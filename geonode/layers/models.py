@@ -42,7 +42,7 @@ from django.core.urlresolvers import reverse
 from geonode import GeoNodeException
 from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
 from geonode.gs_helpers import cascading_delete
-from geonode.people.models import Contact, Role 
+from geonode.people.models import Contact, Role
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.ows import wcs_links, wfs_links, wms_links
@@ -60,7 +60,7 @@ logger = logging.getLogger("geonode.layers.models")
 
 
 class LayerManager(models.Manager):
-    
+
     def __init__(self):
         models.Manager.__init__(self)
         url = "%srest" % settings.GEOSERVER_BASE_URL
@@ -72,17 +72,20 @@ class LayerManager(models.Manager):
         superusers = User.objects.filter(is_superuser=True).order_by('id')
         if superusers.count() == 0:
             raise RuntimeError('GeoNode needs at least one admin/superuser set')
-        
-        contact = Contact.objects.get_or_create(user=superusers[0], 
+
+        contact = Contact.objects.get_or_create(user=superusers[0],
                                                 defaults={"name": "Geonode Admin"})[0]
         return contact
 
-    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, owner=None):
+    def slurp(self, ignore_errors=True, verbosity=1, console=None, owner=None):
         """Configure the layers available in GeoServer in GeoNode.
 
            It returns a list of dictionaries with the name of the layer,
            the result of the operation and the errors and traceback if it failed.
         """
+        if console is None:
+            console = open(os.devnull, 'w')
+
         if verbosity > 1:
             print >> console, "Inspecting the available layers in GeoServer ..."
         cat = self.gs_catalog
@@ -150,7 +153,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     # section 1
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
     date = models.DateTimeField(_('date'), default = datetime.now, help_text=_('reference date for the cited resource')) # passing the method itself, not the result
-    
+
     date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication', help_text=_('identification of when a given event occurred'))
 
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True, help_text=_('version of the cited resource'))
@@ -198,7 +201,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     srid = models.CharField(max_length=255, default='EPSG:4326')
 
     # CSW specific fields
-    csw_typename = models.CharField(_('CSW typename'), max_length=32, default='gmd:MD_Metadata', null=False)    
+    csw_typename = models.CharField(_('CSW typename'), max_length=32, default='gmd:MD_Metadata', null=False)
     csw_schema = models.CharField(_('CSW schema'), max_length=64, default='http://www.isotc211.org/2005/gmd', null=False)
     csw_mdsource = models.CharField(_('CSW source'), max_length=256, default='local', null=False)
     csw_insert_date = models.DateTimeField(_('CSW insert date'), auto_now_add=True, null=True)
@@ -435,7 +438,7 @@ class Layer(ResourceBase):
         return [kw.name for kw in self.keywords.all()]
 
     def get_absolute_url(self):
-        return reverse('geonode.layers.views.layer_detail', None, [str(self.typename)]) 
+        return reverse('geonode.layers.views.layer_detail', None, [str(self.typename)])
 
     def __str__(self):
         return "%s Layer" % self.typename
@@ -443,7 +446,7 @@ class Layer(ResourceBase):
     class Meta:
         # custom permissions,
         # change and delete are standard in django
-        permissions = (('view_layer', 'Can view'), 
+        permissions = (('view_layer', 'Can view'),
                        ('change_layer_permissions', "Can change permissions"), )
 
     # Permission Level Constants
@@ -451,10 +454,10 @@ class Layer(ResourceBase):
     LEVEL_READ  = 'layer_readonly'
     LEVEL_WRITE = 'layer_readwrite'
     LEVEL_ADMIN = 'layer_admin'
-                 
+
     def set_default_permissions(self):
         self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
-        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ) 
+        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
 
         # remove specific user permissions
         current_perms =  self.get_all_level_info()
@@ -543,7 +546,7 @@ class LinkManager(models.Manager):
 
     def original(self):
         return self.get_query_set().filter(link_type='original')
-        
+
 
 
 class Link(models.Model):
@@ -568,7 +571,7 @@ class Link(models.Model):
     objects = LinkManager()
 
 
-def geoserver_pre_delete(instance, sender, **kwargs): 
+def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer
     """
     ct = ContentType.objects.get_for_model(instance)
@@ -636,7 +639,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     gs_catalog.save(gs_resource)
 
     publishing = gs_catalog.get_layer(instance.name)
- 
+
     if instance.poc and instance.poc.user:
         publishing.attribution = str(instance.poc.user)
         profile = Contact.objects.get(user=instance.poc.user)
@@ -646,7 +649,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     """Get information from geoserver.
 
        The attributes retrieved include:
-       
+
        * Bounding Box
        * SRID
        * Download links (WMS, WCS or WFS and KML)

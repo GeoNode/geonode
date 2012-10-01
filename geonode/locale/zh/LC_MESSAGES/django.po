@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-09-12 21:58-0700\n"
-"PO-Revision-Date: 2012-09-27 22:59+0000\n"
+"PO-Revision-Date: 2012-09-30 21:17+0000\n"
 "Last-Translator: nwang <nwang@opengeo.org>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/zh/)\n"
 "MIME-Version: 1.0\n"
@@ -32,7 +32,7 @@ msgstr "用户"
 
 #: utils.py:565
 msgid "Permission Denied"
-msgstr ""
+msgstr "权限级别"
 
 #: layers/enumerations.py:24
 msgid "series"
@@ -40,11 +40,11 @@ msgstr ""
 
 #: layers/enumerations.py:25
 msgid "computer program or routine"
-msgstr ""
+msgstr "电脑程序"
 
 #: layers/enumerations.py:26
 msgid "feature type"
-msgstr ""
+msgstr "功能类型"
 
 #: layers/enumerations.py:27
 msgid "copy or imitation of an existing or hypothetical object"
@@ -213,23 +213,23 @@ msgstr ""
 
 #: layers/enumerations.py:87
 msgid "economic activities, conditions and employment"
-msgstr ""
+msgstr "经济活动，环境以及就业"
 
 #: layers/enumerations.py:88
 msgid "information used for appropriate actions for future use of the land"
-msgstr ""
+msgstr "对未来合理利用土地的帮助信息"
 
 #: layers/enumerations.py:89
 msgid "flora and/or fauna in natural environment"
-msgstr ""
+msgstr "自然环境中的动植物"
 
 #: layers/enumerations.py:90
 msgid "health, health services, human ecology, and safety"
-msgstr ""
+msgstr "健康，医疗卫生服务，人类生态学，以及安全设施"
 
 #: layers/enumerations.py:91
 msgid "base maps"
-msgstr ""
+msgstr "底图"
 
 #: layers/enumerations.py:92
 msgid "means and aids for conveying persons and/or goods"
@@ -237,11 +237,11 @@ msgstr ""
 
 #: layers/enumerations.py:93
 msgid "characteristics of society and cultures"
-msgstr ""
+msgstr "社会与文化特征"
 
 #: layers/enumerations.py:94
 msgid "man-made construction"
-msgstr ""
+msgstr "人工建筑物"
 
 #: layers/enumerations.py:95
 msgid "processes and phenomena of the atmosphere"
@@ -249,7 +249,7 @@ msgstr ""
 
 #: layers/enumerations.py:114
 msgid "No information provided"
-msgstr ""
+msgstr "无信息提供"
 
 #: layers/enumerations.py:118
 msgid "Afghanistan"
@@ -1213,7 +1213,7 @@ msgstr "日期"
 
 #: layers/models.py:148
 msgid "reference date for the cited resource"
-msgstr ""
+msgstr "资料引用日期"
 
 #: layers/models.py:150
 msgid "date type"
@@ -1221,7 +1221,7 @@ msgstr "日期类型"
 
 #: layers/models.py:150
 msgid "identification of when a given event occurred"
-msgstr ""
+msgstr "识别特定事件的发生"
 
 #: layers/models.py:152
 msgid "edition"
@@ -1229,7 +1229,7 @@ msgstr "版本"
 
 #: layers/models.py:152
 msgid "version of the cited resource"
-msgstr ""
+msgstr "引用文献的版本"
 
 #: layers/models.py:153
 msgid "abstract"
@@ -1237,7 +1237,7 @@ msgstr "摘要"
 
 #: layers/models.py:153
 msgid "brief narrative summary of the content of the resource(s)"
-msgstr ""
+msgstr "资料简介"
 
 #: layers/models.py:154
 msgid "purpose"
@@ -1255,7 +1255,7 @@ msgstr "维护频率"
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
-msgstr ""
+msgstr "数据首次生成后的修改及删除频率"
 
 #: layers/models.py:162 maps/models.py:85
 msgid "keywords"
@@ -1265,7 +1265,7 @@ msgstr "关键字"
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
-msgstr ""
+msgstr "常用词汇或固定短语(用空格或逗号隔开"
 
 #: layers/models.py:163
 msgid "keywords region"
@@ -1273,7 +1273,7 @@ msgstr "关键词区域"
 
 #: layers/models.py:163
 msgid "keyword identifies a location"
-msgstr ""
+msgstr "定位关键词"
 
 #: layers/models.py:164
 msgid "constraints use"
@@ -1294,7 +1294,7 @@ msgstr "其他约束"
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
-msgstr ""
+msgstr "使用资料或元数据的限制及法律前提"
 
 #: layers/models.py:166
 msgid "spatial representation type"
@@ -1302,7 +1302,7 @@ msgstr "空间呈现类型"
 
 #: layers/models.py:166
 msgid "method used to represent geographic information in the dataset"
-msgstr ""
+msgstr "在数据组中显示地理信息的方法"
 
 #: layers/models.py:169
 msgid "language"
@@ -1310,7 +1310,7 @@ msgstr "语言"
 
 #: layers/models.py:169
 msgid "language used within the dataset"
-msgstr ""
+msgstr "数据组使用语言"
 
 #: layers/models.py:170
 msgid "topic_category"
@@ -1328,7 +1328,7 @@ msgstr "起始时间"
 
 #: layers/models.py:173
 msgid "time period covered by the content of the dataset (start)"
-msgstr ""
+msgstr "数据组所覆盖时间段 (起始日期)"
 
 #: layers/models.py:174
 msgid "temporal extent end"
@@ -1336,7 +1336,7 @@ msgstr "结束时间"
 
 #: layers/models.py:174
 msgid "time period covered by the content of the dataset (end)"
-msgstr ""
+msgstr "数据组所覆盖时间段 (结束日期)"
 
 #: layers/models.py:176
 msgid "supplemental information"
@@ -1344,7 +1344,7 @@ msgstr "补充信息"
 
 #: layers/models.py:176
 msgid "any other descriptive information about the dataset"
-msgstr ""
+msgstr "其他关于数据的描述性信息"
 
 #: layers/models.py:179
 msgid "distribution URL"
@@ -1362,7 +1362,7 @@ msgstr "发布描述"
 
 #: layers/models.py:180
 msgid "detailed text description of what the online resource is/does"
-msgstr ""
+msgstr "对网上资源的详细文字介绍"
 
 #: layers/models.py:183
 msgid "data quality statement"
@@ -1380,7 +1380,7 @@ msgstr ""
 
 #: layers/models.py:198
 msgid "CSW schema"
-msgstr ""
+msgstr "CSW 图解"
 
 #: layers/models.py:199
 msgid "CSW source"
@@ -1388,11 +1388,11 @@ msgstr ""
 
 #: layers/models.py:200
 msgid "CSW insert date"
-msgstr ""
+msgstr "CSW 插入日期"
 
 #: layers/models.py:201
 msgid "CSW type"
-msgstr ""
+msgstr "CSW类型"
 
 #: layers/models.py:202
 msgid "CSW anytext"
@@ -1474,7 +1474,7 @@ msgstr "您无权删除此图层"
 
 #: layers/views.py:77
 msgid "You do not have permissions for this layer."
-msgstr ""
+msgstr "您没有权限查看或下载此图层。"
 
 #: layers/views.py:78
 msgid "You are not permitted to modify this layer"
@@ -1507,7 +1507,7 @@ msgstr "浏览数据"
 
 #: layers/templates/layers/data.html:9
 msgid "Geospatial Data"
-msgstr ""
+msgstr "地理空间数据"
 
 #: layers/templates/layers/data.html:16 maps/templates/maps/maps.html:20
 #: templates/index.html:51
@@ -1535,7 +1535,7 @@ msgid ""
 " \n"
 "      If you are interested in information about accessing this information through OGC services, please visit our\n"
 "      "
-msgstr ""
+msgstr "您想要通过OGC服务获得感兴趣的信息，请访问我们的网站"
 
 #: layers/templates/layers/data.html:33
 msgid "developer page"
@@ -1658,7 +1658,7 @@ msgstr ""
 
 #: layers/templates/layers/layer.html:212 maps/templates/maps/mapinfo.html:77
 msgid "Post a comment"
-msgstr ""
+msgstr "发表评论"
 
 #: layers/templates/layers/layer.html:220 maps/templates/maps/mapinfo.html:85
 #: people/templates/people/forgot_username_form.html:18
@@ -1671,7 +1671,7 @@ msgstr "登录以发表评论"
 
 #: layers/templates/layers/layer.html:230
 msgid "Rate this layer"
-msgstr ""
+msgstr "给此图层打分"
 
 #: layers/templates/layers/layer.html:243
 msgid "Legend"
@@ -1679,11 +1679,11 @@ msgstr ""
 
 #: layers/templates/layers/layer.html:254
 msgid "Download Data"
-msgstr ""
+msgstr "下载数据"
 
 #: layers/templates/layers/layer.html:259
 msgid "Download Metadata"
-msgstr ""
+msgstr "下载元数据"
 
 #: layers/templates/layers/layer.html:263
 msgid "No metadata links provided for this data."
@@ -1760,7 +1760,7 @@ msgstr ""
 
 #: layers/templates/layers/layer_describe.html:28
 msgid "Metadata Provider"
-msgstr ""
+msgstr "元数据提供者"
 
 #: layers/templates/layers/layer_describe.html:32
 msgid "Update"
@@ -1791,7 +1791,7 @@ msgstr "此操作会影响以下地图："
 
 #: layers/templates/layers/layer_remove.html:28
 msgid "No maps are using this layer"
-msgstr ""
+msgstr "没有地图使用此图层。"
 
 #: layers/templates/layers/layer_replace.html:4
 #: layers/templates/layers/layer_replace.html:155
@@ -1836,7 +1836,7 @@ msgid ""
 "GeoNode can import GeoTIFF and Shapefile data. To import a shapefile, first "
 "pick its file with the .shp extension. You will then be prompted to pick the"
 " other component files."
-msgstr ""
+msgstr "GeoNode 可以导入GeoTIFF 和Shapefile 数据。要导入Shapefile,请先选中以.shp结尾的文件，然后您会被提示选择其他组件文件。"
 
 #: layers/templates/layers/search_base.html:4
 msgid "Search Data"
@@ -1861,16 +1861,16 @@ msgstr "标题"
 #: layers/templates/layers/search_base.html:36
 #: maps/templates/maps/maps_search_base.html:17
 msgid "Contact"
-msgstr ""
+msgstr "联系"
 
 #: layers/templates/layers/search_base.html:37
 #: maps/templates/maps/maps_search_base.html:18
 msgid "Last Modified"
-msgstr ""
+msgstr "最终修改"
 
 #: layers/templates/layers/search_base.html:50
 msgid "Export as ZIP "
-msgstr ""
+msgstr "导出为ZIP文件"
 
 #: layers/templates/layers/search_base.html:53 templates/index.html:20
 msgid "Create Map"
@@ -1890,7 +1890,7 @@ msgstr "对显示区域包括数据搜索功能。"
 
 #: layers/templates/layers/search_base.html:71
 msgid "Selected Data"
-msgstr ""
+msgstr "已选数据"
 
 #: layers/templates/layers/search_base.html:72
 msgid ""
@@ -1910,7 +1910,7 @@ msgstr "导出选取"
 #: layers/templates/layers/search_base.html:103
 #: maps/templates/maps/maps_search_base.html:49
 msgid "Your search did not match any items."
-msgstr ""
+msgstr "未搜索到任何结果。"
 
 #: layers/templates/layers/search_result_snippet.html:5
 #: maps/templates/maps/mapinfo.html:52
@@ -2032,7 +2032,7 @@ msgstr "您无权删除此地图。"
 
 #: maps/views.py:69
 msgid "You do not have permissions for this map."
-msgstr ""
+msgstr "您没有权限查看或下载此地图。"
 
 #: maps/views.py:70
 msgid "You must be logged in to save this map"
@@ -2073,7 +2073,7 @@ msgid ""
 "        Finally, the map contains these layers which will not be downloaded\n"
 "        because they are not available directly from this GeoNode:\n"
 "      "
-msgstr ""
+msgstr "\n    最后，该地图包含的这些图层将不会被下载，\n    因为图层不是GeoNode数据：\n    "
 
 #: maps/templates/maps/download.html:115
 msgid "Start downloading this map"
@@ -2093,11 +2093,11 @@ msgstr ""
 
 #: maps/templates/maps/map_describe.html:24
 msgid "Update metadata"
-msgstr ""
+msgstr "更新元数据"
 
 #: maps/templates/maps/map_remove.html:6
 msgid "Deleting"
-msgstr ""
+msgstr "删除"
 
 #: maps/templates/maps/map_remove.html:11
 #, python-format
@@ -2166,7 +2166,7 @@ msgstr "新地图"
 
 #: maps/templates/maps/maps.html:24
 msgid "Create"
-msgstr ""
+msgstr "创建地图"
 
 #: maps/templates/maps/maps.html:26
 msgid ""
@@ -2239,7 +2239,7 @@ msgstr ""
 #: people/enumerations.py:49
 msgid ""
 "key party responsible for gathering information and conducting research"
-msgstr ""
+msgstr "信息收集与研究的主要责任方"
 
 #: people/forms.py:32
 msgid "Email Address"
@@ -2253,7 +2253,7 @@ msgstr "个人名称"
 msgid ""
 "name of the responsible personsurname, given name, title separated by a "
 "delimiter"
-msgstr ""
+msgstr "负责人的姓、名、头衔"
 
 #: people/models.py:36
 msgid "Organization Name"
@@ -2273,13 +2273,13 @@ msgstr "位置名称"
 
 #: people/models.py:38
 msgid "role or position of the responsible person"
-msgstr ""
+msgstr "责任人的作用"
 
 #: people/models.py:39
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
-msgstr ""
+msgstr "负责人或负责机构的联系电话"
 
 #: people/models.py:40
 msgid "Facsimile"
@@ -2289,7 +2289,7 @@ msgstr "传真"
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
-msgstr ""
+msgstr "负责人或负责机构的传真联系号码"
 
 #: people/models.py:41
 msgid "Delivery Point"
@@ -2299,7 +2299,7 @@ msgstr "交付地点"
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
-msgstr ""
+msgstr "可以联系到负责人或负责团体的地址及email地址"
 
 #: people/models.py:42
 msgid "City"
@@ -2307,7 +2307,7 @@ msgstr "城市"
 
 #: people/models.py:42
 msgid "city of the location"
-msgstr ""
+msgstr "城市"
 
 #: people/models.py:43
 msgid "Administrative Area"
@@ -2315,7 +2315,7 @@ msgstr "行政区域"
 
 #: people/models.py:43
 msgid "state, province of the location"
-msgstr ""
+msgstr "州或省"
 
 #: people/models.py:44
 msgid "Postal Code"
@@ -2323,21 +2323,21 @@ msgstr "邮政编码"
 
 #: people/models.py:44
 msgid "ZIP or other postal code"
-msgstr ""
+msgstr "邮编"
 
 #: people/models.py:45
 msgid "country of the physical address"
-msgstr ""
+msgstr "国家"
 
 #: people/models.py:46
 msgid ""
 "address of the electronic mailbox of the responsible organization or "
 "individual"
-msgstr ""
+msgstr "负责个人或团体的email地址"
 
 #: people/models.py:67
 msgid "function performed by the responsible party"
-msgstr ""
+msgstr "责任方履行职务"
 
 #: people/models.py:68 security/models.py:56
 msgid "permissions"
@@ -2345,30 +2345,30 @@ msgstr "权限"
 
 #: people/views.py:36
 msgid "Your username for "
-msgstr ""
+msgstr "您的用户名"
 
 #: people/views.py:48
 msgid "Your username has been emailed to you."
-msgstr ""
+msgstr "您的用户名已经电邮给你。"
 
 #: people/views.py:50
 msgid "No user could be found with that email address."
-msgstr ""
+msgstr "找不到使用此email的用户。"
 
 #: people/templates/idios/profile.html:11
 #: templates/profiles/profile_detail.html:11
 msgid "Date"
-msgstr ""
+msgstr "日期"
 
 #: people/templates/idios/profile.html:18
 #: templates/profiles/profile_detail.html:18
 msgid "Layer"
-msgstr ""
+msgstr "图层"
 
 #: people/templates/idios/profile.html:27
 #: templates/profiles/profile_detail.html:27
 msgid "Map"
-msgstr ""
+msgstr "地图"
 
 #: people/templates/idios/profile.html:36
 #: templates/profiles/profile_detail.html:36
@@ -2383,24 +2383,24 @@ msgstr ""
 #: people/templates/idios/profile.html:44
 #: templates/profiles/profile_detail.html:44
 msgid "Delete Layers"
-msgstr ""
+msgstr "删除图层"
 
 #: people/templates/idios/profile.html:47
 #: templates/profiles/profile_detail.html:47
 msgid ""
 "You're about to delete multiple layers and maps.  Is that really what you "
 "want to do?"
-msgstr ""
+msgstr "你将删除多个图层和地图。你确定要进行此操作？"
 
 #: people/templates/idios/profile.html:50 templates/_permissions_form.html:51
 #: templates/profiles/profile_detail.html:50
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 #: people/templates/idios/profile.html:51
 #: templates/profiles/profile_detail.html:51
 msgid "Delete"
-msgstr ""
+msgstr "删除"
 
 #: people/templates/idios/profile.html:66
 #: templates/profiles/profile_detail.html:66
@@ -2433,7 +2433,7 @@ msgstr "设置"
 #: people/templates/idios/profile_create.html:8
 #: people/templates/idios/profile_create.html:14
 msgid "Create Profile"
-msgstr ""
+msgstr "创建个人信息"
 
 #: people/templates/idios/profile_edit.html:8 templates/avatar/add.html:9
 msgid "You haven't uploaded an avatar yet. Please upload one now."
@@ -2445,15 +2445,15 @@ msgstr "改换您的头像"
 
 #: people/templates/idios/profile_edit.html:17
 msgid "Choose new avatar"
-msgstr ""
+msgstr "选择新头像"
 
 #: people/templates/idios/profile_edit.html:23
 msgid "Upload a New Avatar"
-msgstr ""
+msgstr "上传新头像"
 
 #: people/templates/idios/profile_edit.html:29
 msgid "Upload new avatar"
-msgstr ""
+msgstr "上传新头像"
 
 #: people/templates/idios/profile_edit.html:34
 msgid "Edit Your Profile"
@@ -2461,17 +2461,17 @@ msgstr "编辑您的个人信息"
 
 #: people/templates/idios/profile_edit.html:40
 msgid "Update profile"
-msgstr ""
+msgstr "更新个人信息"
 
 #: people/templates/people/forgot_username_form.html:6
 msgid "Forgot Username"
-msgstr ""
+msgstr "忘记用户名"
 
 #: people/templates/people/forgot_username_form.html:10
 msgid ""
 "Enter your email address and click the submit button.  Your username will be"
 " sent to you."
-msgstr ""
+msgstr "请填写您的email地址，然后点击提交按钮。您的用户名会被发到您的电邮信箱"
 
 #: security/models.py:37
 msgid "Invalid permission level."
@@ -2517,7 +2517,7 @@ msgid ""
 "\n"
 "      The page you requested does not exist.  Perhaps you are using an outdated bookmark?\n"
 "  "
-msgstr ""
+msgstr "\n您请求的页面不存在。原因可能是网址过时？ "
 
 #: templates/500.html:5
 msgid "Internal Server Error"
@@ -2528,43 +2528,43 @@ msgid ""
 "\n"
 "      An internal error occurred. Please try again, and if the problem continues, contact your site administrator.\n"
 "  "
-msgstr ""
+msgstr "\n发生内部错误。请重试，如果还有问题，请联系网站管理员。"
 
 #: templates/_permissions_form.html:11
 msgid "Who can view and download this data?"
-msgstr ""
+msgstr "谁有权查看并下载此数据？"
 
 #: templates/_permissions_form.html:15
 msgid "Anyone"
-msgstr ""
+msgstr "任何人"
 
 #: templates/_permissions_form.html:19 templates/_permissions_form.html:32
 msgid "Any registered user"
-msgstr ""
+msgstr "任何注册用户"
 
 #: templates/_permissions_form.html:23
 msgid "Only users who can edit"
-msgstr ""
+msgstr "仅限于有编辑权限的用户"
 
 #: templates/_permissions_form.html:28
 msgid "Who can edit this data?"
-msgstr ""
+msgstr "谁能编辑此数据？"
 
 #: templates/_permissions_form.html:36
 msgid "Only the following users or groups:"
-msgstr ""
+msgstr "仅限于以下用户或团体"
 
 #: templates/_permissions_form.html:38 templates/_permissions_form.html:45
 msgid "Choose a user or group..."
-msgstr ""
+msgstr "选择一个用户或团体"
 
 #: templates/_permissions_form.html:43
 msgid "Who can manage and edit this data?"
-msgstr ""
+msgstr "谁能管理修改此数据？"
 
 #: templates/_permissions_form.html:52
 msgid "Apply Changes"
-msgstr ""
+msgstr "应用更改"
 
 #: templates/base.html:67 templates/index.html:36
 msgid "Data"
@@ -2572,11 +2572,11 @@ msgstr "数据"
 
 #: templates/base.html:75
 msgid "Logged in as:"
-msgstr ""
+msgstr "登陆为"
 
 #: templates/base.html:87
 msgid "Admin"
-msgstr ""
+msgstr "网站管理"
 
 #: templates/base.html:90
 msgid "Log out"
@@ -2596,7 +2596,7 @@ msgstr "注册"
 
 #: templates/base.html:122
 msgid "Powered by"
-msgstr ""
+msgstr "提供者："
 
 #: templates/base.html:122
 msgid "GeoNode"
@@ -2612,11 +2612,11 @@ msgstr "帮助"
 
 #: templates/base.html:132
 msgid "Language"
-msgstr ""
+msgstr "语言"
 
 #: templates/base.html:160
 msgid "Add User..."
-msgstr ""
+msgstr "添加用户"
 
 #: templates/developer.html:4
 msgid "OGC Services"
@@ -2624,7 +2624,7 @@ msgstr "OGC服务"
 
 #: templates/developer.html:8
 msgid "Information for Developers"
-msgstr ""
+msgstr "供开发者使用的信息"
 
 #: templates/developer.html:9
 msgid "Useful information for developers interested in GeoNode."
@@ -2727,23 +2727,23 @@ msgstr ""
 
 #: templates/help.html:66
 msgid "Browsing Data"
-msgstr ""
+msgstr "浏览数据"
 
 #: templates/help.html:67
 msgid "Developer Access"
-msgstr ""
+msgstr "开发者通道"
 
 #: templates/help.html:68
 msgid "Browsing Maps"
-msgstr ""
+msgstr "浏览地图"
 
 #: templates/help.html:69
 msgid "Creating a Map"
-msgstr ""
+msgstr "创建地图"
 
 #: templates/help.html:70
 msgid "Exporting a Map"
-msgstr ""
+msgstr "导出地图"
 
 #: templates/help.html:71
 msgid "Remixing a Map"
@@ -2762,7 +2762,7 @@ msgid ""
 "\n"
 "        GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>.\n"
 "      "
-msgstr ""
+msgstr "\nGeoNode是一个开源，共享地理空间数据和地图的平台。如果您有任何有关软件或服务的问题，请点击https://groups.google.com/d/forum/geonode-users加入我们的邮件名单.\n    "
 
 #: templates/index.html:17
 msgid "Explore Maps"
@@ -2775,7 +2775,7 @@ msgid ""
 "        a map with our cartography tool, or <strong>explore</strong> maps\n"
 "        shared by others.\n"
 "      "
-msgstr ""
+msgstr "  GeoNode让您编写和共享地图。\n   使用我们的绘图工具来创建地图，或浏览由他人共享的地图。\n    "
 
 #: templates/index.html:38
 msgid ""
@@ -2784,7 +2784,7 @@ msgid ""
 "        <strong>Search</strong> for data that is valuable to you, or \n"
 "        <strong>upload</strong> your own data.\n"
 "      "
-msgstr ""
+msgstr " \n你可以通过GeoNode上传，管理和浏览数据。 \n      <strong>查询</strong> 对您有所帮助的数据，或者 \n      <strong>上传</strong> 您自己的数据 \n   "
 
 #: templates/avatar/add.html:6
 msgid "Your current avatar: "
@@ -2792,11 +2792,11 @@ msgstr "您当前的头像："
 
 #: templates/avatar/add.html:12
 msgid "Upload an Avatar"
-msgstr ""
+msgstr "上传一个头像"
 
 #: templates/avatar/add.html:18
 msgid "Upload avatar"
-msgstr ""
+msgstr "上传头像"
 
 #: templates/registration/activate.html:6
 msgid "Account successfully activated"
@@ -2835,11 +2835,11 @@ msgstr "再次登录"
 
 #: templates/registration/login.html:17
 msgid "Forgot password?"
-msgstr ""
+msgstr "忘记密码？"
 
 #: templates/registration/login.html:18
 msgid "Forgot username?"
-msgstr ""
+msgstr "忘记用户名？"
 
 #: templates/registration/logout.html:6
 msgid "Logged out"
@@ -2860,7 +2860,7 @@ msgstr "密码成功重置"
 #: templates/registration/password_reset_confirm.html:13
 #: templates/registration/password_reset_form.html:12
 msgid "Reset my password"
-msgstr ""
+msgstr "重设密码"
 
 #: templates/registration/password_reset_confirm.html:17
 msgid "Password reset failed"
@@ -2881,4 +2881,4 @@ msgstr "您已经注册，激活邮件已发送到您的邮箱。"
 
 #: templates/registration/registration_form.html:12
 msgid "Create account"
-msgstr ""
+msgstr "创建账户"
