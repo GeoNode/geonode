@@ -37,14 +37,9 @@
             <div class="span5">
                 <form class="form-inline well search-box" action="{% url search %}" method="POST">
                   {% csrf_token %}
-                  <input type="text" class="input-medium" name="q" placeholder="Search" />
-                  <select name="" id="" class="span2">
-                    <option value="">All Categories</option>
-                    <option value="">Category 1</option>
-                    <option value="">Category 2</option>
-                  </select>
+                  <input type="text" name="q" placeholder="Search" />
                   <button type="submit" class="btn btn-small"><i class="icon-search"></i></button>
-                  {# <a href="{% url advanced_search %}">{% trans "Advanced Search" %}</a> #}
+                  <a href="{% url advanced_search %}">{% trans "Advanced Search" %}</a>
                 </form>
             </div>
             <div class="span4">
@@ -53,9 +48,7 @@
                   <ul class="nav pull-right account-bar">
                     {% if user.is_authenticated %}
                       <li class="user-avatar">
-                        <a href="#">
-                            <img src="{{ STATIC_URL }}theme/img/avatar.png" width="20px" height="20px" alt="" class="avatar" />
-                        </a>
+                        <img src="{{ STATIC_URL }}theme/img/avatar.png" width="20px" height="20px" alt="" class="avatar" />
                       </li>
                       <li class="dropdown user">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">

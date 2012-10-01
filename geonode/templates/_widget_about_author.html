@@ -1,7 +1,7 @@
 {% load i18n %}
 <section class="last">
     <h2>{% trans "About the Author" %}</h2>
-    <img src="{{ STATIC_URL }}theme/img/placeholder3.png" alt="Placeholder3" class="thumb" />
+    <div class="placeholder pl-64-70">{% trans "No Image Available" %}</div>
     <h4><a href="{{ owner.get_profile.get_absolute_url }}">{{ owner.get_profile.name|default:owner }}</a></h4>
     <p class="clear"></p>
     <a href="{% url profile_detail "admin" %}" class="read-more">

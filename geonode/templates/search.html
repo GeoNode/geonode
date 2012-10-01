@@ -198,12 +198,14 @@
       </form>
     </div>
 
-    {% include "_pagination.html" %}
+    {# {% include "_pagination.html" %} #}
 
     <div class="search-results">
       <article>
         <h6>Map</h6>
-        <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" /></a>
+        <a href="{% url mapinfo %}">
+            <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
+        </a>
         <div class="details">
           <a href="{% url mapinfo %}"><h5>Title of the Map goes right here</h5></a>
           <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
@@ -214,7 +216,9 @@
 
       <article>
         <h6>Data</h6>
-        <a href="{% url layerinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" /></a>
+        <a href="{% url layerinfo %}">
+            <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
+        </a>
         <div class="details">
           <a href="{% url layerinfo %}"><h5>Title of the Layer goes right here</h5></a>
           <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
@@ -226,7 +230,9 @@
 
       <article>
         <h6>Map</h6>
-        <a href="{% url mapinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" /></a>
+        <a href="{% url mapinfo %}">
+            <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
+        </a>
         <div class="details">
           <a href="{% url mapinfo %}"><h5>Title of the Map goes right here</h5></a>
           <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
@@ -237,7 +243,9 @@
 
       <article>
         <h6>Data</h6>
-        <a href="{% url layerinfo %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="25%" class="thumb" alt="placeholder" /></a>
+        <a href="{% url layerinfo %}">
+            <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
+        </a>
         <div class="details">
           <a href="{% url layerinfo %}"><h5>Title of the Layer goes right here</h5></a>
           <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
@@ -248,7 +256,7 @@
       </article>
     </div>
 
-    {% include "_pagination.html" %}
+    {# {% include "_pagination.html" %} #}
 
   </div>
 <div class="modal custom hide" id="download-layer">
