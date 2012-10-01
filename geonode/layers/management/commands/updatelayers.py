@@ -23,6 +23,8 @@ from geonode.layers.models import Layer
 from geonode.people.utils import get_valid_user
 import traceback
 import datetime
+import sys
+
 
 class Command(BaseCommand):
     help = 'Update the GeoNode application with data from GeoServer'
@@ -42,8 +44,14 @@ class Command(BaseCommand):
         user = options.get('user')
         owner = get_valid_user(user)
 
+        if verbosity > 0:
+            console = sys.stdout
+        else:
+            console = None
+
         start = datetime.datetime.now()
-        output = Layer.objects.slurp(ignore_errors, verbosity=verbosity, owner=owner)
+        output = Layer.objects.slurp(ignore_errors, verbosity=verbosity,
+                owner=owner, console=console)
         updated = [dict_['name'] for dict_ in output if dict_['status']=='updated']
         created = [dict_['name'] for dict_ in output if dict_['status']=='created']
         failed = [dict_['name'] for dict_ in output if dict_['status']=='failed']
