@@ -492,6 +492,12 @@ section.widget-mini {
   padding-bottom:10px;
   margin-bottom:20px;
   overflow:hidden;
+  position: relative;
+
+  .download {
+    right: 20px;
+    position: absolute;
+  }
 
   img {
     float:left;
@@ -503,14 +509,26 @@ section.widget-mini {
     width:420px;
   }
 
-  .rating {
+  .abstract {
+    margin: 1em 0;
+  }
+
+  .rating, .activity {
     color:@graySp;
+  }
+  .overall_rating {
+    color: @orange;
   }
 }
 
 .grid article {
   width: 285px;
+  overflow: hidden;
   float: left;
+
+  .details {
+    clear: left;
+  }
 }
 
 aside .well {
@@ -879,16 +897,16 @@ ul.space li {
       margin:2px 1px 0 0;
     }
   }
-}
-.avg_rating {
-  float: right;
-  margin-top: 8px;
-  color: @graySp;
+  .avg_rating {
+    float: right;
+    margin-top: 8px;
+    color: @graySp;
 
-  .overall_rating {
-    font-size: 18px;
-    padding-left: 6px;
-    color: @orange;
+    .overall_rating {
+      font-size: 18px;
+      padding-left: 6px;
+      color: @orange;
+    }
   }
 }
 

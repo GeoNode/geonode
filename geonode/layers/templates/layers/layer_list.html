@@ -69,4 +69,23 @@
   <script src="{% static "geonode/js/layers.js" %}"></script>
   <script src="{% static "geonode/js/waypoints.js" %}"></script>
   <script src="{% static "geonode/js/loadmore.js" %}"></script>
+  <script src="{% static "agon_ratings/js/jquery.raty.js" %}"></script>
+  <script type="text/javascript">
+     $(function() {
+       $('.overall_rating').raty({
+         half: true,
+         readOnly: true,
+         start: $('.overall_rating').data('rating'),
+         path: "{{ STATIC_URL }}agon_ratings/img/"
+       });
+       $(".tab-pane").on("load.loadmore", function(e, o) {
+          o.find(".overall_rating").raty({
+            half: true,
+           readOnly: true,
+           start: $(this).data('rating'),
+           path: "{{ STATIC_URL }}agon_ratings/img/"
+          });
+       });
+     });
+  </script>
 {% endblock extra_script %}
