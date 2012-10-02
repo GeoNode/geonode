@@ -420,7 +420,7 @@ def deb(options):
         path('.git').makedirs()
 
         sh(('git-dch --git-author --new-version=%s'
-            '--id-length=6 --debian-branch=%s' % (
+            ' --id-length=6 --debian-branch=%s' % (
             simple_version, branch)))
 
         # Rever workaround for git-dhc bug
