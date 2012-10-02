@@ -4900,6 +4900,11 @@ section.widget-mini h2 a.btn {
   padding-bottom: 10px;
   margin-bottom: 20px;
   overflow: hidden;
+  position: relative;
+}
+.list article .download {
+  right: 20px;
+  position: absolute;
 }
 .list article img {
   float: left;
@@ -4909,12 +4914,23 @@ section.widget-mini h2 a.btn {
   float: left;
   width: 420px;
 }
-.list article .rating {
+.list article .abstract {
+  margin: 1em 0;
+}
+.list article .rating,
+.list article .activity {
   color: #777777;
+}
+.list article .overall_rating {
+  color: #f05a24;
 }
 .grid article {
   width: 285px;
+  overflow: hidden;
   float: left;
+}
+.grid article .details {
+  clear: left;
 }
 aside .well section {
   border-bottom: 1px solid #cccccc;
@@ -5292,12 +5308,14 @@ ul.space li {
 .layer-actions a [class*=" icon-"] {
   margin: 2px 1px 0 0;
 }
-.avg_rating {
+.map-actions .avg_rating,
+.layer-actions .avg_rating {
   float: right;
   margin-top: 8px;
   color: #777777;
 }
-.avg_rating .overall_rating {
+.map-actions .avg_rating .overall_rating,
+.layer-actions .avg_rating .overall_rating {
   font-size: 18px;
   padding-left: 6px;
   color: #f05a24;

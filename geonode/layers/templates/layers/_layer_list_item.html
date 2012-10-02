@@ -1,14 +1,17 @@
 {% load url from future %}
 {% load i18n %}
+{% load agon_ratings_tags %}
 
+{% overall_rating layer "layer" as layer_rating %}
 <article>
+    <a href="#" class="btn btn-primary download">Download</a>
   <a href="{% url "layer_detail" layer.typename %}">
       <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
   </a>
   <div class="details">
     <a href="{% url "layer_detail" layer.typename %}"><h3>{{ layer.title }}</h3></a>
-    <div class="meta">by <a href="{% url "profile_detail" layer.owner.username %}">{{ map.owner }}</a>, {{ layer.date|timesince }} ago</div>
-    <p>{{ layer.abstract }}</p>
-    <!--p class="rating">564 likes</p-->
+    <div class="meta">by <a href="{% url "profile_detail" layer.owner.username %}">{{ layer.owner }}</a>, {{ layer.date|timesince }} ago</div>
+    <p class="abstract">{{ layer.abstract }}</p>
+    <p class="activity">{{ layer.popular_count }} view{{ layer.popular_count|pluralize }} | <span class="avg_rating" data-rating="{{ layer_rating }}">Average rating <span class="overall_rating"></span></span></p>
   </div>
 </article>

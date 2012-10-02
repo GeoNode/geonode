@@ -176,6 +176,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
 
+    layer.popular_count += 1
+    layer.save()
+
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
     DEFAULT_BASE_LAYERS = default_map_config()[1]
