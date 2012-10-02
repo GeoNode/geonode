@@ -131,15 +131,18 @@
             </li>
           {% endif %}
         </ul>
-          {% if layer.attribute_names %}
-              <h2>{% trans "Attributes" %}:</h2>
-              <table border=1 width=100%>
-              <tr><th>Attribute Name</th><th>Range</th><th>Mean</th><th>Median</th><th>Std. Dev.</th></tr>
-              {% for attribute in layer.attribute_names %}
-              <tr><td>{{ attribute }}</td><td></td><td></td><td></td><td></td></tr>
-              {% endfor %}
-              </table>
-          {% endif %}
+          
+      </article>
+      <article id="attributes" class="tab-pane">
+        {% if layer.attribute_names %}
+            <h2>{% trans "Attributes" %}:</h2>
+            <table border=1 width=100%>
+            <tr><th>Attribute Name</th><th>Range</th><th>Mean</th><th>Median</th><th>Std. Dev.</th></tr>
+            {% for attribute in layer.attribute_names %}
+            <tr><td>{{ attribute }}</td><td></td><td></td><td></td><td></td></tr>
+            {% endfor %}
+            </table>
+        {% endif %}
       </article>
       <article id="share" class="tab-pane">
         <p>Share</p>
