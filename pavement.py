@@ -312,6 +312,10 @@ def test_integration(options):
 
     success = False
     try:
+        if name == 'geonode.tests.csw':
+            call_task('start')
+            sh('sleep 30')
+            call_task('setup_data')
         sh(('python manage.py test %s'
            ' --noinput --liveserver=localhost:8000' % name))
     except BuildFailure, e:
@@ -320,8 +324,7 @@ def test_integration(options):
         success = True
     finally:
         # don't use call task here - it won't run since it already has
-        stop_django()
-        stop_geoserver()
+        stop()
 
     _reset()
     if not success:
