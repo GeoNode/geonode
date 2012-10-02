@@ -865,8 +865,9 @@ ul.space li {
   margin-top: 60px;
 }
 
-/** map actions **/
-.map-actions {
+/** map & layer actions **/
+.map-actions,
+.layer-actions {
   margin:8px 0 20px;
   float: left;
 
@@ -1069,12 +1070,11 @@ body.explore #subnav-tabs a.explore {
 // layer info
 
 .layer-actions {
-  border-bottom:1px solid @bdrColor;
   margin-bottom:20px;
   position:relative;
 
-  a.btn {
-    margin-bottom:10px;
+  ul {
+    width: 100%;
   }
 }
 body.layer-info .pointer,

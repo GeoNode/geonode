@@ -66,86 +66,88 @@
     </div>
   </div>
   <div class="span8">
-    <div class="row layer-actions">
-      <div class="span6">
-        {% include "_actions.html" %}
-        <div class="pointer"></div>
-        
-      </div>
-      <div class="span2">
-        
-      </div>
+    <div class="row layer-actions span8">
+
+        {% include "layers/_actions.html" %}
     </div>
-    <article class="description">
-      <h2>{% trans "Layer Information" %}</h2>
-      <ul class="unstyled wide">
-        {% if layer.display_type %}
-          <li>
-            <strong>{% trans "Type" %}:</strong>
-            {{ layer.display_type }}
-          </li>
-        {% endif %}
-        
-        {% if layer.topic_category %}
-          <li>
-            <strong>{% trans "Topic Category" %}:</strong>
-            {{ layer.topic_category }}
-          </li>
-        {% endif %}
-        
-        {% if layer.constraints_use or layer.constraints_other %}
-          <li>
-            <strong>{% trans "Citation" %}:</strong> 
-            {{ layer.constraints_use}} {{ layer.contraints_other}}
-          </li>
-        {% endif %}
-        
-        {% if layer.owner %}
-          <li>
-            <strong>{% trans "Owner" %}:</strong>
-            <a href="{{ layer.owner.get_profile.get_absolute_url }}">{{ layer.owner.username }}</a>
-          </li>
-        {% endif %}
+    <div class="span8 tab-content">
+      <article class="description tab-pane active" id="info">
+        <h2>{% trans "Layer Information" %}</h2>
+        <ul class="unstyled wide">
+          {% if layer.display_type %}
+            <li>
+              <strong>{% trans "Type" %}:</strong>
+              {{ layer.display_type }}
+            </li>
+          {% endif %}
+          
+          {% if layer.topic_category %}
+            <li>
+              <strong>{% trans "Topic Category" %}:</strong>
+              {{ layer.topic_category }}
+            </li>
+          {% endif %}
+          
+          {% if layer.constraints_use or layer.constraints_other %}
+            <li>
+              <strong>{% trans "Citation" %}:</strong> 
+              {{ layer.constraints_use}} {{ layer.contraints_other}}
+            </li>
+          {% endif %}
+          
+          {% if layer.owner %}
+            <li>
+              <strong>{% trans "Owner" %}:</strong>
+              <a href="{{ layer.owner.get_profile.get_absolute_url }}">{{ layer.owner.username }}</a>
+            </li>
+          {% endif %}
 
-        {% if layer.poc.user %}
-          <li>
-            <strong>{% trans "Point of Contact" %}:</strong>
-            <a href="{{ layer.poc.user.get_profile.get_absolute_url }}"> {{ layer.poc.user.username }} </a>
-          <li>
-        {% endif %}
-        
+          {% if layer.poc.user %}
+            <li>
+              <strong>{% trans "Point of Contact" %}:</strong>
+              <a href="{{ layer.poc.user.get_profile.get_absolute_url }}"> {{ layer.poc.user.username }} </a>
+            <li>
+          {% endif %}
+          
 
-        {% if layer.supplemental_information %}
-          <li>
-            <strong>{% trans "Supplemental Information" %}:</strong> 
-            {{ layer.supplemental_information }}
-          </li>
-        {% endif %}
+          {% if layer.supplemental_information %}
+            <li>
+              <strong>{% trans "Supplemental Information" %}:</strong> 
+              {{ layer.supplemental_information }}
+            </li>
+          {% endif %}
 
-        {% if layer.geographic_bounding_box %}
-          <li>
-            <strong>{% trans "Bounding Box" %}:</strong>
-            {{ layer.geographic_bounding_box }}
-          </li>
-        {% endif %}
-        
-        {% if layer.resource.projection %}
-          <li>
-            <strong>{% trans "Native SRS" %}:</strong>
-            {{ layer.resource.projection|default:_("No SRS specified.") }}
-          </li>
-        {% endif %}
-      </ul>
-        {% if layer.attribute_names %}
-            <h2>{% trans "Attributes" %}:</h2>
-            <table border=1 width=100%>
-            <tr><th>Attribute Name</th><th>Range</th><th>Mean</th><th>Median</th><th>Std. Dev.</th></tr>
-            {% for attribute in layer.attribute_names %}
-            <tr><td>{{ attribute }}</td><td></td><td></td><td></td><td></td></tr>
-            {% endfor %}
-            </table>
-        {% endif %}
-    </article>
+          {% if layer.geographic_bounding_box %}
+            <li>
+              <strong>{% trans "Bounding Box" %}:</strong>
+              {{ layer.geographic_bounding_box }}
+            </li>
+          {% endif %}
+          
+          {% if layer.resource.projection %}
+            <li>
+              <strong>{% trans "Native SRS" %}:</strong>
+              {{ layer.resource.projection|default:_("No SRS specified.") }}
+            </li>
+          {% endif %}
+        </ul>
+          {% if layer.attribute_names %}
+              <h2>{% trans "Attributes" %}:</h2>
+              <table border=1 width=100%>
+              <tr><th>Attribute Name</th><th>Range</th><th>Mean</th><th>Median</th><th>Std. Dev.</th></tr>
+              {% for attribute in layer.attribute_names %}
+              <tr><td>{{ attribute }}</td><td></td><td></td><td></td><td></td></tr>
+              {% endfor %}
+              </table>
+          {% endif %}
+      </article>
+      <article id="share" class="tab-pane">
+        <p>Share</p>
+      </article>
+      <article id="flag" class="tab-pane">
+        <p>Flag this Layer</p>
+      </article>
+    </div>
   </div>
   <aside class="span4">
     <div class="well">
