@@ -4,32 +4,15 @@ Installing GeoNode
 The easiest way to install GeoNode is using the official packages for one of the supported Operating Systems.
 Please be advised that GeoNode requires at least 4GB of RAM (6GB including swap).
 
-Ubuntu 10.04, 10.10 and 11.04
+Ubuntu 12.04 
 -----------------------------
 
 Open a terminal and run the following commands::
 
-    wget -qO- http://apt.opengeo.org/gpg.key | sudo apt-key add -
-    sudo add-apt-repo "deb http://apt.opengeo.org/ubuntu lucid main"
+    sudo add-apt-repository ppa:ingenieroariel/unstable
     sudo apt-get update
     sudo apt-get install geonode
- 
-CentOS and RHEL 5
------------------
 
-Create a file called opengeo.repo with the following::
-
-    [opengeo]
-    name=opengeo
-    baseurl=http://yum.opengeo.org/centos/
-    enabled=1
-    gpgcheck=0
-
-
-Open a terminal and copy that file to::
-
-    cp opengeo.repo /etc/yum.repos.d/
-    yum install geonode
 
 OSX, Windows and other operating systems
 ----------------------------------------
@@ -47,7 +30,7 @@ it has only been tested in Ubuntu Linux but should work with minimal changes to 
 # First you need to install the OS specific dependencies,
 here is the complete list (the actual package name may vary)::
 
-    python, python-support, python-dev, sun-java6-jre | openjdk-6-jre, tomcat6, postgresql-8.4, gcc, patch, zip,  python-imaging, gdal-bin, libgeos-dev, python-urlgrabber, python-pastescript, gettext, postgresql-contrib, postgresql-8.4-postgis,libpq-dev, unzip, libjpeg-dev, libpng-dev, python-gdal, libproj-dev, python-psycopg2, apache2, libapache2-mod-wsgi, libxml2-dev, libxslt1-dev
+    geoserver, python, python-support, python-dev, sun-java6-jre | openjdk-6-jre, tomcat6, postgresql-8.4, gcc, patch, zip,  python-imaging, gdal-bin, libgeos-dev, python-urlgrabber, python-pastescript, gettext, postgresql-contrib, postgresql-8.4-postgis,libpq-dev, unzip, libjpeg-dev, libpng-dev, python-gdal, libproj-dev, python-psycopg2, apache2, libapache2-mod-wsgi, libxml2-dev, libxslt1-dev
 
 # Then you have to edit the config file that is in the support directory with the appropiate paths,
 sample config files for Ubuntu and CentOS are distributed with the release packages.
@@ -64,7 +47,7 @@ sample config files for Ubuntu and CentOS are distributed with the release packa
 
 # After you have installing your GeoNode we recommend you to read the following guide to learn how to create users,
 serve the site on a DNS or IP address and optimize your GeoNode.
-    http://docs.geonode.org/en/1.1/deploy/production.html 
+    http://docs.geonode.org/deploy/production.html 
 
 Note for packagers
 ~~~~~~~~~~~~~~~~~~
