@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-27 15:50-0700\n"
+"POT-Creation-Date: 2012-10-03 16:57-0700\n"
 "PO-Revision-Date: 2012-09-13 04:27+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1201,261 +1201,261 @@ msgstr "Sambia"
 msgid "Zimbabwe"
 msgstr "Simbabwe"
 
-#: layers/models.py:151 security/models.py:55
+#: layers/models.py:154 security/models.py:55
 msgid "title"
 msgstr "Titel"
 
-#: layers/models.py:151
+#: layers/models.py:154
 msgid "name by which the cited resource is known"
 msgstr ""
 
-#: layers/models.py:152
+#: layers/models.py:155
 msgid "date"
 msgstr "Datum"
 
-#: layers/models.py:152
+#: layers/models.py:155
 msgid "reference date for the cited resource"
 msgstr ""
 
-#: layers/models.py:154
+#: layers/models.py:157
 msgid "date type"
 msgstr "Datum Typ"
 
-#: layers/models.py:154
+#: layers/models.py:157
 msgid "identification of when a given event occurred"
 msgstr ""
 
-#: layers/models.py:156
+#: layers/models.py:159
 msgid "edition"
 msgstr "Ausgabe"
 
-#: layers/models.py:156
+#: layers/models.py:159
 msgid "version of the cited resource"
 msgstr ""
 
-#: layers/models.py:157
+#: layers/models.py:160
 msgid "abstract"
 msgstr "Kurzbeschreibung"
 
-#: layers/models.py:157
+#: layers/models.py:160
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr ""
 
-#: layers/models.py:158
+#: layers/models.py:161
 msgid "purpose"
 msgstr "Zweck"
 
-#: layers/models.py:158
+#: layers/models.py:161
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr ""
 
-#: layers/models.py:160
+#: layers/models.py:163
 msgid "maintenance frequency"
 msgstr "Wartungshäufigkeit"
 
-#: layers/models.py:160
+#: layers/models.py:163
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr ""
 
-#: layers/models.py:166 maps/models.py:87
+#: layers/models.py:169 maps/models.py:87
 msgid "keywords"
 msgstr "Schlüsselworter"
 
-#: layers/models.py:166
+#: layers/models.py:169
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
 msgstr ""
 
-#: layers/models.py:167
+#: layers/models.py:170
 msgid "keywords region"
 msgstr "Schlüsselwörter Region"
 
-#: layers/models.py:167
+#: layers/models.py:170
 msgid "keyword identifies a location"
 msgstr ""
 
-#: layers/models.py:168
+#: layers/models.py:171
 msgid "constraints use"
 msgstr "Nutzungsbeschränkungen"
 
-#: layers/models.py:168
+#: layers/models.py:171
 msgid ""
 "constraints applied to assure the protection of privacy or intellectual "
 "property, and any special restrictions or limitations or warnings on using "
 "the resource or metadata"
 msgstr ""
 
-#: layers/models.py:169
+#: layers/models.py:172
 msgid "constraints other"
 msgstr "Andere Beschränkungen"
 
-#: layers/models.py:169
+#: layers/models.py:172
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr ""
 
-#: layers/models.py:170
+#: layers/models.py:173
 msgid "spatial representation type"
 msgstr "Räumlicher Repräsentationstyp"
 
-#: layers/models.py:170
+#: layers/models.py:173
 msgid "method used to represent geographic information in the dataset"
 msgstr ""
 
-#: layers/models.py:173
+#: layers/models.py:176
 msgid "language"
 msgstr "Sprache"
 
-#: layers/models.py:173
+#: layers/models.py:176
 msgid "language used within the dataset"
 msgstr ""
 
-#: layers/models.py:174
+#: layers/models.py:177
 msgid "topic_category"
 msgstr "Themenkategorie"
 
-#: layers/models.py:174
+#: layers/models.py:177
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
 msgstr ""
 
-#: layers/models.py:177
+#: layers/models.py:180
 msgid "temporal extent start"
 msgstr "Zeitliche Ausdehnung Start"
 
-#: layers/models.py:177
+#: layers/models.py:180
 msgid "time period covered by the content of the dataset (start)"
 msgstr ""
 
-#: layers/models.py:178
+#: layers/models.py:181
 msgid "temporal extent end"
 msgstr "Zeitliche Ausdehnung Ende"
 
-#: layers/models.py:178
+#: layers/models.py:181
 msgid "time period covered by the content of the dataset (end)"
 msgstr ""
 
-#: layers/models.py:180
+#: layers/models.py:183
 msgid "supplemental information"
 msgstr "Zusätzliche Information"
 
-#: layers/models.py:180
+#: layers/models.py:183
 msgid "any other descriptive information about the dataset"
 msgstr ""
 
-#: layers/models.py:183
+#: layers/models.py:186
 msgid "distribution URL"
 msgstr "Verbreitungs URL"
 
-#: layers/models.py:183
+#: layers/models.py:186
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
 msgstr ""
 
-#: layers/models.py:184
+#: layers/models.py:187
 msgid "distribution description"
 msgstr "Verbreitungsbeschreibung"
 
-#: layers/models.py:184
+#: layers/models.py:187
 msgid "detailed text description of what the online resource is/does"
 msgstr ""
 
-#: layers/models.py:187
+#: layers/models.py:190
 msgid "data quality statement"
 msgstr "Datenqualitätskommentar"
 
-#: layers/models.py:187
+#: layers/models.py:190
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr ""
 
-#: layers/models.py:201
+#: layers/models.py:204
 msgid "CSW typename"
 msgstr ""
 
-#: layers/models.py:202
+#: layers/models.py:205
 msgid "CSW schema"
 msgstr ""
 
-#: layers/models.py:203
+#: layers/models.py:206
 msgid "CSW source"
 msgstr ""
 
-#: layers/models.py:204
+#: layers/models.py:207
 msgid "CSW insert date"
 msgstr ""
 
-#: layers/models.py:205
+#: layers/models.py:208
 msgid "CSW type"
 msgstr ""
 
-#: layers/models.py:206
+#: layers/models.py:209
 msgid "CSW anytext"
 msgstr ""
 
-#: layers/models.py:207
+#: layers/models.py:210
 msgid "CSW WKT geometry"
 msgstr ""
 
-#: layers/models.py:487
+#: layers/models.py:490
 #, fuzzy
 msgid "attribute name"
 msgstr "Attribute"
 
-#: layers/models.py:487
+#: layers/models.py:490
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr ""
 
-#: layers/models.py:488
+#: layers/models.py:491
 #, fuzzy
 msgid "attribute label"
 msgstr "Attribute"
 
-#: layers/models.py:488
+#: layers/models.py:491
 msgid "title of attribute as displayed in GeoNode"
 msgstr ""
 
-#: layers/models.py:489
+#: layers/models.py:492
 #, fuzzy
 msgid "attribute type"
 msgstr "Datum Typ"
 
-#: layers/models.py:489
+#: layers/models.py:492
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr ""
 
-#: layers/models.py:490
+#: layers/models.py:493
 #, fuzzy
 msgid "visible?"
 msgstr "Sichtbarkeit"
 
-#: layers/models.py:490
+#: layers/models.py:493
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr ""
 
-#: layers/models.py:491
+#: layers/models.py:494
 #, fuzzy
 msgid "display order"
 msgstr "Stack Reihenfolge"
 
-#: layers/models.py:491
+#: layers/models.py:494
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr ""
 
-#: layers/models.py:761
+#: layers/models.py:764
 msgid "KML"
 msgstr "KML"
 
-#: layers/models.py:775
+#: layers/models.py:778
 msgid "View in Google Earth"
 msgstr "Ansicht in Google Earth"
 
@@ -1575,7 +1575,7 @@ msgstr "Wir unterstützen das hinaufladen von Shapefile und GeoTIFF."
 msgid "Upload a new layer"
 msgstr "Lade eine neue Ebene hinauf"
 
-#: layers/templates/layers/data.html:29 templates/base.html:125
+#: layers/templates/layers/data.html:29 templates/base.html:126
 msgid "For Developers"
 msgstr "Für Entwickler"
 
@@ -2691,27 +2691,27 @@ msgstr ""
 msgid "Register"
 msgstr "Registrieren"
 
-#: templates/base.html:122
+#: templates/base.html:123
 msgid "Powered by"
 msgstr ""
 
-#: templates/base.html:122
+#: templates/base.html:123
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/base.html:123
+#: templates/base.html:124
 msgid "Need Help?"
 msgstr "Brauchen Sie Hilfe?"
 
-#: templates/base.html:124
+#: templates/base.html:125
 msgid "Help"
 msgstr "Hilfe"
 
-#: templates/base.html:132
+#: templates/base.html:133
 msgid "Language"
 msgstr ""
 
-#: templates/base.html:160
+#: templates/base.html:161
 msgid "Add User..."
 msgstr ""
 
