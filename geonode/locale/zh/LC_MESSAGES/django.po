@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-09-12 21:58-0700\n"
-"PO-Revision-Date: 2012-09-30 21:17+0000\n"
+"PO-Revision-Date: 2012-10-03 14:59+0000\n"
 "Last-Translator: nwang <nwang@opengeo.org>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/zh/)\n"
 "MIME-Version: 1.0\n"
@@ -36,7 +36,7 @@ msgstr "权限级别"
 
 #: layers/enumerations.py:24
 msgid "series"
-msgstr ""
+msgstr "序列"
 
 #: layers/enumerations.py:25
 msgid "computer program or routine"
@@ -48,168 +48,168 @@ msgstr "功能类型"
 
 #: layers/enumerations.py:27
 msgid "copy or imitation of an existing or hypothetical object"
-msgstr ""
+msgstr "存在或假设物体的副本"
 
 #: layers/enumerations.py:28
 msgid "collection hardware"
-msgstr ""
+msgstr "集合硬件"
 
 #: layers/enumerations.py:29
 msgid "collection session"
-msgstr ""
+msgstr "集合时段"
 
 #: layers/enumerations.py:30
 msgid "non-geographic data"
-msgstr ""
+msgstr "非地理数据"
 
 #: layers/enumerations.py:31
 msgid "property type"
-msgstr ""
+msgstr "属性种类"
 
 #: layers/enumerations.py:32
 msgid "field session"
-msgstr ""
+msgstr "类时段"
 
 #: layers/enumerations.py:33
 msgid "dataset"
-msgstr ""
+msgstr "数据组"
 
 #: layers/enumerations.py:34
 msgid "service interfaces"
-msgstr ""
+msgstr "服务界面"
 
 #: layers/enumerations.py:35
 msgid "attribute class"
-msgstr ""
+msgstr "属性"
 
 #: layers/enumerations.py:36
 msgid "characteristic of a feature"
-msgstr ""
+msgstr "功能特点"
 
 #: layers/enumerations.py:37
 msgid "tile or spatial subset of geographic data"
-msgstr ""
+msgstr "地理数据段"
 
 #: layers/enumerations.py:38
 msgid "feature"
-msgstr ""
+msgstr "功能"
 
 #: layers/enumerations.py:39
 msgid "dimension group"
-msgstr ""
+msgstr "维度组"
 
 #: layers/enumerations.py:43
 msgid "frequency of maintenance for the data is not known"
-msgstr ""
+msgstr "维护数据的频率未知"
 
 #: layers/enumerations.py:44
 msgid "data is repeatedly and frequently updated"
-msgstr ""
+msgstr "反复频繁地更新数据"
 
 #: layers/enumerations.py:45
 msgid "there are no plans to update the data"
-msgstr ""
+msgstr "没有计划更新数据"
 
 #: layers/enumerations.py:46
 msgid "data is updated each day"
-msgstr ""
+msgstr "数据每天更新"
 
 #: layers/enumerations.py:47
 msgid "data is updated every year"
-msgstr ""
+msgstr "数据每年更新"
 
 #: layers/enumerations.py:48
 msgid "data is updated as deemed necessary"
-msgstr ""
+msgstr "数据"
 
 #: layers/enumerations.py:49
 msgid "data is updated each month"
-msgstr ""
+msgstr "数据每月更新"
 
 #: layers/enumerations.py:50
 msgid "data is updated every two weeks"
-msgstr ""
+msgstr "数据每两周更新一次"
 
 #: layers/enumerations.py:51
 msgid "data is updated in intervals that are uneven in duration"
-msgstr ""
+msgstr "上传数据的时间间隔不一致"
 
 #: layers/enumerations.py:52
 msgid "data is updated on a weekly basis"
-msgstr ""
+msgstr "数据每周更新一次"
 
 #: layers/enumerations.py:53
 msgid "data is updated twice each year"
-msgstr ""
+msgstr "数据一年更新两次"
 
 #: layers/enumerations.py:54
 msgid "data is updated every three months"
-msgstr ""
+msgstr "数据每三个月更新一次"
 
 #: layers/enumerations.py:69
 msgid "grid data"
-msgstr ""
+msgstr "电网数据"
 
 #: layers/enumerations.py:70
 msgid ""
 "three-dimensional view formed by the intersecting homologous rays of an "
 "overlapping pair of images"
-msgstr ""
+msgstr "用同源光打在重叠图片上生成的三维视角"
 
 #: layers/enumerations.py:71
 msgid "textual or tabular data"
-msgstr ""
+msgstr "文本或表格数据"
 
 #: layers/enumerations.py:72
 msgid "triangulated irregular network"
-msgstr ""
+msgstr "不规则三角形格网"
 
 #: layers/enumerations.py:73
 msgid "vector data"
-msgstr ""
+msgstr "矢量数据"
 
 #: layers/enumerations.py:77
 msgid "information pertaining to earth sciences"
-msgstr ""
+msgstr "地球科学相关信息"
 
 #: layers/enumerations.py:78
 msgid "rearing of animals and/or cultivation of plants"
-msgstr ""
+msgstr "饲养动物以及种植农作物"
 
 #: layers/enumerations.py:79
 msgid "height above or below sea level"
-msgstr ""
+msgstr "高于或低于海平面的高度"
 
 #: layers/enumerations.py:80
 msgid ""
 "energy, water and waste systems and communications infrastructure and "
 "services"
-msgstr ""
+msgstr "能源、供水和排污系统，以及通信基础设施与服务点"
 
 #: layers/enumerations.py:81
 msgid ""
 "features and characteristics of salt water bodies (excluding inland waters)"
-msgstr ""
+msgstr "海水的功能和特性(不包括内陆水系)"
 
 #: layers/enumerations.py:82
 msgid "legal land descriptions"
-msgstr ""
+msgstr "土地法定描述"
 
 #: layers/enumerations.py:83
 msgid "inland water features, drainage systems and their characteristics"
-msgstr ""
+msgstr "内陆水系的功能、排水系统以及特性"
 
 #: layers/enumerations.py:84
 msgid "military bases, structures, activities"
-msgstr ""
+msgstr "军事基地、建筑、活动"
 
 #: layers/enumerations.py:85
 msgid "environmental resources, protection and conservation"
-msgstr ""
+msgstr "环境资源、保护及养护"
 
 #: layers/enumerations.py:86
 msgid "positional information and services"
-msgstr ""
+msgstr "定位信息和服务"
 
 #: layers/enumerations.py:87
 msgid "economic activities, conditions and employment"
@@ -233,7 +233,7 @@ msgstr "底图"
 
 #: layers/enumerations.py:92
 msgid "means and aids for conveying persons and/or goods"
-msgstr ""
+msgstr "传送人或物的手段"
 
 #: layers/enumerations.py:93
 msgid "characteristics of society and cultures"
@@ -245,7 +245,7 @@ msgstr "人工建筑物"
 
 #: layers/enumerations.py:95
 msgid "processes and phenomena of the atmosphere"
-msgstr ""
+msgstr "大气的过程和现象"
 
 #: layers/enumerations.py:114
 msgid "No information provided"
@@ -1205,7 +1205,7 @@ msgstr "标题"
 
 #: layers/models.py:147
 msgid "name by which the cited resource is known"
-msgstr ""
+msgstr "用已知资源命名"
 
 #: layers/models.py:148
 msgid "date"
@@ -1245,7 +1245,7 @@ msgstr "目标"
 
 #: layers/models.py:154
 msgid "summary of the intentions with which the resource(s) was developed"
-msgstr ""
+msgstr "总结生成资源的动机"
 
 #: layers/models.py:156
 msgid "maintenance frequency"
@@ -1284,7 +1284,7 @@ msgid ""
 "constraints applied to assure the protection of privacy or intellectual "
 "property, and any special restrictions or limitations or warnings on using "
 "the resource or metadata"
-msgstr ""
+msgstr "以保护知识产权或隐私而添加的对于使用元数据的限制"
 
 #: layers/models.py:165
 msgid "constraints other"
@@ -1320,7 +1320,7 @@ msgstr "主题种类"
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping"
 " and search of available geographic data sets."
-msgstr ""
+msgstr "用以助于地理信息搜集的高层次地理信息分类"
 
 #: layers/models.py:173
 msgid "temporal extent start"
@@ -1354,7 +1354,7 @@ msgstr "发布网址"
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
-msgstr ""
+msgstr "关于数据，社区，元数据的网络信息"
 
 #: layers/models.py:180
 msgid "distribution description"
@@ -1372,11 +1372,11 @@ msgstr "数据质量描述"
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
-msgstr ""
+msgstr "对于数据集沿袭的基本知识"
 
 #: layers/models.py:197
 msgid "CSW typename"
-msgstr ""
+msgstr "CSW类型名称"
 
 #: layers/models.py:198
 msgid "CSW schema"
@@ -1384,7 +1384,7 @@ msgstr "CSW 图解"
 
 #: layers/models.py:199
 msgid "CSW source"
-msgstr ""
+msgstr "CSW资源"
 
 #: layers/models.py:200
 msgid "CSW insert date"
@@ -1396,11 +1396,11 @@ msgstr "CSW类型"
 
 #: layers/models.py:202
 msgid "CSW anytext"
-msgstr ""
+msgstr "CSW文本"
 
 #: layers/models.py:203
 msgid "CSW WKT geometry"
-msgstr ""
+msgstr "CSW WKT图形"
 
 #: layers/models.py:763
 msgid "KML"
@@ -1654,7 +1654,7 @@ msgid ""
 "\n"
 "\t                %(age)s ago\n"
 "\t                "
-msgstr ""
+msgstr "\n\t                %(age)s 以前\n\t                "
 
 #: layers/templates/layers/layer.html:212 maps/templates/maps/mapinfo.html:77
 msgid "Post a comment"
@@ -1675,7 +1675,7 @@ msgstr "给此图层打分"
 
 #: layers/templates/layers/layer.html:243
 msgid "Legend"
-msgstr ""
+msgstr "图例"
 
 #: layers/templates/layers/layer.html:254
 msgid "Download Data"
@@ -1756,7 +1756,7 @@ msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
-msgstr ""
+msgstr "\n细节修改%(layer_title)s"
 
 #: layers/templates/layers/layer_describe.html:28
 msgid "Metadata Provider"
@@ -1772,7 +1772,7 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(layer_title)s?\n"
 "      "
-msgstr ""
+msgstr "\n你确定要删除%(layer_title)s？"
 
 #: layers/templates/layers/layer_remove.html:16
 #: maps/templates/maps/map_remove.html:17
@@ -2057,7 +2057,7 @@ msgid ""
 "      are hosted on this GeoNode.  The following layers will\n"
 "      be downloaded:\n"
 "    "
-msgstr ""
+msgstr "\n    你可以下载GeoNode里所有图层数据。\n    将下载以下几层：\n    "
 
 #: maps/templates/maps/download.html:85
 msgid ""
@@ -2065,7 +2065,7 @@ msgid ""
 "        Additionally, the map contains these layers which will not be downloaded\n"
 "        due to security restrictions:\n"
 "      "
-msgstr ""
+msgstr "\n此外，由于安全限制该地图包含的这些图层不会被下载：\n    "
 
 #: maps/templates/maps/download.html:97
 msgid ""
@@ -2089,7 +2089,7 @@ msgid ""
 "\n"
 "            Updating metadata of %(map_title)s\n"
 "        "
-msgstr ""
+msgstr "\n更新%(map_title)s的元数据"
 
 #: maps/templates/maps/map_describe.html:24
 msgid "Update metadata"
@@ -2105,7 +2105,7 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(map_title)s?\n"
 "    "
-msgstr ""
+msgstr "\n你确定要删除%(map_title)s？"
 
 #: maps/templates/maps/mapinfo.html:57
 msgid "Contact:"
@@ -2117,7 +2117,7 @@ msgid ""
 "\n"
 "                %(age)s ago\n"
 "                "
-msgstr ""
+msgstr "\n                %(age)s 以前\n                "
 
 #: maps/templates/maps/mapinfo.html:95
 msgid "Rate this map"
@@ -2192,49 +2192,49 @@ msgstr "查看详细信息"
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
-msgstr ""
+msgstr "资源授权方"
 
 #: people/enumerations.py:40
 msgid ""
 "party who has processed the data in a manner such that the resource has been"
 " modified"
-msgstr ""
+msgstr "资源修改方"
 
 #: people/enumerations.py:41
 msgid "party who published the resource"
-msgstr ""
+msgstr "资源发布方"
 
 #: people/enumerations.py:42
 msgid ""
 "party that accepts accountability and responsability for the data and "
 "ensures appropriate care and maintenance of the resource"
-msgstr ""
+msgstr "资源管理方"
 
 #: people/enumerations.py:43
 msgid ""
 "party who can be contacted for acquiring knowledge about or acquisition of "
 "the resource"
-msgstr ""
+msgstr "资源信息查询方"
 
 #: people/enumerations.py:44
 msgid "party who distributes the resource"
-msgstr ""
+msgstr "资源分配方"
 
 #: people/enumerations.py:45
 msgid "party who uses the resource"
-msgstr ""
+msgstr "资源使用方"
 
 #: people/enumerations.py:46
 msgid "party that supplies the resource"
-msgstr ""
+msgstr "资源提供方"
 
 #: people/enumerations.py:47
 msgid "party who created the resource"
-msgstr ""
+msgstr "资源制造方"
 
 #: people/enumerations.py:48
 msgid "party that owns the resource"
-msgstr ""
+msgstr "资源拥有方"
 
 #: people/enumerations.py:49
 msgid ""
@@ -2373,12 +2373,12 @@ msgstr "地图"
 #: people/templates/idios/profile.html:36
 #: templates/profiles/profile_detail.html:36
 msgid "Change permissions on selected"
-msgstr ""
+msgstr "修改被选项的权限"
 
 #: people/templates/idios/profile.html:37
 #: templates/profiles/profile_detail.html:37
 msgid "Remove selected"
-msgstr ""
+msgstr "取消选择"
 
 #: people/templates/idios/profile.html:44
 #: templates/profiles/profile_detail.html:44
@@ -2723,7 +2723,7 @@ msgstr "\n  <p>GeoNode提供数据集和地图编辑应用，允许用户浏览�
 
 #: templates/help.html:65
 msgid "Sections"
-msgstr ""
+msgstr "路段"
 
 #: templates/help.html:66
 msgid "Browsing Data"
@@ -2823,7 +2823,7 @@ msgstr "链接有效时日为%(expiration_days)s天"
 
 #: templates/registration/activation_email_subject.txt:1
 msgid "Account activation on"
-msgstr ""
+msgstr "账户激活"
 
 #: templates/registration/logged_out.html:5
 msgid "Thanks for spending some quality time with the GeoNode today."
