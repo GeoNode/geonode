@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load maps_tags %}
 {% load pagination_tags %}
+{% load staticfiles %}
 {% load url from future %}
 
 {% block body_class %}maps explore{% endblock %}
@@ -31,7 +32,7 @@
         </ul>
       </div>
       <div class="tab-content">
-        <div class="tab-pane active span8" id="all">
+        <div class="tab-pane active span8 grid" id="all">
           <div class="row">
             {% featured_maps as featured_maps %}
             {% autopaginate featured_maps 8 %}
@@ -49,7 +50,30 @@
 
 {% endblock %}
 
-{% block extra_body %}
-  <script src="{{ STATIC_URL }}geonode/js/bootstrap-tab.js" type="text/javascript"></script>
+{% block extra_script %}
+  <script src="{% static "geonode/js/bootstrap-tab.js" %}" type="text/javascript"></script>
+  <script src="{% static "agon_ratings/js/jquery.raty.js" %}"></script>
+  <script type="text/javascript">
+     $(function() {
+       $('.overall_rating').each(function() {
+        var rating = $(this).parents(".avg_rating").data('rating');
+        star(this, rating);
+      });
+       $(".tab-pane").on("load.loadmore", function(e, o) {          
+        o.find(".overall_rating").each(function() {
+          var rating = $(this).parents(".avg_rating").data('rating');
+          star(this, rating);
+        });
+       });
+     });
+      function star(elem, rating) {
+          $(elem).raty({
+            half: true,
+           readOnly: true,
+           score: rating,
+           path: "{% static "agon_ratings/img/" %}"
+          });        
+      }
+  </script>
 {% endblock %}
 

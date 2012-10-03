@@ -72,20 +72,24 @@
   <script src="{% static "agon_ratings/js/jquery.raty.js" %}"></script>
   <script type="text/javascript">
      $(function() {
-       $('.overall_rating').raty({
-         half: true,
-         readOnly: true,
-         start: $('.overall_rating').data('rating'),
-         path: "{{ STATIC_URL }}agon_ratings/img/"
-       });
-       $(".tab-pane").on("load.loadmore", function(e, o) {
-          o.find(".overall_rating").raty({
-            half: true,
-           readOnly: true,
-           start: $(this).data('rating'),
-           path: "{{ STATIC_URL }}agon_ratings/img/"
-          });
+       $('.overall_rating').each(function() {
+        var rating = $(this).parents(".avg_rating").data('rating');
+        star(this, rating);
+      });
+       $(".tab-pane").on("load.loadmore", function(e, o) {          
+        o.find(".overall_rating").each(function() {
+          var rating = $(this).parents(".avg_rating").data('rating');
+          star(this, rating);
+        });
        });
      });
+      function star(elem, rating) {
+          $(elem).raty({
+            half: true,
+           readOnly: true,
+           score: rating,
+           path: "{% static "agon_ratings/img/" %}"
+          });        
+      }
   </script>
 {% endblock extra_script %}
