@@ -417,6 +417,8 @@ def deb(options):
         # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
         path('.git').makedirs()
 
+        sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
+
         sh(('git-dch --git-author --new-version=%s'
             ' --id-length=6 --debian-branch=%s' % (
             simple_version, branch)))
@@ -424,7 +426,6 @@ def deb(options):
         # Rever workaround for git-dhc bug
         path('.git').rmtree()
 
-        sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
         if key is None:
             sh('debuild -uc -us -A')
