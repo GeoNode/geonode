@@ -134,14 +134,16 @@
           
       </article>
       <article id="attributes" class="tab-pane">
-        {% if layer.attribute_names %}
             <h2>{% trans "Attributes" %}:</h2>
+        {% if layer.attribute_set.all %}
+	    <!-- TODO Style Me -->
             <table border=1 width=100%>
             <tr><th>Attribute Name</th><th>Range</th><th>Mean</th><th>Median</th><th>Std. Dev.</th></tr>
-            {% for attribute in layer.attribute_names %}
+            {% for attribute in layer.attribute_set.all %}
             <tr><td>{{ attribute }}</td><td></td><td></td><td></td><td></td></tr>
             {% endfor %}
             </table>
+	    <!-- TODO /Style Me -->
         {% endif %}
       </article>
       <article id="share" class="tab-pane">
@@ -173,14 +175,13 @@
     </div>
     <div class="well">
         <h2>{% trans "Permissions" %}</h2>
+        <p>{% trans "Placeholder" %}</p>
         <p><a href="{% url "layer_permissions" layer.typename %}" class="btn btn-large">{% trans "Change Layer Permissions" %}</a></p>
-        <p><a href="{% url "layer_remove" layer.typename %}" class="btn btn-large">{% trans "Remove Layer" %}</a></p>
     </div>
     <div class="well">
         <h2>{% trans "Styles" %}</h2>
         <p>{% trans "The following styles are associated with this data set. Choose a style to view it in the preview to the left. Click on a style name to view or edit the style." %}</p>
         <ul class="unstyled space">
-            {% comment %}
           {% for style in layer.styles %}
             <li>
               <a href="#">
@@ -194,7 +195,6 @@
           {% empty %}
             <li>{% trans "No styles associated with this layer" %}</li>
           {% endfor %}
-            {% endcomment %}
         </ul>
     </div>
     <div class="well">
