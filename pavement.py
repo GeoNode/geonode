@@ -389,7 +389,9 @@ def deb(options):
     """
     key = options.get('key', None)
     ppa = options.get('ppa', None)
-    branch = options.get('branch', 'dev')
+
+
+    import pdb;pdb.set_trace()
 
     import geonode
     from geonode.version import get_git_changeset
@@ -419,9 +421,15 @@ def deb(options):
 
         sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
+        # create a temporary file with the name of the branch
+        sh('echo `git rev-parse --abbrev-ref HEAD` > .git_branch')
+
         sh(('git-dch --git-author --new-version=%s'
-            ' --id-length=6 --debian-branch=%s' % (
-            simple_version, branch)))
+            ' --id-length=6 --debian-branch=`cat .git_branch`' % (
+            simple_version)))
+
+        # remove the temporary file
+        sh('rm .git_branch')
 
         # Rever workaround for git-dhc bug
         path('.git').rmtree()
