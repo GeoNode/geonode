@@ -20,7 +20,6 @@ set -e
 case "$1" in
     remove|upgrade|deconfigure)
 	invoke-rc.d apache2 stop
-	invoke-rc.d tomcat6 stop
     ;;
 
     failed-upgrade)
