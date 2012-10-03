@@ -47,7 +47,7 @@
           </nav>
         </div>
         <div class="tab-content span8">
-          <div class="tab-pane active list" id="all">
+          <div class="tab-pane active list loadmore" id="all">
             {% if object_list.count %}
             {% autopaginate object_list 2 %}
             {% for layer in object_list %}
@@ -76,7 +76,7 @@
         var rating = $(this).parents(".avg_rating").data('rating');
         star(this, rating);
       });
-       $(".tab-pane").on("load.loadmore", function(e, o) {          
+       $(".loadmore").on("load.loadmore", function(e, o) {          
         o.find(".overall_rating").each(function() {
           var rating = $(this).parents(".avg_rating").data('rating');
           star(this, rating);
