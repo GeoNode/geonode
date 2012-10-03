@@ -431,7 +431,6 @@ def deb(options):
         # Revert workaround for git-dhc bug
         path('.git').rmtree()
 
-
         if key is None:
             sh('debuild -uc -us -A')
         else:
