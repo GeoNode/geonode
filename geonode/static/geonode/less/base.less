@@ -487,11 +487,29 @@ section.widget-mini {
   }
 }
 
+.list article,
+.grid article {
+
+  .rating, .activity {
+    color:@graySp;
+  }
+  .overall_rating {
+    color: @orange;
+  }
+  
+}
+
 .list article {
   border-bottom:1px solid @bdrColor;
   padding-bottom:10px;
   margin-bottom:20px;
   overflow:hidden;
+  position: relative;
+
+  .download {
+    right: 20px;
+    position: absolute;
+  }
 
   img {
     float:left;
@@ -503,14 +521,19 @@ section.widget-mini {
     width:420px;
   }
 
-  .rating {
-    color:@graySp;
+  .abstract {
+    margin: 1em 0;
   }
 }
 
 .grid article {
   width: 285px;
+  overflow: hidden;
   float: left;
+
+  .details {
+    clear: left;
+  }
 }
 
 aside .well {
@@ -865,8 +888,9 @@ ul.space li {
   margin-top: 60px;
 }
 
-/** map actions **/
-.map-actions {
+/** map & layer actions **/
+.map-actions,
+.layer-actions {
   margin:8px 0 20px;
   float: left;
 
@@ -878,16 +902,16 @@ ul.space li {
       margin:2px 1px 0 0;
     }
   }
-}
-.avg_rating {
-  float: right;
-  margin-top: 8px;
-  color: @graySp;
+  .avg_rating {
+    float: right;
+    margin-top: 8px;
+    color: @graySp;
 
-  .overall_rating {
-    font-size: 18px;
-    padding-left: 6px;
-    color: @orange;
+    .overall_rating {
+      font-size: 18px;
+      padding-left: 6px;
+      color: @orange;
+    }
   }
 }
 
@@ -1069,12 +1093,11 @@ body.explore #subnav-tabs a.explore {
 // layer info
 
 .layer-actions {
-  border-bottom:1px solid @bdrColor;
   margin-bottom:20px;
   position:relative;
 
-  a.btn {
-    margin-bottom:10px;
+  ul {
+    width: 100%;
   }
 }
 body.layer-info .pointer,

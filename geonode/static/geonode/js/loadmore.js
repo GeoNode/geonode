@@ -13,7 +13,9 @@ $(function () {
             $pages.before($loading);
             $.get($('a.more').attr('href'), function(data) {
                 var $data = $(data);
-                $('.tab-pane.active').append($data.find('article'));
+                var articles = $data.find('article');
+                $('.loadmore').append(articles);
+                $(".loadmore").trigger("load.loadmore", [articles]);
                 $loading.detach();
                 if ($data.find(".more").size()) {
                     $('.more').replaceWith($data.find('.more'));
@@ -24,9 +26,3 @@ $(function () {
 
     }
 });
-$.urlParam = function(name){
-    if (window.location.href.search(name) != -1) {
-        var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
-        return results[1];
-    } else return 0;
-}
