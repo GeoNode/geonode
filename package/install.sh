@@ -47,7 +47,7 @@ function reorganize_configuration() {
 	cp -rp $INSTALL_DIR/support/geonode.apache $APACHE_SITES/geonode
 	cp -rp $INSTALL_DIR/support/geonode.wsgi $GEONODE_WWW/wsgi/
 	cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
-	cp -rp $INSTALL_DIR/geonode-webapp.pybundle $GEONODE_LIB
+	cp -rp $INSTALL_DIR/GeoNode*.tar.gz $GEONODE_LIB
 	cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
 	cp -rp $INSTALL_DIR/support/geonode.updateip $GEONODE_BIN/geonode-updateip
 	cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
@@ -130,7 +130,7 @@ function setup_django_every_time() {
     fi
 
     source bin/activate
-    pip install geonode-webapp.pybundle
+    pip install GeoNode-*.tar.gz
 
     sitedir=`$GEONODE_LIB/bin/python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
 
