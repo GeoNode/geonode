@@ -4895,6 +4895,16 @@ section.widget-mini h2 a.btn {
   padding-top: 20px;
   font-size: 11px;
 }
+.list article .rating,
+.grid article .rating,
+.list article .activity,
+.grid article .activity {
+  color: #777777;
+}
+.list article .overall_rating,
+.grid article .overall_rating {
+  color: #f05a24;
+}
 .list article {
   border-bottom: 1px solid #cccccc;
   padding-bottom: 10px;
@@ -4916,13 +4926,6 @@ section.widget-mini h2 a.btn {
 }
 .list article .abstract {
   margin: 1em 0;
-}
-.list article .rating,
-.list article .activity {
-  color: #777777;
-}
-.list article .overall_rating {
-  color: #f05a24;
 }
 .grid article {
   width: 285px;
