@@ -187,7 +187,8 @@ def package(options):
         justcopy(install_file, out_pkg)
 
         # Package Geoserver's war.
-        geoserver_path = '../geoserver-geonode-ext/target/geoserver.war'
+        geoserver_path = ('../geoserver-geonode-ext/target/'
+                          'geonode-geoserver-ext-0.3.jar')
         geoserver_target = path(geoserver_path)
         geoserver_target.copy(out_pkg)
 
