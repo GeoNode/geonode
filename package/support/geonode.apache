@@ -30,6 +30,4 @@ WSGIDaemonProcess geonode user=www-data threads=15 processes=2 python-path=REPLA
     ProxyPreserveHost On
     ProxyPass /geoserver http://localhost:8080/geoserver
     ProxyPassReverse /geoserver http://localhost:8080/geoserver
-    ProxyPass /geonetwork http://localhost:8080/geonetwork
-    ProxyPassReverse /geonetwork http://localhost:8080/geonetwork
 </VirtualHost>
