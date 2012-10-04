@@ -98,26 +98,20 @@ class LayersTest(TestCase):
         # Get a Layer object to work with
         layer = Layer.objects.all()[0]
 
-        # Should we set some 'current' permissions to do further testing?
+        # Set the default permissions
+        layer.set_default_permissions()
 
         # Save the layers Current Permissions
         current_perms = layer.get_all_level_info()
-
-        # Set the default permissions
-        layer.set_default_permissions()
 
         # Test that LEVEL_READ is set for ANONYMOUS_USERS and AUTHENTICATED_USERS
         self.assertEqual(layer.get_gen_level(geonode.security.models.ANONYMOUS_USERS), layer.LEVEL_READ)
         self.assertEqual(layer.get_gen_level(geonode.security.models.AUTHENTICATED_USERS), layer.LEVEL_READ)
 
-        # Test that the previous Permissions were set to LEVEL_NONE
-        for username in current_perms['users'].keys():
-            user = User.objects.get(username=username)
-            self.assertEqual(layer.get_user_level(user), layer.LEVEL_NONE)
+        admin_perms = current_perms['users'][layer.owner.username]
 
         # Test that the owner was assigned LEVEL_ADMIN
-        if layer.owner:
-            self.assertEqual(layer.owner, layer.LEVEL_ADMIN)
+        self.assertEqual(admin_perms, layer.LEVEL_ADMIN)
 
     def test_set_layer_permissions(self):
         """Verify that the set_layer_permissions view is behaving as expected
