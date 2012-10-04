@@ -24,27 +24,29 @@
     </div>
     <div class="span12">
       <div class="row" id="contain-slider">
-        <div class="span4" id="slide-pane">
-          <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
-          <nav class="tabs-left" id="nav-categories">
-            <h2>Categories <a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i></a></h2>
-            <ul class="nav">
-              {% layer_categories as category_list %}
-              <li><a href="{% url "layer_browse" %}"{% if not layer_category %} class="active"{% endif %}>All Categories</a></li>
-              {% for category in category_list %}
-              <li><a href="{% url "layer_browse_category" category.slug %}"{% ifequal layer_category category %} class="active"{% endifequal %}>{{ category }}</a></li>
-              {% endfor %}
-            </ul>
-          </nav>
-          <nav class="" id="nav-keywords">
-            <h2>Keywords <a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i></a></h2>
-            <ul class="nav">
-              {% get_taglist as tags for 'layers.Layer' %}
-              {% for tag in tags %}
-                <li><a href="{% url "layer_browse_tag" tag.slug %}"{% if tag.slug == layer_tag %} class="active"{% endif %}>{{ tag }}</a> <span class="count">({{ tag.num_times }})</span></li>
-              {% endfor %}
-            </ul>
-          </nav>
+        <div class="span4">
+          <div id="slide-pane">
+            <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
+            <nav class="tabs-left" id="nav-categories">
+              <h2>Categories <a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i></a></h2>
+              <ul class="nav">
+                {% layer_categories as category_list %}
+                <li><a href="{% url "layer_browse" %}"{% if not layer_category %} class="active"{% endif %}>All Categories</a></li>
+                {% for category in category_list %}
+                <li><a href="{% url "layer_browse_category" category.slug %}"{% ifequal layer_category category %} class="active"{% endifequal %}>{{ category }}</a></li>
+                {% endfor %}
+              </ul>
+            </nav>
+            <nav class="" id="nav-keywords">
+              <h2>Keywords <a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i></a></h2>
+              <ul class="nav">
+                {% get_taglist as tags for 'layers.Layer' %}
+                {% for tag in tags %}
+                  <li><a href="{% url "layer_browse_tag" tag.slug %}"{% if tag.slug == layer_tag %} class="active"{% endif %}>{{ tag }}</a> <span class="count">({{ tag.num_times }})</span></li>
+                {% endfor %}
+              </ul>
+            </nav>
+          </div>
         </div>
         <div class="tab-content span8">
           <div class="tab-pane active list loadmore" id="all">
