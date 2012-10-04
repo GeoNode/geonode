@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} {% trans "Browse Data" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}data{% endblock %}
+
+{% block body_outer %}
+    <div class="span12">
+      <!--nav class="back"><a href="{% url "layer_browse" %}"><i class="icon-chevron-left"></i> See all Layers</a></nav-->
+      <ul class="nav nav-tabs" id="subnav-tabs">
+            <li><a href="{% url "layer_browse" %}" class="explore">Explore Layers</a></li>
+            <li><a href="{% url "layer_search_page" %}" class="search">Search Layers</a></li>
+            <li><a href="{% url "layer_upload" %}" class="upload">Upload Layers</a></li>
+      </ul>
+    </div>
+  {% block body %}{% endblock body %}
+{% endblock %}

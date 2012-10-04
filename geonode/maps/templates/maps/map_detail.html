@@ -1,0 +1,160 @@
+{% extends "maps/map_base.html" %}
+{% load i18n %}
+{% load geonode_auth %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load url from future %}
+
+{% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+{% include "maps/map_include.html" %}
+{{ block.super }}
+{% endblock %}
+
+{% block body_class %}maps{% endblock %}
+
+{% block body %}
+  {% overall_rating map "map" as map_rating %}
+  <div class="span8">
+    <h2 class="page-title">{{ map.title }}</h2>
+  </div>
+  <div class="span4">
+    <p class="hd-actions pull-right">
+      <a href="{% url "map_download" map.pk %}" data-toggle="modal" class="btn btn-large btn-primary strong"><i class="icon-download-alt icon-white"></i> {% trans "Download Data" %}</a>
+      <a href="#" class="btn btn-large btn-info strong"><i class="icon-print icon-white"></i> {% trans "Print Map" %}</a>
+    </p>
+  </div>
+  {% comment %}
+  <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
+  {% endcomment %}
+  <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
+  <div class="span12">
+	  <div id="embedded_map">
+        <div id="the_map" width='100%'></div>
+      {% include "_actions.html" %}
+        <div class="avg_rating" data-rating="{{ map_rating }}">Average rating <span class="overall_rating"></span></div>
+        <div class="pointer"></div>
+    </div>
+  </div>
+
+  <div class="span8">
+    <div id="collapse-map">
+      <div id="info" class="collapse in">
+        <strong>{% trans "Abstract:" %}</strong>
+        {{ map.abstract }}
+        {% comment %}<a href="" class="read-more" data-toggle="collapse" data-target="#abstract-full">{% trans "Read more" %}</a>
+        <div id="abstract-full" class="collapse in">More content goes here and is displayed when read more is clicked.</div>{% endcomment %}
+      </div>
+      <div id="rate-map">
+
+      </div>
+    </div>
+    <p class="meta">{{ map }}<strong> {% trans "Uploaded by" %} <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner.get_profile.name }}</a> on Sep 27, 2011</strong></p>
+    {% with map as obj %}
+      {% include "_comments.html" %}
+    {% endwith %}
+  </div>
+  <aside class="span4">
+    <div class="well">
+      <section>
+        <h2>{% trans "Layers" %}</h2>
+        <p>{% trans "This map uses the following layers:" %}</p>
+        <ul class="unstyled space">
+          {% for layer in map.layer_set.all %}
+            <li><a href="{% url "layer_detail" layer.name %}">{{ layer.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </section>
+      <section>
+        <h2>{% trans "Edit map" %}</h2>
+        <p>{% trans "Placeholder" %}</p>
+        <a href="{% url "new_map" %}" class="btn btn-large">{% trans "Edit Map" %}</a>
+      </section>
+      <section>
+        <h2>{% trans "Permissions" %}</h2>
+        <a href="#modal_perms" data-toggle="modal" class="btn btn-large">{% trans "Change Permissions of this Map" %}</a>
+      </section>
+      <section class="last">
+        <h2>{% trans "Create a new map" %}</h2>
+        <p>{% trans "Placeholder" %}</p>
+        <a href="{% url "new_map" %}" class="btn btn-large">{% trans "Create a New Map" %}</a>
+      </section>
+    </div>
+    <div class="well">
+      {% with map.owner as owner %}
+        {% include "_widget_about_author.html" %}          
+      {% endwith %}
+    </div>
+  </aside>
+
+  <div class="modal custom hide" id="download-layer">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
+    </div>
+    <div class="modal-body">
+      <p></p>
+    </div>
+    <div class="modal-footer">
+      <div class="span2 offset1">
+        <ul class="unstyled">
+          <li><a href="#">Zipped Shapefile</a></li>
+          <li><a href="#">JPEG</a></li>
+          <li><a href="#">GML 2.0</a></li>
+          <li><a href="#">PDF</a></li>
+          <li><a href="#">GML 3.1.1</a></li>
+          <li><a href="#">PNG</a></li>
+        </ul>
+      </div>
+      <div class="span2">
+        <ul class="unstyled">
+          <li><a href="#">CSV</a></li>
+          <li><a href="#">KML</a></li>
+          <li><a href="#">Excel</a></li>
+          <li><a href="#">GeoJSON</a></li>
+          <li><a href="#">View in Google Earth</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% with "#" as form_action %}
+      {% include "_permissions_form.html" %}
+  {% endwith %}
+{% endblock %}
+
+{# {% block extra_script %} #}
+{#     <script> #}
+{#     $(function() { #}
+{#       $("#permission_form").submit(perms_submit); #}
+{#     }); #}
+{#   </script> #}
+{# {% endblock %} #}
+
+{% block extra_script %}
+{% if request.user.is_authenticated %}
+ {% user_rating_js request.user map "map" %}
+{% else %}
+ <script src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
+{% endif %}
+<script type="text/javascript">
+ $(function() {
+   $('.overall_rating').raty({
+     half: true,
+     readOnly: true,
+     start: $('div.overall_rating').data('rating'),
+     path: "{{ STATIC_URL }}agon_ratings/img/"
+   });
+   $("#rate-map").raty();
+ });
+
+ (function() {
+   var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+   po.src = 'https://apis.google.com/js/plusone.js';
+   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+ })();
+</script>
+{% endblock %}

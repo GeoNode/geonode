@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Upload Data" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}upload {% block body_class_extra %}{% endblock %}{% endblock %}
+
+{% block body_outer %}
+    <div class="span12 main-content">
+        <h2 class="page-title">{% trans "Upload Data" %}</h2>
+        <div class="steps">
+            <span class="step step1">{% trans "1. File Upload" %}</span>
+            <span class="step step2">{% trans "2. Enter Info" %}</span>
+            <span class="step step3">{% trans "3. Permissions" %}</span>
+        </div>
+        {% block body %}{% endblock %}
+    </div>
+{% endblock %}

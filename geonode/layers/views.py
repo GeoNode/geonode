@@ -39,12 +39,13 @@ from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import escape
 from django.views.decorators.http import require_POST
+from django.views.generic.list import ListView
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
-from geonode.layers.models import Layer, ContactRole, Attribute
+from geonode.layers.models import Layer, ContactRole, Attribute, TopicCategory
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -92,12 +93,44 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 #### Basic Layer Views ####
 
 
-def data(request):
-    return render_to_response('data.html', RequestContext(request, {}))
+class LayerListView(ListView):
+
+    layer_filter = "date"
+    queryset = Layer.objects.all()
+
+    def __init__(self, *args, **kwargs):
+        self.layer_filter = kwargs.pop("layer_filter", "date")
+        self.queryset = self.queryset.order_by("-{0}".format(self.layer_filter))
+        super(LayerListView, self).__init__(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        kwargs.update({"layer_filter": self.layer_filter})
+        return kwargs
 
 
-def layer_browse(request, template='layers/data.html'):
-    return render_to_response(template, RequestContext(request, {}))
+def layer_category(request, slug, template='layers/layer_list.html'):
+    category = get_object_or_404(TopicCategory, slug=slug)
+    layer_list = category.layer_set.all()
+    return render_to_response(
+        template,
+        RequestContext(request, {
+            "object_list": layer_list,
+            "layer_category": category
+            }
+        )
+    )
+
+
+def layer_tag(request, slug, template='layers/layer_list.html'):
+    layer_list = Layer.objects.filter(keywords__slug__in=[slug])
+    return render_to_response(
+        template,
+        RequestContext(request, {
+            "object_list": layer_list,
+            "layer_tag": slug
+            }
+        )
+    )
 
 
 @login_required
@@ -138,10 +171,13 @@ def layer_upload(request, template='layers/layer_upload.html'):
             return HttpResponse(json.dumps({ "success": False, "errors": form.errors, "errormsgs": errormsgs}))
 
 
-def layer_detail(request, layername, template='layers/layer.html'):
+def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
     maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
+
+    layer.popular_count += 1
+    layer.save()
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
@@ -155,7 +191,8 @@ def layer_detail(request, layername, template='layers/layer.html'):
 
 
 @login_required
-def layer_metadata(request, layername, template='layers/layer_describe.html'):
+        
+def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA)
     layer_attribute_set = inlineformset_factory(Layer, Attribute, extra=0, form=LayerAttributeForm, )
 
@@ -254,7 +291,7 @@ def layer_style(request, layername):
 
 
 @login_required
-def layer_change_poc(request, ids, template = 'layers/change_poc.html'):
+def layer_change_poc(request, ids, template = 'layers/layer_change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
     if request.method == 'POST':
         form = PocForm(request.POST)
@@ -381,7 +418,7 @@ def layer_batch_download(request):
 #### Layers Search ####
 
 
-def layer_search_page(request, template='layers/search.html'):
+def layer_search_page(request, template='layers/layer_search.html'):
     DEFAULT_BASE_LAYERS = default_map_config()[1]
     # for non-ajax requests, render a generic search page
 
@@ -525,18 +562,6 @@ def get_query(query_string, search_fields):
         else:
             query = query & or_query
     return query
-
-
-def layer_search_result_detail(request, template='layers/search_result_snippet.html'):
-    uuid = request.GET.get("uuid")
-    if  uuid is None:
-        return HttpResponse(status=400)
-
-    layer = get_object_or_404(Layer, uuid=uuid)
- 
-    return render_to_response(template, RequestContext(request, {
-        'layer': layer,
-    }))
 
 
 @require_POST
