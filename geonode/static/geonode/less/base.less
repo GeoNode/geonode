@@ -329,7 +329,7 @@ footer.footer {
       }
     }
 
-    input[type="text"] {
+    input[type="text"], input[type="password"], input[type="email"] {
       padding-top:10px;
       padding-bottom:11px;
       font-size:@baseFontSize + 2;
@@ -353,6 +353,13 @@ footer.footer {
         margin-left:30px;
         padding-left:25px;
         padding-right:25px;
+      }
+    }
+
+    &.form-search {
+      input[type="text"] {
+        padding-top:8px;
+        padding-bottom:9px;
       }
     }
   }
@@ -1351,4 +1358,9 @@ ul.list {
 
 .navbar-fixed-top {
   z-index: 1019;
+}
+
+// log in
+.content-wrap form.login .form-actions {
+  text-align:left;
 }
