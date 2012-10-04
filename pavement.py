@@ -187,15 +187,13 @@ def package(options):
         justcopy(install_file, out_pkg)
 
         # Package Geoserver's war.
-        geoserver_path = '../geoserver-geonode-ext/target/geoserver.war'
+        geoserver_path = ('../geoserver-geonode-ext/target/'
+                          'geonode-geoserver-ext-0.3.jar')
         geoserver_target = path(geoserver_path)
         geoserver_target.copy(out_pkg)
 
-        # Package (Python, Django) web application and dependencies.
-        # Bundle all the dependencies in a zip-lib package called a pybundle.
-        bundle = out_pkg / 'geonode-webapp.pybundle'
         geonode_dist = path('..') / 'dist' / 'GeoNode-%s.zip' % version
-        sh('pip bundle %s %s' % (bundle, geonode_dist))
+        justcopy(geonode_dist, out_pkg)
 
         # Create a tar file with all files in the output package folder.
         tar = tarfile.open(out_pkg_tar, "w:gz")
@@ -391,7 +389,6 @@ def deb(options):
     """
     key = options.get('key', None)
     ppa = options.get('ppa', None)
-    branch = options.get('branch', 'dev')
 
     import geonode
     from geonode.version import get_git_changeset
@@ -401,8 +398,14 @@ def deb(options):
 
     major, minor, revision, stage, edition = raw_version
 
+    # create a temporary file with the name of the branch
+    sh('echo `git rev-parse --abbrev-ref HEAD` > .git_branch')
+    branch = open('.git_branch', 'r').read().strip()
+    # remove the temporary file
+    sh('rm .git_branch')
+
     if stage == 'alpha' and edition == 0:
-        tail = 'dev%s' % timestamp
+        tail = '%s%s' % (branch, timestamp)
     else:
         tail = '%s%s' % (stage, edition)
 
@@ -419,14 +422,14 @@ def deb(options):
         # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
         path('.git').makedirs()
 
+        sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
+
         sh(('git-dch --git-author --new-version=%s'
             ' --id-length=6 --debian-branch=%s' % (
             simple_version, branch)))
 
-        # Rever workaround for git-dhc bug
+        # Revert workaround for git-dhc bug
         path('.git').rmtree()
-
-        sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
         if key is None:
             sh('debuild -uc -us -A')
