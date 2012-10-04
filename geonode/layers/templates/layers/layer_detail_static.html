@@ -1,0 +1,134 @@
+{% extends "layers/layer_base.html" %}
+{% load geonode_auth %}
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+
+{% block title %}Layer Title — {{ block.super }}{% endblock %}
+
+{% block body_class %}layer-info{% endblock %}
+
+{% block body_outer %}
+  <div class="span8">
+    <h2 class="page-title">Title of the Layer Goes Here</h2>
+  </div>
+  <div class="span4">
+    <a href="#download-layer" data-toggle="modal" class="btn btn-large strong pull-right"><i class="icon-download-alt"></i> {% trans "Download Layer" %}</a>
+  </div>
+  <div class="span12">
+    <div id="embedded_map" class="mrg-btm">
+	    <img src="{{ STATIC_URL }}theme/img/placeholder_map.png" width="100%" alt="Placeholder Map" />
+    </div>
+  </div>
+  <div class="span8">
+    <div class="row layer-actions">
+      <div class="span6">
+        {% include "_actions.html" %}
+        <div class="pointer"></div>
+        
+      </div>
+      <div class="span2">
+        <a href="#" class="btn btn-large pull-right">Edit Layer</a>
+        
+      </div>
+    </div>
+    <article class="description">
+      <h3>{% trans "Layer Information" %}</h3>
+      <ul class="unstyled wide">
+        <li><strong>Type:</strong>
+        Vector Data</li>
+
+        <li><strong>Topic Category:</strong>
+        location</li>
+
+        <li><strong>Citation:</strong>
+        copyright</li>
+
+        <li><strong>Owner:</strong>
+        cholmesny</li>
+
+        <li><strong>Point of Contact:</strong>
+        cholmesny</li>
+
+        <li><strong>Attributes:</strong>
+        the_geom, PIN, LT_ID_FK, LT_NAME, NAME, AD1, CITY, STATE, ZIP5, ZIP4, PHONE_AREA, PHONE_PREF, PHONE_SUFF, COUNTY, NAICS_CODE, NAICS_DESC, ENROLLMENT, TI_8047, TI_8060, TI_8064, TI_8065, TI_8068, TI_8072, TI_8066, TI_8099, TI_9000, TI_9001, TI_9003, TI_9004, TI_9005, FACILITY_L, AFFILIATIO, REVIEWED, REC_STATUS, REC_SOURCE, GDTSAD, GDTCITY, GDTSTATE, GDT- PCODE, GDTSFIPS, GDTCFIPS, GDTTR, GDTBLK, GDTPLACE, GDTMCD, GDTLAT, GDTLONG, GDTXIN, GDTSTAT</li>
+
+        <li><strong>Supplemental Information:</strong>
+        You can customize the template to suit your needs. You can add and remove fields and fill out default information (e.g. contact details). Fields you can not change in the default view may be accessible in the more comprehensive (and more complex) advanced view. You can even use the XML editor to create custom structures, but they have to be validated by the system, so know what you do :-)</li>
+
+        <li><strong>Bounding Box:</strong>
+        SRID=EPSG:4326;POLYGON((-84.734475 37.26708,-84.734475 44.846791,-72.696924 44.846791,-72.696924 37.26708,-84.734475 37.26708))</li>
+
+        <li><strong>Native SRS:</strong>
+        EPSG:32044</li>
+      </dl>
+    </article>
+  </div>
+  <aside class="span4">
+    <div class="well">
+      <section>
+        <h2>{% trans "Maps using this layer" %}</h2>
+        <p>{% trans "List of maps using this layer:" %}</p>
+        <ul class="unstyled space">
+          <li><a href="{% url mapinfo %}">Lorem ipsum dolor site amet adipiscing elit</a></li>
+          <li><a href="{% url mapinfo %}">Sed do eisumod tempor</a></li>
+          <li><a href="{% url mapinfo %}">Incididnet ut labore et dolor</a></li>
+        </ul>
+      </section>
+      <section>
+        <h2>{% trans "Create a map using this layer" %}</h2>
+        <p>{% trans "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed" %}</p>
+        <a href="{% url new_map %}" class="btn btn-large">{% trans "Create a Map" %}</a>
+      </section>
+      <section>
+        <h2>{% trans "Permissions" %}</h2>
+        <a href="#modal_perms" data-toggle="modal" class="btn btn-large">{% trans "Change Permissions of this layer" %}</a>
+      </section>
+      <section class="last">
+        <h2>{% trans "Styles" %}</h2>
+        <p>{% trans "The following styles are associated with this data set. Choose a style to view it in the preview to the left. Click on a style name to view or edit the style." %}</p>
+        <ul class="unstyled space">
+          <li><a href="#">Lorem ipsum dolor site amet adipiscing elit</a></li>
+          <li><a href="#">Sed do eisumod tempor</a></li>
+          <li><a href="#">Incididnet ut labore et dolor</a></li>
+        </ul>
+      </section>
+    </div>
+    <div class="well">
+      {% include "_widget_about_author.html" %}
+    </div>
+  </aside>
+<div class="modal custom hide" id="download-layer">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
+    </div>
+    <div class="modal-body">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nos-trud exercitation.</p>
+    </div>
+    <div class="modal-footer">
+      <div class="span2 offset1">
+        <ul class="unstyled">
+          <li><a href="#">Zipped Shapefile</a></li>
+          <li><a href="#">JPEG</a></li>
+          <li><a href="#">GML 2.0</a></li>
+          <li><a href="#">PDF</a></li>
+          <li><a href="#">GML 3.1.1</a></li>
+          <li><a href="#">PNG</a></li>
+        </ul>
+      </div>
+      <div class="span2">
+        <ul class="unstyled">
+          <li><a href="#">CSV</a></li>
+          <li><a href="#">KML</a></li>
+          <li><a href="#">Excel</a></li>
+          <li><a href="#">GeoJSON</a></li>
+          <li><a href="#">View in Google Earth</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% with "#" as form_action %}
+      {% include "_permissions_form.html" %}
+  {% endwith %}
+{% endblock %}

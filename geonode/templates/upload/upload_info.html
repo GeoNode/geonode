@@ -1,0 +1,43 @@
+{% extends "upload/base.html" %}
+{% load i18n %}
+
+{% block body_class_extra %}upload-info{% endblock %}
+
+{% block body %}
+    <h3>{% trans "Enter Info" %}</h3>
+    <form action="{% url upload_permissions %}" class="form-horizontal well">
+        <fieldset>
+            <div class="row">
+                <div class="span8 offset1">
+                    <div class="control-group">
+                        <label class="control-label" for="input01">Title:</label>
+                        <div class="controls">
+                            <input type="text" class="span7" id="input01">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="input01">Data:</label>
+                        <div class="controls">
+                            <input type="file" class="input-file" id="input01">
+                            <p class="help-text">Select a layer data file</p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="input01">SLD:</label>
+                        <div class="controls">
+                            <input type="file" class="input-xlarge" id="input01">
+                            <p class="help-text">Select a .sld style file (optional)</p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="input01">Abstract:</label>
+                        <div class="controls">
+                            <textarea class="span7" rows="10"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-large pull-right">{% trans "Next &gt;" %}</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}

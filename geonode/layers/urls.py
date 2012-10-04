@@ -20,16 +20,25 @@
 
 from django.conf.urls.defaults import patterns, url
 
+from geonode.layers.views import LayerListView
+
 js_info_dict = {
     'packages': ('geonode.layers',),
 }
 
 urlpatterns = patterns('geonode.layers.views',
-  url(r'^$', 'layer_browse', name='layer_browse'),
+  url(r'^$', LayerListView.as_view(), name='layer_browse'),
+  url(r'^popular/$', LayerListView.as_view(
+    layer_filter="popular_count"
+  ), name='layer_browse_popular'),
+  url(r'^shared/$', LayerListView.as_view(
+    layer_filter="share_count"
+  ), name='layer_browse_shared'),
+  url(r'^category/(?P<slug>[-\w]+?)/$', 'layer_category', name='layer_browse_category'),
+  url(r'^tag/(?P<slug>[-\w]+?)/$', 'layer_tag', name='layer_browse_tag'),
   url(r'^acls/?$', 'layer_acls', name='layer_acls'),
   url(r'^search/?$', 'layer_search_page', name='layer_search_page'),
   url(r'^search/api/?$', 'layer_search', name='layer_search_api'),
-  url(r'^search/detail/?$', 'layer_search_result_detail', name='layer_search_result_detail'),
   url(r'^upload$', 'layer_upload', name='layer_upload'),
   url(r'^download$', 'layer_batch_download', name='layer_batch_download'),
   url(r'^(?P<layername>[^/]*)$', 'layer_detail', name="layer_detail"),

@@ -1,0 +1,17 @@
+{% load i18n %}
+
+<ul class="nav nav-pills filter">
+  <li><a href="{% url maps_browse %}" class="selected">{% trans "All" %}</a></li>
+  <li><a href="{% url maps_browse %}"{% if map_filter == "view_count" %} class="selected"{% endif %}>{% trans "Most viewed" %}</a></li>
+  <li><a href="{% url maps_browse %}"{% if map_filter == "popular_count" %} class="selected"{% endif %}>{% trans "Most popular" %}</a></li>
+  <li><a href="{% url maps_browse %}"{% if map_filter == "share_count" %} class="selected"{% endif %}>{% trans "Most shared" %}</a></li>
+  <li>
+    <form action="" class="form-inline">
+      <label for="">sort by:</label>
+      <select name="" id="" class="span1">
+        <option value="">Newest</option>
+        <option value="">Popular</option>
+      </select>
+    </form>
+  </li>
+</ul>

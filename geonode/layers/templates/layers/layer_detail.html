@@ -1,0 +1,262 @@
+{% extends "layers/layer_base.html" %}
+{% load geonode_auth %}
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load url from future %}
+
+{% block title %}{{ layer.resource.title|default:layer.typename }} — {{ block.super }}{% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+
+{% include "layers/layer_map.html" %}
+
+{{ block.super }}
+
+{% endblock %}
+
+
+{% block body_class %}data{% endblock %}
+
+{% block body_outer %}
+  <div class="span6">
+    <h2 class="page-title">{{ layer.resource.title|default:layer.typename }}</h2>
+  </div>
+  <div class="span6 action-group">
+    <div class="pull-right">
+      <div class="btn-group">
+        <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+          {% trans "Download Layer" %}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          {% for link in layer.link_set.download %}
+            <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="btn-group">
+        <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+          {% trans "Download Metadata" %}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          {% for link in layer.link_set.metadata %}
+            <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% has_obj_perm user layer "layer.change_layer" as can_edit_layer %}
+    {% if can_edit_layer %}
+    <div class="btn-group pull-right">
+      <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
+        {% trans "Edit Layer" %}
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_metadata" layer.typename %}">Edit Metadata <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_style" layer.typename %}">Edit Styles <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_permissions" layer.typename %}">Edit Permissions <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_remove" layer.typename %}">Remove this Layer <i class="icon-chevron-right"></i></a></li>
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+  <div class="span12">
+    <div id="embedded_map" class="mrg-btm">
+	    <div id="preview_map" width='100%'></div>
+    </div>
+  </div>
+  <div class="span8">
+    <div class="layer-actions">
+      {% include "layers/_actions.html" %}
+    </div>
+    <div class="tab-content">
+      <article class="description tab-pane active" id="info">
+        <h2>{% trans "Layer Information" %}</h2>
+        <ul class="unstyled wide">
+          {% if layer.display_type %}
+            <li>
+              <strong>{% trans "Type" %}:</strong>
+              {{ layer.display_type }}
+            </li>
+          {% endif %}
+          
+          {% if layer.topic_category %}
+            <li>
+              <strong>{% trans "Topic Category" %}:</strong>
+              {{ layer.topic_category }}
+            </li>
+          {% endif %}
+          
+          {% if layer.constraints_use or layer.constraints_other %}
+            <li>
+              <strong>{% trans "Citation" %}:</strong> 
+              {{ layer.constraints_use}} {{ layer.contraints_other}}
+            </li>
+          {% endif %}
+          
+          {% if layer.owner %}
+            <li>
+              <strong>{% trans "Owner" %}:</strong>
+              <a href="{{ layer.owner.get_profile.get_absolute_url }}">{{ layer.owner.username }}</a>
+            </li>
+          {% endif %}
+
+          {% if layer.poc.user %}
+            <li>
+              <strong>{% trans "Point of Contact" %}:</strong>
+              <a href="{{ layer.poc.user.get_profile.get_absolute_url }}"> {{ layer.poc.user.username }} </a>
+            <li>
+          {% endif %}
+          
+
+          {% if layer.supplemental_information %}
+            <li>
+              <strong>{% trans "Supplemental Information" %}:</strong> 
+              {{ layer.supplemental_information }}
+            </li>
+          {% endif %}
+
+          {% if layer.geographic_bounding_box %}
+            <li>
+              <strong>{% trans "Bounding Box" %}:</strong>
+              {{ layer.geographic_bounding_box }}
+            </li>
+          {% endif %}
+          
+          {% if layer.resource.projection %}
+            <li>
+              <strong>{% trans "Native SRS" %}:</strong>
+              {{ layer.resource.projection|default:_("No SRS specified.") }}
+            </li>
+          {% endif %}
+        </ul>
+          
+      </article>
+      <article id="attributes" class="tab-pane">
+            <h2>{% trans "Attributes" %}:</h2>
+        {% if layer.attribute_set.all %}
+            <table class="table table-striped table-bordered table-condensed">
+              <thead>
+                <tr>
+                  <th>{% trans "Attribute Name" %}</th>
+                  <th>{% trans "Range" %}</th>
+                  <th>{% trans "Mean" %}</th>
+                  <th>{% trans "Median" %}</th>
+                  <th>{% trans "Std. Dev." %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for attribute in layer.attribute_set.all %}
+                  <tr>
+                    <td>{{ attribute }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        {% endif %}
+      </article>
+      <article id="share" class="tab-pane">
+        <p>Share</p>
+      </article>
+      <article id="flag" class="tab-pane">
+        <p>Flag this Layer</p>
+      </article>
+    </div>
+  </div>
+  <aside class="span4">
+    <div class="well">
+        <h2>{% trans "Maps using this layer" %}</h2>
+        {% if layer.maps %}
+        <p>{% trans "List of maps using this layer:" %}</p>
+        {% endif %}
+        <ul class="unstyled space">
+          {% for map in layer.maps %} 
+            <li><a href="{{ map.get_absolute_url }}">{{ map.title }}</a></li>
+          {% empty %}
+            <li>{% trans "This layer is not currently used in any maps." %}</li>
+          {% endfor %}
+        </ul>
+    </div>
+    <div class="well">
+        <h2>{% trans "Create a map using this layer" %}</h2>
+        <p>{% trans "Placeholder" %}</p>
+        <a href="{% url "new_map" %}?layer={{layer.typename}}" class="btn btn-large">{% trans "Create a Map" %}</a>
+    </div>
+    {% has_obj_perm user layer "layer.change_layer_permissions" as can_change_permissions %}
+    {% if can_change_permissions %}
+    <div class="well">
+        <h2>{% trans "Permissions" %}</h2>
+        <p>{% trans "Placeholder" %}</p>
+        <p><a href="{% url "layer_permissions" layer.typename %}" class="btn btn-large">{% trans "Change Layer Permissions" %}</a></p>
+    </div>
+    {% endif %}
+    <div class="well">
+        <h2>{% trans "Styles" %}</h2>
+        <p>{% trans "The following styles are associated with this layer. Choose a style to view it in the preview map." %}</p>
+        <ul class="unstyled space">
+          {% for style in layer.styles %}
+            <li>
+              <a href="#">
+                {% if style.sld_title %}
+                  {{ style.sld_title }}
+                {% else %}
+                  {{ style.name|title }}
+                {% endif %}
+              </a>
+            <li>
+          {% empty %}
+            <li>{% trans "No styles associated with this layer" %}</li>
+          {% endfor %}
+        </ul>
+    </div>
+    <div class="well">
+      {% with layer.owner as owner %}
+          {% include "_widget_about_author.html" %}
+      {% endwith %}
+    </div>
+  </aside>
+<div class="modal custom hide" id="download-layer">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
+    </div>
+    <div class="modal-body">
+      <p></p>
+    </div>
+    <div class="modal-footer">
+      <div class="span2 offset1">
+        <ul class="unstyled">
+          <li><a href="#">Zipped Shapefile</a></li>
+          <li><a href="#">JPEG</a></li>
+          <li><a href="#">GML 2.0</a></li>
+          <li><a href="#">PDF</a></li>
+          <li><a href="#">GML 3.1.1</a></li>
+          <li><a href="#">PNG</a></li>
+        </ul>
+      </div>
+      <div class="span2">
+        <ul class="unstyled">
+          <li><a href="#">CSV</a></li>
+          <li><a href="#">KML</a></li>
+          <li><a href="#">Excel</a></li>
+          <li><a href="#">GeoJSON</a></li>
+          <li><a href="#">View in Google Earth</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% with "#" as form_action %}
+      {% include "_permissions_form.html" %}
+  {% endwith %}
+{% endblock %}

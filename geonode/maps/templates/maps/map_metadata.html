@@ -1,0 +1,29 @@
+{% extends "maps/map_base.html" %}
+
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
+
+{% block head %}
+    {{ block.super }}
+{% endblock %}
+
+{% block body_class %}maps{% endblock %}
+
+{% block body %}
+  <form action="{{ map.get_absolute_url }}/metadata" method="POST">
+    <legend>
+        {% blocktrans with map.title as map_title %}
+            Updating metadata of {{ map_title }}
+        {% endblocktrans %}
+    </legend>
+    {% csrf_token %}
+    <div class="form-controls">
+        {{ map_form|as_bootstrap }}
+    </div>
+    <div class="form-actions">
+      <input type="submit" class="btn btn-primary" value="{% trans "Update metadata" %}"/>
+    </div>
+  </form>
+{% endblock %}

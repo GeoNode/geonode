@@ -1,0 +1,53 @@
+[
+    {
+        "pk": 1, 
+        "model": "taggit.tag", 
+        "fields": {
+            "name": "usa", 
+            "slug": "usa"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "taggit.tag", 
+        "fields": {
+            "name": "relief", 
+            "slug": "relief"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "taggit.tag", 
+        "fields": {
+            "name": "isthmus", 
+            "slug": "isthmus"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "taggit.taggeditem", 
+        "fields": {
+            "tag": 1, 
+            "content_type": 20, 
+            "object_id": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "taggit.taggeditem", 
+        "fields": {
+            "tag": 2, 
+            "content_type": 20, 
+            "object_id": 1
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "taggit.taggeditem", 
+        "fields": {
+            "tag": 3, 
+            "content_type": 20, 
+            "object_id": 1
+        }
+    }
+]

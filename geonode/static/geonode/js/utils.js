@@ -1,3 +1,14 @@
+$(function() {
+    // Topbar active tab support
+    $(".main-nav li").removeClass("current");
+    
+    var class_list = $("body").attr("class").split(/\s+/);
+    $.each(class_list, function(index, item) {
+        var selector = ".main-nav li#nav_" + item;
+        $(selector).addClass("current");
+    });
+});
+
 jQuery(document).ajaxSend(function(event, xhr, settings) {
     function getCookie(name) {
         var cookieValue = null;

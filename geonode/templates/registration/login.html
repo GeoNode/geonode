@@ -6,7 +6,7 @@
 {% block title %} {% trans "Log in" %} — {{ block.super }}{% endblock %}
 
 {% block main %}
-  <form method="post" action="{% url auth_login %}">
+  <form method="post" action="{% url auth_login %}" class="login">
     <legend>{{ SITENAME }} {% trans "Log in" %}</legend>
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ next }}" />
@@ -14,9 +14,11 @@
       {{ form|as_bootstrap }}
     </div>
     <div class="form-actions">
-      <a href="{% url auth_password_reset %}" class="btn">{% trans "Forgot password?" %}</a>
-      <a href="{% url forgot_username %}" class="btn">{% trans "Forgot username?" %}</a>
       <input type="submit" class="btn btn-primary" value="Log in"/>
     </div>
+    <p>
+      <a href="{% url auth_password_reset %}">{% trans "Forgot password?" %}</a> |
+      <a href="{% url forgot_username %}">{% trans "Forgot username?" %}</a>
+    </p>
   </form>
 {% endblock %}

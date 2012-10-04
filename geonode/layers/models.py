@@ -139,6 +139,20 @@ class LayerManager(models.Manager):
                 print >> console, msg
         return output
 
+
+class TopicCategory(models.Model):
+
+    name = models.CharField(max_length=50)
+    slug = models.SlugField()
+    description = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return u"{0}".format(self.name)
+
+    class Meta:
+        ordering = ("name",)
+
+
 class ResourceBase(models.Model, PermissionLevelMixin):
     """
     Base Resource Object loosely based on ISO 19115:2003
@@ -174,7 +188,8 @@ class ResourceBase(models.Model, PermissionLevelMixin):
 
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng', help_text=_('language used within the dataset'))
-    topic_category = models.CharField(_('topic_category'), max_length=255, choices=TOPIC_CATEGORIES, default='location', help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'))
+    topic_category = models.CharField(_('topic_category'), editable=False, max_length=255, choices=TOPIC_CATEGORIES, default='location')
+    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True)
 
     # Section 5
     temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True, help_text=_('time period covered by the content of the dataset (start)'))
@@ -269,6 +284,9 @@ class Layer(ResourceBase):
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     typename = models.CharField(max_length=128, unique=True)
+
+    popular_count = models.IntegerField(default=0)
+    share_count = models.IntegerField(default=0)
 
     contacts = models.ManyToManyField(Contact, through='ContactRole')
 
