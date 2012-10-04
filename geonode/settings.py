@@ -293,7 +293,7 @@ NOSE_ARGS = [
 
 SITENAME = "GeoNode"
 
-SITEURL = "http://ui.dev.geonode.org/"
+SITEURL = "http://localhost:8000/"
 
 # GeoServer information
 
@@ -355,10 +355,6 @@ PYCSW = {
             'contact_hours': 'Hours of Service',
             'contact_instructions': 'During hours of service. Off on weekends.',
             'contact_role': 'pointOfContact',
-        },
-        'repository': {
-            'source': 'geonode',
-            'mappings': '/home/geonode/geonode/geonode/catalogue/backends/pycsw_local.py',
         },
         'metadata:inspire': {
             'enabled': 'true',
