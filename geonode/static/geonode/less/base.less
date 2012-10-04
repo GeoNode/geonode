@@ -509,7 +509,7 @@ section.widget-mini {
 
 .list article {
   border-bottom:1px solid @bdrColor;
-  padding-bottom:10px;
+  padding-bottom:20px;
   margin-bottom:20px;
   overflow:hidden;
   position: relative;
@@ -527,10 +527,12 @@ section.widget-mini {
   .details {
     float:left;
     width:420px;
+    overflow: hidden;
 
     h3 {
       width:320px;
-      overflow:hidden;
+      overflow: hidden;
+      text-overflow:ellipses;
     }
   }
 
@@ -546,6 +548,12 @@ section.widget-mini {
 
   .details {
     clear: left;
+
+    h3 {
+      padding-right: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }
 
@@ -704,6 +712,7 @@ ul.nav-pills.filter {
   font-weight:bold;
   font-size:11px;
   text-align:right;
+  clear: left;
 }
 
 .comments header .pages {
@@ -773,6 +782,7 @@ ul.space li {
   .tab-content {
      margin-left: 40px;
      width: auto;
+     padding-bottom: 40px;
   }
 }
 #slide-pane {
@@ -792,6 +802,7 @@ ul.space li {
   }
   .nav li {
     border-bottom: 1px solid @grayNeutral;
+    line-height: 1.3;
   }
   .nav a {
     padding: 0.8em;
@@ -818,8 +829,11 @@ ul.space li {
     .border-radius(0 3px 3px 0);
   }
   a.toggle-nav {
-    float: right;
+    display: block;
     color: @grayLight;
+    i {
+      padding-right: 8px;
+    }
   }
 
 }
@@ -834,14 +848,14 @@ ul.space li {
     a {
       display: inline;
       padding: 3px 5px;
-      font-size: 11px;
+      font-size: 12px;
       background-color: @navBkgd;
       color: @graySp;
       text-transform: lowercase;
       .border-radius(4px);
     }
     .count {
-      color: @grayNeutral;
+      color: @graySp;
       padding-left: 8px;
       font-size: 11px;
     }
