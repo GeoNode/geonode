@@ -302,7 +302,7 @@ GEOSERVER_BASE_URL = "http://localhost:8080/geoserver/"
 
 # The username and password for a user that can add and
 # edit layer details on GeoServer
-GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
+GEOSERVER_CREDENTIALS = "admin", "geoserver"
 
 # CSW settings
 CATALOGUE = {
@@ -311,7 +311,7 @@ CATALOGUE = {
         # default is pycsw in local mode (tied directly to GeoNode Django DB)
         'ENGINE': 'geonode.catalogue.backends.pycsw_local',
         # pycsw in non-local mode
-        #'ENGINE': 'geonode.catalogue.backends.pycsw',
+        #'ENGINE': 'geonode.catalogue.backends.pycsw_http',
         # GeoNetwork opensource
         #'ENGINE': 'geonode.catalogue.backends.geonetwork',
         # deegree and others
