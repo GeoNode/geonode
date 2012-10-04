@@ -16,15 +16,16 @@ $(function() {
     });
     $("#slide-pane a.toggle-pane").click(function(e) {
         e.preventDefault();
-        if(!$("#slide-pane").is('.hidden')) {
-            $("#slide-pane").addClass("hidden").animate({
+        var span$ = $("#slide-pane").parents(".span4");
+        if(!span$.is('.hidden')) {
+            span$.addClass("hidden").animate({
                 marginLeft: "-310px"
             }, 500, function() {
                 setContentWidth();
             });
             $(this).find("i").attr("class", "icon-chevron-right");
         } else {
-            $("#slide-pane").removeClass("hidden").animate({
+            span$.removeClass("hidden").animate({
                 marginLeft: "0px"
             }, 500, function() {
                 setContentWidth();
@@ -36,7 +37,7 @@ $(function() {
         e.preventDefault();
         if ($(this).parents("h2").siblings(".nav").is(":visible")) {
             $(this).parents("h2").siblings(".nav").slideUp();
-            $(this).find("i").attr("class", "icon-chevron-left");
+            $(this).find("i").attr("class", "icon-chevron-right");
         } else {
             $(this).parents("h2").siblings(".nav").slideDown();
             $(this).find("i").attr("class", "icon-chevron-down");
@@ -45,7 +46,7 @@ $(function() {
 });
 
 function setContentWidth() {
-    var lm = parseInt($("#slide-pane").css("marginLeft").replace("px", "")) + 51;
-    var w = $("#contain-slider").width() - ($("#slide-pane").width() + lm);
+    var lm = parseInt($("#slide-pane").parents(".span4").css("marginLeft").replace("px", "")) + 51;
+    var w = $("#contain-slider").width() - ($("#slide-pane").outerWidth() + lm);
     $(".tab-content").css('width', w + "px");
 }

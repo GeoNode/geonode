@@ -28,7 +28,7 @@
           <div id="slide-pane">
             <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
             <nav class="tabs-left" id="nav-categories">
-              <h2>Categories <a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i></a></h2>
+              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> Categories</a></h2>
               <ul class="nav">
                 {% layer_categories as category_list %}
                 <li><a href="{% url "layer_browse" %}"{% if not layer_category %} class="active"{% endif %}>All Categories</a></li>
@@ -38,12 +38,13 @@
               </ul>
             </nav>
             <nav class="" id="nav-keywords">
-              <h2>Keywords <a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i></a></h2>
+              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> Keywords</a></h2>
               <ul class="nav">
                 {% get_taglist as tags for 'layers.Layer' %}
                 {% for tag in tags %}
                   <li><a href="{% url "layer_browse_tag" tag.slug %}"{% if tag.slug == layer_tag %} class="active"{% endif %}>{{ tag }}</a> <span class="count">({{ tag.num_times }})</span></li>
                 {% endfor %}
+                  <li><a href="#"{% if tag.slug == layer_tag %} class="active"{% endif %}>horribad</a> <span class="count">(1234)</span></li>
               </ul>
             </nav>
           </div>
