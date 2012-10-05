@@ -346,6 +346,14 @@ class LayersTest(TestCase):
         self.assertEqual(custom_attributes[0].attribute_label, "Place Name")
         self.assertEqual(custom_attributes[1].attribute_label, "Description")
 
+    def test_layer_attribute_config(self):
+        lyr = Layer.objects.get(pk=1)
+        custom_attributes = lyr.attribute_config()
+        self.assertEqual(custom_attributes["fields"],["place_name","description"])
+        self.assertEqual(custom_attributes["propertyNames"]["description"], "Description")
+        self.assertEqual(custom_attributes["propertyNames"]["place_name"], "Place Name")
+
+
     def test_layer_save(self):
         lyr = Layer.objects.get(pk=1)
         lyr.keywords.add(*["saving", "keywords"])
