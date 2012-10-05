@@ -141,7 +141,7 @@ def layer_upload(request, template='layers/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms")
+    maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms", layer_params=json.dumps( layer.attribute_config()))
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
@@ -623,3 +623,8 @@ def layer_acls(request):
     }
 
     return HttpResponse(json.dumps(result), mimetype="application/json")
+
+def layer_attributes(request, layername):
+    #Return custom layer attribute labels/order in JSON format
+    layer = Layer.objects.get(typename=layername)
+    return HttpResponse(json.dumps(layer.attribute_config()), mimetype="application/json")

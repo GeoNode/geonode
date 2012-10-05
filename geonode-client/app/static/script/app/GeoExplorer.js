@@ -471,7 +471,27 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.on("ready", function() {
             this.mapPanel.layers.on({
                 "update": function() {this.modified |= 1;},
-                "add": function() {this.modified |= 1;},
+                "add": function(store, rec) {
+                    this.modified |= 1;
+                    //Add attribute configuration for added  local layers
+                    for (record =0; record < rec.length; record++) {
+                        var layerRec = rec[record];
+                        if (layerRec.get("layer").url.indexOf(this.localGeoServerBaseUrl) > -1) {
+                            Ext.Ajax.request({
+                                url: this.rest.replace("maps","data") +  layerRec.get("layer").params.LAYERS + "/attributes",
+                                method: 'POST',
+                                success: function(response, options) {
+                                    var jsonData = Ext.util.JSON.decode(response.responseText);
+                                    if (jsonData) {
+                                        layerRec.set("propertyNames", "propertyNames" in jsonData ? jsonData["propertyNames"]  :  null);
+                                        layerRec.set("fields",  "fields" in jsonData ? jsonData["fields"]  :  null);
+                                    }
+                                },
+                                scope: this
+                            });
+                        }
+                    }
+                },
                 "remove": function(store, rec) {
                     this.modified |= 1;
                 },

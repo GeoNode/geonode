@@ -374,6 +374,15 @@ class Layer(ResourceBase):
     def get_absolute_url(self):
         return "/data/%s" % (self.typename)
 
+    def attribute_config(self):
+        #Get custom attribute sort order and labels if any
+            cfg = {}
+            visible_attributes =  self.attribute_set.visible()
+            if (visible_attributes.count() > 0):
+                cfg["fields"] = [l.attribute for l in visible_attributes]
+                cfg["propertyNames"] = dict([(l.attribute,l.attribute_label) for l in visible_attributes])
+            return cfg
+
     def __str__(self):
         return "%s Layer" % self.typename
 
