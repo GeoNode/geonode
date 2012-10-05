@@ -24,6 +24,7 @@ from urllib import urlencode
 import json
 import urllib
 import urllib2
+import datetime
 import time
 
 from django.conf import settings
@@ -224,7 +225,38 @@ class GeoNodeMapTest(TestCase):
             #        (GeoNodeException, type(e)))
             # assert e is GeoNodeException, msg
 
+    def test_layer_upload_metadata(self):
+        """Test uploading a layer with XML metadata"""
 
+        thelayer = os.path.join(gisdata.PROJECT_ROOT,
+                   'both', 'good', 'sangis.org', 'Airport', 'Air_Runways.shp')
+
+        self.assertTrue('%s.xml' % thelayer,
+            'Expected layer XML metadata to exist')
+
+        uploaded = file_upload(thelayer, overwrite=True)
+
+        self.assertEqual(uploaded.title, 'Air_Runways',
+            'Expected specific title from uploaded layer XML metadata')
+
+        self.assertEqual(uploaded.abstract, 'Airport Runways',
+            'Expected specific abstract from uploaded layer XML metadata')
+
+        self.assertEqual(len(uploaded.keyword_list()), 5,
+            'Expected specific number of keywords from uploaded layer XML metadata')
+
+        self.assertTrue('Landing Strips' in uploaded.keyword_list(),
+            'Expected specific keyword from uploaded layer XML metadata')
+
+        self.assertEqual(uploaded.constraints_other, 'None',
+            'Expected specific constraint from uploaded layer XML metadata')
+
+        self.assertEqual(uploaded.date, datetime.datetime(2010, 8, 3, 0, 0),
+            'Expected specific constraint from uploaded layer XML metadata')
+
+        # Clean up and completely delete the layer
+        uploaded.delete()
+        
     def test_shapefile(self):
         """Test Uploading a good shapefile
         """

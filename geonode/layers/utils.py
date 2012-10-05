@@ -134,6 +134,11 @@ def get_files(filename):
 
     matches = glob.glob(base_name + ".[xX][mM][lL]")
 
+    # shapefile XML metadata is sometimes named base_name.shp.xml
+    # try looking for filename.xml if base_name.xml does not exist
+    if len(matches) == 0:
+        matches = glob.glob(filename + ".[xX][mM][lL]")
+
     if len(matches) == 1:
         files['xml'] = matches[0]
     elif len(matches) > 1:
