@@ -252,7 +252,7 @@ class GeoNodeMapTest(TestCase):
             'Expected specific constraint from uploaded layer XML metadata')
 
         self.assertEqual(uploaded.date, datetime.datetime(2010, 8, 3, 0, 0),
-            'Expected specific constraint from uploaded layer XML metadata')
+            'Expected specific date from uploaded layer XML metadata')
 
         # Clean up and completely delete the layer
         uploaded.delete()
