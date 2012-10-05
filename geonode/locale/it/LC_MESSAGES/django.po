@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-03 16:57-0700\n"
+"POT-Creation-Date: 2012-10-04 20:23-0700\n"
 "PO-Revision-Date: 2012-08-01 23:24+0100\n"
 "Last-Translator: Luca Casagrande <luca.casagrande@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Translated-Using: django-rosetta 0.6.6\n"
 
@@ -1210,262 +1210,262 @@ msgstr "Zambia"
 msgid "Zimbabwe"
 msgstr "Zimbabwe"
 
-#: layers/models.py:154 security/models.py:55
+#: layers/models.py:168 security/models.py:55
 msgid "title"
 msgstr "titolo"
 
-#: layers/models.py:154
+#: layers/models.py:168
 msgid "name by which the cited resource is known"
 msgstr ""
 
-#: layers/models.py:155
+#: layers/models.py:169
 msgid "date"
 msgstr "data"
 
-#: layers/models.py:155
+#: layers/models.py:169
 msgid "reference date for the cited resource"
 msgstr ""
 
-#: layers/models.py:157
+#: layers/models.py:171
 msgid "date type"
 msgstr "tipo di data"
 
-#: layers/models.py:157
+#: layers/models.py:171
 msgid "identification of when a given event occurred"
 msgstr ""
 
-#: layers/models.py:159
+#: layers/models.py:173
 msgid "edition"
 msgstr "edizione"
 
-#: layers/models.py:159
+#: layers/models.py:173
 msgid "version of the cited resource"
 msgstr ""
 
-#: layers/models.py:160
+#: layers/models.py:174
 msgid "abstract"
 msgstr "abstract"
 
-#: layers/models.py:160
+#: layers/models.py:174
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr ""
 
-#: layers/models.py:161
+#: layers/models.py:175
 msgid "purpose"
 msgstr "finalità"
 
-#: layers/models.py:161
+#: layers/models.py:175
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr ""
 
-#: layers/models.py:163
+#: layers/models.py:177
 msgid "maintenance frequency"
 msgstr "frequenza di revisione"
 
-#: layers/models.py:163
+#: layers/models.py:177
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr ""
 
-#: layers/models.py:169 maps/models.py:87
+#: layers/models.py:183 maps/models.py:87
 msgid "keywords"
 msgstr "keywords"
 
-#: layers/models.py:169
+#: layers/models.py:183
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
 msgstr ""
 
-#: layers/models.py:170
+#: layers/models.py:184
 msgid "keywords region"
 msgstr "keywords regione"
 
-#: layers/models.py:170
+#: layers/models.py:184
 msgid "keyword identifies a location"
 msgstr ""
 
-#: layers/models.py:171
+#: layers/models.py:185
 msgid "constraints use"
 msgstr "limiti di utilizzo"
 
-#: layers/models.py:171
+#: layers/models.py:185
 msgid ""
 "constraints applied to assure the protection of privacy or intellectual "
 "property, and any special restrictions or limitations or warnings on using "
 "the resource or metadata"
 msgstr ""
 
-#: layers/models.py:172
+#: layers/models.py:186
 msgid "constraints other"
 msgstr "altre limitazioni"
 
-#: layers/models.py:172
+#: layers/models.py:186
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr ""
 
-#: layers/models.py:173
+#: layers/models.py:187
 msgid "spatial representation type"
 msgstr "tipo di rappresentazione spaziale"
 
-#: layers/models.py:173
+#: layers/models.py:187
 msgid "method used to represent geographic information in the dataset"
 msgstr ""
 
-#: layers/models.py:176
+#: layers/models.py:190
 msgid "language"
 msgstr "lingua"
 
-#: layers/models.py:176
+#: layers/models.py:190
 msgid "language used within the dataset"
 msgstr ""
 
-#: layers/models.py:177
+#: layers/models.py:191
 msgid "topic_category"
 msgstr "topic_categoria"
 
-#: layers/models.py:177
+#: layers/models.py:192
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
 msgstr ""
 
-#: layers/models.py:180
+#: layers/models.py:195
 msgid "temporal extent start"
 msgstr "Inizio dell'estensione temporale"
 
-#: layers/models.py:180
+#: layers/models.py:195
 msgid "time period covered by the content of the dataset (start)"
 msgstr ""
 
-#: layers/models.py:181
+#: layers/models.py:196
 msgid "temporal extent end"
 msgstr "Fine dell'estensione temporale"
 
-#: layers/models.py:181
+#: layers/models.py:196
 msgid "time period covered by the content of the dataset (end)"
 msgstr ""
 
-#: layers/models.py:183
+#: layers/models.py:198
 msgid "supplemental information"
 msgstr "Informazioni supplementari "
 
-#: layers/models.py:183
+#: layers/models.py:198
 #, fuzzy
 msgid "any other descriptive information about the dataset"
 msgstr "Aggiorna la descrizione di questo dato"
 
-#: layers/models.py:186
+#: layers/models.py:201
 msgid "distribution URL"
 msgstr "Deistribuzione delle URL"
 
-#: layers/models.py:186
+#: layers/models.py:201
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
 msgstr ""
 
-#: layers/models.py:187
+#: layers/models.py:202
 msgid "distribution description"
 msgstr "Descrizione della distribuzione"
 
-#: layers/models.py:187
+#: layers/models.py:202
 msgid "detailed text description of what the online resource is/does"
 msgstr ""
 
-#: layers/models.py:190
+#: layers/models.py:205
 msgid "data quality statement"
 msgstr "Dichiarazione di qualità del dato"
 
-#: layers/models.py:190
+#: layers/models.py:205
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr ""
 
-#: layers/models.py:204
+#: layers/models.py:219
 msgid "CSW typename"
 msgstr ""
 
-#: layers/models.py:205
+#: layers/models.py:220
 msgid "CSW schema"
 msgstr ""
 
-#: layers/models.py:206
+#: layers/models.py:221
 msgid "CSW source"
 msgstr ""
 
-#: layers/models.py:207
+#: layers/models.py:222
 msgid "CSW insert date"
 msgstr ""
 
-#: layers/models.py:208
+#: layers/models.py:223
 msgid "CSW type"
 msgstr ""
 
-#: layers/models.py:209
+#: layers/models.py:224
 msgid "CSW anytext"
 msgstr ""
 
-#: layers/models.py:210
+#: layers/models.py:225
 msgid "CSW WKT geometry"
 msgstr ""
 
-#: layers/models.py:490
+#: layers/models.py:508
 #, fuzzy
 msgid "attribute name"
 msgstr "Attributi"
 
-#: layers/models.py:490
+#: layers/models.py:508
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr ""
 
-#: layers/models.py:491
+#: layers/models.py:509
 #, fuzzy
 msgid "attribute label"
 msgstr "Attributi"
 
-#: layers/models.py:491
+#: layers/models.py:509
 msgid "title of attribute as displayed in GeoNode"
 msgstr ""
 
-#: layers/models.py:492
+#: layers/models.py:510
 #, fuzzy
 msgid "attribute type"
 msgstr "tipo di data"
 
-#: layers/models.py:492
+#: layers/models.py:510
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr ""
 
-#: layers/models.py:493
+#: layers/models.py:511
 #, fuzzy
 msgid "visible?"
 msgstr "visibilità"
 
-#: layers/models.py:493
+#: layers/models.py:511
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr ""
 
-#: layers/models.py:494
+#: layers/models.py:512
 #, fuzzy
 msgid "display order"
 msgstr "ordinamento"
 
-#: layers/models.py:494
+#: layers/models.py:512
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr ""
 
-#: layers/models.py:764
+#: layers/models.py:782
 msgid "KML"
 msgstr "KML"
 
-#: layers/models.py:778
+#: layers/models.py:796
 msgid "View in Google Earth"
 msgstr "Visualizza in Google Earth"
 
@@ -1505,7 +1505,7 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: layers/views.py:66
+#: layers/views.py:67
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -1513,320 +1513,266 @@ msgstr ""
 "E' occorso un errore durante l'invio dei tuoi dati. Riprova o contatta un "
 "amministratore se il problema persiste."
 
-#: layers/views.py:70 maps/views.py:62
+#: layers/views.py:71 maps/views.py:62
 msgid "No Permissions"
 msgstr "Nessun Permesso"
 
-#: layers/views.py:71 maps/views.py:63
+#: layers/views.py:72 maps/views.py:63
 msgid "Read Only"
 msgstr "Sola Lettura"
 
-#: layers/views.py:72 maps/views.py:64
+#: layers/views.py:73 maps/views.py:64
 msgid "Read/Write"
 msgstr "Leggere/Scrivere"
 
-#: layers/views.py:73 maps/views.py:65
+#: layers/views.py:74 maps/views.py:65
 msgid "Administrative"
 msgstr "Amministrativo"
 
-#: layers/views.py:76
+#: layers/views.py:77
 msgid "You are not permitted to delete this layer"
 msgstr "Non hai i permessi per eliminare questo layer"
 
-#: layers/views.py:77
+#: layers/views.py:78
 #, fuzzy
 msgid "You do not have permissions for this layer."
 msgstr "Non hai i permessi per vedere o scaricare questo layer"
 
-#: layers/views.py:78
+#: layers/views.py:79
 msgid "You are not permitted to modify this layer"
 msgstr "Non hai i permessi per modificare questo layer"
 
-#: layers/views.py:79
+#: layers/views.py:80
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "Non hai i permessi per modificare i metadati di questo layer"
 
-#: layers/views.py:80
+#: layers/views.py:81
 msgid "You are not permitted to view this layer"
 msgstr "Non hai i permessi per visualizzare questo layer"
 
-#: layers/views.py:596
+#: layers/views.py:621
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Credenziali di autorizzazione HTTP errate."
 
-#: layers/templates/layers/change_poc.html:5 templates/base.html:64
-msgid "Home"
-msgstr "Home"
+#: layers/templates/layers/_layer_filters.html:5
+#, fuzzy
+msgid "Most recent"
+msgstr "Inserisci un commento"
 
-#: layers/templates/layers/change_poc.html:5
-#: layers/templates/layers/change_poc.html:7
-msgid "Change point of contact"
-msgstr "Modifica contatto"
+#: layers/templates/layers/_layer_filters.html:6
+#: maps/templates/maps/_map_filters.html:6
+msgid "Most popular"
+msgstr ""
 
-#: layers/templates/layers/data.html:4
+#: layers/templates/layers/_layer_filters.html:7
+#: maps/templates/maps/_map_filters.html:7
+msgid "Most shared"
+msgstr ""
+
+#: layers/templates/layers/_layer_list_item.html:8
+#: layers/templates/layers/_layer_widget_item.html:5
+#: templates/_widget_about_author.html:4 templates/search.html:207
+#: templates/search.html.py:220 templates/search.html:234
+#: templates/search.html.py:247
+msgid "No Image Available"
+msgstr ""
+
+#: layers/templates/layers/layer_base.html:5
 msgid "Browse Data"
 msgstr "Esplora dati"
 
-#: layers/templates/layers/data.html:9
+#: layers/templates/layers/layer_change_poc.html:5 templates/base.html:119
+msgid "Home"
+msgstr "Home"
+
+#: layers/templates/layers/layer_change_poc.html:5
+#: layers/templates/layers/layer_change_poc.html:7
+msgid "Change point of contact"
+msgstr "Modifica contatto"
+
+#: layers/templates/layers/layer_detail.html:32
+#: layers/templates/layers/layer_detail.html:232
+#: layers/templates/layers/layer_detail_static.html:16
+#: layers/templates/layers/layer_detail_static.html:104
+#: maps/templates/maps/map_detail.html:99 templates/search.html:265
 #, fuzzy
-msgid "Geospatial Data"
-msgstr "per dati geospaziali"
+msgid "Download Layer"
+msgstr "Carica layer"
 
-#: layers/templates/layers/data.html:16 maps/templates/maps/maps.html:20
-#: templates/index.html:51
-msgid "Advanced Search"
-msgstr "Ricerca avanzata"
-
-#: layers/templates/layers/data.html:22
-msgid "Upload"
-msgstr "Carica"
-
-#: layers/templates/layers/data.html:23
-msgid "We support Shapefile and GeoTIFF uploads."
-msgstr "Attualmente è possibile caricare ESRI Shapefile e GeoTIFF "
-
-#: layers/templates/layers/data.html:24
-msgid "Upload a new layer"
-msgstr "Carica un nuovo layer"
-
-#: layers/templates/layers/data.html:29 templates/base.html:126
-msgid "For Developers"
-msgstr "Per gli sviluppatori"
-
-#: layers/templates/layers/data.html:30
+#: layers/templates/layers/layer_detail.html:43
 #, fuzzy
-msgid ""
-" \n"
-"      If you are interested in information about accessing this information "
-"through OGC services, please visit our\n"
-"      "
-msgstr ""
-" \n"
-"    Se sei interessato ad ottenere informazioni si come accedere a questi "
-"dati usando servizi OGC, visita il nostro\n"
-"    "
+msgid "Download Metadata"
+msgstr "Carica dati"
 
-#: layers/templates/layers/data.html:33
-msgid "developer page"
-msgstr "Pagina per gli sviluppatori"
+#: layers/templates/layers/layer_detail.html:57
+#, fuzzy
+msgid "Edit Layer"
+msgstr "Aggiorna Layer"
 
-#: layers/templates/layers/layer.html:131 maps/models.py:61
-msgid "Abstract"
-msgstr "Abstract"
+#: layers/templates/layers/layer_detail.html:81
+#: layers/templates/layers/layer_detail_static.html:36
+msgid "Layer Information"
+msgstr "Informazioni supplementari"
 
-#: layers/templates/layers/layer.html:131
-msgid "No abstract for this layer."
-msgstr "Nessun abstract per questo layer."
-
-#: layers/templates/layers/layer.html:135
+#: layers/templates/layers/layer_detail.html:85
 #: people/templates/idios/profile.html:9
 #: templates/profiles/profile_detail.html:9
 msgid "Type"
 msgstr "Tipo"
 
-#: layers/templates/layers/layer.html:136
-msgid "Keywords"
-msgstr "Parole chiave"
-
-#: layers/templates/layers/layer.html:137
-msgid "Edition"
-msgstr "Edizione"
-
-#: layers/templates/layers/layer.html:138
+#: layers/templates/layers/layer_detail.html:92
 msgid "Topic Category"
 msgstr "Categoria del tema."
 
-#: layers/templates/layers/layer.html:141
+#: layers/templates/layers/layer_detail.html:99
 msgid "Citation"
 msgstr "Citazione"
 
-#: layers/templates/layers/layer.html:147
+#: layers/templates/layers/layer_detail.html:106
 msgid "Owner"
 msgstr "Proprietario"
 
-#: layers/templates/layers/layer.html:153
-#: layers/templates/layers/layer_describe.html:38
+#: layers/templates/layers/layer_detail.html:113
+#: layers/templates/layers/layer_metadata.html:40
 msgid "Point of Contact"
 msgstr "Contatto"
 
-#: layers/templates/layers/layer.html:158
-msgid "Name"
-msgstr "Nome"
-
-#: layers/templates/layers/layer.html:159
-msgid "Email"
-msgstr "Email"
-
-#: layers/templates/layers/layer.html:160
-msgid "Organization"
-msgstr "Organizzazione"
-
-#: layers/templates/layers/layer.html:161
-msgid "Position"
-msgstr "Posizione"
-
-#: layers/templates/layers/layer.html:162 people/models.py:39
-msgid "Voice"
-msgstr "Voce"
-
-#: layers/templates/layers/layer.html:163
-msgid "Fax"
-msgstr "Fax"
-
-#: layers/templates/layers/layer.html:164
-msgid "Delivery"
-msgstr "Domicilio"
-
-#: layers/templates/layers/layer.html:165
-msgid "Area"
-msgstr "Area"
-
-#: layers/templates/layers/layer.html:166
-msgid "Zip Code"
-msgstr "CAP"
-
-#: layers/templates/layers/layer.html:167
-msgid "Country"
-msgstr "Paese"
-
-#: layers/templates/layers/layer.html:173
-msgid "Attributes"
-msgstr "Attributi"
-
-#: layers/templates/layers/layer.html:181
+#: layers/templates/layers/layer_detail.html:121
 msgid "Supplemental Information"
 msgstr "Informazioni supplementari"
 
-#: layers/templates/layers/layer.html:187
-msgid "Data Quality Statement"
-msgstr "Dichiarazione di qualità dei dati"
-
-#: layers/templates/layers/layer.html:192
+#: layers/templates/layers/layer_detail.html:128
 msgid "Bounding Box"
 msgstr "Estensione geografica"
 
-#: layers/templates/layers/layer.html:193
+#: layers/templates/layers/layer_detail.html:135
 msgid "Native SRS"
 msgstr "SRS Nativo"
 
-#: layers/templates/layers/layer.html:193
+#: layers/templates/layers/layer_detail.html:136
 msgid "No SRS specified."
 msgstr "Nessun SRS specificato."
 
-#: layers/templates/layers/layer.html:195 maps/templates/maps/mapinfo.html:58
-msgid "Comments"
-msgstr "Commenti"
+#: layers/templates/layers/layer_detail.html:143
+msgid "Attributes"
+msgstr "Attributi"
 
-#: layers/templates/layers/layer.html:204
-#, fuzzy, python-format
-msgid ""
-"\n"
-"\t                %(age)s ago\n"
-"\t                "
+#: layers/templates/layers/layer_detail.html:148
+#, fuzzy
+msgid "Attribute Name"
+msgstr "Attributi"
+
+#: layers/templates/layers/layer_detail.html:149
+msgid "Range"
 msgstr ""
-"\n"
-"%(age)s fa"
 
-#: layers/templates/layers/layer.html:213 maps/templates/maps/mapinfo.html:77
-msgid "Post a comment"
-msgstr "Inserisci un commento"
+#: layers/templates/layers/layer_detail.html:150
+msgid "Mean"
+msgstr ""
 
-#: layers/templates/layers/layer.html:221 maps/templates/maps/mapinfo.html:85
-#: people/templates/people/forgot_username_form.html:18
-msgid "Submit"
-msgstr "Invia"
+#: layers/templates/layers/layer_detail.html:151
+msgid "Median"
+msgstr ""
 
-#: layers/templates/layers/layer.html:226 maps/templates/maps/mapinfo.html:90
-msgid "Login to add a comment"
-msgstr "Accedi per aggiungere un commento"
+#: layers/templates/layers/layer_detail.html:152
+msgid "Std. Dev."
+msgstr ""
 
-#: layers/templates/layers/layer.html:231
-msgid "Rate this layer"
-msgstr "Giudica questo layer"
-
-#: layers/templates/layers/layer.html:244
-msgid "Legend"
-msgstr "Legenda"
-
-#: layers/templates/layers/layer.html:255
+#: layers/templates/layers/layer_detail.html:179
+#: layers/templates/layers/layer_detail_static.html:70
 #, fuzzy
-msgid "Download Data"
-msgstr "Scarica"
+msgid "Maps using this layer"
+msgstr "Nessuna mappa sta utilizzando questo layer."
 
-#: layers/templates/layers/layer.html:260
+#: layers/templates/layers/layer_detail.html:181
+#: layers/templates/layers/layer_detail_static.html:71
 #, fuzzy
-msgid "Download Metadata"
-msgstr "Carica dati"
+msgid "List of maps using this layer:"
+msgstr "Nessuna mappa sta utilizzando questo layer."
 
-#: layers/templates/layers/layer.html:264
-msgid "No metadata links provided for this data."
-msgstr "Nessun link ai metadati fornito per questo layer."
-
-#: layers/templates/layers/layer.html:267
-msgid "The following maps use this data set"
-msgstr "Le seguenti mappe utilizzano questo set di dati"
-
-#: layers/templates/layers/layer.html:271
+#: layers/templates/layers/layer_detail.html:187
 msgid "This layer is not currently used in any maps."
 msgstr "Questo layer non è al momento utilizzato da alcuna mappa."
 
-#: layers/templates/layers/layer.html:274
-msgid "Create new map"
-msgstr "Crea una nuova mappa"
+#: layers/templates/layers/layer_detail.html:192
+#: layers/templates/layers/layer_detail_static.html:79
+#, fuzzy
+msgid "Create a map using this layer"
+msgstr "Nessuna mappa sta utilizzando questo layer."
 
-#: layers/templates/layers/layer.html:278
+#: layers/templates/layers/layer_detail.html:193
+#: layers/templates/layers/layer_detail.html:200
+#: maps/templates/maps/map_detail.html:76
+#: maps/templates/maps/map_detail.html:85
+msgid "Placeholder"
+msgstr ""
+
+#: layers/templates/layers/layer_detail.html:194
+#: layers/templates/layers/layer_detail_static.html:81
+#, fuzzy
+msgid "Create a Map"
+msgstr "Crea Mappa"
+
+#: layers/templates/layers/layer_detail.html:199
+#: layers/templates/layers/layer_detail_static.html:84
+#: layers/templates/layers/layer_upload.html:259
+#: maps/templates/maps/map_detail.html:80 templates/_permissions_form.html:7
+#: templates/upload/upload_permissions.html:7
+msgid "Permissions"
+msgstr "Permessi"
+
+#: layers/templates/layers/layer_detail.html:201
+#, fuzzy
+msgid "Change Layer Permissions"
+msgstr "Nessun Permesso"
+
+#: layers/templates/layers/layer_detail.html:205
+#: layers/templates/layers/layer_detail_static.html:88
 msgid "Styles"
 msgstr "Stili"
 
-#: layers/templates/layers/layer.html:279
+#: layers/templates/layers/layer_detail.html:206
+#, fuzzy
 msgid ""
-"The following styles are associated with this data set.  Choose a style to "
-"view it in the preview to the left.  Click on a style name to view or edit "
+"The following styles are associated with this layer. Choose a style to view "
+"it in the preview map."
+msgstr ""
+"I seguenti stili sono associati a questo set di dati. Scegli uno stile da "
+"visualizzare nell'anteprima sulla sinistra. Clicca sul nome per vedere o "
+"modificare lo stile."
+
+#: layers/templates/layers/layer_detail.html:219
+#, fuzzy
+msgid "No styles associated with this layer"
+msgstr "Nessun abstract per questo layer."
+
+#: layers/templates/layers/layer_detail_static.html:80
+msgid "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed"
+msgstr ""
+
+#: layers/templates/layers/layer_detail_static.html:85
+#, fuzzy
+msgid "Change Permissions of this layer"
+msgstr "Non hai i permessi per vedere o scaricare questo layer"
+
+#: layers/templates/layers/layer_detail_static.html:89
+#, fuzzy
+msgid ""
+"The following styles are associated with this data set. Choose a style to "
+"view it in the preview to the left. Click on a style name to view or edit "
 "the style."
 msgstr ""
 "I seguenti stili sono associati a questo set di dati. Scegli uno stile da "
 "visualizzare nell'anteprima sulla sinistra. Clicca sul nome per vedere o "
 "modificare lo stile."
 
-#: layers/templates/layers/layer.html:305
-msgid "Default style:"
-msgstr "Stile di default:"
+#: layers/templates/layers/layer_list.html:9
+#: layers/templates/layers/layer_list.html:15 templates/index.html:25
+#, fuzzy
+msgid "Explore Layers"
+msgstr "Esplora mappe"
 
-#: layers/templates/layers/layer.html:314
-msgid "Create new style"
-msgstr "Crea un nuovo stile"
-
-#: layers/templates/layers/layer.html:320 maps/templates/maps/mapinfo.html:115
-msgid "Manage"
-msgstr "Gestisci"
-
-#: layers/templates/layers/layer.html:324
-msgid "Update the description of this data"
-msgstr "Aggiorna la descrizione di questo dato"
-
-#: layers/templates/layers/layer.html:327
-msgid "Upload a new version of this data"
-msgstr "Carica una nuova versione di questo dato"
-
-#: layers/templates/layers/layer.html:333
-msgid "Remove"
-msgstr "Elimina"
-
-#: layers/templates/layers/layer.html:338
-msgid "Please authenticate to update or remove layers"
-msgstr "Per favore autenticati per aggiornare o eliminare layer"
-
-#: layers/templates/layers/layer.html:344
-#: layers/templates/layers/layer_upload.html:252
-#: maps/templates/maps/mapinfo.html:129 templates/_permissions_form.html:7
-msgid "Permissions"
-msgstr "Permessi"
-
-#: layers/templates/layers/layer.html:345 maps/templates/maps/mapinfo.html:130
-msgid "Edit permissions"
-msgstr "Modifica permessi"
-
-#: layers/templates/layers/layer_describe.html:15
+#: layers/templates/layers/layer_metadata.html:17
 #, python-format
 msgid ""
 "\n"
@@ -1834,56 +1780,56 @@ msgid ""
 "      "
 msgstr ""
 
-#: layers/templates/layers/layer_describe.html:30
+#: layers/templates/layers/layer_metadata.html:32
 #, fuzzy
 msgid "Attribute"
 msgstr "Attributi"
 
-#: layers/templates/layers/layer_describe.html:30
+#: layers/templates/layers/layer_metadata.html:32
 msgid "Display Title"
 msgstr ""
 
-#: layers/templates/layers/layer_describe.html:30
+#: layers/templates/layers/layer_metadata.html:32
 msgid "Display Order"
 msgstr ""
 
-#: layers/templates/layers/layer_describe.html:30
+#: layers/templates/layers/layer_metadata.html:32
 msgid "Visible?"
 msgstr ""
 
-#: layers/templates/layers/layer_describe.html:42
+#: layers/templates/layers/layer_metadata.html:44
 #, fuzzy
 msgid "Metadata Provider"
 msgstr "Metadati"
 
-#: layers/templates/layers/layer_describe.html:46
+#: layers/templates/layers/layer_metadata.html:48
 msgid "Update"
 msgstr "Aggiorna"
 
-#: layers/templates/layers/layer_remove.html:9
+#: layers/templates/layers/layer_remove.html:11
 #, fuzzy, python-format
 msgid ""
 "\n"
-"        Are you sure you want to remove %(layer_title)s?\n"
-"      "
+"          Are you sure you want to remove %(layer_title)s?\n"
+"        "
 msgstr "Sei sicuro di volerlo eliminare"
 
-#: layers/templates/layers/layer_remove.html:16
-#: maps/templates/maps/map_remove.html:17
+#: layers/templates/layers/layer_remove.html:18
+#: maps/templates/maps/map_remove.html:19
 msgid "Yes, I am sure"
 msgstr "Si, sono sicuro"
 
-#: layers/templates/layers/layer_remove.html:17
-#: maps/templates/maps/map_remove.html:18
+#: layers/templates/layers/layer_remove.html:19
+#: maps/templates/maps/map_remove.html:20
 msgid "No, don't remove it"
 msgstr "No, non eliminarlo"
 
-#: layers/templates/layers/layer_remove.html:24
+#: layers/templates/layers/layer_remove.html:25
 #: layers/templates/layers/layer_replace.html:167
 msgid "This action affects the following maps:"
 msgstr "Questa azione avrà effetto sulle seguenti mappe:"
 
-#: layers/templates/layers/layer_remove.html:28
+#: layers/templates/layers/layer_remove.html:29
 #, fuzzy
 msgid "No maps are using this layer"
 msgstr "Nessuna mappa sta utilizzando questo layer."
@@ -1928,15 +1874,91 @@ msgstr "Nessuna mappa sta utilizzando questo layer."
 msgid "Supported Formats"
 msgstr "Formati supportati"
 
-#: layers/templates/layers/layer_upload.html:4
+#: layers/templates/layers/layer_search.html:6
+#, fuzzy
+msgid "Search Layers"
+msgstr "Cerca Mappe"
+
+#: layers/templates/layers/layer_search.html:14
+#, fuzzy
+msgid "Search for Layers"
+msgstr "Cerca Mappe"
+
+#: layers/templates/layers/layer_search.html:26 maps/models.py:58
+#: maps/templates/maps/map_search.html:24
+#: people/templates/idios/profile.html:10
+#: templates/profiles/profile_detail.html:10
+msgid "Title"
+msgstr "Titolo"
+
+#: layers/templates/layers/layer_search.html:27
+#: maps/templates/maps/map_search.html:25
+#, fuzzy
+msgid "Contact"
+msgstr "Contatto: "
+
+#: layers/templates/layers/layer_search.html:28
+#: maps/templates/maps/map_search.html:26
+msgid "Last Modified"
+msgstr ""
+
+#: layers/templates/layers/layer_search.html:41
+#, fuzzy
+msgid "Export as ZIP "
+msgstr "Esplora mappe"
+
+#: layers/templates/layers/layer_search.html:44
+msgid "Create Map"
+msgstr "Crea Mappa"
+
+#: layers/templates/layers/layer_search.html:52
+msgid "Refine Search"
+msgstr "Raffina la ricerca"
+
+#: layers/templates/layers/layer_search.html:54
+msgid "By area"
+msgstr "Per area"
+
+#: layers/templates/layers/layer_search.html:55
+msgid "Limit the search to data that includes features in the displayed area."
+msgstr "Limita la ricerca ai dati che sono inclusi nell'area visualizzata."
+
+#: layers/templates/layers/layer_search.html:62
+msgid "Selected Data"
+msgstr "Dato selezionato"
+
+#: layers/templates/layers/layer_search.html:63
+msgid "Use the checkboxes in the search results to add data to your selection."
+msgstr ""
+"Usa le caselle nei risultati della ricerca per aggiungere dati alla tua "
+"selezione."
+
+#: layers/templates/layers/layer_search.html:69
+#: maps/templates/maps/map_detail.html:84
+#: people/templates/idios/profile.html:72
+#: templates/profiles/profile_detail.html:72
+msgid "Create a new map"
+msgstr "Crea una nuova mappa"
+
+#: layers/templates/layers/layer_search.html:70
+msgid "Export selected"
+msgstr "Esporta i selezionati"
+
+#: layers/templates/layers/layer_search.html:94
+#: maps/templates/maps/map_search.html:52
+msgid "Your search did not match any items."
+msgstr ""
+
+#: layers/templates/layers/layer_upload.html:6
 msgid "Upload Layer"
 msgstr "Carica layer"
 
-#: layers/templates/layers/layer_upload.html:19
-msgid "Add data"
-msgstr "Carica dati"
+#: layers/templates/layers/layer_upload.html:25
+#, fuzzy
+msgid "Upload Layers"
+msgstr "Carica layer"
 
-#: layers/templates/layers/layer_upload.html:27
+#: layers/templates/layers/layer_upload.html:34
 #, fuzzy
 msgid ""
 "GeoNode can import GeoTIFF and Shapefile data. To import a shapefile, first "
@@ -1947,124 +1969,9 @@ msgstr ""
 "Nota: Se stai caricando uno shapefile, prima scegli il file .SHP. Ti sarà "
 "richiesto di indicare i restanti file.\n"
 
-#: layers/templates/layers/search_base.html:4
-msgid "Search Data"
-msgstr "Cerca Dati"
-
-#: layers/templates/layers/search_base.html:27
-#: maps/templates/maps/maps_search_base.html:8 templates/index.html:49
-msgid "Search"
-msgstr "Cerca"
-
-#: layers/templates/layers/search_base.html:27
-msgid "for geospatial data"
-msgstr "per dati geospaziali"
-
-#: layers/templates/layers/search_base.html:35 maps/models.py:58
-#: maps/templates/maps/maps_search_base.html:16
-#: people/templates/idios/profile.html:10
-#: templates/profiles/profile_detail.html:10
-msgid "Title"
-msgstr "Titolo"
-
-#: layers/templates/layers/search_base.html:36
-#: maps/templates/maps/maps_search_base.html:17
-#, fuzzy
-msgid "Contact"
-msgstr "Contatto: "
-
-#: layers/templates/layers/search_base.html:37
-#: maps/templates/maps/maps_search_base.html:18
-msgid "Last Modified"
-msgstr ""
-
-#: layers/templates/layers/search_base.html:50
-#, fuzzy
-msgid "Export as ZIP "
-msgstr "Esplora mappe"
-
-#: layers/templates/layers/search_base.html:53 templates/index.html:20
-msgid "Create Map"
-msgstr "Crea Mappa"
-
-#: layers/templates/layers/search_base.html:61
-msgid "Refine Search"
-msgstr "Raffina la ricerca"
-
-#: layers/templates/layers/search_base.html:63
-msgid "By area"
-msgstr "Per area"
-
-#: layers/templates/layers/search_base.html:64
-msgid "Limit the search to data that includes features in the displayed area."
-msgstr "Limita la ricerca ai dati che sono inclusi nell'area visualizzata."
-
-#: layers/templates/layers/search_base.html:71
-msgid "Selected Data"
-msgstr "Dato selezionato"
-
-#: layers/templates/layers/search_base.html:72
-msgid "Use the checkboxes in the search results to add data to your selection."
-msgstr ""
-"Usa le caselle nei risultati della ricerca per aggiungere dati alla tua "
-"selezione."
-
-#: layers/templates/layers/search_base.html:78
-#: people/templates/idios/profile.html:72
-#: templates/profiles/profile_detail.html:72
-msgid "Create a new map"
-msgstr "Crea una nuova mappa"
-
-#: layers/templates/layers/search_base.html:79
-msgid "Export selected"
-msgstr "Esporta i selezionati"
-
-#: layers/templates/layers/search_base.html:103
-#: maps/templates/maps/maps_search_base.html:49
-msgid "Your search did not match any items."
-msgstr ""
-
-#: layers/templates/layers/search_result_snippet.html:5
-#: maps/templates/maps/mapinfo.html:52
-msgid "Abstract:"
-msgstr "Abstract:"
-
-#: layers/templates/layers/search_result_snippet.html:11
-msgid "Provided by:"
-msgstr "Fornito da: "
-
-#: layers/templates/layers/search_result_snippet.html:16
-msgid "Metadata Links:"
-msgstr "Link ai metadati: "
-
-#: layers/templates/layers/search_result_snippet.html:20
-msgid "No metadata URLs are defined for this layer."
-msgstr "Nessuna URL di metadati è definita per questo layer. "
-
-#: layers/templates/layers/search_result_snippet.html:24
-#: maps/templates/maps/mapinfo.html:53
-msgid "Keywords:"
-msgstr "Parole chiave: "
-
-#: layers/templates/layers/search_result_snippet.html:28
-msgid "No keywords are listed for this layer."
-msgstr "Nessuna parola chiave elencata per questo layer."
-
-#: layers/templates/layers/search_result_snippet.html:34
-msgid "Download:"
-msgstr "Scarica:"
-
-#: layers/templates/layers/search_result_snippet.html:38
-msgid "No download URLs are defined for this layer."
-msgstr "Non è stata definita alcuna URL per scaricare il layer."
-
-#: layers/templates/layers/search_result_snippet.html:43
-msgid "Click here for more information about this layer."
-msgstr "Clicca qui per avere più informazioni su questo layer."
-
-#: layers/templates/layers/search_result_snippet.html:46
-msgid "You do not have permission to view or download this layer"
-msgstr "Non hai i permessi per vedere o scaricare questo layer"
+#: maps/models.py:61
+msgid "Abstract"
+msgstr "Abstract"
 
 #: maps/models.py:65
 msgid "zoom"
@@ -2159,11 +2066,71 @@ msgstr "Non hai i permessi per modificare i metadati di questa mappa."
 msgid "You are not allowed to view this map."
 msgstr "Non hai i permessi per visualizzare questa mappa."
 
-#: maps/templates/maps/download.html:65 maps/templates/maps/mapinfo.html:105
+#: maps/templates/maps/_map_filters.html:4
+msgid "All"
+msgstr ""
+
+#: maps/templates/maps/_map_filters.html:5
+msgid "Most viewed"
+msgstr ""
+
+#: maps/templates/maps/map_base.html:5 maps/templates/maps/map_list.html:12
+#: templates/index.html:28
+msgid "Explore Maps"
+msgstr "Esplora mappe"
+
+#: maps/templates/maps/map_detail.html:27
+#, fuzzy
+msgid "Download Data"
+msgstr "Scarica"
+
+#: maps/templates/maps/map_detail.html:28
+#, fuzzy
+msgid "Print Map"
+msgstr "Naviga Mappe"
+
+#: maps/templates/maps/map_detail.html:48
+msgid "Abstract:"
+msgstr "Abstract:"
+
+#: maps/templates/maps/map_detail.html:58
+#, fuzzy
+msgid "Uploaded by"
+msgstr "Carica"
+
+#: maps/templates/maps/map_detail.html:66 templates/base.html:122
+msgid "Layers"
+msgstr "Layer"
+
+#: maps/templates/maps/map_detail.html:67
+#, fuzzy
+msgid "This map uses the following layers:"
+msgstr "Questa mappa utilizza i seguenti layer"
+
+#: maps/templates/maps/map_detail.html:75
+#, fuzzy
+msgid "Edit map"
+msgstr "Modifica metadati"
+
+#: maps/templates/maps/map_detail.html:77
+msgid "Edit Map"
+msgstr ""
+
+#: maps/templates/maps/map_detail.html:81
+#, fuzzy
+msgid "Change Permissions of this Map"
+msgstr "Non hai i permessi per vedere o scaricare questo layer"
+
+#: maps/templates/maps/map_detail.html:86 maps/templates/maps/map_list.html:16
+#, fuzzy
+msgid "Create a New Map"
+msgstr "Crea una nuova mappa"
+
+#: maps/templates/maps/map_download.html:65
 msgid "Download"
 msgstr "Scarica"
 
-#: maps/templates/maps/download.html:67
+#: maps/templates/maps/map_download.html:67
 #, fuzzy
 msgid ""
 "\n"
@@ -2177,7 +2144,7 @@ msgstr ""
 "    sono gestiti su questo GeoNode.    I seguenti layer saranno scaricati:\n"
 "    "
 
-#: maps/templates/maps/download.html:85
+#: maps/templates/maps/map_download.html:85
 #, fuzzy
 msgid ""
 "\n"
@@ -2192,7 +2159,7 @@ msgstr ""
 "    per vincoli di sicurezza:\n"
 "    "
 
-#: maps/templates/maps/download.html:97
+#: maps/templates/maps/map_download.html:97
 #, fuzzy
 msgid ""
 "\n"
@@ -2205,15 +2172,15 @@ msgstr ""
 "    perchè non sono disponibili direttamente da questo GeoNode:\n"
 "    "
 
-#: maps/templates/maps/download.html:115
+#: maps/templates/maps/map_download.html:115
 msgid "Start downloading this map"
 msgstr ""
 
-#: maps/templates/maps/embed.html:5 maps/templates/maps/view.html:5
+#: maps/templates/maps/map_embed.html:5 maps/templates/maps/map_view.html:5
 msgid "Map Viewer"
 msgstr "Visualizzatore mappa."
 
-#: maps/templates/maps/map_describe.html:15
+#: maps/templates/maps/map_metadata.html:17
 #, fuzzy, python-format
 msgid ""
 "\n"
@@ -2223,7 +2190,7 @@ msgstr ""
 "\n"
 "%(age)s fa"
 
-#: maps/templates/maps/map_describe.html:24
+#: maps/templates/maps/map_metadata.html:26
 #, fuzzy
 msgid "Update metadata"
 msgstr "Modifica metadati"
@@ -2233,7 +2200,7 @@ msgstr "Modifica metadati"
 msgid "Deleting"
 msgstr "Impostazioni"
 
-#: maps/templates/maps/map_remove.html:11
+#: maps/templates/maps/map_remove.html:13
 #, fuzzy, python-format
 msgid ""
 "\n"
@@ -2241,94 +2208,18 @@ msgid ""
 "    "
 msgstr "Sei sicuro di volerlo eliminare"
 
-#: maps/templates/maps/mapinfo.html:57
-msgid "Contact:"
-msgstr "Contatto: "
-
-#: maps/templates/maps/mapinfo.html:68
-#, python-format
-msgid ""
-"\n"
-"                %(age)s ago\n"
-"                "
-msgstr ""
-"\n"
-"%(age)s fa"
-
-#: maps/templates/maps/mapinfo.html:95
-msgid "Rate this map"
-msgstr "Giudica questa mappa"
-
-#: maps/templates/maps/mapinfo.html:106
-msgid "Download all layers included in this map"
-msgstr "Scarica tutti i layer inclusi in questa mappa"
-
-#: maps/templates/maps/mapinfo.html:108
-msgid "Layers"
-msgstr "Layer"
-
-#: maps/templates/maps/mapinfo.html:118
-msgid "View or edit this map"
-msgstr "Visualizza o modifica questa mappa"
-
-#: maps/templates/maps/mapinfo.html:120
-msgid "Edit metadata"
-msgstr "Modifica metadati"
-
-#: maps/templates/maps/mapinfo.html:123
-msgid "Delete map"
-msgstr "Elimina mappa"
-
-#: maps/templates/maps/mapinfo.html:125
-msgid "Duplicate map"
-msgstr "Duplica mappa"
-
-#: maps/templates/maps/maps.html:4
-msgid "Browse Maps"
-msgstr "Naviga Mappe"
-
-#: maps/templates/maps/maps.html:9 maps/templates/maps/view.html:92
-#: templates/base.html:70 templates/index.html:26
-msgid "Maps"
-msgstr "Mappe"
-
-#: maps/templates/maps/maps.html:11
-msgid "All Maps"
-msgstr "Tutte le Mappe"
-
-#: maps/templates/maps/maps.html:12
-msgid "New Maps"
-msgstr "Nuove Mappe"
-
-#: maps/templates/maps/maps.html:24
-#, fuzzy
-msgid "Create"
-msgstr "Crea Mappa"
-
-#: maps/templates/maps/maps.html:26
-msgid ""
-"Use GeoNode's Map Composer application to create your own maps.  Add layers "
-"from this GeoNode or remote services, and style them."
-msgstr ""
-"Usa lo strumento di generazione mappe di GeoNode per creare la tua mappa. "
-"Aggiungi layer da questo GeoNode o da servizi remoti ed applica loro uno "
-"stile."
-
-#: maps/templates/maps/maps.html:28
-msgid "Create your own map"
-msgstr "Crea la tua mappa"
-
-#: maps/templates/maps/maps_search_base.html:5
+#: maps/templates/maps/map_search.html:5
+#: maps/templates/maps/map_search.html:12
 msgid "Search Maps"
 msgstr "Cerca Mappe"
 
-#: maps/templates/maps/maps_search_base.html:8
-msgid "for maps"
-msgstr "per mappe"
-
-#: maps/templates/maps/view.html:91
+#: maps/templates/maps/map_view.html:84
 msgid "View info"
 msgstr "Visualizza informazioni"
+
+#: maps/templates/maps/map_view.html:85 templates/base.html:125
+msgid "Maps"
+msgstr "Mappe"
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
@@ -2402,7 +2293,7 @@ msgstr "Nome dell'organizzazione"
 msgid "name of the responsible organization"
 msgstr ""
 
-#: people/models.py:37 templates/base.html:85
+#: people/models.py:37 templates/base.html:59
 msgid "Profile"
 msgstr "Profilo"
 
@@ -2413,6 +2304,10 @@ msgstr "Ruolo"
 #: people/models.py:38
 msgid "role or position of the responsible person"
 msgstr ""
+
+#: people/models.py:39
+msgid "Voice"
+msgstr "Voce"
 
 #: people/models.py:39
 msgid ""
@@ -2625,6 +2520,10 @@ msgid ""
 "sent to you."
 msgstr ""
 
+#: people/templates/people/forgot_username_form.html:18
+msgid "Submit"
+msgstr "Invia"
+
 #: security/models.py:37
 msgid "Invalid permission level."
 msgstr "Livello di permessi non valido."
@@ -2736,65 +2635,129 @@ msgstr ""
 msgid "Apply Changes"
 msgstr ""
 
-#: templates/base.html:67 templates/index.html:36
-msgid "Data"
-msgstr "Dati"
+#: templates/_widget_about_author.html:3
+msgid "About the Author"
+msgstr ""
 
-#: templates/base.html:75
+#: templates/_widget_about_author.html:8
+msgid "Read more about this author"
+msgstr ""
+
+#: templates/advanced_search_static.html:4 templates/search.html:4
+msgid "Search Data"
+msgstr "Cerca Dati"
+
+#: templates/advanced_search_static.html:18 templates/base.html:42
+msgid "Advanced Search"
+msgstr "Ricerca avanzata"
+
+#: templates/advanced_search_static.html:22
 #, fuzzy
-msgid "Logged in as:"
-msgstr "Effettua nuovamente il login"
+msgid "Search for: "
+msgstr "Cerca"
 
-#: templates/base.html:87
+#: templates/advanced_search_static.html:34
+#: templates/advanced_search_static.html:113
+#, fuzzy
+msgid "Search "
+msgstr "Cerca"
+
+#: templates/advanced_search_static.html:59
+#, fuzzy
+msgid "Type: "
+msgstr "Tipo"
+
+#: templates/advanced_search_static.html:92
+#, fuzzy
+msgid "Metadata: "
+msgstr "Link ai metadati: "
+
+#: templates/advanced_search_static.html:114
+msgid "Clear Options "
+msgstr ""
+
+#: templates/base.html:61
 msgid "Admin"
 msgstr "Amministrazione"
 
-#: templates/base.html:90
+#: templates/base.html:64
 msgid "Log out"
 msgstr "Esci"
 
-#: templates/base.html:94
+#: templates/base.html:80 templates/base.html.py:93
 msgid "Sign in"
 msgstr "Entra"
 
-#: templates/base.html:96
+#: templates/base.html:85
+#, fuzzy
+msgid "Username"
+msgstr "Password dimenticata"
+
+#: templates/base.html:87
+#, fuzzy
+msgid "Password"
+msgstr "Password modificata"
+
+#: templates/base.html:91
+msgid "Remember Me"
+msgstr ""
+
+#: templates/base.html:94
+msgid "Don't have an account yet?"
+msgstr ""
+
+#: templates/base.html:94
+#, fuzzy
+msgid "Register now"
+msgstr "Registrati"
+
+#: templates/base.html:100
 msgid "or"
 msgstr "oppure"
 
-#: templates/base.html:97
+#: templates/base.html:101
 msgid "Register"
 msgstr "Registrati"
 
-#: templates/base.html:123
+#: templates/base.html:128
+#, fuzzy
+msgid "Profiles"
+msgstr "Profilo"
+
+#: templates/base.html:131
+msgid "Search"
+msgstr "Cerca"
+
+#: templates/base.html:164
 msgid "Powered by"
 msgstr "Fornito da: "
 
-#: templates/base.html:123
+#: templates/base.html:164
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/base.html:124
+#: templates/base.html:165
 msgid "Need Help?"
 msgstr "Serve aiuto?"
 
-#: templates/base.html:125
+#: templates/base.html:166
 msgid "Help"
 msgstr "Aiuto"
 
-#: templates/base.html:133
+#: templates/base.html:167
+msgid "For Developers"
+msgstr "Per gli sviluppatori"
+
+#: templates/base.html:174
 #, fuzzy
 msgid "Language"
 msgstr "lingua"
 
-#: templates/base.html:161
+#: templates/base.html:243 templates/base.html.py:282
 msgid "Add User..."
 msgstr ""
 
-#: templates/developer.html:4
-msgid "OGC Services"
-msgstr "OGC Services"
-
-#: templates/developer.html:8
+#: templates/developer.html:4 templates/developer.html.py:8
 #, fuzzy
 msgid "Information for Developers"
 msgstr "Per gli sviluppatori"
@@ -3051,15 +3014,15 @@ msgstr "Esplora mappe"
 msgid "Remixing a Map"
 msgstr ""
 
-#: templates/index.html:4
+#: templates/index.html:9
 msgid "Welcome!"
 msgstr "Benvenuto"
 
-#: templates/index.html:9
+#: templates/index.html:16
 msgid "Welcome"
 msgstr "Benvenuto"
 
-#: templates/index.html:11
+#: templates/index.html:18
 #, fuzzy
 msgid ""
 "\n"
@@ -3075,18 +3038,37 @@ msgstr ""
 "<em>geonode@librelist.com</em>.\n"
 "    "
 
-#: templates/index.html:17
-msgid "Explore Maps"
-msgstr "Esplora mappe"
+#: templates/index.html:35
+#, fuzzy
+msgid "Latest Layers"
+msgstr "Aggiorna Layer"
 
-#: templates/index.html:28
+#: templates/index.html:50
+#, fuzzy
+msgid "Contribute"
+msgstr "Attributi"
+
+#: templates/index.html:52
 #, fuzzy
 msgid ""
+"\n"
+"              GeoNode enables you to upload, manage, and browse data layers. "
+"Search for data that is valuable to you, or upload your own data. \n"
+"            "
+msgstr ""
 " \n"
-"        GeoNode lets you compose and share maps.  <strong>Create</strong>\n"
-"        a map with our cartography tool, or <strong>explore</strong> maps\n"
-"        shared by others.\n"
-"      "
+"  GeoNode ti permette di caricare, gestire e ricercare dati geografici. \n"
+"      <strong>Ricercare</strong> dati che sono importanti per te o \n"
+"      <strong>caricare</strong> dati in tuo possesso.\n"
+"   "
+
+#: templates/index.html:56
+#, fuzzy
+msgid ""
+"\n"
+"              GeoNode enables you to compose and share maps. Create a map "
+"with our cartography tool, or explore maps shared by others. \n"
+"            "
 msgstr ""
 " \n"
 " GeoNode permette di creare e condividere mappe. <strong>Crea</strong>\n"
@@ -3095,20 +3077,25 @@ msgstr ""
 "      condivise da altri.\n"
 "    "
 
-#: templates/index.html:38
+#: templates/index.html:65
 #, fuzzy
-msgid ""
-" \n"
-"        GeoNode lets you upload, manage, and browse data.  \n"
-"        <strong>Search</strong> for data that is valuable to you, or \n"
-"        <strong>upload</strong> your own data.\n"
-"      "
-msgstr ""
-" \n"
-"  GeoNode ti permette di caricare, gestire e ricercare dati geografici. \n"
-"      <strong>Ricercare</strong> dati che sono importanti per te o \n"
-"      <strong>caricare</strong> dati in tuo possesso.\n"
-"   "
+msgid "Latest Maps"
+msgstr "Crea Mappe"
+
+#: templates/search.html:20
+#, fuzzy
+msgid "Refine your search"
+msgstr "Raffina la ricerca"
+
+#: templates/search.html:24
+#, fuzzy
+msgid "Your selections"
+msgstr "Operazioni"
+
+#: templates/search.html:169
+#, fuzzy
+msgid "Search Results"
+msgstr "Cerca Dati"
 
 #: templates/avatar/add.html:6
 msgid "Your current avatar: "
@@ -3123,6 +3110,22 @@ msgstr "Carica nuovi dati"
 #, fuzzy
 msgid "Upload avatar"
 msgstr "Carica dati"
+
+#: templates/pagination/pagination.html:7
+msgid "Previous"
+msgstr ""
+
+#: templates/pagination/pagination.html:9
+msgid "previous"
+msgstr ""
+
+#: templates/pagination/pagination.html:16
+msgid "Next"
+msgstr ""
+
+#: templates/pagination/pagination.html:18
+msgid "next"
+msgstr ""
 
 #: templates/registration/activate.html:6
 msgid "Account successfully activated"
@@ -3159,12 +3162,12 @@ msgstr "Grazie per aver speso bene il tuo tempo con GeoNode oggi."
 msgid "Log in again"
 msgstr "Effettua nuovamente il login"
 
-#: templates/registration/login.html:17
+#: templates/registration/login.html:20
 #, fuzzy
 msgid "Forgot password?"
 msgstr "Password dimenticata"
 
-#: templates/registration/login.html:18
+#: templates/registration/login.html:21
 msgid "Forgot username?"
 msgstr ""
 
@@ -3213,6 +3216,246 @@ msgstr "Ore sei registrato. Ti è stata inviata una e-mail di attivazione"
 #, fuzzy
 msgid "Create account"
 msgstr "Crea Mappa"
+
+#: templates/upload/base.html:4 templates/upload/base.html.py:10
+#, fuzzy
+msgid "Upload Data"
+msgstr "Carica dati"
+
+#: templates/upload/base.html:12
+#, fuzzy
+msgid "1. File Upload"
+msgstr "Carica"
+
+#: templates/upload/base.html:13
+msgid "2. Enter Info"
+msgstr ""
+
+#: templates/upload/base.html:14
+#, fuzzy
+msgid "3. Permissions"
+msgstr "Permessi"
+
+#: templates/upload/upload_info.html:7
+msgid "Enter Info"
+msgstr ""
+
+#: templates/upload/upload_info.html:38
+msgid "Next &gt;"
+msgstr ""
+
+#: templates/upload/upload_permissions.html:58
+#, fuzzy
+msgid "Save Upload"
+msgstr "Carica"
+
+#, fuzzy
+#~ msgid "Geospatial Data"
+#~ msgstr "per dati geospaziali"
+
+#~ msgid "We support Shapefile and GeoTIFF uploads."
+#~ msgstr "Attualmente è possibile caricare ESRI Shapefile e GeoTIFF "
+
+#~ msgid "Upload a new layer"
+#~ msgstr "Carica un nuovo layer"
+
+#, fuzzy
+#~ msgid ""
+#~ " \n"
+#~ "      If you are interested in information about accessing this "
+#~ "information through OGC services, please visit our\n"
+#~ "      "
+#~ msgstr ""
+#~ " \n"
+#~ "    Se sei interessato ad ottenere informazioni si come accedere a questi "
+#~ "dati usando servizi OGC, visita il nostro\n"
+#~ "    "
+
+#~ msgid "developer page"
+#~ msgstr "Pagina per gli sviluppatori"
+
+#~ msgid "Keywords"
+#~ msgstr "Parole chiave"
+
+#~ msgid "Edition"
+#~ msgstr "Edizione"
+
+#~ msgid "Name"
+#~ msgstr "Nome"
+
+#~ msgid "Email"
+#~ msgstr "Email"
+
+#~ msgid "Organization"
+#~ msgstr "Organizzazione"
+
+#~ msgid "Position"
+#~ msgstr "Posizione"
+
+#~ msgid "Fax"
+#~ msgstr "Fax"
+
+#~ msgid "Delivery"
+#~ msgstr "Domicilio"
+
+#~ msgid "Area"
+#~ msgstr "Area"
+
+#~ msgid "Zip Code"
+#~ msgstr "CAP"
+
+#~ msgid "Country"
+#~ msgstr "Paese"
+
+#~ msgid "Data Quality Statement"
+#~ msgstr "Dichiarazione di qualità dei dati"
+
+#~ msgid "Comments"
+#~ msgstr "Commenti"
+
+#, fuzzy
+#~ msgid ""
+#~ "\n"
+#~ "\t                %(age)s ago\n"
+#~ "\t                "
+#~ msgstr ""
+#~ "\n"
+#~ "%(age)s fa"
+
+#~ msgid "Login to add a comment"
+#~ msgstr "Accedi per aggiungere un commento"
+
+#~ msgid "Rate this layer"
+#~ msgstr "Giudica questo layer"
+
+#~ msgid "Legend"
+#~ msgstr "Legenda"
+
+#~ msgid "No metadata links provided for this data."
+#~ msgstr "Nessun link ai metadati fornito per questo layer."
+
+#~ msgid "The following maps use this data set"
+#~ msgstr "Le seguenti mappe utilizzano questo set di dati"
+
+#~ msgid "Create new map"
+#~ msgstr "Crea una nuova mappa"
+
+#~ msgid "Default style:"
+#~ msgstr "Stile di default:"
+
+#~ msgid "Create new style"
+#~ msgstr "Crea un nuovo stile"
+
+#~ msgid "Manage"
+#~ msgstr "Gestisci"
+
+#~ msgid "Update the description of this data"
+#~ msgstr "Aggiorna la descrizione di questo dato"
+
+#~ msgid "Upload a new version of this data"
+#~ msgstr "Carica una nuova versione di questo dato"
+
+#~ msgid "Remove"
+#~ msgstr "Elimina"
+
+#~ msgid "Please authenticate to update or remove layers"
+#~ msgstr "Per favore autenticati per aggiornare o eliminare layer"
+
+#~ msgid "Edit permissions"
+#~ msgstr "Modifica permessi"
+
+#~ msgid "Add data"
+#~ msgstr "Carica dati"
+
+#~ msgid "for geospatial data"
+#~ msgstr "per dati geospaziali"
+
+#~ msgid "Provided by:"
+#~ msgstr "Fornito da: "
+
+#~ msgid "No metadata URLs are defined for this layer."
+#~ msgstr "Nessuna URL di metadati è definita per questo layer. "
+
+#~ msgid "Keywords:"
+#~ msgstr "Parole chiave: "
+
+#~ msgid "No keywords are listed for this layer."
+#~ msgstr "Nessuna parola chiave elencata per questo layer."
+
+#~ msgid "Download:"
+#~ msgstr "Scarica:"
+
+#~ msgid "No download URLs are defined for this layer."
+#~ msgstr "Non è stata definita alcuna URL per scaricare il layer."
+
+#~ msgid "Click here for more information about this layer."
+#~ msgstr "Clicca qui per avere più informazioni su questo layer."
+
+#~ msgid "You do not have permission to view or download this layer"
+#~ msgstr "Non hai i permessi per vedere o scaricare questo layer"
+
+#~ msgid "Contact:"
+#~ msgstr "Contatto: "
+
+#~ msgid ""
+#~ "\n"
+#~ "                %(age)s ago\n"
+#~ "                "
+#~ msgstr ""
+#~ "\n"
+#~ "%(age)s fa"
+
+#~ msgid "Rate this map"
+#~ msgstr "Giudica questa mappa"
+
+#~ msgid "Download all layers included in this map"
+#~ msgstr "Scarica tutti i layer inclusi in questa mappa"
+
+#~ msgid "View or edit this map"
+#~ msgstr "Visualizza o modifica questa mappa"
+
+#~ msgid "Delete map"
+#~ msgstr "Elimina mappa"
+
+#~ msgid "Duplicate map"
+#~ msgstr "Duplica mappa"
+
+#~ msgid "Browse Maps"
+#~ msgstr "Naviga Mappe"
+
+#~ msgid "All Maps"
+#~ msgstr "Tutte le Mappe"
+
+#~ msgid "New Maps"
+#~ msgstr "Nuove Mappe"
+
+#, fuzzy
+#~ msgid "Create"
+#~ msgstr "Crea Mappa"
+
+#~ msgid ""
+#~ "Use GeoNode's Map Composer application to create your own maps.  Add "
+#~ "layers from this GeoNode or remote services, and style them."
+#~ msgstr ""
+#~ "Usa lo strumento di generazione mappe di GeoNode per creare la tua mappa. "
+#~ "Aggiungi layer da questo GeoNode o da servizi remoti ed applica loro uno "
+#~ "stile."
+
+#~ msgid "Create your own map"
+#~ msgstr "Crea la tua mappa"
+
+#~ msgid "for maps"
+#~ msgstr "per mappe"
+
+#~ msgid "Data"
+#~ msgstr "Dati"
+
+#, fuzzy
+#~ msgid "Logged in as:"
+#~ msgstr "Effettua nuovamente il login"
+
+#~ msgid "OGC Services"
+#~ msgstr "OGC Services"
 
 #~ msgid ""
 #~ "You can customize the template to suit your needs. You can add and remove "
@@ -3275,9 +3518,6 @@ msgstr "Crea Mappa"
 #~ msgid "Not member"
 #~ msgstr "Non sei un utente registrato"
 
-#~ msgid "Create Maps"
-#~ msgstr "Crea Mappe"
-
 #~ msgid "Click the <b>+</b> on any row to show map abstract."
 #~ msgstr ""
 #~ "Clicca il <b>+</b>o una qualunque riga per mostrare l'abstract della "
@@ -3299,9 +3539,6 @@ msgstr "Crea Mappa"
 #~ msgid "Upload New Image"
 #~ msgstr "Carica una nuova immagine"
 
-#~ msgid "Layer Information"
-#~ msgstr "Informazioni supplementari"
-
 #~ msgid "Editing details for "
 #~ msgstr "Modifica dettagli per"
 
@@ -3315,9 +3552,6 @@ msgstr "Crea Mappa"
 #~ msgstr ""
 #~ "\n"
 #~ "%(age)s fa"
-
-#~ msgid "This map uses the following layers"
-#~ msgstr "Questa mappa utilizza i seguenti layer"
 
 #~ msgid "Select what kind of privileges to allow."
 #~ msgstr "Seleziona che tipo di privilegi garantire"
