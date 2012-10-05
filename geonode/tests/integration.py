@@ -242,6 +242,15 @@ class GeoNodeMapTest(TestCase):
         self.assertEqual(uploaded.abstract, 'Airport Runways',
             'Expected specific abstract from uploaded layer XML metadata')
 
+        self.assertEqual(uploaded.purpose,
+            'To show the location of Public Airports '\
+            'and Runways within San Diego County',
+            'Expected specific purpose from uploaded layer XML metadata')
+
+        assert uploaded.supplemental_information is None, \
+            'Expected specific supplemental information '\
+            'from uploaded layer XML metadata'
+
         self.assertEqual(len(uploaded.keyword_list()), 5,
             'Expected specific number of keywords from uploaded layer XML metadata')
 
