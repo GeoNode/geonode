@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-05 22:23-0700\n"
+"POT-Creation-Date: 2012-10-05 22:53-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1201,30 +1201,6 @@ msgstr ""
 msgid "Zimbabwe"
 msgstr ""
 
-#: layers/models.py:74
-msgid "GeoNode needs at least one admin/superuser set"
-msgstr ""
-
-#: layers/models.py:108
-msgid "No title provided"
-msgstr ""
-
-#: layers/models.py:109 layers/models.py:602
-msgid "No abstract provided"
-msgstr ""
-
-#: layers/models.py:161
-msgid "Creation"
-msgstr ""
-
-#: layers/models.py:161
-msgid "Publication"
-msgstr ""
-
-#: layers/models.py:161
-msgid "Revision"
-msgstr ""
-
 #: layers/models.py:168 security/models.py:55
 msgid "title"
 msgstr ""
@@ -1582,7 +1558,7 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: layers/templates/layers/_actions.html:5
+#: layers/templates/layers/_actions.html:5 templates/_actions.html:5
 msgid "Share"
 msgstr ""
 
