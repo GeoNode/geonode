@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-05 22:23-0700\n"
-"PO-Revision-Date: 2012-10-06 05:06+0000\n"
+"POT-Creation-Date: 2012-10-05 22:53-0700\n"
+"PO-Revision-Date: 2012-10-06 05:34+0000\n"
 "Last-Translator: nwang <nwang@opengeo.org>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/"
 "zh/)\n"
@@ -1203,35 +1203,6 @@ msgstr "赞比亚"
 msgid "Zimbabwe"
 msgstr "津巴布韦"
 
-#: layers/models.py:74
-msgid "GeoNode needs at least one admin/superuser set"
-msgstr ""
-
-#: layers/models.py:108
-#, fuzzy
-msgid "No title provided"
-msgstr "无信息提供"
-
-#: layers/models.py:109 layers/models.py:602
-#, fuzzy
-msgid "No abstract provided"
-msgstr "无信息提供"
-
-#: layers/models.py:161
-#, fuzzy
-msgid "Creation"
-msgstr "引用"
-
-#: layers/models.py:161
-#, fuzzy
-msgid "Publication"
-msgstr "皮特凯恩"
-
-#: layers/models.py:161
-#, fuzzy
-msgid "Revision"
-msgstr "留尼汪"
-
 #: layers/models.py:168 security/models.py:55
 msgid "title"
 msgstr "标题"
@@ -1479,16 +1450,15 @@ msgstr "标明属性在identity中显示的顺序"
 
 #: layers/models.py:583
 msgid "For example \"kml\""
-msgstr ""
+msgstr "比如“kml”"
 
 #: layers/models.py:585
-#, fuzzy
 msgid "For example \"View in Google Earth\""
-msgstr "谷歌地球"
+msgstr "比如“在谷歌地球中查看”"
 
 #: layers/models.py:586
 msgid "For example \"text/xml\""
-msgstr ""
+msgstr "比如“text/xml”"
 
 #: layers/models.py:782
 msgid "KML"
@@ -1590,7 +1560,7 @@ msgstr "信息"
 msgid "Attributes"
 msgstr "属性"
 
-#: layers/templates/layers/_actions.html:5
+#: layers/templates/layers/_actions.html:5 templates/_actions.html:5
 msgid "Share"
 msgstr "分享"
 
@@ -2643,16 +2613,15 @@ msgstr ""
 
 #: templates/_actions.html:4
 msgid "Add to Favorites"
-msgstr ""
+msgstr "添加到喜爱"
 
 #: templates/_actions.html:6
-#, fuzzy
 msgid "Rate this Map"
-msgstr "最新地图"
+msgstr "给此地图打分"
 
 #: templates/_comments.html:8
 msgid "Comments"
-msgstr ""
+msgstr "评论"
 
 #: templates/_comments.html:13 templates/pagination/pagination.html:7
 msgid "Previous"
@@ -2664,7 +2633,7 @@ msgstr "下一页"
 
 #: templates/_comments.html:21
 msgid "add comment"
-msgstr ""
+msgstr "添加评论"
 
 #: templates/_permissions_form.html:11
 msgid "Who can view and download this data?"
@@ -2703,26 +2672,24 @@ msgid "Apply Changes"
 msgstr "应用更改"
 
 #: templates/_viewby.html:3
-#, fuzzy
 msgid "View by"
-msgstr "查看详细信息"
+msgstr "查看自"
 
 #: templates/_viewby.html:4
 msgid "Grid"
-msgstr ""
+msgstr "网格"
 
 #: templates/_viewby.html:5
 msgid "List"
-msgstr ""
+msgstr "列"
 
 #: templates/_widget_about_author.html:3
 msgid "About the Layer Owner"
-msgstr ""
+msgstr "关于图层拥有者"
 
 #: templates/_widget_about_author.html:8
-#, fuzzy
 msgid "Read more about the layer owner"
-msgstr "更多关于作者的信息"
+msgstr "更多关于图层拥有者"
 
 #: templates/advanced_search_static.html:4 templates/search.html:4
 msgid "Search Data"
@@ -2737,9 +2704,8 @@ msgid "Search for: "
 msgstr "搜索"
 
 #: templates/advanced_search_static.html:28
-#, fuzzy
 msgid "All of the words"
-msgstr "所有种类"
+msgstr "所有关键词"
 
 #: templates/advanced_search_static.html:34
 #: templates/advanced_search_static.html:113
@@ -2748,26 +2714,23 @@ msgstr "搜索"
 
 #: templates/advanced_search_static.html:37
 msgid "Exclude words from your search"
-msgstr ""
+msgstr "从搜索中排除这些词"
 
 #: templates/advanced_search_static.html:43
-#, fuzzy
 msgid "All categories"
 msgstr "所有种类"
 
 #: templates/advanced_search_static.html:46
-#, fuzzy
 msgid "Maps only"
-msgstr "地图"
+msgstr "仅是地图"
 
 #: templates/advanced_search_static.html:49
-#, fuzzy
 msgid "Layers only"
-msgstr "图层"
+msgstr "仅是图层"
 
 #: templates/advanced_search_static.html:52
 msgid "Groups only"
-msgstr ""
+msgstr "仅是组群"
 
 #: templates/advanced_search_static.html:59
 msgid "Type: "
@@ -2775,33 +2738,31 @@ msgstr "种类"
 
 #: templates/advanced_search_static.html:64
 msgid "From this site/portal"
-msgstr ""
+msgstr "来自这一网址"
 
 #: templates/advanced_search_static.html:70
 msgid "From this group"
-msgstr ""
+msgstr "来自这一组群"
 
 #: templates/advanced_search_static.html:76
-#, fuzzy
 msgid "From this organization"
-msgstr "命名有关责任组织"
+msgstr "来自这一组织"
 
 #: templates/advanced_search_static.html:82
 msgid "From this geographic region"
-msgstr ""
+msgstr "来自这一地区"
 
 #: templates/advanced_search_static.html:92
 msgid "Metadata: "
 msgstr "元数据"
 
 #: templates/advanced_search_static.html:97
-#, fuzzy
 msgid "Since this date"
-msgstr "CSW 插入日期"
+msgstr "开始日期"
 
 #: templates/advanced_search_static.html:103
 msgid "Until this date"
-msgstr ""
+msgstr "结束日期"
 
 #: templates/advanced_search_static.html:114
 msgid "Clear Options "
@@ -3313,5 +3274,20 @@ msgstr "下一个 &gt;"
 msgid "Save Upload"
 msgstr "保存上传"
 
-#~ msgid "About the Author"
-#~ msgstr "作者信息"
+#~ msgid "GeoNode needs at least one admin/superuser set"
+#~ msgstr "GeoNode需要至少一个管理员"
+
+#~ msgid "No title provided"
+#~ msgstr "没有标题"
+
+#~ msgid "No abstract provided"
+#~ msgstr "没有摘要"
+
+#~ msgid "Creation"
+#~ msgstr "生成"
+
+#~ msgid "Publication"
+#~ msgstr "发表"
+
+#~ msgid "Revision"
+#~ msgstr "修改"
