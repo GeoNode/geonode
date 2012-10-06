@@ -71,7 +71,7 @@ class LayerManager(models.Manager):
         # this assumes there is at least one superuser
         superusers = User.objects.filter(is_superuser=True).order_by('id')
         if superusers.count() == 0:
-            raise RuntimeError(_('GeoNode needs at least one admin/superuser set'))
+            raise RuntimeError('GeoNode needs at least one admin/superuser set')
 
         contact = Contact.objects.get_or_create(user=superusers[0],
                                                 defaults={"name": "Geonode Admin"})[0]
@@ -105,8 +105,8 @@ class LayerManager(models.Manager):
                     "store": store.name,
                     "storeType": store.resource_type,
                     "typename": "%s:%s" % (workspace.name, resource.name),
-                    "title": resource.title or _('No title provided'),
-                    "abstract": resource.abstract or _('No abstract provided'),
+                    "title": resource.title or 'No title provided',
+                    "abstract": resource.abstract or 'No abstract provided',
                     "owner": owner,
                     "uuid": str(uuid.uuid4())
                 })
@@ -158,7 +158,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     Base Resource Object loosely based on ISO 19115:2003
     """
 
-    VALID_DATE_TYPES = [(x.lower(), _(x)) for x in [_('Creation'), _('Publication'), _('Revision')]]
+    VALID_DATE_TYPES = [(x.lower(), _(x)) for x in ['Creation', 'Publication', 'Revision']] 
 
     # internal fields
     uuid = models.CharField(max_length=36)
@@ -599,7 +599,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
 
 def pre_save_layer(instance, sender, **kwargs):
     if instance.abstract == '' or instance.abstract is None:
-        instance.abstract = _('No abstract provided')
+        instance.abstract = 'No abstract provided'
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 
