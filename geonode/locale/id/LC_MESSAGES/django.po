@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-04 20:23-0700\n"
+"POT-Creation-Date: 2012-10-05 21:54-0700\n"
 "PO-Revision-Date: 2012-09-13 04:27+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: id\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: utils.py:232 security/models.py:34
@@ -1455,7 +1455,7 @@ msgstr ""
 msgid "KML"
 msgstr "KML"
 
-#: layers/models.py:796
+#: layers/models.py:796 layers/templates/layers/layer_detail.html:254
 msgid "View in Google Earth"
 msgstr "Tampilkan di Google Earth"
 
@@ -1543,6 +1543,24 @@ msgstr "Anda tidak diijinkan untuk melihat layer peta ini"
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Autorisasi HTTP salah"
 
+#: layers/templates/layers/_actions.html:3
+msgid "Info"
+msgstr ""
+
+#: layers/templates/layers/_actions.html:4
+#: layers/templates/layers/layer_detail.html:143
+#: layers/templates/layers/layer_metadata.html:30
+msgid "Attributes"
+msgstr "Atribut"
+
+#: layers/templates/layers/_actions.html:5
+msgid "Share"
+msgstr ""
+
+#: layers/templates/layers/_actions.html:6
+msgid "Flag"
+msgstr ""
+
 #: layers/templates/layers/_layer_filters.html:5
 msgid "Most recent"
 msgstr ""
@@ -1565,9 +1583,48 @@ msgstr ""
 msgid "No Image Available"
 msgstr ""
 
+#: layers/templates/layers/_layer_list_item.html:11
+#: maps/templates/maps/map_download.html:65
+msgid "Download"
+msgstr "Unduh"
+
+#: layers/templates/layers/_layer_list_item.html:15
+msgid "view"
+msgstr ""
+
+#: layers/templates/layers/_layer_list_item.html:15
+#: layers/templates/layers/_layer_widget_item.html:11
+#, fuzzy
+msgid "Average rating"
+msgstr "Argentina"
+
+#: layers/templates/layers/_layer_widget_item.html:11
+#, python-format
+msgid "view%(layer.popular_count|pluralize)s"
+msgstr ""
+
 #: layers/templates/layers/layer_base.html:5
 msgid "Browse Data"
 msgstr "Browse Data"
+
+#: layers/templates/layers/layer_base.html:13
+#: layers/templates/layers/layer_list.html:9
+#: layers/templates/layers/layer_list.html:15 templates/index.html:25
+#, fuzzy
+msgid "Explore Layers"
+msgstr "Telusuri Peta"
+
+#: layers/templates/layers/layer_base.html:14
+#: layers/templates/layers/layer_search.html:6
+#, fuzzy
+msgid "Search Layers"
+msgstr "Cari Peta"
+
+#: layers/templates/layers/layer_base.html:15
+#: layers/templates/layers/layer_upload.html:25
+#, fuzzy
+msgid "Upload Layers"
+msgstr "Unggah Layer"
 
 #: layers/templates/layers/layer_change_poc.html:5 templates/base.html:119
 msgid "Home"
@@ -1577,6 +1634,15 @@ msgstr "Beranda"
 #: layers/templates/layers/layer_change_poc.html:7
 msgid "Change point of contact"
 msgstr "Ubah Kontak"
+
+#: layers/templates/layers/layer_change_poc.html:10
+msgid "Assign a new point of contact to the layers below:"
+msgstr ""
+
+#: layers/templates/layers/layer_change_poc.html:17
+#: people/templates/people/forgot_username_form.html:18
+msgid "Submit"
+msgstr "Proses"
 
 #: layers/templates/layers/layer_detail.html:32
 #: layers/templates/layers/layer_detail.html:232
@@ -1595,6 +1661,25 @@ msgstr ""
 #, fuzzy
 msgid "Edit Layer"
 msgstr "Ubah Layer"
+
+#: layers/templates/layers/layer_detail.html:62
+#, fuzzy
+msgid "Edit Metadata"
+msgstr "Link Metadata:"
+
+#: layers/templates/layers/layer_detail.html:63
+#, fuzzy
+msgid "Edit Styles"
+msgstr "Penampilan"
+
+#: layers/templates/layers/layer_detail.html:64
+#, fuzzy
+msgid "Edit Permissions"
+msgstr "Ubah izin"
+
+#: layers/templates/layers/layer_detail.html:65
+msgid "Remove this Layer"
+msgstr ""
 
 #: layers/templates/layers/layer_detail.html:81
 #: layers/templates/layers/layer_detail_static.html:36
@@ -1640,10 +1725,6 @@ msgstr "SRS Asli"
 #: layers/templates/layers/layer_detail.html:136
 msgid "No SRS specified."
 msgstr "Tidak ada SRS ditentukan"
-
-#: layers/templates/layers/layer_detail.html:143
-msgid "Attributes"
-msgstr "Atribut"
 
 #: layers/templates/layers/layer_detail.html:148
 #, fuzzy
@@ -1754,11 +1835,21 @@ msgstr ""
 "menampilkannya di bagian sebelah kiri. Tekan nama jenis tampilan untuk "
 "melihat atau mengubah jenis tampilan."
 
-#: layers/templates/layers/layer_list.html:9
-#: layers/templates/layers/layer_list.html:15 templates/index.html:25
-#, fuzzy
-msgid "Explore Layers"
-msgstr "Telusuri Peta"
+#: layers/templates/layers/layer_list.html:31
+msgid "Categories"
+msgstr ""
+
+#: layers/templates/layers/layer_list.html:34
+msgid "All Categories"
+msgstr ""
+
+#: layers/templates/layers/layer_list.html:41
+msgid "Keywords"
+msgstr "Kata Kunci"
+
+#: layers/templates/layers/layer_list.html:59
+msgid "No data found"
+msgstr ""
 
 #: layers/templates/layers/layer_metadata.html:17
 #, python-format
@@ -1766,6 +1857,15 @@ msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
+msgstr ""
+
+#: layers/templates/layers/layer_metadata.html:22
+msgid ""
+"Note: this layer's orginal metadata was populated by importing a metadata "
+"XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
+"        Some of your original metadata may have been lost."
 msgstr ""
 
 #: layers/templates/layers/layer_metadata.html:32
@@ -1861,15 +1961,14 @@ msgstr "Tidak ada peta yang menggunakan layer ini."
 msgid "Supported Formats"
 msgstr "Format yang didukung"
 
-#: layers/templates/layers/layer_search.html:6
-#, fuzzy
-msgid "Search Layers"
-msgstr "Cari Peta"
-
 #: layers/templates/layers/layer_search.html:14
 #, fuzzy
 msgid "Search for Layers"
 msgstr "Cari Peta"
+
+#: layers/templates/layers/layer_search.html:19 templates/base.html:131
+msgid "Search"
+msgstr "Cari"
 
 #: layers/templates/layers/layer_search.html:26 maps/models.py:58
 #: maps/templates/maps/map_search.html:24
@@ -1936,11 +2035,6 @@ msgstr ""
 
 #: layers/templates/layers/layer_upload.html:6
 msgid "Upload Layer"
-msgstr "Unggah Layer"
-
-#: layers/templates/layers/layer_upload.html:25
-#, fuzzy
-msgid "Upload Layers"
 msgstr "Unggah Layer"
 
 #: layers/templates/layers/layer_upload.html:34
@@ -2104,10 +2198,6 @@ msgstr "Unggah versi terbaru dari data"
 #, fuzzy
 msgid "Create a New Map"
 msgstr "Buat peta baru"
-
-#: maps/templates/maps/map_download.html:65
-msgid "Download"
-msgstr "Unduh"
 
 #: maps/templates/maps/map_download.html:67
 msgid ""
@@ -2466,10 +2556,6 @@ msgid ""
 "sent to you."
 msgstr ""
 
-#: people/templates/people/forgot_username_form.html:18
-msgid "Submit"
-msgstr "Proses"
-
 #: security/models.py:37
 msgid "Invalid permission level."
 msgstr "Ijin level tidak benar"
@@ -2655,10 +2741,6 @@ msgstr "Daftar"
 #: templates/base.html:128
 msgid "Profiles"
 msgstr ""
-
-#: templates/base.html:131
-msgid "Search"
-msgstr "Cari"
 
 #: templates/base.html:164
 msgid "Powered by"
@@ -3154,9 +3236,6 @@ msgstr "Unggah"
 #~ msgid "developer page"
 #~ msgstr "Halaman Pengembang"
 
-#~ msgid "Keywords"
-#~ msgstr "Kata Kunci"
-
 #~ msgid "Edition"
 #~ msgstr "Edisi"
 
@@ -3207,9 +3286,6 @@ msgstr "Unggah"
 
 #~ msgid "Remove"
 #~ msgstr "Hapus"
-
-#~ msgid "Edit permissions"
-#~ msgstr "Ubah izin"
 
 #~ msgid "Add data"
 #~ msgstr "Tambah data"

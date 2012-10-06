@@ -8,15 +8,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-04 20:23-0700\n"
+"POT-Creation-Date: 2012-10-05 21:54-0700\n"
 "PO-Revision-Date: 2012-09-13 05:03+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/geonode/"
 "language/ja/)\n"
-"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: utils.py:232 security/models.py:34
@@ -1452,7 +1452,7 @@ msgstr ""
 msgid "KML"
 msgstr ""
 
-#: layers/models.py:796
+#: layers/models.py:796 layers/templates/layers/layer_detail.html:254
 msgid "View in Google Earth"
 msgstr ""
 
@@ -1538,6 +1538,24 @@ msgstr ""
 msgid "Bad HTTP Authorization Credentials."
 msgstr ""
 
+#: layers/templates/layers/_actions.html:3
+msgid "Info"
+msgstr ""
+
+#: layers/templates/layers/_actions.html:4
+#: layers/templates/layers/layer_detail.html:143
+#: layers/templates/layers/layer_metadata.html:30
+msgid "Attributes"
+msgstr ""
+
+#: layers/templates/layers/_actions.html:5
+msgid "Share"
+msgstr ""
+
+#: layers/templates/layers/_actions.html:6
+msgid "Flag"
+msgstr ""
+
 #: layers/templates/layers/_layer_filters.html:5
 msgid "Most recent"
 msgstr ""
@@ -1560,8 +1578,43 @@ msgstr ""
 msgid "No Image Available"
 msgstr ""
 
+#: layers/templates/layers/_layer_list_item.html:11
+#: maps/templates/maps/map_download.html:65
+msgid "Download"
+msgstr ""
+
+#: layers/templates/layers/_layer_list_item.html:15
+msgid "view"
+msgstr ""
+
+#: layers/templates/layers/_layer_list_item.html:15
+#: layers/templates/layers/_layer_widget_item.html:11
+msgid "Average rating"
+msgstr ""
+
+#: layers/templates/layers/_layer_widget_item.html:11
+#, python-format
+msgid "view%(layer.popular_count|pluralize)s"
+msgstr ""
+
 #: layers/templates/layers/layer_base.html:5
 msgid "Browse Data"
+msgstr ""
+
+#: layers/templates/layers/layer_base.html:13
+#: layers/templates/layers/layer_list.html:9
+#: layers/templates/layers/layer_list.html:15 templates/index.html:25
+msgid "Explore Layers"
+msgstr ""
+
+#: layers/templates/layers/layer_base.html:14
+#: layers/templates/layers/layer_search.html:6
+msgid "Search Layers"
+msgstr ""
+
+#: layers/templates/layers/layer_base.html:15
+#: layers/templates/layers/layer_upload.html:25
+msgid "Upload Layers"
 msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:5 templates/base.html:119
@@ -1571,6 +1624,15 @@ msgstr ""
 #: layers/templates/layers/layer_change_poc.html:5
 #: layers/templates/layers/layer_change_poc.html:7
 msgid "Change point of contact"
+msgstr ""
+
+#: layers/templates/layers/layer_change_poc.html:10
+msgid "Assign a new point of contact to the layers below:"
+msgstr ""
+
+#: layers/templates/layers/layer_change_poc.html:17
+#: people/templates/people/forgot_username_form.html:18
+msgid "Submit"
 msgstr ""
 
 #: layers/templates/layers/layer_detail.html:32
@@ -1587,6 +1649,22 @@ msgstr ""
 
 #: layers/templates/layers/layer_detail.html:57
 msgid "Edit Layer"
+msgstr ""
+
+#: layers/templates/layers/layer_detail.html:62
+msgid "Edit Metadata"
+msgstr ""
+
+#: layers/templates/layers/layer_detail.html:63
+msgid "Edit Styles"
+msgstr ""
+
+#: layers/templates/layers/layer_detail.html:64
+msgid "Edit Permissions"
+msgstr ""
+
+#: layers/templates/layers/layer_detail.html:65
+msgid "Remove this Layer"
 msgstr ""
 
 #: layers/templates/layers/layer_detail.html:81
@@ -1631,10 +1709,6 @@ msgstr ""
 
 #: layers/templates/layers/layer_detail.html:136
 msgid "No SRS specified."
-msgstr ""
-
-#: layers/templates/layers/layer_detail.html:143
-msgid "Attributes"
 msgstr ""
 
 #: layers/templates/layers/layer_detail.html:148
@@ -1730,9 +1804,20 @@ msgid ""
 "the style."
 msgstr ""
 
-#: layers/templates/layers/layer_list.html:9
-#: layers/templates/layers/layer_list.html:15 templates/index.html:25
-msgid "Explore Layers"
+#: layers/templates/layers/layer_list.html:31
+msgid "Categories"
+msgstr ""
+
+#: layers/templates/layers/layer_list.html:34
+msgid "All Categories"
+msgstr ""
+
+#: layers/templates/layers/layer_list.html:41
+msgid "Keywords"
+msgstr ""
+
+#: layers/templates/layers/layer_list.html:59
+msgid "No data found"
 msgstr ""
 
 #: layers/templates/layers/layer_metadata.html:17
@@ -1741,6 +1826,15 @@ msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
+msgstr ""
+
+#: layers/templates/layers/layer_metadata.html:22
+msgid ""
+"Note: this layer's orginal metadata was populated by importing a metadata "
+"XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
+"        Some of your original metadata may have been lost."
 msgstr ""
 
 #: layers/templates/layers/layer_metadata.html:32
@@ -1826,12 +1920,12 @@ msgstr ""
 msgid "Supported Formats"
 msgstr ""
 
-#: layers/templates/layers/layer_search.html:6
-msgid "Search Layers"
-msgstr ""
-
 #: layers/templates/layers/layer_search.html:14
 msgid "Search for Layers"
+msgstr ""
+
+#: layers/templates/layers/layer_search.html:19 templates/base.html:131
+msgid "Search"
 msgstr ""
 
 #: layers/templates/layers/layer_search.html:26 maps/models.py:58
@@ -1897,10 +1991,6 @@ msgstr ""
 
 #: layers/templates/layers/layer_upload.html:6
 msgid "Upload Layer"
-msgstr ""
-
-#: layers/templates/layers/layer_upload.html:25
-msgid "Upload Layers"
 msgstr ""
 
 #: layers/templates/layers/layer_upload.html:34
@@ -2057,10 +2147,6 @@ msgstr ""
 
 #: maps/templates/maps/map_detail.html:86 maps/templates/maps/map_list.html:16
 msgid "Create a New Map"
-msgstr ""
-
-#: maps/templates/maps/map_download.html:65
-msgid "Download"
 msgstr ""
 
 #: maps/templates/maps/map_download.html:67
@@ -2420,10 +2506,6 @@ msgid ""
 "sent to you."
 msgstr ""
 
-#: people/templates/people/forgot_username_form.html:18
-msgid "Submit"
-msgstr ""
-
 #: security/models.py:37
 msgid "Invalid permission level."
 msgstr ""
@@ -2598,10 +2680,6 @@ msgstr ""
 
 #: templates/base.html:128
 msgid "Profiles"
-msgstr ""
-
-#: templates/base.html:131
-msgid "Search"
 msgstr ""
 
 #: templates/base.html:164
