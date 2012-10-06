@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-05 22:23-0700\n"
-"PO-Revision-Date: 2012-10-06 05:00+0000\n"
+"POT-Creation-Date: 2012-10-05 22:53-0700\n"
+"PO-Revision-Date: 2012-10-06 05:30+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1201,33 +1201,6 @@ msgstr "Sambia"
 msgid "Zimbabwe"
 msgstr "Simbabwe"
 
-#: layers/models.py:74
-msgid "GeoNode needs at least one admin/superuser set"
-msgstr ""
-
-#: layers/models.py:108
-msgid "No title provided"
-msgstr ""
-
-#: layers/models.py:109 layers/models.py:602
-msgid "No abstract provided"
-msgstr ""
-
-#: layers/models.py:161
-#, fuzzy
-msgid "Creation"
-msgstr "Zitierung"
-
-#: layers/models.py:161
-#, fuzzy
-msgid "Publication"
-msgstr "Pitcairn"
-
-#: layers/models.py:161
-#, fuzzy
-msgid "Revision"
-msgstr "Reunion"
-
 #: layers/models.py:168 security/models.py:55
 msgid "title"
 msgstr "Titel"
@@ -1478,9 +1451,8 @@ msgid "For example \"kml\""
 msgstr ""
 
 #: layers/models.py:585
-#, fuzzy
 msgid "For example \"View in Google Earth\""
-msgstr "Ansicht in Google Earth"
+msgstr ""
 
 #: layers/models.py:586
 msgid "For example \"text/xml\""
@@ -1586,7 +1558,7 @@ msgstr ""
 msgid "Attributes"
 msgstr "Attribute"
 
-#: layers/templates/layers/_actions.html:5
+#: layers/templates/layers/_actions.html:5 templates/_actions.html:5
 msgid "Share"
 msgstr ""
 
@@ -2628,9 +2600,8 @@ msgid "Add to Favorites"
 msgstr ""
 
 #: templates/_actions.html:6
-#, fuzzy
 msgid "Rate this Map"
-msgstr "Karte erstellen"
+msgstr ""
 
 #: templates/_comments.html:8
 msgid "Comments"
@@ -2685,9 +2656,8 @@ msgid "Apply Changes"
 msgstr ""
 
 #: templates/_viewby.html:3
-#, fuzzy
 msgid "View by"
-msgstr "Ansichtsinformation"
+msgstr ""
 
 #: templates/_viewby.html:4
 msgid "Grid"
@@ -2735,14 +2705,12 @@ msgid "All categories"
 msgstr ""
 
 #: templates/advanced_search_static.html:46
-#, fuzzy
 msgid "Maps only"
-msgstr "Karten"
+msgstr ""
 
 #: templates/advanced_search_static.html:49
-#, fuzzy
 msgid "Layers only"
-msgstr "Ebenen"
+msgstr ""
 
 #: templates/advanced_search_static.html:52
 msgid "Groups only"
