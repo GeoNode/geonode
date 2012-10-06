@@ -38,7 +38,6 @@ urlpatterns = patterns('geonode.layers.views',
   url(r'^(?P<layername>[^/]*)/replace$', 'layer_replace', name="layer_replace"),
   url(r'^(?P<layername>[^/]*)/style$', 'layer_style', name="layer_style"),
   url(r'^(?P<layername>[^/]*)/permissions$', 'layer_permissions', name='layer_permissions'),
-    url(r'^(?P<layername>[^/]*)/attributes', 'layer_attributes', name='layer_attributes'),
   #url(r'^api/batch_permissions/?$', 'batch_permissions', name='batch_permssions'),
   #url(r'^api/batch_delete/?$', 'batch_delete', name='batch_delete'),
 )
