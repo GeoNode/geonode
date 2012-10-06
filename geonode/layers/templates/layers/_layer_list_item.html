@@ -8,10 +8,10 @@
       <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
   </a>
   <div class="details">
-    <a href="#" class="btn btn-info download">Download</a>
+    <a href="#" class="btn btn-info download">{% trans "Download" %}</a>
     <a href="{% url "layer_detail" layer.typename %}"><h3>{{ layer.title }}</h3></a>
     <div class="meta">by <a href="{% url "profile_detail" layer.owner.username %}">{{ layer.owner }}</a>, {{ layer.date|timesince }} ago</div>
     <p class="abstract">{{ layer.abstract }}</p>
-    <p class="activity">{{ layer.popular_count }} view{{ layer.popular_count|pluralize }} | <span class="avg_rating" data-rating="{{ layer_rating }}">Average rating <span class="overall_rating"></span></span></p>
+    <p class="activity">{{ layer.popular_count }} {% trans "view" %}{{ layer.popular_count|pluralize }} | <span class="avg_rating" data-rating="{{ layer_rating }}">{% trans "Average rating" %} <span class="overall_rating"></span></span></p>
   </div>
 </article>
