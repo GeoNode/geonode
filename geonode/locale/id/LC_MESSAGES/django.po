@@ -1,13 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-05 21:53-0700\n"
+"POT-Creation-Date: 2012-10-05 22:23-0700\n"
 "PO-Revision-Date: 2012-10-06 05:00+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -218,8 +218,7 @@ msgstr ""
 
 #: layers/enumerations.py:99
 msgid ""
-"information used for appropriate actions for future use of the           "
-"land"
+"information used for appropriate actions for future use of the           land"
 msgstr ""
 
 #: layers/enumerations.py:101
@@ -1202,6 +1201,33 @@ msgstr "Zambia"
 msgid "Zimbabwe"
 msgstr "Zimbabwe"
 
+#: layers/models.py:74
+msgid "GeoNode needs at least one admin/superuser set"
+msgstr ""
+
+#: layers/models.py:108
+msgid "No title provided"
+msgstr ""
+
+#: layers/models.py:109 layers/models.py:602
+msgid "No abstract provided"
+msgstr ""
+
+#: layers/models.py:161
+#, fuzzy
+msgid "Creation"
+msgstr "Sitasi"
+
+#: layers/models.py:161
+#, fuzzy
+msgid "Publication"
+msgstr "Pitcairn "
+
+#: layers/models.py:161
+#, fuzzy
+msgid "Revision"
+msgstr "Reunion"
+
 #: layers/models.py:168 security/models.py:55
 msgid "title"
 msgstr "Judul "
@@ -1321,8 +1347,8 @@ msgstr "kategori_topik"
 
 #: layers/models.py:192
 msgid ""
-"high-level geographic data thematic classification to assist in the grouping"
-" and search of available geographic data sets."
+"high-level geographic data thematic classification to assist in the grouping "
+"and search of available geographic data sets."
 msgstr ""
 
 #: layers/models.py:195
@@ -1447,6 +1473,19 @@ msgid ""
 "results"
 msgstr ""
 
+#: layers/models.py:583
+msgid "For example \"kml\""
+msgstr ""
+
+#: layers/models.py:585
+#, fuzzy
+msgid "For example \"View in Google Earth\""
+msgstr "Tampilkan di Google Earth"
+
+#: layers/models.py:586
+msgid "For example \"text/xml\""
+msgstr ""
+
 #: layers/models.py:782
 msgid "KML"
 msgstr "KML"
@@ -1495,7 +1534,9 @@ msgstr "PNG"
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
-msgstr "Terdapat kesalahan saat melakukan unggah data anda. Silakan coba lagi atau hubungi administrator jika permasalahan masih berlanjut"
+msgstr ""
+"Terdapat kesalahan saat melakukan unggah data anda. Silakan coba lagi atau "
+"hubungi administrator jika permasalahan masih berlanjut"
 
 #: layers/views.py:71 maps/views.py:62
 msgid "No Permissions"
@@ -1537,7 +1578,7 @@ msgstr "Anda tidak diijinkan untuk melihat layer peta ini"
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Autorisasi HTTP salah"
 
-#: layers/templates/layers/_actions.html:3
+#: layers/templates/layers/_actions.html:3 templates/_actions.html:3
 msgid "Info"
 msgstr ""
 
@@ -1829,8 +1870,10 @@ msgstr ""
 
 #: layers/templates/layers/layer_metadata.html:22
 msgid ""
-"Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
+"Note: this layer's orginal metadata was populated by importing a metadata "
+"XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
 
@@ -1897,15 +1940,26 @@ msgstr "Form ini mengijinkan anda untuk mengubah data dari layer."
 #: layers/templates/layers/layer_replace.html:157
 msgid ""
 "\n"
-"If the new dataset omits attributes that were included in the previous version,\n"
+"If the new dataset omits attributes that were included in the previous "
+"version,\n"
 "or changes their types, then existing styles for the layer may not work.\n"
-"Please check your maps if the new data includes such changes.  Additionally,\n"
+"Please check your maps if the new data includes such changes.  "
+"Additionally,\n"
 "updated data must be the same format as the data already in place, e.g.\n"
-msgstr "\nJika dataset baru menghilangkan atribut yang disertakan pada versi sebelumnya,\natau mengubah tipe, maka tampilan yang sudah ada pada layer tidak akan berfungsi.\nSilahkan periksa peta anda jika data baru berbeda. Selain itu, \nData terbaru harus sama dengan format data yang tersedia sebelumnya, misalnya.\n"
+msgstr ""
+"\n"
+"Jika dataset baru menghilangkan atribut yang disertakan pada versi "
+"sebelumnya,\n"
+"atau mengubah tipe, maka tampilan yang sudah ada pada layer tidak akan "
+"berfungsi.\n"
+"Silahkan periksa peta anda jika data baru berbeda. Selain itu, \n"
+"Data terbaru harus sama dengan format data yang tersedia sebelumnya, "
+"misalnya.\n"
 
 #: layers/templates/layers/layer_replace.html:165
 msgid "Select a layer data file and submit the form to begin the transfer."
-msgstr "Pilih sebuah file layer dan tekan tombol untuk memulai melakukan transfer."
+msgstr ""
+"Pilih sebuah file layer dan tekan tombol untuk memulai melakukan transfer."
 
 #: layers/templates/layers/layer_replace.html:173
 msgid "No maps are using this layer."
@@ -1958,15 +2012,16 @@ msgstr "Berdasarkan area"
 
 #: layers/templates/layers/layer_search.html:55
 msgid "Limit the search to data that includes features in the displayed area."
-msgstr "Batasi pencarian pada data yang memiliki feature di dalam area yang ditampilkan."
+msgstr ""
+"Batasi pencarian pada data yang memiliki feature di dalam area yang "
+"ditampilkan."
 
 #: layers/templates/layers/layer_search.html:62
 msgid "Selected Data"
 msgstr ""
 
 #: layers/templates/layers/layer_search.html:63
-msgid ""
-"Use the checkboxes in the search results to add data to your selection."
+msgid "Use the checkboxes in the search results to add data to your selection."
 msgstr "Gunakan checkbox pada hasil pencarian untuk menambah data "
 
 #: layers/templates/layers/layer_search.html:69
@@ -1992,8 +2047,8 @@ msgstr "Unggah Layer"
 #: layers/templates/layers/layer_upload.html:34
 msgid ""
 "GeoNode can import GeoTIFF and Shapefile data. To import a shapefile, first "
-"pick its file with the .shp extension. You will then be prompted to pick the"
-" other component files."
+"pick its file with the .shp extension. You will then be prompted to pick the "
+"other component files."
 msgstr ""
 
 #: maps/models.py:61
@@ -2157,7 +2212,8 @@ msgstr ""
 #: maps/templates/maps/map_download.html:85
 msgid ""
 "\n"
-"        Additionally, the map contains these layers which will not be downloaded\n"
+"        Additionally, the map contains these layers which will not be "
+"downloaded\n"
 "        due to security restrictions:\n"
 "      "
 msgstr ""
@@ -2221,8 +2277,8 @@ msgstr ""
 
 #: people/enumerations.py:40
 msgid ""
-"party who has processed the data in a manner such that the resource has been"
-" modified"
+"party who has processed the data in a manner such that the resource has been "
+"modified"
 msgstr ""
 
 #: people/enumerations.py:41
@@ -2262,8 +2318,7 @@ msgid "party that owns the resource"
 msgstr ""
 
 #: people/enumerations.py:49
-msgid ""
-"key party responsible for gathering information and conducting research"
+msgid "key party responsible for gathering information and conducting research"
 msgstr ""
 
 #: people/forms.py:32
@@ -2498,8 +2553,8 @@ msgstr ""
 
 #: people/templates/people/forgot_username_form.html:10
 msgid ""
-"Enter your email address and click the submit button.  Your username will be"
-" sent to you."
+"Enter your email address and click the submit button.  Your username will be "
+"sent to you."
 msgstr ""
 
 #: security/models.py:37
@@ -2527,7 +2582,10 @@ msgid ""
 "\n"
 "          You are not allowed to perform this operation.  \n"
 "      "
-msgstr "\n          Anda tidak diijinkan untuk melakukan operasi ini.  \n      "
+msgstr ""
+"\n"
+"          Anda tidak diijinkan untuk melakukan operasi ini.  \n"
+"      "
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
@@ -2544,7 +2602,8 @@ msgstr "Halaman tidak ditemukan"
 #: templates/404.html:6
 msgid ""
 "\n"
-"      The page you requested does not exist.  Perhaps you are using an outdated bookmark?\n"
+"      The page you requested does not exist.  Perhaps you are using an "
+"outdated bookmark?\n"
 "  "
 msgstr ""
 
@@ -2555,8 +2614,34 @@ msgstr "Internal Server Error"
 #: templates/500.html:6
 msgid ""
 "\n"
-"      An internal error occurred. Please try again, and if the problem continues, contact your site administrator.\n"
+"      An internal error occurred. Please try again, and if the problem "
+"continues, contact your site administrator.\n"
 "  "
+msgstr ""
+
+#: templates/_actions.html:4
+msgid "Add to Favorites"
+msgstr ""
+
+#: templates/_actions.html:6
+#, fuzzy
+msgid "Rate this Map"
+msgstr "Buat Peta"
+
+#: templates/_comments.html:8
+msgid "Comments"
+msgstr ""
+
+#: templates/_comments.html:13 templates/pagination/pagination.html:7
+msgid "Previous"
+msgstr ""
+
+#: templates/_comments.html:17 templates/pagination/pagination.html:16
+msgid "Next"
+msgstr "Selanjutnya"
+
+#: templates/_comments.html:21
+msgid "add comment"
 msgstr ""
 
 #: templates/_permissions_form.html:11
@@ -2595,12 +2680,25 @@ msgstr ""
 msgid "Apply Changes"
 msgstr ""
 
+#: templates/_viewby.html:3
+#, fuzzy
+msgid "View by"
+msgstr "Informasi Tampilan"
+
+#: templates/_viewby.html:4
+msgid "Grid"
+msgstr ""
+
+#: templates/_viewby.html:5
+msgid "List"
+msgstr ""
+
 #: templates/_widget_about_author.html:3
-msgid "About the Author"
+msgid "About the Layer Owner"
 msgstr ""
 
 #: templates/_widget_about_author.html:8
-msgid "Read more about this author"
+msgid "Read more about the layer owner"
 msgstr ""
 
 #: templates/advanced_search_static.html:4 templates/search.html:4
@@ -2615,17 +2713,67 @@ msgstr "Pencarian lanjutan"
 msgid "Search for: "
 msgstr ""
 
+#: templates/advanced_search_static.html:28
+msgid "All of the words"
+msgstr ""
+
 #: templates/advanced_search_static.html:34
 #: templates/advanced_search_static.html:113
 msgid "Search "
+msgstr ""
+
+#: templates/advanced_search_static.html:37
+msgid "Exclude words from your search"
+msgstr ""
+
+#: templates/advanced_search_static.html:43
+msgid "All categories"
+msgstr ""
+
+#: templates/advanced_search_static.html:46
+#, fuzzy
+msgid "Maps only"
+msgstr "Peta"
+
+#: templates/advanced_search_static.html:49
+#, fuzzy
+msgid "Layers only"
+msgstr "Layer"
+
+#: templates/advanced_search_static.html:52
+msgid "Groups only"
 msgstr ""
 
 #: templates/advanced_search_static.html:59
 msgid "Type: "
 msgstr ""
 
+#: templates/advanced_search_static.html:64
+msgid "From this site/portal"
+msgstr ""
+
+#: templates/advanced_search_static.html:70
+msgid "From this group"
+msgstr ""
+
+#: templates/advanced_search_static.html:76
+msgid "From this organization"
+msgstr ""
+
+#: templates/advanced_search_static.html:82
+msgid "From this geographic region"
+msgstr ""
+
 #: templates/advanced_search_static.html:92
 msgid "Metadata: "
+msgstr ""
+
+#: templates/advanced_search_static.html:97
+msgid "Since this date"
+msgstr ""
+
+#: templates/advanced_search_static.html:103
+msgid "Until this date"
 msgstr ""
 
 #: templates/advanced_search_static.html:114
@@ -2746,49 +2894,83 @@ msgstr "Bantuan Geonode"
 
 #: templates/help.html:9
 msgid ""
-"This page provides helpful information about how to use the GeoNode. You can"
-" use the sidebar links to navigate to what you want to know."
+"This page provides helpful information about how to use the GeoNode. You can "
+"use the sidebar links to navigate to what you want to know."
 msgstr ""
 
 #: templates/help.html:12
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application allows users to browse existing maps and contribute their own.</p>\n"
+"  <p>The GeoNode provides access to data sets and a map editing application "
+"allows users to browse existing maps and contribute their own.</p>\n"
 "\n"
 "  <h4 id=\"browsing-data\">Browsing Data</h4>\n"
-"  <p>The <a href=\"data\">Data</a> tab allows you to browse data uploaded to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other applications.</p>\n"
+"  <p>The <a href=\"data\">Data</a> tab allows you to browse data uploaded to "
+"this GeoNode.</p>\n"
+"  <p>All data can be downloaded in a variety of formats, for use in other "
+"applications.</p>\n"
 "\n"
 "  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"developer\"> Developer</a> page is the place for developers to get started building applications against the GeoNode. It includes instructions on using the web services, links to the source code of the GeoNode, and information about the open source projects used to create it.</p>\n"
+"  <p>The <a href=\"developer\"> Developer</a> page is the place for "
+"developers to get started building applications against the GeoNode. It "
+"includes instructions on using the web services, links to the source code of "
+"the GeoNode, and information about the open source projects used to create "
+"it.</p>\n"
 "\n"
 "  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</p>\n"
-"  <p>The <a href=\"maps\">Maps</a> tab is a gateway to map exploration on GeoNode.  From here you can <strong>search for a map</strong> or <strong>create a map</strong>, which will open the <a href=\"maps/new\">Map Composer</a>.</p>\n"
+"  <p>The GeoNode allows users to create and share maps with one another.</"
+"p>\n"
+"  <p>The <a href=\"maps\">Maps</a> tab is a gateway to map exploration on "
+"GeoNode.  From here you can <strong>search for a map</strong> or "
+"<strong>create a map</strong>, which will open the <a href=\"maps/new\">Map "
+"Composer</a>.</p>\n"
 "  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode with the Google Earth plugin. To switch to 3D mode select the Google Earth globe logo, the rightmost button on top toolbar. If you do not have the Google Earth plugin installed you will be prompted to install it.</p>\n"
+"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"with the Google Earth plugin. To switch to 3D mode select the Google Earth "
+"globe logo, the rightmost button on top toolbar. If you do not have the "
+"Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"maps\">Contributed Maps</a> tab and click the <a href=\"maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"maps/new\">Map Composer</a> with a base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button located below the Data tab on the left hand side of the screen. This will open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</strong> button. When finished you may hit <strong>Done</strong> to close the dialog and go back to the map.</p>\n"
+"  <p>To create a new map go to the <a href=\"maps\">Contributed Maps</a> tab "
+"and click the <a href=\"maps/new\">create your own map</a> link.</p>\n"
+"  <p>This will take you to the <a href=\"maps/new\">Map Composer</a> with a "
+"base layer loaded.</p>\n"
+"  <p>To add data layers from the GeoNode click on the green plus button "
+"located below the Data tab on the left hand side of the screen. This will "
+"open a dialog listing all the layers available on the GeoNode.</p>\n"
+"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"strong> button. When finished you may hit <strong>Done</strong> to close the "
+"dialog and go back to the map.</p>\n"
 "\n"
 "  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply dragging and dropping their names. The order in the map will be updated to reflect that. To turn a layer's visibility off simply uncheck it, and to remove it entirely select it and hit the red minus button.</p>\n"
+"  <p>Change the display order of the layers listed in the data tab by simply "
+"dragging and dropping their names. The order in the map will be updated to "
+"reflect that. To turn a layer's visibility off simply uncheck it, and to "
+"remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
 "  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time to save it so others can see it.  Click the Save button--the left most icon on the top toolbar, an image of a map with a disk--on the top menu and fill out the title and abstract of the map.</p>\n"
+"  <p>Once a suitable set of layers and zoom level has been found it's time "
+"to save it so others can see it.  Click the Save button--the left most icon "
+"on the top toolbar, an image of a map with a disk--on the top menu and fill "
+"out the title and abstract of the map.</p>\n"
 "\n"
 "  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or blog. To export a map:</p>\n"
+"  <p>Any map from the GeoNode can be embedded for use in another site or "
+"blog. To export a map:</p>\n"
 "  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li>\n"
+"    <li>Select the from the list of maps on the community or map page and "
+"then hit the 'export map' button.</li> \n"
+"    <li>Choose your desired height and width for the widget in the wizard.</"
+"li> \n"
+"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"iFrame-supporting blog post.</li>\n"
 "  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or blog post.</p>\n"
-"  <p>Note that the <a href=\"maps/new\">Map Composer</a> also has a button to export the map. Just be sure to save the map before exporting if there are changes that you want others to see. It exports the last saved version, not the last viewed version.</p>\n"
+"  <p>This will put an interactive widget showing you map in your web page or "
+"blog post.</p>\n"
+"  <p>Note that the <a href=\"maps/new\">Map Composer</a> also has a button "
+"to export the map. Just be sure to save the map before exporting if there "
+"are changes that you want others to see. It exports the last saved version, "
+"not the last viewed version.</p>\n"
 "\n"
 "  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
 "  <p>Any map available can serve as a starting point for a new map.</p>\n"
@@ -2796,12 +2978,100 @@ msgid ""
 "    <li>Open the map in the Map Composer.</li>\n"
 "    <li>Add and remove layers as you like.</li>\n"
 "    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info and tags to reflect the new map.</li>\n"
+"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
+"and tags to reflect the new map.</li>\n"
 "    <li>Save the map.</li>\n"
 "  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a href=\"maps\">Maps</a> tab.</p> \n"
+"  <p>You will be able to see your new map when you search for it from the <a "
+"href=\"maps\">Maps</a> tab.</p> \n"
 "  "
-msgstr "\n  <p>GeoNode merupakan aplikasi untuk melakukan akses dan kontribusi terhadap data set dan peta. Hal ini memungkinan pengguna dapat melihat dan eksplorasi peta dan data set.</p>\n\n  <h4 id=\"browsing-data\">Eksplorasi Data</h4>\n  <p>Menu <a href=\"data\">Data</a> untuk melihat data yang telah diunggah di GeoNode.</p>\n  <p>Seluruh data dapat diunduh dalam berbagai format untuk dapat digunakan pada aplikasi lainnya.</p>\n\n  <h4 id=\"developer-access\">Akses Developer</h4>\n  <p>Halaman <a href=\"developer\"> Developer</a> merupakan tempat untuk para developer dapat memulai membuat aplikasi di GeoNode. Halaman ini memuat instruksi bagaimana menggunakan layanan web (web services), tautan ke kode sumber GeoNode dan informasi mengenai proyek-proyek open source yag digunakan untuk membangun geoNode.</p>\n\n  <h4 id=\"browsing-maps\">Eksplorasi Peta</h4>\n  <p>GeoNode mengizinkan pengguna untuk membuat dan membagi petanya dengan sesama pengguna.</p>\n  <p>Menu <a href=\"maps\">Peta</a> merupakan halam untuk melakukan eksplorasi petad di GeoNode. Anda dapat melakukan <strong>pencarian peta</strong> atau <strong>membuat peta</strong>, yang akan menggunkan <a href=\"maps/new\">Map Composer</a>.</p>\n  <h5>Mode Google Earth</h5>\n  <p>Seluruh peta yang ditampilkan pada editor peta interaktif dapat dilihat dalam mode 3 dimensi (3D) dengan menggunakan Google Earth plugin. Untuk memindahkan ke mode 3D, klik logo Google Earth globe yang terdapat pada bagian paling kanan di toolbar atas. Jika belum memiliki Google Earth plugin, Anda akan diminta untuk melakukan instalasi.</p>\n\n  <h4 id=\"creating-a-map\">Membuat Peta</h4>\n  <p>Untuk membuat peta, navigasi ke halaman <a href=\"maps\">Contributed Maps</a> dan pilih <a href=\"maps/new\">buat peta</a>.</p>\n  <p>Hal ini akan menuju ke halaman <a href=\"maps/new\">Map Composer</a> dengan base layer yang dimuat secara otomatis.</p>\n  <p>Untuk menambah layer dari GeoNode tekan tombol + yang berwarna hijau. hal ini akan menampilkan daftar layer yang tersedia di GeoNode.</p>\n  <p>Untuk menambahkan layer, tekan tombol <strong>Tambah Layer</strong>. Jika telah selesai tekan tombol <strong>Selesai</strong>.</p>\n\n  <h5>Mengurutkan dan menghapus layer</h5>\n  <p>Untuk mengatur urutan layer dapat dilakukan dengan tekan dan geser ke urutan yang diinginkan. Tampilan peta akan disesuaikan sesuai urutan yang telah diatur. Untuk mengatur peta yang ditampilkan, gunakan checkbox pada bagian kiri dari nama layer. Dan untuk menghapus layer tersebut, gunakan tombol - yang berwarna merah.</p>\n\n  <h5>Menyimpan peta</h5>\n  <p>Setelah layer diset, sekarang anda dapat menyimpannya sehingga pengguna yang lain dapat melihat peta tersebut. Klik tombol Simpan pada bagian kiri pada toolbar diatas (bergambar peta dan disket), kemudian isi judul dan anstrak peta.</p>\n\n  <h4 id=\"exporting-a-map\">Ekspor Peta</h4>\n  <p>Peta dari GeoNode dapat disertakan untuk penggunaan lainnya seperti situs web atau blog. Untuk mengekspor peta: </p>\n  <ol>\n    <li>Pilih dari daftar peta pada halaman komunitas atau halaman peta dan klik tombol 'ekspor peta'.</li> \n    <li>Pilih tinggi dan lebar widget.</li> \n    <li>Sunting kode HTML yang disediakan ke halaman HTML atau blog yang mendukung iFrame.</li>\n  </ol>\n  <p>Hal ini akan menyimpan widget interaktif yang menampilkan peta di situs web atau blog yang diinginkan.</p>\n  <p>Ingat bahwa <a href=\"maps/new\">Map Composer</a> juga memiliki tombol untuk mengeskpor peta. Jangan lupa untuk menyimpan peta sebelum diekspor, karena yang disimpan adalah versi yang tersimpan dan bukan versi yang terakhir ditayangkan.</p>\n\n  <h4 id=\"remixing-a-map\">Mengkomposisikan Ulang Peta</h4>\n  <p>Setiap peta dapat dijadikan awal untuk membuat peta baru.</p>\n  <ol>\n    <li>Buka peta pada Map Composer</li>\n    <li>Tambahkan dan Hapus layer sesuai yang anda inginkan.</li>\n    <li>Geser dan perbesar/perkecil untuk memilih area yang diinginkan.</li>\n    <li><strong>PENTING:</strong> Perbaharui judul abstrakm info kontak dan tag yang merefleksikan peta tersebut.</li>\n    <li>Menyimpa peta.</li>\n  </ol>\n  <p>Anda akan dapat melihat peta baru anda melalui menu pencarian di tab <a href=\"maps\">Peta</a>.</p> \n  "
+msgstr ""
+"\n"
+"  <p>GeoNode merupakan aplikasi untuk melakukan akses dan kontribusi "
+"terhadap data set dan peta. Hal ini memungkinan pengguna dapat melihat dan "
+"eksplorasi peta dan data set.</p>\n"
+"\n"
+"  <h4 id=\"browsing-data\">Eksplorasi Data</h4>\n"
+"  <p>Menu <a href=\"data\">Data</a> untuk melihat data yang telah diunggah "
+"di GeoNode.</p>\n"
+"  <p>Seluruh data dapat diunduh dalam berbagai format untuk dapat digunakan "
+"pada aplikasi lainnya.</p>\n"
+"\n"
+"  <h4 id=\"developer-access\">Akses Developer</h4>\n"
+"  <p>Halaman <a href=\"developer\"> Developer</a> merupakan tempat untuk "
+"para developer dapat memulai membuat aplikasi di GeoNode. Halaman ini memuat "
+"instruksi bagaimana menggunakan layanan web (web services), tautan ke kode "
+"sumber GeoNode dan informasi mengenai proyek-proyek open source yag "
+"digunakan untuk membangun geoNode.</p>\n"
+"\n"
+"  <h4 id=\"browsing-maps\">Eksplorasi Peta</h4>\n"
+"  <p>GeoNode mengizinkan pengguna untuk membuat dan membagi petanya dengan "
+"sesama pengguna.</p>\n"
+"  <p>Menu <a href=\"maps\">Peta</a> merupakan halam untuk melakukan "
+"eksplorasi petad di GeoNode. Anda dapat melakukan <strong>pencarian peta</"
+"strong> atau <strong>membuat peta</strong>, yang akan menggunkan <a href="
+"\"maps/new\">Map Composer</a>.</p>\n"
+"  <h5>Mode Google Earth</h5>\n"
+"  <p>Seluruh peta yang ditampilkan pada editor peta interaktif dapat dilihat "
+"dalam mode 3 dimensi (3D) dengan menggunakan Google Earth plugin. Untuk "
+"memindahkan ke mode 3D, klik logo Google Earth globe yang terdapat pada "
+"bagian paling kanan di toolbar atas. Jika belum memiliki Google Earth "
+"plugin, Anda akan diminta untuk melakukan instalasi.</p>\n"
+"\n"
+"  <h4 id=\"creating-a-map\">Membuat Peta</h4>\n"
+"  <p>Untuk membuat peta, navigasi ke halaman <a href=\"maps\">Contributed "
+"Maps</a> dan pilih <a href=\"maps/new\">buat peta</a>.</p>\n"
+"  <p>Hal ini akan menuju ke halaman <a href=\"maps/new\">Map Composer</a> "
+"dengan base layer yang dimuat secara otomatis.</p>\n"
+"  <p>Untuk menambah layer dari GeoNode tekan tombol + yang berwarna hijau. "
+"hal ini akan menampilkan daftar layer yang tersedia di GeoNode.</p>\n"
+"  <p>Untuk menambahkan layer, tekan tombol <strong>Tambah Layer</strong>. "
+"Jika telah selesai tekan tombol <strong>Selesai</strong>.</p>\n"
+"\n"
+"  <h5>Mengurutkan dan menghapus layer</h5>\n"
+"  <p>Untuk mengatur urutan layer dapat dilakukan dengan tekan dan geser ke "
+"urutan yang diinginkan. Tampilan peta akan disesuaikan sesuai urutan yang "
+"telah diatur. Untuk mengatur peta yang ditampilkan, gunakan checkbox pada "
+"bagian kiri dari nama layer. Dan untuk menghapus layer tersebut, gunakan "
+"tombol - yang berwarna merah.</p>\n"
+"\n"
+"  <h5>Menyimpan peta</h5>\n"
+"  <p>Setelah layer diset, sekarang anda dapat menyimpannya sehingga pengguna "
+"yang lain dapat melihat peta tersebut. Klik tombol Simpan pada bagian kiri "
+"pada toolbar diatas (bergambar peta dan disket), kemudian isi judul dan "
+"anstrak peta.</p>\n"
+"\n"
+"  <h4 id=\"exporting-a-map\">Ekspor Peta</h4>\n"
+"  <p>Peta dari GeoNode dapat disertakan untuk penggunaan lainnya seperti "
+"situs web atau blog. Untuk mengekspor peta: </p>\n"
+"  <ol>\n"
+"    <li>Pilih dari daftar peta pada halaman komunitas atau halaman peta dan "
+"klik tombol 'ekspor peta'.</li> \n"
+"    <li>Pilih tinggi dan lebar widget.</li> \n"
+"    <li>Sunting kode HTML yang disediakan ke halaman HTML atau blog yang "
+"mendukung iFrame.</li>\n"
+"  </ol>\n"
+"  <p>Hal ini akan menyimpan widget interaktif yang menampilkan peta di situs "
+"web atau blog yang diinginkan.</p>\n"
+"  <p>Ingat bahwa <a href=\"maps/new\">Map Composer</a> juga memiliki tombol "
+"untuk mengeskpor peta. Jangan lupa untuk menyimpan peta sebelum diekspor, "
+"karena yang disimpan adalah versi yang tersimpan dan bukan versi yang "
+"terakhir ditayangkan.</p>\n"
+"\n"
+"  <h4 id=\"remixing-a-map\">Mengkomposisikan Ulang Peta</h4>\n"
+"  <p>Setiap peta dapat dijadikan awal untuk membuat peta baru.</p>\n"
+"  <ol>\n"
+"    <li>Buka peta pada Map Composer</li>\n"
+"    <li>Tambahkan dan Hapus layer sesuai yang anda inginkan.</li>\n"
+"    <li>Geser dan perbesar/perkecil untuk memilih area yang diinginkan.</"
+"li>\n"
+"    <li><strong>PENTING:</strong> Perbaharui judul abstrakm info kontak dan "
+"tag yang merefleksikan peta tersebut.</li>\n"
+"    <li>Menyimpa peta.</li>\n"
+"  </ol>\n"
+"  <p>Anda akan dapat melihat peta baru anda melalui menu pencarian di tab <a "
+"href=\"maps\">Peta</a>.</p> \n"
+"  "
 
 #: templates/help.html:65
 msgid "Sections"
@@ -2842,7 +3112,9 @@ msgstr "Selamat Datang"
 #: templates/index.html:18
 msgid ""
 "\n"
-"        GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>.\n"
+"        GeoNode is an open source platform for sharing geospatial data and "
+"maps.  If you have any questions about the software or service, join our <a "
+"href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>.\n"
 "      "
 msgstr ""
 
@@ -2857,14 +3129,16 @@ msgstr ""
 #: templates/index.html:52
 msgid ""
 "\n"
-"              GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. \n"
+"              GeoNode enables you to upload, manage, and browse data layers. "
+"Search for data that is valuable to you, or upload your own data. \n"
 "            "
 msgstr ""
 
 #: templates/index.html:56
 msgid ""
 "\n"
-"              GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. \n"
+"              GeoNode enables you to compose and share maps. Create a map "
+"with our cartography tool, or explore maps shared by others. \n"
 "            "
 msgstr ""
 
@@ -2896,17 +3170,9 @@ msgstr ""
 msgid "Upload avatar"
 msgstr ""
 
-#: templates/pagination/pagination.html:7
-msgid "Previous"
-msgstr ""
-
 #: templates/pagination/pagination.html:9
 msgid "previous"
 msgstr ""
-
-#: templates/pagination/pagination.html:16
-msgid "Next"
-msgstr "Selanjutnya"
 
 #: templates/pagination/pagination.html:18
 msgid "next"
