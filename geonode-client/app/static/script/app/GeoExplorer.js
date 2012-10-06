@@ -478,7 +478,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         var layerRec = rec[record];
                         if (layerRec.get("layer").url.indexOf(this.localGeoServerBaseUrl) > -1) {
                             Ext.Ajax.request({
-                                url: this.rest.replace("maps","data") +  layerRec.get("layer").params.LAYERS + "/attributes",
+                                url: this.rest +  layerRec.get("layer").params.LAYERS + "/attributes",
                                 method: 'POST',
                                 success: function(response, options) {
                                     var jsonData = Ext.util.JSON.decode(response.responseText);

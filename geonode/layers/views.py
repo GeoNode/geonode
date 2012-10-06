@@ -623,8 +623,3 @@ def layer_acls(request):
     }
 
     return HttpResponse(json.dumps(result), mimetype="application/json")
-
-def layer_attributes(request, layername):
-    #Return custom layer attribute labels/order in JSON format
-    layer = Layer.objects.get(typename=layername)
-    return HttpResponse(json.dumps(layer.attribute_config()), mimetype="application/json")
