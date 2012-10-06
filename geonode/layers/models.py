@@ -71,7 +71,7 @@ class LayerManager(models.Manager):
         # this assumes there is at least one superuser
         superusers = User.objects.filter(is_superuser=True).order_by('id')
         if superusers.count() == 0:
-            raise RuntimeError('GeoNode needs at least one admin/superuser set')
+            raise RuntimeError(_('GeoNode needs at least one admin/superuser set'))
 
         contact = Contact.objects.get_or_create(user=superusers[0],
                                                 defaults={"name": "Geonode Admin"})[0]
@@ -105,8 +105,8 @@ class LayerManager(models.Manager):
                     "store": store.name,
                     "storeType": store.resource_type,
                     "typename": "%s:%s" % (workspace.name, resource.name),
-                    "title": resource.title or 'No title provided',
-                    "abstract": resource.abstract or 'No abstract provided',
+                    "title": resource.title or _('No title provided'),
+                    "abstract": resource.abstract or _('No abstract provided'),
                     "owner": owner,
                     "uuid": str(uuid.uuid4())
                 })
@@ -158,7 +158,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     Base Resource Object loosely based on ISO 19115:2003
     """
 
-    VALID_DATE_TYPES = [(x.lower(), _(x)) for x in ['Creation', 'Publication', 'Revision']]
+    VALID_DATE_TYPES = [(x.lower(), _(x)) for x in [_('Creation'), _('Publication'), _('Revision')]]
 
     # internal fields
     uuid = models.CharField(max_length=36)
@@ -580,10 +580,10 @@ class Link(models.Model):
         * metadata: For CSW links
     """
     layer = models.ForeignKey(Layer)
-    extension = models.CharField(max_length=255, help_text='For example "kml"')
+    extension = models.CharField(max_length=255, help_text=_('For example "kml"'))
     link_type = models.CharField(max_length=255, choices = [(x, x) for x in LINK_TYPES])
-    name = models.CharField(max_length=255, help_text='For example "View in Google Earth"')
-    mime = models.CharField(max_length=255, help_text='For example "text/xml"')
+    name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
+    mime = models.CharField(max_length=255, help_text=_('For example "text/xml"'))
     url = models.TextField(unique=True, max_length=1000)
 
     objects = LinkManager()
@@ -599,7 +599,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
 
 def pre_save_layer(instance, sender, **kwargs):
     if instance.abstract == '' or instance.abstract is None:
-        instance.abstract = 'No abstract provided'
+        instance.abstract = _('No abstract provided')
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 
