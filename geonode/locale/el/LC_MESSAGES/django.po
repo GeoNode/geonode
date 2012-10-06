@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-05 23:10-0700\n"
+"POT-Creation-Date: 2012-10-05 23:21-0700\n"
 "PO-Revision-Date: 2012-10-06 05:30+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/"
@@ -1587,7 +1587,7 @@ msgstr ""
 #: layers/templates/layers/_layer_grid_item.html:5
 #: layers/templates/layers/_layer_list_item.html:13
 #: layers/templates/layers/_layer_widget_item.html:9
-#: maps/templates/maps/_map_grid_item.html:9
+#: maps/templates/maps/_map_grid_item.html:10
 #, fuzzy
 msgid "from"
 msgstr "μορφή"
@@ -1607,7 +1607,7 @@ msgstr "Λήψη"
 
 #: layers/templates/layers/_layer_list_item.html:13
 #: layers/templates/layers/_layer_widget_item.html:9
-#: maps/templates/maps/_map_grid_item.html:9
+#: maps/templates/maps/_map_grid_item.html:10
 msgid "ago"
 msgstr ""
 
@@ -1617,7 +1617,7 @@ msgstr ""
 
 #: layers/templates/layers/_layer_list_item.html:15
 #: layers/templates/layers/_layer_widget_item.html:11
-#: maps/templates/maps/_map_grid_item.html:11
+#: maps/templates/maps/_map_grid_item.html:12
 #: maps/templates/maps/map_detail.html:40
 msgid "Average rating"
 msgstr ""
@@ -1967,7 +1967,8 @@ msgstr "Υποστηριζόμενοι Τύποι Αρχείου"
 msgid "Search for Layers"
 msgstr ""
 
-#: layers/templates/layers/layer_search.html:19 templates/base.html:131
+#: layers/templates/layers/layer_search.html:19 templates/base.html:40
+#: templates/base.html.py:131
 msgid "Search"
 msgstr "Αναζήτηση"
 
@@ -2170,6 +2171,11 @@ msgstr "Πολωνία"
 msgid "Explore Maps"
 msgstr "Εξερευνήστε Χάρτες"
 
+#: maps/templates/maps/map_base.html:14 maps/templates/maps/map_search.html:5
+#: maps/templates/maps/map_search.html:12
+msgid "Search Maps"
+msgstr "Αναζήτηση Χάρτες"
+
 #: maps/templates/maps/map_detail.html:27
 msgid "Download Data"
 msgstr ""
@@ -2267,11 +2273,6 @@ msgid ""
 "        Are you sure you want to remove %(map_title)s?\n"
 "    "
 msgstr ""
-
-#: maps/templates/maps/map_search.html:5
-#: maps/templates/maps/map_search.html:12
-msgid "Search Maps"
-msgstr "Αναζήτηση Χάρτες"
 
 #: maps/templates/maps/map_view.html:84
 msgid "View info"
@@ -2797,6 +2798,24 @@ msgstr "Διαχειριστής"
 msgid "Log out"
 msgstr "Αποσύνδεση"
 
+#: templates/base.html:69 templates/base.html.py:166
+msgid "Help"
+msgstr "Βοήθεια"
+
+#: templates/base.html:70
+#, fuzzy
+msgid "Notifications"
+msgstr "Ενέργειες"
+
+#: templates/base.html:71
+msgid "Messages"
+msgstr ""
+
+#: templates/base.html:72
+#, fuzzy
+msgid "Upload"
+msgstr "Ανεβάστε Επιφάνεια"
+
 #: templates/base.html:80 templates/base.html.py:93
 msgid "Sign in"
 msgstr "Είσοδος"
@@ -2844,10 +2863,6 @@ msgstr "GeoNode"
 #: templates/base.html:165
 msgid "Need Help?"
 msgstr "Χρειάζεστε βοήθεια;"
-
-#: templates/base.html:166
-msgid "Help"
-msgstr "Βοήθεια"
 
 #: templates/base.html:167
 msgid "For Developers"
