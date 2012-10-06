@@ -37,7 +37,7 @@
             <div class="span5">
                 <form class="form-inline well search-box" action="{% url search %}" method="POST">
                   {% csrf_token %}
-                  <input type="text" name="q" placeholder="Search" />
+                  <input type="text" name="q" placeholder="{% trans 'Search' %}" />
                   <button type="submit" class="btn btn-small"><i class="icon-search"></i></button>
                   <a href="{% url advanced_search %}">{% trans "Advanced Search" %}</a>
                 </form>
@@ -66,10 +66,10 @@
                       </li>
                       <li class="divider-v">|</li>
                     <li class="actions">
-                      <a href="{% url help %}" rel="tooltip" title="help"><i class="icon-question-sign"></i></a>
-                      <a href="#" rel="tooltip" title="notifications"><i class="icon-bullhorn"></i></a>
-                      <a href="#" rel="tooltip" title="messages"><i class="icon-envelope"></i></a>
-                      <a href="{% url layer_upload %}" rel="tooltip" title="upload"><i class="icon-upload-alt"></i></a>
+                      <a href="{% url help %}" rel="tooltip" title="{% trans 'Help' %}"><i class="icon-question-sign"></i></a>
+                      <a href="#" rel="tooltip" title="{% trans 'Notifications' %}"><i class="icon-bullhorn"></i></a>
+                      <a href="#" rel="tooltip" title="{% trans 'Messages' %}"><i class="icon-envelope"></i></a>
+                      <a href="{% url layer_upload %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a>
                     </li>
                     {% else %}
                         <li class="actions">
