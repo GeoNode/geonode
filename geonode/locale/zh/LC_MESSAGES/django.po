@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-05 22:53-0700\n"
+"POT-Creation-Date: 2012-10-05 23:10-0700\n"
 "PO-Revision-Date: 2012-10-06 05:34+0000\n"
 "Last-Translator: nwang <nwang@opengeo.org>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/"
@@ -1582,6 +1582,14 @@ msgstr "最流行的"
 msgid "Most shared"
 msgstr "最多被分享的"
 
+#: layers/templates/layers/_layer_grid_item.html:5
+#: layers/templates/layers/_layer_list_item.html:13
+#: layers/templates/layers/_layer_widget_item.html:9
+#: maps/templates/maps/_map_grid_item.html:9
+#, fuzzy
+msgid "from"
+msgstr "格式"
+
 #: layers/templates/layers/_layer_list_item.html:8
 #: layers/templates/layers/_layer_widget_item.html:5
 #: templates/_widget_about_author.html:4 templates/search.html:207
@@ -1595,12 +1603,20 @@ msgstr "没有图片"
 msgid "Download"
 msgstr "下载"
 
+#: layers/templates/layers/_layer_list_item.html:13
+#: layers/templates/layers/_layer_widget_item.html:9
+#: maps/templates/maps/_map_grid_item.html:9
+msgid "ago"
+msgstr ""
+
 #: layers/templates/layers/_layer_list_item.html:15
 msgid "view"
 msgstr "观看"
 
 #: layers/templates/layers/_layer_list_item.html:15
 #: layers/templates/layers/_layer_widget_item.html:11
+#: maps/templates/maps/_map_grid_item.html:11
+#: maps/templates/maps/map_detail.html:40
 msgid "Average rating"
 msgstr "平均得分"
 
@@ -1625,7 +1641,7 @@ msgid "Search Layers"
 msgstr "寻找图层"
 
 #: layers/templates/layers/layer_base.html:15
-#: layers/templates/layers/layer_upload.html:25
+#: layers/templates/layers/layer_upload.html:25 templates/index.html:55
 msgid "Upload Layers"
 msgstr "上传图层"
 
@@ -1770,7 +1786,7 @@ msgid "Placeholder"
 msgstr "占位符"
 
 #: layers/templates/layers/layer_detail.html:194
-#: layers/templates/layers/layer_detail_static.html:81
+#: layers/templates/layers/layer_detail_static.html:81 templates/index.html:59
 msgid "Create a Map"
 msgstr "生成一张地图"
 
@@ -2129,8 +2145,22 @@ msgstr "全部"
 msgid "Most viewed"
 msgstr "最多被查看的"
 
-#: maps/templates/maps/map_base.html:5 maps/templates/maps/map_list.html:12
-#: templates/index.html:28
+#: maps/templates/maps/_map_filters.html:10
+msgid "sort by"
+msgstr ""
+
+#: maps/templates/maps/_map_filters.html:12
+#, fuzzy
+msgid "Newest"
+msgstr "下一页"
+
+#: maps/templates/maps/_map_filters.html:13
+#, fuzzy
+msgid "Popular"
+msgstr "最流行的"
+
+#: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:13
+#: maps/templates/maps/map_list.html:12 templates/index.html:28
 msgid "Explore Maps"
 msgstr "浏览地图"
 
@@ -3092,6 +3122,15 @@ msgstr ""
 "问题，请点击https://groups.google.com/d/forum/geonode-users加入我们的邮件名"
 "单.\n"
 "    "
+
+#: templates/index.html:23
+#, fuzzy
+msgid "Need help"
+msgstr "需要帮助吗？"
+
+#: templates/index.html:23
+msgid "Getting Started?"
+msgstr ""
 
 #: templates/index.html:35
 msgid "Latest Layers"
