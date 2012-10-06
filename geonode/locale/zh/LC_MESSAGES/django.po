@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-04 20:23-0700\n"
-"PO-Revision-Date: 2012-10-06 03:55+0000\n"
+"POT-Creation-Date: 2012-10-05 21:53-0700\n"
+"PO-Revision-Date: 2012-10-06 05:06+0000\n"
 "Last-Translator: nwang <nwang@opengeo.org>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/zh/)\n"
 "MIME-Version: 1.0\n"
@@ -1452,7 +1452,7 @@ msgstr "标明属性在identity中显示的顺序"
 msgid "KML"
 msgstr "KML"
 
-#: layers/models.py:796
+#: layers/models.py:796 layers/templates/layers/layer_detail.html:254
 msgid "View in Google Earth"
 msgstr "谷歌地球"
 
@@ -1538,6 +1538,24 @@ msgstr "您无权以查看此图层"
 msgid "Bad HTTP Authorization Credentials."
 msgstr "HTTP授权证书错误。"
 
+#: layers/templates/layers/_actions.html:3
+msgid "Info"
+msgstr "信息"
+
+#: layers/templates/layers/_actions.html:4
+#: layers/templates/layers/layer_detail.html:143
+#: layers/templates/layers/layer_metadata.html:30
+msgid "Attributes"
+msgstr "属性"
+
+#: layers/templates/layers/_actions.html:5
+msgid "Share"
+msgstr "分享"
+
+#: layers/templates/layers/_actions.html:6
+msgid "Flag"
+msgstr "标注"
+
 #: layers/templates/layers/_layer_filters.html:5
 msgid "Most recent"
 msgstr "最近的"
@@ -1560,9 +1578,44 @@ msgstr "最多被分享的"
 msgid "No Image Available"
 msgstr "没有图片"
 
+#: layers/templates/layers/_layer_list_item.html:11
+#: maps/templates/maps/map_download.html:65
+msgid "Download"
+msgstr "下载"
+
+#: layers/templates/layers/_layer_list_item.html:15
+msgid "view"
+msgstr "观看"
+
+#: layers/templates/layers/_layer_list_item.html:15
+#: layers/templates/layers/_layer_widget_item.html:11
+msgid "Average rating"
+msgstr "平均得分"
+
+#: layers/templates/layers/_layer_widget_item.html:11
+#, python-format
+msgid "view%(layer.popular_count|pluralize)s"
+msgstr "查看%(layer.popular_count|pluralize)s"
+
 #: layers/templates/layers/layer_base.html:5
 msgid "Browse Data"
 msgstr "浏览数据"
+
+#: layers/templates/layers/layer_base.html:13
+#: layers/templates/layers/layer_list.html:9
+#: layers/templates/layers/layer_list.html:15 templates/index.html:25
+msgid "Explore Layers"
+msgstr "浏览图层"
+
+#: layers/templates/layers/layer_base.html:14
+#: layers/templates/layers/layer_search.html:6
+msgid "Search Layers"
+msgstr "寻找图层"
+
+#: layers/templates/layers/layer_base.html:15
+#: layers/templates/layers/layer_upload.html:25
+msgid "Upload Layers"
+msgstr "上传图层"
 
 #: layers/templates/layers/layer_change_poc.html:5 templates/base.html:119
 msgid "Home"
@@ -1572,6 +1625,15 @@ msgstr "主页"
 #: layers/templates/layers/layer_change_poc.html:7
 msgid "Change point of contact"
 msgstr "改变联络地址"
+
+#: layers/templates/layers/layer_change_poc.html:10
+msgid "Assign a new point of contact to the layers below:"
+msgstr "给以下图层添加一个新的联系点"
+
+#: layers/templates/layers/layer_change_poc.html:17
+#: people/templates/people/forgot_username_form.html:18
+msgid "Submit"
+msgstr "提交"
 
 #: layers/templates/layers/layer_detail.html:32
 #: layers/templates/layers/layer_detail.html:232
@@ -1588,6 +1650,22 @@ msgstr "下载元数据"
 #: layers/templates/layers/layer_detail.html:57
 msgid "Edit Layer"
 msgstr "编辑图层"
+
+#: layers/templates/layers/layer_detail.html:62
+msgid "Edit Metadata"
+msgstr "修改元数据"
+
+#: layers/templates/layers/layer_detail.html:63
+msgid "Edit Styles"
+msgstr "修改样式"
+
+#: layers/templates/layers/layer_detail.html:64
+msgid "Edit Permissions"
+msgstr "修改权限"
+
+#: layers/templates/layers/layer_detail.html:65
+msgid "Remove this Layer"
+msgstr "移除此图层"
 
 #: layers/templates/layers/layer_detail.html:81
 #: layers/templates/layers/layer_detail_static.html:36
@@ -1632,10 +1710,6 @@ msgstr "本地SRS"
 #: layers/templates/layers/layer_detail.html:136
 msgid "No SRS specified."
 msgstr "没有指定SRS。"
-
-#: layers/templates/layers/layer_detail.html:143
-msgid "Attributes"
-msgstr "属性"
 
 #: layers/templates/layers/layer_detail.html:148
 msgid "Attribute Name"
@@ -1730,10 +1804,21 @@ msgid ""
 "the style."
 msgstr "以下样式与此数据集关联"
 
-#: layers/templates/layers/layer_list.html:9
-#: layers/templates/layers/layer_list.html:15 templates/index.html:25
-msgid "Explore Layers"
-msgstr "浏览图层"
+#: layers/templates/layers/layer_list.html:31
+msgid "Categories"
+msgstr "种类"
+
+#: layers/templates/layers/layer_list.html:34
+msgid "All Categories"
+msgstr "所有种类"
+
+#: layers/templates/layers/layer_list.html:41
+msgid "Keywords"
+msgstr "关键词"
+
+#: layers/templates/layers/layer_list.html:59
+msgid "No data found"
+msgstr "没有数据"
 
 #: layers/templates/layers/layer_metadata.html:17
 #, python-format
@@ -1742,6 +1827,13 @@ msgid ""
 "        Editing details for %(layer_title)s\n"
 "      "
 msgstr "\n细节修改%(layer_title)s"
+
+#: layers/templates/layers/layer_metadata.html:22
+msgid ""
+"Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
+"        Some of your original metadata may have been lost."
+msgstr "主意: 此图层的元数据是从元数据XML文件中获取的。GeoNode的元数据输入支持ISO，FGDC和Dublin Core元数据元素。一些早先的元数据可能已经丢失。"
 
 #: layers/templates/layers/layer_metadata.html:32
 msgid "Attribute"
@@ -1824,13 +1916,13 @@ msgstr "没有地图使用此图层。"
 msgid "Supported Formats"
 msgstr "支持格式"
 
-#: layers/templates/layers/layer_search.html:6
-msgid "Search Layers"
-msgstr "寻找图层"
-
 #: layers/templates/layers/layer_search.html:14
 msgid "Search for Layers"
 msgstr "寻找图层"
+
+#: layers/templates/layers/layer_search.html:19 templates/base.html:131
+msgid "Search"
+msgstr "查询"
 
 #: layers/templates/layers/layer_search.html:26 maps/models.py:58
 #: maps/templates/maps/map_search.html:24
@@ -1896,10 +1988,6 @@ msgstr "未搜索到任何结果。"
 
 #: layers/templates/layers/layer_upload.html:6
 msgid "Upload Layer"
-msgstr "上传图层"
-
-#: layers/templates/layers/layer_upload.html:25
-msgid "Upload Layers"
 msgstr "上传图层"
 
 #: layers/templates/layers/layer_upload.html:34
@@ -2057,10 +2145,6 @@ msgstr "改变此地图的访问权限"
 #: maps/templates/maps/map_detail.html:86 maps/templates/maps/map_list.html:16
 msgid "Create a New Map"
 msgstr "生成新地图"
-
-#: maps/templates/maps/map_download.html:65
-msgid "Download"
-msgstr "下载"
 
 #: maps/templates/maps/map_download.html:67
 msgid ""
@@ -2419,10 +2503,6 @@ msgid ""
 " sent to you."
 msgstr "请填写您的email地址，然后点击提交按钮。您的用户名会被发到您的电邮信箱"
 
-#: people/templates/people/forgot_username_form.html:18
-msgid "Submit"
-msgstr "提交"
-
 #: security/models.py:37
 msgid "Invalid permission level."
 msgstr "权限等级不够。"
@@ -2596,10 +2676,6 @@ msgstr "注册"
 #: templates/base.html:128
 msgid "Profiles"
 msgstr "资料"
-
-#: templates/base.html:131
-msgid "Search"
-msgstr "查询"
 
 #: templates/base.html:164
 msgid "Powered by"
