@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-05 22:53-0700\n"
+"POT-Creation-Date: 2012-10-05 23:10-0700\n"
 "PO-Revision-Date: 2012-10-06 05:30+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1583,6 +1583,14 @@ msgstr ""
 msgid "Most shared"
 msgstr ""
 
+#: layers/templates/layers/_layer_grid_item.html:5
+#: layers/templates/layers/_layer_list_item.html:13
+#: layers/templates/layers/_layer_widget_item.html:9
+#: maps/templates/maps/_map_grid_item.html:9
+#, fuzzy
+msgid "from"
+msgstr "format"
+
 #: layers/templates/layers/_layer_list_item.html:8
 #: layers/templates/layers/_layer_widget_item.html:5
 #: templates/_widget_about_author.html:4 templates/search.html:207
@@ -1596,12 +1604,20 @@ msgstr ""
 msgid "Download"
 msgstr "Télécharger"
 
+#: layers/templates/layers/_layer_list_item.html:13
+#: layers/templates/layers/_layer_widget_item.html:9
+#: maps/templates/maps/_map_grid_item.html:9
+msgid "ago"
+msgstr ""
+
 #: layers/templates/layers/_layer_list_item.html:15
 msgid "view"
 msgstr ""
 
 #: layers/templates/layers/_layer_list_item.html:15
 #: layers/templates/layers/_layer_widget_item.html:11
+#: maps/templates/maps/_map_grid_item.html:11
+#: maps/templates/maps/map_detail.html:40
 msgid "Average rating"
 msgstr ""
 
@@ -1626,7 +1642,7 @@ msgid "Search Layers"
 msgstr ""
 
 #: layers/templates/layers/layer_base.html:15
-#: layers/templates/layers/layer_upload.html:25
+#: layers/templates/layers/layer_upload.html:25 templates/index.html:55
 msgid "Upload Layers"
 msgstr ""
 
@@ -1771,7 +1787,7 @@ msgid "Placeholder"
 msgstr ""
 
 #: layers/templates/layers/layer_detail.html:194
-#: layers/templates/layers/layer_detail_static.html:81
+#: layers/templates/layers/layer_detail_static.html:81 templates/index.html:59
 msgid "Create a Map"
 msgstr ""
 
@@ -2130,8 +2146,22 @@ msgstr "Tout"
 msgid "Most viewed"
 msgstr ""
 
-#: maps/templates/maps/map_base.html:5 maps/templates/maps/map_list.html:12
-#: templates/index.html:28
+#: maps/templates/maps/_map_filters.html:10
+msgid "sort by"
+msgstr ""
+
+#: maps/templates/maps/_map_filters.html:12
+#, fuzzy
+msgid "Newest"
+msgstr "Suivant"
+
+#: maps/templates/maps/_map_filters.html:13
+#, fuzzy
+msgid "Popular"
+msgstr "La Pologne"
+
+#: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:13
+#: maps/templates/maps/map_list.html:12 templates/index.html:28
 msgid "Explore Maps"
 msgstr "Découvrez les artes"
 
@@ -3099,6 +3129,15 @@ msgid ""
 "maps.  If you have any questions about the software or service, join our <a "
 "href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>.\n"
 "      "
+msgstr ""
+
+#: templates/index.html:23
+#, fuzzy
+msgid "Need help"
+msgstr "Besoin d'Aide?"
+
+#: templates/index.html:23
+msgid "Getting Started?"
 msgstr ""
 
 #: templates/index.html:35
