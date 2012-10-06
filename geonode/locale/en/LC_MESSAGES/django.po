@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-05 21:53-0700\n"
+"POT-Creation-Date: 2012-10-05 22:23-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1201,6 +1201,30 @@ msgstr ""
 msgid "Zimbabwe"
 msgstr ""
 
+#: layers/models.py:74
+msgid "GeoNode needs at least one admin/superuser set"
+msgstr ""
+
+#: layers/models.py:108
+msgid "No title provided"
+msgstr ""
+
+#: layers/models.py:109 layers/models.py:602
+msgid "No abstract provided"
+msgstr ""
+
+#: layers/models.py:161
+msgid "Creation"
+msgstr ""
+
+#: layers/models.py:161
+msgid "Publication"
+msgstr ""
+
+#: layers/models.py:161
+msgid "Revision"
+msgstr ""
+
 #: layers/models.py:168 security/models.py:55
 msgid "title"
 msgstr ""
@@ -1446,6 +1470,18 @@ msgid ""
 "results"
 msgstr ""
 
+#: layers/models.py:583
+msgid "For example \"kml\""
+msgstr ""
+
+#: layers/models.py:585
+msgid "For example \"View in Google Earth\""
+msgstr ""
+
+#: layers/models.py:586
+msgid "For example \"text/xml\""
+msgstr ""
+
 #: layers/models.py:782
 msgid "KML"
 msgstr ""
@@ -1536,7 +1572,7 @@ msgstr ""
 msgid "Bad HTTP Authorization Credentials."
 msgstr ""
 
-#: layers/templates/layers/_actions.html:3
+#: layers/templates/layers/_actions.html:3 templates/_actions.html:3
 msgid "Info"
 msgstr ""
 
@@ -2563,6 +2599,30 @@ msgid ""
 "  "
 msgstr ""
 
+#: templates/_actions.html:4
+msgid "Add to Favorites"
+msgstr ""
+
+#: templates/_actions.html:6
+msgid "Rate this Map"
+msgstr ""
+
+#: templates/_comments.html:8
+msgid "Comments"
+msgstr ""
+
+#: templates/_comments.html:13 templates/pagination/pagination.html:7
+msgid "Previous"
+msgstr ""
+
+#: templates/_comments.html:17 templates/pagination/pagination.html:16
+msgid "Next"
+msgstr ""
+
+#: templates/_comments.html:21
+msgid "add comment"
+msgstr ""
+
 #: templates/_permissions_form.html:11
 msgid "Who can view and download this data?"
 msgstr ""
@@ -2599,12 +2659,24 @@ msgstr ""
 msgid "Apply Changes"
 msgstr ""
 
+#: templates/_viewby.html:3
+msgid "View by"
+msgstr ""
+
+#: templates/_viewby.html:4
+msgid "Grid"
+msgstr ""
+
+#: templates/_viewby.html:5
+msgid "List"
+msgstr ""
+
 #: templates/_widget_about_author.html:3
-msgid "About the Author"
+msgid "About the Layer Owner"
 msgstr ""
 
 #: templates/_widget_about_author.html:8
-msgid "Read more about this author"
+msgid "Read more about the layer owner"
 msgstr ""
 
 #: templates/advanced_search_static.html:4 templates/search.html:4
@@ -2619,17 +2691,65 @@ msgstr ""
 msgid "Search for: "
 msgstr ""
 
+#: templates/advanced_search_static.html:28
+msgid "All of the words"
+msgstr ""
+
 #: templates/advanced_search_static.html:34
 #: templates/advanced_search_static.html:113
 msgid "Search "
+msgstr ""
+
+#: templates/advanced_search_static.html:37
+msgid "Exclude words from your search"
+msgstr ""
+
+#: templates/advanced_search_static.html:43
+msgid "All categories"
+msgstr ""
+
+#: templates/advanced_search_static.html:46
+msgid "Maps only"
+msgstr ""
+
+#: templates/advanced_search_static.html:49
+msgid "Layers only"
+msgstr ""
+
+#: templates/advanced_search_static.html:52
+msgid "Groups only"
 msgstr ""
 
 #: templates/advanced_search_static.html:59
 msgid "Type: "
 msgstr ""
 
+#: templates/advanced_search_static.html:64
+msgid "From this site/portal"
+msgstr ""
+
+#: templates/advanced_search_static.html:70
+msgid "From this group"
+msgstr ""
+
+#: templates/advanced_search_static.html:76
+msgid "From this organization"
+msgstr ""
+
+#: templates/advanced_search_static.html:82
+msgid "From this geographic region"
+msgstr ""
+
 #: templates/advanced_search_static.html:92
 msgid "Metadata: "
+msgstr ""
+
+#: templates/advanced_search_static.html:97
+msgid "Since this date"
+msgstr ""
+
+#: templates/advanced_search_static.html:103
+msgid "Until this date"
 msgstr ""
 
 #: templates/advanced_search_static.html:114
@@ -2940,16 +3060,8 @@ msgstr ""
 msgid "Upload avatar"
 msgstr ""
 
-#: templates/pagination/pagination.html:7
-msgid "Previous"
-msgstr ""
-
 #: templates/pagination/pagination.html:9
 msgid "previous"
-msgstr ""
-
-#: templates/pagination/pagination.html:16
-msgid "Next"
 msgstr ""
 
 #: templates/pagination/pagination.html:18
