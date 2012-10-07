@@ -22,23 +22,17 @@
         <div class="container">
           <div class="row">
             <div class="span3">
-              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </a>
               <a href="{% url home %}">
                 <span class="nav-logo">
                   <a class="brand">{{ SITENAME }}</a>
                 </span>
               </a>
             </div>
-            <div class="span5">
-                <form class="form-inline well search-box" action="{% url search %}" method="POST">
+            <div class="span4 offset1">
+                <form class="imput-append form-inline search-box" action="{% url search %}" method="POST">
                   {% csrf_token %}
-                  <input type="text" name="q" placeholder="{% trans 'Search' %}" />
+                  <input type="text" name="q" placeholder="{% trans 'Search ...' %}" />
                   <button type="submit" class="btn btn-small"><i class="icon-search"></i></button>
-                  <a href="{% url advanced_search %}">{% trans "Advanced Search" %}</a>
                 </form>
             </div>
             <div class="span4">
