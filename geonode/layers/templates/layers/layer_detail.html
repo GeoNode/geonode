@@ -59,10 +59,10 @@
       </a>
       <ul class="dropdown-menu">
         <li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li>
-        <li><a href="{% url "layer_metadata" layer.typename %}">Edit Metadata <i class="icon-chevron-right"></i></a></li>
-        <li><a href="{% url "layer_style" layer.typename %}">Edit Styles <i class="icon-chevron-right"></i></a></li>
-        <li><a href="{% url "layer_permissions" layer.typename %}">Edit Permissions <i class="icon-chevron-right"></i></a></li>
-        <li><a href="{% url "layer_remove" layer.typename %}">Remove this Layer <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_style" layer.typename %}">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_permissions" layer.typename %}">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %} <i class="icon-chevron-right"></i></a></li>
       </ul>
     </div>
     {% endif %}
@@ -251,7 +251,7 @@
           <li><a href="#">KML</a></li>
           <li><a href="#">Excel</a></li>
           <li><a href="#">GeoJSON</a></li>
-          <li><a href="#">View in Google Earth</a></li>
+          <li><a href="#">{% trans "View in Google Earth" %}</a></li>
         </ul>
       </div>
     </div>

@@ -25,7 +25,7 @@
           <fieldset class="fieldset1">
             <div class="span2">
               <select name="" id="" class="span2">
-                <option value="">All of the words</option>
+                <option value="">{% trans 'All of the words' %}</option>
               </select>
             </div>
             <div class="span7">
@@ -34,22 +34,22 @@
                 <button type="submit" class="btn">{% trans "Search "%}</button>
               </div>
               <div class="control-group">
-                <label for="id_exclusions">Exclude words from your search<br />
+                <label for="id_exclusions">{% trans 'Exclude words from your search' %}<br />
                   <input type="text" id="id_exclusions" />
                 </label>
               </div>
               <div class="control-group">
                 <label for="id_filter_categories_all" class="radio inline">
-                  <input type="radio" name="filter_categories" id="id_filter_categories_all" checked /> All categories
+                  <input type="radio" name="filter_categories" id="id_filter_categories_all" checked /> {% trans 'All categories' %}
                 </label>
                 <label for="id_filter_categories_maps" class="radio inline">
-                  <input type="radio" name="filter_categories" id="id_filter_categories_maps" /> Maps only
+                  <input type="radio" name="filter_categories" id="id_filter_categories_maps" /> {% trans 'Maps only' %}
                 </label>
                 <label for="id_filter_categories_datasets" class="radio inline">
-                  <input type="radio" name="filter_categories" id="id_filter_categories_datasets" /> Datasets only
+                  <input type="radio" name="filter_categories" id="id_filter_categories_datasets" /> {% trans 'Layers only' %}
                 </label>
                 <label for="id_filter_categories_groups" class="radio inline">
-                  <input type="radio" name="filter_categories" id="id_filter_categories_groups" /> Groups only
+                  <input type="radio" name="filter_categories" id="id_filter_categories_groups" /> {% trans 'Groups only' %}
                 </label>
               </div>
             </div>
@@ -61,25 +61,25 @@
         <div class="span10">
           <fieldset>
             <div class="control-group">
-              <label class="control-label" for="id_type_site">From this site/portal</label>
+              <label class="control-label" for="id_type_site">{% trans 'From this site/portal' %}</label>
               <div class="controls">
                 <input type="text" class="input-xlarge" id="id_type_site">
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="id_type_group">From this group</label>
+              <label class="control-label" for="id_type_group">{% trans 'From this group' %}</label>
               <div class="controls">
                 <input type="text" class="input-xlarge" id="id_type_group">
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="id_type_org">From this organization</label>
+              <label class="control-label" for="id_type_org">{% trans 'From this organization' %}</label>
               <div class="controls">
                 <input type="text" class="input-xlarge" id="id_type_org">
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="id_type_region">From this geographic region</label>
+              <label class="control-label" for="id_type_region">{% trans 'From this geographic region' %}</label>
               <div class="controls">
                 <select name="" id="id_type_region">
                   <option value=""></option>
@@ -94,13 +94,13 @@
         <div class="span10">
           <fieldset>
             <div class="control-group">
-              <label class="control-label" for="id_meta_date_since">Since this date</label>
+              <label class="control-label" for="id_meta_date_since">{% trans 'Since this date' %}</label>
               <div class="controls">
                 <input id="id_meta_date_since" data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="id_meta_date_until">Until this date</label>
+              <label class="control-label" for="id_meta_date_until">{% trans 'Until this date' %}</label>
               <div class="controls">
                 <input id="id_meta_date_until" data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
               </div>
