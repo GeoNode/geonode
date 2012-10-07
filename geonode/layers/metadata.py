@@ -66,6 +66,8 @@ def set_metadata(xml):
         if hasattr(md, 'identification'):
             vals['title'] = md.identification.title
             vals['abstract'] = md.identification.abstract
+            vals['purpose'] = md.identification.purpose
+            vals['supplemental_information'] = md.identification.self.supplementalinformation
 
             vals['temporal_extent_start'] = md.identification.temporalextent_start
             vals['temporal_extent_end'] = md.identification.temporalextent_end
@@ -97,7 +99,11 @@ def set_metadata(xml):
 
         if hasattr(md, 'idinfo'):
             vals['title'] = md.idinfo.citation.citeinfo['title']
+
+        if hasattr(md.idinfo, 'descript'):
             vals['abstract'] = md.idinfo.descript.abstract
+            vals['purpose'] = md.idinfo.descript.purpose
+            vals['supplemental_information'] = md.idinfo.descript.supplinf
 
         if hasattr(md.idinfo, 'keywords'):
             if md.idinfo.keywords.theme:

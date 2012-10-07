@@ -158,7 +158,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     Base Resource Object loosely based on ISO 19115:2003
     """
 
-    VALID_DATE_TYPES = [(x.lower(), _(x)) for x in ['Creation', 'Publication', 'Revision']]
+    VALID_DATE_TYPES = [(x.lower(), _(x)) for x in ['Creation', 'Publication', 'Revision']] 
 
     # internal fields
     uuid = models.CharField(max_length=36)
@@ -580,10 +580,10 @@ class Link(models.Model):
         * metadata: For CSW links
     """
     layer = models.ForeignKey(Layer)
-    extension = models.CharField(max_length=255, help_text='For example "kml"')
+    extension = models.CharField(max_length=255, help_text=_('For example "kml"'))
     link_type = models.CharField(max_length=255, choices = [(x, x) for x in LINK_TYPES])
-    name = models.CharField(max_length=255, help_text='For example "View in Google Earth"')
-    mime = models.CharField(max_length=255, help_text='For example "text/xml"')
+    name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
+    mime = models.CharField(max_length=255, help_text=_('For example "text/xml"'))
     url = models.TextField(unique=True, max_length=1000)
 
     objects = LinkManager()

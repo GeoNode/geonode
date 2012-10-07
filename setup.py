@@ -100,7 +100,7 @@ setup(name='GeoNode',
         # assembling javascript
         "jstools==0.6",
         # sample and test data / metadata
-        "gisdata==0.4.4",
+        "gisdata==0.5.4",
         # testing
         "django-nose",
         "nose>=1.0",
