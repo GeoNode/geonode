@@ -67,11 +67,11 @@ img.olTileImage {
 // General layout styles
 .nav-logo {
   float: left;
-  width: 158px;
-  height: 50px;
+  width: 130px;
+  height: 30px;
   overflow: hidden;
   text-indent: -9999em;
-  margin-top:-2px;
+  margin-top: 3px;
   background: url(../img/logo.png) no-repeat;
 }
 
@@ -81,8 +81,10 @@ img.olTileImage {
 }
 
 .navbar .nav.account-bar {
+  margin-top: 7px;
+
   li.divider-v {
-    padding: 10px 0 10px;
+      padding: 1px 5px 0 0;
   }
 
   i {
@@ -92,7 +94,7 @@ img.olTileImage {
   li.actions {
     padding-left:7px;
     a {
-      padding: 10px 3px 10px;
+      padding-left: 3px;
       float:left;
 
       i {
@@ -102,18 +104,17 @@ img.olTileImage {
   }
 
   li.user-avatar {
-    padding: 10px 0 10px;
   }
 
   li {
     a {
-      padding: 10px 4px 10px;
+      padding-left: 4px;
     }
   }
 
   img.avatar {
     float: left;
-    margin: 1px 5px 0 0;
+    margin-left: 5px;
     border-radius: 3px;
   }
 }
@@ -136,23 +137,18 @@ img.olTileImage {
     color:#fff;
   }
 
-  .well.search-box {
-    padding:0px 15px;
-    margin:3px 0 2px;
-    background:@blueBright;
+  .search-box {
+    margin: 5px;
     border:0;
 
     input[type="text"] {
       width:200px;
     }
 
-    select {
-      font-size:11px;
-      width:110px;
-    }
-
     button {
-      margin:7px 5px 7px 0;
+     height: 28px;
+     margin: -2.5px 0px -2.5px;
+     padding: 4px 10px;
     }
 
     a {
@@ -166,25 +162,18 @@ img.olTileImage {
     }
 
     .btn {
-      background:@white;
-      color:@grayLight;
-      font-size:@baseFontSize;
-
-      &:hover {
-        background:@grayLighter;
-        color:@grayDark;
-      }
+      font-size:@baseFontSize + 5;
     }
 
     i {
-      color:@textColor;
+      color:@white;
     }
   }
 }
 
 section.nav-block {
   background:@navBkgd;
-  margin-top:-35px;
+  margin-top:-45px;
 
   .nav-box {
     border-bottom: 0;
@@ -209,7 +198,7 @@ section.nav-block {
 }
 
 nav.main-nav  {
-  margin:1px 0 1px;
+  margin:4px 0 2px;
   overflow:hidden;
 
   ul {
@@ -246,15 +235,15 @@ nav.back i {
 }
 
 ul.social {
-  margin-top:1px;
+  margin-top:5px;
     li {
       list-style-type:none;
 
     a {
       display:block;
       text-indent:-9999px;
-      width:30px;
-      height:30px;
+      width:25px;
+      height:25px;
       float:left;
       margin-right:5px;
       zoom: 1;
