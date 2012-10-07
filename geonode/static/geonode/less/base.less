@@ -171,30 +171,23 @@ img.olTileImage {
   }
 }
 
-section.nav-block {
+.nav-box {
   background:@navBkgd;
-  margin-top:-45px;
+  border-bottom: 0;
+  margin-bottom: 0;
+ 
+  .border-top-radius(10px);
 
-  .nav-box {
-    border-bottom: 0;
-    margin-bottom: 0;
-  }
-
-  nav.main-nav ul li.current a {
+  ul li.current a {
     font-weight:700;
   }
 
-  nav.main-nav ul li a {
+  ul li a {
     border:0;
     color:#353535;
     font-family:@customFont;
     font-weight: 400;
   }
-}
-
-.nav-box {
-  border-bottom:1px solid @bdrColor;
-  margin-bottom:1px;
 }
 
 nav.main-nav  {
@@ -212,7 +205,6 @@ nav.main-nav  {
         text-transform:uppercase;
         font-size:16px;
         padding:4px 12px;
-        border-right:1px solid @bdrColor;
       }
 
       a.last {
