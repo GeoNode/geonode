@@ -98,13 +98,8 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <section class="nav-block">
-        <div class="container">
-          <div class="row nav-box">
+           </div>
+           <div class="row nav-box">
             <div class="span10">
               <nav class="main-nav">
                 <ul>
@@ -135,7 +130,10 @@
             </div>
           </div>
         </div>
-    </section>
+       </section>
+      </div>
+    </div>
+   {% block middle %}
     <div class="content-wrap">
         <div class="container">
           <div class="row">
@@ -150,6 +148,7 @@
           </div>
         </div>
     </div>
+    {% endblock middle %}
     <footer class="footer">
       <div class="container">
         {% block footer %}
@@ -187,7 +186,6 @@
     <script src="{{ STATIC_URL }}geonode/js/json2.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
     <script src="{{ STATIC_URL }}select2/select2.js"></script>
-    <script src="{{ STATIC_URL }}geonode/select2/select2.js"></script>
     <script type="text/javascript">
 
       $(function() {
