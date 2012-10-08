@@ -9,7 +9,7 @@ psycopg2==2.4.1
 #django-registration
 https://bitbucket.org/ubernostrum/django-registration/get/d36a38202ee3.zip
 django-profiles
--e git+https://github.com/ericflo/django-avatar.git#egg=avatar
+-e git+https://github.com/mbertrand/django-avatar.git#egg=avatar
 django-staticfiles
 South==0.7.3
 #for using memcached
