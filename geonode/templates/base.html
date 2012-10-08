@@ -153,10 +153,7 @@
       <div class="container">
         {% block footer %}
           <div class="pull-left">
-            {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %} {{ VERSION }}</a> |
-            <strong>{% trans "Need Help?" %}</strong>
-            <a href="{% url help %}">{% trans "Help" %}</a> |
-            <a href="{% url dev %}">{% trans "For Developers" %}</a>
+              {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> ( version {{ VERSION }} )
           </div>
           <div class="pull-right">
             {% if csrf_token != "NOTPROVIDED" %}
