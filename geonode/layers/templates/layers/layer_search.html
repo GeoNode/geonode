@@ -16,7 +16,7 @@
       <div class="span4">
         <form class="geonode-search form-search" action="{% url layer_search_page %}" method="GET" data-results-table="#searchResults" data-search-api="{% url layer_search_api %}">
           <input type="text" id="search_query" name="q" class="input-large search-query" value="{{ request.get.q }}">
-          <button type="submit" class="btn btn-large">Search</button>
+          <button type="submit" class="btn btn-large">{% trans "Search" %}</button>
         </form>
       </div>
     </div>

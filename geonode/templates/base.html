@@ -6,7 +6,6 @@
     <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
     {% block head %}
       <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css' />
-      <link href="{{ STATIC_URL }}theme/site.css" rel="stylesheet">
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/datatables.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
@@ -23,23 +22,17 @@
         <div class="container">
           <div class="row">
             <div class="span3">
-              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </a>
               <a href="{% url home %}">
                 <span class="nav-logo">
                   <a class="brand">{{ SITENAME }}</a>
                 </span>
               </a>
             </div>
-            <div class="span5">
-                <form class="form-inline well search-box" action="{% url search %}" method="POST">
+            <div class="span4 offset1">
+                <form class="imput-append form-inline search-box" action="{% url search %}" method="POST">
                   {% csrf_token %}
-                  <input type="text" name="q" placeholder="Search" />
+                  <input type="text" name="q" placeholder="{% trans 'Search ...' %}" />
                   <button type="submit" class="btn btn-small"><i class="icon-search"></i></button>
-                  <a href="{% url advanced_search %}">{% trans "Advanced Search" %}</a>
                 </form>
             </div>
             <div class="span4">
@@ -48,7 +41,7 @@
                   <ul class="nav pull-right account-bar">
                     {% if user.is_authenticated %}
                       <li class="user-avatar">
-                        <img src="{{ STATIC_URL }}theme/img/avatar.png" width="20px" height="20px" alt="" class="avatar" />
+                        <img src="{{ STATIC_URL }}geonode/img/avatar.png" width="20px" height="20px" alt="" class="avatar" />
                       </li>
                       <li class="dropdown user">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -66,10 +59,10 @@
                       </li>
                       <li class="divider-v">|</li>
                     <li class="actions">
-                      <a href="{% url help %}" rel="tooltip" title="help"><i class="icon-question-sign"></i></a>
-                      <a href="#" rel="tooltip" title="notifications"><i class="icon-bullhorn"></i></a>
-                      <a href="#" rel="tooltip" title="messages"><i class="icon-envelope"></i></a>
-                      <a href="{% url layer_upload %}" rel="tooltip" title="upload"><i class="icon-upload-alt"></i></a>
+                      <a href="{% url help %}" rel="tooltip" title="{% trans 'Help' %}"><i class="icon-question-sign"></i></a>
+                      <a href="#" rel="tooltip" title="{% trans 'Notifications' %}"><i class="icon-bullhorn"></i></a>
+                      <a href="#" rel="tooltip" title="{% trans 'Messages' %}"><i class="icon-envelope"></i></a>
+                      <a href="{% url layer_upload %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a>
                     </li>
                     {% else %}
                         <li class="actions">
@@ -105,13 +98,8 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <section class="nav-block">
-        <div class="container">
-          <div class="row nav-box">
+           </div>
+           <div class="row nav-box">
             <div class="span10">
               <nav class="main-nav">
                 <ul>
@@ -125,7 +113,7 @@
                     <a href="{% url maps_browse %}">{% trans "Maps" %}</a>
                   </li>
                   <li id="nav_profiles">
-                    <a href="{% url profile_list_all %}">{% trans "Profiles" %}</a>
+                    <a href="{% url profile_list_all %}">{% trans "People" %}</a>
                   </li>
                   <li id="nav_search">
                     <a href="{% url advanced_search %}">{% trans "Search" %}</a>
@@ -142,7 +130,10 @@
             </div>
           </div>
         </div>
-    </section>
+       </section>
+      </div>
+    </div>
+   {% block middle %}
     <div class="content-wrap">
         <div class="container">
           <div class="row">
@@ -157,14 +148,12 @@
           </div>
         </div>
     </div>
+    {% endblock middle %}
     <footer class="footer">
       <div class="container">
         {% block footer %}
           <div class="pull-left">
-            {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %} {{ VERSION }}</a> |
-            <strong>{% trans "Need Help?" %}</strong>
-            <a href="{% url help %}">{% trans "Help" %}</a> |
-            <a href="{% url dev %}">{% trans "For Developers" %}</a>
+              {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em>
           </div>
           <div class="pull-right">
             {% if csrf_token != "NOTPROVIDED" %}
@@ -194,8 +183,6 @@
     <script src="{{ STATIC_URL }}geonode/js/json2.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
     <script src="{{ STATIC_URL }}select2/select2.js"></script>
-    <script src="{{ STATIC_URL }}geonode/select2/select2.js"></script>
-    <script src="{{ STATIC_URL }}geonode/bootstrap/js/bootstrap-tooltip.js"></script>
     <script type="text/javascript">
 
       $(function() {
