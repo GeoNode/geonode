@@ -348,7 +348,7 @@ class LayersTest(TestCase):
 
     def test_layer_attribute_config(self):
         lyr = Layer.objects.get(pk=1)
-        custom_attributes = lyr.attribute_config()
+        custom_attributes = (lyr.attribute_config())["getfeatureinfo"]
         self.assertEqual(custom_attributes["fields"],["place_name","description"])
         self.assertEqual(custom_attributes["propertyNames"]["description"], "Description")
         self.assertEqual(custom_attributes["propertyNames"]["place_name"], "Place Name")
