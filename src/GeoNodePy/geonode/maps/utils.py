@@ -127,6 +127,12 @@ def get_valid_layer_name(layer=None, overwrite=False):
         msg = ('You must pass either a filename or a GeoNode layer object')
         raise GeoNodeException(msg)
 
+    # Trim the layer name's length to 50 chars.
+    # Workaround for issue #354.
+    # https://github.com/GeoNode/geonode/issues/354
+    if len(layer_name)>50:
+    	layer_name = layer_name[:50]
+
     if overwrite:
         #FIXME: What happens if there is a store in GeoServer with that name
         # that is not registered in GeoNode?
