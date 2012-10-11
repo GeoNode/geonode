@@ -1,7 +1,7 @@
 try:
     # Django 1.4
     from django.conf.urls import include, patterns, url
-except:
+except ImportError:
     # Django < 1.4
     from django.conf.urls.defaults import include, patterns, url
 
