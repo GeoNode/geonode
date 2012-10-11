@@ -18,7 +18,7 @@
 #########################################################################
 
 """
-Tools for managing a CatalogWebService (CSW)
+Tools for managing a Catalogue Service for the Web (CSW)
 """
 import os
 from django.conf import settings

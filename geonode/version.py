@@ -19,10 +19,8 @@
 
 import datetime
 import os
-import base64
-import re
-import math
 import subprocess
+
 
 def get_version(version=None):
     "Returns a PEP 386-compliant version number from VERSION."
@@ -62,8 +60,8 @@ def get_git_changeset():
     """
     repo_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     git_show = subprocess.Popen('git show --pretty=format:%ct --quiet HEAD',
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            shell=True, cwd=repo_dir, universal_newlines=True)
+                   stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                   shell=True, cwd=repo_dir, universal_newlines=True)
     timestamp = git_show.communicate()[0].partition('\n')[0]
     try:
         timestamp = datetime.datetime.utcfromtimestamp(int(timestamp))

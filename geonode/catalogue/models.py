@@ -64,7 +64,19 @@ def catalogue_post_save(instance, sender, **kwargs):
                           )
                          )
 
+    # generate and save CSW specific fields
+    signals.post_save.disconnect(catalogue_post_save, sender=Layer)
 
+    # generate an XML document (GeoNode's default is ISO)
+    md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
+    instance.metadata_xml = md_doc
+    instance.csw_anytext = catalogue.catalogue.csw_gen_anytext(instance.metadata_xml)
+
+    instance.csw_wkt_geometry = instance.geographic_bounding_box
+
+    instance.save()
+
+    signals.post_save.connect(catalogue_post_save, sender=Layer)
 
 def catalogue_pre_save(instance, sender, **kwargs):
     """Send information to catalogue

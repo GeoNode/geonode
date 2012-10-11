@@ -26,7 +26,7 @@ Django's documenation on this topic can be found here https://docs.djangoproject
 
     From the GeoNode source directory::
 
-     $ cd src/GeoNodePy/geonode
+     $ cd geonode/locale
      $ cp -R es id
 
 #. Edit the 2 .po files (``django.po`` and ``djangojs.po``) which are found in the new locale directory you created. This can be done in a normal text editor, or there are specialized tools like po edit http://www.poedit.net/ for this purpose.
@@ -51,7 +51,7 @@ Django's documenation on this topic can be found here https://docs.djangoproject
 
    From the GeoNode source directory, and with the virtualenv activated::
 
-     $ cd src/GeoNodePy/geonode/
+     $ cd geonode/
      $ django-admin.py compilemessages
 
    That's it. Your translations are ready for use.

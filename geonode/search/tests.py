@@ -36,6 +36,7 @@ class SearchTest(TestCase):
         ## Geospatial Elements
         #bbox = request.REQUEST.get("bbox", None)
 
+    def test_empty_search(self):
         # Test Empty Search [returns all results, should match len(Layer.objects.all())+5]
         test_url = "/search/api/?q=%s&start=%d&limit=%d"  % ("", 0, 1)
         client = Client()
@@ -43,42 +44,49 @@ class SearchTest(TestCase):
         results = json.loads(resp.content)
         self.assertEquals(results["total"], 18)
            
+    def test_random_search(self):
         # Test n0ch@nc3 Search (returns no results)
         test_url = "/search/api/?q=%s&start=%d&limit=%d"  % ("n0ch@nc3", 0, 10)
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(results["total"], 0)
                 
+    def test_keyword_search(self):
         # Test Keyword Search (various search terms)
         test_url = "/search/api/?q=%s"  % ("san_andres_y_providencia_location")
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(results["total"], 1)
-
+    
+    def test_id_search(self):
         # Test id Search
         test_url = "/search/api/?id=%d"  % (3)
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(results["total"], 1)
         
+    def test_id_search_2(self):    
         # Test id Search (when id=1, two layers will be selected)
         test_url = "/search/api/?id=%d"  % (1)
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(results["total"], 2)
         
+    def test_name_search(self):
         # TODO: Test name Search
         test_url = "/search/api/?name=%s"  % ('san_andres_y_providencia_location')
         resp = client.get(test_url)
         results = json.loads(resp.content)
         #self.assertEquals(results["total"], 2)
 
+    def test_limit_search(self):
         # Test limit Search
         test_url = "/search/api/?limit=%d"  % (10)
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(len(results["results"]), 10)
 
+    def test_startIndex_search(self):
         # Test startIndex Search
         test_url = "/search/api/?startIndex=%d"  % (5)
         resp = client.get(test_url)
@@ -86,6 +94,7 @@ class SearchTest(TestCase):
         #print resp
         self.assertEquals(len(results["results"]), 13)
 
+    def test_startPage_search(self):
         # TODO: Test startPage Search
         test_url = "/search/api/?startPage=%d"  % (1)
         resp = client.get(test_url)
@@ -93,42 +102,45 @@ class SearchTest(TestCase):
         #print resp
         #self.assertEquals(results["total"], 2)
 
-        # Test type Search
+    def test_type_search(self):
+        # Test type Search: layer
         test_url = "/search/api/?type=%s"  % ('layer')
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(results["total"], 16)
 
-        # Test type Search
+        # Test type Search: contact
         test_url = "/search/api/?type=%s"  % ('contact')
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(results["total"], 2)
 
-        # Test type Search
+        # Test type Search: map
         test_url = "/search/api/?type=%s"  % ('map')
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(results["total"], 0)
 
-        # Test type Search
+        # Test type Search: vector
         test_url = "/search/api/?type=%s"  % ('vector')
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(results["total"], 14)
 
-        # Test type Search
+        # Test type Search: raster
         test_url = "/search/api/?type=%s"  % ('raster')
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(results["total"], 2)
 
+    def test_category_search(self):
         # Test category Search
         test_url = "/search/api/?cat=%s"  % ('location')
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(results["total"], 16)
 
+    def test_sort_search(self):
         # TODO: Test sort Search
         test_url = "/search/api/?sort=%s"  % ('newest') #oldest, alphaaz, alphaza
         resp = client.get(test_url)

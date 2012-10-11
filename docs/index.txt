@@ -23,9 +23,9 @@ The following documents give an overview to GeoNode, the overview document is ta
 For users
 =========
 
-Users are not required to have experience with GIS systems but most power GeoNode users have existings knowledge of tools like ESRI's ArcGIS or qGIS.
+Users are not required to have experience with GIS systems but most power GeoNode users have existing knowledge of tools like ESRI's ArcGIS or QGIS.
 
-The end user documentation is formatted in form of tutorials, this material has mostly been developed for Workshops during FOSS4g and similar conferences.
+The end user documentation is formatted in form of tutorials, this material has mostly been developed for workshops during FOSS4G and similar conferences.
 
  * :doc:`Tutorials Overview <users/index>`
  * :doc:`Registering a New Account <users/register>`
@@ -72,6 +72,7 @@ Administrators are expected to have some experience with Linux systems but they 
     deploy/ssl
     deploy/language
     deploy/backup
+    deploy/csw
 
 For Developers
 ==============

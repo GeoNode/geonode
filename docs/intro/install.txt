@@ -39,9 +39,9 @@ The easiest way to get the .deb is to install it using APT, the standard install
     sudo apt-get update
     sudo apt-get install geonode
 
-Once the package is installed, please consult the :doc:`/deploy/production` to learn how to create an account for the admin user and tweak the settings to get more performance.
+Once the package is installed, please consult :doc:`/deploy/production` to learn how to create an account for the admin user and tweak the settings to get more performance.
 
-CentOS/RHEL  and other *nix distros
+CentOS/RHEL and other \*nix distros
 -----------------------------------
 
 We recommend you to download the latest release and modify the included ``install.sh`` and ``support/config.sh``. GeoNode has been installed in CentOS/RHEL using this mechanism.
@@ -54,7 +54,7 @@ Windows, OSX and others
 
 The recommended install method in these platforms is to use a virtualization solution, like `Virtual Box`_, install the latest `Ubuntu Linux`_ and then proceed with the steps mentioned above.
 
-Some GeoNode developers prefer to use `Vagrant`_ - a VirtualBox wrapper, the Vagrant quickstart guide shows how to get a Linux VM configured in most operating systems.
+Some GeoNode developers prefer to use `Vagrant`_ - a VirtualBox wrapper.  The Vagrant quickstart guide shows how to get a Linux VM configured in most operating systems.
 
 http://vagrantup.com/docs/getting-started/index.html
 

@@ -32,7 +32,12 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template import Context
 from django.template.loader import get_template
 from django.forms import ValidationError
+<<<<<<< HEAD
 from django.db.models import signals
+=======
+from django.contrib.contenttypes.models import ContentType
+from agon_ratings.models import OverallRating
+>>>>>>> 9be019a7618bfec11b841ddc292d479fb90fe917
 
 import geonode.layers.utils
 import geonode.layers.views
@@ -333,6 +338,17 @@ class LayersTest(TestCase):
         # ... all should be good
         response = c.get('/data/base:CA/metadata')
         self.failUnlessEqual(response.status_code, 200)
+
+    def test_layer_attributes(self):
+        lyr = Layer.objects.get(pk=1)
+        #There should be a total of 3 attributes
+        self.assertEqual(len(lyr.attribute_set.all()), 3)
+        #Two out of 3 attributes should be visible
+        custom_attributes = lyr.attribute_set.visible()
+        self.assertEqual(len(custom_attributes), 2)
+        #place_ name should come before description
+        self.assertEqual(custom_attributes[0].attribute_label, "Place Name")
+        self.assertEqual(custom_attributes[1].attribute_label, "Description")
 
     def test_layer_save(self):
         lyr = Layer.objects.get(pk=1)
@@ -700,3 +716,26 @@ class LayersTest(TestCase):
 
         # text which is not JSON should fail
         self.assertRaises(ValidationError, lambda: field.clean('<users></users>'))
+
+    def test_rating_layer_remove(self):
+        """ Test layer rating is removed on layer remove
+        """
+        #Get the layer to work with
+        layer = Layer.objects.all()[0]       
+        url = '/data/%s/remove' % layer.typename
+        layer_id = layer.id
+
+        #Create the rating with the correct content type
+        ctype = ContentType.objects.get(model='layer')
+        OverallRating.objects.create(category=2,object_id=layer_id,content_type=ctype, rating=3)
+
+        c = Client()
+    
+        c.login(username='admin', password='admin')
+
+        #Remove the layer
+        response = c.post(url)
+
+        #Check there are no ratings matching the remove layer
+        rating = OverallRating.objects.filter(category=2,object_id=layer_id)
+        self.assertEquals(rating.count(),0)

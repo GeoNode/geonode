@@ -1,0 +1,39 @@
+language: python
+
+python:
+#  - "2.7"
+  - "2.6"
+
+branches:
+  only:
+    - dev
+
+install:
+  - sudo apt-get update
+  - sudo apt-get install python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2
+  - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
+  - sudo apt-get install -y  gettext
+  - pip install -e . --use-mirrors
+
+before_script:
+  - paver setup
+
+script:
+  - paver test
+  - paver test_integration
+  - paver reset
+  - paver start
+  - sleep 30
+  - paver setup_data
+  - python manage.py test geonode.tests.csw --noinput
+
+after_script:
+  - paver reset_hard
+
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.org#geonode"
+    use_notice: true
+  email:
+    - geonode-dev@opengeo.org

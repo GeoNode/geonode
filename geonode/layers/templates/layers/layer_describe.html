@@ -16,10 +16,24 @@
         Editing details for {{ layer_title }}
       {% endblocktrans %}
     </legend>
+    {% if layer.metadata_uploaded %}
+        Note: this layer's orginal metadata was populated by importing a metadata XML file.
+        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.
+        Some of your original metadata may have been lost.
+    {% endif %}
     {% csrf_token %}
     <div class="form-controls">
       {{ layer_form|as_bootstrap }}
     </div>
+      <legend>Attributes</legend>
+      {{ attribute_form.management_form }}
+      <table cellpadding="5" cellspacing="5" width="100%"><tr><th>{% trans "Attribute" %}</th><th>{% trans "Display Title" %}</th><th>{% trans "Display Order" %}</th><th>{% trans "Visible?" %}</th>
+          {% for form in attribute_form.forms %}
+          {% if form.attribute %}
+          <tr><td>{{form.attribute}}</td><td><div style="display:none">{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.display_order}}</td><td align="center"> {{form.visible}}</td></tr>
+          {% endif %}
+          {% endfor %}
+      </table>
     <fieldset class="form-controls" id="poc_form" {% if poc_form.hidden %}style="display:none"{% endif %}>
       <legend>{% trans "Point of Contact" %}</legend>
       {{ poc_form|as_bootstrap }}

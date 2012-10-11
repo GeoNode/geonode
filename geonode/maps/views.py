@@ -168,6 +168,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
         return render_to_response(template, RequestContext(request, {
             "map": map_obj
         }))
+
     elif request.method == 'POST':
         layers = map_obj.layer_set.all()
         for layer in layers:

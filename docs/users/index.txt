@@ -7,8 +7,7 @@ Downloading material
 ====================
 
 `**Download the data** <https://github.com/downloads/GeoNode/workshops/GeoNode-Workshop-Materials.zip>`_ to use with the tutorials.
-Unzip this to your desktop. You should now have a folder on your desktop called GeoNode-Workshop-Materials.
-In this folder are some sample datasets.
+Unzip this to your desktop. You should now have a folder on your desktop called ``GeoNode-Workshop-Materials``.  In this folder are some sample datasets.
 
 
 Terminology
