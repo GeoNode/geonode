@@ -1,6 +1,8 @@
 {% extends "idios/base.html" %}
 {% load avatar_tags %}
 
+{% block body_class %}profiles{% endblock %}
+
 {% block main %}
 <ul>
 {% for profile in object_list %}

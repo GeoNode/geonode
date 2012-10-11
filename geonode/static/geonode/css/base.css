@@ -5468,6 +5468,7 @@ body.maps #subnav-tabs {
   -moz-box-shadow: 0 1px 2px #cccccc;
   box-shadow: 0 1px 2px #cccccc;
   border-bottom: 2px solid #484748;
+  font-family: 'Lato', sans-serif;
 }
 body.data #subnav-tabs a,
 body.maps #subnav-tabs a {
