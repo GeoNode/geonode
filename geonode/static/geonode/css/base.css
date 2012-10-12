@@ -5146,6 +5146,12 @@ ul.space li {
 #contain-slider {
   overflow: hidden;
 }
+#contain-slider a.toggle i {
+  display: block;
+  float: left;
+  width: 20px;
+  text-align: center;
+}
 #contain-slider .tab-content {
   margin-left: 40px;
   width: auto;
