@@ -2409,8 +2409,6 @@ def batch_permissions(request, use_email=False):
     users = spec['permissions'].get('users', [])
     user_names = [x for (x, y) in users]
 
-
-
     if "layers" in spec:
         lyrs = Layer.objects.filter(pk__in = spec['layers'])
         valid_perms = ['layer_readwrite', 'layer_readonly', 'layer_admin']
@@ -2445,11 +2443,12 @@ def batch_permissions(request, use_email=False):
                 else:
                     if user_level not in valid_perms:
                         user_level = "_none"
+                        user = User.objects.get(username=user)
                     lyr.set_user_level(user, user_level)
 
     if "maps" in spec:
         maps = Map.objects.filter(pk__in = spec['maps'])
-        valid_perms = ['map_readwrite', 'map_readonly', 'map_admin']
+        valid_perms = ['layer_readwrite', 'layer_readonly', 'layer_admin']
         if anon_level not in valid_perms:
             anon_level = "_none"
         if auth_level not in valid_perms:
@@ -2481,7 +2480,7 @@ def batch_permissions(request, use_email=False):
                 else:
                     m.set_user_level(user, user_level)
 
-    return HttpResponse("Not implemented yet")
+    return HttpResponse("Map/layer permissions updated")
 
 def batch_delete(request):
     if not request.user.is_authenticated:

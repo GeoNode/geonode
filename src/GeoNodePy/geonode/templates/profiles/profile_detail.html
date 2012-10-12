@@ -201,11 +201,15 @@ Ext.onReady(function() {
                           Ext.Ajax.request({
                               url: '/data/api/batch_permissions_by_email',
                               method: 'post',
-                              jsonData: spec
+                              jsonData: spec,
+                              success: function (result, request) {
+                                  Ext.getCmp("profile_permissions_win").close();
+                              }
                           });
                       }
                   });
                   var win = new Ext.Window({
+                      id: "profile_permissions_win",
                       title: gettext("Permissions"),
                       modal: true,
                       items: [ editor.container, {
