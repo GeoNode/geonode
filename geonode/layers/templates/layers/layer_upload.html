@@ -19,21 +19,23 @@
   </script>
 {% endblock %}
 
-{% block body %}
+{% block main %}
   <div class="block">
-    <div class="span12">
+    <div class="span8">
       <h2 class="page-title">{% trans "Upload Layers" %}</h2>
 
-  {% if errors %}
-    <div id="errors">
-      {% for error in errors %}
-        <div>{{ error }}</div>
-      {% endfor %}
-    </div>
-  {% endif %}
-  <div>{% trans 'GeoNode can import GeoTIFF and Shapefile data. To import a shapefile, first pick its file with the .shp extension. You will then be prompted to pick the other component files.' %}</div>
-  <div id="upload_form">
+	  {% if errors %}
+	    <div id="errors">
+	      {% for error in errors %}
+	        <div>{{ error }}</div>
+	      {% endfor %}
+	    </div>
+	  {% endif %}
+	    <div>{% trans 'GeoNode can import GeoTIFF and Shapefile data. To import a shapefile, first pick its file with the .shp extension. You will then be prompted to pick the other component files.' %}</div>
+	    <div id="upload_form">
+	    </div>
 	</div>
+</div>
 	<script type="text/javascript">
 	{% autoescape off %}
 	Ext.onReady(function(){
@@ -127,14 +129,14 @@
 	        listeners: listeners
 	    });
 
-            var xml_file = new Ext.ux.form.FileUploadField({
-                id: 'xml_file',
-                emptyText: gettext('Select a .xml metadata file (ISO, Dublin Core, FGDC [optional])'),
-                fieldLabel: gettext('XML'),
-                name: 'xml_file',
-                allowBlank: true,
-                listeners: listeners
-            });
+        var xml_file = new Ext.ux.form.FileUploadField({
+            id: 'xml_file',
+            emptyText: gettext('Select a .xml metadata file (ISO, Dublin Core, FGDC [optional])'),
+            fieldLabel: gettext('XML'),
+            name: 'xml_file',
+            allowBlank: true,
+            listeners: listeners
+        });
 
 	    var abstractField = new Ext.form.TextArea({
 	        id: 'abstract', 
