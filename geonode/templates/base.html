@@ -17,6 +17,7 @@
     <![endif]-->
   </head>
   <body class="{% block body_class %}{% endblock %}">
+    {% block header %}
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -133,7 +134,8 @@
        </section>
       </div>
     </div>
-   {% block middle %}
+    {% endblock header %}
+    {% block middle %}
     <div class="content-wrap">
         <div class="container">
           <div class="row">
@@ -149,6 +151,7 @@
         </div>
     </div>
     {% endblock middle %}
+    {% block footer %}
     <footer class="footer">
       <div class="container">
         {% block footer %}
@@ -174,6 +177,7 @@
         {% endblock %}
       </div>
     </footer>
+    {% endblock footer %}
 
     <script src="{{ STATIC_URL }}bootstrap/js/jquery-1.7.1.min.js"></script>
     <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
