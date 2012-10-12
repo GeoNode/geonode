@@ -19,7 +19,7 @@
   </script>
 {% endblock %}
 
-{% block main %}
+{% block body %}
   <div class="block">
     <div class="span8">
       <h2 class="page-title">{% trans "Upload Layers" %}</h2>
@@ -219,16 +219,16 @@
 	        }
 	    };
 
-            var disable_title_and_abstract_inputs = function() {
-                layer_title.setValue('DISABLED: Will be derived from metadata XML.');
-                abstractField.setValue('DISABLED: Will be derived from metadata XML.');
-                layer_title.disable();
-                abstractField.disable();
-            }
+        var disable_title_and_abstract_inputs = function() {
+            layer_title.setValue('DISABLED: Will be derived from metadata XML.');
+            abstractField.setValue('DISABLED: Will be derived from metadata XML.');
+            layer_title.disable();
+            abstractField.disable();
+        }
 
-            xml_file.addListener('fileselected', function() {
-                disable_title_and_abstract_inputs();
-            });
+        xml_file.addListener('fileselected', function() {
+            disable_title_and_abstract_inputs();
+        });
 
 	    base_file.addListener('fileselected', function(cmp, value) {
 	        check_shapefile();
