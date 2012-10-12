@@ -15,5 +15,10 @@
             <li><a href="{% url "layer_upload" %}" class="upload">{% trans "Upload Layers" %}</a></li>
       </ul>
     </div>
-  {% block body %}{% endblock body %}
+    <div class="span8">
+        {% block body %}{% endblock %}
+    </div>
+    <div class="span4">
+        {% block sidebar %}{% endblock %}
+    </div>
 {% endblock %}
