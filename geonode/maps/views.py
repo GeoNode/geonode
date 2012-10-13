@@ -30,16 +30,17 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
+from django.views.generic.list import ListView
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 
 from geonode.utils import _split_query, http_client
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, TopicCategory
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import forward_mercator
 from geonode.utils import DEFAULT_TITLE
@@ -87,28 +88,45 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 
 #### BASIC MAP VIEWS ####
 
-def maps_browse(request, template='maps/map_list.html'):
-    if request.method == 'GET':
-        return render_to_response(template, RequestContext(request))
-    elif request.method == 'POST':
-        if not request.user.is_authenticated():
-            return HttpResponse(
-                'You must be logged in to save new maps',
-                mimetype="text/plain",
-                status=401
-            )
-        else:
-            map_obj = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
-            map_obj.save()
-            map_obj.set_default_permissions()
-            try:
-                map_obj.update_from_viewer(request.raw_post_data)
-            except ValueError, e:
-                return HttpResponse(str(e), status=400)
-            else:
-                response = HttpResponse('', status=201)
-                response['Location'] = map_obj.id
-                return response
+class MapListView(ListView):
+
+    layer_filter = "date"
+    queryset = Map.objects.all()
+
+    def __init__(self, *args, **kwargs):
+        self.layer_filter = kwargs.pop("layer_filter", "last_modified")
+        self.queryset = self.queryset.order_by("-{0}".format(self.layer_filter))
+        super(MapListView, self).__init__(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        kwargs.update({"layer_filter": self.layer_filter})
+        return kwargs
+
+
+def maps_category(request, slug, template='maps/map_list.html'):
+    category = get_object_or_404(TopicCategory, slug=slug)
+    map_list = category.map_set.all()
+    print map_list
+    return render_to_response(
+        template,
+        RequestContext(request, {
+            "object_list": map_list,
+            "layer_category": category
+            }
+        )
+    )
+
+
+def maps_tag(request, slug, template='maps/map_list.html'):
+    map_list = Map.objects.filter(keywords__slug__in=[slug])
+    return render_to_response(
+        template,
+        RequestContext(request, {
+            "object_list": map_list,
+            "map_tag": slug
+            }
+        )
+    )
 
 
 def map_detail(request, mapid, template='maps/map_detail.html'):
