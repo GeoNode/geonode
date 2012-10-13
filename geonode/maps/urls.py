@@ -29,10 +29,10 @@ js_info_dict = {
 urlpatterns = patterns('geonode.maps.views',
     url(r'^$', MapListView.as_view(), name='maps_browse'),
     url(r'^popular/$', MapListView.as_view(
-        layer_filter="popular_count"
+        map_filter="popular_count"
     ), name='maps_browse_popular'),
     url(r'^shared/$', MapListView.as_view(
-        layer_filter="share_count"
+        map_filter="share_count"
     ), name='maps_browse_shared'),
     url(r'^category/(?P<slug>[-\w]+?)/$', 'maps_category', name='maps_browse_category'),
     url(r'^tag/(?P<slug>[-\w]+?)/$', 'maps_tag', name='maps_browse_tag'),
