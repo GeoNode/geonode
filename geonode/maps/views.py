@@ -90,16 +90,16 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 
 class MapListView(ListView):
 
-    layer_filter = "date"
+    map_filter = "last_modified"
     queryset = Map.objects.all()
 
     def __init__(self, *args, **kwargs):
-        self.layer_filter = kwargs.pop("layer_filter", "last_modified")
-        self.queryset = self.queryset.order_by("-{0}".format(self.layer_filter))
+        self.map_filter = kwargs.pop("map_filter", "last_modified")
+        self.queryset = self.queryset.order_by("-{0}".format(self.map_filter))
         super(MapListView, self).__init__(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        kwargs.update({"layer_filter": self.layer_filter})
+        kwargs.update({"map_filter": self.map_filter})
         return kwargs
 
 

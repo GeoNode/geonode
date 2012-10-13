@@ -33,7 +33,7 @@
             <ul class="nav">
               {% map_categories as category_list %}
               <li>
-                <a href="{% url "maps_browse" %}"{% if not layer_category %} class="active"{% endif %}>
+                <a href="{% url "maps_browse" %}"{% if not map_category %} class="active"{% endif %}>
                   {% trans "All Categories" %}
                 </a>
               </li>
