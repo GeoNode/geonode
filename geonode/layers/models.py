@@ -390,7 +390,7 @@ class Layer(ResourceBase):
         return self._publishing_cache
 
     def get_absolute_url(self):
-        return "/data/%s" % (self.typename)
+        return reverse('layer_detail', args=(self.typename))
 
     def __str__(self):
         return "%s Layer" % self.typename
