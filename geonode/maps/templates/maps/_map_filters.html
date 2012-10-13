@@ -5,6 +5,7 @@
   <li><a href="{% url maps_browse %}"{% if map_filter == "view_count" %} class="selected"{% endif %}>{% trans "Most viewed" %}</a></li>
   <li><a href="{% url maps_browse %}"{% if map_filter == "popular_count" %} class="selected"{% endif %}>{% trans "Most popular" %}</a></li>
   <li><a href="{% url maps_browse %}"{% if map_filter == "share_count" %} class="selected"{% endif %}>{% trans "Most shared" %}</a></li>
+  {% comment %}
   <li>
     <form action="" class="form-inline">
       <label for="">{% trans 'sort by' %}:</label>
@@ -14,4 +15,5 @@
       </select>
     </form>
   </li>
+  {% endcomment %}
 </ul>

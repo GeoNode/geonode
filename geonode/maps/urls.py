@@ -20,12 +20,22 @@
 
 from django.conf.urls.defaults import patterns, url
 
+from geonode.maps.views import MapListView
+
 js_info_dict = {
     'packages': ('geonode.maps',),
 }
 
 urlpatterns = patterns('geonode.maps.views',
-    url(r'^$', 'maps_browse', name='maps_browse'),
+    url(r'^$', MapListView.as_view(), name='maps_browse'),
+    url(r'^popular/$', MapListView.as_view(
+        layer_filter="popular_count"
+    ), name='maps_browse_popular'),
+    url(r'^shared/$', MapListView.as_view(
+        layer_filter="share_count"
+    ), name='maps_browse_shared'),
+    url(r'^category/(?P<slug>[-\w]+?)/$', 'maps_category', name='maps_browse_category'),
+    url(r'^tag/(?P<slug>[-\w]+?)/$', 'maps_tag', name='maps_browse_tag'),
     url(r'^search/?$', 'maps_search_page', name='maps_search'),
     url(r'^search/api/?$', 'maps_search', name='maps_search_api'),
     url(r'^new$', 'new_map', name="new_map"),
