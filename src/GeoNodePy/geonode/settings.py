@@ -16,11 +16,11 @@ DEFAULT_FROM_EMAIL="me@me.com"
 NO_REPLY_EMAIL = "do-not-reply@worldmap.harvard.edu"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'naturegirls@gmail.com'
-EMAIL_HOST_PASSWORD = '@makihi69gmail2'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_HOST_USER = 'me@me.com'
+#EMAIL_HOST_PASSWORD = 'password'
+#EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
