@@ -209,7 +209,7 @@ function postinstall() {
 }
 
 function pgpasswd(){
-    if [ $(su - postgres -c 'psql -l' | awk /geonode/'{print $1}') = 'geonode' ]
+    if [ "$(su - postgres -c 'psql -l' | awk /geonode/'{print $1}')" = 'geonode' ]
     then
     if [ -f $GEONODE_ETC/local_settings.py.old ]
     then
