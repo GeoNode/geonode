@@ -498,9 +498,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             var startSourceId = null;
             for (var id in this.layerSources) {
                 source = this.layerSources[id];
-                if (source.store && source instanceof gxp.plugins.WMSSource &&
-                                source.url.indexOf("/geoserver/wms") === 0) {
-                    startSourceId = id;
+                if (source.store && 
+                    source instanceof gxp.plugins.WMSSource && (
+                    source.url.indexOf(this.localGeoServerBaseUrl) === 0 || 
+                    source.url.indexOf("/geoserver/wms") === 0)) {
+                        startSourceId = id;
                 }
             }
             // find the add layers plugin
