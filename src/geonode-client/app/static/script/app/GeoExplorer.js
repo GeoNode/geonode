@@ -53,13 +53,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * api: config[localGeoServerBaseUrl]
      * ``String`` url of the local GeoServer instance
      */
-    localGeoServerBaseUrl: "",
+    localGeoServerBaseUrl: null,
 
     /**
      * api: config[localCSWBaseUrl]
      * ``String`` url of the local CS-W instance
      */
-    localCSWBaseUrl: "",
+    localCSWBaseUrl: null,
 
     /**
      * api: config[useMapOverlay]
@@ -416,11 +416,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ptype: "gxp_addlayers",
             search: true,
             actionTarget: "treetbar",
-            createExpander: function() {
+            createExpander: (config.localGeoServerBaseUrl) ? function() {
                 return new GeoExplorer.CapabilitiesRowExpander({
                     ows: config.localGeoServerBaseUrl + "ows"
                 });
-            }
+            }: undefined
         }, {
             ptype: "gxp_removelayer",
             actionTarget: ["treetbar", "treecontent.contextMenu"]
