@@ -379,7 +379,7 @@ class Layer(ResourceBase):
             cfg = {}
             visible_attributes =  self.attribute_set.visible()
             if (visible_attributes.count() > 0):
-                cfg["getfeatureinfo"] = {
+                cfg["getFeatureInfo"] = {
                     "fields":  [l.attribute for l in visible_attributes],
                     "propertyNames":   dict([(l.attribute,l.attribute_label) for l in visible_attributes])
                 }

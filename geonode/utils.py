@@ -324,7 +324,7 @@ def layer_from_viewer_config(model, layer, source, ordering):
     """
     layer_cfg = dict(layer)
     for k in ["format", "name", "opacity", "styles", "transparent",
-                "fixed", "group", "visibility", "title", "source", "getfeatureinfo"]:
+                "fixed", "group", "visibility", "title", "source", "getFeatureInfo"]:
         if k in layer_cfg: del layer_cfg[k]
 
     source_cfg = dict(source)

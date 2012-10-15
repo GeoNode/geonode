@@ -349,8 +349,8 @@ class MapLayer(models.Model, GXPLayerBase):
         if self.local:
             layer = Layer.objects.get(typename=self.name)
             attribute_cfg = layer.attribute_config()
-            if "getfeatureinfo" in attribute_cfg:
-                    cfg["getfeatureinfo"] = attribute_cfg["getfeatureinfo"]
+            if "getFeatureInfo" in attribute_cfg:
+                    cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
         return cfg
 
 
