@@ -269,11 +269,33 @@ def new_map(request, template='maps/map_view.html'):
 
 
 def new_map_json(request):
-    config = new_map_config(request)
-    if isinstance(config, HttpResponse):
-        return config
-    else:
-        return HttpResponse(config)
+    if request.method == 'GET':
+        config = new_map_config(request)
+        if isinstance(config, HttpResponse):
+            return config
+        else:
+            return HttpResponse(config)
+
+    elif request.method == 'POST':
+        if not request.user.is_authenticated():
+            return HttpResponse(
+                   'You must be logged in to save new maps',
+                   mimetype="text/plain",
+                   status=401
+            )
+
+        map_obj = Map(owner=request.user, zoom=0,
+                      center_x=0, center_y=0)
+        map_obj.save()
+        map_obj.set_default_permissions()
+        try:
+            map_obj.update_from_viewer(request.raw_post_data)
+        except ValueError, e:
+            return HttpResponse(str(e), status=400)
+        else:
+            response = HttpResponse('', status=201)
+            response['Location'] = map_obj.id
+            return response
 
 
 def new_map_config(request):
