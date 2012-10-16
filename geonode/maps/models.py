@@ -32,7 +32,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, TopicCategory
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
@@ -86,6 +86,11 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
     
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"))
 
+    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True)
+
+    popular_count = models.IntegerField(default=0)
+    share_count = models.IntegerField(default=0)
+    
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
 

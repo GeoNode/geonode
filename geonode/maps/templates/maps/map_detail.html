@@ -1,4 +1,5 @@
 {% extends "maps/map_base.html" %}
+{% load geonode_auth %}
 {% load i18n %}
 {% load geonode_auth %}
 {% load dialogos_tags %}
@@ -17,7 +18,7 @@
 
 {% block body_class %}maps{% endblock %}
 
-{% block body %}
+{% block body_outer %}
   {% overall_rating map "map" as map_rating %}
   <div class="span8">
     <h2 class="page-title">{{ map.title }}</h2>
@@ -35,25 +36,38 @@
   <div class="span12">
 	  <div id="embedded_map">
         <div id="the_map" width='100%'></div>
-      {% include "_actions.html" %}
-        <div class="avg_rating" data-rating="{{ map_rating }}">{% trans 'Average rating' %} <span class="overall_rating"></span></div>
-        <div class="pointer"></div>
     </div>
   </div>
 
   <div class="span8">
-    <div id="collapse-map">
-      <div id="info" class="collapse in">
+    <div class="map-actions">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#info" data-toggle="tab"><i class="icon-info-sign"></i>{% trans "Info" %}</a></li>
+        <li><a href="#attributes" data-toggle="tab"><i class="icon-list"></i>{% trans "Attributes" %}</a></li>
+        <li><a href="#share" data-toggle="tab"><i class="icon-share"></i>{% trans "Share" %}</a></li>
+        <li><a href="#flag" data-toggle="tab"><i class="icon-flag"></i>{% trans "Flag" %}</a></li>
+      </ul>
+    </div>
+
+    <div class="tab-content">
+      <article class="description tab-pane active" id="info">
+        <h2>{% trans "Map Information" %}</h2>
         <strong>{% trans "Abstract:" %}</strong>
         {{ map.abstract }}
-        {% comment %}<a href="" class="read-more" data-toggle="collapse" data-target="#abstract-full">{% trans "Read more" %}</a>
-        <div id="abstract-full" class="collapse in">More content goes here and is displayed when read more is clicked.</div>{% endcomment %}
-      </div>
-      <div id="rate-map">
-
-      </div>
+        
+        <p class="meta">{{ map }}<strong> {% trans "Uploaded by" %} <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner.get_profile.name }}</a></strong></p>
+        <div id="rate-map"></div>
+      </article>
+      <article class="tab-pane" id="attributes">
+        <h2>{% trans "Attributes" %}</h2>
+      </article>
+      <article class="tab-pane" id="share">
+        <h2>{% trans "Sharing" %}</h2>
+      </article>
+      <article class="tab-pane" id="flag">
+        <h2>{% trans "Flag" %}</h2>
+      </article>
     </div>
-    <p class="meta">{{ map }}<strong> {% trans "Uploaded by" %} <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner.get_profile.name }}</a> on Sep 27, 2011</strong></p>
     {% with map as obj %}
       {% include "_comments.html" %}
     {% endwith %}
