@@ -135,17 +135,17 @@ community."
         self.assertEquals(map_obj.layer_set.all().count(), 1)
 
     def test_map_save(self):
-        """POST /maps -> Test saving a new map"""
+        """POST /maps/new/data -> Test saving a new map"""
 
         c = Client()
-
+        new_map = reverse("new_map_json")
         # Test that saving a map when not logged in gives 401
-        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+        response = c.post(new_map,data=self.viewer_config,content_type="text/json")
         self.assertEqual(response.status_code,401)
 
         # Test successful new map creation
         c.login(username=self.user, password=self.passwd)
-        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+        response = c.post(new_map,data=self.viewer_config,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id = int(response['Location'].split('/')[-1])
         c.logout()
@@ -159,7 +159,7 @@ community."
 
         # Test an invalid map creation request
         c.login(username=self.user, password=self.passwd)
-        response = c.post("/maps/",data="not a valid viewer config",content_type="text/json")
+        response = c.post(new_map,data="not a valid viewer config",content_type="text/json")
         self.assertEquals(response.status_code,400)
         c.logout()
 
@@ -550,8 +550,10 @@ community."
         c = Client()
         c.login(username=self.user, password=self.passwd)
 
+        new_map = reverse('new_map_json')
+
         #Create the map
-        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+        response = c.post(new_map, data=self.viewer_config,content_type="text/json")
         map_id = int(response['Location'].split('/')[-1])
 
         #Create the rating with the correct content type
