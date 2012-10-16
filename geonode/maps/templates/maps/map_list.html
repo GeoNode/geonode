@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load maps_tags %}
 {% load pagination_tags %}
+{% load taggit_extras %}
 {% load staticfiles %}
 {% load url from future %}
 
@@ -10,47 +11,74 @@
 {% block body %}
   <div class="span8">
     <h2 class="page-title">{% trans "Explore Maps" %}</h2>
+  </div>
+  <div class="span4">
+    <a href="{% url "new_map" %}" class="btn btn-large btn-primary pull-right strong">{% trans "Create a New Map" %}</a>
+  </div>
+  <div class="span8">
     {% include "maps/_map_filters.html" %}
   </div>
   <div class="span4">
-    <p><a href="{% url "new_map" %}" class="btn btn-large btn-primary pull-right strong">{% trans "Create a New Map" %}</a></p>
-  </div>
-  <div class="span12">
-    <div class="row">
-      <div class="tabs-left span4">
-        <ul class="nav nav-tabs">
-          <li class="active"><a href="#all" data-toggle="tab">All Categories <i class="icon-chevron-right pull-right"></i></a></li>
-          <li><a href="#cat1" data-toggle="tab">Category 1 <i class="icon-chevron-right pull-right"></i></a></li>
-          <li><a href="#cat2" data-toggle="tab">Category 2 <i class="icon-chevron-right pull-right"></i></a></li>
-          <li><a href="#cat3" data-toggle="tab">Category 3 <i class="icon-chevron-right pull-right"></i></a></li>
-          <li><a href="#cat4" data-toggle="tab">Category 4 <i class="icon-chevron-right pull-right"></i></a></li>
-          <li><a href="#cat5" data-toggle="tab">Category 5 <i class="icon-chevron-right pull-right"></i></a></li>
-          <li><a href="#cat6" data-toggle="tab">Category 6 <i class="icon-chevron-right pull-right"></i></a></li>
-          <li><a href="#cat7" data-toggle="tab">Category 7 <i class="icon-chevron-right pull-right"></i></a></li>
-          <li><a href="#cat8" data-toggle="tab">Category 8 <i class="icon-chevron-right pull-right"></i></a></li>
-        </ul>
-      </div>
-      <div class="tab-content">
-        <div class="tab-pane active span8 grid" id="all">
-          <div class="row">
-            {% featured_maps as featured_maps %}
-            {% autopaginate featured_maps 8 %}
-            {% for map in featured_maps %}
-              {% include "maps/_map_grid_item.html" %}
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-      <div>
-        {% paginate %}
-      </div>
+    <div class="pull-right" data-viewby="list">
+      {% include "_viewby.html" %}
     </div>
   </div>
+  <div class="span12">
+    <div class="row" id="contain-slider">
+      <div class="span4">
+        <div id="slide-pane">
+          <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
+          <nav class="tabs-left" id="nav-categories">
+            <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Categories" %}</a></h2>
+            <ul class="nav">
+              {% map_categories as category_list %}
+              <li>
+                <a href="{% url "maps_browse" %}"{% if not map_category %} class="active"{% endif %}>
+                  {% trans "All Categories" %}
+                </a>
+              </li>
+              {% for category in category_list %}
+                <li>
+                  <a href="{% url "maps_browse_category" category.slug %}"{% ifequal map_category category %} class="active"{% endifequal %}>{{ category }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </nav>
+          <nav class="" id="nav-keywords">
+            <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> {% trans "Keywords" %}</a></h2>
+            <ul class="nav">
+              {% get_taglist as tags for 'maps.Map' %}
+              {% for tag in tags %}
+                <li><a href="{% url "map_browse_tag" tag.slug %}"{% if tag.slug == map_tag %} class="active"{% endif %}>{{ tag }}</a> <span class="count">({{ tag.num_times }})</span></li>
+              {% endfor %}
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <div class="tab-content span8">
+        <div class="tab-pane active list loadmore" id="all">
+          {% if object_list.count %}
+          {% autopaginate object_list 2 %}
+          {% for map in object_list %}
+            {% include "maps/_map_list_item.html" %}
+          {% endfor %}
+          {% else %}
+            <p>{% trans "No data found" %}</p>
+          {% endif %}
+        </div>
+        {% if object_list.count %}
+          {% paginate %}
+        {% endif %}
+        </div>
+    </div>
+  </div> <!-- End Nav -->
 
 {% endblock %}
 
 {% block extra_script %}
-  <script src="{% static "geonode/js/bootstrap-tab.js" %}" type="text/javascript"></script>
+  <script src="{% static "geonode/js/layers.js" %}"></script>
+  <script src="{% static "geonode/js/waypoints.js" %}"></script>
+  <script src="{% static "geonode/js/loadmore.js" %}"></script>
   <script src="{% static "agon_ratings/js/jquery.raty.js" %}"></script>
   <script type="text/javascript">
      $(function() {
@@ -58,7 +86,7 @@
         var rating = $(this).parents(".avg_rating").data('rating');
         star(this, rating);
       });
-       $(".tab-pane").on("load.loadmore", function(e, o) {          
+       $(".loadmore").on("load.loadmore", function(e, o) {          
         o.find(".overall_rating").each(function() {
           var rating = $(this).parents(".avg_rating").data('rating');
           star(this, rating);

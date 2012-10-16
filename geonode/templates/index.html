@@ -30,8 +30,8 @@
     </p>
   </div>
   <div class="row">
-    <div class="span8">
-      <section class="widget list loadmore">
+    <div class="span8 paginate paginate-auto">
+      <section class="widget list paginate-contents">
         <h2>{% trans "Latest Layers" %}</h2>
         {% featured_layers 100 as featured_layers %}
         {% if featured_layers.count %}
@@ -76,7 +76,7 @@
 
 {% block extra_script %}  
   <script src="{% static "geonode/js/waypoints.js" %}"></script>
-  <script src="{% static "geonode/js/loadmore.js" %}"></script>
+  <script src="{% static "geonode/js/paginate.js" %}"></script>
   <script src="{% static "agon_ratings/js/jquery.raty.js" %}"></script>
   <script type="text/javascript">
      $(function() {
