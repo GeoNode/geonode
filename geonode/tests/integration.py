@@ -57,6 +57,8 @@ import zipfile
 
 LOGIN_URL= "/accounts/login/"
 
+import logging
+logging.getLogger("south").setLevel(logging.INFO)
 
 class GeoNodeCoreTest(TestCase):
     """Tests geonode.security app/module
@@ -328,94 +330,6 @@ class GeoNodeMapTest(TestCase):
 
     # Search Tests
     
-    def test_metadata_search(self):
-        
-        # Test Empty Search [returns all results, should match len(Layer.objects.all())+5]
-        # +5 is for the 5 'default' records in GeoNetwork
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("", 0, 10)
-        client = Client()
-        resp = client.get(test_url)
-        results = json.loads(resp.content)
-        self.assertEquals(int(results["total"]), Layer.objects.count())
-        
-        # Test n0ch@nc3 Search (returns no results)
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("n0ch@nc3", 0, 10)
-        resp = client.get(test_url)
-        results = json.loads(resp.content)
-        self.assertEquals(int(results["total"]), 0)
-        
-        # Test Keyword Search (various search terms)
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("NIC", 0, 10)
-        resp = client.get(test_url)
-        results = json.loads(resp.content)
-        #self.assertEquals(int(results["total"]), 3)
-
-        # This Section should be greatly expanded upon after uploading several
-        # Test layers. Issues found with GeoNetwork search should be 'documented'
-        # here with a Test Case
-
-        # Test BBOX Search (various bbox)
-        
-        # - Test with an empty query string and Global BBOX and validate that total is correct
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d&bbox=%s"  % ("", 0, 10, "-180,-90,180,90")
-        resp = client.get(test_url)
-        results = json.loads(resp.content)
-        self.assertEquals(int(results["total"]), Layer.objects.count())
-
-        # - Test with a specific query string and a bbox that is disjoint from its results
-        #test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d&bbox=%s"  % (settings.SITEURL, "NIC", 0, 10, "0,-90,180,90")
-        #results = json.loads(get_web_page(test_url))
-        #self.assertEquals(int(results["total"]), 0) 
-
-        # - Many more Tests required
-
-        # Test start/limit params (do in unit test?)
-
-        # Test complex/compound Search
-
-        # Test Permissions applied to search from ACLs
-
-        # TODO Write a method to accept a perm_spec and query params
-        # and test that query results are returned respecting the
-        # perm_spec
-
-        # - Test with Anonymous User
-        perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","layer_readwrite"]]}
-        for layer in Layer.objects.all():
-            layer_set_permissions(layer, perm_spec)
-
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("", 0, 10)
-        resp = client.get(test_url)
-        results = json.loads(resp.content)
-
-        for layer in results["rows"]:
-            if layer["_local"] == False:
-                # Ignore non-local layers
-                pass
-            else:
-                self.assertEquals(layer["_permissions"]["view"], False)
-                self.assertEquals(layer["_permissions"]["change"], False)
-                self.assertEquals(layer["_permissions"]["delete"], False)
-                self.assertEquals(layer["_permissions"]["change_permissions"], False)
-
-        # - Test with Authenticated User
-        client = Client()
-        client.login(username='admin', password='admin')
-        resp = client.get(test_url)
-        results = json.loads(resp.content)
-        
-        for layer in results["rows"]:
-            if layer["_local"] == False:
-                # Ignore non-local layers
-                pass
-            else:
-                self.assertEquals(layer["_permissions"]["view"], True)
-                self.assertEquals(layer["_permissions"]["change"], True)
-                self.assertEquals(layer["_permissions"]["delete"], True)
-                self.assertEquals(layer["_permissions"]["change_permissions"], True)
-        
-        # Test that MAX_SEARCH_BATCH_SIZE is respected (in unit test?)
-    
     def test_search_result_detail(self):
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file, overwrite=True)
@@ -427,6 +341,9 @@ class GeoNodeMapTest(TestCase):
         client = Client()
         resp = client.get(test_url)
         results = resp.content
+        print results
+        print resp.status_code
+        assert resp.status_code == 200
         
         # Test with an invalid UUID (should return 404, but currently does not)
         uuid="xyz"
