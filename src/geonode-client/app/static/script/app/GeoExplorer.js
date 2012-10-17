@@ -1646,10 +1646,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         gxp.plugins.FeatureEditorGrid.prototype.initComponent = function(){
             oldInitComponent.apply(this);
             var customEditField = null;
-            if (this.customEditors["Description"] != undefined && this.customEditors["Description"].field.maxLength == undefined)
-                customEditField = this.customEditors["Description"];
-            else if (this.customEditors["descriptio"] != undefined && this.customEditors["descriptio"].field.maxLength == undefined)
-                customEditField = this.customEditors["descriptio"];
+            for(var key in this.customEditors) {
+                if (this.customEditors.hasOwnProperty(key)) {
+                    if (key.match(/descripti/i) &&  this.customEditors[key].field.maxLength == undefined) {
+                        customEditField = this.customEditors[key];
+                        break;
+                    }
+                }
+            }
             if (customEditField)
             {
                 customEditField.addListener("startedit",
