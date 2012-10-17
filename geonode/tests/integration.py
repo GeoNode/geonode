@@ -520,8 +520,8 @@ class GeoNodeMapTest(TestCase):
         shp_layer = file_upload(shp_file)
 
         # Save the names of the Resource/Store/Styles 
-        resource_name = shp_layer.resource.name
-        store = shp_layer.resource.store
+        resource_name = shp_layer.name
+        store = shp_layer.store
         store_name = store.name
         layer = gs_cat.get_layer(resource_name)
         styles = layer.styles + [layer.default_style]
