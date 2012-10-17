@@ -6,7 +6,7 @@
 {% load bootstrap_tags %}
 {% load url from future %}
 
-{% block title %}{{ layer.resource.title|default:layer.typename }} — {{ block.super }}{% endblock %}
+{% block title %}{{ layer.title|default:layer.typename }} — {{ block.super }}{% endblock %}
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
@@ -24,7 +24,7 @@
 
 {% block body_outer %}
   <div class="span6">
-    <h2 class="page-title">{{ layer.resource.title|default:layer.typename }}</h2>
+    <h2 class="page-title">{{ layer.title|default:layer.typename }}</h2>
   </div>
   <div class="span6 action-group">
     <div class="pull-right">
@@ -59,10 +59,10 @@
         <span class="caret"></span>
       </a>
       <ul class="dropdown-menu">
-        <li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li>
+        <!--li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li-->
         <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
-        <li><a href="{% url "layer_style" layer.typename %}">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
-        <li><a href="{% url "layer_permissions" layer.typename %}">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+        <!--li><a href="{% url "layer_style" layer.typename %}">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li-->
+        <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %} <i class="icon-chevron-right"></i></a></li>
       </ul>
     </div>
@@ -131,10 +131,10 @@
             </li>
           {% endif %}
           
-          {% if layer.resource.projection %}
+          {% if layer.srid %}
             <li>
               <strong>{% trans "Native SRS" %}:</strong>
-              {{ layer.resource.projection|default:_("No SRS specified.") }}
+              {{ layer.srid|default:_("No SRS specified.") }}
             </li>
           {% endif %}
         </ul>
@@ -204,14 +204,14 @@
     <div class="well">
         <h2>{% trans "Permissions" %}</h2>
         <p>{% trans "Placeholder" %}</p>
-        <p><a href="{% url "layer_permissions" layer.typename %}" class="btn btn-large">{% trans "Change Layer Permissions" %}</a></p>
+        <p><a href="#modal_perms" data-toggle="modal" class="btn btn-large">{% trans "Change Layer Permissions" %}</a></p>
     </div>
     {% endif %}
     <div class="well">
         <h2>{% trans "Styles" %}</h2>
         <p>{% trans "The following styles are associated with this layer. Choose a style to view it in the preview map." %}</p>
         <ul class="unstyled space">
-          {% for style in layer.styles %}
+          {% for style in layer.styles.all %}
             <li>
               <a href="#">
                 {% if style.sld_title %}
