@@ -354,7 +354,7 @@ class Layer(ResourceBase):
         }).get(self.storeType, "Data")
 
     def delete_from_geoserver(self):
-        cascading_delete(Layer.objects.gs_catalog, self.resource)
+        cascading_delete(Layer.objects.gs_catalog, self)
 
     @property
     def service_type(self):

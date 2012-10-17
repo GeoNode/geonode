@@ -21,6 +21,7 @@ from itertools import cycle, izip
 from geoserver.catalog import FailedRequestError
 import logging
 import re
+import errno
 from django.conf import settings
 
 logger = logging.getLogger("geonode.maps.gs_helpers")
@@ -153,7 +154,23 @@ def fixup_style(cat, resource, style):
             cat.save(lyr)
             logger.info("Successfully updated %s", lyr)
 
-def cascading_delete(cat, resource):
+def cascading_delete(cat, layer):
+    resource = None
+    try:
+        ws = cat.get_workspace(layer.workspace)
+        store = cat.get_store(layer.store, ws)
+        resource = cat.get_resource(layer.name, store)
+    except EnvironmentError, e: 
+      if e.errno == errno.ECONNREFUSED:
+        msg = ('Could not connect to geoserver at "%s"'
+               'to save information for layer "%s"' % (
+               settings.GEOSERVER_BASE_URL, layer.name)
+              )
+        logger.warn(msg, e)
+        return None
+      else:
+        raise e
+
     if resource is None:
         # If there is no associated resource,
         # this method can not delete anything.
