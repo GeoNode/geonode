@@ -418,7 +418,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
                    '[%s]. It doesn\'t look like EPSG:4326, so backing out '
                    'the layer.')
             logger.info(msg, name)
-            cascading_delete(cat, gs_resource)
+            cascading_delete(cat, name)
             raise GeoNodeException(msg % name)
 
     # Step 7. Create the style and assign it to the created resource
@@ -527,7 +527,8 @@ def save(layer, base_file, user, overwrite = True, title=None,
     try:
         # FIXME: Implement a verify method that makes sure it was
         # saved in both Catalogue and GeoServer
-        saved_layer.verify()
+        #saved_layer.verify()
+        pass
     except NotImplementedError, e:
         logger.exception('>>> FIXME: Please, if you can write python code, '
                          'implement "verify()" '

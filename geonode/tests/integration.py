@@ -521,13 +521,14 @@ class GeoNodeMapTest(TestCase):
 
         # Save the names of the Resource/Store/Styles 
         resource_name = shp_layer.name
-        store = shp_layer.store
+        ws = gs_cat.get_workspace(shp_layer.workspace)
+        store = gs_cat.get_store(shp_layer.store, ws)
         store_name = store.name
         layer = gs_cat.get_layer(resource_name)
         styles = layer.styles + [layer.default_style]
         
         # Delete the Layer using cascading_delete()
-        cascading_delete(gs_cat, shp_layer.resource)
+        cascading_delete(gs_cat, shp_layer)
         
         # Verify that the styles were deleted
         for style in styles:
