@@ -164,7 +164,7 @@
        <gmd:resourceFormat>
          <gmd:MD_Format>
            <gmd:name>
-             {% if layer.resource.dom.tag == 'coverage' %}
+             {% if layer.store_type == 'coverageStore' %}
              <gco:CharacterString>GeoTIFF</gco:CharacterString>
              {% else %}
              <gco:CharacterString>ESRI Shapefile</gco:CharacterString>
