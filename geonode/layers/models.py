@@ -59,6 +59,20 @@ from agon_ratings.models import OverallRating
 logger = logging.getLogger("geonode.layers.models")
 
 
+class Style(models.Model):
+    """Model for storing styles.
+    """
+    name = models.CharField(_('style name'), max_length=255, unique=True)
+    sld_title = models.CharField(max_length=255, null=True, blank=True)
+    sld_body = models.TextField(_('sld text'), null=True, blank=True)
+    sld_version = models.CharField(_('sld version'), max_length=12, null=True, blank=True)
+    sld_url = models.CharField(_('sld url'), null = True, max_length=1000)
+    workspace = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return "%s" % self.name
+
+
 class LayerManager(models.Manager):
 
     def __init__(self):
@@ -290,6 +304,9 @@ class Layer(ResourceBase):
 
     contacts = models.ManyToManyField(Contact, through='ContactRole')
 
+    default_style = models.ForeignKey(Style, related_name='layer_default_style', null=True, blank=True)
+    styles = models.ManyToManyField(Style, related_name='layer_styles')
+
     def download_links(self):
         links = []
         for url in self.link_set.all():
@@ -340,54 +357,11 @@ class Layer(ResourceBase):
         cascading_delete(Layer.objects.gs_catalog, self.resource)
 
     @property
-    def resource(self):
-        if not hasattr(self, "_resource_cache"):
-            cat = Layer.objects.gs_catalog
-            try:
-                ws = cat.get_workspace(self.workspace)
-                store = cat.get_store(self.store, ws)
-                self._resource_cache = cat.get_resource(self.name, store)
-            except EnvironmentError, e:
-                if e.errno == errno.ECONNREFUSED:
-                    msg = ('Could not connect to geoserver at "%s"'
-                           'to save information for layer "%s"' % (
-                            settings.GEOSERVER_BASE_URL, self.name)
-                          )
-                    logger.warn(msg, e)
-                    return None
-                else:
-                    raise e
-        return self._resource_cache
-
-    def _get_default_style(self):
-        return self.publishing.default_style
-
-    def _set_default_style(self, style):
-        self.publishing.default_style = style
-
-    default_style = property(_get_default_style, _set_default_style)
-
-    def _get_styles(self):
-        return self.publishing.styles
-
-    def _set_styles(self, styles):
-        self.publishing.styles = styles
-
-    styles = property(_get_styles, _set_styles)
-
-    @property
     def service_type(self):
         if self.storeType == 'coverageStore':
             return "WCS"
         if self.storeType == 'dataStore':
             return "WFS"
-
-    @property
-    def publishing(self):
-        if not hasattr(self, "_publishing_cache"):
-            cat = Layer.objects.gs_catalog
-            self._publishing_cache = cat.get_layer(self.name)
-        return self._publishing_cache
 
     def get_absolute_url(self):
         return "/data/%s" % (self.typename)
@@ -656,13 +630,13 @@ def geoserver_pre_save(instance, sender, **kwargs):
     gs_resource.metadata_links = metadata_links
     gs_catalog.save(gs_resource)
 
-    publishing = gs_catalog.get_layer(instance.name)
+    gs_layer = gs_catalog.get_layer(instance.name)
 
     if instance.poc and instance.poc.user:
-        publishing.attribution = str(instance.poc.user)
+        gs_layer.attribution = str(instance.poc.user)
         profile = Contact.objects.get(user=instance.poc.user)
-        publishing.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
-        gs_catalog.save(publishing)
+        gs_layer.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
+        gs_catalog.save(gs_layer)
 
     """Get information from geoserver.
 
@@ -671,6 +645,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
        * Bounding Box
        * SRID
        * Download links (WMS, WCS or WFS and KML)
+       * Styles (SLD)
     """
     gs_resource = gs_catalog.get_resource(instance.name)
 
@@ -685,9 +660,6 @@ def geoserver_pre_save(instance, sender, **kwargs):
     instance.bbox_x1 = bbox[1]
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
-
-
-
 
 def geoserver_post_save(instance, sender, **kwargs):
     """Save keywords to GeoServer
@@ -801,6 +773,30 @@ def geoserver_post_save(instance, sender, **kwargs):
     #Save layer attributes
     set_attributes(instance)
 
+    #Save layer styles
+    set_styles(instance, gs_catalog)
+  
+def set_styles(layer, gs_catalog):
+    style_set = []
+    gs_layer = gs_catalog.get_layer(layer.name)
+    default_style = gs_layer.default_style
+    layer.default_style = save_style(default_style) 
+    style_set.append(layer.default_style)
+ 
+    alt_styles = gs_layer.styles
+
+    for alt_style in alt_styles:
+        style_set.append(save_style(alt_style))
+
+    layer.styles = style_set
+    
+def save_style(gs_style):
+    style, created = Style.objects.get_or_create(name = gs_style.sld_name)
+    style.sld_title = gs_style.sld_title
+    style.sld_body = gs_style.sld_body
+    style.sld_url = gs_style.body_href()
+    style.save()    
+    return style   
 
 def set_attributes(layer):
     """
