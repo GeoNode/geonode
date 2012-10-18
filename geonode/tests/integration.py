@@ -129,7 +129,7 @@ class GeoNodeMapTest(TestCase):
     def tearDown(self):
         pass
 
-    # geonode.maps.utils 
+    # geonode.maps.utils
 
     def test_layer_upload(self):
         """Test that layers can be uploaded to running GeoNode/GeoServer
@@ -143,7 +143,7 @@ class GeoNodeMapTest(TestCase):
             if extension.lower() in ['.tif', '.shp', '.zip']:
                 expected_layers.append(os.path.join(gisdata.GOOD_DATA, filename))
 
-        for filename in os.listdir(gisdata.BAD_DATA):        
+        for filename in os.listdir(gisdata.BAD_DATA):
             not_expected_layers.append(
                                     os.path.join(gisdata.BAD_DATA, filename)
                                        )
@@ -267,7 +267,7 @@ class GeoNodeMapTest(TestCase):
 
         # Clean up and completely delete the layer
         uploaded.delete()
-        
+
     def test_shapefile(self):
         """Test Uploading a good shapefile
         """
@@ -303,7 +303,7 @@ class GeoNodeMapTest(TestCase):
 
         # Clean up and completely delete the layer
         uploaded.delete()
-    
+
     def test_repeated_upload(self):
         """Upload the same file more than once
         """
@@ -325,15 +325,15 @@ class GeoNodeMapTest(TestCase):
         # uploaded1 is overwritten by uploaded2 ... no need to delete it
         uploaded2.delete()
         uploaded3.delete()
-    
+
     # geonode.maps.views
 
     # Search Tests
-    
+
     def test_search_result_detail(self):
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file, overwrite=True)
- 
+
         # Test with a valid UUID
         uuid=Layer.objects.all()[0].uuid
 
@@ -344,7 +344,7 @@ class GeoNodeMapTest(TestCase):
         print results
         print resp.status_code
         assert resp.status_code == 200
-        
+
         # Test with an invalid UUID (should return 404, but currently does not)
         uuid="xyz"
         test_url = "/data/search/detail/?uuid=%s" % uuid
@@ -436,25 +436,25 @@ class GeoNodeMapTest(TestCase):
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
 
-        # Save the names of the Resource/Store/Styles 
+        # Save the names of the Resource/Store/Styles
         resource_name = shp_layer.resource.name
         store = shp_layer.resource.store
         store_name = store.name
         layer = gs_cat.get_layer(resource_name)
         styles = layer.styles + [layer.default_style]
-        
+
         # Delete the Layer using cascading_delete()
         cascading_delete(gs_cat, shp_layer.resource)
-        
+
         # Verify that the styles were deleted
         for style in styles:
             s = gs_cat.get_style(style.name)
             assert s == None
-        
+
         # Verify that the resource was deleted
         self.assertRaises(FailedRequestError, lambda: gs_cat.get_resource(resource_name, store=store))
 
-        # Verify that the store was deleted 
+        # Verify that the store was deleted
         self.assertRaises(FailedRequestError, lambda: gs_cat.get_store(store_name))
 
         # Clean up by deleting the layer from GeoNode's DB and GeoNetwork
@@ -489,23 +489,23 @@ class GeoNodeMapTest(TestCase):
 
         raster_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
         raster_layer = file_upload(raster_file, overwrite=True)
- 
+
         c = Client()
         c.login(username='admin', password='admin')
 
-        #test the program can determine the original layer in raster type 
+        #test the program can determine the original layer in raster type
         raster_replace_url = reverse('layer_replace', args=[raster_layer.typename])
         response = c.get(raster_replace_url)
-        self.assertEquals(response.status_code, 200)   
+        self.assertEquals(response.status_code, 200)
         self.assertEquals(response.context['is_featuretype'], False)
-        
+
         #test the program can determine the original layer in vector type
         vector_replace_url = reverse('layer_replace', args=[vector_layer.typename])
         response = c.get(vector_replace_url)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.context['is_featuretype'], True)
-   
-        #test replace a vector with a raster 
+
+        #test replace a vector with a raster
         response = c.post(vector_replace_url, {'base_file': open(raster_file) })
         # TODO: This should really return a 400 series error with the json dict
         self.assertEquals(response.status_code, 200)
@@ -526,7 +526,7 @@ class GeoNodeMapTest(TestCase):
                                 'prj_file': layer_prj
                                 })
         self.assertEquals(response.status_code, 200)
-        response_dict = json.loads(response.content) 
+        response_dict = json.loads(response.content)
         self.assertEquals(response_dict['success'], True)
 
         # Get a Layer object for the newly created layer.
@@ -540,9 +540,9 @@ class GeoNodeMapTest(TestCase):
         self.assertNotEqual(vector_layer.bbox_y1, new_vector_layer.bbox_y1)
 
         #test an invalid user without layer replace permission
-        c.logout()   
+        c.logout()
         c.login(username='norman', password='norman')
-          
+
         response = c.post(vector_replace_url, {'base_file': layer_base,
                                 'dbf_file': layer_dbf,
                                 'shx_file': layer_shx,
