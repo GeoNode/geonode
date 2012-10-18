@@ -33,9 +33,6 @@ from agon_ratings.models import OverallRating
 import json
 import logging
 
-logging.getLogger('south').setLevel(logging.INFO)
-logging.getLogger('geonode.search.backends.silage.views').setLevel(logging.DEBUG)
-
 # quack
 MockRequest = lambda **kw: type('xyz',(object,),{'REQUEST':kw,'user':None})
 
@@ -49,9 +46,9 @@ def all_public():
 class SilageTest(TestCase):
 
     c = Client()
-    
+
     fixtures = ['initial_data.json', 'silage_testdata.json']
-    
+
     @classmethod
     def setUpClass(cls):
         "Hook method for setting up class fixture before running tests in the class."
@@ -69,7 +66,7 @@ class SilageTest(TestCase):
     def _fixture_setup(self, a=False):
         if a:
             super(SilageTest, self)._fixture_setup()
-        
+
     def _fixture_teardown(self, a=False):
         if a:
             super(SilageTest, self)._fixture_teardown()
@@ -87,11 +84,11 @@ class SilageTest(TestCase):
 
     def search_assert(self, response, **options):
         jsonvalue = json.loads(response.content)
-        
+
         facets = jsonvalue['facets']
         if 'layer' in facets:
             self.assertEquals(facets['raster'] + facets['vector'], facets['layer'])
-            
+
 #        import pprint; pprint.pprint(jsonvalue)
         self.assertFalse(jsonvalue.get('errors'))
         self.assertTrue(jsonvalue.get('success'))
@@ -111,7 +108,7 @@ class SilageTest(TestCase):
         n_results = options.pop('n_results', None)
         if n_results:
             self.assertEquals(n_results, len(jsonvalue['results']))
-            
+
         n_total = options.pop('n_total', None)
         if n_total:
             self.assertEquals(n_total, jsonvalue['total'])
@@ -121,7 +118,7 @@ class SilageTest(TestCase):
             self.assertTrue(len(jsonvalue['results']) > 0, 'No results found')
             doc = jsonvalue['results'][0]
             self.assertEquals(first_title, doc['title'])
-            
+
         sorted_by = options.pop('sorted_by', None)
         if sorted_by:
             reversed = sorted_by[0] == '-'
@@ -185,7 +182,7 @@ class SilageTest(TestCase):
             'limit must be valid number')
         self.assert_error(self.request(added='x'),
             'valid added filter values are: today,week,month')
-        
+
     def assert_error(self, resp, msg):
         obj = json.loads(resp.content)
         self.assertTrue(obj['success'] == False)
@@ -200,7 +197,7 @@ class SilageTest(TestCase):
                            first_title='bar baz', sorted_by='title')
         self.search_assert(self.request('foo', sort='alphaza'),
                            first_title='uniquefirst foo', sorted_by='-title')
-                           
+
         # apply some ratings
         ct = ContentType.objects.get_for_model(Layer)
         for l in Layer.objects.all():
@@ -230,7 +227,7 @@ class SilageTest(TestCase):
         # there are 8 total layers, half vector, half raster
         self.search_assert(self.request('', type='raster'), n_results=4, n_total=4)
         self.search_assert(self.request('', type='vector'), n_results=4, n_total=4)
-        
+
     def test_kw_query(self):
         # a kw-only query should filter out those not matching the keyword
         self.search_assert(self.request('', kw='here', type='layer'), n_results=1, n_total=1)
@@ -241,7 +238,7 @@ class SilageTest(TestCase):
         resp = self.c.get('/search/api/authors')
         jsobj = json.loads(resp.content)
         self.assertEquals(6, jsobj['total'])
-        
+
     def test_search_page(self):
         resp = self.c.get('/search/')
         self.assertEquals(200, resp.status_code)
@@ -251,13 +248,13 @@ class SilageTest(TestCase):
         self.assertEquals(jdate, -105192)
         roundtripped = util.jdate_to_approx_iso_str(jdate)
         self.assertEquals(roundtripped, '-4999-01-03')
-        
+
     def test_security_trimming(self):
         try:
             self.run_security_trimming()
         finally:
             all_public()
-            
+
     def run_security_trimming(self):
         # remove permissions on all jblaze layers
         jblaze_layers = Layer.objects.filter(owner__username='jblaze')
@@ -265,15 +262,15 @@ class SilageTest(TestCase):
         for l in jblaze_layers:
             l.set_gen_level(ANONYMOUS_USERS, l.LEVEL_NONE)
             l.set_gen_level(AUTHENTICATED_USERS, l.LEVEL_NONE)
-        
+
         # a (anonymous) layer query should exclude the number of hiding layers
         self.search_assert(self.request(type='layer'), n_results=8 - hiding, n_total=8 - hiding)
-        
+
         # admin sees all
         self.assertTrue(self.c.login(username='admin', password='admin'))
         self.search_assert(self.request(type='layer'), n_results=8, n_total=8)
         self.c.logout()
-        
+
         # a logged in jblaze will see his, too
         jblaze = User.objects.get(username='jblaze')
         jblaze.set_password('passwd')
