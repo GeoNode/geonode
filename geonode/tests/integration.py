@@ -328,9 +328,6 @@ class GeoNodeMapTest(TestCase):
 
     # geonode.maps.views
 
-    # Search Tests
-
-    # geonode.maps.models
 
     def test_layer_delete_from_geoserver(self):
         """Verify that layer is correctly deleted from GeoServer
