@@ -78,7 +78,7 @@ def _resolve_map(request, id, permission='maps.change_map',
     '''
     Resolve the Map by the provided typename and check the optional permission.
     '''
-    return resolve_object(request, Map, {'pk':id}, permission = permission, 
+    return resolve_object(request, Map, {'pk':id}, permission = permission,
                           permission_msg=msg, **kwargs)
 
 
@@ -179,7 +179,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
 @login_required
 def map_remove(request, mapid, template='maps/map_remove.html'):
     ''' Delete a map, and its constituent layers. '''
-    map_obj = _resolve_map(request, mapid, 'maps.delete_map', 
+    map_obj = _resolve_map(request, mapid, 'maps.delete_map',
                            _PERMISSION_MSG_DELETE, permission_required=True)
 
     if request.method == 'GET':
@@ -211,12 +211,12 @@ def map_embed(request, mapid=None, template='maps/map_embed.html'):
 
 
 def map_view(request, mapid, template='maps/map_view.html'):
-    """  
+    """
     The view that returns the map composer opened to
     the map with the given map ID.
     """
     map_obj = _resolve_map(request, mapid, 'maps.view_map', _PERMISSION_MSG_VIEW)
-    
+
     config = map_obj.viewer_json()
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config),
@@ -269,19 +269,42 @@ def new_map(request, template='maps/map_view.html'):
 
 
 def new_map_json(request):
-    config = new_map_config(request)
-    if isinstance(config, HttpResponse):
-        return config
-    else:
-        return HttpResponse(config)
+    if request.method == 'GET':
+        config = new_map_config(request)
+        if isinstance(config, HttpResponse):
+            return config
+        else:
+            return HttpResponse(config)
 
+    elif request.method == 'POST':
+        if not request.user.is_authenticated():
+            return HttpResponse(
+                   'You must be logged in to save new maps',
+                   mimetype="text/plain",
+                   status=401
+            )
+
+        map_obj = Map(owner=request.user, zoom=0,
+                      center_x=0, center_y=0)
+        map_obj.save()
+        map_obj.set_default_permissions()
+        try:
+            map_obj.update_from_viewer(request.raw_post_data)
+        except ValueError, e:
+            return HttpResponse(str(e), status=400)
+        else:
+            response = HttpResponse('', status=201)
+            response['Location'] = map_obj.id
+            return response
+    else:
+        return HttpResponse(status=405)
 
 def new_map_config(request):
     '''
-    View that creates a new map.  
-    
+    View that creates a new map.
+
     If the query argument 'copy' is given, the inital map is
-    a copy of the map with the id specified, otherwise the 
+    a copy of the map with the id specified, otherwise the
     default map configuration is used.  If copy is specified
     and the map specified does not exist a 404 is returned.
     '''
@@ -303,7 +326,7 @@ def new_map_config(request):
             params = request.POST
         else:
             return HttpResponse(status=405)
-        
+
         if 'layer' in params:
             bbox = None
             map_obj = Map(projection="EPSG:900913")
@@ -312,13 +335,13 @@ def new_map_config(request):
                 try:
                     layer = Layer.objects.get(typename=layer_name)
                 except ObjectDoesNotExist:
-                    # bad layer, skip 
+                    # bad layer, skip
                     continue
 
                 if not request.user.has_perm('maps.view_layer', obj=layer):
                     # invisible layer, skip inclusion
                     continue
-                    
+
                 layer_bbox = layer.bbox
                 # assert False, str(layer_bbox)
                 if bbox is None:
@@ -328,7 +351,7 @@ def new_map_config(request):
                     bbox[1] = max(bbox[1], layer_bbox[1])
                     bbox[2] = min(bbox[2], layer_bbox[2])
                     bbox[3] = max(bbox[3], layer_bbox[3])
-                
+
                 layers.append(MapLayer(
                     map = map_obj,
                     name = layer.typename,
@@ -358,7 +381,7 @@ def new_map_config(request):
                 map_obj.center_y = center[1]
                 map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
 
-            
+
             config = map_obj.viewer_json(*(DEFAULT_BASE_LAYERS + layers))
             config['fromLayer'] = True
         else:
@@ -370,15 +393,15 @@ def new_map_config(request):
 
 @login_required
 def map_download(request, mapid, template='maps/map_download.html'):
-    """ 
+    """
     Download all the layers of a map as a batch
-    XXX To do, remove layer status once progress id done 
-    This should be fix because 
-    """ 
+    XXX To do, remove layer status once progress id done
+    This should be fix because
+    """
     mapObject = _resolve_map(request, mapid, 'maps.view_map')
 
     map_status = dict()
-    if request.method == 'POST': 
+    if request.method == 'POST':
         url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
 
         def perm_filter(layer):
@@ -391,7 +414,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
         if resp.status not in (400, 404, 417):
             map_status = json.loads(content)
             request.session["map_status"] = map_status
-        else: 
+        else:
             pass # XXX fix
 
     locked_layers = []
@@ -418,23 +441,23 @@ def map_download(request, mapid, template='maps/map_download.html'):
          "geoserver" : settings.GEOSERVER_BASE_URL,
          "site" : settings.SITEURL
     }))
-    
+
 
 def map_download_check(request):
     """
     this is an endpoint for monitoring map downloads
     """
     try:
-        layer = request.session["map_status"] 
+        layer = request.session["map_status"]
         if type(layer) == dict:
             url = "%srest/process/batchDownload/status/%s" % (settings.GEOSERVER_BASE_URL,layer["id"])
             resp,content = http_client.request(url,'GET')
             status= resp.status
             if resp.status == 400:
                 return HttpResponse(content="Something went wrong",status=status)
-        else: 
-            content = "Something Went wrong" 
-            status  = 400 
+        else:
+            content = "Something Went wrong"
+            status  = 400
     except ValueError:
         # TODO: Is there any useful context we could include in this log?
         logger.warn("User tried to check status, but has no download in progress.")
@@ -537,16 +560,16 @@ def maps_search(request):
     """
     handles a basic search for maps using the Catalogue.
 
-    the search accepts: 
+    the search accepts:
     q - general query for keywords across all fields
     start - skip to this point in the results
     limit - max records to return
     sort - field to sort results on
     dir - ASC or DESC, for ascending or descending order
 
-    for ajax requests, the search returns a json structure 
-    like this: 
-    
+    for ajax requests, the search returns a json structure
+    like this:
+
     {
     'total': <total result count>,
     'next': <url for next batch if exists>,
@@ -586,12 +609,12 @@ def maps_search(request):
     try:
         limit = min(int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE)),
                     MAX_MAPS_SEARCH_BATCH_SIZE)
-    except Exception: 
+    except Exception:
         limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
 
 
     sort_field = params.get('sort', u'')
-    sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')  
+    sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')
     sort_dir = params.get('dir', 'ASC')
     result = _maps_search(query, start, limit, sort_field, sort_dir)
 
@@ -632,7 +655,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             }
         maps_list.append(mapdict)
 
-    result = {'rows': maps_list, 
+    result = {'rows': maps_list,
               'total': map_query.count()}
 
     result['query_info'] = {
@@ -640,7 +663,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
         'limit': limit,
         'q': query
     }
-    if start > 0: 
+    if start > 0:
         prev = max(start - limit, 0)
         params = urlencode({'q': query, 'start': prev, 'limit': limit})
         result['prev'] = reverse('maps_search') + '?' + params
@@ -649,5 +672,5 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
     if next_page < map_query.count():
         params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
         result['next'] = reverse('maps_search') + '?' + params
-    
+
     return result
