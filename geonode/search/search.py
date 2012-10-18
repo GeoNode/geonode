@@ -32,10 +32,10 @@ from geonode.maps.models import Map
 from geonode.maps.models import MapLayer
 from geonode.people.models import Contact
 
-from geonode.silage import extension
-from geonode.silage.models import filter_by_period
-from geonode.silage.models import filter_by_extent
-from geonode.silage.models import using_geodjango
+from geonode.search import extension
+from geonode.search.models import filter_by_period
+from geonode.search.models import filter_by_extent
+from geonode.search.models import using_geodjango
 
 import operator
 

@@ -21,7 +21,7 @@ from django.conf import settings
 
 from geonode.layers.models import Layer
 from geonode.layers.models import add_bbox_query
-from geonode.silage.util import iso_fmt
+from geonode.search.util import iso_fmt
 
 from datetime import datetime
 
@@ -56,5 +56,5 @@ def filter_by_extent(model, q, extent, user=None):
 using_geodjango = False
 
 if 'django.contrib.gis' in settings.INSTALLED_APPS:
-    from geonode.silage.geomodels import *
+    from geonode.search.geomodels import *
     using_geodjango = True

@@ -6,7 +6,7 @@ from django.template import defaultfilters
 
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
-from geonode.silage import extension
+from geonode.search import extension
 
 from agon_ratings.categories import RATING_CATEGORY_LOOKUP
 from agon_ratings.models import OverallRating

@@ -26,9 +26,9 @@ from geonode.security.models import ANONYMOUS_USERS
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.people.models import Contact
-from geonode.silage import search
-from geonode.silage import util
-from geonode.silage.query import query_from_request
+from geonode.search import search
+from geonode.search import util
+from geonode.search.query import query_from_request
 from agon_ratings.models import OverallRating
 import json
 import logging
@@ -43,33 +43,33 @@ def all_public():
     for m in Map.objects.all():
         m.set_default_permissions()
 
-class SilageTest(TestCase):
+class searchTest(TestCase):
 
     c = Client()
 
-    fixtures = ['initial_data.json', 'silage_testdata.json']
+    fixtures = ['initial_data.json', 'search_testdata.json']
 
     @classmethod
     def setUpClass(cls):
         "Hook method for setting up class fixture before running tests in the class."
         from django.core.cache import cache
         cache.clear()
-        SilageTest('_fixture_setup')._fixture_setup(True)
+        searchTest('_fixture_setup')._fixture_setup(True)
         all_public()
 
     @classmethod
     def tearDownClass(cls):
         "Hook method for deconstructing the class fixture after running all tests in the class."
-        SilageTest('_fixture_teardown')._fixture_teardown(True)
+        searchTest('_fixture_teardown')._fixture_teardown(True)
         logging.getLogger('south').setLevel(logging.DEBUG)
 
     def _fixture_setup(self, a=False):
         if a:
-            super(SilageTest, self)._fixture_setup()
+            super(searchTest, self)._fixture_setup()
 
     def _fixture_teardown(self, a=False):
         if a:
-            super(SilageTest, self)._fixture_teardown()
+            super(searchTest, self)._fixture_teardown()
 
     def request(self, query=None, **options):
         query_dict = dict(q=query) if query else {}
