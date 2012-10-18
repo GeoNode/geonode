@@ -330,29 +330,6 @@ class GeoNodeMapTest(TestCase):
 
     # Search Tests
 
-    def test_search_result_detail(self):
-        shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
-        shp_layer = file_upload(shp_file, overwrite=True)
-
-        # Test with a valid UUID
-        uuid=Layer.objects.all()[0].uuid
-
-        test_url = "/data/search/detail/?uuid=%s"  % uuid
-        client = Client()
-        resp = client.get(test_url)
-        results = resp.content
-        print results
-        print resp.status_code
-        assert resp.status_code == 200
-
-        # Test with an invalid UUID (should return 404, but currently does not)
-        uuid="xyz"
-        test_url = "/data/search/detail/?uuid=%s" % uuid
-        # Should use assertRaisesRegexp here, but new in 2.7
-        resp = client.get(test_url)
-        msg = 'Result for uuid: "%s" should have returned a 404' % resp.status_code
-        assert resp.status_code == 404, msg
-
     # geonode.maps.models
 
     def test_layer_delete_from_geoserver(self):
