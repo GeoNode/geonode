@@ -20,7 +20,7 @@
 from geonode.people.models import Contact
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.silage.util import resolve_extension
+from geonode.search.util import resolve_extension
 
 from django.conf import settings
 import re

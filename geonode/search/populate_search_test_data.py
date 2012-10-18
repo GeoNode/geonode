@@ -119,7 +119,7 @@ def dump_models(path=None):
                                      ]], []), indent=2, use_natural_keys=True)
     if path is None:
         parent, _ = os.path.split(__file__)
-        path = os.path.join(parent, 'fixtures', 'silage_testdata.json')
+        path = os.path.join(parent, 'fixtures', 'search_testdata.json')
     with open(path, 'w') as f:
         f.write(result)
 

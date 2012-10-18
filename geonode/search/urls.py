@@ -19,7 +19,7 @@
 
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('geonode.silage.views',
+urlpatterns = patterns('geonode.search.views',
     url(r'^$', 'search_page', name='search'),
     url(r'^api$', 'search_api', name='search_api'),
     url(r'^api/data$', 'search_api', kwargs={'type':'layer'}, name='layer_search_api'),

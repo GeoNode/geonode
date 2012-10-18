@@ -25,7 +25,7 @@ from django.db.models import signals
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
 from geonode.maps.models import map_changed_signal
-from geonode.silage import util
+from geonode.search import util
 
 from logging import getLogger
 
