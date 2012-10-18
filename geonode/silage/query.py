@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from geonode.search.backends.silage.util import resolve_extension
+from geonode.silage.util import resolve_extension
 from geonode.utils import _split_query
 
 from django.conf import settings
@@ -39,13 +39,13 @@ _SEARCH_PARAMS = [
     'end',
     'exclude',
     'cache']
-    
+
 # settings API
 _search_config = getattr(settings,'SIMPLE_SEARCH_SETTINGS', {})
 _SEARCH_PARAMS.extend(_search_config.get('extra_query',[]))
 _extra_context = resolve_extension('extra_context')
 # end settings API
-    
+
 
 class BadQuery(Exception):
     pass
@@ -53,36 +53,36 @@ class BadQuery(Exception):
 
 class Query(object):
     # while these are all class attributes, they will be overwritten
-    
+
     # search params
     query = None
     'search terms, query, keyword(s)'
 
     split_query = None
     'the query, but split into pieces'
-    
+
     period = None
     'tuple of start/end date'
     extent = None
-    
+
     params = None
     'dict of specific field queries, use the fields for easier access'
-    
+
     # sorting
     sort = None
     'relevance, alpha, rating, created, updated'
-    
+
     order = None
-    
+
     # other
     user = None
     cache = True
-    
+
     # paging
     start = None
     limit = None
-    
-    def __init__(self, query, start=0, limit=DEFAULT_MAPS_SEARCH_BATCH_SIZE, 
+
+    def __init__(self, query, start=0, limit=DEFAULT_MAPS_SEARCH_BATCH_SIZE,
                  sort_field='last_modified', sort_asc=False, filters=None,
                  user=None, cache=True):
         self.query = query
@@ -94,23 +94,23 @@ class Query(object):
         self.params = filters or {}
         self.user = user
         self.cache = cache
-        
+
         self.type = filters.get('type')
         self.owner = filters.get('owner')
         self.kw = filters.get('kw')
         if self.kw:
             self.kw = tuple(self.kw.split(','))
-        
+
         val = filters['period']
         self.period = tuple(val.split(',')) if val else None
-        
+
         start = filters['start']
         end = filters['end']
         if start or end:
             if self.period:
                 raise BadQuery('period and start/end both provided')
             self.period = (start, end)
-            
+
         val = filters['extent']
         if val:
             try:
@@ -121,7 +121,7 @@ class Query(object):
                 self.extent = map(float, parts)
             except:
                 raise err
-        
+
         val = filters['added']
         self.added = parse_by_added(val) if val else None
 
@@ -130,8 +130,8 @@ class Query(object):
         '''the cache key is based on filters, the user and the text query'''
         fhash = reduce(operator.xor, map(hash, self.params.items()))
         return str(fhash ^ hash(self.user.username if self.user else 31) ^ hash(self.query))
-    
-    
+
+
     def get_query_response(self):
         '''return a dict containing any non-null parameters used in the search'''
         q = dict([ kv for kv in self.params.items() if kv[1] ])
@@ -155,7 +155,7 @@ def parse_by_added(spec):
 def query_from_request(request, extra):
     params = dict(request.REQUEST)
     params.update(extra)
-    
+
     query = params.get('q', '')
     try:
         start = int(params.get('startIndex', 0))
@@ -165,7 +165,7 @@ def query_from_request(request, extra):
         limit = int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE))
     except ValueError:
         raise BadQuery('limit must be valid number')
-        
+
     # handle old search link parameters
     if 'sort' in params and 'dir' in params:
         sort_field = params['sort']
@@ -185,13 +185,13 @@ def query_from_request(request, extra):
             raise BadQuery('valid sorting values are: %s' % sorts.keys())
 
     filters = dict([(k,params.get(k,None) or None) for k in _SEARCH_PARAMS])
-    
+
     aliases = dict(bbox='extent')
     for k,v in aliases.items():
         if k in params: filters[v] = params[k]
-                
+
     cache = bool(params.get('cache', True))
-    return Query(query, start=start, limit=limit, sort_field=sort_field, 
+    return Query(query, start=start, limit=limit, sort_field=sort_field,
                  sort_asc=sort_asc, filters=filters, cache=cache, user=request.user)
-    
-    
+
+
