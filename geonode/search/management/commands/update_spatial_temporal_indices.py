@@ -20,7 +20,6 @@
 from django.core.management.base import BaseCommand
 from geonode.maps.models import Map
 from geonode.maps.models import Layer
-from geonode.search.models import index_object
 import logging
 from optparse import make_option
 import traceback
@@ -41,6 +40,13 @@ class Command(BaseCommand):
     def handle(self, *args, **opts):
         logging.getLogger('geonode.search.models').setLevel(logging.DEBUG)
         update = opts['update']
+        try:
+            # if this is done at the top-level it can cause failures during
+            # code-coverage
+            from geonode.search.models import index_object
+        except ImportError:
+            print 'geodjango is most likely not enabled'
+            return
         def index(o):
             try:
                 index_object(o,update=update)
