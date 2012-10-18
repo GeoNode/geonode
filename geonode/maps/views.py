@@ -106,7 +106,6 @@ class MapListView(ListView):
 def maps_category(request, slug, template='maps/map_list.html'):
     category = get_object_or_404(TopicCategory, slug=slug)
     map_list = category.map_set.all()
-    print map_list
     return render_to_response(
         template,
         RequestContext(request, {
