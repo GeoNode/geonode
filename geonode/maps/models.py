@@ -33,6 +33,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
 from geonode.layers.models import Layer, TopicCategory
+from geonode.maps.signals import map_changed_signal
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
@@ -109,7 +110,9 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
 
     @property
     def local_layers(self): 
-        return True
+        layer_names = MapLayer.objects.filter(map__id=self.id).values('name')
+        return Layer.objects.filter(typename__in=layer_names) | \
+               Layer.objects.filter(name__in=layer_names)
 
     def json(self, layer_filter):
         map_layers = MapLayer.objects.filter(map=self.id)
@@ -169,6 +172,7 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
             return conf["sources"][layer["source"]]
 
         layers = [l for l in conf["map"]["layers"]]
+        layer_names = set([l.typename for l in self.local_layers])
         
         for layer in self.layer_set.all():
             layer.delete()
@@ -180,6 +184,10 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
                 layer_from_viewer_config(
                     MapLayer, layer, source_for(layer), ordering
             ))
+
+        if layer_names != set([l.typename for l in self.local_layers]):
+            map_changed_signal.send_robust(sender=self,what_changed='layers')
+
         self.save()
 
     def keyword_list(self):

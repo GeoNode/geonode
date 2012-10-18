@@ -537,7 +537,7 @@ community."
         map_id_2 = int(response['Location'].split('/')[-1])
         c.logout()
 
-        url = '/maps/search/api/?'
+        url = '/search/api/maps'
 
         # Test GET method
         response = c.get(url, {'q': '', 'start': 1, 'limit': '', 'sort': '', 'dir': ''}, content_type="text/json")

@@ -101,7 +101,7 @@ class GeoNodeSmokeTests(TestCase):
         '''Test Maps Search API page renders.'''
 
         c = Client()
-        response = c.get('/maps/search/api/')
+        response = c.get('/search/api/maps')
         self.failUnlessEqual(response.status_code, 200)
     
     def test_new_map_page(self):
