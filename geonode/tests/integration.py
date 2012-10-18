@@ -332,20 +332,21 @@ class GeoNodeMapTest(TestCase):
         
         # Test Empty Search [returns all results, should match len(Layer.objects.all())+5]
         # +5 is for the 5 'default' records in GeoNetwork
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("", 0, 10)
+        test_url = reverse('layer_search_api') + "?q=%s&start=%d&limit=%d"  % ("", 0, 10)
         client = Client()
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(int(results["total"]), Layer.objects.count())
         
         # Test n0ch@nc3 Search (returns no results)
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("n0ch@nc3", 0, 10)
+        test_url = reverse('layer_search_api') + "?q=%s&start=%d&limit=%d"  % ("n0ch@nc3", 0, 10)
+
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(int(results["total"]), 0)
         
         # Test Keyword Search (various search terms)
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("NIC", 0, 10)
+        test_url = reverse('layer_search_api') + "?q=%s&start=%d&limit=%d"  % ("NIC", 0, 10)
         resp = client.get(test_url)
         results = json.loads(resp.content)
         #self.assertEquals(int(results["total"]), 3)
@@ -357,7 +358,7 @@ class GeoNodeMapTest(TestCase):
         # Test BBOX Search (various bbox)
         
         # - Test with an empty query string and Global BBOX and validate that total is correct
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d&bbox=%s"  % ("", 0, 10, "-180,-90,180,90")
+        test_url = reverse('layer_search_api') + "?q=%s&start=%d&limit=%d&bbox=%s"  % ("", 0, 10, "-180,-90,180,90")
         resp = client.get(test_url)
         results = json.loads(resp.content)
         self.assertEquals(int(results["total"]), Layer.objects.count())
@@ -384,7 +385,7 @@ class GeoNodeMapTest(TestCase):
         for layer in Layer.objects.all():
             layer_set_permissions(layer, perm_spec)
 
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("", 0, 10)
+            test_url = reverse('layer_search_api') + "?q=%s&start=%d&limit=%d"  % ("", 0, 10)
         resp = client.get(test_url)
         results = json.loads(resp.content)
 
@@ -423,14 +424,14 @@ class GeoNodeMapTest(TestCase):
         # Test with a valid UUID
         uuid=Layer.objects.all()[0].uuid
 
-        test_url = "/data/search/detail/?uuid=%s"  % uuid
+        test_url = reverse('layer_search_page') + "detail/?uuid=%s"  % uuid
         client = Client()
         resp = client.get(test_url)
         results = resp.content
         
         # Test with an invalid UUID (should return 404, but currently does not)
         uuid="xyz"
-        test_url = "/data/search/detail/?uuid=%s" % uuid
+        test_url = reverse('layer_search_page') + "detail/?uuid=%s"  % uuid
         # Should use assertRaisesRegexp here, but new in 2.7
         resp = client.get(test_url)
         msg = 'Result for uuid: "%s" should have returned a 404' % resp.status_code
