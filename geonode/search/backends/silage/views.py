@@ -64,7 +64,7 @@ def search_page(request, **kw):
 
     context = _get_search_context()
     context['init_search'] = json.dumps(params)
-     
+
     return render_to_response('silage/search.html', RequestContext(request, context))
 
 
@@ -72,7 +72,7 @@ def _get_search_context():
     cache_key = 'simple_search_context'
     context = cache.get(cache_key)
     if context: return context
-    
+
     counts = {
         'maps' : Map.objects.count(),
         'layers' : Layer.objects.count(),
@@ -95,7 +95,7 @@ def _get_search_context():
     if _extra_context:
         _extra_context(context)
     cache.set(cache_key, context, 60)
-        
+
     return context
 
 
@@ -142,20 +142,20 @@ def search_api(request, **kwargs):
 
 def _search_json(query, items, facets, time):
     total = len(items)
-    
+
     if query.limit > 0:
         items = items[query.start:query.start + query.limit]
-    
+
     # unique item id for ext store (this could be done client side)
     iid = query.start
     for r in items:
         r.iid = iid
         iid += 1
-    
+
     exclude = query.params.get('exclude')
     exclude = set(exclude.split(',')) if exclude else ()
     items = map(lambda r: r.as_dict(exclude), items)
-        
+
     results = {
         '_time' : time,
         'results' : items,
@@ -181,7 +181,7 @@ def _search(query):
         if results:
             # put it back again - this basically extends the lease
             cache.add(key, results, cache_time)
-        
+
     if not results:
         results = combined_search_results(query)
         facets = results['facets']
@@ -204,24 +204,24 @@ def _search(query):
     else:
         keyfunc = lambda r: getattr(r, query.sort)()
     results.sort(key=keyfunc, reverse=not query.order)
-    
+
     return results, facets
 
 
 def author_list(req):
     q = User.objects.all()
-    
+
     query = req.REQUEST.get('query',None)
     start = int(req.REQUEST.get('start',0))
     limit = int(req.REQUEST.get('limit',20))
-    
+
     if query:
         q = q.filter(username__icontains=query)
-        
+
     vals = q.values_list('username',flat=True)[start:start+limit]
     results = {
         'total' : q.count(),
         'names' : [ dict(name=v) for v in vals ]
     }
     return HttpResponse(json.dumps(results), mimetype="application/json")
-    
+
