@@ -43,7 +43,8 @@
     <div class="map-actions">
       <ul class="nav nav-tabs">
         <li class="active"><a href="#info" data-toggle="tab"><i class="icon-info-sign"></i>{% trans "Info" %}</a></li>
-        <li><a href="#attributes" data-toggle="tab"><i class="icon-list"></i>{% trans "Attributes" %}</a></li>
+	<li><a href="#comments" data-toggle="tab"><i class="icon-comment"></i> {% trans "Comments" %}</a></li>
+        <li><a href="#rate" data-toggle="tab"><i class="icon-star"></i>{% trans "Rate this Map" %}</a></li>
         <li><a href="#share" data-toggle="tab"><i class="icon-share"></i>{% trans "Share" %}</a></li>
         <li><a href="#flag" data-toggle="tab"><i class="icon-flag"></i>{% trans "Flag" %}</a></li>
       </ul>
@@ -56,7 +57,6 @@
         {{ map.abstract }}
         
         <p class="meta">{{ map }}<strong> {% trans "Uploaded by" %} <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner.get_profile.name }}</a></strong></p>
-        <div id="rate-map"></div>
       </article>
       <article class="tab-pane" id="attributes">
         <h2>{% trans "Attributes" %}</h2>
@@ -67,10 +67,17 @@
       <article class="tab-pane" id="flag">
         <h2>{% trans "Flag" %}</h2>
       </article>
+      <article class="tab-pane" id="comments">
+        <h2>{% trans "Comments" %}</h2>
+    	{% with map as obj %}
+      	{% include "_comments.html" %}
+    	{% endwith %}
+      </article>
+      <article class="tab-pane" id="rate">
+        <h2>{% trans "Rating" %}</h2>
+        <div id="rate-map"></div>
+      </article>
     </div>
-    {% with map as obj %}
-      {% include "_comments.html" %}
-    {% endwith %}
   </div>
   <aside class="span4">
     <div class="well">
@@ -79,7 +86,9 @@
         <p>{% trans "This map uses the following layers:" %}</p>
         <ul class="unstyled space">
           {% for layer in map.layer_set.all %}
+	    {% ifnotequal layer.group 'background' %}
             <li><a href="{% url "layer_detail" layer.name %}">{{ layer.name }}</a></li>
+	    {% endifnotequal %}
           {% endfor %}
         </ul>
       </section>
