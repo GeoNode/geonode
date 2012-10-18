@@ -16,10 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+'''
+This is an optional module that will be activated if geodjango is present.
+It needs testing still...
+'''
 
-from django.contrib.gis.db import models
-from django.contrib.gis.gdal import Envelope
-
+from django.conf import settings
 from django.db.models import signals
 
 from geonode.maps.models import Layer
@@ -30,30 +32,6 @@ from geonode.search import util
 from logging import getLogger
 
 _logger = getLogger(__name__)
-
-class SpatialTemporalIndex(models.Model):
-    time_start = models.BigIntegerField(null=True)
-    time_end = models.BigIntegerField(null=True)
-    extent = models.PolygonField()
-    objects = models.GeoManager()
-
-    class Meta:
-        abstract = True
-
-    def __unicode__(self):
-        return '<SpatialTemporalIndex> for %s, %s, %s - %s' % (
-            self.indexed,
-            self.extent.extent,
-            util.jdate_to_approx_iso_str(self.time_start),
-            util.jdate_to_approx_iso_str(self.time_end)
-        )
-
-class LayerIndex(SpatialTemporalIndex):
-    indexed = models.OneToOneField(Layer,related_name='spatial_temporal_index')
-
-class MapIndex(SpatialTemporalIndex):
-    indexed = models.OneToOneField(Map,related_name='spatial_temporal_index')
-
 
 def _index_for_model(model):
     if model == Layer:
@@ -212,10 +190,36 @@ def object_deleted(instance, sender, **kw):
     except index.DoesNotExist:
         pass
 
+# work around code coverage failures
+if 'django.contrib.gis' in settings.INSTALLED_APPS:
+    from django.contrib.gis.db import models
+    from django.contrib.gis.gdal import Envelope
+    class SpatialTemporalIndex(models.Model):
+        time_start = models.BigIntegerField(null=True)
+        time_end = models.BigIntegerField(null=True)
+        extent = models.PolygonField()
+        objects = models.GeoManager()
 
-signals.post_save.connect(object_created, sender=Layer)
+        class Meta:
+            abstract = True
 
-signals.pre_delete.connect(object_deleted, sender=Map)
-signals.pre_delete.connect(object_deleted, sender=Layer)
+        def __unicode__(self):
+            return '<SpatialTemporalIndex> for %s, %s, %s - %s' % (
+                self.indexed,
+                self.extent.extent,
+                util.jdate_to_approx_iso_str(self.time_start),
+                util.jdate_to_approx_iso_str(self.time_end)
+            )
 
-map_changed_signal.connect(map_updated)
+    class LayerIndex(SpatialTemporalIndex):
+        indexed = models.OneToOneField(Layer,related_name='spatial_temporal_index')
+
+    class MapIndex(SpatialTemporalIndex):
+        indexed = models.OneToOneField(Map,related_name='spatial_temporal_index')
+        
+    signals.post_save.connect(object_created, sender=Layer)
+
+    signals.pre_delete.connect(object_deleted, sender=Map)
+    signals.pre_delete.connect(object_deleted, sender=Layer)
+
+    map_changed_signal.connect(map_updated)
