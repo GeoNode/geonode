@@ -21,6 +21,7 @@ import os
 import math
 from django.test.client import Client
 from django.test import TestCase
+from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
 from geonode.utils import forward_mercator, inverse_mercator
@@ -44,21 +45,21 @@ class GeoNodeSmokeTests(TestCase):
     def test_home_page(self):
         '''Test if the homepage renders.'''
         c = Client()
-        response = c.get('/')
+        response = c.get(reverse('home'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_help_page(self):
         '''Test help page renders.'''
 
         c = Client()
-        response = c.get('/help/')
+        response = c.get(reverse('help'))
         self.failUnlessEqual(response.status_code, 200)
     
     def test_developer_page(self):
         '''Test help page renders.'''
 
         c = Client()
-        response = c.get('/help/')
+        response = c.get(reverse('help'))
         self.failUnlessEqual(response.status_code, 200)
     
     #### Data/Layer Pages ####
@@ -66,19 +67,19 @@ class GeoNodeSmokeTests(TestCase):
     def test_data_page(self):
         'Test if the data home page renders.'
         c = Client()
-        response = c.get('/data/')
+        response = c.get(reverse('layer_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_data_search(self):
         'Test if the data search page renders.'
         c = Client()
-        response = c.get('/data/search')
+        response = c.get(reverse('layer_search_page'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_data_acls(self):
         'Test if the data/acls endpoint renders.'
         c = Client()
-        response = c.get('/data/acls')
+        response = c.get(reverse('layer_acls'))
         self.failUnlessEqual(response.status_code, 200)
 
     #### Maps Pages ####
@@ -87,28 +88,28 @@ class GeoNodeSmokeTests(TestCase):
         '''Test Maps page renders.'''
 
         c = Client()
-        response = c.get('/maps/')
+        response = c.get(reverse('maps_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_maps_search_page(self):
         '''Test Maps Search page renders.'''
 
         c = Client()
-        response = c.get('/maps/search/')
+        response = c.get(reverse('maps_search'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_maps_search_api(self):
         '''Test Maps Search API page renders.'''
 
         c = Client()
-        response = c.get('/maps/search/api/')
+        response = c.get(reverse('maps_search_api'))
         self.failUnlessEqual(response.status_code, 200)
     
     def test_new_map_page(self):
         '''Test New Map page renders.'''
 
         c = Client()
-        response = c.get('/maps/new')
+        response = c.get(reverse('new_map'))
         self.failUnlessEqual(response.status_code, 200)
 
     #### People Pages ####
