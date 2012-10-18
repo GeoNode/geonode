@@ -296,7 +296,8 @@ def new_map_json(request):
             response = HttpResponse('', status=201)
             response['Location'] = map_obj.id
             return response
-
+    else:
+        return HttpResponse(status=405)
 
 def new_map_config(request):
     '''

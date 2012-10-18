@@ -275,7 +275,8 @@ community."
 
         # Test successful new map creation
         c.login(username=self.user, password=self.passwd)
-        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+        new_map = reverse('new_map_json')
+        response = c.post(new_map, data=self.viewer_config,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id = int(response['Location'].split('/')[-1])
         c.logout()
@@ -313,7 +314,9 @@ community."
 
         # Test successful new map creation
         c.login(username=self.user, password=self.passwd)
-        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+
+        new_map = reverse('new_map_json')
+        response = c.post(new_map, data=self.viewer_config,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id = int(response['Location'].split('/')[-1])
         c.logout()
@@ -360,7 +363,9 @@ community."
 
         # Test successful new map creation
         c.login(username=self.user, password=self.passwd)
-        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+
+        new_map = reverse('new_map_json')
+        response = c.post(new_map, data=self.viewer_config,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id = int(response['Location'].split('/')[-1])
         c.logout()
@@ -397,7 +402,9 @@ community."
 
         # Test successful new map creation
         c.login(username=self.user, password=self.passwd)
-        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+
+        new_map = reverse('new_map_json')
+        response = c.post(new_map, data=self.viewer_config,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id = int(response['Location'].split('/')[-1])
         c.logout()
@@ -468,19 +475,21 @@ community."
         response_dict = json.loads(response.content)
         self.assertEquals(response_dict['fromLayer'],True)
 
-        # Test POST method and no layer in params
-        response = c.post(url)
-        self.assertEquals(response.status_code,200)
-        config_default = default_map_config()[0]
-        response_config_dict = json.loads(response.content)
-        self.assertEquals(config_default['about']['abstract'],response_config_dict['about']['abstract'])
-        self.assertEquals(config_default['about']['title'],response_config_dict['about']['title'])
-
-        # Test POST method but with layer in params
+        # Test POST method without authentication
         response = c.post(url,{'layer':layer_name})
-        self.assertEquals(response.status_code,200)
-        response_dict = json.loads(response.content)
-        self.assertEquals(response_dict['fromLayer'],True)
+        self.assertEquals(response.status_code,401)
+
+        # Test POST method with authentication and a layer in params
+        c.login(username='admin', password='admin')
+
+        response = c.post(url,{'layer':layer_name})
+        # Should not accept the request
+        self.assertEquals(response.status_code,400)
+
+        # Test POST method with map data in json format
+        response = c.post(url, data=self.viewer_config,content_type="text/json")
+        self.assertEquals(response.status_code,201)
+        map_id = int(response['Location'].split('/')[-1])
 
         # Test methods other than GET or POST and no layer in params
         response = c.put(url)
@@ -518,10 +527,12 @@ community."
 
         # Test successful new map creation
         c.login(username=self.user, password=self.passwd)
-        response = c.post("/maps/",data=self.viewer_config,content_type="text/json")
+
+        new_map = reverse('new_map_json')
+        response = c.post(new_map, data=self.viewer_config,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id = int(response['Location'].split('/')[-1])
-        response = c.post("/maps/",data=self.viewer_config_alternative,content_type="text/json")
+        response = c.post(new_map, data=self.viewer_config_alternative,content_type="text/json")
         self.assertEquals(response.status_code,201)
         map_id_2 = int(response['Location'].split('/')[-1])
         c.logout()
