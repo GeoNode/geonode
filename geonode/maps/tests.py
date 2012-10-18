@@ -540,13 +540,13 @@ community."
         url = '/search/api/maps'
 
         # Test GET method
-        response = c.get(url, {'q': '', 'start': 1, 'limit': '', 'sort': '', 'dir': ''}, content_type="text/json")
+        response = c.get(url, {'q': '', 'start': 1}, content_type="text/json")
         self.assertEquals(response.status_code,200)
         response_dict = json.loads(response.content)
         self.assertEquals(response_dict['success'], True)
 
         # Test POST method
-        response = c.post(url, {'q': '', 'start': 1, 'limit': '', 'sort': '', 'dir': ''}, content_type="text/json")
+        response = c.post(url, {'q': '', 'start': 1}, content_type="text/json")
         self.assertEquals(response.status_code,200)
         response_dict = json.loads(response.content)
         self.assertEquals(response_dict['success'], True)
