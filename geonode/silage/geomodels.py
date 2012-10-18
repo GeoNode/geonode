@@ -25,7 +25,7 @@ from django.db.models import signals
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
 from geonode.maps.models import map_changed_signal
-from geonode.search.backends.silage import util
+from geonode.silage import util
 
 from logging import getLogger
 
@@ -35,11 +35,11 @@ class SpatialTemporalIndex(models.Model):
     time_start = models.BigIntegerField(null=True)
     time_end = models.BigIntegerField(null=True)
     extent = models.PolygonField()
-    objects = models.GeoManager() 
-    
+    objects = models.GeoManager()
+
     class Meta:
         abstract = True
-        
+
     def __unicode__(self):
         return '<SpatialTemporalIndex> for %s, %s, %s - %s' % (
             self.indexed,
@@ -47,10 +47,10 @@ class SpatialTemporalIndex(models.Model):
             util.jdate_to_approx_iso_str(self.time_start),
             util.jdate_to_approx_iso_str(self.time_end)
         )
-    
+
 class LayerIndex(SpatialTemporalIndex):
     indexed = models.OneToOneField(Layer,related_name='spatial_temporal_index')
-    
+
 class MapIndex(SpatialTemporalIndex):
     indexed = models.OneToOneField(Map,related_name='spatial_temporal_index')
 
@@ -102,7 +102,7 @@ def index_object(obj, update=False):
         func = index_map
     else:
         raise Exception('cannot index %s' % obj)
-    
+
     created = False
     try:
         index_obj = index.objects.get(indexed=obj)
@@ -110,7 +110,7 @@ def index_object(obj, update=False):
         _logger.debug('created index for %s',obj)
         index_obj = index(indexed=obj)
         created = True
-    
+
     if not update or created:
         _logger.debug('indexing %s',obj)
         try:
@@ -119,7 +119,7 @@ def index_object(obj, update=False):
             _logger.exception('Error indexing object %s', obj)
     else:
         _logger.debug('skipping %s',obj)
-        
+
 
 def index_layer(index, obj):
     start = end = None
@@ -127,20 +127,20 @@ def index_layer(index, obj):
         start, end = obj.get_time_extent()
     except:
         _logger.warn('could not get time info for %s', obj.typename)
-    
+
     if start:
         index.time_start = util.iso_str_to_jdate(start)
     if end:
         index.time_end = util.iso_str_to_jdate(end)
-        
+
     try:
         wms_metadata = obj.metadata()
     except:
         _logger.warn('could not get WMS info for %s', obj.typename)
         return
-    
+
     min_x, min_y, max_x, max_y = wms_metadata.boundingBoxWGS84
-    
+
     if wms_metadata.boundingBoxWGS84 != (0.0,0.0,-1.0,-1.0):
         try:
             index.extent = Envelope(min_x,min_y,max_x,max_y).wkt;
@@ -150,10 +150,10 @@ def index_layer(index, obj):
         #@todo might be better to have a nullable extent
         _logger.warn('Bounding box empty, adding default envelope')
         index.extent = Envelope(-180,-90,180,90).wkt
-    
+
     index.save()
 
-    
+
 def index_map(index, obj):
     time_start = None
     time_end = None
@@ -177,13 +177,13 @@ def index_map(index, obj):
                 time_end = start
             else:
                 time_end = max(time_end, end)
-            
+
         try:
             wms_metadata = l.metadata()
             extent.expand_to_include(wms_metadata.boundingBoxWGS84)
         except:
             _logger.warn('could not get WMS info for %s', l.typename )
-                
+
     if time_start:
         index.time_start = time_start
     if time_end:

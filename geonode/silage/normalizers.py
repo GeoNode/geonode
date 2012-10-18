@@ -6,7 +6,7 @@ from django.template import defaultfilters
 
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
-from geonode.search.backends.silage import extension
+from geonode.silage import extension
 
 from agon_ratings.categories import RATING_CATEGORY_LOOKUP
 from agon_ratings.models import OverallRating
@@ -39,7 +39,7 @@ def _get_ratings(model):
         choice = model.__name__.lower()
         category = RATING_CATEGORY_LOOKUP.get(
             "%s.%s-%s" % (model._meta.app_label, model._meta.object_name, choice)
-        ) 
+        )
         try:
             ct = ContentType.objects.get_for_model(model)
             ratings = OverallRating.objects.filter(
@@ -82,7 +82,7 @@ def apply_normalizers(results):
 
 class Normalizer:
     '''Base class to allow lazy normalization of Map and Layer attributes.
-    
+
     The fields we support sorting on are rank, title, last_modified.
     Instead of storing these (to keep pickle query size small), expose via methods.
     '''
@@ -112,8 +112,8 @@ class Normalizer:
             for e in exclude:
                 if e in self.dict: self.dict.pop(e)
         return self.dict
-    
-    
+
+
 class MapNormalizer(Normalizer):
     def last_modified(self):
         return self.o.last_modified

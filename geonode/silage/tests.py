@@ -26,9 +26,9 @@ from geonode.security.models import ANONYMOUS_USERS
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.people.models import Contact
-from geonode.search.backends.silage import search
-from geonode.search.backends.silage import util
-from geonode.search.backends.silage.query import query_from_request
+from geonode.silage import search
+from geonode.silage import util
+from geonode.silage.query import query_from_request
 from agon_ratings.models import OverallRating
 import json
 import logging

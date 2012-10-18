@@ -145,7 +145,7 @@ INSTALLED_APPS = (
     'geonode.people',
     'geonode.proxy',
     'geonode.security',
-    'geonode.search.backends.silage',
+    'geonode.silage',
     'geonode.catalogue',
 )
 LOGGING = {

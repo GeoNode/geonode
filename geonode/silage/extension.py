@@ -20,11 +20,11 @@
 from geonode.people.models import Contact
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.search.backends.silage.util import resolve_extension
+from geonode.silage.util import resolve_extension
 
 from django.conf import settings
 import re
-    
+
 date_fmt = lambda dt: dt.isoformat()
 USER_DISPLAY = 'User'
 MAP_DISPLAY = 'Map'
@@ -40,17 +40,17 @@ exclude_regex = [ re.compile(e) for e in exclude_patterns ]
 process_results = resolve_extension('process_search_results')
 if process_results is None:
     process_results = lambda r: r
-    
+
 owner_query = resolve_extension('owner_query')
 if not owner_query:
     owner_query = lambda q: Contact.objects.filter()
-    
+
 owner_query_fields = resolve_extension('owner_query_fields') or []
-    
+
 layer_query = resolve_extension('layer_query')
 if not layer_query:
     layer_query = lambda q: Layer.objects.filter()
-    
+
 map_query = resolve_extension('map_query')
 if not map_query:
     map_query = lambda q: Map.objects.filter()
@@ -60,7 +60,7 @@ if display_names:
     USER_DISPLAY = display_names.get('user')
     MAP_DISPLAY = display_names.get('map')
     LAYER_DISPLAY = display_names.get('layer')
-    
+
 owner_rank_rules = resolve_extension('owner_rank_rules')
 if not owner_rank_rules:
     owner_rank_rules = lambda: []

@@ -29,11 +29,11 @@ from geonode.maps.views import default_map_config
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
 from geonode.people.models import Contact
-from geonode.search.backends.silage.search import combined_search_results
-from geonode.search.backends.silage.util import resolve_extension
-from geonode.search.backends.silage.normalizers import apply_normalizers
-from geonode.search.backends.silage.query import query_from_request
-from geonode.search.backends.silage.query import BadQuery
+from geonode.silage.search import combined_search_results
+from geonode.silage.util import resolve_extension
+from geonode.silage.normalizers import apply_normalizers
+from geonode.silage.query import query_from_request
+from geonode.silage.query import BadQuery
 
 from datetime import datetime
 from time import time
