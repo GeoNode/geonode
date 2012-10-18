@@ -310,6 +310,74 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                         }
                     });
                 }
+                else if (layer.url.indexOf("140.247.116.252")  > -1) {
+                    var control = new GeoExplorer.GeopsGetFeatureInfo({
+                        format:  new OpenLayers.Format.JSON(),
+                        url: layer.url,
+                        queryVisible: true,
+                        layers: [layer],
+                        eventListeners: {
+                            getfeatureinfo: function(evt) {
+                                if (successCount === 0)
+                                    features = [];
+                                successCount++;
+
+                                if (evt.text != '') {
+                                    var featureInfo = new Object();
+                                    //var title =  x.get("title");
+                                    //featureInfo.title = x.get("title");
+                                    results = evt.features;
+                                    if (results && "results" in results) {
+                                        results = evt.features.results;
+                                    }
+                                    if (results){
+                                        var qfields = [];
+
+                                        for (var attribute in results[0]) {
+                                            qfields.push(attribute);
+                                            if (attribute.indexOf("name") > 0) {
+                                                featureInfo['nameField'] = attribute;
+                                            }
+                                        }
+                                        featureInfo['queryfields'] = qfields;
+
+                                        featureInfo['nameField'] =  featureInfo['nameField'] || featureInfo['queryfields'][0];
+
+                                        for (var r = 0; r < results.length; r++) {
+                                            var feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(results[r]["goog_x"],
+                                                results[r]["goog_y"]));
+                                            for (var attribute in results[r]) {
+                                               feature.attributes[attribute] = results[r][attribute];
+                                            }
+                                            feature.wm_layer_id = featureCount;
+                                            feature.wm_layer_title = x.get("title");
+                                            feature.wm_layer_name = feature.attributes[featureInfo.nameField];
+                                            feature.wm_layer_type = layer.params.LAYERS;
+                                            featureCount++;
+                                            features = features.concat(feature);
+
+                                        }
+
+                                        featureMeta[layer.params.LAYERS] = featureInfo.queryfields;
+                                    }
+                                }
+
+                                if (successCount == count) {
+                                    successCount = 0;
+                                    if (features.length == 0) {
+                                        //Ext.Msg.alert('Map Results', 'No features found at this location.');
+                                    } else {
+                                        this.displayXYResults(features, featureMeta);
+                                    }
+                                    OpenLayers.Element.removeClass(control.map.viewPortDiv, "olCursorWait");
+                                }
+
+                            },
+                            scope:this
+                        }
+                    });
+
+                }
                 else {
                     var control = new OpenLayers.Control.WMSGetFeatureInfo({
                         url: layer.url,

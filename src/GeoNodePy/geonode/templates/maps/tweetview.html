@@ -173,8 +173,8 @@ var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
         fieldLabel: 'Query',
         labelAlign: 'top',
         name: 'tweetFilter',
-        allowBlank: false,
-        value: 'flu',
+        allowBlank: true,
+        value: '',
         labelStyle:"font-weight:bold;text-align:right",
         width:100
     });
@@ -248,26 +248,33 @@ var remoteStore = new Ext.data.JsonStore({
 */
 
 var updateCQL = function(layers) {
-    var startFilter = "SELECT goog_x, goog_y, tweet_text ";
+    var startFilter = "SELECT goog_x, goog_y, ";
 
-    var keywordFilter =  (tweetFilterField.getValue() != null && tweetFilterField.getValue().length > 0) ?
-             " ilike '" + tweetFilterField.getValue() + "'" + " AND " : "";
+    var keywordFilter = "";
+    var keywords = tweetFilterField.getValue().match(/\w+|"[^"]+"/g);
+    if (keywords) {
+        for (var k = 0; k < keywords.length; k++) {
+            keywordFilter += "  AND tweet_text ilike '" +keywords[k].replace(/['"]/g,'') + "'";
+        }
 
-    var timeFilter =  "time > " + (new Date(tweetDateStartField.getValue()).getTime() / 1000) + " AND time < " + (new Date(tweetDateEndField.getValue()).getTime() / 1000 + 86400);
+    }
+
+    var timeFilter =  "time > " + (new Date(tweetDateStartField.getValue()).getTime() / 1000) + " AND time < " + (new Date(tweetDateEndField.getValue()).getTime() / 1000 + 86400) ;
     var fromFilter = " from oct_tweets";
 
     for (var x = 0; x < layers.length; x++) {
         var layer = layers[x];
 
         if (layer.get("name") == "heatmap") {
-            //layer["cql_filter"] = startFilter + keywordFilter + timeFilter + fromFilter;
-            layer.getLayer().params["SQL"] = startFilter + keywordFilter + timeFilter + fromFilter;
+            layer["cql_filter"] =  startFilter  + timeFilter + keywordFilter +  fromFilter;
+            layer.getLayer().params["SQL"] =  layer["cql_filter"];
             layer.getLayer().params["BLUR"] = Ext.getCmp("slider_blur").value;
             layer.getLayer().params["MIN"] = Ext.getCmp("slider_min").value;
             layer.getLayer().params["SCALE"] = Ext.getCmp("slider_scale").value/1000;
+            layer.getLayer().visibility =  keywords ? true : false;
         } else {
-            //layer["cql_filter"]= startFilter + fromFilter + " WHERE tweet_text" +  keywordFilter + timeFilter;
-            layer.getLayer().params["SQL"] = startFilter + fromFilter + " WHERE tweet_text" +  keywordFilter + timeFilter;
+            layer["cql_filter"] = startFilter + " tweet_text " + fromFilter + " WHERE "  + timeFilter + keywordFilter;
+            layer.getLayer().params["SQL"] = layer["cql_filter"]
             layer.getLayer().params["RADIUS"] = 1;
             layer.getLayer().params["R"] = 0;
             layer.getLayer().params["G"] = 0;
@@ -341,13 +348,13 @@ var updateCQL = function(layers) {
 
     var cqlOverlay = new Ext.FormPanel({
         frame: true,
-        bodyStyle: 'padding: 10px 10px 0 10px;',
+        bodyStyle: 'padding: 10px 10px 0 10px;background:transparent;',
         labelWidth: 70,
         defaults: {
             anchor: '95%',
             msgTarget: 'side'
         },
-        width: 800,
+        width: 850,
         height: 100,
         layout:"fit",
         items: [
@@ -407,7 +414,7 @@ var updateCQL = function(layers) {
                             width: 100,
                             style: "display:inline-block;",
                             value:"25",
-                            fieldLabel: "Scale",
+                            fieldLabel: "Max %",
                             labelStyle: "text-align:right;",
                             minValue: 1,
                             maxValue: 50,
@@ -417,7 +424,7 @@ var updateCQL = function(layers) {
                         {xtype:"sliderfield",
                             id:"slider_blur",
                             value:"10",
-                            fieldLabel: "Blur",
+                            fieldLabel: "Aggregation",
                             labelStyle: "text-align:right;",
                             minValue: 1,
                             maxValue: 40,
@@ -428,7 +435,7 @@ var updateCQL = function(layers) {
                             id:"slider_min",
                             width: 100,
                             value:"100",
-                            fieldLabel: "Min",
+                            fieldLabel: "Density/km",
                             labelStyle: "text-align:right;",
                             minValue: 1,
                             maxValue: 1000,
@@ -449,6 +456,8 @@ var updateCQL = function(layers) {
 
 var cqlWindow = new Ext.Window({
     id     : 'cql_window',
+    style: 'opacity:0.8',
+    width: 850,
     collapsible: true,
     draggable: true,
     closable: false,
@@ -555,7 +564,7 @@ tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
             singleTile: true,
             removeBackBufferDelay: 0,
             ratio: tweetConfig.ratio || 1,
-            visibility: true,
+            visibility: false,
             opacity: ("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
             buffer: ("buffer" in tweetConfig) ? tweetConfig.buffer : 1,
             //transitionEffect: 'resize',
@@ -616,7 +625,7 @@ app.on("ready", function() {
      });
 
 
-    Ext.getCmp("gx_westPanel").collapse();
+    //Ext.getCmp("gx_westPanel").collapse();
 
     tweetHeatRecord.getLayer().events.register("loadend", tweetHeatRecord.getLayer(), function(e) {
         //updateLegend();
