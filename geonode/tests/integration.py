@@ -385,7 +385,7 @@ class GeoNodeMapTest(TestCase):
         for layer in Layer.objects.all():
             layer_set_permissions(layer, perm_spec)
 
-            test_url = reverse('layer_search_api') + "?q=%s&start=%d&limit=%d"  % ("", 0, 10)
+        test_url = reverse('layer_search_api') + "?q=%s&start=%d&limit=%d"  % ("", 0, 10)
         resp = client.get(test_url)
         results = json.loads(resp.content)
 
