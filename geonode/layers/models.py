@@ -279,6 +279,7 @@ def add_bbox_query(q, bbox):
     bbox - 4 tuple of floats representing x0,x1,y0,y1
     returns the modified query
     '''
+    bbox = map(str, bbox) # 2.6 compat - float to decimal conversion
     q = q.filter(bbox_x0__gte=bbox[0])
     q = q.filter(bbox_x1__lte=bbox[1])
     q = q.filter(bbox_y0__gte=bbox[2])
