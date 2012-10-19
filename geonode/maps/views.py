@@ -315,6 +315,7 @@ def new_map_config(request):
                     map = map_obj,
                     name = layer.typename,
                     ows_url = settings.GEOSERVER_BASE_URL + "wms",
+                    layer_params=json.dumps( layer.attribute_config()),
                     visibility = True
                 ))
 

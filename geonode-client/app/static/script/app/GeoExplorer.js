@@ -471,20 +471,22 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.on("ready", function() {
             this.mapPanel.layers.on({
                 "update": function() {this.modified |= 1;},
-                "add": function(store, rec) {
+                "add": function(store, records) {
                     this.modified |= 1;
                     //Add attribute configuration for added  local layers
-                    for (record =0; record < rec.length; record++) {
-                        var layerRec = rec[record];
-                        if (layerRec.get("layer").url.indexOf(this.localGeoServerBaseUrl) > -1) {
-                            Ext.Ajax.request({
-                                url: this.rest +  layerRec.get("layer").params.LAYERS + "/attributes",
+                    for (var i = 0,  ii = records.length; i < ii; ++i) {
+                        var layerRec = records[i];
+                        var layer = layerRec.getLayer();
+                        if (layer.url &&
+                            layer.url.indexOf(this.localGeoServerBaseUrl) === 0 ||
+                            layer.url.indexOf("/geoserver/wms") === 0) {
+                              Ext.Ajax.request({
+                                url: this.rest + layer.params.LAYERS + "/attributes",
                                 method: 'POST',
                                 success: function(response, options) {
                                     var jsonData = Ext.util.JSON.decode(response.responseText);
-                                    if (jsonData) {
-                                        layerRec.set("propertyNames", "propertyNames" in jsonData ? jsonData["propertyNames"]  :  null);
-                                        layerRec.set("fields",  "fields" in jsonData ? jsonData["fields"]  :  null);
+                                    if (jsonData && jsonData["getFeatureInfo"]) {
+                                        layerRec.set("getFeatureInfo", jsonData.getFeatureInfo);
                                     }
                                 },
                                 scope: this
