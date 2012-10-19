@@ -81,6 +81,12 @@
       <article class="description tab-pane active" id="info">
         <h2>{% trans "Layer Information" %}</h2>
         <ul class="unstyled wide">
+          {% if layer.abstract %}
+            <li>
+              <strong>{% trans "Abstract" %}:</strong>
+              {{ layer.abstract }}
+            </li>
+          {% endif %}
           {% if layer.display_type %}
             <li>
               <strong>{% trans "Type" %}:</strong>
