@@ -371,47 +371,6 @@ class Layer(ResourceBase):
         cascading_delete(Layer.objects.gs_catalog, self)
 
     @property
-    def resource(self):
-        if not hasattr(self, "_resource_cache"):
-            cat = Layer.objects.gs_catalog
-            try:
-                ws = cat.get_workspace(self.workspace)
-                store = cat.get_store(self.store, ws)
-                self._resource_cache = cat.get_resource(self.name, store)
-            except EnvironmentError, e:
-                if e.errno == errno.ECONNREFUSED:
-                    msg = ('Could not connect to geoserver at "%s"'
-                           'to save information for layer "%s"' % (
-                            settings.GEOSERVER_BASE_URL, self.name)
-                          )
-                    logger.warn(msg, e)
-                    return None
-                else:
-                    raise e
-            except FailedRequestError, e:
-                # This is returned if the layer was already deleted.
-                return None
-
-        return self._resource_cache
-
-    def _get_default_style(self):
-        return self.publishing.default_style
-
-    def _set_default_style(self, style):
-        self.publishing.default_style = style
-
-    default_style = property(_get_default_style, _set_default_style)
-
-    def _get_styles(self):
-        return self.publishing.styles
-
-    def _set_styles(self, styles):
-        self.publishing.styles = styles
-
-    styles = property(_get_styles, _set_styles)
->>>>>>> e589cfe04ce684dee8c0a9aae82986b4a812a7d7
-
-    @property
     def service_type(self):
         if self.storeType == 'coverageStore':
             return "WCS"
@@ -648,7 +607,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
             raise e
 
     # If there is no resource returned it could mean one of two things:
-    # a) There is a sincronization problem in geoserver
+    # a) There is a syncronization problem in geoserver
     # b) The unit tests are running and another geoserver is running in the
     # background.
     # For both cases it is sensible to stop processing the layer
@@ -723,7 +682,7 @@ def geoserver_post_save(instance, sender, **kwargs):
             raise e
 
     # If there is no resource returned it could mean one of two things:
-    # a) There is a sincronization problem in geoserver
+    # a) There is a syncronization problem in geoserver
     # b) The unit tests are running and another geoserver is running in the
     # background.
     # For both cases it is sensible to stop processing the layer
