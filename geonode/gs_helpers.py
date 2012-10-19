@@ -167,7 +167,7 @@ def cascading_delete(cat, layer_name):
       if e.errno == errno.ECONNREFUSED:
         msg = ('Could not connect to geoserver at "%s"'
                'to save information for layer "%s"' % (
-               settings.GEOSERVER_BASE_URL, layer.name)
+               settings.GEOSERVER_BASE_URL, layer_name)
               )
         logger.warn(msg, e)
         return None
