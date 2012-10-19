@@ -51,7 +51,7 @@ from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
     SPATIAL_REPRESENTATION_TYPES,  TOPIC_CATEGORIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
 
-from geoserver.catalog import Catalog
+from geoserver.catalog import Catalog, FailedRequestError
 from taggit.managers import TaggableManager
 from agon_ratings.models import OverallRating
 
@@ -172,7 +172,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     Base Resource Object loosely based on ISO 19115:2003
     """
 
-    VALID_DATE_TYPES = [(x.lower(), _(x)) for x in ['Creation', 'Publication', 'Revision']] 
+    VALID_DATE_TYPES = [(x.lower(), _(x)) for x in ['Creation', 'Publication', 'Revision']]
 
     # internal fields
     uuid = models.CharField(max_length=36)
@@ -286,6 +286,20 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     class Meta:
         abstract = True
 
+
+def add_bbox_query(q, bbox):
+    '''modify the queryset q to limit to the provided bbox
+
+    bbox - 4 tuple of floats representing x0,x1,y0,y1
+    returns the modified query
+    '''
+    bbox = map(str, bbox) # 2.6 compat - float to decimal conversion
+    q = q.filter(bbox_x0__gte=bbox[0])
+    q = q.filter(bbox_x1__lte=bbox[1])
+    q = q.filter(bbox_y0__gte=bbox[2])
+    return q.filter(bbox_y1__lte=bbox[3])
+
+
 class Layer(ResourceBase):
     """
     Layer (inherits ResourceBase fields)
@@ -357,6 +371,47 @@ class Layer(ResourceBase):
         cascading_delete(Layer.objects.gs_catalog, self)
 
     @property
+    def resource(self):
+        if not hasattr(self, "_resource_cache"):
+            cat = Layer.objects.gs_catalog
+            try:
+                ws = cat.get_workspace(self.workspace)
+                store = cat.get_store(self.store, ws)
+                self._resource_cache = cat.get_resource(self.name, store)
+            except EnvironmentError, e:
+                if e.errno == errno.ECONNREFUSED:
+                    msg = ('Could not connect to geoserver at "%s"'
+                           'to save information for layer "%s"' % (
+                            settings.GEOSERVER_BASE_URL, self.name)
+                          )
+                    logger.warn(msg, e)
+                    return None
+                else:
+                    raise e
+            except FailedRequestError, e:
+                # This is returned if the layer was already deleted.
+                return None
+
+        return self._resource_cache
+
+    def _get_default_style(self):
+        return self.publishing.default_style
+
+    def _set_default_style(self, style):
+        self.publishing.default_style = style
+
+    default_style = property(_get_default_style, _set_default_style)
+
+    def _get_styles(self):
+        return self.publishing.styles
+
+    def _set_styles(self, styles):
+        self.publishing.styles = styles
+
+    styles = property(_get_styles, _set_styles)
+>>>>>>> e589cfe04ce684dee8c0a9aae82986b4a812a7d7
+
+    @property
     def service_type(self):
         if self.storeType == 'coverageStore':
             return "WCS"
@@ -364,7 +419,7 @@ class Layer(ResourceBase):
             return "WFS"
 
     def get_absolute_url(self):
-        return "/data/%s" % (self.typename)
+        return reverse('layer_detail', args=(self.typename))
 
     def __str__(self):
         return "%s Layer" % self.typename
@@ -592,6 +647,15 @@ def geoserver_pre_save(instance, sender, **kwargs):
         else:
             raise e
 
+    # If there is no resource returned it could mean one of two things:
+    # a) There is a sincronization problem in geoserver
+    # b) The unit tests are running and another geoserver is running in the
+    # background.
+    # For both cases it is sensible to stop processing the layer
+    if gs_resource is None:
+        logger.warn('Could not get geoserver resource for %s' % instance)
+        return
+
     gs_resource.title = instance.title
     gs_resource.abstract = instance.abstract
     gs_resource.name= instance.name
@@ -658,6 +722,14 @@ def geoserver_post_save(instance, sender, **kwargs):
         else:
             raise e
 
+    # If there is no resource returned it could mean one of two things:
+    # a) There is a sincronization problem in geoserver
+    # b) The unit tests are running and another geoserver is running in the
+    # background.
+    # For both cases it is sensible to stop processing the layer
+    if gs_resource is None:
+        logger.warn('Could not get geoserver resource for %s' % instance)
+        return
 
     gs_resource.keywords = instance.keyword_list()
     gs_catalog.save(gs_resource)
