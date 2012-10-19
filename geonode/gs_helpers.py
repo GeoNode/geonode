@@ -154,12 +154,15 @@ def fixup_style(cat, resource, style):
             cat.save(lyr)
             logger.info("Successfully updated %s", lyr)
 
-def cascading_delete(cat, layer):
+def cascading_delete(cat, layer_name):
     resource = None
     try:
-        ws = cat.get_workspace(layer.workspace)
-        store = cat.get_store(layer.store, ws)
-        resource = cat.get_resource(layer.name, store)
+        if layer_name.find(':') != -1:
+            workspace, name = layer_name.split(':')
+            ws = cat.get_workspace(workspace)
+            resource = cat.get_resource(name, workspace = workspace)
+        else:
+            resource = cat.get_resource(layer_name)
     except EnvironmentError, e: 
       if e.errno == errno.ECONNREFUSED:
         msg = ('Could not connect to geoserver at "%s"'
