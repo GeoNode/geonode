@@ -21,7 +21,7 @@
 import os
 from ConfigParser import SafeConfigParser
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from lxml import etree
 from pycsw import server
@@ -29,11 +29,17 @@ from geonode.catalogue.backends.pycsw_local import CONFIGURATION
 
 @csrf_exempt
 def csw_global_dispatch(request):
+    """pycsw wrapper"""
 
-    app_root = os.path.dirname(__file__)
+    # this view should only operate if pycsw_local is the backend
+    # else, redirect to the URL of the non-pycsw_local backend
+    if (settings.CATALOGUE['default']['ENGINE'] !=
+        'geonode.catalogue.backends.pycsw_local'):
+        return HttpResponseRedirect(settings.CATALOGUE['default']['URL'])
 
     # serialize pycsw settings into SafeConfigParser
     # object for interaction with pycsw
+    # TODO: pass just dict when pycsw supports it
     mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
     config = SafeConfigParser()
 
@@ -42,21 +48,10 @@ def csw_global_dispatch(request):
         for option, value in options.iteritems():
             config.set(section, option, value)
 
-    scheme = "http"
-    if request.is_secure():
-        scheme = "https"
-
-    # request.meta has:
-    # QUERY_STRING, REMOTE_ADDR, CONTENT_LENGTH, SERVER_NAME
-    # SERVER_PORT
     env = request.META.copy()
     env.update({
-            'local.app_root': app_root,
+            'local.app_root': os.path.dirname(__file__),
             'REQUEST_URI': request.build_absolute_uri(),
-            'REQUEST_METHOD': request.method,
-            'wsgi.url_scheme': scheme,
-            'PATH_INFO': request.path_info,
-            'wsgi.input': request # this is being a bit sneaky but w/e
             })
             
     csw = server.Csw(config, env)
