@@ -774,7 +774,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         if (!this.mapID || as) {
             /* create a new map */ 
             Ext.Ajax.request({
-                url: this.rest,
+                url: this.rest + 'new/data',
                 method: 'POST',
                 jsonData: config,
                 success: function(response, options) {
