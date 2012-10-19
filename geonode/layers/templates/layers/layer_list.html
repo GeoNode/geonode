@@ -48,8 +48,8 @@
             </nav>
           </div>
         </div>
-        <div class="tab-content span8">
-          <div class="tab-pane active list loadmore" id="all">
+        <div class="tab-content span8 paginate paginate-auto">
+          <div class="tab-pane active list paginate-contents" id="all">
             {% if object_list.count %}
             {% autopaginate object_list 2 %}
             {% for layer in object_list %}
@@ -70,7 +70,7 @@
 {% block extra_script %}
   <script src="{% static "geonode/js/layers.js" %}"></script>
   <script src="{% static "geonode/js/waypoints.js" %}"></script>
-  <script src="{% static "geonode/js/loadmore.js" %}"></script>
+  <script src="{% static "geonode/js/paginate.js" %}"></script>
   <script src="{% static "agon_ratings/js/jquery.raty.js" %}"></script>
   <script type="text/javascript">
      $(function() {

@@ -33,6 +33,7 @@ from django.template import Context
 from django.template.loader import get_template
 from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from agon_ratings.models import OverallRating
 
 import geonode.layers.utils
@@ -120,7 +121,7 @@ class LayersTest(TestCase):
         # Get a layer to work with
         layer = Layer.objects.all()[0]
 
-        # FIXME Test a comprehensive set of permisssions specifications
+        # FIXME Test a comprehensive set of permissions specifications
 
         # Set the Permissions
 
@@ -152,19 +153,19 @@ class LayersTest(TestCase):
         c = Client()
 
         # Test that an invalid layer.typename is handled for properly
-        response = c.post("/data/%s/permissions" % invalid_layer_typename,
+        response = c.post(reverse('layer_permissions', args=(invalid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 404)
 
         # Test that POST is required
-        response = c.get("/data/%s/permissions" % valid_layer_typename)
+        response = c.get(reverse('layer_permissions', args=(valid_layer_typename,)))
         self.assertEquals(response.status_code, 405)
 
         # Test that a user is required to have maps.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post("/data/%s/permissions" % valid_layer_typename,
+        response = c.post(reverse('layer_permissions', args=(valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401)
@@ -172,7 +173,7 @@ class LayersTest(TestCase):
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
-        response = c.post("/data/%s/permissions" % valid_layer_typename,
+        response = c.post(reverse('layer_permissions', args=(valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401)
@@ -181,7 +182,7 @@ class LayersTest(TestCase):
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
 
-        response = c.post("/data/%s/permissions" % valid_layer_typename,
+        response = c.post(reverse('layer_permissions', args=(valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
 
@@ -220,19 +221,19 @@ class LayersTest(TestCase):
         }
 
         c = Client()
-        response = c.get('/data/acls', **valid_auth_headers)
+        response = c.get(reverse('layer_acls'), **valid_auth_headers)
         response_json = json.loads(response.content)
         self.assertEquals(expected_result, response_json)
 
         # Test that requesting when supplying invalid credentials returns the appropriate error code
-        response = c.get('/data/acls', **invalid_auth_headers)
+        response = c.get(reverse('layer_acls'), **invalid_auth_headers)
         self.assertEquals(response.status_code, 401)
 
         # Test logging in using Djangos normal auth system
         c.login(username='admin', password='admin')
 
         # Basic check that the returned content is at least valid json
-        response = c.get("/data/acls")
+        response = c.get(reverse('layer_acls'))
         response_json = json.loads(response.content)
 
         # TODO Lots more to do here once jj0hns0n understands the ACL system better
@@ -262,20 +263,20 @@ class LayersTest(TestCase):
     def test_data(self):
         '''/data/ -> Test accessing the data page'''
         c = Client()
-        response = c.get('/data/')
+        response = c.get(reverse('layer_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_describe_data_2(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(2, User.objects.all().count())
         c = Client()
-        response = c.get('/data/base:CA/metadata')
+        response = c.get(reverse('layer_metadata', args=('base:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
         c.login(username='admin', password='admin')
         # ... all should be good
-        response = c.get('/data/base:CA/metadata')
+        response = c.get(reverse('layer_metadata', args=('base:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
     # Layer Tests
@@ -285,37 +286,37 @@ class LayersTest(TestCase):
         c = Client()
 
         # Test redirection to login form when not logged in
-        response = c.get("/data/upload")
+        response = c.get(reverse('layer_upload'))
         self.assertEquals(response.status_code,302)
 
         # Test return of upload form when logged in
         c.login(username="bobby", password="bob")
-        response = c.get("/data/upload")
+        response = c.get(reverse('layer_upload'))
         self.assertEquals(response.status_code,200)
 
     def test_search(self):
         '''/data/search/ -> Test accessing the data search page'''
         c = Client()
-        response = c.get('/data/search/')
+        response = c.get(reverse('layer_search_page'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_search_api(self):
         '''/data/search/api -> Test accessing the data search api JSON'''
         c = Client()
-        response = c.get('/data/search/api')
+        response = c.get(reverse('layer_search_api'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_describe_data(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(2, User.objects.all().count())
         c = Client()
-        response = c.get('/data/base:CA/metadata')
+        response = c.get(reverse('layer_metadata', args=('base:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
         c.login(username='admin', password='admin')
         # ... all should be good
-        response = c.get('/data/base:CA/metadata')
+        response = c.get(reverse('layer_metadata', args=('base:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_layer_attributes(self):
@@ -339,7 +340,7 @@ class LayersTest(TestCase):
         """Test layer remove functionality
         """
         layer = Layer.objects.all()[0]
-        url = '/data/%s/remove' % layer.typename
+        url = reverse('layer_remove', args=(layer.typename,))
 
         c = Client()
 
@@ -701,7 +702,7 @@ class LayersTest(TestCase):
         """
         #Get the layer to work with
         layer = Layer.objects.all()[0]
-        url = '/data/%s/remove' % layer.typename
+        url = reverse('layer_remove', args=(layer.typename,))
         layer_id = layer.id
 
         #Create the rating with the correct content type

@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
+{% load bootstrap_tags %}
 {% load url from future %}
 
 {% block title %}{{ layer.resource.title|default:layer.typename }} — {{ block.super }}{% endblock %}
@@ -172,6 +173,14 @@
       <article id="flag" class="tab-pane">
         <p>Flag this Layer</p>
       </article>
+      <article id="comments" class="tab-pane">
+        {% with layer as obj %}
+          {% include "_comments.html" %}
+        {% endwith %}
+      </article>
+      <article id="rate" class="tab-pane">
+        <p>Rate this Layer</p>
+      </article>
     </div>
   </div>
   <aside class="span4">
@@ -260,3 +269,12 @@
       {% include "_permissions_form.html" %}
   {% endwith %}
 {% endblock %}
+{% block extra_script %}
+  <script src="{{ STATIC_URL }}geonode/js/paginate.js"></script>
+  <script>
+  $(function () {
+     var activeTab = $('[href=' + location.hash + ']');
+     activeTab && activeTab.tab('show');
+  });
+  </script>
+{% endblock extra_script %}
