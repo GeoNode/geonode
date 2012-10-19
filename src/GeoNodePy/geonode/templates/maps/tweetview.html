@@ -272,7 +272,8 @@ var remoteStore = new Ext.data.JsonStore({
     var updateLegend = function(mapExtent) {
         Ext.getCmp("tweetLegendImg").getEl().dom.src = tweetConfig.url +
                 "?TRANSPARENT=TRUE&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml" +
-                "&LAYER=heatmap&FORMAT=image%2Fgif&CQL_FILTER=" + tweetHeatRecord.getLayer().params["CQL_FILTER"]
+                "&LAYER=heatmap&FORMAT=image%2Fgif&SQL=" + tweetHeatRecord.getLayer().params["SQL"] + "&MAXVAL=" + tweetHeatRecord.getLayer().params["MAXVAL"] +
+                "&BLUR=" + tweetHeatRecord.getLayer().params["BLUR"] + "&MIN=" + tweetHeatRecord.getLayer().params["MIN"];
     }
 
 
@@ -283,7 +284,7 @@ var updateCQL = function(layers) {
     var keywords = tweetFilterField.getValue().match(/\w+|"[^"]+"/g);
     if (keywords) {
         for (var k = 0; k < keywords.length; k++) {
-            keywordFilter += "  AND tweet_text ilike '" +keywords[k].replace(/['"]/g,'') + "'";
+            keywordFilter += (k > 0? " AND ": "") +  "tweet_text ilike '" +keywords[k].replace(/['"]/g,'') + "'";
         }
         if (!legendWindow.isVisible()) {
         legendWindow.show();
@@ -293,14 +294,14 @@ var updateCQL = function(layers) {
         legendWindow.hide();
     }
 
-    var timeFilter =  "time > " + (new Date(tweetDateStartField.getValue()).getTime() / 1000) + " AND time < " + (new Date(tweetDateEndField.getValue()).getTime() / 1000 + 86400) ;
+    var timeFilter =  "time > " + (new Date(tweetDateStartField.getValue()).getTime()/1000) + " AND time < " + (new Date(tweetDateEndField.getValue()).getTime() /1000) ;
     var fromFilter = " from oct_tweets";
 
     for (var x = 0; x < layers.length; x++) {
         var layer = layers[x];
 
         if (layer.get("name") == "heatmap") {
-            layer["cql_filter"] =  startFilter  + timeFilter + keywordFilter +  fromFilter;
+            layer["cql_filter"] =  startFilter + keywordFilter +  fromFilter + " WHERE " + timeFilter;
             layer.getLayer().params["SQL"] =  layer["cql_filter"];
             layer.getLayer().params["BLUR"] = Ext.getCmp("slider_blur").value;
             layer.getLayer().params["MIN"] = Ext.getCmp("slider_min").value;
@@ -308,7 +309,7 @@ var updateCQL = function(layers) {
             layer.getLayer().visibility =  keywords ? true : false;
 
         } else {
-            layer["cql_filter"] = startFilter + " tweet_text " + fromFilter + " WHERE "  + timeFilter + keywordFilter;
+            layer["cql_filter"] = startFilter + " tweet_text " + fromFilter + " WHERE "  + timeFilter + (keywords ?  " AND " + keywordFilter : "") ;
             layer.getLayer().params["SQL"] = layer["cql_filter"]
             layer.getLayer().params["RADIUS"] = 1;
             layer.getLayer().params["R"] = 0;
@@ -319,14 +320,28 @@ var updateCQL = function(layers) {
     //console.log(tweetHeatRecord.getLayer().params["CQL_FILTER"]);
 }
 
+
+    var getHeatNode =  function() {
+      var heatNode = null;
+    app.treeRoot.cascade(function(node) {
+        if (node.isLeaf() && node.layer && node.layer == tweetHeatRecord.getLayer()) {
+            heatNode = node;
+        }
+    });
+        return heatNode;
+};
+
+
+
     var updateLayer =  function() {
 
-        randomNum = Math.random();
+        var heatNode = getHeatNode();
 
         if (tweetHeatRecord != null && tweetPointRecord != null) {
             updateCQL([tweetHeatRecord,tweetPointRecord]);
             tweetHeatRecord.getLayer().redraw(true);
-	    tweetPointRecord.getLayer().redraw(true);
+	        tweetPointRecord.getLayer().redraw(true);
+            heatNode.getUI().toggleCheck(tweetHeatRecord.getLayer().getVisibility());
         }
 
 
@@ -485,11 +500,11 @@ var updateCQL = function(layers) {
                             id:"slider_maxval",
                             width: 100,
                             style: "display:inline-block;",
-                            value:"0.5",
+                            value:"0.05",
                             fieldLabel: "Max %",
                             labelStyle: "text-align:right;",
                             minValue: 0.001,
-                            maxValue: 1.0,
+                            maxValue: 0.1,
                             increment: 0.001,
                             keyIncrement: 0.01,
                             decimalPrecision: 3,
