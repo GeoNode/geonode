@@ -367,9 +367,6 @@ class Layer(ResourceBase):
             "coverageStore": "Raster Data",
         }).get(self.storeType, "Data")
 
-    def delete_from_geoserver(self):
-        cascading_delete(Layer.objects.gs_catalog, self)
-
     @property
     def service_type(self):
         if self.storeType == 'coverageStore':
@@ -556,7 +553,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     """
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
-    instance.delete_from_geoserver()
+    cascading_delete(Layer.objects.gs_catalog, instance.typename) 
 
 
 def pre_save_layer(instance, sender, **kwargs):
