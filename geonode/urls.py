@@ -71,6 +71,9 @@ urlpatterns = patterns('',
     # Map views
     (r'^maps/', include('geonode.maps.urls')),
 
+    # Search
+    (r'^search/', include('geonode.search.urls')),
+
     # Social
     (r'^comments/', include('dialogos.urls')),
     (r'^ratings/', include('agon_ratings.urls')),

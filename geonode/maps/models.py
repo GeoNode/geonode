@@ -32,7 +32,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, TopicCategory
+from geonode.maps.signals import map_changed_signal
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
@@ -86,6 +87,11 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
     
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"))
 
+    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True)
+
+    popular_count = models.IntegerField(default=0)
+    share_count = models.IntegerField(default=0)
+    
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
 
@@ -104,7 +110,9 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
 
     @property
     def local_layers(self): 
-        return True
+        layer_names = MapLayer.objects.filter(map__id=self.id).values('name')
+        return Layer.objects.filter(typename__in=layer_names) | \
+               Layer.objects.filter(name__in=layer_names)
 
     def json(self, layer_filter):
         map_layers = MapLayer.objects.filter(map=self.id)
@@ -164,6 +172,7 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
             return conf["sources"][layer["source"]]
 
         layers = [l for l in conf["map"]["layers"]]
+        layer_names = set([l.typename for l in self.local_layers])
         
         for layer in self.layer_set.all():
             layer.delete()
@@ -175,6 +184,10 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
                 layer_from_viewer_config(
                     MapLayer, layer, source_for(layer), ordering
             ))
+
+        if layer_names != set([l.typename for l in self.local_layers]):
+            map_changed_signal.send_robust(sender=self,what_changed='layers')
+
         self.save()
 
     def keyword_list(self):

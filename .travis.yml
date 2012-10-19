@@ -1,8 +1,10 @@
 language: python
 
 python:
-#  - "2.7"
-  - "2.6"
+  - "2.7"
+
+virtualenv:
+  system_site_packages: true
 
 branches:
   only:
@@ -10,9 +12,9 @@ branches:
 
 install:
   - sudo apt-get update
-  - sudo apt-get install python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2
+  - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2
   - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
-  - sudo apt-get install -y  gettext
+  - sudo apt-get install -y gettext
   - pip install -e . --use-mirrors
 
 before_script:
@@ -32,10 +34,5 @@ notifications:
       - "irc.freenode.org#geonode"
     use_notice: true
   email:
-    - geonode-dev@opengeo.org
-
-# whitelist
-branches:
-  only:
-    - dev
-    - opendri-dev
+    #- geonode-dev@opengeo.org
+    - ingenieroariel@gmail.com
