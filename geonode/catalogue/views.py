@@ -23,7 +23,6 @@ from ConfigParser import SafeConfigParser
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
-from lxml import etree
 from pycsw import server
 from geonode.catalogue.backends.pycsw_local import CONFIGURATION
 
