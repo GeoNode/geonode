@@ -37,6 +37,15 @@
 Ext.sequence( Ext.form.SliderField.prototype, 'initComponent', function() {
     this.slider.on( 'change', this.fireEvent.createDelegate( this, 'change', 0 ) );
     this.slider.on( 'changecomplete', this.fireEvent.createDelegate( this, 'changecomplete', 0 ) );
+
+});
+
+Ext.override(Ext.form.SliderField, {
+    onDrag:  function(e) {
+    var pos = this.innerEl.translatePoints(this.tracker.getXY());
+    this.setValue(Ext.util.Format.round(this.reverseValue(pos.left), this.decimalPrecision), false);
+    this.fireEvent('drag', this, e);
+    }
 });
 
 var randomNum = Math.random();
@@ -179,28 +188,48 @@ var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
         width:100
     });
 
-    var tweetDateStartField = new Ext.form.DateField({
+    var tweetDateStartField = new Ext.ux.form.DateTime({
         id: 'tweetStartDate',
         fieldLabel: 'From',
         labelAlign: 'right',
         labelStyle:"font-weight:bold;text-align:right",
-        allowBlank: false,
-        minValue: new Date(2012,9,1),
-        maxValue: new Date(2012,9,12),
-        value: new Date(2012,9,1),
-        width:100
+        allowBlank: false
+        ,timeFormat:'H:i:s'
+        ,timeConfig: {
+            altFormats:'H:i:s'
+            ,allowBlank:true
+        }
+        ,dateFormat:'n/d/Y'
+        ,dateConfig: {
+            altFormats:'Y-m-d|Y-n-d'
+            ,allowBlank:true,
+            minValue: new Date(2012,9,1),
+            maxValue: new Date(2012,9,12),
+            value: new Date(2012,9,1)
+         },
+        width:200,
     });
 
-var tweetDateEndField = new Ext.form.DateField({
+var tweetDateEndField = new Ext.ux.form.DateTime({
     id: 'tweetEndDate',
     //fieldLabel: 'To',
     //labelAlign: 'top',
     //labelStyle:"font-weight:bold;text-align:right",
-    allowBlank: false,
-    minValue: new Date(2012,9,1),
-    maxValue: new Date(2012,9,12),
-    value: new Date(2012,9,2),
-    width:100
+    allowBlank: false
+    ,timeFormat:'H:i:s'
+    ,timeConfig: {
+        altFormats:'H:i:s'
+        ,allowBlank:true
+    }
+    ,dateFormat:'n/d/Y'
+    ,dateConfig: {
+        altFormats:'Y-m-d|Y-n-d'
+        ,allowBlank:true,
+        minValue: new Date(2012,9,1),
+        maxValue: new Date(2012,9,12,23,59,59),
+        value: new Date(2012,9,2)
+    },
+    width:200
 });
 
 var tweetPointLayer = null;
@@ -239,13 +268,13 @@ var remoteStore = new Ext.data.JsonStore({
         }
     }
 });
-
+ */
     var updateLegend = function(mapExtent) {
         Ext.getCmp("tweetLegendImg").getEl().dom.src = tweetConfig.url +
                 "?TRANSPARENT=TRUE&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml" +
                 "&LAYER=heatmap&FORMAT=image%2Fgif&CQL_FILTER=" + tweetHeatRecord.getLayer().params["CQL_FILTER"]
     }
-*/
+
 
 var updateCQL = function(layers) {
     var startFilter = "SELECT goog_x, goog_y, ";
@@ -256,7 +285,12 @@ var updateCQL = function(layers) {
         for (var k = 0; k < keywords.length; k++) {
             keywordFilter += "  AND tweet_text ilike '" +keywords[k].replace(/['"]/g,'') + "'";
         }
-
+        if (!legendWindow.isVisible()) {
+        legendWindow.show();
+        legendWindow.alignTo(document, 'r-r?');
+        }
+    } else {
+        legendWindow.hide();
     }
 
     var timeFilter =  "time > " + (new Date(tweetDateStartField.getValue()).getTime() / 1000) + " AND time < " + (new Date(tweetDateEndField.getValue()).getTime() / 1000 + 86400) ;
@@ -270,8 +304,9 @@ var updateCQL = function(layers) {
             layer.getLayer().params["SQL"] =  layer["cql_filter"];
             layer.getLayer().params["BLUR"] = Ext.getCmp("slider_blur").value;
             layer.getLayer().params["MIN"] = Ext.getCmp("slider_min").value;
-            layer.getLayer().params["SCALE"] = Ext.getCmp("slider_scale").value/1000;
+            layer.getLayer().params["MAXVAL"] = Ext.getCmp("slider_maxval").value
             layer.getLayer().visibility =  keywords ? true : false;
+
         } else {
             layer["cql_filter"] = startFilter + " tweet_text " + fromFilter + " WHERE "  + timeFilter + keywordFilter;
             layer.getLayer().params["SQL"] = layer["cql_filter"]
@@ -304,17 +339,18 @@ var updateCQL = function(layers) {
 
     };
 
-     tweetDateStartField.on("select", updateLayer);
-    tweetDateEndField.on("select", updateLayer);
+     tweetDateStartField.on("change", updateLayer);
+    tweetDateEndField.on("change", updateLayer);
 
     var rewindDate = new Ext.Button({
             iconCls: "icon-zoom-previous",
             style: "display: inline-block;padding-left:5px;",
             handler: function(button,event) {
                 if (tweetDateStartField.validate() && tweetDateEndField.validate()){
-                    var yesterdayStart = tweetDateStartField.getValue().add(Date.DAY, -1);
-                    var yesterdayEnd = tweetDateEndField.getValue().add(Date.DAY, -1);
-                    if (yesterdayStart >= tweetDateStartField.minValue) {
+                    var interval = Ext.getCmp("date_interval").getValue();
+                    var yesterdayStart = tweetDateStartField.getValue().add(interval, -1);
+                    var yesterdayEnd = tweetDateEndField.getValue().add(interval, -1);
+                    if (yesterdayStart >=  Ext.getCmp(tweetDateStartField.id + "-date").minValue) {
                         tweetDateStartField.setValue(yesterdayStart);
                         tweetDateEndField.setValue(yesterdayEnd);
                         updateLayer();
@@ -329,9 +365,10 @@ var updateCQL = function(layers) {
         style: "display: inline-block;padding-right:5px;",
         handler: function(button,event) {
             if (tweetDateStartField.validate() && tweetDateEndField.validate()){
-                var tomorrowStart = tweetDateStartField.getValue().add(Date.DAY, 1);
-                var tomorrowEnd = tweetDateEndField.getValue().add(Date.DAY, 1);
-                if (tomorrowEnd <= tweetDateEndField.maxValue) {
+                var interval = Ext.getCmp("date_interval").getValue();
+                var tomorrowStart = tweetDateStartField.getValue().add(interval, 1);
+                var tomorrowEnd = tweetDateEndField.getValue().add(interval, 1);
+                if (tomorrowEnd <= Ext.getCmp(tweetDateEndField.id + "-date").maxValue) {
                     tweetDateStartField.setValue(tomorrowStart);
                     tweetDateEndField.setValue(tomorrowEnd);
                     updateLayer();
@@ -355,7 +392,7 @@ var updateCQL = function(layers) {
             msgTarget: 'side'
         },
         width: 850,
-        height: 100,
+        height: 150,
         layout:"fit",
         items: [
             {
@@ -375,12 +412,46 @@ var updateCQL = function(layers) {
                         {
                             xtype: "compositefield",
                             items: [
-                        rewindDate,
-                        tweetDateStartField,
-                         {xtype: "container",
-                                    html: "<span> to </span>"},
-                         tweetDateEndField,
-                          forwardDate
+                       // rewindDate,
+                       {xtype: "container", width: 55, style:"align:right",
+                                    html: "<span> From:</span>"},
+                        tweetDateStartField
+                          //forwardDate
+                            ]
+                        },
+                        {xtype: "container",
+                            html: "<div style='padding-bottom:5px;'></div>"},
+                        {
+                            xtype: "compositefield",
+                            items: [
+                                // rewindDate,
+                                {xtype: "container", width: 55, style:"align:right",
+                                    html: "<span> To: </span>"},
+                                tweetDateEndField
+                                //forwardDate
+                            ]
+                        },
+
+                        {xtype: "container",
+                            html: "<div style='padding-bottom:5px;'></div>"},
+                        {
+                            xtype: "compositefield",
+                            items: [
+                                {xtype: "container", width: 55, style:"align:right",
+                                    html: "<span> Increment:  </span>"},
+                                {
+                                    xtype: "combo",
+                                    width: 75,
+                                    id: "date_interval",
+                                    triggerAction: 'all',
+                                    mode: 'local',
+                                    store:  [[Date.DAY, 'Day'], [Date.HOUR, 'Hour'],[Date.MINUTE, 'Minute' ]],
+                                    value: Date.DAY,
+                                    valueField: 'myId',
+                                    displayField: 'displayText'
+                                },
+                                rewindDate,
+                                forwardDate
                             ]
                         }
                     ]
@@ -402,6 +473,7 @@ var updateCQL = function(layers) {
                                     updateLayerBtn
                                     ]
                             }
+
                     ]
                 },
 
@@ -410,14 +482,17 @@ var updateCQL = function(layers) {
                     items: [
                         {
                             xtype:"sliderfield",
-                            id:"slider_scale",
+                            id:"slider_maxval",
                             width: 100,
                             style: "display:inline-block;",
-                            value:"25",
+                            value:"0.5",
                             fieldLabel: "Max %",
                             labelStyle: "text-align:right;",
-                            minValue: 1,
-                            maxValue: 50,
+                            minValue: 0.001,
+                            maxValue: 1.0,
+                            increment: 0.001,
+                            keyIncrement: 0.01,
+                            decimalPrecision: 3,
                             listeners: {
                                 "changecomplete": updateLayer
                             }},
@@ -577,16 +652,17 @@ app.mapPanel.add(cqlWindow);
 
 /*
 app.mapPanel.add(chartPanel);
-
+ */
 
 var legendUrl = ""
 
 //legendUrl = "https://encrypted-tbn0.google.com/tbns/personal?q=tbn:ANd9GcTyCBe7PCREYi_ZHxQ1Mj5iCslnngmTgeJz7K2Bxx6sqtRMf0YOuMEgmyy3-0DEYa6t-Q2GXaAfz5O6UnJkLAcNGeWrRrJjOLM00caVtNYICYBz2WLMNlbfPC4IJrde3pKMMiSjEcWIpZwV2wgPwNMGr9MQ39SSjx5HIw";
 
-var legendImage = new Ext.BoxComponent({id: "tweetLegendImg", autoEl: {tag: 'img', src: legendUrl, style: 'z-index:10050;position:absolute;top:42%;right:0px;margin-top:-120px;border:1px solid #000;width:200px;height:200px;'}});
-app.mapPanel.add(legendImage);
+var legendImage = new Ext.Panel({id: "tweetLegendImg", width:200,height:200,autoEl: {tag: 'img', src: legendUrl, style: 'width:200px;height:200px;'}});
+var legendWindow = new Ext.Window({id: "tweetLegendWin", title: "legend",  collapsible:true, draggable: true, items: [legendImage] });
+app.mapPanel.add(legendWindow);
 
-*/
+
 
 app.on("ready", function() {
 
@@ -601,11 +677,11 @@ app.on("ready", function() {
 
     });
 
-    /*
+
     app.legendPanel.filter = function(record) {
         return record.data.group == undefined || (record.data.group != "Overlays" && record.data.url != "http://107.22.230.16");
     }
-*/
+
 
    app.mapPanel.layers.add([tweetHeatRecord]);
    app.addCategoryFolder(tweetHeatRecord.get("group"), "true");
@@ -628,7 +704,7 @@ app.on("ready", function() {
     //Ext.getCmp("gx_westPanel").collapse();
 
     tweetHeatRecord.getLayer().events.register("loadend", tweetHeatRecord.getLayer(), function(e) {
-        //updateLegend();
+        updateLegend();
         randomNum = Math.random();
         updateCQL([tweetHeatRecord,tweetPointRecord]);
     });
