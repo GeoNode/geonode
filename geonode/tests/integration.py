@@ -57,6 +57,8 @@ import zipfile
 
 LOGIN_URL= "/accounts/login/"
 
+import logging
+logging.getLogger("south").setLevel(logging.INFO)
 
 class GeoNodeCoreTest(TestCase):
     """Tests geonode.security app/module
@@ -127,7 +129,7 @@ class GeoNodeMapTest(TestCase):
     def tearDown(self):
         pass
 
-    # geonode.maps.utils 
+    # geonode.maps.utils
 
     def test_layer_upload(self):
         """Test that layers can be uploaded to running GeoNode/GeoServer
@@ -141,7 +143,7 @@ class GeoNodeMapTest(TestCase):
             if extension.lower() in ['.tif', '.shp', '.zip']:
                 expected_layers.append(os.path.join(gisdata.GOOD_DATA, filename))
 
-        for filename in os.listdir(gisdata.BAD_DATA):        
+        for filename in os.listdir(gisdata.BAD_DATA):
             not_expected_layers.append(
                                     os.path.join(gisdata.BAD_DATA, filename)
                                        )
@@ -265,7 +267,7 @@ class GeoNodeMapTest(TestCase):
 
         # Clean up and completely delete the layer
         uploaded.delete()
-        
+
     def test_shapefile(self):
         """Test Uploading a good shapefile
         """
@@ -301,7 +303,7 @@ class GeoNodeMapTest(TestCase):
 
         # Clean up and completely delete the layer
         uploaded.delete()
-    
+
     def test_repeated_upload(self):
         """Upload the same file more than once
         """
@@ -323,120 +325,9 @@ class GeoNodeMapTest(TestCase):
         # uploaded1 is overwritten by uploaded2 ... no need to delete it
         uploaded2.delete()
         uploaded3.delete()
-    
+
     # geonode.maps.views
 
-    # Search Tests
-    
-    def test_metadata_search(self):
-        
-        # Test Empty Search [returns all results, should match len(Layer.objects.all())+5]
-        # +5 is for the 5 'default' records in GeoNetwork
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("", 0, 10)
-        client = Client()
-        resp = client.get(test_url)
-        results = json.loads(resp.content)
-        self.assertEquals(int(results["total"]), Layer.objects.count())
-        
-        # Test n0ch@nc3 Search (returns no results)
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("n0ch@nc3", 0, 10)
-        resp = client.get(test_url)
-        results = json.loads(resp.content)
-        self.assertEquals(int(results["total"]), 0)
-        
-        # Test Keyword Search (various search terms)
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("NIC", 0, 10)
-        resp = client.get(test_url)
-        results = json.loads(resp.content)
-        #self.assertEquals(int(results["total"]), 3)
-
-        # This Section should be greatly expanded upon after uploading several
-        # Test layers. Issues found with GeoNetwork search should be 'documented'
-        # here with a Test Case
-
-        # Test BBOX Search (various bbox)
-        
-        # - Test with an empty query string and Global BBOX and validate that total is correct
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d&bbox=%s"  % ("", 0, 10, "-180,-90,180,90")
-        resp = client.get(test_url)
-        results = json.loads(resp.content)
-        self.assertEquals(int(results["total"]), Layer.objects.count())
-
-        # - Test with a specific query string and a bbox that is disjoint from its results
-        #test_url = "%sdata/search/api/?q=%s&start=%d&limit=%d&bbox=%s"  % (settings.SITEURL, "NIC", 0, 10, "0,-90,180,90")
-        #results = json.loads(get_web_page(test_url))
-        #self.assertEquals(int(results["total"]), 0) 
-
-        # - Many more Tests required
-
-        # Test start/limit params (do in unit test?)
-
-        # Test complex/compound Search
-
-        # Test Permissions applied to search from ACLs
-
-        # TODO Write a method to accept a perm_spec and query params
-        # and test that query results are returned respecting the
-        # perm_spec
-
-        # - Test with Anonymous User
-        perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","layer_readwrite"]]}
-        for layer in Layer.objects.all():
-            layer_set_permissions(layer, perm_spec)
-
-        test_url = "/data/search/api/?q=%s&start=%d&limit=%d"  % ("", 0, 10)
-        resp = client.get(test_url)
-        results = json.loads(resp.content)
-
-        for layer in results["rows"]:
-            if layer["_local"] == False:
-                # Ignore non-local layers
-                pass
-            else:
-                self.assertEquals(layer["_permissions"]["view"], False)
-                self.assertEquals(layer["_permissions"]["change"], False)
-                self.assertEquals(layer["_permissions"]["delete"], False)
-                self.assertEquals(layer["_permissions"]["change_permissions"], False)
-
-        # - Test with Authenticated User
-        client = Client()
-        client.login(username='admin', password='admin')
-        resp = client.get(test_url)
-        results = json.loads(resp.content)
-        
-        for layer in results["rows"]:
-            if layer["_local"] == False:
-                # Ignore non-local layers
-                pass
-            else:
-                self.assertEquals(layer["_permissions"]["view"], True)
-                self.assertEquals(layer["_permissions"]["change"], True)
-                self.assertEquals(layer["_permissions"]["delete"], True)
-                self.assertEquals(layer["_permissions"]["change_permissions"], True)
-        
-        # Test that MAX_SEARCH_BATCH_SIZE is respected (in unit test?)
-    
-    def test_search_result_detail(self):
-        shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
-        shp_layer = file_upload(shp_file, overwrite=True)
- 
-        # Test with a valid UUID
-        uuid=Layer.objects.all()[0].uuid
-
-        test_url = "/data/search/detail/?uuid=%s"  % uuid
-        client = Client()
-        resp = client.get(test_url)
-        results = resp.content
-        
-        # Test with an invalid UUID (should return 404, but currently does not)
-        uuid="xyz"
-        test_url = "/data/search/detail/?uuid=%s" % uuid
-        # Should use assertRaisesRegexp here, but new in 2.7
-        resp = client.get(test_url)
-        msg = 'Result for uuid: "%s" should have returned a 404' % resp.status_code
-        assert resp.status_code == 404, msg
-
-    # geonode.maps.models
 
     def test_layer_delete_from_geoserver(self):
         """Verify that layer is correctly deleted from GeoServer
@@ -526,7 +417,7 @@ class GeoNodeMapTest(TestCase):
         store_name = store.name
         layer = gs_cat.get_layer(resource_name)
         styles = layer.styles + [layer.default_style]
-        
+
         # Delete the Layer using cascading_delete()
         cascading_delete(gs_cat, shp_layer)
         
@@ -534,11 +425,11 @@ class GeoNodeMapTest(TestCase):
         for style in styles:
             s = gs_cat.get_style(style.name)
             assert s == None
-        
+
         # Verify that the resource was deleted
         self.assertRaises(FailedRequestError, lambda: gs_cat.get_resource(resource_name, store=store))
 
-        # Verify that the store was deleted 
+        # Verify that the store was deleted
         self.assertRaises(FailedRequestError, lambda: gs_cat.get_store(store_name))
 
         # Clean up by deleting the layer from GeoNode's DB and GeoNetwork
@@ -573,23 +464,23 @@ class GeoNodeMapTest(TestCase):
 
         raster_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
         raster_layer = file_upload(raster_file, overwrite=True)
- 
+
         c = Client()
         c.login(username='admin', password='admin')
 
-        #test the program can determine the original layer in raster type 
+        #test the program can determine the original layer in raster type
         raster_replace_url = reverse('layer_replace', args=[raster_layer.typename])
         response = c.get(raster_replace_url)
-        self.assertEquals(response.status_code, 200)   
+        self.assertEquals(response.status_code, 200)
         self.assertEquals(response.context['is_featuretype'], False)
-        
+
         #test the program can determine the original layer in vector type
         vector_replace_url = reverse('layer_replace', args=[vector_layer.typename])
         response = c.get(vector_replace_url)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.context['is_featuretype'], True)
-   
-        #test replace a vector with a raster 
+
+        #test replace a vector with a raster
         response = c.post(vector_replace_url, {'base_file': open(raster_file) })
         # TODO: This should really return a 400 series error with the json dict
         self.assertEquals(response.status_code, 200)
@@ -610,7 +501,7 @@ class GeoNodeMapTest(TestCase):
                                 'prj_file': layer_prj
                                 })
         self.assertEquals(response.status_code, 200)
-        response_dict = json.loads(response.content) 
+        response_dict = json.loads(response.content)
         self.assertEquals(response_dict['success'], True)
 
         # Get a Layer object for the newly created layer.
@@ -624,9 +515,9 @@ class GeoNodeMapTest(TestCase):
         self.assertNotEqual(vector_layer.bbox_y1, new_vector_layer.bbox_y1)
 
         #test an invalid user without layer replace permission
-        c.logout()   
+        c.logout()
         c.login(username='norman', password='norman')
-          
+
         response = c.post(vector_replace_url, {'base_file': layer_base,
                                 'dbf_file': layer_dbf,
                                 'shx_file': layer_shx,
