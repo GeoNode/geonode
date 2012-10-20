@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Search Data" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}search-results{% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/datepicker.css" type="text/css" media="screen" />
+{% endblock %}
+
+{% block body_outer %}
+  <aside class="span4 search-filters">
+    <div class="well">
+      <header class="well-header">
+        <h3>{% trans "Refine your search" %}</h3>
+      </header>
+      <section class="selections">
+        <h4>
+          {% trans "Your selections" %}
+          <a href="#" class="pull-right">Clear all</a>
+        </h4>
+        <ul class="unstyled">
+        </ul>
+      </section>
+
+      <div class="refine-search">
+        <section>
+            <header>
+                <h4>
+                    <a href="#filter1" class="expand-content" data-toggle="collapse">Type <i class="icon-chevron-right pull-right"></i></a>
+                </h4>
+            </header>
+            <div id="filter-classes" class="collapse in">
+                <form action="">
+                  <label class="checkbox" data-class="Map">
+                    <input type="checkbox" id="filter-maps" /> Maps <span>(<span class="count">0</span>)</span>
+                  </label>
+                  <label class="checkbox" data-class="Layer">
+                    <input type="checkbox" id="filter-data" /> Data <span>(<span class="count">0</span>)</span>
+                  </label>
+                  <div class="subgroup">
+                    <label class="checkbox" data-class="Raster">
+                      <input type="checkbox" /> Raster <span>(<span class="count">0</span>)</span>
+                    </label>
+                    <label class="checkbox" data-class="Vector">
+                      <input type="checkbox" /> Vector <span>(<span class="count">0</span>)</span>
+                    </label>
+                    <label class="checkbox" data-class="Document">
+                      <input type="checkbox" /> Document <span>(<span class="count">0</span>)</span>
+                    </label>
+                    <label class="checkbox" data-class="Feed">
+                      <input type="checkbox" /> Feed <span>(<span class="count">0</span>)</span>
+                    </label>
+                  </div>
+                  <label class="checkbox" data-class="User">
+                    <input type="checkbox" /> User <span>(<span class="count">0</span>)</span>
+                  </label>
+                  <label class="checkbox" data-class="Group">
+                    <input type="checkbox" /> Group <span>(<span class="count">0</span>)</span>
+                  </label>
+                </form>
+            </div>
+        </section>
+
+        <section>
+          <header>
+              <h4>
+                  <a href="#filter2" class="expand-content" data-toggle="collapse">Spatial Extent <i class="icon-chevron-right pull-right"></i></a>
+              </h4>
+          </header>
+        </section>
+
+        <section>
+            <header>
+                <h4>
+                    <a href="#filter3" class="expand-content" data-toggle="collapse">Temporal Extent <i class="icon-chevron-right pull-right"></i></a>
+                </h4>
+            </header>
+            <div id="filter3" class="collapse in">
+                <p>Limit the search to a specific time period</p>
+                <form action="">
+                    <label for="id_data_begins">Data begins after:</label>
+                    <input id="id_data_begins" value="{% now "Y" %}-01-01" data-date-format="yyyy-mm-dd" type="text" class="span2 datepicker" placeholder="yyyy-mm-dd" />
+                    <label for="id_data_ends">Data ends before:</label>
+                    <input id="id_data_ends" value="{% now "Y-m-d" %}" data-date-format="yyyy-mm-dd" type="text" class="span2 datepicker" placeholder="yyyy-mm-dd" />
+                </form>
+            </div>
+        </section>
+
+        <section>
+            <header>
+                <h4>
+                    <a href="#filter4" class="expand-content" data-toggle="collapse">Category <i class="icon-chevron-right pull-right"></i></a>
+                </h4>
+            </header>
+            <div id="filter4" class="collapse">
+              <p>Categories</p>
+            </div>
+        </section>
+
+        <section>
+            <header>
+                <h4>
+                    <a href="#filter5" class="expand-content" data-toggle="collapse">Keywords <i class="icon-chevron-right pull-right"></i></a>
+                </h4>
+            </header>
+            <div id="filter5" class="collapse">
+              <p>Keywords</p>
+            </div>
+        </section>
+
+        <section>
+            <header>
+                <h4>
+                    <a href="#filter6" class="expand-content" data-toggle="collapse">Metadata Date <i class="icon-chevron-right pull-right"></i></a>
+                </h4>
+            </header>
+            <div id="filter6" class="collapse">
+              <p>Metadata Date</p>
+            </div>
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="span8">
+    <h2 class="page-title">{% trans "Search Results" %}</h2>
+    <h4>You searched for "{{ request.GET.q }}"</h4>
+    <div class="row">
+      <div class="span6">
+        <p class="related-search">
+          <strong>related searches:</strong>
+        </p>
+      </div>
+      <div class="span2">
+        <div class="view">
+          <strong>View:</strong>
+          <a href="#" class="list current"><i class="icon-th-list"></i></a>
+          <a href="#" class="thumb"><i class="icon-th-large"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="well info-bar hide">
+      <div class="results-counter"><strong><span class="count">0</span> results</strong> found for <strong class="q"></strong></div>
+      <a href="#" class="save-search"><i class="icon-star"></i> Save Search</a>
+      <form action="" class="form-inline">
+        <label for="">sort by:</label>
+        <select name="" id="" class="span1">
+          <option value="">Newest</option>
+          <option value="">Popular</option>
+        </select>
+      </form>
+    </div>
+
+    {# {% include "_pagination.html" %} #}
+
+    <div id="search-results">
+    </div>
+
+    {# {% include "_pagination.html" %} #}
+
+  </div>
+<div class="modal custom hide" id="download-layer">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+      <div class="span2 offset1">
+        <ul class="unstyled">
+          <li><a href="#">Zipped Shapefile</a></li>
+          <li><a href="#">JPEG</a></li>
+          <li><a href="#">GML 2.0</a></li>
+          <li><a href="#">PDF</a></li>
+          <li><a href="#">GML 3.1.1</a></li>
+          <li><a href="#">PNG</a></li>
+        </ul>
+      </div>
+      <div class="span2">
+        <ul class="unstyled">
+          <li><a href="#">CSV</a></li>
+          <li><a href="#">KML</a></li>
+          <li><a href="#">Excel</a></li>
+          <li><a href="#">GeoJSON</a></li>
+          <li><a href="#">View in Google Earth</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block extra_script %}
+    <script src="{{ STATIC_URL }}geonode/js/bootstrap-datepicker.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}geonode/js/jquery.sortElements.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/hogan.js"></script>
+    <script id="searchResult" type="text/html">
+      {% include "search/search_result.js" %}
+    </script>
+    <script type="text/javascript">
+        var srt = Hogan.compile($("#searchResult").html());
+        $(function() {
+          $("form.search-box").bind("submit", function(e) {
+            e.preventDefault();
+            doSearch($(this).find("input[name=q]").val());
+          });
+          $("#filter-classes label.checkbox").each(function() {
+            $(this).find("input[type=checkbox]").change(function() {
+              filterResults($(this).parents("label").data("class"), $(this).attr("checked") == "checked");
+            });
+          });
+          $(".expand-content").click(function(event) {
+              event.preventDefault();
+          });
+          $(".datepicker").datepicker().on('changeDate', function(ev){
+            filterDates($(".datepicker"));
+          });
+
+          // view
+          $(".view .thumb").click(function(event) {
+              $(this).addClass('current');
+              $('.view .list').removeClass('current');
+              $('#search-results').addClass("row");
+              $('#search-results article').wrap('<div class="span4" />');
+              $('#search-results article img').attr('width', '100%');
+              event.preventDefault();
+          });
+
+          $(".view .list").click(function(event) {
+              $(this).addClass('current');
+              $('.view .thumb').removeClass('current');
+              $('#search-results').removeClass('row');
+              $('#search-results article').unwrap('<div class="span4" />');
+              $('#search-results article img').attr('width', '25%');
+              event.preventDefault();
+          });
+          function doSearch(q) {
+            $("#search-results").html("<p>Searching...</p>");
+            $(".info-bar .q").html(q);
+            $.getJSON('/search/api', {"q": q}, function(data) {
+                $("#search-results").html("");
+                var d1 = data.results[0].last_modified;
+
+                $.each(data.results, function(index, item) {
+                  var context = {
+                    "display_type": item._display_type,
+                    "date": item.date,
+                    "url": item.detail,
+                    "title": item.title,
+                    "owner": item.owner,
+                    "owner_url": item.owner_detail,
+                    "popular": 437,
+                    "last_modified": item.last_modified.replace(/-/g, "")
+                  }
+                  $("#search-results").append(srt.render(context));
+                  if (d1 > item.last_modified) d1 = item.last_modified;
+                });
+                $("#id_data_begins").val(d1);
+                $(".info-bar").show().find(".count").html($("#search-results article").size());
+                $("#filter-maps, #filter-data").attr("checked", "checked");
+                $("#filter-classes span.count").each(function() {
+                  $(this).html(
+                    $("#search-results article."+$(this).parents("label").data("class")).size()
+                  );
+                });
+                if ($("#search-results article").size()) {
+                  $(".info-bar select").show();
+                } else {
+                  $(".info-bar select").hide();
+                  $("#search-results").html("<p>No results</p>");
+                }
+              });
+            }
+
+          doSearch("{{ request.GET.q }}");
+        });
+        function filterResults(cls, show) {
+          if (show) $("#search-results article."+cls).show();
+          else $("#search-results article."+cls).hide();
+        }
+        function filterDates(dates) {
+          var d1 = $(dates[0]).val().replace(/-/g, ""),
+                d2 = $(dates[1]).val().replace(/-/g, "");
+          $("#search-results article").each(function() {
+            if (d2 >= $(this).data("modified") && $(this).data("modified") >= d1) $(this).show();
+            else $(this).hide();
+          });
+        }
+
+    </script>
+{% endblock %}

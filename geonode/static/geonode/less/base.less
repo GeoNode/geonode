@@ -764,13 +764,6 @@ ul.space li {
 #contain-slider {
   overflow: hidden;
 
-  a.toggle i {
-    display: block;
-    float: left;
-    width: 20px;
-    text-align: center;
-  }
-
   .tab-content {
      margin-left: 40px;
      width: auto;
@@ -946,24 +939,17 @@ article.abstract {
 
   header {
     padding: 0.1em 1em;
-    height: 45px;
     background-color: @brown;
     color: white;
     margin-bottom: 1em;
-
-    h3 {
-      margin-top: 10px;
-      text-transform: uppercase;
-      font-weight: normal;
-      float: left;
-    }
-    .total {
-      text-transform: lowercase;
-    }
-    a {
-      float: right;
-      margin-top: 8px;
-    }
+  }
+  header h3 {
+    margin-top: 10px;
+    text-transform: uppercase;
+    font-weight: normal;
+  }
+  header .total {
+    text-transform: lowercase;
   }
 
   article {
@@ -1082,7 +1068,6 @@ body.maps #subnav-tabs {
   .border-radius(3px 3px 0 0);
   .box-shadow(0 1px 2px #CCC);
   border-bottom: 2px solid @grayDark;
-  font-family: @customFont;
 
   a {
     display: block;
@@ -1118,7 +1103,7 @@ body.explore #subnav-tabs a.explore {
 
 // layer info
 
-.map-actions, .layer-actions {
+.layer-actions {
   margin-bottom:20px;
   position:relative;
 
@@ -1228,6 +1213,12 @@ body.search-results {
 }
 
 .search-results {
+  .content-wrap .container {
+    width: 960px;
+  }
+  .span4 {
+
+  }
   article {
     overflow:hidden;
     background:@grayLighter;

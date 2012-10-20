@@ -67,6 +67,14 @@ def search_page(request, **kw):
 
     return render_to_response('search/search.html', RequestContext(request, context))
 
+def advanced_search(request, **kw):
+    params = {}
+    if kw:
+        params.update(kw)
+
+    context = _get_search_context()
+    context['init_search'] = json.dumps(params)
+    return render_to_response('search/advanced_search.html', RequestContext(request, context))
 
 def _get_search_context():
     cache_key = 'simple_search_context'
