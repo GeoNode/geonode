@@ -447,7 +447,49 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
     },
-    
+
+    //Check permissions for selected layer and enable/disable feature edit buttons accordingly
+    checkLayerPermissions:function (layerRecord) {
+
+        var buttons = this.tools["gn_layer_editor"].actions;
+
+        var toggleButtons = function(enabled) {
+            for (var i; i < buttons.length; i++) {
+                enabled ? buttons[i].enable() : buttons[i].disable();
+            }
+        }
+
+        //Disable if layer is null or selected layer in tree doesn't match input layer
+        var tree_node =  Ext.getCmp("treecontent").getSelectionModel().getSelectedNode();
+        if (layerRecord == null) {
+            toggleButtons(false);
+        }
+        else {
+            //Proceed if this is a local queryable WMS layer
+            var layer = layerRecord.getLayer();
+            if (layer instanceof OpenLayers.Layer.WMS && (layer.url == "/geoserver/wms" ||
+                    layer.url.indexOf(this.localGeoServerBaseUrl.replace(this.urlPortRegEx, "$1/")) == 0)) {
+                Ext.Ajax.request({
+                    url:"/data/" + layer.params.LAYERS + "/ajax-edit-check",
+                    method:"POST",
+                    success:function (result, request) {
+                        if (result.status != 200) {
+                            toggleButtons(false);
+                        } else {
+                            layer.displayOutsideMaxExtent = true;
+                            toggleButtons(true);
+                        }
+                    },
+                    failure:function (result, request) {
+                        toggleButtons(false);
+                    }
+                });
+            } else {
+                toggleButtons(false);
+            }
+        }
+    },
+
     initMapPanel: function() {
         this.mapItems = [{
             xtype: "gx_zoomslider",
@@ -523,6 +565,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
             layerTree = Ext.getCmp("treecontent");
 
+
+            if ("gn_layer_editor" in this.tools) {
+                this.tools["gn_layer_editor"].getFeatureManager().activate();
+            }
+
+
         }, this);
 
         //needed for Safari
@@ -553,7 +601,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 item.disable();
             });
         }, this);
-        
+
         var showContextMenu;
         this.googleEarthPanel = new gxp.GoogleEarthPanel({
             mapPanel: this.mapPanel,

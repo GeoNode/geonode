@@ -15,6 +15,7 @@
   <charset>UTF-8</charset>
   <numDecimals>8</numDecimals>
   <onlineResource>http://geoserver.org</onlineResource>
+  <proxyBaseUrl>http://localhost:8000/geoserver</proxyBaseUrl>
   <verbose>false</verbose>
   <verboseExceptions>false</verboseExceptions>
   <updateSequence>0</updateSequence>
