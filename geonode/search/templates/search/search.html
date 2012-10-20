@@ -25,9 +25,6 @@
           <a href="#" class="pull-right">Clear all</a>
         </h4>
         <ul class="unstyled">
-          <li>Lorem ipsum amet <a href="#" class="pull-right">remove</a></li>
-          <li>Sed do eiusmod dolore <a href="#" class="pull-right">remove</a></li>
-          <li>Quis nostrud <a href="#" class="pull-right">remove</a></li>
         </ul>
       </section>
 
@@ -76,19 +73,6 @@
                   <a href="#filter2" class="expand-content" data-toggle="collapse">Spatial Extent <i class="icon-chevron-right pull-right"></i></a>
               </h4>
           </header>
-          <div id="filter2" class="collapse in">
-            <form action="">
-              <label class="checkbox">
-                <input type="checkbox" /> Area 1
-              </label>
-              <label class="checkbox">
-                <input type="checkbox" /> Area 2
-              </label>
-              <label class="checkbox">
-                <input type="checkbox" /> Area 3
-              </label>
-            </form>
-          </div>
         </section>
 
         <section>
@@ -140,28 +124,6 @@
               <p>Metadata Date</p>
             </div>
         </section>
-
-        <section>
-            <header>
-                <h4>
-                    <a href="#filter7" class="expand-content" data-toggle="collapse">Services <i class="icon-chevron-right pull-right"></i></a>
-                </h4>
-            </header>
-            <div id="filter7" class="collapse">
-              <p>Services</p>
-            </div>
-        </section>
-
-        <section>
-            <header>
-                <h4>
-                    <a href="#filter8" class="expand-content" data-toggle="collapse">Raster Params <i class="icon-chevron-right pull-right"></i></a>
-                </h4>
-            </header>
-            <div id="filter8" class="collapse">
-              <p>Raster Params</p>
-            </div>
-        </section>
       </div>
     </div>
   </aside>
@@ -172,9 +134,6 @@
       <div class="span6">
         <p class="related-search">
           <strong>related searches:</strong>
-          <a href="#">consectetur</a>
-          <a href="#">adipisicing elit</a>
-          <a href="#">se eiusmod</a>
         </p>
       </div>
       <div class="span2">
@@ -201,62 +160,6 @@
     {# {% include "_pagination.html" %} #}
 
     <div id="search-results">
-      {% comment %}
-        
-      <article>
-        <h6>Map</h6>
-        <a href="{% url mapinfo %}">
-            <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
-        </a>
-        <div class="details">
-          <a href="{% url mapinfo %}"><h5>Title of the Map goes right here</h5></a>
-          <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
-          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
-        </div>
-      </article>
-
-      <article>
-        <h6>Data</h6>
-        <a href="{% url layerinfo %}">
-            <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
-        </a>
-        <div class="details">
-          <a href="{% url layerinfo %}"><h5>Title of the Layer goes right here</h5></a>
-          <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
-          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
-          <p class="actions"><a href="#download-layer"  data-toggle="modal" class="btn btn-small strong">Download Data</a> <a href="{% url new_map %}"   data-toggle="modal" class="btn btn-small strong">Create Map</a></p>
-        </div>
-      </article>
-
-      <article>
-        <h6>Map</h6>
-        <a href="{% url mapinfo %}">
-            <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
-        </a>
-        <div class="details">
-          <a href="{% url mapinfo %}"><h5>Title of the Map goes right here</h5></a>
-          <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
-          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
-        </div>
-      </article>
-
-      <article>
-        <h6>Data</h6>
-        <a href="{% url layerinfo %}">
-            <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
-        </a>
-        <div class="details">
-          <a href="{% url layerinfo %}"><h5>Title of the Layer goes right here</h5></a>
-          <div class="meta">by <a href="{% url profile_detail "admin" %}">John Smith</a>, 1 month ago</div>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incid
-          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitatioe.</p>
-          <p class="actions"><a href="#download-layer"  data-toggle="modal" class="btn btn-small strong">Download Data</a> <a href="{% url new_map %}"   data-toggle="modal" class="btn btn-small strong">Create Map</a></p>
-        </div>
-      </article>
-      {% endcomment %}
     </div>
 
     {# {% include "_pagination.html" %} #}
@@ -268,7 +171,6 @@
       <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
     </div>
     <div class="modal-body">
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nos-trud exercitation.</p>
     </div>
     <div class="modal-footer">
       <div class="span2 offset1">
