@@ -63,14 +63,14 @@ You get the latest GeoNode release from http://dev.geonode.org/release/ or the `
 
 You can unpack it like::
 
-   $ tar xvzf GeoNode-1.1.tar.gz
-   GeoNode-1.1/geonetwork.war
-   GeoNode-1.1/geonode-webapp.pybundle
-   GeoNode-1.1/geoserver.war
-   GeoNode-1.1/bootstrap.py
-   GeoNode-1.1/requirements.txt
-   GeoNode-1.1/install.sh
-   GeoNode-1.1/support/
+   $ tar xvzf GeoNode-1.2.tar.gz
+   GeoNode-1.2/geonetwork.war
+   GeoNode-1.2/geonode-webapp.pybundle
+   GeoNode-1.2/geoserver.war
+   GeoNode-1.2/bootstrap.py
+   GeoNode-1.2/requirements.txt
+   GeoNode-1.2/install.sh
+   GeoNode-1.2/support/
 
 This tarball comes with an install script and a directory with supporting config files.
 
@@ -137,7 +137,7 @@ Installation
 
    For example, on ubuntu you can use the provided configuration in support/config-ubuntu.sh ::
 
-    $ cd GeoNode-1.1/
+    $ cd GeoNode-1.2/
     $ sudo ./install.sh support/config-ubuntu.sh
 
 
