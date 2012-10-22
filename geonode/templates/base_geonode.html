@@ -119,6 +119,8 @@
                   <li id="nav_search">
                     <a href="{% url advanced_search %}">{% trans "Search" %}</a>
                   </li>
+                  {% block extra_nav %}
+                  {% endblock extra_nav %}
                 </ul>
               </nav>
             </div>
