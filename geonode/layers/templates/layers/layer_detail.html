@@ -271,7 +271,7 @@
       </div>
     </div>
   </div>
-  {% with "#" as form_action %}
+  {% with form_action=layer.get_absolute_url|add:"/permissions" %}
       {% include "_permissions_form.html" %}
   {% endwith %}
 {% endblock %}
@@ -283,4 +283,12 @@
      activeTab && activeTab.tab('show');
   });
   </script>
+   <script>
+      $(function() {
+        $("#perms_submit").click(function(){
+          $("#permission_form").submit();
+        });
+        $("#permission_form").submit(layer_perms_submit);
+      });
+    </script> 
 {% endblock extra_script %}
