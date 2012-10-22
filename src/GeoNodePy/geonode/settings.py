@@ -395,8 +395,8 @@ HOODS_TEMPLATE_LAYER = 'boston_census_block_neighborhoods' # layer name in geose
 HOODS_TEMPLATE_ID = 188  #Map id to be used as template
 HOODS_TEMPLATE_ATTRIBUTE = 'GEOID10'  #Attribute to be used for block id
 
-GEOPS_IP =  '128.30.77.57:8083'
-#GEOPS_IP =  '140.247.116.252:8083'
+#GEOPS_IP =  '128.30.77.77:8083'
+GEOPS_IP =  '140.247.116.252:8083'
 
 try:
     from local_settings import *
