@@ -69,7 +69,7 @@ def deploy_project():
     put('requirements.txt',GEONODEDIR,use_sudo=True)
     with cd(GEONODEDIR), prefix(ACT):
         sudo('pip install -r requirements.txt')
-        sudo('rm requitements.txt')
+        sudo('rm requirements.txt')
 
 def restore_data():
     # Restore geoserver data
