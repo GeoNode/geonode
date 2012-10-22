@@ -40,6 +40,7 @@ from django.utils import simplejson as json
 from django.utils.html import escape
 from django.views.decorators.http import require_POST
 from django.views.generic.list import ListView
+from django.template.defaultfilters import slugify
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
@@ -144,9 +145,18 @@ def layer_upload(request, template='layers/layer_upload.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+                title = form.cleaned_data["layer_title"]
+
                 # Replace dots in filename - GeoServer REST API upload bug
-                name = name.replace(".","_")
+                # and avoid any other invalid characters.
+                # Use the title if possible, otherwise default to the filename
+                if title is not None and len(title) > 0:
+                    name_base = title
+                else:
+                    name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+
+                name = slugify(name_base.replace(".","_"))
+
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
