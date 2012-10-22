@@ -1055,13 +1055,17 @@ def tweetview(request):
 
 
     first_visit = True
-
+    if request.session.get('visit' + str(map.id), False):
+        first_visit = False
+    else:
+        request.session['visit' + str(map.id)] = True
 
     mapstats, created = MapStats.objects.get_or_create(map=map)
     mapstats.visits += 1
     if created or first_visit:
         mapstats.uniques+=1
     mapstats.save()
+
 
     #Remember last visited map
     request.session['lastmap'] = map.id
@@ -1075,6 +1079,7 @@ def tweetview(request):
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
         'maptitle': map.title,
+        'GEOPS_IP': settings.GEOPS_IP,
         'urlsuffix': get_suffix_if_custom(map),
         }))
 

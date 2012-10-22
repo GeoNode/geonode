@@ -57,6 +57,8 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
     attributePanel: "",
     gridResultsPanel: 'gridResultsPanel',
 
+    geopsUrl: "128.30.77.57:8083",
+
     /** api: config[vendorParams]
      *  ``Object``
      *  Optional object with properties to be serialized as vendor specific
@@ -310,7 +312,7 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                         }
                     });
                 }
-                else if (layer.url.indexOf("140.247.116.252")  > -1) {
+                else if (layer.url.indexOf(this.geopsUrl)  > -1) {
                     var control = new GeoExplorer.GeopsGetFeatureInfo({
                         format:  new OpenLayers.Format.JSON(),
                         url: layer.url,

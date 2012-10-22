@@ -48,7 +48,7 @@ Ext.override(Ext.form.SliderField, {
     }
 });
 
-var randomNum = Math.random();
+
 
 /* Override Layer.Grid method for twitter heatmap */
 
@@ -122,6 +122,7 @@ var init = function() {
                     actionTarget:  {target: "paneltbar", index: 5},
                     toolText: '<span class="x-btn-text">Identify</span>',
                     iconCls: null,
+                    geopsUrl: "{{GEOPS_IP}}",
                     outputConfig: {width: 400, height: 200, panIn: false},
                     featurePanel: 'queryPanel',
                     attributePanel: 'gridWinPanel',
@@ -197,14 +198,14 @@ var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
         ,timeFormat:'H:i:s'
         ,timeConfig: {
             altFormats:'H:i:s'
-            ,allowBlank:true
+            ,allowBlank:true,
         }
         ,dateFormat:'n/d/Y'
         ,dateConfig: {
             altFormats:'Y-m-d|Y-n-d'
             ,allowBlank:true,
             minValue: new Date(2012,9,1),
-            maxValue: new Date(2012,9,12),
+            maxValue: new Date(Date.now()),
             value: new Date(2012,9,1)
          },
         width:200
@@ -219,15 +220,16 @@ var tweetDateEndField = new Ext.ux.form.DateTime({
     ,timeFormat:'H:i:s'
     ,timeConfig: {
         altFormats:'H:i:s'
-        ,allowBlank:true
+        ,allowBlank:true,
+        value: new Date(Date.now()+60000)
     }
     ,dateFormat:'n/d/Y'
     ,dateConfig: {
         altFormats:'Y-m-d|Y-n-d'
         ,allowBlank:true,
         minValue: new Date(2012,9,1),
-        maxValue: new Date(2012,9,12,23,59,59),
-        value: new Date(2012,9,2)
+        maxValue: new Date(Date.now()),
+        value: new Date(Date.now())
     },
     width:200
 });
@@ -288,10 +290,10 @@ var updateCQL = function(layers) {
     var startFilter = "SELECT goog_x, goog_y, ";
 
     var keywordFilter = "";
-    var keywords = tweetFilterField.getValue().match(/\w+|"[^"]+"/g);
+    var keywords = tweetFilterField.getValue().replace("'","''").match(/[A-Za-z0-9\#\[\]\{\}\*\'\?\@\%\&\!\+\=\-\_\(\)]+|"[^"]+"/g);
     if (keywords) {
         for (var k = 0; k < keywords.length; k++) {
-            keywordFilter += (k > 0? " AND ": "") +  "tweet_text ilike '" +keywords[k].replace(/['"]/g,'') + "'";
+            keywordFilter += (k > 0? " AND ": "") +  "tweet_text ilike '" +keywords[k].replace(/["]/g,'') + "'";
         }
     }
 
@@ -575,7 +577,7 @@ var updateCQL = function(layers) {
 
 var cqlWindow = new Ext.Window({
     id     : 'cql_window',
-    style: 'opacity:0.8',
+    style: 'opacity:0.9',
     width: 850,
     collapsible: true,
     draggable: true,
@@ -633,7 +635,7 @@ var chartPanel = new Ext.Panel({
 */
 
 var tweetConfig = {title: "Twitter Trends", source: "local", group: "Twitter", name: "heatmap",
-    url: "http://140.247.116.252:8083/", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
+    url: "http://{{GEOPS_IP}}", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
     singleTile: true, tiled: false, ratio: 1, opacity: 1, visibility: true, queryable: true
 };
 /*
