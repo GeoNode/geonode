@@ -579,7 +579,7 @@ def layer_permissions(request, layername):
     layer_set_permissions(layer, permission_spec)
 
     return HttpResponse(
-        "Permissions updated",
+        json.dumps({'success': True}),
         status=200,
         mimetype='text/plain'
     )
