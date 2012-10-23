@@ -136,10 +136,11 @@ Ext.ux.form.DateTime = Ext.extend(Ext.form.Field, {
         delete(this.timeFormat);
 
         // relay events
-        this.relayEvents(this.df, ['focus', 'specialkey', 'invalid', 'valid']);
-        this.relayEvents(this.tf, ['focus', 'specialkey', 'invalid', 'valid']);
+        this.relayEvents(this.df, ['focus', 'specialkey', 'invalid', 'valid','select']);
+        this.relayEvents(this.tf, ['focus', 'specialkey', 'invalid', 'valid','select']);
 
         this.on('specialkey', this.onSpecialKey, this);
+        this.on('select', this.updateValue, this);
 
         this.updateValue();
 

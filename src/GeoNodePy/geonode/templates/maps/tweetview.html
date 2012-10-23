@@ -198,7 +198,7 @@ var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
         ,timeFormat:'H:i:s'
         ,timeConfig: {
             altFormats:'H:i:s'
-            ,allowBlank:true,
+            ,allowBlank:true
         }
         ,dateFormat:'n/d/Y'
         ,dateConfig: {
@@ -387,6 +387,8 @@ var updateCQL = function(layers) {
 
      tweetDateStartField.on("change", updateLayer);
     tweetDateEndField.on("change", updateLayer);
+    tweetDateStartField.on("select", updateLayer);
+    tweetDateEndField.on("select", updateLayer);
 
     var rewindDate = new Ext.Button({
             iconCls: "icon-zoom-previous",

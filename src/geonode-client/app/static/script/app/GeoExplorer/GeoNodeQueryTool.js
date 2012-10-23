@@ -316,6 +316,7 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                     var control = new GeoExplorer.GeopsGetFeatureInfo({
                         format:  new OpenLayers.Format.JSON(),
                         url: layer.url,
+                        radius: 100,
                         queryVisible: true,
                         layers: [layer],
                         eventListeners: {

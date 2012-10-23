@@ -77,7 +77,7 @@ GeoExplorer.GeopsGetFeatureInfo = OpenLayers.Class(OpenLayers.Control.WMSGetFeat
         }
 
         var lonlat = this.map.getLonLatFromViewPortPx(clickPosition).transform(projection, layerProj);
-        var SQL =  firstLayer.params["SQL"] + " AND  dist(point(lon,lat),point(" + lonlat.lon + "," +  lonlat.lat + ")) < " + this.radius +
+        var SQL =  firstLayer.params["SQL"] + " AND  dist(point(lon,lat),point(" + lonlat.lon + "," +  lonlat.lat + ")) < " + (this.radius / this.map.zoom) +
             " order by dist(point(lon,lat), point(" + lonlat.lon + "," +  lonlat.lat + "))" +
             " LIMIT " + this.maxFeatures;
 
