@@ -144,7 +144,7 @@
       </div>
     </div>
   </div>
-  {% with "#" as form_action %}
+  {% with form_action=map.get_absolute_url|add:"/permissions" %}
       {% include "_permissions_form.html" %}
   {% endwith %}
 {% endblock %}
@@ -158,6 +158,15 @@
 {# {% endblock %} #}
 
 {% block extra_script %}
+<script>
+  $(function() {
+    $("#perms_submit").click(function(){
+      $("#permission_form").submit();
+    });
+    $("#permission_form").submit(map_perms_submit);
+  });
+</script> 
+
 {% if request.user.is_authenticated %}
  {% user_rating_js request.user map "map" %}
 {% else %}
