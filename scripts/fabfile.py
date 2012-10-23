@@ -89,7 +89,7 @@ def setup_apache():
     with cd(PYLIBS), prefix(ACT):
         sudo("sed 's/{{ PYLIBS }}/%s/g' %s/%s.apache > /etc/apache2/sites-available/%s" % (PYLIBS.replace('/','\/'), PROJECT, PROJECT, PROJECT))
         sudo("a2enmod proxy_http")
-        sudo('a2dissite default; a2ensite %s; service apache2 restart' % PROJECT)
+        sudo('a2ensite %s; service apache2 restart' % PROJECT)
         sudo('mkdir /var/www/geonode; chown www-data:www-data /var/www/geonode')
         sudo('django-admin.py collectstatic --noinput --settings=%s.settings' % PROJECT)
 
@@ -103,7 +103,7 @@ def setup_pgsql():
     #sudo("dropdb %s" % db, user="postgres")
     #sudo("dropuser %s" % user, user="postgres")
     sudo("createuser -SDR %s" % user, user="postgres")
-    sudo("createdb -O %s %s" %(user,db), user="postgres")
+    sudo("createdb -O %s %s -T template_postgis" %(user,db), user="postgres")
     sudo("psql -c \"alter user %s with encrypted password '%s'\" " % (user,password), user="postgres")
     with prefix(ACT):
         sudo('django-admin.py syncdb --settings=%s.settings' % PROJECT)
