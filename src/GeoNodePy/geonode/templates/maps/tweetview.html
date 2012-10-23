@@ -180,9 +180,10 @@ var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
 
     var tweetFilterField = new Ext.form.TextField({
         id: 'tweetFilter',
-        fieldLabel: 'Query',
-        labelAlign: 'top',
         name: 'tweetFilter',
+        fieldLabel: "Filter Term",
+        labelAlign: 'right',
+        labelStyle:"font-weight:bold;text-align:right",
         allowBlank: true,
         value: '',
         labelStyle:"font-weight:bold;text-align:right",
@@ -439,8 +440,8 @@ var updateCQL = function(layers) {
             anchor: '95%',
             msgTarget: 'side'
         },
-        width: 850,
-        height: 150,
+        width: 700,
+        height: 160,
         layout:"fit",
         items: [
             {
@@ -448,13 +449,10 @@ var updateCQL = function(layers) {
 
                 items:[
                 {
-                    columnWidth:0.4,
+                    columnWidth:0.5,
                     //layout:"form",
                     //title:"3",
                     items:[
-                        {xtype: "label",
-                            text: "Date Interval:",
-                            style: 'margin-bottom: 20px;font-weight:bold;font-size: 12px;'},
                         {xtype: "container",
                         html: "<div style='padding-bottom:10px;'></div>"},
                         {
@@ -505,13 +503,10 @@ var updateCQL = function(layers) {
                     ]
                 },
                 {
-                        columnWidth:0.25,
-                       // layout:"form",
+                        columnWidth:0.5,
+                       layout:"form",
                         //title:"3",
                         items:[
-                            {xtype: "label",
-                                text: "Filter Term:",
-                                style: 'margin-bottom: 20px;font-weight:bold;font-size: 12px;'},
                             {xtype: "container",
                                 html: "<div style='padding-bottom:10px;'></div>"},
                             {
@@ -520,54 +515,48 @@ var updateCQL = function(layers) {
                                     tweetFilterField,
                                     updateLayerBtn
                                     ]
-                            }
+                            },
+                            {
+                                xtype:"sliderfield",
+                                id:"slider_maxval",
+                                width: 100,
+                                style: "display:inline-block;",
+                                value:"0.05",
+                                fieldLabel: "Max %",
+                                labelStyle: "text-align:right;",
+                                minValue: 0.001,
+                                maxValue: 0.1,
+                                increment: 0.001,
+                                keyIncrement: 0.01,
+                                decimalPrecision: 3,
+                                listeners: {
+                                    "changecomplete": updateLayer
+                                }},
+                            {xtype:"sliderfield",
+                                id:"slider_blur",
+                                value:"10",
+                                width: 100,
+                                fieldLabel: "Aggregation",
+                                labelStyle: "text-align:right;",
+                                minValue: 1,
+                                maxValue: 40,
+                                listeners: {
+                                    "changecomplete": updateLayer
+                                }},
+                            {xtype:"sliderfield",
+                                id:"slider_min",
+                                width: 100,
+                                value:"100",
+                                fieldLabel: "Density/km",
+                                labelStyle: "text-align:right;",
+                                minValue: 1,
+                                maxValue: 1000,
+                                listeners: {
+                                    "changecomplete": updateLayer
+                                }}
 
-                    ]
-                },
-
-                {    columnWidth:0.25,
-                    layout: "form",
-                    items: [
-                        {
-                            xtype:"sliderfield",
-                            id:"slider_maxval",
-                            width: 100,
-                            style: "display:inline-block;",
-                            value:"0.05",
-                            fieldLabel: "Max %",
-                            labelStyle: "text-align:right;",
-                            minValue: 0.001,
-                            maxValue: 0.1,
-                            increment: 0.001,
-                            keyIncrement: 0.01,
-                            decimalPrecision: 3,
-                            listeners: {
-                                "changecomplete": updateLayer
-                            }},
-                        {xtype:"sliderfield",
-                            id:"slider_blur",
-                            value:"10",
-                            fieldLabel: "Aggregation",
-                            labelStyle: "text-align:right;",
-                            minValue: 1,
-                            maxValue: 40,
-                            listeners: {
-                            "changecomplete": updateLayer
-                        }},
-                        {xtype:"sliderfield",
-                            id:"slider_min",
-                            width: 100,
-                            value:"100",
-                            fieldLabel: "Density/km",
-                            labelStyle: "text-align:right;",
-                            minValue: 1,
-                            maxValue: 1000,
-                            listeners: {
-                            "changecomplete": updateLayer
-                        }}],
-                    style: "padding-left:20px;"
+                        ]
                 }
-
                 ]
             }
         ],
@@ -580,7 +569,7 @@ var updateCQL = function(layers) {
 var cqlWindow = new Ext.Window({
     id     : 'cql_window',
     style: 'opacity:0.9',
-    width: 850,
+    width: 700,
     collapsible: true,
     draggable: true,
     closable: false,
@@ -761,7 +750,7 @@ app.on("ready", function() {
     updateLayer();
 
     cqlWindow.show();
-    cqlWindow.alignTo(document, 'b-b?');
+    cqlWindow.alignTo(document, 'br-br?');
 });
 
 
