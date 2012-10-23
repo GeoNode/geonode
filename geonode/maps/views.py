@@ -141,7 +141,7 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         'config': config,
         'map': map_obj,
         'layers': layers,
-        'permissions_json': json.dumps(_perms_info(map_obj, MAP_LEV_NAMES))
+        'permissions_json': json.dumps(_perms_info(map_obj, MAP_LEV_NAMES)),
     }))
 
 
