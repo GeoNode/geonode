@@ -15,11 +15,8 @@ from repo or debian package (once release candidate phase or later)
 # Usage:
 #     fab -H user@hostname 
 
-import os
-import datetime
 from fabric.api import env, sudo, run, cd, local, put, prefix
-from fabric.contrib.project import rsync_project
-from urlparse import urlparse
+from fabric.api import settings as fab_settings
 
 # Project info
 PROJECT = 'PROJNAME'
@@ -38,7 +35,7 @@ ACT = 'source ' + GEONODEDIR + '/bin/activate'
 def install_depend():
     sudo('apt-get install -y python-virtualenv')
     sudo('cd %s; virtualenv geonode --system-site-packages;' % INSTALLDIR)
-    sudo('apt-get install -y gcc python-pastescript python-dev libxml2-dev libxslt1-dev openjdk-6-jre')
+    sudo('apt-get install -y gcc python-pastescript python-dev libxml2-dev libxslt1-dev openjdk-6-jdk')
     # Web server
     sudo('apt-get install -y apache2 tomcat6 libapache2-mod-wsgi maven2')
     # Database
@@ -102,9 +99,10 @@ def setup_pgsql():
     password = settings.DATABASES['default']['PASSWORD']
     #sudo("dropdb %s" % db, user="postgres")
     #sudo("dropuser %s" % user, user="postgres")
-    sudo("createuser -SDR %s" % user, user="postgres")
-    sudo("createdb -O %s %s -T template_postgis" %(user,db), user="postgres")
-    sudo("psql -c \"alter user %s with encrypted password '%s'\" " % (user,password), user="postgres")
+    with fab_settings(warn_only=True):
+        sudo("createuser -SDR %s" % user, user="postgres")
+        sudo("createdb -O %s %s -T template_postgis" %(user,db), user="postgres")
+        sudo("psql -c \"alter user %s with encrypted password '%s'\" " % (user,password), user="postgres")
     with prefix(ACT):
         sudo('django-admin.py syncdb --settings=%s.settings' % PROJECT)
         sudo('django-admin.py migrate --settings=%s.settings' % PROJECT)
