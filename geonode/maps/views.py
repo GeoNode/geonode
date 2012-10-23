@@ -514,7 +514,7 @@ def map_permissions(request, mapid):
         map_obj.set_user_level(user, perms(level))
 
     return HttpResponse(
-        "Permissions updated",
+        json.dumps({'success': True}),
         status=200,
         mimetype='text/plain'
     )
