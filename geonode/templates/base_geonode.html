@@ -9,7 +9,7 @@
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/datatables.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}geonode/select2/select2.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}select2/select2.css" rel="stylesheet"/>
       {% block extra_head %}{% endblock %}
     {% endblock %}
     <!--[if lt IE 9]>
@@ -119,6 +119,8 @@
                   <li id="nav_search">
                     <a href="{% url advanced_search %}">{% trans "Search" %}</a>
                   </li>
+                  {% block extra_nav %}
+                  {% endblock extra_nav %}
                 </ul>
               </nav>
             </div>
