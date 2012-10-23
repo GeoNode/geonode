@@ -366,7 +366,6 @@ var updateCQL = function(layers) {
 
 
     var updateLayer =  function() {
-
         var heatNode = getHeatNode();
 
         if (tweetHeatRecord != null && tweetPointRecord != null) {
@@ -521,7 +520,7 @@ var updateCQL = function(layers) {
                                 id:"slider_maxval",
                                 width: 100,
                                 style: "display:inline-block;",
-                                value:"0.05",
+                                value: 0.02,
                                 fieldLabel: "Max %",
                                 labelStyle: "text-align:right;",
                                 minValue: 0.001,
@@ -534,7 +533,7 @@ var updateCQL = function(layers) {
                                 }},
                             {xtype:"sliderfield",
                                 id:"slider_blur",
-                                value:"10",
+                                value:"28",
                                 width: 100,
                                 fieldLabel: "Aggregation",
                                 labelStyle: "text-align:right;",
@@ -546,8 +545,8 @@ var updateCQL = function(layers) {
                             {xtype:"sliderfield",
                                 id:"slider_min",
                                 width: 100,
-                                value:"100",
-                                fieldLabel: "Density/km",
+                                value:"30",
+                                fieldLabel: "Tweets/km",
                                 labelStyle: "text-align:right;",
                                 minValue: 1,
                                 maxValue: 1000,
