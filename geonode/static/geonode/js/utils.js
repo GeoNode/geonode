@@ -193,7 +193,6 @@ function permissionsString(form, type) {
     };
   };
 
-
   return {
     anonymous: anonymousPermissions,
     authenticated: authenticatedPermissions,
