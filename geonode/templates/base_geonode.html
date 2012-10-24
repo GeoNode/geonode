@@ -12,22 +12,6 @@
       <link href="{{ STATIC_URL }}select2/select2.css" rel="stylesheet"/>
       {% block extra_head %}{% endblock %}
     {% endblock %}
-    <!--[if lt IE 9]>
-      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <script src="{{ STATIC_URL }}bootstrap/js/jquery-1.7.1.min.js"></script>
-    <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}datatables/js/jquery.dataTables.min.js"></script>
-    <script src="{{ STATIC_URL }}geonode/js/hogan.js"></script>
-    <script src="{{ STATIC_URL }}geonode/js/jquery.timeago.js"></script>
-    <script src="{{ STATIC_URL }}geonode/js/json2.js"></script>
-    <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
-    <script src="{{ STATIC_URL }}select2/select2.js"></script>
-
-    {% block extra_script %}{% endblock extra_script %}
-
-    <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
-    <script type="text/javascript" src="{% url lang %}"></script>
   </head>
   <body class="{% block body_class %}{% endblock %}">
     {% block header %}
@@ -191,5 +175,22 @@
       </div>
     </footer>
     {% endblock footer %}
+
+    <!--[if lt IE 9]>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="{{ STATIC_URL }}bootstrap/js/jquery-1.7.1.min.js"></script>
+    <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}datatables/js/jquery.dataTables.min.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/hogan.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/jquery.timeago.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/json2.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
+    <script src="{{ STATIC_URL }}select2/select2.js"></script>
+
+    {% block extra_script %}{% endblock extra_script %}
+
+    <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+    <script type="text/javascript" src="{% url lang %}"></script>
   </body>
 </html>
