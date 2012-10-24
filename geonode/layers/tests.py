@@ -370,7 +370,7 @@ class LayersTest(TestCase):
         #test the post method that actually removes the layer and redirects
         response = c.post(url)
         self.assertEquals(response.status_code, 302)
-        self.assertEquals(response['Location'], 'http://testserver/data/')
+        self.assertEquals(response['Location'], 'http://testserver/layers/')
 
         #test that the layer is actually removed
         self.assertEquals(Layer.objects.filter(pk=layer.pk).count(), 0)
