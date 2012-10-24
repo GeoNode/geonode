@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <div class="modal fade" id="modal_perms" style="display:none">
-  <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% if layer %}{% url layer_permissions layer.typename %}{% else %}{% url map_permissions map.id %}{%endif %}">
+  <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% if layer %}{% url layer_permissions layer.typename %}{% elif map %}{% url map_permissions map.id %}{% else %}/api/batch_permissions{%endif %}">
     <div class="modal-header">
       <a class="close" data-dismiss="modal">×</a>
       <h3>{% trans "Permissions" %}</h3>
@@ -121,7 +121,7 @@
       $("#perms_submit").click(function(){
           $("#permission_form").submit();
       });
-      $("#permission_form").submit(perms_submit);
+      $("#permission_form").submit({% if layer or map %}perms_submit{% else %}batch_perms_submit{% endif %});
     });
     </script>
 </div>
