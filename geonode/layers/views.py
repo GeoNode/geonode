@@ -197,7 +197,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "layer": layer,
         "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
-        "form_action": reverse("layer_permissions", args=(layer.typename,))
     }))
 
 
