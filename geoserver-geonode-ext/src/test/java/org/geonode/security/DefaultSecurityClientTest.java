@@ -47,7 +47,7 @@ public class DefaultSecurityClientTest extends GeoServerSecurityTestSupport {
     public void testAuthenticateAnonymous() throws Exception {
         String response = "{'is_superuser': false, 'rw': [], 'ro': [], 'is_anonymous': true, 'name': ''}";
         EasyMock.expect(
-                mockHttpClient.sendGET(EasyMock.eq("http://localhost:8000/data/acls"),
+                mockHttpClient.sendGET(EasyMock.eq("http://localhost:8000/layers/acls"),
                         (String[]) EasyMock.isNull())).andReturn(response);
         EasyMock.replay(mockHttpClient);
 
@@ -83,7 +83,7 @@ public class DefaultSecurityClientTest extends GeoServerSecurityTestSupport {
         final String response = "{'is_superuser': true, 'rw': ['layer1', 'layer2'], 'ro': ['layer3'], 'is_anonymous': false, 'name': 'aang'}";
 
         EasyMock.expect(
-                mockHttpClient.sendGET(EasyMock.eq("http://localhost:8000/data/acls"),
+                mockHttpClient.sendGET(EasyMock.eq("http://localhost:8000/layers/acls"),
                         EasyMock.aryEq(requestHeaders))).andReturn(response);
         EasyMock.replay(mockHttpClient);
 
@@ -121,7 +121,7 @@ public class DefaultSecurityClientTest extends GeoServerSecurityTestSupport {
         final String response = "{'is_superuser': false, 'rw': ['layer1'], 'ro': ['layer2', 'layer3'], 'is_anonymous': false, 'name': 'aang'}";
 
         EasyMock.expect(
-                mockHttpClient.sendGET(EasyMock.eq("http://localhost:8000/data/acls"),
+                mockHttpClient.sendGET(EasyMock.eq("http://localhost:8000/layers/acls"),
                         EasyMock.aryEq(requestHeaders))).andReturn(response);
         EasyMock.replay(mockHttpClient);
 
