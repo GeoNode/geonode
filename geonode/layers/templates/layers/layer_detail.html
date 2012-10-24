@@ -271,9 +271,7 @@
       </div>
     </div>
   </div>
-  {% with form_action=layer.get_absolute_url|add:"/permissions" %}
-      {% include "_permissions_form.html" %}
-  {% endwith %}
+  {% include "_permissions_form.html" %}
 {% endblock %}
 {% block extra_script %}
   <script src="{{ STATIC_URL }}geonode/js/paginate.js"></script>
@@ -283,12 +281,4 @@
      activeTab && activeTab.tab('show');
   });
   </script>
-   <script>
-      $(function() {
-        $("#perms_submit").click(function(){
-          $("#permission_form").submit();
-        });
-        $("#permission_form").submit(layer_perms_submit);
-      });
-    </script> 
 {% endblock extra_script %}
