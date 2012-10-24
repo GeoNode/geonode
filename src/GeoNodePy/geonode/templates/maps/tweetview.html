@@ -183,10 +183,9 @@ var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
         name: 'tweetFilter',
         fieldLabel: "Filter Term",
         labelAlign: 'right',
-        labelStyle:"font-weight:bold;text-align:right",
+        labelStyle: "text-align:right;",
         allowBlank: true,
         value: '',
-        labelStyle:"font-weight:bold;text-align:right",
         width:100
     });
 
@@ -308,7 +307,7 @@ var updateCQL = function(layers) {
             layer["cql_filter"] =  startFilter + keywordFilter +  fromFilter + " WHERE " + timeFilter;
             layer.getLayer().params["SQL"] =  layer["cql_filter"];
             layer.getLayer().params["BLUR"] = Ext.getCmp("slider_blur").value;
-            layer.getLayer().params["MIN"] = Ext.getCmp("slider_min").value;
+            layer.getLayer().params["MIN"] = Ext.getCmp("slider_min").value/100;
             layer.getLayer().params["MAXVAL"] = Ext.getCmp("slider_maxval").value
             layer.getLayer().visibility =  keywords ? true : false;
 
@@ -366,8 +365,8 @@ var updateCQL = function(layers) {
 
 
     var updateLayer =  function() {
+        if (tweetDateStartField.getValue() !="" && tweetDateEndField.getValue() != "") {
         var heatNode = getHeatNode();
-
         if (tweetHeatRecord != null && tweetPointRecord != null) {
             updateCQL([tweetHeatRecord,tweetPointRecord]);
             tweetHeatRecord.getLayer().redraw(true);
@@ -381,6 +380,7 @@ var updateCQL = function(layers) {
 //            params: {"bounds": app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent() : config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'), "dateEnd" : new Date(tweetDateEndField.getValue()).format('Y-M-d')}
 //        });
 
+        }
 
 
     };
@@ -439,8 +439,8 @@ var updateCQL = function(layers) {
             anchor: '95%',
             msgTarget: 'side'
         },
-        width: 700,
-        height: 160,
+        width: 600,
+        height: 140,
         layout:"fit",
         items: [
             {
@@ -504,12 +504,14 @@ var updateCQL = function(layers) {
                 {
                         columnWidth:0.5,
                        layout:"form",
+                    labelWidth: 100,
                         //title:"3",
                         items:[
                             {xtype: "container",
                                 html: "<div style='padding-bottom:10px;'></div>"},
                             {
                                 xtype: "compositefield",
+                                labelStyle: "text-align:right;",
                                 items: [
                                     tweetFilterField,
                                     updateLayerBtn
@@ -520,13 +522,13 @@ var updateCQL = function(layers) {
                                 id:"slider_maxval",
                                 width: 100,
                                 style: "display:inline-block;",
-                                value: 0.02,
+                                value: 2,
                                 fieldLabel: "Max %",
                                 labelStyle: "text-align:right;",
-                                minValue: 0.001,
-                                maxValue: 0.1,
-                                increment: 0.001,
-                                keyIncrement: 0.01,
+                                minValue: 0.1,
+                                maxValue: 10,
+                                increment: 0.1,
+                                keyIncrement: 0.5,
                                 decimalPrecision: 3,
                                 listeners: {
                                     "changecomplete": updateLayer
@@ -535,7 +537,7 @@ var updateCQL = function(layers) {
                                 id:"slider_blur",
                                 value:"28",
                                 width: 100,
-                                fieldLabel: "Aggregation",
+                                fieldLabel: "Smoothing",
                                 labelStyle: "text-align:right;",
                                 minValue: 1,
                                 maxValue: 40,
@@ -546,7 +548,7 @@ var updateCQL = function(layers) {
                                 id:"slider_min",
                                 width: 100,
                                 value:"30",
-                                fieldLabel: "Tweets/km",
+                                fieldLabel: "Min Tweets/sq km",
                                 labelStyle: "text-align:right;",
                                 minValue: 1,
                                 maxValue: 1000,
@@ -568,7 +570,7 @@ var updateCQL = function(layers) {
 var cqlWindow = new Ext.Window({
     id     : 'cql_window',
     style: 'opacity:0.9',
-    width: 700,
+    width: 600,
     collapsible: true,
     draggable: true,
     closable: false,
