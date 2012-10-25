@@ -694,7 +694,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     url:"/data/" + layer.params.LAYERS + "/ajax_layer_edit_check",
                     method:"POST",
                     success:function (result, request) {
-                        if (result.status != 200) {
+                        if (result.status != 200 || result.responseText == "False") {
                             toggleButtons(false);
                         } else {
                             layer.displayOutsideMaxExtent = true;

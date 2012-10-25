@@ -186,7 +186,7 @@ var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
         labelStyle: "text-align:right;",
         allowBlank: true,
         value: '',
-        width:100
+        width:96
     });
 
     var tweetDateStartField = new Ext.ux.form.DateTime({
@@ -448,17 +448,25 @@ var updateCQL = function(layers) {
 
                 items:[
                 {
-                    columnWidth:0.5,
+                    columnWidth:0.6,
                     //layout:"form",
                     //title:"3",
                     items:[
-                        {xtype: "container",
-                        html: "<div style='padding-bottom:10px;'></div>"},
+                        {
+                            xtype: "compositefield",
+                            labelStyle: "text-align:right;",
+                            items: [
+                                {xtype: "container", width: 70, style:"align:right;padding-bottom:10px",
+                                    html: "<span> Filter Term:</span>"},
+                                tweetFilterField,
+                                updateLayerBtn
+                            ]
+                        },
                         {
                             xtype: "compositefield",
                             items: [
                        // rewindDate,
-                       {xtype: "container", width: 55, style:"align:right",
+                       {xtype: "container", width: 70, style:"align:right",
                                     html: "<span> From:</span>"},
                         tweetDateStartField
                           //forwardDate
@@ -470,7 +478,7 @@ var updateCQL = function(layers) {
                             xtype: "compositefield",
                             items: [
                                 // rewindDate,
-                                {xtype: "container", width: 55, style:"align:right",
+                                {xtype: "container", width: 70, style:"align:right",
                                     html: "<span> To: </span>"},
                                 tweetDateEndField
                                 //forwardDate
@@ -482,7 +490,7 @@ var updateCQL = function(layers) {
                         {
                             xtype: "compositefield",
                             items: [
-                                {xtype: "container", width: 55, style:"align:right",
+                                {xtype: "container", width: 70, style:"align:right",
                                     html: "<span> Increment:  </span>"},
                                 {
                                     xtype: "combo",
@@ -502,7 +510,7 @@ var updateCQL = function(layers) {
                     ]
                 },
                 {
-                        columnWidth:0.5,
+                        columnWidth:0.4,
                        layout:"form",
                     labelWidth: 100,
                         //title:"3",
@@ -510,19 +518,11 @@ var updateCQL = function(layers) {
                             {xtype: "container",
                                 html: "<div style='padding-bottom:10px;'></div>"},
                             {
-                                xtype: "compositefield",
-                                labelStyle: "text-align:right;",
-                                items: [
-                                    tweetFilterField,
-                                    updateLayerBtn
-                                    ]
-                            },
-                            {
                                 xtype:"sliderfield",
                                 id:"slider_maxval",
                                 width: 100,
                                 style: "display:inline-block;",
-                                value: 2,
+                                value: 0.02,
                                 fieldLabel: "Max %",
                                 labelStyle: "text-align:right;",
                                 minValue: 0.1,
