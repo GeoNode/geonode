@@ -1,0 +1,72 @@
+{% load i18n %}
+<script type="text/javascript">
+    $(function() {
+      $("input.user-select").select2({
+        placeholder: {title: '{% trans "Add User..." %}', id: ""},
+        minimumInputLength: 1,
+        multiple: true,
+        ajax: {
+          url: "{% url auth_ajax_lookup %}",
+          dataType: "json",
+          type: "POST",
+          data: function (term, page) {
+            return {
+              query: term,
+            };
+          },
+          results: function (data, page) {
+            return {results: data.users};
+          }
+        },
+        id: userID,
+        formatResult: userFormatResult,
+        formatSelection: userFormatSelection
+      });
+
+      function userID(user) {
+        return user.username
+      }
+
+      function userFormatResult(user) {
+        return user.username
+      }
+
+      function userFormatSelection(user) {
+          return user.username;
+      }
+
+      var toggle_buttons = function() {
+        if ($("input.asset-selector:checked").length) {
+          $(".asset-modifier").removeClass("disabled");
+        } else {
+          $(".asset-modifier").addClass("disabled");
+        }
+      };
+
+      $("input.asset-selector").live("change", toggle_buttons);
+      toggle_buttons();
+
+
+      var perms_submit = function() {
+        var form = $(this);
+        var action = form.attr("action");
+
+        var permissions = permissionsString(form, {% if layer %}'layers'{% else %}'maps'{% endif %});
+        $.ajax(
+          {
+            type: "POST",
+            url: action,
+            data: JSON.stringify(permissions),
+            success: function(data) {
+              $("#modal_perms").modal("hide");
+            }
+          }
+        );
+        return false;
+      };
+
+      $("#perms_submit").click(function(){
+          $("#permission_form").submit();
+      });
+      $("#permission_form").submit({% if layer or map %}perms_submit{% else %}batch_perms_submit{% endif %});
+    });</script>
