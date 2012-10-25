@@ -144,7 +144,7 @@ class MapNormalizer(Normalizer):
         doc['id'] = mapobj.id
         doc['title'] = mapobj.title
         doc['abstract'] = defaultfilters.linebreaks(mapobj.abstract)
-        doc['topic'] = '', # @todo
+        doc['category'] = mapobj.category,
         doc['detail'] = reverse('map_detail', args=(mapobj.id,))
         doc['owner'] = mapobj.owner.username
 #        doc['owner_detail'] = reverse('about_storyteller', args=(map.owner.username,))
@@ -170,7 +170,7 @@ class LayerNormalizer(Normalizer):
         doc['id'] = layer.id
         doc['_type'] = 'layer'
 #        doc['owsUrl'] = layer.get_virtual_wms_url()
-        doc['topic'] = layer.topic_category
+        doc['category'] = layer.topic_category
         doc['name'] = layer.typename
         doc['abstract'] = defaultfilters.linebreaks(layer.abstract)
         doc['storeType'] = layer.storeType
