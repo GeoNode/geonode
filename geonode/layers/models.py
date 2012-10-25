@@ -77,7 +77,7 @@ class LayerManager(models.Manager):
                                                 defaults={"name": "Geonode Admin"})[0]
         return contact
 
-    def slurp(self, ignore_errors=True, verbosity=1, console=None, owner=None):
+    def slurp(self, ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None):
         """Configure the layers available in GeoServer in GeoNode.
 
            It returns a list of dictionaries with the name of the layer,
@@ -89,7 +89,9 @@ class LayerManager(models.Manager):
         if verbosity > 1:
             print >> console, "Inspecting the available layers in GeoServer ..."
         cat = self.gs_catalog
-        resources = cat.get_resources()
+        if workspace is not None:
+            workspace = cat.get_workspace(workspace)
+        resources = cat.get_resources(workspace=workspace)
         number = len(resources)
         if verbosity > 1:
             msg =  "Found %d layers, starting processing" % number
