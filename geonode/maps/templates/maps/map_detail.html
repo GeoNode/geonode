@@ -95,7 +95,7 @@
       <section>
         <h2>{% trans "Edit map" %}</h2>
         <p>{% trans "Placeholder" %}</p>
-        <a href="{% url "new_map" %}" class="btn btn-large">{% trans "Edit Map" %}</a>
+        <a href="{% url "map_view" map.id %}" class="btn btn-large">{% trans "Edit Map" %}</a>
       </section>
       <section>
         <h2>{% trans "Permissions" %}</h2>
@@ -144,18 +144,8 @@
       </div>
     </div>
   </div>
-  {% with "#" as form_action %}
-      {% include "_permissions_form.html" %}
-  {% endwith %}
+  {% include "_permissions_form.html" %}
 {% endblock %}
-
-{# {% block extra_script %} #}
-{#     <script> #}
-{#     $(function() { #}
-{#       $("#permission_form").submit(perms_submit); #}
-{#     }); #}
-{#   </script> #}
-{# {% endblock %} #}
 
 {% block extra_script %}
 {% if request.user.is_authenticated %}
@@ -180,4 +170,5 @@
    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
  })();
 </script>
+{% include "_permissions_form_js.html" %}
 {% endblock %}
