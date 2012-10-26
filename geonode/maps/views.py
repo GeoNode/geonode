@@ -462,6 +462,15 @@ def map_download_check(request):
         logger.warn("User tried to check status, but has no download in progress.")
     return HttpResponse(content=content,status=status)
 
+def map_wmc(request, mapid, template="maps/wmc.xml"):
+    """Serialize an OGC Web Map Context Document (WMC) 1.1"""
+
+    mapObject = _resolve_map(request, mapid, 'maps.view_map')
+
+    return render_to_response(template, RequestContext(request, {
+        'map': mapObject,
+        'siteurl': settings.SITEURL,
+    }), mimetype='text/xml')
 
 #### MAPS PERMISSIONS ####
 
