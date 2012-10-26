@@ -332,7 +332,7 @@ class GeoNodeMapTest(TestCase):
     def test_layer_delete_from_geoserver(self):
         """Verify that layer is correctly deleted from GeoServer
         """
-        # Layer.delete_from_geoserver() uses cascading_delete()
+        # Layer.delete() calls the pre_delete hook which uses cascading_delete()
         # Should we explicitly test that the styles and store are
         # deleted as well as the resource itself?
         # There is already an explicit test for cascading delete
@@ -343,21 +343,17 @@ class GeoNodeMapTest(TestCase):
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file, overwrite=True)
         shp_store = gs_cat.get_store(shp_layer.name)
-        shp_layer.delete_from_geoserver()
+        shp_layer.delete()
         self.assertRaises(FailedRequestError,
             lambda: gs_cat.get_resource(shp_layer.name, store=shp_store))
-
-        shp_layer.delete()
 
         # Test Uploading then Deleting a TIFF file from GeoServer
         tif_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
         tif_layer = file_upload(tif_file)
         tif_store = gs_cat.get_store(tif_layer.name)
-        tif_layer.delete_from_geoserver()
+        tif_layer.delete()
         self.assertRaises(FailedRequestError,
             lambda: gs_cat.get_resource(shp_layer.name, store=tif_store))
-
-        tif_layer.delete()
 
     def test_delete_layer(self):
         """Verify that the 'delete_layer' pre_delete hook is functioning
@@ -410,16 +406,17 @@ class GeoNodeMapTest(TestCase):
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
 
-        # Save the names of the Resource/Store/Styles
-        resource_name = shp_layer.resource.name
-        store = shp_layer.resource.store
+        # Save the names of the Resource/Store/Styles 
+        resource_name = shp_layer.name
+        ws = gs_cat.get_workspace(shp_layer.workspace)
+        store = gs_cat.get_store(shp_layer.store, ws)
         store_name = store.name
         layer = gs_cat.get_layer(resource_name)
         styles = layer.styles + [layer.default_style]
 
         # Delete the Layer using cascading_delete()
-        cascading_delete(gs_cat, shp_layer.resource)
-
+        cascading_delete(gs_cat, shp_layer.typename)
+        
         # Verify that the styles were deleted
         for style in styles:
             s = gs_cat.get_style(style.name)
