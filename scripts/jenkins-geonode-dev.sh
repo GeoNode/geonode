@@ -33,7 +33,7 @@ paver setup
 cp /home/jenkins/local_settings_with_coverage.py geonode/local_settings.py
 
 # Run the unit tests
-paver test
+python manage.py test
 cp TEST-nose.xml unit-TEST-nose.xml
 cp coverage.xml unit-coverage.xml
 cp -R coverage unit-coverage
