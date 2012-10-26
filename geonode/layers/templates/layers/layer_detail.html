@@ -62,7 +62,7 @@
         <li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li>
         <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="{% url "layer_style" layer.typename %}">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
-        <li><a href="{% url "layer_permissions" layer.typename %}">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+        <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %} <i class="icon-chevron-right"></i></a></li>
       </ul>
     </div>
@@ -213,7 +213,7 @@
     <div class="well">
         <h2>{% trans "Permissions" %}</h2>
         <p>{% trans "Placeholder" %}</p>
-        <p><a href="{% url "layer_permissions" layer.typename %}" class="btn btn-large">{% trans "Change Layer Permissions" %}</a></p>
+        <p><a href="#modal_perms" data-toggle="modal" class="btn btn-large">{% trans "Change Layer Permissions" %}</a></p>
     </div>
     {% endif %}
     <div class="well">
@@ -271,9 +271,7 @@
       </div>
     </div>
   </div>
-  {% with "#" as form_action %}
-      {% include "_permissions_form.html" %}
-  {% endwith %}
+  {% include "_permissions_form.html" %}
 {% endblock %}
 {% block extra_script %}
   <script src="{{ STATIC_URL }}geonode/js/paginate.js"></script>
@@ -283,4 +281,5 @@
      activeTab && activeTab.tab('show');
   });
   </script>
+  {% include "_permissions_form_js.html" %}
 {% endblock extra_script %}

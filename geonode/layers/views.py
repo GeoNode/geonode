@@ -40,6 +40,7 @@ from django.utils import simplejson as json
 from django.utils.html import escape
 from django.views.decorators.http import require_POST
 from django.views.generic.list import ListView
+from django.template.defaultfilters import slugify
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
@@ -86,10 +87,10 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
     '''
     Resolve the layer by the provided typename and check the optional permission.
     '''
-    return resolve_object(request, Layer, {'typename':typename}, 
+    return resolve_object(request, Layer, {'typename':typename},
                           permission = permission, permission_msg=msg, **kwargs)
-    
-    
+
+
 #### Basic Layer Views ####
 
 
@@ -144,9 +145,18 @@ def layer_upload(request, template='layers/layer_upload.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+                title = form.cleaned_data["layer_title"]
+
                 # Replace dots in filename - GeoServer REST API upload bug
-                name = name.replace(".","_")
+                # and avoid any other invalid characters.
+                # Use the title if possible, otherwise default to the filename
+                if title is not None and len(title) > 0:
+                    name_base = title
+                else:
+                    name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+
+                name = slugify(name_base.replace(".","_"))
+
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
@@ -191,7 +201,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
 
 @login_required
-        
+
 def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA)
     layer_attribute_set = inlineformset_factory(Layer, Attribute, extra=0, form=LayerAttributeForm, )
@@ -266,7 +276,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
 @require_POST
 def layer_style(request, layername):
     layer = _resolve_layer(request, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
-        
+
     style_name = request.POST.get('defaultStyle')
 
     # would be nice to implement
@@ -286,7 +296,7 @@ def layer_style(request, layername):
     layer.default_style = new_style
     layer.styles = [s for s in layer.styles if s.name != style_name] + [old_default]
     layer.save()
-    
+
     return HttpResponse("Default style for %s changed to %s" % (layer.name, style_name),status=200)
 
 
@@ -311,12 +321,12 @@ def layer_change_poc(request, ids, template = 'layers/layer_change_poc.html'):
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
     layer = _resolve_layer(request, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
-    
+
     if request.method == 'GET':
         cat = Layer.objects.gs_catalog
         info = cat.get_resource(layer.name)
         is_featuretype = info.resource_type == FeatureType.resource_type
-        
+
         return render_to_response(template,
                                   RequestContext(request, {'layer': layer,
                                                            'is_featuretype': is_featuretype}))
@@ -366,27 +376,27 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
 def layer_batch_download(request):
     """
     batch download a set of layers
-    
+
     POST - begin download
     GET?id=<download_id> monitor status
     """
 
-    # currently this just piggy-backs on the map download backend 
+    # currently this just piggy-backs on the map download backend
     # by specifying an ad hoc map that contains all layers requested
     # for download. assumes all layers are hosted locally.
     # status monitoring is handled slightly differently.
-    
+
     if request.method == 'POST':
         layers = request.POST.getlist("layer")
         layers = Layer.objects.filter(typename__in=list(layers))
 
         def layer_son(layer):
             return {
-                "name" : layer.typename, 
-                "service" : layer.service_type, 
+                "name" : layer.typename,
+                "service" : layer.service_type,
                 "metadataURL" : "",
                 "serviceURL" : ""
-            } 
+            }
 
         readme = """This data is provided by GeoNode.\n\nContents:"""
         def list_item(lyr):
@@ -403,7 +413,7 @@ def layer_batch_download(request):
         resp, content = http_client.request(url,'POST',body=json.dumps(fake_map))
         return HttpResponse(content, status=resp.status)
 
-    
+
     if request.method == 'GET':
         # essentially, this just proxies back to geoserver
         download_id = request.GET.get('id', None)
@@ -490,9 +500,9 @@ def layer_search(request):
 
     if ('q' in request.GET) and request.GET['q'].strip():
         query_string = request.GET['q']
-        
+
         entry_query = get_query(query_string, ['title', 'abstract',])
-        
+
         found_entries = Layer.objects.filter(entry_query)
 
     result['total'] = len(found_entries)
@@ -579,7 +589,7 @@ def layer_permissions(request, layername):
     layer_set_permissions(layer, permission_spec)
 
     return HttpResponse(
-        "Permissions updated",
+        json.dumps({'success': True}),
         status=200,
         mimetype='text/plain'
     )
@@ -587,12 +597,12 @@ def layer_permissions(request, layername):
 
 def layer_acls(request):
     """
-    returns json-encoded lists of layer identifiers that 
+    returns json-encoded lists of layer identifiers that
     represent the sets of read-write and read-only layers
-    for the currently authenticated user. 
+    for the currently authenticated user.
     """
-    
-    # the layer_acls view supports basic auth, and a special 
+
+    # the layer_acls view supports basic auth, and a special
     # user which represents the geoserver administrator that
     # is not present in django.
     acl_user = request.user
@@ -602,7 +612,7 @@ def layer_acls(request):
             acl_user = authenticate(username=username, password=password)
 
             # Nope, is it the special geoserver user?
-            if (acl_user is None and 
+            if (acl_user is None and
                 username == settings.GEOSERVER_CREDENTIALS[0] and
                 password == settings.GEOSERVER_CREDENTIALS[1]):
                 # great, tell geoserver it's an admin.
@@ -616,13 +626,13 @@ def layer_acls(request):
                 return HttpResponse(json.dumps(result), mimetype="application/json")
         except Exception:
             pass
-        
-        if acl_user is None: 
+
+        if acl_user is None:
             return HttpResponse(_("Bad HTTP Authorization Credentials."),
                                 status=401,
                                 mimetype="text/plain")
 
-            
+
     all_readable = set()
     all_writable = set()
     for bck in get_auth_backends():
@@ -638,7 +648,7 @@ def layer_acls(request):
 
     read_only = [x[0] for x in Layer.objects.filter(id__in=read_only).values_list('typename').all()]
     read_write = [x[0] for x in Layer.objects.filter(id__in=read_write).values_list('typename').all()]
-    
+
     result = {
         'rw': read_write,
         'ro': read_only,
