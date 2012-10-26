@@ -36,6 +36,8 @@ class Command(BaseCommand):
             help='Stop after any errors are encountered.'),
         make_option('-u', '--user', dest="user", default=None,
             help="Name of the user account which should own the imported layers"),
+        make_option('-w', '--workspace', dest="workspace", default=None,
+            help="Only update data on specified workspace")
         )
 
     def handle(self, **options):
@@ -43,6 +45,7 @@ class Command(BaseCommand):
         verbosity = int(options.get('verbosity'))
         user = options.get('user')
         owner = get_valid_user(user)
+        workspace = options.get('workspace')
 
         if verbosity > 0:
             console = sys.stdout
@@ -51,7 +54,7 @@ class Command(BaseCommand):
 
         start = datetime.datetime.now()
         output = Layer.objects.slurp(ignore_errors, verbosity=verbosity,
-                owner=owner, console=console)
+                owner=owner, console=console, workspace=workspace)
         updated = [dict_['name'] for dict_ in output if dict_['status']=='updated']
         created = [dict_['name'] for dict_ in output if dict_['status']=='created']
         failed = [dict_['name'] for dict_ in output if dict_['status']=='failed']

@@ -7,15 +7,21 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Adding field 'Layer.metadata_uploaded'
-        db.add_column('layers_layer', 'metadata_uploaded', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+
+        # Adding field 'Layer.popular_count'
+        db.add_column('layers_layer', 'popular_count', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
+
+        # Adding field 'Layer.share_count'
+        db.add_column('layers_layer', 'share_count', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
 
 
     def backwards(self, orm):
-        
-        # Deleting field 'Layer.metadata_uploaded'
-        db.delete_column('layers_layer', 'metadata_uploaded')
+
+        # Deleting field 'Layer.popular_count'
+        db.delete_column('layers_layer', 'popular_count')
+
+        # Deleting field 'Layer.share_count'
+        db.delete_column('layers_layer', 'share_count')
 
 
     models = {
@@ -34,7 +40,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 21, 10, 53, 42, 486571)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 20, 14, 35, 12, 474684)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -42,7 +48,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 21, 10, 53, 42, 486466)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 20, 14, 35, 12, 474519)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -79,6 +85,7 @@ class Migration(SchemaMigration):
             'bbox_x1': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
             'bbox_y0': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
             'bbox_y1': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
+            'category': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['layers.TopicCategory']", 'null': 'True'}),
             'constraints_other': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'constraints_use': ('django.db.models.fields.CharField', [], {'default': "'copyright'", 'max_length': '255'}),
             'contacts': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['people.Contact']", 'through': "orm['layers.ContactRole']", 'symmetrical': 'False'}),
@@ -99,11 +106,12 @@ class Migration(SchemaMigration):
             'keywords_region': ('django.db.models.fields.CharField', [], {'default': "'USA'", 'max_length': '3'}),
             'language': ('django.db.models.fields.CharField', [], {'default': "'eng'", 'max_length': '3'}),
             'maintenance_frequency': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'metadata_uploaded': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'metadata_xml': ('django.db.models.fields.TextField', [], {'default': '\'<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>\'', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
+            'popular_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'purpose': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'share_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'spatial_representation_type': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'srid': ('django.db.models.fields.CharField', [], {'default': "'EPSG:4326'", 'max_length': '255'}),
             'store': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
@@ -126,6 +134,13 @@ class Migration(SchemaMigration):
             'mime': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'url': ('django.db.models.fields.TextField', [], {'unique': 'True', 'max_length': '1000'})
+        },
+        'layers.topiccategory': {
+            'Meta': {'ordering': "('name',)", 'object_name': 'TopicCategory'},
+            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'})
         },
         'people.contact': {
             'Meta': {'object_name': 'Contact'},

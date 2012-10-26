@@ -49,24 +49,8 @@ urlpatterns = patterns('',
     url(r'^developer/$', 'django.views.generic.simple.direct_to_template',
                 {'template': 'developer.html'}, name='dev'),
 
-    # Temp static pages
-    url(r'^mapinfo/$', 'django.views.generic.simple.direct_to_template',
-                {'template': 'maps/map_detail_static.html'}, name='mapinfo'),
-    url(r'^layerinfo/$', 'django.views.generic.simple.direct_to_template',
-                {'template': 'layers/layer_detail_static.html'}, name='layerinfo'),
-    url(r'^search/$', 'django.views.generic.simple.direct_to_template',
-                {'template': 'search.html'}, name='search'),
-    url(r'^advanced-search/$', 'django.views.generic.simple.direct_to_template',
-                {'template': 'advanced_search_static.html'}, name='advanced_search'),
-    url(r'^upload/$', 'django.views.generic.simple.direct_to_template',
-                {'template': 'upload/upload.html'}, name='upload'),
-    url(r'^upload-info/$', 'django.views.generic.simple.direct_to_template',
-                {'template': 'upload/upload_info.html'}, name='upload_info'),
-    url(r'^upload-permissions/$', 'django.views.generic.simple.direct_to_template',
-                {'template': 'upload/upload_permissions.html'}, name='upload_permissions'),
-
     # Data views
-    (r'^data/', include('geonode.layers.urls')),
+    (r'^layers/', include('geonode.layers.urls')),
 
     # Map views
     (r'^maps/', include('geonode.maps.urls')),

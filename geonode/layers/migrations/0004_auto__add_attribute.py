@@ -8,14 +8,23 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding field 'Layer.metadata_uploaded'
-        db.add_column('layers_layer', 'metadata_uploaded', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+        # Adding model 'Attribute'
+        db.create_table('layers_attribute', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('layer', self.gf('django.db.models.fields.related.ForeignKey')(related_name='attribute_set', to=orm['layers.Layer'])),
+            ('attribute', self.gf('django.db.models.fields.CharField')(max_length=255, null=True)),
+            ('attribute_label', self.gf('django.db.models.fields.CharField')(max_length=255, null=True)),
+            ('attribute_type', self.gf('django.db.models.fields.CharField')(default='xsd:string', max_length=50)),
+            ('visible', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('display_order', self.gf('django.db.models.fields.IntegerField')(default=1)),
+        ))
+        db.send_create_signal('layers', ['Attribute'])
 
 
     def backwards(self, orm):
         
-        # Deleting field 'Layer.metadata_uploaded'
-        db.delete_column('layers_layer', 'metadata_uploaded')
+        # Deleting model 'Attribute'
+        db.delete_table('layers_attribute')
 
 
     models = {
@@ -34,7 +43,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 21, 10, 53, 42, 486571)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 13, 6, 58, 30, 684592)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -42,7 +51,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 21, 10, 53, 42, 486466)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 13, 6, 58, 30, 684520)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -99,7 +108,6 @@ class Migration(SchemaMigration):
             'keywords_region': ('django.db.models.fields.CharField', [], {'default': "'USA'", 'max_length': '3'}),
             'language': ('django.db.models.fields.CharField', [], {'default': "'eng'", 'max_length': '3'}),
             'maintenance_frequency': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'metadata_uploaded': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'metadata_xml': ('django.db.models.fields.TextField', [], {'default': '\'<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>\'', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
