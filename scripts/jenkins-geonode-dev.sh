@@ -3,7 +3,6 @@ PATH=/home/jenkins/apache-maven-2.2.1/bin/:$PATH
 MAVEN_HOME=/home/jenkins/apache-maven-2.2.1/
 JAVA_HOME=/usr/lib/jvm/java-6-sun/
 PYENV_HOME=$HOME/.pyenv/
-PYTHONPATH=.
 
 # Delete previously built virtualenv
 if [ -d $PYENV_HOME ]; then
@@ -12,7 +11,7 @@ fi
 
 # Setup the virtualenv
 virtualenv --no-site-packages $PYENV_HOME
-. $PYENV_HOME/bin/activate
+source $PYENV_HOME/bin/activate
 
 # Install test tools
 pip install --quiet nosexcover
@@ -39,19 +38,17 @@ cp coverage.xml unit-coverage.xml
 cp -R coverage unit-coverage
 
 # Run the integration tests
+paver reset
+cp /home/jenkins/local_settings_with_coverage.py geonode/local_settings.py
+source $PYENV_HOME/bin/activate #double check its activated.
+
 paver test_integration
 cp TEST-nose.xml integration-TEST-nose.xml
 cp coverage.xml integration-coverage.xml
 cp -R coverage integration-coverage
 
 # Run the catalogue tests
-paver reset
-cp /home/jenkins/local_settings_with_coverage.py geonode/local_settings.py
-paver start
-sleep 30
-paver setup_data
-python manage.py test geonode.tests.csw --noinput
-paver stop
+paver test_integration -n geonode.tests.csw
 cp TEST-nose.xml csw-TEST-nose.xml
 cp coverage.xml csw-coverage.xml
 cp coverage -R csw-coverage
