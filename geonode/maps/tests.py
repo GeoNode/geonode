@@ -208,6 +208,7 @@ community."
         title = '{ns}General/{ns}Title'.format(ns=namespace)
         abstract = '{ns}General/{ns}Abstract'.format(ns=namespace)
 
+        self.assertEquals(wmc.attrib.get('id'), '1')
         self.assertEquals(wmc.find(title).text, 'GeoNode Default Map')
         self.assertEquals(wmc.find(abstract).text, 'This is a demonstration '\
             'of GeoNode, an application for assembling and publishing web '\
