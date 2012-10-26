@@ -88,7 +88,11 @@
         <ul class="unstyled space">
           {% for layer in map.layer_set.all %}
 	    {% ifnotequal layer.group 'background' %}
-            <li><a href="{% url "layer_detail" layer.name %}">{{ layer.name }}</a></li>
+		{% if layer.local %}
+        	    <li><a href="{% url "layer_detail" layer.name %}">{{ layer.name }}</a></li>
+		{% else %}
+        	    <li>{{ layer.name }}</li>
+		{% endif %}
 	    {% endifnotequal %}
           {% endfor %}
         </ul>

@@ -18,7 +18,10 @@ install:
   - pip install -e . --use-mirrors
 
 before_script:
-  - paver setup
+  - cd geoserver-geonode-ext
+  - mvn -s travis-settings.xml install
+  - cd ..
+  - paver setup -f
 
 script:
   - paver test
