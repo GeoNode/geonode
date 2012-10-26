@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+from lxml import etree
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -185,6 +187,33 @@ community."
             return cfg['sources'][x['source']]['ptype'] == 'gxp_wmscsource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
         self.assertEquals(layernames, ['base:CA',])
+
+    def test_map_to_wmc(self):
+        """ /maps/1/wmc -> Test map WMC export
+            Make some assertions about the data structure produced
+            for serialization to a Web Map Context Document
+        """
+
+        map_obj = Map.objects.get(id=1)
+
+        c = Client()
+        c.login(username=self.user, password=self.passwd)
+        response = c.get(reverse('map_wmc', args=(map_obj.id,)))
+        self.assertEquals(response.status_code, 200)
+
+        # check specific XPaths
+        wmc = etree.fromstring(response.content)
+
+        namespace = '{http://www.opengis.net/context}'
+        title = '{ns}General/{ns}Title'.format(ns=namespace)
+        abstract = '{ns}General/{ns}Abstract'.format(ns=namespace)
+
+        self.assertEquals(wmc.attrib.get('id'), '1')
+        self.assertEquals(wmc.find(title).text, 'GeoNode Default Map')
+        self.assertEquals(wmc.find(abstract).text, 'This is a demonstration '\
+            'of GeoNode, an application for assembling and publishing web '\
+            'based maps.  After adding layers to the map, use the Save Map '\
+            'button above to contribute your map to the GeoNode community.')
 
     def test_newmap_to_json(self):
         """ Make some assertions about the data structure produced for serialization
