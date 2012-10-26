@@ -1,5 +1,7 @@
 $(function() {
-    var related_searches = new related_search();
+    related_searches = new related_search();
+    keywords = new keyword();
+    categories = new category();
     $("form.search-box").bind("submit", function(e) {
         e.preventDefault();
         doSearch($(this).find("input[name=q]").val());
@@ -19,10 +21,11 @@ $(function() {
     $(".datepicker").datepicker().on('changeDate', function(ev){
         filterDates($(".datepicker"));
     });
-    $("#filter-categories a").click(function(e) {
-        e.preventDefault();
-        $("#search-results article").hide();
-        filterResults("category-"+$(this).data("category"), true);
+    $("#filter-categories input[type=checkbox]").change(function() {
+        categories.filter($(this).val(), $(this).attr("checked") == "checked");
+    });
+    $("#filter-keywords input[type=checkbox]").change(function() {
+        keywords.filter($(this).val(), $(this).attr("checked") == "checked");
     });
 
     // view
@@ -58,6 +61,44 @@ related_search.prototype.load = function(data) {
     this.container.append("<li>"+item+"</li>");
   });
 };
+function keyword() {
+    this.keywords = $("#filter-keywords label");
+    this.keywords.append(" (<span class=\"count\">0</span>)");
+}
+keyword.prototype.limit = function() {
+    this.keywords.hide().each(function() {
+        if ($("[data-keywords~="+$(this).find("input").val()+"]").size()) $(this).show().find("input").attr("checked", "checked");
+    });
+};
+keyword.prototype.filter = function(keyword, show) {
+    if (show) $("#search-results article[data-keywords~="+keyword+"]").show();
+    else $("#search-results article[data-keywords~="+keyword+"]").hide();
+};
+keyword.prototype.update_counts = function() {
+    this.keywords.each(function() {
+        var count = $("#search-results article[data-keywords~="+$(this).find("input").val()+"]").size();
+        $(this).find("span.count").html(count);
+    });
+};
+function category() {
+    this.categories = $("#filter-categories label");
+    this.categories.append(" (<span class=\"count\">0</span>)");
+}
+category.prototype.limit = function() {
+    this.categories.hide().each(function() {
+        if ($("article[data-category="+$(this).find("input").val()+"]").size()) $(this).show().find("input").attr("checked", "checked");
+    });
+};
+category.prototype.filter = function(category, show) {
+    if (show) $("#search-results article[data-category="+category+"]").show();
+    else $("#search-results article[data-category="+category+"]").hide();
+};
+category.prototype.update_counts = function() {
+    this.categories.each(function() {
+        var count = $("#search-results article[data-category="+$(this).find("input").val()+"]").size();
+        $(this).find("span.count").html(count);
+    });
+};
 
 function doSearch(q) {
     $("#search-results").html("<p>Searching...</p>");
@@ -70,13 +111,15 @@ function doSearch(q) {
               var context = {
                 "display_type": item._display_type,
                 "category": item.category,
+                "category_slug": item.category.toLowerCase().replace(/ /g, "-"),
                 "date": item.date,
                 "url": item.detail,
                 "title": item.title,
+                "keywords": item.keywords,
                 "owner": item.owner,
                 "owner_url": item.owner_detail,
                 "popular": index === 0 ? item.rating : 23, // item.rating when popularity data is established
-                "last_modified": item.last_modified.split(".")[0].replace(/[-T:]/g, ""),
+                "last_modified": item.last_modified.split(".")[0].replace(/[\-T:]/g, ""),
                 "last_modified_date": item.last_modified.split("T")[0].replace(/-/g, "")
               };
               $("#search-results").append(srt.render(context));
@@ -97,6 +140,9 @@ function doSearch(q) {
           $(".info-bar select").hide();
           $("#search-results").html("<p>No results</p>");
         }
+        keywords.update_counts();
+        categories.limit();
+        categories.update_counts();
       });
 }
 function filterResults(cls, show) {
