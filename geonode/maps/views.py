@@ -473,8 +473,6 @@ def map_wmc(request, mapid, template="maps/wmc.xml"):
         'siteurl': settings.SITEURL,
     }), mimetype='text/xml')
 
-    pass
-
 #### MAPS PERMISSIONS ####
 
 

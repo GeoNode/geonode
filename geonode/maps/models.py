@@ -226,6 +226,25 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)    
 
+    def get_extent(self):
+        """Generate minx/miny/maxx/maxy of map extent"""
+
+        # TODO: Map should inherit from layers.models.ResourceBase
+        # which would negate the need for this function
+        bbox_x0 = bbox_x1 = bbox_y0 = bbox_y1 = None
+        for layer in self.local_layers:
+            if bbox_x0 is None: bbox_x0 = layer.bbox[0]
+            if bbox_y0 is None: bbox_y0 = layer.bbox[2]
+            if bbox_x1 is None: bbox_x1 = layer.bbox[1]
+            if bbox_y1 is None: bbox_y1 = layer.bbox[3]
+
+            bbox_x0 = min(bbox_x0, layer.bbox[0])
+            bbox_y0 = min(bbox_y0, layer.bbox[2])
+            bbox_x1 = max(bbox_x1, layer.bbox[1])
+            bbox_y1 = max(bbox_y1, layer.bbox[3])
+
+        return [bbox_x0, bbox_y0, bbox_x1, bbox_y1]
+
     def create_from_layer_list(self, user, layers, title, abstract):
         self.owner = user
         self.title = title
