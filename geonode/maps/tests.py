@@ -197,7 +197,6 @@ community."
         map_obj = Map.objects.get(id=1)
 
         c = Client()
-        c.login(username=self.user, password=self.passwd)
         response = c.get(reverse('map_wmc', args=(map_obj.id,)))
         self.assertEquals(response.status_code, 200)
 
