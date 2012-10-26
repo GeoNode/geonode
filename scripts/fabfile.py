@@ -137,7 +137,6 @@ def setup_pgsql(project):
     create_database(db,user,password)
     with prefix(ACT):
         sudo('django-admin.py syncdb --settings=%s.settings' % project)
-        sudo('django-admin.py migrate --settings=%s.settings' % project)
     # Need to restore database and GeoServer data
     #put('data/%s.sql' % db, GEONODEDIR, use_sudo=True)
     #sudo('psql -d %s -f %s/%s.sql' % (db, GEONODEDIR, db), user='postgres')
