@@ -26,6 +26,7 @@
   <div class="span4">
     <p class="hd-actions pull-right">
       <a href="{% url "map_download" map.pk %}" data-toggle="modal" class="btn btn-large btn-primary strong"><i class="icon-download-alt icon-white"></i> {% trans "Download Data" %}</a>
+      <a href="{% url "map_wmc" map.pk %}" data-toggle="modal" class="btn btn-large btn-primary strong"><i class="icon-download-alt icon-white"></i> {% trans "Download Web Map Context" %}</a>
       <a href="#" class="btn btn-large btn-info strong"><i class="icon-print icon-white"></i> {% trans "Print Map" %}</a>
     </p>
   </div>
