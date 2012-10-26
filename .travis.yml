@@ -37,5 +37,4 @@ notifications:
       - "irc.freenode.org#geonode"
     use_notice: true
   email:
-    #- geonode-dev@opengeo.org
-    - ingenieroariel@gmail.com
+    - geonode-dev@opengeo.org
