@@ -33,6 +33,8 @@ Most links to maps in GeoNode go to that map’s information page, which display
 
 To download all the layers in this map as a .zip file, click the *Download all layers included in this map* link.  This will prompt you to log in to the site. If you do not have a user login on the site already, please follow the steps in the section *Registering a new Account in GeoNode* to register on the demo.geonode.org site. 
 
+You can also save the map view in OGC Web Map Context Documents (WMC) format by clicking "Download Web Map Context" and view the same map in other applications.  Note that WMC export will save all layers in the map that are served via WMS.
+
 .. image:: images/download_all_layers.png
 
 A page will be displayed listing the layers that cannot be download either due to security restrictions or because they are from another server.
