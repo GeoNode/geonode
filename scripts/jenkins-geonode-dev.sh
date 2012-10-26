@@ -3,7 +3,7 @@ PATH=/home/jenkins/apache-maven-2.2.1/bin/:$PATH
 MAVEN_HOME=/home/jenkins/apache-maven-2.2.1/
 JAVA_HOME=/usr/lib/jvm/java-6-sun/
 PYENV_HOME=$HOME/.pyenv/
-
+PYTHONPATH=.
 
 # Delete previously built virtualenv
 if [ -d $PYENV_HOME ]; then
