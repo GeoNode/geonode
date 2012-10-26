@@ -1,6 +1,6 @@
 {% load search_tags %}
 {% raw %}
-<article class="{{display_type}}" data-modified="{{last_modified}}" data-popular="{{popular}}">
+<article class="{{display_type}} category-{{category}}" data-modified="{{last_modified}}" data-modified-date="{{last_modified_date}}" data-popular="{{popular}}">
   <h6>{{display_type}}</h6>
   <a href="{{url}}">
       <div class="placeholder pl-153-113">{{image}}</div>
