@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load layers_tags %}
+{% load taggit_extras %}
 
 {% block title %} {% trans "Search Data" %} - {{ block.super }} {% endblock %}
 
@@ -96,27 +97,33 @@
         <section>
             <header>
                 <h4>
-                    <a href="#filter4" class="expand-content" data-toggle="collapse">Category <i class="icon-chevron-right pull-right"></i></a>
+                    <a href="#filter-categories" class="expand-content" data-toggle="collapse">Category <i class="icon-chevron-right pull-right"></i></a>
                 </h4>
             </header>
-            <div id="filter4" class="collapse">
-              <ul id="filter-categories">
+            <div id="filter-categories" class="collapse">
                 {% layer_categories as categories %}
                 {% for category in categories %}
-                <li><a href="#" data-category="{{ category.slug }}">{{ category }}</a></li>
+                <label class="checkbox" data-category="{{ category.slug }}">
+                    <input type="checkbox" value="{{ category|slugify }}" checked="checked" /> {{ category }}
+                </label>
                 {% endfor %}
               </ul>
             </div>
         </section>
 
+        {% get_taglist as tags for 'layers.Layer' %}
         <section>
             <header>
                 <h4>
-                    <a href="#filter5" class="expand-content" data-toggle="collapse">Keywords <i class="icon-chevron-right pull-right"></i></a>
+                    <a href="#filter-keywords" class="expand-content" data-toggle="collapse">Keywords <i class="icon-chevron-right pull-right"></i></a>
                 </h4>
             </header>
-            <div id="filter5" class="collapse">
-              <p>Keywords</p>
+            <div id="filter-keywords" class="collapse">
+              {% for tag in tags %}
+              <label class="checkbox" data-tag="{{ tag }}">
+                <input type="checkbox" value="{{ tag }}" checked="checked" /> {{ tag }}
+              </label>
+              {% endfor %}
             </div>
         </section>
 
