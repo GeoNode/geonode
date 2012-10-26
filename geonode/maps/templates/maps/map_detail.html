@@ -145,18 +145,8 @@
       </div>
     </div>
   </div>
-  {% with "#" as form_action %}
-      {% include "_permissions_form.html" %}
-  {% endwith %}
+  {% include "_permissions_form.html" %}
 {% endblock %}
-
-{# {% block extra_script %} #}
-{#     <script> #}
-{#     $(function() { #}
-{#       $("#permission_form").submit(perms_submit); #}
-{#     }); #}
-{#   </script> #}
-{# {% endblock %} #}
 
 {% block extra_script %}
 {% if request.user.is_authenticated %}
@@ -181,4 +171,5 @@
    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
  })();
 </script>
+{% include "_permissions_form_js.html" %}
 {% endblock %}
