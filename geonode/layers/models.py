@@ -592,18 +592,15 @@ def geoserver_pre_save(instance, sender, **kwargs):
     try:
         gs_catalog = Catalog(url, _user, _password)
         gs_resource = gs_catalog.get_resource(instance.name)
-    except EnvironmentError, e:
+    except (EnvironmentError, FailedRequestError) as e:
         gs_resource = None
-        if e.errno == errno.ECONNREFUSED:
-            msg = ('Could not connect to geoserver at "%s"'
-                   'to save information for layer "%s"' % (
-                    settings.GEOSERVER_BASE_URL, instance.name)
-                  )
-            logger.warn(msg, e)
-            # If geoserver is not online, there is no need to continue
-            return
-        else:
-            raise e
+        msg = ('Could not connect to geoserver at "%s"'
+               'to save information for layer "%s"' % (
+                settings.GEOSERVER_BASE_URL, instance.name)
+              )
+        logger.warn(msg, e)
+        # If geoserver is not online, there is no need to continue
+        return
 
     # If there is no resource returned it could mean one of two things:
     # a) There is a syncronization problem in geoserver
@@ -668,17 +665,14 @@ def geoserver_post_save(instance, sender, **kwargs):
     try:
         gs_catalog = Catalog(url, _user, _password)
         gs_resource = gs_catalog.get_resource(instance.name)
-    except EnvironmentError, e:
-        if e.errno == errno.ECONNREFUSED:
-            msg = ('Could not connect to geoserver at "%s"'
-                   'to save information for layer "%s"' % (
-                    settings.GEOSERVER_BASE_URL, instance.name)
-                  )
-            logger.warn(msg, e)
-            # If geoserver is not online, there is no need to continue
-            return
-        else:
-            raise e
+    except (FailedRequestError, EnvironmentError) as e:
+        msg = ('Could not connect to geoserver at "%s"'
+               'to save information for layer "%s"' % (
+                settings.GEOSERVER_BASE_URL, instance.name)
+              )
+        logger.warn(msg, e)
+        # If geoserver is not online, there is no need to continue
+        return
 
     # If there is no resource returned it could mean one of two things:
     # a) There is a syncronization problem in geoserver
