@@ -26,12 +26,6 @@ import logging
 import re
 import uuid
 import os
-import datetime
-import traceback
-import inspect
-import string
-import urllib2
-from lxml import etree
 import glob
 import sys
 
@@ -328,14 +322,10 @@ def save(layer, base_file, user, overwrite = True, title=None,
         if settings.DB_DATASTORE:
             create_store_and_resource = _create_db_featurestore
         else:
-            def create_store_and_resource(name, data, overwrite):
-                cat.create_featurestore(name, data, overwrite=overwrite)
-                return cat.get_store(name), cat.get_resource(name)
+            create_store_and_resource = _create_featurestore
     elif the_layer_type == Coverage.resource_type:
         logger.debug("Uploading raster layer: [%s]", base_file)
-        def create_store_and_resource(name, data, overwrite):
-            cat.create_coveragestore(name, data, overwrite=overwrite)
-            return cat.get_store(name), cat.get_resource(name)
+        create_store_and_resource = _create_coveragestore
     else:
         msg = ('The layer type for name %s is %s. It should be '
                '%s or %s,' % (name,
@@ -619,8 +609,6 @@ def upload(incoming, user=None, overwrite=False, keywords = (), skip=True,
         raise GeoNodeException(msg)
     else:
         datadir = incoming
-        results = []
-
         for root, dirs, files in os.walk(datadir):
             for short_filename in files:
                 basename, extension = os.path.splitext(short_filename)
@@ -687,6 +675,19 @@ def upload(incoming, user=None, overwrite=False, keywords = (), skip=True,
         if verbosity > 0:
             print >> console, msg
     return output
+
+
+def _create_featurestore(name, data, overwrite):
+    cat = Layer.objects.gs_catalog
+    cat.create_featurestore(name, data, overwrite=overwrite)
+    return cat.get_store(name), cat.get_resource(name)
+
+
+def _create_coveragestore(name, data, overwrite):
+    cat = Layer.objects.gs_catalog
+    cat.create_coveragestore(name, data, overwrite=overwrite)
+    return cat.get_store(name), cat.get_resource(name)
+
 
 def _create_db_featurestore(name, data, overwrite = False, charset = None):
     """Create a database store then use it to import a shapefile.
