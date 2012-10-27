@@ -95,10 +95,11 @@ def set_metadata(xml):
         md = Metadata(exml)
         vals['csw_typename'] = 'fgdc:metadata'
         vals['csw_schema'] = 'http://www.opengis.net/cat/csw/csdgm'
-        vals['spatial_representation_type'] = md.idinfo.citation.citeinfo['geoform']
 
-        if hasattr(md, 'idinfo'):
-            vals['title'] = md.idinfo.citation.citeinfo['title']
+        if hasattr(md.idinfo, 'citation'):
+            if hasattr(md.idinfo.citation, 'citeinfo'):
+                vals['spatial_representation_type'] = md.idinfo.citation.citeinfo['geoform']
+                vals['title'] = md.idinfo.citation.citeinfo['title']
 
         if hasattr(md.idinfo, 'descript'):
             vals['abstract'] = md.idinfo.descript.abstract
@@ -115,7 +116,9 @@ def set_metadata(xml):
                 vals['temporal_extent_end'] = sniff_date(md.idinfo.timeperd.timeinfo.rngdates.enddate.strip())
 
         vals['constraints_other'] = md.idinfo.useconst
-        vals['date'] = sniff_date(md.metainfo.metd.strip())
+        raw_date = md.metainfo.metd
+        if raw_date is not None:
+            vals['date'] = sniff_date(raw_date.strip())
 
     elif tagname == 'Record':  # Dublin Core
         md = CswRecord(exml)
