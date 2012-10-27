@@ -53,6 +53,7 @@ def set_metadata(xml):
         tagname = exml.tag
 
     vals = {}
+    keywords = []
 
     if tagname == 'MD_Metadata':  # ISO
         md = MD_Metadata(exml)
@@ -90,32 +91,45 @@ def set_metadata(xml):
         if hasattr(md.identification, 'dataquality'):
             vals['data_quality_statement'] = md.dataquality.lineage
 
-    elif tagname == 'metadata':  # FGDC
-        md = Metadata(exml)
+    elif tagname == 'metadata':  # FGDC and ESRI
 
-        vals['csw_typename'] = 'fgdc:metadata'
-        vals['csw_schema'] = 'http://www.opengis.net/cat/csw/csdgm'
-        vals['spatial_representation_type'] = md.idinfo.citation.citeinfo['geoform']
+        #FIXME: This is a workaround to avoid confusing ESRI metadata
+        # and FGDC. See https://github.com/GeoNode/geonode/issues/474
 
-        if hasattr(md, 'idinfo'):
-            vals['title'] = md.idinfo.citation.citeinfo['title']
+        # Go one level deeper to see if the second tag is not <Esri>
+        if len(exml.getchildren()) > 0:
+            main_tag = exml.getchildren()[0].tag
+        else:
+            main_tag = None
 
-        if hasattr(md.idinfo, 'descript'):
-            vals['abstract'] = md.idinfo.descript.abstract
-            vals['purpose'] = md.idinfo.descript.purpose
-            vals['supplemental_information'] = md.idinfo.descript.supplinf
+        if main_tag == 'Esri': #ESRI
+            vals['csw_type'] = 'esri'
 
-        if hasattr(md.idinfo, 'keywords'):
-            if md.idinfo.keywords.theme:
-                keywords = md.idinfo.keywords.theme[0]['themekey']
+        else: # FGDC
+            md = Metadata(exml)
+            vals['csw_typename'] = 'fgdc:metadata'
+            vals['csw_schema'] = 'http://www.opengis.net/cat/csw/csdgm'
+            vals['spatial_representation_type'] = md.idinfo.citation.citeinfo['geoform']
 
-        if hasattr(md.idinfo.timeperd, 'timeinfo'):
-            if hasattr(md.idinfo.timeperd.timeinfo, 'rngdates'):
-                vals['temporal_extent_start'] = sniff_date(md.idinfo.timeperd.timeinfo.rngdates.begdate.strip())
-                vals['temporal_extent_end'] = sniff_date(md.idinfo.timeperd.timeinfo.rngdates.enddate.strip())
+            if hasattr(md, 'idinfo'):
+                vals['title'] = md.idinfo.citation.citeinfo['title']
 
-        vals['constraints_other'] = md.idinfo.useconst
-        vals['date'] = sniff_date(md.metainfo.metd.strip())
+            if hasattr(md.idinfo, 'descript'):
+                vals['abstract'] = md.idinfo.descript.abstract
+                vals['purpose'] = md.idinfo.descript.purpose
+                vals['supplemental_information'] = md.idinfo.descript.supplinf
+
+            if hasattr(md.idinfo, 'keywords'):
+                if md.idinfo.keywords.theme:
+                    keywords = md.idinfo.keywords.theme[0]['themekey']
+
+            if hasattr(md.idinfo.timeperd, 'timeinfo'):
+                if hasattr(md.idinfo.timeperd.timeinfo, 'rngdates'):
+                    vals['temporal_extent_start'] = sniff_date(md.idinfo.timeperd.timeinfo.rngdates.begdate.strip())
+                    vals['temporal_extent_end'] = sniff_date(md.idinfo.timeperd.timeinfo.rngdates.enddate.strip())
+
+            vals['constraints_other'] = md.idinfo.useconst
+            vals['date'] = sniff_date(md.metainfo.metd.strip())
 
     elif tagname == 'Record':  # Dublin Core
         md = CswRecord(exml)
