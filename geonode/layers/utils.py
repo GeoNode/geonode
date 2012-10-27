@@ -581,7 +581,8 @@ def file_upload(filename, user=None, title=None,
     except Layer.DoesNotExist:
         layer = name
 
-    new_layer = save(layer, filename, theuser, overwrite, keywords=keywords)
+    new_layer = save(layer, filename, theuser, overwrite,
+                     keywords=keywords, title=title)
 
     return new_layer
 
