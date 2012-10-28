@@ -23,7 +23,9 @@ from geonode.catalogue.backends.generic import CatalogueBackend \
 
 class CatalogueBackend(GenericCatalogueBackend):
     """pycsw HTTP CSW backend"""
+
     def __init__(self, *args, **kwargs):
+        """initialize pycsw HTTP CSW backend"""
         super(CatalogueBackend, self).__init__(*args, **kwargs)
         self.catalogue.formats = \
             ['Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'TC211']
