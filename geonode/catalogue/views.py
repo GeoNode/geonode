@@ -26,6 +26,7 @@ from django.views.decorators.csrf import csrf_exempt
 from pycsw import server
 from geonode.catalogue.backends.pycsw_local import CONFIGURATION
 
+
 @csrf_exempt
 def csw_global_dispatch(request):
     """pycsw wrapper"""
@@ -52,7 +53,7 @@ def csw_global_dispatch(request):
             'local.app_root': os.path.dirname(__file__),
             'REQUEST_URI': request.build_absolute_uri(),
             })
-            
+
     csw = server.Csw(config, env)
 
     content = csw.dispatch_wsgi()
