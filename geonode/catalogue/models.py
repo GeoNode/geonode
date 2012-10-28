@@ -22,18 +22,18 @@ import logging
 
 from django.conf import settings
 from django.db.models import signals
-from geonode.layers.models import Layer, Link
+from geonode.layers.models import Layer
 from geonode.catalogue import get_catalogue
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
+
 
 def catalogue_pre_delete(instance, sender, **kwargs):
     """Removes the layer from the catalogue
     """
     catalogue = get_catalogue()
     catalogue.remove_record(instance.uuid)
-
 
 
 def catalogue_post_save(instance, sender, **kwargs):
@@ -43,15 +43,14 @@ def catalogue_post_save(instance, sender, **kwargs):
         catalogue = get_catalogue()
         catalogue.create_record(instance)
         record = catalogue.get_record(instance.uuid)
-    except EnvironmentError, e:
-        msg = ('Could not connect to catalogue'
+    except EnvironmentError, err:
+        msg = 'Could not connect to catalogue' \
                'to save information for layer "%s"' % (instance.name)
-              )
-        if e.reason.errno == errno.ECONNREFUSED:
-            logger.warn(msg, e)
+        if err.reason.errno == errno.ECONNREFUSED:
+            LOGGER.warn(msg, err)
             return
         else:
-            raise e
+            raise err
 
     # Create the different metadata links with the available formats
     for mime, name, metadata_url in record.links['metadata']:
@@ -68,15 +67,18 @@ def catalogue_post_save(instance, sender, **kwargs):
     signals.post_save.disconnect(catalogue_post_save, sender=Layer)
 
     # generate an XML document (GeoNode's default is ISO)
-    md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
+    md_doc = catalogue.catalogue.csw_gen_xml(instance,
+             'catalogue/full_metadata.xml')
     instance.metadata_xml = md_doc
-    instance.csw_anytext = catalogue.catalogue.csw_gen_anytext(instance.metadata_xml)
+    instance.csw_anytext = \
+        catalogue.catalogue.csw_gen_anytext(instance.metadata_xml)
 
     instance.csw_wkt_geometry = instance.geographic_bounding_box
 
     instance.save()
 
     signals.post_save.connect(catalogue_post_save, sender=Layer)
+
 
 def catalogue_pre_save(instance, sender, **kwargs):
     """Send information to catalogue
@@ -85,21 +87,21 @@ def catalogue_pre_save(instance, sender, **kwargs):
     try:
         catalogue = get_catalogue()
         record = catalogue.get_record(instance.uuid)
-    except EnvironmentError, e:
-        msg = ('Could not connect to catalogue'
+    except EnvironmentError, err:
+        msg = 'Could not connect to catalogue' \
                'to save information for layer "%s"' % (instance.name)
-              )
-        if e.reason.errno == errno.ECONNREFUSED:
-            logger.warn(msg, e)
+        if err.reason.errno == errno.ECONNREFUSED:
+            LOGGER.warn(msg, err)
         else:
-            raise e
+            raise err
 
     if record is None:
         return
 
     # Fill in the url for the catalogue
     if hasattr(record.distribution, 'online'):
-        onlineresources = [r for r in record.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
+        onlineresources = [r for r in record.distribution.online \
+            if r.protocol == "WWW:LINK-1.0-http--link"]
         if len(onlineresources) == 1:
             res = onlineresources[0]
             instance.distribution_url = res.url
