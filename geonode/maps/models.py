@@ -373,6 +373,20 @@ class MapLayer(models.Model, GXPLayerBase):
     local = models.BooleanField(default=False)
     # True if this layer is served by the local geoserver
 
+    def layer_config(self):
+        cfg = GXPLayerBase.layer_config(self)
+
+        # if this is a local layer, get the attribute configuration that
+        # determines display order & attribute labels
+        if self.local:
+            layer = Layer.objects.get(typename=self.name)
+            attribute_cfg = layer.attribute_config()
+            if "getFeatureInfo" in attribute_cfg:
+                    cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
+        return cfg
+
+
+
     @property
     def local_link(self): 
         if self.local:
