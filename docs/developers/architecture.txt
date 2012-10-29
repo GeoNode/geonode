@@ -7,7 +7,7 @@ This section provides insight about the components of GeoNode and the way they a
 
 .. image:: images/geonode_architecture.png
 
-.. TODO:: Replace this image
+.. TODO: Replace this image
 
 Components
 ==========

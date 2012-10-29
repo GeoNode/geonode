@@ -24,21 +24,21 @@ import os
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.importlib import import_module
-from contextlib import contextmanager
-
 
 DEFAULT_CATALOGUE_ALIAS = 'default'
 
 # GeoNode uses this if the CATALOGUE setting is empty (None).
 if not hasattr(settings, 'CATALOGUE'):
-    settings.CATALOGUE = { DEFAULT_CATALOGUE_ALIAS: 'geonode.backends.dummy'}
+    settings.CATALOGUE = {DEFAULT_CATALOGUE_ALIAS: 'geonode.backends.dummy'}
 
 # If settings.CATALOGUE is defined, we expect it to be properly named
 if DEFAULT_CATALOGUE_ALIAS not in settings.CATALOGUE:
-    raise ImproperlyConfigured("You must define a '%s' CATALOGUE" % DEFAULT_CATALOGUE_ALIAS)
+    raise ImproperlyConfigured("You must define a '%s' CATALOGUE" %
+          DEFAULT_CATALOGUE_ALIAS)
 
 
 def load_backend(backend_name):
+    """load a Catalogue backend"""
     # Look for a fully qualified CSW backend name
     try:
         return import_module(backend_name)
@@ -56,13 +56,14 @@ def load_backend(backend_name):
         if backend_name not in available_backends:
             backend_reprs = map(repr, sorted(available_backends))
             error_msg = ("%r isn't an available catalogue backend.\n"
-                         "Try using geonode.catalogue.backends.XXX, where XXX "
-                         "is one of:\n    %s\nError was: %s" %
+                         "Try using geonode.catalogue.backends.BACKEND"
+                         ", where BACKEND is one of:\n    %s\nError was: %s" %
                          (backend_name, ", ".join(backend_reprs), e_user))
             raise ImproperlyConfigured(error_msg)
         else:
             # If there's some other error, this must be an error in GeoNode
             raise
+
 
 def default_catalogue_backend():
     """Get the default bakcend
@@ -71,13 +72,15 @@ def default_catalogue_backend():
     assert DEFAULT_CATALOGUE_ALIAS in settings.CATALOGUE, msg
     return settings.CATALOGUE[DEFAULT_CATALOGUE_ALIAS]
 
+
 def get_catalogue(backend=None, skip_caps=True):
     """Returns a catalogue object.
     """
     default_backend_config = backend or default_catalogue_backend()
     backend_name = default_backend_config['ENGINE']
     catalog_module = load_backend(backend_name)
-    assert hasattr(catalog_module, 'CatalogueBackend'), '%s must define a CatalogueBackend class'
+    assert hasattr(catalog_module, 'CatalogueBackend'), \
+        '%s must define a CatalogueBackend class'
     catalog_class = catalog_module.CatalogueBackend
     cat = catalog_class(skip_caps=skip_caps, **default_backend_config)
     return cat
