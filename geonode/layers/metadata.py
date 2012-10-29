@@ -26,8 +26,6 @@ import logging
 import datetime
 from lxml import etree
 
-from django.conf import settings
-
 # Geonode functionality
 from geonode import GeoNodeException
 # OWSLib functionality
@@ -35,7 +33,8 @@ from owslib.csw import CswRecord
 from owslib.iso import MD_Metadata
 from owslib.fgdc import Metadata
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
+
 
 def set_metadata(xml):
     """Generate dict of model properties based on XML metadata"""
@@ -44,97 +43,136 @@ def set_metadata(xml):
     try:
         exml = etree.fromstring(xml)
     except Exception, err:
-        raise GeoNodeException('Uploaded XML document is not XML: %s' % str(err))
+        raise GeoNodeException(
+            'Uploaded XML document is not XML: %s' % str(err))
 
     # check if document is an accepted XML metadata format
     try:
         tagname = exml.tag.split('}')[1]
-    except:
+    except IndexError:
         tagname = exml.tag
 
-    vals = {}
-
     if tagname == 'MD_Metadata':  # ISO
-        md = MD_Metadata(exml)
-
-        vals['csw_typename'] = 'gmd:MD_Metadata'
-        vals['csw_schema'] = 'http://www.isotc211.org/2005/gmd'
-        vals['language'] = md.language
-        vals['spatial_representation_type'] = md.hierarchy
-        vals['date'] = sniff_date(md.datestamp.strip())
-
-        if hasattr(md, 'identification'):
-            vals['title'] = md.identification.title
-            vals['abstract'] = md.identification.abstract
-            vals['purpose'] = md.identification.purpose
-            vals['supplemental_information'] = md.identification.self.supplementalinformation
-
-            vals['temporal_extent_start'] = md.identification.temporalextent_start
-            vals['temporal_extent_end'] = md.identification.temporalextent_end
-
-            if len(md.identification.topiccategory) > 0:
-                vals['topic_category'] = md.identification.topiccategory[0]
-
-            if (hasattr(md.identification, 'keywords') and
-            len(md.identification.keywords) > 0):
-                if None not in md.identification.keywords[0]['keywords']:
-                    keywords = md.identification.keywords[0]['keywords']
-
-            if len(md.identification.securityconstraints) > 0:
-                vals['constraints_use'] = md.identification.securityconstraints[0]
-            if len(md.identification.otherconstraints) > 0:
-                vals['constraints_other'] = md.identification.otherconstraints[0]
-
-            vals['purpose'] = md.identification.purpose
-
-        if hasattr(md.identification, 'dataquality'):
-            vals['data_quality_statement'] = md.dataquality.lineage
-
+        vals, keywords = iso2dict(exml)
     elif tagname == 'metadata':  # FGDC
-        md = Metadata(exml)
-
-        vals['csw_typename'] = 'fgdc:metadata'
-        vals['csw_schema'] = 'http://www.opengis.net/cat/csw/csdgm'
-        vals['spatial_representation_type'] = md.idinfo.citation.citeinfo['geoform']
-
-        if hasattr(md, 'idinfo'):
-            vals['title'] = md.idinfo.citation.citeinfo['title']
-
-        if hasattr(md.idinfo, 'descript'):
-            vals['abstract'] = md.idinfo.descript.abstract
-            vals['purpose'] = md.idinfo.descript.purpose
-            vals['supplemental_information'] = md.idinfo.descript.supplinf
-
-        if hasattr(md.idinfo, 'keywords'):
-            if md.idinfo.keywords.theme:
-                keywords = md.idinfo.keywords.theme[0]['themekey']
-
-        if hasattr(md.idinfo.timeperd, 'timeinfo'):
-            if hasattr(md.idinfo.timeperd.timeinfo, 'rngdates'):
-                vals['temporal_extent_start'] = sniff_date(md.idinfo.timeperd.timeinfo.rngdates.begdate.strip())
-                vals['temporal_extent_end'] = sniff_date(md.idinfo.timeperd.timeinfo.rngdates.enddate.strip())
-
-        vals['constraints_other'] = md.idinfo.useconst
-        vals['date'] = sniff_date(md.metainfo.metd.strip())
-
+        vals, keywords = fgdc2dict(exml)
     elif tagname == 'Record':  # Dublin Core
-        md = CswRecord(exml)
-
-        vals['csw_typename'] = 'csw:Record'
-        vals['csw_schema'] = 'http://www.opengis.net/cat/csw/2.0.2'
-        vals['language'] = md.language
-        vals['spatial_representation_type'] = md.type
-        keywords = md.subjects
-        vals['temporal_extent_start'] = md.temporal
-        vals['temporal_extent_end'] = md.temporal
-        vals['constraints_other'] = md.license
-        vals['date'] = sniff_date(md.modified.strip())
-        vals['title'] = md.title
-        vals['abstract'] = md.abstract
+        vals, keywords = dc2dict(exml)
     else:
         raise RuntimeError('Unsupported metadata format')
 
     return [vals, keywords]
+
+
+def iso2dict(exml):
+    """generate dict of properties from gmd:MD_Metadata"""
+
+    vals = {}
+    keywords = []
+
+    mdata = MD_Metadata(exml)
+    vals['csw_typename'] = 'gmd:MD_Metadata'
+    vals['csw_schema'] = 'http://www.isotc211.org/2005/gmd'
+    vals['language'] = mdata.language
+    vals['spatial_representation_type'] = mdata.hierarchy
+    vals['date'] = sniff_date(mdata.datestamp)
+
+    if hasattr(mdata, 'identification'):
+        vals['title'] = mdata.identification.title
+        vals['abstract'] = mdata.identification.abstract
+        vals['purpose'] = mdata.identification.purpose
+        vals['supplemental_information'] = \
+            mdata.identification.supplementalinformation
+
+        vals['temporal_extent_start'] = \
+            mdata.identification.temporalextent_start
+        vals['temporal_extent_end'] = \
+            mdata.identification.temporalextent_end
+
+        if len(mdata.identification.topiccategory) > 0:
+            vals['topic_category'] = mdata.identification.topiccategory[0]
+
+        if (hasattr(mdata.identification, 'keywords') and
+        len(mdata.identification.keywords) > 0):
+            if None not in mdata.identification.keywords[0]['keywords']:
+                keywords = mdata.identification.keywords[0]['keywords']
+
+        if len(mdata.identification.securityconstraints) > 0:
+            vals['constraints_use'] = \
+                mdata.identification.securityconstraints[0]
+        if len(mdata.identification.otherconstraints) > 0:
+            vals['constraints_other'] = \
+                mdata.identification.otherconstraints[0]
+
+        vals['purpose'] = mdata.identification.purpose
+
+    if mdata.dataquality is not None:
+        vals['data_quality_statement'] = mdata.dataquality.lineage
+
+    return [vals, keywords]
+
+
+def fgdc2dict(exml):
+    """generate dict of properties from FGDC metadata"""
+
+    vals = {}
+    keywords = []
+
+    mdata = Metadata(exml)
+    vals['csw_typename'] = 'fgdc:metadata'
+    vals['csw_schema'] = 'http://www.opengis.net/cat/csw/csdgm'
+
+    if hasattr(mdata.idinfo, 'citation'):
+        if hasattr(mdata.idinfo.citation, 'citeinfo'):
+            vals['spatial_representation_type'] = \
+                mdata.idinfo.citation.citeinfo['geoform']
+            vals['title'] = mdata.idinfo.citation.citeinfo['title']
+
+    if hasattr(mdata.idinfo, 'descript'):
+        vals['abstract'] = mdata.idinfo.descript.abstract
+        vals['purpose'] = mdata.idinfo.descript.purpose
+        vals['supplemental_information'] = mdata.idinfo.descript.supplinf
+
+    if hasattr(mdata.idinfo, 'keywords'):
+        if mdata.idinfo.keywords.theme:
+            keywords = mdata.idinfo.keywords.theme[0]['themekey']
+
+    if hasattr(mdata.idinfo.timeperd, 'timeinfo'):
+        if hasattr(mdata.idinfo.timeperd.timeinfo, 'rngdates'):
+            vals['temporal_extent_start'] = \
+                sniff_date(mdata.idinfo.timeperd.timeinfo.rngdates.begdate)
+            vals['temporal_extent_end'] = \
+                sniff_date(mdata.idinfo.timeperd.timeinfo.rngdates.enddate)
+
+    vals['constraints_other'] = mdata.idinfo.useconst
+    raw_date = mdata.metainfo.metd
+    if raw_date is not None:
+        vals['date'] = sniff_date(raw_date)
+
+    return [vals, keywords]
+
+
+def dc2dict(exml):
+    """generate dict of properties from csw:Record"""
+
+    vals = {}
+    keywords = []
+
+    mdata = CswRecord(exml)
+    vals['csw_typename'] = 'csw:Record'
+    vals['csw_schema'] = 'http://www.opengis.net/cat/csw/2.0.2'
+    vals['language'] = mdata.language
+    vals['spatial_representation_type'] = mdata.type
+    keywords = mdata.subjects
+    vals['temporal_extent_start'] = mdata.temporal
+    vals['temporal_extent_end'] = mdata.temporal
+    vals['constraints_other'] = mdata.license
+    vals['date'] = sniff_date(mdata.modified)
+    vals['title'] = mdata.title
+    vals['abstract'] = mdata.abstract
+
+    return [vals, keywords]
+
 
 def sniff_date(datestr):
     """
@@ -148,9 +186,11 @@ def sniff_date(datestr):
     '2000-11-22T'
     """
 
-    for f in ('%Y%m%d','%Y-%m-%d','%Y-%m-%dT%H:%M:%SZ','%Y-%m-%dT','%Y/%m/%d'):
+    dateformats = ('%Y%m%d', '%Y-%m-%d', '%Y-%m-%dT%H:%M:%SZ',
+                   '%Y-%m-%dT', '%Y/%m/%d')
+
+    for dfmt in dateformats:
         try:
-            return datetime.datetime.strptime(datestr, f)
+            return datetime.datetime.strptime(datestr.strip(), dfmt)
         except ValueError:
             pass
-
