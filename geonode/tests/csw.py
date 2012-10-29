@@ -170,7 +170,7 @@ class GeoNodeCSWTest(TestCase):
         # once this is implemented we can remove this condition
 
         csw = get_catalogue()
-        if csw.catalogue.type in ['pycsw', 'pycsw_local']:
+        if csw.catalogue.type in ['pycsw_http', 'pycsw_local']:
             # get all ISO records in FGDC schema
             csw.catalogue.getrecords(typenames='gmd:MD_Metadata', keywords=['san_andres_y_providencia_location'],
                 outputschema='http://www.opengis.net/cat/csw/csdgm')
@@ -192,7 +192,7 @@ class GeoNodeCSWTest(TestCase):
         # once this is implemented we can remove this condition
 
         csw = get_catalogue()
-        if csw.catalogue.type == 'pycsw':
+        if csw.catalogue.type == 'pycsw_http':
             # upload a native FGDC metadata document
             md_doc = etree.tostring(etree.fromstring(open(os.path.join(gisdata.GOOD_METADATA, 'sangis.org', 'Census', 'Census_Blockgroup_Pop_Housing.shp.xml')).read()))
             csw.catalogue.transaction(ttype='insert', typename='fgdc:metadata', record=md_doc)
@@ -241,7 +241,7 @@ class GeoNodeCSWTest(TestCase):
         # once this is implemented we can remove this condition
 
         csw = get_catalogue()
-        if csw.catalogue.type == 'pycsw':
+        if csw.catalogue.type == 'pycsw_http':
     
             identifiers = []
     
