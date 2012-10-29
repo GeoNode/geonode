@@ -1,0 +1,21 @@
+#!/usr/bin/python
+import os
+import urllib2
+
+replace_host='localhost'
+replace_internal='replace.me.internal'
+
+req = urllib2.Request(url="http://169.254.169.254/latest/meta-data/public-hostname")
+f = urllib2.urlopen(req)
+public_hostname = f.read()
+
+req = urllib2.Request(url="http://169.254.169.254/latest/meta-data/local-ipv4")
+f = urllib2.urlopen(req)
+local_ipv4 = f.read()
+
+# ToDo: Grab user specified dns entry (and more ...) here
+
+os.system("perl -pi -e 's/%s/%s/g' /var/lib/tomcat6/webapps/geoserver/WEB-INF/web.xml" % (replace_host, public_hostname))
+os.system("perl -pi -e 's/%s/%s/g' /etc/geonode/geoserver/web.xml" % (replace_host, public_hostname))
+os.system("perl -pi -e 's/%s/%s/g' /var/lib/geonode/src/GeoNodePy/geonode/local_settings.py" % ('http:\/\/' + replace_host, 'http:\/\/' + public_hostname))
+os.system("perl -pi -e 's/%s/%s/g' /etc/geonode/local_settings.py" % ('http:\/\/' + replace_host, 'http:\/\/' + public_hostname))
