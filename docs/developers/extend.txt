@@ -197,7 +197,8 @@ Branding
 
 The section :doc:`/deploy/customize` describes how to change the Logo, Colors and other branding elements in a GeoNode site.
 
-.. TODO::
+.. TODO:
+
    Add the following two sections:
 
     1. Adding Additional Django Pluggable Apps

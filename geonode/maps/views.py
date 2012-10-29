@@ -355,6 +355,7 @@ def new_map_config(request):
                     map = map_obj,
                     name = layer.typename,
                     ows_url = settings.GEOSERVER_BASE_URL + "wms",
+                    layer_params=json.dumps( layer.attribute_config()),
                     visibility = True
                 ))
 
@@ -682,3 +683,9 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
         result['next'] = reverse('maps_search') + '?' + params
 
     return result
+
+
+def maplayer_attributes(request, layername):
+    #Return custom layer attribute labels/order in JSON format
+    layer = Layer.objects.get(typename=layername)
+    return HttpResponse(json.dumps(layer.attribute_config()), mimetype="application/json")

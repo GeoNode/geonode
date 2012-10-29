@@ -23,6 +23,7 @@ from geonode.catalogue.backends.generic import CatalogueBackend \
 
 class CatalogueBackend(GenericCatalogueBackend):
     """GeoNetwork CSW Backend"""
+
     def __init__(self, *args, **kwargs):
         super(CatalogueBackend, self).__init__(*args, **kwargs)
         self.catalogue.formats = ['Dublin Core', 'TC211']
