@@ -1,0 +1,10 @@
+# Where the Django project is.
+CELERYD_CHDIR="/var/www/geonode/wsgi/geonode"
+
+# Path to celeryd
+CELERYD="/var/www/geonode/wsgi/geonode/bin/django-admin.py celeryd"
+
+# Name of the projects settings module.
+export DJANGO_SETTINGS_MODULE="geonode.settings"
+
+CELERYD_LOG_LEVEL=DEBUG
