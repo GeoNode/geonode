@@ -24,6 +24,7 @@ import taggit
 
 from django import forms
 from django.utils import simplejson as json
+from django.utils.translation import ugettext_lazy as _
 
 from geonode.layers.models import Layer, Attribute
 from geonode.people.models import Contact
@@ -52,7 +53,8 @@ class LayerForm(forms.ModelForm):
     metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                              label = "Metadata Author", required=False,
                                              queryset = Contact.objects.exclude(user=None))
-    keywords = taggit.forms.TagField()
+    keywords = taggit.forms.TagField(required=False,
+                                     help_text=_("A space or comma-separated list of keywords"))
     class Meta:
         model = Layer
         exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename',
