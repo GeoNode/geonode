@@ -84,14 +84,14 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
 
     last_modified = models.DateTimeField(auto_now_add=True)
     # The last time the map was modified.
-    
-    keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"))
+
+    keywords = TaggableManager(_('keywords'), blank=True, help_text=_("A space or comma-separated list of keywords"))
 
     category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True)
 
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
-    
+
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
 
@@ -109,20 +109,20 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
         return  [layer for layer in layers]
 
     @property
-    def local_layers(self): 
+    def local_layers(self):
         layer_names = MapLayer.objects.filter(map__id=self.id).values('name')
         return Layer.objects.filter(typename__in=layer_names) | \
                Layer.objects.filter(name__in=layer_names)
 
     def json(self, layer_filter):
         map_layers = MapLayer.objects.filter(map=self.id)
-        layers = [] 
+        layers = []
         for map_layer in map_layers:
-            if map_layer.local:   
+            if map_layer.local:
                 layer =  Layer.objects.get(typename=map_layer.name)
                 layers.append(layer)
-            else: 
-                pass 
+            else:
+                pass
 
         if layer_filter:
             layers = [l for l in layers if layer_filter(l)]
@@ -151,8 +151,8 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
     def update_from_viewer(self, conf):
         """
         Update this Map's details by parsing a JSON object as produced by
-        a GXP Viewer.  
-        
+        a GXP Viewer.
+
         This method automatically persists to the database!
         """
         if isinstance(conf, basestring):
@@ -173,10 +173,10 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
 
         layers = [l for l in conf["map"]["layers"]]
         layer_names = set([l.typename for l in self.local_layers])
-        
+
         for layer in self.layer_set.all():
             layer.delete()
-            
+
         self.keywords.add(*conf['map'].get('keywords', []))
 
         for ordering, layer in enumerate(layers):
@@ -198,12 +198,12 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
             return []
 
     def get_absolute_url(self):
-        return reverse('geonode.maps.views.map_detail', None, [str(self.id)]) 
-        
+        return reverse('geonode.maps.views.map_detail', None, [str(self.id)])
+
     class Meta:
-        # custom permissions, 
+        # custom permissions,
         # change and delete are standard in django
-        permissions = (('view_map', 'Can view'), 
+        permissions = (('view_map', 'Can view'),
                        ('change_map_permissions', "Can change permissions"), )
 
     # Permission Level Constants
@@ -211,7 +211,7 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
     LEVEL_READ  = 'map_readonly'
     LEVEL_WRITE = 'map_readwrite'
     LEVEL_ADMIN = 'map_admin'
-    
+
     def set_default_permissions(self):
         self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
         self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
@@ -224,7 +224,7 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
 
         # assign owner admin privs
         if self.owner:
-            self.set_user_level(self.owner, self.LEVEL_ADMIN)    
+            self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
     def get_extent(self):
         """Generate minx/miny/maxx/maxy of map extent"""
@@ -258,17 +258,17 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
         index = 0
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
-        
+
         for layer in layers:
             try:
                 layer = Layer.objects.get(typename=layer)
             except ObjectDoesNotExist:
                 continue # Raise exception?
-            
+
             if not user.has_perm('maps.view_layer', obj=layer):
                 # invisible layer, skip inclusion or raise Exception?
                 continue # Raise Exception
-            
+
             layer_bbox = layer.bbox
             if bbox is None:
                 bbox = list(layer_bbox[0:4])
@@ -281,12 +281,12 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
             map_layers.append(MapLayer(
                 map = self,
                 name = layer.typename,
-                ows_url = settings.GEOSERVER_BASE_URL + "wms",  
+                ows_url = settings.GEOSERVER_BASE_URL + "wms",
                 stack_order = index,
                 visibility = True
             ))
-            
-        
+
+
             if bbox is not None:
                 minx, maxx, miny, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
@@ -374,11 +374,11 @@ class MapLayer(models.Model, GXPLayerBase):
     # True if this layer is served by the local geoserver
 
     @property
-    def local_link(self): 
+    def local_link(self):
         if self.local:
             layer = Layer.objects.get(typename=self.name)
             link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),layer.title)
-        else: 
+        else:
             link = "<span>%s</span> " % self.name
         return link
 
@@ -397,7 +397,7 @@ def pre_save_maplayer(instance, sender, **kwargs):
     _user, _password = settings.GEOSERVER_CREDENTIALS
     url = "%srest" % settings.GEOSERVER_BASE_URL
     try:
-        c = Catalog(url, _user, _password)   
+        c = Catalog(url, _user, _password)
         instance.local = isinstance(c.get_layer(instance.name),GsLayer)
     except EnvironmentError, e:
         if e.errno == errno.ECONNREFUSED:
@@ -405,7 +405,7 @@ def pre_save_maplayer(instance, sender, **kwargs):
             logger.warn(msg, e)
         else:
             raise e
-        
+
 def pre_delete_map(instance, sender, **kwrargs):
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()

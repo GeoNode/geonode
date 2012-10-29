@@ -24,7 +24,8 @@ from geonode.maps.models import Map
 
 
 class MapForm(forms.ModelForm):
-    keywords = taggit.forms.TagField()
+    keywords = taggit.forms.TagField(required=False,
+                                     help_text=_("A space or comma-separated list of keywords"))
     class Meta:
         model = Map
         exclude = ('contact', 'zoom', 'projection', 'center_x', 'center_y', 'owner')
