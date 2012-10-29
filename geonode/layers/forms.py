@@ -24,6 +24,7 @@ import taggit
 
 from django import forms
 from django.utils import simplejson as json
+from django.utils.translation import ugettext_lazy as _
 
 from geonode.layers.models import Layer, Attribute
 from geonode.people.models import Contact
