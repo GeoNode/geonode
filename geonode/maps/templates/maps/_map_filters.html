@@ -1,0 +1,8 @@
+{% load i18n %}
+{% load url from future %}
+
+<ul class="nav nav-pills filter">
+  <li><a href="{% url "maps_browse" %}" {% if map_filter  == "last_modified" %}class="selected"{% endif %}>{% trans "Most recent" %}</a></li>
+  <li><a href="{% url "maps_browse_popular" %}"{% if map_filter == "popular_count" %} class="selected"{% endif %}>{% trans "Most popular" %}</a></li>
+  <li><a href="{% url "maps_browse_shared" %}"{% if map_filter == "share_count" %} class="selected"{% endif %}>{% trans "Most shared" %}</a></li>
+</ul>

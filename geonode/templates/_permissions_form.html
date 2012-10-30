@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <div class="modal fade" id="modal_perms" style="display:none">
-  <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{{ form_action|default:"" }}">
+  <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% if layer %}{% url layer_permissions layer.typename %}{% elif map %}{% url map_permissions map.id %}{% else %}/api/batch_permissions{%endif %}">
     <div class="modal-header">
       <a class="close" data-dismiss="modal">×</a>
       <h3>{% trans "Permissions" %}</h3>
@@ -49,7 +49,7 @@
     </div>
     <div class="modal-footer">
       <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
-      <button type="submit" class="btn btn-primary">{% trans "Apply Changes" %}</button>
+      <a href="#" class="btn btn-primary" data-dismiss="modal" id="perms_submit">{% trans "Apply Changes" %}</a>
     </div>
   </form>
 </div>

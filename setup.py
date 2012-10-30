@@ -77,7 +77,7 @@ setup(name='GeoNode',
         "PIL",
         "lxml",
         # python dependencies
-        "gsconfig==0.6",
+        "gsconfig==0.6.1",
         "OWSLib==0.5.1",
         "Django==1.4",
         "httplib2>=0.7",
@@ -86,19 +86,26 @@ setup(name='GeoNode',
         "geonode-avatar==2.1",
         "geonode-profiles==0.2",
         "agon-ratings==0.2",
-        "django-taggit==0.9.3", 
+        "django-taggit==0.9.3",
+        "django-taggit-templatetags",
         "dialogos==0.1",
         "South==0.7.3",
         "django-forms-bootstrap==2.0.3.post1",
+	"django-pagination",
+        #catalogue
+        "Shapely>=1.2.15",
+        "pycsw>=1.4.0",
         # setup
         "Paver",
         # assembling javascript
         "jstools==0.6",
         # sample and test data / metadata
-        "gisdata==0.4.4",
+        "gisdata==0.5.4",
         # testing
         "django-nose",
         "nose>=1.0",
+        # translation
+        "transifex-client",
         ],
       zip_safe=False,
       )

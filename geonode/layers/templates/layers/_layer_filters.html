@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load url from future %}
+
+<ul class="nav nav-pills filter">
+  <li><a href="{% url "layer_browse" %}"{% if layer_filter  == "date" %} class="selected"{% endif %}>{% trans "Most recent" %}</a></li>
+  <li><a href="{% url "layer_browse_popular" %}"{% if layer_filter == "popular_count" %} class="selected"{% endif %}>{% trans "Most popular" %}</a></li>
+  <li><a href="{% url "layer_browse_shared" %}"{% if layer_filter == "share_count" %} class="selected"{% endif %}>{% trans "Most shared" %}</a></li>
+  {% comment %}
+  <li>
+    <form action="." class="form-inline">
+      <label for="">{% trans "sort by:" %}</label>
+      <select name="sort" id="layer_sort" class="span1">
+        <option value="">{% trans "Newest" %}</option>
+        <option value="">{% trans "Popularity" %}</option>
+      </select>
+    </form>
+  </li>
+{% endcomment %}
+</ul>

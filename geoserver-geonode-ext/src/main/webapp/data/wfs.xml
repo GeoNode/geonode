@@ -18,6 +18,13 @@
   <verbose>false</verbose>
   <gml>
     <entry>
+      <version>V_11</version>
+      <gml>
+        <srsNameStyle>URN</srsNameStyle>
+        <overrideGMLAttributes>false</overrideGMLAttributes>
+      </gml>
+    </entry>
+    <entry>
       <version>V_20</version>
       <gml>
         <srsNameStyle>URN2</srsNameStyle>
@@ -29,13 +36,6 @@
       <gml>
         <srsNameStyle>XML</srsNameStyle>
         <overrideGMLAttributes>true</overrideGMLAttributes>
-      </gml>
-    </entry>
-    <entry>
-      <version>V_11</version>
-      <gml>
-        <srsNameStyle>URN</srsNameStyle>
-        <overrideGMLAttributes>false</overrideGMLAttributes>
       </gml>
     </entry>
   </gml>

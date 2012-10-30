@@ -65,6 +65,7 @@ LANGUAGES = (
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
     ('zh', '中文'),
+    ('ja', '日本人'),
 )
 
 # If you set this to False, Django will make some optimizations so as not
@@ -133,7 +134,9 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
+    'pagination',
     'taggit',
+    'taggit_templatetags',
     'south',
 
     # GeoNode internal apps
@@ -142,7 +145,8 @@ INSTALLED_APPS = (
     'geonode.people',
     'geonode.proxy',
     'geonode.security',
-#    'geonode.catalogue',
+    'geonode.search',
+    'geonode.catalogue',
 )
 LOGGING = {
     'version': 1,
@@ -186,7 +190,11 @@ LOGGING = {
         "owslib": {
             "handlers": ["console"],
             "level": "ERROR",
-        },    
+        },
+        "pycsw": {
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
     },
 }
 
@@ -214,6 +222,7 @@ MIDDLEWARE_CLASSES = (
     # The setting below makes it possible to serve different languages per
     # user depending on things like headers in HTTP requests.
     'django.middleware.locale.LocaleMiddleware',
+    'pagination.middleware.PaginationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
@@ -248,7 +257,7 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     "maps.Map": {
         "map": "How good is this map?"
     },
-    "maps.Layer": {
+    "layers.Layer": {
         "layer": "How good is this layer?"
     },
 }
@@ -275,16 +284,8 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Arguments for the test runner
 NOSE_ARGS = [
-      '--verbosity=2',
-      '--cover-erase',
       '--nocapture',
-      '--with-coverage',
-      '--cover-package=geonode',
-      '--cover-inclusive',
-      '--cover-tests',
       '--detailed-errors',
-      '--with-xunit',
-#      '--stop',
       ]
 
 #
@@ -302,26 +303,71 @@ GEOSERVER_BASE_URL = "http://localhost:8080/geoserver/"
 
 # The username and password for a user that can add and
 # edit layer details on GeoServer
-GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
+GEOSERVER_CREDENTIALS = "admin", "geoserver"
 
 # CSW settings
 CATALOGUE = {
     'default': {
         # The underlying CSW implementation
-        'ENGINE': 'geonode.catalogue.backends.geonetwork',
-
-        # enabled formats
-        #'formats': ['DIF', 'Dublin Core', 'FGDC', 'TC211'],
-        'FORMATS': ['TC211'],
+        # default is pycsw in local mode (tied directly to GeoNode Django DB)
+        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+        # pycsw in non-local mode
+        #'ENGINE': 'geonode.catalogue.backends.pycsw_http',
+        # GeoNetwork opensource
+        #'ENGINE': 'geonode.catalogue.backends.geonetwork',
+        # deegree and others
+        #'ENGINE': 'geonode.catalogue.backends.generic',
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        #'url': 'http://localhost/pycsw/trunk/csw.py',
-        'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
-        #'url': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
-    
+        'URL': '%scatalogue/csw' % SITEURL,
+        #'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
+        #'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
+
         # login credentials (for GeoNetwork)
         'USER': 'admin',
-        'PASSWORD': 'admin'
+        'PASSWORD': 'admin',
+    }
+}
+
+# pycsw settings
+PYCSW = {
+    # pycsw configuration
+    'CONFIGURATION': {
+        'metadata:main': {
+            'identification_title': '%s Catalogue' % SITENAME,
+            'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, and collaborative use of geospatial data',
+            'identification_keywords': '%s,sdi,catalogue,discovery,metadata,GeoNode' % SITENAME,
+            'identification_keywords_type': 'theme',
+            'identification_fees': 'None',
+            'identification_accessconstraints': 'None',
+            'provider_name': 'Organization Name',
+            'provider_url': SITEURL,
+            'contact_name': 'Lastname, Firstname',
+            'contact_position': 'Position Title',
+            'contact_address': 'Mailing Address',
+            'contact_city': 'City',
+            'contact_stateorprovince': 'Administrative Area',
+            'contact_postalcode': 'Zip or Postal Code',
+            'contact_country': 'Country',
+            'contact_phone': '+xx-xxx-xxx-xxxx',
+            'contact_fax': '+xx-xxx-xxx-xxxx',
+            'contact_email': 'Email Address',
+            'contact_url': 'Contact URL',
+            'contact_hours': 'Hours of Service',
+            'contact_instructions': 'During hours of service. Off on weekends.',
+            'contact_role': 'pointOfContact',
+        },
+        'metadata:inspire': {
+            'enabled': 'true',
+            'languages_supported': 'eng,gre',
+            'default_language': 'eng',
+            'date': 'YYYY-MM-DD',
+            'gemet_keywords': 'Utility and governmental services',
+            'conformity_service': 'notEvaluated',
+            'contact_name': 'Organization Name',
+            'contact_email': 'Email Address',
+            'temp_extent': 'YYYY-MM-DD/YYYY-MM-DD',
+        }
     }
 }
 
@@ -404,13 +450,14 @@ GEONODE_CLIENT_LOCATION = "/static/geonode/"
 DB_DATASTORE = False
 
 #Database datastore connection settings
-DB_DATASTORE_NAME = ''
+DB_DATASTORE_DATABASE = ''
 DB_DATASTORE_USER = ''
 DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE = ''
-
+#The name of the store in Geoserver
+DB_DATASTORE_NAME = ''
 
 # Load more settings from a file called local_settings.py if it exists
 try:

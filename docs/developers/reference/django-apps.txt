@@ -25,7 +25,7 @@ these apps for your specific needs.
         manage layers, maps, styles
   
       geonode.proxy
-        support JavaScript applications accessing GeoServer/GeoNetwork
+        support JavaScript applications accessing GeoServer
 
 ``geonode.security`` - GeoNode granular Auth Backend 
 ====================================================
@@ -81,9 +81,8 @@ The maps app provides views for:
 * Creating, viewing, browsing, editing, and deleting Maps
 * Creating, viewing, browsing, editing, and deleting Layers and their metadata
 
-These operations require the use of GeoServer and GeoNetwork to manage map
-rendering and metadata indexing, as well as GeoExt to provide interactive
-editing and previewing of maps and data layers.
+These operations require the use of GeoServer to manage map rendering, as well
+as GeoExt to provide interactive editing and previewing of maps and data layers.
 
 There are also some url mappings in the geonode.maps.urls module for easy
 inclusion in GeoNode sites.
@@ -103,13 +102,23 @@ GEOSERVER_BASE_URL
   http://example.com/geoserver/web/ , your GEOSERVER_BASE_URL is
   http://example.com/ .
 
-# CSW settings
-CSW
+CATALOGUE
   A dict with the following keys:
- * type: The underlying CSW implementation ("pycsw", "geonetwork", "deegree")
- * url: The FULLY QUALIFIED base url to the CSW instance for this GeoNode
- * username: login credentials (for GeoNetwork)
- * password: login credentials (for GeoNetwork)
+
+  * ENGINE: The CSW backend (default is ``geonode.catalogue.backends.pycsw_local``)
+  * URL: The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+  * USERNAME: login credentials (if required)
+  * PASSWORD: login credentials (if required)
+
+  pycsw is the default CSW enabled in GeoNode.  pycsw configuration directives
+  are managed in the PYCSW entry.
+
+PYCSW
+  A dict with pycsw's configuration.  Of note are the sections
+  ``metadata:main`` to set CSW server metadata and ``metadata:inspire``
+  to set INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true``
+  will enable INSPIRE support.  See http://pycsw.org/docs/configuration.html
+  for full pycsw configuration details.
 
 SITEURL
   A base URL for use in creating absolute links to Django views.
@@ -134,8 +143,7 @@ GOOGLE_API_KEY
 ----------------------------
 
 updatelayers
-  Scan GeoServer for data that hasn't been added to the GeoNode yet, and ensure
-  that each layer in the Django database is indexed in GeoNetwork
+  Scan GeoServer for data that hasn't been added to the GeoNode yet
 
 ``geonode.proxy`` - Assist JavaScript applications in accessing remote servers
 ==============================================================================

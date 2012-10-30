@@ -44,7 +44,8 @@ class PocForm(forms.Form):
 
 
 class ContactForm(forms.ModelForm):
-    keywords = taggit.forms.TagField()
+    keywords = taggit.forms.TagField(required=False,
+                                     help_text=_("A space or comma-separated list of keywords"))
     class Meta:
         model = Contact
         exclude = ('user',)

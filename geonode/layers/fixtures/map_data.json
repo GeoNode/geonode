@@ -43,6 +43,7 @@
             "store": "CA",
             "name": "CA",
             "workspace": "base",
+            "owner": 1,
             "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298",
             "bbox_x0": 0,
             "bbox_x1": 1,
@@ -51,6 +52,42 @@
         },
         "model": "layers.layer",
         "pk": 1
+    },
+    {
+        "fields": {
+            "layer": 1,
+            "attribute": "the_geom",
+            "attribute_label": "Shape",
+            "attribute_type": "gml:Geometry",
+            "visible": false,
+            "display_order": 3
+        },
+        "model": "layers.attribute",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "layer": 1,
+            "attribute": "description",
+            "attribute_label": "Description",
+            "attribute_type": "xsd:string",
+            "visible": true,
+            "display_order": 2
+        },
+        "model": "layers.attribute",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "layer": 1,
+            "attribute": "place_name",
+            "attribute_label": "Place Name",
+            "attribute_type": "xsd:string",
+            "visible": true,
+            "display_order": 1
+        },
+        "model": "layers.attribute",
+        "pk": 3
     },
     {
         "fields": {

@@ -32,6 +32,9 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template import Context
 from django.template.loader import get_template
 from django.forms import ValidationError
+from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
+from agon_ratings.models import OverallRating
 
 import geonode.layers.utils
 import geonode.layers.views
@@ -75,63 +78,57 @@ class LayersTest(TestCase):
     # - LEVEL_WRITE = layer_readwrite
     # - LEVEL_ADMIN = layer_admin
 
-    # Map 
+    # Map
     # - LEVEL_READ = map_read
     # - LEVEL_WRITE = map_readwrite
     # - LEVEL_ADMIN = map_admin
-    
 
-    # FIXME: Add a comprehensive set of permissions specifications that allow us 
+
+    # FIXME: Add a comprehensive set of permissions specifications that allow us
     # to test as many conditions as is possible/necessary
-    
-    # If anonymous and/or authenticated are not specified, 
+
+    # If anonymous and/or authenticated are not specified,
     # should set_layer_permissions remove any existing perms granted??
-    
+
     perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","layer_readwrite"]]}
-    
+
     def test_layer_set_default_permissions(self):
         """Verify that Layer.set_default_permissions is behaving as expected
         """
 
-        # Get a Layer object to work with 
+        # Get a Layer object to work with
         layer = Layer.objects.all()[0]
-
-        # Should we set some 'current' permissions to do further testing?
-
-        # Save the layers Current Permissions
-        current_perms = layer.get_all_level_info()
 
         # Set the default permissions
         layer.set_default_permissions()
+
+        # Save the layers Current Permissions
+        current_perms = layer.get_all_level_info()
 
         # Test that LEVEL_READ is set for ANONYMOUS_USERS and AUTHENTICATED_USERS
         self.assertEqual(layer.get_gen_level(geonode.security.models.ANONYMOUS_USERS), layer.LEVEL_READ)
         self.assertEqual(layer.get_gen_level(geonode.security.models.AUTHENTICATED_USERS), layer.LEVEL_READ)
 
-        # Test that the previous Permissions were set to LEVEL_NONE
-        for username in current_perms['users'].keys():
-            user = User.objects.get(username=username)
-            self.assertEqual(layer.get_user_level(user), layer.LEVEL_NONE)
+        admin_perms = current_perms['users'][layer.owner.username]
 
         # Test that the owner was assigned LEVEL_ADMIN
-        if layer.owner:
-            self.assertEqual(layer.owner, layer.LEVEL_ADMIN)    
+        self.assertEqual(admin_perms, layer.LEVEL_ADMIN)
 
     def test_set_layer_permissions(self):
         """Verify that the set_layer_permissions view is behaving as expected
         """
-        
+
         # Get a layer to work with
         layer = Layer.objects.all()[0]
 
-        # FIXME Test a comprehensive set of permisssions specifications 
+        # FIXME Test a comprehensive set of permissions specifications
 
         # Set the Permissions
 
         geonode.layers.utils.layer_set_permissions(layer, self.perm_spec)
 
-        # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
-        self.assertEqual(layer.get_gen_level(geonode.security.models.ANONYMOUS_USERS), layer.LEVEL_NONE) 
+        # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly
+        self.assertEqual(layer.get_gen_level(geonode.security.models.ANONYMOUS_USERS), layer.LEVEL_NONE)
         self.assertEqual(layer.get_gen_level(geonode.security.models.AUTHENTICATED_USERS), layer.LEVEL_NONE)
 
         # Test that previous permissions for users other than ones specified in
@@ -139,7 +136,7 @@ class LayersTest(TestCase):
         users = [n[0] for n in self.perm_spec['users']]
         levels = layer.get_user_levels().exclude(user__username__in = users + [layer.owner])
         self.assertEqual(len(levels), 0)
-       
+
         # Test that the User permissions specified in the perm_spec were applied properly
         for username, level in self.perm_spec['users']:
             user = geonode.maps.models.User.objects.get(username=username)
@@ -148,7 +145,7 @@ class LayersTest(TestCase):
     def test_ajax_layer_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
         """
-        
+
         # Setup some layer names to work with
         valid_layer_typename = Layer.objects.all()[0].typename
         invalid_layer_typename = "n0ch@nc3"
@@ -156,19 +153,19 @@ class LayersTest(TestCase):
         c = Client()
 
         # Test that an invalid layer.typename is handled for properly
-        response = c.post("/data/%s/permissions" % invalid_layer_typename, 
+        response = c.post(reverse('layer_permissions', args=(invalid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
-        self.assertEquals(response.status_code, 404) 
+        self.assertEquals(response.status_code, 404)
 
         # Test that POST is required
-        response = c.get("/data/%s/permissions" % valid_layer_typename)
+        response = c.get(reverse('layer_permissions', args=(valid_layer_typename,)))
         self.assertEquals(response.status_code, 405)
-        
+
         # Test that a user is required to have maps.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post("/data/%s/permissions" % valid_layer_typename,
+        response = c.post(reverse('layer_permissions', args=(valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401)
@@ -176,7 +173,7 @@ class LayersTest(TestCase):
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
-        response = c.post("/data/%s/permissions" % valid_layer_typename,
+        response = c.post(reverse('layer_permissions', args=(valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401)
@@ -185,7 +182,7 @@ class LayersTest(TestCase):
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
 
-        response = c.post("/data/%s/permissions" % valid_layer_typename,
+        response = c.post(reverse('layer_permissions', args=(valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
 
@@ -194,7 +191,7 @@ class LayersTest(TestCase):
 
         # Test that the permissions specification is applied
 
-        # Should we do this here, or assume the tests in 
+        # Should we do this here, or assume the tests in
         # test_set_layer_permissions will handle for that?
 
     def test_layer_acls(self):
@@ -208,12 +205,12 @@ class LayersTest(TestCase):
         valid_auth_headers = {
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw),
         }
-        
+
         invalid_auth_headers = {
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
         }
-       
-        # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json 
+
+        # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json
 
         expected_result = {
             u'rw': [],
@@ -224,19 +221,19 @@ class LayersTest(TestCase):
         }
 
         c = Client()
-        response = c.get('/data/acls', **valid_auth_headers)
+        response = c.get(reverse('layer_acls'), **valid_auth_headers)
         response_json = json.loads(response.content)
-        self.assertEquals(expected_result, response_json) 
+        self.assertEquals(expected_result, response_json)
 
         # Test that requesting when supplying invalid credentials returns the appropriate error code
-        response = c.get('/data/acls', **invalid_auth_headers)
+        response = c.get(reverse('layer_acls'), **invalid_auth_headers)
         self.assertEquals(response.status_code, 401)
-       
-        # Test logging in using Djangos normal auth system 
+
+        # Test logging in using Djangos normal auth system
         c.login(username='admin', password='admin')
-       
+
         # Basic check that the returned content is at least valid json
-        response = c.get("/data/acls")
+        response = c.get(reverse('layer_acls'))
         response_json = json.loads(response.content)
 
         # TODO Lots more to do here once jj0hns0n understands the ACL system better
@@ -244,20 +241,20 @@ class LayersTest(TestCase):
     def test_perms_info(self):
         """ Verify that the perms_info view is behaving as expected
         """
-        
+
         # Test with a Layer object
         layer = Layer.objects.all()[0]
         layer_info = layer.get_all_level_info()
         info = geonode.security.views._perms_info(layer, geonode.layers.views.LAYER_LEV_NAMES)
-        
+
         # Test that ANONYMOUS_USERS and AUTHENTICATED_USERS are set properly
         self.assertEqual(info[geonode.maps.models.ANONYMOUS_USERS], layer.LEVEL_READ)
         self.assertEqual(info[geonode.maps.models.AUTHENTICATED_USERS], layer.LEVEL_READ)
-        
+
         self.assertEqual(info['users'], sorted(layer_info['users'].items()))
 
         # TODO Much more to do here once jj0hns0n understands the ACL system better
- 
+
         # Test with a Map object
         # TODO
 
@@ -266,22 +263,22 @@ class LayersTest(TestCase):
     def test_data(self):
         '''/data/ -> Test accessing the data page'''
         c = Client()
-        response = c.get('/data/')
+        response = c.get(reverse('layer_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_describe_data_2(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(2, User.objects.all().count())
         c = Client()
-        response = c.get('/data/base:CA/metadata')
+        response = c.get(reverse('layer_metadata', args=('base:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
         c.login(username='admin', password='admin')
         # ... all should be good
-        response = c.get('/data/base:CA/metadata')
+        response = c.get(reverse('layer_metadata', args=('base:CA',)))
         self.failUnlessEqual(response.status_code, 200)
-    
+
     # Layer Tests
 
     # Test layer upload endpoint
@@ -289,49 +286,57 @@ class LayersTest(TestCase):
         c = Client()
 
         # Test redirection to login form when not logged in
-        response = c.get("/data/upload")
+        response = c.get(reverse('layer_upload'))
         self.assertEquals(response.status_code,302)
 
         # Test return of upload form when logged in
         c.login(username="bobby", password="bob")
-        response = c.get("/data/upload")
+        response = c.get(reverse('layer_upload'))
         self.assertEquals(response.status_code,200)
 
     def test_search(self):
         '''/data/search/ -> Test accessing the data search page'''
         c = Client()
-        response = c.get('/data/search/')
+        response = c.get(reverse('layer_search_page'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_search_api(self):
         '''/data/search/api -> Test accessing the data search api JSON'''
         c = Client()
-        response = c.get('/data/search/api')
-        self.failUnlessEqual(response.status_code, 200)
-
-    def test_search_detail(self):
-        '''
-        /data/search/detail -> Test accessing the data search detail for a layer
-        Disabled due to reliance on consistent UUIDs across loads.
-        '''
-        layer = Layer.objects.all()[0]
-
-        c = Client()
-        response = c.get('/data/search/detail', {'uuid':layer.uuid})
+        response = c.get(reverse('layer_search_api'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_describe_data(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(2, User.objects.all().count())
         c = Client()
-        response = c.get('/data/base:CA/metadata')
+        response = c.get(reverse('layer_metadata', args=('base:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
         c.login(username='admin', password='admin')
         # ... all should be good
-        response = c.get('/data/base:CA/metadata')
+        response = c.get(reverse('layer_metadata', args=('base:CA',)))
         self.failUnlessEqual(response.status_code, 200)
+
+    def test_layer_attributes(self):
+        lyr = Layer.objects.get(pk=1)
+        #There should be a total of 3 attributes
+        self.assertEqual(len(lyr.attribute_set.all()), 3)
+        #2 out of 3 attributes should be visible
+        custom_attributes = lyr.attribute_set.visible()
+        self.assertEqual(len(custom_attributes), 2)
+        #place_ name should come before description
+        self.assertEqual(custom_attributes[0].attribute_label, "Place Name")
+        self.assertEqual(custom_attributes[1].attribute_label, "Description")
+
+    def test_layer_attribute_config(self):
+        lyr = Layer.objects.get(pk=1)
+        custom_attributes = (lyr.attribute_config())["getFeatureInfo"]
+        self.assertEqual(custom_attributes["fields"],["place_name","description"])
+        self.assertEqual(custom_attributes["propertyNames"]["description"], "Description")
+        self.assertEqual(custom_attributes["propertyNames"]["place_name"], "Place Name")
+
 
     def test_layer_save(self):
         lyr = Layer.objects.get(pk=1)
@@ -342,38 +347,38 @@ class LayersTest(TestCase):
     def test_layer_remove(self):
         """Test layer remove functionality
         """
-        layer = Layer.objects.all()[0]       
-        url = '/data/%s/remove' % layer.typename
+        layer = Layer.objects.all()[0]
+        url = reverse('layer_remove', args=(layer.typename,))
 
         c = Client()
-    
+
         # test unauthenticated
         response = c.get(url)
         self.assertEquals(response.status_code, 302)
- 
+
         #test a user without layer removal permission
         c = Client()
         c.login(username='norman', password='norman')
         response = c.post(url)
         self.assertEquals(response.status_code, 302)
-        c.logout()   
+        c.logout()
 
         # Now test with a valid user
         c = Client()
         c.login(username='admin', password='admin')
-        
-        #test a method other than POST and GET 
+
+        #test a method other than POST and GET
         response = c.put(url)
         self.assertEquals(response.status_code, 403)
 
-        #test the page with a valid user with layer removal permission         
+        #test the page with a valid user with layer removal permission
         response = c.get(url)
         self.assertEquals(response.status_code, 200)
 
         #test the post method that actually removes the layer and redirects
         response = c.post(url)
         self.assertEquals(response.status_code, 302)
-        self.assertEquals(response['Location'], 'http://testserver/data/') 
+        self.assertEquals(response['Location'], 'http://testserver/layers/')
 
         #test that the layer is actually removed
         self.assertEquals(Layer.objects.filter(pk=layer.pk).count(), 0)
@@ -490,8 +495,8 @@ class LayersTest(TestCase):
         tempdir = form.write_files()[0]
         self.assertEquals(set(os.listdir(tempdir)),
             set(['foo.shp', 'foo.shx', 'foo.dbf', 'foo.prj']))
-    
-    
+
+
     def test_layer_type(self):
         self.assertEquals(layer_type('foo.shp'), FeatureType.resource_type)
         self.assertEquals(layer_type('foo.SHP'), FeatureType.resource_type)
@@ -521,7 +526,7 @@ class LayersTest(TestCase):
             for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             gotten_files = get_files(os.path.join(d, "foo.shp"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
@@ -538,7 +543,7 @@ class LayersTest(TestCase):
             for f in ("foo.shp", "foo.shx", "foo.prj"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
         finally:
@@ -552,7 +557,7 @@ class LayersTest(TestCase):
             for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf", "foo.sld"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             gotten_files = get_files(os.path.join(d, "foo.shp"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
@@ -569,7 +574,7 @@ class LayersTest(TestCase):
             for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             gotten_files = get_files(os.path.join(d, "foo.SHP"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
@@ -586,7 +591,7 @@ class LayersTest(TestCase):
             for f in ("foo.SHP", "foo.shx", "foo.pRJ", "foo.DBF"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             gotten_files = get_files(os.path.join(d, "foo.SHP"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
@@ -604,7 +609,7 @@ class LayersTest(TestCase):
             for f in files:
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             # Only run the tests if this is a case sensitive OS
             if len(os.listdir(d)) == len(files):
@@ -615,7 +620,7 @@ class LayersTest(TestCase):
             if d is not None:
                 shutil.rmtree(d)
 
-        # Check that including both capital and lowercase PRJ (this is special-cased in the implementation) 
+        # Check that including both capital and lowercase PRJ (this is special-cased in the implementation)
         d = None
         try:
             d = tempfile.mkdtemp()
@@ -623,7 +628,7 @@ class LayersTest(TestCase):
             for f in files:
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             # Only run the tests if this is a case sensitive OS
             if len(os.listdir(d)) == len(files):
@@ -633,7 +638,7 @@ class LayersTest(TestCase):
             if d is not None:
                 shutil.rmtree(d)
 
-        # Check that including both capital and lowercase SLD (this is special-cased in the implementation) 
+        # Check that including both capital and lowercase SLD (this is special-cased in the implementation)
         d = None
         try:
             d = tempfile.mkdtemp()
@@ -641,7 +646,7 @@ class LayersTest(TestCase):
             for f in files:
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             # Only run the tests if this is a case sensitive OS
             if len(os.listdir(d)) == len(files):
@@ -683,10 +688,10 @@ class LayersTest(TestCase):
     ## NOTE: we don't care about file content for many of these tests (the
     ## forms under test validate based only on file name, and leave actual
     ## content inspection to GeoServer) but Django's form validation will omit
-    ## any files with empty bodies. 
+    ## any files with empty bodies.
     ##
     ## That is, this leads to mysterious test failures:
-    ##     SimpleUploadedFile('foo', '') 
+    ##     SimpleUploadedFile('foo', '')
     ##
     ## And this should be used instead to avoid that:
     ##     SimpleUploadedFile('foo', ' ')
@@ -699,3 +704,26 @@ class LayersTest(TestCase):
 
         # text which is not JSON should fail
         self.assertRaises(ValidationError, lambda: field.clean('<users></users>'))
+
+    def test_rating_layer_remove(self):
+        """ Test layer rating is removed on layer remove
+        """
+        #Get the layer to work with
+        layer = Layer.objects.all()[0]
+        url = reverse('layer_remove', args=(layer.typename,))
+        layer_id = layer.id
+
+        #Create the rating with the correct content type
+        ctype = ContentType.objects.get(model='layer')
+        OverallRating.objects.create(category=2,object_id=layer_id,content_type=ctype, rating=3)
+
+        c = Client()
+
+        c.login(username='admin', password='admin')
+
+        #Remove the layer
+        response = c.post(url)
+
+        #Check there are no ratings matching the remove layer
+        rating = OverallRating.objects.filter(category=2,object_id=layer_id)
+        self.assertEquals(rating.count(),0)

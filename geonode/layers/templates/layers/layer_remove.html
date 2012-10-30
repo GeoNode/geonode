@@ -1,25 +1,26 @@
-{% extends "layers/base.html" %}
+{% extends "layers/layer_base.html" %}
 {% load i18n %}
 
 {% block title %}{{ layer.typename }} — {{ block.super }}{% endblock %}
 
-{% block main %}
-  <form action="{% url layer_remove layer.typename %}" method="POST">
-    <legend>
-      {% blocktrans with layer.typename as layer_title %}
-        Are you sure you want to remove {{ layer_title }}?
-      {% endblocktrans %}
-    </legend>
-    {% csrf_token %}
-    <input type="hidden" value="{{ layer.typename }}" /> 
-    <div class="form-actions">
-      <input type="submit" value="{% trans "Yes, I am sure" %}" />
-      <a href="{{ layer.get_absolute_url }}" class="btn">{% trans "No, don't remove it" %}</a>
-    </div>
-  </form>
-{% endblock %}
-
-{% block sidebar %}
+{% block body %}
+<div class="row">
+  <div class="span8">
+    <form action="{% url layer_remove layer.typename %}" method="POST">
+      <h2>
+        {% blocktrans with layer.typename as layer_title %}
+          Are you sure you want to remove {{ layer_title }}?
+        {% endblocktrans %}
+      </h2>
+      {% csrf_token %}
+      <input type="hidden" value="{{ layer.typename }}" /> 
+      <div class="form-actions">
+        <input type="submit" value="{% trans "Yes, I am sure" %}" class="btn btn-danger" />
+        <a href="{{ layer.get_absolute_url }}" class="btn btn-info">{% trans "No, don't remove it" %}</a>
+      </div>
+    </form>
+  </div>
+  <div class="span4">
   <ul class="nav nav-list">
     <li class="nav-header">{% trans "This action affects the following maps:" %}</li>
     {% for map in layer.maps %}
@@ -28,4 +29,6 @@
       <li>{% trans "No maps are using this layer" %}</li>
     {% endfor %}
   <ul>
+  </div>
+</div>
 {% endblock %}
