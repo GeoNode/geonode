@@ -48,7 +48,7 @@ Ext.override(Ext.dd.DragTracker, {
  * title - {String} Optional title to display for layer.
  */
 var GeoExplorer = Ext.extend(gxp.Viewer, {
-
+    
     /**
      * api: config[localGeoServerBaseUrl]
      * ``String`` url of the local GeoServer instance
@@ -67,7 +67,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * to not add a scale overlay.
      */
     useMapOverlay: null,
-
+    
     /**
      * api: config[fromLayer]
      * ``Boolean`` true if map view was loaded with layer parameters
@@ -91,7 +91,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * {<Ext.Window>} A window which includes a CapabilitiesGrid panel.
      */
     capGrid: null,
-
+    
     /**
      * Property: modified
      * ``Number``
@@ -100,16 +100,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
     /**
      * Property: popupCache
-     * {Object} An object containing references to visible popups so that
+     * {Object} An object containing references to visible popups so that 
      *     we can insert responses from multiple requests.
      */
     popupCache: null,
-
+    
     /** private: property[urlPortRegEx]
      *  ``RegExp``
      */
     urlPortRegEx: /^(http[s]?:\/\/[^:]*)(:80|:443)?\//,
-
+    
     //public variables for string literals needed for localization
     backgroundContainerText: "UT:Background",
     connErrorTitleText: "UT:Connection Error",
@@ -121,7 +121,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     layerSelectionLabel: "UT:View available data from:",
     layersContainerText: "UT:Data",
     layersPanelText: "UT:Layers",
-    mapSizeLabel: 'UT: Map Size',
+    mapSizeLabel: 'UT: Map Size', 
     metadataFormCancelText : "UT:Cancel",
     metadataFormSaveAsCopyText : "UT:Save as Copy",
     metadataFormSaveText : "UT:Save",
@@ -169,7 +169,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         Ext.preg("gx_wmssource", gxp.plugins.WMSSource);
         Ext.preg("gx_olsource", gxp.plugins.OLSource);
         Ext.preg("gx_googlesource", gxp.plugins.GoogleSource);
-
+        
         // global request proxy and error handling
         Ext.util.Observable.observeClass(Ext.data.Connection);
         Ext.data.Connection.on({
@@ -297,7 +297,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             },
             scope: this
         });
-
+        
         // register the color manager with every color field, for Styler
         Ext.util.Observable.observeClass(gxp.form.ColorField);
         gxp.form.ColorField.on({
@@ -313,17 +313,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 return "If you leave this page, unsaved changes will be lost.";
             }
         }).createDelegate(this);
-
+        
         // limit combo boxes to the window they belong to - fixes issues with
         // list shadow covering list items
         Ext.form.ComboBox.prototype.getListParent = function() {
             return this.el.up(".x-window") || document.body;
         };
-
+        
         // don't draw window shadows - allows us to use autoHeight: true
         // without using syncShadow on the window
         Ext.Window.prototype.shadow = false;
-
+        
         if (!config.map) {
             config.map = {};
         }
@@ -333,7 +333,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.mapID = this.initialConfig.id;
     },
-
+    
     displayXHRTrouble: function(response) {
         response.status && Ext.Msg.show({
             title: this.connErrorTitleText,
@@ -363,7 +363,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         });
     },
-
+    
     loadConfig: function(config) {
         config.sources['csw'] = {
             ptype: "gxp_cataloguesource",
@@ -433,7 +433,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
     },
-
+    
     //Check permissions for selected layer and enable/disable feature edit buttons accordingly
     checkLayerPermissions:function (layerRecord) {
 
@@ -492,13 +492,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             });
         }
         this.mapPlugins = [{
-            ptype: "gxp_loadingindicator",
+            ptype: "gxp_loadingindicator", 
             onlyShowOnFirstLoad: true
         }];
-
+         
         GeoExplorer.superclass.initMapPanel.apply(this, arguments);
     },
-
+    
     /**
      * Method: initPortal
      * Create the various parts that compose the layout.
@@ -602,7 +602,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 item.disable();
             });
         }, this);
-
+        
         var showContextMenu;
         this.googleEarthPanel = new gxp.GoogleEarthPanel({
             mapPanel: this.mapPanel,
@@ -632,9 +632,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this
             }
         });
-
+        
         this.mapPanelContainer = new Ext.Panel({
-            layout: "card",
+            layout: "card", 
             region: "center",
             defaults: {
                 // applied to each contained panel
@@ -674,7 +674,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }
         ];
-
+        
         //Activate now, after layer has been autoselected in tree
         if ("gn_layer_editor" in this.tools) {
             this.tools["gn_layer_editor"].getFeatureManager().activate();
@@ -682,7 +682,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         GeoExplorer.superclass.initPortal.apply(this, arguments);
     },
-
+    
     createTools: function() {
         var tools = [
             new Ext.Button({
@@ -711,10 +711,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
     /** private: method[makeExportDialog]
      *
-     * Create a dialog providing the HTML snippet to use for embedding the
-     * (persisted) map, etc.
+     * Create a dialog providing the HTML snippet to use for embedding the 
+     * (persisted) map, etc. 
      */
-    makeExportDialog: function() {
+    makeExportDialog: function() { 
         new Ext.Window({
             title: this.publishActionText,
             layout: "fit",
@@ -722,7 +722,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             autoHeight: true,
             items: [{
                 xtype: "gxp_embedmapdialog",
-                url: this.rest + this.mapID + "/embed"
+                url: this.rest + this.mapID + "/embed" 
             }]
         }).show();
     },
@@ -732,7 +732,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      * Initialize metadata entry form.
      */
     initMetadataForm: function(){
-
+        
         var titleField = new Ext.form.TextField({
             width: '95%',
             fieldLabel: this.metaDataMapTitle,
@@ -759,7 +759,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         var metaDataPanel = new Ext.FormPanel({
-            bodyStyle: {padding: "5px"},
+            bodyStyle: {padding: "5px"},          
             labelAlign: "top",
             items: [
                 titleField,
@@ -768,7 +768,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         metaDataPanel.enable();
-
+        
         var saveAsButton = new Ext.Button({
             text: this.metadataFormSaveAsCopyText,
             disabled: !this.about.title,
@@ -840,9 +840,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
      */
     save: function(as){
         var config = this.getState();
-
+        
         if (!this.mapID || as) {
-            /* create a new map */
+            /* create a new map */ 
             Ext.Ajax.request({
                 url: this.rest + 'new/data',
                 method: 'POST',
@@ -855,7 +855,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     id = id.match(/[\d]*$/)[0];
                     this.mapID = id; //id is url, not mapID
                     this.fireEvent("saved", id);
-                },
+                }, 
                 scope: this
             });
         }
@@ -868,9 +868,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 success: function(response, options) {
                     /* nothing for now */
                     this.fireEvent("saved", this.mapID);
-                },
+                }, 
                 scope: this
-            });
+            });         
         }
     }
 });
