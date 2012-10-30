@@ -50,10 +50,13 @@ urlpatterns = patterns('',
                 {'template': 'developer.html'}, name='dev'),
 
     # Data views
-    (r'^data/', include('geonode.layers.urls')),
-    
+    (r'^layers/', include('geonode.layers.urls')),
+
     # Map views
     (r'^maps/', include('geonode.maps.urls')),
+
+    # Search
+    (r'^search/', include('geonode.search.urls')),
 
     # Social
     (r'^comments/', include('dialogos.urls')),
@@ -78,6 +81,9 @@ urlpatterns = patterns('',
                                   {'sitemaps': sitemaps}, name='sitemap'),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
+
+    # Catalogue
+    (r'^catalogue/', include('geonode.catalogue.urls')),
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns

@@ -34,6 +34,8 @@ If your .prj file does not look like this, the upload may still work fine.  If i
 
 **SLD:**  Optionally provide a Styled Layer Descriptor (SLD) file.  This is an XML document that defines the layer's default style.  For more information on creating SLD files, see `Creating styles with desktop software`_.
 
+**XML:**  Optionally provide a metadata XML document in ISO, FGDC or Dublin Core format.  This XML document allows GeoNode to use existing metadata to describe a layer.
+
 ***Abstract:**  Provide a description of your data. More information is better.  At the very least when you add real data, please include a brief description of the data, who created it, for what purpose, and when.  Please also include source materials used to create the data layer.  This information is important both for you to remember what the data is about, and to allow someone else a chance to benefit from your work (assuming you want to make the data available for others to use at some point).
 
 **Permissions:**  Default permissions are set such that the world can view your data but only you can change it.  You may optionally grant layer editing permissions to all registered users or to specific users you choose.  Editors can modify layer styles, edit metadata records, and upload new versions of the data.  Similarly, you can grant layer management permissions to select users.  In addition to editing capabilities, managers can modify layer permission settings or delete the layer entirely.

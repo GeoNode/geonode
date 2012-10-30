@@ -1,54 +1,54 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# 
+# Translators:
+#   <nwang@opengeo.org>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-15 12:30-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2012-05-15 12:41-0500\n"
+"PO-Revision-Date: 2012-09-28 19:26+0000\n"
+"Last-Translator: nwang <nwang@opengeo.org>\n"
+"Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/zh/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n>1\n"
+"Language: zh\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: static/geonode/script/GeoExplorer.js:68 static/geonode/script/GeoNode.js:33
 msgid "Add user..."
-msgstr ""
+msgstr "添加用户"
 
 #: static/geonode/script/GeoNode.js:36
 msgid "Who can view and download this data?"
-msgstr ""
+msgstr "谁能浏览下载此数据？"
 
 #: static/geonode/script/GeoNode.js:36
 msgid "Anyone"
-msgstr ""
+msgstr "任何人"
 
 #: static/geonode/script/GeoNode.js:36 static/geonode/script/GeoNode.js.c:38
 msgid "Any registered user"
-msgstr ""
+msgstr "任何注册用户"
 
 #: static/geonode/script/GeoNode.js:36
 msgid "Only users who can edit"
-msgstr ""
+msgstr "只限于有编辑权限的用户"
 
 #: static/geonode/script/GeoNode.js:37
 msgid "Who can edit this data?"
-msgstr ""
+msgstr "谁能编辑此数据？"
 
 #: static/geonode/script/GeoNode.js:38
 msgid "Only the following users or groups:"
-msgstr ""
+msgstr "只有下列用户或组织："
 
 #: static/geonode/script/GeoNode.js:39
 msgid "Who can manage and edit this data?"
-msgstr ""
+msgstr "谁能管理编辑此数据？"
 
 #: templates/lang.js:9 templates/lang.js.c:12
 msgid "Add Layers"
@@ -235,9 +235,7 @@ msgstr "小"
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
-"连接服务时出错。\n"
-"请检查网址再重试。"
+msgstr "连接服务时出错。\n请检查网址再重试。"
 
 #: templates/lang.js:59
 msgid "Layer Properties"

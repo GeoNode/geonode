@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+import logging
 import re
 import urllib, urllib2, cookielib
 from django.conf import settings
@@ -28,21 +29,24 @@ from urlparse import urlparse
 from lxml import etree
 from geonode.catalogue.backends.base import BaseCatalogueBackend
 
+logger = logging.getLogger(__name__)
+
 METADATA_FORMATS = {
+    'Atom': ('atom:entry', 'http://www.w3.org/2005/Atom'),
     'DIF': ('dif:DIF', 'http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/'),
     'Dublin Core': ('csw:Record', 'http://www.opengis.net/cat/csw/2.0.2'),
+    'ebRIM': ('rim:RegistryObject', 'urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0'),
     'FGDC': ('fgdc:metadata', 'http://www.opengis.net/cat/csw/csdgm'),
     'TC211': ('gmd:MD_Metadata', 'http://www.isotc211.org/2005/gmd'),
 }
-
-
 
 class Catalogue(CatalogueServiceWeb):
     def __init__(self, *args, **kwargs):
         self.url = kwargs['URL']
         self.user = kwargs['USER']
         self.password = kwargs['PASSWORD']
-        self.formats = kwargs['FORMATS']
+        self.type = kwargs['ENGINE'].split('.')[-1]
+        self.local = False
         self._group_ids = {}
         self._operation_ids = {}
         self.connected = False
@@ -122,8 +126,7 @@ class Catalogue(CatalogueServiceWeb):
             urls.append(('text/xml', mformat, self.url_for_uuid(uuid, METADATA_FORMATS[mformat][1])))
         return urls
 
-    def csw_request(self, layer, template):
-
+    def csw_gen_xml(self, layer, template):
         id_pname = 'dc:identifier'
         if self.type == 'deegree':
             id_pname = 'apiso:Identifier'
@@ -136,6 +139,16 @@ class Catalogue(CatalogueServiceWeb):
         })
         md_doc = tpl.render(ctx)
         md_doc = md_doc.encode("utf-8")
+        return md_doc
+
+    def csw_gen_anytext(self, xml):
+        """ get all element data from an XML document """
+        xml = etree.fromstring(xml)
+        return ' '.join([value for value in xml.xpath('//text()')])
+ 
+    def csw_request(self, layer, template):
+
+        md_doc = self.csw_gen_xml(layer, template)
 
         if self.type == 'geonetwork':
             headers = {
@@ -356,8 +369,6 @@ class Catalogue(CatalogueServiceWeb):
                     pass
         return links
 
-
-
 class CatalogueBackend(BaseCatalogueBackend):
     def __init__(self, *args, **kwargs):
        self.catalogue = Catalogue(*args, **kwargs) 
@@ -370,7 +381,6 @@ class CatalogueBackend(BaseCatalogueBackend):
                 rec.links['metadata'] = self.catalogue.urls_for_uuid(uuid)
                 rec.links['download'] = self.catalogue.extract_links(rec)
         return rec
-
 
     def search_records(self, keywords, start, limit, bbox):
         with self.catalogue: 
@@ -388,13 +398,12 @@ class CatalogueBackend(BaseCatalogueBackend):
 
             return result
 
-
     def remove_record(self, uuid):
         with self.catalogue:
            catalogue_record = self.catalogue.get_by_uuid(uuid)
            if catalogue_record is None:
                return
-
+    
            try:
                # this is a bit hacky, delete_layer expects an instance of the layer
                # model but it just passes it to a Django template so a dict works

@@ -1,3 +1,15 @@
+$(function() {
+    // Topbar active tab support
+    $(".main-nav li").removeClass("current");
+    $('[rel=tooltip]').tooltip({placement:"left"});
+    
+    var class_list = $("body").attr("class").split(/\s+/);
+    $.each(class_list, function(index, item) {
+        var selector = ".main-nav li#nav_" + item;
+        $(selector).addClass("current");
+    });
+});
+
 jQuery(document).ajaxSend(function(event, xhr, settings) {
     function getCookie(name) {
         var cookieValue = null;
@@ -34,42 +46,6 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
         xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
     }
 });
-
-var map_perms_submit = function() {
-    var form = $(this);
-    var action = form.attr("action");
-
-    permissions = permissionsString(form, "maps");
-    $.ajax(
-      {
-        type: "POST",
-        url: action,
-        data: JSON.stringify(permissions),
-        success: function(data) {
-          $("#modal_perms").modal("hide");
-        }
-      }
-    );
-    return false;
-};
-
-var layer_perms_submit = function() {
-    var form = $(this);
-    var action = form.attr("action");
-
-    permissions = permissionsString(form, "layer");
-    $.ajax(
-      {
-        type: "POST",
-        url: action,
-        data: JSON.stringify(permissions),
-        success: function(data) {
-          $("#modal_perms").modal("hide");
-        }
-      }
-    );
-    return false;
-};
 
 var batch_delete = function() {
   var form = $(this);
@@ -216,7 +192,6 @@ function permissionsString(form, type) {
       perUserPermissions.push([manageusers, levels["admin"]]);
     };
   };
-
 
   return {
     anonymous: anonymousPermissions,

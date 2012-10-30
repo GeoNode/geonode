@@ -1,12 +1,14 @@
-{% extends "maps/base.html" %}
+{% extends "maps/map_base.html" %}
 
 {% load i18n %}
 {% load bootstrap_tags %}
 
-{% block title %}{% trans "Deleting" %} {{ map.title }} — {{ block.super }}{% endblock %}
+{% block title_sub %}{% trans "Deleting" %} {{ map.title }} {% endblock %}
 
-{% block main %}
-<form action="/maps/{{map.id}}?remove" method="POST">
+{% block body_class %}maps{% endblock %}
+
+{% block body %}
+<form action="/maps/{{map.id}}/remove" method="POST">
   <legend>
     {% blocktrans with map.title as map_title %}
         Are you sure you want to remove {{ map_title }}?

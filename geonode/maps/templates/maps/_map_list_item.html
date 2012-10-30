@@ -1,0 +1,19 @@
+{% load url from future %}
+{% load i18n %}
+{% load agon_ratings_tags %}
+
+{% overall_rating map "map" as map_rating %}
+<article>
+  <a href="{% url "map_detail" map.id %}">
+    <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
+  </a>
+  <div class="details">
+      <a href="#" class="btn btn-info download">{% trans "Download" %}</a>
+      <a href="{% url "map_detail" map.id %}"><h3>{{ map.title }}</h3></a>
+      <div class="meta">
+        {% trans "from" %} <a href="{% url "profile_detail" map.owner.username %}" rel="author">{{ map.owner }}</a>, {{ map.last_modified|timesince }} {% trans 'ago' %}
+      </div>
+      <p class="abstract">{{ map.abstract }}</p>
+      <p class="activity">{{ map.popular_count }} {% trans "view" %}{{ map.popular_count|pluralize }} | <span class="avg_rating" data-rating="{{ map_rating }}">{% trans "Average rating" %} <span class="overall_rating"></span></span></p>
+  </div>
+</article>
