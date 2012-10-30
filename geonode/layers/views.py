@@ -245,6 +245,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             the_layer = layer_form.save(commit=False)
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
+            the_layer.keywords.clear()
             the_layer.keywords.add(*new_keywords)
             the_layer.save()
             return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
