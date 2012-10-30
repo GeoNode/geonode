@@ -434,6 +434,49 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
     },
     
+    //Check permissions for selected layer and enable/disable feature edit buttons accordingly
+    checkLayerPermissions:function (layerRecord) {
+
+        var buttons = this.tools["gn_layer_editor"].actions;
+
+        var toggleButtons = function(enabled) {
+            for (var i = 0; i < buttons.length; i++) {
+                enabled ? buttons[i].enable() : buttons[i].disable();
+            }
+        }
+
+        //Disable if layer is null or selected layer in tree doesn't match input layer
+        var tree_node =  Ext.getCmp("treecontent").getSelectionModel().getSelectedNode();
+        if (layerRecord == null) {
+            toggleButtons(false);
+        }
+        else {
+            //Proceed if this is a local queryable WMS layer
+            var layer = layerRecord.getLayer();
+            if (layer instanceof OpenLayers.Layer.WMS && (layer.url == "/geoserver/wms" ||
+                layer.url.indexOf(this.localGeoServerBaseUrl.replace(this.urlPortRegEx, "$1/")) == 0)) {
+                Ext.Ajax.request({
+                    url:"/layers/" + layer.params.LAYERS + "/edit-check",
+                    method:"POST",
+                    success:function (result, request) {
+                        if (result.status != 200) {
+                            toggleButtons(false);
+                        } else {
+                            layer.displayOutsideMaxExtent = true;
+                            toggleButtons(true);
+                        }
+                    },
+                    failure:function (result, request) {
+                        toggleButtons(false);
+                    }
+                });
+            } else {
+                toggleButtons(false);
+            }
+        }
+    },
+
+
     initMapPanel: function() {
         this.mapItems = [{
             xtype: "gx_zoomslider",
@@ -478,9 +521,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         var layerRec = records[i];
                         var layer = layerRec.getLayer();
                         if (layer.url &&
-                            layer.url.indexOf(this.localGeoServerBaseUrl) === 0 ||
-                            layer.url.indexOf("/geoserver/wms") === 0) {
-                              Ext.Ajax.request({
+                           (layer.url.indexOf(this.localGeoServerBaseUrl) === 0 ||
+                            layer.url.indexOf("/geoserver/wms") === 0)) {
+                            Ext.Ajax.request({
                                 url: this.rest + layer.params.LAYERS + "/attributes",
                                 method: 'POST',
                                 success: function(response, options) {
@@ -632,6 +675,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         ];
         
+        //Activate now, after layer has been autoselected in tree
+        if ("gn_layer_editor" in this.tools) {
+            this.tools["gn_layer_editor"].getFeatureManager().activate();
+        }
+
         GeoExplorer.superclass.initPortal.apply(this, arguments);
     },
     
