@@ -35,7 +35,7 @@ Ext.onReady(function() {
             autoLoadFeatures: true,
             listeners: {
                 'layerchange': function(mgr, layer, schema) {
-                    app.checkLayerPermissions(layer);
+                    checkLayerPermissions(layer);
                 }
             }
         },
@@ -61,7 +61,57 @@ Ext.onReady(function() {
         authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
     }, {{ config }});
 
+
     app = new GeoExplorer(config);
+
+    {% if user.is_authenticated and DB_DATASTORE  %}
+    //Check permissions for selected layer and enable/disable feature edit buttons accordingly
+    var checkLayerPermissions = function (layerRecord) {
+
+        var buttons = app.tools["gn_layer_editor"].actions;
+
+        var toggleButtons = function(enabled) {
+            for (var i = 0; i < buttons.length; i++) {
+                enabled ? buttons[i].enable() : buttons[i].disable();
+            }
+        }
+
+        //Disable if layer is null or selected layer in tree doesn't match input layer
+        var tree_node =  Ext.getCmp("treecontent").getSelectionModel().getSelectedNode();
+        if (layerRecord == null) {
+            toggleButtons(false);
+        }
+        else {
+            //Proceed if this is a local queryable WMS layer
+            var layer = layerRecord.getLayer();
+            if (layer instanceof OpenLayers.Layer.WMS && (layer.url == "/geoserver/wms" ||
+                    layer.url.indexOf(app.localGeoServerBaseUrl.replace(app.urlPortRegEx, "$1/")) == 0)) {
+                Ext.Ajax.request({
+                    url:"/layers/" + layer.params.LAYERS + "/edit-check",
+                    method:"POST",
+                    success:function (result, request) {
+                        if (result.status != 200) {
+                            toggleButtons(false);
+                        } else {
+                            layer.displayOutsideMaxExtent = true;
+                            toggleButtons(true);
+                        }
+                    },
+                    failure:function (result, request) {
+                        toggleButtons(false);
+                    }
+                });
+            } else {
+                toggleButtons(false);
+            }
+        }
+    };
+
+    //Activate the editing if a map is created with a layer already in the config
+    app.on('ready',function(){
+        app.tools["gn_layer_editor"].getFeatureManager().setLayer(app.selectedLayer);
+     });
+    {% endif %}
 
     var permalinkTemplate = new Ext.Template("{protocol}//{host}/geonode/maps/{id}");
     var permalink = function(id) {
