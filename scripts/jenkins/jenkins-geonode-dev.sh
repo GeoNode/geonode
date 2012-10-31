@@ -25,7 +25,7 @@ paver stop
 git clean -dxff
 # run this here while we have a clean dir.
 #/usr/bin/sloccount --duplicates --wide --details geonode/ > sloccount.out 
-python /usr/local/bin/clokins.py --exclude-list-file=scripts/clokins.exclude . > clokins.output
+python /usr/local/bin/clokins.py --exclude-list-file=scripts/jenkins/clokins.exclude . > clokins.output
 pip install -e .
 #pip install -r requirements.txt
 paver setup
