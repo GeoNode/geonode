@@ -216,6 +216,7 @@
         <p><a href="#modal_perms" data-toggle="modal" class="btn btn-large">{% trans "Change Layer Permissions" %}</a></p>
     </div>
     {% endif %}
+    {% if user.is_authenticated %}
     <div class="well">
         <h2>{% trans "Styles" %}</h2>
         <p>{% trans "The following styles are associated with this layer. Choose a style to view it in the preview map." %}</p>
@@ -235,6 +236,7 @@
           {% endfor %}
         </ul>
     </div>
+    {% endif %}
     <div class="well">
       {% with layer.owner as owner %}
           {% include "_widget_about_author.html" %}
