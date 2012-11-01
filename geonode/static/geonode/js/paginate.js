@@ -4,8 +4,8 @@ $(function () {
     $(".paginate").each(function() {
         var p$ = $(this);
         var auto = p$.hasClass("paginate-auto") ? true : false,
-        hasMore = parseInt(p$.find(".pages .current.page").html()) < parseInt(p$.find(".pages .page_total").html()),
-        $pages = p$.find(".pages");
+        hasMore = parseInt(p$.find(".pagination .current.page").html()) < parseInt(p$.find(".pagination .page_total").html()),
+        $pages = p$.find(".pagination");
         opts = {
             offset: '100%'
         };
@@ -46,7 +46,7 @@ function fetchMore(a) {
             $(this).find(".loading").detach();
             if (more) {
                 $(this).find('.more').attr("href", more);
-                if ($(this).hasClass("paginate-auto")) $(this).find(".pages").waypoint(opts);
+                if ($(this).hasClass("paginate-auto")) $(this).find(".pagination").waypoint(opts);
             } else $(this).find('.more').remove();
         }
     });
