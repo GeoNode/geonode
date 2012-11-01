@@ -23,7 +23,6 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from geonode.sitemap import LayerSitemap, MapSitemap
 import geonode.proxy.urls
-import geonode.maps.urls
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
