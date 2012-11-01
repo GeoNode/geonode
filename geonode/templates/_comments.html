@@ -6,21 +6,13 @@
 <div class="comments paginate paginate-manual">
     <header>
         <h3>{% trans 'Comments' %} <span class="total">({% comment_count obj %} total)</span></h3>
-        {% if user.is_authenticated %}<a href="#form_post_comment" class="btn pull-right" data-toggle="collapse" data-target="#form_post_comment">{% trans 'add comment' %}</a>{% endif %}
+        {% if user.is_authenticated %}
+            <a href="#form_post_comment" role="button" class="btn" data-toggle="modal">{% trans 'Add Comment' %}</a>
+        {% endif %}
     </header>
-    {% if user.is_authenticated %}
-    {% comment_form obj as form %}
-    <form action="{% comment_target obj %}" method="POST" class="collapse form form-bordered" id="form_post_comment">
-      {% csrf_token %}
-      {{ form|as_bootstrap }}
-      <div class="form-actions">
-        <button class="btn btn-primary">Submit Comment</button>
-      </div>
-    </form>
-    {% endif %}
     <div class="paginate-contents">
     {% comments obj as comment_list %}
-    {% autopaginate comment_list 4 %}
+    {% autopaginate comment_list 5 %}
     {% for comment in comment_list %}      
     <article>
         <p>{{ comment.comment }}</p>
@@ -30,3 +22,24 @@
   </div>
     {% paginate %}
 </div>
+
+<!-- Modal -->
+{% if user.is_authenticated %}
+<div id="form_post_comment" class="modal hide fade" tabindex="-1" role="dialog">
+    <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3>{% trans 'Add a Comment' %}</h3>
+    </div>
+    <div class="modal-body">
+        {% comment_form obj as form %}
+        <form class="well" action="{% comment_target obj %}" method="POST" id="form_post_comment">
+        {% csrf_token %}
+        {{ form }}
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        <button class="btn btn-primary">{% trans 'Submit Comments' %}</button>
+    </div>
+        </form>
+</div>
+{% endif %}
