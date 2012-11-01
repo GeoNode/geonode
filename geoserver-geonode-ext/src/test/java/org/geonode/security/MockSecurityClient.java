@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.security.AccessMode;
 import org.geoserver.security.impl.GeoServerRole;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -108,5 +110,9 @@ public class MockSecurityClient implements GeoNodeSecurityClient {
 
     public Authentication authenticateAnonymous() throws AuthenticationException, IOException {
         return anonymousAuth;
+    }
+    
+    public boolean authorize(Authentication user, ResourceInfo resource, AccessMode mode) {
+        return DefaultSecurityClient.authorizeUsingAuthorities(user, resource, mode);
     }
 }

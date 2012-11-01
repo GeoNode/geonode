@@ -21,6 +21,8 @@ import net.sf.json.JSONSerializer;
 
 import org.apache.commons.codec.binary.Base64;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.security.AccessMode;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
@@ -192,5 +194,30 @@ public class DefaultSecurityClient implements GeoNodeSecurityClient {
                 userName, credentials, authorities);
         }
         return authentication;
+    }
+
+    public boolean authorize(Authentication user, ResourceInfo resource, AccessMode mode) {
+        return authorizeUsingAuthorities(user, resource, mode);
+    }
+    
+    static boolean authorizeUsingAuthorities(Authentication user, ResourceInfo resource, AccessMode mode) {
+        boolean authorized = false;
+        if (user != null && user.getAuthorities() != null) {
+            for (GrantedAuthority ga : user.getAuthorities()) {
+                if (ga instanceof LayersGrantedAuthority) {
+                    LayersGrantedAuthority lga = ((LayersGrantedAuthority) ga);
+                    // see if the layer is contained in the granted authority list with
+                    // sufficient privileges
+                    if (mode == AccessMode.READ
+                            || ((mode == AccessMode.WRITE) && lga.getAccessMode() == LayersGrantedAuthority.LayerMode.READ_WRITE)) {
+                        if (lga.getLayerNames().contains(resource.prefixedName())) {
+                            authorized = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return authorized;
     }
 }
