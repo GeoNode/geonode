@@ -88,7 +88,9 @@
                                         {% trans "Remember Me" %}
                                     </label>
                                     <button type="submit" class="btn pull-right">{% trans "Sign in" %}</button>
+                                    {% if REGISTRATION_OPEN %}
                                     <div>{% trans "Don't have an account yet?" %} <a href="{% url registration_register %}">{% trans "Register now" %}</a></div>
+                                    {% endif %}
                                 </form>
                             </li>
                           </ul>
