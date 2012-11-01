@@ -779,6 +779,22 @@ def geoserver_post_save(instance, sender, **kwargs):
                         link_type='data',
                         )
                        )
+
+    tile_url = ('%sgwc/service/gmaps?' % settings.GEOSERVER_BASE_URL +
+                'layers=%s' % instance.typename +
+                '&zoom={z}&x={x}&y={y}' +
+                'format=image/png8'
+                )
+
+    instance.link_set.get_or_create(url=tile_url,
+                       defaults=dict(
+                        extension='tiles',
+                        name=_("Tiles"),
+                        mime='text/png',
+                        link_type='image',
+                        )
+                       )
+
     #Save layer attributes
     set_attributes(instance)
 
