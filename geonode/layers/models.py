@@ -566,7 +566,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     """
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
-    cascading_delete(Layer.objects.gs_catalog, instance.typename) 
+    cascading_delete(Layer.objects.gs_catalog, instance.typename)
 
 
 def pre_save_layer(instance, sender, **kwargs):
@@ -784,28 +784,28 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     #Save layer styles
     set_styles(instance, gs_catalog)
-  
+
 def set_styles(layer, gs_catalog):
     style_set = []
     gs_layer = gs_catalog.get_layer(layer.name)
     default_style = gs_layer.default_style
-    layer.default_style = save_style(default_style) 
+    layer.default_style = save_style(default_style)
     style_set.append(layer.default_style)
- 
+
     alt_styles = gs_layer.styles
 
     for alt_style in alt_styles:
         style_set.append(save_style(alt_style))
 
     layer.styles = style_set
-    
+
 def save_style(gs_style):
     style, created = Style.objects.get_or_create(name = gs_style.sld_name)
     style.sld_title = gs_style.sld_title
     style.sld_body = gs_style.sld_body
     style.sld_url = gs_style.body_href()
-    style.save()    
-    return style   
+    style.save()
+    return style
 
 def set_attributes(layer):
     """
