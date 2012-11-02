@@ -100,9 +100,11 @@
   <bean id="downloadKillerRestlet" class="org.geonode.rest.batchdownload.DownloadKillerRestlet">
     <constructor-arg ref="processController" />
   </bean>
-  <bean class="org.geonode.security.GeoNodeSecurityProvider"/>
+  <bean id="geoNodeSecurityProvider" class="org.geonode.security.GeoNodeSecurityProvider"/>
   <bean class="org.geonode.security.GeoNodeAnonymousSecurityProvider"/>
-  <bean class="org.geonode.security.GeoNodeDataAccessManager"/>
+  <bean class="org.geonode.security.GeoNodeDataAccessManager">
+    <constructor-arg ref="geoNodeSecurityProvider" />
+  </bean>
   <bean id="geonodeAnonymousAuthFilterPanelInfo" class="org.geonode.web.security.GeoNodeAnonymousAuthFilterPanelInfo">
     <property name="id" value="security.geonodeAnonymousAuthFilter" />
     <property name="shortTitleKey" value="GeoNodeAnonymousAuthFilterPanel.short" />
