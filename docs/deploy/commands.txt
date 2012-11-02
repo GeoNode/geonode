@@ -56,3 +56,15 @@ Usage::
 
     geonode cleardeadlayers
 
+
+emit_notices
+============
+
+Sends email notices, for example after layers have been uploaded.
+
+It should be configured as a cronjob, running for example every 5 minutes, otherwise the notices will be created (available in the system) but not sent. It requires the email gateway to be set correctly.
+
+Usage::
+
+    geonode emit_notices
+
