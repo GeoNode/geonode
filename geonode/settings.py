@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
     'django.contrib.messages',
+    'django.contrib.humanize',
 
     # Third party apps
     'django_forms_bootstrap',
@@ -138,6 +139,7 @@ INSTALLED_APPS = (
     'taggit',
     'taggit_templatetags',
     'south',
+    'notification',
 
     # GeoNode internal apps
     'geonode.maps',
