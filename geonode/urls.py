@@ -73,7 +73,8 @@ urlpatterns = patterns('',
     (r'^people/', include('geonode.people.urls')),
     (r'^avatar/', include('avatar.urls')),
 
-    # Utility
+    # Social
+    (r'^notifications/', include('notification.urls')),
     (r'^announcements/', include('announcements.urls')),
 
     # Meta
