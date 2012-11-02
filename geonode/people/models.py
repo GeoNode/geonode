@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import signals
@@ -30,6 +31,10 @@ from idios.models import ProfileBase, create_profile
 from geonode.layers.enumerations import COUNTRIES
 from geonode.people.enumerations import ROLE_VALUES, CONTACT_FIELDS
 
+if "notification" in settings.INSTALLED_APPS:
+    from notification import models as notification
+else:
+    notification = None
 
 class Contact(ProfileBase):
     name = models.CharField(_('Individual Name'), max_length=255, blank=True, null=True, help_text=_('name of the responsible personsurname, given name, title separated by a delimiter'))
@@ -79,6 +84,14 @@ def create_user_profile(instance, sender, created, **kwargs):
         profile.name = instance.username
         profile.save()
 
+def relationship_post_save(instance, sender, created, **kwargs):
+    if notification:
+        notification.queue([instance.to_user], "user_follow", {"from_user": instance.from_user}) 
+
 # Remove the idios create_profile handler, which interferes with ours.
 signals.post_save.disconnect(create_profile, sender=User)
 signals.post_save.connect(create_user_profile, sender=User)
+
+if 'relationships' in settings.INSTALLED_APPS:
+    from relationships.models import Relationship 
+    signals.post_save.connect(relationship_post_save, sender=Relationship)
