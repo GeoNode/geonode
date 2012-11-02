@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n avatar_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -42,7 +42,7 @@
                   <ul class="nav pull-right account-bar">
                     {% if user.is_authenticated %}
                       <li class="user-avatar">
-                        <img src="{{ STATIC_URL }}geonode/img/avatar.png" width="20px" height="20px" alt="" class="avatar" />
+                        {% avatar user 20 %}
                       </li>
                       <li class="dropdown user">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
