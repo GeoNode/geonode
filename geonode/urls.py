@@ -61,7 +61,7 @@ urlpatterns = patterns('',
     # Social
     (r'^comments/', include('dialogos.urls')),
     (r'^ratings/', include('agon_ratings.urls')),
-
+    (r'^activity/', include('actstream.urls')),
 
     # Accounts
     url(r'^accounts/ajax_login$', 'geonode.views.ajax_login',
