@@ -139,6 +139,7 @@ INSTALLED_APPS = (
     'taggit_templatetags',
     'south',
     'announcements',
+    'relationships',
 
     # GeoNode internal apps
     'geonode.maps',
