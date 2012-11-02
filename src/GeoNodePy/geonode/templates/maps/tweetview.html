@@ -48,6 +48,25 @@ Ext.override(Ext.form.SliderField, {
     }
 });
 
+function get_cookie(c_name) {
+    if (document.cookie.length <= 0)
+        return "";
+
+    c_start = document.cookie.indexOf(c_name + "=");
+    if (c_start == -1)
+        return "";
+
+    c_start = c_start + c_name.length + 1;
+    c_end = document.cookie.indexOf(";", c_start);
+    if (c_end == -1)
+        c_end = document.cookie.length;
+    return unescape(document.cookie.substring(c_start, c_end));
+}
+
+function delete_cookie(name)
+{
+    document.cookie = name + '=; Domain=.harvard.edu; Path=/; expires=Monday, 19-Aug-1996 05:00:00 GMT';
+}
 
 
 /* Override Layer.Grid method for twitter heatmap */
@@ -60,7 +79,7 @@ OpenLayers.Layer.Grid.prototype.setTileSize = function(size) {
         //console.log("Grid Size: " + size.toString() + " and ratio: " + this.ratio);
         var curWidth = parseInt(size.w * this.ratio);
         var targetWidth = curWidth +  (16 - (curWidth % 16));
-        this.newRatio = this.ratio * (targetWidth/curWidth);
+        this.newRatio = this.ratio * (targetWidth/size.w);
         size.h = parseInt(Math.round(size.h * this.newRatio));
         size.w = parseInt(Math.round(size.w * this.newRatio));
         //console.log("In setTileSize: " + this.newRatio + ":" + size.toString());
@@ -122,7 +141,7 @@ var init = function() {
                     actionTarget:  {target: "paneltbar", index: 5},
                     toolText: '<span class="x-btn-text">Identify</span>',
                     iconCls: null,
-                    geopsUrl: "{{GEOPS_IP}}",
+                    geopsUrl: "/tweetserver",
                     outputConfig: {width: 400, height: 200, panIn: false},
                     featurePanel: 'queryPanel',
                     attributePanel: 'gridWinPanel',
@@ -297,7 +316,8 @@ var updateCQL = function(layers) {
         }
     }
 
-    var timeFilter =  "time > " + (new Date(tweetDateStartField.getValue()).getTime()/1000) + " AND time < " + (new Date(tweetDateEndField.getValue()).getTime() /1000) ;
+    var timeFilter =  "time > " + (new Date(tweetDateStartField.getValue()).getTime() + new Date(tweetDateStartField.getValue()).getTimezoneOffset()*60000)/1000
+            + " AND time < " + (new Date(tweetDateEndField.getValue()).getTime()  + new Date(tweetDateEndField.getValue()).getTimezoneOffset()*60000)/1000 ;
     var fromFilter = " from oct_tweets";
 
     for (var x = 0; x < layers.length; x++) {
@@ -627,7 +647,7 @@ var chartPanel = new Ext.Panel({
 */
 
 var tweetConfig = {title: "Twitter Trends", source: "local", group: "Twitter", name: "heatmap",
-    url: "http://{{GEOPS_IP}}", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
+    url: "/tweetserver", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
     singleTile: true, tiled: false, ratio: 1, opacity: 1, visibility: true, queryable: true
 };
 /*
@@ -663,6 +683,13 @@ tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
 ));
 tweetPointRecord.group = tweetConfig.group;
 
+tweetPointRecord.getLayer().events.register("loadend", tweetPointRecord.getLayer(), function() {
+    var metadata = get_cookie("tweet_count");
+    if (metadata) {
+        cqlWindow.setTitle(gettext("Tweet Filter:  ") + metadata + " tweets currently on map");
+        delete_cookie("tweet_count");
+    }
+});
 
 tweetConfig["queryable"] = false;
 var tweetHeatRecord = feedSource.createLazyLayerRecord(tweetConfig);

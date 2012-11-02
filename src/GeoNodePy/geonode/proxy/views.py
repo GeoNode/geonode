@@ -160,8 +160,33 @@ def hglServiceStarter (request, layer):
     startUrl = HGL_URL + "/RemoteServiceStarter?ValidationKey=" + settings.HGL_VALIDATION_KEY + "&AddLayer=" + layer
     return HttpResponse(urllib.urlopen(startUrl).read())
 
+def tweetServerProxy(request):
+    url = urlsplit(request.get_full_path())
+    tweet_url = "http://" + settings.GEOPS_IP + "?" + url.query
+
+    step1 = urllib.urlopen(tweet_url)
+    step2 = step1.read()
+    response = HttpResponse(step2, mimetype= step1.info().dict['content-type'])
+    try :
+        cookie = step1.info().dict['set-cookie'].split(";")[0].split("=")[1]
+        response.set_cookie("tweet_count", cookie)
+    except:
+        pass
+    return response
+
+#    conn = HTTPConnection(settings.GEOPS_IP)
+#    conn.request(request.method, url.query)
+#    result = conn.getresponse()
+#    response = HttpResponse(
+#        result.read(),
+#        status=result.status,
+#        content_type=result.getheader("Content-Type", "image/png")
+#    )
+#    return response
+
 
 def tweetTrendProxy (request):
+    request.get_full_url()
     tweetUrl = "http://" + settings.AWS_INSTANCE_IP + "/?agg=trend&bounds=" + request.POST["bounds"] + "&dateStart=" + request.POST["dateStart"] + "&dateEnd=" + request.POST["dateEnd"];
     resultJSON = urllib.urlopen(tweetUrl).read()
 #    import datetime
