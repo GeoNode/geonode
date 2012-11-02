@@ -139,6 +139,7 @@ INSTALLED_APPS = (
     'taggit_templatetags',
     'south',
     'announcements',
+    'actstream',
 
     # GeoNode internal apps
     'geonode.maps',
@@ -262,6 +263,15 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     "layers.Layer": {
         "layer": "How good is this layer?"
     },
+}
+
+# Activity Stream
+ACTSTREAM_SETTINGS = {
+    'MODELS': ('auth.user', 'layers.layer', 'maps.map'),
+    'FETCH_RELATIONS': True,
+    'USE_PREFETCH': True,
+    'USE_JSONFIELD': True,
+    'GFK_FETCH_DEPTH': 1,
 }
 
 # For South migrations
