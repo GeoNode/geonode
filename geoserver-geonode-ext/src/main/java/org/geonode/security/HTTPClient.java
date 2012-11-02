@@ -1,13 +1,11 @@
 package org.geonode.security;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.io.IOUtils;
 import org.springframework.util.Assert;
 
 /**
@@ -72,19 +70,9 @@ public class HTTPClient {
                 throw new IOException("GeoNode communication failed, status report is: " + status
                         + ", " + get.getStatusText());
             }
-            StringBuilder responseBody = new StringBuilder();
-            InputStream bodyAsStream = get.getResponseBodyAsStream();
-            try {
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
-                        bodyAsStream));
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    responseBody.append(line).append('\n');
-                }
-            } finally {
-                bodyAsStream.close();
-            }
-            responseBodyAsString = responseBody.toString();
+            
+            // releaseConnection will close the stream
+            responseBodyAsString = IOUtils.toString(get.getResponseBodyAsStream());
         } finally {
             get.releaseConnection();
         }

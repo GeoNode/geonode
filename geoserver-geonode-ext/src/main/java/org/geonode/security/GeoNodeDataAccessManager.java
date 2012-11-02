@@ -7,7 +7,6 @@ package org.geonode.security;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geonode.security.LayersGrantedAuthority.LayerMode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -20,7 +19,6 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 
 /**
  * An access manager that uses the special authentication tokens setup by the
@@ -32,7 +30,13 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
     private static final Logger LOG = Logging.getLogger(GeoNodeDataAccessManager.class);
 
     boolean authenticationEnabled = true;
+    
+    private final GeoNodeSecurityClient.Provider securityClientProvider;
 
+    public GeoNodeDataAccessManager(GeoNodeSecurityClient.Provider securityClientProvider) {
+        this.securityClientProvider = securityClientProvider;
+    }
+    
     public static GeoServerRole getAdminRole() {
         return roleService().getAdminRole();
     }
@@ -84,30 +88,15 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
             return true;
         }
                 
-        if (LOG.isLoggable(Level.FINER))
+        if (LOG.isLoggable(Level.FINER)) {
             LOG.finer("Checking permissions for " + user +" with authorities " + user.getAuthorities() + " accessing " + resource);
-        
-        if (user != null && user.getAuthorities() != null) {
-            GrantedAuthority admin = getAdminRole();
-            for (GrantedAuthority ga : user.getAuthorities()) {
-                if (ga instanceof LayersGrantedAuthority) {
-                    LayersGrantedAuthority lga = ((LayersGrantedAuthority) ga);
-                    // see if the layer is contained in the granted authority list with
-                    // sufficient privileges
-                    if (mode == AccessMode.READ
-                            || ((mode == AccessMode.WRITE) && lga.getAccessMode() == LayerMode.READ_WRITE)) {
-                        if (lga.getLayerNames().contains(resource.prefixedName())) {
-                            return true;
-                        }
-                    }
-                } else if (admin.equals(ga)) {
-                    // admin is all powerful
-                    return true;
-                }
-            }
         }
-        // if we got here sorry, no luck
-        return false;
+        
+        if (user.getAuthorities().contains(GeoNodeDataAccessManager.getAdminRole())) {
+            return true;
+        }
+        
+        return securityClientProvider.getSecurityClient().authorize(user, resource, mode);
     }
 
     /**
