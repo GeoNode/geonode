@@ -21,17 +21,16 @@ from django.conf import settings
 from django.db.models import signals
 from django.utils.translation import ugettext_noop as _
 import logging
-logger = logging.getLogger("geonode.layers.management.commands")
+logger = logging.getLogger(__name__)
 
 if "notification" in settings.INSTALLED_APPS:
-    print "here"
     from notification import models as notification
-    
+
     def create_notice_types(app, created_models, verbosity, **kwargs):
         notification.create_notice_type("layer_uploaded", _("Layer Uploaded"), _("A layer was uploaded"))
         notification.create_notice_type("layer_comment", _("Comment on Layer"), _("A layer was commented on"))
         notification.create_notice_type("layer_rated", _("Rating for Layer"), _("A rating was given to a layer"))
-        
+
     signals.post_syncdb.connect(create_notice_types, sender=notification)
     logger.info("Notifications Configured for geonode.layers.managment.commands")
 else:
