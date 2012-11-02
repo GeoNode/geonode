@@ -94,7 +94,7 @@ setup(name='GeoNode',
         "dialogos==0.2",
         "South==0.7.3",
         "django-forms-bootstrap==2.0.3.post1",
-	    "django-pagination",
+        "django-pagination",
         "django-jsonfield==0.8.11",
         #catalogue
         "Shapely>=1.2.15",
