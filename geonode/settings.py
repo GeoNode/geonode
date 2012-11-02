@@ -140,6 +140,7 @@ INSTALLED_APPS = (
     'south',
     'announcements',
     'actstream',
+    'relationships',
 
     # GeoNode internal apps
     'geonode.maps',
