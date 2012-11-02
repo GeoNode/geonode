@@ -62,6 +62,7 @@ urlpatterns = patterns('',
     (r'^comments/', include('dialogos.urls')),
     (r'^ratings/', include('agon_ratings.urls')),
 
+
     # Accounts
     url(r'^accounts/ajax_login$', 'geonode.views.ajax_login',
                                        name='auth_ajax_login'),
@@ -74,6 +75,7 @@ urlpatterns = patterns('',
 
     # Social
     (r'^notifications/', include('notification.urls')),
+    (r'^announcements/', include('announcements.urls')),
 
     # Meta
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',

@@ -596,6 +596,29 @@ def layer_permissions(request, layername):
     )
 
 
+def resolve_user(request):
+    user = None
+    geoserver = False
+    superuser = False
+    if 'HTTP_AUTHORIZATION' in request.META:
+        username, password = _get_basic_auth_info(request)
+        acl_user = authenticate(username=username, password=password)
+        if acl_user:
+            user = acl_user.username
+            superuser = user.is_superuser
+        elif _get_basic_auth_info(request) == settings.GEOSERVER_CREDENTIALS:
+            geoserver = True
+            superuser = True
+    elif not request.user.is_anonymous():
+        user = request.user.username
+        superuser = request.user.is_superuser
+    return HttpResponse(json.dumps({
+        'user' : user,
+        'geoserver' : geoserver,
+        'superuser' : superuser
+    }))
+
+
 def layer_acls(request):
     """
     returns json-encoded lists of layer identifiers that
