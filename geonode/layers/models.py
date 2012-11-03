@@ -205,7 +205,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng', help_text=_('language used within the dataset'))
     topic_category = models.CharField(_('topic_category'), editable=False, max_length=255, choices=TOPIC_CATEGORIES, default='location')
-    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True)
+    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True, blank=True)
 
     # Section 5
     temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True, help_text=_('time period covered by the content of the dataset (start)'))
@@ -456,6 +456,9 @@ class Layer(ResourceBase):
     def get_absolute_url(self):
         return reverse('geonode.layers.views.layer_detail', None, [str(self.typename)])
 
+    def tiles_url(self):
+        return self.link_set.get(name='Tiles').url
+
     def __str__(self):
         return "%s Layer" % self.typename
 
@@ -566,7 +569,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     """
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
-    cascading_delete(Layer.objects.gs_catalog, instance.typename) 
+    cascading_delete(Layer.objects.gs_catalog, instance.typename)
 
 
 def pre_save_layer(instance, sender, **kwargs):
@@ -779,33 +782,49 @@ def geoserver_post_save(instance, sender, **kwargs):
                         link_type='data',
                         )
                        )
+
+    tile_url = ('%sgwc/service/gmaps?' % settings.GEOSERVER_BASE_URL +
+                'layers=%s' % instance.typename +
+                '&zoom={z}&x={x}&y={y}' +
+                '&format=image/png8'
+                )
+
+    instance.link_set.get_or_create(url=tile_url,
+                       defaults=dict(
+                        extension='tiles',
+                        name=_("Tiles"),
+                        mime='text/png',
+                        link_type='image',
+                        )
+                       )
+
     #Save layer attributes
     set_attributes(instance)
 
     #Save layer styles
     set_styles(instance, gs_catalog)
-  
+
 def set_styles(layer, gs_catalog):
     style_set = []
     gs_layer = gs_catalog.get_layer(layer.name)
     default_style = gs_layer.default_style
-    layer.default_style = save_style(default_style) 
+    layer.default_style = save_style(default_style)
     style_set.append(layer.default_style)
- 
+
     alt_styles = gs_layer.styles
 
     for alt_style in alt_styles:
         style_set.append(save_style(alt_style))
 
     layer.styles = style_set
-    
+
 def save_style(gs_style):
     style, created = Style.objects.get_or_create(name = gs_style.sld_name)
     style.sld_title = gs_style.sld_title
     style.sld_body = gs_style.sld_body
     style.sld_url = gs_style.body_href()
-    style.save()    
-    return style   
+    style.save()
+    return style
 
 def set_attributes(layer):
     """

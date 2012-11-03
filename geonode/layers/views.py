@@ -245,6 +245,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             the_layer = layer_form.save(commit=False)
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
+            the_layer.keywords.clear()
             the_layer.keywords.add(*new_keywords)
             the_layer.save()
             return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
@@ -595,6 +596,29 @@ def layer_permissions(request, layername):
     )
 
 
+def resolve_user(request):
+    user = None
+    geoserver = False
+    superuser = False
+    if 'HTTP_AUTHORIZATION' in request.META:
+        username, password = _get_basic_auth_info(request)
+        acl_user = authenticate(username=username, password=password)
+        if acl_user:
+            user = acl_user.username
+            superuser = user.is_superuser
+        elif _get_basic_auth_info(request) == settings.GEOSERVER_CREDENTIALS:
+            geoserver = True
+            superuser = True
+    elif not request.user.is_anonymous():
+        user = request.user.username
+        superuser = request.user.is_superuser
+    return HttpResponse(json.dumps({
+        'user' : user,
+        'geoserver' : geoserver,
+        'superuser' : superuser
+    }))
+
+
 def layer_acls(request):
     """
     returns json-encoded lists of layer identifiers that
@@ -658,3 +682,13 @@ def layer_acls(request):
     }
 
     return HttpResponse(json.dumps(result), mimetype="application/json")
+
+def feature_edit_check(request, layername):
+    """
+    If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
+    Otherwise, return a status of 401 (unauthorized).
+    """
+    layer = get_object_or_404(Layer, typename=layername);
+    return HttpResponse(
+        status=200 if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' else 401
+    )

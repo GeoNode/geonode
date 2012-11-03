@@ -3,18 +3,23 @@ package org.geonode.security;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.logging.Level;
+import org.apache.commons.dbcp.BasicDataSource;
 
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerSecurityProvider;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.validation.SecurityConfigException;
+import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 
-public class GeoNodeSecurityProvider extends GeoServerSecurityProvider {
-    private final HTTPClient httpClient = new HTTPClient(10, 1000, 1000);
+public class GeoNodeSecurityProvider extends GeoServerSecurityProvider implements GeoNodeSecurityClient.Provider {
+
+    private GeoNodeSecurityClient client;
     
     @Override
     public Class<GeoNodeAuthenticationProvider> getAuthenticationProviderClass() {
@@ -25,8 +30,8 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider {
     public GeoNodeAuthenticationProvider createAuthenticationProvider(
             SecurityNamedServiceConfig config)
     {
-        return new GeoNodeAuthenticationProvider(
-                configuredClient(((GeoNodeAuthProviderConfig)config).getBaseUrl()));
+        client = configuredClient(((GeoNodeAuthProviderConfig)config).getBaseUrl());
+        return new GeoNodeAuthenticationProvider(client);
     }
     
     @Override
@@ -39,8 +44,28 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider {
         return new GeoNodeCookieProcessingFilter();
     }
     
+    public GeoNodeSecurityClient getSecurityClient() {
+        return client;
+    }
+    
     private GeoNodeSecurityClient configuredClient(String baseUrl) {
-        return new DefaultSecurityClient(baseUrl, httpClient);
+        HTTPClient httpClient = new HTTPClient(10, 1000, 1000);
+        String securityClientDatabaseURL = GeoServerExtensions.getProperty("org.geonode.security.databaseSecurityClient.url");
+        
+        GeoNodeSecurityClient configured;
+        String securityClient = "default";
+        if (securityClientDatabaseURL == null) {
+            DefaultSecurityClient defaultClient = new DefaultSecurityClient(baseUrl, httpClient);
+            configured = defaultClient;
+        } else {
+            securityClient = "database";
+            BasicDataSource dataSource = new BasicDataSource();
+            dataSource.setDriverClassName("org.postgresql.Driver");
+            dataSource.setUrl(securityClientDatabaseURL);
+            configured = new DatabaseSecurityClient(dataSource, baseUrl, httpClient);
+        }
+        Logging.getLogger(getClass()).log(Level.INFO, "using geonode {0} security client", securityClient);
+        return configured;
     }
     
     @Override 

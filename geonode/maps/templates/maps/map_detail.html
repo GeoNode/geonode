@@ -45,9 +45,9 @@
       <ul class="nav nav-tabs">
         <li class="active"><a href="#info" data-toggle="tab"><i class="icon-info-sign"></i>{% trans "Info" %}</a></li>
 	<li><a href="#comments" data-toggle="tab"><i class="icon-comment"></i> {% trans "Comments" %}</a></li>
-        <li><a href="#rate" data-toggle="tab"><i class="icon-star"></i>{% trans "Rate this Map" %}</a></li>
+        <li><a href="#rate" data-toggle="tab"><i class="icon-star"></i>{% trans "Ratings" %}</a></li>
         <li><a href="#share" data-toggle="tab"><i class="icon-share"></i>{% trans "Share" %}</a></li>
-        <li><a href="#flag" data-toggle="tab"><i class="icon-flag"></i>{% trans "Flag" %}</a></li>
+        <!-- li><a href="#flag" data-toggle="tab"><i class="icon-flag"></i>{% trans "Flag" %}</a></li -->
       </ul>
     </div>
 
@@ -59,15 +59,18 @@
         
         <p class="meta">{{ map }}<strong> {% trans "Uploaded by" %} <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner.get_profile.name }}</a></strong></p>
       </article>
-      <article class="tab-pane" id="attributes">
-        <h2>{% trans "Attributes" %}</h2>
-      </article>
       <article class="tab-pane" id="share">
-        <h2>{% trans "Sharing" %}</h2>
+        <!-- TODO: Move this to a reusable template snippet -->
+        <header>
+            <h3>{% trans "Share This Map" %}</h3>
+        </header>
+        <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
+        <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
+        <!-- TODO: Add more sharing options -->
       </article>
-      <article class="tab-pane" id="flag">
+      <!--article class="tab-pane" id="flag">
         <h2>{% trans "Flag" %}</h2>
-      </article>
+      </article-->
       <article class="tab-pane" id="comments">
         <h2>{% trans "Comments" %}</h2>
     	{% with map as obj %}
@@ -75,8 +78,16 @@
     	{% endwith %}
       </article>
       <article class="tab-pane" id="rate">
-        <h2>{% trans "Rating" %}</h2>
-        <div id="rate-map"></div>
+        <!-- TODO: Move this to a reusable template snippet -->
+        {% if request.user.is_authenticated %}
+        <h3>{% trans "Rate this Map" %}</h3>
+        {% user_rating request.user map "map" as user_map_rating %}
+        <div id="user_rating" class="category-map"></div>
+        {% endif %}
+        <h3>{% trans 'Average Rating' %}</h3>
+        {% overall_rating map "map" as map_rating %}
+        <div class="overall_rating" data-rating="{{ map_rating }}"></div>
+        <!-- TODO: Add display of who gave what rating based -->
       </article>
     </div>
   </div>
@@ -153,6 +164,15 @@
 {% endblock %}
 
 {% block extra_script %}
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
 {% if request.user.is_authenticated %}
  {% user_rating_js request.user map "map" %}
 {% else %}
@@ -174,6 +194,11 @@
    po.src = 'https://apis.google.com/js/plusone.js';
    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
  })();
+        (function() {
+            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+            po.src = 'https://apis.google.com/js/plusone.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+        })();
 </script>
 {% include "_permissions_form_js.html" %}
 {% endblock %}

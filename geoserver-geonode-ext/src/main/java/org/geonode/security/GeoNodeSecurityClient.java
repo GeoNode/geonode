@@ -5,14 +5,17 @@
 package org.geonode.security;
 
 import java.io.IOException;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.security.AccessMode;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 
 /**
- * A client that talks to GeoNode to authenticate the users based on cookies contents or
- * username/password
+ * A client that talks to GeoNode to authenticate the users based on cookies 
+ * contents or username/password. The client is also responsible for determining
+ * authorization for resource access.
  * 
  * @author Andrea Aime - OpenGeo
  */
@@ -53,4 +56,16 @@ public interface GeoNodeSecurityClient {
     public Authentication authenticateUserPwd(String username, String password)
             throws AuthenticationException, IOException;
 
+    /**
+     * Authorize the user to access the provided resource.
+     * @param user the user being authorized
+     * @param resource the resource being authorized
+     * @param mode the mode of access being authorized
+     * @return true if authorized, false otherwise
+     */
+    public boolean authorize(Authentication user, ResourceInfo resource, AccessMode mode);
+    
+    public static interface Provider {
+        GeoNodeSecurityClient getSecurityClient();
+    }
 }
