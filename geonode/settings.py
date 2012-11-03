@@ -129,17 +129,21 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
 
     # Third party apps
+
+    # Utility
+    'pagination',
     'django_forms_bootstrap',
+    'taggit',
+    'taggit_templatetags',
+    'south',
+    'friendlytagloader',
+
+    # Social
     'registration',
     'profiles',
     'avatar',
     'dialogos',
     'agon_ratings',
-    'pagination',
-    'taggit',
-    'taggit_templatetags',
-    'south',
-    'friendlytagloader',
     #'notification',
     #'announcements',
     #'actstream',
