@@ -64,8 +64,8 @@
                       <li class="divider-v">|</li>
                     <li class="actions">
                       <a href="{% url help %}" rel="tooltip" title="{% trans 'Help' %}"><i class="icon-question-sign"></i></a>
-                      <!--a href="#" rel="tooltip" title="{% trans 'Notifications' %}"><i class="icon-bullhorn"></i></a>
-                      <a href="#" rel="tooltip" title="{% trans 'Messages' %}"><i class="icon-envelope"></i></a-->
+                      <!--a href="#" rel="tooltip" title="{% trans 'Notifications' %}"><i class="icon-bullhorn"></i></a-->
+                      <a href="{% url messages_inbox %}" rel="tooltip" title="{% trans 'Messages' %}"><i class="icon-envelope"></i></al->
                       <a href="{% url layer_upload %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a>
                     </li>
                     {% else %}
