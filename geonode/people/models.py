@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import signals
@@ -79,6 +80,15 @@ def create_user_profile(instance, sender, created, **kwargs):
         profile.name = instance.username
         profile.save()
 
+def relationship_post_save(instance, sender, created, **kwargs):
+    if "notification" in settings.INSTALLED_APPS:
+        from notification import models as notification
+        notification.queue([instance.to_user], "user_follow", {"from_user": instance.from_user})
+
 # Remove the idios create_profile handler, which interferes with ours.
 signals.post_save.disconnect(create_profile, sender=User)
 signals.post_save.connect(create_user_profile, sender=User)
+
+if 'relationships' in settings.INSTALLED_APPS:
+    from relationships.models import Relationship
+    signals.post_save.connect(relationship_post_save, sender=Relationship)

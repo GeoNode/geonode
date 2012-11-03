@@ -456,6 +456,9 @@ class Layer(ResourceBase):
     def get_absolute_url(self):
         return reverse('geonode.layers.views.layer_detail', None, [str(self.typename)])
 
+    def tiles_url(self):
+        return self.link_set.get(name='Tiles').url
+
     def __str__(self):
         return "%s Layer" % self.typename
 
@@ -783,7 +786,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     tile_url = ('%sgwc/service/gmaps?' % settings.GEOSERVER_BASE_URL +
                 'layers=%s' % instance.typename +
                 '&zoom={z}&x={x}&y={y}' +
-                'format=image/png8'
+                '&format=image/png8'
                 )
 
     instance.link_set.get_or_create(url=tile_url,
