@@ -433,7 +433,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
     },
-    
+
     initMapPanel: function() {
         this.mapItems = [{
             xtype: "gx_zoomslider",
@@ -478,9 +478,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         var layerRec = records[i];
                         var layer = layerRec.getLayer();
                         if (layer.url &&
-                            layer.url.indexOf(this.localGeoServerBaseUrl) === 0 ||
-                            layer.url.indexOf("/geoserver/wms") === 0) {
-                              Ext.Ajax.request({
+                           (layer.url.indexOf(this.localGeoServerBaseUrl) === 0 ||
+                            layer.url.indexOf("/geoserver/wms") === 0)) {
+                            Ext.Ajax.request({
                                 url: this.rest + layer.params.LAYERS + "/attributes",
                                 method: 'POST',
                                 success: function(response, options) {
@@ -631,7 +631,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
             }
         ];
-        
+
         GeoExplorer.superclass.initPortal.apply(this, arguments);
     },
     
