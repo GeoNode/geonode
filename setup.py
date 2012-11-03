@@ -97,6 +97,7 @@ setup(name='GeoNode',
         "django-forms-bootstrap==2.0.3.post1",
         "django-pagination",
         "django-jsonfield==0.8.11",
+        "django-friendly-tag-loader==1.1",
         #catalogue
         "Shapely>=1.2.15",
         "pycsw>=1.4.0",
