@@ -1,0 +1,20 @@
+{% load leaflet_tags %}
+
+{% leaflet_js %}
+{% leaflet_css %}
+
+{% leaflet_map "preview_map" creatediv=False %}
+<script type="text/javascript">
+    function zoom_to_box(map, bbox){
+        var bounds = [
+            [bbox[2], bbox[0]],
+            [bbox[3], bbox[1]]
+        ];
+        map.fitBounds(bounds);
+    }
+
+    function preview_mapInit(map, bounds) {
+        zoom_to_box(map, [{{ layer.bbox_string }}]);
+        L.tileLayer("{{ layer.tiles_url|safe }}",{}).addTo(map);
+   }
+</script>
