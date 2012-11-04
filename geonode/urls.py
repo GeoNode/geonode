@@ -60,6 +60,7 @@ urlpatterns = patterns('',
     # Social
     (r'^comments/', include('dialogos.urls')),
     (r'^ratings/', include('agon_ratings.urls')),
+    (r'^activity/', include('actstream.urls')),
     (r'^relationships/', include('relationships.urls')),
 
     # Accounts
