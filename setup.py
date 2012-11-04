@@ -84,6 +84,7 @@ setup(name='GeoNode',
         # Django Apps
         "geonode-avatar==2.1.1",
         "geonode-profiles==0.2",
+        "django-profiles==0.2",
         "django-registration==0.8",
         "agon-ratings==0.2",
         "dialogos==0.2",
