@@ -137,6 +137,7 @@ INSTALLED_APPS = (
     'taggit_templatetags',
     'south',
     'friendlytagloader',
+    'leaflet',
 
     # Social
     'registration',
@@ -144,11 +145,6 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    'pagination',
-    'taggit',
-    'taggit_templatetags',
-    'south',
-    'leaflet',
     #'notification',
     #'announcements',
     #'actstream',
