@@ -23,9 +23,11 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from geonode.sitemap import LayerSitemap, MapSitemap
 import geonode.proxy.urls
-import geonode.signals
 
-# Uncomment the next two lines to enable the admin:
+# Import *_signals.py
+import geonode.social_signals
+
+# Setup Django Admin
 from django.contrib import admin
 admin.autodiscover()
 
