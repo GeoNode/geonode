@@ -21,6 +21,7 @@ from django.core.management.base import BaseCommand
 from optparse import make_option
 from geonode.layers.models import Layer
 from geonode.people.utils import get_valid_user
+from geonode.gs_helpers import gs_slurp
 import traceback
 import datetime
 import sys
@@ -53,7 +54,7 @@ class Command(BaseCommand):
             console = None
 
         start = datetime.datetime.now()
-        output = Layer.objects.slurp(ignore_errors, verbosity=verbosity,
+        output = gs_slurp(ignore_errors, verbosity=verbosity,
                 owner=owner, console=console, workspace=workspace)
         updated = [dict_['name'] for dict_ in output if dict_['status']=='updated']
         created = [dict_['name'] for dict_ in output if dict_['status']=='created']

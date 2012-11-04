@@ -17,12 +17,18 @@
 #
 #########################################################################
 
-from itertools import cycle, izip
-from geoserver.catalog import FailedRequestError
+import sys
 import logging
 import re
 import errno
+import uuid
+from itertools import cycle, izip
+
 from django.conf import settings
+
+from geonode.utils import _user, _password
+
+from geoserver.catalog import Catalog, FailedRequestError
 
 logger = logging.getLogger("geonode.maps.gs_helpers")
 
@@ -220,7 +226,7 @@ def delete_from_postgis(resource_name):
     finally:
         conn.close()
 
-def slurp(self, ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None):
+def gs_slurp(self, ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None):
     """Configure the layers available in GeoServer in GeoNode.
 
        It returns a list of dictionaries with the name of the layer,
@@ -231,7 +237,8 @@ def slurp(self, ignore_errors=True, verbosity=1, console=None, owner=None, works
 
     if verbosity > 1:
         print >> console, "Inspecting the available layers in GeoServer ..."
-    cat = self.gs_catalog
+    url = "%srest" % settings.GEOSERVER_BASE_URL
+    cat = Catalog(url, _user, _password)
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
     resources = cat.get_resources(workspace=workspace)
@@ -245,6 +252,8 @@ def slurp(self, ignore_errors=True, verbosity=1, console=None, owner=None, works
         store = resource.store
         workspace = store.workspace
         try:
+            # Avoid circular import problem
+            from geonode.layers.models import Layer
             layer, created = Layer.objects.get_or_create(name=name, defaults = {
                 "workspace": workspace.name,
                 "store": store.name,
