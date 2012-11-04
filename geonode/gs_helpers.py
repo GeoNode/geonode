@@ -187,8 +187,8 @@ def cascading_delete(cat, layer_name):
         store = resource.store
         styles = lyr.styles + [lyr.default_style]
         cat.delete(lyr)
-        for s in styles and s.name not in _default_style_names:
-            if s is not None:
+        for s in styles: 
+            if s is not None and s.name not in _default_style_names:
                 try:
                     cat.delete(s, purge=True)
                 except FailedRequestError as e:
