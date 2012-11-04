@@ -31,6 +31,7 @@ _foregrounds = ["#ffbbbb", "#bbffbb", "#bbbbff", "#ffffbb", "#bbffff", "#ffbbff"
 _backgrounds = ["#880000", "#008800", "#000088", "#888800", "#008888", "#880088"]
 _marks = ["square", "circle", "cross", "x", "triangle"]
 _style_contexts = izip(cycle(_foregrounds), cycle(_backgrounds), cycle(_marks))
+_default_style_names = ["point", "line", "polygon", "raster"]
 
 def _add_sld_boilerplate(symbolizer):
     """
@@ -186,8 +187,8 @@ def cascading_delete(cat, layer_name):
         store = resource.store
         styles = lyr.styles + [lyr.default_style]
         cat.delete(lyr)
-        for s in styles:
-            if s is not None:
+        for s in styles: 
+            if s is not None and s.name not in _default_style_names:
                 try:
                     cat.delete(s, purge=True)
                 except FailedRequestError as e:

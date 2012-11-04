@@ -21,6 +21,7 @@
 import logging
 import math
 import errno
+import uuid
 
 from django.conf import settings
 from django.db import models
@@ -32,7 +33,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
-from geonode.layers.models import Layer, TopicCategory
+from geonode.layers.models import Layer, TopicCategory, ResourceBase
 from geonode.maps.signals import map_changed_signal
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -50,17 +51,11 @@ from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
 
-class Map(models.Model, PermissionLevelMixin, GXPMapBase):
+class Map(ResourceBase, GXPMapBase):
     """
     A Map aggregates several layers together and annotates them with a viewport
     configuration.
     """
-
-    title = models.TextField(_('Title'))
-    # A display name suitable for search results and page headers
-
-    abstract = models.TextField(_('Abstract'))
-    # A longer description of the themes in the map.
 
     # viewer configuration
     zoom = models.IntegerField(_('zoom'))
@@ -79,15 +74,8 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
     # The y coordinate to center on when loading this map.  Its interpretation
     # depends on the projection.
 
-    owner = models.ForeignKey(User, verbose_name=_('owner'), blank=True, null=True)
-    # The user that created/owns this map.
-
     last_modified = models.DateTimeField(auto_now_add=True)
     # The last time the map was modified.
-
-    keywords = TaggableManager(_('keywords'), blank=True, help_text=_("A space or comma-separated list of keywords"))
-
-    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True)
 
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
@@ -168,6 +156,9 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
 
         self.projection = conf['map']['projection']
 
+        if self.uuid is None or self.uuid == '':
+            self.uuid = str(uuid.uuid1())
+
         def source_for(layer):
             return conf["sources"][layer["source"]]
 
@@ -184,6 +175,8 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
                 layer_from_viewer_config(
                     MapLayer, layer, source_for(layer), ordering
             ))
+
+        self.set_bounds_from_layers(self.local_layers)
 
         if layer_names != set([l.typename for l in self.local_layers]):
             map_changed_signal.send_robust(sender=self,what_changed='layers')
@@ -229,21 +222,31 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
     def get_extent(self):
         """Generate minx/miny/maxx/maxy of map extent"""
 
-        # TODO: Map should inherit from layers.models.ResourceBase
-        # which would negate the need for this function
-        bbox_x0 = bbox_x1 = bbox_y0 = bbox_y1 = None
-        for layer in self.local_layers:
-            if bbox_x0 is None: bbox_x0 = layer.bbox[0]
-            if bbox_y0 is None: bbox_y0 = layer.bbox[2]
-            if bbox_x1 is None: bbox_x1 = layer.bbox[1]
-            if bbox_y1 is None: bbox_y1 = layer.bbox[3]
+        return self.bbox
 
-            bbox_x0 = min(bbox_x0, layer.bbox[0])
-            bbox_y0 = min(bbox_y0, layer.bbox[2])
-            bbox_x1 = max(bbox_x1, layer.bbox[1])
-            bbox_y1 = max(bbox_y1, layer.bbox[3])
+    def set_bounds_from_layers(self, layers):
+        """
+        Calculate the bounds from a given list of Layer objects
+        """
+        bbox = None
+        for layer in layers:
 
-        return [bbox_x0, bbox_y0, bbox_x1, bbox_y1]
+            layer_bbox = layer.bbox
+            if bbox is None:
+                bbox = list(layer_bbox[0:4])
+            else:
+                bbox[0] = min(bbox[0], layer_bbox[0])
+                bbox[1] = max(bbox[1], layer_bbox[1])
+                bbox[2] = min(bbox[2], layer_bbox[2])
+                bbox[3] = max(bbox[3], layer_bbox[3])
+
+        if bbox is not None:
+            self.bbox_x0 = bbox[0]
+            self.bbox_x1 = bbox[1]
+            self.bbox_y0 = bbox[2]
+            self.bbox_y1 = bbox[3]
+
+        return bbox
 
     def create_from_layer_list(self, user, layers, title, abstract):
         self.owner = user
@@ -259,6 +262,7 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
 
+        layer_objects = []
         for layer in layers:
             try:
                 layer = Layer.objects.get(typename=layer)
@@ -269,14 +273,7 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
                 # invisible layer, skip inclusion or raise Exception?
                 continue # Raise Exception
 
-            layer_bbox = layer.bbox
-            if bbox is None:
-                bbox = list(layer_bbox[0:4])
-            else:
-                bbox[0] = min(bbox[0], layer_bbox[0])
-                bbox[1] = max(bbox[1], layer_bbox[1])
-                bbox[2] = min(bbox[2], layer_bbox[2])
-                bbox[3] = max(bbox[3], layer_bbox[3])
+            layer_objects.append(layer)
 
             map_layers.append(MapLayer(
                 map = self,
@@ -286,6 +283,7 @@ class Map(models.Model, PermissionLevelMixin, GXPMapBase):
                 visibility = True
             ))
 
+            bbox = self.set_bounds_from_layers(layer_objects)
 
             if bbox is not None:
                 minx, maxx, miny, maxy = [float(c) for c in bbox]

@@ -27,11 +27,11 @@ if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
 
     def create_notice_types(app, created_models, verbosity, **kwargs):
-        notification.create_notice_type("layer_uploaded", _("Layer Uploaded"), _("A layer was uploaded"))
-        notification.create_notice_type("layer_comment", _("Comment on Layer"), _("A layer was commented on"))
-        notification.create_notice_type("layer_rated", _("Rating for Layer"), _("A rating was given to a layer"))
+        notification.create_notice_type("map_created", _("Map Created"), _("A Map was created"))
+        notification.create_notice_type("map_comment", _("Comment on Map"), _("A map was commented on"))
+        notification.create_notice_type("map_rated", _("Rating for Map"), _("A rating was given to a map"))
 
     signals.post_syncdb.connect(create_notice_types, sender=notification)
-    logger.info("Notifications Configured for geonode.layers.managment.commands")
+    logger.info("Notifications Configured for geonode.maps.management.commands")
 else:
-    logger.info("Skipping creation of NoticeTypes for geonode.layers.management.commands, since notification app was not found.")
+    logger.info("Skipping creation of NoticeTypes for geonode.maps.management.commands, since notification app was not found.")
