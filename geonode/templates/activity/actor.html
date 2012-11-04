@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load activity_tags i18n %}
+{% block extra_head %}
+<script>
+$(function () {
+    $("#follow_button, #unfollow_button").click(function () {
+        $.post($(this).attr("href"), {});
+        $(this).parent().find("#follow_button, #unfollow_button").toggle();
+        return false
+    });
+});
+</script>
+{% endblock %}
+
+
+{% block title %}{% ifequal request.user actor %}Your feed{% else %}{{ actor }}{% endifequal %}{% endblock %}
+{% block content_title %}{% ifequal request.user actor %}Your feed{% else %}{{ actor }}{% endifequal %}{% endblock %}
+
+{% block navlinks %}
+<li><a href="{% url actstream_object_feed content_type_id=ctype.pk  object_id=actor.pk %}">RSS</a></li>
+<li><a href="{% url actstream_object_feed_atom content_type_id=ctype.pk  object_id=actor.pk %}">ATOM</a></li>
+{% ifequal request.user actor %}{% else %}
+    <li>
+        <a href="{% url actstream_unfollow content_type_id=ctype.pk  object_id=actor.pk %}" id="unfollow_button" style="display:none">{% trans "UNFOLLOW" %}</a>
+        <a href="{% url actstream_follow content_type_id=ctype.pk  object_id=actor.pk %}" id="follow_button" >{% trans "FOLLOW" %}</a>
+    </li>
+{% endifequal %}
+{% endblock %}
+
+{% block main %}
+{% get_user_contenttype as user_ctype %}
+{% if request.user.is_authenticated %}
+<p><b><a href="{% url actstream_actor content_type_id=user_ctype.pk object_id=request.user.pk %}">{% trans "View my actions" %}</a></b></p>
+{% endif %}
+<ul>
+{% for action in action_list %}
+    <li>{% include 'activity/action.html' %}</li>
+{% empty %}
+{% trans "No actions yet" %}
+{% endfor %}
+</ul>
+{% endblock %}
