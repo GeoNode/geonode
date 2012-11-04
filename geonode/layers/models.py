@@ -332,22 +332,24 @@ class Layer(ResourceBase):
         links.append((self.title, self.title, 'WWW:LINK-1.0-http--link', abs_url))
         return links
 
-    def thumbnail(self):
+    def thumbnail(self, width=20, height=None):
         """ Generate a URL representing thumbnail of the layer """
 
-        width = 20
-        height = 20
-
-        return settings.GEOSERVER_BASE_URL + "wms?" + urllib.urlencode({
-            'service': 'WMS',
-            'version': '1.1.1',
-            'request': 'GetMap',
+        params = {
             'layers': self.typename,
-            'format': 'image/png',
-            'height': height,
+            'format': 'image/png8',
             'width': width,
-            'srs': self.srid,
-            'bbox': self.bbox_string})
+        }
+        if height is not None:
+            params['height'] = height
+
+        # Avoid usring urllib.urlencode here because it breaks the url.
+        # commas and slashes in values get encoded and then cause trouble
+        # with the WMS parser.
+        p = "&".join("%s=%s"%item for item in params.items())
+
+        return settings.GEOSERVER_BASE_URL + "wms/reflect?" + p
+
 
     def verify(self):
         """Makes sure the state of the layer is consistent in GeoServer and Catalogue.
