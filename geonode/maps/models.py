@@ -221,6 +221,9 @@ class Map(ResourceBase, GXPMapBase):
         return [self.bbox_x0, self.bbox_y0, self.bbox_x1, self.bbox_y1]
 
     def set_bounds_from_layers(self, layers):
+        """
+        Calculate the bounds from a given list of Layer objects
+        """
         bbox = None
         for layer in layers:
 
@@ -233,10 +236,11 @@ class Map(ResourceBase, GXPMapBase):
                 bbox[2] = min(bbox[2], layer_bbox[2])
                 bbox[3] = max(bbox[3], layer_bbox[3])
 
-        self.bbox_x0 = bbox[0]
-        self.bbox_x1 = bbox[1]
-        self.bbox_y0 = bbox[2]
-        self.bbox_y1 = bbox[3]
+        if bbox is not None:
+            self.bbox_x0 = bbox[0]
+            self.bbox_x1 = bbox[1]
+            self.bbox_y0 = bbox[2]
+            self.bbox_y1 = bbox[3]
 
         return bbox
 
