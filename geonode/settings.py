@@ -126,21 +126,30 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
     'django.contrib.messages',
+    'django.contrib.humanize',
 
     # Third party apps
+
+    # Utility
+    'pagination',
     'django_forms_bootstrap',
+    'taggit',
+    'taggit_templatetags',
+    'south',
+    'friendlytagloader',
+    'leaflet',
+
+    # Social
     'registration',
     'profiles',
     'avatar',
     'dialogos',
     'agon_ratings',
-    'pagination',
-    'taggit',
-    'taggit_templatetags',
-    'south',
-    'announcements',
-    'relationships',
-    'user_messages',
+    #'notification',
+    #'announcements',
+    #'actstream',
+    #'relationships',
+    #'user_messages',
 
     # GeoNode internal apps
     'geonode.maps',
@@ -213,7 +222,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
-    'announcements.context_processors.site_wide_announcements',
+    #'announcements.context_processors.site_wide_announcements',
     # The context processor belows add things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
     'geonode.context_processors.resource_urls',
@@ -264,6 +273,15 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     "layers.Layer": {
         "layer": "How good is this layer?"
     },
+}
+
+# Activity Stream
+ACTSTREAM_SETTINGS = {
+    'MODELS': ('auth.user', 'layers.layer', 'maps.map'),
+    'FETCH_RELATIONS': True,
+    'USE_PREFETCH': True,
+    'USE_JSONFIELD': True,
+    'GFK_FETCH_DEPTH': 1,
 }
 
 # For South migrations
