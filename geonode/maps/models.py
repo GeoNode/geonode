@@ -156,7 +156,7 @@ class Map(ResourceBase, GXPMapBase):
 
         self.projection = conf['map']['projection']
 
-        if self.uuid == '':
+        if self.uuid is None or self.uuid == '':
             self.uuid = str(uuid.uuid1())
 
         def source_for(layer):
@@ -223,7 +223,7 @@ class Map(ResourceBase, GXPMapBase):
         """Generate minx/miny/maxx/maxy of map extent"""
 
         return self.bbox
-        
+
     def set_bounds_from_layers(self, layers):
         """
         Calculate the bounds from a given list of Layer objects
