@@ -907,10 +907,14 @@ def set_attributes(layer):
     else:
         logger.debug("No attributes found")
 
+def notification_post_save(instance, sender, created, **kwargs):
+    if created and "notification" in settings.INSTALLED_APPS:
+        from notification import models as notification
+        superusers = User.objects.filter(is_superuser=True)
+        notification.queue(superusers, "layer_uploaded", {"from_user": instance.owner})
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
-
 signals.pre_save.connect(geoserver_pre_save, sender=Layer)
 signals.pre_delete.connect(geoserver_pre_delete, sender=Layer)
 signals.post_save.connect(geoserver_post_save, sender=Layer)
-
+signals.post_save.connect(notification_post_save, sender=Layer)
