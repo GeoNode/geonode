@@ -126,7 +126,7 @@ class GeoNodeSmokeTests(TestCase):
         c = Client()
         response = c.get(reverse('profile_detail', args=['admin']))
         self.failUnlessEqual(response.status_code, 200)
-        response = c.get(reverse('profile_detail', args=['norman'])
+        response = c.get(reverse('profile_detail', args=['norman']))
         
 
 class GeoNodeUtilsTests(TestCase):
