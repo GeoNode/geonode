@@ -131,9 +131,9 @@
             </div>
             <div class="span2">
               <ul class="social">
-                <li><a href="#" class="fb">facebook</a></li>
-                <li><a href="#" class="tw">twitter</a></li>
-                <li><a href="#" class="gp">google+</a></li>
+                  <li><a href="http://www.facebook.com/sharer.php?u=http://{{ request.get_host }}{{ request.get_full_path }}" class="fb">facebook</a></li>
+                  <li><a href="https://twitter.com/share?url=http://{{   request.get_host }}{{ request.get_full_path }}" class="tw">twitter</a></li>
+                  <li><a href="https://plusone.google.com/_/ 1/confirm?hl=en&url=http://{{ request.get_host }}{{ request.get_full_path }}" class="gp">google+</a></li>
               </ul>
             </div>
           </div>
@@ -159,6 +159,7 @@
           <div class="row">
             {% block body_outer %}
               <div class="span8">
+                {% block navlinks %} {% endblock %}
                 {% block main %}{% endblock %}
               </div>
               <div class="span4">
