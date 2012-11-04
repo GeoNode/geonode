@@ -21,6 +21,7 @@
 import logging
 import math
 import errno
+import uuid
 
 from django.conf import settings
 from django.db import models
@@ -155,6 +156,9 @@ class Map(ResourceBase, GXPMapBase):
 
         self.projection = conf['map']['projection']
 
+        if self.uuid == '':
+            self.uuid = str(uuid.uuid1())
+
         def source_for(layer):
             return conf["sources"][layer["source"]]
 
@@ -218,8 +222,8 @@ class Map(ResourceBase, GXPMapBase):
     def get_extent(self):
         """Generate minx/miny/maxx/maxy of map extent"""
 
-        return [self.bbox_x0, self.bbox_y0, self.bbox_x1, self.bbox_y1]
-
+        return self.bbox
+        
     def set_bounds_from_layers(self, layers):
         """
         Calculate the bounds from a given list of Layer objects
