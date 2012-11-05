@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from geonode.people.models import Profile 
+from geonode.people.models import Profile
 from geonode.layers.models import ContactRole
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -47,5 +47,5 @@ class ProfileForm(forms.ModelForm):
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
     class Meta:
-        model = Profile 
+        model = Profile
         exclude = ('user',)
