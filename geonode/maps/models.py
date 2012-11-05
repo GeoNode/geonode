@@ -262,7 +262,7 @@ class Map(ResourceBase, GXPMapBase):
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
 
-        layer_objects =[]
+        layer_objects = []
         for layer in layers:
             try:
                 layer = Layer.objects.get(typename=layer)
