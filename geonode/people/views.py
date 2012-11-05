@@ -28,6 +28,7 @@ from django.core.urlresolvers import reverse
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.views.generic.list import ListView
+from django.contrib.sites.models import Site
 from django.conf import settings
 
 from geonode.people.models import Profile
@@ -50,7 +51,7 @@ def profile_edit(request, username=None):
             return redirect("profile_create")
     else:
         profile = get_object_or_404(Profile, user__username=username)
-    
+
     if request.method == "POST":
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
@@ -59,7 +60,7 @@ def profile_edit(request, username=None):
             return redirect(reverse('profile_detail', args=[request.user.username]))
     else:
         form = ProfileForm(instance=profile)
-    
+
     return render(request, "people/profile_edit.html", {
         "form": form,
     })
@@ -67,7 +68,7 @@ def profile_edit(request, username=None):
 
 def profile_detail(request, username):
     profile = get_object_or_404(Profile, user__username=username)
-    
+
     return render(request, "people/profile_detail.html", {
         "profile": profile,
     })
@@ -80,7 +81,9 @@ def forgot_username(request):
 
     message = ''
 
-    email_subject = _("Your username for ") + settings.SITENAME
+    site = Site.objects.get_current()
+
+    email_subject = _("Your username for " + site.name)
 
     if request.method == 'POST':
         username_form = ForgotUsernameForm(request.POST)

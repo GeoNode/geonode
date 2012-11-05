@@ -231,8 +231,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     # The context processor below adds things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
     'geonode.context_processors.resource_urls',
-    # The pinax context_utils context processor ...
-    "pinax_utils.context_processors.settings",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -321,8 +319,6 @@ NOSE_ARGS = [
 # GeoNode specific settings
 #
 
-SITENAME = "GeoNode"
-
 SITEURL = "http://localhost:8000/"
 
 # GeoServer information
@@ -363,9 +359,9 @@ PYCSW = {
     # pycsw configuration
     'CONFIGURATION': {
         'metadata:main': {
-            'identification_title': '%s Catalogue' % SITENAME,
+            'identification_title': 'GeoNode Catalogue',
             'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, and collaborative use of geospatial data',
-            'identification_keywords': '%s,sdi,catalogue,discovery,metadata,GeoNode' % SITENAME,
+            'identification_keywords': 'sdi,catalogue,discovery,metadata,GeoNode',
             'identification_keywords_type': 'theme',
             'identification_fees': 'None',
             'identification_accessconstraints': 'None',
