@@ -180,11 +180,18 @@ class LayerNormalizer(Normalizer):
         doc['keywords'] = layer.keyword_list()
         doc['title'] = layer.title
         doc['detail'] = layer.get_absolute_url()
-        #if 'download_links' not in exclude:
-        #    links = layer.download_links()
-        #    for i,e in enumerate(links):
-        #        links[i] = [ unicode(l) for l in e]
-        #    doc['download_links'] = links
+        if 'download_links' not in exclude:
+            all_links = layer.link_set.all()
+            links = {}
+            for l in layer.link_set.all():
+                link = {}
+                link['extension'] = l.extension
+                link['url'] = l.url
+                link['mime'] = l.mime
+                link['type'] = l.link_type
+                links[l.name] = link
+            doc['links'] = links
+
         owner = layer.owner
         if owner:
             doc['owner_detail'] = layer.owner.get_absolute_url()
