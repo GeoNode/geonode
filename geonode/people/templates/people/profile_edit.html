@@ -1,8 +1,8 @@
-{% extends "idios/base.html" %}
+{% extends "people/base.html" %}
 {% load i18n avatar_tags %}
 {% load bootstrap_tags %}
 
-{% block main %}
+{% block body %}
   {% avatar user %}
   {% if not avatars %}
     <p>{% trans "You haven't uploaded an avatar yet. Please upload one now." %}</p>
