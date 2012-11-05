@@ -185,11 +185,12 @@ class LayerNormalizer(Normalizer):
             links = {}
             for l in layer.link_set.all():
                 link = {}
+                link['name'] = l.name
                 link['extension'] = l.extension
                 link['url'] = l.url
                 link['mime'] = l.mime
                 link['type'] = l.link_type
-                links[l.name] = link
+                links[l.extension] = link
             doc['links'] = links
 
         owner = layer.owner
