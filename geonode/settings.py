@@ -148,10 +148,10 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    'notification',
-    'announcements',
-    'actstream',
-    'relationships',
+    #'notification',
+    #'announcements',
+    #'actstream',
+    #'relationships',
 
     # GeoNode internal apps
     'geonode.maps',
