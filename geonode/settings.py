@@ -64,7 +64,7 @@ LANGUAGES = (
     ('de', 'Deutsch'),
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
-    ('zh', '中文'),
+#    ('zh', '中文'),
     ('ja', '日本人'),
 )
 
@@ -132,16 +132,19 @@ INSTALLED_APPS = (
 
     # Utility
     'pagination',
-    'django_forms_bootstrap',
     'taggit',
     'taggit_templatetags',
     'south',
     'friendlytagloader',
     'leaflet',
 
+    # Theme
+    "pinax_theme_bootstrap_account",
+    "pinax_theme_bootstrap",
+    'django_forms_bootstrap',
+
     # Social
-    'registration',
-    'profiles',
+    'account',
     'avatar',
     'dialogos',
     'agon_ratings',
@@ -216,15 +219,20 @@ LOGGING = {
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
-    'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
+    "django.core.context_processors.tz",
     'django.core.context_processors.media',
+    "django.core.context_processors.static",
     'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
     #'announcements.context_processors.site_wide_announcements',
-    # The context processor belows add things like SITEURL
+    "account.context_processors.account",
+    # The context processor below adds things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
     'geonode.context_processors.resource_urls',
+    # The pinax context_utils context processor ...
+    "pinax_utils.context_processors.settings",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -290,7 +298,7 @@ SOUTH_MIGRATION_MODULES = {
 }
 
 # For django-profiles
-AUTH_PROFILE_MODULE = 'people.Contact'
+AUTH_PROFILE_MODULE = 'people.Profile'
 
 # For django-registration
 REGISTRATION_OPEN = False

@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from geonode.people.models import Contact
+from geonode.people.models import Profile 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.search.util import resolve_extension
@@ -43,7 +43,7 @@ if process_results is None:
 
 owner_query = resolve_extension('owner_query')
 if not owner_query:
-    owner_query = lambda q: Contact.objects.filter()
+    owner_query = lambda q: Profile.objects.filter()
 
 owner_query_fields = resolve_extension('owner_query_fields') or []
 
