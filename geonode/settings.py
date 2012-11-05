@@ -291,14 +291,11 @@ ACTSTREAM_SETTINGS = {
 
 # For South migrations
 SOUTH_MIGRATION_MODULES = {
-    'registration': 'geonode.migrations.registration',
     'avatar': 'geonode.migrations.avatar',
 }
 
-# For django-profiles
+# Settings for Social Apps 
 AUTH_PROFILE_MODULE = 'people.Profile'
-
-# For django-registration
 REGISTRATION_OPEN = False
 
 #

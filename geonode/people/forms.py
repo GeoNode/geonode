@@ -22,9 +22,10 @@ from geonode.people.models import Profile
 from geonode.layers.models import ContactRole
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from registration.forms import attrs_dict
 import taggit
 
+# Ported in from django-registration
+attrs_dict = { 'class': 'required' }
 
 class ForgotUsernameForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
