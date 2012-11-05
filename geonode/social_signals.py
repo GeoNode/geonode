@@ -62,6 +62,9 @@ def relationship_post_save_actstream(instance, sender, created, **kwargs):
 def relationship_pre_delete_actstream(instance, sender, **kwargs):
    unfollow(instance.from_user, instance.to_user)
 
+def relationship_post_save(instance, sender, created, **kwargs):
+    notification.queue([instance.to_user], "user_follow", {"from_user": instance.from_user})
+
 if activity:
     signals.post_save.connect(activity_post_save_layer, sender=Layer)
 if notification:
@@ -69,3 +72,5 @@ if notification:
 if relationships and activity:
     signals.post_save.connect(relationship_post_save_actstream, sender=Relationship)
     signals.pre_delete.connect(relationship_pre_delete_actstream, sender=Relationship)
+if relationships and notification:
+    signals.post_save.connect(relationship_post_save, sender=Relationship)

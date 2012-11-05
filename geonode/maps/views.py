@@ -48,7 +48,7 @@ from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
 from geonode.utils import resolve_object
 from geonode.maps.forms import MapForm
-from geonode.people.models import Contact
+from geonode.people.models import Profile 
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
 
@@ -651,7 +651,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
 
     for m in map_query.all()[start:start+limit]:
         try:
-            owner_name = Contact.objects.get(user=m.owner).name
+            owner_name = Profile.objects.get(user=m.owner).name
         except Exception:
             owner_name = m.owner.first_name + " " + m.owner.last_name
 
