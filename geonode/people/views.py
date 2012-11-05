@@ -49,7 +49,7 @@ def profile_edit(request, username=None):
         except Profile.DoesNotExist:
             return redirect("profile_create")
     else:
-        profile = get_object_or_404(Profile, user=User.objects.get(username=username))
+        profile = get_object_or_404(Profile, user__username=username)
     
     if request.method == "POST":
         form = ProfileForm(request.POST, request.FILES, instance=profile)
@@ -66,7 +66,7 @@ def profile_edit(request, username=None):
 
 
 def profile_detail(request, username):
-    profile = get_object_or_404(Profile, user=User.objects.get(username=username))
+    profile = get_object_or_404(Profile, user__username=username)
     
     return render(request, "people/profile_detail.html", {
         "profile": profile,
