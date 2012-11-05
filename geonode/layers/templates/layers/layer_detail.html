@@ -56,7 +56,7 @@
       <ul class="dropdown-menu">
         <!--li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li-->
         <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
-        <li><a href="#">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_style" layer.typename %}">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %} <i class="icon-chevron-right"></i></a></li>
       </ul>
@@ -137,7 +137,7 @@
           {% if layer.srid %}
             <li>
               <strong>{% trans "Native SRS" %}:</strong>
-              {{ layer.srid|default:_("No SRS specified.") }}
+              <a href="{{layer.srid_url}}"> {{ layer.srid|default:_("No SRS specified.") }} </a>
             </li>
           {% endif %}
         </ul>

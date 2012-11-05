@@ -53,7 +53,7 @@ from geonode.utils import GXPMap
 from geonode.layers.utils import save
 from geonode.layers.utils import layer_set_permissions
 from geonode.utils import resolve_object
-from geonode.people.forms import ContactForm, PocForm
+from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from django.forms.models import inlineformset_factory
@@ -186,6 +186,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms", layer_params=json.dumps( layer.attribute_config()))
 
+    layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"	
+	
     #layer.popular_count += 1
     #layer.save()
 
@@ -224,12 +226,12 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         new_keywords = layer_form.cleaned_data['keywords']
 
         if new_poc is None:
-            poc_form = ContactForm(request.POST, prefix="poc")
+            poc_form = ProfileForm(request.POST, prefix="poc")
             if poc_form.has_changed and poc_form.is_valid():
                 new_poc = poc_form.save()
 
         if new_author is None:
-            author_form = ContactForm(request.POST, prefix="author")
+            author_form = ProfileForm(request.POST, prefix="author")
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
@@ -251,17 +253,17 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
 
     if poc.user is None:
-        poc_form = ContactForm(instance=poc, prefix="poc")
+        poc_form = ProfileForm(instance=poc, prefix="poc")
     else:
         layer_form.fields['poc'].initial = poc.id
-        poc_form = ContactForm(prefix="poc")
+        poc_form = ProfileForm(prefix="poc")
         poc_form.hidden=True
 
     if metadata_author.user is None:
-        author_form = ContactForm(instance=metadata_author, prefix="author")
+        author_form = ProfileForm(instance=metadata_author, prefix="author")
     else:
         layer_form.fields['metadata_author'].initial = metadata_author.id
-        author_form = ContactForm(prefix="author")
+        author_form = ProfileForm(prefix="author")
         author_form.hidden=True
 
     return render_to_response(template, RequestContext(request, {

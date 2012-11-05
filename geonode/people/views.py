@@ -19,12 +19,59 @@
 
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import Http404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render_to_response
+from django.core.urlresolvers import reverse
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
+from django.views.generic.list import ListView
+from django.contrib.sites.models import Site
 from django.conf import settings
+
+from geonode.people.models import Profile
+from geonode.people.forms import ProfileForm
 from geonode.people.forms import ForgotUsernameForm
 
+class ProfileListView(ListView):
+
+    def __init__(self, *args, **kwargs):
+        self.queryset = Profile.objects.all()
+        super(ProfileListView, self).__init__(*args, **kwargs)
+
+
+@login_required
+def profile_edit(request, username=None):
+    if username is None:
+        try:
+            profile = request.user.profile_detail
+        except Profile.DoesNotExist:
+            return redirect("profile_create")
+    else:
+        profile = get_object_or_404(Profile, user__username=username)
+
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile profile updated.")
+            return redirect(reverse('profile_detail', args=[request.user.username]))
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, "people/profile_edit.html", {
+        "form": form,
+    })
+
+
+def profile_detail(request, username):
+    profile = get_object_or_404(Profile, user__username=username)
+
+    return render(request, "people/profile_detail.html", {
+        "profile": profile,
+    })
 
 def forgot_username(request):
     """ Look up a username based on an email address, and send an email
@@ -34,7 +81,9 @@ def forgot_username(request):
 
     message = ''
 
-    email_subject = _("Your username for ") + settings.SITENAME
+    site = Site.objects.get_current()
+
+    email_subject = _("Your username for " + site.name)
 
     if request.method == 'POST':
         username_form = ForgotUsernameForm(request.POST)
