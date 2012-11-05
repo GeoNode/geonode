@@ -24,7 +24,6 @@ from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
-from registration.signals import user_activated
 from django.contrib.auth import login
 
 # implicitly defined 'generic' groups of users
@@ -260,4 +259,5 @@ def autologin(sender, **kwargs):
     # This login function does not need password.
     login(request, user)
 
-user_activated.connect(autologin)
+#FIXME(Ariel): Replace this signal with the one from django-user-accounts
+#user_activated.connect(autologin)
