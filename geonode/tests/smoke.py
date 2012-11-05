@@ -118,8 +118,16 @@ class GeoNodeSmokeTests(TestCase):
         '''Test the profiles page renders.'''
 
         c = Client()
-        response = c.get('/profiles/')
+        response = c.get(reverse('profile_list'))
         self.failUnlessEqual(response.status_code, 200)
+
+    def test_profiles(self):
+        '''Test that user profile pages render.'''
+        c = Client()
+        response = c.get(reverse('profile_detail', args=['admin']))
+        self.failUnlessEqual(response.status_code, 200)
+        response = c.get(reverse('profile_detail', args=['norman']))
+        
 
 class GeoNodeUtilsTests(TestCase):
 
