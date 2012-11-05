@@ -32,6 +32,7 @@
       {% endfor %}
     </tbody>
   </table>
+  {% if user == profile.user %}
   <div class="pull-right">
     <a href="#modal_perms" class="btn disabled asset-modifier" data-toggle="modal"><i class="icon-lock"></i> {% trans "Change permissions on selected" %}</a>
     <a href="#modal_delete" class="btn disabled asset-modifier" data-toggle="modal"><i class="icon-remove"></i> {% trans "Remove selected" %}</a>
@@ -55,7 +56,7 @@
   {% with "/data/api/batch_permissions/" as form_action %}
       {% include "_permissions_form.html" %}
   {% endwith %}
-  
+  {% endif %} 
 {% endblock %}
 
 {% block sidebar %}
@@ -79,15 +80,22 @@
         {% endif_has_tag %}
   {% else %}
         {# decide whether or not the current user is following this user #}
+        {% if_has_tag if_relationship remove_relationship_url %}
+            {% if_relationship request.user profile.user "following" %}
+                {# they are following them, so show a "remove" url #}
+                <a href="{{ profile.user|remove_relationship_url:"following" }}">Unfollow</a>
+            {% endif_relationship %}
+        {% endif_has_tag %}
+
         {% if_has_tag if_relationship %}
-        {% if_relationship request.user profile.user "following" %}
-            {# they are following them, so show a "remove" url #}
-            <a href="{{ profile.user|remove_relationship_url:"following" }}">Unfollow</a>
-        {% else %}
-            {# they are not following them, so show a link to start following #}
-            {% if_has_tag add_relationship_url %}
-            <a href="{{ profile.user|add_relationship_url:"following" }}">Follow</a>
-            {% endif_has_tag %}
+            {% if_relationship request.user profile.user "following" %}
+                {# itentionally empty (its above) #}
+            {% else %}
+                {% if_has_tag add_relationship_url %}
+                    {# they are not following them, so show a link to start following #}
+                    <a href="{{ profile.user|add_relationship_url:"following" }}">Follow</a>
+                {% endif_has_tag %}
+            {% endif_relationship %}
         {% endif_has_tag %}
   {% endif %}
   {% if_has_tag if_relationship %}

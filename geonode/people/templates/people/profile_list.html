@@ -18,8 +18,9 @@
                     <a href="{{ profile.user|remove_relationship_url:"following" }}">Unfollow</a>
                 {% else %}
                     {# they are not following them, so show a link to start following #}
-                    {% comment %}<a href="{{ profile.user|add_relationship_url:"following" }}">Follow</a>{% endcomment %}
-                {% endif_has_tag %}
+                    <a href="{{ profile.user|add_relationship_url:"following" }}">Follow</a>
+                {# {% endif_relationship %} #}
+            {% endif_has_tag %}
           {% endif %}
         </li>
     {% endif %}
