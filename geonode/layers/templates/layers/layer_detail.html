@@ -136,8 +136,8 @@
           
           {% if layer.srid %}
             <li>
-              <strong>{% trans "Native SRS" %}:</strong>
-              {{ layer.srid|default:_("No SRS specified.") }}
+              <strong>{% trans "Native SRS" %}:</strong> 	
+	      	  <a href="{{layer.srid_url}}"> {{ layer.srid|default:_("No SRS specified.") }} </a>	      
             </li>
           {% endif %}
         </ul>
