@@ -40,7 +40,7 @@ from geonode.utils import check_geonode_is_up
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
 from geonode.layers.metadata import set_metadata
-from geonode.people.models import Contact
+from geonode.people.models import Profile
 from geonode.gs_helpers import cascading_delete
 from geonode.gs_helpers import get_sld_for
 from geonode.gs_helpers import delete_from_postgis
@@ -465,9 +465,9 @@ def save(layer, base_file, user, overwrite=True, title=None,
     # A user without a profile might be uploading this
     logger.info('>>> Step 9. Creating points of contact records for '
                 '[%s]', name)
-    pc, __ = Contact.objects.get_or_create(user=user,
+    pc, __ = Profile.objects.get_or_create(user=user,
                                            defaults={"name": user.username})
-    ac, __ = Contact.objects.get_or_create(user=user,
+    ac, __ = Profile.objects.get_or_create(user=user,
                                            defaults={"name": user.username}
                                            )
 
@@ -656,7 +656,6 @@ def upload(incoming, user=None, overwrite=False,
             try:
                 layer = file_upload(filename,
                                     user=user,
-                                    title=basename,
                                     overwrite=overwrite,
                                     keywords=keywords,
                                     )

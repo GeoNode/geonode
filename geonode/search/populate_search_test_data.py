@@ -23,7 +23,7 @@ from django.core.serializers import serialize
 from django.contrib.auth.models import User
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.people.models import Contact
+from geonode.people.models import Profile 
 from itertools import cycle
 from taggit.models import Tag
 from taggit.models import TaggedItem
@@ -82,7 +82,7 @@ def create_models():
         u.first_name = first_name
         u.last_name = last_name
         u.save()
-        contact = Contact.objects.get(user=u)
+        contact = Profile.objects.get(user=u)
         contact.profile = profile
         contact.save()
         users.append(u)
@@ -130,7 +130,7 @@ def create_models():
 def dump_models(path=None):
     result = serialize("json", sum([list(x) for x in
                                     [User.objects.all(),
-                                     Contact.objects.all(),
+                                     Profile.objects.all(),
                                      Layer.objects.all(),
                                      Map.objects.all(),
                                      Tag.objects.all(),

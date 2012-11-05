@@ -23,9 +23,11 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from geonode.sitemap import LayerSitemap, MapSitemap
 import geonode.proxy.urls
-import geonode.signals
 
-# Uncomment the next two lines to enable the admin:
+# Import *_signals.py
+import geonode.social_signals
+
+# Setup Django Admin
 from django.contrib import admin
 admin.autodiscover()
 
@@ -62,8 +64,7 @@ urlpatterns = patterns('',
     (r'^search/', include('geonode.search.urls')),
 
     # Social views
-    (r'^accounts/', include('registration.urls')),
-    (r'^profiles/', include('idios.urls')),
+    (r"^account/", include("account.urls")),
     (r'^people/', include('geonode.people.urls')),
     (r'^avatar/', include('avatar.urls')),
     (r'^comments/', include('dialogos.urls')),
@@ -73,12 +74,13 @@ urlpatterns = patterns('',
     #(r'^activity/', include('actstream.urls')),
     #(r'^relationships/', include('relationships.urls')),
     #(r'^messages/', include('user_messages.urls')),
+    #(r'^announcements/', include('announcements.urls')),
 
     # Accounts
-    url(r'^accounts/ajax_login$', 'geonode.views.ajax_login',
-                                       name='auth_ajax_login'),
-    url(r'^accounts/ajax_lookup$', 'geonode.views.ajax_lookup',
-                                       name='auth_ajax_lookup'),
+    url(r'^account/ajax_login$', 'geonode.views.ajax_login',
+                                       name='account_ajax_login'),
+    url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup',
+                                       name='account_ajax_lookup'),
     
     # Meta
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',

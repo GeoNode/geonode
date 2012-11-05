@@ -6,7 +6,7 @@
         minimumInputLength: 1,
         multiple: true,
         ajax: {
-          url: "{% url auth_ajax_lookup %}",
+          url: "{% url account_ajax_lookup %}",
           dataType: "json",
           type: "POST",
           data: function (term, page) {
