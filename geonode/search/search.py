@@ -30,7 +30,7 @@ from geonode.security.models import AUTHENTICATED_USERS
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
 from geonode.maps.models import MapLayer
-from geonode.people.models import Contact
+from geonode.people.models import Profile 
 
 from geonode.search import extension
 from geonode.search.models import filter_by_period
@@ -170,7 +170,7 @@ def _get_owner_results(query):
         q = q.filter(qs)
 
         rules = _rank_rules(User,['username', 10, 5]) + \
-                _rank_rules(Contact,['organization', 5, 2])
+                _rank_rules(Profile,['organization', 5, 2])
         added = extension.owner_rank_rules()
         if added:
             rules = rules + _rank_rules(*added)

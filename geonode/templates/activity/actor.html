@@ -27,7 +27,7 @@ $(function () {
 {% endifequal %}
 {% endblock %}
 
-{% block main %}
+{% block body %}
 {% if request.user.is_authenticated %}
 <p><b><a href="{% actor_url request.user %}">{% trans "View my actions" %}</a></b></p>
 {% endif %}

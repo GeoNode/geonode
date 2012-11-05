@@ -109,7 +109,7 @@
   },
   {
     "pk": 1,
-    "model": "people.contact",
+    "model": "people.profile",
     "fields": {
       "profile": null,
       "city": null,
@@ -130,7 +130,7 @@
   },
   {
     "pk": 2,
-    "model": "people.contact",
+    "model": "people.profile",
     "fields": {
       "profile": "this contains all my interesting profile information",
       "city": null,
@@ -151,7 +151,7 @@
   },
   {
     "pk": 3,
-    "model": "people.contact",
+    "model": "people.profile",
     "fields": {
       "profile": "some other information goes here",
       "city": null,
@@ -172,7 +172,7 @@
   },
   {
     "pk": 4,
-    "model": "people.contact",
+    "model": "people.profile",
     "fields": {
       "profile": "this contains all my interesting profile information",
       "city": null,
@@ -193,7 +193,7 @@
   },
   {
     "pk": 5,
-    "model": "people.contact",
+    "model": "people.profile",
     "fields": {
       "profile": "some other information goes here",
       "city": null,
@@ -214,7 +214,7 @@
   },
   {
     "pk": 6,
-    "model": "people.contact",
+    "model": "people.profile",
     "fields": {
       "profile": "this contains all my interesting profile information",
       "city": null,
