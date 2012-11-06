@@ -25,7 +25,7 @@ from geonode.security.models import AUTHENTICATED_USERS
 from geonode.security.models import ANONYMOUS_USERS
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.people.models import Contact
+from geonode.people.models import Profile 
 from geonode.search import search
 from geonode.search import util
 from geonode.search.query import query_from_request
@@ -299,4 +299,4 @@ class searchTest(TestCase):
         assert_rules([(Layer,
             [('name', 10, 1), ('title', 10, 5), ('abstract', 5, 2)])])
         assert_rules([(User, [('username', 10, 5)]),
-                      (Contact, [('organization', 5, 2)])])
+                      (Profile, [('organization', 5, 2)])])

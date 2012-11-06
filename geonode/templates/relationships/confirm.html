@@ -3,7 +3,7 @@
 
 {% block title %}{% if not add %}{% trans "No longer" %} {% endif %}{{ status.verb|capfirst }} {{ to_user.username }}?{% endblock %}
 
-{% block main %}
+{% block body %}
   <p>{% if not add %}{% trans "No longer" %} {% endif %}{{ status.verb|capfirst }} {{ to_user.username }}?</p>
   <form method="post" action="">{% csrf_token %}
     {{ form.as_table }}

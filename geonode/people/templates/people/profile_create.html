@@ -1,9 +1,9 @@
-{% extends "idios/base.html" %}
+{% extends "people/base.html" %}
 
 {% load i18n %}
 {% load bootstrap_tags %}
 
-{% block main %}
+{% block body %}
   <form action="" class="form-horizontal" method="post">
     <legend>{% trans "Create Profile" %}</legend>
     {% csrf_token %}

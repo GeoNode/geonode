@@ -64,7 +64,7 @@ LANGUAGES = (
     ('de', 'Deutsch'),
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
-    ('zh', '中文'),
+#    ('zh', '中文'),
     ('ja', '日本人'),
 )
 
@@ -132,16 +132,19 @@ INSTALLED_APPS = (
 
     # Utility
     'pagination',
-    'django_forms_bootstrap',
     'taggit',
     'taggit_templatetags',
     'south',
     'friendlytagloader',
     'leaflet',
 
+    # Theme
+    "pinax_theme_bootstrap_account",
+    "pinax_theme_bootstrap",
+    'django_forms_bootstrap',
+
     # Social
-    'registration',
-    'profiles',
+    'account',
     'avatar',
     'dialogos',
     'agon_ratings',
@@ -216,13 +219,16 @@ LOGGING = {
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
-    'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
+    "django.core.context_processors.tz",
     'django.core.context_processors.media',
+    "django.core.context_processors.static",
     'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
     #'announcements.context_processors.site_wide_announcements',
-    # The context processor belows add things like SITEURL
+    "account.context_processors.account",
+    # The context processor below adds things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
     'geonode.context_processors.resource_urls',
 )
@@ -285,14 +291,11 @@ ACTSTREAM_SETTINGS = {
 
 # For South migrations
 SOUTH_MIGRATION_MODULES = {
-    'registration': 'geonode.migrations.registration',
     'avatar': 'geonode.migrations.avatar',
 }
 
-# For django-profiles
-AUTH_PROFILE_MODULE = 'people.Contact'
-
-# For django-registration
+# Settings for Social Apps 
+AUTH_PROFILE_MODULE = 'people.Profile'
 REGISTRATION_OPEN = False
 
 #
@@ -312,8 +315,6 @@ NOSE_ARGS = [
 #
 # GeoNode specific settings
 #
-
-SITENAME = "GeoNode"
 
 SITEURL = "http://localhost:8000/"
 
@@ -355,9 +356,9 @@ PYCSW = {
     # pycsw configuration
     'CONFIGURATION': {
         'metadata:main': {
-            'identification_title': '%s Catalogue' % SITENAME,
+            'identification_title': 'GeoNode Catalogue',
             'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, and collaborative use of geospatial data',
-            'identification_keywords': '%s,sdi,catalogue,discovery,metadata,GeoNode' % SITENAME,
+            'identification_keywords': 'sdi,catalogue,discovery,metadata,GeoNode',
             'identification_keywords_type': 'theme',
             'identification_fees': 'None',
             'identification_accessconstraints': 'None',

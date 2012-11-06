@@ -27,7 +27,7 @@ from django.utils import simplejson as json
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.layers.models import Layer, Attribute
-from geonode.people.models import Contact
+from geonode.people.models import Profile 
 
 
 class JSONField(forms.CharField):
@@ -48,11 +48,11 @@ class LayerForm(forms.ModelForm):
 
     poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                  label = "Point Of Contact", required=False,
-                                 queryset = Contact.objects.exclude(user=None))
+                                 queryset = Profile.objects.exclude(user=None))
 
     metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                              label = "Metadata Author", required=False,
-                                             queryset = Contact.objects.exclude(user=None))
+                                             queryset = Profile.objects.exclude(user=None))
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
     class Meta:
