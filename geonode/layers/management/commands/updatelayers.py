@@ -50,8 +50,7 @@ class Command(BaseCommand):
             console = None
 
         start = datetime.datetime.now()
-        output = Layer.objects.slurp(ignore_errors, verbosity=verbosity,
-                owner=owner, console=console)
+        output = Layer.objects.slurp(ignore_errors, verbosity=verbosity, owner=owner)
         updated = [dict_['name'] for dict_ in output if dict_['status']=='updated']
         created = [dict_['name'] for dict_ in output if dict_['status']=='created']
         failed = [dict_['name'] for dict_ in output if dict_['status']=='failed']
