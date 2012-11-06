@@ -529,6 +529,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
             layerTree = Ext.getCmp("treecontent");
 
+
+            //If there are feeds on the map, there will be a SelectFeature control.
+            //Activate it now.
+            if (this.selectControl)
+                this.selectControl.activate();
+
         }, this);
 
         //needed for Safari
@@ -825,4 +831,32 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             });         
         }
     }
+
+    /**
+     * Remove a feed layer from the SelectFeatureControl (if present) when that layer is removed from the map.
+     * If this is not done, the layer will remain on the map even after the record is deleted.
+     * @param record
+     */
+    removeFromSelectControl:  function(record){
+        if (this.selectControl ) {
+            var recordLayer = record.getLayer();
+            //SelectControl might have layers array or single layer object
+            if (this.selectControl.layers != null){
+                for (var x = 0; x < this.selectControl.layers.length; x++)
+                {
+                    var selectLayer = this.selectControl.layers[x];
+                    var selectLayers = this.selectControl.layers;
+                    if (selectLayer.id === recordLayer.id) {
+                        selectLayers.splice(x,1);
+                        this.selectControl.setLayer(selectLayers);
+                    }
+                }
+            }
+            if (this.selectControl.layer != null) {
+                if (recordLayer.id === this.selectControl.layer.id) {
+                    this.selectControl.setLayer([]);
+                }
+            }
+        }
+    },
 });
