@@ -35,8 +35,9 @@ from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from owslib.wms import WebMapService
 from owslib.csw import CatalogueServiceWeb
+from django.http import HttpResponse
 
-from geonode import GeoNodeException
+# from geonode import GeoNodeException
 #from geonode.layers.models import Layer
 #from geonode.maps.models import Map
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -565,3 +566,40 @@ def resolve_object(request, model, query, permission=None,
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)
     return obj
+
+
+def json_response(body=None, errors=None, redirect_to=None, exception=None, content_type=None):
+   """Create a proper JSON response. If body is provided, this is the response.
+   If errors is not None, the response is a success/errors json object.
+   If redirect_to is not None, the response is a success=True, redirect_to object
+   If the exception is provided, it will be logged. If body is a string, the
+   exception message will be used as a format option to that string and the
+   result will be a success=False, errors = body % exception
+   """
+   if errors:
+       body = {
+           'success' : False,
+           'errors' : errors
+       }
+   elif redirect_to:
+       body = {
+           'success' : True,
+           'redirect_to' : redirect_to
+       }
+   elif exception:
+       if body is None:
+           body = "Unexpected exception %s" % exception
+       else:
+           body = body % exception
+       body = {
+           'success' : False,
+           'errors' : [ body ]
+       }
+   elif body:
+       pass
+   else:
+       raise Exception("must call with body, errors or redirect_to")
+
+   if not isinstance(body, basestring):
+       body = json.dumps(body)
+   return HttpResponse(body, mimetype = "application/json")

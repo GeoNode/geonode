@@ -435,7 +435,10 @@ def layer_search_page(request, template='layers/layer_search.html'):
         'init_search': json.dumps(params or {}),
         'viewer_config': json.dumps(map_obj.viewer_json(*DEFAULT_BASE_LAYERS)),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        "site" : settings.SITEURL
+        "site" : settings.SITEURL,
+        "search_api": reverse("layer_search_api"),
+        "search_action": reverse("layer_search_page"),
+        "search_type": "layer"
     }))
 
 
