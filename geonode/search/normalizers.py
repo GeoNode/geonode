@@ -191,7 +191,7 @@ class LayerNormalizer(Normalizer):
                 link['mime'] = l.mime
                 link['type'] = l.link_type
                 links[l.extension] = link
-            for s in layer.style_set.all():
+            for s in layer.styles.all():
                 link = {}
                 link['name'] = s.name
                 link['url'] = s.sld_url
