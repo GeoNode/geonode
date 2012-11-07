@@ -357,7 +357,7 @@
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user layer "layer" %}
     {% else %}
-        <script src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
+        <script src="{{ STATIC_URL }}libs/js/jquery.raty.js"></script>
     {% endif %}
     <script type="text/javascript">
     $(function() {
@@ -369,7 +369,7 @@
         });
     });
     </script>
-    <script src="{{ STATIC_URL }}geonode/js/paginate.js"></script>
+    <script src="{{ STATIC_URL }}js/paginate.js"></script>
     <script>
         $(function () {
             var activeTab = $('[href=' + location.hash + ']');
