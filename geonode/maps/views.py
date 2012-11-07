@@ -563,7 +563,10 @@ def maps_search_page(request, template='maps/map_search.html'):
 
     return render_to_response(template, RequestContext(request, {
         'init_search': json.dumps(params or {}),
-         "site" : settings.SITEURL
+        "site" : settings.SITEURL,
+        "search_api": reverse("maps_search_api"),
+        "search_action": reverse("maps_search"),
+        "search_type": "map"
     }))
 
 
