@@ -91,10 +91,8 @@
             {% if_relationship request.user profile.user "following" %}
                 {# itentionally empty (its above) #}
             {% else %}
-                {% if_has_tag add_relationship_url %}
                     {# they are not following them, so show a link to start following #}
-                    <a href="{{ profile.user|add_relationship_url:"following" }}">Follow</a>
-                {% endif_has_tag %}
+                    {# <a href="{{ profile.user|add_relationship_url:"following" }}">Follow</a> #}
             {% endif_relationship %}
         {% endif_has_tag %}
   {% endif %}

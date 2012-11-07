@@ -119,6 +119,7 @@ $.fn.serializeObject = function() {
       });
       return false;
     },
+
     batch_delete: function() {
       var form = $(this);
       var action = form.attr("action");
@@ -155,6 +156,7 @@ $.fn.serializeObject = function() {
       });
       return false;
     },
+
     batch_perms_submit: function() {
       var form = $(this);
       var action = form.attr("action");
@@ -257,7 +259,5 @@ $.fn.serializeObject = function() {
   };
     }
 };
-
-  return pub;
 
 });
