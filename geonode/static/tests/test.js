@@ -5,10 +5,10 @@ requirejs.config({
 
 
 define(['jquery',
-        '../js/upload/FileType',
-        '../js/upload/LayerInfo',
-        '../js/upload/FileTypes',
-        '../js/status/UploadSession'], function ($, FileType, LayerInfo, FileTypes, UploadSession) {
+        '../../js/upload/FileType',
+        '../../js/upload/LayerInfo',
+        '../../js/upload/FileTypes',
+        '../../js/status/UploadSession'], function ($, FileType, LayerInfo, FileTypes, UploadSession) {
 
     'use strict';
 
