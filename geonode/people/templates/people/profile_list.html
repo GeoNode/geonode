@@ -11,6 +11,7 @@
     {% if profile.user %}
         <li>
         {% avatar profile.user 50 %}<a href="{% url profile_detail profile.user.username %}">{{ profile.name }}</a>
+          {% comment %}
           {% if request.user != profile.user %}
             {% if_has_tag if_relationship remove_relationship_url %} 
                 {% if_relationship request.user profile.user "following" %}
@@ -18,10 +19,11 @@
                     <a href="{{ profile.user|remove_relationship_url:"following" }}">Unfollow</a>
                 {% else %}
                     {# they are not following them, so show a link to start following #}
-                    {# <a href="{{ profile.user|add_relationship_url:"following" }}">Follow</a> #}
+                    <a href="{{ profile.user|add_relationship_url:"following" }}">Follow</a>
                 {# {% endif_relationship %} #}
             {% endif_has_tag %}
           {% endif %}
+          {% endcomment %}
         </li>
     {% endif %}
 {% endfor %}
