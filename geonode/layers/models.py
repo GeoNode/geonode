@@ -52,6 +52,7 @@ from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
 
 from geoserver.catalog import Catalog, FailedRequestError
+
 from taggit.managers import TaggableManager
 from agon_ratings.models import OverallRating
 
@@ -77,7 +78,6 @@ class LayerManager(models.Manager):
         models.Manager.__init__(self)
         url = "%srest" % settings.GEOSERVER_BASE_URL
         self.gs_catalog = Catalog(url, _user, _password)
-
 
     def admin_contact(self):
         # this assumes there is at least one superuser

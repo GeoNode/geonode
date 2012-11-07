@@ -155,6 +155,7 @@ INSTALLED_APPS = (
 
     # GeoNode internal apps
     'geonode.maps',
+    'geonode.upload',
     'geonode.layers',
     'geonode.people',
     'geonode.proxy',
@@ -187,16 +188,21 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
-    'loggers': {
-        'django': {
-            'handlers':['null'],
-            'propagate': True,
-            'level':'INFO',
+    "loggers": {        
+        "django": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
         },
         "geonode": {
             "handlers": ["console"],
             "level": "ERROR",
         },
+
         "gsconfig.catalog": {
             "handlers": ["console"],
             "level": "ERROR",
@@ -478,8 +484,10 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE = ''
-#The name of the store in Geoserver
 DB_DATASTORE_NAME = ''
+
+UPLOADER_SHOW_TIME_STEP = False
+#The name of the store in Geoserver
 
 # Load more settings from a file called local_settings.py if it exists
 try:

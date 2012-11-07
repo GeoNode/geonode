@@ -10,13 +10,14 @@ $(function() {
     });
 });
 
-jQuery(document).ajaxSend(function(event, xhr, settings) {
+define(['jquery'], function($) {
+  $(document).ajaxSend(function(event, xhr, settings) {
     function getCookie(name) {
         var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
+      if (document.cookie && document.cookie !== '') {
             var cookies = document.cookie.split(';');
             for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
+          var cookie = $.trim(cookies[i]);
                 // Does this cookie string begin with the name we want?
                 if (cookie.substring(0, name.length + 1) == (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
@@ -26,6 +27,7 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
         }
         return cookieValue;
     }
+
     function sameOrigin(url) {
         // url could be relative or scheme relative or absolute
         var host = document.location.host; // host + port
@@ -33,11 +35,11 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
         var sr_origin = '//' + host;
         var origin = protocol + sr_origin;
         // Allow absolute or scheme relative URLs to same origin
-        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+      return (url == origin || url.slice(0, origin.length + 1) == origin + '/') || (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
             // or any other URL that isn't scheme relative or absolute i.e relative.
             !(/^(\/\/|http:|https:).*/.test(url));
     }
+
     function safeMethod(method) {
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
@@ -70,56 +72,6 @@ var batch_delete = function() {
     delete postdata.maps;
   };
 
-  $.ajax(
-    {
-      type: "POST",
-      url: action,
-      data: JSON.stringify(postdata),
-      success: function(data) {
-        $("#delete_form").modal("hide");
-      }
-    }
-  );
-  return false;
-};
-
-var batch_perms_submit = function() {
-    var form = $(this);
-    var action = form.attr("action");
-
-    var postdata = { layers: [], maps: [], permissions: {} };
-    var selected = $(".asset-selector:checked");
-
-    $.each(selected, function(index, value) {
-      var el = $(value);
-      if (el.data("type") === "map") {
-        postdata.maps.push(el.data("id"));
-      } else if (el.data("type") === "layer") {
-        postdata.layers.push(el.data("id"));
-      }
-    });
-
-    if (postdata.layers.length == 0) {
-      delete postdata.layers;
-    };
-    if (postdata.maps.length == 0) {
-      delete postdata.maps;
-    };
-
-    postdata.permissions = permissionsString(form, "bulk");
-    $.ajax(
-      {
-        type: "POST",
-        url: action,
-        data: JSON.stringify(postdata),
-        success: function(data) {
-          $("#modal_perms").modal("hide");
-        }
-      }
-    );
-    return false;
-  };
-
 $.fn.serializeObject = function() {
   var o = {};
   var a = this.serializeArray();
@@ -136,20 +88,125 @@ $.fn.serializeObject = function() {
   return o;
 };
 
-function permissionsString(form, type) {
-  var anonymousPermissions, authenticatedPermissions;
+  var pub = {
+    mapPermsSubmit: function() {
+      var form = $(this);
+      var action = form.attr("action");
+
+      permissions = permissionsString(form, "maps");
+      $.ajax({
+        type: "POST",
+        url: action,
+        data: JSON.stringify(permissions),
+        success: function(data) {
+          $("#modal_perms").modal("hide");
+        }
+      });
+      return false;
+    },
+    layerPermsSubmit: function() {
+      var form = $(this);
+      var action = form.attr("action");
+
+      permissions = permissionsString(form, "layer");
+      $.ajax({
+        type: "POST",
+        url: action,
+        data: JSON.stringify(permissions),
+        success: function(data) {
+          $("#modal_perms").modal("hide");
+        }
+      });
+      return false;
+    },
+    batch_delete: function() {
+      var form = $(this);
+      var action = form.attr("action");
+
+      var postdata = {
+        layers: [],
+        maps: []
+      };
+      var selected = $(".asset-selector:checked");
+
+      $.each(selected, function(index, value) {
+        var el = $(value);
+        if (el.data("type") === "map") {
+          postdata.maps.push(el.data("id"));
+        } else if (el.data("type") === "layer") {
+          postdata.layers.push(el.data("id"));
+        }
+      });
+
+      if (!postdata.layers.length) {
+        delete postdata.layers;
+      }
+      if (!postdata.maps.length) {
+        delete postdata.maps;
+      }
+
+      $.ajax({
+        type: "POST",
+        url: action,
+        data: JSON.stringify(postdata),
+        success: function(data) {
+          $("#delete_form").modal("hide");
+        }
+      });
+      return false;
+    },
+    batch_perms_submit: function() {
+      var form = $(this);
+      var action = form.attr("action");
+
+      var postdata = {
+        layers: [],
+        maps: [],
+        permissions: {}
+      };
+      var selected = $(".asset-selector:checked");
+
+      $.each(selected, function(index, value) {
+        var el = $(value);
+        if (el.data("type") === "map") {
+          postdata.maps.push(el.data("id"));
+        } else if (el.data("type") === "layer") {
+          postdata.layers.push(el.data("id"));
+        }
+      });
+
+      if (!postdata.layers.length) {
+        delete postdata.layers;
+      }
+      if (!postdata.maps.length) {
+        delete postdata.maps;
+      }
+
+      postdata.permissions = permissionsString(form, "bulk");
+      $.ajax({
+        type: "POST",
+        url: action,
+        data: JSON.stringify(postdata),
+        success: function(data) {
+          $("#modal_perms").modal("hide");
+        }
+      });
+      return false;
+    },
+    permissionsString: function(form, type) {
+      var anonymousPermissions, authenticatedPermissions, levels;
 
   var data = form.serializeObject();
 
   if (type == "maps") {
-    var levels = {
+        levels = {
       'readonly': 'map_readonly',
       'readwrite': 'map_readwrite',
       'admin': 'map_admin',
       'none': '_none'
     };
   } else {
-    var levels = {
+        levels = {
       'admin': 'layer_admin',
       'readwrite': 'layer_readwrite',
       'readonly': 'layer_readonly',
@@ -180,7 +237,7 @@ function permissionsString(form, type) {
       });
     } else {
       perUserPermissions.push([editusers, levels["readwrite"]]);
-    };
+        }
   }
   var manageusers = form.find("input[name=manageusers]").select2("val");
   if (manageusers) {
@@ -190,12 +247,17 @@ function permissionsString(form, type) {
       });
     } else {
       perUserPermissions.push([manageusers, levels["admin"]]);
-    };
-  };
+        }
+      }
 
   return {
     anonymous: anonymousPermissions,
     authenticated: authenticatedPermissions,
     users: perUserPermissions
   };
+    }
 };
+
+  return pub;
+
+});
