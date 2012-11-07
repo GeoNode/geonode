@@ -71,6 +71,7 @@
             <li><a href="{% url layer_upload %}">{% trans "Upload new layers" %}</a></li>
             <li><a href="{% url new_map %}">{% trans "Create a new map" %}</a></li>
         </ul>
+        {% comment %}
         {% if_has_tag relationship_list %}
         <h3>{% trans "Manage Connections" %}</h3>
         <ul class="nav nav-list">
@@ -78,7 +79,9 @@
             <li><a href="{% url relationship_list user "blocking" %}">{% trans "Blocking" %}</a></li>
         </ul>
         {% endif_has_tag %}
+        {% endcomment %}
   {% else %}
+        {% comment %}
         {# decide whether or not the current user is following this user #}
         {% if_has_tag if_relationship remove_relationship_url %}
             {% if_relationship request.user profile.user "following" %}
@@ -95,6 +98,7 @@
                     {# <a href="{{ profile.user|add_relationship_url:"following" }}">Follow</a> #}
             {% endif_relationship %}
         {% endif_has_tag %}
+        {% endcomment %}
   {% endif %}
   {% if_has_tag if_relationship %}
   <h3>Following</h3>

@@ -1,6 +1,6 @@
 /*global define: true, jasmine: true, describe: true, it: true, expect: true */
 requirejs.config({
-    baseUrl: '../libs'
+    baseUrl: '../libs/js'
 });
 
 
