@@ -1,4 +1,4 @@
-{% extends "layers/base.html" %}
+{% extends "layers/layer_base.html" %}
 {% load i18n %}
 
 {% block title %} {% trans "Search Data" %} - {{ block.super }} {% endblock %}
@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block main %}
-{% include "search_base.html" %}
+{% include "search/search_base.html" %}
 {% endblock %}
 
 {% block require_script %}
