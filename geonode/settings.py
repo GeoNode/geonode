@@ -155,7 +155,6 @@ INSTALLED_APPS = (
 
     # GeoNode internal apps
     'geonode.maps',
-    'geonode.upload',
     'geonode.layers',
     'geonode.people',
     'geonode.proxy',
