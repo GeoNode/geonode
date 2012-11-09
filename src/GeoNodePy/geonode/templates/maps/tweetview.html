@@ -131,6 +131,7 @@ OpenLayers.Layer.Grid.prototype.initSingleTile = function(bounds) {
 };
 
 
+
 var app;
 var init = function() {
 {% autoescape off %}
@@ -141,7 +142,7 @@ var init = function() {
                     actionTarget:  {target: "paneltbar", index: 5},
                     toolText: '<span class="x-btn-text">Identify</span>',
                     iconCls: null,
-                    geopsUrl: "/tweetserver",
+                    geopsUrl: "{{GEOPS_IP}}",
                     outputConfig: {width: 400, height: 200, panIn: false},
                     featurePanel: 'queryPanel',
                     attributePanel: 'gridWinPanel',
@@ -224,8 +225,8 @@ var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
             altFormats:'Y-m-d|Y-n-d'
             ,allowBlank:true,
             minValue: new Date(2012,9,1),
-            maxValue: new Date(Date.now()),
-            value: new Date(2012,9,10)
+            maxValue: new Date(Date.now()+86400000),
+            value: new Date(Date.now()-86400000)
          },
         width:200
     });
@@ -240,18 +241,22 @@ var tweetDateEndField = new Ext.ux.form.DateTime({
     ,timeConfig: {
         altFormats:'H:i:s'
         ,allowBlank:true,
-        value: new Date(Date.now()+60000)
+        value: new Date(Date.now())
     }
     ,dateFormat:'n/d/Y'
     ,dateConfig: {
         altFormats:'Y-m-d|Y-n-d'
         ,allowBlank:true,
         minValue: new Date(2012,9,1),
-        maxValue: new Date(Date.now()),
+        maxValue: new Date(Date.now()+86400000),
         value: new Date(Date.now())
     },
     width:200
 });
+
+
+var firstEndDate =  tweetDateEndField.getValue().getTime()-1000;
+var firstHeatMap = true;
 
 var tweetPointLayer = null;
 var tweetHeatLayer = null;
@@ -294,19 +299,29 @@ var remoteStore = new Ext.data.JsonStore({
 var getLegendUrl = function() {
     return  tweetConfig.url +
             "?TRANSPARENT=TRUE&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml" +
-            "&LAYER=heatmap&FORMAT=image%2Fgif&SQL=" + tweetHeatRecord.getLayer().params["SQL"] + "&MAXVAL=" + tweetHeatRecord.getLayer().params["MAXVAL"] +
-            "&BLUR=" + tweetHeatRecord.getLayer().params["BLUR"] + "&MIN=" + tweetHeatRecord.getLayer().params["MIN"];
+            "&LAYER=heatmap&FORMAT=image%2Fgif&SQL=" + tweetHeatRecord.getLayer().params["SQL"] + "&MAXVAL=" +  Ext.getCmp("slider_maxval").getValue() +
+            "&BLUR=" + tweetHeatRecord.getLayer().params["BLUR"] + "&MIN=" + tweetHeatRecord.getLayer().params["MIN"] +
+            "&RND=" + tweetHeatRecord.getLayer().params["RND"];
 };
 
 var updateLegend = function(mapExtent) {
     Ext.getCmp("legendImage").getEl().dom.src = getLegendUrl();
 };
 
+var is_authorized = "{{tweetdownload}}";
 var legendImage = null;
 var legendWindow = null;
 
 var updateCQL = function(layers) {
+
+    if (Math.floor(tweetDateEndField.getValue().getTime()) >=  Math.floor(firstEndDate)) {
+        var rightNow = new Date();
+        tweetDateEndField.setValue(rightNow);
+    }
+
+    var randomNum = Math.random();
     var startFilter = "SELECT goog_x, goog_y, ";
+
 
     var keywordFilter = "";
     var keywords = tweetFilterField.getValue().replace("'","''").match(/[A-Za-z0-9\#\[\]\{\}\*\'\?\@\%\&\!\+\=\-\_\(\)]+|"[^"]+"/g);
@@ -316,8 +331,7 @@ var updateCQL = function(layers) {
         }
     }
 
-    var timeFilter =  "time > " + (new Date(tweetDateStartField.getValue()).getTime() + new Date(tweetDateStartField.getValue()).getTimezoneOffset()*60000)/1000
-            + " AND time < " + (new Date(tweetDateEndField.getValue()).getTime()  + new Date(tweetDateEndField.getValue()).getTimezoneOffset()*60000)/1000 ;
+    var timeFilter =  "time > " + (Math.floor(new Date(tweetDateStartField.getValue()).getTime()/1000)) + " AND time < " + (Math.floor(new Date(tweetDateEndField.getValue()).getTime() /1000)) ;
     var fromFilter = " from oct_tweets";
 
     for (var x = 0; x < layers.length; x++) {
@@ -328,8 +342,14 @@ var updateCQL = function(layers) {
             layer.getLayer().params["SQL"] =  layer["cql_filter"];
             layer.getLayer().params["BLUR"] = Ext.getCmp("slider_blur").value;
             layer.getLayer().params["MIN"] = Ext.getCmp("slider_min").value/100;
-            layer.getLayer().params["MAXVAL"] = Ext.getCmp("slider_maxval").value
-            layer.getLayer().visibility =  keywords ? true : false;
+            layer.getLayer().params["MAXVAL"] = Ext.getCmp("auto_max_checkbox").checked ? "auto" :  Ext.getCmp("slider_maxval").value;
+            layer.getLayer().params["RND"] = randomNum;
+            if (firstHeatMap && keywords) {
+                layer.getLayer().setVisibility(keywords ? true : false);
+                firstHeatMap = false;
+            } else if (!keywords || keywords == "") {
+                layer.getLayer().setVisibility(false);
+            }
 
         } else {
             layer["cql_filter"] = startFilter + " tweet_text " + fromFilter + " WHERE "  + timeFilter + (keywords ?  " AND " + keywordFilter : "") ;
@@ -371,6 +391,30 @@ var updateCQL = function(layers) {
     //console.log(tweetHeatRecord.getLayer().params["CQL_FILTER"]);
 }
 
+
+var getDownloadLink = function() {
+
+    function getUrlParams(url) {
+        var params = {};
+        url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str,key,value) {
+            params[key] = value;
+        });
+
+        return params;
+    }
+
+    var params = getUrlParams(tweetPointRecord.getLayer().grid[0][0].url);
+    return "/tweetDownload/?LAYERS=POINT&SQL=" + params.SQL + "&BBOX=" + params.BBOX;
+
+}
+
+var setCurrentTime = function() {
+    if (Math.floor(tweetDateEndField.getValue().getTime()) >=  Math.floor(firstEndDate)) {
+        var rightNow = new Date();
+        tweetDateEndField.setValue(rightNow);
+        updateLayer();
+    }
+}
 
     var getHeatNode =  function() {
       var heatNode = null;
@@ -518,7 +562,7 @@ var updateCQL = function(layers) {
                                     id: "date_interval",
                                     triggerAction: 'all',
                                     mode: 'local',
-                                    store:  [[Date.DAY, 'Day'], [Date.HOUR, 'Hour'],[Date.MINUTE, 'Minute' ]],
+                                    store:  [[Date.DAY, 'Day'], [Date.HOUR, 'Hour'],[Date.MINUTE, 'Minute' ], [Date.SECOND, 'Second']],
                                     value: Date.DAY,
                                     valueField: 'myId',
                                     displayField: 'displayText'
@@ -526,6 +570,12 @@ var updateCQL = function(layers) {
                                 rewindDate,
                                 forwardDate
                             ]
+                        },
+                        {
+                            xtype: 'box',
+                            id: 'dl_link_container',
+                            hidden: true,
+                            autoEl: {tag: 'a', id: "tweet_download_link",  href: '', html: 'Download Tweets'}
                         }
                     ]
                 },
@@ -538,6 +588,16 @@ var updateCQL = function(layers) {
                             {xtype: "container",
                                 html: "<div style='padding-bottom:10px;'></div>"},
                             {
+                                xtype: "checkbox",
+                                id: "auto_max_checkbox",
+                                boxLabel: "Auto Max %",
+                                style: "display:inline-block;",
+                                checked: true,
+                                listeners: {
+                                    "change": updateLayer
+                                }
+                            },
+                            {
                                 xtype:"sliderfield",
                                 id:"slider_maxval",
                                 width: 100,
@@ -545,14 +605,15 @@ var updateCQL = function(layers) {
                                 value: 0.02,
                                 fieldLabel: "Max %",
                                 labelStyle: "text-align:right;",
-                                minValue: 0.1,
-                                maxValue: 10,
-                                increment: 0.1,
+                                minValue: 0.01,
+                                maxValue: 20,
+                                increment: 0.01,
                                 keyIncrement: 0.5,
                                 decimalPrecision: 3,
                                 listeners: {
                                     "changecomplete": updateLayer
-                                }},
+                                }
+                            },
                             {xtype:"sliderfield",
                                 id:"slider_blur",
                                 value:"28",
@@ -574,7 +635,10 @@ var updateCQL = function(layers) {
                                 maxValue: 1000,
                                 listeners: {
                                     "changecomplete": updateLayer
-                                }}
+                                }},
+                            {
+
+                            }
 
                         ]
                 }
@@ -647,7 +711,7 @@ var chartPanel = new Ext.Panel({
 */
 
 var tweetConfig = {title: "Twitter Trends", source: "local", group: "Twitter", name: "heatmap",
-    url: "/tweetserver", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
+    url: "http://{{GEOPS_IP}}", srs: "EPSG:900913", format: "image/png", bbox: [-180,-90,180,90],
     singleTile: true, tiled: false, ratio: 1, opacity: 1, visibility: true, queryable: true
 };
 /*
@@ -682,13 +746,21 @@ tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
         }
 ));
 tweetPointRecord.group = tweetConfig.group;
+tweetPointRecord.group = tweetConfig.group;
 
 tweetPointRecord.getLayer().events.register("loadend", tweetPointRecord.getLayer(), function() {
-    var metadata = get_cookie("tweet_count");
-    if (metadata) {
-        cqlWindow.setTitle(gettext("Tweet Filter:  ") + metadata + " tweets currently on map");
+    var tweet_cookie = get_cookie("tweet_count");
+    if (tweet_cookie) {
+        cqlWindow.setTitle(gettext("Tweet Filter:  ") + tweet_cookie + " tweets currently on map");
+        if (tweet_cookie < 1000000 && is_authorized === "True") {
+            Ext.getCmp("dl_link_container").show();
+            Ext.getCmp("dl_link_container").getEl().dom.href = getDownloadLink();
+        } else {
+            Ext.getCmp("dl_link_container").hide();
+        }
         delete_cookie("tweet_count");
     }
+
 });
 
 tweetConfig["queryable"] = false;
@@ -735,10 +807,7 @@ app.on("ready", function() {
     });
 
 
-    app.legendPanel.filter = function(record) {
-        return record.data.group == undefined || (record.data.group != "Overlays" && record.data.url != "http://107.22.230.16");
-    };
-
+    app.legendPanel.destroy();
 
 
    app.mapPanel.layers.add([tweetHeatRecord]);
@@ -761,24 +830,43 @@ app.on("ready", function() {
     //Ext.getCmp("gx_westPanel").collapse();
 
     tweetHeatRecord.getLayer().events.register("loadend", tweetHeatRecord.getLayer(), function(e) {
-            updateLegend();
-    });
 
+        var maxlevel_cookie = get_cookie("max_value");
+        if (maxlevel_cookie) {
+            Ext.getCmp("slider_maxval").setValue(maxlevel_cookie);
+            //Ext.getCmp("slider_maxval").setValue(Math.random()*20);
+            delete_cookie("max_value");
+        }
 
-    app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
+        updateLegend();
 
-        var mapExtent = app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent() : config["map"]["maxExtent"];
-/*
-        remoteStore.load({
-            params: {"bounds": app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent() : config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'),  "dateEnd": new Date(tweetDateEndField.getValue()).format('Y-M-d')}
-        });
-        */
+        if (!tweetPointRecord.getLayer().getVisibility()) {
+                cqlWindow.setTitle(gettext("Tweet Filter:  "))
+        }
+
     });
 
     updateLayer();
 
     cqlWindow.show();
     cqlWindow.alignTo(document, 'br-br?');
+
+    app.mapPanel.map.events.register("moveend", app.mapPanel.map, function(e) {
+
+        // var mapExtent = app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent() : config["map"]["maxExtent"];
+
+        if (Math.floor(tweetDateEndField.getValue().getTime()) >=  Math.floor(firstEndDate)) {
+            var rightNow = new Date();
+            tweetDateEndField.setValue(rightNow);
+            updateLayer();
+        }
+        /*
+         remoteStore.load({
+         params: {"bounds": app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent() : config["map"]["maxExtent"], "dateStart": new Date(tweetDateStartField.getValue()).format('Y-M-d'),  "dateEnd": new Date(tweetDateEndField.getValue()).format('Y-M-d')}
+         });
+         */
+    }, this);
+
 });
 
 

@@ -174,21 +174,33 @@ def tweetServerProxy(request):
         pass
     return response
 
-#    conn = HTTPConnection(settings.GEOPS_IP)
-#    conn.request(request.method, url.query)
-#    result = conn.getresponse()
-#    response = HttpResponse(
-#        result.read(),
-#        status=result.status,
-#        content_type=result.getheader("Content-Type", "image/png")
-#    )
-#    return response
+
+def tweetDownload (request):
+
+    if (not request.user.is_authenticated() or  not request.user.get_profile().is_org_member):
+        return HttpResponse(status=403)
+
+    proxy_url = urlsplit(request.get_full_path())
+    download_url = "http://" + settings.GEOPS_IP + "?" + proxy_url.query  + settings.GEOPS_DOWNLOAD
+
+    http = httplib2.Http()
+    response, content = http.request(
+        download_url, request.method)
+
+    response =  HttpResponse(
+        content=content,
+        status=response.status,
+        mimetype=response.get("content-type", "text/plain"))
+
+    response['Content-Disposition'] = response.get('Content-Disposition', 'attachment; filename="tweets_"' + request.user.username + '.csv');
+
 
 
 def tweetTrendProxy (request):
-    request.get_full_url()
+
     tweetUrl = "http://" + settings.AWS_INSTANCE_IP + "/?agg=trend&bounds=" + request.POST["bounds"] + "&dateStart=" + request.POST["dateStart"] + "&dateEnd=" + request.POST["dateEnd"];
-    resultJSON = urllib.urlopen(tweetUrl).read()
+    resultJSON =""
+#    resultJSON = urllib.urlopen(tweetUrl).read()
 #    import datetime
 #
 #
