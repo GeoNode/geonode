@@ -1,0 +1,18 @@
+{% extends "base.html"%}
+
+{% load i18n %}
+
+{% block main %}
+<h3>{% trans "Create Message" %}</h3>
+<form method="post" action="{% url message_create %}">
+    {% csrf_token %}
+<table>
+    {{ form }}
+</table>
+<div><input type="submit" value="{% trans "Send message" %}" />
+</form>
+{% endblock %}
+
+{% block sidebar %}
+<a href="{% url messages_inbox %}">{% trans "Back to Inbox" %}</a>
+{% endblock %}
