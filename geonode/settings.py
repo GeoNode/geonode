@@ -294,7 +294,7 @@ SOUTH_MIGRATION_MODULES = {
     'avatar': 'geonode.migrations.avatar',
 }
 
-# Settings for Social Apps 
+# Settings for Social Apps
 AUTH_PROFILE_MODULE = 'people.Profile'
 REGISTRATION_OPEN = False
 
