@@ -1081,6 +1081,7 @@ def tweetview(request):
         'maptitle': map.title,
         'GEOPS_IP': settings.GEOPS_IP,
         'urlsuffix': get_suffix_if_custom(map),
+        'tweetdownload': request.user.is_authenticated() and request.user.get_profile().is_org_member
         }))
 
 def official_site(request, site):
@@ -2303,9 +2304,8 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
               Q(title__icontains=keyword)
             | Q(abstract__icontains=keyword))
 
-    officialMaps = maps.filter(Q(officialurl__isnull=False)).exclude(officialurl='tweetmap')
+    officialMaps = maps.filter(Q(officialurl__isnull=False))
     maps = maps.filter(Q(officialurl__isnull=True))
-
     if sort_field:
         order_by = ("" if sort_dir == "ASC" else "-") + sort_field
         maps = maps.order_by(order_by)
