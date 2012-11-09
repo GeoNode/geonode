@@ -192,7 +192,8 @@ def tweetDownload (request):
         status=response.status,
         mimetype=response.get("content-type", "text/plain"))
 
-    response['Content-Disposition'] = response.get('Content-Disposition', 'attachment; filename="tweets_"' + request.user.username + '.csv');
+    response['Content-Disposition'] = response.get('Content-Disposition', 'attachment; filename="tweets"' + request.user.username + '.csv');
+    return response
 
 
 

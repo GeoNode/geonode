@@ -752,7 +752,7 @@ tweetPointRecord.getLayer().events.register("loadend", tweetPointRecord.getLayer
     var tweet_cookie = get_cookie("tweet_count");
     if (tweet_cookie) {
         cqlWindow.setTitle(gettext("Tweet Filter:  ") + tweet_cookie + " tweets currently on map");
-        if (tweet_cookie < 1000000 && is_authorized === "True") {
+        if (tweet_cookie < 50000 && is_authorized === "True") {
             Ext.getCmp("dl_link_container").show();
             Ext.getCmp("dl_link_container").getEl().dom.href = getDownloadLink();
         } else {
