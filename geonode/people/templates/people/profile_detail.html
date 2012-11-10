@@ -71,42 +71,16 @@
             <li><a href="{% url layer_upload %}">{% trans "Upload new layers" %}</a></li>
             <li><a href="{% url new_map %}">{% trans "Create a new map" %}</a></li>
         </ul>
-        {% if_has_tag relationship_list %}
-        <h3>{% trans "Manage Connections" %}</h3>
-        <ul class="nav nav-list">
-            <li><a href="{% url relationship_list user "following" %}">{% trans "Following" %}</a></li>
-            <li><a href="{% url relationship_list user "blocking" %}">{% trans "Blocking" %}</a></li>
-        </ul>
+        {% if_has_tag if_relationship %}
+            {% include "relationships/_manage_connections.html" %}
         {% endif_has_tag %}
   {% else %}
-        {# decide whether or not the current user is following this user #}
-        {% if_has_tag if_relationship remove_relationship_url %}
-            {% if_relationship request.user profile.user "following" %}
-                {# they are following them, so show a "remove" url #}
-                <a href="{{ profile.user|remove_relationship_url:"following" }}">Unfollow</a>
-            {% endif_relationship %}
-        {% endif_has_tag %}
-
         {% if_has_tag if_relationship %}
-            {% if_relationship request.user profile.user "following" %}
-                {# itentionally empty (its above) #}
-            {% else %}
-                {% if_has_tag add_relationship_url %}
-                    {# they are not following them, so show a link to start following #}
-                    <a href="{{ profile.user|add_relationship_url:"following" }}">Follow</a>
-                {% endif_has_tag %}
-            {% endif_relationship %}
+            {% include "relationships/_profile_follow.html" %}
         {% endif_has_tag %}
   {% endif %}
   {% if_has_tag if_relationship %}
-  <h3>Following</h3>
-  {% for u in profile.user.relationships.following %}
-      <a href="{% url profile_detail u.username %}">{% avatar u 65 %}</a>
-  {% endfor %}
-  <h3>Followers</h3>
-  {% for u in profile.user.relationships.followers %}
-      <a href="{% url profile_detail u.username %}">{% avatar u 65 %}</a>
-  {% endfor %}
+    {% include "relationships/_list_connections.html" %}
   {% endif_has_tag %}
 {% endblock %}
 
