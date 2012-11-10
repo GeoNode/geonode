@@ -31,6 +31,9 @@ pip install -e .
 paver setup
 cp /home/jenkins/local_settings_with_coverage.py geonode/local_settings.py
 
+# Run the smoke tests
+python manage.py test geonode.tests.smoke
+
 # Run the unit tests
 python manage.py test
 cp TEST-nose.xml unit-TEST-nose.xml

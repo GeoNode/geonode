@@ -24,6 +24,7 @@ before_script:
   - paver setup -f
 
 script:
+  - python manage.py test geonode.tests.smoke
   - paver test
   - paver test_integration
   - paver test_integration -n geonode.tests.csw
