@@ -124,7 +124,7 @@ class GeoNodeMapTest(TestCase):
     """
 
     def setUp(self):
-        call_command('loaddata', 'sample_admin', verbosity=0)
+        call_command('loaddata', 'people_data', verbosity=0)
 
     def tearDown(self):
         pass
