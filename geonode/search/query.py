@@ -26,7 +26,10 @@ from datetime import date
 from datetime import timedelta
 import operator
 
-DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
+try:
+    DEFAULT_SEARCH_SIZE = settings.DEFAULT_SEARCH_SIZE
+except ValueError:
+    DEFAULT_SEARCH_SIZE = 10
 
 _SEARCH_PARAMS = [
     'type',
@@ -82,7 +85,7 @@ class Query(object):
     start = None
     limit = None
 
-    def __init__(self, query, start=0, limit=DEFAULT_MAPS_SEARCH_BATCH_SIZE,
+    def __init__(self, query, start=0, limit=DEFAULT_SEARCH_SIZE,
                  sort_field='last_modified', sort_asc=False, filters=None,
                  user=None, cache=True):
         self.query = query
@@ -162,7 +165,13 @@ def query_from_request(request, extra):
     except ValueError:
         raise BadQuery('startIndex must be valid number')
     try:
-        limit = int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE))
+        limit = params.get('limit', DEFAULT_SEARCH_SIZE)
+
+        if str(limit).lower() == 'none':
+            limit = None
+
+        if limit is not None:
+            limit = int(limit)
     except ValueError:
         raise BadQuery('limit must be valid number')
 
