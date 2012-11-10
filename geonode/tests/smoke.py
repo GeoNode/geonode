@@ -28,7 +28,7 @@ from geonode.utils import forward_mercator, inverse_mercator
 
 class GeoNodeSmokeTests(TestCase):
 
-    fixtures = ['test_data.json']
+    fixtures = ['sample_admin.json']
     GEOSERVER = False
 
     def setUp(self):
@@ -127,6 +127,7 @@ class GeoNodeSmokeTests(TestCase):
         response = c.get(reverse('profile_detail', args=['admin']))
         self.failUnlessEqual(response.status_code, 200)
         response = c.get(reverse('profile_detail', args=['norman']))
+        self.failUnlessEqual(response.status_code, 200)
         
 
 class GeoNodeUtilsTests(TestCase):
