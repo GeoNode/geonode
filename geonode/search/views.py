@@ -151,7 +151,7 @@ def search_api(request, **kwargs):
 def _search_json(query, items, facets, time):
     total = len(items)
 
-    if query.limit > 0:
+    if query.limit is not None and query.limit > 0:
         items = items[query.start:query.start + query.limit]
 
     # unique item id for ext store (this could be done client side)

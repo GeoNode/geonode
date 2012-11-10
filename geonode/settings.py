@@ -266,6 +266,11 @@ ABSOLUTE_URL_OVERRIDES = {
 # it would be best to use the ?next= parameter
 LOGIN_REDIRECT_URL = "/"
 
+#
+# Settings for default search size
+#
+DEFAULT_SEARCH_SIZE = 10
+
 
 #
 # Settings for third party apps
