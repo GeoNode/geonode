@@ -72,7 +72,7 @@ urlpatterns = patterns('',
     (r'^activity/', include('actstream.urls')),
     (r'^relationships/', include('relationships.urls')),
     (r'^announcements/', include('announcements.urls')),
-    (r'^notifications/', include('notification.urls')),
+    #(r'^notifications/', include('notification.urls')),
 
     # Accounts
     url(r'^account/ajax_login$', 'geonode.views.ajax_login',
