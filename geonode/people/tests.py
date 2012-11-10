@@ -29,7 +29,7 @@ from django.contrib.sites.models import Site
 
 class PeopleTest(TestCase):
 
-    fixtures = ('test_data.json',)
+    fixtures = ('people_data.json',)
 
     def test_forgot_username(self):
         c = Client()
