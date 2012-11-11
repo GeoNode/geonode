@@ -140,6 +140,7 @@ INSTALLED_APPS = (
     'south',
     'friendlytagloader',
     'leaflet',
+    'request',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -242,6 +243,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'request.middleware.RequestMiddleware',
     # The setting below makes it possible to serve different languages per
     # user depending on things like headers in HTTP requests.
     'django.middleware.locale.LocaleMiddleware',
