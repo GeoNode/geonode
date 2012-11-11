@@ -41,7 +41,7 @@
 	<div class="twocol">
 		<h3>{{ document.title }}</h3>
 
-		{% if document.extension in imgtypes %}
+		{% if document.extension|lower in imgtypes %}
 		<div id="embedded_map">
 			<img src="{{document.doc_file.url}}" width='100%' />
 		</div>
