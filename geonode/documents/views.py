@@ -20,8 +20,8 @@ from geonode.people.models import Profile
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.people.forms import ProfileForm, PocForm
 
-from documents.models import Document
-from documents.forms import DocumentForm
+from geonode.documents.models import Document
+from geonode.documents.forms import DocumentForm
 
 IMGTYPES = ['jpg','jpeg','tif','tiff','png','gif']
 

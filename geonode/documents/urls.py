@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, url
 from django.views.i18n import javascript_catalog
 
-urlpatterns = patterns('documents.views',
+urlpatterns = patterns('geonode.documents.views',
 	url(r'^$','documents', name='documents_browse'),
 	url(r'^(?P<docid>\d+)/?$', 'documentdetail', name='document_detail'),
 	url(r'^upload/?$', 'upload_document', name='document-upload'),

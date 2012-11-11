@@ -6,8 +6,8 @@ when you run "manage.py test".
 from django.test import TestCase
 from django.conf import settings
 from geonode.maps.models import Map, MapLayer
-from documents.models import Document
-import documents.views
+from geonode.documents.models import Document
+import geonode.documents.views
 import geonode.core
 from django.test.client import Client
 from django.core.files.uploadedfile import SimpleUploadedFile
