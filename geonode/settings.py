@@ -114,6 +114,9 @@ ROOT_URLCONF = 'geonode.urls'
 # Site id in the Django sites framework
 SITE_ID = 1
 
+# Login and logout urls override
+LOGIN_URL = '/account/login/'
+LOGOUT_URL = '/account/logout/'
 
 INSTALLED_APPS = (
 
@@ -252,9 +255,7 @@ MIDDLEWARE_CLASSES = (
 AUTHENTICATION_BACKENDS = ('geonode.security.auth.GranularBackend',)
 
 def get_user_url(u):
-    from django.contrib.sites.models import Site
-    s = Site.objects.get_current()
-    return "http://" + s.domain + "/profiles/" + u.username
+    return u.profile.get_absolute_url() 
 
 
 ABSOLUTE_URL_OVERRIDES = {
