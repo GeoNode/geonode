@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% block main %}
+{% block body %}
 <h3>{% trans "Create Message" %}</h3>
 <form method="post" action="{% url message_create %}">
     {% csrf_token %}
