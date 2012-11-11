@@ -30,6 +30,15 @@
           <td><input type="checkbox" class="asset-selector pull-right" data-id="{{ map.id }}" data-type="map"></td>
         </tr>
       {% endfor %}
+
+      {% for doc in profile.user.document_set.all %}
+        <tr data-type="doc">
+          <td>{% trans "Document" %}</td>
+          <td><a href="{{ doc.get_absolute_url }}">{{ doc.title }}</a></td>
+          <td>{{ doc.date|date:"Y-m-d" }}</td>
+          <td><input type="checkbox" class="asset-selector pull-right" data-id="{{ doc.id }}" data-type="document"></td>
+        </tr>
+      {% endfor %}
     </tbody>
   </table>
   {% if user == profile.user %}
