@@ -24,6 +24,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
 
 from django.contrib.auth.models import User, Permission
 
@@ -54,8 +55,7 @@ class Profile(models.Model):
             raise ValidationError('Either name or organization should be provided')
 
     def get_absolute_url(self):
-        return ('profile_detail', (), { 'username': self.user.username })
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse('profile_detail', args=[self.user.username,]) 
 
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.organization)
