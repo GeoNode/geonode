@@ -5,7 +5,7 @@ from django.utils import simplejson as json
 
 from geonode.people.models import Profile
 
-from documents.models import Document
+from geonode.documents.models import Document
 
 class DocumentForm(forms.ModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
