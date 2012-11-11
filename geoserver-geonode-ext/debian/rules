@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh $@ 
+install:
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+	
+	# copy geoserver in /usr/share/geoserver
+	mkdir -p $(CURDIR)/debian/geoserver/usr/share/geoserver/
+	cp -r $(CURDIR)/target/geoserver/* $(CURDIR)/debian/geoserver/usr/share/geoserver/geoserver
+	# configure geoserver in tomcat
+	mkdir -p $(CURDIR)/debian/geoserver/etc/tomcat7/Catalina/localhost
+	echo '<Context path="/geoserver" docBase="/usr/share/geoserver/geoserver" />'  >> $(CURDIR)/debian/geoserver/etc/tomcat7/Catalina/localhost/geoserver.xml
+
+binary-indep: build install
+
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installdocs
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch

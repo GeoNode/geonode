@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Back up tomcat7 config file before changing it
+cp /etc/default/tomcat7 /etc/default/tomcat7.orig
+
+#GeoServer needs more ram than the default for tomcat.
+JVM_OPTS='JAVA_OPTS="-Djava.awt.headless=true -Xms256m -Xmx768m -Xrs -XX:PerfDataSamplingInterval=500 -XX:MaxPermSize=128m"'
+
+# Append a line with the new jvm configuration
+if [ "$(grep ^GEOSERVER /etc/default/tomcat7)" == "" ]; then 
+	echo '# GEOSERVER additions' >> /etc/default/tomcat7
+	echo 'JAVA_HOME=/usr/' >> /etc/default/tomcat7
+	echo $JVM_OPTS >> /etc/default/tomcat7
+fi
+
+# Fix permissions on deployed jar
+chown -R tomcat7:tomcat7 /usr/share/geoserver/geoserver
+
+# start tomcat after installing geoserver
+service tomcat7 restart
