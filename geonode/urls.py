@@ -57,6 +57,9 @@ urlpatterns = patterns('',
     # Map views
     (r'^maps/', include('geonode.maps.urls')),
 
+    #Documents views
+    (r'^documents/', include('geonode.documents.urls')),
+
     # Catalogue views
     (r'^catalogue/', include('geonode.catalogue.urls')),
 

@@ -162,6 +162,7 @@ INSTALLED_APPS = (
     'geonode.security',
     'geonode.search',
     'geonode.catalogue',
+    'geonode.documents',
 )
 LOGGING = {
     'version': 1,
