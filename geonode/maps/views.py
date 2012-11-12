@@ -243,12 +243,7 @@ def map_json(request, mapid):
         map_obj = _resolve_map(request, mapid, 'maps.change_map')
         try:
             map_obj.update_from_viewer(request.raw_post_data)
-
-            return HttpResponse(
-                "Map successfully updated.",
-                mimetype="text/plain",
-                status=204
-            )
+            return HttpResponse(json.dumps(map_obj.viewer_json()))
         except ValueError, e:
             return HttpResponse(
                 "The server could not understand the request." + str(e),
