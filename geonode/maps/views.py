@@ -294,9 +294,11 @@ def new_map_json(request):
         except ValueError, e:
             return HttpResponse(str(e), status=400)
         else:
-            response = HttpResponse('', status=201)
-            response['Location'] = map_obj.id
-            return response
+            return HttpResponse(
+                json.dumps({'id':map_obj.id }),
+                status=201,
+                mimetype='application/json'
+            )
     else:
         return HttpResponse(status=405)
 
