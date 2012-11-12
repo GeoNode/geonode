@@ -38,6 +38,7 @@ from django.utils import simplejson as json
 from django.views.generic.list import ListView
 from django.db.models import Q
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 from geonode.utils import _split_query, http_client
 from geonode.layers.models import Layer, TopicCategory
@@ -264,6 +265,7 @@ def new_map(request, template='maps/map_view.html'):
         }))
 
 
+@csrf_exempt
 def new_map_json(request):
     if request.method == 'GET':
         config = new_map_config(request)
@@ -291,7 +293,7 @@ def new_map_json(request):
         else:
             return HttpResponse(
                 json.dumps({'id':map_obj.id }),
-                status=201,
+                status=200,
                 mimetype='application/json'
             )
     else:
