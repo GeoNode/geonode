@@ -23,7 +23,9 @@ from httplib import HTTPConnection
 from urlparse import urlsplit
 import httplib2
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 def proxy(request):
     if 'url' not in request.GET:
         return HttpResponse(
@@ -45,6 +47,13 @@ def proxy(request):
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
+
+    print request.COOKIES
+
+    if 'csrftoken' in request.COOKIES:
+        headers['X-CSRFToken'] = request.COOKIES.get('csrftoken')
+
+    print headers
 
     conn = HTTPConnection(url.hostname, url.port)
     conn.request(request.method, locator, request.raw_post_data, headers)
