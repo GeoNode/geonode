@@ -24,6 +24,133 @@
 
 <script type="text/javascript">
 var app;
+
+Ext.ns("GeoNode");
+GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
+
+    /** begin i18n */
+    metadataFormCancelText : "UT:Cancel",
+    metadataFormSaveAsCopyText : "UT:Save as Copy",
+    metadataFormSaveText : "UT:Save",
+    metaDataHeader: 'UT:About this Map',
+    metaDataMapAbstract: 'UT:Abstract',
+    metaDataMapTitle: 'UT:Title',
+    /** end i18n */
+    initPortal: function() {
+        this.on("beforesave", function(json) {
+            if (this._doSave === true) {
+                delete this._doSave;
+                return true;
+            } else {
+                this.showMetadataForm();
+                return false;
+            }
+        }, this);
+        GeoNode.Composer.superclass.initPortal.apply(this, arguments);
+    },
+    /** private: method[initMetadataForm]
+     *
+     * Initialize metadata entry form.
+     */
+    initMetadataForm: function(){
+
+        var titleField = new Ext.form.TextField({
+            width: '95%',
+            fieldLabel: this.metaDataMapTitle,
+            value: this.about.title,
+            allowBlank: false,
+            enableKeyEvents: true,
+            listeners: {
+                "valid": function() {
+                    //saveAsButton.enable();
+                    saveButton.enable();
+                },
+                "invalid": function() {
+                    //saveAsButton.disable();
+                    saveButton.disable();
+                }
+            }
+        });
+
+        var abstractField = new Ext.form.TextArea({
+            width: '95%',
+            height: 200,
+            fieldLabel: this.metaDataMapAbstract,
+            value: this.about["abstract"]
+        });
+
+        var metaDataPanel = new Ext.FormPanel({
+            bodyStyle: {padding: "5px"},
+            labelAlign: "top",
+            items: [
+                titleField,
+                abstractField
+            ]
+        });
+        metaDataPanel.enable();
+
+        /*var saveAsButton = new Ext.Button({
+            text: this.metadataFormSaveAsCopyText,
+            disabled: !this.about.title,
+            handler: function(e){
+                this.about.title = titleField.getValue();
+                this.about["abstract"] = abstractField.getValue();
+                this.metadataForm.hide();
+                this.save(true);
+            },
+            scope: this
+        });*/
+        var saveButton = new Ext.Button({
+            text: this.metadataFormSaveText,
+            disabled: !this.about.title,
+            handler: function(e){
+                this.about.title = titleField.getValue();
+                this.about["abstract"] = abstractField.getValue();
+                this.metadataForm.hide();
+                this._doSave = true;
+                this.save();
+            },
+            scope: this
+        });
+
+        this.metadataForm = new Ext.Window({
+            title: this.metaDataHeader,
+            closeAction: 'hide',
+            items: metaDataPanel,
+            modal: true,
+            width: 400,
+            autoHeight: true,
+            bbar: [
+                "->",
+                /*saveAsButton,*/
+                saveButton,
+                new Ext.Button({
+                    text: this.metadataFormCancelText,
+                    handler: function() {
+                        titleField.setValue(this.about.title);
+                        abstractField.setValue(this.about["abstract"]);
+                        this.metadataForm.hide();
+                    },
+                    scope: this
+                })
+            ]
+        });
+    },
+
+    /** private: method[showMetadataForm]
+     *  Shows the window with a metadata form
+     */
+    showMetadataForm: function() {
+        if(!this.metadataForm) {
+            this.initMetadataForm();
+        }
+
+        this.metadataForm.show();
+    },
+
+
+});
+
 Ext.onReady(function() {
 {% autoescape off %}
     var config = Ext.apply({
@@ -61,6 +188,8 @@ Ext.onReady(function() {
          * maps on the server for sharing and editing.
          */
         rest: "{% url maps_browse %}",
+        saveUrl: "{% url maps_browse %}new/data",
+        updateUrl: "{% url maps_browse %}{mapid}/data",
         homeUrl: "{% url home %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
         localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",
@@ -69,7 +198,7 @@ Ext.onReady(function() {
     }, {{ config }});
 
 
-    app = new GeoExplorer.Composer(config);
+    app = new GeoNode.Composer(config);
 
     {% if user.is_authenticated and DB_DATASTORE  %}
     //Check permissions for selected layer and enable/disable feature edit buttons accordingly
