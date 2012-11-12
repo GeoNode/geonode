@@ -1,4 +1,4 @@
-{% extends "maps/map_base.html" %}
+{% extends "base.html" %}
 
 {% load i18n %}
 
@@ -6,14 +6,21 @@
 
 {% block head %}
 {{ block.super }}
-{% include "geonode/ext_header.html" %}
-<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/geoext/resources/css/gxtheme-gray.css">
-{% include "geonode/app_header.html" %}
-{% include "geonode/geo_header.html" %}
-<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
-<script src="{{ GEONODE_CLIENT_LOCATION }}script/PrintPreview.js"></script>
-<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/PrintPreview/resources/css/printpreview.css" />
-<script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/ext/resources/css/ext-all.css" />
+<script type="text/javascript" src="{{ STATIC_URL }}geoexplorer/externals/ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}geoexplorer/externals/ext/ext-all.js"></script>
+<script type="text/javascript">
+  Ext.Ajax.defaultHeaders = { 'X-CSRFToken': '{{ csrf_token|escapejs }}' };
+  Ext.BLANK_IMAGE_URL = "{{ STATIC_URL }}geoexplorer/externals/ext/resources/images/default/s.gif";
+</script>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/geoext/resources/css/gxtheme-gray.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/ux/colorpicker/color-picker.ux.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/PrintPreview/resources/css/printpreview.css" />
+<link rel="stylesheet" type="texr/css" href="{{ STATIC_URL }}geoexplorer/externals/gxp/src/theme/all.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/style.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/geoexplorer.css " />
+<!--[if IE]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/ie.css"/><![endif]-->
+<script src="{{STATIC_URL}}/geoexplorer/script/GeoExplorer.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 var app;
@@ -24,7 +31,7 @@ Ext.onReady(function() {
             ptype: "gxp_wmsgetfeatureinfo",
             // uncomment the line below if you want feature info in a grid
             format: "grid",
-            actionTarget: "main.tbar",
+            actionTarget: "map.tbar",
             outputConfig: {width: 400, height: 300}
         }{% if user.is_authenticated and DB_DATASTORE  %},
         {
@@ -48,7 +55,7 @@ Ext.onReady(function() {
         { ptype: "gxp_measure" }{% endif %}
         ],
         proxy: "/proxy/?url=",
-
+        printService: "{{GEOSERVER_BASE_URL}}pdf/",
         /* The URL to a REST map configuration service.  This service 
          * provides listing and, with an authenticated user, saving of 
          * maps on the server for sharing and editing.
@@ -62,7 +69,7 @@ Ext.onReady(function() {
     }, {{ config }});
 
 
-    app = new GeoExplorer(config);
+    app = new GeoExplorer.Composer(config);
 
     {% if user.is_authenticated and DB_DATASTORE  %}
     //Check permissions for selected layer and enable/disable feature edit buttons accordingly
