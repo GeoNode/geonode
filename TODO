@@ -1,8 +1,8 @@
-Proxy Issue
-Authentication Header
+Proxy Issue (using csrf_exempt on the proxy view temporarily)
 Hide GeoExplorer Login/Logout button (top right)
 Displace GeoExplorer down to fit in body (in mainline dev too)
 About Map Content
 about.html override
 Add Option to Layer Right Click Menu
+Save Map endpoint
 
