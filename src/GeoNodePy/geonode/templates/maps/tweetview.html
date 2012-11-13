@@ -224,9 +224,9 @@ var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
         ,dateConfig: {
             altFormats:'Y-m-d|Y-n-d'
             ,allowBlank:true,
-            minValue: new Date(2012,9,7),
+            minValue: new Date(2012,9,1),
             maxValue: new Date(Date.now()+86400000),
-            value: new Date(Date.now()-86400000)
+            value: new Date(Date.now()-(86400000*7))
          },
         width:200
     });
@@ -247,7 +247,7 @@ var tweetDateEndField = new Ext.ux.form.DateTime({
     ,dateConfig: {
         altFormats:'Y-m-d|Y-n-d'
         ,allowBlank:true,
-        minValue: new Date(2012,9,7),
+        minValue: new Date(2012,9,1),
         maxValue: new Date(Date.now()+86400000),
         value: new Date(Date.now())
     },
@@ -404,7 +404,8 @@ var getDownloadLink = function() {
     }
 
     var params = getUrlParams(tweetPointRecord.getLayer().grid[0][0].url);
-    return "/tweetDownload/?LAYERS=POINT&SQL=" + params.SQL + "&BBOX=" + params.BBOX;
+    return "/tweetDownload/?LAYERS=POINT&SQL=" + params.SQL.replace(/goog_x%2C(%20)+goog_y%2C(%20)+tweet_text/g,  "lat%2C%20lon%2C%20sender_name%2C%20time%2C%20tweet_id%2C%20tweet_text") + "&BBOX=" + params.BBOX;
+    //return "/tweetDownload/?LAYERS=POINT&SQL=" + params.SQL + "&BBOX=" + params.BBOX;
 
 }
 
@@ -575,7 +576,7 @@ var setCurrentTime = function() {
                             xtype: 'box',
                             id: 'dl_link_container',
                             hidden: true,
-                            autoEl: {tag: 'a', id: "tweet_download_link",  href: '', html: 'Download Tweets'}
+                            autoEl: {tag: 'a', id: "tweet_download_link",  target:"dl", href: '', html: 'Download Tweets'}
                         }
                     ]
                 },
@@ -752,7 +753,7 @@ tweetPointRecord.getLayer().events.register("loadend", tweetPointRecord.getLayer
     var tweet_cookie = get_cookie("tweet_count");
     if (tweet_cookie) {
         cqlWindow.setTitle(gettext("Tweet Filter:  ") + tweet_cookie + " tweets currently on map");
-        if (tweet_cookie < 100000 && is_authorized === "True") {
+        if (tweet_cookie < 1000000 && is_authorized === "True") {
             Ext.getCmp("dl_link_container").show();
             Ext.getCmp("dl_link_container").getEl().dom.href = getDownloadLink();
         } else {
