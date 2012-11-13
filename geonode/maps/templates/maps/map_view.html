@@ -51,6 +51,9 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
                 return false;
             }
         }, this);
+        this.on("beforehashchange", function(hash) {
+            return false;
+        });
         GeoNode.Composer.superclass.initPortal.apply(this, arguments);
     },
     /** private: method[initMetadataForm]
