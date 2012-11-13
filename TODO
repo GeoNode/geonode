@@ -34,3 +34,27 @@ Cosmetic
 ========
 Displace GeoExplorer down to fit in body (in mainline dev too)
 Bootstrap + Ext CSS Clashes (ext-compatibility.css)
+
+Other Pages using ext_header etc
+================================
+
+Documents
+---------
+geonode/documents/templates/documents/docinfo.html
+geonode/documents/templates/documents/document_metadata.html
+geonode/documents/templates/documents/document_search.html
+geonode/documents/templates/documents/document_upload.html
+geonode/documents/templates/documents/documents.html
+
+Layers
+------
+geonode/layers/templates/layers/layer_geoext_map.html
+geonode/layers/templates/layers/layer_metadata.html
+geonode/layers/templates/layers/layer_replace.html
+geonode/layers/templates/layers/layer_upload.html
+
+Maps
+----
+geonode/maps/templates/maps/map_detail.html
+geonode/maps/templates/maps/map_download.html
+geonode/maps/templates/maps/map_embed.html
