@@ -70,11 +70,11 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             enableKeyEvents: true,
             listeners: {
                 "valid": function() {
-                    //saveAsButton.enable();
+                    saveAsButton.enable();
                     saveButton.enable();
                 },
                 "invalid": function() {
-                    //saveAsButton.disable();
+                    saveAsButton.disable();
                     saveButton.disable();
                 }
             }
@@ -97,17 +97,19 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         });
         metaDataPanel.enable();
 
-        /*var saveAsButton = new Ext.Button({
+        var saveAsButton = new Ext.Button({
             text: this.metadataFormSaveAsCopyText,
             disabled: !this.about.title,
             handler: function(e){
+                delete this.id;
                 this.about.title = titleField.getValue();
                 this.about["abstract"] = abstractField.getValue();
                 this.metadataForm.hide();
-                this.save(true);
+                this._doSave = true;
+                this.save();
             },
             scope: this
-        });*/
+        });
         var saveButton = new Ext.Button({
             text: this.metadataFormSaveText,
             disabled: !this.about.title,
@@ -130,7 +132,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             autoHeight: true,
             bbar: [
                 "->",
-                /*saveAsButton,*/
+                saveAsButton,
                 saveButton,
                 new Ext.Button({
                     text: this.metadataFormCancelText,
