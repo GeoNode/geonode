@@ -6,9 +6,6 @@
 {% block body_class %}adv-search search{% endblock %}
 
 {% block head %}
-  {% include "geonode/ext_header.html" %}
-  {% include "geonode/app_header.html" %}
-  {% include "geonode/geo_header.html" %}
   {{ block.super }}
   <link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/datepicker.css" type="text/css" media="screen" />
 {% endblock %}
