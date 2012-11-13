@@ -37,9 +37,14 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
     metaDataMapTitle: 'UT:Title',
     /** end i18n */
     initPortal: function() {
-        this.on("beforesave", function(json) {
+        this.on("beforesave", function(requestConfig) {
             if (this._doSave === true) {
                 delete this._doSave;
+                if (this.id) {
+                    requestConfig.url = "{% url maps_browse %}" + this.id + "/data";
+                } else {
+                    requestConfig.url = "{% url maps_browse %}new/data";
+                }
                 return true;
             } else {
                 this.showMetadataForm();
@@ -188,8 +193,6 @@ Ext.onReady(function() {
          * maps on the server for sharing and editing.
          */
         rest: "{% url maps_browse %}",
-        saveUrl: "{% url maps_browse %}new/data",
-        updateUrl: "{% url maps_browse %}{mapid}/data",
         homeUrl: "{% url home %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
         localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",

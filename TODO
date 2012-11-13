@@ -14,6 +14,7 @@ Check Login/Logout workflow with header etc
 Check that Google Earth Plugin works properly
     Removed from geonode
     Requires update to latest Google Earth (6.2) 
+Decide how to deal with the hash change after save (have a beforehashchange event in GeoExplorer, or have GeoNode server-side deal with parsing this)
 
 Important
 =========

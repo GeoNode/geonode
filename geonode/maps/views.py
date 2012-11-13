@@ -229,7 +229,7 @@ def map_view_js(request, mapid):
     config = map.viewer_json()
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
-
+@csrf_exempt
 def map_json(request, mapid):
     if request.method == 'GET':
         map_obj = _resolve_map(request, mapid, 'maps.view_map')
