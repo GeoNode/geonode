@@ -29,6 +29,9 @@ Non-Critical
 Hide GeoExplorer Login/Logout button (top right)
 About Map Content
 about.html override
+Add Option to Layer Right Click Menu
+Save Map endpoint
+Decide how to deal with the hash change after save (have a beforehashchange event in GeoExplorer, or have GeoNode server-side deal with parsing this)
 Determine strategy for uploads inside GeoExplorer
 
 Cosmetic
