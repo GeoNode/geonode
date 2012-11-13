@@ -310,6 +310,9 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
 Ext.onReady(function() {
 {% autoescape off %}
     var config = Ext.apply({
+        portalConfig: {
+            style: 'margin-top: 10px'
+        },
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
         tools: [{
             ptype: "gxp_wmsgetfeatureinfo",
