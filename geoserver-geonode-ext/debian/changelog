@@ -1,0 +1,5 @@
+geoserver-geonode (0.3) precise; urgency=low
+
+  * Initial release. (Closes: #1)
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sun, 11 Nov 2012 03:18:45 +0000

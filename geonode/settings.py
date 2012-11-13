@@ -114,6 +114,9 @@ ROOT_URLCONF = 'geonode.urls'
 # Site id in the Django sites framework
 SITE_ID = 1
 
+# Login and logout urls override
+LOGIN_URL = '/account/login/'
+LOGOUT_URL = '/account/logout/'
 
 INSTALLED_APPS = (
 
@@ -137,6 +140,7 @@ INSTALLED_APPS = (
     'south',
     'friendlytagloader',
     'leaflet',
+    'request',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -149,9 +153,10 @@ INSTALLED_APPS = (
     'dialogos',
     'agon_ratings',
     #'notification',
-    #'announcements',
-    #'actstream',
-    #'relationships',
+    'announcements',
+    'actstream',
+    'relationships',
+    'user_messages',
 
     # GeoNode internal apps
     'geonode.maps',
@@ -161,6 +166,7 @@ INSTALLED_APPS = (
     'geonode.security',
     'geonode.search',
     'geonode.catalogue',
+    'geonode.documents',
 )
 LOGGING = {
     'version': 1,
@@ -242,6 +248,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'request.middleware.RequestMiddleware',
     # The setting below makes it possible to serve different languages per
     # user depending on things like headers in HTTP requests.
     'django.middleware.locale.LocaleMiddleware',
@@ -256,9 +263,7 @@ MIDDLEWARE_CLASSES = (
 AUTHENTICATION_BACKENDS = ('geonode.security.auth.GranularBackend',)
 
 def get_user_url(u):
-    from django.contrib.sites.models import Site
-    s = Site.objects.get_current()
-    return "http://" + s.domain + "/profiles/" + u.username
+    return u.profile.get_absolute_url() 
 
 
 ABSOLUTE_URL_OVERRIDES = {
@@ -269,6 +274,11 @@ ABSOLUTE_URL_OVERRIDES = {
 # FIXME(Ariel): I do not know why this setting is needed,
 # it would be best to use the ?next= parameter
 LOGIN_REDIRECT_URL = "/"
+
+#
+# Settings for default search size
+#
+DEFAULT_SEARCH_SIZE = 10
 
 
 #
@@ -299,7 +309,7 @@ SOUTH_MIGRATION_MODULES = {
     'avatar': 'geonode.migrations.avatar',
 }
 
-# Settings for Social Apps 
+# Settings for Social Apps
 AUTH_PROFILE_MODULE = 'people.Profile'
 REGISTRATION_OPEN = False
 
@@ -399,9 +409,6 @@ PYCSW = {
 }
 
 # GeoNode javascript client configuration
-
-# Google Api Key needed for 3D maps / Google Earth plugin
-GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
 
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)

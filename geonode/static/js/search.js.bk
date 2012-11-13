@@ -103,15 +103,13 @@ category.prototype.update_counts = function() {
 function doSearch(q) {
     $("#search-results").html("<p>Searching...</p>");
     $(".search_query").html(q);
-    $.getJSON('/search/api', {"q": q}, function(data) {
+    $.getJSON('/search/api', {"q": q, "limit": "none"}, function(data) {
         $("#search-results").html("");
         if (data.results.length) {
             var d1 = data.results[0].last_modified;
             $.each(data.results, function(index, item) {
               var context = {
                 "display_type": item._display_type,
-                "category": item.category,
-                "category_slug": item.category.toLowerCase().replace(/ /g, "-"),
                 "date": item.date,
                 "url": item.detail,
                 "title": item.title,
@@ -122,9 +120,16 @@ function doSearch(q) {
                 "last_modified": item.last_modified.split(".")[0].replace(/[\-T:]/g, ""),
                 "last_modified_date": item.last_modified.split("T")[0].replace(/-/g, "")
               };
+
+              if (item.category !== undefined){
+                context["category"] = item.category;
+                context["category_slug"] = item.category.toLowerCase().replace(/ /g, "-");
+              };
+
               $("#search-results").append(srt.render(context));
               if (d1 > item.last_modified) d1 = item.last_modified;
             });
+
             $("#id_data_begins").val(d1.split("T")[0]);
             $(".info-bar").show().find(".count").html($("#search-results article").size());
             $("#filter-maps, #filter-data").attr("checked", "checked");

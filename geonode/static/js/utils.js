@@ -8,6 +8,39 @@ $(function() {
         var selector = ".main-nav li#nav_" + item;
         $(selector).addClass("current");
     });
+    $('#login-link').click(function(e) {
+        e.preventDefault();
+        var href = $(this).attr('href');
+        if (href[0] == '/') {
+            $.post(href,{},function(d,s,x) {
+                window.location.reload();
+            })
+        } else {
+            $(href).toggle();
+        }
+    });
+
+    $("#login-form-pop button").click(function(e) {
+        var form = $("#login-form-pop form");
+        e.preventDefault();
+        if (!navigator.cookieEnabled) {
+            alert('GeoNode requires cookies to be enabled.');
+            return;
+        }
+        $.post(form.attr('action'),form.serialize(),function(data,status,xhr) {
+            $('.loginmsg').hide();
+            if (status == 'success') {
+                window.location.reload();
+            } else {
+                alert(data);
+            }
+            $("#login-form-pop").toggle();
+        }).error(function(data,status,xhr) {
+            if (status == 'error') {
+                $('.loginmsg').text('Invalid login').slideDown();
+            }
+        });
+    });
 });
 
 define(['jquery'], function($) {

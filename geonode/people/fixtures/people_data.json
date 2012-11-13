@@ -10,7 +10,7 @@
             "is_superuser": true,
             "last_login": "2010-07-20 17:26:12",
             "last_name": "",
-            "password": "sha1$6c974$de67ee46336cb3b9bb9e90d53863c3a8d01ce944",
+            "password": "sha1$a1ddf$1e14be2baa49df74672c93fa283ba549f56254b7",
             "user_permissions": [],
             "username": "admin"
         },
@@ -53,62 +53,23 @@
         "model": "auth.user",
         "pk": 4
     },
-
-{
-    "pk": 1,
-    "model": "people.contact",
-    "fields": {
-        "city": null,
-        "fax": null,
-        "name": "Default Contact",
-        "area": null,
-        "country": null,
-        "zipcode": null,
-        "delivery": null,
-        "user": 4,
-        "position": null,
-        "organization": "GeoNode",
-        "voice": null,
-        "email": null
-    }
-},
-{
-    "pk": 2,
-    "model": "people.contact",
-    "fields": {
-        "city": null,
-        "fax": null,
-        "name": "Default Author",
-        "area": null,
-        "country": null,
-        "zipcode": null,
-        "delivery": null,
-        "user": 3,
-        "position": null,
-        "organization": "Geonode",
-        "voice": null,
-        "email": null
-    }
-},
-{
-    "pk": 3,
-    "model": "people.contact",
-    "fields": {
-        "city": null,
-        "fax": null,
-        "name": "Admin",
-        "area": null,
-        "country": null,
-        "zipcode": null,
-        "delivery": null,
-        "user": 2,
-        "position": null,
-        "organization": "Geonode",
-        "voice": null,
-        "email": null
-    }
-},
-
-
-
+    {
+        "pk": 5,
+        "model": "auth.user",
+        "fields": {
+            "username": "bobby",
+            "first_name": "",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2010-06-10 16:59:13",
+            "groups": [],
+            "user_permissions": [],
+            "password": "sha1$8d019$a84eea3f5093eed93bc68bf62fe400f14042ab06",
+            "email": "bobby@bob.com",
+            "date_joined": "2010-06-10 16:58:18"
+        }
+    },
+    { "fields": { "date_joined": "2011-06-09 15:46:03", "email": "", "first_name": "Norman", "groups": [], "is_active": true, "is_staff": false, "is_superuser": false, "last_login": "2011-06-09 15:46:03", "last_name": "Normandy", "password": "sha1$b0022$1592757da52adeed741051a203fe2d65b6798e83", "user_permissions": [], "username": "norman" },  "model": "auth.user", "pk": 6 }
 ]

@@ -25,7 +25,7 @@ from geonode.security.models import AUTHENTICATED_USERS
 from geonode.security.models import ANONYMOUS_USERS
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.people.models import Profile 
+from geonode.people.models import Profile
 from geonode.search import search
 from geonode.search import util
 from geonode.search.query import query_from_request
