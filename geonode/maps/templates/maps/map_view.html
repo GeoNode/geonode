@@ -21,13 +21,21 @@
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/geoexplorer.css " />
 <!--[if IE]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/ie.css"/><![endif]-->
 <script src="{{STATIC_URL}}/geoexplorer/script/GeoExplorer.js" type="text/javascript"></script>
-
+<style type="text/css">
+button.logout {
+    display: none;
+}
+button.login {
+    display:none;
+}
+</style>
 <script type="text/javascript">
 var app;
 
 Ext.ns("GeoNode");
 GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
 
+    cookieParamName: 'geonode-user',
     /** begin i18n */
     metadataFormCancelText : "UT:Cancel",
     metadataFormSaveAsCopyText : "UT:Save as Copy",
@@ -36,6 +44,88 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
     metaDataMapAbstract: 'UT:Abstract',
     metaDataMapTitle: 'UT:Title',
     /** end i18n */
+    authenticate: function(options) {
+        var submit = function() {
+            form.getForm().submit({
+                  waitMsg: "Logging in...",
+                  success: function(form, action) {
+                      this.setAuthorizedRoles(["ROLE_ADMINISTRATOR"]);
+                      win.close();
+                      document.cookie = action.response.getResponseHeader("Set-Cookie");
+                      // resend the original request
+                      if (options) {
+                          Ext.Ajax.request(options);
+                      }
+                  },
+                  failure: function(form, action) {
+                      var username = form.items.get(0);
+                      var password = form.items.get(1);
+                      username.markInvalid();
+                      password.markInvalid();
+                      username.focus(true);
+                  },
+                  scope: this
+              });
+          }.createDelegate(this);
+          var csrfToken, csrfMatch = document.cookie.match(/csrftoken=(\w+);/);
+          if (csrfMatch && csrfMatch.length > 0) {
+              csrfToken = csrfMatch[1];
+          }
+          var win = new Ext.Window({
+              title: "GeoNode Login",
+              modal: true,
+              width: 230,
+              autoHeight: true,
+              layout: "fit",
+              items: [{
+                  xtype: "form",
+                  autoHeight: true,
+                  labelWidth: 55,
+                  border: false,
+                  bodyStyle: "padding: 10px;",
+                  url: "{% url account_ajax_login %}",
+                  waitMsgTarget: true,
+                  errorReader: {
+                      // teach ExtJS a bit of RESTfulness
+                      read: function(response) {
+                          return {
+                              success: response.status == 200,
+                              records: []
+                          };
+                      }
+                  },
+                  defaults: {
+                      anchor: "100%"
+                  },
+                  items: [{
+                      xtype: "textfield",
+                      name: "username",
+                      fieldLabel: "Username"
+                  }, {
+                      xtype: "textfield",
+                      name: "password",
+                      fieldLabel: "Password",
+                      inputType: "password"
+                  }, {
+                      xtype: "hidden",
+                      name: "csrfmiddlewaretoken",
+                      value: csrfToken
+                  }, {
+                      xtype: "button",
+                      text: "Login",
+                      inputType: "submit",
+                      handler: submit
+                  }]
+              }],
+              keys: {
+                  "key": Ext.EventObject.ENTER,
+                  "fn": submit
+              }
+          });
+          win.show();
+          var form = win.items.get(0);
+          form.items.get(0).focus(false, 100);
+    },
     initPortal: function() {
         this.on("beforesave", function(requestConfig) {
             if (this._doSave === true) {
@@ -51,6 +141,9 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
                 return false;
             }
         }, this);
+        this.on("beforehashchange", function(hash) {
+            return false;
+        });
         GeoNode.Composer.superclass.initPortal.apply(this, arguments);
     },
     /** private: method[initMetadataForm]
@@ -67,11 +160,11 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             enableKeyEvents: true,
             listeners: {
                 "valid": function() {
-                    //saveAsButton.enable();
+                    saveAsButton.enable();
                     saveButton.enable();
                 },
                 "invalid": function() {
-                    //saveAsButton.disable();
+                    saveAsButton.disable();
                     saveButton.disable();
                 }
             }
@@ -94,17 +187,19 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         });
         metaDataPanel.enable();
 
-        /*var saveAsButton = new Ext.Button({
+        var saveAsButton = new Ext.Button({
             text: this.metadataFormSaveAsCopyText,
             disabled: !this.about.title,
             handler: function(e){
+                delete this.id;
                 this.about.title = titleField.getValue();
                 this.about["abstract"] = abstractField.getValue();
                 this.metadataForm.hide();
-                this.save(true);
+                this._doSave = true;
+                this.save();
             },
             scope: this
-        });*/
+        });
         var saveButton = new Ext.Button({
             text: this.metadataFormSaveText,
             disabled: !this.about.title,
@@ -127,7 +222,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             autoHeight: true,
             bbar: [
                 "->",
-                /*saveAsButton,*/
+                saveAsButton,
                 saveButton,
                 new Ext.Button({
                     text: this.metadataFormCancelText,
@@ -159,6 +254,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
 Ext.onReady(function() {
 {% autoescape off %}
     var config = Ext.apply({
+        authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
         tools: [{
             ptype: "gxp_wmsgetfeatureinfo",
             // uncomment the line below if you want feature info in a grid
@@ -196,8 +292,7 @@ Ext.onReady(function() {
         homeUrl: "{% url home %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
         localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",
-        csrfToken: "{{ csrf_token }}",
-        authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
+        csrfToken: "{{ csrf_token }}"
     }, {{ config }});
 
 
