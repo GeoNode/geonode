@@ -77,7 +77,8 @@
                           <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Sign in" %}</a>
                           <ul class="dropdown-menu">
                             <li>
-                                <form action="{% url account_login %}" method="post" class="sign-in">
+                                <div id="login-form-pop">
+                                <form action="{% url account_ajax_login %}" method="post" class="sign-in">
                                     {% csrf_token %}
                                     <label for="id_username">{% trans "Username" %}:</label>
                                     <input id="id_username" name="username" type="text" />
@@ -87,11 +88,13 @@
                                         <input type="checkbox" />
                                         {% trans "Remember Me" %}
                                     </label>
+                                    <p class="loginmsg alert alert-error"></p>
                                     <button type="submit" class="btn pull-right">{% trans "Sign in" %}</button>
                                     {% if REGISTRATION_OPEN %}
                                     <div>{% trans "Don't have an account yet?" %} <a href="{% url account_signup %}">{% trans "Register now" %}</a></div>
                                     {% endif %}
                                 </form>
+                                </div>
                             </li>
                           </ul>
                         </li>
