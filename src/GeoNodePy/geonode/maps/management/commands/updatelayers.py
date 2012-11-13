@@ -15,16 +15,27 @@ class Command(BaseCommand):
             help='Stop after any errors are encountered.'),
         make_option('-u', '--user', dest="user", default=None,
             help="Name of the user account which should own the imported layers"),
+        make_option('-n', '--new_only', action='store_true', dest="new_only", default=False,
+            help="Only new data: no update the data already imported"),
+        make_option('-w', '--workspace', dest="workspace", default=None,
+            help="Only update data on specified workspace"),
         )
 
-    def handle(self, **options):
+    args = '[layername layername ...]'
+
+    def handle(self, *lnames, **options):
         ignore_errors = options.get('ignore_errors')
         verbosity = int(options.get('verbosity'))
         user = options.get('user')
         owner = get_valid_user(user)
+        new_only = options.get('new_only')
+        workspace = options.get('workspace')
 
+        if len(lnames) == 0:
+            lnames = None
+            
         start = datetime.datetime.now()
-        output = Layer.objects.slurp(ignore_errors, verbosity=verbosity, owner=owner)
+        output = Layer.objects.slurp(ignore_errors, verbosity=verbosity, owner=owner, new_only=new_only, lnames=lnames, workspace=workspace)
         updated = [dict_['name'] for dict_ in output if dict_['status']=='updated']
         created = [dict_['name'] for dict_ in output if dict_['status']=='created']
         failed = [dict_['name'] for dict_ in output if dict_['status']=='failed']
