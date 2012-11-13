@@ -474,10 +474,8 @@ def map_wmc(request, mapid, template="maps/wmc.xml"):
 #### MAPS PERMISSIONS ####
 
 def map_set_permissions(m, perm_spec):
-    print perm_spec
     if "authenticated" in perm_spec:
         m.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
-        print m.get_gen_level(AUTHENTICATED_USERS)
     if "anonymous" in perm_spec:
         m.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
     users = [n[0] for n in perm_spec['users']]
