@@ -27,6 +27,29 @@ Ext.override(Ext.dd.DragTracker, {
     }
 });
 
+//Do not wipe out feature.attributes, or will get broken image for
+//legend when layer points are displayed as external image based
+// on attributes (ie Picasa & Youtube feeds)
+GeoExt.VectorLegend.prototype.onFeaturesAdded = function() {
+    this.layer.events.un({
+        featuresadded: this.onFeaturesAdded,
+        scope: this
+    });
+    var featureCnt = 1;
+    var feature = this.layer.features[0].clone();
+    while (!feature.geometry && featureCnt < this.layer.features.length) {
+        feature = this.layer.features[featureCnt].clone();
+        featureCnt++;
+    }
+    //feature.attributes = {};  GeoExt bug? Not sure why this is here.
+    this.feature = feature;
+    this.symbolType = this.symbolTypeFromFeature(this.feature);
+    if (!this.rules) {
+        this.setRules();
+    }
+    this.update();
+};
+
 /**
  * Constructor: GeoExplorer
  * Create a new GeoExplorer application.
@@ -532,8 +555,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
             //If there are feeds on the map, there will be a SelectFeature control.
             //Activate it now.
-            if (this.selectControl)
+            if (this.selectControl) {
                 this.selectControl.activate();
+            }
 
         }, this);
 
@@ -832,31 +856,4 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }
     }
 
-    /**
-     * Remove a feed layer from the SelectFeatureControl (if present) when that layer is removed from the map.
-     * If this is not done, the layer will remain on the map even after the record is deleted.
-     * @param record
-     */
-    removeFromSelectControl:  function(record){
-        if (this.selectControl ) {
-            var recordLayer = record.getLayer();
-            //SelectControl might have layers array or single layer object
-            if (this.selectControl.layers != null){
-                for (var x = 0; x < this.selectControl.layers.length; x++)
-                {
-                    var selectLayer = this.selectControl.layers[x];
-                    var selectLayers = this.selectControl.layers;
-                    if (selectLayer.id === recordLayer.id) {
-                        selectLayers.splice(x,1);
-                        this.selectControl.setLayer(selectLayers);
-                    }
-                }
-            }
-            if (this.selectControl.layer != null) {
-                if (recordLayer.id === this.selectControl.layer.id) {
-                    this.selectControl.setLayer([]);
-                }
-            }
-        }
-    },
 });
