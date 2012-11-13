@@ -405,9 +405,6 @@ PYCSW = {
 
 # GeoNode javascript client configuration
 
-# Google Api Key needed for 3D maps / Google Earth plugin
-GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
-
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)
 
