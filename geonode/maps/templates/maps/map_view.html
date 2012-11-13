@@ -56,8 +56,8 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
     constructor: function(config) {
         // global request proxy and error handling
         OpenLayers.Request.events.on({
-            "failure": function(options) {
-                console.log('xx');
+            "failure": function(evt) {
+                this.displayXHRTrouble(evt.request);
             },
             scope: this
         });
