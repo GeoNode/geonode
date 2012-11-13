@@ -1,8 +1,35 @@
+Critical
+========
 Proxy Issue (using csrf_exempt on the proxy view temporarily)
+Save Map endpoint
+    Working, CSRF Issues
+Check Update Map Endpoint
+Publish Map workflow
+Add GeoNode Search API widget
+Make sure the security check works for editing
+Make sure that the security check works for map saving
+Make sure error handling works
+Update other pages using Ext to import from new location
+Check Login/Logout workflow with header etc
+Check that Google Earth Plugin works properly
+    Removed from geonode
+    Requires update to latest Google Earth (6.2) 
+
+Important
+=========
+Add Option to Layer Right Click Menu
+Save Copy
+Print not working
+Add Keywords and any other metadata to the Map Metadata form
+
+Non-Critical
+============
 Hide GeoExplorer Login/Logout button (top right)
-Displace GeoExplorer down to fit in body (in mainline dev too)
 About Map Content
 about.html override
-Add Option to Layer Right Click Menu
-Save Map endpoint
+Determine strategy for uploads inside GeoExplorer
 
+Cosmetic
+========
+Displace GeoExplorer down to fit in body (in mainline dev too)
+Bootstrap + Ext CSS Clashes (ext-compatibility.css)
