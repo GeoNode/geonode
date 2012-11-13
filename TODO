@@ -1,55 +1,30 @@
 Critical
 ========
 Proxy Issue (using csrf_exempt on the proxy view temporarily)
-Publish Map workflow
-Add GeoNode Search API widget as Find Layers
 Make sure the security check works for editing
+    Appears to, requires more checking
 Make sure that the security check works for map saving
+    Appears to, error not displayed, but 403 returned
 Make sure error handling works (should display popup with django error etc)
+Add GeoNode Search API widget as Find Layers
+Publish Map workflow
 Update other pages using Ext to import from new location
-Decide how to deal with the hash change after save (have a beforehashchange event in GeoExplorer, or have GeoNode server-side deal with parsing this)
+/maps/new?layer= doesnt seem to work now
 
 Important
 =========
 Add Option to Layer Right Click Menu
-Save Copy
 Print not working
+Add Option to Layer Right Click Menu
 Add Keywords and any other metadata to the Map Metadata form
 Figure out how to display map title and link back to info page in new design
 
 Non-Critical
 ============
 about.html override
-Add Option to Layer Right Click Menu
-Save Map endpoint
 Decide how to deal with the hash change after save (have a beforehashchange event in GeoExplorer, or have GeoNode server-side deal with parsing this)
 Determine strategy for uploads inside GeoExplorer
 
 Cosmetic
 ========
-Displace GeoExplorer down to fit in body (in mainline dev too)
 Bootstrap + Ext CSS Clashes (ext-compatibility.css)
-
-Other Pages using ext_header etc
-================================
-
-Documents
----------
-geonode/documents/templates/documents/docinfo.html
-geonode/documents/templates/documents/document_metadata.html
-geonode/documents/templates/documents/document_search.html
-geonode/documents/templates/documents/document_upload.html
-geonode/documents/templates/documents/documents.html
-
-Layers
-------
-geonode/layers/templates/layers/layer_geoext_map.html
-geonode/layers/templates/layers/layer_metadata.html
-geonode/layers/templates/layers/layer_replace.html
-geonode/layers/templates/layers/layer_upload.html
-
-Maps
-----
-geonode/maps/templates/maps/map_detail.html
-geonode/maps/templates/maps/map_download.html
-geonode/maps/templates/maps/map_embed.html
