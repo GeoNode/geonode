@@ -306,6 +306,8 @@ class Map(ResourceBase, GXPMapBase):
             ml.map = self # update map_id after saving map
             ml.save()
 
+        self.set_default_permissions()
+
 class MapLayer(models.Model, GXPLayerBase):
     """
     The MapLayer model represents a layer included in a map.  This doesn't just
