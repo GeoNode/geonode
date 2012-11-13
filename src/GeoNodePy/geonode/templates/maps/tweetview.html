@@ -224,7 +224,7 @@ var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
         ,dateConfig: {
             altFormats:'Y-m-d|Y-n-d'
             ,allowBlank:true,
-            minValue: new Date(2012,9,1),
+            minValue: new Date(2012,9,7),
             maxValue: new Date(Date.now()+86400000),
             value: new Date(Date.now()-86400000)
          },
@@ -247,7 +247,7 @@ var tweetDateEndField = new Ext.ux.form.DateTime({
     ,dateConfig: {
         altFormats:'Y-m-d|Y-n-d'
         ,allowBlank:true,
-        minValue: new Date(2012,9,1),
+        minValue: new Date(2012,9,7),
         maxValue: new Date(Date.now()+86400000),
         value: new Date(Date.now())
     },
@@ -752,7 +752,7 @@ tweetPointRecord.getLayer().events.register("loadend", tweetPointRecord.getLayer
     var tweet_cookie = get_cookie("tweet_count");
     if (tweet_cookie) {
         cqlWindow.setTitle(gettext("Tweet Filter:  ") + tweet_cookie + " tweets currently on map");
-        if (tweet_cookie < 50000 && is_authorized === "True") {
+        if (tweet_cookie < 100000 && is_authorized === "True") {
             Ext.getCmp("dl_link_container").show();
             Ext.getCmp("dl_link_container").getEl().dom.href = getDownloadLink();
         } else {
