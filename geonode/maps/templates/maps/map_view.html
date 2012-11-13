@@ -22,6 +22,9 @@
 <!--[if IE]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/ie.css"/><![endif]-->
 <script src="{{STATIC_URL}}/geoexplorer/script/GeoExplorer.js" type="text/javascript"></script>
 <style type="text/css">
+html, body {
+  height: 100%;
+}
 button.logout {
     display: none;
 }
@@ -30,6 +33,9 @@ button.login {
 }
 </style>
 <script type="text/javascript">
+OpenLayers.Request.DEFAULT_CONFIG.headers = {
+    'X-CSRFToken': '{{ csrf_token|escapejs }}'
+};
 var app;
 
 Ext.ns("GeoNode");
@@ -49,6 +55,12 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
     /** end i18n */
     constructor: function(config) {
         // global request proxy and error handling
+        OpenLayers.Request.events.on({
+            "failure": function(options) {
+                console.log('xx');
+            },
+            scope: this
+        });
         Ext.util.Observable.observeClass(Ext.data.Connection);
         Ext.data.Connection.on({
             "requestexception": function(conn, response, options) {
@@ -311,7 +323,8 @@ Ext.onReady(function() {
 {% autoescape off %}
     var config = Ext.apply({
         portalConfig: {
-            style: 'margin-top: 10px'
+            renderTo: 'composer',
+            height: 400
         },
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
         tools: [{
@@ -415,20 +428,20 @@ Ext.onReady(function() {
             }) 
         };
 
-    var moreInfoTemplate = new Ext.Template(decodeURIComponent(Ext.get("more-info-tpl").dom.innerHTML));
+/*    var moreInfoTemplate = new Ext.Template(decodeURIComponent(Ext.get("more-info-tpl").dom.innerHTML));
     var mapInfoHtml = config.id ? moreInfoTemplate.apply({permalink : permalink(app.id)}) : "This map is currently unsaved";
     Ext.DomHelper.overwrite(Ext.get("more-info"), mapInfoHtml)
 
     var titleTemplate = new Ext.Template(Ext.get("title-tpl").dom.innerHTML);
     Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}));
-
-    app.on("save", function(id) {
+*/
+//    app.on("save", function(id) {
         //reset title header
-        Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}))
+//        Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}))
 
         //reset more info link
-        Ext.DomHelper.overwrite(Ext.get("more-info"), moreInfoTemplate.apply({permalink : permalink(app.id)}))
-    }, this);
+//        Ext.DomHelper.overwrite(Ext.get("more-info"), moreInfoTemplate.apply({permalink : permalink(app.id)}))
+//    }, this);
 {% endautoescape %}
 });
 </script>
@@ -447,5 +460,8 @@ Ext.onReady(function() {
   <div id="more-info-tpl"><a class='link' href='{permalink}'>{% trans "View info" %}</a></div>
   <div id="title-tpl"><a class='maplist' href='{% url maps_search %}'>{% trans "Maps" %}</a> / <strong>{title}</strong></div>
 </div>
+{% endblock %}
+{% block middle %}
+<div id="composer" style="width:100%;height:100%;position:absolute;top: 70px"></div>
 {% endblock %}
 {% block footer %}{% endblock %}
