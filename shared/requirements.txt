@@ -9,10 +9,10 @@ Django==1.4
 django-extensions==0.8
 httplib2==0.7.4
 psycopg2==2.4.1
--e git+http://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
+-e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
 django-registration==0.8
 django-profiles==0.2
--e git+http://github.com/GeoNode/django-avatar.git#egg=avatar
+-e git+https://github.com/GeoNode/django-avatar.git#egg=avatar
 dialogos==0.1
 agon-ratings==0.2
 South==0.7.3
@@ -23,11 +23,11 @@ ordereddict
 #python-memcached
 
 #The following are for the gazetteer
--e git+http://github.com/cga-harvard/geopy.git#egg=geopy
+-e git+https://github.com/cga-harvard/geopy.git#egg=geopy
 geojson
 https://bitbucket.org/jespern/django-piston/get/5b3ef294fe89.zip
 #Uncomment the following to use the django debug toolbar
--e git+http://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar
+-e git+https://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar
 #For scheduled tasks
 django-celery
 django-kombu

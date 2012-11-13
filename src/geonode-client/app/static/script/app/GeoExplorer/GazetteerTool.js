@@ -105,7 +105,7 @@ gxp.plugins.GazetteerTool = Ext.extend(gxp.plugins.Tool, {
                     tool.services += ',' + item.id;
                     break;
                 default:
-                    this.services = tool.services.replace(',' + item.id, '');
+                    tool.services = tool.services.replace(',' + item.id, '');
             }
         };
 

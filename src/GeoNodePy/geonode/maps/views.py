@@ -2341,56 +2341,55 @@ def batch_permissions(request, use_email=False):
         return HttpResponse(json.dumps(result), mimetype="application/json", status=401)
 
     if request.method != "POST":
-        result = {'success': False, 'errors': ['Permissions API requires POST requests']}
-        return HttpResponse(json.dumps(result), mimetype="application/json", status=405)
+        return HttpResponse("Permissions API requires POST requests", status=405)
 
-    try:
-        spec = json.loads(request.raw_post_data)
-    
-        if "layers" in spec:
-            lyrs = Layer.objects.filter(pk__in = spec['layers'])
-            for lyr in lyrs:
-                if not request.user.has_perm("maps.change_layer_permissions", obj=lyr):
-                    result = {'success': False, 'errors': ['User not authorized to change layer permissions']}
-                    return HttpResponse(json.dumps(result), mimetype="application/json", status=403)
+    spec = json.loads(request.raw_post_data)
 
-        if "maps" in spec:
-            map_query = Map.objects.filter(pk__in = spec['maps'])
-            for m in map_query:
-                if not request.user.has_perm("maps.change_map_permissions", obj=m):
-                    result = {'success': False, 'errors': ['User not authorized to change map permissions']}
-                    return HttpResponse(json.dumps(result), mimetype="application/json", status=403)
+    if "layers" in spec:
+        lyrs = Layer.objects.filter(pk__in = spec['layers'])
+        for lyr in lyrs:
+            if not request.user.has_perm("maps.change_layer_permissions", obj=lyr):
+                return HttpResponse("User not authorized to change layer permissions", status=403)
 
-        anon_level = spec['permissions'].get("anonymous")
-        auth_level = spec['permissions'].get("authenticated")
-        custom_level = spec['permissions'].get("customgroup")
+    if "maps" in spec:
+        maps = Map.objects.filter(pk__in = spec['maps'])
+        for map in maps:
+            if not request.user.has_perm("maps.change_map_permissions", obj=map):
+                return HttpResponse("User not authorized to change map permissions", status=403)
 
-        logger.debug("anon_level:[%s]; auth_level:[%s]; custom_level:[%s]", anon_level, auth_level, custom_level)
+    anon_level = spec['permissions'].get("anonymous")
+    auth_level = spec['permissions'].get("authenticated")
+    custom_level = spec['permissions'].get("customgroup")
 
-        users = spec['permissions'].get('users', [])
-        user_names = [x[0] for x in users]
+    logger.debug("anon_level:[%s]; auth_level:[%s]; custom_level:[%s]", anon_level, auth_level, custom_level)
 
-        if "layers" in spec:
-            lyrs = Layer.objects.filter(pk__in = spec['layers'])
-            valid_perms = ['layer_readwrite', 'layer_readonly', 'layer_admin']
+    users = spec['permissions'].get('users', [])
+    user_names = [x for (x, y) in users]
 
-            if anon_level not in valid_perms:
-                anon_level = "_none"
-            if auth_level not in valid_perms:
-                auth_level = "_none"
-            if custom_level not in valid_perms:
-                custom_level = "_none"
+    if "layers" in spec:
+        lyrs = Layer.objects.filter(pk__in = spec['layers'])
+        valid_perms = ['layer_readwrite', 'layer_readonly', 'layer_admin']
+        if anon_level not in valid_perms:
+            anon_level = "_none"
+        if auth_level not in valid_perms:
+            auth_level = "_none"
+        if custom_level not in valid_perms:
+            custom_level = "_none"
 
-            logger.debug("anon:[%s],auth:[%s],custom:[%s]", anon_level, auth_level, custom_level)
-            for lyr in lyrs:
-                logger.info("Layer [%s]", lyr)
-                if use_email:
-                    lyr.get_user_levels().exclude(user__email__in = user_names + [lyr.owner.email]).delete()
-                else:
-                    lyr.get_user_levels().exclude(user__username__in = user_names + [lyr.owner.username]).delete()
-                lyr.set_gen_level(ANONYMOUS_USERS, anon_level)
-                lyr.set_gen_level(AUTHENTICATED_USERS, auth_level)
-                lyr.set_gen_level(CUSTOM_GROUP_USERS, custom_level)
+        logger.debug("anon:[%s],auth:[%s],custom:[%s]", anon_level, auth_level, custom_level)
+        for lyr in lyrs:
+            logger.info("Layer [%s]", lyr)
+            if use_email:
+                lyr.get_user_levels().exclude(user__email__in = user_names + [lyr.owner.email]).delete()
+            else:
+                lyr.get_user_levels().exclude(user__username__in = user_names + [lyr.owner.username]).delete()
+
+            lyr.set_gen_level(ANONYMOUS_USERS, anon_level)
+            lyr.set_gen_level(AUTHENTICATED_USERS, auth_level)
+            lyr.set_gen_level(CUSTOM_GROUP_USERS, custom_level)
+            for user, user_level in users:
+                logger.info("User [%s]", user)
+
                 if use_email:
                     try:
                         userObject = User.objects.get(email=user)
@@ -2402,22 +2401,36 @@ def batch_permissions(request, use_email=False):
                 else:
                     if user_level not in valid_perms:
                         user_level = "_none"
+                        user = User.objects.get(username=user)
                     lyr.set_user_level(user, user_level)
 
-        if "maps" in spec:
-            map_query = Map.objects.filter(pk__in = spec['maps'])
-            valid_perms = ['map_readwrite', 'map_readonly', 'map_admin']
-            if anon_level not in valid_perms:
-                anon_level = "_none"
-            if auth_level not in valid_perms:
-                auth_level = "_none"
-            if custom_level not in valid_perms:
-                custom_level = "_none"
-            anon_level = anon_level.replace("layer", "map")
-            auth_level = auth_level.replace("layer", "map")
-            custom_level = custom_level.replace("layer", "map")
 
-            for m in map_query:
+    if "maps" in spec:
+        maps = Map.objects.filter(pk__in = spec['maps'])
+        valid_perms = ['layer_readwrite', 'layer_readonly', 'layer_admin']
+        if anon_level not in valid_perms:
+            anon_level = "_none"
+        if auth_level not in valid_perms:
+            auth_level = "_none"
+        if custom_level not in valid_perms:
+            custom_level = "_none"
+        anon_level = anon_level.replace("layer", "map")
+        auth_level = auth_level.replace("layer", "map")
+        custom_level = custom_level.replace("layer", "map")
+
+        for m in maps:
+            if use_email:
+                m.get_user_levels().exclude(user__email__in = user_names + [m.owner.email]).delete()
+            else:
+                m.get_user_levels().exclude(user__username__in = user_names + [m.owner.username]).delete()
+            m.set_gen_level(ANONYMOUS_USERS, anon_level)
+            m.set_gen_level(AUTHENTICATED_USERS, auth_level)
+            m.set_gen_level(CUSTOM_GROUP_USERS, custom_level)
+            for user, user_level in spec['permissions'].get("users", []):
+                user_level = user_level.replace("layer", "map")
+                if user_level not in valid_perms:
+                    user_level = "_none"
+
                 if use_email:
                     m.get_user_levels().exclude(user__email__in = user_names + [m.owner.email]).delete()
                 else:
@@ -2438,12 +2451,7 @@ def batch_permissions(request, use_email=False):
                     else:
                         m.set_user_level(user, user_level)
 
-        result = {'success': True }
-        return HttpResponse(json.dumps(result), mimetype="application/json")
-    except:
-        logger.exception("Unexpected error during upload. %s" % sys.exc_info()[0])
-        result = {'success': False, 'errors': [sys.exc_info()[0]]}
-        return HttpResponse(json.dumps(result), mimetype="application/json", status=500)
+    return HttpResponse("Map/layer permissions updated")
 
 def batch_delete(request):
     if not request.user.is_authenticated:
