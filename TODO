@@ -2,13 +2,13 @@ Critical
 ========
 Proxy Issue (using csrf_exempt on the proxy view temporarily)
 Save Map endpoint
-    Working, CSRF Issues
+    Now Working, bypassed CSRF Issues for now
 Check Update Map Endpoint
 Publish Map workflow
-Add GeoNode Search API widget
+Add GeoNode Search API widget as Find Layers
 Make sure the security check works for editing
 Make sure that the security check works for map saving
-Make sure error handling works
+Make sure error handling works (should display popup with django error etc)
 Update other pages using Ext to import from new location
 Check Login/Logout workflow with header etc
 Check that Google Earth Plugin works properly
@@ -21,6 +21,7 @@ Add Option to Layer Right Click Menu
 Save Copy
 Print not working
 Add Keywords and any other metadata to the Map Metadata form
+Figure out how to display map title and link back to info page in new design
 
 Non-Critical
 ============
