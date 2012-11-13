@@ -20,20 +20,16 @@
 
 {% block body_outer %}
   {% overall_rating map "map" as map_rating %}
-  <div class="span8">
+  <div class="span12">
     <h2 class="page-title">{{ map.title }}</h2>
   </div>
-  <div class="span4">
+  <div class="span12">
     <p class="hd-actions pull-right">
       <a href="{% url "map_download" map.pk %}" data-toggle="modal" class="btn btn-large btn-primary strong"><i class="icon-download-alt icon-white"></i> {% trans "Download Data" %}</a>
       <a href="{% url "map_wmc" map.pk %}" data-toggle="modal" class="btn btn-large btn-primary strong"><i class="icon-download-alt icon-white"></i> {% trans "Download Web Map Context" %}</a>
       <a href="#" class="btn btn-large btn-info strong"><i class="icon-print icon-white"></i> {% trans "Print Map" %}</a>
     </p>
   </div>
-  {% comment %}
-  <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
-  {% endcomment %}
-  <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
   <div class="span12">
 	  <div id="embedded_map">
         <div id="the_map" width='100%'></div>
@@ -92,9 +88,9 @@
     </div>
   </div>
   <aside class="span4">
-    <div class="well">
-      <section>
-        <h2>{% trans "Layers" %}</h2>
+    <div>
+      <section class='well'>
+        <h2>{% trans "Map Layers" %}</h2>
         <p>{% trans "This map uses the following layers:" %}</p>
         <ul class="unstyled space">
           {% for layer in map.layer_set.all %}
@@ -108,58 +104,31 @@
           {% endfor %}
         </ul>
       </section>
-      <section>
-        <h2>{% trans "Edit map" %}</h2>
-        <p>{% trans "Placeholder" %}</p>
-        <a href="{% url "map_view" map.id %}" class="btn btn-large">{% trans "Edit Map" %}</a>
+      <section class='well'>
+        <h2>{% trans "View map" %}</h2>
+        <p>{% trans "View this map in the GeoExplorer GIS Viewer" %}</p>
+        <a href="{% url "map_view" map.id %}" class="btn btn-large">{% trans "View Map" %}</a>
       </section>
-      <section>
+      {% has_obj_perm user map "map.change_map_permissions" as can_change_permissions %}
+      {% if can_change_permissions %}
+      <section class='well'>
         <h2>{% trans "Permissions" %}</h2>
+        <p>{% trans "Specify which users can view or modify this map" %}</p>
         <a href="#modal_perms" data-toggle="modal" class="btn btn-large">{% trans "Change Permissions of this Map" %}</a>
       </section>
-      <section class="last">
-        <h2>{% trans "Create a new map" %}</h2>
-        <p>{% trans "Placeholder" %}</p>
+      {% endif %}
+      <section class="well last">
+        <h2>{% trans "Copy this map" %}</h2>
+        <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
         <a href="{% url "new_map" %}" class="btn btn-large">{% trans "Create a New Map" %}</a>
       </section>
     </div>
     <div class="well">
       {% with map.owner as owner %}
-        {% include "_widget_about_author.html" %}          
+        {% include "people/_profile_about_item.html" %} 
       {% endwith %}
     </div>
   </aside>
-
-  <div class="modal custom hide" id="download-layer">
-    <div class="modal-header">
-      <button class="close" data-dismiss="modal">×</button>
-      <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
-    </div>
-    <div class="modal-body">
-      <p></p>
-    </div>
-    <div class="modal-footer">
-      <div class="span2 offset1">
-        <ul class="unstyled">
-          <li><a href="#">Zipped Shapefile</a></li>
-          <li><a href="#">JPEG</a></li>
-          <li><a href="#">GML 2.0</a></li>
-          <li><a href="#">PDF</a></li>
-          <li><a href="#">GML 3.1.1</a></li>
-          <li><a href="#">PNG</a></li>
-        </ul>
-      </div>
-      <div class="span2">
-        <ul class="unstyled">
-          <li><a href="#">CSV</a></li>
-          <li><a href="#">KML</a></li>
-          <li><a href="#">Excel</a></li>
-          <li><a href="#">GeoJSON</a></li>
-          <li><a href="#">View in Google Earth</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
   {% include "_permissions_form.html" %}
 {% endblock %}
 

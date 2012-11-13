@@ -87,7 +87,7 @@ class NormalUserTest(TestCase):
     """
 
     def setUp(self):
-        call_command('loaddata', 'sample_admin', verbosity=0)
+        call_command('loaddata', 'people_data', verbosity=0)
 
     def tearDown(self):
         pass
@@ -124,7 +124,7 @@ class GeoNodeMapTest(TestCase):
     """
 
     def setUp(self):
-        call_command('loaddata', 'sample_admin', verbosity=0)
+        call_command('loaddata', 'people_data', verbosity=0)
 
     def tearDown(self):
         pass
@@ -406,7 +406,7 @@ class GeoNodeMapTest(TestCase):
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
 
-        # Save the names of the Resource/Store/Styles 
+        # Save the names of the Resource/Store/Styles
         resource_name = shp_layer.name
         ws = gs_cat.get_workspace(shp_layer.workspace)
         store = gs_cat.get_store(shp_layer.store, ws)
@@ -416,7 +416,7 @@ class GeoNodeMapTest(TestCase):
 
         # Delete the Layer using cascading_delete()
         cascading_delete(gs_cat, shp_layer.typename)
-        
+
         # Verify that the styles were deleted
         for style in styles:
             s = gs_cat.get_style(style.name)
