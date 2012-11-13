@@ -228,7 +228,6 @@ def map_view_js(request, mapid):
     config = map.viewer_json()
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
-
 def map_json(request, mapid):
     if request.method == 'GET':
         map_obj = _resolve_map(request, mapid, 'maps.view_map')
@@ -243,12 +242,7 @@ def map_json(request, mapid):
         map_obj = _resolve_map(request, mapid, 'maps.change_map')
         try:
             map_obj.update_from_viewer(request.raw_post_data)
-
-            return HttpResponse(
-                "Map successfully updated.",
-                mimetype="text/plain",
-                status=204
-            )
+            return HttpResponse(json.dumps(map_obj.viewer_json()))
         except ValueError, e:
             return HttpResponse(
                 "The server could not understand the request." + str(e),
@@ -294,9 +288,11 @@ def new_map_json(request):
         except ValueError, e:
             return HttpResponse(str(e), status=400)
         else:
-            response = HttpResponse('', status=201)
-            response['Location'] = map_obj.id
-            return response
+            return HttpResponse(
+                json.dumps({'id':map_obj.id }),
+                status=200,
+                mimetype='application/json'
+            )
     else:
         return HttpResponse(status=405)
 
