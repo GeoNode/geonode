@@ -23,9 +23,7 @@ from httplib import HTTPConnection
 from urlparse import urlsplit
 import httplib2
 from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
 def proxy(request):
     if 'url' not in request.GET:
         return HttpResponse(

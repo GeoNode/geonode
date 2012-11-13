@@ -3695,9 +3695,9 @@ OpenLayers.Util.pagePosition =  function(forElement) {
 
     if (forElement.getBoundingClientRect) { // IE
         box = forElement.getBoundingClientRect();
-        var scrollTop = viewportElement.scrollTop;
-        var scrollLeft = viewportElement.scrollLeft;
-
+        var scrollTop = window.pageYOffset || viewportElement.scrollTop;
+        var scrollLeft = window.pageXOffset || viewportElement.scrollLeft;
+        
         pos[0] = box.left + scrollLeft;
         pos[1] = box.top + scrollTop;
 
@@ -5166,7 +5166,7 @@ OpenLayers.Events = OpenLayers.Class({
             var num = touches.length;
             var touch;
             for (var i=0; i<num; ++i) {
-                touch = touches[i];
+                touch = this.getTouchClientXY(touches[i]);
                 x += touch.clientX;
                 y += touch.clientY;
             }
@@ -5178,7 +5178,48 @@ OpenLayers.Events = OpenLayers.Class({
         } 
         this.triggerEvent(type, evt);
     },
-
+    
+    /**
+     * Method: getTouchClientXY
+     * WebKit has a few bugs for clientX/clientY. This method detects them
+     * and calculate the correct values.
+     *
+     * Parameters:
+     * evt - {Touch} a Touch object from a TouchEvent
+     * 
+     * Returns:
+     * {Object} An object with only clientX and clientY properties with the
+     * calculated values.
+     */
+    getTouchClientXY: function (evt) {
+        // olMochWin is to override window, used for testing
+        var win = window.olMockWin || window,
+            winPageX = win.pageXOffset,
+            winPageY = win.pageYOffset,
+            x = evt.clientX,
+            y = evt.clientY;
+        
+        if (evt.pageY === 0 && Math.floor(y) > Math.floor(evt.pageY) ||
+            evt.pageX === 0 && Math.floor(x) > Math.floor(evt.pageX)) {
+            // iOS4 include scroll offset in clientX/Y
+            x = x - winPageX;
+            y = y - winPageY;
+        } else if (y < (evt.pageY - winPageY) || x < (evt.pageX - winPageX) ) {
+            // Some Android browsers have totally bogus values for clientX/Y
+            // when scrolling/zooming a page
+            x = evt.pageX - winPageX;
+            y = evt.pageY - winPageY;
+        }
+        
+        evt.olClientX = x;
+        evt.olClientY = y;
+        
+        return {
+            clientX: x,
+            clientY: y
+        };
+    },
+    
     /**
      * APIMethod: clearMouseCache
      * Clear cached data about the mouse position. This should be called any 
@@ -5188,17 +5229,7 @@ OpenLayers.Events = OpenLayers.Class({
     clearMouseCache: function() { 
         this.element.scrolls = null;
         this.element.lefttop = null;
-        // OpenLayers.Util.pagePosition needs to use
-        // element.getBoundingClientRect to correctly calculate the offsets
-        // for the iPhone, but once the page is scrolled, getBoundingClientRect
-        // returns incorrect offsets. So our best bet is to not invalidate the
-        // offsets once we have them, and hope that the page was not scrolled
-        // when we did the initial calculation.
-        var body = document.body;
-        if (body && !((body.scrollTop != 0 || body.scrollLeft != 0) &&
-                                    navigator.userAgent.match(/iPhone/i))) {
-            this.element.offsets = null;
-        }
+        this.element.offsets = null;
     },      
 
     /**
@@ -5222,8 +5253,8 @@ OpenLayers.Events = OpenLayers.Class({
         if (!this.element.scrolls) {
             var viewportElement = OpenLayers.Util.getViewportElement();
             this.element.scrolls = [
-                viewportElement.scrollLeft,
-                viewportElement.scrollTop
+                window.pageXOffset || viewportElement.scrollLeft,
+                window.pageYOffset || viewportElement.scrollTop
             ];
         }
 
@@ -11195,6 +11226,26 @@ OpenLayers.Format.XML = OpenLayers.Class(OpenLayers.Format, {
             }
         } else {
             element = document.createElementNS(uri, name);
+        }
+        return element;
+    },
+
+    /**
+     * APIMethod: createDocumentFragment
+     * Create a document fragment node that can be appended to another node
+     *     created by createElementNS.  This will call 
+     *     document.createDocumentFragment outside of IE.  In IE, the ActiveX
+     *     object's createDocumentFragment method is used.
+     *
+     * Returns:
+     * {Element} A document fragment.
+     */
+    createDocumentFragment: function() {
+        var element;
+        if (this.xmldom) {
+            element = this.xmldom.createDocumentFragment();
+        } else {
+            element = document.createDocumentFragment();
         }
         return element;
     },
@@ -18252,7 +18303,8 @@ OpenLayers.Filter.Comparison = OpenLayers.Class(OpenLayers.Filter, {
      * - OpenLayers.Filter.Comparison.LESS_THAN_OR_EQUAL_TO    = "<=";
      * - OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO = ">=";
      * - OpenLayers.Filter.Comparison.BETWEEN                  = "..";
-     * - OpenLayers.Filter.Comparison.LIKE                     = "~"; 
+     * - OpenLayers.Filter.Comparison.LIKE                     = "~";
+     * - OpenLayers.Filter.Comparison.IS_NULL                  = "NULL";
      */
     type: null,
     
@@ -18380,6 +18432,9 @@ OpenLayers.Filter.Comparison = OpenLayers.Class(OpenLayers.Filter, {
                 var regexp = new RegExp(this.value, "gi");
                 result = regexp.test(got);
                 break;
+            case OpenLayers.Filter.Comparison.IS_NULL:
+                result = (got === null);
+                break;
         }
         return result;
     },
@@ -18486,6 +18541,7 @@ OpenLayers.Filter.Comparison.LESS_THAN_OR_EQUAL_TO    = "<=";
 OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO = ">=";
 OpenLayers.Filter.Comparison.BETWEEN                  = "..";
 OpenLayers.Filter.Comparison.LIKE                     = "~";
+OpenLayers.Filter.Comparison.IS_NULL                  = "NULL";
 
 /** FILE: OpenLayers/Filter/Spatial.js **/
 /* Copyright (c) 2006-2012 by OpenLayers Contributors (see authors.txt for 
@@ -18800,6 +18856,138 @@ OpenLayers.Filter.Function = OpenLayers.Class(OpenLayers.Filter, {
 });
 
 
+/** FILE: OpenLayers/BaseTypes/Date.js **/
+/* Copyright (c) 2006-2012 by OpenLayers Contributors (see authors.txt for
+ * full list of contributors). Published under the 2-clause BSD license.
+ * See license.txt in the OpenLayers distribution or repository for the
+ * full text of the license. */
+
+/**
+ * @requires OpenLayers/SingleFile.js
+ */
+
+/**
+ * Namespace: OpenLayers.Date
+ * Contains implementations of Date.parse and date.toISOString that match the
+ *     ECMAScript 5 specification for parsing RFC 3339 dates.
+ *     http://tools.ietf.org/html/rfc3339
+ */
+OpenLayers.Date = {
+
+    /** 
+     * APIProperty: dateRegEx
+     * The regex to be used for validating dates. You can provide your own
+     * regex for instance for adding support for years before BC. Default
+     * value is: /^(?:(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?)?(?:(?:T(\d{1,2}):(\d{2}):(\d{2}(?:\.\d+)?)(Z|(?:[+-]\d{1,2}(?::(\d{2}))?)))|Z)?$/
+     */
+    dateRegEx: /^(?:(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?)?(?:(?:T(\d{1,2}):(\d{2}):(\d{2}(?:\.\d+)?)(Z|(?:[+-]\d{1,2}(?::(\d{2}))?)))|Z)?$/,
+
+    /**
+     * APIMethod: toISOString
+     * Generates a string representing a date.  The format of the string follows
+     *     the profile of ISO 8601 for date and time on the Internet (see
+     *     http://tools.ietf.org/html/rfc3339).  If the toISOString method is
+     *     available on the Date prototype, that is used.  The toISOString
+     *     method for Date instances is defined in ECMA-262.
+     *
+     * Parameters:
+     * date - {Date} A date object.
+     *
+     * Returns:
+     * {String} A string representing the date (e.g.
+     *     "2010-08-07T16:58:23.123Z").  If the date does not have a valid time
+     *     (i.e. isNaN(date.getTime())) this method returns the string "Invalid
+     *     Date".  The ECMA standard says the toISOString method should throw
+     *     RangeError in this case, but Firefox returns a string instead.  For
+     *     best results, use isNaN(date.getTime()) to determine date validity
+     *     before generating date strings.
+     */
+    toISOString: (function() {
+        if ("toISOString" in Date.prototype) {
+            return function(date) {
+                return date.toISOString();
+            };
+        } else {
+            function pad(num, len) {
+                var str = num + "";
+                while (str.length < len) {
+                    str = "0" + str;
+                }
+                return str;
+            }
+            return function(date) {
+                var str;
+                if (isNaN(date.getTime())) {
+                    // ECMA-262 says throw RangeError, Firefox returns
+                    // "Invalid Date"
+                    str = "Invalid Date";
+                } else {
+                    str =
+                        date.getUTCFullYear() + "-" +
+                        pad(date.getUTCMonth() + 1, 2) + "-" +
+                        pad(date.getUTCDate(), 2) + "T" +
+                        pad(date.getUTCHours(), 2) + ":" +
+                        pad(date.getUTCMinutes(), 2) + ":" +
+                        pad(date.getUTCSeconds(), 2) + "." +
+                        pad(date.getUTCMilliseconds(), 3) + "Z";
+                }
+                return str;
+            };
+        }
+
+    })(),
+
+    /**
+     * APIMethod: parse
+     * Generate a date object from a string.  The format for the string follows
+     *     the profile of ISO 8601 for date and time on the Internet (see
+     *     http://tools.ietf.org/html/rfc3339).  We don't call the native
+     *     Date.parse because of inconsistency between implmentations.  In
+     *     Chrome, calling Date.parse with a string that doesn't contain any
+     *     indication of the timezone (e.g. "2011"), the date is interpreted
+     *     in local time.  On Firefox, the assumption is UTC.
+     *
+     * Parameters:
+     * str - {String} A string representing the date (e.g.
+     *     "2010", "2010-08", "2010-08-07", "2010-08-07T16:58:23.123Z",
+     *     "2010-08-07T11:58:23.123-06").
+     *
+     * Returns:
+     * {Date} A date object.  If the string could not be parsed, an invalid
+     *     date is returned (i.e. isNaN(date.getTime())).
+     */
+    parse: function(str) {
+        var date;
+        var match = str.match(this.dateRegEx);
+        if (match && (match[1] || match[7])) { // must have at least year or time
+            var year = parseInt(match[1], 10) || 0;
+            var month = (parseInt(match[2], 10) - 1) || 0;
+            var day = parseInt(match[3], 10) || 1;
+            date = new Date(Date.UTC(year, month, day));
+            // optional time
+            var type = match[7];
+            if (type) {
+                var hours = parseInt(match[4], 10);
+                var minutes = parseInt(match[5], 10);
+                var secFrac = parseFloat(match[6]);
+                var seconds = secFrac | 0;
+                var milliseconds = Math.round(1000 * (secFrac - seconds));
+                date.setUTCHours(hours, minutes, seconds, milliseconds);
+                // check offset
+                if (type !== "Z") {
+                    var hoursOffset = parseInt(type, 10);
+                    var minutesOffset = parseInt(match[8], 10) || 0;
+                    var offset = -1000 * (60 * (hoursOffset * 60) + minutesOffset * 60);
+                    date = new Date(date.getTime() + offset);
+                }
+            }
+        } else {
+            date = new Date("invalid");
+        }
+        return date;
+    }
+};
+
 /** FILE: OpenLayers/Format/Filter/v1.js **/
 /* Copyright (c) 2006-2012 by OpenLayers Contributors (see authors.txt for 
  * full list of contributors). Published under the 2-clause BSD license.
@@ -18809,6 +18997,7 @@ OpenLayers.Filter.Function = OpenLayers.Class(OpenLayers.Filter, {
  * @requires OpenLayers/Format/Filter.js
  * @requires OpenLayers/Format/XML.js
  * @requires OpenLayers/Filter/Function.js
+ * @requires OpenLayers/BaseTypes/Date.js
  */
 
 /**
@@ -19015,6 +19204,13 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
             "Function": function(node, obj) {
                 //TODO write decoder for it
                 return;
+            },
+            "PropertyIsNull": function(node, obj) {
+                var filter = new OpenLayers.Filter.Comparison({
+                    type: OpenLayers.Filter.Comparison.IS_NULL
+                });
+                this.readChildNodes(node, filter);
+                obj.filters.push(filter);
             }
         }
     },
@@ -19043,6 +19239,25 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
     },
 
     /**
+     * APIMethod: encodeLiteral
+     * Generates the string representation of a value for use in <Literal> 
+     *     elements.  The default encoder writes Date values as ISO 8601 
+     *     strings.
+     *
+     * Parameters:
+     * value - {Object} Literal value to encode
+     *
+     * Returns:
+     * {String} String representation of the provided value.
+     */
+    encodeLiteral: function(value) {
+        if (value instanceof Date) {
+            value = OpenLayers.Date.toISOString(value);
+        }
+        return value;
+    },
+
+    /**
      * Method: writeOgcExpression
      * Limited support for writing OGC expressions. Currently it supports
      * (<OpenLayers.Filter.Function> || String || Number)
@@ -19055,9 +19270,8 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
      * {DOMElement} Updated node element.
      */
     writeOgcExpression: function(value, node) {
-        if(value instanceof OpenLayers.Filter.Function){
-            var child = this.writeNode("Function", value, node);
-            node.appendChild(child);
+        if (value instanceof OpenLayers.Filter.Function){
+            this.writeNode("Function", value, node);
         } else {
             this.writeNode("Literal", value, node);
         }
@@ -19078,19 +19292,6 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
     },
     
     /**
-     * Method: writeFeatureIdNodes
-     * 
-     * Parameters:
-     * filter - {<OpenLayers.Filter.FeatureId}
-     * node - {DOMElement}
-     */
-    writeFeatureIdNodes: function(filter, node) {
-        for (var i=0, ii=filter.fids.length; i<ii; ++i) {
-            this.writeNode("FeatureId", filter.fids[i], node);
-        }
-    },
-    
-    /**
      * Property: writers
      * As a compliment to the readers property, this structure contains public
      *     writing functions grouped by namespace alias and named like the
@@ -19100,10 +19301,13 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
         "ogc": {
             "Filter": function(filter) {
                 var node = this.createElementNSPlus("ogc:Filter");
-                if (filter.type === "FID") {
-                    OpenLayers.Format.Filter.v1.prototype.writeFeatureIdNodes.call(this, filter, node);
-                } else {
-                    this.writeNode(this.getFilterType(filter), filter, node);
+                this.writeNode(this.getFilterType(filter), filter, node);
+                return node;
+            },
+            "_featureIds": function(filter) {
+                var node = this.createDocumentFragment();
+                for (var i=0, ii=filter.fids.length; i<ii; ++i) {
+                    this.writeNode("ogc:FeatureId", filter.fids[i], node);
                 }
                 return node;
             },
@@ -19117,13 +19321,9 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
                 var childFilter;
                 for (var i=0, ii=filter.filters.length; i<ii; ++i) {
                     childFilter = filter.filters[i];
-                    if (childFilter.type === "FID") {
-                        OpenLayers.Format.Filter.v1.prototype.writeFeatureIdNodes.call(this, childFilter, node);
-                    } else {
                     this.writeNode(
                         this.getFilterType(childFilter), childFilter, node
                     );
-                }
                 }
                 return node;
             },
@@ -19132,26 +19332,18 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
                 var childFilter;
                 for (var i=0, ii=filter.filters.length; i<ii; ++i) {
                     childFilter = filter.filters[i];
-                    if (childFilter.type === "FID") {
-                        OpenLayers.Format.Filter.v1.prototype.writeFeatureIdNodes.call(this, childFilter, node);
-                    } else {
                     this.writeNode(
                         this.getFilterType(childFilter), childFilter, node
                     );
-                }
                 }
                 return node;
             },
             "Not": function(filter) {
                 var node = this.createElementNSPlus("ogc:Not");
                 var childFilter = filter.filters[0];
-                if (childFilter.type === "FID") {
-                    OpenLayers.Format.Filter.v1.prototype.writeFeatureIdNodes.call(this, childFilter, node);
-                } else {
                 this.writeNode(
                     this.getFilterType(childFilter), childFilter, node
                 );
-                }
                 return node;
             },
             "PropertyIsLessThan": function(filter) {
@@ -19201,9 +19393,10 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
                 });
             },
             "Literal": function(value) {
-                // no ogc:expression handling for now
+                var encode = this.encodeLiteral ||
+                    OpenLayers.Format.Filter.v1.prototype.encodeLiteral;
                 return this.createElementNSPlus("ogc:Literal", {
-                    value: value
+                    value: encode(value)
                 });
             },
             "LowerBoundary": function(filter) {
@@ -19251,6 +19444,11 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
                     this.writeOgcExpression(params[i], node);
                 }
                 return node;
+            },
+            "PropertyIsNull": function(filter) {
+                var node = this.createElementNSPlus("ogc:PropertyIsNull");
+                this.writeNode("PropertyName", filter, node);
+                return node;
             }
         }
     },
@@ -19283,12 +19481,13 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
         ">=": "PropertyIsGreaterThanOrEqualTo",
         "..": "PropertyIsBetween",
         "~": "PropertyIsLike",
+        "NULL": "PropertyIsNull",
         "BBOX": "BBOX",
         "DWITHIN": "DWITHIN",
         "WITHIN": "WITHIN",
         "CONTAINS": "CONTAINS",
         "INTERSECTS": "INTERSECTS",
-        "FID": "FeatureId"
+        "FID": "_featureIds"
     },
 
     CLASS_NAME: "OpenLayers.Format.Filter.v1" 
@@ -21241,9 +21440,6 @@ OpenLayers.Util.extend(OpenLayers.Request, {
                 } else {
                     url = proxy + encodeURIComponent(url);
                 }
-            } else {
-                OpenLayers.Console.warn(
-                    OpenLayers.i18n("proxyNeeded"), {url: url});
             }
         }
         return url;
@@ -21311,8 +21507,10 @@ OpenLayers.Util.extend(OpenLayers.Request, {
             this.DEFAULT_CONFIG,
             {proxy: OpenLayers.ProxyHost}
         );
+        config = config || {};
+        config.headers = config.headers || {};
         config = OpenLayers.Util.applyDefaults(config, defaultConfig);
-        
+        config.headers = OpenLayers.Util.applyDefaults(config.headers, defaultConfig.headers);
         // Always set the "X-Requested-With" header to signal that this request
         // was issued through the XHR-object. Since header keys are case 
         // insensitive and we want to allow overriding of the "X-Requested-With"
@@ -22743,6 +22941,11 @@ OpenLayers.Protocol.WFS.v1 = OpenLayers.Class(OpenLayers.Protocol, {
      *     "the_geom" for WFS <version> 1.0, and null for higher versions.
      */
     geometryName: "the_geom",
+
+    /**
+     * Property: maxFeatures
+     * {Integer} Optional maximum number of features to retrieve.
+     */
     
     /**
      * Property: schema
@@ -27411,10 +27614,13 @@ OpenLayers.Layer = OpenLayers.Class({
      * element - {DOMElement} A reference to layer.events.element.
      *
      * Supported map event types:
-     * loadstart - Triggered when layer loading starts.
-     * loadend - Triggered when layer loading ends.  When using Fixed or BBOX
-     *     strategies, the event object includes a *response* property holding
-     *     an OpenLayers.Protocol.Response object.
+     * loadstart - Triggered when layer loading starts.  When using a Vector 
+     *     layer with a Fixed or BBOX strategy, the event object includes 
+     *     a *filter* property holding the OpenLayers.Filter used when 
+     *     calling read on the protocol.
+     * loadend - Triggered when layer loading ends.  When using a Vector layer
+     *     with a Fixed or BBOX strategy, the event object includes a 
+     *     *response* property holding an OpenLayers.Protocol.Response object.
      * visibilitychanged - Triggered when layer visibility is changed.
      * move - Triggered when layer moves (triggered with every mousemove
      *     during a drag).
@@ -35182,14 +35388,6 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
     asyncRequestId: null,
     
     /**
-     * Property: blankImageUrl
-     * {String} Using a data scheme url is not supported by all browsers, but
-     * we don't care because we either set it as css backgroundImage, or the
-     * image's display style is set to "none" when we use it.
-     */
-    blankImageUrl: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAQAIBRAA7",
-
-    /**
      * APIProperty: maxGetUrlLength
      * {Number} If set, requests that would result in GET urls with more
      * characters than the number provided will be made using form-encoded
@@ -35353,7 +35551,6 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
         OpenLayers.Tile.prototype.clear.apply(this, arguments);
         var img = this.imgDiv;
         if (img) {
-            OpenLayers.Event.stopObservingElement(img);
             var tile = this.getTile();
             if (tile.parentNode === this.layer.div) {
                 this.layer.div.removeChild(tile);
@@ -35373,11 +35570,7 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
      */
     getImage: function() {
         if (!this.imgDiv) {
-            this.imgDiv = document.createElement("img");
-
-            this.imgDiv.className = "olTileImage";
-            // avoid image gallery menu in IE6
-            this.imgDiv.galleryImg = "no";
+            this.imgDiv = OpenLayers.Tile.Image.IMAGE.cloneNode(false);
 
             var style = this.imgDiv.style;
             if (this.frame) {
@@ -35423,36 +35616,18 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
         if (this.url && img.getAttribute("src") == this.url) {
             this.onImageLoad();
         } else {
-            // We need to start with a blank image, to make sure that no
-            // loading image placeholder and no old image is displayed when we
-            // set the display style to "" in onImageLoad, which is called
-            // after the image is loaded, but before it is rendered. So we set
-            // a blank image with a data scheme URI, and register for the load
-            // event (for browsers that support data scheme) and the error
-            // event (for browsers that don't). In the event handler, we set
-            // the final src.
-            var load = OpenLayers.Function.bind(function() {
-                OpenLayers.Event.stopObservingElement(img);
-                OpenLayers.Event.observe(img, "load",
-                    OpenLayers.Function.bind(this.onImageLoad, this)
-                );
-                OpenLayers.Event.observe(img, "error",
-                    OpenLayers.Function.bind(this.onImageError, this)
-                );
-                this.imageReloadAttempts = 0;
-                this.setImgSrc(this.url);
-            }, this);
-            if (img.getAttribute("src") == this.blankImageUrl) {
-                load();
-            } else {
-                OpenLayers.Event.stopObservingElement(img);
-                OpenLayers.Event.observe(img, "load", load);
-                OpenLayers.Event.observe(img, "error", load);
-                if (this.crossOriginKeyword) {
-                    img.removeAttribute("crossorigin");
-                }
-                img.src = this.blankImageUrl;
+            OpenLayers.Event.stopObservingElement(img);
+            if (this.crossOriginKeyword) {
+                img.removeAttribute("crossorigin");
             }
+            OpenLayers.Event.observe(img, "load",
+                OpenLayers.Function.bind(this.onImageLoad, this)
+            );
+            OpenLayers.Event.observe(img, "error",
+                OpenLayers.Function.bind(this.onImageError, this)
+            );
+            this.imageReloadAttempts = 0;
+            this.setImgSrc(this.url);
         }
     },
     
@@ -35480,6 +35655,7 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
         } else {
             // Remove reference to the image, and leave it to the browser's
             // caching and garbage collection.
+            OpenLayers.Event.stopObservingElement(this.imgDiv);
             this.imgDiv = null;
             if (img.parentNode) {
                 img.parentNode.removeChild(img);
@@ -35530,10 +35706,8 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
     onImageLoad: function() {
         var img = this.imgDiv;
         OpenLayers.Event.stopObservingElement(img);
-
         img.style.visibility = 'inherit';
         img.style.opacity = this.layer.opacity;
-
         this.isLoading = false;
         this.canvasContext = null;
         this.events.triggerEvent("loadend");
@@ -35598,6 +35772,19 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
     CLASS_NAME: "OpenLayers.Tile.Image"
 
 });
+
+/** 
+ * Constant: OpenLayers.Tile.Image.IMAGE
+ * {HTMLImageElement} The image for a tile.
+ */
+OpenLayers.Tile.Image.IMAGE = (function() {
+    var img = new Image();
+    img.className = "olTileImage";
+    // avoid image gallery menu in IE6
+    img.galleryImg = "no";
+    return img;
+}());
+
 
 /** FILE: OpenLayers/Layer/Grid.js **/
 /* Copyright (c) 2006-2012 by OpenLayers Contributors (see authors.txt for 
@@ -36395,8 +36582,8 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
     setTileSize: function(size) { 
         if (this.singleTile) {
             size = this.map.getSize();
-            size.h = parseInt(size.h * this.ratio);
-            size.w = parseInt(size.w * this.ratio);
+            size.h = parseInt(size.h * this.ratio, 10);
+            size.w = parseInt(size.w * this.ratio, 10);
         } 
         OpenLayers.Layer.HTTPRequest.prototype.setTileSize.apply(this, [size]);
     },
@@ -41863,9 +42050,10 @@ OpenLayers.Format.CQL = (function() {
     patterns = {
         PROPERTY: /^[_a-zA-Z]\w*/,
         COMPARISON: /^(=|<>|<=|<|>=|>|LIKE)/i,
+        IS_NULL: /^IS NULL/i,
         COMMA: /^,/,
         LOGICAL: /^(AND|OR)/i,
-        VALUE: /^('\w+'|\d+(\.\d*)?|\.\d+)/,
+        VALUE: /^('([^']|'')*'|\d+(\.\d*)?|\.\d+)/,
         LPAREN: /^\(/,
         RPAREN: /^\)/,
         SPATIAL: /^(BBOX|INTERSECTS|DWITHIN|WITHIN|CONTAINS)/i,
@@ -41901,8 +42089,9 @@ OpenLayers.Format.CQL = (function() {
     follows = {
         LPAREN: ['GEOMETRY', 'SPATIAL', 'PROPERTY', 'VALUE', 'LPAREN'],
         RPAREN: ['NOT', 'LOGICAL', 'END', 'RPAREN'],
-        PROPERTY: ['COMPARISON', 'BETWEEN', 'COMMA'],
+        PROPERTY: ['COMPARISON', 'BETWEEN', 'COMMA', 'IS_NULL'],
         BETWEEN: ['VALUE'],
+        IS_NULL: ['END'],
         COMPARISON: ['VALUE'],
         COMMA: ['GEOMETRY', 'VALUE', 'PROPERTY'],
         VALUE: ['LOGICAL', 'COMMA', 'RPAREN', 'END'],
@@ -41920,7 +42109,8 @@ OpenLayers.Format.CQL = (function() {
         '>': OpenLayers.Filter.Comparison.GREATER_THAN,
         '>=': OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO,
         'LIKE': OpenLayers.Filter.Comparison.LIKE,
-        'BETWEEN': OpenLayers.Filter.Comparison.BETWEEN
+        'BETWEEN': OpenLayers.Filter.Comparison.BETWEEN,
+        'IS NULL': OpenLayers.Filter.Comparison.IS_NULL
     },
 
     operatorReverse = {},
@@ -42016,6 +42206,7 @@ OpenLayers.Format.CQL = (function() {
                     break;
                 case "COMPARISON":
                 case "BETWEEN":
+                case "IS_NULL":
                 case "LOGICAL":
                     var p = precedence[tok.type];
 
@@ -42092,9 +42283,16 @@ OpenLayers.Format.CQL = (function() {
                         value: value,
                         type: operators[tok.text.toUpperCase()]
                     });
+                case "IS_NULL":
+                    var property = buildTree();
+                    return new OpenLayers.Filter.Comparison({
+                        property: property,
+                        type: operators[tok.text.toUpperCase()]
+                    });
                 case "VALUE":
-                    if ((/^'.*'$/).test(tok.text)) {
-                        return tok.text.substr(1, tok.text.length - 2);
+                    var match = tok.text.match(/^'(.*)'$/);
+                    if (match) {
+                        return match[1].replace(/''/g, "'");
                     } else {
                         return Number(tok.text);
                     }
@@ -42253,14 +42451,14 @@ OpenLayers.Format.CQL = (function() {
                             this.write(filter.lowerBoundary) + " AND " + 
                             this.write(filter.upperBoundary);
                     } else {
-                        
-                        return filter.property +
+                        return (filter.value !== null) ? filter.property +
                             " " + operatorReverse[filter.type] + " " + 
-                            this.write(filter.value);
+                            this.write(filter.value) : filter.property +
+                            " " + operatorReverse[filter.type];
                     }
                 case undefined:
                     if (typeof filter === "string") {
-                        return "'" + filter + "'";
+                        return "'" + filter.replace(/'/g, "''") + "'";
                     } else if (typeof filter === "number") {
                         return String(filter);
                     }
@@ -47911,8 +48109,8 @@ OpenLayers.Handler.Click = OpenLayers.Class(OpenLayers.Handler, {
             for (var i=0; i<len; i++) {
                 touch = evt.touches[i];
                 touches[i] = {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
+                    clientX: touch.olClientX,
+                    clientY: touch.olClientY
                 };
             }
         }
@@ -49539,7 +49737,7 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
 
     initPortal: function() {
         
-        var config = this.portalConfig || {};
+        var config = Ext.apply({}, this.portalConfig);
         
         if (this.portalItems.length === 0) {
             this.mapPanel.region = "center";
@@ -64314,18 +64512,8 @@ gxp.FeatureEditPopup = Ext.extend(GeoExt.Popup, {
 
             this.modifyControl = new OpenLayers.Control.ModifyFeature(
                 this.feature.layer,
-                {standalone: true, vertexRenderIntent: this.vertexRenderIntent,
-                handleKeypress: function(evt) {
-                    OpenLayers.Control.ModifyFeature.prototype.handleKeypress.apply(this, arguments);
-                    // don't go to previous page when back button is pressed
-                    //TODO consider calling OpenLayers.Event.stop in
-                    // OpenLayers.Control.ModifyFeature::handleKeypress
-                    if (this.feature && OpenLayers.Util.indexOf(this.deleteCodes, evt.keyCode) != -1) {
-                        OpenLayers.Event.stop(evt);
-                    }
-                }}
+                {standalone: true, vertexRenderIntent: this.vertexRenderIntent}
             );
-            this.modifyControl.deleteCodes = [8, 46, 68];
             this.feature.layer.map.addControl(this.modifyControl);
             this.modifyControl.activate();
             if (this.feature.geometry) {
@@ -78309,7 +78497,7 @@ gxp.plugins.LayerTree = Ext.extend(gxp.plugins.Tool, {
             }));
             if (record) {
                 attr.qtip = record.get('abstract');
-                if (!record.get("queryable")) {
+                if (!record.get("queryable") && !attr.iconCls) {
                     attr.iconCls = "gxp-tree-rasterlayer-icon";
                 }
                 if (record.get("fixed")) {
