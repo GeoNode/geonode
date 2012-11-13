@@ -29,10 +29,8 @@ def resource_urls(request):
 
     return dict(
         STATIC_URL=settings.STATIC_URL,
-        GEONODE_CLIENT_LOCATION=settings.GEONODE_CLIENT_LOCATION,
         GEOSERVER_BASE_URL=settings.GEOSERVER_BASE_URL,
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
-        GOOGLE_API_KEY=settings.GOOGLE_API_KEY,
         REGISTRATION_OPEN=settings.REGISTRATION_OPEN,
         VERSION=get_version(),
         SITE_NAME=site.name,

@@ -1,8 +1,64 @@
+Critical
+========
 Proxy Issue (using csrf_exempt on the proxy view temporarily)
+Save Map endpoint
+    Now Working, bypassed CSRF Issues for now
+Check Update Map Endpoint
+Publish Map workflow
+Add GeoNode Search API widget as Find Layers
+Make sure the security check works for editing
+Make sure that the security check works for map saving
+Make sure error handling works (should display popup with django error etc)
+Update other pages using Ext to import from new location
+Check Login/Logout workflow with header etc
+Check that Google Earth Plugin works properly
+    Removed from geonode
+    Requires update to latest Google Earth (6.2) 
+
+Important
+=========
+Add Option to Layer Right Click Menu
+Save Copy
+Print not working
+Add Keywords and any other metadata to the Map Metadata form
+Figure out how to display map title and link back to info page in new design
+
+Non-Critical
+============
 Hide GeoExplorer Login/Logout button (top right)
-Displace GeoExplorer down to fit in body (in mainline dev too)
 About Map Content
 about.html override
 Add Option to Layer Right Click Menu
 Save Map endpoint
 Decide how to deal with the hash change after save (have a beforehashchange event in GeoExplorer, or have GeoNode server-side deal with parsing this)
+=======
+Determine strategy for uploads inside GeoExplorer
+
+Cosmetic
+========
+Displace GeoExplorer down to fit in body (in mainline dev too)
+Bootstrap + Ext CSS Clashes (ext-compatibility.css)
+
+Other Pages using ext_header etc
+================================
+
+Documents
+---------
+geonode/documents/templates/documents/docinfo.html
+geonode/documents/templates/documents/document_metadata.html
+geonode/documents/templates/documents/document_search.html
+geonode/documents/templates/documents/document_upload.html
+geonode/documents/templates/documents/documents.html
+
+Layers
+------
+geonode/layers/templates/layers/layer_geoext_map.html
+geonode/layers/templates/layers/layer_metadata.html
+geonode/layers/templates/layers/layer_replace.html
+geonode/layers/templates/layers/layer_upload.html
+
+Maps
+----
+geonode/maps/templates/maps/map_detail.html
+geonode/maps/templates/maps/map_download.html
+geonode/maps/templates/maps/map_embed.html
