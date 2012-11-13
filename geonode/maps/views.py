@@ -477,14 +477,17 @@ def map_wmc(request, mapid, template="maps/wmc.xml"):
 
 #### MAPS PERMISSIONS ####
 
-
 def map_set_permissions(m, perm_spec):
+    print perm_spec
     if "authenticated" in perm_spec:
         m.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+        print m.get_gen_level(AUTHENTICATED_USERS)
     if "anonymous" in perm_spec:
         m.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
     users = [n[0] for n in perm_spec['users']]
-    m.get_user_levels().exclude(user__username__in = users + [m.owner]).delete()
+    excluded = users + [m.owner]
+    existing = m.get_user_levels().exclude(user__username__in=excluded)
+    existing.delete()
     for username, level in perm_spec['users']:
         user = User.objects.get(username=username)
         m.set_user_level(user, level)
@@ -503,27 +506,8 @@ def map_permissions(request, mapid):
         )
 
 
-    spec = json.loads(request.raw_post_data)
-    map_set_permissions(map_obj, spec)
-
-    _perms = {
-        Layer.LEVEL_READ: Map.LEVEL_READ,
-        Layer.LEVEL_WRITE: Map.LEVEL_WRITE,
-        Layer.LEVEL_ADMIN: Map.LEVEL_ADMIN,
-    }
-
-    def perms(x):
-        return _perms.get(x, Map.LEVEL_NONE)
-
-    if "anonymous" in spec:
-        map_obj.set_gen_level(ANONYMOUS_USERS, perms(spec['anonymous']))
-    if "authenticated" in spec:
-        map_obj.set_gen_level(AUTHENTICATED_USERS, perms(spec['authenticated']))
-    users = [n for (n, p) in spec["users"]]
-    map_obj.get_user_levels().exclude(user__username__in = users + [map_obj.owner]).delete()
-    for username, level in spec['users']:
-        user = User.objects.get(username = username)
-        map_obj.set_user_level(user, perms(level))
+    permission_spec = json.loads(request.raw_post_data)
+    map_set_permissions(map_obj, permission_spec)
 
     return HttpResponse(
         json.dumps({'success': True}),
