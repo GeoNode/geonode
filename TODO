@@ -1,19 +1,12 @@
 Critical
 ========
 Proxy Issue (using csrf_exempt on the proxy view temporarily)
-Save Map endpoint
-    Now Working, bypassed CSRF Issues for now
-Check Update Map Endpoint
 Publish Map workflow
 Add GeoNode Search API widget as Find Layers
 Make sure the security check works for editing
 Make sure that the security check works for map saving
 Make sure error handling works (should display popup with django error etc)
 Update other pages using Ext to import from new location
-Check Login/Logout workflow with header etc
-Check that Google Earth Plugin works properly
-    Removed from geonode
-    Requires update to latest Google Earth (6.2) 
 Decide how to deal with the hash change after save (have a beforehashchange event in GeoExplorer, or have GeoNode server-side deal with parsing this)
 
 Important
@@ -26,8 +19,6 @@ Figure out how to display map title and link back to info page in new design
 
 Non-Critical
 ============
-Hide GeoExplorer Login/Logout button (top right)
-About Map Content
 about.html override
 Add Option to Layer Right Click Menu
 Save Map endpoint
