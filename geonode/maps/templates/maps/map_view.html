@@ -262,18 +262,18 @@ Ext.onReady(function() {
         };
 
     var moreInfoTemplate = new Ext.Template(decodeURIComponent(Ext.get("more-info-tpl").dom.innerHTML));
-    var mapInfoHtml = config.id ? moreInfoTemplate.apply({permalink : permalink(app.mapID)}) : "This map is currently unsaved";
+    var mapInfoHtml = config.id ? moreInfoTemplate.apply({permalink : permalink(app.id)}) : "This map is currently unsaved";
     Ext.DomHelper.overwrite(Ext.get("more-info"), mapInfoHtml)
 
     var titleTemplate = new Ext.Template(Ext.get("title-tpl").dom.innerHTML);
     Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}));
 
-    app.on("saved", function(id) {
+    app.on("save", function(id) {
         //reset title header
         Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}))
 
         //reset more info link
-        Ext.DomHelper.overwrite(Ext.get("more-info"), moreInfoTemplate.apply({permalink : permalink(app.mapID)}))
+        Ext.DomHelper.overwrite(Ext.get("more-info"), moreInfoTemplate.apply({permalink : permalink(app.id)}))
     }, this);
 {% endautoescape %}
 });
