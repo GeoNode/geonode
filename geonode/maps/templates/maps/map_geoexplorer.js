@@ -91,10 +91,6 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             url: "/search/api"
         };
         GeoNode.Composer.superclass.constructor.apply(this, [config]);
-        config.sources['search'] = {
-            ptype: "gxp_geonodecataloguesource",
-            url: "/search/api"
-        };
         for (var i=0, ii=config.tools.length; i<ii; i++) {
             if (config.tools[i].ptype === "gxp_addlayers") {
                 config.tools[i].search = true;
