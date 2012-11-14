@@ -6,66 +6,7 @@
 
 {% block head %}
 {{ block.super }}
-<style type="text/css">
-#paneltbar {
-    margin-top: 70px;
-}
-button.logout {
-    display: none;
-}
-button.login {
-    display:none;
-}
-</style>
 {% include 'maps/map_geoexplorer.js' %}
-<script type="text/javascript">
-var app;
-Ext.onReady(function() {
-{% autoescape off %}
-    var config = Ext.apply({
-        authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
-        proxy: "/proxy/?url=",
-        printService: "{{GEOSERVER_BASE_URL}}pdf/",
-        /* The URL to a REST map configuration service.  This service 
-         * provides listing and, with an authenticated user, saving of 
-         * maps on the server for sharing and editing.
-         */
-        rest: "{% url maps_browse %}",
-        homeUrl: "{% url home %}",
-        localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
-        localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",
-        csrfToken: "{{ csrf_token }}"
-    }, {{ config }});
-
-
-    app = new GeoNode.Composer(config);
-
-    var permalinkTemplate = new Ext.Template("{protocol}//{host}/geonode/maps/{id}");
-    var permalink = function(id) {
-            return permalinkTemplate.apply({
-                protocol: window.location.protocol,
-                host: window.location.host,
-                id: id
-            }) 
-        };
-
-/*    var moreInfoTemplate = new Ext.Template(decodeURIComponent(Ext.get("more-info-tpl").dom.innerHTML));
-    var mapInfoHtml = config.id ? moreInfoTemplate.apply({permalink : permalink(app.id)}) : "This map is currently unsaved";
-    Ext.DomHelper.overwrite(Ext.get("more-info"), mapInfoHtml)
-
-    var titleTemplate = new Ext.Template(Ext.get("title-tpl").dom.innerHTML);
-    Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}));
-*/
-//    app.on("save", function(id) {
-        //reset title header
-//        Ext.DomHelper.overwrite(Ext.get("map-title-header"), titleTemplate.apply({title: config.about.title}))
-
-        //reset more info link
-//        Ext.DomHelper.overwrite(Ext.get("more-info"), moreInfoTemplate.apply({permalink : permalink(app.id)}))
-//    }, this);
-{% endautoescape %}
-});
-</script>
 
 {% endblock %}
 
