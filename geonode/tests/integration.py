@@ -109,9 +109,6 @@ class NormalUserTest(TestCase):
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
              norman,
              overwrite=False,
-             abstract="Schools which are in Lembang",
-             title="Lembang Schools",
-             permissions={'users': []}
         )
 
         url = reverse('layer_metadata', args=[saved_layer.typename])
