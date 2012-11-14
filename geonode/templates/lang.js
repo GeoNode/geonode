@@ -4,6 +4,20 @@ if (window.GeoExt && GeoExt.Lang) {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
 }
 
+if (window.GeoNode && GeoNode.Composer) {
+    Ext.apply(GeoNode.Composer.prototype, {
+        metadataFormCancelText : gettext("Cancel"),
+        metadataFormSaveAsCopyText : gettext("Save as Copy"),
+        metaDataHeader: gettext("About this Map"),
+        metaDataMapAbstract: gettext("Abstract"),
+        metadataFormSaveText : gettext("Save"),
+        metaDataMapTitle: gettext("Title"),
+        connErrorTitleText: gettext("Connection Error"),
+        connErrorText: gettext("The server returned an error"),
+        connErrorDetailsText: gettext("Details...")
+    });
+}
+
 if (window.GeoExplorer) {
     Ext.apply(GeoExplorer.prototype, {
         addLayersButtonText: gettext("Add Layers"),
@@ -12,9 +26,6 @@ if (window.GeoExplorer) {
         capGridAddLayersText: gettext("Add Layers"),
         capGridDoneText: gettext("Done"),
         capGridText: gettext("Available Layers"),
-        connErrorTitleText: gettext("Connection Error"),
-        connErrorText: gettext("The server returned an error"),
-        connErrorDetailsText: gettext("Details..."),
         exportDialogMessage: '<p>Your map is ready to be published to the web! </p>' + '<p> Simply copy the following HTML to embed the map in your website: </p>',
         heightLabel: gettext("Height"),
         infoButtonText: gettext("Get Feature Info"),
@@ -29,14 +40,8 @@ if (window.GeoExplorer) {
         loadingMapMessage: gettext("Loading Map..."),
         mapSizeLabel: gettext("Map Size"), 
         measureSplitText: gettext("Measure"),
-        metaDataHeader: gettext("About this Map"),
-        metaDataMapAbstract: gettext("Abstract"),
         metaDataMapContact: gettext("Contact"),
         metaDataMapId: gettext("Permalink"),
-        metadataFormCancelText : gettext("Cancel"),
-        metadataFormSaveAsCopyText : gettext("Save as Copy"),
-        metadataFormSaveText : gettext("Save"),
-        metaDataMapTitle: gettext("Title"),
         miniSizeLabel: gettext("Mini"),
         navActionTipText: gettext("Pan Map"),
         navNextAction: gettext("Zoom to Next Extent"),
