@@ -114,7 +114,7 @@
       </section>
       <section class='well'>
         <h2>{% trans "View map" %}</h2>
-        <p>{% trans "View this map in the GeoExplorer GIS Viewer" %}</p>
+        <p>{% trans "View this map in the GeoExplorer GIS Client" %}</p>
         <a href="{% url "map_view" map.id %}" class="btn btn-large">{% trans "View Map" %}</a>
       </section>
       {% has_obj_perm user map "map.change_map_permissions" as can_change_permissions %}
