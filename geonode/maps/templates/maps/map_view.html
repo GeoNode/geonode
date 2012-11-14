@@ -26,33 +26,6 @@ Ext.onReady(function() {
 {% autoescape off %}
     var config = Ext.apply({
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
-        tools: [{
-            ptype: "gxp_wmsgetfeatureinfo",
-            // uncomment the line below if you want feature info in a grid
-            format: "grid",
-            actionTarget: "map.tbar",
-            outputConfig: {width: 400, height: 300}
-        }{% if user.is_authenticated and DB_DATASTORE  %},
-        {
-            ptype: "gxp_featuremanager",
-            id: "feature_manager",
-            paging: false,
-            autoSetLayer: true,
-            autoLoadFeatures: true,
-            listeners: {
-                'layerchange': function(mgr, layer, schema) {
-                    checkLayerPermissions(layer);
-                }
-            }
-        },
-        {
-            ptype: "gxp_featureeditor",
-            id: "gn_layer_editor",
-            featureManager: "feature_manager",
-            autoLoadFeature: true
-        },
-        { ptype: "gxp_measure" }{% endif %}
-        ],
         proxy: "/proxy/?url=",
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
         /* The URL to a REST map configuration service.  This service 
@@ -68,55 +41,6 @@ Ext.onReady(function() {
 
 
     app = new GeoNode.Composer(config);
-
-    {% if user.is_authenticated and DB_DATASTORE  %}
-    //Check permissions for selected layer and enable/disable feature edit buttons accordingly
-    var checkLayerPermissions = function (layerRecord) {
-
-        var buttons = app.tools["gn_layer_editor"].actions;
-
-        var toggleButtons = function(enabled) {
-            for (var i = 0; i < buttons.length; i++) {
-                enabled ? buttons[i].enable() : buttons[i].disable();
-            }
-        }
-
-        //Disable if layer is null or selected layer in tree doesn't match input layer
-        var tree_node =  Ext.getCmp("treecontent").getSelectionModel().getSelectedNode();
-        if (layerRecord == null) {
-            toggleButtons(false);
-        }
-        else {
-            //Proceed if this is a local queryable WMS layer
-            var layer = layerRecord.getLayer();
-            if (layer instanceof OpenLayers.Layer.WMS && (layer.url == "/geoserver/wms" ||
-                    layer.url.indexOf(app.localGeoServerBaseUrl.replace(app.urlPortRegEx, "$1/")) == 0)) {
-                Ext.Ajax.request({
-                    url:"/layers/" + layer.params.LAYERS + "/edit-check",
-                    method:"POST",
-                    success:function (result, request) {
-                        if (result.status != 200) {
-                            toggleButtons(false);
-                        } else {
-                            layer.displayOutsideMaxExtent = true;
-                            toggleButtons(true);
-                        }
-                    },
-                    failure:function (result, request) {
-                        toggleButtons(false);
-                    }
-                });
-            } else {
-                toggleButtons(false);
-            }
-        }
-    };
-
-    //Activate the editing if a map is created with a layer already in the config
-    app.on('ready',function(){
-        app.tools["gn_layer_editor"].getFeatureManager().setLayer(app.selectedLayer);
-     });
-    {% endif %}
 
     var permalinkTemplate = new Ext.Template("{protocol}//{host}/geonode/maps/{id}");
     var permalink = function(id) {
