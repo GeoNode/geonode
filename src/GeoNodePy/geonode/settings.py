@@ -395,8 +395,8 @@ MAP_BASELAYERS = [{
   }]
 
 
-#GEONODE_CLIENT_LOCATION = "/static/geonode/"
-GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
+GEONODE_CLIENT_LOCATION = "/static/geonode/"
+
 
 # GeoNode vector data backend configuration.
 
@@ -487,8 +487,8 @@ HOODS_TEMPLATE_ID = 8  #Map id to be used as template
 HOODS_TEMPLATE_ATTRIBUTE = 'GEOID10'  #Attribute to be used for block id
 HOODS_MASTER_LAYER = 'masterhoodlayer_nuw'
 
-#GEOPS_IP =  '128.30.77.57:8083'
-GEOPS_IP =  '140.247.116.252:8083'
+GEOPS_IP =  '128.30.77.57:8083'
+#GEOPS_IP =  '140.247.116.252:8083'
 GEOPS_DOWNLOAD = ''
 
 try:
