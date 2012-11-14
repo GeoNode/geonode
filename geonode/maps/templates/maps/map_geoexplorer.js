@@ -88,6 +88,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         }];
         config.sources['search'] = {
             ptype: "gxp_geonodecataloguesource",
+            restUrl: "/gs/rest",
             url: "/search/api"
         };
         GeoNode.Composer.superclass.constructor.apply(this, [config]);

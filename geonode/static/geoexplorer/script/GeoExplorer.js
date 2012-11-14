@@ -79326,6 +79326,12 @@ gxp.plugins.GeoNodeCatalogueSource = Ext.extend(gxp.plugins.CatalogueSource, {
             delete this.store.baseParams.bbox;
         }
         this.store.load();
+    },
+
+    createLayerRecord: function(layerConfig) {
+        layerConfig.restUrl = this.restUrl;
+        layerConfig.queryable = true;
+        return gxp.plugins.GeoNodeCatalogueSource.superclass.createLayerRecord.apply(this, arguments);
     }
 
 });
