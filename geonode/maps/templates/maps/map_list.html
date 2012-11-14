@@ -58,7 +58,7 @@
       <div class="tab-content span8">
         <div class="tab-pane active list loadmore" id="all">
           {% if object_list.count %}
-          {% autopaginate object_list 2 %}
+          {% autopaginate object_list 10 %}
           {% for map in object_list %}
             {% include "maps/_map_list_item.html" %}
           {% endfor %}
