@@ -5,12 +5,10 @@ Print not working
 Important
 =========
 Add GeoNode Search API widget as Find Layers
-Add Option to Layer Right Click Menu
 
 Non-Critical
 ============
 about.html override
-Decide how to deal with the hash change after save (have a beforehashchange event in GeoExplorer, or have GeoNode server-side deal with parsing this)
 Determine strategy for uploads inside GeoExplorer
 Add Keywords and any other metadata to the Map Metadata form
 
