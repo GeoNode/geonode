@@ -44,6 +44,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         });
         GeoNode.Composer.superclass.constructor.apply(this, [config]);
     },
+    showUrl: Ext.emptyFn,
     loadConfig: function() {
         GeoNode.Composer.superclass.loadConfig.apply(this, arguments);
         for (var key in this.tools) {
