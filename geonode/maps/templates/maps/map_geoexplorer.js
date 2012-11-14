@@ -44,6 +44,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         });
         GeoNode.Composer.superclass.constructor.apply(this, [config]);
     },
+    showUrl: Ext.emptyFn,
     loadConfig: function() {
         GeoNode.Composer.superclass.loadConfig.apply(this, arguments);
         for (var key in this.tools) {
@@ -294,7 +295,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
                 this.about["abstract"] = abstractField.getValue();
                 this.metadataForm.hide();
                 this._doSave = true;
-                this.save(callback);
+                this.save(this.metadataForm.saveCallback);
             },
             scope: this
         });
@@ -306,7 +307,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
                 this.about["abstract"] = abstractField.getValue();
                 this.metadataForm.hide();
                 this._doSave = true;
-                this.save(callback);
+                this.save(this.metadataForm.saveCallback);
             },
             scope: this
         });
@@ -314,6 +315,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         this.metadataForm = new Ext.Window({
             title: this.metaDataHeader,
             closeAction: 'hide',
+            saveCallback: callback,
             items: metaDataPanel,
             modal: true,
             width: 400,
@@ -341,8 +343,9 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
     showMetadataForm: function(callback) {
         if(!this.metadataForm) {
             this.initMetadataForm(callback);
+        } else {
+            this.metadataForm.saveCallback = callback;
         }
-
         this.metadataForm.show();
     }
 
