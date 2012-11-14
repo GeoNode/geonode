@@ -44,6 +44,63 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         });
         GeoNode.Composer.superclass.constructor.apply(this, [config]);
     },
+    loadConfig: function() {
+        GeoNode.Composer.superclass.loadConfig.apply(this, arguments);
+        for (var key in this.tools) {
+            var tool = this.tools[key];
+            if (tool.id === "featuremanager") {
+                tool.on("layerchange", function(mgr, layer, schema) {
+                    this.checkLayerPermissions(layer);
+                }, this);
+                break;
+            }
+        }
+    },
+    checkLayerPermissions: function (layerRecord) {
+        var buttons;
+        for (var key in this.tools) {
+            var tool = this.tools[key];
+            if (tool instanceof gxp.plugins.FeatureEditor) {
+                buttons = tool.actions;
+                break;
+            }
+        }
+        var toggleButtons = function(enabled) {
+            for (var i = 0; i < buttons.length; i++) {
+                enabled ? buttons[i].enable() : buttons[i].disable();
+            }
+        }
+        //Disable if layer is null or selected layer in tree doesn't match input layer
+        var tree_node =  Ext.getCmp("layers").getSelectionModel().getSelectedNode();
+        if (layerRecord == null) {
+            toggleButtons(false);
+        }
+        else {
+            //Proceed if this is a local queryable WMS layer
+            var layer = layerRecord.getLayer();
+            if (layer instanceof OpenLayers.Layer.WMS && (layer.url == "/geoserver/wms" ||
+                    layer.url.indexOf(app.localGeoServerBaseUrl.replace(app.urlPortRegEx, "$1/")) == 0)) {
+                Ext.Ajax.request({
+                    url:"/layers/" + layer.params.LAYERS + "/edit-check",
+                    method:"POST",
+                    success:function (response) {
+                        var result = Ext.decode(response.responseText);
+                        if (result.authorized === false) {
+                            toggleButtons(false);
+                        } else {
+                            layer.displayOutsideMaxExtent = true;
+                            toggleButtons(true);
+                        }
+                    },
+                    failure:function () {
+                        toggleButtons(false);
+                    }
+                });
+            } else {
+                toggleButtons(false);
+            }
+        }
+    },
     showEmbedWindow: function() {
         new Ext.Window({
             title: this.publishActionText,

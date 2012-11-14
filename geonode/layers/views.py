@@ -689,7 +689,8 @@ def feature_edit_check(request, layername):
     If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
     Otherwise, return a status of 401 (unauthorized).
     """
-    layer = get_object_or_404(Layer, typename=layername);
-    return HttpResponse(
-        status=200 if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' else 401
-    )
+    layer = get_object_or_404(Layer, typename=layername)
+    if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' and settings.DB_DATASTORE:
+        return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
+    else:
+        return HttpResponse(json.dumps({'authorized': False}), mimetype="application/json")
