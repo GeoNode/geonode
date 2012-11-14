@@ -1,22 +1,11 @@
 Critical
 ========
-Proxy Issue (using csrf_exempt on the proxy view temporarily)
-Make sure the security check works for editing
-    Appears to, requires more checking
-Make sure that the security check works for map saving
-    Appears to, error not displayed, but 403 returned
-Make sure error handling works (should display popup with django error etc)
-Add GeoNode Search API widget as Find Layers
-Publish Map workflow
-Update other pages using Ext to import from new location
-/maps/new?layer= doesnt seem to work now
+Print not working
 
 Important
 =========
+Add GeoNode Search API widget as Find Layers
 Add Option to Layer Right Click Menu
-Print not working
-Add Option to Layer Right Click Menu
-Add Keywords and any other metadata to the Map Metadata form
 Figure out how to display map title and link back to info page in new design
 
 Non-Critical
@@ -24,6 +13,7 @@ Non-Critical
 about.html override
 Decide how to deal with the hash change after save (have a beforehashchange event in GeoExplorer, or have GeoNode server-side deal with parsing this)
 Determine strategy for uploads inside GeoExplorer
+Add Keywords and any other metadata to the Map Metadata form
 
 Cosmetic
 ========

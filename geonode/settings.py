@@ -215,6 +215,10 @@ LOGGING = {
             "handlers": ["console"],
             "level": "ERROR",
         },
+        'south': {
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
     },
 }
 
@@ -232,8 +236,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    #'announcements.context_processors.site_wide_announcements',
-    "account.context_processors.account",
+    'announcements.context_processors.site_wide_announcements',
+    'account.context_processors.account',
     # The context processor below adds things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
     'geonode.context_processors.resource_urls',
@@ -303,6 +307,7 @@ ACTSTREAM_SETTINGS = {
 SOUTH_MIGRATION_MODULES = {
     'avatar': 'geonode.migrations.avatar',
 }
+SOUTH_TESTS_MIGRATE=False
 
 # Settings for Social Apps
 AUTH_PROFILE_MODULE = 'people.Profile'

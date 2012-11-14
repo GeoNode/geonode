@@ -1,3 +1,6 @@
+{% include 'geonode/ext_header.html' %}
+{% include 'geonode/geo_header.html' %}
+
 <script type="text/javascript">
 Ext.ns("GeoNode");
 GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
