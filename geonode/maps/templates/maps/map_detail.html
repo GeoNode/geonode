@@ -9,9 +9,6 @@
 {% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% include "geonode/ext_header.html" %}
-{% include "geonode/app_header.html" %}
-{% include "geonode/geo_header.html" %}
 {% include "maps/map_include.html" %}
 {{ block.super }}
 {% endblock %}
