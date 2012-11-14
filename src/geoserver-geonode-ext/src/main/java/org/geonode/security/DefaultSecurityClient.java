@@ -84,28 +84,47 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
         Assert.notNull(cookieValue);
         
         Authentication cachedAuth = authCache.get(cookieValue);
+        LOGGER.info("got authentication cache");
         if (null == cachedAuth) {
-            authLock.lock();
+            LOGGER.info("Locking authentication");
+        	authLock.lock();
             try {
                 // got the lock, check again
+            	LOGGER.info("Getting auth cache again");
                 cachedAuth = authCache.get(cookieValue);
+                LOGGER.info("Got auth cache again");
                 if (null == cachedAuth) {
-
+                	LOGGER.info("Cache was null");
                     final String headerName = "Cookie";
                     final String headerValue = GEONODE_COOKIE_NAME + "=" + cookieValue;
-
+                    LOGGER.info("Trying to authenticate with cookie Value");
                     cachedAuth = authenticate(cookieValue, headerName, headerValue);
+                    LOGGER.info("Principal is " + cachedAuth.getPrincipal().toString());
+                    if (cachedAuth.getPrincipal() == "anonymous") {
+                    	LOGGER.info("Principal is anonymous, cookie is wrong or pointless, unauthenticate");
+                    	cachedAuth.setAuthenticated(false);
+                    }
+                    LOGGER.info("Finished trying to authenticate with cookie Value");                    
                     if (cachedAuth instanceof UsernamePasswordAuthenticationToken) {
+                    	LOGGER.info("authentication is instance of UsernamePasswordAuthenticationToken"); 
                         cachedAuth = new GeoNodeSessionAuthToken(cachedAuth.getPrincipal(),
                                 cachedAuth.getCredentials(), cachedAuth.getAuthorities());
+                        LOGGER.info("created new GeoNodeSessionAuthToken"); 
                     }
-                    authCache.put(cookieValue, cachedAuth);
+                    LOGGER.info("Are we authenticated now? " + cachedAuth.isAuthenticated());
+                    
+                    if (cachedAuth.isAuthenticated()) {
+                    	LOGGER.info("Putting cookie value in auth cache"); 
+                    	authCache.put(cookieValue, cachedAuth);
+                    }
                 }
             } finally {
+            	LOGGER.info("Unlock auth"); 
                 authLock.unlock();
+            	LOGGER.info("Unlocked auth"); 
             }
         }
-
+    	LOGGER.info("Return cached auth"); 
         return cachedAuth;
     }
 
@@ -147,13 +166,12 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
             throws AuthenticationException, IOException {
         final String url = baseUrl + "data/acls";
 
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.finest("Authenticating with " + Arrays.toString(requestHeaders));
-        }
+
+        LOGGER.info("Authenticating with " + Arrays.toString(requestHeaders));
+  
         final String responseBodyAsString = client.sendGET(url, requestHeaders);
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.finest("Auth response: " + responseBodyAsString);
-        }
+        LOGGER.info("Auth response: " + responseBodyAsString);
+
 
         JSONObject json = (JSONObject) JSONSerializer.toJSON(responseBodyAsString);
         Authentication authentication = toAuthentication(credentials, json);
@@ -164,20 +182,24 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
     private Authentication toAuthentication(Object credentials, JSONObject json) {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         if (json.containsKey("ro")) {
+        	LOGGER.info("readonly");
             JSONArray roLayers = json.getJSONArray("ro");
             authorities.add(new LayersGrantedAuthority(roLayers, LayerMode.READ_ONLY));
         }
         if (json.containsKey("rw")) {
+        	LOGGER.info("readwrite");
             JSONArray rwLayers = json.getJSONArray("rw");
             authorities.add(new LayersGrantedAuthority(rwLayers, LayerMode.READ_WRITE));
         }
         if (json.getBoolean("is_superuser")) {
+        	LOGGER.info("superuser");
             authorities.add(new GrantedAuthorityImpl(GeoNodeDataAccessManager.ADMIN_ROLE));
         }
 
         final Authentication authentication;
 
         if (json.getBoolean("is_anonymous")) {
+        	LOGGER.info("Anonymous");
             authorities.add(new GrantedAuthorityImpl("ROLE_ANONYMOUS"));
             String key = "geonode";
             Object principal = "anonymous";
@@ -190,6 +212,7 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
             if (json.containsKey("name")) {
                 userName = json.getString("name");
             }
+            LOGGER.info("Username is " + userName);
             GrantedAuthority[] grantedAuthorities = authorities
                     .toArray(new GrantedAuthority[authorities.size()]);
 

@@ -132,7 +132,7 @@ GeoNode.WorldMapPermissionsEditor = Ext.extend(Ext.util.Observable, {
         this.editorChooser.setDisabled(this.editMode !== 'LIST');
 
         var radioItems = [
-                     { xtype: 'radio', name: 'editmode', inputValue: 'REGISTERED', boxLabel: gettext('Any registered user')}
+                    { xtype: 'radio', name: 'editmode', inputValue: 'REGISTERED', boxLabel: gettext('Any registered user')}
         ];
 
         if (this.customGroup)

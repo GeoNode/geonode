@@ -22,8 +22,8 @@ import urllib
 from urllib import urlretrieve
 import glob
 
-assert sys.version_info >= (2,6), \
-       SystemError("GeoNode Build requires python 2.6 or better")
+assert sys.version_info >= (2,6),\
+SystemError("GeoNode Build requires python 2.6 or better")
 
 
 options(
@@ -666,7 +666,7 @@ def host(options):
         time.sleep(2)
 
     try:
-        #sh("django-admin.py updatelayers --settings=geonode.settings")
+        sh("django-admin.py updatelayers --settings=geonode.settings")
 
         info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
         info("The GeoNode is an unstoppable machine")

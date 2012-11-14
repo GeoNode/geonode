@@ -36,7 +36,7 @@ ows_sub = re.compile(r"[&\?]+SERVICE=WMS|[&\?]+REQUEST=GetCapabilities", re.IGNO
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
-                            x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+                                                                 x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
 
 ROLE_VALUES = [
     'datasetProvider',
@@ -290,7 +290,7 @@ COUNTRIES = (
     ('YEM', _('Yemen')),
     ('ZMB', _('Zambia')),
     ('ZWE', _('Zimbabwe')),
-)
+    )
 
 
 KEYWORD_REGIONS= (
@@ -310,7 +310,7 @@ KEYWORD_REGIONS= (
     ('SAF',_('South Africa')),
     ('MES',_('Middle East')),
     ('ANT',_('Antarctica')),
-)
+    )
 
 # Taken from http://www.w3.org/WAI/ER/IG/ert/iso639.htm
 ALL_LANGUAGES = (
@@ -427,7 +427,7 @@ ALL_LANGUAGES = (
     ('yor', 'Yoruba'),
     ('zha', 'Zhuang'),
     ('zul', 'Zulu'),
-)
+    )
 
 
 CHARSETS = [
@@ -500,7 +500,7 @@ CONSTRAINT_OPTIONS = [
     'trademark',
     'public',
     'no restrictions',
-]
+    ]
 
 SPATIAL_REPRESENTATION_TYPES = [
     'grid', 'steroModel', 'textTable', 'tin', 'vector'
@@ -527,51 +527,51 @@ DEFAULT_SUPPLEMENTAL_INFORMATION=_(
 )
 
 DEFAULT_CONTENT=_(
-'<h3>The Harvard WorldMap Project</h3>\
-<p>WorldMap is an open source web mapping system that is currently\
-under construction. It is built to assist academic research and\
-teaching as well as the general public and supports discovery,\
-investigation, analysis, visualization, communication and archiving\
-of multi-disciplinary, multi-source and multi-format data,\
-organized spatially and temporally.</p>\
-<p>The first instance of WorldMap, focused on the continent of\
-Africa, is called AfricaMap. Since its beta release in November of\
-2008, the framework has been implemented in several geographic\
-locations with different research foci, including metro Boston,\
-East Asia, Vermont, Harvard Forest and the city of Paris. These web\
-mapping applications are used in courses as well as by individual\
-researchers.</p>\
-<h3>Introduction to the WorldMap Project</h3>\
-<p>WorldMap solves the problem of discovering where things happen.\
-It draws together an array of public maps and scholarly data to\
-create a common source where users can:</p>\
-<ol>\
-<li>Interact with the best available public data for a\
-city/region/continent</li>\
-<li>See the whole of that area yet also zoom in to particular\
-places</li>\
-<li>Accumulate both contemporary and historical data supplied by\
-researchers and make it permanently accessible online</li>\
-<li>Work collaboratively across disciplines and organizations with\
-spatial information in an online environment</li>\
-</ol>\
-<p>The WorldMap project aims to accomplish these goals in stages,\
-with public and private support. It draws on the basic insight of\
-geographic information systems that spatiotemporal data becomes\
-more meaningful as more "layers" are added, and makes use of tiling\
-and indexing approaches to facilitate rapid search and\
-visualization of large volumes of disparate data.</p>\
-<p>WorldMap aims to augment existing initiatives for globally\
-sharing spatial data and technology such as <a target="_blank" href="http://www.gsdi.org/">GSDI</a> (Global Spatial Data\
-Infrastructure).WorldMap makes use of <a target="_blank" href="http://www.opengeospatial.org/">OGC</a> (Open Geospatial\
-Consortium) compliant web services such as <a target="_blank" href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS</a> (Web\
-Map Service), emerging open standards such as <a target="_blank" href="http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">WMS-C</a>\
-(cached WMS), and standards-based metadata formats, to enable\
-WorldMap data layers to be inserted into existing data\
-infrastructures.&nbsp;<br>\
-<br>\
-All WorldMap source code will be made available as <a target="_blank" href="http://www.opensource.org/">Open Source</a> for others to use\
-and improve upon.</p>'
+    '<h3>The Harvard WorldMap Project</h3>\
+  <p>WorldMap is an open source web mapping system that is currently\
+  under construction. It is built to assist academic research and\
+  teaching as well as the general public and supports discovery,\
+  investigation, analysis, visualization, communication and archiving\
+  of multi-disciplinary, multi-source and multi-format data,\
+  organized spatially and temporally.</p>\
+  <p>The first instance of WorldMap, focused on the continent of\
+  Africa, is called AfricaMap. Since its beta release in November of\
+  2008, the framework has been implemented in several geographic\
+  locations with different research foci, including metro Boston,\
+  East Asia, Vermont, Harvard Forest and the city of Paris. These web\
+  mapping applications are used in courses as well as by individual\
+  researchers.</p>\
+  <h3>Introduction to the WorldMap Project</h3>\
+  <p>WorldMap solves the problem of discovering where things happen.\
+  It draws together an array of public maps and scholarly data to\
+  create a common source where users can:</p>\
+  <ol>\
+  <li>Interact with the best available public data for a\
+  city/region/continent</li>\
+  <li>See the whole of that area yet also zoom in to particular\
+  places</li>\
+  <li>Accumulate both contemporary and historical data supplied by\
+  researchers and make it permanently accessible online</li>\
+  <li>Work collaboratively across disciplines and organizations with\
+  spatial information in an online environment</li>\
+  </ol>\
+  <p>The WorldMap project aims to accomplish these goals in stages,\
+  with public and private support. It draws on the basic insight of\
+  geographic information systems that spatiotemporal data becomes\
+  more meaningful as more "layers" are added, and makes use of tiling\
+  and indexing approaches to facilitate rapid search and\
+  visualization of large volumes of disparate data.</p>\
+  <p>WorldMap aims to augment existing initiatives for globally\
+  sharing spatial data and technology such as <a target="_blank" href="http://www.gsdi.org/">GSDI</a> (Global Spatial Data\
+  Infrastructure).WorldMap makes use of <a target="_blank" href="http://www.opengeospatial.org/">OGC</a> (Open Geospatial\
+  Consortium) compliant web services such as <a target="_blank" href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS</a> (Web\
+  Map Service), emerging open standards such as <a target="_blank" href="http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">WMS-C</a>\
+  (cached WMS), and standards-based metadata formats, to enable\
+  WorldMap data layers to be inserted into existing data\
+  infrastructures.&nbsp;<br>\
+  <br>\
+  All WorldMap source code will be made available as <a target="_blank" href="http://www.opensource.org/">Open Source</a> for others to use\
+  and improve upon.</p>'
 )
 
 
@@ -713,7 +713,7 @@ class LayerManager(models.Manager):
         return self.admin_contact()
 
 
-    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, owner=None, new_only=False, lnames=None):
+    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, owner=None, new_only=False, lnames=None, workspace=None):
         """Configure the layers available in GeoServer in GeoNode.
 
            It returns a list of dictionaries with the name of the layer,
@@ -722,11 +722,10 @@ class LayerManager(models.Manager):
         if verbosity > 1:
             print >> console, "Inspecting the available layers in GeoServer ..."
         cat = self.gs_catalog
-        if layer is None:
-            resources = cat.get_resources()
-        else:
-            resource = cat.get_resource(layer)
-            resources = [resource] if resource else []
+        resources = []
+        if workspace is not None:
+            workspace = cat.get_workspace(workspace)
+            resources = cat.get_resources(workspace=workspace)
         number = len(resources)
         if verbosity > 1:
             msg =  "Found %d layers, starting processing" % number
@@ -1207,12 +1206,12 @@ class Layer(models.Model, PermissionLevelMixin):
             try:
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
-                netloc = urlparse(dft_url).netloc
+                netloc = urlparse(dc_url).netloc
                 http.authorizations.append(
                     httplib2.BasicAuthentication(
                         (_user, _password),
                         netloc,
-                        dft_url,
+                        dc_url,
                             {},
                         None,
                         None,
@@ -2251,9 +2250,11 @@ class MapStats(models.Model):
     map = models.ForeignKey(Map, unique=True)
     visits = models.IntegerField(_("Visits"), default= 0)
     uniques = models.IntegerField(_("Unique Visitors"), default = 0)
+    last_modified = models.DateTimeField(auto_now=True,null=True)
 
 class LayerStats(models.Model):
     layer = models.ForeignKey(Layer, unique=True)
     visits = models.IntegerField(_("Visits"), default = 0)
     uniques = models.IntegerField(_("Unique Visitors"), default = 0)
     downloads = models.IntegerField(_("Downloads"), default = 0)
+    last_modified = models.DateTimeField(auto_now=True, null=True)

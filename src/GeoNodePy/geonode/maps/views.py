@@ -1003,6 +1003,75 @@ def view(request, mapid, snapshot=None):
     }))
 
 
+def ajax_start_twitter(request):
+    from boto.ec2.connection import EC2Connection
+    try:
+        ec2 = EC2Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+        twitterInstance = ec2.get_all_instances(instance_ids=[settings.AWS_INSTANCE_ID])[0].instances[0]
+        twitterInstance.start()
+        instanceStarted = False
+        while not instanceStarted:
+            try:
+                twitterInstance.use_ip(settings.AWS_INSTANCE_IP)
+                instanceStarted = True
+            except:
+                pass
+        return HttpResponse(
+            status=200
+        )
+    except Exception, e:
+        return HttpResponse(
+            status=500
+        )
+
+def tweetview(request):
+#    from boto.ec2.connection import EC2Connection
+    map = get_object_or_404(Map,urlsuffix="tweetmap")
+    config = map.viewer_json(request.user)
+
+    redirectPage = 'maps/tweetview.html'
+
+    #Check if twitter server is running
+#    ec2 = EC2Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+#    twitterInstance = ec2.get_all_instances(instance_ids=[settings.AWS_INSTANCE_ID])[0].instances[0]
+#
+#
+#    instanceStarted = twitterInstance.state == 'running'
+#
+#    if not instanceStarted:
+#        redirectPage = 'maps/tweetstartup.html'
+
+
+
+    first_visit = True
+    if request.session.get('visit' + str(map.id), False):
+        first_visit = False
+    else:
+        request.session['visit' + str(map.id)] = True
+
+    mapstats, created = MapStats.objects.get_or_create(map=map)
+    mapstats.visits += 1
+    if created or first_visit:
+        mapstats.uniques+=1
+    mapstats.save()
+
+
+    #Remember last visited map
+    request.session['lastmap'] = map.id
+    request.session['lastmapTitle'] = map.title
+
+    config['first_visit'] = first_visit
+    config['edit_map'] = request.user.has_perm('maps.change_map', obj=map)
+
+    return render_to_response(redirectPage, RequestContext(request, {
+        'config': json.dumps(config),
+        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        'maptitle': map.title,
+        'GEOPS_IP': settings.GEOPS_IP,
+        'urlsuffix': get_suffix_if_custom(map),
+        'tweetdownload': request.user.is_authenticated() and request.user.get_profile().is_org_member
+        }))
 
 def official_site(request, site):
     """
@@ -1529,6 +1598,11 @@ def layer_replace(request, layername):
                     "success": True,
                     "redirect_to": reverse('data_metadata', args=[saved_layer.typename])}))
             except Exception, e:
+                try:
+                    if len(settings.ADMINS) > 0:
+                        send_mail("Upload Error", escape(str(e)), settings.DEFAULT_FROM_EMAIL,[settings.ADMINS[0][1]], fail_silently=True)
+                except Exception, f:
+                    pass
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
                     "success": False,
@@ -2194,7 +2268,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             | Q(keywords__name__icontains=keyword)
             | Q(abstract__icontains=keyword))
 
-    officialMaps = map_query.filter(Q(officialurl__isnull=False)).exclude(officialurl='tweetmap')
+    officialMaps = map_query.filter(Q(officialurl__isnull=False))
     map_query = map_query.filter(Q(officialurl__isnull=True))
 
     if sort_field:
@@ -2216,12 +2290,13 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             else:
                 owner_name = m.owner.username
 
+        url = ("/" + map.officialurl) if map.officialurl else ("/maps/" + map.urlsuffix) if map.urlsuffix  else "/maps/" + str(map.id)
+
         mapdict = {
-            'id' : m.id,
-            'title' : m.title,
-            'abstract' : m.abstract,
-            'urlsuffix' : m.urlsuffix,
-            'detail' : reverse('geonode.maps.views.view', args=(m.id,)),
+            'id' : map.id,
+            'title' : map.title,
+            'abstract' : map.abstract,
+            'detail' : url,
             'owner' : owner_name,
             'owner_detail' : reverse('profiles.views.profile_detail', args=(m.owner.username,)),
             'last_modified' : m.last_modified.isoformat()

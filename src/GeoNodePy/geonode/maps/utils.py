@@ -263,9 +263,11 @@ def save(layer, base_file, user, overwrite = True, title=None,
     # Check if the store exists in geoserver
     try:
         if settings.DB_DATASTORE and the_layer_type == FeatureType.resource_type:
+            logger.info('Get WMSTORE')
             store = cat.get_store(settings.DB_DATASTORE_NAME)
         else:
-            store = cat.get_store(name);
+            logger.info('GET store %s', name)
+            store = cat.get_store(name)
     except geoserver.catalog.FailedRequestError, e:
         # There is no store, ergo the road is clear
         pass
@@ -273,7 +275,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
         # If we get a store, we do the following:
         resources = store.get_resources()
         # Is it empty?
-        if len(resources) == 0:
+        if settings.DB_DATASTORE_NAME != store.name and len(resources) == 0:
             # What should we do about that empty store?
             if overwrite:
                 # We can just delete it and recreate it later.
@@ -394,7 +396,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
         f.close()
         try:
             XML(sld)
-        except Exception, ex:
+        except Exception, e:
             msg =_('Your SLD file contains invalid XML')
             logger.warn("%s - %s" % (msg, str(e)))
             e.args = (msg,)

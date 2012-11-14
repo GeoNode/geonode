@@ -131,6 +131,7 @@ class PermissionLevelMixin(object):
         try:
             my_ct = ContentType.objects.get_for_model(self)
             mapping = UserObjectRoleMapping.objects.get(user=user, object_id=self.id, object_ct=my_ct)
+            logger.info("User " + user + " for object " + self.id + "of type " + my_ct + " is " + mapping.role.codename)
             return mapping.role.codename
         except Exception:
             return self.LEVEL_NONE

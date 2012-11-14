@@ -341,6 +341,7 @@ GAZETTEER
 ..............
 The gazetteer is disabled by default because it adds a bit of complexity to the setup process.
 It should be enabled only if PostGIS integration is also enabled.
+
 In your settings.py file:
 * uncomment the following in INSTALLED_APPS:
     * #geonode.gazetteer,
@@ -349,7 +350,7 @@ In your settings.py file:
 
 QUEUE
 ..............
-WorldMap can now optionally make use of the Celery project to send certain tasks (updating
+WorldMap can now optionally make use of Celery (http://celeryproject.org/) to send certain tasks (updating
 the gazetteer, updating layer boundaries after creating/editing features) to a job queue
 where they will be processed later.
 
@@ -358,13 +359,10 @@ In your settings.py file, uncomment the following in INSTALLED_APPS:
 * #'djcelery',
 * #'djkombu',
 
-The default run interval is determined by QUEUE_INTERVAL - the default is 10 minutes.
+The run interval is determined by QUEUE_INTERVAL - the default is 10 minutes.
 
 You will need to manually setup and run the celery processes on your server.  For basic
 instructions on doing so see  :file:`docs/deploy/celery_queue.txt`
-
-
-
 
 
 Directory Structure
