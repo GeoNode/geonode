@@ -83512,6 +83512,8 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
              *
              *  * requestConfig - ``Object`` configuration object for the request,
              *    which has the following properties: method, url and data.
+             *  * callback - ``Function`` Optional callback function which was
+             *    passed on to the save function.
              */
             "beforesave",
             /** api: event[save]
@@ -83543,7 +83545,7 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
         // should not be persisted or accessed again
         delete config.authStatus;
 
-        config.tools = [
+        var tools = [
             {
                 ptype: "gxp_layermanager",
                 outputConfig: {
@@ -83669,6 +83671,11 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
                 actionTarget: "paneltbar"
             }
         ];
+        if (config.tools) {
+            config.tools = tools.concat(config.tools);
+        } else {
+            config.tools = tools;
+        }
         
         GeoExplorer.Composer.superclass.constructor.apply(this, arguments);
     },
@@ -84155,7 +84162,7 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
         }
     },
 
-    /** private: method[showEmbedWindow]
+    /** api: method[showEmbedWindow]
      */
     showEmbedWindow: function() {
        var toolsArea = new Ext.tree.TreePanel({title: this.toolsTitle, 

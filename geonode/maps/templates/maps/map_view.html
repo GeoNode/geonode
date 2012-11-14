@@ -71,19 +71,4 @@ Ext.onReady(function() {
 
 {% endblock %}
 
-{% block body %}
-<div id="header-wrapper">
-  {{ block.super }}
-  <div id="topPanel">
-    <div id="more-info"></div>
-    <span id="map-title-header"></span>
-  </div>
-</div>
-<div id="templates">
-  <div id="more-info-tpl"><a class='link' href='{permalink}'>{% trans "View info" %}</a></div>
-  <div id="title-tpl"><a class='maplist' href='{% url maps_search %}'>{% trans "Maps" %}</a> / <strong>{title}</strong></div>
-</div>
-{% endblock %}
-{% block middle %}
-{% endblock %}
 {% block footer %}{% endblock %}

@@ -15,6 +15,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
     connErrorDetailsText: "UT:Details...",
     /** end i18n */
     constructor: function(config) {
+        this.titleTemplate = new Ext.Template("<a class='maplist' href='{% url maps_browse %}'>Maps</a> / <strong>{title}");
         // global request proxy and error handling
         OpenLayers.Request.events.on({
             "failure": function(evt) {
@@ -42,9 +43,34 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             },
             scope: this
         });
+        config.tools = [{
+            actions: ["map-title-header"],
+            actionTarget: "paneltbar"
+        }];
         GeoNode.Composer.superclass.constructor.apply(this, [config]);
     },
     showUrl: Ext.emptyFn,
+    getPermalink: function() {
+        permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}");
+        return permalinkTemplate.apply({
+            protocol: window.location.protocol,
+            host: window.location.host,
+            id: this.id
+        })
+    },
+    getMapTitle: function() {
+        var title;
+        if (this.id) {
+            title = '<a class="link" href="' + this.getPermalink(this.id) + '">' + this.about.title + '</a>';
+        } else {
+            title = "This map is currently unsaved";
+        }
+        return this.titleTemplate.apply({title: title});
+    },
+    createTools: function() {
+        GeoNode.Composer.superclass.createTools.apply(this, arguments);
+        new Ext.Container({style: "margin-right: 10px", id: "map-title-header", html: this.getMapTitle()});
+    },
     loadConfig: function() {
         GeoNode.Composer.superclass.loadConfig.apply(this, arguments);
         for (var key in this.tools) {
@@ -226,6 +252,9 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
           form.items.get(0).focus(false, 100);
     },
     initPortal: function() {
+        this.on("save", function(id) {
+            Ext.getCmp("map-title-header").update(this.getMapTitle());
+        }, this);
         this.on("beforesave", function(requestConfig, callback) {
             if (this._doSave === true) {
                 delete this._doSave;
