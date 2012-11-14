@@ -84120,7 +84120,7 @@ GeoExplorer.Composer = Ext.extend(GeoExplorer, {
             url: url,
             data: configStr
         };
-        if (this.fireEvent("beforesave", requestConfig) !== false) {
+        if (this.fireEvent("beforesave", requestConfig, callback) !== false) {
             OpenLayers.Request.issue(Ext.apply(requestConfig, {
                 callback: function(request) {
                     this.handleSave(request);

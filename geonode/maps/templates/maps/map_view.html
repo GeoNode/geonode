@@ -83,6 +83,18 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         });
         GeoNode.Composer.superclass.constructor.apply(this, [config]);
     },
+    showEmbedWindow: function() {
+        new Ext.Window({
+            title: this.publishActionText,
+            layout: "fit",
+            width: 380,
+            autoHeight: true,
+            items: [{
+                xtype: "gxp_embedmapdialog",
+                url: this.rest + this.id + "/embed"
+            }]
+        }).show();
+    },
     displayXHRTrouble: function(response) {
         response.status && Ext.Msg.show({
             title: this.connErrorTitleText,
@@ -195,7 +207,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
           form.items.get(0).focus(false, 100);
     },
     initPortal: function() {
-        this.on("beforesave", function(requestConfig) {
+        this.on("beforesave", function(requestConfig, callback) {
             if (this._doSave === true) {
                 delete this._doSave;
                 if (this.id) {
@@ -205,7 +217,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
                 }
                 return true;
             } else {
-                this.showMetadataForm();
+                this.showMetadataForm(callback);
                 return false;
             }
         }, this);
@@ -218,7 +230,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
      *
      * Initialize metadata entry form.
      */
-    initMetadataForm: function(){
+    initMetadataForm: function(callback){
 
         var titleField = new Ext.form.TextField({
             width: '95%',
@@ -264,7 +276,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
                 this.about["abstract"] = abstractField.getValue();
                 this.metadataForm.hide();
                 this._doSave = true;
-                this.save();
+                this.save(callback);
             },
             scope: this
         });
@@ -276,7 +288,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
                 this.about["abstract"] = abstractField.getValue();
                 this.metadataForm.hide();
                 this._doSave = true;
-                this.save();
+                this.save(callback);
             },
             scope: this
         });
@@ -308,9 +320,9 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
     /** private: method[showMetadataForm]
      *  Shows the window with a metadata form
      */
-    showMetadataForm: function() {
+    showMetadataForm: function(callback) {
         if(!this.metadataForm) {
-            this.initMetadataForm();
+            this.initMetadataForm(callback);
         }
 
         this.metadataForm.show();
