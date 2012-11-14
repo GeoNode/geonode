@@ -79062,6 +79062,840 @@ gxp.NewSourceDialog = Ext.extend(Ext.Panel, {
 /** api: xtype = gxp_newsourcedialog */
 Ext.reg('gxp_newsourcedialog', gxp.NewSourceDialog);
 
+/** FILE: plugins/CatalogueSource.js **/
+/**
+ * Copyright (c) 2008-2011 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ */
+
+/**
+ * @requires plugins/WMSSource.js
+ */
+
+/** api: (define)
+ *  module = gxp.plugins
+ *  class = CatalogueSource
+ */
+
+/** api: (extends)
+ *  plugins/WMSSource.js
+ */
+Ext.namespace("gxp.plugins");
+
+/** api: constructor
+ *  .. class:: CatalogueSource(config)
+ *
+ *    Base class for catalogue sources uses for search.
+ */
+gxp.plugins.CatalogueSource = Ext.extend(gxp.plugins.WMSSource, {
+
+    /** api: config[url]
+     *  ``String`` Online resource of the catalogue service.
+     */
+    url: null,
+
+    /** api: config[title]
+     *  ``String`` Optional title for this source.
+     */
+    title: null,
+
+    /** private: property[lazy]
+     *  ``Boolean`` This source always operates lazy so without GetCapabilities
+     */
+    lazy: true,
+
+    /** api: config[hidden]
+     *  ``Boolean`` Normally we do not want these sources to show up in the
+     *  AddLayers dialog for the source combobox. Set to false for a certain 
+     *  source to show up anyway whenever that makes sense, e.g. by using a
+     *  catalogue source to retrieve all the layers for a capabilities grid.
+     */
+    hidden: true,
+
+    /** api: config[proxyOptions]
+     *  ``Object``
+     *  An optional object to pass to the constructor of the ProtocolProxy.
+     *  This can be used e.g. to set listeners.
+     */
+    proxyOptions: null,
+
+    /** api: method[describeLayer]
+     *  :arg rec: ``GeoExt.data.LayerRecord`` the layer to issue a WMS
+     *      DescribeLayer request for
+     *  :arg callback: ``Function`` Callback function. Will be called with
+     *      an ``Ext.data.Record`` from a ``GeoExt.data.DescribeLayerStore``
+     *      as first argument, or false if the WMS does not support
+     *      DescribeLayer.
+     *  :arg scope: ``Object`` Optional scope for the callback.
+     *
+     *  Get a DescribeLayer response from this source's WMS.
+     */
+    describeLayer: function(rec, callback, scope) {
+        // it makes no sense to keep a describeLayerStore since
+        // everything is lazy and layers can come from different WMSs.
+        var recordType = Ext.data.Record.create(
+            [
+                {name: "owsType", type: "string"},
+                {name: "owsURL", type: "string"},
+                {name: "typeName", type: "string"}
+            ]
+        );
+        var record = new recordType({
+            owsType: "WFS",
+            owsURL: rec.get('url'),
+            typeName: rec.get('name')
+        });
+        callback.call(scope, record);
+    },
+
+    /** private: method[destroy]
+     */
+    destroy: function() {
+        this.store && this.store.destroy();
+        this.store = null;
+        gxp.plugins.CatalogueSource.superclass.destroy.apply(this, arguments);
+    }
+
+    /** api: method[getPagingParamNames]
+     *  :return: ``Object`` with keys start and limit.
+     *
+     *  Get the names of the parameters to use for paging.
+     *
+     *  To be implemented by subclasses
+     */
+
+    /** api: method[filter]
+     *  Filter the store by querying the catalogue service.
+     *  :param options: ``Object`` An object with the following keys:
+     *
+     * .. list-table::
+     *     :widths: 20 80
+     * 
+     *     * - ``queryString``
+     *       - the search string
+     *     * - ``limit`` 
+     *       - the maximum number of records to retrieve
+     *     * - ``filters``
+     *       - additional filters to include in the query
+     *
+     *  To be implemented by subclasses
+     */
+
+});
+
+/** FILE: plugins/GeoNodeCatalogueSource.js **/
+/**
+ * Copyright (c) 2008-2011 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ */
+
+/**
+ * @requires plugins/CatalogueSource.js
+ */
+
+/** api: (define)
+ *  module = gxp.plugins
+ *  class = GeoNodeCatalogueSource
+ */
+
+/** api: (extends)
+ *  plugins/CatalogueSource.js
+ */
+Ext.namespace("gxp.plugins");
+
+/** api: constructor
+ *  .. class:: GeoNodeCatalogueSource(config)
+ *
+ *    Plugin for creating WMS layers lazily. The difference with the WMSSource
+ *    is that the url is configured on the layer not on the source. This means
+ *    that this source can create WMS layers for any url. This is particularly
+ *    useful when working against a Catalogue Service, such as GeoNode.
+ */
+gxp.plugins.GeoNodeCatalogueSource = Ext.extend(gxp.plugins.CatalogueSource, {
+
+    /** api: ptype = gxp_geonodecataloguesource */
+    ptype: "gxp_geonodecataloguesource",
+
+    /** api: config[rootProperty]
+     *  ``String`` Root property in the JSON response. Defaults to 'results'.
+     */
+    rootProperty: 'results',
+
+    /** api: config[baseParams]
+     *  ``Object`` Optional additional params to send in the requests.
+     */
+    baseParams: null,
+
+    /** api: config[fields]
+     *  ``Array`` Fields to use for the JsonReader. By default the following
+     *  fields are provided: title, abstract, bounds and URI. Optionally this 
+     *  can be overridden by applications to provide different or additional
+     *  mappings.
+     */
+    fields: [
+        {name: "title", convert: function(v) {
+            return [v];
+        }},
+        {name: "abstract", mapping: "description"},
+        {name: "bounds", mapping: "bbox", convert: function(v) {
+            return {
+                left: v.minx,
+                right: v.maxx,
+                bottom: v.miny,
+                top: v.maxy
+            };
+        }},
+        {name: "URI", mapping: "links", convert: function(v) {
+            var result = [];
+            for (var key in v) {
+                result.push({value: v[key].url});
+            }
+            return result;
+        }}
+    ],
+
+    /** api: method[createStore]
+     *  Create the store that will be used for the GeoNode searches.
+     */
+    createStore: function() {
+        this.store = new Ext.data.Store({
+            proxy: new Ext.data.HttpProxy(Ext.apply({
+                url: this.url, 
+                method: 'GET'
+            }, this.proxyOptions || {})),
+            baseParams: Ext.apply({
+                type: 'layer'
+            }, this.baseParams),
+            reader: new Ext.data.JsonReader({
+                root: this.rootProperty
+            }, this.fields)
+        });
+        gxp.plugins.LayerSource.prototype.createStore.apply(this, arguments);
+    },
+
+    /** api: method[getPagingParamNames]
+     *  :return: ``Object`` with keys start and limit.
+     *
+     *  Get the names of the parameters to use for paging.
+     */
+    getPagingParamNames: function() {
+        return {
+            start: 'startIndex',
+            limit: 'limit'
+        };
+    },
+
+    /** api: method[filter]
+     *  Filter the store by querying the catalogue service.
+     *  :param options: ``Object`` An object with the following keys:
+     *
+     * .. list-table::
+     *     :widths: 20 80
+     * 
+     *     * - ``queryString``
+     *       - the search string
+     *     * - ``limit`` 
+     *       - the maximum number of records to retrieve
+     *     * - ``filters``
+     *       - additional filters to include in the query
+     */
+    filter: function(options) {
+        var bbox = undefined;
+        for (var i=0, ii=options.filters.length; i<ii; ++i) {
+            var f = options.filters[i];
+            if (f instanceof OpenLayers.Filter.Spatial) {
+                bbox = f.value.toBBOX();
+                break;
+            }
+        }
+        Ext.apply(this.store.baseParams, {
+            'q': options.queryString,
+            'limit': options.limit
+        });
+        if (bbox !== undefined) {
+            Ext.apply(this.store.baseParams, {
+                'bbox': bbox
+            });
+        } else {
+            delete this.store.baseParams.bbox;
+        }
+        this.store.load();
+    }
+
+});
+
+Ext.preg(gxp.plugins.GeoNodeCatalogueSource.prototype.ptype, gxp.plugins.GeoNodeCatalogueSource);
+
+/** FILE: widgets/form/CSWFilterField.js **/
+/**
+ * Copyright (c) 2008-2011 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ */
+
+/** api: (define)
+ *  module = gxp.form
+ *  class = CSWFilterField
+ *  base_link = `Ext.form.CompositeField <http://extjs.com/deploy/dev/docs/?class=Ext.form.CompositeField>`_
+ */
+Ext.namespace("gxp.form");
+
+/** api: constructor
+ *  .. class:: CSWFilterField(config)
+ *   
+ *      A composite form field which uses a combobox to select values
+ *      for a certain filter, and adds a button to the right of the combobox
+ *      to remove the filter.
+ */
+gxp.form.CSWFilterField = Ext.extend(Ext.form.CompositeField, {
+
+    /** i18n */
+    clearTooltip: "Clear the filter for this category",
+    emptyText: 'Select filter',    
+    /* end i18n */
+
+    /** api: config[property]
+     *  ``String`` Optional, the PropertyName to use in the Filter
+     */
+    property: null,
+
+    /** api: config[map]
+     *  ``OpenLayers.Map``
+     */
+    map: null,
+
+    /** api: config[type]
+     *  ``String`` Optional type to use in the comparison filter.
+     *  Defaults to '=='.
+     */
+    type: OpenLayers.Filter.Comparison.EQUAL_TO,
+
+    /** api:config[name]
+     *  ``String`` Name of the filter property.
+     */
+    name: null,
+
+    /** api:config[comboFieldLabel]
+     *  ``String`` fieldLabel to use for the combobox.
+     */
+    comboFieldLabel: null,
+
+    /** api:config[comboStoreData]
+     *  ``Array`` The data for the combo store.
+     */
+    comboStoreData: null,
+
+    /** api:config[target]
+     *  ``gxp.CatalogueSearchPanel`` The target on which to apply the filters.
+     */
+    target: null,
+
+    getFilter: function() {
+        if (this.property === 'BoundingBox') {
+            return new OpenLayers.Filter.Spatial({
+                type: OpenLayers.Filter.Spatial.BBOX,
+                property: this.property,
+                projection: "EPSG:4326",
+                value: this.map.getExtent().transform(
+                    this.map.getProjectionObject(),
+                    new OpenLayers.Projection("EPSG:4326")
+                )
+            });
+        } else { 
+            return new OpenLayers.Filter.Comparison({
+                type: this.type,
+                property: this.property,
+                value: this.combo.getValue()
+            });
+        } 
+    },
+
+    /** private: method[initComponent]
+     *  Initializes the CSW filter field.
+     */
+    initComponent: function() {
+        this.items = [{
+            ref: 'combo',
+            xtype: "combo",
+            fieldLabel: this.comboFieldLabel,
+            store: new Ext.data.ArrayStore({
+                fields: ['id', 'value'],
+                data: this.comboStoreData
+            }),
+            displayField: 'value',
+            valueField: 'id',
+            mode: 'local',
+            listeners: {
+                'select': function(cmb, record) {
+                    if (this.filter) {
+                        this.target.removeFilter(this.filter);
+                    }
+                    this.filter = this.getFilter();
+                    this.target.addFilter(this.filter);
+                    return false;
+                },
+                scope: this
+            },
+            emptyText: this.emptyText,
+            triggerAction: 'all'
+        }, {
+            xtype: 'button',
+            iconCls: 'gxp-icon-removelayers',
+            tooltip: this.clearTooltip,
+            handler: function(btn) {
+                this.target.removeFilter(this.filter);
+                this.hide();
+            },
+            scope: this
+        }];
+        this.hidden = true;
+        gxp.form.CSWFilterField.superclass.initComponent.apply(this, arguments);
+    },
+
+    /** private: method[destroy]
+     *  Clean up.
+     */
+    destroy: function() {
+        this.filter = null;
+        this.target = null;
+        this.map = null;
+        gxp.form.CSWFilterField.superclass.destroy.call(this);
+    }
+
+});
+
+/** api: xtype = gxp_cswfilterfield */
+Ext.reg('gxp_cswfilterfield', gxp.form.CSWFilterField);
+
+/** FILE: widgets/CatalogueSearchPanel.js **/
+/**
+ * Copyright (c) 2008-2012 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ */
+
+/**
+ * @requires widgets/form/CSWFilterField.js
+ */
+
+/** api: (define)
+ *  module = gxp
+ *  class = CatalogueSearchPanel
+ *  base_link = `Ext.Panel <http://extjs.com/deploy/dev/docs/?class=Ext.Panel>`_
+ */
+Ext.namespace("gxp");
+
+/** api: constructor
+ *  .. class:: CatalogueSearchPanel(config)
+ *   
+ *      Create a panel for searching a CS-W.
+ */
+gxp.CatalogueSearchPanel = Ext.extend(Ext.Panel, {
+
+    /** private: property[border]
+     *  ``Boolean``
+     */
+    border: false,
+
+    /** api: config[maxRecords]
+     *  ``Integer`` The maximum number of records to retrieve in one batch.
+     *  Defaults to 10.
+     */
+    maxRecords: 10,
+
+    /** api: config[map]
+     *  ``OpenLayers.Map``
+     */
+    map: null,
+
+    /** api: config[selectedSource]
+     *  ``String`` The key of the catalogue source to use on startup.
+     */
+    selectedSource: null,
+
+    /** api: config[sources]
+     *  ``Object`` The set of catalogue sources for which the user will be
+     *  able to query on.
+     */
+    sources: null,
+
+    /* i18n */
+    searchFieldEmptyText: "Search",
+    searchButtonText: "Search",
+    addTooltip: "Create filter",
+    addMapTooltip: "Add to map",
+    advancedTitle: "Advanced",
+    datatypeLabel: "Data type",
+    extentLabel: "Spatial extent",
+    categoryLabel: "Category",
+    datasourceLabel: "Data source",
+    filterLabel: "Filter search by",
+    removeSourceTooltip: "Switch back to original source",
+    /* end i18n */
+
+    /** private: method[initComponent]
+     *  Initializes the catalogue search panel.
+     */
+    initComponent: function() {
+        this.addEvents(
+            /** api: event[addlayer]
+             *  Fires when a layer needs to be added to the map.
+             *
+             *  Listener arguments:
+             *
+             *  * :class:`gxp.CatalogueSearchPanel` this component
+             *  * ``String`` the key of the catalogue source to use
+             *  * ``Object`` config object for the WMS layer to create.
+             */
+            "addlayer"
+        );
+        this.filters = [];
+        var sourceComboData = [];
+        for (var key in this.sources) {
+            sourceComboData.push([key, this.sources[key].title]);
+        }
+        if (sourceComboData.length >= 1) {
+            this.selectedSource = sourceComboData[0][0];
+        }
+        var filterOptions = [['datatype', 'data type'], ['extent', 'spatial extent'], ['category', 'category']];
+        if (sourceComboData.length > 1) {
+            filterOptions.push(['csw', 'data source']);
+        }
+        this.items = [{
+            xtype: 'form',
+            border: false,
+            ref: 'form',
+            hideLabels: true,
+            autoHeight: true,
+            style: "margin-left: 5px; margin-right: 5px; margin-bottom: 5px; margin-top: 5px",
+            items: [{
+                xtype: "compositefield",
+                items: [{
+                    xtype: "textfield",
+                    emptyText: this.searchFieldEmptyText,
+                    ref: "../../search",
+                    name: "search",
+                    listeners: {
+                         specialkey: function(field, e) {
+                             if (e.getKey() == e.ENTER) {
+                                 this.performQuery();
+                             }
+                         },
+                         scope: this
+                    },
+                    width: 250
+                }, {
+                    xtype: "button",
+                    text: this.searchButtonText,
+                    handler: this.performQuery,
+                    scope: this
+                }]
+            }, {
+                xtype: "fieldset",
+                collapsible: true,
+                collapsed: true,
+                hideLabels: false,
+                hidden: true,
+                title: this.advancedTitle,
+                items: [{
+                    xtype: 'gxp_cswfilterfield',
+                    name: 'datatype',
+                    property: 'apiso:Type',
+                    comboFieldLabel: this.datatypeLabel,
+                    comboStoreData: [
+                        ['dataset', 'Dataset'],
+                        ['datasetcollection', 'Dataset collection'],
+                        ['application', 'Application'],
+                        ['service', 'Service']
+                    ],
+                    target: this
+                }, {
+                    xtype: 'gxp_cswfilterfield',
+                    name: 'extent',
+                    property: 'BoundingBox',
+                    map: this.map,
+                    comboFieldLabel: this.extentLabel,
+                    comboStoreData: [
+                        ['map', 'spatial extent of the map']
+                    ],
+                    target: this
+                }, {
+                    xtype: 'gxp_cswfilterfield',
+                    name: 'category',
+                    property: 'apiso:TopicCategory',
+                    comboFieldLabel: this.categoryLabel,
+                    comboStoreData: [
+                        ['farming', 'Farming'],
+                        ['biota', 'Biota'],
+                        ['boundaries', 'Boundaries'],
+                        ['climatologyMeteorologyAtmosphere', 'Climatology/Meteorology/Atmosphere'],
+                        ['economy', 'Economy'],
+                        ['elevation', 'Elevation'],
+                        ['environment', 'Environment'],
+                        ['geoscientificinformation', 'Geoscientific Information'],
+                        ['health', 'Health'],
+                        ['imageryBaseMapsEarthCover', 'Imagery/Base Maps/Earth Cover'],
+                        ['intelligenceMilitary', 'Intelligence/Military'],
+                        ['inlandWaters', 'Inland Waters'],
+                        ['location', 'Location'],
+                        ['oceans', 'Oceans'],
+                        ['planningCadastre', 'Planning Cadastre'],
+                        ['society', 'Society'],
+                        ['structure', 'Structure'],
+                        ['transportation', 'Transportation'],
+                        ['utilitiesCommunications', 'Utilities/Communications']
+                    ],
+                    target: this
+                }, {
+                    xtype: "compositefield",
+                    id: "csw",
+                    ref: "../../cswCompositeField",
+                    hidden: true,
+                    items: [{
+                        xtype: "combo",
+                        ref: "../../../sourceCombo",
+                        fieldLabel: this.datasourceLabel,
+                        store: new Ext.data.ArrayStore({
+                            fields: ['id', 'value'],
+                            data: sourceComboData
+                        }),
+                        displayField: 'value',
+                        valueField: 'id',
+                        mode: 'local',
+                        listeners: {
+                            'select': function(cmb, record) {
+                                this.setSource(cmb.getValue());
+                            },
+                            'render': function() { 
+                                this.sourceCombo.setValue(this.selectedSource);
+                            },
+                            scope: this
+                        },
+                        triggerAction: 'all'
+                    }, {
+                        xtype: 'button',
+                        iconCls: 'gxp-icon-removelayers',
+                        tooltip: this.removeSourceTooltip,
+                        handler: function(btn) {
+                            this.setSource(this.initialConfig.selectedSource);
+                            this.sourceCombo.setValue(this.initialConfig.selectedSource);
+                            this.cswCompositeField.hide();
+                        },
+                        scope: this
+                    }]
+                }, {
+                    xtype: 'compositefield',
+                    items: [{
+                        xtype: "combo",
+                        fieldLabel: this.filterLabel,
+                        store: new Ext.data.ArrayStore({
+                            fields: ['id', 'value'],
+                            data: filterOptions
+                        }),
+                        displayField: 'value',
+                        valueField: 'id',
+                        mode: 'local',
+                        triggerAction: 'all'
+                    }, {
+                        xtype: 'button',
+                        iconCls: 'gxp-icon-addlayers',
+                        tooltip: this.addTooltip,
+                        handler: function(btn) {
+                            btn.ownerCt.items.each(function(item) {
+                                if (item.getXType() === "combo") {
+                                    var id = item.getValue();
+                                    item.clearValue();
+                                    var field = this.form.getForm().findField(id);
+                                    if (field) {
+                                        field.show();
+                                    }
+                                }
+                            }, this);
+                        },
+                        scope: this
+                    }]
+                }]
+            }, {
+                xtype: "grid",
+                width: '100%', 
+                anchor: '99%',
+                viewConfig: {
+                    scrollOffset: 0,
+                    forceFit: true
+                },
+                border: false,
+                ref: "../grid",
+                bbar: new Ext.PagingToolbar({
+                    paramNames: this.sources[this.selectedSource].getPagingParamNames(),
+                    store: this.sources[this.selectedSource].store,
+                    pageSize: this.maxRecords
+                }),
+                loadMask: true,
+                hideHeaders: true,
+                store: this.sources[this.selectedSource].store,
+                columns: [{
+                    id: 'title',
+                    xtype: "templatecolumn", 
+                    tpl: new Ext.XTemplate('<b>{title}</b><br/>{abstract}'), 
+                    sortable: true
+                }, {
+                    xtype: "actioncolumn",
+                    width: 30,
+                    items: [{
+                        iconCls: "gxp-icon-addlayers",
+                        tooltip: this.addMapTooltip,
+                        handler: function(grid, rowIndex, colIndex) {
+                            var rec = this.grid.store.getAt(rowIndex);
+                            this.addLayer(rec);
+                        },
+                        scope: this
+                    }]
+                }],
+                autoExpandColumn: 'title',
+                autoHeight: true
+            }] 
+        }];
+        gxp.CatalogueSearchPanel.superclass.initComponent.apply(this, arguments);
+    },
+
+    /** private: method[destroy]
+     *  Clean up.
+     */
+    destroy: function() {
+        this.sources = null;
+        this.map = null;
+        gxp.CatalogueSearchPanel.superclass.destroy.call(this);
+    },
+
+    /** private: method[setSource]
+     *  :arg key: ``String`` The key of the source to search on.
+     *
+     *  Change the CS-W this panel will search on.
+     */
+    setSource: function(key) {
+        this.selectedSource = key;
+        var store = this.sources[key].store;
+        this.grid.reconfigure(store, this.grid.getColumnModel());
+        this.grid.getBottomToolbar().bindStore(store);
+    },
+
+    /** private: method[performQuery]
+     *  Query the Catalogue and show the results.
+     */
+    performQuery: function() {
+        var plugin = this.sources[this.selectedSource];
+        plugin.filter({
+            queryString: this.search.getValue(),
+            limit: this.maxRecords,
+            filters: this.filters
+        });
+    },
+
+    /** private: method[addFilter]
+     *  :arg filter: ``OpenLayers.Filter`` The filter to add.
+     *
+     *  Add the filter to the list of filters to use in the CS-W query.
+     */
+    addFilter: function(filter) {
+        this.filters.push(filter);
+    },
+
+    /** private: method[removeFilter]
+     *  :arg filter: ``OpenLayers.Filter`` The filter to remove.
+     *
+     *  Remove the filter from the list of filters to use in the CS-W query.
+     */
+    removeFilter: function(filter) {
+        this.filters.remove(filter);
+    },
+
+    /** private: method[findWMS]
+     *  :arg links: ``Array`` The links to search for a GetMap URL.
+     *  :returns: ``Object`` A config object with the url and the layer name.
+     *
+     *  Look up the WMS url in a set of hyperlinks.
+     *  TODO: find a more solid way to do this, without using GetCapabilities
+     *  preferably.
+     */
+    findWMS: function(links) {
+        var url = null, name = null, i, ii, link;
+        // search for a protocol that matches WMS
+        for (i=0, ii=links.length; i<ii; ++i) {
+            link = links[i];
+            if (link.protocol && link.protocol.toUpperCase() === "OGC:WMS" && link.value && link.name) {
+                url = link.value;
+                name = link.name;
+                break;
+            }
+        }
+        // if not found by protocol, try by inspecting the url
+        if (url === null) {
+            for (i=0, ii=links.length; i<ii; ++i) {
+                link = links[i];
+                if (link.value && link.value.toLowerCase().indexOf('service=wms') > 0) {
+                    var obj = OpenLayers.Util.createUrlObject(link.value);
+                    url = obj.protocol + "//" + obj.host + ":" + obj.port + obj.pathname;
+                    name = obj.args.layers;
+                    break;
+                }
+            }
+        }
+        if (url !== null && name !== null) {
+            return {
+                url: url,
+                name: name
+            };
+        } else {
+            return false;
+        }
+    },
+
+    /** private: method[addLayer]
+     *  :arg record: ``GeoExt.data.LayerRecord`` The layer record to add.
+     *      
+     *  Add a WMS layer coming from a catalogue search.
+     */
+    addLayer: function(record) {
+        var uri = record.get("URI");
+        var bounds = record.get("bounds");
+        var bLeft = bounds.left,
+            bRight = bounds.right,
+            bBottom = bounds.bottom,
+            bTop = bounds.top;
+        var left = Math.min(bLeft, bRight),
+            right = Math.max(bLeft, bRight),
+            bottom = Math.min(bBottom, bTop),
+            top = Math.max(bBottom, bTop);
+        var wmsInfo = this.findWMS(uri);
+        if (wmsInfo === false) {
+            // fallback to dct:references
+            var references = record.get("references");
+            wmsInfo = this.findWMS(references);
+        }
+        if (wmsInfo !== false) {
+            this.fireEvent("addlayer", this, this.selectedSource, Ext.apply({
+                title: record.get('title')[0],
+                bbox: [left, bottom, right, top],
+                srs: "EPSG:4326"
+            }, wmsInfo));
+        }
+    }
+
+});
+
+/** api: xtype = gxp_cataloguesearchpanel */
+Ext.reg('gxp_cataloguesearchpanel', gxp.CatalogueSearchPanel);
+
 /** FILE: plugins/AddLayers.js **/
 /**
  * Copyright (c) 2008-2011 The Open Planning Project
@@ -79074,6 +79908,8 @@ Ext.reg('gxp_newsourcedialog', gxp.NewSourceDialog);
 /**
  * @requires plugins/Tool.js
  * @requires widgets/NewSourceDialog.js
+ * @requires plugins/GeoNodeCatalogueSource.js
+ * @requires widgets/CatalogueSearchPanel.js
  */
 
 /** api: (define)
@@ -79150,19 +79986,25 @@ gxp.plugins.AddLayers = Ext.extend(gxp.plugins.Tool, {
      */
     availableLayersText: "Available Layers",
 
-    /** api: config[availableLayersText]
+    /** api: config[searchText]
+     *  ``String``
+     *  Text for the search dialog title (i18n).
+     */
+    searchText: "Search for layers",
+
+    /** api: config[expanderTemplateText]
      *  ``String``
      *  Text for the grid expander (i18n).
      */
     expanderTemplateText: "<p><b>Abstract:</b> {abstract}</p>",
     
-    /** api: config[availableLayersText]
+    /** api: config[panelTitleText]
      *  ``String``
      *  Text for the layer title (i18n).
      */
     panelTitleText: "Title",
 
-    /** api: config[availableLayersText]
+    /** api: config[layerSelectionText]
      *  ``String``
      *  Text for the layer selection (i18n).
      */
@@ -79367,6 +80209,9 @@ gxp.plugins.AddLayers = Ext.extend(gxp.plugins.Tool, {
         }
         var output = gxp.plugins.AddLayers.superclass.addOutput.apply(this, [{
             sources: sources,
+            title: this.searchText,
+            height: 300,
+            width: 315,
             selectedSource: selectedSource,
             xtype: 'gxp_cataloguesearchpanel',
             map: this.target.mapPanel.map,
@@ -84709,7 +85554,8 @@ GeoExt.Lang.add("ca", {
         panelTitleText: "Títol",
         layerSelectionText: "Veure dades disponibles de:",
         doneText: "Fet",
-        uploadText: "Puja dades"
+        uploadText: "Puja dades",
+        searchText: "Search for layers"
     },
     
     "gxp.plugins.BingSource.prototype": {
@@ -85105,7 +85951,8 @@ GeoExt.Lang.add("de", {
         panelTitleText: "Titel",
         layerSelectionText: "Verfügbare Daten anzeigen von:",
         doneText: "Fertig",
-        uploadText: "Daten hochladen"
+        uploadText: "Daten hochladen",
+        searchText: "Search for layers"
     },
     
     "gxp.plugins.BingSource.prototype": {
@@ -85499,7 +86346,8 @@ GeoExt.Lang.add("el", {
         panelTitleText: "Τίτλος",
         layerSelectionText: "Δείτε διαθέσιμα δεδομένα από:",
         doneText: "Ολοκληρώθηκε",
-        uploadText: "Ανεβάστε Δεδομένα"
+        uploadText: "Ανεβάστε Δεδομένα",
+        searchText: "Search for layers"
     },
     
     "gxp.plugins.BingSource.prototype": {
@@ -85890,7 +86738,8 @@ GeoExt.Lang.add("en", {
         panelTitleText: "Title",
         layerSelectionText: "View available data from:",
         doneText: "Done",
-        uploadText: "Upload layers"
+        uploadText: "Upload layers",
+        searchText: "Search for layers"
     },
     
     "gxp.plugins.BingSource.prototype": {
@@ -86283,7 +87132,8 @@ GeoExt.Lang.add("es", {
         panelTitleText: "Título",
         layerSelectionText: "Ver datos disponibles de:",
         doneText: "Hecho",
-        uploadText: "Subir Datos"
+        uploadText: "Subir Datos",
+        searchText: "Search for layers"
     },
     
     "gxp.plugins.BingSource.prototype": {
@@ -86671,7 +87521,8 @@ GeoExt.Lang.add("fr", {
         addLayerSourceErrorText: "Impossible d'obtenir les capacités WMS ({msg}).\nVeuillez vérifier l'URL et essayez à nouveau.",
         availableLayersText: "Couches disponibles",
         doneText: "Terminé",
-        uploadText: "Télécharger des données"
+        uploadText: "Télécharger des données",
+        searchText: "Search for layers"
     },
     
     "gxp.plugins.BingSource.prototype": {
@@ -87010,7 +87861,8 @@ GeoExt.Lang.add("id", {
         panelTitleText: "Title",
         layerSelectionText: "View available data from:",
         doneText: "Selesai",
-        uploadText: "Unggah data"
+        uploadText: "Unggah data",
+        searchText: "Search for layers"
     },
     
     "gxp.plugins.BingSource.prototype": {
@@ -87398,7 +88250,8 @@ GeoExt.Lang.add("nl", {
         untitledText: "Onbekend",
         addLayerSourceErrorText: "Probleem bij het ophalen van de Error WMS GetCapabilities ({msg}).\nControleer de URL en probeer opnieuw.",
         availableLayersText: "Beschikbare kaartlagen",
-        doneText: "Klaar"
+        doneText: "Klaar",
+        searchText: "Zoek naar kaartlagen"
     },
     
     "gxp.plugins.BingSource.prototype": {
@@ -87765,7 +88618,8 @@ GeoExt.Lang.add("pl", {
         panelTitleText: "Tytuł",
         layerSelectionText: "Pokaż dostępne warstwy z:",
         doneText: "Gotowe",
-        uploadText: "Wyślij dane"
+        uploadText: "Wyślij dane",
+        searchText: "Search for layers"
     },
     
     "gxp.plugins.BingSource.prototype": {
