@@ -86,6 +86,14 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             ptype: "gn_layerinfo",
             actionTarget: ["layers.contextMenu"]
         }];
+        var catalogSourceKey;
+        for (var key in config.sources) {
+            var source = config.sources[key];
+            if (source.ptype === "gxp_wmscsource" && source.restUrl) {
+                catalogSourceKey = key;
+                break;
+            }
+        }
         config.sources['search'] = {
             ptype: "gxp_geonodecataloguesource",
             restUrl: "/gs/rest",
@@ -95,6 +103,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         for (var i=0, ii=config.tools.length; i<ii; i++) {
             if (config.tools[i].ptype === "gxp_addlayers") {
                 config.tools[i].search = true;
+                config.tools[i].catalogSourceKey = catalogSourceKey;
                 break;
             }
         }
