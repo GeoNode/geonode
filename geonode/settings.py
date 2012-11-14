@@ -215,6 +215,10 @@ LOGGING = {
             "handlers": ["console"],
             "level": "ERROR",
         },
+        'south': {
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
     },
 }
 
@@ -303,6 +307,7 @@ ACTSTREAM_SETTINGS = {
 SOUTH_MIGRATION_MODULES = {
     'avatar': 'geonode.migrations.avatar',
 }
+SOUTH_TESTS_MIGRATE=False
 
 # Settings for Social Apps
 AUTH_PROFILE_MODULE = 'people.Profile'
