@@ -12,7 +12,31 @@ button.login {
 }
 </style>
 <script type="text/javascript">
-Ext.ns("GeoNode");
+Ext.ns("GeoNode.plugins");
+GeoNode.plugins.LayerInfo = Ext.extend(gxp.plugins.Tool, {
+    ptype: "gn_layerinfo",
+    addActions: function() {
+        var actions = GeoNode.plugins.LayerInfo.superclass.addActions.apply(this, [{
+            menuText: "Layer Info",
+            iconCls: "gxp-icon-layerproperties",
+            disabled: true,
+            handler: function() {
+                var url = "/layers/" + this.target.selectedLayer.get("name");
+                window.open(url);
+            },
+            scope: this
+        }]);
+        var layerInfoAction = actions[0];
+
+        this.target.on("layerselectionchange", function(record) {
+            layerInfoAction.setDisabled(
+                !record || !record.get('restUrl')
+            );
+        }, this);
+        return actions;
+    }
+});
+Ext.preg(GeoNode.plugins.LayerInfo.prototype.ptype, GeoNode.plugins.LayerInfo);
 GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
 
     cookieParamName: 'geonode-user',
@@ -42,7 +66,6 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
                 if(options.failure) {
                     // exceptions are handled elsewhere
                 } else {
-                    this.mapPlugins[0].busyMask && this.mapPlugins[0].busyMask.hide();
                     var url = options.url;
                     if (response.status == 401 && url.indexOf("http" != 0) &&
                                             url.indexOf(this.proxy) === -1) {
@@ -59,6 +82,9 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         config.tools = [{
             actions: ["map-title-header"],
             actionTarget: "paneltbar"
+        }, {
+            ptype: "gn_layerinfo",
+            actionTarget: ["layers.contextMenu"]
         }];
         GeoNode.Composer.superclass.constructor.apply(this, [config]);
     },
