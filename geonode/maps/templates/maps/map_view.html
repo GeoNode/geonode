@@ -22,8 +22,8 @@
 <!--[if IE]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/ie.css"/><![endif]-->
 <script src="{{STATIC_URL}}/geoexplorer/script/GeoExplorer.js" type="text/javascript"></script>
 <style type="text/css">
-html, body {
-  height: 100%;
+#paneltbar {
+    margin-top: 70px;
 }
 button.logout {
     display: none;
@@ -334,10 +334,6 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
 Ext.onReady(function() {
 {% autoescape off %}
     var config = Ext.apply({
-        portalConfig: {
-            renderTo: 'composer',
-            height: 400
-        },
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
         tools: [{
             ptype: "gxp_wmsgetfeatureinfo",
@@ -474,6 +470,5 @@ Ext.onReady(function() {
 </div>
 {% endblock %}
 {% block middle %}
-<div id="composer" style="width:100%;height:100%;position:absolute;top: 70px"></div>
 {% endblock %}
 {% block footer %}{% endblock %}
