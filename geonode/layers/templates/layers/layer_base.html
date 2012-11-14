@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load url from future %}
 
-{% block title %} {% trans "Browse Data" %} - {{ block.super }} {% endblock %}
+{% block title %} {{ block.super }} {% endblock %}
 
 {% block body_class %}data{% endblock %}
 
@@ -16,4 +16,5 @@
       </ul>
     </div>
     {% block body %}{% endblock body %}
-{% endblock %}
+    {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}
