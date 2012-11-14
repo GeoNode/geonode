@@ -83,6 +83,18 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         });
         GeoNode.Composer.superclass.constructor.apply(this, [config]);
     },
+    showEmbedWindow: function() {
+        new Ext.Window({
+            title: this.publishActionText,
+            layout: "fit",
+            width: 380,
+            autoHeight: true,
+            items: [{
+                xtype: "gxp_embedmapdialog",
+                url: this.rest + this.id + "/embed"
+            }]
+        }).show();
+    },
     displayXHRTrouble: function(response) {
         response.status && Ext.Msg.show({
             title: this.connErrorTitleText,
