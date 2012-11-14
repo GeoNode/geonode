@@ -45,7 +45,7 @@ def _bbox(obj):
     except AttributeError:
         pass
     # unknown extent, just give something that works
-    extent = idx.extent.extent if idx else (-180,-90,180,90)
+    extent = idx.extent.extent if idx else map(str,(obj.bbox_x0, obj.bbox_y0, obj.bbox_x1, obj.bbox_y1))
     return dict(minx=extent[0], miny=extent[1], maxx=extent[2], maxy=extent[3])
 
 
@@ -147,7 +147,6 @@ class MapNormalizer(Normalizer):
         doc['category'] = mapobj.category,
         doc['detail'] = reverse('map_detail', args=(mapobj.id,))
         doc['owner'] = mapobj.owner.username
-#        doc['owner_detail'] = reverse('about_storyteller', args=(map.owner.username,))
         doc['owner_detail'] = mapobj.owner.get_absolute_url()
         doc['last_modified'] = extension.date_fmt(mapobj.last_modified)
         doc['_type'] = 'map'
@@ -181,7 +180,6 @@ class LayerNormalizer(Normalizer):
         doc['title'] = layer.title
         doc['detail'] = layer.get_absolute_url()
         if 'download_links' not in exclude:
-            all_links = layer.link_set.all()
             links = {}
             for l in layer.link_set.all():
                 link = {}
@@ -202,7 +200,6 @@ class LayerNormalizer(Normalizer):
         owner = layer.owner
         if owner:
             doc['owner_detail'] = layer.owner.get_absolute_url()
-#            doc['owner_detail'] = reverse('about_storyteller', args=(layer.owner.username,))
         return doc
 
 
