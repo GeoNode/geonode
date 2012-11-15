@@ -1,6 +1,9 @@
 {% include 'geonode/ext_header.html' %}
 {% include 'geonode/geo_header.html' %}
 <style type="text/css">
+#aboutbutton {
+    display: none;
+}
 #paneltbar {
     margin-top: 70px;
 }
