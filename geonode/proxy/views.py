@@ -46,9 +46,6 @@ def proxy(request):
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
-    if 'csrftoken' in request.COOKIES:
-        headers['X-CSRFToken'] = request.COOKIES.get('csrftoken')
-
     conn = HTTPConnection(url.hostname, url.port)
     conn.request(request.method, locator, request.raw_post_data, headers)
     result = conn.getresponse()
