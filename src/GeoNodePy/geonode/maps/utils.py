@@ -273,7 +273,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
         # If we get a store, we do the following:
         resources = store.get_resources()
         # Is it empty?
-        if len(resources) == 0:
+        if settings.DB_DATASTORE_NAME != store.name and len(resources) == 0:
             # What should we do about that empty store?
             if overwrite:
                 # We can just delete it and recreate it later.
@@ -394,7 +394,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
         f.close()
         try:
             XML(sld)
-        except Exception, ex:
+        except Exception, e:
             msg =_('Your SLD file contains invalid XML')
             logger.warn("%s - %s" % (msg, str(e)))
             e.args = (msg,)

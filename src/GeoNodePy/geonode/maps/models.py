@@ -713,7 +713,7 @@ class LayerManager(models.Manager):
         return self.admin_contact()
 
 
-    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, owner=None, new_only=False, lnames=None):
+    def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, owner=None, new_only=False, lnames=None, workspace=None):
         """Configure the layers available in GeoServer in GeoNode.
 
            It returns a list of dictionaries with the name of the layer,
@@ -722,11 +722,10 @@ class LayerManager(models.Manager):
         if verbosity > 1:
             print >> console, "Inspecting the available layers in GeoServer ..."
         cat = self.gs_catalog
-        if layer is None:
-            resources = cat.get_resources()
-        else:
-            resource = cat.get_resource(layer)
-            resources = [resource] if resource else []
+        resources = []
+        if workspace is not None:
+            workspace = cat.get_workspace(workspace)
+            resources = cat.get_resources(workspace=workspace)
         number = len(resources)
         if verbosity > 1:
             msg =  "Found %d layers, starting processing" % number
@@ -1207,12 +1206,12 @@ class Layer(models.Model, PermissionLevelMixin):
             try:
                 http = httplib2.Http()
                 http.add_credentials(_user, _password)
-                netloc = urlparse(dft_url).netloc
+                netloc = urlparse(dc_url).netloc
                 http.authorizations.append(
                     httplib2.BasicAuthentication(
                         (_user, _password),
                         netloc,
-                        dft_url,
+                        dc_url,
                             {},
                         None,
                         None,
@@ -1823,7 +1822,8 @@ class Map(models.Model, PermissionLevelMixin):
         self.featured = conf['about'].get('featured', False)
 
         logger.debug("Try to save treeconfig")
-        self.group_params = json.dumps(conf['map']['groups'])
+        if 'groups' in conf['map']:
+            self.group_params = json.dumps(conf['map']['groups'])
         logger.debug("Saved treeconfig")
 
         def source_for(layer):
@@ -2251,9 +2251,11 @@ class MapStats(models.Model):
     map = models.ForeignKey(Map, unique=True)
     visits = models.IntegerField(_("Visits"), default= 0)
     uniques = models.IntegerField(_("Unique Visitors"), default = 0)
+    last_modified = models.DateTimeField(auto_now=True,null=True)
 
 class LayerStats(models.Model):
     layer = models.ForeignKey(Layer, unique=True)
     visits = models.IntegerField(_("Visits"), default = 0)
     uniques = models.IntegerField(_("Unique Visitors"), default = 0)
     downloads = models.IntegerField(_("Downloads"), default = 0)
+    last_modified = models.DateTimeField(auto_now=True, null=True)
