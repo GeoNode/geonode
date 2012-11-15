@@ -36,7 +36,7 @@ ows_sub = re.compile(r"[&\?]+SERVICE=WMS|[&\?]+REQUEST=GetCapabilities", re.IGNO
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
-                                                                 x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+                            x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
 
 ROLE_VALUES = [
     'datasetProvider',

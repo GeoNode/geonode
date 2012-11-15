@@ -133,7 +133,6 @@ class PermissionLevelMixin(object):
             mapping = UserObjectRoleMapping.objects.get(user=user, object_id=self.id, object_ct=my_ct)
             return mapping.role.codename
         except Exception, e:
-            print e
             return self.LEVEL_NONE
 
     def set_user_level(self, user, level):
@@ -159,7 +158,7 @@ class PermissionLevelMixin(object):
             UserObjectRoleMapping.objects.filter(user=user, object_id=self.id, object_ct=my_ct).delete()
             # grant new level
             UserObjectRoleMapping.objects.create(user=user, object=self, role=role)
-            print("SET LEVEL:" + user.username + ":" + str(self.id) + ":" + str(my_ct) + ":" + role.title )
+
 
     def get_gen_level(self, gen_role):
         """
