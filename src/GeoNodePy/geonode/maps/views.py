@@ -2290,12 +2290,12 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             else:
                 owner_name = m.owner.username
 
-        url = ("/" + map.officialurl) if map.officialurl else ("/maps/" + map.urlsuffix) if map.urlsuffix  else "/maps/" + str(map.id)
+        url = ("/" + m.officialurl) if m.officialurl else ("/maps/" + m.urlsuffix) if m.urlsuffix  else "/maps/" + str(m.id)
 
         mapdict = {
-            'id' : map.id,
-            'title' : map.title,
-            'abstract' : map.abstract,
+            'id' : m.id,
+            'title' : m.title,
+            'abstract' : m.abstract,
             'detail' : url,
             'owner' : owner_name,
             'owner_detail' : reverse('profiles.views.profile_detail', args=(m.owner.username,)),
