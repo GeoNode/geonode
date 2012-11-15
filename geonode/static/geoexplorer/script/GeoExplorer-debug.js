@@ -80233,6 +80233,9 @@ gxp.plugins.AddLayers = Ext.extend(gxp.plugins.Tool, {
                         this.initialConfig.catalogSourceKey : sourceKey;
                     var record = source.createLayerRecord(layerConfig);
                     this.target.mapPanel.layers.add(record);
+                    if (bbox) {
+                        this.target.mapPanel.map.zoomToExtent(bbox);
+                    }
                 },
                 scope: this
             }
