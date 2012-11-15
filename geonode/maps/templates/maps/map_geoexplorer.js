@@ -187,6 +187,10 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             }
         }
     },
+    /* TODO: we are overriding a private method here for now
+     * The true solution would involve fixing: 
+     * https://github.com/opengeo/gxp/issues/163
+     */
     showEmbedWindow: function() {
         new Ext.Window({
             title: this.publishActionText,
