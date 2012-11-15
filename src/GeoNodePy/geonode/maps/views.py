@@ -2222,6 +2222,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             'id' : m.id,
             'title' : m.title,
             'abstract' : m.abstract,
+            'urlsuffix' : m.urlsuffix,
             'detail' : url,
             'owner' : owner_name,
             'owner_detail' : reverse('profiles.views.profile_detail', args=(m.owner.username,)),
