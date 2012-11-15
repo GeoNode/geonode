@@ -1822,7 +1822,8 @@ class Map(models.Model, PermissionLevelMixin):
         self.featured = conf['about'].get('featured', False)
 
         logger.debug("Try to save treeconfig")
-        self.group_params = json.dumps(conf['map']['groups'])
+        if 'groups' in conf['map']:
+            self.group_params = json.dumps(conf['map']['groups'])
         logger.debug("Saved treeconfig")
 
         def source_for(layer):

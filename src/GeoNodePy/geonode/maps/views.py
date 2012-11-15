@@ -258,7 +258,7 @@ def mapJSON(request, mapid):
                 mimetype="text/plain",
                 status=204
             )
-        except Exception:
+        except Exception, e:
             return HttpResponse(
                 "The server could not understand the request." + str(e),
                 mimetype="text/plain",
@@ -304,7 +304,7 @@ def newmap_config(request):
         if 'layer' in params:
             bbox = None
             groups = set()
-            map = Map(projection="EPSG:900913")
+            map_obj = Map(projection="EPSG:900913")
             layers = []
             for layer_name in params.getlist('layer'):
                 try:
@@ -327,11 +327,12 @@ def newmap_config(request):
                     ows_url = settings.GEOSERVER_BASE_URL + "wms",
                     visibility = True,
                     styles='',
-                    group=layer.topic_category.title,
+                    group=layer.topic_category.title if layer.topic_category else None,
                     source_params = u'{"ptype": "gxp_gnsource"}',
                     layer_params= u'{"tiled":true, "title":" '+ layer.title + '", "format":"image/png","queryable":true}')
                 )
-                groups.add(layer.topic_category.title)
+                if layer.topic_category:
+                    groups.add(layer.topic_category.title)
 
             if bbox is not None:
                 minx, miny, maxx, maxy = [float(c) for c in bbox]
@@ -1799,7 +1800,7 @@ def layer_acls(request):
                                                       'maps.view_layer',
                                                       Layer))
             all_writable.update(bck.objects_with_perm(acl_user,
-                                                      'maps.change_layer', 
+                                                      'maps.change_layer',
                                                       Layer))
     read_only = [x for x in all_readable if x not in all_writable]
     read_write = [x for x in all_writable if x in all_readable]

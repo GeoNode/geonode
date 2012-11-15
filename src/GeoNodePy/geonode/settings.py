@@ -7,9 +7,6 @@ import os
 # General Django development settings
 #
 
-logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'a')
-
-
 # Defines the directory that contains the settings file as the PROJECT_ROOT
 # It is used for relative settings elsewhere.
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -26,12 +23,21 @@ DEBUG = TEMPLATE_DEBUG = True
 #EMAIL_PORT = 587
 #EMAIL_USE_TLS = True
 
+#POSTGIS_VERSION = (1, 5, 3)
+#DATABASE_ENGINE = 'sqlite3'
+#DATABASE_NAME = os.path.join(PROJECT_ROOT,"..","..","..","development.db")
+#DATABASE_USER = ''             # Not used with sqlite3.
+#DATABASE_PASSWORD = ''         # Not used with sqlite3.
+#DATABASE_HOST = ''             # Not used with sqlite3.
+#DATABASE_PORT = ''             # Not used with sqlite3.
+
+
 # Defines settings for development
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(PROJECT_ROOT, '..', '..', '..', 'development.db'),
-    }
+        }
 }
 
 # Local time zone for this installation. Choices can be found here:
@@ -54,7 +60,7 @@ LANGUAGES = (
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
     ('zh', '中國的'),
-)
+    )
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -80,18 +86,18 @@ STATIC_URL = "/static/"
 # Additional directories which hold static files
 STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, "static"),
-]
+    ]
 
 # Note that Django automatically includes the "templates" dir in all the
 # INSTALLED_APPS, se there is no need to add maps/templates or admin/templates
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, "templates"),
-)
+    )
 
 # Location of translation files
 LOCALE_PATHS = (
     os.path.join(PROJECT_ROOT, "locale"),
-)
+    )
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -142,7 +148,7 @@ INSTALLED_APPS = (
     #'djkombu',
     #'debug_toolbar',
 
-)
+    )
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -152,12 +158,12 @@ LOGGING = {
         },
         'simple': {
             'format': '%(message)s',        },
-    },
+        },
     'handlers': {
         'null': {
             'level':'DEBUG',
             'class':'django.utils.log.NullHandler',
-        },
+            },
         'console':{
             'level':'DEBUG',
             'class':'logging.StreamHandler',
@@ -166,33 +172,29 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
-        }
+            }
     },
     'loggers': {
         'django': {
             'handlers':['null'],
             'propagate': True,
             'level':'INFO',
-        },
+            },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': False,
-        },
+            },
         'geonode': {
             'handlers': ['console'],
             'level': 'WARNING',
-        },
-    }
+            },
+        }
 }
 
 #
 # Customizations to built in Django settings required by GeoNode
 #
-
-# Setting a custom test runner to avoid running the tests for
-# some problematic 3rd party apps
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -204,7 +206,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     # The context processor belows add things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
     'geonode.maps.context_processors.resource_urls',
-)
+    )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -216,7 +218,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
+    )
 
 #This is only required for the Django Debug Toolbar
 INTERNAL_IPS = ('127.0.0.1',)
@@ -254,13 +256,13 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     "maps.Layer": {
         "layer": "How good is this layer?"
     },
-}
+    }
 
 # For South migrations
 SOUTH_MIGRATION_MODULES = {
     'registration': 'geonode.migrations.registration',
     'avatar': 'geonode.migrations.avatar',
-}
+    }
 
 # For django-profiles
 AUTH_PROFILE_MODULE = 'maps.Contact'
@@ -268,18 +270,23 @@ AUTH_PROFILE_MODULE = 'maps.Contact'
 # For django-registration
 REGISTRATION_OPEN = False
 
+# Setting a custom test runner to avoid running the tests for
+# some problematic 3rd party apps
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+#TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
 # Arguments for the test runner
 NOSE_ARGS = [
-      '--verbosity=2',
-      '--cover-erase',
-      '--nocapture',
-      '--with-coverage',
-      '--cover-package=geonode',
-      '--cover-inclusive',
-      '--cover-tests',
-      '--detailed-errors',
-      '--with-xunit',
-      ]
+    '--verbosity=2',
+    '--cover-erase',
+    '--nocapture',
+    '--with-coverage',
+    '--cover-package=geonode',
+    '--cover-inclusive',
+    '--cover-tests',
+    '--detailed-errors',
+    '--with-xunit',
+    ]
 
 #
 # GeoNode specific settings
@@ -336,63 +343,63 @@ ACCOUNT_ACTIVATION_DAYS = 30
 SERVE_MEDIA = DEBUG;
 
 MAP_BASELAYERS = [{
-    "source": {
-        "ptype": "gxp_wmscsource",
-        "url": GEOSERVER_BASE_URL + "wms",
-        "restUrl": "/gs/rest"
-     }
-  },{
-    "source": {"ptype": "gx_olsource"},
-    "type":"OpenLayers.Layer",
-    "args":["No background"],
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
-  }, {
-    "source": {"ptype": "gx_olsource"},
-    "type":"OpenLayers.Layer.OSM",
-    "args":["OpenStreetMap"],
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
-  }, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name":"osm",
-    "group":"background",
-    "visibility": True
-  }, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name":"naip",
-    "group":"background",
-    "visibility": False
-  }, {
-    "source": {"ptype": "gxp_bingsource"},
-    "name": "AerialWithLabels",
-    "fixed": True,
-    "visibility": False,
-    "group":"background"
-  },{
-    "source": {"ptype": "gxp_mapboxsource"},
-  },{
-    "source": {"ptype": "gx_googlesource"},
-    "group":"background",
-    "name":"SATELLITE",
-    "visibility": False,
-    "fixed": True,
-},{
-    "source": {"ptype": "gx_googlesource"},
-        "group":"background",
-    "name":"TERRAIN",
-    "visibility": False,
-    "fixed": True,
-},            {
-    "source": {"ptype": "gx_googlesource"},
-    "group":"background",
-    "name":"ROADMAP",
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
-  }]
+                      "source": {
+                          "ptype": "gxp_wmscsource",
+                          "url": GEOSERVER_BASE_URL + "wms",
+                          "restUrl": "/gs/rest"
+                      }
+                  },{
+                      "source": {"ptype": "gx_olsource"},
+                      "type":"OpenLayers.Layer",
+                      "args":["No background"],
+                      "visibility": False,
+                      "fixed": True,
+                      "group":"background"
+                  }, {
+                      "source": {"ptype": "gx_olsource"},
+                      "type":"OpenLayers.Layer.OSM",
+                      "args":["OpenStreetMap"],
+                      "visibility": False,
+                      "fixed": True,
+                      "group":"background"
+                  }, {
+                      "source": {"ptype": "gxp_mapquestsource"},
+                      "name":"osm",
+                      "group":"background",
+                      "visibility": True
+                  }, {
+                      "source": {"ptype": "gxp_mapquestsource"},
+                      "name":"naip",
+                      "group":"background",
+                      "visibility": False
+                  }, {
+                      "source": {"ptype": "gxp_bingsource"},
+                      "name": "AerialWithLabels",
+                      "fixed": True,
+                      "visibility": False,
+                      "group":"background"
+                  },{
+                      "source": {"ptype": "gxp_mapboxsource"},
+                      },{
+                      "source": {"ptype": "gx_googlesource"},
+                      "group":"background",
+                      "name":"SATELLITE",
+                      "visibility": False,
+                      "fixed": True,
+                      },{
+                      "source": {"ptype": "gx_googlesource"},
+                      "group":"background",
+                      "name":"TERRAIN",
+                      "visibility": False,
+                      "fixed": True,
+                      },            {
+                      "source": {"ptype": "gx_googlesource"},
+                      "group":"background",
+                      "name":"ROADMAP",
+                      "visibility": False,
+                      "fixed": True,
+                      "group":"background"
+                  }]
 
 
 GEONODE_CLIENT_LOCATION = "/static/geonode/"
@@ -447,7 +454,8 @@ USE_GAZETTEER = False
 #    'wmdata' : "south.db.postgresql_psycopg2",
 #
 #    }
-SOUTH_TESTS_MIGRATE = False
+#SOUTH_TESTS_MIGRATE = True
+
 
 ##### END GAZETTEER SETTINGS #####
 
