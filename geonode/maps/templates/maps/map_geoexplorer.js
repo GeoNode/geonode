@@ -16,14 +16,38 @@ button.login {
 </style>
 <script type="text/javascript">
 Ext.ns("GeoNode.plugins");
+/** api: constructor
+ *  .. class:: LayerInfo(config)
+ *
+ *    Plugin for navigating to the GeoNode layer info page.
+ *    Will only be enabled for local layers.
+ */
 GeoNode.plugins.LayerInfo = Ext.extend(gxp.plugins.Tool, {
+
+    /** api: ptype = gxp_removelayer */
     ptype: "gn_layerinfo",
+
+    /** api: config[menuText]
+     *  ``String``
+     *  i18n text to use on the menu item.
+     */
+    menuText: "Layer Info",
+
+    /** api: config[iconCls]
+     *  ``String``
+     *  iconCls to use on the menu item.
+     */
+    iconCls: "gxp-icon-layerproperties",
+
+    /** api: method[addActions]
+     */
     addActions: function() {
         var actions = GeoNode.plugins.LayerInfo.superclass.addActions.apply(this, [{
-            menuText: "Layer Info",
-            iconCls: "gxp-icon-layerproperties",
+            menuText: this.menuText,
+            iconCls: this.iconCls,
             disabled: true,
             handler: function() {
+                // TODO is there a way to get this from a template variable?
                 var url = "/layers/" + this.target.selectedLayer.get("name");
                 window.open(url);
             },
@@ -39,10 +63,30 @@ GeoNode.plugins.LayerInfo = Ext.extend(gxp.plugins.Tool, {
         return actions;
     }
 });
+
 Ext.preg(GeoNode.plugins.LayerInfo.prototype.ptype, GeoNode.plugins.LayerInfo);
+
+/** api: constructor
+ *  .. class:: Composer(config)
+ *   
+ *    The GeoNode Composer application class.
+ *    Changes compared to out-of-the-box GeoExplorer:
+ *    - before saving a map, show a metadata form
+ *    - add a tool that will show the map title and that will have a clickable
+ *      link.
+ *    - a generic XHRTrouble dialog that gives easier access to underlying
+ *      Django errors.
+ *    - adds catalogue search through the GeoNode search api
+ *    - only enable editing if user has the right permissions
+ *    - integrate with GeoNode AJAX login
+ *    - publish map will show the iframe text directly, and not a wizard
+ *      like interface that GeoExplorer has
+ *    - when saving a map, do not set window.location.hash
+ *    - use different urls for saving a new map and updating an existing map
+ *      than GeoExplorer does.
+ */
 GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
 
-    cookieParamName: 'geonode-user',
     /** begin i18n */
     metadataFormCancelText : "UT:Cancel",
     metadataFormSaveAsCopyText : "UT:Save as Copy",
@@ -54,6 +98,10 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
     connErrorText: "UT:The server returned an error",
     connErrorDetailsText: "UT:Details...",
     /** end i18n */
+
+    /** private: method[constructor]
+     *  Construct the composer.
+     */
     constructor: function(config) {
         this.titleTemplate = new Ext.Template("<a class='maplist' href='{% url maps_browse %}'>Maps</a> / <strong>{title}");
         // global request proxy and error handling
@@ -82,29 +130,17 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             },
             scope: this
         });
-        var catalogSourceKey;
-        for (var key in config.sources) {
-            var source = config.sources[key];
-            if (source.ptype === "gxp_wmscsource" && source.restUrl) {
-                catalogSourceKey = key;
-                break;
-            }
-        }
-        config.sources['search'] = {
-            ptype: "gxp_geonodecataloguesource",
-            restUrl: "/gs/rest",
-            url: "/search/api"
-        };
         GeoNode.Composer.superclass.constructor.apply(this, [config]);
-        for (var i=0, ii=config.tools.length; i<ii; i++) {
-            if (config.tools[i].ptype === "gxp_addlayers") {
-                config.tools[i].search = true;
-                config.tools[i].catalogSourceKey = catalogSourceKey;
-                break;
-            }
-        }
     },
+    /** private: method[showUrl]
+     *  Do not show the url after map save.
+     */
     showUrl: Ext.emptyFn,
+    /** private: method[getPermalink]
+     *  :return: ``String``
+     *
+     *  Get the permalink for the current map.
+     */
     getPermalink: function() {
         permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}");
         return permalinkTemplate.apply({
@@ -113,6 +149,12 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             id: this.id
         })
     },
+    /** private: getMapTitle
+     *  :return: ``String``
+     *
+     *  Get the HTML to use in the map title container which is shown in the
+     *  top right of the panel top toolbar.
+     */
     getMapTitle: function() {
         var title;
         if (this.id) {
@@ -122,11 +164,44 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         }
         return this.titleTemplate.apply({title: title});
     },
+    /** private: method[createTools]
+     * Create the toolbar configuration for the main panel.  This method can be 
+     * extended by derived explorer classes such as :class:`GeoExplorer.Composer`
+     * or :class:`GeoExplorer.Viewer` to provide specialized controls.
+     */
     createTools: function() {
         GeoNode.Composer.superclass.createTools.apply(this, arguments);
         new Ext.Container({style: "margin-right: 10px", id: "map-title-header", html: this.getMapTitle()});
     },
+    /** api: method[loadConfig]
+     *  :arg config: ``Object`` The config object passed to the constructor.
+     *
+     *  Subclasses that load config asynchronously can override this to load
+     *  any configuration before applyConfig is called.
+     */
     loadConfig: function(config) {
+        // find out what the key of the local source is
+        var catalogSourceKey;
+        for (var key in config.sources) {
+            var source = config.sources[key];
+            if (source.ptype === "gxp_wmscsource" && source.restUrl) {
+                catalogSourceKey = key;
+                break;
+            }
+        }
+        for (var i=0, ii=config.tools.length; i<ii; i++) {
+            if (config.tools[i].ptype === "gxp_addlayers") {
+                config.tools[i].search = true;
+                config.tools[i].catalogSourceKey = catalogSourceKey;
+                break;
+            }
+        }
+        // add catalog source
+        config.sources['search'] = {
+            ptype: "gxp_geonodecataloguesource",
+            restUrl: "/gs/rest",
+            url: "/search/api"
+        };
         config.tools.push({
             actions: ["map-title-header"],
             actionTarget: "paneltbar"
@@ -145,6 +220,12 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             }
         }
     },
+    /** private: method[checkLayerPermissions]
+     *  :arg layerRecord: ``GeoExt.data.LayerRecord`` The currently selected layer.
+     *
+     *  Check the editing permissions on the layer and enable/disable the
+     *  editing tools.
+     */
     checkLayerPermissions: function (layerRecord) {
         var buttons;
         for (var key in this.tools) {
@@ -170,6 +251,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             if (layer instanceof OpenLayers.Layer.WMS && (layer.url == "/geoserver/wms" ||
                     layer.url.indexOf(app.localGeoServerBaseUrl.replace(app.urlPortRegEx, "$1/")) == 0)) {
                 Ext.Ajax.request({
+                    /* TODO: use a template variable here if possible */
                     url:"/layers/" + layer.params.LAYERS + "/edit-check",
                     method:"POST",
                     success:function (response) {
@@ -206,6 +288,12 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             }]
         }).show();
     },
+    /** private method[displayXHRTrouble]
+     *  :arg respoonse: ``Object`` The XHR response object.
+     *
+     *  If something goes wrong with an AJAX request, show an error dialog
+     *  with a button to view the details (Django error).
+     */
     displayXHRTrouble: function(response) {
         response.status && Ext.Msg.show({
             title: this.connErrorTitleText,
@@ -235,6 +323,9 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             }
         });
     },
+    /** private: method[authenticate]
+     * Show the login dialog for the user to login.
+     */
     authenticate: function(options) {
         var submit = function() {
             form.getForm().submit({
