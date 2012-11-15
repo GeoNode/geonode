@@ -79,13 +79,6 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             },
             scope: this
         });
-        config.tools = [{
-            actions: ["map-title-header"],
-            actionTarget: "paneltbar"
-        }, {
-            ptype: "gn_layerinfo",
-            actionTarget: ["layers.contextMenu"]
-        }];
         var catalogSourceKey;
         for (var key in config.sources) {
             var source = config.sources[key];
@@ -130,7 +123,14 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
         GeoNode.Composer.superclass.createTools.apply(this, arguments);
         new Ext.Container({style: "margin-right: 10px", id: "map-title-header", html: this.getMapTitle()});
     },
-    loadConfig: function() {
+    loadConfig: function(config) {
+        config.tools.push({
+            actions: ["map-title-header"],
+            actionTarget: "paneltbar"
+        }, {
+            ptype: "gn_layerinfo",
+            actionTarget: ["layers.contextMenu"]
+        });
         GeoNode.Composer.superclass.loadConfig.apply(this, arguments);
         for (var key in this.tools) {
             var tool = this.tools[key];
