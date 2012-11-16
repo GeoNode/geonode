@@ -56,7 +56,7 @@ class MapTest(TestCase):
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
 use the Save Map button above to contribute your map to the GeoNode \
-community." 
+community."
 
     default_title = "GeoNode Default Map"
 
@@ -64,117 +64,117 @@ community."
 
     # maps.models.Layer
 
-#    def test_layer_save_to_geoserver(self):
-#        pass
+    #    def test_layer_save_to_geoserver(self):
+    #        pass
 
-#    def test_layer_save_to_geonetwork(self):
-#        pass
+    #    def test_layer_save_to_geonetwork(self):
+    #        pass
 
-#    def test_post_save_layer(self):
-#        pass
+    #    def test_post_save_layer(self):
+    #        pass
 
-#    def test_layer_verify(self):
-#        pass
+    #    def test_layer_verify(self):
+    #        pass
 
-#    def test_layer_download_links(self):
-#        pass
+    #    def test_layer_download_links(self):
+    #        pass
 
-#    def test_layer_maps(self):
-#        pass
+    #    def test_layer_maps(self):
+    #        pass
 
-#    def test_layer_metadata(self):
-#        pass
-    
-#    def test_layer_metadata_csw(self):
-#        pass
+    #    def test_layer_metadata(self):
+    #        pass
 
-#    def test_layer_attribute_names(self):
-#        pass
+    #    def test_layer_metadata_csw(self):
+    #        pass
 
-#    def test_layer_display_type(self):
-#        pass
+    #    def test_layer_attribute_names(self):
+    #        pass
 
-#    def test_layer_delete_from_geoserver(self):
-#        pass
+    #    def test_layer_display_type(self):
+    #        pass
 
-#    def test_layer_delete_from_geonetwork(self):
-#        pass
+    #    def test_layer_delete_from_geoserver(self):
+    #        pass
 
-#    def test_delete_layer(self):
-#        pass
+    #    def test_layer_delete_from_geonetwork(self):
+    #        pass
 
-#    def test_layer_resource(self):
-#        pass
+    #    def test_delete_layer(self):
+    #        pass
 
-#    def test_layer_get_metadata_links(self):
-#        pass
+    #    def test_layer_resource(self):
+    #        pass
 
-#    def test_layer_set_metadata_links(self):
-#        pass
+    #    def test_layer_get_metadata_links(self):
+    #        pass
 
-#    def test_layer_get_default_style(self):
-#        pass
-    
-#    def test_layer_set_default_style(self):
-#        pass
+    #    def test_layer_set_metadata_links(self):
+    #        pass
 
-#    def test_layer_get_styles(self):
-#        pass
+    #    def test_layer_get_default_style(self):
+    #        pass
 
-#    def test_layer_set_styles(self):
-#        pass
+    #    def test_layer_set_default_style(self):
+    #        pass
 
-#    def test_layer_service_type(self):
-#        pass
+    #    def test_layer_get_styles(self):
+    #        pass
 
-#    def test_layer_publishing(self):
-#        pass
+    #    def test_layer_set_styles(self):
+    #        pass
 
-#    def test_layer_poc_role(self):
-#        pass
+    #    def test_layer_service_type(self):
+    #        pass
 
-#    def test_layer_metadata_author_role(self):
-#        pass
+    #    def test_layer_publishing(self):
+    #        pass
 
-#    def test_layer_set_poc(self):
-#        pass
+    #    def test_layer_poc_role(self):
+    #        pass
 
-#    def test_layer_get_poc(self):
-#        pass
+    #    def test_layer_metadata_author_role(self):
+    #        pass
 
-#    def test_layer_set_metadata_author(self):
-#        pass
+    #    def test_layer_set_poc(self):
+    #        pass
 
-#    def test_layer_get_metadata_author(self):
-#        pass
+    #    def test_layer_get_poc(self):
+    #        pass
 
-#    def test_layer_populate_from_gs(self):
-#        pass
+    #    def test_layer_set_metadata_author(self):
+    #        pass
 
-#    def test_layer_autopopulate(self):
-#        pass
+    #    def test_layer_get_metadata_author(self):
+    #        pass
 
-#    def test_layer_populate_from_gn(self):
-#        pass
+    #    def test_layer_populate_from_gs(self):
+    #        pass
 
-#    def test_layer_keyword_list(self):
-#        pass
+    #    def test_layer_autopopulate(self):
+    #        pass
 
-#    def test_layer_set_bbox(self):
-#        pass
+    #    def test_layer_populate_from_gn(self):
+    #        pass
 
-#    def test_layer_get_absolute_url(self):
-#        pass
+    #    def test_layer_keyword_list(self):
+    #        pass
+
+    #    def test_layer_set_bbox(self):
+    #        pass
+
+    #    def test_layer_get_absolute_url(self):
+    #        pass
 
     def test_layer_set_default_permissions(self):
         """Verify that Layer.set_default_permissions is behaving as expected
         """
-        
-        # Get a Layer object to work with 
+
+        # Get a Layer object to work with
         layer = Layer.objects.all()[0]
 
         # Should we set some 'current' permissions to do further testing?
-        
+
         # Save the layers Current Permissions
         current_perms = layer.get_all_level_info()
 
@@ -194,16 +194,16 @@ community."
         if layer.owner:
             self.assertEqual(layer.owner, layer.LEVEL_ADMIN)
 
-    # maps.models.Map
+            # maps.models.Map
 
-#    def test_map_center(self):
-#        pass
+        #    def test_map_center(self):
+        #        pass
 
-#    def test_map_layers(self):
-#        pass
+        #    def test_map_layers(self):
+        #        pass
 
-#    def test_map_local_layers(self):
-#        pass
+        #    def test_map_local_layers(self):
+        #        pass
 
 
     viewer_config_alternative = """
@@ -244,8 +244,8 @@ community."
         c = Client()
 
         # Test that saving a map when not logged in gives 401
-#        response = c.put("/maps/1/data",data=MapTest.viewer_config,content_type="text/json")
-#        self.assertEqual(response.status_code,401)
+        #        response = c.put("/maps/1/data",data=MapTest.viewer_config,content_type="text/json")
+        #        self.assertEqual(response.status_code,401)
 
         log = c.login(username="bobby", password="bob")
         response = c.put("/maps/1/data",data=MapTest.viewer_config_alternative,content_type="text/json")
@@ -256,53 +256,53 @@ community."
         self.assertEquals(map.abstract, "Abstract2")
         self.assertEquals(map.layer_set.all().count(), 1)
 
-#    def test_map_viewer_json(self):
-#        pass
+    #    def test_map_viewer_json(self):
+    #        pass
 
-#    def test_map_update_from_viewer(self):
-#        pass
+    #    def test_map_update_from_viewer(self):
+    #        pass
 
-#    def test_map_get_absolute_url(self):
-#        pass
+    #    def test_map_get_absolute_url(self):
+    #        pass
 
-#    def test_map_set_default_permissions(self):
-#        pass
+    #    def test_map_set_default_permissions(self):
+    #        pass
 
     # maps.models.MapLayerManager
 
-#    def test_mlm_from_viewer_config(self):
-#        pass
-    
+    #    def test_mlm_from_viewer_config(self):
+    #        pass
+
     # maps.models.MapLayer
 
-#    def test_map_layer_from_viewer_config(self):
-#        pass
+    #    def test_map_layer_from_viewer_config(self):
+    #        pass
 
-#    def test_map_layer_source_config(self):
-#        pass
+    #    def test_map_layer_source_config(self):
+    #        pass
 
-#    def test_map_layer_layer_config(self):
-#        pass
+    #    def test_map_layer_layer_config(self):
+    #        pass
 
-#    def test_map_layer_local_link(self):
-#        pass
+    #    def test_map_layer_local_link(self):
+    #        pass
 
     # maps/views.py tests
 
-#    def test_project_center(self):
-#        pass
+    #    def test_project_center(self):
+    #        pass
 
-#    def test_baselayer(self):
-#        pass
+    #    def test_baselayer(self):
+    #        pass
 
-#    def test_bbox_to_wkt(self):
-#        pass
+    #    def test_bbox_to_wkt(self):
+    #        pass
 
-#    def test_view_js(self):
-#        pass
+    #    def test_view_js(self):
+    #        pass
 
-#    def test_view(self):
-#        pass
+    #    def test_view(self):
+    #        pass
 
     # Maps Tests
 
@@ -342,11 +342,11 @@ community."
     }
     """
 
-#    def test_map_controller(self):
-#        pass
+    #    def test_map_controller(self):
+    #        pass
 
-#    def test_new_map(self):
-#        pass
+    #    def test_new_map(self):
+    #        pass
 
     def test_map_save(self):
         """POST /maps -> Test saving a new map"""
@@ -383,9 +383,9 @@ community."
         response = c.get("/maps/%s/data" % map.id)
         self.assertEquals(response.status_code, 200)
         cfg = json.loads(response.content)
-        self.assertEquals(cfg["about"]["abstract"], self.default_abstract) 
-        self.assertEquals(cfg["about"]["title"], self.default_title) 
-        self.assertEquals(len(cfg["map"]["layers"]), 5) 
+        self.assertEquals(cfg["about"]["abstract"], self.default_abstract)
+        self.assertEquals(cfg["about"]["title"], self.default_title)
+        self.assertEquals(len(cfg["map"]["layers"]), 5)
 
     def test_map_to_json(self):
         """ Make some assertions about the data structure produced for serialization
@@ -408,36 +408,36 @@ community."
 
     def test_map_details(self):
         """/maps/1 -> Test accessing the detail view of a map"""
-        map = Map.objects.get(id=1) 
-        c = Client() 
+        map = Map.objects.get(id=1)
+        c = Client()
         response = c.get("/maps/%s" % map.id)
-        self.assertEquals(response.status_code,200) 
+        self.assertEquals(response.status_code,200)
 
-#    def test_delete_map(self):
-#        pass
+    #    def test_delete_map(self):
+    #        pass
 
-#    def test_map_detail(self):
-#        pass
+    #    def test_map_detail(self):
+    #        pass
 
-#    def test_describe_map(self):
-#        pass
+    #    def test_describe_map(self):
+    #        pass
 
-#    def test_embed_map(self):
-#        pass
+    #    def test_embed_map(self):
+    #        pass
 
-    # Batch Tests    
-    
-#    def test_map_download(self):
-#        pass
+    # Batch Tests
 
-#    def test_check_download(self):
-#        pass
+    #    def test_map_download(self):
+    #        pass
 
-#    def test_batch_layer_download(self):
-#        pass
+    #    def test_check_download(self):
+    #        pass
 
-#    def test_batch_delete(self):
-#        pass
+    #    def test_batch_layer_download(self):
+    #        pass
+
+    #    def test_batch_delete(self):
+    #        pass
 
     # Permissions Tests
 
@@ -453,37 +453,37 @@ community."
     # - LEVEL_WRITE = layer_readwrite
     # - LEVEL_ADMIN = layer_admin
 
-    # Map 
+    # Map
     # - LEVEL_READ = map_read
     # - LEVEL_WRITE = map_readwrite
     # - LEVEL_ADMIN = map_admin
-    
 
-    # FIXME: Add a comprehensive set of permissions specifications that allow us 
+
+    # FIXME: Add a comprehensive set of permissions specifications that allow us
     # to test as many conditions as is possible/necessary
-    
-    # If anonymous and/or authenticated are not specified, 
+
+    # If anonymous and/or authenticated are not specified,
     # should set_layer_permissions remove any existing perms granted??
-    
+
     perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["bobby","layer_readwrite"]]}
-    
+
     def test_set_layer_permissions(self):
         """Verify that the set_layer_permissions view is behaving as expected
         """
-        
+
         # Get a layer to work with
         layer = Layer.objects.all()[0]
 
         # Save the Layers current permissions
-        current_perms = layer.get_all_level_info() 
-       
-        # FIXME Test a comprehensive set of permisssions specifications 
+        current_perms = layer.get_all_level_info()
+
+        # FIXME Test a comprehensive set of permisssions specifications
 
         # Set the Permissions
         geonode.maps.views.set_layer_permissions(layer, self.perm_spec)
 
-        # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
-        self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_NONE) 
+        # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly
+        self.assertEqual(layer.get_gen_level(geonode.core.models.ANONYMOUS_USERS), layer.LEVEL_NONE)
         self.assertEqual(layer.get_gen_level(geonode.core.models.AUTHENTICATED_USERS), layer.LEVEL_NONE)
 
         # Test that previous permissions for users other than ones specified in
@@ -491,7 +491,7 @@ community."
         users = [n for (n, p) in self.perm_spec['users']]
         levels = layer.get_user_levels().exclude(user__username__in = users + [layer.owner])
         self.assertEqual(len(levels), 0)
-       
+
         # Test that the User permissions specified in the perm_spec were applied properly
         for username, level in self.perm_spec['users']:
             user = geonode.maps.models.User.objects.get(username=username)
@@ -504,57 +504,57 @@ community."
 
         # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
 
-        pass        
+        pass
 
     def test_ajax_layer_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
         """
-        
-        # Setup some layer names to work with 
+
+        # Setup some layer names to work with
         valid_layer_typename = Layer.objects.all()[0].typename
         invalid_layer_typename = "n0ch@nc3"
 
         c = Client()
 
         # Test that an invalid layer.typename is handled for properly
-        response = c.post("/data/%s/ajax-permissions" % invalid_layer_typename, 
-                            data=json.dumps(self.perm_spec),
-                            content_type="application/json")
-        self.assertEquals(response.status_code, 404) 
+        response = c.post("/data/%s/ajax-permissions" % invalid_layer_typename,
+            data=json.dumps(self.perm_spec),
+            content_type="application/json")
+        self.assertEquals(response.status_code, 404)
 
         # Test that POST is required
         response = c.get("/data/%s/ajax-permissions" % valid_layer_typename)
         self.assertEquals(response.status_code, 405)
-        
+
         # Test that a user is required to have maps.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
-                            data=json.dumps(self.perm_spec),
-                            content_type="application/json")
-        self.assertEquals(response.status_code, 401) 
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
+            data=json.dumps(self.perm_spec),
+            content_type="application/json")
+        self.assertEquals(response.status_code, 401)
 
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
-        self.assertEquals(logged_in, True) 
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
-                            data=json.dumps(self.perm_spec),
-                            content_type="application/json")
-        self.assertEquals(response.status_code, 401) 
+        self.assertEquals(logged_in, True)
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
+            data=json.dumps(self.perm_spec),
+            content_type="application/json")
+        self.assertEquals(response.status_code, 401)
 
         # Login as a user with the proper permission and test the endpoint
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
-        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename, 
-                            data=json.dumps(self.perm_spec),
-                            content_type="application/json")
+        response = c.post("/data/%s/ajax-permissions" % valid_layer_typename,
+            data=json.dumps(self.perm_spec),
+            content_type="application/json")
 
-        # Test that the method returns 200         
-        self.assertEquals(response.status_code, 200) 
+        # Test that the method returns 200
+        self.assertEquals(response.status_code, 200)
 
         # Test that the permissions specification is applied
 
-        # Should we do this here, or assume the tests in 
+        # Should we do this here, or assume the tests in
         # test_set_layer_permissions will handle for that?
 
     def test_layer_acls(self):
@@ -567,86 +567,86 @@ community."
 
         valid_auth_headers = {
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw),
-        }
-        
+            }
+
         invalid_auth_headers = {
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
-        }
-       
-        # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json 
+            }
+
+        # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json
         expected_result = {'rw': [],'ro': [],'name': settings.GEOSERVER_CREDENTIALS[0],'is_superuser':  True,'is_anonymous': False}
         c = Client()
         response = c.get('/data/acls', **valid_auth_headers)
         response_json = json.loads(response.content)
-        self.assertEquals(expected_result, response_json) 
+        self.assertEquals(expected_result, response_json)
 
         # Test that requesting when supplying invalid credentials returns the appropriate error code
         response = c.get('/data/acls', **invalid_auth_headers)
-        self.assertEquals(response.status_code, 401)  
-       
-        # Test logging in using Djangos normal auth system 
+        self.assertEquals(response.status_code, 401)
+
+        # Test logging in using Djangos normal auth system
         logged_in = c.login(username='admin', password='admin')
-       
+
         # Basic check that the returned content is at least valid json
         response = c.get("/data/acls")
         response_json = json.loads(response.content)
 
         # TODO Lots more to do here once jj0hns0n understands the ACL system better
 
-#    def test_view_perms_context(self):
-        # It seems that since view_layer_permissions and view_map_permissions
-        # are no longer used, that this view is also no longer used since those
-        # are the only 2 places it is ever called (jj0hns0n 2011-04-13)
- 
-#        pass
+    #    def test_view_perms_context(self):
+    # It seems that since view_layer_permissions and view_map_permissions
+    # are no longer used, that this view is also no longer used since those
+    # are the only 2 places it is ever called (jj0hns0n 2011-04-13)
+
+    #        pass
 
     def test_perms_info(self):
         """ Verify that the perms_info view is behaving as expected
         """
-        
+
         # Test with a Layer object
         layer = Layer.objects.all()[0]
         layer_info = layer.get_all_level_info()
         info = geonode.maps.views._perms_info(layer, geonode.maps.views.LAYER_LEV_NAMES)
-        
+
         # Test that ANONYMOUS_USERS and AUTHENTICATED_USERS are set properly
         self.assertEqual(info[geonode.maps.models.ANONYMOUS_USERS], layer.LEVEL_READ)
         self.assertEqual(info[geonode.maps.models.AUTHENTICATED_USERS], layer.LEVEL_READ)
-        
+
         self.assertEqual(info['users'], sorted(layer_info['users'].items()))
 
         # TODO Much more to do here once jj0hns0n understands the ACL system better
- 
+
         # Test with a Map object
         # TODO
 
-#    def test_perms_info_json(self):
-#        # Should only need to verify that valid json is returned?
-#        pass
+    #    def test_perms_info_json(self):
+    #        # Should only need to verify that valid json is returned?
+    #        pass
 
-#    def test_fix_map_perms_for_editor(self):
-        # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
-#        pass
+    #    def test_fix_map_perms_for_editor(self):
+    # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
+    #        pass
 
-#    def test_handle_perms_edit(self):
-        # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
-#        pass
+    #    def test_handle_perms_edit(self):
+    # I'm not sure this view is actually being used anywhere (jj0hns0n 2011-04-13)
+    #        pass
 
-#    def test_get_basic_auth_info(self):
-        # How do we test this? Perhaps as a part of test_layer_acls
-#        pass
+    #    def test_get_basic_auth_info(self):
+    # How do we test this? Perhaps as a part of test_layer_acls
+    #        pass
 
-#    def test_view_map_permissions(self):
-#        pass
+    #    def test_view_map_permissions(self):
+    #        pass
 
-#    def test_set_map_permissions(self):
-#        pass
+    #    def test_set_map_permissions(self):
+    #        pass
 
-#    def test_ajax_map_permissions(self):
-#        pass
+    #    def test_ajax_map_permissions(self):
+    #        pass
 
-#    def test_batch_permissions(self):
-#        pass
+    #    def test_batch_permissions(self):
+    #        pass
 
     # Data Tests
 
@@ -656,8 +656,8 @@ community."
         response = c.get('/data/')
         self.failUnlessEqual(response.status_code, 200)
 
-#    def test_browse_data(self):
-#        pass
+    #    def test_browse_data(self):
+    #        pass
 
     def test_describe_data(self):
         '''/data/base:CA/metadata -> Test accessing the description of a layer '''
@@ -672,7 +672,7 @@ community."
         # ... all should be good
         response = c.get('/data/base:CA/metadata')
         self.failUnlessEqual(response.status_code, 200)
-    
+
     # Layer Tests
 
     # Test layer upload endpoint
@@ -688,40 +688,40 @@ community."
         response = c.get("/data/upload")
         self.assertEquals(response.status_code,200)
 
-#    def test_handle_layer_upload(self):
-#        pass
+    #    def test_handle_layer_upload(self):
+    #        pass
 
-#    def test_update_layer(self):
-#        pass
+    #    def test_update_layer(self):
+    #        pass
 
-#    def test_describe_layer(self):
-#        pass
+    #    def test_describe_layer(self):
+    #        pass
 
-#    def test_remove_layer(self):
-#        pass
+    #    def test_remove_layer(self):
+    #        pass
 
-#    def test_change_layer_default_style(self):
-#        pass
+    #    def test_change_layer_default_style(self):
+    #        pass
 
-#    def test_layer_controller(self):
-#        pass
+    #    def test_layer_controller(self):
+    #        pass
 
-#    def test_extract_links(self):
-#        pass
+    #    def test_extract_links(self):
+    #        pass
 
     # Search Tests
-    
+
     def test_search(self):
         '''/data/search/ -> Test accessing the data search page'''
         c = Client()
         response = c.get('/data/search/')
         self.failUnlessEqual(response.status_code, 200)
 
-#    def test_search_page(self):
-#        pass
+    #    def test_search_page(self):
+    #        pass
 
-#    def test_build_search_result(self):
-#        pass
+    #    def test_build_search_result(self):
+    #        pass
 
     def test_metadata_search(self):
         c = Client()
@@ -730,10 +730,10 @@ community."
         with patch.object(geonode.maps.views,'_metadata_search') as mock_ms:
             result = {
                 'rows' : [{
-                        'uuid' : 1214431  # does not exist
-                        }
-                          ]
-                }
+                              'uuid' : 1214431  # does not exist
+                          }
+                ]
+            }
             mock_ms.return_value = result
 
             response = c.get("/data/search/api?q=foo&start=5&limit=10")
@@ -743,8 +743,8 @@ community."
             self.assertEqual(call_args[0][1], 5)
             self.assertEqual(call_args[0][2], 10)
 
-#    def test_search_result_detail(self):
-#        pass
+        #    def test_search_result_detail(self):
+        #        pass
 
     def test_split_query(self):
         query = 'alpha "beta gamma"   delta  '
@@ -752,7 +752,7 @@ community."
         self.assertEqual(keywords[0], "alpha")
         self.assertEqual(keywords[1], "beta gamma")
         self.assertEqual(keywords[2], "delta")
-    
+
     def test_search_api(self):
         '''/data/search/api -> Test accessing the data search api JSON'''
         c = Client()
@@ -782,7 +782,7 @@ community."
         tpl = get_template("maps/csw/transaction_insert.xml")
         ctx = Context({
             'layer': layer,
-        })
+            })
         md_doc = tpl.render(ctx)
         self.assert_(layer.name  in md_doc, "Layer name not in " + md_doc)
 
@@ -843,7 +843,7 @@ community."
         adminuser = User.objects.get(is_superuser=True)
         valid_user = get_valid_user(adminuser)
         msg = ('Passed in a valid admin user "%s" but got "%s" in return'
-                % (adminuser, valid_user))
+               % (adminuser, valid_user))
         assert valid_user.id == adminuser.id, msg
 
         # Verify it returns a valid user after receiving None
@@ -854,7 +854,7 @@ community."
         newuser = User.objects.create(username='arieluser')
         valid_user = get_valid_user(newuser)
         msg = ('Passed in a valid user "%s" but got "%s" in return'
-                % (newuser, valid_user))
+               % (newuser, valid_user))
         assert valid_user.id == newuser.id, msg
 
         valid_user = get_valid_user('arieluser')
@@ -913,10 +913,10 @@ class FormTest(TestCase):
     ## NOTE: we don't care about file content for many of these tests (the
     ## forms under test validate based only on file name, and leave actual
     ## content inspection to GeoServer) but Django's form validation will omit
-    ## any files with empty bodies. 
+    ## any files with empty bodies.
     ##
     ## That is, this leads to mysterious test failures:
-    ##     SimpleUploadedFile('foo', '') 
+    ##     SimpleUploadedFile('foo', '')
     ##
     ## And this should be used instead to avoid that:
     ##     SimpleUploadedFile('foo', ' ')
@@ -1067,7 +1067,7 @@ class UtilsTest(TestCase):
             for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             gotten_files = get_files(os.path.join(d, "foo.shp"),None)
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
@@ -1084,7 +1084,7 @@ class UtilsTest(TestCase):
             for f in ("foo.shp", "foo.shx", "foo.prj"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp"),None))
         finally:
@@ -1098,7 +1098,7 @@ class UtilsTest(TestCase):
             for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf", "foo.sld"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             gotten_files = get_files(os.path.join(d, "foo.shp"), os.path.join(d, "foo.sld"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
@@ -1115,7 +1115,7 @@ class UtilsTest(TestCase):
             for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             gotten_files = get_files(os.path.join(d, "foo.SHP"),None)
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
@@ -1132,7 +1132,7 @@ class UtilsTest(TestCase):
             for f in ("foo.SHP", "foo.shx", "foo.pRJ", "foo.DBF"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             gotten_files = get_files(os.path.join(d, "foo.SHP"),None)
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
@@ -1142,51 +1142,51 @@ class UtilsTest(TestCase):
             if d is not None:
                 shutil.rmtree(d)
 
-#These don't work on a Mac (foo.SHP == foo.shp)
-#        # Check that including both capital and lowercase extensions raises an exception
-#        d = None
-#        try:
-#            d = tempfile.mkdtemp()
-#            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.shp", "foo.shx", "foo.prj", "foo.dbf"):
-#                path = os.path.join(d, f)
-#                # open and immediately close to create empty file
-#                open(path, 'w').close()
-#
-#            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP"),None))
-#            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp"),None))
-#        finally:
-#            if d is not None:
-#                shutil.rmtree(d)
-#
-#        # Check that including both capital and lowercase PRJ (this is special-cased in the implementation)
-#        d = None
-#        try:
-#            d = tempfile.mkdtemp()
-#            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.prj"):
-#                path = os.path.join(d, f)
-#                # open and immediately close to create empty file
-#                open(path, 'w').close()
-#
-#            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP"),None))
-#            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp"),None))
-#        finally:
-#            if d is not None:
-#                shutil.rmtree(d)
-#
-#        # Check that including both capital and lowercase SLD (this is special-cased in the implementation)
-#        d = None
-#        try:
-#            d = tempfile.mkdtemp()
-#            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.SLD", "foo.sld"):
-#                path = os.path.join(d, f)
-#                # open and immediately close to create empty file
-#                open(path, 'w').close()
-#
-#            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP"),None))
-#            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp"),None))
-#        finally:
-#            if d is not None:
-#                shutil.rmtree(d)
+            #These don't work on a Mac (foo.SHP == foo.shp)
+            #        # Check that including both capital and lowercase extensions raises an exception
+            #        d = None
+            #        try:
+            #            d = tempfile.mkdtemp()
+            #            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.shp", "foo.shx", "foo.prj", "foo.dbf"):
+            #                path = os.path.join(d, f)
+            #                # open and immediately close to create empty file
+            #                open(path, 'w').close()
+            #
+            #            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP"),None))
+            #            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp"),None))
+            #        finally:
+            #            if d is not None:
+            #                shutil.rmtree(d)
+            #
+            #        # Check that including both capital and lowercase PRJ (this is special-cased in the implementation)
+            #        d = None
+            #        try:
+            #            d = tempfile.mkdtemp()
+            #            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.prj"):
+            #                path = os.path.join(d, f)
+            #                # open and immediately close to create empty file
+            #                open(path, 'w').close()
+            #
+            #            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP"),None))
+            #            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp"),None))
+            #        finally:
+            #            if d is not None:
+            #                shutil.rmtree(d)
+            #
+            #        # Check that including both capital and lowercase SLD (this is special-cased in the implementation)
+            #        d = None
+            #        try:
+            #            d = tempfile.mkdtemp()
+            #            for f in ("foo.SHP", "foo.SHX", "foo.PRJ", "foo.DBF", "foo.SLD", "foo.sld"):
+            #                path = os.path.join(d, f)
+            #                # open and immediately close to create empty file
+            #                open(path, 'w').close()
+            #
+            #            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.SHP"),None))
+            #            self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp"),None))
+            #        finally:
+            #            if d is not None:
+            #                shutil.rmtree(d)
 
     def test_get_valid_name(self):
         from geonode.maps.utils import get_valid_name
@@ -1259,19 +1259,19 @@ class UtilsTest(TestCase):
             self.assertRaises(GeoNodeException, check_geonode_is_up)
 
         with nested(
-                patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                patch('geonode.maps.models.Layer.objects.geonetwork')
-            ) as (mock_gs, mock_gn):
-                mock_gn.login.side_effect = blowup
-                self.assertRaises(GeoNodeException, check_geonode_is_up)
-                self.assertTrue(mock_gs.get_workspaces.called)
+            patch('geonode.maps.models.Layer.objects.gs_catalog'),
+            patch('geonode.maps.models.Layer.objects.geonetwork')
+        ) as (mock_gs, mock_gn):
+            mock_gn.login.side_effect = blowup
+            self.assertRaises(GeoNodeException, check_geonode_is_up)
+            self.assertTrue(mock_gs.get_workspaces.called)
 
         with nested(
-                patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                patch('geonode.maps.models.Layer.objects.geonetwork')
-            ) as (mock_gs, mock_gn):
-                # no assertion, this should just run without error
-                check_geonode_is_up()
+            patch('geonode.maps.models.Layer.objects.gs_catalog'),
+            patch('geonode.maps.models.Layer.objects.geonetwork')
+        ) as (mock_gs, mock_gn):
+            # no assertion, this should just run without error
+            check_geonode_is_up()
 
 
     def test_save(self):
@@ -1280,14 +1280,14 @@ class UtilsTest(TestCase):
         from contextlib import nested
         from geonode.maps.utils import save
 
-        # Check that including both capital and lowercase SLD (this is special-cased in the implementation) 
+        # Check that including both capital and lowercase SLD (this is special-cased in the implementation)
         d = None
         try:
             d = tempfile.mkdtemp()
             for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf", "foo.sld", "foo.sld"):
                 path = os.path.join(d, f)
                 # open and immediately close to create empty file
-                open(path, 'w').close()  
+                open(path, 'w').close()
 
             class MockWMS(object):
 
@@ -1298,35 +1298,35 @@ class UtilsTest(TestCase):
                     return self.contents[idx]
 
             with nested(
-                    patch.object(geonode.maps.models, '_wms', new=MockWMS()),
-                    patch('geonode.maps.models.Layer.objects.gs_catalog'),
-                    patch('geonode.maps.models.Layer.objects.geonetwork')
-                ) as (mock_wms, mock_gs, mock_gn):
-                    # Setup
-                    mock_gs.get_store.return_value.get_resources.return_value = []
-                    mock_resource = mock_gs.get_resource.return_value
-                    mock_resource.name = 'a_layer'
-                    mock_resource.title = 'a_layer'
-                    mock_resource.abstract = 'a_layer'
-                    mock_resource.store.name = "a_layer"
-                    mock_resource.store.resource_type = "dataStore"
-                    mock_resource.store.workspace.name = "geonode"
-                    mock_resource.native_bbox = ["0", "0", "0", "0"]
-                    mock_resource.latlon_bbox = ["0", "0", "0", "0"]
-                    mock_resource.projection = "EPSG:4326"
-                    mock_gn.url_for_uuid.return_value = "http://example.com/metadata"
+                patch.object(geonode.maps.models, '_wms', new=MockWMS()),
+                patch('geonode.maps.models.Layer.objects.gs_catalog'),
+                patch('geonode.maps.models.Layer.objects.geonetwork')
+            ) as (mock_wms, mock_gs, mock_gn):
+                # Setup
+                mock_gs.get_store.return_value.get_resources.return_value = []
+                mock_resource = mock_gs.get_resource.return_value
+                mock_resource.name = 'a_layer'
+                mock_resource.title = 'a_layer'
+                mock_resource.abstract = 'a_layer'
+                mock_resource.store.name = "a_layer"
+                mock_resource.store.resource_type = "dataStore"
+                mock_resource.store.workspace.name = "geonode"
+                mock_resource.native_bbox = ["0", "0", "0", "0"]
+                mock_resource.latlon_bbox = ["0", "0", "0", "0"]
+                mock_resource.projection = "EPSG:4326"
+                mock_gn.url_for_uuid.return_value = "http://example.com/metadata"
 
-                    # Exercise
-                    base_file = os.path.join(d, 'foo.shp')
-                    owner = User.objects.get(username="admin")
-                    save('a_layer', base_file, owner)
+                # Exercise
+                base_file = os.path.join(d, 'foo.shp')
+                owner = User.objects.get(username="admin")
+                save('a_layer', base_file, owner)
 
-                    # Assertions
-                    (md_link,) = mock_resource.metadata_links
-                    md_mime, md_spec, md_url = md_link
-                    self.assertEquals(md_mime, "text/xml")
-                    self.assertEquals(md_spec, "TC211")
-                    self.assertEquals(md_url,  "http://example.com/metadata")
+                # Assertions
+                (md_link,) = mock_resource.metadata_links
+                md_mime, md_spec, md_url = md_link
+                self.assertEquals(md_mime, "text/xml")
+                self.assertEquals(md_spec, "TC211")
+                self.assertEquals(md_url,  "http://example.com/metadata")
         finally:
             if d is not None:
                 shutil.rmtree(d)
