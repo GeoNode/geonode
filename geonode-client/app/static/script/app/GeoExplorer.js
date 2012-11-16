@@ -27,29 +27,6 @@ Ext.override(Ext.dd.DragTracker, {
     }
 });
 
-//Do not wipe out feature.attributes, or will get broken image for
-//legend when layer points are displayed as external image based
-// on attributes (ie Picasa & Youtube feeds)
-GeoExt.VectorLegend.prototype.onFeaturesAdded = function() {
-    this.layer.events.un({
-        featuresadded: this.onFeaturesAdded,
-        scope: this
-    });
-    var featureCnt = 1;
-    var feature = this.layer.features[0].clone();
-    while (!feature.geometry && featureCnt < this.layer.features.length) {
-        feature = this.layer.features[featureCnt].clone();
-        featureCnt++;
-    }
-    //feature.attributes = {};  GeoExt bug? Not sure why this is here.
-    this.feature = feature;
-    this.symbolType = this.symbolTypeFromFeature(this.feature);
-    if (!this.rules) {
-        this.setRules();
-    }
-    this.update();
-};
-
 /**
  * Constructor: GeoExplorer
  * Create a new GeoExplorer application.
@@ -552,13 +529,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
             layerTree = Ext.getCmp("treecontent");
 
-
-            //If there are feeds on the map, there will be a SelectFeature control.
-            //Activate it now.
-            if (this.selectControl) {
-                this.selectControl.activate();
-            }
-
         }, this);
 
         //needed for Safari
@@ -855,5 +825,4 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             });         
         }
     }
-
 });
