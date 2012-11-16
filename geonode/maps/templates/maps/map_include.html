@@ -21,11 +21,11 @@ Ext.onReady(function() {
     }, {{ config }});
 app = new GeoExplorer.Viewer(config);
 app.on("ready", function() {
-        //If there are feeds on the map, there will be a SelectFeature control.
-        //Activate it now.
-        if (app.selectControl) {
-            app.selectControl.activate();
-        }
+ //If there are feeds on the map, there will be a SelectFeature control.
+//Activate it now.
+ if (app.selectControl) {
+     app.selectControl.activate();
+ }
 });
 {% endautoescape %}
 });
