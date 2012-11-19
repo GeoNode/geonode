@@ -72,15 +72,43 @@ function delete_cookie(name)
 
 OpenLayers.Layer.Grid.newRatio = 1.5;
 
-var configureLayerNodeOriginal = gxp.plugins.LayerManager.prototype.configureLayerNode;
+
 
 gxp.plugins.LayerManager.prototype.configureLayerNode = function(loader,attr) {
-    if (OpenLayers.Layer.WMS && attr.layer instanceof OpenLayers.Layer.WMS &&
-            attr.layer.url.indexOf("{{GEOPS_IP}}") > -1) {
+
+    var legendXType;
+    // add a WMS legend to each node created
+    if (attr.layer.url &&  attr.layer.url.indexOf("{{GEOPS_IP}}") > -1) {
+        if (attr.layer.params.LAYERS == "heatmap") {
+            legendXType = "gx_geopslegend";
+        } else
         return;
-    } else {
-        configureLayerNodeOriginal.apply(this, [loader,attr]);
+    } else if (OpenLayers.Layer.WMS && attr.layer instanceof OpenLayers.Layer.WMS) {
+        legendXType = "gx_wmslegend";
     }
+    gxp.plugins.LayerManager.superclass.configureLayerNode.apply(this, arguments);
+    if (legendXType) {
+        Ext.apply(attr, {
+            component: {
+                xtype: legendXType,
+                // TODO these baseParams were only tested with GeoServer,
+                // so maybe they should be configurable - and they are
+                // only relevant for gx_wmslegend.
+                baseParams: {
+                    transparent: true,
+                    format: "image/png",
+                    legend_options: "fontAntiAliasing:true;fontSize:11;fontName:Arial"
+                },
+                layerRecord: this.target.mapPanel.layers.getByLayer(attr.layer),
+                showTitle: false,
+                // custom class for css positioning
+                // see tree-legend.html
+                cls: "legend"
+            }
+        });
+    }
+
+
 };
 
 
@@ -307,21 +335,15 @@ var remoteStore = new Ext.data.JsonStore({
 });
  */
 
-var getLegendUrl = function() {
-    return  tweetConfig.url +
-            "?TRANSPARENT=TRUE&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml" +
-            "&LAYER=heatmap&FORMAT=image%2Fgif&SQL=" + tweetHeatRecord.getLayer().params["SQL"] + "&MAXVAL=" +  Ext.getCmp("slider_maxval").getValue() +
-            "&BLUR=" + tweetHeatRecord.getLayer().params["BLUR"] + "&MIN=" + tweetHeatRecord.getLayer().params["MIN"] +
-            "&RND=" + tweetHeatRecord.getLayer().params["RND"];
-};
-
-var updateLegend = function(mapExtent) {
-    Ext.getCmp("legendImage").getEl().dom.src = getLegendUrl();
-};
+//var getLegendUrl = function() {
+//    return  tweetConfig.url +
+//            "?TRANSPARENT=TRUE&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml" +
+//            "&LAYER=heatmap&FORMAT=image%2Fgif&SQL=" + tweetHeatRecord.getLayer().params["SQL"] + "&MAXVAL=" +  Ext.getCmp("slider_maxval").getValue() +
+//            "&BLUR=" + tweetHeatRecord.getLayer().params["BLUR"] + "&MIN=" + tweetHeatRecord.getLayer().params["MIN"] +
+//            "&RND=" + tweetHeatRecord.getLayer().params["RND"];
+//};
 
 var is_authorized = "{{tweetdownload}}";
-var legendImage = null;
-var legendWindow = null;
 
 var updateCQL = function(layers) {
 
@@ -345,8 +367,11 @@ var updateCQL = function(layers) {
     var timeFilter =  "time > " + (Math.floor(new Date(tweetDateStartField.getValue()).getTime()/1000)) + " AND time < " + (Math.floor(new Date(tweetDateEndField.getValue()).getTime() /1000)) ;
     var fromFilter = " from oct_tweets";
 
+    var numLayersVisible = 0;
     for (var x = 0; x < layers.length; x++) {
         var layer = layers[x];
+
+        layer.getLayer().params["RND"] = randomNum;
 
         if (layer.get("name") == "heatmap") {
             layer["cql_filter"] =  startFilter + keywordFilter +  fromFilter + " WHERE " + timeFilter;
@@ -354,9 +379,9 @@ var updateCQL = function(layers) {
             layer.getLayer().params["BLUR"] = Ext.getCmp("slider_blur").value;
             layer.getLayer().params["MIN"] = Ext.getCmp("slider_min").value/100;
             layer.getLayer().params["MAXVAL"] = Ext.getCmp("auto_max_checkbox").checked ? "auto" :  Ext.getCmp("slider_maxval").value;
-            layer.getLayer().params["RND"] = randomNum;
             if (firstHeatMap && keywords) {
-                layer.getLayer().setVisibility(keywords ? true : false);
+                layer.getLayer().setVisibility(true);
+                numLayersVisible++;
                 firstHeatMap = false;
             } else if (!keywords || keywords == "") {
                 layer.getLayer().setVisibility(false);
@@ -369,37 +394,17 @@ var updateCQL = function(layers) {
             layer.getLayer().params["R"] = 0;
             layer.getLayer().params["G"] = 0;
             layer.getLayer().params["B"] = 255;
+            if (layer.getLayer().getVisibility() === true) {
+                numLayersVisible++;
+            }
+
         }
 
-        if (keywords) {
-        if (!legendWindow) {
-
-            legendImage = new Ext.Component({
-                id: "legendImage",
-                autoEl: {tag: 'img', src: getLegendUrl(), style: 'width:200px;height:200px;'}
-            });
-
-            legendWindow = new Ext.Window({
-                id: "tweetLegendWin",
-                width: 200,
-                title: "Legend",
-                collapsible:true,
-                draggable: true,
-                constrain: true,
-                monitorResize: true,
-                items:[legendImage]
-            });
-            app.mapPanel.add(legendWindow);
-        }
-        if (!legendWindow.isVisible()) {
-            legendWindow.show();
-            legendWindow.alignTo(document, 'r-r?');
-        }
-        } else if (legendWindow){
-            legendWindow.hide();
-        }
     }
-    //console.log(tweetHeatRecord.getLayer().params["CQL_FILTER"]);
+
+    for (var x = 0; x < layers.length; x++) {
+        layer.getLayer().params["NUM_REQUESTS"] = numLayersVisible;
+    }
 }
 
 
@@ -821,12 +826,6 @@ app.on("ready", function() {
 
     });
 
-
-    //app.legendPanel.destroy();
-
-
-    //Ext.getCmp("gx_westPanel").collapse();
-
     tweetHeatRecord.getLayer().events.register("loadend", tweetHeatRecord.getLayer(), function(e) {
 
         var maxlevel_cookie = get_cookie("max_value");
@@ -836,7 +835,7 @@ app.on("ready", function() {
             delete_cookie("max_value");
         }
 
-        updateLegend();
+        //updateLegend();
 
         if (!tweetPointRecord.getLayer().getVisibility()) {
                 cqlWindow.setTitle(gettext("Tweet Filter:  "))
