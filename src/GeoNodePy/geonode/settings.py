@@ -392,14 +392,46 @@ MAP_BASELAYERS = [{
                       "name":"TERRAIN",
                       "visibility": False,
                       "fixed": True,
-                      },            {
+                      },{
+    "source": {"ptype": "gx_googlesource"},
+    "group":"background",
+    "name":"HYBRID",
+    "visibility": False,
+    "fixed": True,
+    },           {
                       "source": {"ptype": "gx_googlesource"},
                       "group":"background",
                       "name":"ROADMAP",
                       "visibility": False,
                       "fixed": True,
                       "group":"background"
-                  }]
+                  },
+                  {
+                      "source": {"url": "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer", "ptype": "gxp_arcrestsource"},
+                      "group":"background",
+                      "format": "jpeg",
+                      "name":"World Imagery",
+                      "visibility": False,
+                      "fixed": True,
+                      "title": "ESRI World Imagery"
+                  },
+                  {
+                          "source": {"url": "http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer", "ptype": "gxp_arcrestsource"},
+                          "group":"background",
+                          "name":"Ocean_Basemap",
+                          "visibility": False,
+                          "fixed": True,
+                          "title": "ESRI World Ocean Basemap"
+                      },
+                          {
+                          "source": {"url": "http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer", "ptype": "gxp_arcrestsource"},
+                          "group":"background",
+                          "name":"NatGeo1_World_Map",
+                          "visibility": False,
+                          "fixed": True,
+                          "title": "National Geographic World Map"
+                      }
+]
 
 
 GEONODE_CLIENT_LOCATION = "/static/geonode/"

@@ -211,10 +211,7 @@ var init = function() {
     }, {{ config }});
 
 
-    app = new GeoExplorer(config, true);
-
-
-
+app = new GeoExplorer(config, true);
 
 var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
     var permalink = function(id) {
@@ -379,10 +376,11 @@ var updateCQL = function(layers) {
             layer.getLayer().params["BLUR"] = Ext.getCmp("slider_blur").value;
             layer.getLayer().params["MIN"] = Ext.getCmp("slider_min").value/100;
             layer.getLayer().params["MAXVAL"] = Ext.getCmp("auto_max_checkbox").checked ? "auto" :  Ext.getCmp("slider_maxval").value;
-            if (firstHeatMap && keywords) {
+            if (keywords  && keywords != "") {
                 layer.getLayer().setVisibility(true);
                 numLayersVisible++;
-                firstHeatMap = false;
+                if (firstHeatMap === true)
+                    firstHeatMap = false;
             } else if (!keywords || keywords == "") {
                 layer.getLayer().setVisibility(false);
             }
@@ -402,7 +400,8 @@ var updateCQL = function(layers) {
 
     }
 
-    for (var x = 0; x < layers.length; x++) {
+    for (var xx = 0; xx < layers.length; xx++) {
+        var layer = layer[xx];
         layer.getLayer().params["NUM_REQUESTS"] = numLayersVisible;
     }
 }

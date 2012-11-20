@@ -29,6 +29,18 @@
 {{ block.super }}
 
 <script type="text/javascript">
+    var originalConfigureLayerNode =  GeoExt.WMSLegend.prototype.getLegendUrl;
+    GeoExt.WMSLegend.prototype.getLegendUrl = function(layerName,layerNames) {
+        var rec = this.layerRecord;
+        var layer = rec.getLayer();
+        if (OpenLayers.Layer.WMS && layer instanceof OpenLayers.Layer.WMS && layer.getVisibility() === false) {
+            return "";
+        } else {
+            return originalConfigureLayerNode.apply(this, arguments);
+        }
+    };
+
+
 var app;
 var init = function() {
 {% autoescape off %}
@@ -36,6 +48,10 @@ var init = function() {
     var identifyText = gettext('Identify');
     var coordinateText = gettext('Map Coordinates - longitude, latitude');
     var gazetteerText = gettext('Placename gazetteer');
+
+
+
+
 
     var config = Ext.apply({
         tools:  [{
