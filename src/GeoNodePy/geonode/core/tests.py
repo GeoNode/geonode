@@ -3,7 +3,7 @@ from django.test import TestCase
 import os
 
 class GeoNodeClientTests(TestCase):
-    
+
     fixtures = ['test_data.json']
     GEOSERVER = False
 
@@ -42,7 +42,7 @@ class GeoNodeClientTests(TestCase):
         c = Client()
         response = c.get('/help/')
         self.failUnlessEqual(response.status_code, 200)
-    
+
     def test_Profiles(self):
         '''Test the profiles page renders.'''
 

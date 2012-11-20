@@ -1122,7 +1122,6 @@ class LayerDescriptionForm(forms.Form):
     keywords = forms.CharField(500, required=False)
 
 
-
 @login_required
 def layer_metadata(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
@@ -1180,7 +1179,6 @@ def layer_metadata(request, layername):
             attribute_form = layerAttSet(request.POST, instance=layer, prefix="layer_attribute_set", queryset=LayerAttribute.objects.order_by('display_order'))
             gazetteer_form = GazetteerForm(request.POST)
             gazetteer_form.fields['startDate'].queryset = gazetteer_form.fields['endDate'].queryset = layer.attribute_set
-
 
             if "tab" in request.POST:
                 tab = request.POST["tab"]
@@ -1725,7 +1723,7 @@ def layer_acls(request):
                                                       'maps.view_layer',
                                                       Layer))
             all_writable.update(bck.objects_with_perm(acl_user,
-                                                      'maps.change_layer',
+                                                      'maps.change_layer', 
                                                       Layer))
     read_only = [x for x in all_readable if x not in all_writable]
     read_write = [x for x in all_writable if x in all_readable]
