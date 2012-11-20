@@ -62,12 +62,12 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, "uploaded")
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, "site_media", "media")
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = "/uploaded/"
+MEDIA_URL = "/site_media/media/"
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
@@ -92,11 +92,6 @@ TEMPLATE_DIRS = (
 LOCALE_PATHS = (
     os.path.join(PROJECT_ROOT, "locale"),
 )
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = os.path.join(STATIC_URL, "admin/")
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
@@ -383,8 +378,8 @@ MAP_BASELAYERS = [{
   }]
 
 
-GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
-#GEONODE_CLIENT_LOCATION = "/static/geonode/"
+#GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
+GEONODE_CLIENT_LOCATION = "/static/geonode/"
 
 
 # GeoNode vector data backend configuration.

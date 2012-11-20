@@ -320,6 +320,9 @@ def package_geonetwork(options):
 @task
 @needs('package_dir')
 def package_webapp(options):
+
+    sh("django-admin.py collectstatic -v0 --settings=geonode.settings --noinput")
+
     """Package (Python, Django) web application and dependencies."""
     with pushd('src/GeoNodePy'):
         sh('python setup.py egg_info sdist')

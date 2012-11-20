@@ -29,6 +29,18 @@
 {{ block.super }}
 
 <script type="text/javascript">
+    var originalConfigureLayerNode =  GeoExt.WMSLegend.prototype.getLegendUrl;
+    GeoExt.WMSLegend.prototype.getLegendUrl = function(layerName,layerNames) {
+        var rec = this.layerRecord;
+        var layer = rec.getLayer();
+        if (OpenLayers.Layer.WMS && layer instanceof OpenLayers.Layer.WMS && layer.getVisibility() === false) {
+            return "";
+        } else {
+            return originalConfigureLayerNode.apply(this, arguments);
+        }
+    };
+
+
 var app;
 var init = function() {
 {% autoescape off %}
