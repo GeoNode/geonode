@@ -30,7 +30,7 @@
 			Ext.onReady(function() {
 				Ext.QuickTips.init();
 
-				var form_target = "{% url documents.views.upload_document %}";
+				var form_target = "{% url document_upload %}";
 
 				var title = new Ext.form.TextField({
 					id: 'title',
