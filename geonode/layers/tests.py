@@ -746,13 +746,15 @@ class LayersTest(TestCase):
 
         # First test un-authenticated
         response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
-        self.assertEquals(response.status_code, 401)
+        response_json = json.loads(response.content) 
+        self.assertEquals(response_json['authorized'], False)
 
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
         response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
-        self.assertEquals(response.status_code, 401)
+        response_json = json.loads(response.content) 
+        self.assertEquals(response_json['authorized'], False)
 
         # Login as a user with the proper permission and test the endpoint
         logged_in = c.login(username='admin', password='admin')
@@ -761,13 +763,17 @@ class LayersTest(TestCase):
         response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
 
         # Test that the method returns 401 because it's not a datastore
-        self.assertEquals(response.status_code, 401)
+        response_json = json.loads(response.content) 
+        self.assertEquals(response_json['authorized'], False)
 
         layer = Layer.objects.all()[0]
         layer.storeType = "dataStore"
         layer.save()
 
-        response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
 
-        # Test that the method returns 401 if it's a datastore
-        self.assertEquals(response.status_code, 200)
+        # Test that the method returns authorized=True if it's a datastore
+        with self.settings(DB_DATASTORE=True):
+            # The check was moved from the template into the view
+            response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
+            response_json = json.loads(response.content) 
+            self.assertEquals(response_json['authorized'], True)
