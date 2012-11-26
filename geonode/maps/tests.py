@@ -129,7 +129,7 @@ community."
 
         c.login(username=self.user, password=self.passwd)
         response = c.put(reverse('map_json', args=('1',)),data=self.viewer_config_alternative,content_type="text/json")
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
 
         map_obj = Map.objects.get(id=1)
         self.assertEquals(map_obj.title, "Title2")
@@ -148,8 +148,8 @@ community."
         # Test successful new map creation
         c.login(username=self.user, password=self.passwd)
         response = c.post(new_map,data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
         c.logout()
 
         self.assertEquals(map_id,2)
@@ -305,8 +305,8 @@ community."
         c.login(username=self.user, password=self.passwd)
         new_map = reverse('new_map_json')
         response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
         c.logout()
 
         url = reverse('map_metadata', args=(map_id,))
@@ -344,8 +344,8 @@ community."
         c.login(username=self.user, password=self.passwd)
         new_map = reverse('new_map_json')
         response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
         c.logout()
 
         url = reverse('map_remove', args=(map_id,))
@@ -393,8 +393,8 @@ community."
 
         new_map = reverse('new_map_json')
         response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
         c.logout()
 
         url = reverse('map_embed', args=(map_id,))
@@ -432,8 +432,8 @@ community."
 
         new_map = reverse('new_map_json')
         response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
         c.logout()
 
         url = reverse('map_view', args=(map_id,))
@@ -515,8 +515,8 @@ community."
 
         # Test POST method with map data in json format
         response = c.post(url, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
 
         # Test methods other than GET or POST and no layer in params
         response = c.put(url)
@@ -557,11 +557,11 @@ community."
 
         new_map = reverse('new_map_json')
         response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
         response = c.post(new_map, data=self.viewer_config_alternative,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id_2 = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id_2 = int(json.loads(response.content)['id'])
         c.logout()
 
         url = reverse('maps_search_api') + '?'
@@ -592,7 +592,7 @@ community."
 
         #Create the map
         response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        map_id = int(response['Location'].split('/')[-1])
+        map_id = int(json.loads(response.content)['id'])
 
         #Create the rating with the correct content type
         ctype = ContentType.objects.get(model='map')

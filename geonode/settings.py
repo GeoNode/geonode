@@ -487,8 +487,6 @@ MAP_BASELAYERS = [{
 
 }]
 
-GEONODE_CLIENT_LOCATION = "/static/geonode/"
-
 # GeoNode vector data backend configuration.
 
 #Import uploaded shapefiles into a database such as PostGIS?

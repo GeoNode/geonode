@@ -110,7 +110,7 @@ def setup_client(options):
 @task
 @needs([
     'setup_geoserver',
-    'setup_client',
+    #'setup_client',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
