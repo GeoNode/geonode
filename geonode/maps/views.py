@@ -133,7 +133,10 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
     The view that show details of each map
     '''
     map_obj = _resolve_map(request, mapid, 'maps.view_map', _PERMISSION_MSG_VIEW)
-
+	
+    map_obj.popular_count += 1
+    map_obj.save()
+	
     config = map_obj.viewer_json()
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
