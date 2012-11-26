@@ -246,9 +246,10 @@ class GeoNodeMapTest(TestCase):
             'and Runways within San Diego County',
             'Expected specific purpose from uploaded layer XML metadata')
 
-        assert uploaded.supplemental_information is None, \
+        self.assertEqual(uploaded.supplemental_information,
+            'No information provided',
             'Expected specific supplemental information '\
-            'from uploaded layer XML metadata'
+            'from uploaded layer XML metadata')
 
         self.assertEqual(len(uploaded.keyword_list()), 5,
             'Expected specific number of keywords from uploaded layer XML metadata')
