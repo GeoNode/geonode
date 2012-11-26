@@ -118,6 +118,9 @@ SITE_ID = 1
 LOGIN_URL = '/account/login/'
 LOGOUT_URL = '/account/logout/'
 
+# Activate the Documents application
+DOCUMENTS_APP = True
+
 INSTALLED_APPS = (
 
     # Apps bundled with Django
@@ -166,8 +169,11 @@ INSTALLED_APPS = (
     'geonode.security',
     'geonode.search',
     'geonode.catalogue',
-    'geonode.documents',
 )
+
+if DOCUMENTS_APP:
+    INSTALLED_APPS += ('geonode.documents',)
+    
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -241,8 +247,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    #'announcements.context_processors.site_wide_announcements',
-    "account.context_processors.account",
+    'announcements.context_processors.site_wide_announcements',
+    'account.context_processors.account',
     # The context processor below adds things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
     'geonode.context_processors.resource_urls',
