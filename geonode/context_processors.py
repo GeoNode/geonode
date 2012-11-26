@@ -34,5 +34,6 @@ def resource_urls(request):
         REGISTRATION_OPEN=settings.REGISTRATION_OPEN,
         VERSION=get_version(),
         SITE_NAME=site.name,
-        SITE_DOMAIN=site.domain
+        SITE_DOMAIN=site.domain,
+        DOCUMENTS_APP = settings.DOCUMENTS_APP,
     )
