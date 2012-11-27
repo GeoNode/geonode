@@ -67,6 +67,11 @@ This lives in the GeoServer Data dir ``/var/lib/geoserver/geonode-data/printing/
         host: YOUR_IP_ADDRESS
         port: 80
 
+Configure the correct GeoNode URL for Security Checks
+-----------------------------
+Change the following value in /var/lib/tomcat6/webapps/geoserver/data/security/auth/geonodeAuthProvider/config.xml:
+    <baseUrl>http://localhost/</baseUrl>
+
 
 Recommended Steps (optional)
 ============================

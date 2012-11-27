@@ -401,6 +401,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }, {
             ptype: "gxp_addlayers",
             search: true,
+            feeds: true,
             actionTarget: "treetbar",
             createExpander: function() {
                 return new GeoExplorer.CapabilitiesRowExpander({

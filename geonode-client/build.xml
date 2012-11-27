@@ -7,7 +7,7 @@
 
     <property name="build" location="build"/>
     <property name="app.proxy.geoserver" value=""/>
-    <property name="app.port" value="8080"/>
+    <property name="app.port" value="9090"/>
 
     <target name="init">
         <mkdir dir="${build}"/>

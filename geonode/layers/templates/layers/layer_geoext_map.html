@@ -12,7 +12,8 @@
                     format: "grid",
                     actionTarget: "main.tbar",
                     outputConfig: {width: 400, height: 200, panIn: false}
-                }],
+                },
+                {ptype: "gxp_getfeedfeatureinfo"}],
                 proxy: "/proxy/?url=",
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
                 authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",

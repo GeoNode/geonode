@@ -1,9 +1,6 @@
 [submodule "geonode-client/app/static/externals/geoext"]
 	path = geonode-client/app/static/externals/geoext
 	url = git://github.com/geoext/geoext.git
-[submodule "geonode-client/app/static/externals/gxp"]
-	path = geonode-client/app/static/externals/gxp
-	url = git://github.com/opengeo/gxp.git
 [submodule "geonode-client/app/static/externals/openlayers"]
 	path = geonode-client/app/static/externals/openlayers
 	url = git://github.com/openlayers/openlayers.git
@@ -19,3 +16,6 @@
 [submodule "geonode-client/externals/buildkit"]
 	path = geonode-client/externals/buildkit
 	url = git://github.com/opengeo/buildkit.git
+[submodule "geonode-client/app/static/externals/gxp"]
+	path = geonode-client/app/static/externals/gxp
+	url = git://github.com/opengeo/gxp.git
