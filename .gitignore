@@ -19,6 +19,9 @@ geonode/static/geonode/script/
 geonode/static/geonode/theme/
 geonode/static_root/
 
+# Uploaded files
+geonode/uploaded
+
 #Testing output
 .coverage
 .noseids
