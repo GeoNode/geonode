@@ -101,7 +101,11 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
         var infoButton = this.actions[0].items[0];
 
         var info = {controls: []};
-        var updateInfo = function() {
+        var updateInfo = function(event) {
+            if (!event.property || event.property == "visibility") {
+                if (event.layer.getVisibility() && event.layer.displayInLayerSwitcher === true && event.layer instanceof OpenLayers.Layer.WMS) {
+
+
             var queryableLayers = this.target.mapPanel.layers.queryBy(function(x) {
                 return (x.get("queryable") && x.getLayer().getVisibility() && x.getLayer().displayInLayerSwitcher === true && x.getLayer() instanceof OpenLayers.Layer.WMS);
             });
@@ -472,11 +476,13 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                     control.activate();
                 }
             }, this);
+                }
+            }
         };
 
-        this.target.mapPanel.layers.on("add", updateInfo, this);
-        this.target.mapPanel.layers.on("update", updateInfo, this);
-        this.target.mapPanel.layers.on("remove", updateInfo, this);
+        this.target.mapPanel.map.events.register("addlayer", this, updateInfo);
+        this.target.mapPanel.map.events.register("changelayer", this, updateInfo);
+        this.target.mapPanel.map.events.register("removelayer", this, updateInfo);
 
         return actions;
     },
@@ -545,7 +551,7 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                 reader: reader,
                 data: currentFeatures,
                 groupField:'wm_layer_title',
-                sortInfo:{field: 'wm_layer_id', direction: "DESC"}
+                sortInfo:{field: 'wm_layer_id', direction: "ASC"}
             }),
             columns:[
                 { id:'wm_layer_id', sortable:false, header:'FID', dataIndex:'wm_layer_id', hidden:true},
