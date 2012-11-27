@@ -214,7 +214,7 @@
     <script id="searchResult" type="text/html">
       {% include "search/search_result.js" %}
     </script>
-    <script src="{{ STATIC_URL }}js/search.js"></script>
+    <script src="{{ STATIC_URL }}js/global_search.js"></script>
     <script>        
         $(function() {
           doSearch("{{ request.POST.q }}");
