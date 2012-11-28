@@ -1,7 +1,8 @@
 $(function() {
     // Topbar active tab support
     $(".main-nav li").removeClass("current");
-    $('[rel=tooltip]').tooltip({placement:"left"});
+
+//    $('[rel=tooltip]').tooltip({placement:"left"});
     
     var class_list = $("body").attr("class").split(/\s+/);
     $.each(class_list, function(index, item) {

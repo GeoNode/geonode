@@ -10,8 +10,9 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery', 'underscore', 'text!templates/search.html', 'jquery.timeago'],
-function($, _, tmpl){
+requirejs(['jquery', 'underscore', 'text!../../js/templates/search.html', 'jquery.timeago'],
+function($, _, tmpl, timeago){
+
     $(function() {
         $('body').append(tmpl);
 
@@ -31,12 +32,12 @@ function($, _, tmpl){
                 } else {
                     // Compile template used to render search rows
                     var _resultRow = _.template($("#searchResultsRowTemplate").html());
-                    $.each(json.rows, function(i, row){
+                    $.each(json.results, function(i, row){
                         var results = _resultRow(row);
                         $(table).find("tbody:last").append(results).find("abbr.timeago").timeago();
                     });
                 }
-             });
+            });
         });
 
         // Grab url params for initial search
@@ -70,4 +71,6 @@ function($, _, tmpl){
             });
         });
     });
+
+
 });
