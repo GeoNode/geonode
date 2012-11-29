@@ -1608,14 +1608,37 @@ def _get_basic_auth_info(request):
     username, password = base64.b64decode(auth).split(':')
     return username, password
 
+def resolve_user(request):
+    user = None
+    geoserver = False
+    superuser = False
+    if 'HTTP_AUTHORIZATION' in request.META:
+        username, password = _get_basic_auth_info(request)
+        acl_user = authenticate(username=username, password=password)
+        if acl_user:
+            user = acl_user.username
+            superuser = user.is_superuser
+        elif _get_basic_auth_info(request) == settings.GEOSERVER_CREDENTIALS:
+            geoserver = True
+            superuser = True
+    elif not request.user.is_anonymous():
+        user = request.user.username
+        superuser = request.user.is_superuser
+    return HttpResponse(json.dumps({
+        'user' : user,
+        'geoserver' : geoserver,
+        'superuser' : superuser
+    }))
+
+
 def layer_acls(request):
     """
-    returns json-encoded lists of layer identifiers that 
+    returns json-encoded lists of layer identifiers that
     represent the sets of read-write and read-only layers
-    for the currently authenticated user. 
+    for the currently authenticated user.
     """
-    
-    # the layer_acls view supports basic auth, and a special 
+
+    # the layer_acls view supports basic auth, and a special
     # user which represents the geoserver administrator that
     # is not present in django.
     acl_user = request.user
@@ -1625,43 +1648,43 @@ def layer_acls(request):
             acl_user = authenticate(username=username, password=password)
 
             # Nope, is it the special geoserver user?
-            if (acl_user is None and 
+            if (acl_user is None and
                 username == settings.GEOSERVER_CREDENTIALS[0] and
                 password == settings.GEOSERVER_CREDENTIALS[1]):
                 # great, tell geoserver it's an admin.
                 result = {
-                   'rw': [],
-                   'ro': [],
-                   'name': username,
-                   'is_superuser':  True,
-                   'is_anonymous': False
+                    'rw': [],
+                    'ro': [],
+                    'name': username,
+                    'is_superuser':  True,
+                    'is_anonymous': False
                 }
                 return HttpResponse(json.dumps(result), mimetype="application/json")
         except Exception:
             pass
-        
-        if acl_user is None: 
-            return HttpResponse(_("Bad HTTP Authorization Credentials."),
-                                status=401,
-                                mimetype="text/plain")
 
-            
+        if acl_user is None:
+            return HttpResponse(_("Bad HTTP Authorization Credentials."),
+                status=401,
+                mimetype="text/plain")
+
+
     all_readable = set()
     all_writable = set()
     for bck in get_auth_backends():
         if hasattr(bck, 'objects_with_perm'):
             all_readable.update(bck.objects_with_perm(acl_user,
-                                                      'maps.view_layer',
-                                                      Layer))
+                'layers.view_layer',
+                Layer))
             all_writable.update(bck.objects_with_perm(acl_user,
-                                                      'maps.change_layer', 
-                                                      Layer))
+                'layers.change_layer',
+                Layer))
     read_only = [x for x in all_readable if x not in all_writable]
     read_write = [x for x in all_writable if x in all_readable]
 
     read_only = [x[0] for x in Layer.objects.filter(id__in=read_only).values_list('typename').all()]
     read_write = [x[0] for x in Layer.objects.filter(id__in=read_write).values_list('typename').all()]
-    
+
     result = {
         'rw': read_write,
         'ro': read_only,
@@ -1671,6 +1694,7 @@ def layer_acls(request):
     }
 
     return HttpResponse(json.dumps(result), mimetype="application/json")
+
 
 
 def _split_query(query):

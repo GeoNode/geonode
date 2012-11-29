@@ -34,34 +34,6 @@ hosts:
     host: sigma.openplans.org
   - !dnsMatch
     host: demo.mapfish.org
-  - !dnsMatch
-    host: tile.openstreetmap.org
-  - !dnsMatch
-    host: a.tile.openstreetmap.org
-  - !dnsMatch
-    host: b.tile.openstreetmap.org
-  - !dnsMatch
-    host: c.tile.openstreetmap.org
-  - !dnsMatch
-    host: d.tile.openstreetmap.org
-  - !dnsMatch
-    host: maps.opengeo.org
-  - !dnsMatch
-    host: oatile1.mqcdn.com
-  - !dnsMatch
-    host: oatile2.mqcdn.com
-  - !dnsMatch
-    host: oatile3.mqcdn.com
-  - !dnsMatch
-    host: oatile4.mqcdn.com
-  - !dnsMatch
-    host: otile1.mqcdn.com
-  - !dnsMatch
-    host: otile2.mqcdn.com
-  - !dnsMatch
-    host: otile3.mqcdn.com
-  - !dnsMatch
-    host: otile4.mqcdn.com
 
 layouts:
   Legal:
@@ -82,6 +54,45 @@ layouts:
       keywords: 'map,print'
       creator: 'MapFish'
 
+    titlePage:
+      pageSize: A4
+      items:
+        - !text
+          spacingAfter: 150
+        - !text
+          font: Helvetica
+          fontSize: 40
+          spacingAfter: 100
+          align: center
+          text: '${layout}'
+        - !image
+          maxWidth: 160
+          maxHeight: 160
+          spacingAfter: 100
+          align: center
+          url: http://trac.mapfish.org/trac/mapfish/attachment/ticket/3/logo_v8_sphere.svg?format=raw
+
+      footer: &commonFooter
+        height: 30
+        items:
+          - !columns
+            config:
+              cells:
+                - paddingBottom: 5   
+            items:
+              - !text
+                backgroundColor: #FF0000
+                align: left
+                text: a red box
+              - !text
+                align: right
+                text: 'Page ${pageNum}'
+              - !image
+                align: center
+                maxWidth: 100
+                maxHeight: 30
+                spacingAfter: 200
+                url: 'http://geoserver.org/download/attachments/10158143/pbGS-Bttn228x68.png'
 
     #-------------------------------------------------------------------------
     mainPage:
@@ -103,7 +114,7 @@ layouts:
         - !map
           spacingAfter: 30
           width: 440
-          height: 600
+          height: 483
         - !columns
           # columns can have an absolute position. In that case, they need the 3 following fields:
           absoluteX: 410
@@ -119,18 +130,6 @@ layouts:
         - !text
           text: '${comment}'
           spacingAfter: 30
-        - !legends
-          maxIconWidth: 0
-          maxIconHeight: 0
-          classIndentation: 0
-          layerSpace: 5
-          classSpace: 2
-          backgroundColor: #FFFFFF
-          layerFont: Helvetica
-          layerFontSize: 10
-          classFont: Helvetica
-          classFontSize: 8
-          fontEncoding: utf-8
         - !attributes
           source: data
           spacingAfter: 30
@@ -166,14 +165,9 @@ layouts:
                 maxWidth: 15
                 maxHeight: 15
                 url: 'http://www.mapfish.org/svn/mapfish/trunk/MapFish/client/mfbase/mapfish/img/${icon}.png'
-      footer: &commonFooter
-        height: 30
-        items:
-          - !columns
-            config:
-              cells:
-                - paddingBottom: 5   
-            items:
-              - !text
-                align: right
-                text: ' '
+        - !text
+          font: Helvetica
+          fontSize: 9
+          align: right
+          text: '1:${scale} ${now MM.dd.yyyy}'
+      footer: *commonFooter

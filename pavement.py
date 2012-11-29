@@ -576,6 +576,7 @@ def start_geoserver(options):
             "-Djetty.host=" + options.host.bind,
             "-Xmx512M",
             "-XX:MaxPermSize=128m"
+            #"-Xdebug -Xrunjdwp:transport= dt_socket,address=8020,server=y,suspend=n"
         ])
         mvn = subprocess.Popen(
             ["mvn", "jetty:run"],
@@ -623,6 +624,7 @@ def host(options):
     djangolog = open("django.log", "w")
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
+            "-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8020,server=y,suspend=y",
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
             "-Djetty.host=" + options.host.bind,
             "-Xmx512M",

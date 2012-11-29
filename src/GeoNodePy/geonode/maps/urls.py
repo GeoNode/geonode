@@ -59,4 +59,5 @@ datapatterns = patterns('geonode.maps.views',
     url(r'^addlayers/?$', 'addlayers', name='addlayers'),
     url(r'^api/batch_permissions_by_email/?$', 'batch_permissions_by_email'),
     url(r'^create_pg_layer', 'create_pg_layer', name='create_pg_layer'),
+    url(r'^resolve_user/?$', 'resolve_user', name='layer_resolve_user'),
 )
