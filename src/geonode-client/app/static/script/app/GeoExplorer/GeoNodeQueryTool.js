@@ -545,7 +545,7 @@ gxp.plugins.GeoNodeQueryTool = Ext.extend(gxp.plugins.Tool, {
                 reader: reader,
                 data: currentFeatures,
                 groupField:'wm_layer_title',
-                sortInfo:{field: 'wm_layer_id', direction: "DESC"}
+                sortInfo:{field: 'wm_layer_id', direction: "ASC"}
             }),
             columns:[
                 { id:'wm_layer_id', sortable:false, header:'FID', dataIndex:'wm_layer_id', hidden:true},

@@ -233,7 +233,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
              * Fires before the page unloads. Return false to stop the page
              * from unloading.
              */
-            "beforeunload"
+            "beforeunload",
+
+            "setLayerTree"
         );
 
         // add old ptypes
@@ -853,6 +855,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     addLayers.catalogSourceKey = startSourceId;
                 } else if (tool.ptype == "gxp_layermanager") {
                     this.layerTree = tool;
+                    this.fireEvent("setLayerTree");
                 }
             }
             if (addLayers !== null) {

@@ -22,8 +22,8 @@ import urllib
 from urllib import urlretrieve
 import glob
 
-assert sys.version_info >= (2,6), \
-       SystemError("GeoNode Build requires python 2.6 or better")
+assert sys.version_info >= (2,6),\
+SystemError("GeoNode Build requires python 2.6 or better")
 
 
 options(

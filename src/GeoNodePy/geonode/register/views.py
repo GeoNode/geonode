@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from django.conf import settings
+from django.contrib.auth import login
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response

@@ -101,7 +101,7 @@
             <div class="comment_content">
                 {{ comment.comment|escape|urlize|safe }}
            </div>
-            <p class="comment_author"><a href="comment.author.get_absolute_url">{{ comment.author.get_full_name|default:comment.author|capfirst }}</a>
+            <p class="comment_author"><a href="{{comment.author.get_absolute_url}}">{{ comment.author.get_full_name|default:comment.author|capfirst }}</a>
                 commented <span class="comment_ago">
                 {% blocktrans with comment.submit_date|timesince as age %}
                 {{ age }} ago

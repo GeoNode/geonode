@@ -7,9 +7,6 @@ import os
 # General Django development settings
 #
 
-logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'a')
-
-
 # Defines the directory that contains the settings file as the PROJECT_ROOT
 # It is used for relative settings elsewhere.
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -330,52 +327,178 @@ REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 30
 SERVE_MEDIA = DEBUG;
 
-MAP_BASELAYERS = [{
-    "source": {
-        "ptype": "gxp_wmscsource",
-        "url": GEOSERVER_BASE_URL + "wms",
-        "restUrl": "/gs/rest"
-     }
-  },{
-    "source": {"ptype": "gx_olsource"},
-    "type":"OpenLayers.Layer",
-    "args":["No background"],
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
-  }, {
-    "source": {"ptype": "gx_olsource"},
-    "type":"OpenLayers.Layer.OSM",
-    "args":["OpenStreetMap"],
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
-  }, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name":"osm",
-    "group":"background",
-    "visibility": True
-  }, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name":"naip",
-    "group":"background",
-    "visibility": False
-  }, {
-    "source": {"ptype": "gxp_bingsource"},
-    "name": "AerialWithLabels",
-    "fixed": True,
-    "visibility": False,
-    "group":"background"
-  },{
-    "source": {"ptype": "gxp_mapboxsource"},
-  }, {
-    "source": {"ptype": "gx_olsource"},
-    "type":"OpenLayers.Layer.WMS",
-    "group":"background",
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
-  }]
+MAP_BASELAYERS = [
+    {
+        "source": {
+            "ptype": "gxp_wmscsource",
+            "url": GEOSERVER_BASE_URL + "wms",
+            "restUrl": "/gs/rest"
+        }
+    }, {
+        "source": {"ptype": "gx_olsource"},
+        "type": "OpenLayers.Layer",
+        "args": ["No background"],
+        "visibility": False,
+        "fixed": True,
+        "group": "background"
+    }, {
+        "source": {"ptype": "gx_olsource"},
+        "type": "OpenLayers.Layer.OSM",
+        "args": ["OpenStreetMap"],
+        "visibility": False,
+        "fixed": True,
+        "group": "background"
+    }, {
+        "source": {"ptype": "gxp_mapquestsource"},
+        "name": "osm",
+        "group": "background",
+        "visibility": True
+    }, {
+        "source": {"ptype": "gxp_mapquestsource"},
+        "name": "naip",
+        "group": "background",
+        "visibility": False
+    }, {
+        "source": {"ptype": "gxp_bingsource"},
+        "name": "AerialWithLabels",
+        "fixed": True,
+        "visibility": False,
+        "group": "background"
+    }, {
+        "source": {"ptype": "gxp_mapboxsource"},
+    },
+    {
+        "source": {"url": "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+                   "ptype": "gxp_arcrestsource"},
+        "group": "background",
+        "name": "World Imagery",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "title": "ESRI World Imagery"
+    },
+    {
+        "source": {
+            "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer",
+            "ptype": "gxp_arcrestsource"},
+        "group": "background",
+        "name": "World Physical Map",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "title": "ESRI World Physical Map"
+    },
+    {
+        "source": {
+            "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
+            "ptype": "gxp_arcrestsource"},
+        "group": "background",
+        "name": "World Street Map",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "title": "ESRI World Street Map"
+    },
+    {
+        "source": {"url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer",
+                   "ptype": "gxp_arcrestsource"},
+        "group": "background",
+        "name": "Topographic Info",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "title": "ESRI World Topography"
+    },
+    {
+        "source": {
+            "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer",
+            "ptype": "gxp_arcrestsource"},
+        "group": "background",
+        "name": "World Shaded Relief",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "title": "ESRI World Shaded Relief"
+    }, {
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+            "ptype": "gxp_arcrestsource"},
+        "group": "background",
+        "format": "jpeg",
+        "name": "World Imagery",
+        "visibility": False,
+        "fixed": True,
+        "title": "ESRI World Imagery"
+    },
+    {
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer",
+            "ptype": "gxp_arcrestsource"},
+        "group": "background",
+        "name": "Ocean_Basemap",
+        "visibility": False,
+        "fixed": True,
+        "title": "ESRI World Ocean Basemap"
+    },
+    {
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer",
+            "ptype": "gxp_arcrestsource"},
+        "group": "background",
+        "name": "Light Gray Canvas Base",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "title": "ESRI Light Gray Reference"
+    },
+    {
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer",
+            "ptype": "gxp_arcrestsource"},
+        "group": "background",
+        "name": "NatGeo_World_Map",
+        "format": "jpeg",
+        "visibility": False,
+        "fixed": True,
+        "title": "National Geographic World Map"
+    },
+    {
+        "source": {"ptype": "gx_googlesource"},
+        "group": "background",
+        "name": "SATELLITE",
+        "visibility": False,
+        "fixed": True,
+    }, {
+        "source": {"ptype": "gx_googlesource"},
+        "group": "background",
+        "name": "TERRAIN",
+        "visibility": False,
+        "fixed": True,
+    }, {
+        "source": {"ptype": "gx_googlesource"},
+        "group": "background",
+        "name": "HYBRID",
+        "visibility": False,
+        "fixed": True,
+    }, {
+        "source": {"ptype": "gx_googlesource"},
+        "group": "background",
+        "name": "ROADMAP",
+        "visibility": False,
+        "fixed": True,
+        "group": "background"
+    },
+    {
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer",
+            "ptype": "gxp_arcrestsource"},
+        "group": "background",
+        "name": "NatGeo1_World_Map",
+        "visibility": False,
+        "fixed": True,
+        "title": "National Geographic World Map"
+    },
+]
 
 
 #GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
@@ -431,7 +554,7 @@ USE_GAZETTEER = False
 #    'wmdata' : "south.db.postgresql_psycopg2",
 #
 #    }
-SOUTH_TESTS_MIGRATE = False
+#SOUTH_TESTS_MIGRATE = False
 
 ##### END GAZETTEER SETTINGS #####
 
