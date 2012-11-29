@@ -1,4 +1,4 @@
-from __future__ import with_statement 
+from __future__ import with_statement
 from paver import svn
 from paver.easy import *
 from paver.easy import options
@@ -10,16 +10,20 @@ import time
 from datetime import date
 import socket
 import ConfigParser
+import paver.doctools
+import paver.misctasks
 import pkg_resources
 import subprocess
 import shutil
-from shutil import copy
+from shutil import move, copy
 import zipfile
 import tarfile
 import urllib
+from urllib import urlretrieve
+import glob
 
-assert sys.version_info >= (2,6), \
-       SystemError("GeoNode Build requires python 2.6 or better")
+assert sys.version_info >= (2,6),\
+SystemError("GeoNode Build requires python 2.6 or better")
 
 
 options(
@@ -35,7 +39,7 @@ options(
     ),
     virtualenv=Bunch(
         packages_to_install=[
-            'http://bitbucket.org/ianb/pip/get/2cb1db7b2baf.gz#egg=pip',
+            'pip',
             'jstools',
             'virtualenv'
         ],
@@ -45,12 +49,9 @@ options(
         paver_command_line='post_bootstrap'
     ),
     deploy=Bunch(
-#        pavement=path('shared/package/pavement.py'),
         req_file=path('shared/package/requirements.txt'),
         packages_to_install=['pip'],
         dest_dir='./',
-#        install_paver=True,
-#        paver_command_line='post_bootstrap'      
     ),
     host=Bunch(
     	bind='localhost'
@@ -116,7 +117,7 @@ def install_bundle(options):
     """
     Installs a bundle of dependencies located at %s.
     """ % bundle
-    
+
     info('install the bundle')
     pip_install(bundle)
 
@@ -126,7 +127,7 @@ def download_bundle(options):
     """
     Downloads zipped bundle of python dependencies to %s. Does not overwrite.
     """ % bundle
-    
+
     bpath = bundle.abspath()
     if not bundle.exists():
         with pushd('shared'):
@@ -140,7 +141,7 @@ def install_25_deps(options):
     """Fetch python 2_5-specific dependencies (not maintained)"""
     pass
 
-    
+
 @task
 @needs(['install_deps'])
 def post_bootstrap(options):
@@ -152,7 +153,6 @@ def post_bootstrap(options):
 #TODO Move svn urls out to a config file
 
 def grab(src, dest):
-    from urllib import urlretrieve
     urlretrieve(str(src), str(dest))
 
 @task
@@ -198,7 +198,7 @@ def setup_geonetwork(options):
         deployed_url.rmtree()
 
     if not dst_war.exists():
-    	info("getting geoserver.war")
+    	info("getting geonetwork.war")
         grab(src_url, dst_url)
         zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
@@ -219,17 +219,18 @@ def setup_geonetwork(options):
 def setup_webapps(options):
     pass
 
+
 @task
 @needs([
     'install_deps',
     'setup_webapps',
-    'generate_geoserver_token',
     'sync_django_db',
     'package_client'
 ])
 def build(options):
     """Get dependencies and generally prepare a GeoNode development environment."""
     info("""GeoNode development environment successfully set up.\nIf you have not set up an administrative account, please do so now.\nUse "paver host" to start up the server.""")
+
 
 @task
 @needs([
@@ -248,7 +249,7 @@ def setup_geonode_client(options):
     """
     Fetch geonode-client
     """
-    static = path("./src/GeoNodePy/geonode/media/static")
+    static = path("./src/GeoNodePy/geonode/static/geonode")
     if not static.exists():
         static.mkdir()
 
@@ -256,9 +257,10 @@ def setup_geonode_client(options):
 
     with pushd("src/geonode-client/"):
         sh("mvn clean compile")
-    
+
     src_zip = "src/geonode-client/build/geonode-client.zip"
     zip_extractall(zipfile.ZipFile(src_zip), static)
+
 
 @task
 def sync_django_db(options):
@@ -271,19 +273,6 @@ unescape the 'DATABASES' AND 'DATABASE_ROUTERS' settings in your settings file \
 and modify the default values if necessary")
     sh("django-admin.py migrate --settings=geonode.settings --noinput")
 
-@task
-def generate_geoserver_token(options):
-    gs_token_file = 'geoserver_token'
-    if not os.path.exists(gs_token_file):
-        from random import choice
-        import string
-        chars = string.letters + string.digits + "-_!@#$*"
-        token = ''
-        for i in range(32):
-            token += choice(chars)
-        tf = open('geoserver_token', 'w')
-        tf.write(token)
-        tf.close()
 
 @task
 def package_dir(options):
@@ -302,7 +291,7 @@ def package_dir(options):
 def package_client(options):
     """Package compressed client resources (JavaScript, CSS, images)."""
 
-    if(hasattr(options, 'use_war')): 
+    if(hasattr(options, 'use_war')):
     	geonode_client_target_war.copy(options.deploy.out_dir)
     else:
         # Extract static files to static_location
@@ -331,10 +320,13 @@ def package_geonetwork(options):
 @task
 @needs('package_dir')
 def package_webapp(options):
+
+    sh("django-admin.py collectstatic -v0 --settings=geonode.settings --noinput")
+
     """Package (Python, Django) web application and dependencies."""
     with pushd('src/GeoNodePy'):
         sh('python setup.py egg_info sdist')
-        
+
     req_file = options.deploy.req_file
     req_file.write_text(deploy_req_txt)
     pip_bundle("-r %s %s/geonode-webapp.pybundle" % (req_file, options.deploy.out_dir))
@@ -355,7 +347,7 @@ def package_all(options):
 def create_version_name():
     # we'll use the geonodepy version as our "official" version number
     # for now
-    slug = "GeoNode-%s-%s" % (
+    slug = "GeoNode-%s" % (
         pkg_resources.get_distribution('GeoNodePy').version,
         date.today().isoformat()
     )
@@ -365,7 +357,6 @@ def create_version_name():
 @task
 def make_devkit(options):
     import virtualenv
-    from urllib import urlretrieve
 
     (path("package") / "devkit" / "share").makedirs()
     pip_bundle("package/devkit/share/geonode-core.pybundle -r shared/devkit.requirements")
@@ -420,7 +411,7 @@ def setup_jetty(source, dest):
     geoserver_target.copy("package/devkit/share")
     geonetwork_target.copy("package/devkit/share")
     geonode_client_target().copy("package/devkit/share")
-        
+
 @task
 @cmdopts([
     ('name=', 'n', 'Release number or name'),
@@ -456,13 +447,13 @@ def make_release(options):
 
         out_pkg.rmtree()
         info("%s.tar.gz created" % out_pkg.abspath())
-                            
+
 
 def unzip_file(src, dest):
     zip = zipfile.ZipFile(src)
     if not path(dest).exists():
         path(dest).makedirs()
-        
+
     for name in zip.namelist():
         if name.endswith("/"):
             (path(dest) / name).makedirs()
@@ -492,7 +483,7 @@ def pip(*args):
     full_path_pip = options.config.bin / 'pip'
 
     sh("%(env)s %(cmd)s %(args)s" % {
-        "env": options.config.pip_flags, 
+        "env": options.config.pip_flags,
         "cmd": full_path_pip,
         "args": " ".join(args)
     })
@@ -511,7 +502,7 @@ def package_bootstrap(options):
         options.virtualenv = options.deploy
         call_task("paver.virtual.bootstrap")
     except ImportError, e:
-        info("VirtualEnv must be installed to enable 'paver bootstrap'. If you " + 
+        info("VirtualEnv must be installed to enable 'paver bootstrap'. If you " +
              "need this command, run: pip install virtualenv")
 
 
@@ -526,6 +517,100 @@ def install_sphinx_conditionally(options):
         # have to reload doctools so it will realize sphinx is now
         # available
         sys.modules['paver.doctools'] = reload(sys.modules['paver.doctools'])
+
+@task
+@needs('package_client')
+@cmdopts([
+    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
+])
+def start_django(options):
+    djangolog = open("django.log", "w")
+    django = subprocess.Popen([
+        "paster",
+        "serve",
+        "--reload",
+        "shared/dev-paste.ini"
+    ],
+        stdout=djangolog,
+        stderr=djangolog
+    )
+
+    def django_is_up():
+        try:
+            urllib.urlopen("http://" + options.host.bind + ":8000")
+            return True
+        except Exception, e:
+            return False
+
+    socket.setdefaulttimeout(1)
+
+    info("Django is starting up, please wait...")
+    while not django_is_up():
+        time.sleep(2)
+
+    try:
+        info("Django/Worldmap is running at http://" + options.host.bind + ":8000/")
+        info("Press CTRL-C to shut down")
+        django.wait()
+        info("Django process terminated, see log for details.")
+    finally:
+        info("Shutting down...")
+        try:
+            django.terminate()
+        except:
+            pass
+
+        django.wait()
+        sys.exit()
+
+@task
+@needs('package_client')
+@cmdopts([
+    ('bind=', 'b', 'IP address to bind to. Default is localhost.')
+])
+def start_geoserver(options):
+    jettylog = open("jetty.log", "w")
+    with pushd("src/geoserver-geonode-ext"):
+        os.environ["MAVEN_OPTS"] = " ".join([
+            "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
+            "-Djetty.host=" + options.host.bind,
+            "-Xmx512M",
+            "-XX:MaxPermSize=128m"
+        ])
+        mvn = subprocess.Popen(
+            ["mvn", "jetty:run"],
+            stdout=jettylog,
+            stderr=jettylog
+        )
+
+
+    def jetty_is_up():
+        try:
+            urllib.urlopen("http://" + options.host.bind + ":8001/geoserver/web/")
+            return True
+        except Exception, e:
+            return False
+
+    socket.setdefaulttimeout(1)
+
+    info("Logging servlet output to jetty.log...")
+    info("Jetty is starting up, please wait...")
+    while not jetty_is_up():
+        time.sleep(2)
+
+    try:
+        info("Development GeoServer/GeoNetwork is running")
+        info("Press CTRL-C to shut down")
+        mvn.wait()
+        info("GeoServer process terminated, see log for details.")
+    finally:
+        info("Shutting down...")
+        try:
+            mvn.terminate()
+        except:
+            pass
+        mvn.wait()
+        sys.exit()
 
 
 @task
@@ -549,11 +634,11 @@ def host(options):
             stderr=jettylog
         )
     django = subprocess.Popen([
-            "paster", 
+            "paster",
             "serve",
             "--reload",
 	        "shared/dev-paste.ini"
-        ],  
+        ],
         stdout=djangolog,
         stderr=djangolog
     )
@@ -564,7 +649,7 @@ def host(options):
             return True
         except Exception, e:
             return False
-    
+
     def django_is_up():
         try:
             urllib.urlopen("http://" + options.host.bind + ":8000")
@@ -585,7 +670,7 @@ def host(options):
 
     try:
         sh("django-admin.py updatelayers --settings=geonode.settings")
-        
+
         info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
         info("The GeoNode is an unstoppable machine")
         info("Press CTRL-C to shut down")
@@ -595,7 +680,7 @@ def host(options):
         info("Shutting down...")
         try:
             django.terminate()
-        except: 
+        except:
             pass
         try:
             mvn.terminate()
@@ -607,6 +692,8 @@ def host(options):
         sys.exit()
 
 
+
+
 @task
 def test(options):
     sh("django-admin.py test --settings=geonode.settings")
@@ -615,7 +702,7 @@ def test(options):
 def platform_options(options):
     "Platform specific options"
     options.config.platform = sys.platform
-    
+
     # defaults:
     pip_flags = ""
     scripts = "bin"
@@ -626,7 +713,7 @@ def platform_options(options):
         scripts = "Scripts"
     elif sys.platform == "darwin":
         pip_flags = "ARCHFLAGS='-arch i386'"
-        
+
     options.config.bin = path(scripts)
     options.config.corelibs = corelibs
     options.config.devlibs = devlibs
@@ -664,7 +751,7 @@ def _zip_extract(zf, member, path=None, pwd=None):
 
     if path is None:
         path = os.getcwd()
-    
+
     return _zip_extract_member(zf, member, path, pwd)
 
 

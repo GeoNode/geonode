@@ -66,7 +66,9 @@ The native libraries needed include:
 
 * PIL http://www.pythonware.com/products/pil/
 
-* simplejson http://code.google.com/p/simplejson/
+* libxml2-dev
+
+* libxslt-dev
 
 For GCC, packages are available for Mac OSX and all Linux distributions;
 consult your operating system provider for installation instructions.  When
@@ -74,10 +76,12 @@ build PIL from source, ensure that you have development libraries available for
 libpng, libjpeg, and libgif if you want to be able to use those formats in your
 WorldMap site.
 
+
 Install
 =======
 
 The following steps should prepare a Python virtual environment for you::
+
 
   git clone git://github.com/cga-harvard/cga-worldmap.git cga-worldmap
   cd cga-worldmap
@@ -86,6 +90,9 @@ The following steps should prepare a Python virtual environment for you::
   source bin/activate
   paver build
   django-admin.py createsuperuser --settings=geonode.settings
+
+
+Start the server:
   paver host
 
 
@@ -193,7 +200,6 @@ instance at that port with the following commands::
     shell script to add some extra parameters to the JVM command-line used to
     run Jetty in order to workaround a JVM bug that affects GeoNetwork.
 
-
 If you want to change this service URL, edit :file:`src/geonode/settings.py` and
 change the line::
   
@@ -201,14 +207,11 @@ change the line::
 
 to indicate the GeoServer URL that you want to use. 
 
-
-
 To run the Django app when Jetty is started independently, use::
 
     paster serve --reload shared/dev-paste.ini
 
 in the base of your working directory.
-
 
 
 Alternative GeoServer Data Directories
@@ -277,7 +280,6 @@ DB_DATASTORE_PASSWORD = '<Database user password>'
 DB_DATASTORE_HOST = '<Database hostname (typically localhost)'
 DB_DATASTORE_PORT = '<Database port (typically 5432)>'
 DB_DATASTORE_TYPE='postgis'
-
 
 
 TILE CACHING
@@ -370,4 +372,3 @@ along with WorldMap.  If not, see <http://www.gnu.org/licenses/>.
 
 WorldMap is Copyright 2011 President and Fellows of Harvard College
 
-GeoNode is Copyright 2010 OpenPlans.

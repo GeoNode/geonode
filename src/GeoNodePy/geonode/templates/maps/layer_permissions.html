@@ -22,6 +22,6 @@
     {% endfor %}
   </tbody>
 </table>
-<a href="{% url edit_layer_permissions_by_email layer.typename %}">Edit Permissions</a>
+<a href="{% url data_ajax_perm_email layer.typename %}">Edit Permissions</a>
 
 {% endblock %}

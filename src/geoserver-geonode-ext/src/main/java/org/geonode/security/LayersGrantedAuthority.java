@@ -13,7 +13,7 @@ import org.springframework.security.GrantedAuthority;
 
 /**
  * An authority marking the user credentials read/only and read/write access to layers
- *
+ * 
  * @author Andrea Aime - OpenGeo
  */
 public class LayersGrantedAuthority implements GrantedAuthority {
@@ -44,7 +44,7 @@ public class LayersGrantedAuthority implements GrantedAuthority {
 
     /**
      * This is not a role, so we return {@code null}, by API spec.
-     *
+     * 
      * @return {@code null}
      * @see org.springframework.security.GrantedAuthority#getAuthority()
      */

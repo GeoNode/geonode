@@ -16,7 +16,7 @@ APACHE_SITES=$TARGET_ROOT/etc/apache2/sites-available
 # Place where the GeoNode virtualenv would be installed
 GEONODE_LIB=$TARGET_ROOT/var/lib/geonode
 # Path to preferred location of binaries (might be /usr/sbin for CentOS)
-GEONODE_BIN=$TARGET_ROOT/usr/bin/
+GEONODE_BIN=$TARGET_ROOT/usr/sbin/
 # Path to place miscelaneous patches and scripts used during the install
 GEONODE_SHARE=$TARGET_ROOT/usr/share/geonode
 # Path to GeoNode configuration and customization
@@ -40,6 +40,16 @@ fi
 if [ -d "/usr/share/postgresql/8.4/contrib/postgis-1.5" ]
 then
     POSTGIS_SQL_PATH=/usr/share/postgresql/8.4/contrib/postgis-1.5
+    POSTGIS_SQL=postgis.sql
+    GEOGRAPHY=1
+else
+    GEOGRAPHY=0
+fi
+
+# For Ubuntu 12.04 (with PostGIS 1.5)
+if [ -d "/usr/share/postgresql/9.1/contrib/postgis-1.5" ]
+then
+    POSTGIS_SQL_PATH=/usr/share/postgresql/9.1/contrib/postgis-1.5
     POSTGIS_SQL=postgis.sql
     GEOGRAPHY=1
 else

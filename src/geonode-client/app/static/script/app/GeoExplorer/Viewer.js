@@ -27,14 +27,6 @@ GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
      */
 
     loadConfig: function(config) {
-/*
-        config.tools = (config.tools || []).concat({
-            ptype: "gxp_styler",
-            id: "styler",
-            rasterStyling: true,
-            actionTarget: undefined
-        });
-*/
         var source;
         for (var s in config.sources) {
             source = config.sources[s];
@@ -75,11 +67,6 @@ GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
      * Create the various parts that compose the layout.
      */
     initPortal: function() {
-
-        // TODO: make a proper component out of this
-        if (this.useMapOverlay !== false) {
-            this.mapPanel.add(this.createMapOverlay());
-        }
 
         if(this.useToolbar !== false) {
             this.toolbar = new Ext.Toolbar({

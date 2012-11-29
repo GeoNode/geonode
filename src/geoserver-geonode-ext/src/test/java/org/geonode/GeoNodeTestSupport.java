@@ -50,7 +50,7 @@ public abstract class GeoNodeTestSupport extends GeoServerTestSupport {
                 "classpath*:/geonodeApplicationSecurityContext.xml"
             };
     }
-
+    
     protected boolean isAuthorizationEnabled() {
         return false;
     }

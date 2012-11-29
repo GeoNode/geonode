@@ -10,18 +10,18 @@
 {{ block.super }}
 <script type="text/javascript">
     Ext.onReady(function() {
-{% autoescape off %}
-var mapCrumb = "";
-if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
-	{
-		mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
-	}
+        {% autoescape off %}
+        var mapCrumb = "";
+        if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
+        {
+            mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
+        }
 
-		var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}}</a><span>&nbsp;/&nbsp;Remove</span>");
-		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+        var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}}</a><span>&nbsp;/&nbsp;Remove</span>");
+        Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
 
-{% endautoescape %}
-	});
+        {% endautoescape %}
+    });
 </script>
 {% endblock %}
 
@@ -29,10 +29,10 @@ if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
 {% block main %}
 
 <h3>{% trans "Are you sure you want to remove"  %} <strong>{{layer.typename}}</strong>?</h3>
-<form action="{% url layer_remove layer.typename %}" method="POST">
-	{% csrf_token %}
-	<input type="hidden" value="{{layer.typename}}" />
-	<input type="submit" value="{% trans "Yes I am sure"  %}" />
+<form action="{% url data_remove layer.typename %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" value="{{layer.typename}}" />
+    <input type="submit" value="{% trans "Yes I am sure"  %}" />
 </form>
 <form action="/data/{{layer.typename}}" method="GET">
     <button type="submit" onclick="javascript: history.go(-1);return false;">{% trans "No, don't remove it" %}</button>
@@ -43,10 +43,10 @@ if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
 {% block sidebar %}
 <h3>{% trans "This action affects the following maps:"  %}</h3>
 <ul>
-	{% for map in layer.maps %}
-	<li>{{map.title}}</li>
+    {% for map in layer.maps %}
+    <li>{{map.title}}</li>
     {% empty %}
     <li> {% trans "No maps are using this layer." %} </li>
-	{% endfor %}
-<ul>
-{% endblock %}
+    {% endfor %}
+    <ul>
+        {% endblock %}

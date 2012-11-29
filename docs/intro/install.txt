@@ -54,5 +54,10 @@ Windows, OSX and others
 
 The recommended install method in these platforms is to use a virtualization solution, like `Virtual Box`_, install the latest `Ubuntu Linux`_ and then proceed with the steps mentioned above.
 
+Some GeoNode developers prefer to use `Vagrant`_ - a VirtualBox wrapper, the Vagrant quickstart guide shows how to get a Linux VM configured in most operating systems.
+
+http://vagrantup.com/docs/getting-started/index.html
+
 .. _Virtual Box: http://virtualbox.org
+.. _Vagrant: http://vagrantup.com
 .. _Ubuntu Linux: http://www.ubuntu.com/download

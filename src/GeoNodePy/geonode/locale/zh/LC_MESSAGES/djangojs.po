@@ -1,0 +1,508 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-15 12:30-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1\n"
+
+#: static/geonode/script/GeoExplorer.js:68 static/geonode/script/GeoNode.js:33
+msgid "Add user..."
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:36
+msgid "Who can view and download this data?"
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:36
+msgid "Anyone"
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:36 static/geonode/script/GeoNode.js.c:38
+msgid "Any registered user"
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:36
+msgid "Only users who can edit"
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:37
+msgid "Who can edit this data?"
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:38
+msgid "Only the following users or groups:"
+msgstr ""
+
+#: static/geonode/script/GeoNode.js:39
+msgid "Who can manage and edit this data?"
+msgstr ""
+
+#: templates/lang.js:9 templates/lang.js.c:12
+msgid "Add Layers"
+msgstr "添加层"
+
+#: templates/lang.js:10
+msgid "Area"
+msgstr "区域"
+
+#: templates/lang.js:11
+msgid "Background"
+msgstr "背景"
+
+#: templates/lang.js:13
+msgid "Done"
+msgstr "完成"
+
+#: templates/lang.js:14
+msgid "Available Layers"
+msgstr "可用层"
+
+#: templates/lang.js:15
+msgid "Connection Error"
+msgstr "连接错误"
+
+#: templates/lang.js:16
+msgid "The server returned an error"
+msgstr "服务器返回一个错误"
+
+#: templates/lang.js:17
+msgid "Details..."
+msgstr "详情..."
+
+#: templates/lang.js:19 templates/lang.js.c:111
+msgid "Height"
+msgstr "高度"
+
+#: templates/lang.js:20
+msgid "Get Feature Info"
+msgstr "获取图形信息"
+
+#: templates/lang.js:21 templates/lang.js.c:112
+msgid "Large"
+msgstr "大量"
+
+#: templates/lang.js:22
+msgid "or add a new server."
+msgstr "或添加新的服务器。"
+
+#: templates/lang.js:23
+msgid "Map Layers"
+msgstr "地图图层"
+
+#: templates/lang.js:24
+msgid "View available data from:"
+msgstr "查看可用的数据："
+
+#: templates/lang.js:25
+msgid "Data"
+msgstr "数据"
+
+#: templates/lang.js:26
+msgid "Layers"
+msgstr "图层"
+
+#: templates/lang.js:27
+msgid "Legend"
+msgstr "图例"
+
+#: templates/lang.js:28
+msgid "Length"
+msgstr "长度"
+
+#: templates/lang.js:29
+msgid "Loading Map..."
+msgstr "载入地图..."
+
+#: templates/lang.js:30 templates/lang.js.c:113
+msgid "Map Size"
+msgstr "地图大小"
+
+#: templates/lang.js:31
+msgid "Measure"
+msgstr "测量"
+
+#: templates/lang.js:32
+msgid "About this Map"
+msgstr "关于此地图"
+
+#: templates/lang.js:33 templates/lang.js.c:86 templates/lang.js.c:155
+msgid "Abstract"
+msgstr "摘要"
+
+#: templates/lang.js:34 templates/lang.js.c:87 templates/lang.js.c:153
+msgid "Contact"
+msgstr "联系"
+
+#: templates/lang.js:35 templates/lang.js.c:45
+msgid "Permalink"
+msgstr "固定"
+
+#: templates/lang.js:36 templates/lang.js.c:226
+msgid "Cancel"
+msgstr "取消"
+
+#: templates/lang.js:37
+msgid "Save as Copy"
+msgstr "另存为"
+
+#: templates/lang.js:38
+msgid "Save"
+msgstr "保存"
+
+#: templates/lang.js:39 templates/lang.js.c:90 templates/lang.js.c:99
+#: templates/lang.js:152 templates/lang.js.c:174 templates/lang.js.c:209
+msgid "Title"
+msgstr "标题"
+
+#: templates/lang.js:40 templates/lang.js.c:114
+msgid "Mini"
+msgstr "迷你"
+
+#: templates/lang.js:41
+msgid "Pan Map"
+msgstr "平移地图"
+
+#: templates/lang.js:42
+msgid "Zoom to Next Extent"
+msgstr "缩放到下一个区域"
+
+#: templates/lang.js:43
+msgid "Zoom to Previous Extent"
+msgstr "缩放到下一个区域"
+
+#: templates/lang.js:44
+msgid "This map has not yet been saved."
+msgstr "地图还没保存"
+
+#: templates/lang.js:46 templates/lang.js.c:115
+msgid "Premium"
+msgstr "高级"
+
+#: templates/lang.js:47
+msgid "Print Map"
+msgstr "打印地图"
+
+#: templates/lang.js:48
+msgid "Print Preview"
+msgstr "打印预览"
+
+#: templates/lang.js:49
+msgid "Properties"
+msgstr "属性"
+
+#: templates/lang.js:50 templates/lang.js.c:116
+msgid "Publish Map"
+msgstr "发布地图"
+
+#: templates/lang.js:51 templates/lang.js.c:52
+msgid "Remove Layer"
+msgstr "删除图层"
+
+#: templates/lang.js:53
+msgid "Sorry, your map could not be saved."
+msgstr "对不起，您的地图不能保存"
+
+#: templates/lang.js:54
+msgid "Error While Saving"
+msgstr "保存错误"
+
+#: templates/lang.js:55
+msgid "Save Map"
+msgstr "保存地图"
+
+#: templates/lang.js:56
+msgid "You must be logged in to save this map."
+msgstr "您必须登录才能保存地图。"
+
+#: templates/lang.js:57 templates/lang.js.c:118
+msgid "Small"
+msgstr "小"
+
+#: templates/lang.js:58
+msgid ""
+"Error contacting server.\n"
+" Please check the url and try again."
+msgstr ""
+"连接服务时出错。\n"
+"请检查网址再重试。"
+
+#: templates/lang.js:59
+msgid "Layer Properties"
+msgstr "图层属性"
+
+#: templates/lang.js:60
+msgid "Change layer format and style"
+msgstr "更改图层格式和样式"
+
+#: templates/lang.js:61
+msgid "Edit Styles"
+msgstr "编辑样式"
+
+#: templates/lang.js:62
+msgid "Edit layer styles"
+msgstr "编辑图层样式"
+
+#: templates/lang.js:63
+msgid "Switch to Google Earth 3D Viewer"
+msgstr "切换到谷歌地球3D查看器"
+
+#: templates/lang.js:64
+msgid ""
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
+msgstr "您加载的地图不存在。请创建一个新的地图"
+
+#: templates/lang.js:65
+msgid "Unknown Map"
+msgstr "未知地图"
+
+#: templates/lang.js:66 templates/lang.js.c:119
+msgid "Width"
+msgstr "宽度"
+
+#: templates/lang.js:67
+msgid "Zoom In"
+msgstr "放大"
+
+#: templates/lang.js:68
+msgid "Zoom Out"
+msgstr "缩小"
+
+#: templates/lang.js:69
+msgid "Zoom level"
+msgstr "缩放级别"
+
+#: templates/lang.js:70
+msgid "Zoom Level"
+msgstr "缩放级别"
+
+#: templates/lang.js:71
+msgid "Zoom to Layer Extent"
+msgstr "缩放范围"
+
+#: templates/lang.js:72
+msgid "Zoom to Visible Extent"
+msgstr "缩放到可见范围"
+
+#: templates/lang.js:78
+msgid "Zoom Level {zoom}"
+msgstr "缩放级别{缩放}"
+
+#: templates/lang.js:84
+msgid "Create Map"
+msgstr "创建地图"
+
+#: templates/lang.js:85
+msgid "Export Map"
+msgstr "导出地图"
+
+#: templates/lang.js:88
+msgid "Map"
+msgstr "地图"
+
+#: templates/lang.js:89 templates/lang.js.c:156
+msgid "View this Map"
+msgstr "查看地图"
+
+#: templates/lang.js:91
+msgid "Open Map"
+msgstr "打开地图"
+
+#: templates/lang.js:97 templates/lang.js.c:173
+msgid "Name"
+msgstr "名称"
+
+#: templates/lang.js:98
+msgid "Queryable"
+msgstr "查询"
+
+#: templates/lang.js:105
+msgid "No background"
+msgstr "没有背景"
+
+#: templates/lang.js:117
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr "您可以随时发布地图到网上！只需复制下面的HTML地图代码嵌入到您的网页："
+
+#: templates/lang.js:126 templates/lang.js.c:192
+msgid "Abstract:"
+msgstr "摘要："
+
+#: templates/lang.js:127 templates/lang.js.c:194
+msgid "No attribution information is provided for this layer."
+msgstr "此图层提供无属性信息。"
+
+#: templates/lang.js:128 templates/lang.js.c:195
+msgid "Provided by:"
+msgstr "提供："
+
+#: templates/lang.js:129 templates/lang.js.c:196
+msgid "Download:"
+msgstr "下载："
+
+#: templates/lang.js:130 templates/lang.js.c:198
+msgid "No keywords are listed for this layer."
+msgstr "无关键字列出此图层。"
+
+#: templates/lang.js:131 templates/lang.js.c:199
+msgid "Keywords:"
+msgstr "关键词："
+
+#: templates/lang.js:132 templates/lang.js.c:200
+msgid "No metadata URLs are defined for this layer."
+msgstr "此图层没有指定元数据链接。"
+
+#: templates/lang.js:133 templates/lang.js.c:201
+msgid "Metadata Links:"
+msgstr "元数据链接："
+
+#: templates/lang.js:139
+msgid "Paper size:"
+msgstr "纸张尺寸："
+
+#: templates/lang.js:140
+msgid "Resolution:"
+msgstr "分辨率："
+
+#: templates/lang.js:141
+msgid "Print"
+msgstr "打印"
+
+#: templates/lang.js:142
+msgid "Enter map title here."
+msgstr "在此处输入地图标题。"
+
+#: templates/lang.js:143
+msgid "Include legend?"
+msgstr "包含图例吗？"
+
+#: templates/lang.js:144
+msgid "Enter comments here."
+msgstr "在这里输入评论。"
+
+#: templates/lang.js:145
+msgid "Creating PDF..."
+msgstr "生成PDF..."
+
+#: templates/lang.js:154
+msgid "Last Modified"
+msgstr "最后修改"
+
+#: templates/lang.js:157 templates/lang.js.c:178
+msgid "Prev"
+msgstr "上一页"
+
+#: templates/lang.js:158 templates/lang.js.c:179
+msgid "Next"
+msgstr "下一页"
+
+#: templates/lang.js:159 templates/lang.js.c:180
+msgid "of"
+msgstr "对于"
+
+#: templates/lang.js:160 templates/lang.js.c:181
+msgid "Your search did not match any items."
+msgstr "没有搜索到您要的结果。"
+
+#: templates/lang.js:161
+msgid "Search Maps"
+msgstr "查询地图"
+
+#: templates/lang.js:162 templates/lang.js.c:182
+msgid "Search"
+msgstr "查询"
+
+#: templates/lang.js:163 templates/lang.js.c:183
+msgid "Showing"
+msgstr "显示"
+
+#: templates/lang.js:164
+msgid "Loading"
+msgstr "加载"
+
+#: templates/lang.js:165 templates/lang.js.c:185
+msgid "permalink"
+msgstr "永久"
+
+#: templates/lang.js:172
+msgid "Select"
+msgstr "选择"
+
+#: templates/lang.js:175
+msgid "Select:"
+msgstr "选择："
+
+#: templates/lang.js:176
+msgid "All"
+msgstr "全部"
+
+#: templates/lang.js:177
+msgid "None"
+msgstr "没有"
+
+#: templates/lang.js:184
+msgid "Loading..."
+msgstr "载入中..."
+
+#: templates/lang.js:186
+msgid "You do not have permission to view this data"
+msgstr "您没有权限查看此数据"
+
+#: templates/lang.js:187
+msgid "This data is stored on a remote server"
+msgstr "此数据存储在远程服务器上"
+
+#: templates/lang.js:193
+msgid "No abstract is provided for this layer."
+msgstr "此图层没有抽象摘要。"
+
+#: templates/lang.js:197
+msgid "No download URLs are definied for this layer."
+msgstr "此图层没有下载的网址。"
+
+#: templates/lang.js:207
+msgid "Selected Layers"
+msgstr "选定图层"
+
+#: templates/lang.js:208
+msgid "No Layers Selected"
+msgstr "没有选择任何图层"
+
+#: templates/lang.js:210
+msgid "Clear Selected"
+msgstr "清除选定"
+
+#: templates/lang.js:211
+msgid "Clear All"
+msgstr "全部清除"
+
+#: templates/lang.js:217
+msgid "Operation Failed"
+msgstr "操作失败"
+
+#: templates/lang.js:218
+msgid "No layers are currently selected."
+msgstr "当前没有选择任何图层。"
+
+#: templates/lang.js:225
+msgid "Downloading..."
+msgstr "下载..."
+
+#: templates/lang.js:227
+msgid "Please wait"
+msgstr "请稍候"

@@ -18,7 +18,6 @@
     google.load("earth", "1");
 </script>
 
-
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
 <style type="text/css">
     #templates { display: none; }
@@ -30,6 +29,18 @@
 {{ block.super }}
 
 <script type="text/javascript">
+    var originalConfigureLayerNode =  GeoExt.WMSLegend.prototype.getLegendUrl;
+    GeoExt.WMSLegend.prototype.getLegendUrl = function(layerName,layerNames) {
+        var rec = this.layerRecord;
+        var layer = rec.getLayer();
+        if (OpenLayers.Layer.WMS && layer instanceof OpenLayers.Layer.WMS && layer.getVisibility() === false) {
+            return "";
+        } else {
+            return originalConfigureLayerNode.apply(this, arguments);
+        }
+    };
+
+
 var app;
 var init = function() {
 {% autoescape off %}
@@ -37,6 +48,10 @@ var init = function() {
     var identifyText = gettext('Identify');
     var coordinateText = gettext('Map Coordinates - longitude, latitude');
     var gazetteerText = gettext('Placename gazetteer');
+
+
+
+
 
     var config = Ext.apply({
         tools:  [{
@@ -69,7 +84,6 @@ var init = function() {
                 paging: false,
                 autoSetLayer: true,
                 autoLoadFeatures: true,
-                autoActivate: false,
                 listeners: {
                     'layerchange': function(mgr, layer, schema) {
                         app.checkLayerPermissions(layer);
@@ -90,17 +104,17 @@ var init = function() {
                 actionTarget:  {target: "paneltbar", index: 4},
                 toggleGroup: 'featureGroup'
             }{% endif %}
-        ],
-        proxy: "/proxy/?url=",
+            ],
+            proxy: "/proxy/?url=",
 
         /* The URL to a REST map configuration service.  This service
          * provides listing and, with an authenticated user, saving of
          * maps on the server for sharing and editing.
          */
         rest: "/maps/",
-        homeUrl: "{% url geonode.views.index %}",
-        siteUrl: "{{ SITE_URL }}",
+        homeUrl: "{% url home %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
+        localCSWBaseUrl: "{{ GEONETWORK_BASE_URL }}srv/en/csw",
         csrfToken: "{{ csrf_token }}",
         {% if user.is_authenticated %}
         db_datastore: {{ DB_DATASTORE|lower }},
@@ -114,12 +128,12 @@ var init = function() {
 
     var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
     var permalink = function(id) {
-            return permalinkTemplate.apply({
-                protocol: window.location.protocol,
-                host: window.location.host,
-                id: id
-            })
-        };
+        return permalinkTemplate.apply({
+            protocol: window.location.protocol,
+            host: window.location.host,
+            id: id
+        })
+    };
 
 
     var titleTemplate = new Ext.Template("<span>{title}</span>");
@@ -133,10 +147,10 @@ var init = function() {
 
 
     }, this);
-{% endautoescape %}
-}
+    {% endautoescape %}
+    }
 
-window.onload = init;
+    window.onload = init;
 
 </script>
 
@@ -144,7 +158,7 @@ window.onload = init;
 
 {% block body %}
 <div id="header-wrapper">
-  {{ block.super }}
+    {{ block.super }}
 
     <div id="dataTabs" class="x-hidden">
 
@@ -186,14 +200,17 @@ window.onload = init;
 </div>
 </div>
         <div id="externalDiv"></div>
-        <div id="uploadDiv"></div>
-        {% if user.is_authenticated and DB_DATASTORE  %}
-        <div id="createDiv"></div>
+        {% if user.is_authenticated %}
+            <div id="uploadDiv"></div>
+            {% if DB_DATASTORE  %}
+                <div id="createDiv"></div>
+            {% endif %}
         {% endif %}
         <div id="warpDiv">
             <div id="tabContainer" style="padding:20px;">
 
                 <div style="position:relative;float:left;">
+
 
                     <h3>{%trans "Rectify Images"  %}</h3>    
                     

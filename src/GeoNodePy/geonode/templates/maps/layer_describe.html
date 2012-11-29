@@ -28,12 +28,12 @@
 {{block.super}}
 <script type="text/javascript">
     Ext.onReady(function() {
-{% autoescape off %}
+        {% autoescape off %}
         // get #poc_form and #metadata_form, and add a `onchange` handler
         // that shows the form if the blank option is selected.
-    	/*if (Ext.get('id_layer-topic_category').getValue()!="") {
-    		Ext.get("id_layer-topic_category_new").up("li").hide();
-    	}*/
+        /*if (Ext.get('id_layer-topic_category').getValue()!="") {
+         Ext.get("id_layer-topic_category_new").up("li").hide();
+         }*/
 
         var types = {{ datatypes }};
 
@@ -78,45 +78,44 @@
 		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
         showGazetteerOptions(Ext.get("gazetteer_include").dom);
 
-{% endautoescape %}
-	});
+        {% endautoescape %}
+    });
 </script>
 {% endblock %}
 {% block main %}
 <div class="twocol">
-  <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>
-  <form action="{% url layer_metadata layer.typename %}" method="POST">
-	  {% csrf_token %}
-      <ul class="form">
-	      {{ layer_form.as_ul }}
+    <h2> {% trans "Editing details for " %} {{ layer.typename }} </h2>
+    <form action="{% url data_metadata layer.typename %}" method="POST">
+        {% csrf_token %}
+        <ul class="form">
+            {{ layer_form.as_ul }}
 
 
-      <fieldset id="category_form">
-	  <legend>* {%  trans "Category"  %}</legend>
-      {%  if category_form.errors %}<li>{{ category_form.errors.as_ul }}</li>{%  endif %}
-      <li>
+            <fieldset id="category_form">
+                <legend>* {%  trans "Category"  %}</legend>
+                {%  if category_form.errors %}<li>{{ category_form.errors.as_ul }}</li>{%  endif %}
+                <li>
 
-        {% autoescape off %}
-        {% for choice in category_form.category_choice_field.field.choices %}
-        <div style="width:50%;float:left;padding-bottom:5px;">
-            <input type="radio" name="category_choice_field" value="{{choice.0}}"
-            {% ifequal category_form.initial choice.0 %}
-                checked="checked"
-            {% endifequal %}/>
-            <label for="" style="display:inline">{{choice.1}}</label>
-        </div>
-        {% endfor %}
-      {% endautoescape %}
+                    {% autoescape off %}
+                    {% for choice in category_form.category_choice_field.field.choices %}
+                    <div style="width:50%;float:left;padding-bottom:5px;">
+                        <input type="radio" name="category_choice_field" value="{{choice.0}}"
+                        {% ifequal category_form.initial choice.0 %}
+                        checked="checked"
+                        {% endifequal %}/>
+                        <label for="" style="display:inline">{{choice.1}}</label>
+                    </div>
+                    {% endfor %}
+                    {% endautoescape %}
 
-      </li>
-      </fieldset>
+                </li>
+            </fieldset>
 
           <fieldset id="attribute_form" {% if attribute_form.hidden %}style="display:none"{% else %}style="width:800px"{% endif %}>
           <p>
-            <div {% if not show_gazetteer_options  %} style="display:none" {% endif %}><input type="checkbox" value="include" name="gazetteer_include" id="gazetteer_include"
-            {% if layer.in_gazetteer %}
-                checked="checked"
-            {% endif %} onclick="showGazetteerOptions(this);">Include in gazetteer</div>
+            <div {% if not show_gazetteer_options  %} style="display:none" {% endif %} >
+            <input type="checkbox" value="include" name="gazetteer_include" id="gazetteer_include" {% if layer.in_gazetteer %}checked="checked"{% endif %} onclick="showGazetteerOptions(this);">Include in gazetteer
+            </div>
             <div class="su_only_gaz">
                 Optional:
                     <table cellpadding="5" cellspacing="5" style="margin-left:20px;">
@@ -143,12 +142,13 @@
 	        	{% endif %}
 	        {% endfor %}
 	        </table>
-          <input type="submit" value="{% trans "Update" %}"/>
+        </fieldset>
       </ul>
+        <div align="center"><p><input type="submit" value="{% trans "Update" %}"/></p></div>
   </form>
 </div>
 <script type="text/javascript">
-{% autoescape off %}
+    {% autoescape off %}
     // Extify form fields
     Ext.select("input[type='text']").each(function(el) {
         if (el.hasClass("date")) {

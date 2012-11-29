@@ -1,21 +1,15 @@
 from setuptools import setup, find_packages
-import pkg_resources
-import sys, os
 
-name='GeoNodePy'
-version = "1.2"
-req = pkg_resources.Requirement.parse(name)
-
-setup(name=name,
-      version=version,
+setup(name='GeoNodePy',
+      version= __import__('geonode').get_version(),
       description="Application for serving and sharing geospatial data",
       long_description=open('README.rst').read(),
       classifiers=[
         "Development Status :: 1 - Planning" ], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       keywords='',
       author='GeoNode Developers',
-      author_email='dev@geonode.org',
-      url='http://geonode.org',
+      author_email='worldmap@harvard.edu',
+      url='http://worldmap.harvard.edu',
       license='GPL',
       packages = find_packages(),
       include_package_data=True,
@@ -24,7 +18,6 @@ setup(name=name,
           "OWSLib==0.4.0",
           "Django>=1.1",
           "PIL",
-          "simplejson",
           "django-extensions",
           "httplib2"
       ],

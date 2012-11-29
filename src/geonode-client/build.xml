@@ -33,13 +33,13 @@
         </java>
 
     </target>
-    
+
     <target name="dist" depends="init, patch, buildjs, redist"/>
-    
+
     <target name="redist">
 
         <mkdir dir="${build}/${ant.project.name}"/>
-        
+
         <copy todir="${build}/${ant.project.name}">
             <fileset dir="src/main/webapp/">
             </fileset>

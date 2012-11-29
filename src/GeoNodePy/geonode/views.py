@@ -1,3 +1,4 @@
+
 from django.conf import settings
 from geonode.maps.models import Map
 from django import forms
@@ -8,14 +9,14 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext as _
-import json
+from django.utils import simplejson as json
 
-def index(request): 
+def index(request):
     return render_to_response('index.html', RequestContext(request, {
         "title": _("Explore, Visualize, and Publish Geographic Information")
     }))
 
-def about(request): 
+def about(request):
     return render_to_response('about.html', RequestContext(request, {
         "title": _("About WorldMap")
     }))
@@ -37,7 +38,6 @@ class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
     username = forms.CharField()
 
-@csrf_exempt
 def ajax_login(request):
     if request.method != 'POST':
         return HttpResponse(
@@ -72,7 +72,6 @@ def ajax_login(request):
                 status=400
             )
 
-@csrf_exempt
 def ajax_lookup(request):
     if request.method != 'POST':
         return HttpResponse(
@@ -94,6 +93,7 @@ def ajax_lookup(request):
         content=json.dumps(json_dict),
         mimetype='text/plain'
     )
+
 
 def ajax_lookup_email(request):
     if request.method != 'POST':

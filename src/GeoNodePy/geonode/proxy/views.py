@@ -3,7 +3,7 @@ from httplib import HTTPConnection
 from urlparse import urlsplit
 import httplib2
 import urllib
-import simplejson
+from django.utils import simplejson as json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.html import escape
@@ -50,11 +50,12 @@ def proxy(request):
     if url.fragment != "":
         locator += '#' + url.fragment
 
-
-    logger.debug("%s: %s : %s : %s", url.hostname, url.port, locator, settings.SESSION_COOKIE_NAME)
     headers = {}
     if settings.SESSION_COOKIE_NAME in request.COOKIES:
         headers["Cookie"] = request.META["HTTP_COOKIE"]
+
+    if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
+        headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     conn = HTTPConnection(url.hostname, url.port)
     conn.request(request.method, locator, request.raw_post_data, headers)
@@ -151,7 +152,7 @@ def hglpoints (request):
 def hglServiceStarter (request, layer):
     #Check if the layer is accessible to public, if not return 403
     accessUrl = HGL_URL + "/ogpHglLayerInfo.jsp?ValidationKey=" + settings.HGL_VALIDATION_KEY +"&layers=" + layer
-    accessJSON = simplejson.loads(urllib.urlopen(accessUrl).read())
+    accessJSON = json.loads(urllib.urlopen(accessUrl).read())
     if accessJSON[layer]['access'] == 'R':
         return HttpResponse(status=403)
 
@@ -218,4 +219,3 @@ def download(request, service, layer, format):
         return response
     else:
         return HttpResponse(status=403)
-

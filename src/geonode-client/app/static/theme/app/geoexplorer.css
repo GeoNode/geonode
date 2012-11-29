@@ -107,25 +107,25 @@
     background-image: url(img/silk/page_white_acrobat.png);
 }
 
-div.report { 
+div.report {
     background-color: white;
     height: 100%;
 }
 
-div.report table, div.report td, div.report th { 
-padding: .4em;
+div.report table, div.report td, div.report th {
+    padding: .4em;
 }
 
-div.report th { 
-background-color: #CCC;
+div.report th {
+    background-color: #CCC;
 }
 
-div.report tr.odd { 
-background-color: #EEF;
+div.report tr.odd {
+    background-color: #EEF;
 }
 
-.report td.corner{ 
-background-color:white;
+.report td.corner{
+    background-color:white;
 }
 
 
@@ -150,34 +150,34 @@ background-color:white;
 }
 
 .x-btn .icon-layer-switcher {
-   background-image: url(img/silk/layers.png);
+    background-image: url(img/silk/layers.png);
 }
 
-.x-btn .icon-zoom-in { 
+.x-btn .icon-zoom-in {
     background-image: url(img/silk/magnifier_zoom_in.png);
 }
 
-.x-btn .icon-zoom-out { 
+.x-btn .icon-zoom-out {
     background-image: url(img/silk/magnifier_zoom_out.png);
 }
 
-.x-btn .icon-zoom-previous { 
+.x-btn .icon-zoom-previous {
     background-image: url(img/silk/arrow_left.png);
 }
 
-.x-btn .icon-zoom-next { 
+.x-btn .icon-zoom-next {
     background-image: url(img/silk/arrow_right.png);
 }
 
-.x-btn .icon-zoom-visible, .x-menu-item .icon-zoom-visible { 
+.x-btn .icon-zoom-visible, .x-menu-item .icon-zoom-visible {
     background-image: url(img/silk/arrow_out.png);
 }
 
-.x-btn .icon-zoom-to, .x-menu-item .icon-zoom-to { 
+.x-btn .icon-zoom-to, .x-menu-item .icon-zoom-to {
     background-image: url(img/silk/magnifier.png);
 }
 
-.x-btn .icon-pan { 
+.x-btn .icon-pan {
     background-image: url(img/geosilk/pan.png);
 }
 
@@ -187,8 +187,8 @@ background-color:white;
 
 div.map-overlay {
     z-index: 4000;
-    position: absolute; 
-    right: 10px; 
+    position: absolute;
+    right: 10px;
     bottom: 10px;
     background:transparent;
 }
@@ -250,7 +250,7 @@ div.overlay-scaleline {
     top: 16px;
 }
 
-.olControlZoomPanel { 
+.olControlZoomPanel {
     left:21px;
 }
 
@@ -300,7 +300,7 @@ div.overlay-scaleline {
 }
 
 .gx-snippet-area textarea {
-    color: black; 
+    color: black;
     opacity: 1;
 }
 
@@ -359,8 +359,8 @@ div.overlay-scaleline {
     margin: 4px;
 }
 
-#more-info{ 
-float:right;
+#more-info{
+    float:right;
 }
 
 /* gxp overrides for different folder structure */
@@ -384,10 +384,10 @@ float:right;
 /* WorldMap additions/modifications */
 
 .x-btn-text {
-                   font-size: 8pt;
-                   text-decoration: underline;
-                   color: #18469C;
-               }
+    font-size: 8pt;
+    text-decoration: underline;
+    color: #18469C;
+}
 
 .x-btn-text button {
     font-size: 8pt;

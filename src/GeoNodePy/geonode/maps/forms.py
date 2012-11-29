@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from django import forms
-import json
+from django.utils import simplejson as json
 import os
 import tempfile
-from django.utils.translation import ugettext as _
 
 SRS_CHOICES = (
     ('EPSG:4326', 'EPSG:4326 (WGS 84 Lat/Long)'),
@@ -40,7 +39,7 @@ class LayerCreateForm(forms.Form):
     title = forms.CharField(label="Title",max_length=256,required=True)
     srs = forms.CharField(label="Projection",initial="EPSG:4326",required=True)
     geom = forms.ChoiceField(label="Data type", choices=GEOMETRY_CHOICES,required=True)
-    keywords = forms.CharField(label = '*' + _('Keywords (separate with spaces)'), widget=forms.Textarea)
+    keywords = forms.CharField(label = '*' + ('Keywords (separate with spaces)'), widget=forms.Textarea)
     abstract = forms.CharField(widget=forms.Textarea, label="Abstract", required=True)
     permissions = JSONField()
 
@@ -55,7 +54,6 @@ class LayerUploadForm(forms.Form):
 
     def clean(self):
         cleaned = super(LayerUploadForm, self).clean()
-
         base_name, base_ext = os.path.splitext(cleaned["base_file"].name)
         if base_ext.lower() not in (".shp", ".tif", ".tiff", ".geotif", ".geotiff", ".zip"):
             raise forms.ValidationError("Only Shapefiles and GeoTiffs are supported. You uploaded a %s file" % base_ext)
@@ -87,7 +85,8 @@ class LayerUploadForm(forms.Form):
                 with open(path, 'w') as writable:
                     for c in f.chunks():
                         writable.write(c)
-        absolute_base_file = os.path.join(tempdir, self.cleaned_data["base_file"].name)
+        absolute_base_file = os.path.join(tempdir,
+                self.cleaned_data["base_file"].name)
         sld_file = None
         if self.cleaned_data["sld_file"]:
             sld_file = os.path.join(tempdir, self.cleaned_data["sld_file"].name)
