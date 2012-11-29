@@ -12,6 +12,12 @@
   {% include "geonode/app_header.html" %}
   {% include "geonode/geo_header.html" %}
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geonode/css/fileuploadfield.css"/>
+  <style type="text/css">
+      {% comment %}fix for firefox upload button issue{% endcomment %}
+      #base_file-file {
+          width: auto;
+      }
+  </style>
   {{ block.super }}
   <script type="text/javascript">
   Ext.onReady(function() {
