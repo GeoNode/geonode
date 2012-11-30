@@ -76,10 +76,11 @@
 {% endblock %}
 
 {% block extra_script %}
-  <script src="{% static "geonode/js/layers.js" %}"></script>
-  <script src="{% static "geonode/js/waypoints.js" %}"></script>
-  <script src="{% static "geonode/js/loadmore.js" %}"></script>
-  <script src="{% static "agon_ratings/js/jquery.raty.js" %}"></script>
+  <script src="{% static "libs/js/waypoints.js" %}"></script>
+  <script src="{% static "libs/js/loadmore.js" %}"></script>
+  <script src="{% static "libs/js/jquery.raty.js" %}"></script>
+  <script src="{% static "js/explore.js" %}"></script>
+  <script src="{% static "js/paginate.js" %}"></script>
   <script type="text/javascript">
      $(function() {
        $('.overall_rating').each(function() {

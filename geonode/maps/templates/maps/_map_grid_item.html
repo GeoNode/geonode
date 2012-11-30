@@ -4,7 +4,7 @@
 
 {% overall_rating map "map" as map_rating %}
 <article class="span4">
-  <a href="{% url "map_detail" map.id %}"><img src="{{ STATIC_URL }}theme/img/placeholder2.png" width="100%" alt="{{ map.title }}" /></a>
+  <a href="{% url "map_detail" map.id %}"><img src="{{ STATIC_URL }}geonode/img/placeholder2.png" width="100%" alt="{{ map.title }}" /></a>
   <div class="details">
     <a href="{% url "map_detail" map.id %}"><h3>{{ map.title }}</h3></a>
     <div class="meta">{% trans 'from' %} <a href="{% url "profile_detail" map.owner.username %}">{{ map.owner }}</a>, {{ map.last_modified|timesince }} {% trans 'ago' %}</div>
