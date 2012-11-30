@@ -6,10 +6,10 @@
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
       <link href="{{ STATIC_URL }}libs/bootstrap/css/bootstrap.css" rel="stylesheet"/>
-      <link href='{{ STATIC_URL }}font/lato_font.css' rel='stylesheet' type='text/css' />
-      <link href="{{ STATIC_URL }}css/ext-compatibility.css" rel="stylesheet" />
+      <link href='{{ STATIC_URL }}geonode/font/lato_font.css' rel='stylesheet' type='text/css' />
+      <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}libs/datatables/css/datatables.css" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}css/base.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}libs/select2/select2.css" rel="stylesheet"/>
       {% block extra_head %}{% endblock %}
     {% endblock %}
@@ -212,7 +212,7 @@
     <script src="{{ STATIC_URL }}libs/js/jquery.timeago.js"></script>
     <script src="{{ STATIC_URL }}libs/js/json2.js"></script>
     <script src="{{ STATIC_URL }}libs/select2/select2.js"></script>
-    <script src="{{ STATIC_URL }}js/utils.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
 
     {% block extra_script %}{% endblock extra_script %}
 
