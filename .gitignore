@@ -14,9 +14,7 @@ paster.pid
 geoserver-geonode-ext/logs/
 
 # Static media handling
-geonode/static/geonode/externals/
-geonode/static/geonode/script/
-geonode/static/geonode/theme/
+geonode/static/components/
 geonode/static_root/
 
 # Uploaded files
