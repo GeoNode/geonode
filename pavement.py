@@ -256,7 +256,7 @@ def setup_geonode_client(options):
     sh("git submodule update --init")
 
     with pushd("src/geonode-client/"):
-        sh("mvn clean compile")
+        sh("ant clean zip")
 
     src_zip = "src/geonode-client/build/geonode-client.zip"
     zip_extractall(zipfile.ZipFile(src_zip), static)
