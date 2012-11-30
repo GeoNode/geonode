@@ -447,6 +447,10 @@ def layer_search_page(request, template='layers/layer_search.html'):
     return render_to_response(template, RequestContext(request, {
         'init_search': json.dumps(params or {}),
         'viewer_config': json.dumps(map_obj.viewer_json(*DEFAULT_BASE_LAYERS)),
+        "site" : settings.SITEURL,
+        "search_api": reverse("layer_search_api"),
+        "search_action": reverse("layer_search_page"),
+        "search_type": "layer",
         "site" : settings.SITEURL
     }))
 
