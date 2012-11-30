@@ -401,7 +401,7 @@ var updateCQL = function(layers) {
     }
 
     for (var xx = 0; xx < layers.length; xx++) {
-        var layer = layer[xx];
+        var layer = layers[xx];
         layer.getLayer().params["NUM_REQUESTS"] = numLayersVisible;
     }
 }
