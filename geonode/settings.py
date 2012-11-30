@@ -501,7 +501,6 @@ DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE = ''
 DB_DATASTORE_NAME = ''
 
-UPLOADER_SHOW_TIME_STEP = False
 #The name of the store in Geoserver
 
 # Load more settings from a file called local_settings.py if it exists
