@@ -3,7 +3,7 @@
 {% load layers_tags %}
 {% load taggit_extras %}
 
-{% block title %} {% trans "Search Data" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Searchx " %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}search-results{% endblock %}
 
@@ -40,7 +40,7 @@
                     <input type="checkbox" id="filter-maps" /> Maps <span>(<span class="count">0</span>)</span>
                   </label>
                   <label class="checkbox" data-class="Layer">
-                    <input type="checkbox" id="filter-data" /> Data <span>(<span class="count">0</span>)</span>
+                    <input type="checkbox" id="filter-data" /> Layers <span>(<span class="count">0</span>)</span>
                   </label>
                   <div class="subgroup">
                     <label class="checkbox" data-class="Raster">
@@ -83,9 +83,9 @@
             <div id="filter3" class="collapse in">
                 <p>Limit the search to a specific time period</p>
                 <form action="">
-                    <label for="id_data_begins">Data begins after:</label>
+                    <label for="id_data_begins">Layers begins after:</label>
                     <input id="id_data_begins" value="{% now "Y" %}-01-01" data-date-format="yyyy-mm-dd" type="text" class="span2 datepicker" placeholder="yyyy-mm-dd" />
-                    <label for="id_data_ends">Data ends before:</label>
+                    <label for="id_data_ends">Layers ends before:</label>
                     <input id="id_data_ends" value="{% now "Y-m-d" %}" data-date-format="yyyy-mm-dd" type="text" class="span2 datepicker" placeholder="yyyy-mm-dd" />
                 </form>
             </div>
