@@ -328,13 +328,7 @@ ACCOUNT_ACTIVATION_DAYS = 30
 SERVE_MEDIA = DEBUG;
 
 MAP_BASELAYERS = [
-    {
-        "source": {
-            "ptype": "gxp_wmscsource",
-            "url": GEOSERVER_BASE_URL + "wms",
-            "restUrl": "/gs/rest"
-        }
-    }, {
+ {
         "source": {"ptype": "gx_olsource"},
         "type": "OpenLayers.Layer",
         "args": ["No background"],
@@ -366,16 +360,6 @@ MAP_BASELAYERS = [
         "group": "background"
     }, {
         "source": {"ptype": "gxp_mapboxsource"},
-    },
-    {
-        "source": {"url": "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
-                   "ptype": "gxp_arcrestsource"},
-        "group": "background",
-        "name": "World Imagery",
-        "visibility": False,
-        "fixed": True,
-        "format": "jpeg",
-        "title": "ESRI World Imagery"
     },
     {
         "source": {
@@ -438,6 +422,7 @@ MAP_BASELAYERS = [
         "name": "Ocean_Basemap",
         "visibility": False,
         "fixed": True,
+        "format": "jpeg",
         "title": "ESRI World Ocean Basemap"
     },
     {

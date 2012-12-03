@@ -591,9 +591,9 @@ def set_map_permissions(m, perm_spec, use_email = False):
             m.set_user_level(user, level)
     else:
         m.get_user_levels().exclude(user__username__in = users + [m.owner]).delete()
-    for username, level in perm_spec['users']:
-        user = User.objects.get(username=username)
-        m.set_user_level(user, level)
+        for username, level in perm_spec['users']:
+            user = User.objects.get(username=username)
+            m.set_user_level(user, level)
 
 def ajax_layer_permissions_by_email(request, layername):
     return ajax_layer_permissions(request, layername, True)
@@ -1063,12 +1063,17 @@ def tweetview(request):
     config['first_visit'] = first_visit
     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map)
 
+    geops_ip = settings.GEOPS_IP
+    if "geopsip" in request.GET:
+        geops_ip = request.GET["geopsip"]
+
+
     return render_to_response(redirectPage, RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
         'maptitle': map.title,
-        'GEOPS_IP': settings.GEOPS_IP,
+        'GEOPS_IP': geops_ip,
         'urlsuffix': get_suffix_if_custom(map),
         'tweetdownload': request.user.is_authenticated() and request.user.get_profile().is_org_member
         }))
@@ -1087,9 +1092,9 @@ def embed(request, mapid=None, snapshot=None):
         config = DEFAULT_MAP_CONFIG
     else:
         if mapid.isdigit():
-            map_obj = Map.objects.get(pk=mapid)
+            map_obj = get_object_or_404(Map,pk=mapid)
         else:
-            map_obj = Map.objects.get(urlsuffix=mapid)
+            map_obj = get_object_or_404(Map,urlsuffix=mapid)
 
         if not request.user.has_perm('maps.view_map', obj=map_obj):
             return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
@@ -1098,7 +1103,6 @@ def embed(request, mapid=None, snapshot=None):
         else:
             config = snapshot_config(snapshot, map_obj, request.user)
 
-        config = map_obj.viewer_json()
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
     }))
@@ -2185,12 +2189,11 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
 
     keywords = _split_query(query)
 
-    map_query = Map.objects.filter()
     for keyword in keywords:
-        map_query = map_query.filter(
+        map_query = Map.objects.filter(
               Q(title__icontains=keyword)
             | Q(keywords__name__icontains=keyword)
-            | Q(abstract__icontains=keyword))
+            | Q(abstract__icontains=keyword)).distinct()
 
     officialMaps = map_query.filter(Q(officialurl__isnull=False))
     map_query = map_query.filter(Q(officialurl__isnull=True))
