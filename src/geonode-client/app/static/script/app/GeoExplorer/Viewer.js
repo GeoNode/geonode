@@ -68,6 +68,11 @@ GeoExplorer.Viewer = Ext.extend(GeoExplorer, {
      */
     initPortal: function() {
 
+        // TODO: make a proper component out of this
+        if (this.useMapOverlay !== false) {
+            this.mapPanel.add(this.createMapOverlay());
+        }
+
         if(this.useToolbar !== false) {
             this.toolbar = new Ext.Toolbar({
                 xtype: "toolbar",

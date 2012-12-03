@@ -1018,9 +1018,9 @@ def embed(request, mapid=None, snapshot=None):
         config = DEFAULT_MAP_CONFIG
     else:
         if mapid.isdigit():
-            map_obj = Map.objects.get(pk=mapid)
+            map_obj = get_object_or_404(Map,pk=mapid)
         else:
-            map_obj = Map.objects.get(urlsuffix=mapid)
+            map_obj = get_object_or_404(Map,urlsuffix=mapid)
 
         if not request.user.has_perm('maps.view_map', obj=map_obj):
             return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
@@ -1029,7 +1029,6 @@ def embed(request, mapid=None, snapshot=None):
         else:
             config = snapshot_config(snapshot, map_obj, request.user)
 
-        config = map_obj.viewer_json()
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
     }))
@@ -2116,12 +2115,11 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
 
     keywords = _split_query(query)
 
-    map_query = Map.objects.filter()
     for keyword in keywords:
-        map_query = map_query.filter(
+        map_query = Map.objects.filter(
               Q(title__icontains=keyword)
             | Q(keywords__name__icontains=keyword)
-            | Q(abstract__icontains=keyword))
+            | Q(abstract__icontains=keyword)).distinct()
 
     officialMaps = map_query.filter(Q(officialurl__isnull=False))
     map_query = map_query.filter(Q(officialurl__isnull=True))

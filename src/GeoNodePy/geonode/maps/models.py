@@ -726,18 +726,22 @@ class LayerManager(models.Manager):
         if workspace is not None:
             workspace = cat.get_workspace(workspace)
             resources = cat.get_resources(workspace=workspace)
-        number = len(resources)
-        if verbosity > 1:
-            msg =  "Found %d layers, starting processing" % number
-            print >> console, msg
         output = []
         
         # check lnames
         if lnames is not None:
-            gs_lnames = [resource.name for resource in resources]
             for l in lnames:
-                if l not in gs_lnames:
-                    raise Exception('Layer %s does not exist' % l )
+                resource = cat.get_resource(l)
+            if resource:
+                resources.append(resource)
+        else:
+            resources = cat.get_resources()
+
+        number = len(resources)
+
+        if verbosity > 1:
+            msg =  "Found %d layers, starting processing" % number
+            print >> console, msg
 
         for i, resource in enumerate(resources):
             name = resource.name
@@ -1484,7 +1488,7 @@ class Layer(models.Model, PermissionLevelMixin):
         cfg['llbbox'] = json.loads(self.llbbox)
         cfg['queryable'] = (self.storeType == 'dataStore')
         cfg['attributes'] = self.layer_attributes()
-        cfg['disabled'] =  not user.has_perm('maps.view_layer', obj=self)
+        cfg['disabled'] =  user is not None and not user.has_perm('maps.view_layer', obj=self)
         cfg['visibility'] = True
         cfg['abstract'] = self.abstract
         cfg['styles'] = ''
@@ -1766,7 +1770,7 @@ class Map(models.Model, PermissionLevelMixin):
                 'introtext' : self.content,
                 'officialurl' : self.officialurl
             },
-            'defaultSourceType': "gxp_wmscsource",
+            'defaultSourceType': "gxp_gnsource",
             'sources': sources,
             'map': {
                 'layers': [layer_config(l, user) for l in layers],
@@ -2115,7 +2119,7 @@ class MapLayer(models.Model):
                 if gnLayer.llbbox: cfg['llbbox'] = json.loads(gnLayer.llbbox)
                 cfg['attributes'] = (gnLayer.layer_attributes())
                 cfg['queryable'] = (gnLayer.storeType == 'dataStore'),
-                cfg['disabled'] =  not user.has_perm('maps.view_layer', obj=gnLayer)
+                cfg['disabled'] =  user is not None and not user.has_perm('maps.view_layer', obj=gnLayer)
                 cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
                 cfg['abstract'] = gnLayer.abstract
                 cfg['styles'] = self.styles
