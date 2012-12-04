@@ -30,7 +30,7 @@ The main components are:
 
     This is a Django based project that allows the user to easily tweak the content and look and feel and to extend GeoNode to build Geospatial.
 
-    It includes tools to handle user registration and accounts, avatars, and helper libraries to interact with GeoServer and pycsw in a programatic and integrated way.
+    It includes tools to handle user registration and accounts, avatars, and helper libraries to interact with GeoServer and pycsw in a programmatic and integrated way.
 
     There is a wide range of third party apps that can be plugged into a GeoNode based site including tools to connect to different social networks, to build content management systems and more.
 
