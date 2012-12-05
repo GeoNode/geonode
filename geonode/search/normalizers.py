@@ -25,6 +25,7 @@ from django.template import defaultfilters
 
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
+from geonode.documents.models import Document
 from geonode.search import extension
 
 from agon_ratings.categories import RATING_CATEGORY_LOOKUP
@@ -87,6 +88,7 @@ def apply_normalizers(results):
     mapping = [
         ('maps', MapNormalizer),
         ('layers', LayerNormalizer),
+        ('documents', DocumentNormalizer),
         ('owners', OwnerNormalizer),
     ]
     for k,n in mapping:
@@ -144,7 +146,7 @@ class MapNormalizer(Normalizer):
         doc['id'] = mapobj.id
         doc['title'] = mapobj.title
         doc['abstract'] = defaultfilters.linebreaks(mapobj.abstract)
-        doc['category'] = mapobj.category,
+        doc['category'] = mapobj.topic_category,
         doc['detail'] = reverse('map_detail', args=(mapobj.id,))
         doc['owner'] = mapobj.owner.username
         doc['owner_detail'] = mapobj.owner.get_absolute_url()
@@ -202,6 +204,26 @@ class LayerNormalizer(Normalizer):
             doc['owner_detail'] = layer.owner.get_absolute_url()
         return doc
 
+class DocumentNormalizer(Normalizer):
+    def last_modified(self):
+        return self.o.date
+    def populate(self, doc, exclude):
+        document = self.o
+        doc['id'] = document.id
+        doc['title'] = document.title
+        doc['abstract'] = defaultfilters.linebreaks(document.abstract)
+        doc['category'] = document.topic_category,
+        doc['detail'] = reverse('document_detail', args=(document.id,))
+        doc['owner'] = document.owner.username
+        doc['owner_detail'] = document.owner.get_absolute_url()
+        doc['last_modified'] = extension.date_fmt(document.date)
+        doc['_type'] = 'document'
+        doc['_display_type'] = extension.DOCUMENT_DISPLAY
+#        doc['thumb'] = map.get_thumbnail_url()
+        doc['keywords'] = document.keyword_list()
+        if 'bbox' not in exclude:
+            doc['bbox'] = _bbox(document)
+        return doc
 
 class OwnerNormalizer(Normalizer):
     def title(self):

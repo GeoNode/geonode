@@ -30,6 +30,7 @@ from geonode.security.models import AUTHENTICATED_USERS
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
 from geonode.maps.models import MapLayer
+from geonode.documents.models import Document
 from geonode.people.models import Profile 
 
 from geonode.search import extension
@@ -261,9 +262,53 @@ def _get_layer_results(query):
 
     return q.distinct()
 
+def _get_document_results(query):
+
+    q = extension.document_query(query)
+
+    q = _filter_security(q, query.user, Document, 'view_document')
+
+    if extension.exclude_patterns:
+        name_filter = reduce(operator.or_,[ Q(name__regex=f) for f in extension.exclude_patterns])
+        q = q.exclude(name_filter)
+
+    if query.kw:
+        q = q.filter(_build_kw_only_query(query.kw))
+
+    if query.owner:
+        q = q.filter(owner__username=query.owner)
+
+    if query.type and query.type != 'document':
+        q = q.filter(storeType = query.type)
+
+    if query.extent:
+        q = filter_by_extent(Document, q, query.extent)
+
+    if query.added:
+        q = q.filter(date__gte=query.added)
+
+    if query.period:
+        q = filter_by_period(Layer, q, *query.period)
+
+    # this is a special optimization for prefetching results when requesting
+    # all records via search
+    # keywords and thumbnails cannot be prefetched at the moment due to
+    # the way the contenttypes are implemented
+    if query.limit == 0 and using_geodjango:
+        q = q.defer(None).prefetch_related("owner","spatial_temporal_index")
+
+    if query.query:
+        q = _build_map_layer_text_query(q, query, query_keywords=True)
+        rules = _rank_rules(Document,
+            ['title',10, 5],
+            ['abstract',5, 2],
+        )
+        q = _safely_add_relevance(q, query, rules)
+
+    return q.distinct()
 
 def combined_search_results(query):
-    facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'user')])
+    facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'document', 'user')])
     results = {'facets' : facets}
 
     bytype = query.type
@@ -279,6 +324,11 @@ def combined_search_results(query):
         facets['raster'] = q.filter(storeType='raster').count()
         facets['vector'] = q.filter(storeType='vector').count()
         results['layers'] = q
+
+    if bytype is None or bytype == u'document':
+        q = _get_document_results(query)
+        facets['document'] = q.count()
+        results['documents'] = q
 
     if bytype is None or bytype == u'owner':
         q = _get_owner_results(query)

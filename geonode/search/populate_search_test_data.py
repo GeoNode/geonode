@@ -23,6 +23,7 @@ from django.core.serializers import serialize
 from django.contrib.auth.models import User
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.documents.models import Document
 from geonode.people.models import Profile 
 from itertools import cycle
 from taggit.models import Tag
@@ -72,6 +73,17 @@ layer_data = [
         ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], '19630829', ('populartag',)),
         ]
 
+document_data = [
+        ('lorem ipsum', 'common lorem ipsum', ('populartag',)),
+        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique')),
+        ('lorem1 ipsum1', 'common abstract1', ('populartag',)),
+        ('ipsum foo', 'common bar lorem', ('populartag',)),
+        ('doc one', 'common this is a unique thing', ('populartag',)),
+        ('quux', 'common double thing', ('populartag',)),
+        ('morx', 'common thing double', ('populartag',)),
+        ('titledupe something else ', 'whatever common', ('populartag',)),
+        ('something titledupe else ', 'bar common', ('populartag',)),
+        ]
 
 def create_models():
     users = []
@@ -95,6 +107,17 @@ def create_models():
                 projection='EPSG:4326',
                 center_x=42,
                 center_y=-73,
+                owner=user,
+                )
+        m.save()
+        for kw in kws:
+            m.keywords.add(kw)
+            m.save()
+
+    for dd, user in zip(document_data, cycle(users)):
+        title, abstract, kws = dd
+        m = Document(title=title,
+                abstract=abstract,
                 owner=user,
                 )
         m.save()
@@ -126,13 +149,13 @@ def create_models():
             l.keywords.add(kw)
             l.save()
 
-
 def dump_models(path=None):
     result = serialize("json", sum([list(x) for x in
                                     [User.objects.all(),
                                      Profile.objects.all(),
                                      Layer.objects.all(),
                                      Map.objects.all(),
+                                     Document.objects.all(),
                                      Tag.objects.all(),
                                      TaggedItem.objects.all(),
                                      ]], []), indent=2, use_natural_keys=True)
