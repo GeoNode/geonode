@@ -3,20 +3,22 @@ This file demonstrates writing tests using the unittest module. These will pass
 when you run "manage.py test".
 
 """
+import StringIO
+import json
+
 from django.test import TestCase
 from django.conf import settings
+from django.test.client import Client
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
+
 from geonode.maps.models import Map, MapLayer
 from geonode.documents.models import Document
 import geonode.documents.views
 import geonode.security
-from django.test.client import Client
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.contrib.auth.models import User
-import StringIO
-from django.contrib.auth.models import User, AnonymousUser
-import json
-from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
 
 imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
 								'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
@@ -64,36 +66,46 @@ class EventsTest(TestCase):
 
 	def test_document_details(self):
 		"""/documents/1 -> Test accessing the detail view of a document"""
-		f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
-	
-		superuser = User.objects.get(pk=2)
-		d, created = Document.objects.get_or_create(id=1, doc_file=f,owner=superuser, title='theimg')
-		d.set_default_permissions()
 
-		c = Client()
-		response = c.get(reverse('document_detail', args=(str(d.id),)))
-		self.assertEquals(response.status_code, 200)
+		if settings.DOCUMENTS_APP:
+			f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
+		
+			superuser = User.objects.get(pk=2)
+			d, created = Document.objects.get_or_create(id=1, doc_file=f,owner=superuser, title='theimg')
+			d.set_default_permissions()
+
+			c = Client()
+			response = c.get(reverse('document_detail', args=(str(d.id),)))
+			self.assertEquals(response.status_code, 200)
+
+		else: 
+			pass
 
 	def test_access_document_upload_form(self):
 		"""Test the form page is returned correctly via GET request /documents/upload"""
-		c = Client()
-		log = c.login(username='bobby', password='bob')
-		self.assertTrue(log)
-		response = c.get(reverse('document_upload'))
-		self.assertTrue('Add document' in response.content)
+		if settings.DOCUMENTS_APP:
+			c = Client()
+			log = c.login(username='bobby', password='bob')
+			self.assertTrue(log)
+			response = c.get(reverse('document_upload'))
+			self.assertTrue('Add document' in response.content)
+		else:
+			pass
 
 	def test_document_isuploaded(self):
 		"""/documents/upload -> Test uploading a document"""
-		f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
-		m = Map.objects.all()[0]		
-		c = Client()
-		
-		c.login(username='admin', password='admin')
-		response = c.post(reverse('document_upload'), data={'file': f, 'title': 'uploaded_document', 'objid': m.id, 'ctype': 'map', 
-			'permissions': '{"anonymous":"document_readonly","users":[]}'},
-						  follow=True)
-		self.assertEquals(response.status_code, 200)
-
+		if settings.DOCUMENTS_APP:
+			f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
+			m = Map.objects.all()[0]		
+			c = Client()
+			
+			c.login(username='admin', password='admin')
+			response = c.post(reverse('document_upload'), data={'file': f, 'title': 'uploaded_document', 'objid': m.id, 'ctype': 'map', 
+				'permissions': '{"anonymous":"document_readonly","users":[]}'},
+							  follow=True)
+			self.assertEquals(response.status_code, 200)
+		else:
+			pass
 		
 	# Permissions Tests
 
@@ -154,49 +166,52 @@ class EventsTest(TestCase):
 		"""Verify that the ajax_document_permissions view is behaving as expected
 		"""
 		
-		# Setup some document names to work with 
-		f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
-	
-		superuser = User.objects.get(pk=1)
-		document, created = Document.objects.get_or_create(id=1, doc_file=f,owner=superuser, title='theimg')
-		document.set_default_permissions()
-		document_id = document.id
-		invalid_document_id = 5
+		if settings.DOCUMENTS_APP:
+			# Setup some document names to work with 
+			f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
 		
-		c = Client()
+			superuser = User.objects.get(pk=1)
+			document, created = Document.objects.get_or_create(id=1, doc_file=f,owner=superuser, title='theimg')
+			document.set_default_permissions()
+			document_id = document.id
+			invalid_document_id = 5
+			
+			c = Client()
 
-		# Test that an invalid document is handled for properly
-		response = c.post(reverse('ajax_document_permissions', args=(invalid_document_id,)), 
-							data=json.dumps(self.perm_spec),
-							content_type="application/json")
-		self.assertEquals(response.status_code, 404) 
+			# Test that an invalid document is handled for properly
+			response = c.post(reverse('ajax_document_permissions', args=(invalid_document_id,)), 
+								data=json.dumps(self.perm_spec),
+								content_type="application/json")
+			self.assertEquals(response.status_code, 404) 
 
-		# Test that POST is required
-		response = c.get(reverse('ajax_document_permissions', args=(document_id,)))
-		self.assertEquals(response.status_code, 405)
-		
-		# Test that a user is required to have documents.change_layer_permissions
+			# Test that POST is required
+			response = c.get(reverse('ajax_document_permissions', args=(document_id,)))
+			self.assertEquals(response.status_code, 405)
+			
+			# Test that a user is required to have documents.change_layer_permissions
 
-		# First test un-authenticated
-		response = c.post(reverse('ajax_document_permissions', args=(document_id,)), 
-							data=json.dumps(self.perm_spec),
-							content_type="application/json")
-		self.assertEquals(response.status_code, 401) 
+			# First test un-authenticated
+			response = c.post(reverse('ajax_document_permissions', args=(document_id,)), 
+								data=json.dumps(self.perm_spec),
+								content_type="application/json")
+			self.assertEquals(response.status_code, 401) 
 
-		# Next Test with a user that does NOT have the proper perms
-		logged_in = c.login(username='bobby', password='bob')
-		self.assertEquals(logged_in, True) 
-		response = c.post(reverse('ajax_document_permissions', args=(document_id,)), 
-							data=json.dumps(self.perm_spec),
-							content_type="application/json")
-		self.assertEquals(response.status_code, 401) 
+			# Next Test with a user that does NOT have the proper perms
+			logged_in = c.login(username='bobby', password='bob')
+			self.assertEquals(logged_in, True) 
+			response = c.post(reverse('ajax_document_permissions', args=(document_id,)), 
+								data=json.dumps(self.perm_spec),
+								content_type="application/json")
+			self.assertEquals(response.status_code, 401) 
 
-		# Login as a user with the proper permission and test the endpoint
-		logged_in = c.login(username='admin', password='admin')
-		self.assertEquals(logged_in, True)
-		response = c.post(reverse('ajax_document_permissions', args=(document_id,)), 
-							data=json.dumps(self.perm_spec),
-							content_type="application/json")
+			# Login as a user with the proper permission and test the endpoint
+			logged_in = c.login(username='admin', password='admin')
+			self.assertEquals(logged_in, True)
+			response = c.post(reverse('ajax_document_permissions', args=(document_id,)), 
+								data=json.dumps(self.perm_spec),
+								content_type="application/json")
 
-		# Test that the method returns 200		   
-		self.assertEquals(response.status_code, 200)
+			# Test that the method returns 200		   
+			self.assertEquals(response.status_code, 200)
+		else:
+			pass
