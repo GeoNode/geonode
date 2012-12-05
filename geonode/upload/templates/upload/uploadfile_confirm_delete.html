@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container">
+    <div class="page-header">
+        <h1>Delete {{ object.file.name }}?</h1>
+    </div>
+    <img src="{{ object.file.url }}" alt="">
+
+    <form method="post" action="" class="form">{% csrf_token %}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger"><i class="icon-trash icon-white"></i> Delete</button>
+            <button type="button" onclick="window.history.back();" class="btn"><i class="icon-remove"></i> Cancel</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

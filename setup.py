@@ -115,6 +115,8 @@ setup(name='GeoNode',
         # testing
         "django-nose",
         "nose>=1.0",
+        "beautifulsoup4",
+        "MultipartPostHandler",
         # translation
         "transifex-client",
         ],
