@@ -291,7 +291,7 @@ def _documents_search(query, start, limit, sort_field, sort_dir, related_id, rel
     
     return result
 
-def documents_search_page(request):
+def document_search_page(request):
     # for non-ajax requests, render a generic search page
 
     if request.method == 'GET':
