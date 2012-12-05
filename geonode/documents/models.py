@@ -6,6 +6,7 @@ from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.contrib.contenttypes import generic
 
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -53,6 +54,7 @@ class Document(ResourceBase):
 	# Relation to the resource model
 	content_type = models.ForeignKey(ContentType,blank=True,null=True)
 	object_id = models.PositiveIntegerField(blank=True,null=True)
+	resource = generic.GenericForeignKey('content_type', 'object_id')
 
 	doc_file = models.FileField(upload_to='documents')
 	extension = models.CharField(max_length=128,blank=True,null=True)
