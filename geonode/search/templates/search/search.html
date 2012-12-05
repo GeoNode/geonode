@@ -49,18 +49,20 @@
                     <label class="checkbox" data-class="Vector">
                       <input type="checkbox" /> Vector <span>(<span class="count">0</span>)</span>
                     </label>
-                    <label class="checkbox" data-class="Document">
-                      <input type="checkbox" /> Document <span>(<span class="count">0</span>)</span>
-                    </label>
-                    <label class="checkbox" data-class="Feed">
-                      <input type="checkbox" /> Feed <span>(<span class="count">0</span>)</span>
-                    </label>
                   </div>
+                  {%  if DOCUMENTS_APP %}
+                  <label class="checkbox" data-class="Document">
+                    <input type="checkbox" /> Documents <span>(<span class="count">0</span>)</span>
+                  </label>
+                  {% endif %}
+                  <label class="checkbox" data-class="Feed">
+                    <input type="checkbox" /> Feeds <span>(<span class="count">0</span>)</span>
+                  </label>
                   <label class="checkbox" data-class="User">
-                    <input type="checkbox" /> User <span>(<span class="count">0</span>)</span>
+                    <input type="checkbox" /> Users <span>(<span class="count">0</span>)</span>
                   </label>
                   <label class="checkbox" data-class="Group">
-                    <input type="checkbox" /> Group <span>(<span class="count">0</span>)</span>
+                    <input type="checkbox" /> Groups <span>(<span class="count">0</span>)</span>
                   </label>
                 </form>
             </div>
