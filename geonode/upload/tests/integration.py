@@ -289,7 +289,8 @@ class UploaderBase(TestCase):
         layer = self.catalog.get_layer(original_name)
         self.assertIsNotNone(layer is not None)
 
-    def check_and_pass_through_timestep(self, data):
+    def check_and_pass_through_timestep(self):
+        raise Exception('not implemented')
         redirect_to = data['redirect_to']
         self.assertEquals(redirect_to, upload_step('time'))
         resp = self.client.make_request(upload_step('time'))
@@ -332,7 +333,7 @@ class UploaderBase(TestCase):
     def finish_upload(self, current_step, layer_name, is_raster=False, skip_srs=False):
 
         if (not is_raster and _ALLOW_TIME_STEP):
-            resp, data = self.check_and_pass_through_timestep(data)
+            resp, data = self.check_and_pass_through_timestep()
             self.assertEquals(resp.code, 200)
             self.assertTrue(data['success'], 'expected success but got %s' % data)
             self.assertTrue('redirect_to' in data)
@@ -372,7 +373,7 @@ class UploaderBase(TestCase):
         """ Makes sure that we got the correct response from an layer
         that can't be uploaded"""
         if _ALLOW_TIME_STEP:
-            resp, data = self.check_and_pass_through_timestep(data)
+            resp, data = self.check_and_pass_through_timestep()
         self.assertTrue(resp.code, 200)
         self.assertTrue(data['success'])
         self.assertEquals(upload_step("srs"), data['redirect_to'])
