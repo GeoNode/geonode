@@ -240,6 +240,7 @@ class searchTest(TestCase):
     def test_type_query(self):
         self.search_assert(self.request('common', type='map'), n_results=9, n_total=9)
         self.search_assert(self.request('common', type='layer'), n_results=5, n_total=5)
+        self.search_assert(self.request('common', type='document'), n_results=9, n_total=9)
         self.search_assert(self.request('foo', type='owner'), n_results=4, n_total=4)
         # there are 8 total layers, half vector, half raster
         self.search_assert(self.request('', type='raster'), n_results=4, n_total=4)
