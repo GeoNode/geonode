@@ -137,8 +137,8 @@ var doSearch = function (options) {
 
                 if (item.category !== undefined) {
                     // use dot notation instead of array look up syntax
-                    context.category = item.category;
-                    context.category_slug = item.category.toLowerCase().replace(/ /g, "-");
+                    context.category = item.category[0];
+                    context.category_slug = item.category[0].toLowerCase().replace(/ /g, "-");
                 }
 
                 $("#search-results").append(srt.render(context));

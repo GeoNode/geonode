@@ -20,6 +20,7 @@
 from geonode.people.models import Profile 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.documents.models import Document
 from geonode.search.util import resolve_extension
 
 from django.conf import settings
@@ -29,6 +30,7 @@ date_fmt = lambda dt: dt.isoformat()
 USER_DISPLAY = 'User'
 MAP_DISPLAY = 'Map'
 LAYER_DISPLAY = 'Layer'
+DOCUMENT_DISPLAY = 'Document'
 
 # settings API
 search_config = getattr(settings,'SIMPLE_SEARCH_SETTINGS', {})
@@ -55,11 +57,16 @@ map_query = resolve_extension('map_query')
 if not map_query:
     map_query = lambda q: Map.objects.filter()
 
+document_query = resolve_extension('document_query')
+if not document_query:
+    document_query = lambda q: Document.objects.filter()
+
 display_names = resolve_extension('display_names')
 if display_names:
     USER_DISPLAY = display_names.get('user')
     MAP_DISPLAY = display_names.get('map')
     LAYER_DISPLAY = display_names.get('layer')
+    DOCUMENT_DISPLAY = display_names.get('document')
 
 owner_rank_rules = resolve_extension('owner_rank_rules')
 if not owner_rank_rules:
