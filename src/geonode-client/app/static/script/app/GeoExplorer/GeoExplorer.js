@@ -870,7 +870,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.gxSearchBar = new GeoExplorer.SearchBar(this);
         var searchPanel = new Ext.Panel({
-            anchor: "100% 50%",
+            anchor: "100% 5%",
             items: [this.gxSearchBar]
         });
 
