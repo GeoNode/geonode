@@ -29,6 +29,7 @@ from geonode.documents.models import Document
 from geonode.people.models import Profile
 from geonode.search import search
 from geonode.search import util
+from geonode.search.populate_search_test_data import create_models
 from geonode.search.query import query_from_request
 from agon_ratings.models import OverallRating
 import json
@@ -50,7 +51,7 @@ class searchTest(TestCase):
 
     c = Client()
 
-    fixtures = ['initial_data.json', 'search_testdata.json']
+    fixtures = ['initial_data.json'] #, 'search_testdata.json']
 
     @classmethod
     def setUpClass(cls):
@@ -58,6 +59,7 @@ class searchTest(TestCase):
         from django.core.cache import cache
         cache.clear()
         searchTest('_fixture_setup')._fixture_setup(True)
+        create_models()
         all_public()
 
     @classmethod
