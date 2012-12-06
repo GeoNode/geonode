@@ -870,9 +870,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.gxSearchBar = new GeoExplorer.SearchBar(this);
         var searchPanel = new Ext.Panel({
-            anchor: "100% 5%",
+            anchor: "100% 50%",
             items: [this.gxSearchBar]
         });
+
 
 
         //needed for Safari
@@ -883,6 +884,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             collapseMode: "mini",
             header: false,
             split: true,
+            bbar: [searchPanel],
             region: "west",
             width: 250
         });
