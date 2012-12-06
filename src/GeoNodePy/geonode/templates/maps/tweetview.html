@@ -323,8 +323,7 @@ var updateCQL = function (layers) {
         }
     }
 
-
-    var timeFilter = "time > " + epochStart + " AND time < " + epochEnd;
+    var timeFilter =  "time > " + (Math.floor(new Date(tweetDateStartField.getValue()).getTime()/1000)) + " AND time < " + (Math.floor(new Date(tweetDateEndField.getValue()).getTime() /1000)) ;
     var fromFilter = " from oct_tweets";
 
     var numLayersVisible = 0;
