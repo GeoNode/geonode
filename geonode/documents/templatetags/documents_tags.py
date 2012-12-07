@@ -10,7 +10,6 @@ register = template.Library()
 
 @register.assignment_tag(takes_context=True)
 def featured_layers(context, count=7):
-    request = context["request"]
     documents = Document.objects.order_by("-date")[:count]
     return documents
 

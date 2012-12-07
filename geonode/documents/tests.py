@@ -11,7 +11,6 @@ from django.conf import settings
 from django.test.client import Client
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import User
-from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 
@@ -140,9 +139,6 @@ class EventsTest(TestCase):
         document.set_default_permissions()
         # Get a document to work with
         document = Document.objects.all()[0]
-
-        # Save the Layers current permissions
-        current_perms = document.get_all_level_info() 
        
         # Set the Permissions
         geonode.documents.views.set_document_permissions(document, self.perm_spec)
