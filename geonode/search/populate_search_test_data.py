@@ -38,15 +38,15 @@ import os.path
 
 
 map_data = [
-        ('lorem ipsum', 'common lorem ipsum', ('populartag',)),
-        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'maptagunique')),
-        ('lorem1 ipsum1', 'common abstract1', ('populartag',)),
-        ('ipsum foo', 'common bar lorem', ('populartag',)),
-        ('map one', 'common this is a unique thing', ('populartag',)),
-        ('quux', 'common double thing', ('populartag',)),
-        ('morx', 'common thing double', ('populartag',)),
-        ('titledupe something else ', 'whatever common', ('populartag',)),
-        ('something titledupe else ', 'bar common', ('populartag',)),
+        ('lorem ipsum', 'common lorem ipsum', ('populartag',), [-180, 180, -90, 90]),
+        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'maptagunique'), [-180, 180, -90, 90]),
+        ('lorem1 ipsum1', 'common abstract1', ('populartag',), [-180, 180, -90, 90]),
+        ('ipsum foo', 'common bar lorem', ('populartag',), [-180, 180, -90, 90]),
+        ('map one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1]),
+        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5]),
+        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10]),
+        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10]),
+        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50]),
         ]
 
 user_data = [
@@ -74,15 +74,15 @@ layer_data = [
         ]
 
 document_data = [
-        ('lorem ipsum', 'common lorem ipsum', ('populartag',)),
-        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique')),
-        ('lorem1 ipsum1', 'common abstract1', ('populartag',)),
-        ('ipsum foo', 'common bar lorem', ('populartag',)),
-        ('doc one', 'common this is a unique thing', ('populartag',)),
-        ('quux', 'common double thing', ('populartag',)),
-        ('morx', 'common thing double', ('populartag',)),
-        ('titledupe something else ', 'whatever common', ('populartag',)),
-        ('something titledupe else ', 'bar common', ('populartag',)),
+        ('lorem ipsum', 'common lorem ipsum', ('populartag',), [-180, 180, -90, 90]),
+        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique'), [-180, 180, -90, 90]),
+        ('lorem1 ipsum1', 'common abstract1', ('populartag',), [-180, 180, -90, 90]),
+        ('ipsum foo', 'common bar lorem', ('populartag',), [-180, 180, -90, 90]),
+        ('doc one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1]),
+        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5]),
+        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10]),
+        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10]),
+        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50]),
         ]
 
 def create_models():
@@ -103,7 +103,7 @@ def create_models():
         users.append(u)
 
     for md, user in zip(map_data, cycle(users)):
-        title, abstract, kws = md
+        title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1) = md
         m = Map(title=title,
                 abstract=abstract,
                 zoom=4,
@@ -111,6 +111,10 @@ def create_models():
                 center_x=42,
                 center_y=-73,
                 owner=user,
+                bbox_x0=bbox_x0,
+                bbox_x1=bbox_x1,
+                bbox_y0=bbox_y0,
+                bbox_y1=bbox_y1,
                 )
         m.save()
         for kw in kws:
@@ -118,10 +122,14 @@ def create_models():
             m.save()
 
     for dd, user in zip(document_data, cycle(users)):
-        title, abstract, kws = dd
+        title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1) = dd
         m = Document(title=title,
                 abstract=abstract,
                 owner=user,
+                bbox_x0=bbox_x0,
+                bbox_x1=bbox_x1,
+                bbox_y0=bbox_y0,
+                bbox_y1=bbox_y1,
                 )
         m.save()
         for kw in kws:
