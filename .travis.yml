@@ -28,14 +28,15 @@ script:
   - paver test
   - paver test_integration
   - paver test_integration -n geonode.tests.csw
+  - paver test_javascript
 
 after_script:
   - paver reset_hard
 
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#geonode"
-    use_notice: true
-  email:
-#    - geonode-dev@opengeo.org
+# notifications:
+#   irc:
+#     channels:
+#       - "irc.freenode.org#geonode"
+#     use_notice: true
+#   email:
+# #    - geonode-dev@opengeo.org
