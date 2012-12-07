@@ -1,5 +1,7 @@
 import json, unicodedata
 
+from urllib import urlencode
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
@@ -10,16 +12,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.forms.models import inlineformset_factory
 from django.views.generic.list import ListView
 
-from geonode.maps.views import _perms_info, default_map_config
+from geonode.maps.views import _perms_info
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map
-from geonode.layers.models import Layer, ContactRole, TopicCategory
+from geonode.layers.models import Layer, TopicCategory
 from geonode.people.models import Profile
-from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
-from geonode.people.forms import ProfileForm, PocForm
+from geonode.people.forms import ProfileForm
 
 from geonode.documents.models import Document
 from geonode.documents.forms import DocumentForm

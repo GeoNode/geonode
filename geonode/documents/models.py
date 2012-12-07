@@ -6,9 +6,9 @@ from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
 from django.contrib.contenttypes import generic
 
-from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import ResourceBase, Layer
 from geonode.people.models import Profile, Role
