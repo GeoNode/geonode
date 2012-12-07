@@ -1617,7 +1617,7 @@ def resolve_user(request):
         acl_user = authenticate(username=username, password=password)
         if acl_user:
             user = acl_user.username
-            superuser = user.is_superuser
+            superuser = acl_user.is_superuser
         elif _get_basic_auth_info(request) == settings.GEOSERVER_CREDENTIALS:
             geoserver = True
             superuser = True
@@ -1626,7 +1626,7 @@ def resolve_user(request):
         superuser = request.user.is_superuser
     return HttpResponse(json.dumps({
         'user' : user,
-        'geoserver' : geoserver,
+        'geoserver' : superuser,
         'superuser' : superuser
     }))
 
@@ -1674,10 +1674,10 @@ def layer_acls(request):
     for bck in get_auth_backends():
         if hasattr(bck, 'objects_with_perm'):
             all_readable.update(bck.objects_with_perm(acl_user,
-                'layers.view_layer',
+                'maps.view_layer',
                 Layer))
             all_writable.update(bck.objects_with_perm(acl_user,
-                'layers.change_layer',
+                'maps.change_layer',
                 Layer))
     read_only = [x for x in all_readable if x not in all_writable]
     read_write = [x for x in all_writable if x in all_readable]
