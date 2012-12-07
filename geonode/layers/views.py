@@ -451,7 +451,6 @@ def layer_search_page(request, template='layers/layer_search.html'):
         "search_api": reverse("layer_search_api"),
         "search_action": reverse("layer_search_page"),
         "search_type": "layer",
-        "site" : settings.SITEURL
     }))
 
 
