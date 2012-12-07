@@ -86,6 +86,9 @@ document_data = [
         ]
 
 def create_models():
+    u, _ = User.objects.get_or_create(username='admin',is_superuser=True)
+    u.set_password('admin')
+    u.save()
     users = []
     for ud, pd in zip(user_data, cycle(people_data)):
         user_name, password, first_name, last_name = ud

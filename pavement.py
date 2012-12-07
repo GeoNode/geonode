@@ -57,7 +57,7 @@ def setup_geoexplorer(options):
     Fetch GeoExplorer
     """
     geoxp_zip = StringIO()
-    geoxp_zip.write(urllib.urlopen("http://suite.opengeo.org/builds/geoexplorer/opengeosuite-dev-geoexplorer-static.zip").read())
+    geoxp_zip.write(urllib.urlopen("http://suite.opengeo.org/builds/geoexplorer/opengeosuite-3.0.1-geoexplorer-static.zip").read())
     geoxp_zipfile = zipfile.ZipFile(geoxp_zip)
     filelist = geoxp_zipfile.filelist
     root_dir = filelist[0].filename
