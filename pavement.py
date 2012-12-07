@@ -44,7 +44,7 @@ def grab(src, dest):
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     fast = options.get('fast', False)
-    
+
     with pushd('geoserver-geonode-ext'):
         if fast:
             sh('mvn install -DskipTests')
@@ -252,6 +252,12 @@ def test(options):
     Run GeoNode's Unit Test Suite
     """
     sh("python manage.py test geonode --noinput")
+
+
+@task
+def test_javascript(options):
+    with pushd('geonode/static/geonode'):
+        sh('./run-tests.sh')
 
 
 @task

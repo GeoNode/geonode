@@ -1,6 +1,6 @@
-/*global define: true */
+/*global define: true, $:true */
 
-define(['jquery'], function ($) {
+define(function () {
     'use strict';
 
     /** Create an instance of a FileType object
