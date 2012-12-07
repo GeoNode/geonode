@@ -624,7 +624,7 @@ def host(options):
     djangolog = open("django.log", "w")
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
-            "-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8020,server=y,suspend=y",
+            #"-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8020,server=y,suspend=y",
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
             "-Djetty.host=" + options.host.bind,
             "-Xmx512M",
