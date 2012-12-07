@@ -28,11 +28,6 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
-      <version>${geoserver.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
       <artifactId>rest</artifactId>
       <version>${geoserver.version}</version>
     </dependency>
@@ -90,25 +85,26 @@
       <artifactId>commons-httpclient</artifactId>
       <version>3.1</version>
     </dependency>
+    
     <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-core</artifactId>
-      <version>3.1.0.RELEASE</version>
+        <groupId>org.opengeo.geoserver</groupId>
+        <artifactId>importer</artifactId>
+        <version>2.2-SNAPSHOT</version>
+        <scope>runtime</scope>
     </dependency>
+
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-expression</artifactId>
-      <version>3.1.1.RELEASE</version>
+        <groupId>org.opengeo.data.csv</groupId>
+        <artifactId>csv</artifactId>
+        <version>2.2-SNAPSHOT</version>
+        <scope>runtime</scope>
     </dependency>
+
+
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <version>3.1.1.RELEASE</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <version>3.1.1.RELEASE</version>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-shapefile</artifactId>
+        <version>${geotools.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -116,6 +112,8 @@
       <version>11.0.1</version>
     </dependency>
 
+
+    
 
     <!-- GeoJSON module dependencies -->
     <dependency>
@@ -153,6 +151,7 @@
       <classifier>tests</classifier>
       <version>${geoserver.version}</version>
     </dependency>
+
     <dependency>
       <groupId>com.mockrunner</groupId>
       <artifactId>mockrunner</artifactId>
@@ -249,6 +248,14 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+            <argLine>-XX:MaxPermSize=256m</argLine>
+        </configuration>
+      </plugin>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
