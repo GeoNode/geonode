@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-import sys
+import sys, os
 import logging
 import re
 import errno

@@ -313,7 +313,7 @@ class Layer(ResourceBase):
             return "WFS"
 
     def get_absolute_url(self):
-        return reverse('layer_detail', args=(self.typename))
+        return reverse('layer_detail', args=(self.typename,))
 
     def attribute_config(self):
         #Get custom attribute sort order and labels if any
@@ -389,15 +389,8 @@ class Layer(ResourceBase):
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 
-    def get_absolute_url(self):
-        return reverse('geonode.layers.views.layer_detail', None, [str(self.typename)])
-
     def tiles_url(self):
         return self.link_set.get(name='Tiles').url
-
-    def __str__(self):
-        return "%s Layer" % self.typename
-
 
 class AttributeManager(models.Manager):
     """Helper class to access filtered attributes
