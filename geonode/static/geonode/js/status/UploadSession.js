@@ -1,6 +1,6 @@
-/*global define: true */
+/*global define: true, $:true */
 
-define(['jquery'], function ($) {
+define(function () {
     'use strict';
 
     var UploadSession = function (options) {
