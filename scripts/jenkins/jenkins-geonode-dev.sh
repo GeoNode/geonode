@@ -56,6 +56,9 @@ cp TEST-nose.xml csw-TEST-nose.xml
 cp coverage.xml csw-coverage.xml
 cp coverage -R csw-coverage
 
+# Run the javascript tests 
+paver test_javascript
+
 # Run Code Quality Tools
 export DJANGO_SETTINGS_MODULE=geonode.settings
 pylint -f parseable geonode/ | tee pylint.out
