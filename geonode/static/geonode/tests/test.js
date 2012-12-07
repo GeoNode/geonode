@@ -10,10 +10,11 @@ requirejs.config({
 var deps = [
     'upload/FileType',
     'upload/FileTypes',
-    'upload/LayerInfo'
+    'upload/LayerInfo',
+    'status/UploadSession'
 ];
 
-define(deps, function (FileType, FileTypes, LayerInfo) {
+define(deps, function (FileType, FileTypes, LayerInfo, UploadSession) {
     'use strict';
 
     module('FileType');
@@ -36,7 +37,6 @@ define(deps, function (FileType, FileTypes, LayerInfo) {
             true,
             'Make sure the type can correctly identify its own type'
         );
-
         strictEqual(
             type.findTypeErrors(['test']).length,
             0,
@@ -77,86 +77,63 @@ define(deps, function (FileType, FileTypes, LayerInfo) {
 
     });
 
+    module('Layer Info of unknown type');
+    test('The LayerInfo object on an unknown type', function () {
+        var unknownType = new LayerInfo({
+            name: 'pdf',
+            files: [{name: 'test.pdf'}]
+        });
 
-    // describe('The LayerInfo object on an unknown type', function () {
-    //     var unknownType = new LayerInfo({
-    //         name: 'pdf',
-    //         files: [{name: 'test.pdf'}]
-    //     });
+        strictEqual(unknownType instanceof LayerInfo, true);
+        strictEqual(unknownType.errors.length, 1, 'Should return one error');
 
-    //     it('Should return the correct class', function () {
-    //         expect(unknownType instanceof LayerInfo).toBeTruthy();
-    //     });
+    });
 
-    //     it('Should return one error', function () {
-    //         expect(unknownType.errors.length).toEqual(1);
-    //     });
+    // can we roll this into a single test case?
+    module('LayerInfo csv file');
+    test('The LayerInfo type on a CSV file', function () {
+        var csvInfo = new LayerInfo({
+            name: 'test-csv',
+            files: [{name: 'test.csv'}]
+        });
+        strictEqual(csvInfo instanceof LayerInfo, true, 'Should return the correct class');
+        strictEqual(csvInfo.type, FileTypes.CSV, 'Should return the correct type');
+        strictEqual(csvInfo.errors.length, 0, 'Should return no errors');
 
-    // });
+    });
 
+    module('LayerInfo Tiff');
+    test('The LayerInfo type on a Tiff file', function () {
+        var tifInfo = new LayerInfo({name: 'test-tif', files: [{name: 'test.tif'}]});
+        strictEqual(tifInfo instanceof LayerInfo, true, 'Should return the correct class');
+        strictEqual(tifInfo.type, FileTypes.TIF, 'Should return the correct file type');
+        strictEqual(tifInfo.errors.length, 0, 'Should return no errors');
+    });
 
-    // describe('The LayerInfo type on a CSV file', function () {
-    //     var csvInfo = new LayerInfo({
-    //         name: 'test-csv',
-    //         files: [{name: 'test.csv'}]
-    //     });
+    module('LayerInfo Zip');
+    test('The LayerInfo type on a Zip file', function () {
+        var tifInfo = new LayerInfo({name: 'test-zip', files: [{name: 'test.zip'}]});
+        strictEqual(tifInfo instanceof LayerInfo, true, 'Should return the correct class');
+        strictEqual(tifInfo.type, FileTypes.ZIP, 'Should return the correct file type');
+        strictEqual(tifInfo.errors.length, 0, 'Should return on errors');
+    });
 
-    //     it('Should return the correct class', function () {
-    //         expect(csvInfo instanceof LayerInfo).toBeTruthy();
-    //     });
+    module('Upload Session');
+    test('The UploadSession should be able', function () {
+        var ses = new UploadSession({
+            name: 'test session',
+            id: 1,
+            layer_name: 'test',
+            layer_id: 1,
+            state: 'PEDDING',
+            url: '',
+            date: 'Date',
+        });
+        strictEqual(ses instanceof UploadSession, true, 'Should return the correct class');
 
-    //     it('Should return the correct type', function () {
-    //         expect(csvInfo.type).toEqual(FileTypes.CSV);
-    //     });
-
-    //     it('Should return no errors', function () {
-    //         expect(csvInfo.errors.length).toEqual(0);
-    //     });
-
-    // });
-
-    // describe('The LayerInfo type on a Tiff file', function () {
-    //     var tifInfo = new LayerInfo({name: 'test-tif', files: [{name: 'test.tif'}]});
-
-    //     it('Should return the correcet class', function () {
-    //         expect(tifInfo instanceof LayerInfo).toBeTruthy();
-    //     });
-
-    //     it('Should return the correct file type', function () {
-    //         expect(tifInfo.type).toEqual(FileTypes.TIF);
-    //     });
-
-    //     it('Should return no errors', function () {
-    //         expect(tifInfo.errors.length).toEqual(0);
-    //     });
-    // });
-
-    // describe('The LayerInfo type on a Zip file', function () {
-    //     var tifInfo = new LayerInfo({name: 'test-zip', files: [{name: 'test.zip'}]});
-
-    //     it('Should return the correcet class', function () {
-    //         expect(tifInfo instanceof LayerInfo).toBeTruthy();
-    //     });
-
-    //     it('Should return the correct file type', function () {
-    //         expect(tifInfo.type).toEqual(FileTypes.ZIP);
-    //     });
-
-    //     it('Should return no errors', function () {
-    //         expect(tifInfo.errors.length).toEqual(0);
-    //     });
-    // });
+    });
 
     // describe('The UploadSession should be able', function () {
-    //     var ses = new UploadSession({
-    //         name: 'test session',
-    //         id: 1,
-    //         layer_name: 'test',
-    //         layer_id: 1,
-    //         state: 'PEDDING',
-    //         url: '',
-    //         date: 'Date',
-    //     });
 
     //     it('Should return the correct class', function () {
     //         expect(ses instanceof UploadSession).toBeTruthy();
