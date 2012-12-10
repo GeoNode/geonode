@@ -1031,6 +1031,9 @@ def tweetview(request):
 
     redirectPage = 'maps/tweetview.html'
 
+
+
+
     #Check if twitter server is running
 #    ec2 = EC2Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
 #    twitterInstance = ec2.get_all_instances(instance_ids=[settings.AWS_INSTANCE_ID])[0].instances[0]
@@ -1067,6 +1070,12 @@ def tweetview(request):
     if "geopsip" in request.GET:
         geops_ip = request.GET["geopsip"]
 
+    try:
+        testUrl = "http://" +  geops_ip  + "/?LAYERS=point&TRANSPARENT=TRUE&FORMAT=image%2Fpng&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&RND=0.7935556590091437&SQL=SELECT%20goog_x%2C%20goog_y%2C%20%20tweet_text%20%20from%20oct_tweets%20WHERE%20time%20%3E%201354300501%20AND%20time%20%3C%201354905302&RADIUS=1&R=0&G=0&B=255&NUM_REQUESTS=1&_OLSALT=0.731751827057451&SRS=EPSG%3A900913&BBOX=-16280475.52625,-4924280.9318723,16280475.52625,4924280.9318723&WIDTH=1664&HEIGHT=503"
+        #testUrl = "http://worldmap.harvard.edu"
+        resp, content = h.request(testUrl, 'GET')
+    except:
+        redirectPage = "maps/tweetstartup.html"
 
     return render_to_response(redirectPage, RequestContext(request, {
         'config': json.dumps(config),
@@ -2188,7 +2197,7 @@ def maps_search(request):
 def _maps_search(query, start, limit, sort_field, sort_dir):
 
     keywords = _split_query(query)
-
+    map_query = Map.objects.filter()
     for keyword in keywords:
         map_query = Map.objects.filter(
               Q(title__icontains=keyword)
