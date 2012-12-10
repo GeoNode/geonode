@@ -1626,7 +1626,7 @@ def resolve_user(request):
         superuser = request.user.is_superuser
     return HttpResponse(json.dumps({
         'user' : user,
-        'geoserver' : superuser,
+        'geoserver' : geoserver,
         'superuser' : superuser
     }))
 
