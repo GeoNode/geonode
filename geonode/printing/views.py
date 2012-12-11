@@ -1,6 +1,7 @@
 import urllib2
+from urllib2 import HTTPError
+import base64
 import logging
-from cookielib import CookieJar
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -14,6 +15,57 @@ from geonode.printing.models import PrintTemplate
 from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
+
+
+def printing_print(request, templateid, resource_context, format):
+    """Interpolate the template with the given id"""
+    try:
+
+        # get the template from the django database
+        template = get_template(templateid)
+        # Apply the vars to the template and render it
+        rendered = render_template(request, template, resource_context)
+        # build to url to be sent to GeoServer
+        url = "%sjson?format=%s" % (settings.GEOSERVER_PRINT_URL, format)
+
+        ## add the auth headers to urllib2
+        passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        passman.add_password(
+            None,
+            "geoserver",
+            settings.GEOSERVER_CREDENTIALS[0],
+            settings.GEOSERVER_CREDENTIALS[1]
+        )
+
+        urllib2.install_opener(urllib2.build_opener(
+            urllib2.HTTPBasicAuthHandler(passman)
+        ))
+
+        print_req = urllib2.Request(url, rendered)
+        ### FIXME, This code should use the urllib2 password manager
+        base64string = base64.encodestring(
+            '%s:%s' % (settings.GEOSERVER_CREDENTIALS[0],
+                       settings.GEOSERVER_CREDENTIALS[0])).replace('\n', '')
+        print_req.add_header("Authorization", "Basic %s" % base64string)
+
+        ### add the correct content type to the request
+        print_req.add_header('Content-Type', 'text/html')
+        printed = urllib2.urlopen(print_req)
+    except HTTPError, e:
+        return HttpResponse(
+            e.reason,
+            mimetype="text/plain",
+            status=500
+        )
+    return HttpResponse(printed, content_type="application/json")
+
+
+def get_resource_context(mapid=None, layerid=None):
+    if mapid is not None:
+        resource_obj = get_object_or_404(Map, pk=mapid)
+    else:
+        resource_obj = get_object_or_404(Layer, typename=layerid)
+    return resource_obj
 
 
 @csrf_exempt
@@ -38,34 +90,6 @@ def printing_preview_map(request, templateid, mapid=None):
 def printing_preview_layer(request, templateid, layerid=None):
     resource_context = get_resource_context(layerid=layerid)
     return printing_print(request, templateid, resource_context, 'png')
-
-
-def printing_print(request, templateid, resource_context, format):
-    """interpolate the template with the given id"""
-    try:
-        template = get_template(templateid)
-        rendered = render_template(request, template, resource_context)
-        print "resource context used for printing task:\n %s" % resource_context
-        print "Post Body for Print Task: \n %s" % rendered
-        url = "%sjson?format=%s" % (settings.GEOSERVER_PRINT_URL, format)
-        print_req = urllib2.Request(url, rendered)
-        print_req.add_header("X-CSRFToken", request.META.get("HTTP_X_CSRFTOKEN", None))
-        printed = urllib2.urlopen(print_req)
-    except Exception, e:
-        return HttpResponse(
-            e.message,
-            mimetype="text/plain",
-            status=500
-        )
-    return HttpResponse(printed, content_type="application/json")
-
-
-def get_resource_context(mapid=None, layerid=None):
-    if mapid is not None:
-        resource_obj = get_object_or_404(Map, pk=mapid)
-    else:
-        resource_obj = get_object_or_404(Layer, typename=layerid)
-    return resource_obj
 
 
 def get_template(templateid):
