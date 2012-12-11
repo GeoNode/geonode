@@ -11,11 +11,14 @@ from django.contrib.contenttypes import generic
 
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import ResourceBase, Layer
+from geonode.maps.signals import map_changed_signal
+from geonode.maps.models import Map
+from geonode.utils import bbox_to_wkt
 from geonode.people.models import Profile, Role
 
 class ContactRole(models.Model):
     """
-    ContactRole is an intermediate model to bind Contacts and Layers and apply roles.
+    ContactRole is an intermediate model to bind Contacts and Documents and apply roles.
     """
     contact = models.ForeignKey(Profile, related_name='document_contact')
     document = models.ForeignKey('Document', null=True)
@@ -141,8 +144,14 @@ def pre_save_document(instance, sender, **kwargs):
     if instance.metadata_author is None:
         instance.contactrole_set.create(role=instance.metadata_author_role,
                                          contact=Layer.objects.admin_contact())
+    if instance.resource:
+        instance.csw_wkt_geometry = instance.resource.geographic_bounding_box
+        instance.bbox_x0 = instance.resource.bbox_x0
+        instance.bbox_x1 = instance.resource.bbox_x1
+        instance.bbox_y0 = instance.resource.bbox_y0
+        instance.bbox_y1 = instance.resource.bbox_y1
 
-def post_save_document(instance,sender, **kwardg):
+def post_save_document(instance,sender, **kwargs):
     pc, __ = Profile.objects.get_or_create(user=instance.owner,
                                            defaults={"name": instance.owner.username})
     ac, __ = Profile.objects.get_or_create(user=instance.owner,
@@ -151,5 +160,12 @@ def post_save_document(instance,sender, **kwardg):
     instance.poc = pc
     instance.metadata_author = ac
 
+def update_documents_extent(sender, **kwargs):
+    model = 'map' if isinstance(sender, Map) else 'layer'
+    ctype = ContentType.objects.get(model= model)
+    for document in Document.objects.filter(content_type=ctype, object_id=sender.id):
+        document.save()
+
 signals.pre_save.connect(pre_save_document, sender=Document)
 signals.post_save.connect(post_save_document, sender=Document)
+map_changed_signal.connect(update_documents_extent)
