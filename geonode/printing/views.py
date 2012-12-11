@@ -28,19 +28,6 @@ def printing_print(request, templateid, resource_context, format):
         # build to url to be sent to GeoServer
         url = "%sjson?format=%s" % (settings.GEOSERVER_PRINT_URL, format)
 
-        ## add the auth headers to urllib2
-        passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-        passman.add_password(
-            None,
-            "geoserver",
-            settings.GEOSERVER_CREDENTIALS[0],
-            settings.GEOSERVER_CREDENTIALS[1]
-        )
-
-        urllib2.install_opener(urllib2.build_opener(
-            urllib2.HTTPBasicAuthHandler(passman)
-        ))
-
         print_req = urllib2.Request(url, rendered)
         ### FIXME, This code should use the urllib2 password manager
         base64string = base64.encodestring(
