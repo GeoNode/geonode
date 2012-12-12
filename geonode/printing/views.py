@@ -2,6 +2,7 @@ import urllib2
 from urllib2 import HTTPError
 import base64
 import logging
+
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -9,16 +10,45 @@ from django.template import Context, loader, Template
 from django.utils import simplejson as json
 from django.utils import html
 from django.forms.models import model_to_dict
+from django.views.decorators.csrf import csrf_exempt
+
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.printing.models import PrintTemplate
-from django.views.decorators.csrf import csrf_exempt
+
 
 logger = logging.getLogger(__name__)
 
 
+def get_template(templateid):
+    """Function to find a template.
+       requires (templateid)
+       produces (template or 404)
+    """
+    template_obj = get_object_or_404(PrintTemplate, pk=templateid)
+    ## If the object is local give it to django template object
+    if template_obj.contents:
+        template = Template(template_obj.contents)
+    else:
+        if not template_obj.url.find("http", 0, 4) > -1:
+            # If the template does not have an http in the url
+            # Use django get_template method
+            template = loader.get_template(template_obj.url)
+        else:
+            # Last option is if the template is remote, use urllib to
+            # request it and then give it to django
+            remote_template = urllib2.urlopen(template_obj.url)
+            template = Template(remote_template.readlines())
+    return template
+
+
 def printing_print(request, templateid, resource_context, format):
-    """Interpolate the template with the given id"""
+    """Interpolate the template with the given id
+
+       returns either a 200 response with json data,
+       or a http error with the error
+
+    """
     try:
 
         # get the template from the django database
@@ -77,19 +107,6 @@ def printing_preview_map(request, templateid, mapid=None):
 def printing_preview_layer(request, templateid, layerid=None):
     resource_context = get_resource_context(layerid=layerid)
     return printing_print(request, templateid, resource_context, 'png')
-
-
-def get_template(templateid):
-    template_obj = get_object_or_404(PrintTemplate, pk=templateid)
-    if template_obj.contents:
-        template = Template(template_obj.contents)
-    else:
-        if not template_obj.url.find("http", 0, 4) > -1:
-            template = loader.get_template(template_obj.url)
-        else:
-            remote_template = urllib2.urlopen(template_obj.url)
-            template = Template(remote_template.readlines())
-    return template
 
 
 def render_template(request, template, resource_context):
