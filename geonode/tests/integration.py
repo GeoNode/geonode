@@ -37,6 +37,7 @@ from django.core.urlresolvers import reverse
 from geoserver.catalog import FailedRequestError
 
 from geonode.security.models import *
+from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.layers.views import layer_set_permissions
 from geonode import GeoNodeException
@@ -115,10 +116,68 @@ class NormalUserTest(TestCase):
         resp = client.get(url)
         self.assertEquals(resp.status_code, 200)
 
+geoserverAdmin = ['admin', 'admin']
+
+
+class Printing(TestCase):
+    #    fixtures = ['some_maps.json']
+
+    def setUp(self):
+        call_command('loaddata', 'security_data', verbosity=1)
+        call_command('loaddata', 'people_data', verbosity=1)
+        call_command('loaddata', 'map_data', verbosity=1)
+        call_command('loaddata', 'sample_tags', verbosity=1)
+        call_command('loaddata', 'some_maps', verbosity=1)
+
+        # when in Rome
+        self.c = Client()
+        self.c.login(username='admin', password='admin')
+
+    def tearDown(self):
+        pass
+
+    def check_printing_response(self, response):
+        """Checks to make sure the printing endpoint returns the
+        correct response """
+
+        self.assertEquals(
+            response.status_code,
+            200,
+            'The printing endpoint should return a 200'
+        )
+
+        data = json.loads(response.content)
+        self.assertTrue('getURL' in data, 'The endpoint should return a url')
+        self.assertTrue(
+            data['getURL'].endswith('pdf'),
+            'The url should be an pdf'
+        )
+
+    def test_print_map(self):
+
+        response = self.c.post(
+            reverse(
+                'printing_map',
+                kwargs={'mapid': 1, 'templateid': 1}
+            )
+        )
+        self.check_printing_response(response)
+
+    # def test_print_layer(self):
+
+    #     response = self.c.post(
+    #         reverse(
+    #             'print_layer',
+    #             kwargs={'layerid': '1', 'templateid': 1}
+    #         )
+    #     )
+    #     self.check_printing_response(response)
+
 
 class GeoNodeMapTest(TestCase):
     """Tests geonode.maps app/module
     """
+    fixtures = ['people_data.json']
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
