@@ -10,6 +10,7 @@
 @blueDark: #379ea9;
 @orange: #f05a24;
 @orangeLight: #f6921e;
+@orangeAlt: #f7931e;
 
 @textColor: @black;
 @linkColor: #41aaba;
@@ -595,11 +596,25 @@ img.thumb {
 section.article-list {
   article {
     overflow:hidden;
-    margin-bottom:10px;
+    margin-bottom:15px;
+
+    header {
+      overflow:hidden;
+
+      h3 {
+        float:left;
+        width:65%;
+        font-size:16px;
+        line-height: 18px;
+      }
+
+      .btn {
+        float:right;
+      }
+    }
 
     .details {
-      float:left;
-      width:152px;
+      clear:both;
     }
 
     h6 {
@@ -1035,16 +1050,17 @@ body.home {
   }
 
   .btn {
-    background:@orange;
+    background:@orangeAlt;
 
     &:hover {
-      background:@orangeLight;
+      background:@orange;
     }
   }
 
   p.btns {
     text-align:right;
     margin:30px 0 0;
+    padding: 30px 0;
 
     span {
       text-align:left;
@@ -1054,7 +1070,7 @@ body.home {
     }
 
     a.btn-large {
-      font-size:@baseFontSize * 2;
+      font-size:20px;
       margin-left:15px;
     }
   }
@@ -1224,9 +1240,7 @@ body.search-results {
   .content-wrap .container {
     width: 960px;
   }
-  .span4 {
 
-  }
   article {
     overflow:hidden;
     background:@grayLighter;
