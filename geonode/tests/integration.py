@@ -125,7 +125,6 @@ class Printing(TestCase):
     def setUp(self):
 
         call_command('loaddata', 'security_data', verbosity=1)
-        call_command('loaddata', 'people_data', verbosity=1)
         call_command('loaddata', 'map_data', verbosity=1)
         call_command('loaddata', 'sample_tags', verbosity=1)
         call_command('loaddata', 'some_maps', verbosity=1)
@@ -155,6 +154,11 @@ class Printing(TestCase):
         )
 
     def test_print_map(self):
+        self.assertNotEqual(
+            Map.objects.all().count(),
+            0,
+            'Make sure we have maps'
+        )
 
         response = self.c.post(
             reverse(
@@ -169,30 +173,30 @@ class Printing(TestCase):
     # whats going on.
     # Ivan Dec 12
 
-    # def test_print_layer(self):
+    def test_print_layer(self):
 
-    #     self.assertNotEqual(
-    #         Layer.objects.all().count(),
-    #         0,
-    #         'Make sure we have some layer objects before we run the tests'
-    #     )
+        self.assertNotEqual(
+            Layer.objects.all().count(),
+            0,
+            'Make sure we have some layer objects before we run the tests'
+        )
 
-    #     response = self.c.post(
-    #         reverse(
-    #             'printing_layer',
-    #             kwargs={'layerid': '1', 'templateid': 1}
-    #         )
-    #     )
-    #     self.check_printing_response(response)
+        response = self.c.post(
+            reverse(
+                'printing_layer',
+                kwargs={'layerid': '1', 'templateid': 1}
+            )
+        )
+        self.check_printing_response(response)
 
 
 class GeoNodeMapTest(TestCase):
     """Tests geonode.maps app/module
     """
-    fixtures = ['people_data.json']
+    #    fixtures = ['people_data.json']
 
     def setUp(self):
-        call_command('loaddata', 'people_data', verbosity=0)
+        call_command('loaddata', 'people_data', verbosity=1)
 
     def tearDown(self):
         pass
