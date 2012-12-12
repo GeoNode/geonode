@@ -123,6 +123,7 @@ class Printing(TestCase):
     #    fixtures = ['some_maps.json']
 
     def setUp(self):
+
         call_command('loaddata', 'security_data', verbosity=1)
         call_command('loaddata', 'people_data', verbosity=1)
         call_command('loaddata', 'map_data', verbosity=1)
@@ -170,9 +171,15 @@ class Printing(TestCase):
 
     # def test_print_layer(self):
 
+    #     self.assertNotEqual(
+    #         Layer.objects.all().count(),
+    #         0,
+    #         'Make sure we have some layer objects before we run the tests'
+    #     )
+
     #     response = self.c.post(
     #         reverse(
-    #             'print_layer',
+    #             'printing_layer',
     #             kwargs={'layerid': '1', 'templateid': 1}
     #         )
     #     )
