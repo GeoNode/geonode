@@ -144,20 +144,28 @@ img.olTileImage {
     border:0;
 
     input[type="text"] {
-      width:200px;
-      .border-right-radius(0);
-      .border-left-radius(10px);
-      margin-right: 0px;
+      width:250px;
+      .border-radius(0);
+      .box-shadow(none);
+      margin-right: 0;
       padding-left: 10px;
       border-right: 0;
+      float:left;
+
+      &:active, &:focus {
+        border-color:@bdrColor;
+      }
     }
 
-    button {
+    .btn {
      height: 28px;
-     margin: 0px -3.5px 0px;
+     margin: 0;
      padding: 0px 10px;
-     .border-left-radius(0);
-     .border-right-radius(10px);
+     .border-radius(0);
+     .box-shadow(none);
+     border: 1px solid @bdrColor;
+     border-left: 0;
+     float:left;
     }
 
     a {
