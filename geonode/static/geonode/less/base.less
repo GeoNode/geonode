@@ -183,19 +183,7 @@ img.olTileImage {
   background:@navBkgd;
   border-bottom: 0;
   margin-bottom: 0;
-
   .border-top-radius(10px);
-
-  ul li.current a {
-    font-weight:700;
-  }
-
-  ul li a {
-    border:0;
-    color:#353535;
-    font-family:@customFont;
-    font-weight: 400;
-  }
 }
 
 nav.main-nav  {
@@ -207,7 +195,15 @@ nav.main-nav  {
      li {
        list-style-type:none;
 
+       &.current a {
+         font-weight:700;
+       }
+
       a {
+        border:0;
+        color:#353535;
+        font-family:@customFont;
+        font-weight: 400;
         display:block;
         float:left;
         text-transform:uppercase;
@@ -221,6 +217,7 @@ nav.main-nav  {
 
       a:hover {
         text-decoration:none;
+        font-weight:700;
       }
     }
   }
