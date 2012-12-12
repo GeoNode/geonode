@@ -163,6 +163,11 @@ class Printing(TestCase):
         )
         self.check_printing_response(response)
 
+    # for some reason the fixtures are not loading correctly for the
+    # layers module. These tests are commented out until I figure out
+    # whats going on.
+    # Ivan Dec 12
+
     # def test_print_layer(self):
 
     #     response = self.c.post(
