@@ -1047,6 +1047,7 @@ body.home {
 
   h1 {
     #title;
+    font-weight:300;
   }
 
   .btn {
@@ -1057,21 +1058,31 @@ body.home {
     }
   }
 
-  p.btns {
-    text-align:right;
-    margin:30px 0 0;
-    padding: 30px 0;
+  .hero-unit-content {
+    overflow:hidden;
+    margin-top:10px;
+  }
+
+  .intro {
+    float:left;
+    width:68%;
 
     span {
-      text-align:left;
-      float:left;
       display:block;
-      font-size:@baseFontSize - 1;
+      font-size:@baseFontSize;
+      margin-top:15px;
     }
+  }
+
+  .btns {
+    float:right;
+    width:30%;
+    text-align:right;
 
     a.btn-large {
       font-size:20px;
-      margin-left:15px;
+      margin:0 0 15px;
+      width:160px;
     }
   }
 }
