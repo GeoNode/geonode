@@ -20,6 +20,16 @@ from geonode.printing.models import PrintTemplate
 logger = logging.getLogger(__name__)
 
 
+def render_template(request, template, resource_context):
+    """ Takes a request, template and returned a rendered template
+    """
+    render_data = request.POST.copy()
+    render_data.update(model_to_dict(resource_context))
+    context = Context(render_data)
+    rendered = template.render(context)
+    return rendered
+
+
 def get_template(templateid):
     """Function to find a template.
        requires (templateid)
@@ -81,7 +91,7 @@ def get_resource_context(mapid=None, layerid=None):
     if mapid is not None:
         resource_obj = get_object_or_404(Map, pk=mapid)
     else:
-        resource_obj = get_object_or_404(Layer, typename=layerid)
+        resource_obj = get_object_or_404(Layer, pk=layerid)
     return resource_obj
 
 
@@ -96,7 +106,9 @@ def printing_print_layer(request, templateid, layerid=None):
     resource_context = get_resource_context(layerid=layerid)
     return printing_print(request, templateid, resource_context, 'pdf')
 
-
+# why are these here? What are they doing that are different from the
+# above methods, content types. can we include the content types in
+# the url? What does the client need?
 @csrf_exempt
 def printing_preview_map(request, templateid, mapid=None):
     resource_context = get_resource_context(mapid=mapid)
@@ -109,15 +121,8 @@ def printing_preview_layer(request, templateid, layerid=None):
     return printing_print(request, templateid, resource_context, 'png')
 
 
-def render_template(request, template, resource_context):
-    render_data = request.POST.copy()
-    render_data.update(model_to_dict(resource_context))
-    context = Context(render_data)
-    rendered = template.render(context)
-    return rendered
-
-
-#require_GET()
+# Require_GET()
+# Where is this url used?
 def printing_template_list(request):
     """list the available templates"""
     templates = []
