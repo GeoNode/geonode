@@ -10,6 +10,7 @@
 @blueDark: #379ea9;
 @orange: #f05a24;
 @orangeLight: #f6921e;
+@orangeAlt: #f7931e;
 
 @textColor: @black;
 @linkColor: #41aaba;
@@ -73,6 +74,7 @@ img.olTileImage {
   text-indent: -9999em;
   margin-top: 3px;
   background: url(../img/logo.png) no-repeat;
+  margin-bottom: 7px;
 }
 
 .brand {
@@ -92,7 +94,6 @@ img.olTileImage {
   }
 
   li.actions {
-    padding-left:7px;
     a {
       padding-left: 3px;
       float:left;
@@ -123,6 +124,7 @@ img.olTileImage {
   .navbar-inner {
     background:@brown;
     .box-shadow(20px);
+    padding-top: 7px;
   }
 
   p {
@@ -138,24 +140,32 @@ img.olTileImage {
   }
 
   .search-box {
-    margin: 5px;
+    margin: 2px 5px;
     border:0;
 
     input[type="text"] {
-      width:200px;
-      .border-right-radius(0);
-      .border-left-radius(10px);
-      margin-right: 0px;
+      width:250px;
+      .border-radius(0);
+      .box-shadow(none);
+      margin-right: 0;
       padding-left: 10px;
       border-right: 0;
+      float:left;
+
+      &:active, &:focus {
+        border-color:@bdrColor;
+      }
     }
 
-    button {
+    .btn {
      height: 28px;
-     margin: 0px -3.5px 0px;
+     margin: 0;
      padding: 0px 10px;
-     .border-left-radius(0);
-     .border-right-radius(10px);
+     .border-radius(0);
+     .box-shadow(none);
+     border: 1px solid @bdrColor;
+     border-left: 0;
+     float:left;
     }
 
     a {
@@ -183,19 +193,7 @@ img.olTileImage {
   background:@navBkgd;
   border-bottom: 0;
   margin-bottom: 0;
- 
-  .border-top-radius(10px);
-
-  ul li.current a {
-    font-weight:700;
-  }
-
-  ul li a {
-    border:0;
-    color:#353535;
-    font-family:@customFont;
-    font-weight: 400;
-  }
+  padding: 1px 0;
 }
 
 nav.main-nav  {
@@ -207,12 +205,20 @@ nav.main-nav  {
      li {
        list-style-type:none;
 
+       &.current a {
+         font-weight:700;
+       }
+
       a {
+        border:0;
+        color:#353535;
+        font-family:@customFont;
+        font-weight: 400;
         display:block;
         float:left;
         text-transform:uppercase;
         font-size:16px;
-        padding:4px 12px;
+        padding:4px 17px;
       }
 
       a.last {
@@ -221,6 +227,7 @@ nav.main-nav  {
 
       a:hover {
         text-decoration:none;
+        font-weight:700;
       }
     }
   }
@@ -427,7 +434,7 @@ footer.footer {
 
 #widget-title {
   background:@brown;
-  padding:10px 15px;
+  padding:4px 15px;
   .border-radius(6px);
   color:@white;
   #title;
@@ -460,13 +467,14 @@ section.widget-mini {
   .box-shadow(none);
 }
 
-.placeholder {
+.img-placeholder {
   float:left;
   margin:0 15px 15px 0;
   background:#dddeda;
   text-align:center;
   color:@graySp;
-  display:table-cell;vertical-align: middle;
+  display:table-cell;
+  vertical-align: middle;
 
   &.pl-153-113 {
     .size(63px, 153px);
@@ -518,6 +526,7 @@ section.widget-mini {
       width:320px;
       overflow: hidden;
       text-overflow:ellipses;
+      font-weight:normal;
     }
   }
 
@@ -556,8 +565,8 @@ aside .well {
 
   h2 {
     border-bottom: 1px solid #ccc;
-    margin:-10px -19px 0;
-    padding: 5px 19px;
+    margin:-19px -19px 0;
+    padding: 4px 15px 3px;
     #title;
   }
 
@@ -587,11 +596,25 @@ img.thumb {
 section.article-list {
   article {
     overflow:hidden;
-    margin-bottom:10px;
+    margin-bottom:15px;
+
+    header {
+      overflow:hidden;
+
+      h3 {
+        float:left;
+        width:65%;
+        font-size:16px;
+        line-height: 18px;
+      }
+
+      .btn {
+        float:right;
+      }
+    }
 
     .details {
-      float:left;
-      width:152px;
+      clear:both;
     }
 
     h6 {
@@ -1019,30 +1042,42 @@ body.home {
 
   h1 {
     #title;
+    font-weight:300;
   }
 
   .btn {
-    background:@orange;
+    background:@orangeAlt;
 
     &:hover {
-      background:@orangeLight;
+      background:@orange;
     }
   }
 
-  p.btns {
-    text-align:right;
-    margin:30px 0 0;
+  .hero-unit-content {
+    overflow:hidden;
+    margin-top:10px;
+  }
+
+  .intro {
+    float:left;
+    width:68%;
 
     span {
-      text-align:left;
-      float:left;
       display:block;
-      font-size:@baseFontSize - 1;
+      font-size:@baseFontSize;
+      margin-top:15px;
     }
+  }
+
+  .btns {
+    float:right;
+    width:30%;
+    text-align:right;
 
     a.btn-large {
-      font-size:@baseFontSize * 2;
-      margin-left:15px;
+      font-size:20px;
+      margin:0 0 15px;
+      width:160px;
     }
   }
 }
@@ -1212,9 +1247,7 @@ body.search-results {
   .content-wrap .container {
     width: 960px;
   }
-  .span4 {
 
-  }
   article {
     overflow:hidden;
     background:@grayLighter;
