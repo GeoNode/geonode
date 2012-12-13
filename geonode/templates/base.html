@@ -1,9 +1,9 @@
-{% load i18n %}
+{% load i18n avatar_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
+    <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
       <link href="{{ STATIC_URL }}libs/bootstrap/css/bootstrap.css" rel="stylesheet"/>
       <link href='{{ STATIC_URL }}geonode/font/lato_font.css' rel='stylesheet' type='text/css' />
@@ -26,7 +26,7 @@
             <div class="span3">
               <a href="{% url home %}">
                 <span class="nav-logo">
-                  <a class="brand">{{ SITENAME }}</a>
+                  <a class="brand">{{ SITE_NAME }}</a>
                 </span>
               </a>
             </div>
@@ -36,7 +36,7 @@
                   <ul class="nav pull-right account-bar">
                     {% if user.is_authenticated %}
                       <li class="user-avatar">
-                        <img src="{{ STATIC_URL }}geonode/img/avatar.png" width="20px" height="20px" alt="" class="avatar" />
+                        {% avatar user 20 %}
                       </li>
                       <li class="dropdown user">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -47,6 +47,9 @@
                           <li><a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}"><i class="icon-user"></i> {% trans "Profile" %}</a></li>
                           {% if user.is_staff %}
                             <li><a href="{% url admin:index %}"><i class="icon-cog"></i> {% trans "Admin" %}</a></li>
+                          {% endif %}
+                          {% if user.is_superuser %}
+                            <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="icon-globe"></i> {% trans "GeoServer" %}</a></li>
                           {% endif %}
                           <li class="divider"></li>
                           <li><a href="{% url account_logout %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
@@ -75,7 +78,7 @@
                                         {% trans "Remember Me" %}
                                     </label>
                                     <button type="submit" class="btn pull-right">{% trans "Sign in" %}</button>
-                                    <div>{% trans "Don't have an account yet?" %} <a href="{% url registration_register %}">{% trans "Register now" %}</a></div>
+                                    <div>{% trans "Don't have an account yet?" %} <a href="{% url account_signup %}">{% trans "Register now" %}</a></div>
                                 </form>
                             </li>
                           </ul>
@@ -112,6 +115,12 @@
                   <li id="nav_maps">
                     <a href="{% url maps_browse %}">{% trans "Maps" %}</a>
                   </li>
+    
+                  {% if DOCUMENTS_APP %}
+                  <li id="nav_documents">
+                    <a href="{% url documents_browse %}">{% trans "Documents" %}</a>
+                  </li>
+                  {% endif %}
                   <li id="nav_profiles">
                     <a href="{% url profile_browse %}">{% trans "People" %}</a>
                   </li>
@@ -123,9 +132,9 @@
             </div>
             <div class="span2">
               <ul class="social">
-                <li><a href="#" class="fb">facebook</a></li>
-                <li><a href="#" class="tw">twitter</a></li>
-                <li><a href="#" class="gp">google+</a></li>
+                  <li><a href="http://www.facebook.com/sharer.php?u=http://{{ request.get_host }}{{ request.get_full_path }}" class="fb">facebook</a></li>
+                  <li><a href="https://twitter.com/share?url=http://{{   request.get_host }}{{ request.get_full_path }}" class="tw">twitter</a></li>
+                  <li><a href="https://plusone.google.com/_/ 1/confirm?hl=en&url=http://{{ request.get_host }}{{ request.get_full_path }}" class="gp">google+</a></li>
               </ul>
             </div>
           </div>
@@ -136,6 +145,17 @@
     {% endblock header %}
     {% block middle %}
     <div class="content-wrap">
+        {% if site_wide_announcements %}
+            <div id="site_wide_announcements">
+                {% for announcement in site_wide_announcements %}
+                <div class="alert alert-block">
+                    <a type="button" class="close" data-dismiss="alert" href="{% url announcement_hide announcement.pk %}?next={{ request.path }}">×</button>
+                    <h4><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a> -</h4>
+                    <div>{{ announcement.content }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         <div class="container">
           <div class="row">
             {% block body_outer %}
