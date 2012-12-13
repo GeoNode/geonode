@@ -71,7 +71,7 @@ Ext.onReady(function() {
     var columns = [
        { header: gettext('Type'), tpl: "<div class='data-type {type}'>&nbsp;</div>", width: 10 },
        { header: gettext('Title'), dataIndex: 'title', autoExpand: true, tpl: "<a href='{href}'> {title} </a>" },
-       { header: gettext('Date'), dataIndex: 'date', width: 30, tpl:'{date}'}
+       { header: gettext('Date'), dataIndex: 'date', sortable: true,  width: 30, tpl:'{date}'}
     ]
 
     {% if user == profile.user %}

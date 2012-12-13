@@ -724,6 +724,7 @@ class LayerManager(models.Manager):
         cat = self.gs_catalog
         resources = []
         if workspace is not None:
+            print >> console, "Workspace is  %s" % workspace
             workspace = cat.get_workspace(workspace)
             resources = cat.get_resources(workspace=workspace)
         output = []
@@ -731,10 +732,14 @@ class LayerManager(models.Manager):
         # check lnames
         if lnames is not None:
             for l in lnames:
+                if verbosity > 1:
+                    print >> console, "Getting  %s" % l
                 resource = cat.get_resource(l)
             if resource:
                 resources.append(resource)
         else:
+            if verbosity > 1:
+                print >> console, "Getting  all resources"
             resources = cat.get_resources()
 
         number = len(resources)
