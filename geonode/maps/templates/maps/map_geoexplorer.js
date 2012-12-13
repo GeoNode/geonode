@@ -195,7 +195,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
                 config.tools[i].catalogSourceKey = catalogSourceKey;
             }
             if (config.tools[i].ptype === "gxp_print") {
-                config.tools[i].ptype == "gn_print";
+                config.tools[i].ptype = "gn_print";
             }
         }
         // add catalog source
