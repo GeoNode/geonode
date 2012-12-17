@@ -121,6 +121,7 @@ GeoExplorer.PrintPlugin = Ext.extend(gxp.plugins.Tool, {
 
     },
     addOutput: function(config) {
+        // add the radiux here
         var winHeight = parseInt(this.target.mapPanel.getHeight() * 0.75);
         config = Ext.applyIf(config || {}, {
             title: this.menuText,
@@ -140,7 +141,7 @@ GeoExplorer.PrintPlugin = Ext.extend(gxp.plugins.Tool, {
                 width: 360,
                 printProvider: this.printProvider,
                 map: this.target.mapPanel,
-                mapId: this.target.mapID
+                mapId: this.target.id
             }]
         });
         var output = Ext.create(this.outputConfig);

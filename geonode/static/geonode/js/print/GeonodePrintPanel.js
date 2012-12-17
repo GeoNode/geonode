@@ -191,12 +191,19 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
                     scale: 'large',
                     text: this.printText,
                     iconCls: "gxp-icon-print",
-                    handler: function() {
-                        if(this.lastPrintLink) {
+                    handler: function () {
+                        // if this methods returns true, print the
+                        // thing, else throw an error to the ui
+
+                        if (this.lastPrintLink) {
                             this.printProvider.download(null, this.lastPrintLink);
                         } else {
-                            Ext.Msg.alert('Error', 'Please select a template first').setIcon(Ext.MessageBox.ERROR);
+                            // what error should we actually throw
+                            // here?
+                            Ext.Msg.alert('Error', 'Last Print Link on defined yet').setIcon(Ext.MessageBox.ERROR);
                         }
+
+
                     },
                     scope: this
                 }]
@@ -279,15 +286,6 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
             }
             this.busyMask.show();
             var boundPreview = this.showPreview.createDelegate(this);
-            /*Ext.getBody(false).appendChild(Ext.DomHelper.createDom({
-                tag: 'iframe',
-                id: 'printMapFrame',
-                style: 'position:absolute; right: -5000px; top: 0px;',
-                marginHeight: 0,
-                marginWidth: 0,
-                frameborder: 0,
-                scrolling: 'no'
-            }));*/
             Ext.getBody(false).appendChild(
                 Ext.DomHelper.createDom({
                     tag: 'div',
@@ -297,12 +295,6 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
             );
             
             var olmap = this.createPrinterMap();
-            /*var pmapFrameEl = Ext.get('printMapFrame'), pmapFrame=pmapFrameEl.dom;
-            if(pmapFrame.contentWindow && pmapFrame.contentWindow.stop){
-                pmapFrame.contentWindow.stop();
-            } else {
-                window.frames[0].document.execCommand('Stop');
-            }*/
             
             var mapEl = new Ext.Element(olmap.div).setLeft(0);
             this.printProvider.print(mapEl,{
@@ -316,13 +308,16 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
     },
     sendToPrint: function() {
         if(this.readyToPrint()) {
+            // what does this method do?
         }
     },
     showPreview: function(resp, url) {
         this.busyMask.hide();
+
         this.printPreview.update({
-            'url': url
+            'url': 'http://localhost:8080' + url
         });
+
         this.lastPrintLink = url;
     },
     createPrinterMap: function(callback) {

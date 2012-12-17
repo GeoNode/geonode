@@ -7,7 +7,7 @@ urlpatterns = patterns(
         'printing_template_list', name='printing_templates'
         ),
 
-    url(r'^print/map/(?P<templateid>\d+)/(?P<mapid>\d+)$',
+    url(r'^print/(?P<templateid>\d+)/(?P<mapid>\d+)$',
         'printing_print_map',
         name='printing_map'
         ),

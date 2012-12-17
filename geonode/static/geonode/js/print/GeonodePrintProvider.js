@@ -173,8 +173,10 @@ GeoExplorer.GeonodePrintProvider = Ext.extend(Ext.util.Observable, {
     },
 
     print: function(map, options) {
-        var printCb = this.download.createDelegate(this);
-        if(options) {
+        var self = this,
+            printCb = this.download.createDelegate(this);
+
+        if (options) {
             printCb = options.callback || options.success || printCb;
             delete options.callback, delete options.success;
             this.setOptions(options);
@@ -182,22 +184,23 @@ GeoExplorer.GeonodePrintProvider = Ext.extend(Ext.util.Observable, {
             options = {};
         }
         if(this.fireEvent('beforeprint', this, map, options) !== false) {
-            var mapId = options.mapId;
-            var styleEl;
-            var rulesTxt = this.buildPageStyle() + this.buildStylesText();
-            styleEl = Ext.DomHelper.createDom({
-                tag: 'style',
-                type: 'text/css',
-                cn: rulesTxt
-            });
-            var mapEl = (map.getEl) ? map.getEl() : map;
+
+            var mapId = options.mapId,
+                rulesTxt = this.buildPageStyle() + this.buildStylesText(),
+                styleEl = Ext.DomHelper.createDom({
+                    tag: 'style',
+                    type: 'text/css',
+                    cn: rulesTxt
+                }),
+                mapEl = (map.getEl) ? map.getEl() : map;
+
             Ext.Ajax.request({
                 url: this.printService + this.activeTemplate.id + '/' + mapId,
-                success: function(response) {
+                success: function (response) {
                     var url = Ext.decode(response.responseText).getURL;
                     printCb(response, url);
                 },
-                failure: function(response) {
+                failure: function (response) {
                     this.fireEvent("printexception", this, response);
                 },
                 method: 'POST',
@@ -217,9 +220,12 @@ GeoExplorer.GeonodePrintProvider = Ext.extend(Ext.util.Observable, {
     },
 
     download: function(resp, url){
+
         if(this.fireEvent('beforedownload', this, url) !== false) {
             //Requires user to un-block popups for this site to work properly
-            window.open(url);
+
+            // FIX ME The GeoServer url is hard coded here
+            window.open('http://localhost:8080' + url);
         }
     },
 
