@@ -624,44 +624,6 @@ def ajax_layer_permissions(request, layername, use_email=False):
         mimetype='text/plain'
     )
 
-def ajax_layer_edit_check(request, layername):
-    layer = get_object_or_404(Layer, typename=layername);
-    return HttpResponse(
-            str(request.user.has_perm("maps.change_layer", obj=layer)),
-            status=200,
-            mimetype='text/plain'
-        )
-
-
-def ajax_layer_update(request, layername):
-    layer = get_object_or_404(Layer, typename=layername)
-    if settings.USE_GAZETTEER:
-        if settings.USE_QUEUE:
-            layer.queue_gazetteer_update()
-            layer.queue_bounds_update()
-        else:
-            layer.update_gazetteer()
-            layer.update_bounds()
-
-    return HttpResponse(
-        "Layer updated",
-        status=200,
-        mimetype='text/plain'
-    )
-
-def ajax_map_edit_check_permissions(request, mapid):
-    mapeditlevel = 'None'
-    if not request.user.has_perm("maps.change_map_permissions", obj=map):
-
-        return HttpResponse(
-            'You are not allowed to change permissions for this map',
-            status=401,
-            mimetype='text/plain'
-        )
-
-def ajax_map_permissions_by_email(request, mapid):
-    return ajax_map_permissions(request, mapid, True)
-
 def ajax_map_permissions(request, mapid, use_email=False):
     map_obj = get_object_or_404(Map, pk=mapid)
 
@@ -707,59 +669,6 @@ def ajax_map_permissions(request, mapid, use_email=False):
         mimetype='text/plain'
     )
 
-
-
-def _create_new_user(user_email, map_layer_title, map_layer_url, map_layer_owner_id):
-    random_password = User.objects.make_random_password()
-    user_name = re.sub(r'\W', r'', user_email.split('@')[0])
-    user_length = len(user_name)
-    if user_length > 30:
-        user_name = user_name[0:29]
-    while len(User.objects.filter(username=user_name)) > 0:
-        user_name = user_name[0:user_length-4] + User.objects.make_random_password(length=4, allowed_chars='0123456789')
-
-    new_user = RegistrationProfile.objects.create_inactive_user(username=user_name, email=user_email, password=random_password, site = settings.SITE_ID, send_email=False)
-    if new_user:
-        new_profile = Contact(user=new_user, name=new_user.username, email=new_user.email)
-        if settings.USE_CUSTOM_ORG_AUTHORIZATION and new_user.email.endswith(settings.CUSTOM_GROUP_EMAIL_SUFFIX):
-            new_profile.is_org_member = True
-            new_profile.member_expiration_dt = datetime.today() + timedelta(days=365)
-        new_profile.save()
-        try:
-            _send_permissions_email(user_email, map_layer_title, map_layer_url, map_layer_owner_id, random_password)
-        except:
-            logger.debug("An error ocurred when sending the mail")
-    return new_user
-
-
-
-
-def _send_permissions_email(user_email, map_layer_title, map_layer_url, map_layer_owner_id,  password):
-
-    current_site = Site.objects.get_current()
-    user = User.objects.get(email = user_email)
-    profile = RegistrationProfile.objects.get(user=user)
-    owner = User.objects.get(id=map_layer_owner_id)
-
-    subject = render_to_string('registration/new_user_email_subject.txt',
-                       { 'site': current_site,
-                         'owner' : (owner.get_profile().name if owner.get_profile().name else owner.email),
-                         })
-    # Email subject *must not* contain newlines
-    subject = ''.join(subject.splitlines())
-
-    message = render_to_string('registration/new_user_email.txt',
-                       { 'activation_key': profile.activation_key,
-                         'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
-                         'owner': (owner.get_profile().name if owner.get_profile().name else owner.email),
-                         'title': map_layer_title,
-                         'url' : map_layer_url,
-                         'site': current_site,
-                         'username': user.username,
-                         'password' : password })
-
-    send_mail(subject, message, settings.NO_REPLY_EMAIL, [user.email])
-
 @login_required
 def deletemap(request, mapid):
     ''' Delete a map, and its constituent layers. '''
@@ -782,27 +691,6 @@ def deletemap(request, mapid):
         map_obj.delete()
 
         return HttpResponseRedirect(request.user.get_profile().get_absolute_url())
-
-@login_required
-def deletemapnow(request, mapid):
-    ''' Delete a map, and its constituent layers. '''
-    map = get_object_or_404(Map,pk=mapid)
-
-    if not request.user.has_perm('maps.delete_map', obj=map):
-        return HttpResponse(loader.render_to_string('401.html',
-            RequestContext(request, {'error_message':
-                _("You are not permitted to delete this map.")})), status=401)
-
-    layers = map.layer_set.all()
-    for layer in layers:
-        layer.delete()
-
-    snapshots = map.snapshot_set.all()
-    for snapshot in snapshots:
-        snapshot.delete()
-    map.delete()
-
-    return HttpResponseRedirect(request.user.get_profile().get_absolute_url())
 
 def mapdetail(request,mapid):
     '''
@@ -828,27 +716,6 @@ def mapdetail(request,mapid):
         'urlsuffix':get_suffix_if_custom(map_obj)
     }))
 
-
-def map_share(request,mapid):
-    '''
-    The view that shows map permissions in a window from map
-    '''
-    map = get_object_or_404(Map,pk=mapid)
-    mapstats,created = MapStats.objects.get_or_create(map=map)
-
-
-    if not request.user.has_perm('maps.view_map', obj=map):
-        return HttpResponse(loader.render_to_string('401.html',
-            RequestContext(request, {'error_message':
-                _("You are not allowed to view this map.")})), status=401)
-
-
-    return render_to_response("maps/mapinfopanel.html", RequestContext(request, {
-        "map": map,
-        "mapstats": mapstats,
-        'permissions_json': _perms_info_email_json(map, MAP_LEV_NAMES),
-        'customGroup': settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
-    }))
 
 @login_required
 def describemap(request, mapid):
@@ -885,18 +752,6 @@ def describemap(request, mapid):
         "urlsuffix": get_suffix_if_custom(map_obj)
     }))
 
-
-def get_suffix_if_custom(map):
-        if map.use_custom_template:
-            if map.officialurl:
-                return map.officialurl
-            elif map.urlsuffix:
-                return map.urlsuffix
-            else:
-                return None
-        else:
-            return None
-
 def map_controller(request, mapid):
     '''
     main view for map resources, dispatches to correct 
@@ -914,45 +769,6 @@ def map_controller(request, mapid):
         return describemap(request, map_obj.id)
     else:
         return mapdetail(request, map_obj.id)
-
-def official_site_controller(request, site):
-    '''
-    main view for map resources, dispatches to correct
-    view based on method and query args.
-    '''
-    map = get_object_or_404(Map,officialurl=site)
-    return map_controller(request, str(map.id))
-
-
-def snapshot_create(request):
-    """
-    Create a permalinked map
-    """
-    conf = request.raw_post_data
-
-    if isinstance(conf, basestring):
-        config = simplejson.loads(conf)
-        snapshot = MapSnapshot.objects.create(config=clean_config(conf),map=Map.objects.get(id=config['id']))
-        return HttpResponse(num_encode(snapshot.id), mimetype="text/plain")
-    else:
-        return HttpResponse("Invalid JSON", mimetype="text/plain", status=500)
-
-def clean_config(conf):
-    if isinstance(conf, basestring):
-        config = simplejson.loads(conf)
-        if "tools" in config:
-            del config["tools"]
-        return simplejson.dumps(config)
-    else:
-        return conf
-
-
-def ajax_snapshot_history(request, mapid):
-    map = Map.objects.get(pk=mapid)
-    history = [snapshot.json() for snapshot in map.snapshots]
-    return HttpResponse(json.dumps(history), mimetype="text/plain")
-
-
 
 def view(request, mapid, snapshot=None):
     """  
@@ -1001,16 +817,6 @@ def view(request, mapid, snapshot=None):
         'maptitle': map_obj.title,
         'urlsuffix': get_suffix_if_custom(map_obj),
     }))
-
-
-
-def official_site(request, site):
-    """
-    The view that returns the map composer opened to
-    the map with the given official site url.
-    """
-    map = get_object_or_404(Map,officialurl=site)
-    return view(request, str(map.id))
 
 def embed(request, mapid=None, snapshot=None):
     if mapid is None:
@@ -1519,26 +1325,6 @@ def _perms_info(obj, level_names):
         info['owner_email'] = obj.owner.email
     return info
 
-def _perms_info_email(obj, level_names):
-    info = obj.get_all_level_info_by_email()
-    # these are always specified even if none
-    info[ANONYMOUS_USERS] = info.get(ANONYMOUS_USERS, obj.LEVEL_NONE)
-    info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
-    info[CUSTOM_GROUP_USERS] = info.get(CUSTOM_GROUP_USERS, obj.LEVEL_NONE)
-    info['users'] = sorted(info['users'].items())
-    info['names'] = sorted(info['names'].items())
-    info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
-    if hasattr(obj, 'owner') and obj.owner is not None:
-        info['owner'] = obj.owner.username
-        info['owner_email'] = obj.owner.email
-    return info
-
-def _perms_info_json(obj, level_names):
-    return json.dumps(_perms_info(obj, level_names))
-
-def _perms_info_email_json(obj, level_names):
-    return json.dumps(_perms_info_email(obj, level_names))
-
 def _fix_map_perms_for_editor(info):
     perms = {
         Map.LEVEL_READ: Layer.LEVEL_READ,
@@ -2002,28 +1788,6 @@ def search_page(request):
         "site" : settings.SITEURL
     }))
 
-
-
-def addlayers(request):
-    # for non-ajax requests, render a generic search page
-
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    map = Map(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
-
-    return render_to_response('addlayers.html', RequestContext(request, {
-        'init_search': json.dumps(params or {}),
-        'viewer_config': json.dumps(map.viewer_json(request.user, *DEFAULT_BASE_LAYERS)),
-        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        "site" : settings.SITEURL
-    }))
-
-
 def change_poc(request, ids, template = 'maps/change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
     if request.method == 'POST':
@@ -2114,9 +1878,9 @@ def maps_search(request):
 def _maps_search(query, start, limit, sort_field, sort_dir):
 
     keywords = _split_query(query)
-
+    map_query = Map.objects.filter()
     for keyword in keywords:
-        map_query = Map.objects.filter(
+        map_query.filter(
               Q(title__icontains=keyword)
             | Q(keywords__name__icontains=keyword)
             | Q(abstract__icontains=keyword)).distinct()
@@ -2177,27 +1941,6 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
     
     return result
 
-
-def addLayerJSON(request):
-    logger.debug("Enter addLayerJSON")
-    layername = request.POST.get('layername', False)
-    logger.debug("layername is [%s]", layername)
-    if layername:
-        try:
-            layer = Layer.objects.get(typename=layername)
-            if not request.user.has_perm("maps.view_layer", obj=layer):
-                return HttpResponse(status=401)
-            sfJSON = {'layer': layer.layer_config(request.user)}
-            logger.debug('sfJSON is [%s]', str(sfJSON))
-            return HttpResponse(json.dumps(sfJSON))
-        except Exception, e:
-            logger.debug("Could not find matching layer: [%s]", str(e))
-            return HttpResponse(str(e), status=500)
-
-    else:
-        return HttpResponse(status=500)
-        logger.debug("addLayerJSON DID NOT WORK")
-
 def maps_search_page(request):
     # for non-ajax requests, render a generic search page
 
@@ -2212,54 +1955,6 @@ def maps_search_page(request):
         'init_search': json.dumps(params or {}),
          "site" : settings.SITEURL
     }))
-
-def ajax_url_lookup(request):
-    if request.method != 'POST':
-        return HttpResponse(
-            content='ajax user lookup requires HTTP POST',
-            status=405,
-            mimetype='text/plain'
-        )
-    elif 'query' not in request.POST:
-        return HttpResponse(
-            content='use a field named "query" to specify a prefix to filter urls',
-            mimetype='text/plain'
-        )
-    if request.POST['query'] != '':
-        forbiddenUrls = ['new','view',]
-        maps = Map.objects.filter(urlsuffix__startswith=request.POST['query'])
-        if request.POST['mapid'] != '':
-            maps = maps.exclude(id=request.POST['mapid'])
-        json_dict = {
-                         'urls': [({'url': m.urlsuffix}) for m in maps],
-                         'count': maps.count(),
-                    }
-    else:
-            json_dict = {
-                            'urls' : [],
-                             'count' : 0,
-                         }
-    return HttpResponse(
-                            content=json.dumps(json_dict),
-                            mimetype='text/plain'
-    )
-
-
-
-def upload_progress(request):
-    """
-    Return JSON object with information about the progress of an upload.
-    """
-    if 'HTTP_X_PROGRESS_ID' in request.META:
-        progress_id = request.META['HTTP_X_PROGRESS_ID']
-        from django.utils import simplejson
-        cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], progress_id)
-        data = cache.get(cache_key)
-        json = simplejson.dumps(data)
-        return HttpResponse(json)
-    else:
-        logger.error("Received progress report request without X-Progress-ID header. request.META: %s" % request.META)
-        return HttpResponseBadRequest('Server Error: You must provide X-Progress-ID header or query param.')
 
 def batch_permissions_by_email(request):
     return batch_permissions(request, True)
@@ -2526,7 +2221,6 @@ def addlayers(request):
         "site" : settings.SITEURL
     }))
 
-
 def addLayerJSON(request):
     logger.debug("Enter addLayerJSON")
     layername = request.POST.get('layername', False)
@@ -2556,34 +2250,22 @@ def ajax_layer_edit_check(request, layername):
         mimetype='text/plain'
     )
 
-def ajax_layer_update_bounds(request, layername):
-    layer = get_object_or_404(Layer, typename=layername);
-
-    #Get extent for layer from PostGIS
-    bboxes = get_postgis_bbox(layer.name)
-    if len(bboxes) != 1 and len(bboxes[0]) != 2:
-        return
-
-    bbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][0])
-    llbbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][1])
-
-    layer.bbox = [float(l) for l in bbox]
-    layer.llbbox = [float(l) for l in llbbox]
-    layer.set_bbox(bbox, srs=layer.srs)
-
-    # Use update to avoid unnecessary post_save signal
-    Layer.objects.filter(id=layer.id).update(bbox=layer.bbox,llbbox=layer.llbbox,geographic_bounding_box=layer.geographic_bounding_box )
-
-    #Update geonetwork record with latest extent
-    logger.info("Save new bounds to geonetwork")
-    layer = get_object_or_404(Layer, typename=layername);
-    layer.save_to_geonetwork()
+def ajax_layer_update(request, layername):
+    layer = get_object_or_404(Layer, typename=layername)
+    if settings.USE_GAZETTEER:
+        if settings.USE_QUEUE:
+            layer.queue_gazetteer_update()
+            layer.queue_bounds_update()
+        else:
+            layer.update_gazetteer()
+            layer.update_bounds()
 
     return HttpResponse(
-        "Bounds updated",
+        "Layer updated",
         status=200,
         mimetype='text/plain'
     )
+
 
 def ajax_map_edit_check_permissions(request, mapid):
     mapeditlevel = 'None'
@@ -2597,10 +2279,6 @@ def ajax_map_edit_check_permissions(request, mapid):
 
 def ajax_map_permissions_by_email(request, mapid):
     return ajax_map_permissions(request, mapid, True)
-
-def batch_permissions_by_email(request):
-    return batch_permissions(request, True)
-
 
 def ajax_url_lookup(request):
     if request.method != 'POST':
@@ -2675,9 +2353,7 @@ def snapshot_config(snapshot, map, user):
     decodedid = num_decode(snapshot)
     snapshot = get_object_or_404(MapSnapshot, pk=decodedid)
     if snapshot.map == map:
-        config = json.loads(snapshot.config)
-        if "tools" in config:
-            del config["tools"]
+        config = json.loads(clean_config(snapshot.config))
         layers = [l for l in config["map"]["layers"]]
         sources = config["sources"]
         maplayers = []
@@ -2766,13 +2442,16 @@ def _send_permissions_email(user_email, map_layer_title, map_layer_url, map_laye
 
     send_mail(subject, message, settings.NO_REPLY_EMAIL, [user.email])
 
-def get_suffix_if_custom(map_obj):
-    if (map_obj.use_custom_template):
-        return map_obj.officialurl
+def get_suffix_if_custom(map):
+    if map.use_custom_template:
+        if map.officialurl:
+            return map.officialurl
+        elif map.urlsuffix:
+            return map.urlsuffix
+        else:
+            return None
     else:
         return None
-
-
 
 def official_site(request, site):
     """
@@ -2808,12 +2487,15 @@ def snapshot_create(request):
 def clean_config(conf):
     if isinstance(conf, basestring):
         config = json.loads(conf)
-        if "tools" in config:
-            del config["tools"]
+        config_extras = ["tools", "rest", "homeUrl", "localGeoServerBaseUrl", "localCSWBaseUrl", "csrfToken", "db_datastore", "authorizedRoles"]
+        for config_item in config_extras:
+            if config_item in config:
+                del config[config_item ]
+            if config_item in config["map"]:
+                del config["map"][config_item ]
         return json.dumps(config)
     else:
         return conf
-
 
 def ajax_snapshot_history(request, mapid):
     map_obj = Map.objects.get(pk=mapid)
@@ -2843,6 +2525,7 @@ def deletemapnow(request, mapid):
 
     return HttpResponseRedirect(request.user.get_profile().get_absolute_url())
 
+
 def map_share(request,mapid):
     '''
     The view that shows map permissions in a window from map
@@ -2863,8 +2546,6 @@ def map_share(request,mapid):
         'permissions_json': _perms_info_email_json(map, MAP_LEV_NAMES),
         'customGroup': settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
         }))
-
-
 
 @login_required
 def create_pg_layer(request):
