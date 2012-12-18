@@ -1,6 +1,7 @@
 from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS, CUSTOM_GROUP_USERS
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, \
      get_csw, LayerCategory, LayerAttribute, MapSnapshot, MapStats, LayerStats, CHARSETS
+from geonode.profile.forms import ContactProfileForm
 from geoserver.resource import FeatureType, Coverage
 import base64
 from django import forms
@@ -2310,24 +2311,6 @@ def ajax_url_lookup(request):
         content=json.dumps(json_dict),
         mimetype='text/plain'
     )
-
-
-
-def upload_progress(request):
-    """
-    Return JSON object with information about the progress of an upload.
-    """
-    if 'HTTP_X_PROGRESS_ID' in request.META:
-        progress_id = request.META['HTTP_X_PROGRESS_ID']
-        cache_key = "%s_%s" % (request.META['REMOTE_ADDR'], progress_id)
-        data = cache.get(cache_key)
-        json = json.dumps(data)
-        return HttpResponse(json)
-    else:
-        logger.error("Received progress report request without X-Progress-ID header. request.META: %s" % request.META)
-        return HttpResponseBadRequest('Server Error: You must provide X-Progress-ID header or query param.')
-
-
 
 def snapshot_config(snapshot, map, user):
     """
