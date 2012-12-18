@@ -17,7 +17,9 @@
     <p>{{ profile.user.layer_set.all|length }} Layers</p>
 
     <p>{{ profile.user.map_set.all|length }} Maps</p>
-
+    {% if DOCUMENTS_APP %}
+    <p>{{ profile.user.document_set.all|length }} Documents</p>
+    {% endif %}
     {% if request.user != profile.user %}
         {% if_has_tag if_relationship %}
             {% include "relationships/_profile_follow.html" %}

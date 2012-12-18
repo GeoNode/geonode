@@ -54,12 +54,9 @@
       </ul>
     </div>
     <div class="tab-content">
-      <article class="description tab-pane active" id="info">
-        <h2>{% trans "Map Information" %}</h2>
-        <strong>{% trans "Abstract:" %}</strong>
-        {{ map.abstract }}
-        <p class="meta">{{ map }}<strong> {% trans "Uploaded by" %} <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner.get_profile.name }}</a></strong></p>
-      </article>
+
+      {% include "geonode/resourcebase_info_panel.html" with resourcebase=map %}
+
       <article class="tab-pane" id="comments">
         <h2>{% trans "Comments" %}</h2>
     	{% with map as obj %}

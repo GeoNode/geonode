@@ -15,6 +15,7 @@ geoserver-geonode-ext/logs/
 
 # Static media handling
 geonode/static/components/
+geonode/static/geoexplorer/
 geonode/static_root/
 
 # Uploaded files
@@ -33,3 +34,6 @@ nosetests.xml
 # OSX specific
 .Python
 .DS_Store
+
+# Docs
+docs/_build

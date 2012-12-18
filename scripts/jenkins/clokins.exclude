@@ -4,30 +4,10 @@ geonode/maps/migrations
 geonode/security/disabled_migrations
 geonode/migrations
 
-# Externals
-geonode-client/app/static/externals
-geonode-client/app/static/externals/gxp/externals
-geonode-client/externals
-geonode/static/geonode/externals
-
-# Ext Includes
-geonode-client/app/static/script/ux/colorpicker/color-picker.ux.js
-geonode-client/app/static/script/ux/colorpicker/color-picker.ux.css
-geonode-client/app/static/script/ux/fileuploadfield/css/fileuploadfield.css
-geonode-client/app/static/script/ux/RowExpander.js
-geonode-client/app/static/script/ux/fileuploadfield/FileUploadField.js
-
 # GeoServer Data Dir
 geoserver-geonode-ext/src/main/webapp
 
 # Static Javascript & Css
-geonode/static/bootstrap
-geonode/static/datatables
-geonode/static/select2
-geonode/static/jquery-1.6.4.min.js
-geonode/static/geonode/css/bootstrap.css
-geonode/static/geonode/js/hogan.js
-geonode/static/geonode/css/datatables.css
-geonode/static/geonode/js/json2.js
-geonode/static/geonode/js/jquery.timeago.js
-geonode/static/theme/boilerplate
+geonode/static/libs
+geonode/static/geonode/libs
+geonode/static/geonode/tests/jasmine.js

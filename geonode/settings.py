@@ -171,10 +171,8 @@ INSTALLED_APPS = (
     'geonode.security',
     'geonode.search',
     'geonode.catalogue',
+    'geonode.documents',
 )
-
-if DOCUMENTS_APP:
-    INSTALLED_APPS += ('geonode.documents',)
     
 LOGGING = {
     'version': 1,
@@ -304,7 +302,7 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     },
     "layers.Layer": {
         "layer": "How good is this layer?"
-    },
+    }
 }
 
 # Activity Stream

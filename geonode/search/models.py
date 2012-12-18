@@ -19,7 +19,9 @@
 
 from django.conf import settings
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, ResourceBase
+from geonode.maps.models import Map
+from geonode.documents.models import Document
 from geonode.layers.models import add_bbox_query
 from geonode.search.util import iso_fmt
 
@@ -45,7 +47,7 @@ def filter_by_extent(model, q, extent, user=None):
     '''modify the query to filter the given model for the provided extent and optional user
     extent: tuple of float coordinates representing x0,x1,y0,y1
     '''
-    if model == Layer and not user:
+    if issubclass(model, ResourceBase) and not user:
         q = add_bbox_query(q, extent)
     else:
         # @todo handle map and/or users - either directly if implemented or ...

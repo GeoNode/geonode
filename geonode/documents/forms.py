@@ -1,10 +1,8 @@
 import taggit
 
 from django import forms
-from django.utils import simplejson as json
 
 from geonode.people.models import Profile
-
 from geonode.documents.models import Document
 
 class DocumentForm(forms.ModelForm):

@@ -25,9 +25,11 @@ from geonode.security.models import AUTHENTICATED_USERS
 from geonode.security.models import ANONYMOUS_USERS
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.documents.models import Document
 from geonode.people.models import Profile
 from geonode.search import search
 from geonode.search import util
+from geonode.search.populate_search_test_data import create_models
 from geonode.search.query import query_from_request
 from agon_ratings.models import OverallRating
 import json
@@ -37,17 +39,19 @@ import logging
 MockRequest = lambda **kw: type('xyz',(object,),{'REQUEST':kw,'user':None})
 
 def all_public():
-    '''ensure all layers and maps are publicly viewable'''
+    '''ensure all layers, maps and documents are publicly viewable'''
     for l in Layer.objects.all():
         l.set_default_permissions()
     for m in Map.objects.all():
         m.set_default_permissions()
+    for d in Document.objects.all():
+        d.set_default_permissions()
 
 class searchTest(TestCase):
 
     c = Client()
 
-    fixtures = ['initial_data.json', 'search_testdata.json']
+    fixtures = ['initial_data.json'] #, 'search_testdata.json']
 
     @classmethod
     def setUpClass(cls):
@@ -55,6 +59,7 @@ class searchTest(TestCase):
         from django.core.cache import cache
         cache.clear()
         searchTest('_fixture_setup')._fixture_setup(True)
+        create_models()
         all_public()
 
     @classmethod
@@ -147,19 +152,20 @@ class searchTest(TestCase):
                            contains_username='jblaze')
 
     def test_text_across_types(self):
-        self.search_assert(self.request('foo'), n_results=7, n_total=7)
-        self.search_assert(self.request('common'), n_results=10, n_total=14)
+        self.search_assert(self.request('foo'), n_results=8, n_total=8)
+        self.search_assert(self.request('common'), n_results=10, n_total=23)
 
     def test_pagination(self):
-        self.search_assert(self.request('common', startIndex=0), n_results=10, n_total=14)
-        self.search_assert(self.request('common', startIndex=10), n_results=4, n_total=14)
+        self.search_assert(self.request('common', startIndex=0), n_results=10, n_total=23)
+        self.search_assert(self.request('common', startIndex=10), n_results=10, n_total=23)
+        self.search_assert(self.request('common', startIndex=20), n_results=3, n_total=23)
 
     def test_bbox_query(self):
         # @todo since maps and users are excluded at the moment, this will have
         # to be revisited
-        self.search_assert(self.request(extent='-180,180,-90,90'), n_results=8)
-        self.search_assert(self.request(extent='0,10,0,10'), n_results=3)
-        self.search_assert(self.request(extent='0,1,0,1'), n_results=1)
+        self.search_assert(self.request(extent='-180,180,-90,90', limit=None), n_results=26, n_total=26)
+        self.search_assert(self.request(extent='0,10,0,10', limit=None), n_results=11)
+        self.search_assert(self.request(extent='0,1,0,1', limit=None), n_results=3)
         
     def test_bbox_result(self):
         # grab one and set the bounds
@@ -226,7 +232,7 @@ class searchTest(TestCase):
 
     def test_keywords(self):
         # this tests the matching of the general query to keywords
-        self.search_assert(self.request('populartag'), n_results=10, n_total=17)
+        self.search_assert(self.request('populartag'), n_results=10, n_total=26)
         self.search_assert(self.request('maptagunique'), n_results=1, n_total=1)
         self.search_assert(self.request('layertagunique'), n_results=1, n_total=1)
         # verify little chunks must entirely match keywords
@@ -236,6 +242,7 @@ class searchTest(TestCase):
     def test_type_query(self):
         self.search_assert(self.request('common', type='map'), n_results=9, n_total=9)
         self.search_assert(self.request('common', type='layer'), n_results=5, n_total=5)
+        self.search_assert(self.request('common', type='document'), n_results=9, n_total=9)
         self.search_assert(self.request('foo', type='owner'), n_results=4, n_total=4)
         # there are 8 total layers, half vector, half raster
         self.search_assert(self.request('', type='raster'), n_results=4, n_total=4)

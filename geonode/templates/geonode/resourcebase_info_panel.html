@@ -1,0 +1,130 @@
+{% load i18n %}
+
+<article class="description tab-pane active" id="info">
+  <ul class="unstyled wide">
+  {% if resourcebase.title%}
+    <li>
+      <strong>{% trans "Title" %}:</strong>
+      {{ resourcebase.title|truncatechars:80 }}
+    </li>
+  {% endif %}
+
+  {% if resourcebase.abstract %}
+    <li>
+      <strong>{% trans "Abstract" %}:</strong>
+      {{ resourcebase.abstract|escape|urlize|linebreaks|safe|truncatechars:160 }}
+    </li>
+  {% endif %}
+
+  {% if resourcebase.date %}
+    <li>
+      <strong>{% trans resourcebase.date_type|title %} {% trans "Date" %}:</strong>
+      {{ resourcebase.date }}
+    </li>
+  {% endif %}
+
+  {% if resourcebase.display_type %}
+    <li>
+      <strong>{% trans "Type" %}:</strong>
+      {{ resourcebase.display_type }}
+    </li>
+  {% endif %}
+
+  {% if resourcebase.keywords_list %}
+    <li>
+      <strong>{% trans "Keywords" %}:</strong>
+      {{ resourcebase.keyword_list }}
+    </li>
+  {% endif %}
+          
+  {% if resourcebase.topic_category %}
+    <li>
+      <strong>{% trans "Topic Category" %}:</strong>
+      {{ resourcebase.topic_category }}
+    </li>
+  {% endif %}
+          
+  {% if resourcebase.owner %}
+    <li>
+      <strong>{% trans "Owner" %}:</strong>
+      <a href="{{ resourcebase.owner.get_profile.get_absolute_url }}">{{ resourcebase.owner.username }}</a>
+    </li>
+  {% endif %}
+
+  {% if resourcebase.poc.user %}
+    <li>
+      <strong>{% trans "Point of Contact" %}:</strong>
+      <a href="{{ resourcebase.poc.user.get_profile.get_absolute_url }}"> {{ resourcebase.poc.user.username }} </a>
+    <li>
+  {% endif %}
+  </ul>
+
+  <a href="#more" data-toggle="collapse" data-target=".more">Show/Hide</a>
+
+  <div class="more collapse"> 
+    <ul class="unstyled wide">
+    {% if resourcebase.maintenance_frequency %}
+      <li>
+        <strong>{% trans "Maintenance Frequency" %}:</strong>
+        {{ resourcebase.maintenance_frequency }}
+      </li>
+    {% endif %}
+
+    {% if resourcebase.constraints_use or resourcebase.constraints_other %}
+      <li>
+        <strong>{% trans "Citation" %}:</strong> 
+        {{ resourcebase.constraints_use}} {{ resourcebase.contraints_other}}
+      </li>
+    {% endif %}
+          
+    {% if resourcebase.edition %}
+      <li>
+        <strong>{% trans "Edition" %}:</strong>
+        {{ resourcebase.edition}}
+      </li>
+    {% endif %}
+
+    {% if resourcebase.purpose %}
+      <li>
+        <strong>{% trans "Purpose" %}:</strong>
+        {{ resourcebase.purpose|escape|urlize|linebreaks|safe|truncatechars:160 }}
+      </li>
+    {% endif %}
+
+    {% if resourcebase.language %}
+      <li>
+        <strong>{% trans "Language" %}:</strong>
+        {{ resourcebase.language }}
+      </li>
+    {% endif %}
+
+    {% if resourcebase.temporal_extent_start and resourcebase.temporal_extent_end %}
+      <li>
+        <strong>{% trans "Temporal Extent" %}:</strong>
+        {{ resourcebase.temporal_extent_start }} - {{ resourcebase.temporal_extent_end }}
+      </li>
+    {% endif %}
+
+    {% if resourcebase.data_quality_statement %}
+      <li>
+        <strong>{% trans "Data Quality" %}:</strong>
+        {{ resourcebase.data_quality_statement }}
+      </li>
+    {% endif %}
+
+    {% if resourcebase.supplemental_information %}
+      <li>
+        <strong>{% trans "Supplemental Information" %}:</strong> 
+        {{ resourcebase.supplemental_information|escape|urlize|linebreaks|safe|truncatechars:160 }}
+      </li>
+    {% endif %}
+
+    {% if resourcebase.spatial_representation_type %}
+      <li>
+        <strong>{% trans "Spatial Representation Type" %}:</strong>
+        {{ resourcebase.spatial_representation_type }}
+      </li>
+    {% endif %}
+    </ul>
+  </div>
+</article>
