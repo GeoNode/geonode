@@ -85,14 +85,16 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
          */
         if (user == null) {
             //throw new NullPointerException("user is null");
+        	LOG.log(Level.SEVERE, "User is null");
             return true;
         }
                 
         if (LOG.isLoggable(Level.FINER)) {
-            LOG.finer("Checking permissions for " + user +" with authorities " + user.getAuthorities() + " accessing " + resource);
+            LOG.log(Level.SEVERE, "Checking permissions for " + user +" with authorities " + user.getAuthorities() + " accessing " + resource);
         }
         
         if (user.getAuthorities().contains(GeoNodeDataAccessManager.getAdminRole())) {
+        	LOG.log(Level.SEVERE, "HAS ADMIN ROLE");
             return true;
         }
         

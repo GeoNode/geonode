@@ -145,7 +145,7 @@ public class DefaultSecurityClient implements GeoNodeSecurityClient {
 
     private Authentication authenticate(final Object credentials, final String... requestHeaders)
             throws AuthenticationException, IOException {
-        final String url = baseUrl + "layers/acls";
+        final String url = baseUrl + "data/acls";
 
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("Authenticating with " + Arrays.toString(requestHeaders));

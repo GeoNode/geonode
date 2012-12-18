@@ -134,8 +134,8 @@ public class DatabaseSecurityClient implements GeoNodeSecurityClient {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         Authentication auth;
         Object userName = json.get("user");
-         LOGGER.log(Level.SEVERE, "json is " +  json.toString());
-         LOGGER.log(Level.SEVERE, "user Name is " + userName);
+         LOGGER.log(Level.SEVERE, "JSON is " +  json.toString());
+         LOGGER.log(Level.SEVERE, "username is " + userName);
         // if userName is null, this will return a JSONObject
         if (userName instanceof JSONObject) {
             // either anonymous or geoserver at this point
@@ -217,17 +217,21 @@ public class DatabaseSecurityClient implements GeoNodeSecurityClient {
         AuthorizationKey key = new AuthorizationKey(user.getName(), resourceName);
         Byte bits = authorizationCache.getIfPresent(key);
         if (bits == null) {
+        	LOGGER.log(Level.SEVERE, "bits is null");
             bits = computeBits(user, resource, mode);
             authorizationCache.put(key, bits);
         }
         boolean authorized = false;
         switch (bits) {
             case ACCESS_DENIED: case ACCESS_UNKNOWN:
+            	LOGGER.log(Level.SEVERE, "ACCESS DENIED/UNKNOWN");
                 break;
             case ACCESS_READ: 
                 authorized = mode == AccessMode.READ;
+                LOGGER.log(Level.SEVERE, "ACCESS READ");
                 break;
             case ACCESS_WRITE:
+            	LOGGER.log(Level.SEVERE, "ACCESS WRITE");
                 authorized = true;
                 break;
             default:
@@ -255,6 +259,7 @@ public class DatabaseSecurityClient implements GeoNodeSecurityClient {
         // nf - no rule found (no auth)
         final String auth = authorize(userName, resource.prefixedName());
         final boolean debug = LOGGER.isLoggable(Level.FINE);
+        LOGGER.log(Level.SEVERE, "Authorizing {0} : {1}", new Object[] {userName, resource.prefixedName()});
         byte bits = ACCESS_DENIED;
         // if auth is null, errors already logged, consider tossing an exception?
         if (auth != null) {
@@ -263,10 +268,10 @@ public class DatabaseSecurityClient implements GeoNodeSecurityClient {
                 String reason = parts[0];
                 if ("nf".equals(reason)) {
                     if (debug) {
-                        LOGGER.log(Level.FINE, "rejecting {0} : {1}", new Object[] {user.getName(), auth});
+                        LOGGER.log(Level.SEVERE, "rejecting {0} : {1}", new Object[] {user.getName(), auth});
                     }
                 } else {
-                    LOGGER.log(Level.WARNING, "unknown access {0} : {1}", new Object[] {user.getName(), auth});
+                    LOGGER.log(Level.SEVERE, "unknown access {0} : {1}", new Object[] {user.getName(), auth});
                     bits = ACCESS_UNKNOWN;
                 }
             } else {
@@ -281,7 +286,7 @@ public class DatabaseSecurityClient implements GeoNodeSecurityClient {
                     bits = ACCESS_WRITE;
                 }
                 if (debug) {
-                    LOGGER.log(Level.FINE, "authorized {0} to {1} for {2} : {3},{4}", new Object[]{
+                    LOGGER.log(Level.SEVERE, "authorized {0} to {1} for {2} : {3},{4}", new Object[]{
                                 user.getName(), resource.prefixedName(), mode, auth, bits
                             });
                 }

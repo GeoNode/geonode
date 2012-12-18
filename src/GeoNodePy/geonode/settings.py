@@ -332,7 +332,7 @@ SERVE_MEDIA = DEBUG;
 
 MAP_BASELAYERS = [{
     "source": {
-        "ptype": "gxp_wmscsource",
+        "ptype": "gxp_gnsource",
         "url": GEOSERVER_BASE_URL + "wms",
         "restUrl": "/gs/rest"
      }
@@ -368,13 +368,6 @@ MAP_BASELAYERS = [{
     "group":"background"
   },{
     "source": {"ptype": "gxp_mapboxsource"},
-  }, {
-    "source": {"ptype": "gx_olsource"},
-    "type":"OpenLayers.Layer.WMS",
-    "group":"background",
-    "visibility": False,
-    "fixed": True,
-    "group":"background"
   }]
 
 
