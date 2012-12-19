@@ -130,10 +130,8 @@ GeoExplorer.PrintPlugin = Ext.extend(gxp.plugins.Tool, {
             title: this.menuText,
             modal: true,
             border: false,
-            //autoHeight: true,
-            //resizable: false,
             layout: 'fit',
-            width: (winHeight - 75) / 0.707,
+            width: 650,
             height: winHeight,
             xtype: 'window'
         });
@@ -141,7 +139,6 @@ GeoExplorer.PrintPlugin = Ext.extend(gxp.plugins.Tool, {
         Ext.apply(this.outputConfig, {
             items:[{
                 xtype: 'gn_printpanel',
-                width: 360,
                 printProvider: this.printProvider,
                 map: this.target.mapPanel,
                 mapId: this.target.id
