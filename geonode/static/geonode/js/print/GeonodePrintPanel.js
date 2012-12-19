@@ -44,7 +44,6 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
             {name: 'legal', size: [8.5, 14], units: 'in'}
         ];
         var defDpiArray = [
-            [96, '96 dpi'],
             [96, '96 dpi']
             /* The flying saucer printer is only printing
             at 96 dpi for the moment
@@ -142,7 +141,7 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
                     ref: '../resolutionSelect',
                     width: 120,
                     store: this.dpis,
-                    value: this.dpis[1] && this.dpis[1].length && this.dpis[1][0],
+                    value: this.dpis[0] && this.dpis[0].length && this.dpis[0][0],
                     listeners: {
                         'select': this.onResolutionSelect,
                         scope: this
@@ -192,18 +191,11 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
                     text: this.printText,
                     iconCls: "gxp-icon-print",
                     handler: function () {
-                        // if this methods returns true, print the
-                        // thing, else throw an error to the ui
-
-                        if (this.lastPrintLink) {
+                        if (!this.readyToPrint()) {
+                            Ext.Msg.alert('Error', 'Please select a paper size, template and resolution').setIcon(Ext.MessageBox.ERROR);
+                        } else if (this.lastPrintLink) {
                             this.printProvider.download(null, this.lastPrintLink);
-                        } else {
-                            // what error should we actually throw
-                            // here?
-                            Ext.Msg.alert('Error', 'Last Print Link on defined yet').setIcon(Ext.MessageBox.ERROR);
                         }
-
-
                     },
                     scope: this
                 }]
@@ -212,6 +204,7 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
         var previewPanelConfig = {
             xtype: 'box',
             disabled: true,
+            flex: 1,
             anchor: '100%, 100%',
             tpl: '<iframe style="width:100%;height:100%" src={url}></iframe>',
             ref: 'printPreview'
@@ -306,11 +299,6 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
             Ext.removeNode(mapEl.dom);
         }
     },
-    sendToPrint: function() {
-        if(this.readyToPrint()) {
-            // what does this method do?
-        }
-    },
     showPreview: function(resp, url) {
         this.busyMask.hide();
 
@@ -331,7 +319,7 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
 
         //convert paperDim to printer map dimension array
         var cfact = OpenLayers.INCHES_PER_UNIT[paperUnits] * dpi;
-        var pmapDim = [parseInt(paperDim[0] * cfact), parseInt(paperDim[1] * cfact)];
+        var pmapDim = [parseInt(paperDim[0] * cfact, 10), parseInt(paperDim[1] * cfact, 10)];
 
         //get and preserve the original map center & zoom
         var origCZ = {
