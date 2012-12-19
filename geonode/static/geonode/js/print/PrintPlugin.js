@@ -111,18 +111,21 @@ GeoExplorer.PrintPlugin = Ext.extend(gxp.plugins.Tool, {
                 menuText: this.menuText,
                 buttonText: this.buttonText,
                 tooltip: this.tooltip,
+                disabled: !this.target.id,
                 iconCls: "gxp-icon-print",
                 scope: this
             }];
             this.outputAction = 0;
             if(!this.outputTarget) {this.outputTarget = this.target.mapPanel.id;}
+            this.target.on("save", function() {
+                actions[0].setDisabled(false);
+            }, null, {single: true});
             GeoExplorer.PrintPlugin.superclass.addActions.call(this, actions);
         }
 
     },
     addOutput: function(config) {
-        // add the radiux here
-        var winHeight = parseInt(this.target.mapPanel.getHeight() * 0.75);
+        var winHeight = parseInt(this.target.mapPanel.getHeight() * 0.75, 10);
         config = Ext.applyIf(config || {}, {
             title: this.menuText,
             modal: true,
