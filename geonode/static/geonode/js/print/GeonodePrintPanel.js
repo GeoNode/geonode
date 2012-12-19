@@ -200,7 +200,10 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
                         } else {
                             // what error should we actually throw
                             // here?
-                            Ext.Msg.alert('Error', 'Last Print Link on defined yet').setIcon(Ext.MessageBox.ERROR);
+                            Ext.Msg.alert(
+                                'Error',
+                                'lastPrinkLink undefined, Please select a few more options'
+                            ).setIcon(Ext.MessageBox.ERROR);
                         }
 
 
@@ -315,7 +318,7 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
         this.busyMask.hide();
 
         this.printPreview.update({
-            'url': 'http://localhost:8080' + url
+            'url': this.localGeoServerBaseUrl + url
         });
 
         this.lastPrintLink = url;
