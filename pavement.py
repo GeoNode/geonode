@@ -21,6 +21,9 @@ import os
 import sys
 import time
 import urllib
+import zipfile
+import shutil
+from StringIO import StringIO
 
 from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, pushd, info, call_task
@@ -48,69 +51,28 @@ def setup_geoserver(options):
         else:
             sh("mvn clean install jetty:stop")
 
-
 @task
-def setup_client(options):
+def setup_geoexplorer(options):
     """
-    Fetch geonode-client
+    Fetch GeoExplorer
     """
-    sh('git submodule update --init')
-    here = os.path.abspath('.')
-    static = path(here) / 'geonode' / 'static' / 'geonode'
-    scripts_path = path(static) / 'script'
-
-    if not scripts_path.exists():
-        scripts_path.makedirs()
-
-    with pushd("geonode-client/"):
-        sh("jsbuild buildjs.cfg -o %s" % scripts_path)
-
-    resources = (
-        # Ext resources
-        ('externals/ext',
-         'app/static/externals/ext'),
-        ('externals/gxp/theme',
-         'app/static/externals/gxp/src/theme'),
-        ('externals/PrintPreview/resources',
-         'app/static/externals/PrintPreview/resources'),
-        ('externals/geoext/resources',
-         'app/static/externals/geoext/resources'),
-        # OpenLayers resources
-        ('externals/openlayers/theme',
-         'app/static/externals/openlayers/theme'),
-        ('externals/openlayers/img',
-         'app/static/externals/openlayers/img'),
-        ('theme/ux/colorpicker',
-         'app/static/script/ux/colorpicker/color-picker.ux.css'),
-        ('script/ux/colorpicker',
-         'script/ux/colorpicker/picker.gif'),
-        ('script/ux/colorpicker',
-         'app/static/script/ux/colorpicker/side_slider.jpg'),
-        ('script/ux/colorpicker',
-         'app/static/script/ux/colorpicker/mask.png'),
-        # GeoExt Resources
-        ('externals/geoext/resource',
-         'app/static/externals/geoext/resources'),
-        ('theme/ux/fileuploadfield',
-         'app/static/script/ux/fileuploadfield/css'),
-        # gxp resources
-        ('externals/gxp/src/theme',
-         'app/static/externals/gxp/src/theme'),
-        # GeoExplorer resources
-        ('theme/app',
-         'app/static/theme/app')
-    )
-
-    for t, o in resources:
-        origin = path('geonode-client') / o
-        target = path(static) / t
-        justcopy(origin, target)
+    geoxp_zip = StringIO()
+    geoxp_zip.write(urllib.urlopen("http://suite.opengeo.org/builds/geoexplorer/opengeosuite-dev-geoexplorer-static.zip").read())
+    geoxp_zipfile = zipfile.ZipFile(geoxp_zip)
+    filelist = geoxp_zipfile.filelist
+    root_dir = filelist[0].filename
+    for afile in filelist:
+        geoxp_zipfile.extract(afile, "geonode/static/")
+    geoxp_zipfile.close()
+    if os.path.exists("geonode/static/geoexplorer"):
+        shutil.rmtree("geonode/static/geoexplorer")
+    shutil.move("geonode/static/%s" % root_dir, "geonode/static/geoexplorer")
 
 
 @task
 @needs([
     'setup_geoserver',
-    #'setup_client',
+    'setup_geoexplorer',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
@@ -290,6 +252,12 @@ def test(options):
     Run GeoNode's Unit Test Suite
     """
     sh("python manage.py test geonode --noinput")
+
+
+@task
+def test_javascript(options):
+    with pushd('geonode/static/geonode'):
+        sh('./run-tests.sh')
 
 
 @task

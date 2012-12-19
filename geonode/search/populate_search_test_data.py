@@ -23,6 +23,7 @@ from django.core.serializers import serialize
 from django.contrib.auth.models import User
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.documents.models import Document
 from geonode.people.models import Profile 
 from itertools import cycle
 from taggit.models import Tag
@@ -37,15 +38,15 @@ import os.path
 
 
 map_data = [
-        ('lorem ipsum', 'common lorem ipsum', ('populartag',)),
-        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'maptagunique')),
-        ('lorem1 ipsum1', 'common abstract1', ('populartag',)),
-        ('ipsum foo', 'common bar lorem', ('populartag',)),
-        ('map one', 'common this is a unique thing', ('populartag',)),
-        ('quux', 'common double thing', ('populartag',)),
-        ('morx', 'common thing double', ('populartag',)),
-        ('titledupe something else ', 'whatever common', ('populartag',)),
-        ('something titledupe else ', 'bar common', ('populartag',)),
+        ('lorem ipsum', 'common lorem ipsum', ('populartag',), [-180, 180, -90, 90]),
+        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'maptagunique'), [-180, 180, -90, 90]),
+        ('lorem1 ipsum1', 'common abstract1', ('populartag',), [-180, 180, -90, 90]),
+        ('ipsum foo', 'common bar lorem', ('populartag',), [-180, 180, -90, 90]),
+        ('map one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1]),
+        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5]),
+        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10]),
+        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10]),
+        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50]),
         ]
 
 user_data = [
@@ -72,8 +73,22 @@ layer_data = [
         ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], '19630829', ('populartag',)),
         ]
 
+document_data = [
+        ('lorem ipsum', 'common lorem ipsum', ('populartag',), [-180, 180, -90, 90]),
+        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique'), [-180, 180, -90, 90]),
+        ('lorem1 ipsum1', 'common abstract1', ('populartag',), [-180, 180, -90, 90]),
+        ('ipsum foo', 'common bar lorem', ('populartag',), [-180, 180, -90, 90]),
+        ('doc one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1]),
+        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5]),
+        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10]),
+        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10]),
+        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50]),
+        ]
 
 def create_models():
+    u, _ = User.objects.get_or_create(username='admin',is_superuser=True)
+    u.set_password('admin')
+    u.save()
     users = []
     for ud, pd in zip(user_data, cycle(people_data)):
         user_name, password, first_name, last_name = ud
@@ -88,7 +103,7 @@ def create_models():
         users.append(u)
 
     for md, user in zip(map_data, cycle(users)):
-        title, abstract, kws = md
+        title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1) = md
         m = Map(title=title,
                 abstract=abstract,
                 zoom=4,
@@ -96,6 +111,25 @@ def create_models():
                 center_x=42,
                 center_y=-73,
                 owner=user,
+                bbox_x0=bbox_x0,
+                bbox_x1=bbox_x1,
+                bbox_y0=bbox_y0,
+                bbox_y1=bbox_y1,
+                )
+        m.save()
+        for kw in kws:
+            m.keywords.add(kw)
+            m.save()
+
+    for dd, user in zip(document_data, cycle(users)):
+        title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1) = dd
+        m = Document(title=title,
+                abstract=abstract,
+                owner=user,
+                bbox_x0=bbox_x0,
+                bbox_x1=bbox_x1,
+                bbox_y0=bbox_y0,
+                bbox_y1=bbox_y1,
                 )
         m.save()
         for kw in kws:
@@ -126,13 +160,13 @@ def create_models():
             l.keywords.add(kw)
             l.save()
 
-
 def dump_models(path=None):
     result = serialize("json", sum([list(x) for x in
                                     [User.objects.all(),
                                      Profile.objects.all(),
                                      Layer.objects.all(),
                                      Map.objects.all(),
+                                     Document.objects.all(),
                                      Tag.objects.all(),
                                      TaggedItem.objects.all(),
                                      ]], []), indent=2, use_natural_keys=True)

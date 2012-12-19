@@ -1,0 +1,18 @@
+<script src="{{STATIC_URL}}geonode/js/print/TemplateStore.js" type="text/javascript"></script>
+<script src="{{STATIC_URL}}geonode/js/print/GeonodePrintProvider.js" type="text/javascript"></script>
+<script src="{{STATIC_URL}}geonode/js/print/GeonodePrintPanel.js" type="text/javascript"></script>
+<script src="{{STATIC_URL}}geonode/js/print/PrintPlugin.js" type="text/javascript"></script>
+<script type="text/javascript">
+    Ext.ns("GeoNode");
+    GeoNode.Viewer = Ext.extend(GeoExplorer.Viewer, {
+        applyConfig: function(config) {
+            for (var i=0, ii=config.viewerTools.length; i<ii; ++i) {
+                if (config.viewerTools[i].ptype === "gxp_print") {
+                    config.viewerTools[i].ptype = "gn_print";
+                    break;
+                }
+            }
+            GeoNode.Viewer.superclass.applyConfig.call(this, config);
+        }
+    });
+</script>
