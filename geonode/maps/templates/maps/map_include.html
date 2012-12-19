@@ -1,6 +1,10 @@
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
+<script src="{{STATIC_URL}}geonode/js/print/TemplateStore.js" type="text/javascript"></script>
+<script src="{{STATIC_URL}}geonode/js/print/GeonodePrintProvider.js" type="text/javascript"></script>
+<script src="{{STATIC_URL}}geonode/js/print/GeonodePrintPanel.js" type="text/javascript"></script>
+<script src="{{STATIC_URL}}geonode/js/print/PrintPlugin.js" type="text/javascript"></script>
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
@@ -14,7 +18,7 @@ Ext.onReady(function() {
         }],
         useToolbar: true,
         proxy: "/proxy/?url=",
-        printService: "{{GEOSERVER_BASE_URL}}pdf/",
+        printService: "/printing/print/",
         rest: "/maps/",
 
         // tell the map viewer where and how to be rendered
@@ -23,7 +27,19 @@ Ext.onReady(function() {
             renderTo: "the_map"
         }
     }, {{ config }});
-app = new GeoExplorer.Viewer(config);
+    Ext.ns("GeoNode");
+    GeoNode.Viewer = Ext.extend(GeoExplorer.Viewer, {
+        applyConfig: function(config) {
+            for (var i=0, ii=config.viewerTools.length; i<ii; ++i) {
+                if (config.viewerTools[i].ptype === "gxp_print") {
+                    config.viewerTools[i].ptype = "gn_print";
+                    break;
+                }
+            }
+            GeoNode.Viewer.superclass.applyConfig.call(this, config);
+        }
+    });
+    app = new GeoNode.Viewer(config);
 {% endautoescape %}
 });
 </script>
