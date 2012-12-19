@@ -198,10 +198,15 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
                     iconCls: "gxp-icon-print",
                     handler: function () {
                         if (!this.readyToPrint()) {
-                            Ext.Msg.alert('Error', 'Please select a paper size, template and resolution').setIcon(Ext.MessageBox.ERROR);
+                            Ext.Msg.alert(
+                                'Error', 
+                                'Please select a paper size, template and resolution'
+                            ).setIcon(Ext.MessageBox.ERROR);
                         } else if (this.lastPrintLink) {
                             this.printProvider.download(null, this.lastPrintLink);
+
                         }
+                        
                     },
                     scope: this
                 }]
@@ -310,7 +315,7 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
         this.busyMask.hide();
 
         this.printPreview.update({
-            'url': 'http://localhost:8080' + url
+            'url': this.localGeoServerBaseUrl + url
         });
 
         this.lastPrintLink = url;

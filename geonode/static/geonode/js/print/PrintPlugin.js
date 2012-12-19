@@ -141,12 +141,14 @@ GeoExplorer.PrintPlugin = Ext.extend(gxp.plugins.Tool, {
             xtype: 'window'
         });
         this.outputConfig = this.outputConfig ? Ext.apply(this.outputConfig, config) : config;
+
         Ext.apply(this.outputConfig, {
             items:[{
                 xtype: 'gn_printpanel',
                 printProvider: this.printProvider,
                 map: this.target.mapPanel,
-                mapId: this.target.id
+                mapId: this.target.id,
+                localGeoServerBaseUrl: this.target.localGeoServerBaseUrl
             }]
         });
         var output = Ext.create(this.outputConfig);
