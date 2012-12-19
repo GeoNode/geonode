@@ -148,9 +148,15 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
                     }
                 }, {
                     xtype: 'label',
-                    text: 'Include Legend?'
+                    text: this.includeLegendText
                 }, {
                     xtype: 'checkbox',
+                    listeners: {
+                        'check': function() {
+                            this.getPreview();
+                        },
+                        scope: this
+                    },
                     ref: '../legendCheckbox',
                     checked: false
                 }]
@@ -292,6 +298,7 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
             var mapEl = new Ext.Element(olmap.div).setLeft(0);
             this.printProvider.print(mapEl,{
                 mapId: this.mapId,
+                includeLegend: this.printOptions.legendCheckbox.checked,
                 callback: this.showPreview.createDelegate(this),
                 width: olmap.size.width,//pmapFrameEl.getWidth(),
                 height: olmap.size.height//pmapFrameEl.getHeight()

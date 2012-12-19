@@ -53,11 +53,6 @@ GeoExplorer.PrintPlugin = Ext.extend(gxp.plugins.Tool, {
      */
     previewService: '/printing/preview/',
 
-    /** api: config[includeLegend]
-     *  ``Boolean`` Should we include the legend in the print by default? Defaults to true.
-     */
-    includeLegend: true,
-
     /** api: config[menuText]
      *  ``String``
      *  Text for print menu item (i18n).
@@ -99,9 +94,19 @@ GeoExplorer.PrintPlugin = Ext.extend(gxp.plugins.Tool, {
     /** api: method[addActions]
      */
     addActions: function() {
+        // look for the legend
+        var legend;
+        for (var key in this.target.tools) {
+            var tool = this.target.tools[key];
+            if (tool.ptype === "gxp_layermanager") {
+                legend = tool;
+                break;
+            }
+        }
         // don't add any action if there is no print service configured
         if(this.printService !== null) {
             var provider = new GeoExplorer.GeonodePrintProvider(Ext.apply({
+                legend: legend,
                 printService: this.printService,
                 templateService: this.templateService,
                 previewService: this.previewService
