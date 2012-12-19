@@ -7,10 +7,7 @@
 {% block head %}
 {{ block.super }}
 {% include 'maps/map_geoexplorer.js' %}
-<script src="{{STATIC_URL}}geonode/js/print/TemplateStore.js" type="text/javascript"></script>
-<script src="{{STATIC_URL}}geonode/js/print/GeonodePrintProvider.js" type="text/javascript"></script>
-<script src="{{STATIC_URL}}geonode/js/print/GeonodePrintPanel.js" type="text/javascript"></script>
-<script src="{{STATIC_URL}}geonode/js/print/PrintPlugin.js" type="text/javascript"></script>
+{% include "geonode/print_header.html" %}
 {% endblock %}
 
 {% block footer %}{% endblock %}
