@@ -200,7 +200,7 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
                             this.printProvider.download(null, this.lastPrintLink);
 
                         }
-                        }
+                        
                     },
                     scope: this
                 }]
