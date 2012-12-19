@@ -2334,11 +2334,10 @@ def addLayerJSON(request):
 
     else:
         return HttpResponse(status=500)
-        logger.debug("addLayerJSON DID NOT WORK")
 
 
 def ajax_layer_edit_check(request, layername):
-    layer = get_object_or_404(Layer, typename=layername);
+    layer = get_object_or_404(Layer, typename=layername)
     return HttpResponse(
         str(request.user.has_perm("maps.change_layer", obj=layer)),
         status=200,
@@ -2347,13 +2346,14 @@ def ajax_layer_edit_check(request, layername):
 
 def ajax_layer_update(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
-    if settings.USE_GAZETTEER:
-        if settings.USE_QUEUE:
+    if settings.USE_QUEUE:
+        layer.queue_bounds_update()
+        if settings.USE_GAZETTEER:
             layer.queue_gazetteer_update()
-            layer.queue_bounds_update()
-        else:
+    else:
+        layer.update_bounds()
+        if settings.USE_GAZETTEER:
             layer.update_gazetteer()
-            layer.update_bounds()
 
     return HttpResponse(
         "Layer updated",
@@ -2405,7 +2405,6 @@ def ajax_url_lookup(request):
         content=json.dumps(json_dict),
         mimetype='text/plain'
     )
-
 
 def snapshot_config(snapshot, map, user):
     """
