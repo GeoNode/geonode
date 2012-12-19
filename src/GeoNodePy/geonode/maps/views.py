@@ -635,13 +635,14 @@ def ajax_layer_edit_check(request, layername):
 
 def ajax_layer_update(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
-    if settings.USE_GAZETTEER:
-        if settings.USE_QUEUE:
+    if settings.USE_QUEUE:
+        layer.queue_bounds_update()
+        if settings.USE_GAZETTEER:
             layer.queue_gazetteer_update()
-            layer.queue_bounds_update()
-        else:
-            layer.update_gazetteer()
+    else:
             layer.update_bounds()
+            if settings.USE_GAZETTEER:
+                layer.update_gazetteer()
 
     return HttpResponse(
         "Layer updated",
