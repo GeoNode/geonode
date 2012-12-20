@@ -1,0 +1,23 @@
+
+How to use paver to build the geonode
+=====================================
+
+Current commands
+
+  deb               - Creates debian packages
+  package           - Creates a tarball to use for building the system elsewhere
+  reset             - Reset a development environment (Database, GeoServer & Catalogue)
+  reset_hard        - Reset a development environment (Database, GeoServer & Catalogue)
+  setup             - Get dependencies and prepare a GeoNode development environment.
+  setup_data        - Import sample data (from gisdata package) into GeoNode
+  setup_geoexplorer - Fetch GeoExplorer
+  setup_geoserver   - Prepare a testing instance of GeoServer.
+  start             - Start GeoNode (Django, GeoServer & Client)
+  start_django      - Start the GeoNode Django application
+  start_geoserver   - Start GeoServer with GeoNode extensions
+  stop              - Stop GeoNode
+  sync              - Run the syncdb and migrate management commands to create and migrate a DB
+  test              - Run GeoNode's Unit Test Suite
+  test_integration  - Run GeoNode's Integration test suite against the external apps
+  test_javascript   - 
+  upgradedb         - Add 'fake' data migrations for existing tables from legacy GeoNode versions
