@@ -315,7 +315,8 @@ GeoExplorer.GeonodePrintPanel = Ext.extend(Ext.Panel, {
         this.busyMask.hide();
 
         this.printPreview.update({
-            'url': this.localGeoServerBaseUrl + url
+            /*'url': this.localGeoServerBaseUrl + url*/
+            url: 'http://localhost:8080' + url
         });
 
         this.lastPrintLink = url;
