@@ -4,7 +4,7 @@
 
 {% block title %} {% trans "Upload Layer"  %} - {{ block.super }}  {% endblock %}
 
-{% block body_class %}data upload{% endblock body_class %}
+{% block main_class %}data upload{% endblock main_class %}
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
@@ -26,7 +26,7 @@
 {{ block.super }}
 {% endblock %}
 
-{% block body %}
+{% block main %}
   <div class="block">
     <div class="span8">
       <h2 class="page-title">{% trans "Upload Layers" %}</h2>
