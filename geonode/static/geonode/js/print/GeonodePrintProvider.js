@@ -148,16 +148,30 @@ GeoExplorer.GeonodePrintProvider = Ext.extend(Ext.util.Observable, {
         if(this.fireEvent('beforeprint', this, map, options) !== false) {
             var legend_html = undefined;
             if (options.includeLegend) {
-                legend_html = '';
-                if (this.legend && this.legend.output && this.legend.output.length >= 1) {
-                    var output = this.legend.output;
-                    output[0].getRootNode().cascade(function(node) {
-                        if (node.component && !node.component.hidden) {
-                            var cmp = node.component;
-                            legend_html += '<div>' + cmp.layerRecord.get('title') + '</div>';
-                            legend_html += '<div>' + cmp.items.get(1).url + '</div>';
+                if (this.legend) {
+                    legend_html = '';
+                    if (this.legend.ptype === "gxp_layermanager") {
+                        var output = this.legend.output;
+                        output[0].getRootNode().cascade(function(node) {
+                            if (node.component && !node.component.hidden) {
+                                var cmp = node.component;
+                                legend_html += '<div>' + cmp.layerRecord.get('title') + '</div>';
+                                legend_html += '<div>' + cmp.items.get(1).url + '</div>';
+                            }
+                        });
+                    } else if (this.legend.ptype === "gxp_legend") {
+                        // TODO: this is not ideal, it requires someone to open up
+                        // the legend before printing with include legend
+                        var lp = this.legend.getLegendPanel();
+                        if (lp && lp.items) {
+                            lp.items.each(function(cmp) {
+                                if(!cmp.hidden) {
+                                    legend_html += '<div>' + cmp.layerRecord.get('title') + '</div>';
+                                    legend_html += '<div>' + cmp.items.get(1).url + '</div>'; 
+                                }
+                            });
                         }
-                    });
+                    }
                 }
             }
             var mapId = options.mapId,

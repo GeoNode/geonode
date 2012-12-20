@@ -100,7 +100,9 @@ GeoExplorer.PrintPlugin = Ext.extend(gxp.plugins.Tool, {
             var tool = this.target.tools[key];
             if (tool.ptype === "gxp_layermanager") {
                 legend = tool;
-                break;
+            }
+            if (tool.ptype === "gxp_legend") {
+                legend = tool;
             }
         }
         // don't add any action if there is no print service configured
