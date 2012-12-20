@@ -97,6 +97,7 @@ types = [
     FileType("Shapefile", "shp", vector, auxillary_file_exts=('dbf','shx','prj')),
     FileType("GeoTIFF", "tif", raster, aliases=('tiff','geotif','geotiff')),
     FileType("CSV", "csv", vector),
+    FileType("KML", "kml", vector, aliases=('kmz',)),
 ]
 
 
