@@ -559,7 +559,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var buttons = this.tools["gn_layer_editor"].actions;
 
         var toggleButtons = function(enabled) {
-            for (var i; i < buttons.length; i++) {
+            for (var i=0; i < buttons.length; i++) {
                 enabled ? buttons[i].enable() : buttons[i].disable();
             }
         }
