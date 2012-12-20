@@ -7,6 +7,7 @@ roles varchar[] = '{anonymous,NULL}';
 ct integer;
 user RECORD;
 layer RECORD;
+customgroup RECORD;
 BEGIN
 
 -- get the layer and user, take quick action if we can
@@ -29,7 +30,12 @@ if (user_name IS NOT NULL) then
 		-- super user
 		return 'su-rw';
 	end if;
-	roles[2] = 'authenticated';
+	SELECT INTO "customgroup" * FROM "maps_contact" WHERE "maps_contact"."user_id" = "user".id;
+	if ("customgroup"."is_org_member") then
+	  roles[2] = 'customgroup';
+	else
+	  roles[2] = 'authenticated';
+	end if;
 end if;
 
 

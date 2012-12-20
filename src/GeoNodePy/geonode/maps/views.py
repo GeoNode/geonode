@@ -624,14 +624,6 @@ def ajax_layer_permissions(request, layername, use_email=False):
         mimetype='text/plain'
     )
 
-def ajax_layer_edit_check(request, layername):
-    layer = get_object_or_404(Layer, typename=layername);
-    return HttpResponse(
-            str(request.user.has_perm("maps.change_layer", obj=layer)),
-            status=200,
-            mimetype='text/plain'
-        )
-
 
 def ajax_layer_update(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
@@ -2577,9 +2569,10 @@ def addLayerJSON(request):
 
 def ajax_layer_edit_check(request, layername):
     layer = get_object_or_404(Layer, typename=layername);
+    editable = request.user.has_perm("maps.change_layer", obj=layer)
     return HttpResponse(
-        str(request.user.has_perm("maps.change_layer", obj=layer)),
-        status=200,
+        str(editable),
+        status=200 if editable else 401,
         mimetype='text/plain'
     )
 
@@ -2615,7 +2608,6 @@ def ajax_layer_update_bounds(request, layername):
 def ajax_map_edit_check_permissions(request, mapid):
     mapeditlevel = 'None'
     if not request.user.has_perm("maps.change_map_permissions", obj=map):
-
         return HttpResponse(
             'You are not allowed to change permissions for this map',
             status=401,
