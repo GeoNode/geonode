@@ -319,7 +319,7 @@ def newmap_config(request):
                     
                 #layer_bbox = layer.resource.latlon_bbox
                 # assert False, str(layer_bbox)
-                bbox = layer.llbbox_coords()
+                bbox = layer.llbbox
                 
                 layers.append(MapLayer(
                     map = map_obj,
