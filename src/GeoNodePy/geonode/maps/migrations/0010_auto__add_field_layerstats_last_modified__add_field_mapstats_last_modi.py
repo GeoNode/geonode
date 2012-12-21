@@ -8,14 +8,20 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding field 'Layer.in_gazetteer'
-        db.add_column('maps_layer', 'in_gazetteer', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+        # Adding field 'LayerStats.last_modified'
+        db.add_column('maps_layerstats', 'last_modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True), keep_default=False)
+
+        # Adding field 'MapStats.last_modified'
+        db.add_column('maps_mapstats', 'last_modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True, blank=True), keep_default=False)
 
 
     def backwards(self, orm):
         
-        # Deleting field 'Layer.in_gazetteer'
-        db.delete_column('maps_layer', 'in_gazetteer')
+        # Deleting field 'LayerStats.last_modified'
+        db.delete_column('maps_layerstats', 'last_modified')
+
+        # Deleting field 'MapStats.last_modified'
+        db.delete_column('maps_mapstats', 'last_modified')
 
 
     models = {
@@ -34,7 +40,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 10, 15, 20, 9, 31153)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -42,7 +48,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 10, 15, 20, 9, 31088)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -68,7 +74,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_org_member': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'member_expiration_dt': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2012, 4, 27, 9, 3, 52, 692684)'}),
+            'member_expiration_dt': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2012, 12, 10, 15, 20, 8, 963863)'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'organization': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'position': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
@@ -98,11 +104,11 @@ class Migration(SchemaMigration):
             'distribution_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'downloadable': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'edition': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'gazetteer_project': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'geographic_bounding_box': ('django.db.models.fields.TextField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'in_gazetteer': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'keywords': ('django.db.models.fields.TextField', [], {'null': 'True'}),
-            'keywords_region': ('django.db.models.fields.CharField', [], {'default': "'GLO'", 'max_length': '3'}),
+            'keywords_region': ('django.db.models.fields.CharField', [], {'default': "'USA'", 'max_length': '3'}),
             'language': ('django.db.models.fields.CharField', [], {'default': "'eng'", 'max_length': '3'}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'llbbox': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
@@ -129,9 +135,12 @@ class Migration(SchemaMigration):
             'attribute_label': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
             'attribute_type': ('django.db.models.fields.CharField', [], {'default': "'xsd:string'", 'max_length': '50'}),
             'created_dttm': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'date_format': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'display_order': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'in_gazetteer': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_gaz_end_date': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_gaz_start_date': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'layer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'attribute_set'", 'to': "orm['maps.Layer']"}),
             'searchable': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -150,6 +159,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'LayerStats'},
             'downloads': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'}),
             'layer': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['maps.Layer']", 'unique': 'True'}),
             'uniques': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'visits': ('django.db.models.fields.IntegerField', [], {'default': '0'})
@@ -159,11 +169,10 @@ class Migration(SchemaMigration):
             'abstract': ('django.db.models.fields.TextField', [], {}),
             'center_x': ('django.db.models.fields.FloatField', [], {}),
             'center_y': ('django.db.models.fields.FloatField', [], {}),
-            'content': ('django.db.models.fields.TextField', [], {'default': 'u\'<h3>The Harvard WorldMap Project</h3><p>WorldMap is an open source web mapping system that is currentlyunder construction. It is built to assist academic research andteaching as well as the general public and supports discovery,investigation, analysis, visualization, communication and archivingof multi-disciplinary, multi-source and multi-format data,organized spatially and temporally.</p><p>The first instance of WorldMap, focused on the continent ofAfrica, is called AfricaMap. Since its beta release in November of2008, the framework has been implemented in several geographiclocations with different research foci, including metro Boston,East Asia, Vermont, Harvard Forest and the city of Paris. These webmapping applications are used in courses as well as by individualresearchers.</p><h3>Introduction to the WorldMap Project</h3><p>WorldMap solves the problem of discovering where things happen.It draws together an array of public maps and scholarly data tocreate a common source where users can:</p><ol><li>Interact with the best available public data for acity/region/continent</li><li>See the whole of that area yet also zoom in to particularplaces</li><li>Accumulate both contemporary and historical data supplied byresearchers and make it permanently accessible online</li><li>Work collaboratively across disciplines and organizations withspatial information in an online environment</li></ol><p>The WorldMap project aims to accomplish these goals in stages,with public and private support. It draws on the basic insight ofgeographic information systems that spatiotemporal data becomesmore meaningful as more "layers" are added, and makes use of tilingand indexing approaches to facilitate rapid search andvisualization of large volumes of disparate data.</p><p>WorldMap aims to augment existing initiatives for globallysharing spatial data and technology such as <a target="_blank" href="http://www.gsdi.org/">GSDI</a> (Global Spatial DataInfrastructure).WorldMap makes use of <a target="_blank" href="http://www.opengeospatial.org/">OGC</a> (Open GeospatialConsortium) compliant web services such as <a target="_blank" href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS</a> (WebMap Service), emerging open standards such as <a target="_blank" href="http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">WMS-C</a>(cached WMS), and standards-based metadata formats, to enableWorldMap data layers to be inserted into existing datainfrastructures.&nbsp;<br><br>All WorldMap source code will be made available as <a target="_blank" href="http://www.opensource.org/">Open Source</a> for others to useand improve upon.</p>\'', 'null': 'True', 'blank': 'True'}),
+            'content': ('django.db.models.fields.TextField', [], {'default': 'u\'<h3>The Harvard WorldMap Project</h3>  <p>WorldMap is an open source web mapping system that is currently  under construction. It is built to assist academic research and  teaching as well as the general public and supports discovery,  investigation, analysis, visualization, communication and archiving  of multi-disciplinary, multi-source and multi-format data,  organized spatially and temporally.</p>  <p>The first instance of WorldMap, focused on the continent of  Africa, is called AfricaMap. Since its beta release in November of  2008, the framework has been implemented in several geographic  locations with different research foci, including metro Boston,  East Asia, Vermont, Harvard Forest and the city of Paris. These web  mapping applications are used in courses as well as by individual  researchers.</p>  <h3>Introduction to the WorldMap Project</h3>  <p>WorldMap solves the problem of discovering where things happen.  It draws together an array of public maps and scholarly data to  create a common source where users can:</p>  <ol>  <li>Interact with the best available public data for a  city/region/continent</li>  <li>See the whole of that area yet also zoom in to particular  places</li>  <li>Accumulate both contemporary and historical data supplied by  researchers and make it permanently accessible online</li>  <li>Work collaboratively across disciplines and organizations with  spatial information in an online environment</li>  </ol>  <p>The WorldMap project aims to accomplish these goals in stages,  with public and private support. It draws on the basic insight of  geographic information systems that spatiotemporal data becomes  more meaningful as more "layers" are added, and makes use of tiling  and indexing approaches to facilitate rapid search and  visualization of large volumes of disparate data.</p>  <p>WorldMap aims to augment existing initiatives for globally  sharing spatial data and technology such as <a target="_blank" href="http://www.gsdi.org/">GSDI</a> (Global Spatial Data  Infrastructure).WorldMap makes use of <a target="_blank" href="http://www.opengeospatial.org/">OGC</a> (Open Geospatial  Consortium) compliant web services such as <a target="_blank" href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS</a> (Web  Map Service), emerging open standards such as <a target="_blank" href="http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">WMS-C</a>  (cached WMS), and standards-based metadata formats, to enable  WorldMap data layers to be inserted into existing data  infrastructures.&nbsp;<br>  <br>  All WorldMap source code will be made available as <a target="_blank" href="http://www.opensource.org/">Open Source</a> for others to use  and improve upon.</p>\'', 'null': 'True', 'blank': 'True'}),
             'created_dttm': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'group_params': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'keywords': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'officialurl': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
@@ -203,6 +212,7 @@ class Migration(SchemaMigration):
         'maps.mapstats': {
             'Meta': {'object_name': 'MapStats'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'}),
             'map': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['maps.Map']", 'unique': 'True'}),
             'uniques': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'visits': ('django.db.models.fields.IntegerField', [], {'default': '0'})
@@ -221,6 +231,19 @@ class Migration(SchemaMigration):
             'map': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'jump_set'", 'to': "orm['maps.Map']"}),
             'title': ('django.db.models.fields.TextField', [], {}),
             'url': ('django.db.models.fields.URLField', [], {'default': "'http://www.socialexplorer.com/pub/maps/map3.aspx?g=0&mapi=SE0012&themei=B23A1CEE3D8D405BA2B079DDF5DE9402'", 'max_length': '200'})
+        },
+        'taggit.tag': {
+            'Meta': {'object_name': 'Tag'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'})
+        },
+        'taggit.taggeditem': {
+            'Meta': {'object_name': 'TaggedItem'},
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'taggit_taggeditem_tagged_items'", 'to': "orm['contenttypes.ContentType']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'}),
+            'tag': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'taggit_taggeditem_items'", 'to': "orm['taggit.Tag']"})
         }
     }
 

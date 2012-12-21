@@ -290,7 +290,7 @@ COUNTRIES = (
     ('YEM', _('Yemen')),
     ('ZMB', _('Zambia')),
     ('ZWE', _('Zimbabwe')),
-)
+    )
 
 
 KEYWORD_REGIONS= (
@@ -310,7 +310,7 @@ KEYWORD_REGIONS= (
     ('SAF',_('South Africa')),
     ('MES',_('Middle East')),
     ('ANT',_('Antarctica')),
-)
+    )
 
 # Taken from http://www.w3.org/WAI/ER/IG/ert/iso639.htm
 ALL_LANGUAGES = (
@@ -427,7 +427,7 @@ ALL_LANGUAGES = (
     ('yor', 'Yoruba'),
     ('zha', 'Zhuang'),
     ('zul', 'Zulu'),
-)
+    )
 
 
 CHARSETS = [
@@ -500,7 +500,7 @@ CONSTRAINT_OPTIONS = [
     'trademark',
     'public',
     'no restrictions',
-]
+    ]
 
 SPATIAL_REPRESENTATION_TYPES = [
     'grid', 'steroModel', 'textTable', 'tin', 'vector'
@@ -527,51 +527,51 @@ DEFAULT_SUPPLEMENTAL_INFORMATION=_(
 )
 
 DEFAULT_CONTENT=_(
-'<h3>The Harvard WorldMap Project</h3>\
-<p>WorldMap is an open source web mapping system that is currently\
-under construction. It is built to assist academic research and\
-teaching as well as the general public and supports discovery,\
-investigation, analysis, visualization, communication and archiving\
-of multi-disciplinary, multi-source and multi-format data,\
-organized spatially and temporally.</p>\
-<p>The first instance of WorldMap, focused on the continent of\
-Africa, is called AfricaMap. Since its beta release in November of\
-2008, the framework has been implemented in several geographic\
-locations with different research foci, including metro Boston,\
-East Asia, Vermont, Harvard Forest and the city of Paris. These web\
-mapping applications are used in courses as well as by individual\
-researchers.</p>\
-<h3>Introduction to the WorldMap Project</h3>\
-<p>WorldMap solves the problem of discovering where things happen.\
-It draws together an array of public maps and scholarly data to\
-create a common source where users can:</p>\
-<ol>\
-<li>Interact with the best available public data for a\
-city/region/continent</li>\
-<li>See the whole of that area yet also zoom in to particular\
-places</li>\
-<li>Accumulate both contemporary and historical data supplied by\
-researchers and make it permanently accessible online</li>\
-<li>Work collaboratively across disciplines and organizations with\
-spatial information in an online environment</li>\
-</ol>\
-<p>The WorldMap project aims to accomplish these goals in stages,\
-with public and private support. It draws on the basic insight of\
-geographic information systems that spatiotemporal data becomes\
-more meaningful as more "layers" are added, and makes use of tiling\
-and indexing approaches to facilitate rapid search and\
-visualization of large volumes of disparate data.</p>\
-<p>WorldMap aims to augment existing initiatives for globally\
-sharing spatial data and technology such as <a target="_blank" href="http://www.gsdi.org/">GSDI</a> (Global Spatial Data\
-Infrastructure).WorldMap makes use of <a target="_blank" href="http://www.opengeospatial.org/">OGC</a> (Open Geospatial\
-Consortium) compliant web services such as <a target="_blank" href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS</a> (Web\
-Map Service), emerging open standards such as <a target="_blank" href="http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">WMS-C</a>\
-(cached WMS), and standards-based metadata formats, to enable\
-WorldMap data layers to be inserted into existing data\
-infrastructures.&nbsp;<br>\
-<br>\
-All WorldMap source code will be made available as <a target="_blank" href="http://www.opensource.org/">Open Source</a> for others to use\
-and improve upon.</p>'
+    '<h3>The Harvard WorldMap Project</h3>\
+  <p>WorldMap is an open source web mapping system that is currently\
+  under construction. It is built to assist academic research and\
+  teaching as well as the general public and supports discovery,\
+  investigation, analysis, visualization, communication and archiving\
+  of multi-disciplinary, multi-source and multi-format data,\
+  organized spatially and temporally.</p>\
+  <p>The first instance of WorldMap, focused on the continent of\
+  Africa, is called AfricaMap. Since its beta release in November of\
+  2008, the framework has been implemented in several geographic\
+  locations with different research foci, including metro Boston,\
+  East Asia, Vermont, Harvard Forest and the city of Paris. These web\
+  mapping applications are used in courses as well as by individual\
+  researchers.</p>\
+  <h3>Introduction to the WorldMap Project</h3>\
+  <p>WorldMap solves the problem of discovering where things happen.\
+  It draws together an array of public maps and scholarly data to\
+  create a common source where users can:</p>\
+  <ol>\
+  <li>Interact with the best available public data for a\
+  city/region/continent</li>\
+  <li>See the whole of that area yet also zoom in to particular\
+  places</li>\
+  <li>Accumulate both contemporary and historical data supplied by\
+  researchers and make it permanently accessible online</li>\
+  <li>Work collaboratively across disciplines and organizations with\
+  spatial information in an online environment</li>\
+  </ol>\
+  <p>The WorldMap project aims to accomplish these goals in stages,\
+  with public and private support. It draws on the basic insight of\
+  geographic information systems that spatiotemporal data becomes\
+  more meaningful as more "layers" are added, and makes use of tiling\
+  and indexing approaches to facilitate rapid search and\
+  visualization of large volumes of disparate data.</p>\
+  <p>WorldMap aims to augment existing initiatives for globally\
+  sharing spatial data and technology such as <a target="_blank" href="http://www.gsdi.org/">GSDI</a> (Global Spatial Data\
+  Infrastructure).WorldMap makes use of <a target="_blank" href="http://www.opengeospatial.org/">OGC</a> (Open Geospatial\
+  Consortium) compliant web services such as <a target="_blank" href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS</a> (Web\
+  Map Service), emerging open standards such as <a target="_blank" href="http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">WMS-C</a>\
+  (cached WMS), and standards-based metadata formats, to enable\
+  WorldMap data layers to be inserted into existing data\
+  infrastructures.&nbsp;<br>\
+  <br>\
+  All WorldMap source code will be made available as <a target="_blank" href="http://www.opensource.org/">Open Source</a> for others to use\
+  and improve upon.</p>'
 )
 
 
@@ -724,20 +724,29 @@ class LayerManager(models.Manager):
         cat = self.gs_catalog
         resources = []
         if workspace is not None:
+            print >> console, "Workspace is  %s" % workspace
             workspace = cat.get_workspace(workspace)
             resources = cat.get_resources(workspace=workspace)
-        number = len(resources)
-        if verbosity > 1:
-            msg =  "Found %d layers, starting processing" % number
-            print >> console, msg
         output = []
         
         # check lnames
         if lnames is not None:
-            gs_lnames = [resource.name for resource in resources]
             for l in lnames:
-                if l not in gs_lnames:
-                    raise Exception('Layer %s does not exist' % l )
+                if verbosity > 1:
+                    print >> console, "Getting  %s" % l
+                resource = cat.get_resource(l)
+            if resource:
+                resources.append(resource)
+        else:
+            if verbosity > 1:
+                print >> console, "Getting  all resources"
+            resources = cat.get_resources()
+
+        number = len(resources)
+
+        if verbosity > 1:
+            msg =  "Found %d layers, starting processing" % number
+            print >> console, msg
 
         for i, resource in enumerate(resources):
             name = resource.name
@@ -1484,7 +1493,7 @@ class Layer(models.Model, PermissionLevelMixin):
         cfg['llbbox'] = json.loads(self.llbbox)
         cfg['queryable'] = (self.storeType == 'dataStore')
         cfg['attributes'] = self.layer_attributes()
-        cfg['disabled'] =  not user.has_perm('maps.view_layer', obj=self)
+        cfg['disabled'] =  user is not None and not user.has_perm('maps.view_layer', obj=self)
         cfg['visibility'] = True
         cfg['abstract'] = self.abstract
         cfg['styles'] = ''
@@ -1766,7 +1775,7 @@ class Map(models.Model, PermissionLevelMixin):
                 'introtext' : self.content,
                 'officialurl' : self.officialurl
             },
-            'defaultSourceType': "gxp_wmscsource",
+            'defaultSourceType': "gxp_gnsource",
             'sources': sources,
             'map': {
                 'layers': [layer_config(l, user) for l in layers],
@@ -2115,7 +2124,7 @@ class MapLayer(models.Model):
                 if gnLayer.llbbox: cfg['llbbox'] = json.loads(gnLayer.llbbox)
                 cfg['attributes'] = (gnLayer.layer_attributes())
                 cfg['queryable'] = (gnLayer.storeType == 'dataStore'),
-                cfg['disabled'] =  not user.has_perm('maps.view_layer', obj=gnLayer)
+                cfg['disabled'] =  user is not None and not user.has_perm('maps.view_layer', obj=gnLayer)
                 cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
                 cfg['abstract'] = gnLayer.abstract
                 cfg['styles'] = self.styles

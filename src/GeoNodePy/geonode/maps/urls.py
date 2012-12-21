@@ -26,8 +26,8 @@ urlpatterns = patterns('geonode.maps.views',
     url(r'^change-poc/(?P<ids>\w+)$', 'change_poc', name='maps_change_poc'),
     url(r'^(?P<mapid>\d+)/ajax-permissions-email/?$', 'ajax_map_permissions_by_email',
         name='ajax_map_permissions_by_email'),
-    (r'^(?P<mapid>[A-Za-z0-9_\-]+)/(?P<snapshot>\w+)/?$', 'view'),
-    (r'^(?P<mapid>[A-Za-z0-9_\-]+)/(?P<snapshot>\w+)/embed/?$', 'embed'),
+    (r'^(?P<mapid>[A-Za-z0-9_\-]+)/(?P<snapshot>[A-Za-z0-9_\-]+)/?$', 'view'),
+    (r'^(?P<mapid>[A-Za-z0-9_\-]+)/(?P<snapshot>[A-Za-z0-9_\-]+)/embed/?$', 'embed'),
     (r'^(?P<mapid>[A-Za-z0-9_\-]+)/?$', 'view'),
 )
 

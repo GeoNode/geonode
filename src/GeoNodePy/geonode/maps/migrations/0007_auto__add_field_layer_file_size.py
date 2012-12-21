@@ -8,20 +8,14 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding field 'LayerAttribute.is_gaz_start_date'
-        db.add_column('maps_layerattribute', 'is_gaz_start_date', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
-
-        # Adding field 'LayerAttribute.is_gaz_end_date'
-        db.add_column('maps_layerattribute', 'is_gaz_end_date', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+        # Adding field 'Layer.file_size'
+        db.add_column('maps_layer', 'file_size', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
 
 
     def backwards(self, orm):
         
-        # Deleting field 'LayerAttribute.is_gaz_start_date'
-        db.delete_column('maps_layerattribute', 'is_gaz_start_date')
-
-        # Deleting field 'LayerAttribute.is_gaz_end_date'
-        db.delete_column('maps_layerattribute', 'is_gaz_end_date')
+        # Deleting field 'Layer.file_size'
+        db.delete_column('maps_layer', 'file_size')
 
 
     models = {
@@ -74,7 +68,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_org_member': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'member_expiration_dt': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2012, 4, 27, 10, 26, 10, 480555)'}),
+            'member_expiration_dt': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2012, 9, 6, 9, 15, 34, 532706)'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'organization': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'position': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
@@ -104,6 +98,7 @@ class Migration(SchemaMigration):
             'distribution_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'downloadable': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'edition': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'file_size': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'gazetteer_project': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'geographic_bounding_box': ('django.db.models.fields.TextField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -136,6 +131,7 @@ class Migration(SchemaMigration):
             'attribute_label': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
             'attribute_type': ('django.db.models.fields.CharField', [], {'default': "'xsd:string'", 'max_length': '50'}),
             'created_dttm': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'date_format': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'display_order': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'in_gazetteer': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),

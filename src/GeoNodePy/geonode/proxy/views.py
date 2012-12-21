@@ -1,3 +1,4 @@
+import random
 from django.http import HttpResponse
 from httplib import HTTPConnection
 from urlparse import urlsplit
@@ -160,7 +161,99 @@ def hglServiceStarter (request, layer):
     startUrl = HGL_URL + "/RemoteServiceStarter?ValidationKey=" + settings.HGL_VALIDATION_KEY + "&AddLayer=" + layer
     return HttpResponse(urllib.urlopen(startUrl).read())
 
+def tweetServerProxy(request):
+    url = urlsplit(request.get_full_path())
+    tweet_url = "http://" + settings.GEOPS_IP + "?" + url.query
 
+    step1 = urllib.urlopen(tweet_url)
+    step2 = step1.read()
+    response = HttpResponse(step2, mimetype= step1.info().dict['content-type'])
+    try :
+        cookie = step1.info().dict['set-cookie'].split(";")[0].split("=")[1]
+        response.set_cookie("tweet_count", cookie)
+    except:
+        pass
+    return response
+
+
+def tweetDownload (request):
+
+    if (not request.user.is_authenticated() or  not request.user.get_profile().is_org_member):
+        return HttpResponse(status=403)
+
+    proxy_url = urlsplit(request.get_full_path())
+    download_url = "http://" + settings.GEOPS_IP + "?" + proxy_url.query  + settings.GEOPS_DOWNLOAD
+
+    http = httplib2.Http()
+    response, content = http.request(
+        download_url, request.method)
+
+    response =  HttpResponse(
+        content=content,
+        status=response.status,
+        mimetype=response.get("content-type", "text/plain"))
+
+    response['Content-Disposition'] = response.get('Content-Disposition', 'attachment; filename="tweets"' + request.user.username + '.csv');
+    return response
+
+
+
+def tweetTrendProxy (request):
+
+    tweetUrl = "http://" + settings.AWS_INSTANCE_IP + "/?agg=trend&bounds=" + request.POST["bounds"] + "&dateStart=" + request.POST["dateStart"] + "&dateEnd=" + request.POST["dateEnd"];
+    resultJSON =""
+#    resultJSON = urllib.urlopen(tweetUrl).read()
+#    import datetime
+#
+#
+#    startDate = datetime.datetime.strptime(request.POST["dateStart"], "%Y-%b-%d")
+#    endDate = datetime.datetime.strptime(request.POST["dateEnd"], "%Y-%b-%d")
+#
+#    recString = "record: ["
+#
+#    while startDate <= endDate:
+#            recString += "{'date': '$date', 'Ebola$rnd5' : $rnd6, 'Malaria$rnd4' : $rnd7, 'Influenza$rnd3': $rnd8, 'Plague$rnd3': $rnd9, 'Lyme_Disease$rnd1': $rnd10},"
+#            recString = recString.replace("$rnd6", str(random.randrange(50,500,1)))
+#            recString = recString.replace("$rnd7", str(random.randrange(50,500,1)))
+#            recString = recString.replace("$rnd8", str(random.randrange(50,500,1)))
+#            recString = recString.replace("$rnd9", str(random.randrange(50,500,1)))
+#            recString = recString.replace("$rnd10", str(random.randrange(50,500,1)))
+#            recString = recString.replace("$date", datetime.datetime.strftime(startDate, '%b-%d-%Y'))
+#            startDate = startDate + datetime.timedelta(days=1)
+#
+#    recString += "]"
+#
+#    resultJSON = """
+#    {
+#    metaData: {
+#        root: "record",
+#        fields: [
+#            {name: 'date'},
+#            {name: 'Ebola$rnd5'},
+#            {name: 'Malaria$rnd4'},
+#            {name: 'Influenza$rnd3'},
+#            {name: 'Plague$rnd3'},
+#            {name: 'Lyme_Disease$rnd1'}
+#        ],
+#    },
+#    // Reader's configured root
+#    $recString
+#}
+#"""
+#
+#    resultJSON = resultJSON.replace("$recString", recString)
+#
+#
+#
+#    resultJSON = resultJSON.replace("$rnd1", str(random.randrange(50,500,1)))
+#    resultJSON = resultJSON.replace("$rnd2", str(random.randrange(50,500,1)))
+#    resultJSON = resultJSON.replace("$rnd3", str(random.randrange(50,500,1)))
+#    resultJSON = resultJSON.replace("$rnd4", str(random.randrange(50,500,1)))
+#    resultJSON = resultJSON.replace("$rnd5", str(random.randrange(50,500,1)))
+
+#    resultJSON = '{"metaData":{"fields":[{"name":"Tuberculosis"},{"name":"STD"},{"name":"Gastroenteritis"},{"name":"Influenza"},{"name":"Common_Cold"},{"name":"date"}],"root":"record"},"record":[{"Common_Cold":18,"Gastroenteritis":104,"Influenza":76,"STD":121,"Tuberculosis":236,"date":"2012-01-26"},{"Common_Cold":19,"Gastroenteritis":115,"Influenza":114,"STD":146,"Tuberculosis":397,"date":"2012-01-27"},{"Common_Cold":26,"Gastroenteritis":104,"Influenza":83,"STD":137,"Tuberculosis":402,"date":"2012-01-28"},{"Common_Cold":25,"Gastroenteritis":96,"Influenza":76,"STD":141,"Tuberculosis":358,"date":"2012-01-29"},{"Common_Cold":30,"Gastroenteritis":106,"Influenza":87,"STD":158,"Tuberculosis":372,"date":"2012-01-30"},{"Common_Cold":12,"Gastroenteritis":74,"Influenza":44,"STD":116,"Tuberculosis":222,"date":"2012-01-31"}]}'
+
+    return HttpResponse(resultJSON, mimetype="application/json")
 
 
 def youtube(request):

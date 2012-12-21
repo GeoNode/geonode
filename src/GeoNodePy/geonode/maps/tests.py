@@ -404,7 +404,7 @@ community."
             to a new JSON map configuration"""
         response = Client().get("/maps/new/data")
         cfg = json.loads(response.content)
-        self.assertEquals(cfg['defaultSourceType'], "gxp_wmscsource")
+        self.assertEquals(cfg['defaultSourceType'], "gxp_gnsource")
 
     def test_map_details(self):
         """/maps/1 -> Test accessing the detail view of a map"""

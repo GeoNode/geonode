@@ -875,6 +875,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
 
+
         //needed for Safari
         var westPanel = new Ext.Panel({
             layout: "fit",

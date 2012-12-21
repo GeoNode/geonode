@@ -5,9 +5,7 @@
 Build Requirements
 ==================
 
-
-Before starting work on the GeoNode, you will need to have the following
->>>>>>> gncore/master
+Before starting work on WorldMap, you will need to have the following
 software installed and in your PATH:
 
 * The git command-line client, version 1.5.3 or higher:
@@ -16,6 +14,17 @@ software installed and in your PATH:
   - If not, you can download one of the installers from http://git-scm.com/ or
     from your operating system provider.
 
+* The Subversion command-line client, version 1.5 or higher.
+  - To verify that is is available, run ``svn --version`` and verify the output
+    starts with something like ``svn, version 1.6.9 (r901367)``
+  - If not, you can find the appropriate installer at
+    http://subversion.apache.org/packages.html
+
+* The GEOS geometry handling library: http://trac.osgeo.org/geos/
+
+* The GDAL geographic raster access library: http://www.gdal.org/
+
+* The OGR geographic vector data access library: http://www.gdal.org/ogr/
 
 * Sun Java Development Kit 1.5 or Higher: 
   - To verify that it is available, run
@@ -44,6 +53,7 @@ software installed and in your PATH:
 
   - If not, download from http://maven.apache.org/download.html
 
+* Apache Tomcat 6.x or Jetty
 
 Additionally, WorldMap uses a number of native-code libraries in Python.  You
 can install these libraries manually, or allow the WorldMap setup script to
@@ -55,6 +65,10 @@ operating system provider for installation instructions.
 The native libraries needed include:
 
 * PIL http://www.pythonware.com/products/pil/
+
+* libxml2-dev
+
+* libxslt-dev
 
 For GCC, packages are available for Mac OSX and all Linux distributions;
 consult your operating system provider for installation instructions.  When
@@ -76,28 +90,13 @@ The following steps should prepare a Python virtual environment for you::
   source bin/activate
   paver build
   django-admin.py createsuperuser --settings=geonode.settings
-<<<<<<< HEAD
-
-
-
-Copy these war files to the webapps directory of your Java container
-(Tomcat/Jetty) and deploy them:
-    webapps/geoserver-geonode-dev.war
-    webapps/geonetwork.war
 
 
 Start the server:
-=======
->>>>>>> master
   paver host
 
 
 Once fully started, you should see a message indicating the address of your WorldMap::
-=======
-  paver host 
-
-Once fully started, you should see a message indicating the address of your geonode::
->>>>>>> gncore/master
   
   Development GeoNode is running at http://localhost:8000/
   The GeoNode is an unstoppable machine
@@ -160,10 +159,6 @@ following needs to be done before running ``paver host``:
 
 * Edit :file:`src/GeoNodePy/geonode/settings.py` and change the line::
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
     GEOSERVER_BASE_URL="http://localhost:8001/geoserver/"
 
   to use the IP address you have written down above::
@@ -180,7 +175,6 @@ following needs to be done before running ``paver host``:
 * Now WorldMap is available in your browser at http://192.168.56.1:8000/
 
 
-
 For Java Developers
 -------------------
 
@@ -194,10 +188,6 @@ GeoServer used for http://geonode.capra.opengeo.org/ is::
 
     http://geonode.capra.opengeo.org/geoserver/
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 The default value is ``http://localhost:8001/geoserver/``.  The GeoServer module
 in :file:`src/geoserver-geonode-ext/` is configured to provide a GeoServer
 instance at that port with the following commands::
@@ -224,8 +214,6 @@ To run the Django app when Jetty is started independently, use::
 in the base of your working directory.
 
 
-=======
->>>>>>> gncore/master
 Alternative GeoServer Data Directories
 ......................................
 
@@ -241,7 +229,7 @@ For Deployment
 Email
 .....
 
-Adding an email gateway to GeoNode can be very useful, the two main reasons are
+Adding an email gateway to WorldMap can be very useful, the two main reasons are
 the ``ADMINS`` and ``REGISTRATION_OPEN`` settings explained below.
 
 Here is a sample configuration to setup a Gmail account as the email gateway::
@@ -271,8 +259,7 @@ email the people in the ADMINS tuple with the error traceback::
 REGISTRATION_OPEN
 .................
 
-<<<<<<< HEAD
-In order to let people autoregister to the GeoNode, set::
+In order to let people autoregister to the WorldMap, set::
 
     REGISTRATION_OPEN=True
 
@@ -321,26 +308,12 @@ Create or edit the 'gwc-gs.xml' file under the gwc directory within your GeoServ
    </defaultOtherCacheFormats>
 </GeoServerGWCConfig>
 
-=======
-Directory Structure
-===================
-
-* docs/ - Documentation based on Sphinx
-* pavement.py - Main build script.
-* shared/ - Configuration files and support files for the installer.
-* src/ - Source code for the java, javascript and python modules. Split in:
-
-    * geonode-client/ - the JavaScript/CSS for general apps (the Map editor,
-      search, embedded viewer...)
-    * GeoNodePy/ - the Python/Django modules.  Inside, geonode/ is the "core".
-    * geoserver-geonode-ext/ - the GeoServer extensions used by the GeoNode.
-      Actually, the build script for this project is set up to create a WAR
-      that includes those extensions, not just a bundle with the extension.
 
 GAZETTEER
 ..............
 The gazetteer is disabled by default because it adds a bit of complexity to the setup process.
 It should be enabled only if PostGIS integration is also enabled.
+
 In your settings.py file:
 * uncomment the following in INSTALLED_APPS:
     * #geonode.gazetteer,
@@ -349,7 +322,7 @@ In your settings.py file:
 
 QUEUE
 ..............
-WorldMap can now optionally make use of the Celery project to send certain tasks (updating
+WorldMap can now optionally make use of Celery (http://celeryproject.org/) to send certain tasks (updating
 the gazetteer, updating layer boundaries after creating/editing features) to a job queue
 where they will be processed later.
 
@@ -358,10 +331,11 @@ In your settings.py file, uncomment the following in INSTALLED_APPS:
 * #'djcelery',
 * #'djkombu',
 
-The default run interval is determined by QUEUE_INTERVAL - the default is 10 minutes.
+The run interval is determined by QUEUE_INTERVAL - the default is 10 minutes.
 
 You will need to manually setup and run the celery processes on your server.  For basic
 instructions on doing so see  :file:`docs/deploy/celery_queue.txt`
+
 
 
 ALTERNATE LAYER-SPECIFIC SECURITY SYSTEM
@@ -385,6 +359,7 @@ In WEB-INF/web.xml, add the following, and change the user/password values:
     </context-param>
 
 Add the function in src/geoserver-geonode-ext/src/main/resources/org/geonode/security/geonode_authorize_layer.sql to the worldmap database
+
 
 
 Directory Structure
