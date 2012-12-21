@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-
+from dialogos.models import Comment
 
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
@@ -24,7 +24,7 @@ class MapAdmin(admin.ModelAdmin):
     list_filter  = ('created_dttm','owner')
     date_hierarchy = 'created_dttm'
     search_fields = ['title','keywords']
-
+    ordering = ('-created_dttm',)
 
 class ContactAdmin(admin.ModelAdmin):
     inlines = [ContactRoleInline]
@@ -42,6 +42,7 @@ class LayerAdmin(admin.ModelAdmin):
     inlines = [ContactRoleInline]
     search_fields = ['typename','title']
     actions = ['change_poc']
+    ordering = ('-date',)
 
     def change_poc(modeladmin, request, queryset):
         selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
@@ -80,3 +81,4 @@ admin.site.register(MapLayer,MapLayerAdmin)
 admin.site.register(Role)
 admin.site.register(MapStats, MapStatsAdmin)
 admin.site.register(LayerStats, LayerStatsAdmin)
+#admin.site.register(Comment, CommentAdmin)
