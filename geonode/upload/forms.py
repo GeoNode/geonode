@@ -44,7 +44,7 @@ class LayerUploadForm(forms.Form):
     spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file", "xml_file")
 
     def clean(self):
-        requires_datastore = () if settings.DB_DATASTORE else ('csv',)
+        requires_datastore = () if settings.DB_DATASTORE else ('csv','kml')
         types = [ t for t in files.types if t.code not in requires_datastore]
         supported_type = lambda ext: any([t.matches(ext) for t in types])
 
