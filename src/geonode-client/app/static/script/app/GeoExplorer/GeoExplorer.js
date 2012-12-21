@@ -233,7 +233,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
              * Fires before the page unloads. Return false to stop the page
              * from unloading.
              */
-            "beforeunload"
+            "beforeunload",
+
+            "setLayerTree"
         );
 
         // add old ptypes
@@ -406,17 +408,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             };
         }
         config.tools = (config.tools || []).concat(
-{
-            ptype: "gxp_layermanager",
-            groups: (config.map.groups || config.treeconfig),
-            id: "treecontentmgr",
-            outputConfig: {
-                id: "treecontent",
-                autoScroll: true,
-                tbar: {id: 'treetbar'}
+            {
+                ptype: "gxp_layermanager",
+                groups: (config.map.groups || config.treeconfig),
+                id: "treecontentmgr",
+                outputConfig: {
+                    id: "treecontent",
+                    autoScroll: true,
+                    tbar: {id: 'treetbar'}
                 },
-            outputTarget: "westpanel"
-        },{
+                outputTarget: "westpanel"
+            },{
                 ptype: "gxp_zoomtolayerextent",
                 actionTarget: "treecontent.contextMenu"
             },{
@@ -853,6 +855,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     addLayers.catalogSourceKey = startSourceId;
                 } else if (tool.ptype == "gxp_layermanager") {
                     this.layerTree = tool;
+                    this.fireEvent("setLayerTree");
                 }
             }
             if (addLayers !== null) {
@@ -880,6 +883,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             collapseMode: "mini",
             header: false,
             split: true,
+            bbar: [searchPanel],
             region: "west",
             width: 250
         });

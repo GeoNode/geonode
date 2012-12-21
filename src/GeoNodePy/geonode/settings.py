@@ -7,9 +7,6 @@ import os
 # General Django development settings
 #
 
-logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s %(levelname)s %(message)s',filename = 'geonode.log',filemode = 'a')
-
-
 # Defines the directory that contains the settings file as the PROJECT_ROOT
 # It is used for relative settings elsewhere.
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -424,7 +421,7 @@ USE_GAZETTEER = False
 #    'wmdata' : "south.db.postgresql_psycopg2",
 #
 #    }
-SOUTH_TESTS_MIGRATE = False
+#SOUTH_TESTS_MIGRATE = False
 
 ##### END GAZETTEER SETTINGS #####
 
