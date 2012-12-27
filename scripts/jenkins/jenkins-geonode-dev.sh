@@ -1,8 +1,14 @@
+#!/bin/bash
+
+set -e
+
 # Setup environment variables.
 PATH=/home/jenkins/apache-maven-2.2.1/bin/:$PATH
 MAVEN_HOME=/home/jenkins/apache-maven-2.2.1/
 JAVA_HOME=/usr/lib/jvm/java-6-sun/
 PYENV_HOME=$HOME/.pyenv/
+DL_ROOT=/var/www/geonode
+GIT_REV=$(git log -1 --pretty=format:%h)
 
 # Delete previously built virtualenv
 if [ -d $PYENV_HOME ]; then
@@ -68,5 +74,16 @@ clonedigger --cpd-output . || :
 mv output.xml clonedigger.out
 echo; echo ">>> Reporting FIXME's and TODO's in source code"
 
+# Make the debian package
+if [ -d $DL_ROOT/$GIT_REV ]; then
+    rm -rf $DL_ROOT/$GIT_REV
+fi
+paver deb
+mkdir $DL_ROOT/$GIT_REV
+cp ../*.deb $DL_ROOT/$GIT_REV/.
+rm -rf $DL_ROOT/latest
+ln -sf $DL_ROOT/$GIT_REV $DL_ROOT/latest
+
 # All done, clean up
 git reset --hard
+git clean -dxf
