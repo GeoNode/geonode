@@ -80,7 +80,8 @@ if [ -d $DL_ROOT/$GIT_REV ]; then
 fi
 paver deb
 mkdir $DL_ROOT/$GIT_REV
-cp ../*.deb $DL_ROOT/$GIT_REV/.
+cp package/*.deb $DL_ROOT/$GIT_REV/.
+cp package/*.gz $DL_ROOT/$GIT_REV/.
 rm -rf $DL_ROOT/latest
 ln -sf $DL_ROOT/$GIT_REV $DL_ROOT/latest
 
