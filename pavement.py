@@ -392,8 +392,8 @@ def deb(options):
         #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
         sh(('git-dch --git-author --new-version=%s'
-            ' --id-length=6 --debian-branch=%s' % (
-            simple_version, branch)))
+            ' --id-length=6 --ignore-branch' % (
+            simple_version)))
 
         # Revert workaround for git-dhc bug
         path('.git').rmtree()
