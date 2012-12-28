@@ -18,6 +18,7 @@ from repo or debian package (once release candidate phase or later)
 import os, glob
 from fabric.api import env, sudo, run, cd, local, put, prefix
 from fabric.api import settings as fab_settings
+from fabric.context_managers import settings
 from fabric.contrib.files import sed
 
 INSTALLDIR = '/var/lib'
@@ -116,7 +117,6 @@ def restore_data(project):
         sudo('django-admin.py cleardeadlayers --settings=%s.settings' % project)
         sudo('django-admin.py updatelayers --settings=%s.settings' % project)
         
-
 def create_database(db,user,password):
     #sudo("dropdb %s" % db, user="postgres")
     #sudo("dropuser %s" % user, user="postgres")
@@ -154,6 +154,14 @@ def deploy_default_geonode():
     enable_site('geonode')
     # User needs to provide local_settings - where?
     setup_pgsql('geonode')
+
+def deploy_geonode_dev_package():
+    sudo('add-apt-repository -y ppa:geonode/unstable') 
+    sudo('apt-get update')
+    sudo('wget http://build.geonode.org/geonode/latest/geonode_2.0.0%2balpha0_all.deb')
+    with settings(warn_only=True):
+        sudo('dpkg -i geonode_2.0.0+alpha0_all.deb')
+    sudo('apt-get install -f -y')
 
 # TODO - Build Amazon Machine Instance
 def build_ami():
