@@ -385,15 +385,15 @@ def deb(options):
         info('Getting rid of any uncommitted changes in debian/changelog')
         sh('git checkout debian/changelog')
 
-        # Workaround for git-dhc bug
+        # Workaround for git-dch bug
         # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
         path('.git').makedirs()
 
         #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
-        sh(('git-dch --git-author --new-version=%s'
-            ' --id-length=6 --ignore-branch' % (
-            simple_version)))
+        #sh(('git-dch --git-author --new-version=%s'
+        #    ' --id-length=6 --ignore-branch' % (
+        #    simple_version)))
 
         # Revert workaround for git-dhc bug
         path('.git').rmtree()
