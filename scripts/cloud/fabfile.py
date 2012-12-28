@@ -128,9 +128,9 @@ def create_database(db,user,password):
 def setup_pgsql(project):
     import sys
     sys.path.append('.')
-    with cd(PYLIBS), fab_settings(warn_only=True):
-        sudo('cd %s; ln -s settings_production.py local_settings.py' % project)
-    exec('import ' + project + '.settings_production as settings')
+    #with cd(PYLIBS), fab_settings(warn_only=True):
+    #    sudo('cd %s; ln -s settings_production.py local_settings.py' % project)
+    #exec('import ' + project + '.settings_production as settings')
     db = settings.DATABASES['default']['NAME']
     user = settings.DATABASES['default']['USER']
     password = settings.DATABASES['default']['PASSWORD']
