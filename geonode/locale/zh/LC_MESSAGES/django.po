@@ -8,15 +8,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-31 09:41-0600\n"
-"PO-Revision-Date: 2012-10-06 06:31+0000\n"
-"Last-Translator: nwang <nwang@opengeo.org>\n"
+"POT-Creation-Date: 2012-12-31 10:27-0600\n"
+"PO-Revision-Date: 2012-12-31 16:00+0000\n"
+"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/"
 "zh/)\n"
+"Language: zh\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: utils.py:233 security/models.py:33
@@ -52,9 +52,8 @@ msgid "Administrative"
 msgstr "管理"
 
 #: documents/views.py:82
-#, fuzzy
 msgid "You are not allowed to view this document."
-msgstr "您无权查看此地图。"
+msgstr ""
 
 #: documents/templates/documents/_document_filters.html:5
 #: layers/templates/layers/_layer_filters.html:5
@@ -122,23 +121,20 @@ msgid "Average rating"
 msgstr "平均得分"
 
 #: documents/templates/documents/docinfo.html:51
-#, fuzzy
 msgid "Contact:"
-msgstr "联系"
+msgstr ""
 
 #: documents/templates/documents/docinfo.html:57
-#, fuzzy
 msgid "Link"
-msgstr "登录"
+msgstr ""
 
 #: documents/templates/documents/docinfo.html:60
 msgid "This document is related to a "
 msgstr ""
 
 #: documents/templates/documents/docinfo.html:63
-#, fuzzy
 msgid "This document is not related to any maps or layers"
-msgstr "当前图层未被任何地图使用。"
+msgstr ""
 
 #: documents/templates/documents/docinfo.html:68
 #: documents/templates/documents/document_upload.html:203
@@ -155,20 +151,17 @@ msgstr ""
 #: documents/templates/documents/document_base.html:12
 #: documents/templates/documents/document_list.html:9
 #: documents/templates/documents/document_list.html:15
-#, fuzzy
 msgid "Explore Documents"
-msgstr "浏览图层"
+msgstr ""
 
 #: documents/templates/documents/document_base.html:13
 #: documents/templates/documents/document_search.html:6
-#, fuzzy
 msgid "Search Documents"
-msgstr "搜索数据"
+msgstr ""
 
 #: documents/templates/documents/document_base.html:14
-#, fuzzy
 msgid "Upload Documents"
-msgstr "上传数据"
+msgstr ""
 
 #: documents/templates/documents/document_list.html:31
 #: layers/templates/layers/layer_list.html:31
@@ -196,14 +189,12 @@ msgid "No data found"
 msgstr "没有数据"
 
 #: documents/templates/documents/document_metadata.html:17
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "        Editing details for %(document_title)s\n"
 "      "
 msgstr ""
-"\n"
-"细节修改%(layer_title)s"
 
 #: documents/templates/documents/document_metadata.html:26
 #: layers/templates/layers/layer_metadata.html:40
@@ -222,9 +213,8 @@ msgid "Update"
 msgstr "更新"
 
 #: documents/templates/documents/document_search.html:14
-#, fuzzy
 msgid "Search for Documents"
-msgstr "寻找图层"
+msgstr ""
 
 #: documents/templates/documents/document_search.html:19
 #: search/templates/search/advanced_search.html:4
@@ -288,14 +278,12 @@ msgid "Your search did not match any items."
 msgstr "未搜索到任何结果。"
 
 #: documents/templates/documents/document_upload.html:4
-#, fuzzy
 msgid "Upload Document"
-msgstr "上传数据"
+msgstr ""
 
 #: documents/templates/documents/document_upload.html:16
-#, fuzzy
 msgid "Add document"
-msgstr "添加评论"
+msgstr ""
 
 #: layers/enumerations.py:24
 msgid "series"
@@ -1470,18 +1458,16 @@ msgid "A space or comma-separated list of keywords"
 msgstr "空格或者用逗号隔开的关键词"
 
 #: layers/models.py:63
-#, fuzzy
 msgid "style name"
-msgstr "用户名"
+msgstr ""
 
 #: layers/models.py:65
 msgid "sld text"
 msgstr ""
 
 #: layers/models.py:66
-#, fuzzy
 msgid "sld version"
-msgstr "类时段"
+msgstr ""
 
 #: layers/models.py:67
 msgid "sld url"
@@ -1753,9 +1739,8 @@ msgid "View in Google Earth"
 msgstr "谷歌地球"
 
 #: layers/models.py:724
-#, fuzzy
 msgid "Tiles"
-msgstr "标题"
+msgstr ""
 
 #: layers/ows.py:85
 msgid "Zipped Shapefile"
@@ -1824,27 +1809,24 @@ msgid "Bad HTTP Authorization Credentials."
 msgstr "HTTP授权证书错误。"
 
 #: layers/management/__init__.py:30
-#, fuzzy
 msgid "Layer Uploaded"
-msgstr "保存上传"
+msgstr ""
 
 #: layers/management/__init__.py:30
 msgid "A layer was uploaded"
 msgstr ""
 
 #: layers/management/__init__.py:31
-#, fuzzy
 msgid "Comment on Layer"
-msgstr "下载图层"
+msgstr ""
 
 #: layers/management/__init__.py:31
 msgid "A layer was commented on"
 msgstr ""
 
 #: layers/management/__init__.py:32
-#, fuzzy
 msgid "Rating for Layer"
-msgstr "寻找图层"
+msgstr ""
 
 #: layers/management/__init__.py:32
 msgid "A rating was given to a layer"
@@ -1873,9 +1855,8 @@ msgstr "标注"
 
 #: layers/templates/layers/_actions.html:7
 #: maps/templates/maps/map_detail.html:51
-#, fuzzy
 msgid "Ratings"
-msgstr "范围"
+msgstr ""
 
 #: layers/templates/layers/_actions.html:8
 #: maps/templates/maps/map_detail.html:50
@@ -1949,9 +1930,8 @@ msgid "Edit Permissions"
 msgstr "修改权限"
 
 #: layers/templates/layers/layer_detail.html:61
-#, fuzzy
 msgid "Replace this Layer"
-msgstr "移除此图层"
+msgstr ""
 
 #: layers/templates/layers/layer_detail.html:62
 msgid "Remove this Layer"
@@ -1978,20 +1958,17 @@ msgid "Std. Dev."
 msgstr "方差"
 
 #: layers/templates/layers/layer_detail.html:109
-#, fuzzy
 msgid "Share This Layer"
-msgstr "寻找图层"
+msgstr ""
 
 #: layers/templates/layers/layer_detail.html:126
-#, fuzzy
 msgid "Rate this layer"
-msgstr "给此地图打分"
+msgstr ""
 
 #: layers/templates/layers/layer_detail.html:130
 #: maps/templates/maps/map_detail.html:73
-#, fuzzy
 msgid "Average Rating"
-msgstr "平均得分"
+msgstr ""
 
 #: layers/templates/layers/layer_detail.html:139
 msgid "Maps using this layer"
@@ -2018,9 +1995,8 @@ msgid "Create a Map"
 msgstr "生成一张地图"
 
 #: layers/templates/layers/layer_detail.html:160
-#, fuzzy
 msgid "Click the button below to change the permissions of this layer."
-msgstr "您没有权限查看或下载此图层。"
+msgstr ""
 
 #: layers/templates/layers/layer_detail.html:161
 msgid "Change Layer Permissions"
@@ -2113,9 +2089,8 @@ msgid "Update Layer"
 msgstr "更新图层"
 
 #: layers/templates/layers/layer_replace.html:15
-#, fuzzy
 msgid "Replace Layer"
-msgstr "更新图层"
+msgstr ""
 
 #: layers/templates/layers/layer_replace.html:159
 msgid "This form allows you to update the data for this layer."
@@ -2254,18 +2229,16 @@ msgid "A Map was created"
 msgstr ""
 
 #: maps/management/__init__.py:31
-#, fuzzy
 msgid "Comment on Map"
-msgstr "评论"
+msgstr ""
 
 #: maps/management/__init__.py:31
 msgid "A map was commented on"
 msgstr ""
 
 #: maps/management/__init__.py:32
-#, fuzzy
 msgid "Rating for Map"
-msgstr "创建地图"
+msgstr ""
 
 #: maps/management/__init__.py:32
 msgid "A rating was given to a map"
@@ -2281,14 +2254,12 @@ msgid "Search Maps"
 msgstr "搜索地图"
 
 #: maps/templates/maps/map_detail.html:27
-#, fuzzy
 msgid "Download Map"
-msgstr "下载"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:31
-#, fuzzy
 msgid "Download Data Layers"
-msgstr "下载图层"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:32
 msgid "Download Web Map Context"
@@ -2303,32 +2274,28 @@ msgid "Rate this Map"
 msgstr "给此地图打分"
 
 #: maps/templates/maps/map_detail.html:81
-#, fuzzy
 msgid "Share This Map"
-msgstr "给此地图打分"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:94
-#, fuzzy
 msgid "Map Layers"
-msgstr "图层"
+msgstr "地图图层"
 
 #: maps/templates/maps/map_detail.html:95
 msgid "This map uses the following layers:"
 msgstr "这张地图用了以下图层"
 
 #: maps/templates/maps/map_detail.html:109
-#, fuzzy
 msgid "View map"
-msgstr "查看自"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:110
 msgid "View this map in the GeoExplorer GIS Client"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:111
-#, fuzzy
 msgid "View Map"
-msgstr "查看自"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:117
 msgid "Specify which users can view or modify this map"
@@ -2339,9 +2306,8 @@ msgid "Change Permissions of this Map"
 msgstr "改变此地图的访问权限"
 
 #: maps/templates/maps/map_detail.html:122
-#, fuzzy
 msgid "Copy this map"
-msgstr "给此地图打分"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:123
 msgid "Duplicate this map and modify it for your own purposes"
@@ -2422,9 +2388,8 @@ msgstr ""
 "你确定要删除%(map_title)s？"
 
 #: maps/templates/maps/map_view.html:5
-#, fuzzy
 msgid "GeoExplorer"
-msgstr "浏览图层"
+msgstr ""
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
@@ -2604,12 +2569,11 @@ msgstr "找不到使用此email的用户。"
 
 #: people/templates/people/_profile_about_item.html:3
 msgid "About the Layer Owner"
-msgstr "关于图层拥有者"
+msgstr ""
 
 #: people/templates/people/_profile_about_item.html:8
-#, fuzzy
 msgid "Read more about the owner"
-msgstr "更多关于图层拥有者"
+msgstr ""
 
 #: people/templates/people/forgot_username_form.html:5
 msgid "Forgot Username"
@@ -2645,9 +2609,8 @@ msgid "Map"
 msgstr "地图"
 
 #: people/templates/people/profile_detail.html:36
-#, fuzzy
 msgid "Document"
-msgstr "评论"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:58
 msgid "Delete Layers"
@@ -2678,18 +2641,16 @@ msgid "Edit profile information"
 msgstr "编辑个人信息"
 
 #: people/templates/people/profile_detail.html:85
-#, fuzzy
 msgid "Account Settings"
-msgstr "设置"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:86
 msgid "Change password"
 msgstr "更改密码"
 
 #: people/templates/people/profile_detail.html:87
-#, fuzzy
 msgid "Upload new layers"
-msgstr "上传图层"
+msgstr ""
 
 #: people/templates/people/profile_edit.html:8 templates/avatar/add.html:9
 msgid "You haven't uploaded an avatar yet. Please upload one now."
@@ -2883,19 +2844,16 @@ msgid "Add to Favorites"
 msgstr "添加到喜爱"
 
 #: templates/_comments.html:10
-#, fuzzy
 msgid "Add Comment"
-msgstr "添加评论"
+msgstr ""
 
 #: templates/_comments.html:31
-#, fuzzy
 msgid "Add a Comment"
-msgstr "添加评论"
+msgstr ""
 
 #: templates/_comments.html:41
-#, fuzzy
 msgid "Submit Comments"
-msgstr "评论"
+msgstr ""
 
 #: templates/_permissions_form.html:11
 msgid "Who can view and download this data?"
@@ -2963,7 +2921,7 @@ msgstr "注销"
 
 #: templates/base.html:60
 msgid "Notifications"
-msgstr "通知"
+msgstr ""
 
 #: templates/base.html:61
 msgid "Messages"
@@ -3010,9 +2968,8 @@ msgid "Register"
 msgstr "注册"
 
 #: templates/base.html:100
-#, fuzzy
 msgid "Search ..."
-msgstr "搜索"
+msgstr ""
 
 #: templates/base.html:113
 msgid "Layers"
@@ -3023,14 +2980,12 @@ msgid "Maps"
 msgstr "地图"
 
 #: templates/base.html:121
-#, fuzzy
 msgid "Documents"
-msgstr "评论"
+msgstr ""
 
 #: templates/base.html:125
-#, fuzzy
 msgid "People"
-msgstr "流行"
+msgstr ""
 
 #: templates/base.html:177
 msgid "Powered by"
@@ -3041,9 +2996,8 @@ msgid "GeoNode"
 msgstr "GeoNode"
 
 #: templates/base.html:177
-#, fuzzy
 msgid "version"
-msgstr "权限"
+msgstr ""
 
 #: templates/base.html:184 templates/geonode/resourcebase_info_panel.html:96
 msgid "Language"
@@ -3096,7 +3050,6 @@ msgid ""
 msgstr "本页提供如何使用GeoNode的帮助信息。请点击工具栏链接了解您想知道的内容"
 
 #: templates/help.html:12
-#, fuzzy
 msgid ""
 "\n"
 "  <p>The GeoNode provides access to data sets and a map editing application "
@@ -3184,83 +3137,14 @@ msgid ""
 "href=\"maps\">Maps</a> tab.</p> \n"
 "  "
 msgstr ""
-"\n"
-"  <p>GeoNode提供数据集和地图编辑应用，允许用户浏览地图或贡献自己的地图。</"
-"p>\n"
-"\n"
-"  <h4 id=\"browsing-data\">浏览数据</h4>\n"
-"  <p>而<a href=\"data\">数据</a> 选项卡允许您浏览上传到GeoNode地图数据。</"
-"p>\n"
-"  <p>所有数据都可以多种格式下载，这些数据可以在其它程序中使用。</p>\n"
-"\n"
-"  <h4 id=\"developer-access\">开发者访问</h4>\n"
-"  <p>The <a href=\"developer\">开发者</a> 选项卡对开发者开始构建GeoNode应用有"
-"帮助。它包括Web服务使用帮助，GeoNode源代码的链接，以及相关开源项目的信息说"
-"明。</p>\n"
-"\n"
-"  <h4 id=\"browsing-maps\">浏览地图</h4>\n"
-"  <p>GeoNode允许用户创建和分享地图。</p>\n"
-"  <p>The <a href=\"maps\">地图</a> 选项卡是GeoNode地图搜寻入口。从这里你可以 "
-"<strong>查询地图</strong> 或 <strong>创建地图</strong>, 点击这里会打开 <a "
-"href=\"maps/new\">地图设计器</a>.</p>\n"
-"  <h5>谷歌地球模式</h5>\n"
-"  <p>在交互式地图编辑器，使用谷歌地球3D模式插件查看任何地图。\n"
-"选择在顶部的工具栏的最右边的按钮的谷歌地球全球的标志，切换到3D模式。\n"
-"如果你没有安装谷歌地球插件，你会被提示安装它。</p>\n"
-"\n"
-"  <h4 id=\"creating-a-map\">创建地图</h4>\n"
-"  <p>要创建一个新的地图去 <a href=\"maps\">贡献地图</a> tab 并点击 <a href="
-"\"maps/new\">创建自己的地图</a> 链接。</p>\n"
-"  <p>这将带你到 <a href=\"maps/new\">地图设计</a> 与基础图层加载。</p>\n"
-"  <p>添加GeoNode数据图层点击\"数据\"选项卡上位于屏幕的左侧下面的绿色加号按"
-"钮。\n"
-"这将打开一个对话框，列出所有GeoNode上的图层。</p>\n"
-"  <p>选择 <strong>添加层</strong> 按钮为地图添加图层。当完成后，您可以点击 "
-"<strong>完成</strong> 关闭对话框并返回到地图。</p>\n"
-"\n"
-"  <h5>图层叠加排序和删除</h5>\n"
-"  <p>简单的拖放图层列表，更改图层显示顺序。\n"
-"在地图上的顺序被改变，地图也会更新。\n"
-"要让图层不显示，只需取消选中，并点击红色的减号按钮来完全消除它。</p>\n"
-"\n"
-"  <h5>保存你的地图</h5>\n"
-"  <p>一旦找到合适的图层和缩放级别设置，将其保存，这样别人可以看到它。保存按"
-"钮 - 在顶部工具栏最左边、图像为磁盘地图的图标 - 顶部的菜单上，填写地图的标题"
-"和摘要。</p>\n"
-"\n"
-"  <h4 id=\"exporting-a-map\">导出地图</h4>\n"
-"  <p>任何GeoNode地图都可以嵌入到其他网站或博客中。如何导出一个地图：</p>\n"
-"  <ol>\n"
-"    <li>选择从社区或地图页上的地图，然后选择“导出地图”按钮。</li> \n"
-"    <li>在向导窗口选择您所需的高度和宽度。</li> \n"
-"    <li>复制向导中提供的HTML片段到任何HTML或支持IFRAME页面中。</li>\n"
-"  </ol>\n"
-"  <p>这将会放置一个互动窗口在您的网页或博客用以显示地图。</p>\n"
-"  <p>请注意 <a href=\"maps/new\">地图设计</a> 也有一个导出地图的按钮。\n"
-"如果有你希望别人看到的变化，只要确保导出前地图已经被保存。\n"
-"你只能导出最后保存的版本，而不是最后查看的版本。</p>\n"
-"\n"
-"  <h4 id=\"remixing-a-map\">叠加地图</h4>\n"
-"  <p>可以通过任意图层组合一张新地图。</p>\n"
-"  <ol>\n"
-"    <li>在地图设计中打开地图</li>\n"
-"    <li>根据需要添加和删除图层。</li>\n"
-"    <li>平移和缩放到感兴趣的区域。</li>\n"
-"    <li><strong>重要事项：</strong> 新的地图要更新标题，摘要，联系信息和标"
-"签，来表示地图是最新的。</li>\n"
-"    <li>保存地图。</li>\n"
-"  </ol>\n"
-"  <p>当你在 <a href=\"maps\">地图</a> 搜索时，您将能够看到新的地图。</p> \n"
-"  "
 
 #: templates/help.html:65
 msgid "Sections"
 msgstr "路段"
 
 #: templates/help.html:66
-#, fuzzy
 msgid "Browsing Layers"
-msgstr "浏览地图"
+msgstr ""
 
 #: templates/help.html:67
 msgid "Developer Access"
@@ -3291,7 +3175,6 @@ msgid "Welcome"
 msgstr "欢迎"
 
 #: templates/index.html:20
-#, fuzzy
 msgid ""
 "\n"
 "            GeoNode is an open source platform for sharing geospatial data "
@@ -3300,11 +3183,6 @@ msgid ""
 "a>.\n"
 "          "
 msgstr ""
-"\n"
-"GeoNode是一个开源，共享地理空间数据和地图的平台。如果您有任何有关软件或服务的"
-"问题，请点击https://groups.google.com/d/forum/geonode-users加入我们的邮件名"
-"单.\n"
-"    "
 
 #: templates/index.html:24
 msgid "Need help"
@@ -3397,28 +3275,24 @@ msgid "Owner"
 msgstr "所有者"
 
 #: templates/geonode/resourcebase_info_panel.html:68
-#, fuzzy
 msgid "Maintenance Frequency"
-msgstr "维护频率"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:75
 msgid "Citation"
 msgstr "引用"
 
 #: templates/geonode/resourcebase_info_panel.html:82
-#, fuzzy
 msgid "Edition"
-msgstr "版本"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:89
-#, fuzzy
 msgid "Purpose"
-msgstr "目标"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:103
-#, fuzzy
 msgid "Temporal Extent"
-msgstr "结束时间"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:110
 msgid "Data Quality"
@@ -3429,20 +3303,17 @@ msgid "Supplemental Information"
 msgstr "补充信息"
 
 #: templates/geonode/resourcebase_info_panel.html:124
-#, fuzzy
 msgid "Spatial Representation Type"
-msgstr "空间呈现类型"
+msgstr ""
 
 #: templates/notification/base.html:15 templates/notification/notices.html:7
 #: templates/notification/notices.html:11
-#, fuzzy
 msgid "Notices"
-msgstr "发言"
+msgstr ""
 
 #: templates/notification/base.html:16
-#, fuzzy
 msgid "Notice settings"
-msgstr "通知"
+msgstr ""
 
 #: templates/notification/base.html:17
 msgid "Observed objects"
@@ -3450,9 +3321,8 @@ msgstr ""
 
 #: templates/notification/notice_settings.html:5
 #: templates/notification/notice_settings.html:10
-#, fuzzy
 msgid "Notification Settings"
-msgstr "通知"
+msgstr ""
 
 #: templates/notification/notice_settings.html:15
 msgid "Primary email"
@@ -3475,14 +3345,12 @@ msgid ""
 msgstr ""
 
 #: templates/notification/notice_settings.html:30
-#, fuzzy
 msgid "Notification Type"
-msgstr "通知"
+msgstr ""
 
 #: templates/notification/notice_settings.html:48
-#, fuzzy
 msgid "Change"
-msgstr "范围"
+msgstr ""
 
 #: templates/notification/notices.html:16
 msgid "Mark all unseen notices seen"
@@ -3493,18 +3361,16 @@ msgid "MONTH_DAY_FORMAT"
 msgstr ""
 
 #: templates/notification/notices.html:33
-#, fuzzy
 msgid "View Notice"
-msgstr "发言"
+msgstr ""
 
 #: templates/notification/notices.html:41
 msgid "No notices."
 msgstr ""
 
 #: templates/notification/single.html:6 templates/notification/single.html:9
-#, fuzzy
 msgid "Notice"
-msgstr "发言"
+msgstr ""
 
 #: templates/pagination/pagination.html:8
 msgid "Previous"
@@ -3523,9 +3389,8 @@ msgid "next"
 msgstr "下一个"
 
 #: templates/relationships/_manage_connections.html:4
-#, fuzzy
 msgid "Manage Connections"
-msgstr "人工建筑物"
+msgstr ""
 
 #: templates/relationships/_manage_connections.html:6
 msgid "Following"
@@ -3574,32 +3439,28 @@ msgid "%(to_user_username)s's profile"
 msgstr ""
 
 #: templates/user_messages/inbox.html:6
-#, fuzzy
 msgid "Message Inbox"
-msgstr "消息"
+msgstr ""
 
 #: templates/user_messages/inbox.html:12
 msgid "With"
 msgstr ""
 
 #: templates/user_messages/inbox.html:13
-#, fuzzy
 msgid "Subject"
-msgstr "提交"
+msgstr ""
 
 #: templates/user_messages/inbox.html:14
 msgid "Last Sender"
 msgstr ""
 
 #: templates/user_messages/inbox.html:15
-#, fuzzy
 msgid "Preview"
-msgstr "观看"
+msgstr ""
 
 #: templates/user_messages/inbox.html:16
-#, fuzzy
 msgid "Delete?"
-msgstr "删除"
+msgstr ""
 
 #: templates/user_messages/inbox.html:33
 #: templates/user_messages/thread_detail.html:14
@@ -3609,14 +3470,12 @@ msgstr ""
 #: templates/user_messages/inbox.html:55
 #: templates/user_messages/message_create.html:5
 #: templates/user_messages/message_create.html:8
-#, fuzzy
 msgid "Create Message"
-msgstr "创建地图"
+msgstr ""
 
 #: templates/user_messages/message_create.html:14
-#, fuzzy
 msgid "Send message"
-msgstr "消息"
+msgstr ""
 
 #: templates/user_messages/message_create.html:19
 #: templates/user_messages/thread_detail.html:32
@@ -3626,165 +3485,3 @@ msgstr ""
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr ""
-
-#~ msgid "Browse Data"
-#~ msgstr "浏览数据"
-
-#~ msgid "Layer Information"
-#~ msgstr "图层信息"
-
-#~ msgid "Bounding Box"
-#~ msgstr "边界矩形"
-
-#~ msgid "Native SRS"
-#~ msgstr "本地SRS"
-
-#~ msgid "No SRS specified."
-#~ msgstr "没有指定SRS。"
-
-#~ msgid "Placeholder"
-#~ msgstr "占位符"
-
-#~ msgid "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed"
-#~ msgstr "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed"
-
-#~ msgid "Change Permissions of this layer"
-#~ msgstr "改变此图层的的访问权限"
-
-#~ msgid ""
-#~ "The following styles are associated with this data set. Choose a style to "
-#~ "view it in the preview to the left. Click on a style name to view or edit "
-#~ "the style."
-#~ msgstr "以下样式与此数据集关联"
-
-#~ msgid "owner"
-#~ msgstr "所有者"
-
-#~ msgid "All"
-#~ msgstr "全部"
-
-#~ msgid "Most viewed"
-#~ msgstr "最多被查看的"
-
-#~ msgid "sort by"
-#~ msgstr "分类"
-
-#~ msgid "Newest"
-#~ msgstr "最新"
-
-#~ msgid "Download Data"
-#~ msgstr "下载数据"
-
-#~ msgid "Abstract:"
-#~ msgstr "摘要:"
-
-#~ msgid "Uploaded by"
-#~ msgstr "上传自"
-
-#~ msgid "Edit map"
-#~ msgstr "编辑地图"
-
-#~ msgid "Edit Map"
-#~ msgstr "编辑地图"
-
-#~ msgid "Map Viewer"
-#~ msgstr "地图查看"
-
-#~ msgid "View info"
-#~ msgstr "查看详细信息"
-
-#~ msgid "Change permissions on selected"
-#~ msgstr "修改被选项的权限"
-
-#~ msgid "Remove selected"
-#~ msgstr "取消选择"
-
-#~ msgid "Upload new data"
-#~ msgstr "上传新数据"
-
-#~ msgid "Advanced Search"
-#~ msgstr "高级搜索"
-
-#~ msgid "Profiles"
-#~ msgstr "资料"
-
-#~ msgid "Need Help?"
-#~ msgstr "需要帮助吗？"
-
-#~ msgid "For Developers"
-#~ msgstr "开发者"
-
-#~ msgid "Browsing Data"
-#~ msgstr "浏览数据"
-
-#~ msgid "Account successfully activated"
-#~ msgstr "帐户成功激活"
-
-#~ msgid "Account activation failed"
-#~ msgstr "帐户激活失败"
-
-#~ msgid "Activate account at"
-#~ msgstr "激活账户于"
-
-#~ msgid "Link is valid for %(expiration_days)s days."
-#~ msgstr "链接有效时日为%(expiration_days)s天"
-
-#~ msgid "Account activation on"
-#~ msgstr "账户激活"
-
-#~ msgid "Thanks for spending some quality time with the GeoNode today."
-#~ msgstr "感谢您愿意花费时间使用GeoNode。"
-
-#~ msgid "Log in again"
-#~ msgstr "再次登录"
-
-#~ msgid "Forgot password?"
-#~ msgstr "忘记密码？"
-
-#~ msgid "Forgot username?"
-#~ msgstr "忘记用户名？"
-
-#~ msgid "Logged out"
-#~ msgstr "注销"
-
-#~ msgid "You have been logged out of GeoNode."
-#~ msgstr "您已从GeoNode退出"
-
-#~ msgid "Password changed"
-#~ msgstr "修改密码"
-
-#~ msgid "Password reset successfully"
-#~ msgstr "密码成功重置"
-
-#~ msgid "Reset my password"
-#~ msgstr "重设密码"
-
-#~ msgid "Password reset failed"
-#~ msgstr "密码重置失败"
-
-#~ msgid "Email with password reset instructions has been sent."
-#~ msgstr "已发送新密码到您邮件。"
-
-#~ msgid "Reset password at %(site_name)s"
-#~ msgstr "复位密码%(site_name)s"
-
-#~ msgid "You are now registered. Activation email sent."
-#~ msgstr "您已经注册，激活邮件已发送到您的邮箱。"
-
-#~ msgid "Create account"
-#~ msgstr "创建账户"
-
-#~ msgid "1. File Upload"
-#~ msgstr "1. 上传文件"
-
-#~ msgid "2. Enter Info"
-#~ msgstr "2. 输入信息"
-
-#~ msgid "3. Permissions"
-#~ msgstr "3. 权限"
-
-#~ msgid "Enter Info"
-#~ msgstr "输入信息"
-
-#~ msgid "Next &gt;"
-#~ msgstr "下一个 &gt;"

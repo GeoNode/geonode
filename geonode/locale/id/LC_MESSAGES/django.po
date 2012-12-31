@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-31 09:40-0600\n"
-"PO-Revision-Date: 2012-10-06 06:30+0000\n"
+"POT-Creation-Date: 2012-12-31 10:27-0600\n"
+"PO-Revision-Date: 2012-12-31 16:00+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: Indonesian (http://www.transifex.com/projects/p/geonode/"
 "language/id/)\n"
+"Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: id\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: utils.py:233 security/models.py:33
@@ -51,9 +51,8 @@ msgid "Administrative"
 msgstr "Administratif"
 
 #: documents/views.py:82
-#, fuzzy
 msgid "You are not allowed to view this document."
-msgstr "Anda tidak diijinkan untuk melihat peta ini"
+msgstr ""
 
 #: documents/templates/documents/_document_filters.html:5
 #: layers/templates/layers/_layer_filters.html:5
@@ -121,23 +120,20 @@ msgid "Average rating"
 msgstr ""
 
 #: documents/templates/documents/docinfo.html:51
-#, fuzzy
 msgid "Contact:"
-msgstr "Kontak"
+msgstr ""
 
 #: documents/templates/documents/docinfo.html:57
-#, fuzzy
 msgid "Link"
-msgstr "Masuk"
+msgstr ""
 
 #: documents/templates/documents/docinfo.html:60
 msgid "This document is related to a "
 msgstr ""
 
 #: documents/templates/documents/docinfo.html:63
-#, fuzzy
 msgid "This document is not related to any maps or layers"
-msgstr "Layer ini tidak digunakan pada peta manapun"
+msgstr ""
 
 #: documents/templates/documents/docinfo.html:68
 #: documents/templates/documents/document_upload.html:203
@@ -154,15 +150,13 @@ msgstr ""
 #: documents/templates/documents/document_base.html:12
 #: documents/templates/documents/document_list.html:9
 #: documents/templates/documents/document_list.html:15
-#, fuzzy
 msgid "Explore Documents"
-msgstr "Telusuri Peta"
+msgstr ""
 
 #: documents/templates/documents/document_base.html:13
 #: documents/templates/documents/document_search.html:6
-#, fuzzy
 msgid "Search Documents"
-msgstr "Cari Data"
+msgstr ""
 
 #: documents/templates/documents/document_base.html:14
 msgid "Upload Documents"
@@ -285,9 +279,8 @@ msgid "Your search did not match any items."
 msgstr "Pencarian anda tidak ditemukan"
 
 #: documents/templates/documents/document_upload.html:4
-#, fuzzy
 msgid "Upload Document"
-msgstr "Unggah data baru"
+msgstr ""
 
 #: documents/templates/documents/document_upload.html:16
 msgid "Add document"
@@ -1466,9 +1459,8 @@ msgid "A space or comma-separated list of keywords"
 msgstr ""
 
 #: layers/models.py:63
-#, fuzzy
 msgid "style name"
-msgstr "style"
+msgstr ""
 
 #: layers/models.py:65
 msgid "sld text"
@@ -1748,9 +1740,8 @@ msgid "View in Google Earth"
 msgstr "Tampilkan di Google Earth"
 
 #: layers/models.py:724
-#, fuzzy
 msgid "Tiles"
-msgstr "Judul"
+msgstr ""
 
 #: layers/ows.py:85
 msgid "Zipped Shapefile"
@@ -1821,9 +1812,8 @@ msgid "Bad HTTP Authorization Credentials."
 msgstr "Autorisasi HTTP salah"
 
 #: layers/management/__init__.py:30
-#, fuzzy
 msgid "Layer Uploaded"
-msgstr "Unggah"
+msgstr ""
 
 #: layers/management/__init__.py:30
 msgid "A layer was uploaded"
@@ -1868,9 +1858,8 @@ msgstr ""
 
 #: layers/templates/layers/_actions.html:7
 #: maps/templates/maps/map_detail.html:51
-#, fuzzy
 msgid "Ratings"
-msgstr "Konfigurasi"
+msgstr ""
 
 #: layers/templates/layers/_actions.html:8
 #: maps/templates/maps/map_detail.html:50
@@ -1944,9 +1933,8 @@ msgid "Edit Permissions"
 msgstr ""
 
 #: layers/templates/layers/layer_detail.html:61
-#, fuzzy
 msgid "Replace this Layer"
-msgstr "Ubah Layer"
+msgstr ""
 
 #: layers/templates/layers/layer_detail.html:62
 msgid "Remove this Layer"
@@ -1982,9 +1970,8 @@ msgstr ""
 
 #: layers/templates/layers/layer_detail.html:130
 #: maps/templates/maps/map_detail.html:73
-#, fuzzy
 msgid "Average Rating"
-msgstr "Argentina"
+msgstr ""
 
 #: layers/templates/layers/layer_detail.html:139
 msgid "Maps using this layer"
@@ -2098,9 +2085,8 @@ msgid "Update Layer"
 msgstr "Ubah Layer"
 
 #: layers/templates/layers/layer_replace.html:15
-#, fuzzy
 msgid "Replace Layer"
-msgstr "Ubah Layer"
+msgstr ""
 
 #: layers/templates/layers/layer_replace.html:159
 msgid "This form allows you to update the data for this layer."
@@ -2267,14 +2253,12 @@ msgid "Search Maps"
 msgstr "Cari Peta"
 
 #: maps/templates/maps/map_detail.html:27
-#, fuzzy
 msgid "Download Map"
-msgstr "Unduh"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:31
-#, fuzzy
 msgid "Download Data Layers"
-msgstr "Unggah Layer"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:32
 msgid "Download Web Map Context"
@@ -2289,32 +2273,28 @@ msgid "Rate this Map"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:81
-#, fuzzy
 msgid "Share This Map"
-msgstr "Cari Peta"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:94
-#, fuzzy
 msgid "Map Layers"
-msgstr "Layer"
+msgstr "Layer peta"
 
 #: maps/templates/maps/map_detail.html:95
 msgid "This map uses the following layers:"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:109
-#, fuzzy
 msgid "View map"
-msgstr "Vietnam"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:110
 msgid "View this map in the GeoExplorer GIS Client"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:111
-#, fuzzy
 msgid "View Map"
-msgstr "Vietnam"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:117
 msgid "Specify which users can view or modify this map"
@@ -2392,9 +2372,8 @@ msgid ""
 msgstr ""
 
 #: maps/templates/maps/map_view.html:5
-#, fuzzy
 msgid "GeoExplorer"
-msgstr "Telusuri Peta"
+msgstr ""
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
@@ -2646,18 +2625,16 @@ msgid "Edit profile information"
 msgstr "Ubah informasi profil"
 
 #: people/templates/people/profile_detail.html:85
-#, fuzzy
 msgid "Account Settings"
-msgstr "Konfigurasi"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:86
 msgid "Change password"
 msgstr "Ganti password"
 
 #: people/templates/people/profile_detail.html:87
-#, fuzzy
 msgid "Upload new layers"
-msgstr "Unggah Layer"
+msgstr ""
 
 #: people/templates/people/profile_edit.html:8 templates/avatar/add.html:9
 msgid "You haven't uploaded an avatar yet. Please upload one now."
@@ -2972,9 +2949,8 @@ msgid "Register"
 msgstr "Daftar"
 
 #: templates/base.html:100
-#, fuzzy
 msgid "Search ..."
-msgstr "Cari"
+msgstr ""
 
 #: templates/base.html:113
 msgid "Layers"
@@ -3001,9 +2977,8 @@ msgid "GeoNode"
 msgstr "GeoNode"
 
 #: templates/base.html:177
-#, fuzzy
 msgid "version"
-msgstr "Izin"
+msgstr ""
 
 #: templates/base.html:184 templates/geonode/resourcebase_info_panel.html:96
 msgid "Language"
@@ -3056,7 +3031,6 @@ msgid ""
 msgstr ""
 
 #: templates/help.html:12
-#, fuzzy
 msgid ""
 "\n"
 "  <p>The GeoNode provides access to data sets and a map editing application "
@@ -3144,92 +3118,6 @@ msgid ""
 "href=\"maps\">Maps</a> tab.</p> \n"
 "  "
 msgstr ""
-"\n"
-"  <p>GeoNode merupakan aplikasi untuk melakukan akses dan kontribusi "
-"terhadap data set dan peta. Hal ini memungkinan pengguna dapat melihat dan "
-"eksplorasi peta dan data set.</p>\n"
-"\n"
-"  <h4 id=\"browsing-data\">Eksplorasi Data</h4>\n"
-"  <p>Menu <a href=\"data\">Data</a> untuk melihat data yang telah diunggah "
-"di GeoNode.</p>\n"
-"  <p>Seluruh data dapat diunduh dalam berbagai format untuk dapat digunakan "
-"pada aplikasi lainnya.</p>\n"
-"\n"
-"  <h4 id=\"developer-access\">Akses Developer</h4>\n"
-"  <p>Halaman <a href=\"developer\"> Developer</a> merupakan tempat untuk "
-"para developer dapat memulai membuat aplikasi di GeoNode. Halaman ini memuat "
-"instruksi bagaimana menggunakan layanan web (web services), tautan ke kode "
-"sumber GeoNode dan informasi mengenai proyek-proyek open source yag "
-"digunakan untuk membangun geoNode.</p>\n"
-"\n"
-"  <h4 id=\"browsing-maps\">Eksplorasi Peta</h4>\n"
-"  <p>GeoNode mengizinkan pengguna untuk membuat dan membagi petanya dengan "
-"sesama pengguna.</p>\n"
-"  <p>Menu <a href=\"maps\">Peta</a> merupakan halam untuk melakukan "
-"eksplorasi petad di GeoNode. Anda dapat melakukan <strong>pencarian peta</"
-"strong> atau <strong>membuat peta</strong>, yang akan menggunkan <a href="
-"\"maps/new\">Map Composer</a>.</p>\n"
-"  <h5>Mode Google Earth</h5>\n"
-"  <p>Seluruh peta yang ditampilkan pada editor peta interaktif dapat dilihat "
-"dalam mode 3 dimensi (3D) dengan menggunakan Google Earth plugin. Untuk "
-"memindahkan ke mode 3D, klik logo Google Earth globe yang terdapat pada "
-"bagian paling kanan di toolbar atas. Jika belum memiliki Google Earth "
-"plugin, Anda akan diminta untuk melakukan instalasi.</p>\n"
-"\n"
-"  <h4 id=\"creating-a-map\">Membuat Peta</h4>\n"
-"  <p>Untuk membuat peta, navigasi ke halaman <a href=\"maps\">Contributed "
-"Maps</a> dan pilih <a href=\"maps/new\">buat peta</a>.</p>\n"
-"  <p>Hal ini akan menuju ke halaman <a href=\"maps/new\">Map Composer</a> "
-"dengan base layer yang dimuat secara otomatis.</p>\n"
-"  <p>Untuk menambah layer dari GeoNode tekan tombol + yang berwarna hijau. "
-"hal ini akan menampilkan daftar layer yang tersedia di GeoNode.</p>\n"
-"  <p>Untuk menambahkan layer, tekan tombol <strong>Tambah Layer</strong>. "
-"Jika telah selesai tekan tombol <strong>Selesai</strong>.</p>\n"
-"\n"
-"  <h5>Mengurutkan dan menghapus layer</h5>\n"
-"  <p>Untuk mengatur urutan layer dapat dilakukan dengan tekan dan geser ke "
-"urutan yang diinginkan. Tampilan peta akan disesuaikan sesuai urutan yang "
-"telah diatur. Untuk mengatur peta yang ditampilkan, gunakan checkbox pada "
-"bagian kiri dari nama layer. Dan untuk menghapus layer tersebut, gunakan "
-"tombol - yang berwarna merah.</p>\n"
-"\n"
-"  <h5>Menyimpan peta</h5>\n"
-"  <p>Setelah layer diset, sekarang anda dapat menyimpannya sehingga pengguna "
-"yang lain dapat melihat peta tersebut. Klik tombol Simpan pada bagian kiri "
-"pada toolbar diatas (bergambar peta dan disket), kemudian isi judul dan "
-"anstrak peta.</p>\n"
-"\n"
-"  <h4 id=\"exporting-a-map\">Ekspor Peta</h4>\n"
-"  <p>Peta dari GeoNode dapat disertakan untuk penggunaan lainnya seperti "
-"situs web atau blog. Untuk mengekspor peta: </p>\n"
-"  <ol>\n"
-"    <li>Pilih dari daftar peta pada halaman komunitas atau halaman peta dan "
-"klik tombol 'ekspor peta'.</li> \n"
-"    <li>Pilih tinggi dan lebar widget.</li> \n"
-"    <li>Sunting kode HTML yang disediakan ke halaman HTML atau blog yang "
-"mendukung iFrame.</li>\n"
-"  </ol>\n"
-"  <p>Hal ini akan menyimpan widget interaktif yang menampilkan peta di situs "
-"web atau blog yang diinginkan.</p>\n"
-"  <p>Ingat bahwa <a href=\"maps/new\">Map Composer</a> juga memiliki tombol "
-"untuk mengeskpor peta. Jangan lupa untuk menyimpan peta sebelum diekspor, "
-"karena yang disimpan adalah versi yang tersimpan dan bukan versi yang "
-"terakhir ditayangkan.</p>\n"
-"\n"
-"  <h4 id=\"remixing-a-map\">Mengkomposisikan Ulang Peta</h4>\n"
-"  <p>Setiap peta dapat dijadikan awal untuk membuat peta baru.</p>\n"
-"  <ol>\n"
-"    <li>Buka peta pada Map Composer</li>\n"
-"    <li>Tambahkan dan Hapus layer sesuai yang anda inginkan.</li>\n"
-"    <li>Geser dan perbesar/perkecil untuk memilih area yang diinginkan.</"
-"li>\n"
-"    <li><strong>PENTING:</strong> Perbaharui judul abstrakm info kontak dan "
-"tag yang merefleksikan peta tersebut.</li>\n"
-"    <li>Menyimpa peta.</li>\n"
-"  </ol>\n"
-"  <p>Anda akan dapat melihat peta baru anda melalui menu pencarian di tab <a "
-"href=\"maps\">Peta</a>.</p> \n"
-"  "
 
 #: templates/help.html:65
 msgid "Sections"
@@ -3360,28 +3248,24 @@ msgid "Owner"
 msgstr "Pemilik"
 
 #: templates/geonode/resourcebase_info_panel.html:68
-#, fuzzy
 msgid "Maintenance Frequency"
-msgstr "frekuensi pemeliharaan"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:75
 msgid "Citation"
 msgstr "Sitasi"
 
 #: templates/geonode/resourcebase_info_panel.html:82
-#, fuzzy
 msgid "Edition"
-msgstr "Edisi"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:89
-#, fuzzy
 msgid "Purpose"
-msgstr "tujuan"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:103
-#, fuzzy
 msgid "Temporal Extent"
-msgstr "periode waktu selesai"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:110
 msgid "Data Quality"
@@ -3392,20 +3276,17 @@ msgid "Supplemental Information"
 msgstr "Informasi tambahan"
 
 #: templates/geonode/resourcebase_info_panel.html:124
-#, fuzzy
 msgid "Spatial Representation Type"
-msgstr "tipe representasi spasial"
+msgstr ""
 
 #: templates/notification/base.html:15 templates/notification/notices.html:7
 #: templates/notification/notices.html:11
-#, fuzzy
 msgid "Notices"
-msgstr "Telepon"
+msgstr ""
 
 #: templates/notification/base.html:16
-#, fuzzy
 msgid "Notice settings"
-msgstr "Konfigurasi"
+msgstr ""
 
 #: templates/notification/base.html:17
 msgid "Observed objects"
@@ -3441,9 +3322,8 @@ msgid "Notification Type"
 msgstr ""
 
 #: templates/notification/notice_settings.html:48
-#, fuzzy
 msgid "Change"
-msgstr "Batal"
+msgstr ""
 
 #: templates/notification/notices.html:16
 msgid "Mark all unseen notices seen"
@@ -3454,18 +3334,16 @@ msgid "MONTH_DAY_FORMAT"
 msgstr ""
 
 #: templates/notification/notices.html:33
-#, fuzzy
 msgid "View Notice"
-msgstr "Telepon"
+msgstr ""
 
 #: templates/notification/notices.html:41
 msgid "No notices."
 msgstr ""
 
 #: templates/notification/single.html:6 templates/notification/single.html:9
-#, fuzzy
 msgid "Notice"
-msgstr "Telepon"
+msgstr ""
 
 #: templates/pagination/pagination.html:8
 msgid "Previous"
@@ -3542,9 +3420,8 @@ msgid "With"
 msgstr ""
 
 #: templates/user_messages/inbox.html:13
-#, fuzzy
 msgid "Subject"
-msgstr "Proses"
+msgstr ""
 
 #: templates/user_messages/inbox.html:14
 msgid "Last Sender"
@@ -3566,9 +3443,8 @@ msgstr ""
 #: templates/user_messages/inbox.html:55
 #: templates/user_messages/message_create.html:5
 #: templates/user_messages/message_create.html:8
-#, fuzzy
 msgid "Create Message"
-msgstr "Buat Peta"
+msgstr ""
 
 #: templates/user_messages/message_create.html:14
 msgid "Send message"
@@ -3582,72 +3458,3 @@ msgstr ""
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr ""
-
-#~ msgid "Browse Data"
-#~ msgstr "Browse Data"
-
-#~ msgid "Bounding Box"
-#~ msgstr "Batas"
-
-#~ msgid "Native SRS"
-#~ msgstr "SRS Asli"
-
-#~ msgid "No SRS specified."
-#~ msgstr "Tidak ada SRS ditentukan"
-
-#~ msgid "owner"
-#~ msgstr "pemilik"
-
-#~ msgid "All"
-#~ msgstr "Seluruhnya"
-
-#~ msgid "Abstract:"
-#~ msgstr "Abstrak"
-
-#~ msgid "Map Viewer"
-#~ msgstr "Penampil Peta"
-
-#~ msgid "View info"
-#~ msgstr "Informasi Tampilan"
-
-#~ msgid "Advanced Search"
-#~ msgstr "Pencarian lanjutan"
-
-#~ msgid "Need Help?"
-#~ msgstr "Butuh Bantuan?"
-
-#~ msgid "For Developers"
-#~ msgstr "Untuk Pengembang"
-
-#~ msgid "Account successfully activated"
-#~ msgstr "Akun telah berhasil diaktivasi"
-
-#~ msgid "Account activation failed"
-#~ msgstr "Aktivasi dari akun gagal"
-
-#~ msgid "Thanks for spending some quality time with the GeoNode today."
-#~ msgstr "Terima kasih untuk meluangkan waktu menggunakan GeoNode."
-
-#~ msgid "Log in again"
-#~ msgstr "Masuk lagi"
-
-#~ msgid "Logged out"
-#~ msgstr "Keluar"
-
-#~ msgid "Password changed"
-#~ msgstr "Password berubah"
-
-#~ msgid "Password reset successfully"
-#~ msgstr "Password berhasil di reset"
-
-#~ msgid "Password reset failed"
-#~ msgstr "Password gagal di reset"
-
-#~ msgid "Email with password reset instructions has been sent."
-#~ msgstr "Email berisi instruksi melakukan reset password sudah dikirim."
-
-#~ msgid "Reset password at %(site_name)s"
-#~ msgstr "Reset password di %(site_name)s"
-
-#~ msgid "You are now registered. Activation email sent."
-#~ msgstr "Anda sudah terdaftar. Petunjuk aktivasi sudah dikirim ke email."
