@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-07 13:29-0600\n"
+"POT-Creation-Date: 2012-12-31 10:33-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 
 #: utils.py:233 security/models.py:33
 msgid "Anonymous Users"
@@ -74,46 +74,47 @@ msgstr ""
 #: documents/templates/documents/_document_grid_item.html:5
 #: documents/templates/documents/_document_list_item.html:14
 #: layers/templates/layers/_layer_grid_item.html:5
-#: layers/templates/layers/_layer_list_item.html:14
+#: layers/templates/layers/_layer_list_item.html:15
 #: layers/templates/layers/_layer_widget_item.html:9
 #: maps/templates/maps/_map_grid_item.html:10
-#: maps/templates/maps/_map_list_item.html:14
+#: maps/templates/maps/_map_list_item.html:17
 msgid "from"
 msgstr ""
 
 #: documents/templates/documents/_document_list_item.html:9
+#: layers/templates/layers/_layer_list_item.html:9
 #: layers/templates/layers/_layer_widget_item.html:5
-#: maps/templates/maps/_map_list_item.html:8
+#: maps/templates/maps/_map_list_item.html:12
 #: people/templates/people/_profile_about_item.html:4
 msgid "No Image Available"
 msgstr ""
 
 #: documents/templates/documents/_document_list_item.html:12
-#: layers/templates/layers/_layer_list_item.html:12
-#: maps/templates/maps/_map_list_item.html:11
+#: layers/templates/layers/_layer_list_item.html:13
+#: maps/templates/maps/_map_list_item.html:8
 #: maps/templates/maps/map_download.html:65
 msgid "Download"
 msgstr ""
 
 #: documents/templates/documents/_document_list_item.html:14
-#: layers/templates/layers/_layer_list_item.html:14
+#: layers/templates/layers/_layer_list_item.html:15
 #: layers/templates/layers/_layer_widget_item.html:9
 #: maps/templates/maps/_map_grid_item.html:10
-#: maps/templates/maps/_map_list_item.html:14
+#: maps/templates/maps/_map_list_item.html:17
 msgid "ago"
 msgstr ""
 
 #: documents/templates/documents/_document_list_item.html:16
-#: layers/templates/layers/_layer_list_item.html:16
-#: maps/templates/maps/_map_list_item.html:17
+#: layers/templates/layers/_layer_list_item.html:17
+#: maps/templates/maps/_map_list_item.html:20
 msgid "view"
 msgstr ""
 
 #: documents/templates/documents/_document_list_item.html:16
-#: layers/templates/layers/_layer_list_item.html:16
+#: layers/templates/layers/_layer_list_item.html:17
 #: layers/templates/layers/_layer_widget_item.html:11
 #: maps/templates/maps/_map_grid_item.html:12
-#: maps/templates/maps/_map_list_item.html:17
+#: maps/templates/maps/_map_list_item.html:20
 msgid "Average rating"
 msgstr ""
 
@@ -216,7 +217,7 @@ msgstr ""
 #: documents/templates/documents/document_search.html:19
 #: search/templates/search/advanced_search.html:4
 #: search/templates/search/advanced_search.html:15
-#: search/templates/search/search_base.html:3 templates/base.html:134
+#: search/templates/search/search_base.html:3 templates/base.html:128
 msgid "Search"
 msgstr ""
 
@@ -1868,7 +1869,7 @@ msgstr ""
 
 #: layers/templates/layers/layer_base.html:13
 #: layers/templates/layers/layer_list.html:9
-#: layers/templates/layers/layer_list.html:15 templates/index.html:25
+#: layers/templates/layers/layer_list.html:15 templates/index.html:28
 msgid "Explore Layers"
 msgstr ""
 
@@ -1878,11 +1879,11 @@ msgid "Search Layers"
 msgstr ""
 
 #: layers/templates/layers/layer_base.html:15
-#: layers/templates/layers/layer_upload.html:32 templates/index.html:55
+#: layers/templates/layers/layer_upload.html:32 templates/index.html:59
 msgid "Upload Layers"
 msgstr ""
 
-#: layers/templates/layers/layer_change_poc.html:5 templates/base.html:117
+#: layers/templates/layers/layer_change_poc.html:5 templates/base.html:110
 msgid "Home"
 msgstr ""
 
@@ -1987,7 +1988,7 @@ msgstr ""
 msgid "Click the button below to generate a new map based on this layer."
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:154 templates/index.html:59
+#: layers/templates/layers/layer_detail.html:154 templates/index.html:63
 msgid "Create a Map"
 msgstr ""
 
@@ -2229,7 +2230,7 @@ msgid "A rating was given to a map"
 msgstr ""
 
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
-#: maps/templates/maps/map_list.html:13 templates/index.html:28
+#: maps/templates/maps/map_list.html:13 templates/index.html:31
 msgid "Explore Maps"
 msgstr ""
 
@@ -2440,7 +2441,7 @@ msgstr ""
 msgid "name of the responsible organization"
 msgstr ""
 
-#: people/models.py:39 templates/base.html:54
+#: people/models.py:39 templates/base.html:47
 msgid "Profile"
 msgstr ""
 
@@ -2537,7 +2538,7 @@ msgid "No user could be found with that email address."
 msgstr ""
 
 #: people/templates/people/_profile_about_item.html:3
-msgid "About the Owner"
+msgid "About the Layer Owner"
 msgstr ""
 
 #: people/templates/people/_profile_about_item.html:8
@@ -2870,95 +2871,99 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-#: templates/base.html:36
-msgid "Search ..."
-msgstr ""
-
-#: templates/base.html:56
+#: templates/base.html:49
 msgid "Admin"
 msgstr ""
 
-#: templates/base.html:59
+#: templates/base.html:52
 msgid "GeoServer"
 msgstr ""
 
-#: templates/base.html:62
+#: templates/base.html:55
 msgid "Log out"
 msgstr ""
 
-#: templates/base.html:67
-msgid "Help"
+#: templates/base.html:60
+msgid "Notifications"
 msgstr ""
 
-#: templates/base.html:69
+#: templates/base.html:61
 msgid "Messages"
 msgstr ""
 
-#: templates/base.html:70
+#: templates/base.html:62
 msgid "Upload"
 msgstr ""
 
-#: templates/base.html:78 templates/base.html.py:93
+#: templates/base.html:63
+msgid "Help"
+msgstr ""
+
+#: templates/base.html:67 templates/base.html.py:80
 msgid "Sign in"
 msgstr ""
 
-#: templates/base.html:84
+#: templates/base.html:72
 msgid "Username"
 msgstr ""
 
-#: templates/base.html:86
+#: templates/base.html:74
 msgid "Password"
 msgstr ""
 
-#: templates/base.html:90
+#: templates/base.html:78
 msgid "Remember Me"
 msgstr ""
 
-#: templates/base.html:95
+#: templates/base.html:81
 msgid "Don't have an account yet?"
 msgstr ""
 
-#: templates/base.html:95
+#: templates/base.html:81
 msgid "Register now"
 msgstr ""
 
-#: templates/base.html:103
+#: templates/base.html:87
 msgid "or"
 msgstr ""
 
-#: templates/base.html:104
+#: templates/base.html:88
 msgid "Register"
 msgstr ""
 
-#: templates/base.html:120
+#: templates/base.html:100
+msgid "Search ..."
+msgstr ""
+
+#: templates/base.html:113
 msgid "Layers"
 msgstr ""
 
-#: templates/base.html:123
+#: templates/base.html:116
 msgid "Maps"
 msgstr ""
 
-#: templates/base.html:127
+#: templates/base.html:121
 msgid "Documents"
 msgstr ""
 
-#: templates/base.html:131
+#: templates/base.html:125
 msgid "People"
 msgstr ""
 
-#: templates/base.html:186
+#: templates/base.html:177
 msgid "Powered by"
 msgstr ""
 
-#: templates/base.html:186
+#: templates/base.html:177
 msgid "GeoNode"
 msgstr ""
 
-#: templates/base.html:186
+#: templates/base.html:177
 msgid "version"
 msgstr ""
 
-#: templates/base.html:193 templates/geonode/resourcebase_info_panel.html:96
+#: templates/base.html:184 templates/geonode/resourcebase_info_panel.html:96
 msgid "Language"
 msgstr ""
 
@@ -3133,32 +3138,33 @@ msgstr ""
 msgid "Welcome"
 msgstr ""
 
-#: templates/index.html:18
+#: templates/index.html:20
 msgid ""
 "\n"
-"        GeoNode is an open source platform for sharing geospatial data and "
-"maps.  If you have any questions about the software or service, join our <a "
-"href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>.\n"
-"      "
+"            GeoNode is an open source platform for sharing geospatial data "
+"and maps.  If you have any questions about the software or service, join our "
+"<a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</"
+"a>.\n"
+"          "
 msgstr ""
 
-#: templates/index.html:23
+#: templates/index.html:24
 msgid "Need help"
 msgstr ""
 
-#: templates/index.html:23
+#: templates/index.html:24
 msgid "Getting Started?"
 msgstr ""
 
-#: templates/index.html:35
+#: templates/index.html:39
 msgid "Latest Layers"
 msgstr ""
 
-#: templates/index.html:50
+#: templates/index.html:54
 msgid "Contribute"
 msgstr ""
 
-#: templates/index.html:52
+#: templates/index.html:56
 msgid ""
 "\n"
 "              GeoNode enables you to upload, manage, and browse data layers. "
@@ -3166,7 +3172,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: templates/index.html:56
+#: templates/index.html:60
 msgid ""
 "\n"
 "              GeoNode enables you to compose and share maps. Create a map "
@@ -3174,7 +3180,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: templates/index.html:65
+#: templates/index.html:69
 msgid "Latest Maps"
 msgstr ""
 
