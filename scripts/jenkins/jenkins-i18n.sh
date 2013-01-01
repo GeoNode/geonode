@@ -33,7 +33,8 @@ python ../manage.py makemessages --all
 python ../manage.py compilemessages
 git add .
 git commit -am "Daily Update GeoNode i18n"
-git push -f origin i18n
+git remote add jj0hns0n git://github.com/jj0hns0n/geonode.git
+git push -f jj0hns0n i18n
 
 # Send the PR against GeoNode dev (Need to export username and password as env vars)
 git pull-request -f "Daily Update GeoNode i18n" -b jj0hns0n/geonode:dev -h jj0hns0n/geonode:i18n
