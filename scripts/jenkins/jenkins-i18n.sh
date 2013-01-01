@@ -3,7 +3,7 @@
 # Setup environment variables.
 source /var/lib/jenkins/.bashrc
 alias git=hub
-git --version
+hub --version
 PATH=/home/jenkins/apache-maven-2.2.1/bin/:$PATH
 MAVEN_HOME=/home/jenkins/apache-maven-2.2.1/
 JAVA_HOME=/usr/lib/jvm/java-6-sun/
