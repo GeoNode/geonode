@@ -70,18 +70,5 @@ clonedigger --cpd-output . || :
 mv output.xml clonedigger.out
 echo; echo ">>> Reporting FIXME's and TODO's in source code"
 
-# Make the debian package
-if [ -d $DL_ROOT/$GIT_REV ]; then
-    rm -rf $DL_ROOT/$GIT_REV
-fi
-paver deb
-mkdir $DL_ROOT/$GIT_REV
-cp *.deb $DL_ROOT/$GIT_REV/.
-cp *.build $DL_ROOT/$GIT_REV/.
-cp *.changes $DL_ROOT/$GIT_REV/.
-cp package/*.gz $DL_ROOT/$GIT_REV/.
-rm -rf $DL_ROOT/latest
-ln -sf $DL_ROOT/$GIT_REV $DL_ROOT/latest
-
 # All done, clean up
 git reset --hard
