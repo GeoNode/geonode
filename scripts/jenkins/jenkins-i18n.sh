@@ -1,5 +1,7 @@
 #!/bin/bash
 
+git checkout -b i18n
+
 # Setup environment variables.
 source /var/lib/jenkins/.bashrc
 alias git=hub
@@ -35,7 +37,7 @@ python ../manage.py makemessages --all
 python ../manage.py compilemessages
 git add .
 git commit -am "Daily Update GeoNode i18n"
-git push -uf git@github.com:jj0hns0n/geonode.git i18n
+git push git@github.com:jj0hns0n/geonode.git i18n
 
 # Send the PR against GeoNode dev (Need to export username and password as env vars)
 hub pull-request -f "Daily Update GeoNode i18n" -b jj0hns0n/geonode:dev -h jj0hns0n/geonode:i18n
