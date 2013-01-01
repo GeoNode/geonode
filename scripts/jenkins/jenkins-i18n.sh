@@ -1,13 +1,9 @@
 #!/bin/bash
 
+git checkout i18n
+
 # Setup environment variables.
-source ~/.bashrc
-PATH=/home/jenkins/apache-maven-2.2.1/bin/:$PATH
-MAVEN_HOME=/home/jenkins/apache-maven-2.2.1/
-JAVA_HOME=/usr/lib/jvm/java-6-sun/
 PYENV_HOME=$HOME/.pyenv/
-DL_ROOT=/var/www/geonode
-GIT_REV=$(git log -1 --pretty=format:%h)
 
 # Delete previously built virtualenv
 if [ -d $PYENV_HOME ]; then
@@ -32,11 +28,12 @@ cd geonode
 python ../manage.py makemessages --all
 python ../manage.py compilemessages
 git add .
-git commit -am "Daily Update GeoNode i18n"
-git push -u git@github.com:jj0hns0n/geonode.git HEAD:i18n
+msg="Daily Update GeoNode i18n "`eval date +%Y%m%d%H%M%S`
+git commit -am "$msg"
+git push git@github.com:jj0hns0n/geonode.git i18n
 
 # Send the PR against GeoNode dev (Need to export username and password as env vars)
-git pull-request -f "Daily Update GeoNode i18n" -b GeoNode/geonode:dev -h jj0hns0n/geonode:i18n
+hub pull-request -f "Daily Update GeoNode i18n" -b jj0hns0n/geonode:dev -h jj0hns0n/geonode:i18n
 
 # Push everything back to Transifex
 tx push -s --skip
