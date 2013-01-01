@@ -36,7 +36,7 @@ git commit -am "Daily Update GeoNode i18n"
 git push -u git@github.com:jj0hns0n/geonode.git HEAD:i18n
 
 # Send the PR against GeoNode dev (Need to export username and password as env vars)
-git pull-request -f "Daily Update GeoNode i18n" -b GeoNode/geonode:dev -h jj0hns0n/geonode:i18n
+git pull-request -f "Daily Update GeoNode i18n" -b jj0hns0n/geonode:dev -h jj0hns0n/geonode:i18n
 
 # Push everything back to Transifex
 tx push -s --skip
