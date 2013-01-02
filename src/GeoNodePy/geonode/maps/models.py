@@ -731,10 +731,14 @@ class LayerManager(models.Manager):
         # check lnames
         if lnames is not None:
             for l in lnames:
+                if verbosity > 1:
+                    print >> console, "Getting  %s" % l
                 resource = cat.get_resource(l)
             if resource:
                 resources.append(resource)
         else:
+            if verbosity > 1:
+                print >> console, "Getting  all resources"
             resources = cat.get_resources()
 
         number = len(resources)
@@ -945,6 +949,9 @@ class Layer(models.Model, PermissionLevelMixin):
     # Section 9
     # see metadata_author property definition below
 
+    def llbbox_coords(self):
+        return [float(n) for n in re.findall('[0-9\.\-]+', self.llbbox)]
+
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""
@@ -952,7 +959,7 @@ class Layer(models.Model, PermissionLevelMixin):
         if not self.downloadable:
             return None
 
-        bbox = self.llbbox
+        bbox = self.llbbox_coords()
 
         dx = float(min(180,bbox[2])) - float(max(-180,(bbox[0])))
         dy = float(min(90,bbox[3])) - float(max(-90,bbox[1]))

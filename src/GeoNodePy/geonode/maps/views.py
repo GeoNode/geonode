@@ -319,7 +319,7 @@ def newmap_config(request):
                     
                 #layer_bbox = layer.resource.latlon_bbox
                 # assert False, str(layer_bbox)
-                bbox = layer.llbbox
+                bbox = layer.llbbox_coords()
                 
                 layers.append(MapLayer(
                     map = map_obj,
@@ -2248,7 +2248,7 @@ def ajax_layer_edit_check(request, layername):
     editable = request.user.has_perm("maps.change_layer", obj=layer)
     return HttpResponse(
         str(editable),
-        status=200 if editable else 401,
+        status=200 if editable else 403,
         mimetype='text/plain'
     )
 
