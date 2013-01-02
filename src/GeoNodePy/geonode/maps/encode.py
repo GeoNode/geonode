@@ -76,6 +76,8 @@ class XssCleaner(HTMLParser):
             {'a':['href','title','target','style'],
              'img':['src','alt','border','style'],
              'blockquote':['type','style'],
+             'font':['size','face'],
+             'h5':['style'],'h4':['style'],'h3':['style'],'h2':['style'],'h1':['style'],
              'table': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
              'tbody': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
              'tr': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
