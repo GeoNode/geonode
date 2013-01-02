@@ -14,10 +14,12 @@ paster.pid
 geoserver-geonode-ext/logs/
 
 # Static media handling
-geonode/static/geonode/externals/
-geonode/static/geonode/script/
-geonode/static/geonode/theme/
+geonode/static/components/
+geonode/static/geoexplorer/
 geonode/static_root/
+
+# Uploaded files
+geonode/uploaded
 
 #Testing output
 .coverage
@@ -32,3 +34,9 @@ nosetests.xml
 # OSX specific
 .Python
 .DS_Store
+
+# Docs
+docs/_build
+
+# ec2.py
+scripts/cloud/.gnec2.cfg

@@ -87,7 +87,7 @@ class NormalUserTest(TestCase):
     """
 
     def setUp(self):
-        call_command('loaddata', 'sample_admin', verbosity=0)
+        call_command('loaddata', 'people_data', verbosity=0)
 
     def tearDown(self):
         pass
@@ -109,9 +109,6 @@ class NormalUserTest(TestCase):
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
              norman,
              overwrite=False,
-             abstract="Schools which are in Lembang",
-             title="Lembang Schools",
-             permissions={'users': []}
         )
 
         url = reverse('layer_metadata', args=[saved_layer.typename])
@@ -124,7 +121,7 @@ class GeoNodeMapTest(TestCase):
     """
 
     def setUp(self):
-        call_command('loaddata', 'sample_admin', verbosity=0)
+        call_command('loaddata', 'people_data', verbosity=0)
 
     def tearDown(self):
         pass
@@ -249,9 +246,10 @@ class GeoNodeMapTest(TestCase):
             'and Runways within San Diego County',
             'Expected specific purpose from uploaded layer XML metadata')
 
-        assert uploaded.supplemental_information is None, \
+        self.assertEqual(uploaded.supplemental_information,
+            'No information provided',
             'Expected specific supplemental information '\
-            'from uploaded layer XML metadata'
+            'from uploaded layer XML metadata')
 
         self.assertEqual(len(uploaded.keyword_list()), 5,
             'Expected specific number of keywords from uploaded layer XML metadata')
@@ -406,7 +404,7 @@ class GeoNodeMapTest(TestCase):
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
 
-        # Save the names of the Resource/Store/Styles 
+        # Save the names of the Resource/Store/Styles
         resource_name = shp_layer.name
         ws = gs_cat.get_workspace(shp_layer.workspace)
         store = gs_cat.get_store(shp_layer.store, ws)
@@ -416,7 +414,7 @@ class GeoNodeMapTest(TestCase):
 
         # Delete the Layer using cascading_delete()
         cascading_delete(gs_cat, shp_layer.typename)
-        
+
         # Verify that the styles were deleted
         for style in styles:
             s = gs_cat.get_style(style.name)

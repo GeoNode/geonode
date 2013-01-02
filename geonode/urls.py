@@ -69,17 +69,18 @@ urlpatterns = patterns('',
     (r'^avatar/', include('avatar.urls')),
     (r'^comments/', include('dialogos.urls')),
     (r'^ratings/', include('agon_ratings.urls')),
-    #(r'^activity/', include('actstream.urls')),
-    #(r'^relationships/', include('relationships.urls')),
-    #(r'^announcements/', include('announcements.urls')),
+    (r'^activity/', include('actstream.urls')),
+    (r'^relationships/', include('relationships.urls')),
+    (r'^announcements/', include('announcements.urls')),
     #(r'^notifications/', include('notification.urls')),
+    (r'^messages/', include('user_messages.urls')),
 
     # Accounts
     url(r'^account/ajax_login$', 'geonode.views.ajax_login',
                                        name='account_ajax_login'),
     url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup',
                                        name='account_ajax_lookup'),
-    
+
     # Meta
     url(r'^lang\.js$', 'django.views.generic.simple.direct_to_template',
          {'template': 'lang.js', 'mimetype': 'text/javascript'}, name='lang'),
@@ -90,6 +91,12 @@ urlpatterns = patterns('',
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
 
+    )
+
+#Documents views
+if settings.DOCUMENTS_APP:
+    urlpatterns += patterns('',
+        (r'^documents/', include('geonode.documents.urls')),
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns

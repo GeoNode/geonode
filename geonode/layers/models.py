@@ -89,70 +89,6 @@ class LayerManager(models.Manager):
                                                 defaults={"name": "Geonode Admin"})[0]
         return contact
 
-    def slurp(self, ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None):
-        """Configure the layers available in GeoServer in GeoNode.
-
-           It returns a list of dictionaries with the name of the layer,
-           the result of the operation and the errors and traceback if it failed.
-        """
-        if console is None:
-            console = open(os.devnull, 'w')
-
-        if verbosity > 1:
-            print >> console, "Inspecting the available layers in GeoServer ..."
-        cat = self.gs_catalog
-        if workspace is not None:
-            workspace = cat.get_workspace(workspace)
-        resources = cat.get_resources(workspace=workspace)
-        number = len(resources)
-        if verbosity > 1:
-            msg =  "Found %d layers, starting processing" % number
-            print >> console, msg
-        output = []
-        for i, resource in enumerate(resources):
-            name = resource.name
-            store = resource.store
-            workspace = store.workspace
-            try:
-                layer, created = Layer.objects.get_or_create(name=name, defaults = {
-                    "workspace": workspace.name,
-                    "store": store.name,
-                    "storeType": store.resource_type,
-                    "typename": "%s:%s" % (workspace.name, resource.name),
-                    "title": resource.title or 'No title provided',
-                    "abstract": resource.abstract or 'No abstract provided',
-                    "owner": owner,
-                    "uuid": str(uuid.uuid4())
-                })
-
-                layer.save()
-            except Exception, e:
-                if ignore_errors:
-                    status = 'failed'
-                    exception_type, error, traceback = sys.exc_info()
-                else:
-                    if verbosity > 0:
-                        msg = "Stopping process because --ignore-errors was not set and an error was found."
-                        print >> sys.stderr, msg
-                    raise Exception('Failed to process %s' % resource.name, e), None, sys.exc_info()[2]
-            else:
-                if created:
-                    layer.set_default_permissions()
-                    status = 'created'
-                else:
-                    status = 'updated'
-
-            msg = "[%s] Layer %s (%d/%d)" % (status, name, i+1, number)
-            info = {'name': name, 'status': status}
-            if status == 'failed':
-                info['traceback'] = traceback
-                info['exception_type'] = exception_type
-                info['error'] = error
-            output.append(info)
-            if verbosity > 0:
-                print >> console, msg
-        return output
-
 
 class TopicCategory(models.Model):
 
@@ -236,7 +172,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     csw_insert_date = models.DateTimeField(_('CSW insert date'), auto_now_add=True, null=True)
     csw_type = models.CharField(_('CSW type'), max_length=32, default='dataset', null=False, choices=HIERARCHY_LEVELS)
     csw_anytext = models.TextField(_('CSW anytext'), null=True)
-    csw_wkt_geometry = models.TextField(_('CSW WKT geometry'), null=False, default='SRID=4326;POLYGON((-180 180,-180 90,-90 90,-90 180,-180 180))')
+    csw_wkt_geometry = models.TextField(_('CSW WKT geometry'), null=False, default='SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))')
 
     # metadata XML specific fields
     metadata_uploaded = models.BooleanField(default=False)
@@ -377,7 +313,7 @@ class Layer(ResourceBase):
             return "WFS"
 
     def get_absolute_url(self):
-        return reverse('layer_detail', args=(self.typename))
+        return reverse('layer_detail', args=(self.typename,))
 
     def attribute_config(self):
         #Get custom attribute sort order and labels if any
@@ -453,15 +389,8 @@ class Layer(ResourceBase):
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 
-    def get_absolute_url(self):
-        return reverse('geonode.layers.views.layer_detail', None, [str(self.typename)])
-
     def tiles_url(self):
         return self.link_set.get(name='Tiles').url
-
-    def __str__(self):
-        return "%s Layer" % self.typename
-
 
 class AttributeManager(models.Manager):
     """Helper class to access filtered attributes

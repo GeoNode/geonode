@@ -1,22 +1,58 @@
 $(function() {
     // Topbar active tab support
     $(".main-nav li").removeClass("current");
-    $('[rel=tooltip]').tooltip({placement:"left"});
+
+//    $('[rel=tooltip]').tooltip({placement:"left"});
     
     var class_list = $("body").attr("class").split(/\s+/);
     $.each(class_list, function(index, item) {
         var selector = ".main-nav li#nav_" + item;
         $(selector).addClass("current");
     });
+    $('#login-link').click(function(e) {
+        e.preventDefault();
+        var href = $(this).attr('href');
+        if (href[0] == '/') {
+            $.post(href,{},function(d,s,x) {
+                window.location.reload();
+            })
+        } else {
+            $(href).toggle();
+        }
+    });
+
+    $("#login-form-pop button").click(function(e) {
+        var form = $("#login-form-pop form");
+        e.preventDefault();
+        if (!navigator.cookieEnabled) {
+            alert('GeoNode requires cookies to be enabled.');
+            return;
+        }
+        $.post(form.attr('action'),form.serialize(),function(data,status,xhr) {
+            $('.loginmsg').hide();
+            if (status == 'success') {
+                window.location.reload();
+            } else {
+                alert(data);
+            }
+            $("#login-form-pop").toggle();
+        }).error(function(data,status,xhr) {
+            if (status == 'error') {
+                $('.loginmsg').text('Invalid login').slideDown();
+            }
+        });
+    });
 });
 
-jQuery(document).ajaxSend(function(event, xhr, settings) {
+//define(['jquery'], function($) {
+
+$(document).ajaxSend(function(event, xhr, settings) {
     function getCookie(name) {
         var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
+      if (document.cookie && document.cookie !== '') {
             var cookies = document.cookie.split(';');
             for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
+          var cookie = $.trim(cookies[i]);
                 // Does this cookie string begin with the name we want?
                 if (cookie.substring(0, name.length + 1) == (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
@@ -26,6 +62,7 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
         }
         return cookieValue;
     }
+
     function sameOrigin(url) {
         // url could be relative or scheme relative or absolute
         var host = document.location.host; // host + port
@@ -33,11 +70,11 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
         var sr_origin = '//' + host;
         var origin = protocol + sr_origin;
         // Allow absolute or scheme relative URLs to same origin
-        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+      return (url == origin || url.slice(0, origin.length + 1) == origin + '/') || (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
             // or any other URL that isn't scheme relative or absolute i.e relative.
             !(/^(\/\/|http:|https:).*/.test(url));
     }
+
     function safeMethod(method) {
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
@@ -55,147 +92,215 @@ var batch_delete = function() {
   var selected = $(".asset-selector:checked");
 
   $.each(selected, function(index, value) {
-    var el = $(value);
-    if (el.data("type") === "map") {
-      postdata.maps.push(el.data("id"));
-    } else if (el.data("type") === "layer") {
-      postdata.layers.push(el.data("id"));
-    }
+      var el = $(value);
+      if (el.data("type") === "map") {
+          postdata.maps.push(el.data("id"));
+      } else if (el.data("type") === "layer") {
+          postdata.layers.push(el.data("id"));
+      }
   });
 
   if (postdata.layers.length == 0) {
-    delete postdata.layers;
-  };
-  if (postdata.maps.length == 0) {
-    delete postdata.maps;
+      delete postdata.layers;
   };
 
-  $.ajax(
-    {
-      type: "POST",
-      url: action,
-      data: JSON.stringify(postdata),
-      success: function(data) {
-        $("#delete_form").modal("hide");
-      }
-    }
-  );
-  return false;
+  if (postdata.maps.length == 0) {
+      delete postdata.maps;
+  };
+
 };
 
-var batch_perms_submit = function() {
-    var form = $(this);
-    var action = form.attr("action");
+$.fn.serializeObject = function() {
+    var o = {};
+    var a = this.serializeArray();
 
-    var postdata = { layers: [], maps: [], permissions: {} };
-    var selected = $(".asset-selector:checked");
-
-    $.each(selected, function(index, value) {
-      var el = $(value);
-      if (el.data("type") === "map") {
-        postdata.maps.push(el.data("id"));
-      } else if (el.data("type") === "layer") {
-        postdata.layers.push(el.data("id"));
-      }
+    $.each(a, function() {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
     });
+    return o;
+};
 
-    if (postdata.layers.length == 0) {
-      delete postdata.layers;
-    };
-    if (postdata.maps.length == 0) {
-      delete postdata.maps;
-    };
+var pub = {
+    mapPermsSubmit: function() {
+        var form = $(this);
+        var action = form.attr("action");
 
-    postdata.permissions = permissionsString(form, "bulk");
-    $.ajax(
-      {
+        permissions = permissionsString(form, "maps");
+
+        $.ajax({
+            type: "POST",
+            url: action,
+            data: JSON.stringify(permissions),
+            success: function(data) {
+                $("#modal_perms").modal("hide");
+            }
+        });
+        return false;
+    },
+
+    layerPermsSubmit: function() {
+        var form = $(this);
+        var action = form.attr("action");
+
+        permissions = permissionsString(form, "layer");
+
+        $.ajax({
+            type: "POST",
+            url: action,
+            data: JSON.stringify(permissions),
+            success: function(data) {
+                $("#modal_perms").modal("hide");
+            }
+        });
+        return false;
+    },
+
+    batch_delete: function() {
+      var form = $(this);
+      var action = form.attr("action");
+
+      var postdata = {
+        layers: [],
+        maps: []
+      };
+      var selected = $(".asset-selector:checked");
+
+      $.each(selected, function(index, value) {
+          var el = $(value);
+          if (el.data("type") === "map") {
+              postdata.maps.push(el.data("id"));
+          } else if (el.data("type") === "layer") {
+              postdata.layers.push(el.data("id"));
+          }
+      });
+
+      if (!postdata.layers.length) {
+        delete postdata.layers;
+      }
+      if (!postdata.maps.length) {
+        delete postdata.maps;
+      }
+
+      $.ajax({
         type: "POST",
         url: action,
         data: JSON.stringify(postdata),
         success: function(data) {
-          $("#modal_perms").modal("hide");
+          $("#delete_form").modal("hide");
         }
-      }
-    );
-    return false;
-  };
+      });
+      return false;
+    },
 
-$.fn.serializeObject = function() {
-  var o = {};
-  var a = this.serializeArray();
-  $.each(a, function() {
-    if (o[this.name] !== undefined) {
-      if (!o[this.name].push) {
-          o[this.name] = [o[this.name]];
-      }
-      o[this.name].push(this.value || '');
-    } else {
-      o[this.name] = this.value || '';
+    batch_perms_submit: function() {
+        var form = $(this);
+        var action = form.attr("action");
+
+        var postdata = {
+            layers: [],
+            maps: [],
+            permissions: {}
+        };
+
+        var selected = $(".asset-selector:checked");
+
+        $.each(selected, function(index, value) {
+            var el = $(value);
+            if (el.data("type") === "map") {
+                postdata.maps.push(el.data("id"));
+            } else if (el.data("type") === "layer") {
+                postdata.layers.push(el.data("id"));
+            }
+        });
+
+        if (!postdata.layers.length) {
+            delete postdata.layers;
+        }
+
+        if (!postdata.maps.length) {
+            delete postdata.maps;
+        }
+
+        postdata.permissions = permissionsString(form, "bulk");
+        $.ajax({
+            type: "POST",
+            url: action,
+            data: JSON.stringify(postdata),
+            success: function(data) {
+                $("#modal_perms").modal("hide");
+            }
+        });
+        return false;
+    },
+    permissionsString: function(form, type) {
+      var anonymousPermissions, authenticatedPermissions, levels;
+
+        var data = form.serializeObject();
+
+        if (type == "maps") {
+            levels = {
+                'readonly': 'map_readonly',
+                'readwrite': 'map_readwrite',
+                'admin': 'map_admin',
+                'none': '_none'
+            };
+        } else {
+            levels = {
+                'admin': 'layer_admin',
+                'readwrite': 'layer_readwrite',
+                'readonly': 'layer_readonly',
+                'none': '_none'
+            };
+        }
+
+        if (data["viewmode"] === "ANYONE") {
+            anonymousPermissions = levels['readonly'];
+        } else {
+            anonymousPermissions = levels['none'];
+        }
+
+        if (data["editmode"] === "REGISTERED") {
+            authenticatedPermissions = levels['readwrite'];
+        } else if (data["viewmode"] === 'REGISTERED') {
+            authenticatedPermissions = levels['readonly'];
+        } else {
+            authenticatedPermissions = levels['none'];
+        }
+
+        var perUserPermissions = [];
+        if (data["editmode"] === "LIST") {
+            var editusers = form.find("input[name=editusers]").select2("val");
+            if (editusers instanceof Array) {
+                $.each(editusers, function(index, value) {
+                    perUserPermissions.push([value, levels["readwrite"]]);
+                });
+            } else {
+                perUserPermissions.push([editusers, levels["readwrite"]]);
+            }
+        }
+
+        var manageusers = form.find("input[name=manageusers]").select2("val");
+        if (manageusers) {
+            if (manageusers instanceof Array) {
+                $.each(manageusers, function(index, value) {
+                    perUserPermissions.push([value, levels["admin"]]);
+                });
+            } else {
+                perUserPermissions.push([manageusers, levels["admin"]]);
+            }
+        }
+
+        return {
+            anonymous: anonymousPermissions,
+            authenticated: authenticatedPermissions,
+            users: perUserPermissions
+        };
     }
-  });
-  return o;
-};
-
-function permissionsString(form, type) {
-  var anonymousPermissions, authenticatedPermissions;
-
-  var data = form.serializeObject();
-
-  if (type == "maps") {
-    var levels = {
-      'readonly': 'map_readonly',
-      'readwrite': 'map_readwrite',
-      'admin': 'map_admin',
-      'none': '_none'
-    };
-  } else {
-    var levels = {
-      'admin': 'layer_admin',
-      'readwrite': 'layer_readwrite',
-      'readonly': 'layer_readonly',
-      'none': '_none'
-    };
-  }
-
-  if (data["viewmode"] === "ANYONE") {
-    anonymousPermissions = levels['readonly'];
-  } else {
-    anonymousPermissions = levels['none'];
-  }
-
-  if (data["editmode"] === "REGISTERED") {
-    authenticatedPermissions = levels['readwrite'];
-  } else if (data["viewmode"] === 'REGISTERED') {
-    authenticatedPermissions = levels['readonly'];
-  } else {
-    authenticatedPermissions = levels['none'];
-  }
-
-  var perUserPermissions = [];
-  if (data["editmode"] === "LIST") {
-    var editusers = form.find("input[name=editusers]").select2("val");
-    if (editusers instanceof Array) {
-      $.each(editusers, function(index, value) {
-        perUserPermissions.push([value, levels["readwrite"]]);
-      });
-    } else {
-      perUserPermissions.push([editusers, levels["readwrite"]]);
-    };
-  }
-  var manageusers = form.find("input[name=manageusers]").select2("val");
-  if (manageusers) {
-    if (manageusers instanceof Array) {
-      $.each(manageusers, function(index, value) {
-        perUserPermissions.push([value, levels["admin"]]);
-      });
-    } else {
-      perUserPermissions.push([manageusers, levels["admin"]]);
-    };
-  };
-
-  return {
-    anonymous: anonymousPermissions,
-    authenticated: authenticatedPermissions,
-    users: perUserPermissions
-  };
 };

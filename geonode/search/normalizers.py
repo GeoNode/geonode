@@ -25,6 +25,7 @@ from django.template import defaultfilters
 
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
+from geonode.documents.models import Document
 from geonode.search import extension
 
 from agon_ratings.categories import RATING_CATEGORY_LOOKUP
@@ -45,7 +46,7 @@ def _bbox(obj):
     except AttributeError:
         pass
     # unknown extent, just give something that works
-    extent = idx.extent.extent if idx else (-180,-90,180,90)
+    extent = idx.extent.extent if idx else map(str,(obj.bbox_x0, obj.bbox_y0, obj.bbox_x1, obj.bbox_y1))
     return dict(minx=extent[0], miny=extent[1], maxx=extent[2], maxy=extent[3])
 
 
@@ -87,6 +88,7 @@ def apply_normalizers(results):
     mapping = [
         ('maps', MapNormalizer),
         ('layers', LayerNormalizer),
+        ('documents', DocumentNormalizer),
         ('owners', OwnerNormalizer),
     ]
     for k,n in mapping:
@@ -144,10 +146,9 @@ class MapNormalizer(Normalizer):
         doc['id'] = mapobj.id
         doc['title'] = mapobj.title
         doc['abstract'] = defaultfilters.linebreaks(mapobj.abstract)
-        doc['category'] = mapobj.category,
+        doc['category'] = mapobj.topic_category,
         doc['detail'] = reverse('map_detail', args=(mapobj.id,))
         doc['owner'] = mapobj.owner.username
-#        doc['owner_detail'] = reverse('about_storyteller', args=(map.owner.username,))
         doc['owner_detail'] = mapobj.owner.get_absolute_url()
         doc['last_modified'] = extension.date_fmt(mapobj.last_modified)
         doc['_type'] = 'map'
@@ -181,7 +182,6 @@ class LayerNormalizer(Normalizer):
         doc['title'] = layer.title
         doc['detail'] = layer.get_absolute_url()
         if 'download_links' not in exclude:
-            all_links = layer.link_set.all()
             links = {}
             for l in layer.link_set.all():
                 link = {}
@@ -202,9 +202,28 @@ class LayerNormalizer(Normalizer):
         owner = layer.owner
         if owner:
             doc['owner_detail'] = layer.owner.get_absolute_url()
-#            doc['owner_detail'] = reverse('about_storyteller', args=(layer.owner.username,))
         return doc
 
+class DocumentNormalizer(Normalizer):
+    def last_modified(self):
+        return self.o.date
+    def populate(self, doc, exclude):
+        document = self.o
+        doc['id'] = document.id
+        doc['title'] = document.title
+        doc['abstract'] = defaultfilters.linebreaks(document.abstract)
+        doc['category'] = document.topic_category,
+        doc['detail'] = reverse('document_detail', args=(document.id,))
+        doc['owner'] = document.owner.username
+        doc['owner_detail'] = document.owner.get_absolute_url()
+        doc['last_modified'] = extension.date_fmt(document.date)
+        doc['_type'] = 'document'
+        doc['_display_type'] = extension.DOCUMENT_DISPLAY
+#        doc['thumb'] = map.get_thumbnail_url()
+        doc['keywords'] = document.keyword_list()
+        if 'bbox' not in exclude:
+            doc['bbox'] = _bbox(document)
+        return doc
 
 class OwnerNormalizer(Normalizer):
     def title(self):
@@ -230,6 +249,7 @@ class OwnerNormalizer(Normalizer):
         doc['detail'] = contact.get_absolute_url()
         doc['layer_cnt'] = Layer.objects.filter(owner = user).count()
         doc['map_cnt'] = Map.objects.filter(owner = user).count()
+        doc['doc_cnt'] = Document.objects.filter(owner = user).count()
         doc['_type'] = 'owner'
         doc['_display_type'] = extension.USER_DISPLAY
         return doc

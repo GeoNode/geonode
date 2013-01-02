@@ -58,7 +58,7 @@
       <div class="tab-content span8">
         <div class="tab-pane active list loadmore" id="all">
           {% if object_list.count %}
-          {% autopaginate object_list 2 %}
+          {% autopaginate object_list 10 %}
           {% for map in object_list %}
             {% include "maps/_map_list_item.html" %}
           {% endfor %}
@@ -76,10 +76,11 @@
 {% endblock %}
 
 {% block extra_script %}
-  <script src="{% static "geonode/js/layers.js" %}"></script>
-  <script src="{% static "geonode/js/waypoints.js" %}"></script>
-  <script src="{% static "geonode/js/loadmore.js" %}"></script>
-  <script src="{% static "agon_ratings/js/jquery.raty.js" %}"></script>
+  <script src="{% static "libs/js/waypoints.js" %}"></script>
+  <script src="{% static "libs/js/loadmore.js" %}"></script>
+  <script src="{% static "libs/js/jquery.raty.js" %}"></script>
+  <script src="{% static "geonode/js/explore.js" %}"></script>
+  <script src="{% static "geonode/js/paginate.js" %}"></script>
   <script type="text/javascript">
      $(function() {
        $('.overall_rating').each(function() {
@@ -103,4 +104,3 @@
       }
   </script>
 {% endblock %}
-

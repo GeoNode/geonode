@@ -1,11 +1,12 @@
-{% extends "maps/map_base.html" %}
+{% extends "base.html" %}
 
 {% load i18n %}
 
-{% block title_sub %} {% trans "Map Viewer" %}{% endblock %}
+{% block title %} {% trans "GeoExplorer" %} - {{ block.super }} {% endblock %}
 
 {% block head %}
 {{ block.super }}
+<<<<<<< HEAD
 {% include "geonode/ext_header.html" %}
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/geoext/resources/css/gxtheme-gray.css">
 {% include "geonode/app_header.html" %}
@@ -146,19 +147,10 @@ Ext.onReady(function() {
 {% endautoescape %}
 });
 </script>
+=======
+{% include 'maps/map_geoexplorer.js' %}
+>>>>>>> ea370529e78d47bc46434cf44f55a2649b7fe9fd
 
 {% endblock %}
 
-{% block body %}
-<div id="header-wrapper">
-  {{ block.super }}
-  <div id="topPanel">
-    <div id="more-info"></div>
-    <span id="map-title-header"></span>
-  </div>
-</div>
-<div id="templates">
-  <div id="more-info-tpl"><a class='link' href='{permalink}'>{% trans "View info" %}</a></div>
-  <div id="title-tpl"><a class='maplist' href='{% url maps_search %}'>{% trans "Maps" %}</a> / <strong>{title}</strong></div>
-</div>
-{% endblock %}
+{% block footer %}{% endblock %}

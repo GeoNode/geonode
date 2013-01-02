@@ -1,3 +1,6 @@
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
@@ -12,6 +15,7 @@ Ext.onReady(function() {
         {ptype: "gxp_getfeedfeatureinfo"}],
         useToolbar: true,
         proxy: "/proxy/?url=",
+        printService: "{{GEOSERVER_BASE_URL}}pdf/",
         rest: "/maps/",
 
         // tell the map viewer where and how to be rendered

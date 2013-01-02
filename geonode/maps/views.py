@@ -133,7 +133,10 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
     The view that show details of each map
     '''
     map_obj = _resolve_map(request, mapid, 'maps.view_map', _PERMISSION_MSG_VIEW)
-
+	
+    map_obj.popular_count += 1
+    map_obj.save()
+	
     config = map_obj.viewer_json()
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
@@ -228,7 +231,6 @@ def map_view_js(request, mapid):
     config = map.viewer_json()
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
-
 def map_json(request, mapid):
     if request.method == 'GET':
         map_obj = _resolve_map(request, mapid, 'maps.view_map')
@@ -243,12 +245,7 @@ def map_json(request, mapid):
         map_obj = _resolve_map(request, mapid, 'maps.change_map')
         try:
             map_obj.update_from_viewer(request.raw_post_data)
-
-            return HttpResponse(
-                "Map successfully updated.",
-                mimetype="text/plain",
-                status=204
-            )
+            return HttpResponse(json.dumps(map_obj.viewer_json()))
         except ValueError, e:
             return HttpResponse(
                 "The server could not understand the request." + str(e),
@@ -294,9 +291,11 @@ def new_map_json(request):
         except ValueError, e:
             return HttpResponse(str(e), status=400)
         else:
-            response = HttpResponse('', status=201)
-            response['Location'] = map_obj.id
-            return response
+            return HttpResponse(
+                json.dumps({'id':map_obj.id }),
+                status=200,
+                mimetype='application/json'
+            )
     else:
         return HttpResponse(status=405)
 
@@ -477,14 +476,15 @@ def map_wmc(request, mapid, template="maps/wmc.xml"):
 
 #### MAPS PERMISSIONS ####
 
-
 def map_set_permissions(m, perm_spec):
     if "authenticated" in perm_spec:
         m.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
     if "anonymous" in perm_spec:
         m.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
     users = [n[0] for n in perm_spec['users']]
-    m.get_user_levels().exclude(user__username__in = users + [m.owner]).delete()
+    excluded = users + [m.owner]
+    existing = m.get_user_levels().exclude(user__username__in=excluded)
+    existing.delete()
     for username, level in perm_spec['users']:
         user = User.objects.get(username=username)
         m.set_user_level(user, level)
@@ -503,27 +503,8 @@ def map_permissions(request, mapid):
         )
 
 
-    spec = json.loads(request.raw_post_data)
-    map_set_permissions(map_obj, spec)
-
-    _perms = {
-        Layer.LEVEL_READ: Map.LEVEL_READ,
-        Layer.LEVEL_WRITE: Map.LEVEL_WRITE,
-        Layer.LEVEL_ADMIN: Map.LEVEL_ADMIN,
-    }
-
-    def perms(x):
-        return _perms.get(x, Map.LEVEL_NONE)
-
-    if "anonymous" in spec:
-        map_obj.set_gen_level(ANONYMOUS_USERS, perms(spec['anonymous']))
-    if "authenticated" in spec:
-        map_obj.set_gen_level(AUTHENTICATED_USERS, perms(spec['authenticated']))
-    users = [n for (n, p) in spec["users"]]
-    map_obj.get_user_levels().exclude(user__username__in = users + [map_obj.owner]).delete()
-    for username, level in spec['users']:
-        user = User.objects.get(username = username)
-        map_obj.set_user_level(user, perms(level))
+    permission_spec = json.loads(request.raw_post_data)
+    map_set_permissions(map_obj, permission_spec)
 
     return HttpResponse(
         json.dumps({'success': True}),
@@ -563,7 +544,10 @@ def maps_search_page(request, template='maps/map_search.html'):
 
     return render_to_response(template, RequestContext(request, {
         'init_search': json.dumps(params or {}),
-         "site" : settings.SITEURL
+        "site" : settings.SITEURL,
+        "search_api": reverse("maps_search_api"),
+        "search_action": reverse("maps_search"),
+        "search_type": "map"
     }))
 
 

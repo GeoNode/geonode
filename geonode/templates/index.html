@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "site_base.html" %}
 {% load i18n %}
 {% load maps_tags %}
 {% load layers_tags %}
@@ -14,20 +14,24 @@
 <div class="span12">
   <div class="hero-unit">
     <h1>{% trans "Welcome" %}</h1>
-    <p>
-      {% blocktrans %}
-        GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.
-      {% endblocktrans %}
-    </p>
-    <p class="btns">
-      <span>{% trans 'Need help' %} <a href="#">{% trans 'Getting Started?' %}</a></span>
-      <a class="btn btn-large" href="{% url "layer_browse" %}">
-        {% trans "Explore Layers" %}
-      </a>
-      <a class="btn btn-large" href="{% url "maps_browse" %}">
-        {% trans "Explore Maps" %}
-      </a>
-    </p>
+    <div class="hero-unit-content">
+      <div class="intro">
+        <p>
+          {% blocktrans %}
+            GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.
+          {% endblocktrans %}
+        </p>
+        <span>{% trans 'Need help' %} <a href="#">{% trans 'Getting Started?' %}</a></span>
+      </div>
+      <div class="btns">
+        <a class="btn btn-large" href="{% url "layer_browse" %}">
+          {% trans "Explore Layers" %}
+        </a>
+        <a class="btn btn-large" href="{% url "maps_browse" %}">
+          {% trans "Explore Maps" %}
+        </a>
+      </div>
+    </div>
   </div>
   <div class="row">
     <div class="span8 paginate paginate-auto">
@@ -75,9 +79,9 @@
 {% endblock %}
 
 {% block extra_script %}  
-  <script src="{% static "geonode/js/waypoints.js" %}"></script>
+  <script src="{% static "libs/js/waypoints.js" %}"></script>
+  <script src="{% static "libs/js/jquery.raty.js" %}"></script>
   <script src="{% static "geonode/js/paginate.js" %}"></script>
-  <script src="{% static "agon_ratings/js/jquery.raty.js" %}"></script>
   <script type="text/javascript">
      $(function() {
        $('.overall_rating').each(function() {

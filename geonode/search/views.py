@@ -28,6 +28,7 @@ from django.core.cache import cache
 from geonode.maps.views import default_map_config
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
+from geonode.documents.models import Document
 from geonode.people.models import Profile 
 from geonode.search.search import combined_search_results
 from geonode.search.util import resolve_extension
@@ -86,6 +87,7 @@ def _get_search_context():
         'layers' : Layer.objects.count(),
         'vector' : Layer.objects.filter(storeType='dataStore').count(),
         'raster' : Layer.objects.filter(storeType='coverageStore').count(),
+        'documents': Document.objects.count(),
         'users' : Profile.objects.count()
     }
     topics = Layer.objects.all().values_list('topic_category',flat=True)
@@ -93,7 +95,6 @@ def _get_search_context():
     for t in topics: topic_cnts[t] = topic_cnts.get(t,0) + 1
     context = {
         'viewer_config': _viewer_config,
-        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         "site" : settings.SITEURL,
         'counts' : counts,
         'users' : User.objects.all(),
@@ -142,6 +143,7 @@ def search_api(request, **kwargs):
     except Exception, ex:
         if not isinstance(ex, BadQuery):
             logger.exception("error during search")
+            raise ex
         return HttpResponse(json.dumps({
             'success' : False,
             'errors' : [str(ex)]
@@ -151,7 +153,7 @@ def search_api(request, **kwargs):
 def _search_json(query, items, facets, time):
     total = len(items)
 
-    if query.limit > 0:
+    if query.limit is not None and query.limit > 0:
         items = items[query.start:query.start + query.limit]
 
     # unique item id for ext store (this could be done client side)
@@ -232,4 +234,3 @@ def author_list(req):
         'names' : [ dict(name=v) for v in vals ]
     }
     return HttpResponse(json.dumps(results), mimetype="application/json")
-

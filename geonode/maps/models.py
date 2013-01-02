@@ -178,10 +178,10 @@ class Map(ResourceBase, GXPMapBase):
 
         self.set_bounds_from_layers(self.local_layers)
 
+        self.save()
+
         if layer_names != set([l.typename for l in self.local_layers]):
             map_changed_signal.send_robust(sender=self,what_changed='layers')
-
-        self.save()
 
     def keyword_list(self):
         keywords_qs = self.keywords.all()
@@ -305,6 +305,8 @@ class Map(ResourceBase, GXPMapBase):
         for ml in map_layers:
             ml.map = self # update map_id after saving map
             ml.save()
+
+        self.set_default_permissions()
 
 class MapLayer(models.Model, GXPLayerBase):
     """

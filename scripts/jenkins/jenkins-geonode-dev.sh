@@ -3,6 +3,8 @@ PATH=/home/jenkins/apache-maven-2.2.1/bin/:$PATH
 MAVEN_HOME=/home/jenkins/apache-maven-2.2.1/
 JAVA_HOME=/usr/lib/jvm/java-6-sun/
 PYENV_HOME=$HOME/.pyenv/
+DL_ROOT=/var/www/geonode
+GIT_REV=$(git log -1 --pretty=format:%h)
 
 # Delete previously built virtualenv
 if [ -d $PYENV_HOME ]; then
@@ -29,7 +31,10 @@ python /usr/local/bin/clokins.py --exclude-list-file=scripts/jenkins/clokins.exc
 pip install -e .
 #pip install -r requirements.txt
 paver setup
-cp /home/jenkins/local_settings_with_coverage.py geonode/local_settings.py
+cp /var/lib/jenkins/local_settings_with_coverage.py geonode/local_settings.py
+
+# Run the smoke tests
+python manage.py test geonode.tests.smoke
 
 # Run the unit tests
 python manage.py test
@@ -39,7 +44,7 @@ cp -R coverage unit-coverage
 
 # Run the integration tests
 paver reset
-cp /home/jenkins/local_settings_with_coverage.py geonode/local_settings.py
+cp /var/lib/jenkins/local_settings_with_coverage.py geonode/local_settings.py
 source $PYENV_HOME/bin/activate #double check its activated.
 
 paver test_integration
@@ -52,6 +57,9 @@ paver test_integration -n geonode.tests.csw
 cp TEST-nose.xml csw-TEST-nose.xml
 cp coverage.xml csw-coverage.xml
 cp coverage -R csw-coverage
+
+# Run the javascript tests 
+paver test_javascript
 
 # Run Code Quality Tools
 export DJANGO_SETTINGS_MODULE=geonode.settings
