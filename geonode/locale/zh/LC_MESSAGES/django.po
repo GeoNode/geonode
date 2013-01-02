@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-07 13:29-0600\n"
+"POT-Creation-Date: 2012-12-31 09:41-0600\n"
 "PO-Revision-Date: 2012-10-06 06:31+0000\n"
 "Last-Translator: nwang <nwang@opengeo.org>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/"
@@ -77,46 +77,47 @@ msgstr "最多被分享的"
 #: documents/templates/documents/_document_grid_item.html:5
 #: documents/templates/documents/_document_list_item.html:14
 #: layers/templates/layers/_layer_grid_item.html:5
-#: layers/templates/layers/_layer_list_item.html:14
+#: layers/templates/layers/_layer_list_item.html:15
 #: layers/templates/layers/_layer_widget_item.html:9
 #: maps/templates/maps/_map_grid_item.html:10
-#: maps/templates/maps/_map_list_item.html:14
+#: maps/templates/maps/_map_list_item.html:17
 msgid "from"
 msgstr "从"
 
 #: documents/templates/documents/_document_list_item.html:9
+#: layers/templates/layers/_layer_list_item.html:9
 #: layers/templates/layers/_layer_widget_item.html:5
-#: maps/templates/maps/_map_list_item.html:8
+#: maps/templates/maps/_map_list_item.html:12
 #: people/templates/people/_profile_about_item.html:4
 msgid "No Image Available"
 msgstr "没有图片"
 
 #: documents/templates/documents/_document_list_item.html:12
-#: layers/templates/layers/_layer_list_item.html:12
-#: maps/templates/maps/_map_list_item.html:11
+#: layers/templates/layers/_layer_list_item.html:13
+#: maps/templates/maps/_map_list_item.html:8
 #: maps/templates/maps/map_download.html:65
 msgid "Download"
 msgstr "下载"
 
 #: documents/templates/documents/_document_list_item.html:14
-#: layers/templates/layers/_layer_list_item.html:14
+#: layers/templates/layers/_layer_list_item.html:15
 #: layers/templates/layers/_layer_widget_item.html:9
 #: maps/templates/maps/_map_grid_item.html:10
-#: maps/templates/maps/_map_list_item.html:14
+#: maps/templates/maps/_map_list_item.html:17
 msgid "ago"
 msgstr "前"
 
 #: documents/templates/documents/_document_list_item.html:16
-#: layers/templates/layers/_layer_list_item.html:16
-#: maps/templates/maps/_map_list_item.html:17
+#: layers/templates/layers/_layer_list_item.html:17
+#: maps/templates/maps/_map_list_item.html:20
 msgid "view"
 msgstr "观看"
 
 #: documents/templates/documents/_document_list_item.html:16
-#: layers/templates/layers/_layer_list_item.html:16
+#: layers/templates/layers/_layer_list_item.html:17
 #: layers/templates/layers/_layer_widget_item.html:11
 #: maps/templates/maps/_map_grid_item.html:12
-#: maps/templates/maps/_map_list_item.html:17
+#: maps/templates/maps/_map_list_item.html:20
 msgid "Average rating"
 msgstr "平均得分"
 
@@ -228,7 +229,7 @@ msgstr "寻找图层"
 #: documents/templates/documents/document_search.html:19
 #: search/templates/search/advanced_search.html:4
 #: search/templates/search/advanced_search.html:15
-#: search/templates/search/search_base.html:3 templates/base.html:134
+#: search/templates/search/search_base.html:3 templates/base.html:128
 msgid "Search"
 msgstr "查询"
 
@@ -1889,7 +1890,7 @@ msgstr "查看%(layer.popular_count|pluralize)s"
 
 #: layers/templates/layers/layer_base.html:13
 #: layers/templates/layers/layer_list.html:9
-#: layers/templates/layers/layer_list.html:15 templates/index.html:25
+#: layers/templates/layers/layer_list.html:15 templates/index.html:28
 msgid "Explore Layers"
 msgstr "浏览图层"
 
@@ -1899,11 +1900,11 @@ msgid "Search Layers"
 msgstr "寻找图层"
 
 #: layers/templates/layers/layer_base.html:15
-#: layers/templates/layers/layer_upload.html:32 templates/index.html:55
+#: layers/templates/layers/layer_upload.html:32 templates/index.html:59
 msgid "Upload Layers"
 msgstr "上传图层"
 
-#: layers/templates/layers/layer_change_poc.html:5 templates/base.html:117
+#: layers/templates/layers/layer_change_poc.html:5 templates/base.html:110
 msgid "Home"
 msgstr "主页"
 
@@ -2012,7 +2013,7 @@ msgstr "制作一张用此图层制作的地图"
 msgid "Click the button below to generate a new map based on this layer."
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:154 templates/index.html:59
+#: layers/templates/layers/layer_detail.html:154 templates/index.html:63
 msgid "Create a Map"
 msgstr "生成一张地图"
 
@@ -2271,7 +2272,7 @@ msgid "A rating was given to a map"
 msgstr ""
 
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
-#: maps/templates/maps/map_list.html:13 templates/index.html:28
+#: maps/templates/maps/map_list.html:13 templates/index.html:31
 msgid "Explore Maps"
 msgstr "浏览地图"
 
@@ -2505,7 +2506,7 @@ msgstr "组织名称"
 msgid "name of the responsible organization"
 msgstr "命名有关责任组织"
 
-#: people/models.py:39 templates/base.html:54
+#: people/models.py:39 templates/base.html:47
 msgid "Profile"
 msgstr "简介"
 
@@ -2602,8 +2603,7 @@ msgid "No user could be found with that email address."
 msgstr "找不到使用此email的用户。"
 
 #: people/templates/people/_profile_about_item.html:3
-#, fuzzy
-msgid "About the Owner"
+msgid "About the Layer Owner"
 msgstr "关于图层拥有者"
 
 #: people/templates/people/_profile_about_item.html:8
@@ -2949,99 +2949,103 @@ msgstr "网格"
 msgid "List"
 msgstr "列"
 
-#: templates/base.html:36
+#: templates/base.html:49
+msgid "Admin"
+msgstr "网站管理"
+
+#: templates/base.html:52
+msgid "GeoServer"
+msgstr ""
+
+#: templates/base.html:55
+msgid "Log out"
+msgstr "注销"
+
+#: templates/base.html:60
+msgid "Notifications"
+msgstr "通知"
+
+#: templates/base.html:61
+msgid "Messages"
+msgstr "消息"
+
+#: templates/base.html:62
+msgid "Upload"
+msgstr "上传"
+
+#: templates/base.html:63
+msgid "Help"
+msgstr "帮助"
+
+#: templates/base.html:67 templates/base.html.py:80
+msgid "Sign in"
+msgstr "登录"
+
+#: templates/base.html:72
+msgid "Username"
+msgstr "用户名"
+
+#: templates/base.html:74
+msgid "Password"
+msgstr "密码"
+
+#: templates/base.html:78
+msgid "Remember Me"
+msgstr "保存密码"
+
+#: templates/base.html:81
+msgid "Don't have an account yet?"
+msgstr "还没有账户？"
+
+#: templates/base.html:81
+msgid "Register now"
+msgstr "现在注册"
+
+#: templates/base.html:87
+msgid "or"
+msgstr "或者"
+
+#: templates/base.html:88
+msgid "Register"
+msgstr "注册"
+
+#: templates/base.html:100
 #, fuzzy
 msgid "Search ..."
 msgstr "搜索"
 
-#: templates/base.html:56
-msgid "Admin"
-msgstr "网站管理"
-
-#: templates/base.html:59
-msgid "GeoServer"
-msgstr ""
-
-#: templates/base.html:62
-msgid "Log out"
-msgstr "注销"
-
-#: templates/base.html:67
-msgid "Help"
-msgstr "帮助"
-
-#: templates/base.html:69
-msgid "Messages"
-msgstr "消息"
-
-#: templates/base.html:70
-msgid "Upload"
-msgstr "上传"
-
-#: templates/base.html:78 templates/base.html.py:93
-msgid "Sign in"
-msgstr "登录"
-
-#: templates/base.html:84
-msgid "Username"
-msgstr "用户名"
-
-#: templates/base.html:86
-msgid "Password"
-msgstr "密码"
-
-#: templates/base.html:90
-msgid "Remember Me"
-msgstr "保存密码"
-
-#: templates/base.html:95
-msgid "Don't have an account yet?"
-msgstr "还没有账户？"
-
-#: templates/base.html:95
-msgid "Register now"
-msgstr "现在注册"
-
-#: templates/base.html:103
-msgid "or"
-msgstr "或者"
-
-#: templates/base.html:104
-msgid "Register"
-msgstr "注册"
-
-#: templates/base.html:120
+#: templates/base.html:113
 msgid "Layers"
 msgstr "图层"
 
-#: templates/base.html:123
+#: templates/base.html:116
 msgid "Maps"
 msgstr "地图"
 
-#: templates/base.html:127
+#: templates/base.html:121
 #, fuzzy
 msgid "Documents"
 msgstr "评论"
 
-#: templates/base.html:131
+#: templates/base.html:125
 #, fuzzy
 msgid "People"
 msgstr "流行"
 
-#: templates/base.html:186
+#: templates/base.html:177
 msgid "Powered by"
 msgstr "提供者："
 
-#: templates/base.html:186
+#: templates/base.html:177
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/base.html:186
+#: templates/base.html:177
 #, fuzzy
 msgid "version"
 msgstr "权限"
 
-#: templates/base.html:193 templates/geonode/resourcebase_info_panel.html:96
+#: templates/base.html:184 templates/geonode/resourcebase_info_panel.html:96
 msgid "Language"
 msgstr "语言"
 
@@ -3286,13 +3290,15 @@ msgstr "欢迎您！"
 msgid "Welcome"
 msgstr "欢迎"
 
-#: templates/index.html:18
+#: templates/index.html:20
+#, fuzzy
 msgid ""
 "\n"
-"        GeoNode is an open source platform for sharing geospatial data and "
-"maps.  If you have any questions about the software or service, join our <a "
-"href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>.\n"
-"      "
+"            GeoNode is an open source platform for sharing geospatial data "
+"and maps.  If you have any questions about the software or service, join our "
+"<a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</"
+"a>.\n"
+"          "
 msgstr ""
 "\n"
 "GeoNode是一个开源，共享地理空间数据和地图的平台。如果您有任何有关软件或服务的"
@@ -3300,23 +3306,23 @@ msgstr ""
 "单.\n"
 "    "
 
-#: templates/index.html:23
+#: templates/index.html:24
 msgid "Need help"
 msgstr "需要帮助？"
 
-#: templates/index.html:23
+#: templates/index.html:24
 msgid "Getting Started?"
 msgstr "开始"
 
-#: templates/index.html:35
+#: templates/index.html:39
 msgid "Latest Layers"
 msgstr "最新的图层"
 
-#: templates/index.html:50
+#: templates/index.html:54
 msgid "Contribute"
 msgstr "贡献"
 
-#: templates/index.html:52
+#: templates/index.html:56
 msgid ""
 "\n"
 "              GeoNode enables you to upload, manage, and browse data layers. "
@@ -3328,7 +3334,7 @@ msgstr ""
 "者上传你的数据。\n"
 "            "
 
-#: templates/index.html:56
+#: templates/index.html:60
 msgid ""
 "\n"
 "              GeoNode enables you to compose and share maps. Create a map "
@@ -3340,7 +3346,7 @@ msgstr ""
 "别人的地图。 \n"
 "            "
 
-#: templates/index.html:65
+#: templates/index.html:69
 msgid "Latest Maps"
 msgstr "最新地图"
 
