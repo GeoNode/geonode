@@ -193,6 +193,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             if (config.tools[i].ptype === "gxp_addlayers") {
                 config.tools[i].search = true;
                 config.tools[i].catalogSourceKey = catalogSourceKey;
+                config.tools[i].feeds = true;
                 break;
             }
         }
