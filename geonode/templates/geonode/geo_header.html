@@ -8,34 +8,8 @@
 <!--[if IE]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/ie.css"/><![endif]-->
 <script src="{{STATIC_URL}}geoexplorer/script/GeoExplorer.js" type="text/javascript"></script>
 <script type="text/javascript">
-<<<<<<< HEAD
-OpenLayers.ImgPath = "{{ GEONODE_CLIENT_LOCATION }}externals/openlayers/img/";
-
-//Do not wipe out feature.attributes, or will get broken image for
-//legend when layer points are displayed as external image based
-// on attributes (ie Picasa & Youtube feeds)
-GeoExt.VectorLegend.prototype.onFeaturesAdded = function() {
-    this.layer.events.un({
-        featuresadded: this.onFeaturesAdded,
-        scope: this
-    });
-    var featureCnt = 1;
-    var feature = this.layer.features[0].clone();
-    while (!feature.geometry && featureCnt < this.layer.features.length) {
-        feature = this.layer.features[featureCnt].clone();
-        featureCnt++;
-    }
-    //feature.attributes = {};  GeoExt bug? Not sure why this is here.
-    this.feature = feature;
-    this.symbolType = this.symbolTypeFromFeature(this.feature);
-    if (!this.rules) {
-        this.setRules();
-    }
-    this.update();
-=======
 OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
 OpenLayers.Request.DEFAULT_CONFIG.headers = {
     'X-CSRFToken': '{{ csrf_token|escapejs }}'
->>>>>>> ea370529e78d47bc46434cf44f55a2649b7fe9fd
 };
 </script>
