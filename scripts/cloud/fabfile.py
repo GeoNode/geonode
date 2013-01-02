@@ -18,13 +18,28 @@ from repo or debian package (once release candidate phase or later)
 import os, glob
 from fabric.api import env, sudo, run, cd, local, put, prefix
 from fabric.api import settings as fab_settings
-from fabric.context_managers import settings
+from fabric.context_managers import settings, hide
 from fabric.contrib.files import sed
+from subprocess import Popen, PIPE
+import datetime
 
 INSTALLDIR = '/var/lib'
 POSTGIS_VER = "1.5.3-2"
 GEONODE_BRANCH = 'dev'
 GEONODE_GIT_URL = 'git://github.com/GeoNode/geonode.git'
+ADMIN_USER='geonode' # Matches user in ubuntu packages 
+ADMIN_PASSWORD='adm1n'
+ADMIN_EMAIL='admin@admin.admin'
+UBUNTU_VERSION = "precise" 
+ARCH='x86_64'
+VERSION='2.0a0'
+MAKE_PUBLIC=True
+AMI_BUCKET = 'geonode-ami-dev'
+AWS_USER_ID=os.environ['AWS_USER_ID']
+AWS_ACCESS_KEY_ID=os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY=os.environ['AWS_SECRET_ACCESS_KEY']
+KEY_BASE=os.environ['EC2_KEY_BASE']
+KEY_PATH='~/.ssh/' # trailing slash please
 
 # Derived variables
 GEONODEDIR = INSTALLDIR + '/geonode'
@@ -163,8 +178,54 @@ def deploy_geonode_dev_package():
         sudo('dpkg -i geonode_2.0.0+alpha0_all.deb')
     sudo('apt-get install -f -y')
 
-# TODO - Build Amazon Machine Instance
-def build_ami():
-    # Install ec2 tools
-    sudo('apt-get install -y ec2-ami-tools ec2-api-tools')
-    # bundle-vol then upload-bundle
+def change_admin_password():
+    put('../misc/changepw.py', '/home/ubuntu/')
+    run("perl -pi -e 's/replace.me.admin.user/%s/g' ~/changepw.py" % ADMIN_USER)
+    run("perl -pi -e 's/replace.me.admin.pw/%s/g' ~/changepw.py" % ADMIN_PASSWORD)
+    sudo('source /var/lib/geonode/bin/activate;cat ~/changepw.py | django-admin.py shell --settings=geonode.settings')
+    run('rm ~/changepw.py')
+
+def update_instance():
+    put('../misc/update-instance', '/home/ubuntu/')
+    sudo('mv /home/ubuntu/update-instance /etc/init.d')
+    sudo('chmod +x /etc/init.d/update-instance')
+    sudo('sudo update-rc.d -f update-instance start 20 2 3 4 5 .')
+
+def cleanup_temp():
+    # ToDo: Update as necessary
+    sudo("rm -f /root/.*hist* $HOME/.*hist*")
+    sudo("rm -f /var/log/*.gz")
+
+def copy_keys():
+    sudo('rm -f ~/.ssh/*%s.pem' % (KEY_BASE))
+    put(('%s*%s*' % (KEY_PATH, KEY_BASE)), '/home/ubuntu/.ssh/', mode=0400)
+    pass
+
+def install_ec2_tools():
+    sudo('add-apt-repository "deb http://us-east-1.ec2.archive.ubuntu.com/ubuntu/ %s multiverse"' % (UBUNTU_VERSION))
+    sudo('add-apt-repository "deb http://us-east-1.ec2.archive.ubuntu.com/ubuntu/ %s-updates multiverse"' % (UBUNTU_VERSION))
+    sudo('apt-get -y update')
+    sudo('apt-get install -y ec2-ami-tools')
+    sudo('apt-get install -y ec2-api-tools')
+
+def build_geonode_ami():
+    deploy_geonode_dev_package()
+    change_admin_password()
+    cleanup_temp()
+    copy_keys()
+    update_instance()
+    install_ec2_tools()
+    with hide('running', 'stdout', 'stderr'):
+        sudo('export AWS_USER_ID=%s' % AWS_USER_ID)
+        sudo('export AWS_ACCESS_KEY_ID=%s' % AWS_ACCESS_KEY_ID)
+        sudo('export AWS_SECRET_ACCESS_KEY=%s' % AWS_SECRET_ACCESS_KEY)
+    sudo('export ARCH=%s' % ARCH) 
+    prefix = 'geonode-%s-%s' % (VERSION, datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
+    excludes = '/mnt,/root/.ssh,/home/ubuntu/.ssh,/tmp'
+    sudo("ec2-bundle-vol -r %s -d /mnt -p %s -u %s -k ~/.ssh/pk-*.pem -c ~/.ssh/cert-*.pem -e %s" % (ARCH, prefix, AWS_USER_ID, excludes))
+    sudo("ec2-upload-bundle -b %s -m /mnt/%s.manifest.xml -a %s -s %s" % (AMI_BUCKET, prefix, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY))
+    output = sudo('ec2-register --name "%s/%s" "%s/%s.manifest.xml" -K ~/.ssh/pk-*.pem -C ~/.ssh/cert-*.pem' % (AMI_BUCKET, prefix, AMI_BUCKET, prefix)) 
+    ami_id = output.split('\t')[1]
+    if MAKE_PUBLIC:
+        sudo("ec2-modify-image-attribute -l -a all -K ~/.ssh/pk-*.pem -C ~/.ssh/cert-*.pem %s" % (ami_id))
+    print "AMI %s Ready for Use" % (ami_id)
