@@ -72,7 +72,7 @@
 {% endblock %}
 
 {% block sidebar %}
-  <div class="pull-right">{% avatar profile.user 70 %}</div>
+  <div class="pull-right">{% avatar profile.user 80 %}</div>
   <h3>{{ profile.name }}</h3>
     {% if_has_tag actor_url %}
         <a href="{% actor_url profile.user %}" class="btn btn-primary" type="button">Activities</a>
