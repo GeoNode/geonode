@@ -391,6 +391,11 @@ class Layer(ResourceBase):
 
     def tiles_url(self):
         return self.link_set.get(name='Tiles').url
+        
+    def maps(self):
+        from geonode.maps.models import MapLayer
+        return  MapLayer.objects.filter(name=self.typename)
+        
 
 class AttributeManager(models.Manager):
     """Helper class to access filtered attributes
