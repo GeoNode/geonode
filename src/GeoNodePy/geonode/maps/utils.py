@@ -277,22 +277,23 @@ def save(layer, base_file, user, overwrite = True, title=None,
         pass
     else:
         # If we get a store, we do the following:
-        resources = store.get_resources()
         # Is it empty?
-        if settings.DB_DATASTORE_NAME != store.name and len(resources) == 0:
+        if settings.DB_DATASTORE_NAME != store.name:
+            resources = cat.get_resources(store=store)
+            if len(resources) == 0:
             # What should we do about that empty store?
-            if overwrite:
-                # We can just delete it and recreate it later.
-                store.delete()
-            else:
-                msg = ('The layer exists and the overwrite parameter is '
+                if overwrite:
+                    # We can just delete it and recreate it later.
+                    store.delete()
+                else:
+                    msg = ('The layer exists and the overwrite parameter is '
                        '%s' % overwrite)
-                raise GeoNodeException(msg)
+                    raise GeoNodeException(msg)
         else:
             # If our resource is already configured in the store it needs
             # to have the right resource type
-            for resource in resources:
-                if resource.name == name:
+            resource = cat.get_resource(name, store=store)
+            if resource is not None:
                     msg = 'Name already in use and overwrite is False'
                     assert overwrite, msg
                     existing_type = resource.resource_type
