@@ -1,10 +1,13 @@
+{% load friendly_loader %}
+{% friendly_load avatar_tags %}
 {% load i18n %}
+
 <section class="last">
     <h2>{% trans "About the Layer Owner" %}</h2>
-    <div class="img-placeholder pl-64-70">{% trans "No Image Available" %}</div>
+    <a href="{% url profile_detail owner.get_profile.user.username %}">{% avatar owner.get_profile.user 80 %}</a>
     <h4><a href="{{ owner.get_profile.get_absolute_url }}">{{ owner.get_profile.name|default:owner }}</a></h4>
     <p class="clear"></p>
-    <a href="{% url profile_detail "admin" %}" class="read-more">
+    <a href="{% url profile_detail owner.get_profile.user.username %}" class="read-more">
         {% trans "Read more about the owner" %}
     </a>
 </section>
