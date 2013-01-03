@@ -23,6 +23,8 @@ done
 shift $(($OPTIND - 1))
 
 function setup_directories() {
+	mkdir -p $TOMCAT_WEBAPPS/geoserver
+	mkdir -p $TOMCAT_WEBAPPS/geonetwork
 	mkdir -p $GEOSERVER_DATA_DIR
 	mkdir -p $GEONODE_WWW/static
 	mkdir -p $GEONODE_WWW/uploaded
@@ -31,19 +33,31 @@ function setup_directories() {
 	mkdir -p $GEONODE_LIB
 	mkdir -p $GEONODE_BIN
 	mkdir -p $GEONODE_ETC
+	mkdir -p $GEONODE_ETC/geonetwork
+	mkdir -p $GEONODE_ETC/geoserver
 	mkdir -p $GEONODE_ETC/media
 	mkdir -p $GEONODE_ETC/templates
 	mkdir -p $GEONODE_SHARE
 }
 
+function unpack_archives() {
+	unzip -qq $INSTALL_DIR/geoserver.war -d $TOMCAT_WEBAPPS/geoserver
+	unzip -qq $INSTALL_DIR/geonetwork.war -d $TOMCAT_WEBAPPS/geonetwork
+}
+
 function reorganize_configuration() {
+	mv $TOMCAT_WEBAPPS/geoserver/data/* $GEOSERVER_DATA_DIR
 	cp -rp $INSTALL_DIR/support/geonode.apache $APACHE_SITES/geonode
 	cp -rp $INSTALL_DIR/support/geonode.wsgi $GEONODE_WWW/wsgi/
 	cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
-	cp -rp $INSTALL_DIR/GeoNode*.zip $GEONODE_LIB
+	cp -rp $INSTALL_DIR/geonode-webapp.pybundle $GEONODE_LIB
 	cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
 	cp -rp $INSTALL_DIR/support/geonode.updateip $GEONODE_BIN/geonode-updateip
 	cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
+	cp -rp $INSTALL_DIR/support/geoserver.patch $GEONODE_SHARE
+	cp -rp $INSTALL_DIR/support/geonetwork.patch $GEONODE_SHARE
+	cp -rp $TOMCAT_WEBAPPS/geoserver/WEB-INF/web.xml $GEONODE_ETC/geoserver/
+	cp -rp $TOMCAT_WEBAPPS/geonetwork/WEB-INF/config.xml $GEONODE_ETC/geonetwork/
 	cp -rp $INSTALL_DIR/support/geonode.local_settings $GEONODE_ETC/local_settings.py
 
 	chmod +x $GEONODE_BIN/geonode
@@ -52,6 +66,7 @@ function reorganize_configuration() {
 
 function preinstall() {
     setup_directories
+    unpack_archives
     reorganize_configuration
 }
 
@@ -59,6 +74,34 @@ function randpass() {
   [ "$2" == "0" ] && CHAR="[:alnum:]" || CHAR="[:graph:]"
     cat /dev/urandom | tr -cd "$CHAR" | head -c ${1:-32}
     echo
+}
+
+function setup_tomcat_once() {
+# configure tomcat defaults to avoid geonetwork bug and increase the available ram
+cat >> /etc/default/tomcat6 <<- EOF 
+JAVA_OPTS='-Djava.awt.headless=true -Xmx1024m -Xms1024M -XX:MaxPermSize=256m -XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement'
+JAVA_HOME=/usr/
+EOF
+patch $GEONODE_ETC/geonetwork/config.xml $GEONODE_SHARE/geonetwork.patch
+patch $GEONODE_ETC/geoserver/web.xml $GEONODE_SHARE/geoserver.patch
+sed -i "s/GEONODE_DATABASE_PASSWORD/$psqlpass/g" $GEONODE_ETC/geonetwork/config.xml
+}
+
+function setup_tomcat_every_time() {
+rm -rf $TOMCAT_WEBAPPS/geonetwork/WEB-INF/config.xml
+ln -sf $GEONODE_ETC/geonetwork/config.xml $TOMCAT_WEBAPPS/geonetwork/WEB-INF/config.xml
+rm -rf $TOMCAT_WEBAPPS/geoserver/WEB-INF/web.xml
+cp -rp $GEONODE_ETC/geoserver/web.xml $TOMCAT_WEBAPPS/geoserver/WEB-INF/web.xml
+
+# Set up logging symlinks to /var/log/geonode
+# Should only be needed once, but also won't hurt anything if run again.
+mkdir -p $GEONODE_LOG
+ln -sf /var/log/tomcat6/catalina.out $GEONODE_LOG/tomcat.log
+ln -sf /var/log/tomcat6/geonetwork.log $GEONODE_LOG/geonetwork.log
+ln -sf $GEOSERVER_DATA_DIR/logs/geoserver.log $GEONODE_LOG/geoserver.log
+
+# Set the tomcat user as the owner
+chown -R tomcat6. $GEOSERVER_DATA_DIR $TOMCAT_WEBAPPS/geonetwork $TOMCAT_WEBAPPS/geoserver
 }
 
 function setup_postgres_once() {
@@ -90,6 +133,8 @@ function setup_django_once() {
 
 function setup_django_every_time() {
     pushd $GEONODE_LIB
+    easy_install -U virtualenv
+    easy_install -U pip
     virtualenv . --system-site-packages --never-download
 
     if [ ! -f bin/activate ]
@@ -99,11 +144,17 @@ function setup_django_every_time() {
     fi
 
     source bin/activate
-    pip install GeoNode-*.zip
+    pip install geonode-webapp.pybundle
 
-    sitedir=`$GEONODE_LIB/bin/python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
+    # FIXME: What is this doing here?
+    test -d src/GeoNodePy/geonode/media/static &&
+        mv -f src/GeoNodePy/geonode/media/static src/GeoNodePy/geonode/media/geonode
 
-    ln -sf $GEONODE_ETC/local_settings.py $sitedir/geonode/local_settings.py
+    ln -sf $GEONODE_ETC/local_settings.py $GEONODE_LIB/src/GeoNodePy/geonode/local_settings.py
+
+    sed -i "s/THE_SECRET_KEY/$secretkey/g" $GEONODE_ETC/local_settings.py
+    sed -i "s/THE_DATABASE_PASSWORD/$psqlpass/g" $GEONODE_ETC/local_settings.py
+
     # Set up logging symlink
     ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
 
@@ -139,21 +190,40 @@ function setup_apache_every_time() {
 }
 
 function one_time_setup() {
-    psqlpass=$(randpass 8 0)
-    secretkey=$(randpass 18 0)
-
+    pgpasswd
     setup_postgres_once
+    setup_tomcat_once
     setup_django_once
     # setup_apache_once # apache setup needs the every_time django setup since
     # it uses that to get the sitedir location
 }
 
 function postinstall() {
+    pgpasswd
     setup_postgres_every_time
+    setup_tomcat_every_time
     setup_django_every_time
     setup_apache_every_time
     $TOMCAT_SERVICE restart
     $APACHE_SERVICE restart
+}
+
+function pgpasswd(){
+    if [ "$(su - postgres -c 'psql -l' | awk /geonode/'{print $1}')" = 'geonode' ]
+    then
+    if [ -f $GEONODE_ETC/local_settings.py.old ]
+    then
+        psqlpass=$(grep -m 1 "DATABASE_PASSWORD =" $GEONODE_ETC/local_settings.py.old | awk '{$3=substr($3,2,length($3)-2);print $3;}')
+    else
+        psqlpass=$(randpass 8 0)
+        su - postgres <<EOF
+        ALTER ROLE geonode WITH PASSWORD '$psqlpass';
+EOF
+    fi
+    else
+        psqlpass=$(randpass 8 0)
+    fi
+        secretkey=$(randpass 18 0)
 }
 
 function once() {

@@ -32,7 +32,7 @@ Once it passes through the GNIP  process, a roadmap item enters the *Development
 Roadmap Items
 -------------
 
-"Rock Solid" 1.1 Release (Development Stage)
+"Rock Solid" 1.1 Release (Released)
 
 Public API's and Interfaces (Under discussion)
 
