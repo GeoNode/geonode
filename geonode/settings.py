@@ -171,7 +171,7 @@ INSTALLED_APPS = (
     'geonode.catalogue',
     'geonode.documents',
 )
-    
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -197,7 +197,7 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
-    "loggers": {        
+    "loggers": {
         "django": {
             "handlers": ["console"],
             "level": "ERROR",
@@ -271,7 +271,7 @@ MIDDLEWARE_CLASSES = (
 AUTHENTICATION_BACKENDS = ('geonode.security.auth.GranularBackend',)
 
 def get_user_url(u):
-    return u.profile.get_absolute_url() 
+    return u.profile.get_absolute_url()
 
 
 ABSOLUTE_URL_OVERRIDES = {
@@ -500,6 +500,10 @@ DB_DATASTORE_TYPE = ''
 DB_DATASTORE_NAME = ''
 
 #The name of the store in Geoserver
+
+LEAFLET_CONFIG = {
+    'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
+}
 
 # Load more settings from a file called local_settings.py if it exists
 try:
