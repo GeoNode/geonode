@@ -54,16 +54,17 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider implement
         
         GeoNodeSecurityClient configured;
         String securityClient = "default";
-        if (securityClientDatabaseURL == null) {
+//        if (securityClientDatabaseURL == null) {
             DefaultSecurityClient defaultClient = new DefaultSecurityClient(baseUrl, httpClient);
             configured = defaultClient;
-        } else {
+ /*       } else {
             securityClient = "database";
             BasicDataSource dataSource = new BasicDataSource();
             dataSource.setDriverClassName("org.postgresql.Driver");
             dataSource.setUrl(securityClientDatabaseURL);
             configured = new DatabaseSecurityClient(dataSource, baseUrl, httpClient);
         }
+        */
         Logging.getLogger(getClass()).log(Level.INFO, "using geonode {0} security client", securityClient);
         return configured;
     }
