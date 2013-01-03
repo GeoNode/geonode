@@ -221,16 +221,16 @@
            <gmd:geographicElement>
              <gmd:EX_GeographicBoundingBox>
                <gmd:westBoundLongitude>
-                 <gco:Decimal>{{layer.llbbox.0}}</gco:Decimal>
+                 <gco:Decimal>{{layer.llbbox_coords.0}}</gco:Decimal>
                </gmd:westBoundLongitude>
                <gmd:eastBoundLongitude>
-                 <gco:Decimal>{{layer.llbbox.2}}</gco:Decimal>
+                 <gco:Decimal>{{layer.llbbox_coords.2}}</gco:Decimal>
                </gmd:eastBoundLongitude>
                <gmd:southBoundLatitude>
-                 <gco:Decimal>{{layer.llbbox.1}}</gco:Decimal>
+                 <gco:Decimal>{{layer.llbbox_coords.1}}</gco:Decimal>
                </gmd:southBoundLatitude>
                <gmd:northBoundLatitude>
-                 <gco:Decimal>{{layer.llbbox.3}}</gco:Decimal>
+                 <gco:Decimal>{{layer.llbbox_coords.3}}</gco:Decimal>
                </gmd:northBoundLatitude>
              </gmd:EX_GeographicBoundingBox>
            </gmd:geographicElement>
