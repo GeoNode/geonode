@@ -7,44 +7,93 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Adding model 'Style'
-        db.create_table('layers_style', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
-            ('sld_title', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('sld_body', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('sld_version', self.gf('django.db.models.fields.CharField')(max_length=12, null=True, blank=True)),
-            ('sld_url', self.gf('django.db.models.fields.CharField')(max_length=1000, null=True)),
-            ('workspace', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-        ))
-        db.send_create_signal('layers', ['Style'])
+    
+        # Adding field 'Layer.csw_typename'
+        db.add_column('layers_layer', 'csw_typename', self.gf('django.db.models.fields.CharField')(default='gmd:MD_Metadata', max_length=32), keep_default=False)
 
-        # Adding field 'Layer.default_style'
-        db.add_column('layers_layer', 'default_style', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='layer_default_style', null=True, to=orm['layers.Style']), keep_default=False)
+        # Adding field 'Layer.csw_schema'
+        db.add_column('layers_layer', 'csw_schema', self.gf('django.db.models.fields.CharField')(default='http://www.isotc211.org/2005/gmd', max_length=64), keep_default=False)
 
-        # Adding M2M table for field styles on 'Layer'
-        db.create_table('layers_layer_styles', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('layer', models.ForeignKey(orm['layers.layer'], null=False)),
-            ('style', models.ForeignKey(orm['layers.style'], null=False))
-        ))
-        db.create_unique('layers_layer_styles', ['layer_id', 'style_id'])
+        # Adding field 'Layer.csw_mdsource'
+        db.add_column('layers_layer', 'csw_mdsource', self.gf('django.db.models.fields.CharField')(default='local', max_length=256), keep_default=False)
+
+        # Adding field 'Layer.csw_insert_date'
+        db.add_column('layers_layer', 'csw_insert_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True), keep_default=False)
+
+        # Adding field 'Layer.csw_type'
+        db.add_column('layers_layer', 'csw_type', self.gf('django.db.models.fields.CharField')(default='dataset', max_length=32), keep_default=False)
+
+        # Adding field 'Layer.csw_anytext'
+        db.add_column('layers_layer', 'csw_anytext', self.gf('django.db.models.fields.TextField')(null=True), keep_default=False)
+
+        # Adding field 'Layer.csw_wkt_geometry'
+        db.add_column('layers_layer', 'csw_wkt_geometry', self.gf('django.db.models.fields.TextField')(default='SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'), keep_default=False)
+
+        # Adding field 'Layer.metadata_uploaded'
+        db.add_column('layers_layer', 'metadata_uploaded', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+
+        # Adding field 'Layer.metadata_xml'
+        db.add_column('layers_layer', 'metadata_xml', self.gf('django.db.models.fields.TextField')(default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', null=True, blank=True), keep_default=False)
+
+        # Adding field 'Layer.popular_count'
+        db.add_column('layers_layer', 'popular_count', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
+
+        # Adding field 'Layer.share_count'
+        db.add_column('layers_layer', 'share_count', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
 
 
     def backwards(self, orm):
-        
-        # Deleting model 'Style'
-        db.delete_table('layers_style')
 
-        # Deleting field 'Layer.default_style'
-        db.delete_column('layers_layer', 'default_style_id')
+        # Deleting field 'Layer.csw_typename'
+        db.delete_column('layers_layer', 'csw_typename')
 
-        # Removing M2M table for field styles on 'Layer'
-        db.delete_table('layers_layer_styles')
+        # Deleting field 'Layer.csw_schema'
+        db.delete_column('layers_layer', 'csw_schema')
+
+        # Deleting field 'Layer.csw_mdsource'
+        db.delete_column('layers_layer', 'csw_mdsource')
+
+        # Deleting field 'Layer.csw_insert_date'
+        db.delete_column('layers_layer', 'csw_insert_date')
+
+        # Deleting field 'Layer.csw_type'
+        db.delete_column('layers_layer', 'csw_type')
+
+        # Deleting field 'Layer.csw_anytext'
+        db.delete_column('layers_layer', 'csw_anytext')
+
+        # Deleting field 'Layer.csw_wkt_geometry'
+        db.delete_column('layers_layer', 'csw_wkt_geometry')
+
+        # Deleting field 'Layer.metadata_uploaded'
+        db.delete_column('layers_layer', 'metadata_uploaded')
+
+        # Deleting field 'Layer.metadata_xml'
+        db.delete_column('layers_layer', 'metadata_xml')
+
+        # Deleting field 'Layer.popular_count'
+        db.delete_column('layers_layer', 'popular_count')
+
+        # Deleting field 'Layer.share_count'
+        db.delete_column('layers_layer', 'share_count')
 
 
     models = {
+        'actstream.action': {
+            'Meta': {'ordering': "('-timestamp',)", 'object_name': 'Action'},
+            'action_object_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'action_object'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
+            'action_object_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'actor_content_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'actor'", 'to': "orm['contenttypes.ContentType']"}),
+            'actor_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'data': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'}),
+            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'target_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
+            'target_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 7, 46, 10, 889346)'}),
+            'verb': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+        },
         'auth.group': {
             'Meta': {'object_name': 'Group'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -60,7 +109,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 10, 17, 1, 46, 7, 453987)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 7, 46, 10, 890177)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -68,9 +117,10 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 10, 17, 1, 46, 7, 453845)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 7, 46, 10, 890121)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'relationships': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'related_to'", 'symmetrical': 'False', 'through': "orm['relationships.Relationship']", 'to': "orm['auth.User']"}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
@@ -93,9 +143,9 @@ class Migration(SchemaMigration):
         },
         'layers.contactrole': {
             'Meta': {'unique_together': "(('contact', 'layer', 'role'),)", 'object_name': 'ContactRole'},
-            'contact': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['people.Contact']"}),
+            'contact': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['people.Profile']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'layer': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['layers.Layer']", 'null': 'True'}),
+            'layer': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['layers.Layer']"}),
             'role': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['people.Role']"})
         },
         'layers.layer': {
@@ -105,17 +155,17 @@ class Migration(SchemaMigration):
             'bbox_x1': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
             'bbox_y0': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
             'bbox_y1': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
-            'category': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['layers.TopicCategory']", 'null': 'True'}),
+            'category': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['layers.TopicCategory']", 'null': 'True', 'blank': 'True'}),
             'constraints_other': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'constraints_use': ('django.db.models.fields.CharField', [], {'default': "'copyright'", 'max_length': '255'}),
-            'contacts': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['people.Contact']", 'through': "orm['layers.ContactRole']", 'symmetrical': 'False'}),
+            'contacts': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['people.Profile']", 'through': "orm['layers.ContactRole']", 'symmetrical': 'False'}),
             'csw_anytext': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'csw_insert_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             'csw_mdsource': ('django.db.models.fields.CharField', [], {'default': "'local'", 'max_length': '256'}),
             'csw_schema': ('django.db.models.fields.CharField', [], {'default': "'http://www.isotc211.org/2005/gmd'", 'max_length': '64'}),
             'csw_type': ('django.db.models.fields.CharField', [], {'default': "'dataset'", 'max_length': '32'}),
             'csw_typename': ('django.db.models.fields.CharField', [], {'default': "'gmd:MD_Metadata'", 'max_length': '32'}),
-            'csw_wkt_geometry': ('django.db.models.fields.TextField', [], {'default': "'SRID=4326;POLYGON((-180 180,-180 90,-90 90,-90 180,-180 180))'"}),
+            'csw_wkt_geometry': ('django.db.models.fields.TextField', [], {'default': "'SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'"}),
             'data_quality_statement': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'date_type': ('django.db.models.fields.CharField', [], {'default': "'publication'", 'max_length': '255'}),
@@ -123,6 +173,7 @@ class Migration(SchemaMigration):
             'distribution_description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'distribution_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'edition': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'geographic_bounding_box': ('django.db.models.fields.TextField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'keywords_region': ('django.db.models.fields.CharField', [], {'default': "'USA'", 'max_length': '3'}),
             'language': ('django.db.models.fields.CharField', [], {'default': "'eng'", 'max_length': '3'}),
@@ -175,8 +226,8 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'})
         },
-        'people.contact': {
-            'Meta': {'object_name': 'Contact'},
+        'people.profile': {
+            'Meta': {'object_name': 'Profile'},
             'area': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'country': ('django.db.models.fields.CharField', [], {'max_length': '3', 'null': 'True', 'blank': 'True'}),
@@ -188,7 +239,7 @@ class Migration(SchemaMigration):
             'organization': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'position': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'profile': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'blank': 'True', 'related_name': "'profile'", 'unique': 'True', 'null': 'True', 'to': "orm['auth.User']"}),
             'voice': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'zipcode': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
         },
@@ -197,6 +248,33 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
             'value': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'})
+        },
+        'relationships.relationship': {
+            'Meta': {'ordering': "('created',)", 'unique_together': "(('from_user', 'to_user', 'status', 'site'),)", 'object_name': 'Relationship'},
+            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'from_user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'from_users'", 'to': "orm['auth.User']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'site': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'related_name': "'relationships'", 'to': "orm['sites.Site']"}),
+            'status': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['relationships.RelationshipStatus']"}),
+            'to_user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'to_users'", 'to': "orm['auth.User']"}),
+            'weight': ('django.db.models.fields.FloatField', [], {'default': '1.0', 'null': 'True', 'blank': 'True'})
+        },
+        'relationships.relationshipstatus': {
+            'Meta': {'ordering': "('name',)", 'object_name': 'RelationshipStatus'},
+            'from_slug': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'login_required': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'private': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'symmetrical_slug': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'to_slug': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'verb': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        'sites.site': {
+            'Meta': {'ordering': "('domain',)", 'object_name': 'Site', 'db_table': "'django_site'"},
+            'domain': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         'taggit.tag': {
             'Meta': {'object_name': 'Tag'},
