@@ -6,10 +6,31 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ("layers", "0001_initial"),
+        ("layers", "0002_auto__add_link__add_attribute__add_style__add_topiccategory__del_field.py"),
+        ("layers", "0003_auto__add_missing_fields.py"),
+    )
+
     def forwards(self, orm):
         
+        # Renaming and altering the bbox fields
+        # renaming
+        db.rename_column('maps_map', 'bbox_left', 'bbox_x0')
+        db.rename_column('maps_map', 'bbox_right', 'bbox_x1')
+        db.rename_column('maps_map', 'bbox_bottom', 'bbox_y0')
+        db.rename_column('maps_map', 'bbox_top', 'bbox_y1')
+        # altering
+        db.alter_column('maps_map', 'bbox_x0', models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True))
+        db.alter_column('maps_map', 'bbox_x1', models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True))
+        db.alter_column('maps_map', 'bbox_y0', models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True))
+        db.alter_column('maps_map', 'bbox_y1', models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True))
+        
+        # Adding field 'MapLayer.local'
+        db.add_column('maps_maplayer', 'local', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+
         # Adding field 'Map.uuid'
-        db.add_column('maps_map', 'uuid', self.gf('django.db.models.fields.CharField')(default=None, max_length=36), keep_default=False)
+        db.add_column('maps_map', 'uuid', self.gf('django.db.models.fields.CharField')(default=datetime.date(2012, 12, 28), max_length=36), keep_default=False)
 
         # Adding field 'Map.date'
         db.add_column('maps_map', 'date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now), keep_default=False)
@@ -44,6 +65,9 @@ class Migration(SchemaMigration):
         # Adding field 'Map.topic_category'
         db.add_column('maps_map', 'topic_category', self.gf('django.db.models.fields.CharField')(default='location', max_length=255), keep_default=False)
 
+        # Adding field 'Map.category'
+        db.add_column('maps_map', 'category', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['layers.TopicCategory'], null=True, blank=True), keep_default=False)
+
         # Adding field 'Map.temporal_extent_start'
         db.add_column('maps_map', 'temporal_extent_start', self.gf('django.db.models.fields.DateField')(null=True, blank=True), keep_default=False)
 
@@ -61,18 +85,6 @@ class Migration(SchemaMigration):
 
         # Adding field 'Map.data_quality_statement'
         db.add_column('maps_map', 'data_quality_statement', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.bbox_x0'
-        db.add_column('maps_map', 'bbox_x0', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=19, decimal_places=10, blank=True), keep_default=False)
-
-        # Adding field 'Map.bbox_x1'
-        db.add_column('maps_map', 'bbox_x1', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=19, decimal_places=10, blank=True), keep_default=False)
-
-        # Adding field 'Map.bbox_y0'
-        db.add_column('maps_map', 'bbox_y0', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=19, decimal_places=10, blank=True), keep_default=False)
-
-        # Adding field 'Map.bbox_y1'
-        db.add_column('maps_map', 'bbox_y1', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=19, decimal_places=10, blank=True), keep_default=False)
 
         # Adding field 'Map.srid'
         db.add_column('maps_map', 'srid', self.gf('django.db.models.fields.CharField')(default='EPSG:4326', max_length=255), keep_default=False)
@@ -96,7 +108,7 @@ class Migration(SchemaMigration):
         db.add_column('maps_map', 'csw_anytext', self.gf('django.db.models.fields.TextField')(null=True), keep_default=False)
 
         # Adding field 'Map.csw_wkt_geometry'
-        db.add_column('maps_map', 'csw_wkt_geometry', self.gf('django.db.models.fields.TextField')(default='SRID=4326;POLYGON((-180 180,-180 90,-90 90,-90 180,-180 180))'), keep_default=False)
+        db.add_column('maps_map', 'csw_wkt_geometry', self.gf('django.db.models.fields.TextField')(default='SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'), keep_default=False)
 
         # Adding field 'Map.metadata_uploaded'
         db.add_column('maps_map', 'metadata_uploaded', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
@@ -104,12 +116,33 @@ class Migration(SchemaMigration):
         # Adding field 'Map.metadata_xml'
         db.add_column('maps_map', 'metadata_xml', self.gf('django.db.models.fields.TextField')(default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', null=True, blank=True), keep_default=False)
 
+        # Adding field 'Map.popular_count'
+        db.add_column('maps_map', 'popular_count', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
+
+        # Adding field 'Map.share_count'
+        db.add_column('maps_map', 'share_count', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
+
         # Changing field 'Map.title'
         db.alter_column('maps_map', 'title', self.gf('django.db.models.fields.CharField')(max_length=255))
 
 
     def backwards(self, orm):
         
+        # Renaming and altering the bbox fields
+        # renaming
+        db.rename_column('maps_map', 'bbox_x0', 'bbox_left')
+        db.rename_column('maps_map', 'bbox_x1', 'bbox_right')
+        db.rename_column('maps_map', 'bbox_y0', 'bbox_bottom')
+        db.rename_column('maps_map', 'bbox_y1', 'bbox_top')
+        # altering
+        db.alter_column('maps_map', 'bbox_x0', models.FloatField(null=True, blank=True))
+        db.alter_column('maps_map', 'bbox_x1', models.FloatField(null=True, blank=True))
+        db.alter_column('maps_map', 'bbox_y0', models.FloatField(null=True, blank=True))
+        db.alter_column('maps_map', 'bbox_y1', models.FloatField(null=True, blank=True))
+        
+        # Deleting field 'MapLayer.local'
+        db.delete_column('maps_maplayer', 'local')
+
         # Deleting field 'Map.uuid'
         db.delete_column('maps_map', 'uuid')
 
@@ -146,6 +179,9 @@ class Migration(SchemaMigration):
         # Deleting field 'Map.topic_category'
         db.delete_column('maps_map', 'topic_category')
 
+        # Deleting field 'Map.category'
+        db.delete_column('maps_map', 'category_id')
+
         # Deleting field 'Map.temporal_extent_start'
         db.delete_column('maps_map', 'temporal_extent_start')
 
@@ -163,18 +199,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'Map.data_quality_statement'
         db.delete_column('maps_map', 'data_quality_statement')
-
-        # Deleting field 'Map.bbox_x0'
-        db.delete_column('maps_map', 'bbox_x0')
-
-        # Deleting field 'Map.bbox_x1'
-        db.delete_column('maps_map', 'bbox_x1')
-
-        # Deleting field 'Map.bbox_y0'
-        db.delete_column('maps_map', 'bbox_y0')
-
-        # Deleting field 'Map.bbox_y1'
-        db.delete_column('maps_map', 'bbox_y1')
 
         # Deleting field 'Map.srid'
         db.delete_column('maps_map', 'srid')
@@ -206,11 +230,32 @@ class Migration(SchemaMigration):
         # Deleting field 'Map.metadata_xml'
         db.delete_column('maps_map', 'metadata_xml')
 
+        # Deleting field 'Map.popular_count'
+        db.delete_column('maps_map', 'popular_count')
+
+        # Deleting field 'Map.share_count'
+        db.delete_column('maps_map', 'share_count')
+
         # Changing field 'Map.title'
         db.alter_column('maps_map', 'title', self.gf('django.db.models.fields.TextField')())
 
 
     models = {
+        'actstream.action': {
+            'Meta': {'ordering': "('-timestamp',)", 'object_name': 'Action'},
+            'action_object_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'action_object'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
+            'action_object_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'actor_content_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'actor'", 'to': "orm['contenttypes.ContentType']"}),
+            'actor_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'data': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'}),
+            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'target_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
+            'target_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 5, 32, 29, 666109)'}),
+            'verb': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+        },
         'auth.group': {
             'Meta': {'object_name': 'Group'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -226,7 +271,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 11, 4, 5, 3, 13, 256495)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 5, 32, 29, 668909)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -234,7 +279,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 11, 4, 5, 3, 13, 256338)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 5, 32, 29, 668850)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'relationships': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'related_to'", 'symmetrical': 'False', 'through': "orm['relationships.Relationship']", 'to': "orm['auth.User']"}),
@@ -273,7 +318,7 @@ class Migration(SchemaMigration):
             'csw_schema': ('django.db.models.fields.CharField', [], {'default': "'http://www.isotc211.org/2005/gmd'", 'max_length': '64'}),
             'csw_type': ('django.db.models.fields.CharField', [], {'default': "'dataset'", 'max_length': '32'}),
             'csw_typename': ('django.db.models.fields.CharField', [], {'default': "'gmd:MD_Metadata'", 'max_length': '32'}),
-            'csw_wkt_geometry': ('django.db.models.fields.TextField', [], {'default': "'SRID=4326;POLYGON((-180 180,-180 90,-90 90,-90 180,-180 180))'"}),
+            'csw_wkt_geometry': ('django.db.models.fields.TextField', [], {'default': "'SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'"}),
             'data_quality_statement': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'date_type': ('django.db.models.fields.CharField', [], {'default': "'publication'", 'max_length': '255'}),
