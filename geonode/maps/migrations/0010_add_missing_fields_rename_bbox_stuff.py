@@ -135,10 +135,10 @@ class Migration(SchemaMigration):
         db.rename_column('maps_map', 'bbox_y0', 'bbox_bottom')
         db.rename_column('maps_map', 'bbox_y1', 'bbox_top')
         # altering
-        db.alter_column('maps_map', 'bbox_x0', models.FloatField(null=True, blank=True))
-        db.alter_column('maps_map', 'bbox_x1', models.FloatField(null=True, blank=True))
-        db.alter_column('maps_map', 'bbox_y0', models.FloatField(null=True, blank=True))
-        db.alter_column('maps_map', 'bbox_y1', models.FloatField(null=True, blank=True))
+        db.alter_column('maps_map', 'bbox_left', models.FloatField(null=True, blank=True))
+        db.alter_column('maps_map', 'bbox_right', models.FloatField(null=True, blank=True))
+        db.alter_column('maps_map', 'bbox_bottom', models.FloatField(null=True, blank=True))
+        db.alter_column('maps_map', 'bbox_top', models.FloatField(null=True, blank=True))
         
         # Deleting field 'MapLayer.local'
         db.delete_column('maps_maplayer', 'local')
