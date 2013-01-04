@@ -2330,7 +2330,6 @@ def addLayerJSON(request):
 
     else:
         return HttpResponse(status=500)
-        logger.debug("addLayerJSON DID NOT WORK")
 
 
 def ajax_layer_edit_check(request, layername):
