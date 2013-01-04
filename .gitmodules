@@ -6,7 +6,7 @@
 	url = git://github.com/openlayers/openlayers.git
 [submodule "src/geonode-client/app/static/externals/PrintPreview"]
 	path = src/geonode-client/app/static/externals/PrintPreview
-	url = git://github.com/GeoNode/PrintPreview.git
+	url = git://github.com/opengeo/PrintPreview.git
 [submodule "src/geonode-client/externals/stick"]
 	path = src/geonode-client/externals/stick
 	url = git://github.com/hns/stick.git
