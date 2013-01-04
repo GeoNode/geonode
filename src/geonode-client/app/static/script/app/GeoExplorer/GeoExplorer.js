@@ -475,7 +475,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     layer.redraw(true);
                     if (!updated) {
                         Ext.Ajax.request({
-                            url:"/data/" + layer.params.LAYERS + "/ajax_layer_update_bounds/",
+                            url:"/data/" + layer.params.LAYERS + "/ajax_layer_update/",
                             method:"POST",
                             params:{layername:layer.params.LAYERS},
                             success:function (result, request) {
@@ -559,7 +559,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var buttons = this.tools["gn_layer_editor"].actions;
 
         var toggleButtons = function(enabled) {
-            for (var i; i < buttons.length; i++) {
+            for (var i=0; i < buttons.length; i++) {
                 enabled ? buttons[i].enable() : buttons[i].disable();
             }
         }
@@ -875,6 +875,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
 
+
         //needed for Safari
         var westPanel = new Ext.Panel({
             layout: "fit",
@@ -883,6 +884,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             collapseMode: "mini",
             header: false,
             split: true,
+            bbar: [searchPanel],
             region: "west",
             width: 250
         });

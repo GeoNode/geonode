@@ -154,7 +154,7 @@ GeoExplorer.SearchBar = function(target) {
                             {'isBaseLayer': false,'displayInLayerSwitcher' : false, 'singleTile': true}
                         );
 
-                        target.registerEvents(wmsHighlight);
+                        //target.registerEvents(wmsHighlight);
                         layers.push(wmsHighlight);
                     }
                 }
@@ -187,7 +187,7 @@ GeoExplorer.SearchBar = function(target) {
         var theLayers = target.mapPanel.map.layers;
         var hLayers = [];
         for (l = 0; l < theLayers.length; l++) {
-            if (theLayers[l].name.toString().indexOf("HighlightWMS") > -1 || theLayers[l].name == "hilites") {
+            if (theLayers[l].name && (theLayers[l].name.toString().indexOf("HighlightWMS") > -1 || theLayers[l].name == "hilites")) {
                 hLayers.push(theLayers[l]);
 
             }

@@ -62,7 +62,7 @@ Ext.onReady(function() {
     var assets = new Ext.data.Store({
         reader: new Ext.data.ArrayReader({
             idIndex: 0,
-            fields: ["pk", "id", "type", "href", "title", { name: "date", type: "date", dateFormat: "Y-m-d H:i:s" }]
+            fields: ["pk", "id", "type", "href", "title", "date"]
         }),
         data: mapsAndLayers
     });
@@ -71,8 +71,7 @@ Ext.onReady(function() {
     var columns = [
        { header: gettext('Type'), tpl: "<div class='data-type {type}'>&nbsp;</div>", width: 10 },
        { header: gettext('Title'), dataIndex: 'title', autoExpand: true, tpl: "<a href='{href}'> {title} </a>" },
-
-       { header: gettext('Date'), dataIndex: 'date', width: 30, xtype: 'datecolumn' }
+       { header: gettext('Date'), dataIndex: 'date', width: 30, tpl:'{date}'}
     ]
 
     {% if user == profile.user %}

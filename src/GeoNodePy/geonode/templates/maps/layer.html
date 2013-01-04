@@ -125,7 +125,7 @@
                 },
                 listeners: {
                     updated: function(perms) {
-                        var submitTo = "{% url data_ajax_perm layer.typename %}";
+                        var submitTo = "{% url geonode.maps.views.ajax_layer_permissions_by_email layer.typename %}";
                         Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
                     }
                 }
@@ -410,9 +410,6 @@
         </a></li>
         {% endif %}
         {% if can_delete %}
-            <li><a href="{% url data_ajax_perm_email layer.typename %}">
-                {% trans "Edit Permissions" %}
-            </a></li>
             <li><a href="{% url data_remove layer.typename %}">
             {% trans "Remove" %}
         </a></li>

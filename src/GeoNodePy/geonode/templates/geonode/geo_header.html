@@ -10,4 +10,66 @@
 <script type="text/javascript">
 OpenLayers.ImgPath = "{{ GEONODE_CLIENT_LOCATION }}externals/openlayers/img/";
 var nicEditIconsPath = "{{ GEONODE_CLIENT_LOCATION }}externals/misc/images/nicEditorIcons.gif"
+
+gxp.plugins.Styler.prototype.enableActionIfAvailable  = function(url) {
+    Ext.Ajax.request({
+        method: "POST",
+        url:"/data/" + this.target.selectedLayer.getLayer().params.LAYERS + "/ajax-edit-check",
+        callback: function(options, success, response) {
+            this.launchAction.setDisabled(response.status !== 200);
+        },
+        scope: this
+    });
+};
+
+gxp.WMSLayerPanel.prototype.createStylesPanel = function(url) {
+    var config = gxp.WMSStylesDialog.createGeoServerStylerConfig(
+            this.layerRecord, url
+    );
+    if (this.rasterStyling === true) {
+        config.plugins.push({
+            ptype: "gxp_wmsrasterstylesdialog"
+        });
+    }
+    var ownerCt = this.ownerCt;
+    if (!(ownerCt.ownerCt instanceof Ext.Window)) {
+        config.dialogCls = Ext.Panel;
+        config.showDlg = function(dlg) {
+            dlg.layout = "fit";
+            dlg.autoHeight = false;
+            ownerCt.add(dlg);
+        };
+    }
+    return Ext.apply(config, {
+        title: this.stylesText,
+        style: "padding: 10px",
+        editable: false,
+        listeners: Ext.apply(config.listeners, {
+            "beforerender": {
+                fn: function(cmp) {
+                    var render = !this.editableStyles;
+                    if (!render) {
+                            Ext.Ajax.request({
+                                method: "PUT",
+                                url:"/data/" + this.layerRecord.getLayer().params.LAYERS + "/ajax-edit-check",
+                                callback: function(options, success, response) {
+                                    // we expect a 405 error code here if we are dealing with
+                                    // GeoServer and have write access. Otherwise we will
+                                    // create the panel in readonly mode.
+                                    cmp.editable = (response.status == 200);
+                                    cmp.ownerCt.doLayout();
+                                }
+                            });
+                    }
+                    return render;
+                },
+                scope: this,
+                single: true
+            }
+        })
+    });
+};
+
+
+
 </script>
