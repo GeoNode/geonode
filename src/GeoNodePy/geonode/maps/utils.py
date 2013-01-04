@@ -282,13 +282,13 @@ def save(layer, base_file, user, overwrite = True, title=None,
             resources = cat.get_resources(store=store)
             if len(resources) == 0:
             # What should we do about that empty store?
-            if overwrite:
-                # We can just delete it and recreate it later.
-                store.delete()
-            else:
-                msg = ('The layer exists and the overwrite parameter is '
+                if overwrite:
+                    # We can just delete it and recreate it later.
+                    store.delete()
+                else:
+                    msg = ('The layer exists and the overwrite parameter is '
                        '%s' % overwrite)
-                raise GeoNodeException(msg)
+                    raise GeoNodeException(msg)
         else:
             # If our resource is already configured in the store it needs
             # to have the right resource type
