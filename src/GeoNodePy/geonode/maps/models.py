@@ -1537,8 +1537,8 @@ class Layer(models.Model, PermissionLevelMixin):
         bbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][0])
         llbbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][1])
 
-        self.bbox = [float(l) for l in bbox]
-        self.llbbox = [float(l) for l in llbbox]
+        self.bbox = str([float(l) for l in bbox])
+        self.llbbox = str([float(l) for l in llbbox])
         self.set_bbox(bbox, srs=self.srs)
 
         # Use update to avoid unnecessary post_save signal
