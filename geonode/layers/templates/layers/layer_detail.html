@@ -141,8 +141,8 @@
         <p>{% trans "List of maps using this layer:" %}</p>
         {% endif %}
         <ul class="unstyled space">
-          {% for map in layer.maps %} 
-            <li><a href="{{ map.get_absolute_url }}">{{ map.title }}</a></li>
+          {% for maplayer in layer.maps %} 
+            <li><a href="{{ maplayer.map.get_absolute_url }}">{{ maplayer.map.title }}</a></li>
           {% empty %}
             <li>{% trans "This layer is not currently used in any maps." %}</li>
           {% endfor %}
