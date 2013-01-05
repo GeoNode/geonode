@@ -36,6 +36,8 @@ assert sys.version_info >= (2, 6, 2), \
 def grab(src, dest):
     urllib.urlretrieve(str(src), str(dest))
 
+GEOSERVER_URL="http://downloads.sourceforge.net/geoserver/geoserver-2.2.3-bin.zip"
+GEONODE_GEOSERVER_EXT_URL="http://build.geonode.org/geoserver/latest/geonode-geoserver-ext-0.3-geoserver-plugin.zip"
 
 @task
 @cmdopts([
@@ -44,12 +46,42 @@ def grab(src, dest):
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     fast = options.get('fast', False)
+    download_dir = path('downloaded')
+    download_dir.makedirs()
 
-    with pushd('geoserver-geonode-ext'):
-        if fast:
-            sh('mvn install -DskipTests')
-        else:
-            sh("mvn clean install jetty:stop")
+    geoserver_dir = path('geoserver')
+
+    geoserver_bin = download_dir / os.path.basename(GEOSERVER_URL)
+    geoserver_ext = download_dir / os.path.basename(GEONODE_GEOSERVER_EXT_URL)
+
+    if not geoserver_bin.exists():
+        print "Downloading geoserver binary distribution"
+        grab(GEOSERVER_URL, geoserver_bin)
+    elif not zipfile.is_zipfile(geoserver_bin):
+        print "Downloading geoserver binary distribution (corrupt file)"
+        grab(GEOSERVER_URL, geoserver_bin)
+
+    if not geoserver_ext.exists():
+        print "Downloading geonode geoserver extensions"
+        grab(GEONODE_GEOSERVER_EXT_URL, geoserver_ext)
+    elif not zipfile.is_zipfile(geoserver_ext):
+        print "Re-downloading geonode geoserver extensions (corrupt file)"
+        grab(GEONODE_GEOSERVER_EXT_URL, geoserver_ext)
+
+    if not geoserver_dir.exists():
+        with zipfile.ZipFile(geoserver_bin, "r") as z:
+            z.extractall(download_dir)
+
+        #FIXME(Ariel): Avoid hardcoding.
+        g = download_dir / "geoserver-2.2.3"
+        libs_dir = g / "webapps/geoserver/WEB-INF/lib"
+
+        with zipfile.ZipFile(geoserver_ext, "r") as z:
+            z.extractall(libs_dir)
+
+        # Move geoserver out of downloaded
+        geoserver_dir.remove()
+        shutil.move(g, geoserver_dir)
 
 @task
 def setup_geoexplorer(options):
@@ -197,7 +229,7 @@ def stop_geoserver():
     """
     Stop GeoServer
     """
-    kill('jetty', 'java')
+    kill('java', 'geoserver')
 
 
 @task
@@ -230,9 +262,12 @@ def start_geoserver(options):
 
     from geonode.settings import GEOSERVER_BASE_URL
 
-    with pushd('geoserver-geonode-ext'):
-        sh(('MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=256m"'
-           ' mvn jetty:run > /dev/null &'))
+    with pushd('geoserver/bin/'):
+        sh(('JAVA_OPTS="-Xmx512m -XX:MaxPermSize=256m"'
+            ' JAVA_HOME="/usr"'
+            ' sh startup.sh'
+            ' > /dev/null &'
+            ))
 
     info('Starting GeoServer on %s' % GEOSERVER_BASE_URL)
     # wait for GeoServer to start
@@ -307,9 +342,7 @@ def reset():
 
 def _reset():
     sh("rm -rf geonode/development.db")
-    # Reset data dir
-    sh('git clean -xdfq geoserver-geonode-ext/src/main/webapp/data')
-    sh('git checkout -q geoserver-geonode-ext/src/main/webapp/data')
+    # Reset data dir (how do we do it?)
 
 
 @needs(['reset'])
