@@ -1,4 +1,5 @@
 {% extends "people/base.html" %}
+{% load static %}
 {% load friendly_loader %}
 {% friendly_load i18n avatar_tags relationship_tags activity_tags %}
 
@@ -100,10 +101,11 @@
 {% endblock %}
 
 {% block extra_script %}
+  <script src="{% static "geonode/js/utils.js" %}"></script>
   <script>
     $(function() {
-      $("#permission_form").submit(batch_perms_submit);
+      $("#permission_form").submit(pub.batch_perms_submit);
       $("#delete_form").submit(batch_delete);
     });
   </script>
-{% endblock %}
+{% endblock extra_script %}
