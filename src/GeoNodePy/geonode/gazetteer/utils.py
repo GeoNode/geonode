@@ -98,10 +98,9 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 ## Unfortunately, python datetime can't handle dates < 1 AD (WTF!?)so
 ## going back to using direct SQL queries for now
 
-    criteria = Q(place_name__istartswith=place_name)
-
+    criteria = Q() if settings.GAZETTEER_FULLTEXTSEARCH else Q(place_name__istartswith=place_name)
     if layers:
-        criteria = criteria & Q(layer_name__in=layers)
+        criteria =  criteria & Q(layer_name__in=layers)
 
     if start_date:
         start_date = parseDate(start_date)
@@ -137,7 +136,10 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
     if project:
         criteria = criteria & Q(project__exact=project)
 
-    matchingEntries=GazetteerEntry.objects.filter(criteria)
+    matchingEntries=GazetteerEntry.objects.extra(
+        where=['placename_tsv @@ to_tsquery(%s)'],
+        params=[place_name + ":*"]).filter(criteria) if settings.GAZETTEER_FULLTEXTSEARCH else GazetteerEntry.objects.filter(criteria)
+
 
     posts = []
 
@@ -149,7 +151,7 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
     return posts
 
 
-    return posts
+
 
 
 def delete_from_gazetteer(layer_name):

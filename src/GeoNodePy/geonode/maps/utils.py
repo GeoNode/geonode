@@ -510,7 +510,7 @@ def create_django_record(user, title, keywords, abstract, gs_resource, permissio
         Layer.objects.get(name=name)
     except Layer.DoesNotExist, e:
         msg = ('There was a problem saving the layer %s to GeoNetwork/Django. '
-               'Error is: %s' % (layer, str(e)))
+               'Error is: %s' % (name, str(e)))
         logger.exception(msg)
         logger.debug('Attempting to clean up after failed save for layer '
                      '[%s]', name)
