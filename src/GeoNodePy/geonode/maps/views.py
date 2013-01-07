@@ -1575,8 +1575,8 @@ def _split_query(query):
 
 
 
-DEFAULT_SEARCH_BATCH_SIZE = 100
-MAX_SEARCH_BATCH_SIZE = 250
+DEFAULT_SEARCH_BATCH_SIZE = 10
+MAX_SEARCH_BATCH_SIZE = 25
 def metadata_search(request):
     """
     handles a basic search for data using the

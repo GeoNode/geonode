@@ -66,10 +66,10 @@ class MapLayerAdmin(admin.ModelAdmin):
     search_fields = ['map__title', 'map__owner__username', 'name','layer_params','ows_url']
 
 class MapStatsAdmin(admin.ModelAdmin):
-    list_display = ('map', 'visits', 'uniques')
+    list_display = ('map', 'visits', 'uniques','last_modified')
 
 class LayerStatsAdmin(admin.ModelAdmin):
-    list_display = ('layer','visits', 'uniques','downloads')
+    list_display = ('layer','visits', 'uniques','downloads','last_modified')
 
 admin.site.register(Map, MapAdmin)
 admin.site.register(Contact, ContactAdmin)
