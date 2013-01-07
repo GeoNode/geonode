@@ -127,6 +127,11 @@ $.fn.serializeObject = function() {
     return o;
 };
 
+
+// what is going on here?, It looks like someone is trying to include
+// all of these global functions as static methods of the pub object.
+// This section could be update to use require.js
+
 var pub = {
     mapPermsSubmit: function() {
         var form = $(this);
