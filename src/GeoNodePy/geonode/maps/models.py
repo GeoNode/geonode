@@ -1271,8 +1271,12 @@ class Layer(models.Model, PermissionLevelMixin):
                 # Geoserver is not running
                 raise RuntimeError("Geoserver cannot be accessed, are you sure it is running in: %s" %
                                    (settings.GEOSERVER_BASE_URL))
-            store = cat.get_store(self.store, ws)
-            self._resource_cache = cat.get_resource(self.name, store)
+            try:
+                store = cat.get_store(self.store, ws)
+                self._resource_cache = cat.get_resource(self.name, store)
+            except:
+                logger.error("Store for %s does not exist", self.name)
+                return None
         return self._resource_cache
 
     def _get_metadata_links(self):

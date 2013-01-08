@@ -10,3 +10,7 @@ div.map-overlay {
     width: 100px;
     padding-bottom: 5px;
 }
+
+.gxp-layermanager-tree .legend {
+    padding-left: 48px;
+}
