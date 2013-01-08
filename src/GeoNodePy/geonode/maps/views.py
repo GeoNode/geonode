@@ -188,7 +188,7 @@ class MapForm(forms.ModelForm):
     keywords = taggit.forms.TagField(required=False)
     title = forms.CharField(300)
     abstract = forms.CharField(1000, widget=forms.Textarea(attrs={'cols': 40, 'rows': 10}), required=False)
-    content = forms.CharField(1000, widget=forms.Textarea(attrs={'cols': 40, 'rows': 10, 'id':'mapdescription'}), required=False)
+    content = forms.CharField(1000, widget=forms.Textarea(attrs={'cols': 60, 'rows': 10, 'id':'mapdescription'}), required=False)
 
     class Meta:
         model = Map
