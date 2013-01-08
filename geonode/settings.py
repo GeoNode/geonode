@@ -434,14 +434,14 @@ MAP_BASELAYERS = [{
         "restUrl": "/gs/rest"
      }
   },{
-    "source": {"ptype": "gx_olsource"},
+    "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
     "visibility": False,
     "fixed": True,
     "group":"background"
   }, {
-    "source": {"ptype": "gx_olsource"},
+    "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer.OSM",
     "args":["OpenStreetMap"],
     "visibility": False,
@@ -466,7 +466,7 @@ MAP_BASELAYERS = [{
   },{
     "source": {"ptype": "gxp_mapboxsource"},
   }, {
-    "source": {"ptype": "gx_olsource"},
+    "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer.WMS",
     "group":"background",
     "visibility": False,
