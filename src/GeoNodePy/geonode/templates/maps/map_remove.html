@@ -5,6 +5,7 @@
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {{ block.super }}
+
 <script type="text/javascript">
     var app;
     var mapurl = "{% url geonode.maps.views.view map.id %}";
@@ -26,12 +27,17 @@
 {% block main %}
 <h3>{% trans "Are you sure you want to delete"  %} <strong>{{ map.title }}</strong>?</h3>
 
-<form action="/maps/{{map.id}}/edit/?remove" method="POST">
+ <div style="float:left;">
+<form action="/maps/{{map.id}}/edit/?remove" method="POST" class="inline">
     {% csrf_token %}
     <input type="hidden" value="{{next}}" id="next" name="next">
-    <input type="submit" value="{% trans "Yes, I am sure"  %}" />
+    <input type="submit" class="submit_btn" value="{% trans "Yes, delete"  %}" />
 </form>
-<form action="/maps/{{map.id}}/edit/" method="GET">
-    <button type="submit" onclick="javascript: history.go(-1);return false;">{% trans "No, don't remove it" %}</button>
-</form>
+     <form action="/maps/{{map.id}}/edit/" method="GET" class="inline">
+         <button type="submit"  class="cancel_btn" onclick="javascript: history.go(-1);return false;">{% trans "No, cancel" %}</button>
+     </form>
+ </div>
+<div style="float:left;">
+
+</div>
 {% endblock %}
