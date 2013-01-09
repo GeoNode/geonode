@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-31 09:40-0600\n"
-"PO-Revision-Date: 2012-10-06 06:30+0000\n"
+"POT-Creation-Date: 2013-01-09 15:05-0600\n"
+"PO-Revision-Date: 2012-12-31 16:00+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/"
 "el/)\n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: el\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: utils.py:233 security/models.py:33
@@ -51,9 +51,8 @@ msgid "Administrative"
 msgstr "Διοικητικές"
 
 #: documents/views.py:82
-#, fuzzy
 msgid "You are not allowed to view this document."
-msgstr "Δεν σας επιτρέπεται να δείτε αυτό το χάρτη."
+msgstr ""
 
 #: documents/templates/documents/_document_filters.html:5
 #: layers/templates/layers/_layer_filters.html:5
@@ -87,7 +86,6 @@ msgstr ""
 #: layers/templates/layers/_layer_list_item.html:9
 #: layers/templates/layers/_layer_widget_item.html:5
 #: maps/templates/maps/_map_list_item.html:12
-#: people/templates/people/_profile_about_item.html:4
 msgid "No Image Available"
 msgstr ""
 
@@ -121,24 +119,20 @@ msgid "Average rating"
 msgstr ""
 
 #: documents/templates/documents/docinfo.html:51
-#, fuzzy
 msgid "Contact:"
-msgstr "Επικοινωνία"
+msgstr ""
 
 #: documents/templates/documents/docinfo.html:57
-#, fuzzy
 msgid "Link"
-msgstr "Σύνδεση"
+msgstr ""
 
 #: documents/templates/documents/docinfo.html:60
 msgid "This document is related to a "
 msgstr ""
 
 #: documents/templates/documents/docinfo.html:63
-#, fuzzy
 msgid "This document is not related to any maps or layers"
 msgstr ""
-"Αυτή η επιφάνεια δεν χρησιμοποιείται επί του παρόντος σε οποιονδήποτε χάρτη."
 
 #: documents/templates/documents/docinfo.html:68
 #: documents/templates/documents/document_upload.html:203
@@ -155,15 +149,13 @@ msgstr ""
 #: documents/templates/documents/document_base.html:12
 #: documents/templates/documents/document_list.html:9
 #: documents/templates/documents/document_list.html:15
-#, fuzzy
 msgid "Explore Documents"
-msgstr "Εξερευνήστε Χάρτες"
+msgstr ""
 
 #: documents/templates/documents/document_base.html:13
 #: documents/templates/documents/document_search.html:6
-#, fuzzy
 msgid "Search Documents"
-msgstr "Δεδομένα Αναζήτηση"
+msgstr ""
 
 #: documents/templates/documents/document_base.html:14
 msgid "Upload Documents"
@@ -230,7 +222,7 @@ msgid "Search"
 msgstr "Αναζήτηση"
 
 #: documents/templates/documents/document_search.html:26
-#: people/templates/people/profile_detail.html:10
+#: people/templates/people/profile_detail.html:11
 #: search/templates/search/search_base.html:11
 #: templates/geonode/resourcebase_info_panel.html:7
 msgid "Title"
@@ -275,7 +267,7 @@ msgstr ""
 "προσθέσετε δεδομένα στην επιλογή σας."
 
 #: documents/templates/documents/document_search.html:62
-#: people/templates/people/profile_detail.html:88
+#: people/templates/people/profile_detail.html:89
 msgid "Create a new map"
 msgstr "Δημιουργήστε ένα νέο χάρτη"
 
@@ -288,9 +280,8 @@ msgid "Your search did not match any items."
 msgstr "Η αναζήτησή σας δεν επέστρεψε κανένα αντικείμενο."
 
 #: documents/templates/documents/document_upload.html:4
-#, fuzzy
 msgid "Upload Document"
-msgstr "Ανέβασε νέα δεδομένα"
+msgstr ""
 
 #: documents/templates/documents/document_upload.html:16
 msgid "Add document"
@@ -1469,9 +1460,8 @@ msgid "A space or comma-separated list of keywords"
 msgstr ""
 
 #: layers/models.py:63
-#, fuzzy
 msgid "style name"
-msgstr "στυλ"
+msgstr ""
 
 #: layers/models.py:65
 msgid "sld text"
@@ -1688,72 +1678,71 @@ msgstr ""
 msgid "CSW WKT geometry"
 msgstr ""
 
-#: layers/models.py:412
+#: layers/models.py:417
 msgid "attribute name"
 msgstr ""
 
-#: layers/models.py:412
+#: layers/models.py:417
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr ""
 
-#: layers/models.py:413
+#: layers/models.py:418
 msgid "attribute label"
 msgstr ""
 
-#: layers/models.py:413
+#: layers/models.py:418
 msgid "title of attribute as displayed in GeoNode"
 msgstr ""
 
-#: layers/models.py:414
+#: layers/models.py:419
 msgid "attribute type"
 msgstr ""
 
-#: layers/models.py:414
+#: layers/models.py:419
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr ""
 
-#: layers/models.py:415
+#: layers/models.py:420
 msgid "visible?"
 msgstr ""
 
-#: layers/models.py:415
+#: layers/models.py:420
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr ""
 
-#: layers/models.py:416
+#: layers/models.py:421
 msgid "display order"
 msgstr ""
 
-#: layers/models.py:416
+#: layers/models.py:421
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr ""
 
-#: layers/models.py:487
+#: layers/models.py:492
 msgid "For example \"kml\""
 msgstr ""
 
-#: layers/models.py:489
+#: layers/models.py:494
 msgid "For example \"View in Google Earth\""
 msgstr ""
 
-#: layers/models.py:490
+#: layers/models.py:495
 msgid "For example \"text/xml\""
 msgstr ""
 
-#: layers/models.py:695
+#: layers/models.py:700
 msgid "KML"
 msgstr "KML"
 
-#: layers/models.py:709 layers/templates/layers/layer_detail.html:216
+#: layers/models.py:714 layers/templates/layers/layer_detail.html:216
 msgid "View in Google Earth"
 msgstr "Προβολή στο Google Earth"
 
-#: layers/models.py:724
-#, fuzzy
+#: layers/models.py:729
 msgid "Tiles"
-msgstr "Τίτλος"
+msgstr ""
 
 #: layers/ows.py:85
 msgid "Zipped Shapefile"
@@ -1825,9 +1814,8 @@ msgid "Bad HTTP Authorization Credentials."
 msgstr "Άκυρα Διαπιστευτήρια Εξουσιοδότησης HTTP."
 
 #: layers/management/__init__.py:30
-#, fuzzy
 msgid "Layer Uploaded"
-msgstr "Ανεβάστε"
+msgstr ""
 
 #: layers/management/__init__.py:30
 msgid "A layer was uploaded"
@@ -1872,9 +1860,8 @@ msgstr ""
 
 #: layers/templates/layers/_actions.html:7
 #: maps/templates/maps/map_detail.html:51
-#, fuzzy
 msgid "Ratings"
-msgstr "Ρυθμίσεις"
+msgstr ""
 
 #: layers/templates/layers/_actions.html:8
 #: maps/templates/maps/map_detail.html:50
@@ -1948,9 +1935,8 @@ msgid "Edit Permissions"
 msgstr ""
 
 #: layers/templates/layers/layer_detail.html:61
-#, fuzzy
 msgid "Replace this Layer"
-msgstr "Ενημέρωση Επιφάνειας"
+msgstr ""
 
 #: layers/templates/layers/layer_detail.html:62
 msgid "Remove this Layer"
@@ -1986,9 +1972,8 @@ msgstr ""
 
 #: layers/templates/layers/layer_detail.html:130
 #: maps/templates/maps/map_detail.html:73
-#, fuzzy
 msgid "Average Rating"
-msgstr "Αργεντινή"
+msgstr ""
 
 #: layers/templates/layers/layer_detail.html:139
 msgid "Maps using this layer"
@@ -2103,9 +2088,8 @@ msgid "Update Layer"
 msgstr "Ενημέρωση Επιφάνειας"
 
 #: layers/templates/layers/layer_replace.html:15
-#, fuzzy
 msgid "Replace Layer"
-msgstr "Ενημέρωση Επιφάνειας"
+msgstr ""
 
 #: layers/templates/layers/layer_replace.html:159
 msgid "This form allows you to update the data for this layer."
@@ -2275,14 +2259,12 @@ msgid "Search Maps"
 msgstr "Αναζήτηση Χάρτες"
 
 #: maps/templates/maps/map_detail.html:27
-#, fuzzy
 msgid "Download Map"
-msgstr "Λήψη"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:31
-#, fuzzy
 msgid "Download Data Layers"
-msgstr "Ανεβάστε Επιφάνεια"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:32
 msgid "Download Web Map Context"
@@ -2297,32 +2279,28 @@ msgid "Rate this Map"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:81
-#, fuzzy
 msgid "Share This Map"
-msgstr "Αναζήτηση Χάρτες"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:94
-#, fuzzy
 msgid "Map Layers"
-msgstr "Επιφάνειες"
+msgstr "Επιφάνειες Χάρτη"
 
 #: maps/templates/maps/map_detail.html:95
 msgid "This map uses the following layers:"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:109
-#, fuzzy
 msgid "View map"
-msgstr "Βιετνάμ"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:110
 msgid "View this map in the GeoExplorer GIS Client"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:111
-#, fuzzy
 msgid "View Map"
-msgstr "Βιετνάμ"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:117
 msgid "Specify which users can view or modify this map"
@@ -2400,9 +2378,8 @@ msgid ""
 msgstr ""
 
 #: maps/templates/maps/map_view.html:5
-#, fuzzy
 msgid "GeoExplorer"
-msgstr "Εξερευνήστε Χάρτες"
+msgstr ""
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
@@ -2580,11 +2557,11 @@ msgstr ""
 msgid "No user could be found with that email address."
 msgstr ""
 
-#: people/templates/people/_profile_about_item.html:3
+#: people/templates/people/_profile_about_item.html:6
 msgid "About the Layer Owner"
 msgstr ""
 
-#: people/templates/people/_profile_about_item.html:8
+#: people/templates/people/_profile_about_item.html:11
 msgid "Read more about the owner"
 msgstr ""
 
@@ -2603,69 +2580,67 @@ msgstr ""
 msgid "Create Profile"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:9
+#: people/templates/people/profile_detail.html:10
 #: templates/geonode/resourcebase_info_panel.html:28
 msgid "Type"
 msgstr "Τύπος"
 
-#: people/templates/people/profile_detail.html:11
+#: people/templates/people/profile_detail.html:12
 #: templates/geonode/resourcebase_info_panel.html:21
 msgid "Date"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:18
+#: people/templates/people/profile_detail.html:19
 msgid "Layer"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:27
+#: people/templates/people/profile_detail.html:28
 msgid "Map"
 msgstr "Χάρτης"
 
-#: people/templates/people/profile_detail.html:36
+#: people/templates/people/profile_detail.html:37
 msgid "Document"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:58
+#: people/templates/people/profile_detail.html:59
 msgid "Delete Layers"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:61
+#: people/templates/people/profile_detail.html:62
 msgid ""
 "You're about to delete multiple layers and maps.  Is that really what you "
 "want to do?"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:64
+#: people/templates/people/profile_detail.html:65
 #: templates/_permissions_form.html:51
 msgid "Cancel"
 msgstr "Ακύρωση"
 
-#: people/templates/people/profile_detail.html:65
+#: people/templates/people/profile_detail.html:66
 #: templates/user_messages/inbox.html:44
 msgid "Delete"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:82
+#: people/templates/people/profile_detail.html:83
 msgid "Actions"
 msgstr "Ενέργειες"
 
-#: people/templates/people/profile_detail.html:84
+#: people/templates/people/profile_detail.html:85
 msgid "Edit profile information"
 msgstr "Επεξεργασία πληροφοριών προφίλ"
 
-#: people/templates/people/profile_detail.html:85
-#, fuzzy
-msgid "Account Settings"
-msgstr "Ρυθμίσεις"
-
 #: people/templates/people/profile_detail.html:86
+msgid "Account Settings"
+msgstr ""
+
+#: people/templates/people/profile_detail.html:87
 msgid "Change password"
 msgstr "Αλλαγή κωδικού πρόσβασης"
 
-#: people/templates/people/profile_detail.html:87
-#, fuzzy
+#: people/templates/people/profile_detail.html:88
 msgid "Upload new layers"
-msgstr "Ανεβάστε Επιφάνεια"
+msgstr ""
 
 #: people/templates/people/profile_edit.html:8 templates/avatar/add.html:9
 msgid "You haven't uploaded an avatar yet. Please upload one now."
@@ -2983,9 +2958,8 @@ msgid "Register"
 msgstr "Εγγραφή"
 
 #: templates/base.html:100
-#, fuzzy
 msgid "Search ..."
-msgstr "Αναζήτηση"
+msgstr ""
 
 #: templates/base.html:113
 msgid "Layers"
@@ -3000,9 +2974,8 @@ msgid "Documents"
 msgstr ""
 
 #: templates/base.html:125
-#, fuzzy
 msgid "People"
-msgstr "Προφίλ"
+msgstr ""
 
 #: templates/base.html:177
 msgid "Powered by"
@@ -3013,9 +2986,8 @@ msgid "GeoNode"
 msgstr "GeoNode"
 
 #: templates/base.html:177
-#, fuzzy
 msgid "version"
-msgstr "Δικαιώματα"
+msgstr ""
 
 #: templates/base.html:184 templates/geonode/resourcebase_info_panel.html:96
 msgid "Language"
@@ -3070,7 +3042,6 @@ msgid ""
 msgstr ""
 
 #: templates/help.html:12
-#, fuzzy
 msgid ""
 "\n"
 "  <p>The GeoNode provides access to data sets and a map editing application "
@@ -3158,106 +3129,6 @@ msgid ""
 "href=\"maps\">Maps</a> tab.</p> \n"
 "  "
 msgstr ""
-"\n"
-"  <p>Το GeoNode παρέχει πρόσβαση σε σετ δεδομένων και σε εφαρμογή "
-"επεξεργασίας χάρτη επιτρέποντας στους χρήστες να εξερευνήσουν τους "
-"υπάρχοντες χάρτες και να συμβάλλουν δημιουργώντας δικούς τους.</p>\n"
-"\n"
-"  <h4 id=\"browsing-data\">Εξερευνήστε τα Δεδομένα</h4>\n"
-"  <p>Η ετικέτα <a href=\"data\">Δεδομένα</a> σας επιτρέπει να εξερευνήσετε "
-"δεδομένα που έχουν ανεβεί σε αυτό το GeoNode.</p>\n"
-"  <p>Όλα τα δεδομένα μπορούν να κατεβούν σε διάφορους τύπους αρχείων, για "
-"χρήση σε άλλες εφαρμογές.</p>\n"
-"\n"
-"  <h4 id=\"developer-access\">Σελίδα Προγραμματιστών</h4>\n"
-"  <p>Η σελίδα <a href=\"developer\"> Προγραμματιστών</a> είναι ένα μέρος "
-"όπου οι προγραμματιστές μπορούν να αρχίσουν να φτιάχνουν εφαρμογές "
-"χρησιμοποιώντας το GeoNode. Περιλαμβάνει οδηγίες για την χρήση των υπηρεσιών "
-"δικτύου, συνδέσμους για τον πηγαίο κώδικα του GeoNode και πληροφορίες για τα "
-"ομαδικά έργα(project) ανοιχτού κώδικα που χρησιμοποιήθηκαν για την "
-"δημιουργία του. </p>\n"
-"\n"
-"  <h4 id=\"browsing-maps\">Εξερευνόντας Χάρτες</h4>\n"
-"  <p>Το GeoNode επιτρέπει στους χρήστες να δημιουργήσουν και να μοιραστούν "
-"χάρτες μεταξύ τους.</p>\n"
-"  <p>Η ετικέτα <a href=\"maps\">Χάρτες</a> είναι μια πύλη για την εξερεύνηση "
-"χαρτών στο GeoNode.  Από εδώ μπορείτε να <strong>αναζητήσετε ένα χάρτη</"
-"strong> ή να <strong>δημιουργήσετε ένα χάρτη</strong>, το οποίο θα ανοίξει "
-"το <a href=\"maps/new\">Συνθέτη Χαρτών</a>.</p>\n"
-"  <h5>Προβολή Google Earth</h5>\n"
-"  <p>Ο κάθε χάρτης μπορεί να προβληθεί σε 3D απεικόνιση με την χρήση του "
-"Google Earth plugin. Για να μεταβείτε στην 3D προβολή επιλέγξτε το λογότυπο "
-"υδρόγειου σφαίρας του Google Earth, το τελείως αριστερά κουμπί της πάνω "
-"εργαλειοθήκης. Αν δεν έχετε το Google Earth plugin εγκατεστημένο θα "
-"ερωτηθείτε αν θέλετε να το εγκαταστήσετε.</p>\n"
-"\n"
-"  <h4 id=\"creating-a-map\">Δημιουργώντας ένα Χάρτη</h4>\n"
-"  <p>Για να δημιουργήσετε ένα νέο χάρτη πηγαίνετε στην ετικέτα <a href=\"maps"
-"\">Χάρτες</a> και κάντε κλικ στον σύνδεσμο <a href=\"maps/new\">Δημιουργήστε "
-"τον δικό σας χάρτη</a>.</p>\n"
-"  <p>Αυτό θα σας πάρει στο <a href=\"maps/new\">Συνθέτη Χαρτών</a> με ένα "
-"υπόβαθρο φορτωμένο.</p>\n"
-"  <p>Για να προσθέσετε επιφάνειες δεδομένων από το GeoNode κάντε κλικ στο "
-"πράσινο κουμπί με το συν (σύμβολο της πρόσθεσης) που βρίσκεται κάτω από την "
-"ετικέτα Δεδομένα στην αριστερή πλευρά της οθόνης. Αυτό θα ανοιξεί ένα "
-"πλαίσιο διαλόγου το οποίο θα περιέχει όλες τις επιφάνειες που είναι "
-"διαθέσιμες στο GeoNode.</p>\n"
-"  <p>Για να προσθέσετε επιφάνειες στον χάρτη σας επιλέγξτε τις και πατήστε "
-"το κουμπί <strong>Προσθήκη Επιφανειών</strong>. Όταν τελειώσετε μπορείτε να "
-"πατήσετε το <strong>Ολοκλήρωση</strong> για να κλείσετε το πλαίσιο διαλόγου "
-"και να επιστρέψετε στον χάρτη.</p>\n"
-"\n"
-"  <h5>Αναδιοργάνωση και Κατάργηση Επιφανειών</h5>\n"
-"  <p>Αλλάγξτε την σειρά προβολής των επιφανειών που υπάρχουν στο πλαίσιο "
-"δεδομένων κάνοντας drag and drop τα ονόματα τους. Η σειρά στον χάρτη θα "
-"ανανεωθεί για να αντιπροσωπεύσει την νέα σειρά επιφανειών. Για να κρύψετε "
-"μια επιφάνεια απλά αποεπιλέγξτε την, και για να την καταργήσετε εντελώς "
-"επιλέγξτε την και πατήστε το κόκκινο κουμπί με το πλην (σύμβολο της "
-"αφαίρεσης).</p>\n"
-"\n"
-"  <h5>Αποθηκεύοντας τον χάρτη σας</h5>\n"
-"  <p>Μόλις βρείτε το επιθυμητό σετ επιφανειών και επίπεδο ζουμ είναι ώρα για "
-"να αποθηκεύσετε τον χάρτη σας ώστε να τον δουν και οι υπόλοιποι.  Κάντε κλικ "
-"στο κουμπί Αποθήκευση--το εικονίδιο που βρίσκεται τελείως αριστερά στην πάνω "
-"εργαλειοθήκη, μια εικόνα ενός χάρτη με μια δισκέτα--στο πάνω μενού(menu) και "
-"συμπληρώστε τον τίτλο και την περίληψη του χάρτη.</p>\n"
-"\n"
-"  <h4 id=\"exporting-a-map\">Δημοσιεύοντας ένα Χάρτη</h4>\n"
-"  <p>Ο κάθε χάρτης από το GeoNode μπορεί να ενσωματωθεί για χρήση σε άλλο "
-"ιστότοπο(site) ή ιστολόγιο(blog). Για να δημοσιεύσετε ένα χάρτη:</p>\n"
-"  <ol>\n"
-"    <li>Επιλέγξτε τον από την λίστα χαρτών στην κοινότητα ή στην σελίδα "
-"χαρτών και μετά πατήστε το κουμπί 'Δημοσίευση Χάρτη'.</li> \n"
-"    <li>Επιλέγξτε το επιθυμητό ύψος και πλάτος για το πλαίσιο(widget) στον "
-"οδηγό(wizard).</li> \n"
-"    <li>Αντιγράψτε τον κώδικα HTML που υπάρχει στον οδηγό σε οποιαδήποτε "
-"HTML σελίδα ή καταχώρηση(post) ιστολογίου που υποστηρίζει iFrame.</li>\n"
-"  </ol>\n"
-"  <p>Αυτό θα βάλει ένα διαδραστικό πλαίσιο που θα δείχνει τον χάρτη σας στην "
-"ιστοσελίδα ή στην καταχώρηση ιστολογίου σας.</p>\n"
-"  <p>Σημειώστε οτι και ο <a href=\"maps/new\">Συνθέτης Χαρτών</a> διαθέτει "
-"κουμπί για εξαγωγή χάρτη --το δεύτερο κουμπί στην πάνω εργαλειοθήκη--. Απλά "
-"βεβαιωθείτε πριν κάνετε εξαγωγή χάρτη οτι έχετε αποθηκεύσει οποιεσδήποτε "
-"αλλαγές που θέλετε να δουν και οι υπόλοιποι. Εξάγει την τελευταία "
-"αποθηκευμένη έκδοση, όχι την τελευταία προβαλλόμενη έκδοση.</p>\n"
-"\n"
-"  <h4 id=\"remixing-a-map\">Μιξάροντας ένα Χάρτη</h4>\n"
-"  <p>Κάθε χάρτης μπορεί να χρησιμοποιηθεί σαν βάση για ένα νέο χάρτη.</p>\n"
-"  <ol>\n"
-"    <li>Ανοίξτε τον χάρτη που θέλετε να χρησιμοποιήσετε σαν βάση και πατήστε "
-"στο πλαίσιο 'Διαχείριση' στα δεξιά, την επιλογή 'Προβολή ή επεξεργασία αυτού "
-"του χάρτη'. Ανοίγει αυτόματα ο Συνθέτης Χαρτών.</li>\n"
-"    <li>Προσθέστε και αφαιρέστε επιφάνειες όπως επιθυμείτε.</li>\n"
-"    <li>Μετακινηθείτε και ζουμάρετε στον χάρτη για να επισημάνετε την "
-"περιοχή ενδιαφέροντος.</li>\n"
-"    <li><strong>ΣΗΜΑΝΤΙΚΌ:</strong> Ανανεώστε τον τίτλο, την περίληψη, της "
-"πληροφορίες επικοινωνίας και τις ετικέτες ώστε να αντιπροσωπεύουν τον νέο "
-"χάρτη.</li>\n"
-"    <li>Αποθηκεύστε τον χάρτη.</li>\n"
-"  </ol>\n"
-"  <p>Θα μπορείτε να δείτε τον νέο σας χάρτη όταν τον αναζητήσετε στην "
-"ετικέτα <a href=\"maps\">Χάρτες</a>.</p> \n"
-"  "
 
 #: templates/help.html:65
 msgid "Sections"
@@ -3388,28 +3259,24 @@ msgid "Owner"
 msgstr "Ιδιοκτήτης"
 
 #: templates/geonode/resourcebase_info_panel.html:68
-#, fuzzy
 msgid "Maintenance Frequency"
-msgstr "συχνότητα συντήρησης"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:75
 msgid "Citation"
 msgstr "Παραπομπή"
 
 #: templates/geonode/resourcebase_info_panel.html:82
-#, fuzzy
 msgid "Edition"
-msgstr "έκδοση"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:89
-#, fuzzy
 msgid "Purpose"
-msgstr "σκοπός"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:103
-#, fuzzy
 msgid "Temporal Extent"
-msgstr "χρονική διάρκεια τέλος"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:110
 msgid "Data Quality"
@@ -3420,20 +3287,17 @@ msgid "Supplemental Information"
 msgstr "Συμπληρωματικές πληροφορίες"
 
 #: templates/geonode/resourcebase_info_panel.html:124
-#, fuzzy
 msgid "Spatial Representation Type"
-msgstr "τύπος χωρικής αναπαράστασης"
+msgstr ""
 
 #: templates/notification/base.html:15 templates/notification/notices.html:7
 #: templates/notification/notices.html:11
-#, fuzzy
 msgid "Notices"
-msgstr "Φωνή"
+msgstr ""
 
 #: templates/notification/base.html:16
-#, fuzzy
 msgid "Notice settings"
-msgstr "Ρυθμίσεις"
+msgstr ""
 
 #: templates/notification/base.html:17
 msgid "Observed objects"
@@ -3469,9 +3333,8 @@ msgid "Notification Type"
 msgstr ""
 
 #: templates/notification/notice_settings.html:48
-#, fuzzy
 msgid "Change"
-msgstr "Ακύρωση"
+msgstr ""
 
 #: templates/notification/notices.html:16
 msgid "Mark all unseen notices seen"
@@ -3482,18 +3345,16 @@ msgid "MONTH_DAY_FORMAT"
 msgstr ""
 
 #: templates/notification/notices.html:33
-#, fuzzy
 msgid "View Notice"
-msgstr "Φωνή"
+msgstr ""
 
 #: templates/notification/notices.html:41
 msgid "No notices."
 msgstr ""
 
 #: templates/notification/single.html:6 templates/notification/single.html:9
-#, fuzzy
 msgid "Notice"
-msgstr "Φωνή"
+msgstr ""
 
 #: templates/pagination/pagination.html:8
 msgid "Previous"
@@ -3570,9 +3431,8 @@ msgid "With"
 msgstr ""
 
 #: templates/user_messages/inbox.html:13
-#, fuzzy
 msgid "Subject"
-msgstr "Υποβολή"
+msgstr ""
 
 #: templates/user_messages/inbox.html:14
 msgid "Last Sender"
@@ -3594,9 +3454,8 @@ msgstr ""
 #: templates/user_messages/inbox.html:55
 #: templates/user_messages/message_create.html:5
 #: templates/user_messages/message_create.html:8
-#, fuzzy
 msgid "Create Message"
-msgstr "Δημιουργήστε Χάρτη"
+msgstr ""
 
 #: templates/user_messages/message_create.html:14
 msgid "Send message"
@@ -3610,72 +3469,3 @@ msgstr ""
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr ""
-
-#~ msgid "Browse Data"
-#~ msgstr "Αναζήτηση Δεδομένων"
-
-#~ msgid "Bounding Box"
-#~ msgstr "Πλαίσιο οριοθέτησης"
-
-#~ msgid "Native SRS"
-#~ msgstr "Εγγενής SRS"
-
-#~ msgid "No SRS specified."
-#~ msgstr "Δεν καθορίζετε το SRS."
-
-#~ msgid "owner"
-#~ msgstr "ιδιοκτήτης"
-
-#~ msgid "All"
-#~ msgstr "Όλα"
-
-#~ msgid "Abstract:"
-#~ msgstr "Περίληψη:"
-
-#~ msgid "Map Viewer"
-#~ msgstr "Προβολέας Χάρτη"
-
-#~ msgid "View info"
-#~ msgstr "Δείτε πληροφορίες"
-
-#~ msgid "Advanced Search"
-#~ msgstr "Σύνθετη Αναζήτηση"
-
-#~ msgid "Need Help?"
-#~ msgstr "Χρειάζεστε βοήθεια;"
-
-#~ msgid "For Developers"
-#~ msgstr "Για προγραμματιστές"
-
-#~ msgid "Account successfully activated"
-#~ msgstr "Ο λογαριασμός ενεργοποιήθηκε με επιτυχία"
-
-#~ msgid "Account activation failed"
-#~ msgstr "Ενεργοποίηση λογαριασμού απέτυχε"
-
-#~ msgid "Thanks for spending some quality time with the GeoNode today."
-#~ msgstr "Ευχαριστούμε που περάσατε ποιοτικό χρόνο με τον GeoNode σήμερα."
-
-#~ msgid "Log in again"
-#~ msgstr "Σύνδεση και πάλι"
-
-#~ msgid "Logged out"
-#~ msgstr "Αποσυνδεθήκατε"
-
-#~ msgid "Password changed"
-#~ msgstr "Κωδικός πρόσβασης άλλαξε"
-
-#~ msgid "Password reset successfully"
-#~ msgstr "Επαναφοράς κωδικού πρόσβασης με επιτυχία"
-
-#~ msgid "Password reset failed"
-#~ msgstr "Επαναφορά του κωδικού πρόσβασης απέτυχε"
-
-#~ msgid "Email with password reset instructions has been sent."
-#~ msgstr "E-mail με τις οδηγίες επαναφοράς κωδικού πρόσβασης έχει σταλεί."
-
-#~ msgid "Reset password at %(site_name)s"
-#~ msgstr "Επαναφορά κωδικού πρόσβασης στο %(site_name)s"
-
-#~ msgid "You are now registered. Activation email sent."
-#~ msgstr "Τώρα είστε εγγεγραμμένος. Το e-mail ενεργοποίησης έχει αποσταλεί."
