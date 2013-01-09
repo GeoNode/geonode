@@ -124,6 +124,7 @@ var doSearch = function (options) {
             $.each(data.results, function (index, item) {
                 var context = {
                     "display_type": item._display_type,
+                    "storeType": item.storeType,
                     "date": item.date,
                     "url": item.detail,
                     "title": item.title,
