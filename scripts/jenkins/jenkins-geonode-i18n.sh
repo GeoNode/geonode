@@ -24,7 +24,7 @@ pip install Django
 msg="Daily Update GeoNode i18n "`eval date +%Y%m%d%H%M%S`
 
 # Pull all latest changes from Transifex
-tx pull --force
+tx pull --all
 
 git commit -am "$msg after tx pull"
 
