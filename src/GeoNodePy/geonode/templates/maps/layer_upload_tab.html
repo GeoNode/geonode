@@ -126,8 +126,7 @@
         mode: 'local',
         value: '',
         width:300,
-        triggerAction: 'all',
-        listeners: listeners
+        triggerAction: 'all'
     });
 
 
@@ -140,18 +139,18 @@
         listeners: listeners
     });
 
-    var abstractField = new Ext.form.TextArea({
-        id: 'abstract',
+    var layer_abstract = new Ext.form.TextArea({
+        id: 'layer_abstract',
         fieldLabel: gettext('Abstract'),
-        name: 'abstract',
+        name: 'layer_abstract',
         allowBlank: false
     });
 
 
-    var keywordsField = new Ext.form.TextField({
-      id: 'keywords',
+    var layer_keywords = new Ext.form.TextField({
+      id: 'layer_keywords',
       fieldLabel: gettext('Keywords'),
-      name: 'keywords',
+      name: 'layer_keywords',
       allowBlank: false
     });
 
@@ -188,7 +187,7 @@
             anchor: '95%',
             msgTarget: 'side'
         },
-        items: [layer_title, map_id, base_file, dbf_file, shx_file, prj_file, encoding, sld_file, abstractField, keywordsField, termsAgreeCheck, permissionsField, {
+        items: [layer_title, map_id, base_file, dbf_file, shx_file, prj_file, encoding, sld_file, layer_abstract, layer_keywords, termsAgreeCheck, permissionsField, {
             xtype: "hidden",
             name: "csrfmiddlewaretoken",
             value: "{{ csrf_token }}"

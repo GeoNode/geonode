@@ -1251,10 +1251,10 @@ def upload_layer(request):
 
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
-                        abstract = form.cleaned_data["abstract"],
+                        abstract = form.cleaned_data["layer_abstract"],
                         title = form.cleaned_data["layer_title"],
                         permissions = form.cleaned_data["permissions"],
-                        keywords = form.cleaned_data["keywords"].split(" "),
+                        keywords = form.cleaned_data["layer_keywords"].split(" "),
                         charset = request.POST.get('charset'),
                         sldfile = sld_file
                         )
