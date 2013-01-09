@@ -219,7 +219,7 @@
     <script src="{{ STATIC_URL }}geonode/js/global_search.js"></script>
     <script>        
         $(function() {
-           window.globalDoSearch("{{ request.POST.q }}");
+           window.globalDoSearch("{{ init_search.q }}");
         });
     </script>
 {% endblock %}

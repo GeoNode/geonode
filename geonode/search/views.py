@@ -59,12 +59,12 @@ _viewer_config = _create_viewer_config()
 
 
 def search_page(request, **kw):
-    params = {}
+    params = request.GET.dict()
     if kw:
         params.update(kw)
 
     context = _get_search_context()
-    context['init_search'] = json.dumps(params)
+    context['init_search'] = params
 
     return render_to_response('search/search.html', RequestContext(request, context))
 

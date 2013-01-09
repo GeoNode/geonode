@@ -150,7 +150,7 @@ var doSearch = function (options) {
 
             $("#id_data_begins").val(d1.split("T")[0]);
             $(".info-bar").show().find(".count").html($("#search-results article").size());
-            $("#filter-maps, #filter-data").attr("checked", "checked");
+            $("#filter-classes :checkbox").attr("checked", "checked");
 
             $("#filter-classes span.count").each(function () {
                 $(this).html(
