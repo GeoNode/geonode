@@ -685,7 +685,7 @@ def deletemap(request, mapid):
     if request.method == 'GET':
         return render_to_response("maps/map_remove.html", RequestContext(request, {
             "map": map_obj,
-            'urlsuffix': get_suffix_if_custom(map)
+            'urlsuffix': get_suffix_if_custom(map_obj)
         }))
     elif request.method == 'POST':
         layers = map_obj.layer_set.all()
