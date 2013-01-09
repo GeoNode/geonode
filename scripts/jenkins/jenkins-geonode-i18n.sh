@@ -24,7 +24,7 @@ pip install Django
 msg="Daily Update GeoNode i18n "`eval date +%Y%m%d%H%M%S`
 
 # Pull all latest changes from Transifex
-tx pull
+tx pull --force
 
 git commit -am "$msg after tx pull"
 
@@ -32,8 +32,8 @@ git commit -am "$msg after tx pull"
 cd geonode
 python ../manage.py makemessages --all
 git commit -am "$msg after makemessages"
-python ../manage.py compilemessages
-git commit -am "$msg after compilemessages"
+#python ../manage.py compilemessages
+#git commit -am "$msg after compilemessages"
 git add .
 git commit -am "$msg after adding new files"
 git push git@github.com:jj0hns0n/geonode.git i18n
