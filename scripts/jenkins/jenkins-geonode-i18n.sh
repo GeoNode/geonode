@@ -20,16 +20,21 @@ pip install transifex-client
 # Install Django Manually
 pip install Django
 
+msg="Daily Update GeoNode i18n "`eval date +%Y%m%d%H%M%S`
+
 # Pull all latest changes from Transifex
-tx pull --force --all
+tx pull
+
+git commit -am "$msg after tx pull"
 
 # Update the Django i18n files
 cd geonode
 python ../manage.py makemessages --all
+git commit -am "$msg after makemessages"
 python ../manage.py compilemessages
+git commit -am "$msg after compilemessages"
 git add .
-msg="Daily Update GeoNode i18n "`eval date +%Y%m%d%H%M%S`
-git commit -am "$msg"
+git commit -am "$msg after adding new files"
 git push git@github.com:jj0hns0n/geonode.git i18n
 
 # Send the PR against GeoNode dev (Need to export username and password as env vars)
