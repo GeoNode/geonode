@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-31 09:41-0600\n"
+"POT-Creation-Date: 2013-01-09 15:14-0600\n"
 "PO-Revision-Date: 2012-10-06 06:31+0000\n"
 "Last-Translator: nwang <nwang@opengeo.org>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/"
@@ -88,7 +88,6 @@ msgstr "从"
 #: layers/templates/layers/_layer_list_item.html:9
 #: layers/templates/layers/_layer_widget_item.html:5
 #: maps/templates/maps/_map_list_item.html:12
-#: people/templates/people/_profile_about_item.html:4
 msgid "No Image Available"
 msgstr "没有图片"
 
@@ -234,7 +233,7 @@ msgid "Search"
 msgstr "查询"
 
 #: documents/templates/documents/document_search.html:26
-#: people/templates/people/profile_detail.html:10
+#: people/templates/people/profile_detail.html:11
 #: search/templates/search/search_base.html:11
 #: templates/geonode/resourcebase_info_panel.html:7
 msgid "Title"
@@ -275,7 +274,7 @@ msgid "Use the checkboxes in the search results to add data to your selection."
 msgstr "使用在搜索结果中的复选框将数据添加到您的选择。"
 
 #: documents/templates/documents/document_search.html:62
-#: people/templates/people/profile_detail.html:88
+#: people/templates/people/profile_detail.html:89
 msgid "Create a new map"
 msgstr "创建一个新的地图"
 
@@ -1690,69 +1689,69 @@ msgstr "CSW文本"
 msgid "CSW WKT geometry"
 msgstr "CSW WKT图形"
 
-#: layers/models.py:412
+#: layers/models.py:417
 msgid "attribute name"
 msgstr "属性名称"
 
-#: layers/models.py:412
+#: layers/models.py:417
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "在shapefile和空间数据库中使用的属性名称"
 
-#: layers/models.py:413
+#: layers/models.py:418
 msgid "attribute label"
 msgstr "属性标签"
 
-#: layers/models.py:413
+#: layers/models.py:418
 msgid "title of attribute as displayed in GeoNode"
 msgstr "GeoNode中显示属性的标题"
 
-#: layers/models.py:414
+#: layers/models.py:419
 msgid "attribute type"
 msgstr "属性种类"
 
-#: layers/models.py:414
+#: layers/models.py:419
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "属性的数据种类(整数，字符串，几何图形等)"
 
-#: layers/models.py:415
+#: layers/models.py:420
 msgid "visible?"
 msgstr "可见？"
 
-#: layers/models.py:415
+#: layers/models.py:420
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "标明是否在identity中显示属性"
 
-#: layers/models.py:416
+#: layers/models.py:421
 msgid "display order"
 msgstr "显示顺序"
 
-#: layers/models.py:416
+#: layers/models.py:421
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "标明属性在identity中显示的顺序"
 
-#: layers/models.py:487
+#: layers/models.py:492
 msgid "For example \"kml\""
 msgstr "比如“kml”"
 
-#: layers/models.py:489
+#: layers/models.py:494
 msgid "For example \"View in Google Earth\""
 msgstr "比如“在谷歌地球中查看”"
 
-#: layers/models.py:490
+#: layers/models.py:495
 msgid "For example \"text/xml\""
 msgstr "比如“text/xml”"
 
-#: layers/models.py:695
+#: layers/models.py:700
 msgid "KML"
 msgstr "KML"
 
-#: layers/models.py:709 layers/templates/layers/layer_detail.html:216
+#: layers/models.py:714 layers/templates/layers/layer_detail.html:216
 msgid "View in Google Earth"
 msgstr "谷歌地球"
 
-#: layers/models.py:724
+#: layers/models.py:729
 #, fuzzy
 msgid "Tiles"
 msgstr "标题"
@@ -2602,11 +2601,11 @@ msgstr "您的用户名已经电邮给你。"
 msgid "No user could be found with that email address."
 msgstr "找不到使用此email的用户。"
 
-#: people/templates/people/_profile_about_item.html:3
+#: people/templates/people/_profile_about_item.html:6
 msgid "About the Layer Owner"
 msgstr "关于图层拥有者"
 
-#: people/templates/people/_profile_about_item.html:8
+#: people/templates/people/_profile_about_item.html:11
 #, fuzzy
 msgid "Read more about the owner"
 msgstr "更多关于图层拥有者"
@@ -2626,67 +2625,67 @@ msgstr "请填写您的email地址，然后点击提交按钮。您的用户名�
 msgid "Create Profile"
 msgstr "创建个人信息"
 
-#: people/templates/people/profile_detail.html:9
+#: people/templates/people/profile_detail.html:10
 #: templates/geonode/resourcebase_info_panel.html:28
 msgid "Type"
 msgstr "类型"
 
-#: people/templates/people/profile_detail.html:11
+#: people/templates/people/profile_detail.html:12
 #: templates/geonode/resourcebase_info_panel.html:21
 msgid "Date"
 msgstr "日期"
 
-#: people/templates/people/profile_detail.html:18
+#: people/templates/people/profile_detail.html:19
 msgid "Layer"
 msgstr "图层"
 
-#: people/templates/people/profile_detail.html:27
+#: people/templates/people/profile_detail.html:28
 msgid "Map"
 msgstr "地图"
 
-#: people/templates/people/profile_detail.html:36
+#: people/templates/people/profile_detail.html:37
 #, fuzzy
 msgid "Document"
 msgstr "评论"
 
-#: people/templates/people/profile_detail.html:58
+#: people/templates/people/profile_detail.html:59
 msgid "Delete Layers"
 msgstr "删除图层"
 
-#: people/templates/people/profile_detail.html:61
+#: people/templates/people/profile_detail.html:62
 msgid ""
 "You're about to delete multiple layers and maps.  Is that really what you "
 "want to do?"
 msgstr "你将删除多个图层和地图。你确定要进行此操作？"
 
-#: people/templates/people/profile_detail.html:64
+#: people/templates/people/profile_detail.html:65
 #: templates/_permissions_form.html:51
 msgid "Cancel"
 msgstr "取消"
 
-#: people/templates/people/profile_detail.html:65
+#: people/templates/people/profile_detail.html:66
 #: templates/user_messages/inbox.html:44
 msgid "Delete"
 msgstr "删除"
 
-#: people/templates/people/profile_detail.html:82
+#: people/templates/people/profile_detail.html:83
 msgid "Actions"
 msgstr "操作"
 
-#: people/templates/people/profile_detail.html:84
+#: people/templates/people/profile_detail.html:85
 msgid "Edit profile information"
 msgstr "编辑个人信息"
 
-#: people/templates/people/profile_detail.html:85
+#: people/templates/people/profile_detail.html:86
 #, fuzzy
 msgid "Account Settings"
 msgstr "设置"
 
-#: people/templates/people/profile_detail.html:86
+#: people/templates/people/profile_detail.html:87
 msgid "Change password"
 msgstr "更改密码"
 
-#: people/templates/people/profile_detail.html:87
+#: people/templates/people/profile_detail.html:88
 #, fuzzy
 msgid "Upload new layers"
 msgstr "上传图层"

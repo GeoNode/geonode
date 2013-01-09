@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-31 09:41-0600\n"
+"POT-Creation-Date: 2013-01-09 15:14-0600\n"
 "PO-Revision-Date: 2012-10-06 06:30+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/geonode/"
@@ -87,7 +87,6 @@ msgstr ""
 #: layers/templates/layers/_layer_list_item.html:9
 #: layers/templates/layers/_layer_widget_item.html:5
 #: maps/templates/maps/_map_list_item.html:12
-#: people/templates/people/_profile_about_item.html:4
 msgid "No Image Available"
 msgstr ""
 
@@ -224,7 +223,7 @@ msgid "Search"
 msgstr ""
 
 #: documents/templates/documents/document_search.html:26
-#: people/templates/people/profile_detail.html:10
+#: people/templates/people/profile_detail.html:11
 #: search/templates/search/search_base.html:11
 #: templates/geonode/resourcebase_info_panel.html:7
 msgid "Title"
@@ -265,7 +264,7 @@ msgid "Use the checkboxes in the search results to add data to your selection."
 msgstr ""
 
 #: documents/templates/documents/document_search.html:62
-#: people/templates/people/profile_detail.html:88
+#: people/templates/people/profile_detail.html:89
 msgid "Create a new map"
 msgstr ""
 
@@ -1676,69 +1675,69 @@ msgstr ""
 msgid "CSW WKT geometry"
 msgstr ""
 
-#: layers/models.py:412
+#: layers/models.py:417
 msgid "attribute name"
 msgstr ""
 
-#: layers/models.py:412
+#: layers/models.py:417
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr ""
 
-#: layers/models.py:413
+#: layers/models.py:418
 msgid "attribute label"
 msgstr ""
 
-#: layers/models.py:413
+#: layers/models.py:418
 msgid "title of attribute as displayed in GeoNode"
 msgstr ""
 
-#: layers/models.py:414
+#: layers/models.py:419
 msgid "attribute type"
 msgstr ""
 
-#: layers/models.py:414
+#: layers/models.py:419
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr ""
 
-#: layers/models.py:415
+#: layers/models.py:420
 msgid "visible?"
 msgstr ""
 
-#: layers/models.py:415
+#: layers/models.py:420
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr ""
 
-#: layers/models.py:416
+#: layers/models.py:421
 msgid "display order"
 msgstr ""
 
-#: layers/models.py:416
+#: layers/models.py:421
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr ""
 
-#: layers/models.py:487
+#: layers/models.py:492
 msgid "For example \"kml\""
 msgstr ""
 
-#: layers/models.py:489
+#: layers/models.py:494
 msgid "For example \"View in Google Earth\""
 msgstr ""
 
-#: layers/models.py:490
+#: layers/models.py:495
 msgid "For example \"text/xml\""
 msgstr ""
 
-#: layers/models.py:695
+#: layers/models.py:700
 msgid "KML"
 msgstr ""
 
-#: layers/models.py:709 layers/templates/layers/layer_detail.html:216
+#: layers/models.py:714 layers/templates/layers/layer_detail.html:216
 msgid "View in Google Earth"
 msgstr ""
 
-#: layers/models.py:724
+#: layers/models.py:729
 msgid "Tiles"
 msgstr ""
 
@@ -2539,11 +2538,11 @@ msgstr ""
 msgid "No user could be found with that email address."
 msgstr ""
 
-#: people/templates/people/_profile_about_item.html:3
+#: people/templates/people/_profile_about_item.html:6
 msgid "About the Layer Owner"
 msgstr ""
 
-#: people/templates/people/_profile_about_item.html:8
+#: people/templates/people/_profile_about_item.html:11
 msgid "Read more about the owner"
 msgstr ""
 
@@ -2562,65 +2561,65 @@ msgstr ""
 msgid "Create Profile"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:9
+#: people/templates/people/profile_detail.html:10
 #: templates/geonode/resourcebase_info_panel.html:28
 msgid "Type"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:11
+#: people/templates/people/profile_detail.html:12
 #: templates/geonode/resourcebase_info_panel.html:21
 msgid "Date"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:18
+#: people/templates/people/profile_detail.html:19
 msgid "Layer"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:27
+#: people/templates/people/profile_detail.html:28
 msgid "Map"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:36
+#: people/templates/people/profile_detail.html:37
 msgid "Document"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:58
+#: people/templates/people/profile_detail.html:59
 msgid "Delete Layers"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:61
+#: people/templates/people/profile_detail.html:62
 msgid ""
 "You're about to delete multiple layers and maps.  Is that really what you "
 "want to do?"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:64
+#: people/templates/people/profile_detail.html:65
 #: templates/_permissions_form.html:51
 msgid "Cancel"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:65
+#: people/templates/people/profile_detail.html:66
 #: templates/user_messages/inbox.html:44
 msgid "Delete"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:82
+#: people/templates/people/profile_detail.html:83
 msgid "Actions"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:84
+#: people/templates/people/profile_detail.html:85
 msgid "Edit profile information"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:85
+#: people/templates/people/profile_detail.html:86
 msgid "Account Settings"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:86
+#: people/templates/people/profile_detail.html:87
 msgid "Change password"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:87
+#: people/templates/people/profile_detail.html:88
 msgid "Upload new layers"
 msgstr ""
 
