@@ -82,6 +82,7 @@ def default_map_config():
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
+
 class ContactForm(forms.ModelForm):
     keywords = taggit.forms.TagField(required=False)
     class Meta:
@@ -185,12 +186,13 @@ class PocForm(forms.Form):
 
 class MapForm(forms.ModelForm):
     keywords = taggit.forms.TagField(required=False)
+    title = forms.CharField(300)
+    abstract = forms.CharField(1000, widget=forms.Textarea(attrs={'cols': 40, 'rows': 10}), required=False)
+    content = forms.CharField(1000, widget=forms.Textarea(attrs={'cols': 60, 'rows': 10, 'id':'mapdescription'}), required=False)
+
     class Meta:
         model = Map
-        exclude = ('contact', 'zoom', 'projection', 'center_x', 'center_y', 'owner', 'officialurl', 'urlsuffix', 'keywords', 'content', 'use_custom_template', 'group_params')
-        widgets = {
-            'abstract': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
-        }
+        exclude = ('contact', 'zoom', 'projection', 'center_x', 'center_y', 'owner', 'officialurl', 'urlsuffix', 'keywords', 'use_custom_template', 'group_params')
 
 
 
@@ -683,7 +685,7 @@ def deletemap(request, mapid):
     if request.method == 'GET':
         return render_to_response("maps/map_remove.html", RequestContext(request, {
             "map": map_obj,
-            'urlsuffix': get_suffix_if_custom(map)
+            'urlsuffix': get_suffix_if_custom(map_obj)
         }))
     elif request.method == 'POST':
         layers = map_obj.layer_set.all()
@@ -1249,10 +1251,10 @@ def upload_layer(request):
 
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
-                        abstract = form.cleaned_data["abstract"],
+                        abstract = form.cleaned_data["layer_abstract"],
                         title = form.cleaned_data["layer_title"],
                         permissions = form.cleaned_data["permissions"],
-                        keywords = form.cleaned_data["keywords"].split(" "),
+                        keywords = form.cleaned_data["layer_keywords"].split(" "),
                         charset = request.POST.get('charset'),
                         sldfile = sld_file
                         )

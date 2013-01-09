@@ -5,7 +5,7 @@
 
 {% block head %}
 {% include "geonode/ext_header.html" %}
-
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nicEdit.js"></script>
 {{ block.super }}
 <script type="text/javascript">
     var app;
@@ -35,4 +35,8 @@
         </ul>
     </form>
 </div>
+ <script type="text/javascript">
+     var nicEditIconsPath = "{{ GEONODE_CLIENT_LOCATION }}externals/misc/images/nicEditorIcons.gif"
+     var myNicEditor = new nicEditor({fullPanel : true,  maxHeight: 190, iconsPath: nicEditIconsPath}).panelInstance("mapdescription");
+ </script>
 {% endblock %}
