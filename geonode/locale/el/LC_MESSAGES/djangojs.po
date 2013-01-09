@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-15 12:41-0500\n"
-"PO-Revision-Date: 2013-01-09 19:07+0000\n"
+"PO-Revision-Date: 2013-01-09 21:33+0000\n"
 "Last-Translator: kalxas <gcpp.kalxas@gmail.com>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/el/)\n"
 "MIME-Version: 1.0\n"
@@ -281,7 +281,7 @@ msgstr "Σμίκρυνση"
 
 #: templates/lang.js:69
 msgid "Zoom level"
-msgstr "Επίπεδο ζουμ"
+msgstr "Επίπεδο μεγέθυνσης"
 
 #: templates/lang.js:70
 msgid "Zoom Level"
