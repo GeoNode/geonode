@@ -5,7 +5,7 @@
     display: none;
 }
 #paneltbar {
-    margin-top: 81px;
+    margin-top: 90px;
 }
 button.logout {
     display: none;
