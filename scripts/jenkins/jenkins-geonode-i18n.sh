@@ -1,5 +1,6 @@
 #!/bin/bash
 
+git branch -D i18n
 git checkout -b i18n
 
 # Setup environment variables.
