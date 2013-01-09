@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git checkout i18n
+git checkout -b i18n
 
 # Setup environment variables.
 PYENV_HOME=$HOME/.pyenv/
