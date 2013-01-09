@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-09 16:12-0600\n"
-"PO-Revision-Date: 2012-10-06 06:30+0000\n"
+"POT-Creation-Date: 2013-01-09 16:50-0600\n"
+"PO-Revision-Date: 2012-12-31 16:00+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
@@ -50,9 +50,8 @@ msgid "Administrative"
 msgstr "Administrativo"
 
 #: documents/views.py:82
-#, fuzzy
 msgid "You are not allowed to view this document."
-msgstr "No tienes permiso para ver este mapa"
+msgstr ""
 
 #: documents/templates/documents/_document_filters.html:5
 #: layers/templates/layers/_layer_filters.html:5
@@ -119,23 +118,20 @@ msgid "Average rating"
 msgstr ""
 
 #: documents/templates/documents/docinfo.html:51
-#, fuzzy
 msgid "Contact:"
-msgstr "Contacto"
+msgstr ""
 
 #: documents/templates/documents/docinfo.html:57
-#, fuzzy
 msgid "Link"
-msgstr "Iniciar Sesión"
+msgstr ""
 
 #: documents/templates/documents/docinfo.html:60
 msgid "This document is related to a "
 msgstr ""
 
 #: documents/templates/documents/docinfo.html:63
-#, fuzzy
 msgid "This document is not related to any maps or layers"
-msgstr "Esta capa no esta siendo usada en ningún mapa."
+msgstr ""
 
 #: documents/templates/documents/docinfo.html:68
 #: documents/templates/documents/document_upload.html:203
@@ -152,15 +148,13 @@ msgstr ""
 #: documents/templates/documents/document_base.html:12
 #: documents/templates/documents/document_list.html:9
 #: documents/templates/documents/document_list.html:15
-#, fuzzy
 msgid "Explore Documents"
-msgstr "Explora Mapas"
+msgstr ""
 
 #: documents/templates/documents/document_base.html:13
 #: documents/templates/documents/document_search.html:6
-#, fuzzy
 msgid "Search Documents"
-msgstr "Buscar Datos"
+msgstr ""
 
 #: documents/templates/documents/document_base.html:14
 msgid "Upload Documents"
@@ -283,9 +277,8 @@ msgid "Your search did not match any items."
 msgstr "Tu búsqueda no produjo ningún resultado."
 
 #: documents/templates/documents/document_upload.html:4
-#, fuzzy
 msgid "Upload Document"
-msgstr "Subir nuevos datos"
+msgstr ""
 
 #: documents/templates/documents/document_upload.html:16
 msgid "Add document"
@@ -1464,9 +1457,8 @@ msgid "A space or comma-separated list of keywords"
 msgstr ""
 
 #: layers/models.py:63
-#, fuzzy
 msgid "style name"
-msgstr "estilos"
+msgstr ""
 
 #: layers/models.py:65
 msgid "sld text"
@@ -1746,9 +1738,8 @@ msgid "View in Google Earth"
 msgstr "Vista en Google Earth"
 
 #: layers/models.py:729
-#, fuzzy
 msgid "Tiles"
-msgstr "Título"
+msgstr ""
 
 #: layers/ows.py:85
 msgid "Zipped Shapefile"
@@ -1819,9 +1810,8 @@ msgid "Bad HTTP Authorization Credentials."
 msgstr "Credenciales de Autorización de HTTP inválidas."
 
 #: layers/management/__init__.py:30
-#, fuzzy
 msgid "Layer Uploaded"
-msgstr "Subir"
+msgstr ""
 
 #: layers/management/__init__.py:30
 msgid "A layer was uploaded"
@@ -1866,9 +1856,8 @@ msgstr ""
 
 #: layers/templates/layers/_actions.html:7
 #: maps/templates/maps/map_detail.html:51
-#, fuzzy
 msgid "Ratings"
-msgstr "Configuración"
+msgstr ""
 
 #: layers/templates/layers/_actions.html:8
 #: maps/templates/maps/map_detail.html:50
@@ -1942,9 +1931,8 @@ msgid "Edit Permissions"
 msgstr ""
 
 #: layers/templates/layers/layer_detail.html:61
-#, fuzzy
 msgid "Replace this Layer"
-msgstr "Actualizar capa"
+msgstr ""
 
 #: layers/templates/layers/layer_detail.html:62
 msgid "Remove this Layer"
@@ -1980,9 +1968,8 @@ msgstr ""
 
 #: layers/templates/layers/layer_detail.html:130
 #: maps/templates/maps/map_detail.html:73
-#, fuzzy
 msgid "Average Rating"
-msgstr "Argentina"
+msgstr ""
 
 #: layers/templates/layers/layer_detail.html:139
 msgid "Maps using this layer"
@@ -2096,9 +2083,8 @@ msgid "Update Layer"
 msgstr "Actualizar capa"
 
 #: layers/templates/layers/layer_replace.html:15
-#, fuzzy
 msgid "Replace Layer"
-msgstr "Actualizar capa"
+msgstr ""
 
 #: layers/templates/layers/layer_replace.html:159
 msgid "This form allows you to update the data for this layer."
@@ -2239,9 +2225,8 @@ msgid "A Map was created"
 msgstr ""
 
 #: maps/management/__init__.py:31
-#, fuzzy
 msgid "Comment on Map"
-msgstr "Comentarios"
+msgstr ""
 
 #: maps/management/__init__.py:31
 msgid "A map was commented on"
@@ -2265,14 +2250,12 @@ msgid "Search Maps"
 msgstr "Buscar Mapas"
 
 #: maps/templates/maps/map_detail.html:27
-#, fuzzy
 msgid "Download Map"
-msgstr "Descargar"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:31
-#, fuzzy
 msgid "Download Data Layers"
-msgstr "Subir capa"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:32
 msgid "Download Web Map Context"
@@ -2287,32 +2270,28 @@ msgid "Rate this Map"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:81
-#, fuzzy
 msgid "Share This Map"
-msgstr "Buscar Mapas"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:94
-#, fuzzy
 msgid "Map Layers"
-msgstr "Capas"
+msgstr "Capas del mapa"
 
 #: maps/templates/maps/map_detail.html:95
 msgid "This map uses the following layers:"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:109
-#, fuzzy
 msgid "View map"
-msgstr "Vietnam (República Socialista de)"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:110
 msgid "View this map in the GeoExplorer GIS Client"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:111
-#, fuzzy
 msgid "View Map"
-msgstr "Vietnam (República Socialista de)"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:117
 msgid "Specify which users can view or modify this map"
@@ -2390,9 +2369,8 @@ msgid ""
 msgstr ""
 
 #: maps/templates/maps/map_view.html:5
-#, fuzzy
 msgid "GeoExplorer"
-msgstr "Explora Mapas"
+msgstr ""
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
@@ -2612,9 +2590,8 @@ msgid "Map"
 msgstr "Mapa"
 
 #: people/templates/people/profile_detail.html:37
-#, fuzzy
 msgid "Document"
-msgstr "Comentarios"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:59
 msgid "Delete Layers"
@@ -2645,18 +2622,16 @@ msgid "Edit profile information"
 msgstr "Editar información de perfil"
 
 #: people/templates/people/profile_detail.html:86
-#, fuzzy
 msgid "Account Settings"
-msgstr "Configuración"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:87
 msgid "Change password"
 msgstr "Cambiar contraseña"
 
 #: people/templates/people/profile_detail.html:88
-#, fuzzy
 msgid "Upload new layers"
-msgstr "Subir capa"
+msgstr ""
 
 #: people/templates/people/profile_edit.html:8 templates/avatar/add.html:9
 msgid "You haven't uploaded an avatar yet. Please upload one now."
@@ -2848,19 +2823,16 @@ msgid "Add to Favorites"
 msgstr ""
 
 #: templates/_comments.html:10
-#, fuzzy
 msgid "Add Comment"
-msgstr "Comentarios"
+msgstr ""
 
 #: templates/_comments.html:31
-#, fuzzy
 msgid "Add a Comment"
-msgstr "Comentarios"
+msgstr ""
 
 #: templates/_comments.html:41
-#, fuzzy
 msgid "Submit Comments"
-msgstr "Comentarios"
+msgstr ""
 
 #: templates/_permissions_form.html:11
 msgid "Who can view and download this data?"
@@ -2975,9 +2947,8 @@ msgid "Register"
 msgstr "Registrarse"
 
 #: templates/base.html:100
-#, fuzzy
 msgid "Search ..."
-msgstr "Buscar"
+msgstr ""
 
 #: templates/base.html:113
 msgid "Layers"
@@ -2988,14 +2959,12 @@ msgid "Maps"
 msgstr "Mapas"
 
 #: templates/base.html:121
-#, fuzzy
 msgid "Documents"
-msgstr "Comentarios"
+msgstr ""
 
 #: templates/base.html:125
-#, fuzzy
 msgid "People"
-msgstr "Perfil"
+msgstr ""
 
 #: templates/base.html:177
 msgid "Powered by"
@@ -3006,9 +2975,8 @@ msgid "GeoNode"
 msgstr "GeoNode"
 
 #: templates/base.html:177
-#, fuzzy
 msgid "version"
-msgstr "Permisos"
+msgstr ""
 
 #: templates/base.html:184 templates/geonode/resourcebase_info_panel.html:96
 msgid "Language"
@@ -3061,7 +3029,6 @@ msgid ""
 msgstr ""
 
 #: templates/help.html:12
-#, fuzzy
 msgid ""
 "\n"
 "  <p>The GeoNode provides access to data sets and a map editing application "
@@ -3149,94 +3116,6 @@ msgid ""
 "href=\"maps\">Maps</a> tab.</p> \n"
 "  "
 msgstr ""
-"\n"
-"<p>GeoNode provee acceso a un conjunto de datos y una aplicación para la "
-"edición de mapas que permite a los usuarios navegar por mapas existentes y "
-"contribuir sus propios mapas.</p>\n"
-"\n"
-"<h4 id=\"browsing-data\">Búsqueda de Datos</h4>\n"
-"<p>El tab de <a href=\"data\">Datos</a> le permite ver los datos cargados en "
-"este GeoNode.</p>\n"
-"<p>Todos lo datos pueden ser descargados en varios formatos para usarlos en "
-"otras aplicaciones.</p>\n"
-"\n"
-"<h4 id=\"developer-access\">Acceso a Desarrolladores</h4>\n"
-"<p>La página <a href=\"developer\">Desarrollador</a> es un lugar para que "
-"los desarrolladores comiencen a crear aplicaciones con GeoNode. Incluye "
-"instrucciones sobre cómo utilizar los servicios web, enlaces al código "
-"fuente de GeoNode e información sobre los proyectos de código abierto "
-"utilizados.</p>\n"
-"\n"
-"<h4 id=\"browsing-maps\">Exploracion de mapas</h4>\n"
-"<p>El GeoNode permite a los usuarios crear y compartir mapas con otros.</p>\n"
-"<p> El tab de <a href=\"maps\">Mapas</a> es un puente de enlace a la "
-"exploración de mapas en GeoNode. Desde aquí puedes <strong>buscar un mapa</"
-"strong> o <strong>crear un mapa</strong>, el cual abrirá el <a href=\"maps/"
-"new\">Editor de Mapas</a>.</p>\n"
-"<h5>Modo Google Earth</h5>\n"
-"<p> Cualquier mapa en el editor de mapas interactivo, puede ser visto en "
-"modo 3D con el plugin de Google Earth. Para cambiar a modo 3D, selecciona el "
-"logo del globo de Google Earth, el botón que está a la derecha en la barra "
-"de herramientas. Si no tienes el plugin de Google Earth instalado, te pedirá "
-"que lo instales. </p>\n"
-"\n"
-"<h4 id=\"creating-a-map\">Creando un Mapa</h4>\n"
-"<p> Para crear un mapa ve al tab de <a href=\"map\">Mapas</a> Contribuidos y "
-"dale click al link <a href=\"maps/new\">Crea tu propio mapa</a>. Esto te "
-"llevará al  <a href=\"maps/new\">Editor de Mapas</a> con una capa base "
-"cargada.</p>\n"
-"<p>Para agregar capas de datos desde GeoNode, has click en el botón verde "
-"con el signo más, localizado debajo del tab de Datos del lado izquierdo de "
-"la pantalla. Esto abrirá un cuadro de diálogo con todas las capas "
-"disponibles en GeoNode.</p>\n"
-"<p>Para agregar capas a tu mapa, selecciónalas y  dale click al botón de "
-"<strong>Agregar Capas</strong>. Cuando finalices dale click a <strong>Hecho</"
-"strong> para cerrar el dialogo y volver a el mapa.</p>\n"
-"\n"
-"<h5>Reorganizando y Removiendo capas</h5>\n"
-"<p>Cambia el orden de visualización de las capas listadas en el tab de "
-"datos, simplemente arrastrando sus nombres. El orden en el mapa será "
-"actualizado para reflejar el cambio. Para apagar la visibilidad de una capa, "
-"simplemente deselecionala, y para removerla completamente, seleccionala y "
-"dale click al signo rojo de sustracción. </p>\n"
-"\n"
-"<h5>Guardando tu mapa</h5>\n"
-"<p>Una vez que se ha definido un conjunto adecuado de capas y niveles de "
-"zoom, es hora de guardar el mapa para que otros puedan verlo. Haz click en "
-"el botón Guardar (el ícono que se encuentra a la izquierda en la barra de "
-"herramientas, una imagen de un mapa con un disco) y llena el título y un "
-"resumen del mapa </p>\n"
-"\n"
-"<h4 id=\"exporting-a-map\">Exportando un Mapa</h4>\n"
-"<p>Cualquier mapa de GeoNode puede ser embebido para su uso en otro sitio o "
-"blog. Para exportar un mapa: <p>\n"
-"<ol>\n"
-"<li>Seleccionalo en la lista de mapas y haz click en el botón 'Exportar "
-"mapa'</li>\n"
-"<li>Escoge la altura y ancho deseados del widget en el asistente.</li>\n"
-"<li>Copia el código HTML proporcionado por el asistente a cualquier página "
-"HTML o entrada de un blog </li>\n"
-"</ol>\n"
-"<p> Esto pondrá un widget interactivo mostrándote el mapa en la página web o "
-"blog.</p>\n"
-"<p>Nota que el <a href=\"maps/new\">Editor de Mapas</a> tiene un botón para "
-"exportar el mapa. Sólo asegúrate de guardar el mapa antes de exportarlo si "
-"hay cambios que quieres que otros vean. Se exporta la última versión "
-"guardada, no la última versión vista. </p>\n"
-"\n"
-"<h4 id=\"remixing-a-map\">Reutilizar un Mapa</h4>\n"
-"<p>Cualquier mapa disponible puede servir como punto de partida para un "
-"nuevo mapa</p>\n"
-"<ol>\n"
-"<li>Abrir el mapa en el Editor de Mapas. </li>\n"
-"<li>Agregar y remover capas. </li>\n"
-"<li>Pan y zoom para resaltar el área de interés </li>\n"
-"<li><strong>IMPORTANTE:</strong> Actualiza el título, resumen, contacto y "
-"tags para el nuevo mapa. </li>\n"
-"<li>Guardar el mapa</li>\n"
-"</ol>\n"
-"<p>Podrás ver tu nuevo mapa, cuando lo busques desde el tab de <a href=\"maps"
-"\">Mapas</a>. </p>"
 
 #: templates/help.html:65
 msgid "Sections"
@@ -3367,28 +3246,24 @@ msgid "Owner"
 msgstr "Dueño"
 
 #: templates/geonode/resourcebase_info_panel.html:68
-#, fuzzy
 msgid "Maintenance Frequency"
-msgstr "Frecuencia de mantenimiento"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:75
 msgid "Citation"
 msgstr "Citación"
 
 #: templates/geonode/resourcebase_info_panel.html:82
-#, fuzzy
 msgid "Edition"
-msgstr "Edición"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:89
-#, fuzzy
 msgid "Purpose"
-msgstr "Propósito"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:103
-#, fuzzy
 msgid "Temporal Extent"
-msgstr "Fin de extensión temporal (extent)"
+msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:110
 msgid "Data Quality"
@@ -3399,20 +3274,17 @@ msgid "Supplemental Information"
 msgstr "Información Adicional"
 
 #: templates/geonode/resourcebase_info_panel.html:124
-#, fuzzy
 msgid "Spatial Representation Type"
-msgstr "Tipo de representación espacial"
+msgstr ""
 
 #: templates/notification/base.html:15 templates/notification/notices.html:7
 #: templates/notification/notices.html:11
-#, fuzzy
 msgid "Notices"
-msgstr "Voz"
+msgstr ""
 
 #: templates/notification/base.html:16
-#, fuzzy
 msgid "Notice settings"
-msgstr "Configuración"
+msgstr ""
 
 #: templates/notification/base.html:17
 msgid "Observed objects"
@@ -3448,9 +3320,8 @@ msgid "Notification Type"
 msgstr ""
 
 #: templates/notification/notice_settings.html:48
-#, fuzzy
 msgid "Change"
-msgstr "Cancelar"
+msgstr ""
 
 #: templates/notification/notices.html:16
 msgid "Mark all unseen notices seen"
@@ -3461,18 +3332,16 @@ msgid "MONTH_DAY_FORMAT"
 msgstr ""
 
 #: templates/notification/notices.html:33
-#, fuzzy
 msgid "View Notice"
-msgstr "Voz"
+msgstr ""
 
 #: templates/notification/notices.html:41
 msgid "No notices."
 msgstr ""
 
 #: templates/notification/single.html:6 templates/notification/single.html:9
-#, fuzzy
 msgid "Notice"
-msgstr "Voz"
+msgstr ""
 
 #: templates/pagination/pagination.html:8
 msgid "Previous"
@@ -3549,9 +3418,8 @@ msgid "With"
 msgstr ""
 
 #: templates/user_messages/inbox.html:13
-#, fuzzy
 msgid "Subject"
-msgstr "Enviar"
+msgstr ""
 
 #: templates/user_messages/inbox.html:14
 msgid "Last Sender"
@@ -3573,9 +3441,8 @@ msgstr ""
 #: templates/user_messages/inbox.html:55
 #: templates/user_messages/message_create.html:5
 #: templates/user_messages/message_create.html:8
-#, fuzzy
 msgid "Create Message"
-msgstr "Crea Mapas"
+msgstr ""
 
 #: templates/user_messages/message_create.html:14
 msgid "Send message"
@@ -3589,84 +3456,3 @@ msgstr ""
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
 msgstr ""
-
-#~ msgid "Browse Data"
-#~ msgstr "Explorar Datos"
-
-#~ msgid "Bounding Box"
-#~ msgstr "Cuadro Delimitador"
-
-#~ msgid "Native SRS"
-#~ msgstr "SRS Nativo"
-
-#~ msgid "No SRS specified."
-#~ msgstr "SRS no especificado"
-
-#~ msgid "owner"
-#~ msgstr "dueño"
-
-#~ msgid "All"
-#~ msgstr "Todos los"
-
-#~ msgid "Abstract:"
-#~ msgstr "Resumen:"
-
-#~ msgid "Map Viewer"
-#~ msgstr "Visor de mapa"
-
-#~ msgid "View info"
-#~ msgstr "Ver info"
-
-#~ msgid "Advanced Search"
-#~ msgstr "Búsqueda Avanzada"
-
-#~ msgid "Need Help?"
-#~ msgstr "Necesitas Ayuda?"
-
-#~ msgid "For Developers"
-#~ msgstr "Para Desarrolladores"
-
-#~ msgid "Account successfully activated"
-#~ msgstr "Cuenta exitosamente activada"
-
-#~ msgid "Account activation failed"
-#~ msgstr "No se pudo activar la cuenta"
-
-#~ msgid "Activate account at"
-#~ msgstr "Activa la cuenta en"
-
-#~ msgid "Link is valid for %(expiration_days)s days."
-#~ msgstr "El link es válido por %(expiration_days)s days."
-
-#~ msgid "Account activation on"
-#~ msgstr "Activación de cuenta en "
-
-#~ msgid "Thanks for spending some quality time with the GeoNode today."
-#~ msgstr "Gracias por pasar algún tiempo con GeoNode hoy."
-
-#~ msgid "Log in again"
-#~ msgstr "Reanudar sesión"
-
-#~ msgid "Logged out"
-#~ msgstr "Sesión finalizada"
-
-#~ msgid "Password changed"
-#~ msgstr "Contraseña cambiada"
-
-#~ msgid "Password reset successfully"
-#~ msgstr "Contraseña cambiada exitosamente"
-
-#~ msgid "Password reset failed"
-#~ msgstr "No se pudo cambiar la contraseña"
-
-#~ msgid "Email with password reset instructions has been sent."
-#~ msgstr ""
-#~ "Un correo electrónico con las instrucciones de como cambiar la contraseña "
-#~ "ha sido enviado."
-
-#~ msgid "Reset password at %(site_name)s"
-#~ msgstr "Cambie la contraseña en %(site_name)s"
-
-#~ msgid "You are now registered. Activation email sent."
-#~ msgstr ""
-#~ "Ahora estas registrado. Un correo electrónico de activación fue enviado."

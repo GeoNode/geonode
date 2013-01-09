@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-15 12:41-0500\n"
-"PO-Revision-Date: 2013-01-09 21:33+0000\n"
+"PO-Revision-Date: 2013-01-09 21:39+0000\n"
 "Last-Translator: kalxas <gcpp.kalxas@gmail.com>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/el/)\n"
 "MIME-Version: 1.0\n"
@@ -285,19 +285,19 @@ msgstr "Επίπεδο μεγέθυνσης"
 
 #: templates/lang.js:70
 msgid "Zoom Level"
-msgstr "Επίπεδο Ζουμ"
+msgstr "Επίπεδο Μεγέθυνσης"
 
 #: templates/lang.js:71
 msgid "Zoom to Layer Extent"
-msgstr "Ζουμ σε Έκταση Επιφάνειας"
+msgstr "Εστίαση σε Έκταση Επιφάνειας"
 
 #: templates/lang.js:72
 msgid "Zoom to Visible Extent"
-msgstr "Ζουμ σε Ορατή Έκταση"
+msgstr "Εστίαση σε Ορατή Έκταση"
 
 #: templates/lang.js:78
 msgid "Zoom Level {zoom}"
-msgstr "Επίπεδο ζουμ {zoom}"
+msgstr "Επίπεδο μεγέθυνσης {zoom}"
 
 #: templates/lang.js:84
 msgid "Create Map"
