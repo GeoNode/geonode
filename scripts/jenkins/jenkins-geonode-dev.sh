@@ -53,10 +53,11 @@ cp coverage.xml integration-coverage.xml
 cp -R coverage integration-coverage
 
 # Run the catalogue tests
-paver test_integration -n geonode.tests.csw
-cp TEST-nose.xml csw-TEST-nose.xml
-cp coverage.xml csw-coverage.xml
-cp coverage -R csw-coverage
+#(Ariel disabled these on Jan 10, 2013 - he will re-enable them)
+#paver test_integration -n geonode.tests.csw
+#cp TEST-nose.xml csw-TEST-nose.xml
+#cp coverage.xml csw-coverage.xml
+#cp coverage -R csw-coverage
 
 # Run the javascript tests 
 paver test_javascript
