@@ -143,6 +143,8 @@ def package(options):
     out_pkg_tar = path("%s.tar.gz" % pkgname)
 
     # Create a distribution in zip format for the geonode python package.
+    dist_dir = path('dist')
+    dist_dir.rmtree()
     sh('python setup.py sdist --format=zip')
 
     with pushd('package'):
@@ -400,7 +402,7 @@ def deb(options):
 
         sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
-        sh(('git-dch --git-author --new-version=%s'
+        sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
             ' --id-length=6 --ignore-branch --release' % (
             simple_version)))
 
