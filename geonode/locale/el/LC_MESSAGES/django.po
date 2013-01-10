@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-09 16:12-0600\n"
-"PO-Revision-Date: 2012-10-06 06:30+0000\n"
-"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
+"PO-Revision-Date: 2013-01-10 17:38+0200\n"
+"Last-Translator: Angelos Tzotsos <gcpp.kalxas@gmail.com>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/"
 "el/)\n"
 "Language: el\n"
@@ -2158,7 +2158,7 @@ msgstr ""
 
 #: maps/models.py:61
 msgid "zoom"
-msgstr "ζουμ"
+msgstr "μεγέθυνση"
 
 #: maps/models.py:65
 msgid "projection"
@@ -2178,7 +2178,7 @@ msgstr "ταξινόμηση στοίβας"
 
 #: maps/models.py:325
 msgid "format"
-msgstr "μορφή"
+msgstr "τύπος αρχείου"
 
 #: maps/models.py:329
 msgid "name"
@@ -2210,7 +2210,7 @@ msgstr "ορατότητα"
 
 #: maps/models.py:356
 msgid "ows URL"
-msgstr "OWS URL"
+msgstr "Ηλεκτρονική Διεύθυνση Υπηρεσίας OWS"
 
 #: maps/models.py:359
 msgid "layer params"
@@ -2230,7 +2230,7 @@ msgstr ""
 
 #: maps/views.py:71
 msgid "You must be logged in to save this map"
-msgstr "Θα πρέπει να συνδεθείτε για να σώσετε αυτό το χάρτη"
+msgstr "Θα πρέπει να συνδεθείτε για να αποθηκεύσετε αυτό το χάρτη"
 
 #: maps/views.py:72
 msgid "You are not allowed to modify this map's metadata."
@@ -2267,11 +2267,11 @@ msgstr ""
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
 #: maps/templates/maps/map_list.html:13 templates/index.html:31
 msgid "Explore Maps"
-msgstr "Εξερευνήστε Χάρτες"
+msgstr "Εξερεύνηση Χάρτών"
 
 #: maps/templates/maps/map_base.html:13 maps/templates/maps/map_search.html:5
 msgid "Search Maps"
-msgstr "Αναζήτηση Χάρτες"
+msgstr "Αναζήτηση Χαρτών"
 
 #: maps/templates/maps/map_detail.html:27
 #, fuzzy
@@ -2497,7 +2497,7 @@ msgstr ""
 
 #: people/models.py:41
 msgid "Voice"
-msgstr "Φωνή"
+msgstr "Τηλέφωνο"
 
 #: people/models.py:41
 msgid ""
@@ -2517,7 +2517,7 @@ msgstr ""
 
 #: people/models.py:43
 msgid "Delivery Point"
-msgstr "Σημείο παράδοσης"
+msgstr "Σημείο Παράδοσης"
 
 #: people/models.py:43
 msgid ""
@@ -2668,8 +2668,7 @@ msgstr "Ανεβάστε Επιφάνεια"
 
 #: people/templates/people/profile_edit.html:8 templates/avatar/add.html:9
 msgid "You haven't uploaded an avatar yet. Please upload one now."
-msgstr ""
-"Δεν έχετε ανεβάσει ένα avatar ακόμα. Παρακαλούμε να ανεβάσετε ένα τώρα."
+msgstr "Δεν έχετε ανεβάσει ένα εικονίδιο. Παρακαλούμε να ανεβάσετε ένα τώρα."
 
 #: people/templates/people/profile_edit.html:11
 msgid "Change Your Avatar"
@@ -3052,7 +3051,7 @@ msgstr "Αναζήτηση μεταδεδομένων μέσω CSW:"
 
 #: templates/developer.html:68
 msgid "Cached tiles via WMTS:"
-msgstr "Προσωρινής αποθήκευσης πλακίδια μέσω WMTS:"
+msgstr "Προσωρινά πλακίδια μέσω WMTS:"
 
 #: templates/help.html:4
 msgid "User Guide"
@@ -3060,7 +3059,7 @@ msgstr "Οδηγός Χρηστών"
 
 #: templates/help.html:8
 msgid "GeoNode Help"
-msgstr "GeoNode Βοήθεια"
+msgstr "Βοήθεια GeoNode"
 
 #: templates/help.html:9
 msgid ""
@@ -3292,7 +3291,7 @@ msgstr "Καλώς ήρθατε!"
 
 #: templates/index.html:16
 msgid "Welcome"
-msgstr "Καλώς ήρθατε!"
+msgstr "Καλώς ήρθατε"
 
 #: templates/index.html:20
 msgid ""
@@ -3364,7 +3363,7 @@ msgstr ""
 
 #: templates/avatar/add.html:6
 msgid "Your current avatar: "
-msgstr "Τρέχον σας avatar:"
+msgstr "Το τρέχον σας εικονίδιο:"
 
 #: templates/avatar/add.html:12
 msgid "Upload an Avatar"
@@ -3416,7 +3415,7 @@ msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:117
 msgid "Supplemental Information"
-msgstr "Συμπληρωματικές πληροφορίες"
+msgstr "Συμπληρωματικές Πληροφορίες"
 
 #: templates/geonode/resourcebase_info_panel.html:124
 #, fuzzy
@@ -3504,7 +3503,7 @@ msgstr ""
 
 #: templates/pagination/pagination.html:17
 msgid "Next"
-msgstr "Επόμενη"
+msgstr "Επόμενο"
 
 #: templates/pagination/pagination.html:19
 msgid "next"
