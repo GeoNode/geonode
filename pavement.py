@@ -401,7 +401,7 @@ def deb(options):
         sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
         sh(('git-dch --git-author --new-version=%s'
-            ' --id-length=6 --ignore-branch' % (
+            ' --id-length=6 --ignore-branch --release' % (
             simple_version)))
 
         ## Revert workaround for git-dhc bug
@@ -414,7 +414,9 @@ def deb(options):
                 sh('debuild -k%s -A' % key)
             else:
                 sh('debuild -k%s -S' % key)
-                sh('dput ppa:%s ../geonode_%s_source.changes' % (ppa, simple_version))
+
+    if ppa is not None:
+        sh('dput ppa:%s geonode_%s_source.changes' % (ppa, simple_version))
 
 
 def kill(arg1, arg2):
