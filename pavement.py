@@ -83,28 +83,10 @@ def setup_geoserver(options):
         geoserver_dir.remove()
         shutil.move(g, geoserver_dir)
 
-@task
-def setup_geoexplorer(options):
-    """
-    Fetch GeoExplorer
-    """
-    geoxp_zip = StringIO()
-    geoxp_zip.write(urllib.urlopen("http://suite.opengeo.org/builds/geoexplorer/opengeosuite-dev-geoexplorer-static.zip").read())
-    geoxp_zipfile = zipfile.ZipFile(geoxp_zip)
-    filelist = geoxp_zipfile.filelist
-    root_dir = filelist[0].filename
-    for afile in filelist:
-        geoxp_zipfile.extract(afile, "geonode/static/")
-    geoxp_zipfile.close()
-    if os.path.exists("geonode/static/geoexplorer"):
-        shutil.rmtree("geonode/static/geoexplorer")
-    shutil.move("geonode/static/%s" % root_dir, "geonode/static/geoexplorer")
-
 
 @task
 @needs([
     'setup_geoserver',
-    'setup_geoexplorer',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
