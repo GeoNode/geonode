@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-09 16:12-0600\n"
-"PO-Revision-Date: 2013-01-10 17:38+0200\n"
+"PO-Revision-Date: 2013-01-10 19:08+0200\n"
 "Last-Translator: Angelos Tzotsos <gcpp.kalxas@gmail.com>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/"
 "el/)\n"
@@ -265,7 +265,7 @@ msgstr ""
 
 #: documents/templates/documents/document_search.html:55
 msgid "Selected Data"
-msgstr "Επιλεγμένα δεδομένα"
+msgstr "Επιλεγμένα Δεδομένα"
 
 #: documents/templates/documents/document_search.html:56
 msgid "Use the checkboxes in the search results to add data to your selection."
@@ -284,7 +284,7 @@ msgstr "Εξαγωγή επιλεγμένων"
 
 #: documents/templates/documents/document_search.html:87
 msgid "Your search did not match any items."
-msgstr "Η αναζήτησή σας δεν επέστρεψε κανένα αντικείμενο."
+msgstr "Η αναζήτησή σας δεν επέστρεψε κανένα αποτέλεσμα."
 
 #: documents/templates/documents/document_upload.html:4
 #, fuzzy
@@ -1756,7 +1756,7 @@ msgstr "Τίτλος"
 
 #: layers/ows.py:85
 msgid "Zipped Shapefile"
-msgstr "Zipped Shapefile"
+msgstr "Συμπιεσμένο Shapefile"
 
 #: layers/ows.py:86
 msgid "GML 2.0"
@@ -1856,7 +1856,7 @@ msgstr ""
 #: layers/templates/layers/_actions.html:4
 #: layers/templates/layers/layer_metadata.html:30
 msgid "Attributes"
-msgstr "Γνωρίσματα"
+msgstr "Χαρακτηριστικά"
 
 #: layers/templates/layers/_actions.html:5
 #: maps/templates/maps/map_detail.html:52 templates/_actions.html:5
@@ -1940,7 +1940,7 @@ msgstr ""
 
 #: layers/templates/layers/layer_detail.html:59
 msgid "Edit Styles"
-msgstr "Επεξεργασία στυλ"
+msgstr "Επεξεργασία Στυλ"
 
 #: layers/templates/layers/layer_detail.html:60
 msgid "Edit Permissions"
@@ -2126,7 +2126,7 @@ msgstr ""
 "προηγούμενη,\n"
 "έκδοση ή αλλάζει τους τύπους τους, τότε τα υπάρχοντα στυλ για την επιφάνεια "
 "μπορεί να μην δουλεύουν.\n"
-"Παρακαλώ ελέγξτε τους χάρτες αν τα νέα δεδομένα περιέχουν τέτοιες αλλαγές.  "
+"Παρακαλώ ελέγξτε στους χάρτες αν τα νέα δεδομένα περιέχουν τέτοιες αλλαγές.  "
 "Επιπρόσθετα,\n"
 "τα νέα δεδομένα πρέπει να είναι του ίδιου τύπου αρχείου με τα υπάρχοντα "
 "δεδομένα, π.χ.\n"
