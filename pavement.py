@@ -414,7 +414,7 @@ def deb(options):
                 sh('debuild -k%s -A' % key)
             else:
                 sh('debuild -k%s -S' % key)
-                sh('dput ppa:%s geonode_*.sources' % ppa)
+                sh('dput ppa:%s ../geonode_%s_source.changes' % (simple_version, ppa))
 
 
 def kill(arg1, arg2):
