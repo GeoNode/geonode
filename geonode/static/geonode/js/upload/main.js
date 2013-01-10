@@ -6,8 +6,8 @@ requirejs.config({
         'underscore': { exports: '_'}
     },
     paths: {
-        'upload': '../js/upload',
-        'templates': '../js/templates'
+        'upload': '../../geonode/js/upload',
+        'templates': '../../geonode/js/templates'
     }
 });
 

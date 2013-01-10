@@ -6,6 +6,11 @@
 
 {% block main_class %}data upload{% endblock main_class %}
 
+{% block extra_head %}
+
+{% endblock %}
+
+
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
@@ -26,10 +31,13 @@
 {{ block.super }}
 {% endblock %}
 
-{% block main %}
+
+
+{% block body %}
   <div class="block">
     <div class="span8">
       <h2 class="page-title">{% trans "Upload Layers" %}</h2>
+
         {% if incomplete %}
             <section style="border: none" class="uip">
                 <h3 class="uip">Incomplete Uploads</h3>
@@ -64,19 +72,22 @@
 
         {% if enough_storage %}
             <div id="upload_form"></div>
-            <script type="text/javascript" src="{% static "geonode/js/upload/ext/layer_upload.js" %}"></script>
-            <script type="text/javascript" src="{% static "geonode/js/upload/ext/upload_common.js" %}"></script>
+
+            <script data-main="{{STATIC_URL}}/geonode/js/upload/main"
+                    src="{{ STATIC_URL }}geonode/libs/require.js">
+            </script>
+
             <script type="text/javascript">
             {% autoescape off %}
-                setup({
-                    csrf_token : "{{ csrf_token }}",
-                    form_target : "{% url data_upload %}",
-                    userLookup : "{% url geonode.views.ajax_lookup %}"
-                });
-                {% if async_upload %}
+            csrf_token =  "{{ csrf_token }}",
+            form_target = "{% url data_upload %}",
+            userLookup = "{% url geonode.views.ajax_lookup %}"
+
+            {% if async_upload %}
                     enableUploadProgress('upload_form');
-                {% endif %}
-                {% endautoescape %}
+            {% endif %}
+
+            {% endautoescape %}
             </script>
         {% endif %}
         </div>
@@ -84,7 +95,7 @@
 {% endblock %}
 
 {% block sidebar %}
-    
+
 {% if enough_storage %}
 <h3>{%trans "Permissions"  %}</h3>
 
