@@ -148,6 +148,13 @@ def package(options):
     sh('python setup.py sdist --format=zip')
 
     with pushd('package'):
+
+        #Delete old tar files in that directory
+        for f in glob.glob('GeoNode*.tar.gz'):
+            old_package = path(f)
+            if old_package != out_pkg_tar:
+                old_package.rmtree()
+	
         if out_pkg_tar.exists():
             info('There is already a package for version %s' % version)
             return
@@ -179,7 +186,7 @@ def package(options):
         out_pkg.rmtree()
 
     # Report the info about the new package.
-    info("%s.tar.gz created" % out_pkg.abspath())
+    info("%s created" % out_pkg_tar.abspath())
 
 
 @task
