@@ -54,8 +54,6 @@ CATALOGUE = {
         'ENGINE': 'geonode.catalogue.backends.pycsw_local',
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         'URL': '%scatalogue/csw' % SITEURL,
-        'USER': '',
-        'PASSWORD':, '',
     }
 }
 
