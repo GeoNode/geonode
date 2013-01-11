@@ -63,13 +63,13 @@ cp -R coverage integration-coverage
 paver test_javascript
 
 # Run Code Quality Tools
-export DJANGO_SETTINGS_MODULE=geonode.settings
-pylint -f parseable geonode/ | tee pylint.out
-pep8 --repeat geonode | tee pep8.out
-find . -type f -iname "*.py" | egrep -v '^./tests/'|xargs pyflakes  > pyflakes.out || :
-clonedigger --cpd-output . || :
-mv output.xml clonedigger.out
-echo; echo ">>> Reporting FIXME's and TODO's in source code"
+#export DJANGO_SETTINGS_MODULE=geonode.settings
+#pylint -f parseable geonode/ | tee pylint.out
+#pep8 --repeat geonode | tee pep8.out
+#find . -type f -iname "*.py" | egrep -v '^./tests/'|xargs pyflakes  > pyflakes.out || :
+#clonedigger --cpd-output . || :
+#mv output.xml clonedigger.out
+#echo; echo ">>> Reporting FIXME's and TODO's in source code"
 
 # All done, clean up
 git reset --hard
