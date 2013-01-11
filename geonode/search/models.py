@@ -36,7 +36,7 @@ def filter_by_period(model, q, period, user=None):
     if model == Layer and not user:
         if period:
             q = q.filter(temporal_extent_start__gte = parse(period[0]))
-            q = q.filter(temporal_extent_end__lte = parse(perion[1]))
+            q = q.filter(temporal_extent_end__lte = parse(period[1]))
     else:
         # @todo handle map and/or users - either directly if implemented or ...
         # this will effectively short-circuit the query at this point
