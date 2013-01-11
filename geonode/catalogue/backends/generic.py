@@ -43,8 +43,8 @@ METADATA_FORMATS = {
 class Catalogue(CatalogueServiceWeb):
     def __init__(self, *args, **kwargs):
         self.url = kwargs['URL']
-        self.user = kwargs['USER']
-        self.password = kwargs['PASSWORD']
+        self.user = None
+        self.password = None
         self.type = kwargs['ENGINE'].split('.')[-1]
         self.local = False
         self._group_ids = {}
@@ -56,6 +56,12 @@ class Catalogue(CatalogueServiceWeb):
         upurl = urlparse(self.url)
 
         self.base = '%s://%s/' % (upurl.scheme, upurl.netloc)
+
+        # User and Password are optional
+        if 'USER'in kwargs:
+            self.user = kwargs['USER']
+        if 'PASSWORD' in kwargs:
+            self.password = kwargs['PASSWORD']
 
     def __enter__(self, *args, **kwargs):
         self.login()
@@ -95,7 +101,7 @@ class Catalogue(CatalogueServiceWeb):
             self.getrecordbyid([uuid], outputschema=namespaces["gmd"])
         except:
             return None
-    
+
         if hasattr(self, 'records'):
             if len(self.records) < 1:
                 return None
@@ -145,7 +151,7 @@ class Catalogue(CatalogueServiceWeb):
         """ get all element data from an XML document """
         xml = etree.fromstring(xml)
         return ' '.join([value for value in xml.xpath('//text()')])
- 
+
     def csw_request(self, layer, template):
 
         md_doc = self.csw_gen_xml(layer, template)
@@ -177,11 +183,11 @@ class Catalogue(CatalogueServiceWeb):
             # Turn on the "view" permission (aka publish) for
             # the "all" group in GeoNetwork so that the layer
             # will be searchable via CSW without admin login.
-            # all other privileges are set to False for all 
+            # all other privileges are set to False for all
             # groups.
             self.set_metadata_privs(layer.uuid, {"all":  {"view": True}})
-       
-        return self.url_for_uuid(layer.uuid, namespaces['gmd']) 
+
+        return self.url_for_uuid(layer.uuid, namespaces['gmd'])
 
     def delete_layer(self, layer):
         response = self.csw_request(layer, "catalogue/transaction_delete.xml")
@@ -199,40 +205,40 @@ class Catalogue(CatalogueServiceWeb):
 
     def set_metadata_privs(self, uuid, privileges):
         """
-        set the full set of geonetwork privileges on the item with the 
-        specified uuid based on the dictionary given of the form: 
+        set the full set of geonetwork privileges on the item with the
+        specified uuid based on the dictionary given of the form:
         {
           'group_name1': {'operation1': True, 'operation2': True, ...},
           'group_name2': ...
         }
 
-        all unspecified operations and operations for unspecified groups 
+        all unspecified operations and operations for unspecified groups
         are set to False.
         """
-        
-        # XXX This is a fairly ugly workaround that makes 
+
+        # XXX This is a fairly ugly workaround that makes
         # requests similar to those made by the GeoNetwork
-        # admin based on the recommendation here: 
+        # admin based on the recommendation here:
         # http://bit.ly/ccVEU7
 
-        if self.type == 'geonetwork': 
+        if self.type == 'geonetwork':
             get_dbid_url = '%sgeonetwork/srv/en/portal.search.present?%s' % (self.base, urllib.urlencode({'uuid': uuid}))
-    
+
             # get the id of the data.
             request = urllib2.Request(get_dbid_url)
             response = self.urlopen(request)
             doc = etree.fromstring(response.read())
             data_dbid = doc.find('metadata/{http://www.fao.org/geonetwork}info/id').text
-    
+
             # update group and operation info if needed
             if len(self._group_ids) == 0:
                 self._group_ids = self._geonetwork_get_group_ids()
             if len(self._operation_ids) == 0:
                 self._operation_ids = self._geonetwork_get_operation_ids()
-    
+
             # build params that represent the privilege configuration
             priv_params = {
-                "id": data_dbid, # "uuid": layer.uuid, # you can say this instead in newer versions of GN 
+                "id": data_dbid, # "uuid": layer.uuid, # you can say this instead in newer versions of GN
             }
             for group, privs in privileges.items():
                 group_id = self._group_ids[group.lower()]
@@ -241,17 +247,17 @@ class Catalogue(CatalogueServiceWeb):
                         continue
                     op_id = self._operation_ids[op.lower()]
                     priv_params['_%s_%s' % (group_id, op_id)] = 'on'
-    
+
             # update all privileges
             update_privs_url = "%sgeonetwork/srv/en/metadata.admin?%s" % (self.base, urllib.urlencode(priv_params))
             request = urllib2.Request(update_privs_url)
             response = self.urlopen(request)
-    
-            # TODO: check for error report  
-        
+
+            # TODO: check for error report
+
     def _geonetwork_get_group_ids(self):
         """
-        helper to fetch the set of geonetwork 
+        helper to fetch the set of geonetwork
         groups.
         """
         # get the ids of the groups.
@@ -266,10 +272,10 @@ class Catalogue(CatalogueServiceWeb):
 
     def _geonetwork_get_operation_ids(self):
         """
-        helper to fetch the set of geonetwork 
+        helper to fetch the set of geonetwork
         'operations' (privileges)
         """
-        # get the ids of the operations    
+        # get the ids of the operations
         get_ops_url = "%sgeonetwork/srv/en/xml.info?%s" % (self.base, urllib.urlencode({'type': 'operations'}))
         request = urllib2.Request(get_ops_url)
         response = self.urlopen(request)
@@ -300,15 +306,15 @@ class Catalogue(CatalogueServiceWeb):
         pycsw accepts y/x
         """
 
-        if self.type == 'geonetwork': 
+        if self.type == 'geonetwork':
             return bbox
         else:  # swap coords per standard
             return [bbox[1], bbox[0], bbox[3], bbox[2]]
 
     def metadatarecord2dict(self, rec):
         """
-        accepts a node representing a catalogue result 
-        record and builds a POD structure representing 
+        accepts a node representing a catalogue result
+        record and builds a POD structure representing
         the search result.
         """
 
@@ -371,7 +377,7 @@ class Catalogue(CatalogueServiceWeb):
 
 class CatalogueBackend(BaseCatalogueBackend):
     def __init__(self, *args, **kwargs):
-       self.catalogue = Catalogue(*args, **kwargs) 
+       self.catalogue = Catalogue(*args, **kwargs)
 
     def get_record(self, uuid):
         with self.catalogue:
@@ -383,7 +389,7 @@ class CatalogueBackend(BaseCatalogueBackend):
         return rec
 
     def search_records(self, keywords, start, limit, bbox):
-        with self.catalogue: 
+        with self.catalogue:
             bbox = self.catalogue.normalize_bbox(bbox)
             self.catalogue.search(keywords, start+1, limit, bbox)
 
@@ -403,7 +409,7 @@ class CatalogueBackend(BaseCatalogueBackend):
            catalogue_record = self.catalogue.get_by_uuid(uuid)
            if catalogue_record is None:
                return
-    
+
            try:
                # this is a bit hacky, delete_layer expects an instance of the layer
                # model but it just passes it to a Django template so a dict works
