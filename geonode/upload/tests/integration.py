@@ -356,6 +356,8 @@ class UploaderBase(TestCase):
         return resp.geturl()
 
     def check_upload_model(self, original_name):
+        # we can only test this if we're using the same DB as the test instance
+        if not settings.DB_DATASTORE: return
         try:
             upload = Upload.objects.get(layer__name=original_name)
         except Upload.DoesNotExist:
