@@ -12,10 +12,11 @@ fi
 # Checkout exts from server
 GEOSERVER_EXT_GIT=git://github.com/GeoNode/geoserver-geonode-ext.git
 git clone $GEOSERVER_EXT_GIT tmp
-GIT_REV=$(git log -1 --pretty=format:%h)
 
 cp -r debian tmp
 pushd tmp
+
+GIT_REV=$(git log -1 --pretty=format:%h)
 
 # Build for launchpad
 debuild -S
