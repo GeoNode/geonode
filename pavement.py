@@ -408,7 +408,8 @@ def deb(options):
         # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
         path('.git').makedirs()
 
-        sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
+        # Install requirements
+        #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
         sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
             ' --id-length=6 --ignore-branch --release' % (
