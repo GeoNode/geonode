@@ -412,7 +412,7 @@ def deb(options):
         #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
         sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
-            ' --id-length=6 --ignore-branch --release' % (
+            ' --id-length=6 --ignore-branch --release -b' % (
             simple_version)))
 
         ## Revert workaround for git-dhc bug
