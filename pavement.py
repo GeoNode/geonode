@@ -23,6 +23,7 @@ import time
 import urllib
 import zipfile
 import shutil
+import glob
 from StringIO import StringIO
 
 from paver.easy import task, options, cmdopts, needs
@@ -153,7 +154,7 @@ def package(options):
         for f in glob.glob('GeoNode*.tar.gz'):
             old_package = path(f)
             if old_package != out_pkg_tar:
-                old_package.rmtree()
+                old_package.remove()
 	
         if out_pkg_tar.exists():
             info('There is already a package for version %s' % version)
