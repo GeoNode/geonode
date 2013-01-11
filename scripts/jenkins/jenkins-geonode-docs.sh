@@ -38,14 +38,14 @@ rm -rf /var/www/workshops/user/*
 cp -R build/html/* /var/www/workshops/user/
 cp -R build/latex/GeoNodeUsersWorkshop.pdf /var/www/workshops/user/
 
-cd ${WORKSPACE}/geonode-workshops/admin
+cd ${WORKSPACE}/geonode-workshops/admin/doc
 make html
 make latexpdf
 rm -rf /var/www/workshops/admin/*
 cp -R build/html/* /var/www/workshops/admin/
 cp -R build/latex/GeoNodeAdministratorsWorkshop.pdf /var/www/workshops/admin/
 
-cd ${WORKSPACE}/geonode-workshops/devel
+cd ${WORKSPACE}/geonode-workshops/devel/doc
 make html
 make latexpdf
 rm -rf /var/www/workshops/devel/*
