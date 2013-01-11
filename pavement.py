@@ -384,11 +384,7 @@ def deb(options):
 
     major, minor, revision, stage, edition = raw_version
 
-    # create a temporary file with the name of the branch
-    sh('echo `git rev-parse --abbrev-ref HEAD` > .git_branch')
-    branch = open('.git_branch', 'r').read().strip()
-    # remove the temporary file
-    sh('rm .git_branch')
+    branch = 'dev'
 
     if stage == 'alpha' and edition == 0:
         tail = '%s%s' % (branch, timestamp)
@@ -412,7 +408,7 @@ def deb(options):
         #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
         sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
-            ' --id-length=6 --ignore-branch --release -b' % (
+            ' --id-length=6 --ignore-branch --release' % (
             simple_version)))
 
         ## Revert workaround for git-dhc bug
