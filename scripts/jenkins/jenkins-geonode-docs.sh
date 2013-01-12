@@ -61,8 +61,10 @@ cp -R build/* .
 rm -rf workshops/*
 mkdir workshops/user
 cp -R ${WORKSPACE}/geonode-workshops/user/doc/build/html/* workshops/user/
+cp -R ${WORKSPACE}/geonode-workshops/user/doc/build/latex/*.pdf workshops/user/
 mkdir workshops/admin
 cp -R ${WORKSPACE}/geonode-workshops/admin/doc/build/html/* workshops/admin/
+cp -R ${WORKSPACE}/geonode-workshops/admin/doc/build/latex/*.pdf workshops/admin/
 git add .
 git commit -am "Update GeoNode Website"
 git push origin master
