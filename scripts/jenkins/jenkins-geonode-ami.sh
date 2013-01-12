@@ -11,6 +11,6 @@ echo $host
 echo $key
 
 cd $WORKSPACE/scripts/cloud/
-fab -i $key -H ubuntu@$host build_geonode_ami
+fab -i $key -H ubuntu@$host deploy_geonode_snapshot_package
 
 #python ec2.py terminate
