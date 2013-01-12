@@ -13,4 +13,4 @@ echo $key
 cd $WORKSPACE/scripts/cloud/
 fab -i $key -H ubuntu@$host build_geonode_ami
 
-python ec2.py terminate
+#python ec2.py terminate
