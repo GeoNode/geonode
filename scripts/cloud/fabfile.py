@@ -175,7 +175,7 @@ def deploy_geonode_dev_package():
     sudo('apt-get update')
     sudo('wget -e robots=off --wait 0.25 -r -l1 --no-parent -A.deb http://build.geonode.org/geonode/latest/')
     with settings(warn_only=True):
-        sudo('dpkg -i geonode_2.0.0*.deb')
+        sudo('dpkg -i geonode_2.0.0*.deb',shell=True)
     sudo('apt-get install -f -y')
 
 def change_admin_password():
