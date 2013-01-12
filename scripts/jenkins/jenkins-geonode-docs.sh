@@ -56,7 +56,14 @@ cp -R build/latex/GeoNodeDevelopersWorkshop.pdf /var/www/workshops/devel/
 cd ${WORKSPACE}/geonode.github.com/
 cactus build
 cp -R build/* .
-# TODO: Publish workshops to main site
+
+# Publish Workshops
+rm -rf workshops/*
+mkdir workshops/user
+cp -R ${WORKSPACE}/geonode-workshops/user/doc/build/html/* workshops/user/
+mkdir workshops/admin
+cp -R ${WORKSPACE}/geonode-workshops/admin/doc/build/html/* workshops/admin/
+git add .
 git commit -am "Update GeoNode Website"
 git push origin master
 rm -rf /var/www/site/*
