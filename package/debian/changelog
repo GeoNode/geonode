@@ -1,4 +1,4 @@
-geonode (2.0.0+alpha1-1) precise; urgency=low
+geonode (2.0.0+alpha1-3) precise; urgency=high
 
   * Fixed django-admin.py reference
 
