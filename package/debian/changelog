@@ -1,3 +1,10 @@
+geonode (2.0.0+alpha1-1) precise; urgency=low
+
+  * Fixed django-admin.py reference
+
+ -- Ariel Núñez <ingenieroariel@gmail.com>  Sun, 13 Jan 2013 06:11:16 +0000
+
+
 geonode (2.0.0+alpha1) precise; urgency=low
 
   [ Ariel Núñez ]
