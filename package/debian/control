@@ -10,7 +10,7 @@ Vcs-git: git://github.com/GeoNode/geonode.git
 
 Package: geonode
 Architecture: all
-Depends: geoserver-geonode | geoserver, python-virtualenv, python-imaging, python-lxml, python-pyproj, python-shapely, python-nose, python-httplib2, gdal-bin, libgeos-dev, gettext, postgresql-contrib, postgresql-9.1-postgis | postgresql-8.4-postgis, libpq-dev, zip, unzip, libjpeg-dev, libpng-dev, python-gdal, libproj-dev, python-psycopg2, apache2, libapache2-mod-wsgi, python-django, owslib, python-pycsw, gsconfig, ${misc:Depends},  ${python:Depends}
+Depends: geoserver-geonode | geoserver, python-virtualenv, python-imaging, python-lxml, python-pyproj, python-shapely, python-nose, python-httplib2, gdal-bin, libgeos-dev, gettext, postgresql-contrib, postgresql-9.1-postgis | postgresql-8.4-postgis, libpq-dev, zip, unzip, libjpeg-dev, libpng-dev, python-gdal, libproj-dev, python-psycopg2, apache2, libapache2-mod-wsgi, python-django, ${misc:Depends},  ${python:Depends}
 Description: Allows the creation, sharing, and collaborative use of geospatial data. 
  At its core, the GeoNode has a stack based on GeoServer, 
  Django, and GeoExt that provides a platform for sophisticated 
