@@ -12,7 +12,7 @@ if [ -d $PYENV_HOME ]; then
 fi
 
 # Setup the virtualenv
-virtualenv --no-site-packages $PYENV_HOME
+virtualenv --system-site-packages $PYENV_HOME
 source $PYENV_HOME/bin/activate
 
 # Install test tools
@@ -21,15 +21,14 @@ pip install --quiet pylint
 pip install --quiet pyflakes
 pip install --quiet clonedigger
 
-paver stop
-
 # Setup and Build GeoNode
 git clean -dxff
 # run this here while we have a clean dir.
 #/usr/bin/sloccount --duplicates --wide --details geonode/ > sloccount.out 
 python /usr/local/bin/clokins.py --exclude-list-file=scripts/jenkins/clokins.exclude . > clokins.output
 pip install -e .
-#pip install -r requirements.txt
+# Just in case
+paver stop
 paver setup
 cp /var/lib/jenkins/local_settings_with_coverage.py geonode/local_settings.py
 
