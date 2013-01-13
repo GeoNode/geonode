@@ -1,3 +1,63 @@
+geonode (2.0.0+alpha1) precise; urgency=low
+
+  [ Ariel Núñez ]
+  * [36d39b] Add back git-dch step in paver deb
+  * [3a0886] Do not add geoserver jars to the debian package, they are packaged elsewhere
+  * [888f83] Updated pavement script to properly place the deb artifact in launchpad
+  * [ab6b51] Reverted order of ppa name and version in paver deb task
+  * [4a9246] Fix version name and refactor ppa upload step
+  * [371b9d] Do not show vim when doing git-dch
+
+  [ capooti ]
+  * [ae82ca] Deleting a layer, we need to delete all of its associations to maps containing it. It fixes #597.
+
+  [ Ariel Núñez ]
+  * [fc33c0] Do not keep around old packages
+  * [5f282e] Fixed missing import
+
+  [ Tom Kralidis ]
+  * [1584d6] bump OWSLib
+
+  [ Ariel Núñez ]
+  * [9d0e7c] Switched to geoext by default
+
+  [ Jeffrey Johnson ]
+  * [474be1] Change path of admin and devel workshops.
+  * [799945] Comment out jenkins code quality tools for now
+  * [3a553d] Add USER and PASSWORD to package/support/geonode.local_settings
+
+  [ Ariel Núñez ]
+  * [5ecb99] USER and PASSWORD are optional for pycsw config
+  * [e3c958] Removed workaround for USER and PASSWORD from local_settings
+  * [54ea9e] Add more variations of ppa and key options to paver deb
+  * [149ad2] Automated package upload to ppa
+  * [4cb601] Requirements are already present on jenkins
+  * [631f33] Added -b option to git-dch to avoid problem in jenkins with version number
+  * [980f41] Avoid reading the branch name and hardcoded it to dev to make jenkins happy
+
+  [ Jeffrey Johnson ]
+  * [ccfc05] Download the latest deb in setup_geonode_deb fabric task
+  * [bc1dbf] shell=True when trying to use wildcard in sudo fab command
+  * [fe8dc4] cd into the dir structure that wget creates before trying to run dpkg
+  * [7f04c3] Dont terminate instance after making AMI (this is temporary and dangerous longterm)
+  * [d39682] add deploy_geonode_snapshot_package to fabfile
+  * [46e3df] Just deploy a snapshot package for now, dont build the AMI
+  * [4436ac] some tweaks to docs script to publish workshops to main site
+  * [7e1896] Publish the PDF Docs too
+
+  [ Bart van den Eijnden ]
+  * [63d908] fix 404s on the Amazon test instance, apparently these are all lowercase in GeoExplorer now, but did not run into this locally
+
+  [ Ariel Núñez ]
+  * [7d4d06] Bumped geoexplorer version
+  * [c06cb1] Added dependency on python-django
+  * [fed618] Bump Django version to 1.4.3
+  * [7964ec] Added gsconfig, owslib and pycsw dependencies
+  * [d69c79] geonode should depend only on python-pycsw, not on pycsw-cgi
+  * [293885] Using PPA dependencies in launchpad did not work, backing out gsconfig, owslib and pycsw debian packages from control file
+
+ -- Ariel Núñez <ingenieroariel@gmail.com>  Sun, 13 Jan 2013 05:11:16 +0000
+
 geonode (2.0.0+alpha0) precise; urgency=high
   * Major source tree refactor
   * Build refactor
