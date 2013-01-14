@@ -2128,6 +2128,7 @@ class MapLayer(models.Model):
                 cfg['attributes'] = (gnLayer.layer_attributes())
                 cfg['queryable'] = (gnLayer.storeType == 'dataStore'),
                 cfg['disabled'] =  user is not None and not user.has_perm('maps.view_layer', obj=gnLayer)
+                #cfg["displayOutsideMaxExtent"] = user is not None and  user.has_perm('maps.change_layer', obj=gnLayer)
                 cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
                 cfg['abstract'] = gnLayer.abstract
                 cfg['styles'] = self.styles

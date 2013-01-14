@@ -594,9 +594,9 @@ def set_map_permissions(m, perm_spec, use_email = False):
             m.set_user_level(user, level)
     else:
         m.get_user_levels().exclude(user__username__in = users + [m.owner]).delete()
-    for username, level in perm_spec['users']:
-        user = User.objects.get(username=username)
-        m.set_user_level(user, level)
+        for username, level in perm_spec['users']:
+            user = User.objects.get(username=username)
+            m.set_user_level(user, level)
 
 def ajax_layer_permissions_by_email(request, layername):
     return ajax_layer_permissions(request, layername, True)

@@ -581,6 +581,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             toggleButtons(false);
                         } else {
                             layer.displayOutsideMaxExtent = true;
+                            layer.redraw();
                             toggleButtons(true);
                         }
                     },
