@@ -182,6 +182,7 @@ def deploy_geonode_dev_package():
     with settings(warn_only=True):
         sudo('cd build.geonode.org/geonode/latest;dpkg -i geonode_2.0.0*.deb',shell=True)
     sudo('apt-get install -f -y')
+    sudo ('source /var/lib/geonode/bin/activate; geonode-updateip alpha.dev.geonode.org')
 
 def change_admin_password():
     put('../misc/changepw.py', '/home/ubuntu/')
