@@ -43,10 +43,10 @@
                     <input type="checkbox" id="filter-data" /> Layers <span>(<span class="count">0</span>)</span>
                   </label>
                   <div class="subgroup">
-                    <label class="checkbox" data-class="Raster">
+                    <label class="checkbox" data-class="coverageStore">
                       <input type="checkbox" /> Raster <span>(<span class="count">0</span>)</span>
                     </label>
-                    <label class="checkbox" data-class="Vector">
+                    <label class="checkbox" data-class="dataStore">
                       <input type="checkbox" /> Vector <span>(<span class="count">0</span>)</span>
                     </label>
                   </div>
@@ -219,7 +219,7 @@
     <script src="{{ STATIC_URL }}geonode/js/global_search.js"></script>
     <script>        
         $(function() {
-           window.globalDoSearch("{{ request.POST.q }}");
+           window.globalDoSearch("{{ init_search.q }}");
         });
     </script>
 {% endblock %}

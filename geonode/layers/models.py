@@ -523,6 +523,12 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.contactrole_set.create(role=instance.metadata_author_role,
                                          contact=Layer.objects.admin_contact())
 
+def post_delete_layer(instance, sender, **kwargs):
+    """Removed the layer from any associated map, if any.
+    """
+    from geonode.maps.models import MapLayer
+    logger.debug("Going to delete associated maplayers for [%s]", instance.typename)
+    MapLayer.objects.filter(name=instance.typename).delete()
 
 def geoserver_pre_save(instance, sender, **kwargs):
     """Send information to geoserver.
@@ -843,3 +849,5 @@ signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.pre_save.connect(geoserver_pre_save, sender=Layer)
 signals.pre_delete.connect(geoserver_pre_delete, sender=Layer)
 signals.post_save.connect(geoserver_post_save, sender=Layer)
+signals.post_delete.connect(post_delete_layer, sender=Layer)
+

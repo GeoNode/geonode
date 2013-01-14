@@ -124,6 +124,7 @@ var doSearch = function (options) {
             $.each(data.results, function (index, item) {
                 var context = {
                     "display_type": item._display_type,
+                    "storeType": item.storeType,
                     "date": item.date,
                     "url": item.detail,
                     "title": item.title,
@@ -150,7 +151,7 @@ var doSearch = function (options) {
 
             $("#id_data_begins").val(d1.split("T")[0]);
             $(".info-bar").show().find(".count").html($("#search-results article").size());
-            $("#filter-maps, #filter-data").attr("checked", "checked");
+            $("#filter-classes :checkbox").attr("checked", "checked");
 
             $("#filter-classes span.count").each(function () {
                 $(this).html(
