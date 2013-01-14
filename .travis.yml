@@ -18,10 +18,7 @@ install:
   - pip install -e . --use-mirrors
 
 before_script:
-  - cd geoserver-geonode-ext
-  - mvn -s travis-settings.xml install
-  - cd ..
-  - paver setup -f
+  - paver setup
 
 script:
   - python manage.py test geonode.tests.smoke

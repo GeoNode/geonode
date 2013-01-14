@@ -39,8 +39,8 @@ If instead, you are interested in doing development on the source code, here are
     mkvirtualenv geonode
     workon geonode
        
-    # Clone GeoNode and switch to dev branch
-    git clone https://github.com/GeoNode/geonode.git -b dev
+    # Clone GeoNode
+    git clone https://github.com/GeoNode/geonode.git
     
     # Install GeoNode in the local virtualenv
     pip install -e geonode --use-mirrors
@@ -80,8 +80,8 @@ openSUSE Development Build Instructions::
     source venv/bin/activate
     cd venv
 
-    # Clone GeoNode and switch to dev branch
-    git clone https://github.com/GeoNode/geonode.git -b dev
+    # Clone GeoNode
+    git clone https://github.com/GeoNode/geonode.git
 
     # Install GeoNode in the local virtualenv
     pip install -e geonode --use-mirrors
@@ -118,8 +118,8 @@ Windows Development Build Instructions::
     easy_install PIL lxml==2.3
     # this command will look for and install binary distributions (pip install will attempt to build and fail)
 
-    # Clone GeoNode and switch to dev branch
-    git clone https://github.com/GeoNode/geonode.git -b dev
+    # Clone GeoNode
+    git clone https://github.com/GeoNode/geonode.git
     
     # Install GeoNode in the local virtualenv
     pip install -e geonode --use-mirrors
