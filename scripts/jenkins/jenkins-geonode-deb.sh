@@ -26,12 +26,16 @@ pip install -e .
 #pip install -r requirements.txt
 paver setup
 
-# Make the Debian package
+# Make the Debian package (locally)
 paver deb
 mkdir $DL_ROOT/$GIT_REV
 cp *.deb $DL_ROOT/$GIT_REV/.
 cp *.build $DL_ROOT/$GIT_REV/.
 cp *.changes $DL_ROOT/$GIT_REV/.
 cp package/*.gz $DL_ROOT/$GIT_REV/.
+
+# Make the Debian package (upload to ppa)
+paver deb -p geonode/snapshots
+
 rm -rf $DL_ROOT/latest
 ln -sf $DL_ROOT/$GIT_REV $DL_ROOT/latest
