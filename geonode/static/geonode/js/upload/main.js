@@ -17,7 +17,9 @@ define(['jquery', 'upload/upload'], function ($, upload) {
     $(function () {
         upload.initialize({
             form: '#file-uploader',
+            dropZone: '#drop-zone',
             file_queue: '#file-queue',
+            clear_button: '#clear-button',
             upload_button: '#upload-button'
         });
     });
