@@ -35,7 +35,7 @@ mkdir $DL_ROOT/$GIT_REV
 cp ../*.deb $DL_ROOT/$GIT_REV/.
 cp target/geoserver.war $DL_ROOT/$GIT_REV/.
 cp target/geonode-geoserver-ext-*-geoserver-plugin.zip $DL_ROOT/$GIT_REV/.
-cp target/data.zip $DL_ROOT/$GIT_REV/.
+cp target/data*.zip $DL_ROOT/$GIT_REV/data.zip
 
 # Remove all but last 4 builds to stop disk from filling up
 (ls -t|tail -n 3)|sort|uniq -u | xargs rm -rf
