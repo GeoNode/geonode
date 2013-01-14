@@ -54,6 +54,8 @@ GEONODE_PRECISE_64=""
 
 DEFAULT_BASE_GEONODE=GEONODE_PRECISE_32
 
+ALPHA_ELASTIC_IP="54.235.204.189"
+
 def writeconfig(config):
     # Writing our configuration file to CONFIG_FILE
     configfile = open(CONFIG_FILE, 'wb')
@@ -87,6 +89,14 @@ def launch_geonode():
 def launch_base():
     readconfig(default_ami=DEFAULT_BASE)
     launch()
+    
+def set_alpha_ip():
+    config = readconfig()
+    conn = boto.connect_ec2()
+    # Assign elastic ip to instance
+    instance_id = config.get('ec2', 'INSTANCE')
+    conn.associate_address(instance_id=instance_id, public_ip=ALPHA_ELASTIC_IP)
+
 
 def launch():
     config = readconfig()
@@ -151,7 +161,7 @@ def launch():
         config.set('ec2', 'HOST', dns)
         config.set('ec2', 'INSTANCE', instance.id)
         writeconfig(config)
-
+        
         print "ssh -i %s ubuntu@%s" % (KEY_PATH, dns)
         print "Terminate the instance via the web interface %s" % instance
 
@@ -187,6 +197,8 @@ if sys.argv[1] == "launch_geonode":
     launch_geonode()
 elif sys.argv[1] == "launch_base":
     launch_base()
+elif sys.argv[1] == "set_alpha_ip":
+    set_alpha_ip()
 elif sys.argv[1] == "terminate":
     terminate()
 elif sys.argv[1] == "host":
