@@ -14,7 +14,7 @@
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
-{% include "geonode/geo_header.html" %}
+
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geonode/css/fileuploadfield.css"/>
 <style type="text/css">
     .uip {
@@ -26,6 +26,12 @@
     /* workaround bizarre firefox bug where filechooser button doesn't work */
     #base_file-file {
         width: auto;
+    }
+    #drop-zone {
+      background: #eee;
+      height: 100px;
+      margin-bottom: 10px;
+      padding: 5px;
     }
 </style>
 {{ block.super }}
@@ -71,7 +77,27 @@
         {% endif %}
 
         {% if enough_storage %}
-            <div id="upload_form"></div>
+
+
+            <section id="drop-zone">
+              <h2>Drag and Drop files here</h2>
+            </section>
+
+            <form id="file-uploader" method="post" enctype="multipart/form-data">
+              <input class="btn" id="file-input" type="file" multiple>
+            </form>
+
+            <section class="widget">
+              <ul id="global-errors"></ul>
+              <h2>{% trans "Files to be uploaded" %}</h2>
+              <div id="file-queue">
+              </div>
+            </section>
+
+            <section>
+              <a href="#" id="clear-button">Clear</a>
+              <a href="#" id="upload-button" class="btn">Upload files</a>
+            </section>
 
             <script data-main="{{STATIC_URL}}/geonode/js/upload/main"
                     src="{{ STATIC_URL }}geonode/libs/require.js">
@@ -88,7 +114,9 @@
             {% endif %}
 
             {% endautoescape %}
+
             </script>
+
         {% endif %}
         </div>
     </div>
