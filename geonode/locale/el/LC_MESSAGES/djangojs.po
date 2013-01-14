@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+#   <gcpp.kalxas@gmail.com>, 2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-15 12:41-0500\n"
-"PO-Revision-Date: 2012-09-13 04:34+0000\n"
-"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
+"PO-Revision-Date: 2013-01-09 21:33+0000\n"
+"Last-Translator: kalxas <gcpp.kalxas@gmail.com>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/el/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -234,7 +235,7 @@ msgstr "Μικρό"
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr "Σφάλμα στην επικοινωνία με τον εξυπηρετητή.\n Παρακαλώ ελέγξτε το url και δοκιμάστε ξανά."
+msgstr "Σφάλμα στην επικοινωνία με τον εξυπηρετητή.\nΠαρακαλώ ελέγξτε τον σύνδεσμο και δοκιμάστε ξανά."
 
 #: templates/lang.js:59
 msgid "Layer Properties"
@@ -280,7 +281,7 @@ msgstr "Σμίκρυνση"
 
 #: templates/lang.js:69
 msgid "Zoom level"
-msgstr "Επίπεδο ζουμ"
+msgstr "Επίπεδο μεγέθυνσης"
 
 #: templates/lang.js:70
 msgid "Zoom Level"
@@ -386,7 +387,7 @@ msgstr "Εισάγετε τον τίτλο χάρτη εδώ."
 
 #: templates/lang.js:143
 msgid "Include legend?"
-msgstr "Συμπεριλάβετε υπόμνημα;"
+msgstr "Συμπερίληψη υπομνήματος;"
 
 #: templates/lang.js:144
 msgid "Enter comments here."
@@ -418,7 +419,7 @@ msgstr "Η αναζήτησή σας δεν επέστρεψε κανένα αν
 
 #: templates/lang.js:161
 msgid "Search Maps"
-msgstr "Αναζήτηση Χάρτες"
+msgstr "Αναζήτηση Χαρτών"
 
 #: templates/lang.js:162 templates/lang.js.c:182
 msgid "Search"

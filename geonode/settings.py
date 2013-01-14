@@ -142,7 +142,7 @@ INSTALLED_APPS = (
     'taggit_templatetags',
     'south',
     'friendlytagloader',
-    'leaflet',
+    'geoexplorer',
     'request',
 
     # Theme

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-31 09:40-0600\n"
-"PO-Revision-Date: 2012-10-06 06:30+0000\n"
-"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
+"POT-Creation-Date: 2013-01-09 16:12-0600\n"
+"PO-Revision-Date: 2013-01-10 19:08+0200\n"
+"Last-Translator: Angelos Tzotsos <gcpp.kalxas@gmail.com>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/"
 "el/)\n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: el\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: utils.py:233 security/models.py:33
@@ -87,7 +87,6 @@ msgstr ""
 #: layers/templates/layers/_layer_list_item.html:9
 #: layers/templates/layers/_layer_widget_item.html:5
 #: maps/templates/maps/_map_list_item.html:12
-#: people/templates/people/_profile_about_item.html:4
 msgid "No Image Available"
 msgstr ""
 
@@ -230,7 +229,7 @@ msgid "Search"
 msgstr "Αναζήτηση"
 
 #: documents/templates/documents/document_search.html:26
-#: people/templates/people/profile_detail.html:10
+#: people/templates/people/profile_detail.html:11
 #: search/templates/search/search_base.html:11
 #: templates/geonode/resourcebase_info_panel.html:7
 msgid "Title"
@@ -266,7 +265,7 @@ msgstr ""
 
 #: documents/templates/documents/document_search.html:55
 msgid "Selected Data"
-msgstr "Επιλεγμένα δεδομένα"
+msgstr "Επιλεγμένα Δεδομένα"
 
 #: documents/templates/documents/document_search.html:56
 msgid "Use the checkboxes in the search results to add data to your selection."
@@ -275,7 +274,7 @@ msgstr ""
 "προσθέσετε δεδομένα στην επιλογή σας."
 
 #: documents/templates/documents/document_search.html:62
-#: people/templates/people/profile_detail.html:88
+#: people/templates/people/profile_detail.html:89
 msgid "Create a new map"
 msgstr "Δημιουργήστε ένα νέο χάρτη"
 
@@ -285,7 +284,7 @@ msgstr "Εξαγωγή επιλεγμένων"
 
 #: documents/templates/documents/document_search.html:87
 msgid "Your search did not match any items."
-msgstr "Η αναζήτησή σας δεν επέστρεψε κανένα αντικείμενο."
+msgstr "Η αναζήτησή σας δεν επέστρεψε κανένα αποτέλεσμα."
 
 #: documents/templates/documents/document_upload.html:4
 #, fuzzy
@@ -1688,76 +1687,76 @@ msgstr ""
 msgid "CSW WKT geometry"
 msgstr ""
 
-#: layers/models.py:412
+#: layers/models.py:417
 msgid "attribute name"
 msgstr ""
 
-#: layers/models.py:412
+#: layers/models.py:417
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr ""
 
-#: layers/models.py:413
+#: layers/models.py:418
 msgid "attribute label"
 msgstr ""
 
-#: layers/models.py:413
+#: layers/models.py:418
 msgid "title of attribute as displayed in GeoNode"
 msgstr ""
 
-#: layers/models.py:414
+#: layers/models.py:419
 msgid "attribute type"
 msgstr ""
 
-#: layers/models.py:414
+#: layers/models.py:419
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr ""
 
-#: layers/models.py:415
+#: layers/models.py:420
 msgid "visible?"
 msgstr ""
 
-#: layers/models.py:415
+#: layers/models.py:420
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr ""
 
-#: layers/models.py:416
+#: layers/models.py:421
 msgid "display order"
 msgstr ""
 
-#: layers/models.py:416
+#: layers/models.py:421
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr ""
 
-#: layers/models.py:487
+#: layers/models.py:492
 msgid "For example \"kml\""
 msgstr ""
 
-#: layers/models.py:489
+#: layers/models.py:494
 msgid "For example \"View in Google Earth\""
 msgstr ""
 
-#: layers/models.py:490
+#: layers/models.py:495
 msgid "For example \"text/xml\""
 msgstr ""
 
-#: layers/models.py:695
+#: layers/models.py:700
 msgid "KML"
 msgstr "KML"
 
-#: layers/models.py:709 layers/templates/layers/layer_detail.html:216
+#: layers/models.py:714 layers/templates/layers/layer_detail.html:216
 msgid "View in Google Earth"
 msgstr "Προβολή στο Google Earth"
 
-#: layers/models.py:724
+#: layers/models.py:729
 #, fuzzy
 msgid "Tiles"
 msgstr "Τίτλος"
 
 #: layers/ows.py:85
 msgid "Zipped Shapefile"
-msgstr "Zipped Shapefile"
+msgstr "Συμπιεσμένο Shapefile"
 
 #: layers/ows.py:86
 msgid "GML 2.0"
@@ -1857,7 +1856,7 @@ msgstr ""
 #: layers/templates/layers/_actions.html:4
 #: layers/templates/layers/layer_metadata.html:30
 msgid "Attributes"
-msgstr "Γνωρίσματα"
+msgstr "Χαρακτηριστικά"
 
 #: layers/templates/layers/_actions.html:5
 #: maps/templates/maps/map_detail.html:52 templates/_actions.html:5
@@ -1941,7 +1940,7 @@ msgstr ""
 
 #: layers/templates/layers/layer_detail.html:59
 msgid "Edit Styles"
-msgstr "Επεξεργασία στυλ"
+msgstr "Επεξεργασία Στυλ"
 
 #: layers/templates/layers/layer_detail.html:60
 msgid "Edit Permissions"
@@ -2127,7 +2126,7 @@ msgstr ""
 "προηγούμενη,\n"
 "έκδοση ή αλλάζει τους τύπους τους, τότε τα υπάρχοντα στυλ για την επιφάνεια "
 "μπορεί να μην δουλεύουν.\n"
-"Παρακαλώ ελέγξτε τους χάρτες αν τα νέα δεδομένα περιέχουν τέτοιες αλλαγές.  "
+"Παρακαλώ ελέγξτε στους χάρτες αν τα νέα δεδομένα περιέχουν τέτοιες αλλαγές.  "
 "Επιπρόσθετα,\n"
 "τα νέα δεδομένα πρέπει να είναι του ίδιου τύπου αρχείου με τα υπάρχοντα "
 "δεδομένα, π.χ.\n"
@@ -2159,7 +2158,7 @@ msgstr ""
 
 #: maps/models.py:61
 msgid "zoom"
-msgstr "ζουμ"
+msgstr "μεγέθυνση"
 
 #: maps/models.py:65
 msgid "projection"
@@ -2179,7 +2178,7 @@ msgstr "ταξινόμηση στοίβας"
 
 #: maps/models.py:325
 msgid "format"
-msgstr "μορφή"
+msgstr "τύπος αρχείου"
 
 #: maps/models.py:329
 msgid "name"
@@ -2211,7 +2210,7 @@ msgstr "ορατότητα"
 
 #: maps/models.py:356
 msgid "ows URL"
-msgstr "OWS URL"
+msgstr "Ηλεκτρονική Διεύθυνση Υπηρεσίας OWS"
 
 #: maps/models.py:359
 msgid "layer params"
@@ -2231,7 +2230,7 @@ msgstr ""
 
 #: maps/views.py:71
 msgid "You must be logged in to save this map"
-msgstr "Θα πρέπει να συνδεθείτε για να σώσετε αυτό το χάρτη"
+msgstr "Θα πρέπει να συνδεθείτε για να αποθηκεύσετε αυτό το χάρτη"
 
 #: maps/views.py:72
 msgid "You are not allowed to modify this map's metadata."
@@ -2268,11 +2267,11 @@ msgstr ""
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
 #: maps/templates/maps/map_list.html:13 templates/index.html:31
 msgid "Explore Maps"
-msgstr "Εξερευνήστε Χάρτες"
+msgstr "Εξερεύνηση Χάρτών"
 
 #: maps/templates/maps/map_base.html:13 maps/templates/maps/map_search.html:5
 msgid "Search Maps"
-msgstr "Αναζήτηση Χάρτες"
+msgstr "Αναζήτηση Χαρτών"
 
 #: maps/templates/maps/map_detail.html:27
 #, fuzzy
@@ -2498,7 +2497,7 @@ msgstr ""
 
 #: people/models.py:41
 msgid "Voice"
-msgstr "Φωνή"
+msgstr "Τηλέφωνο"
 
 #: people/models.py:41
 msgid ""
@@ -2518,7 +2517,7 @@ msgstr ""
 
 #: people/models.py:43
 msgid "Delivery Point"
-msgstr "Σημείο παράδοσης"
+msgstr "Σημείο Παράδοσης"
 
 #: people/models.py:43
 msgid ""
@@ -2580,11 +2579,11 @@ msgstr ""
 msgid "No user could be found with that email address."
 msgstr ""
 
-#: people/templates/people/_profile_about_item.html:3
+#: people/templates/people/_profile_about_item.html:6
 msgid "About the Layer Owner"
 msgstr ""
 
-#: people/templates/people/_profile_about_item.html:8
+#: people/templates/people/_profile_about_item.html:11
 msgid "Read more about the owner"
 msgstr ""
 
@@ -2603,74 +2602,73 @@ msgstr ""
 msgid "Create Profile"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:9
+#: people/templates/people/profile_detail.html:10
 #: templates/geonode/resourcebase_info_panel.html:28
 msgid "Type"
 msgstr "Τύπος"
 
-#: people/templates/people/profile_detail.html:11
+#: people/templates/people/profile_detail.html:12
 #: templates/geonode/resourcebase_info_panel.html:21
 msgid "Date"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:18
+#: people/templates/people/profile_detail.html:19
 msgid "Layer"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:27
+#: people/templates/people/profile_detail.html:28
 msgid "Map"
 msgstr "Χάρτης"
 
-#: people/templates/people/profile_detail.html:36
+#: people/templates/people/profile_detail.html:37
 msgid "Document"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:58
+#: people/templates/people/profile_detail.html:59
 msgid "Delete Layers"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:61
+#: people/templates/people/profile_detail.html:62
 msgid ""
 "You're about to delete multiple layers and maps.  Is that really what you "
 "want to do?"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:64
+#: people/templates/people/profile_detail.html:65
 #: templates/_permissions_form.html:51
 msgid "Cancel"
 msgstr "Ακύρωση"
 
-#: people/templates/people/profile_detail.html:65
+#: people/templates/people/profile_detail.html:66
 #: templates/user_messages/inbox.html:44
 msgid "Delete"
 msgstr ""
 
-#: people/templates/people/profile_detail.html:82
+#: people/templates/people/profile_detail.html:83
 msgid "Actions"
 msgstr "Ενέργειες"
 
-#: people/templates/people/profile_detail.html:84
+#: people/templates/people/profile_detail.html:85
 msgid "Edit profile information"
 msgstr "Επεξεργασία πληροφοριών προφίλ"
 
-#: people/templates/people/profile_detail.html:85
+#: people/templates/people/profile_detail.html:86
 #, fuzzy
 msgid "Account Settings"
 msgstr "Ρυθμίσεις"
 
-#: people/templates/people/profile_detail.html:86
+#: people/templates/people/profile_detail.html:87
 msgid "Change password"
 msgstr "Αλλαγή κωδικού πρόσβασης"
 
-#: people/templates/people/profile_detail.html:87
+#: people/templates/people/profile_detail.html:88
 #, fuzzy
 msgid "Upload new layers"
 msgstr "Ανεβάστε Επιφάνεια"
 
 #: people/templates/people/profile_edit.html:8 templates/avatar/add.html:9
 msgid "You haven't uploaded an avatar yet. Please upload one now."
-msgstr ""
-"Δεν έχετε ανεβάσει ένα avatar ακόμα. Παρακαλούμε να ανεβάσετε ένα τώρα."
+msgstr "Δεν έχετε ανεβάσει ένα εικονίδιο. Παρακαλούμε να ανεβάσετε ένα τώρα."
 
 #: people/templates/people/profile_edit.html:11
 msgid "Change Your Avatar"
@@ -3053,7 +3051,7 @@ msgstr "Αναζήτηση μεταδεδομένων μέσω CSW:"
 
 #: templates/developer.html:68
 msgid "Cached tiles via WMTS:"
-msgstr "Προσωρινής αποθήκευσης πλακίδια μέσω WMTS:"
+msgstr "Προσωρινά πλακίδια μέσω WMTS:"
 
 #: templates/help.html:4
 msgid "User Guide"
@@ -3061,7 +3059,7 @@ msgstr "Οδηγός Χρηστών"
 
 #: templates/help.html:8
 msgid "GeoNode Help"
-msgstr "GeoNode Βοήθεια"
+msgstr "Βοήθεια GeoNode"
 
 #: templates/help.html:9
 msgid ""
@@ -3293,7 +3291,7 @@ msgstr "Καλώς ήρθατε!"
 
 #: templates/index.html:16
 msgid "Welcome"
-msgstr "Καλώς ήρθατε!"
+msgstr "Καλώς ήρθατε"
 
 #: templates/index.html:20
 msgid ""
@@ -3365,7 +3363,7 @@ msgstr ""
 
 #: templates/avatar/add.html:6
 msgid "Your current avatar: "
-msgstr "Τρέχον σας avatar:"
+msgstr "Το τρέχον σας εικονίδιο:"
 
 #: templates/avatar/add.html:12
 msgid "Upload an Avatar"
@@ -3417,7 +3415,7 @@ msgstr ""
 
 #: templates/geonode/resourcebase_info_panel.html:117
 msgid "Supplemental Information"
-msgstr "Συμπληρωματικές πληροφορίες"
+msgstr "Συμπληρωματικές Πληροφορίες"
 
 #: templates/geonode/resourcebase_info_panel.html:124
 #, fuzzy
@@ -3505,7 +3503,7 @@ msgstr ""
 
 #: templates/pagination/pagination.html:17
 msgid "Next"
-msgstr "Επόμενη"
+msgstr "Επόμενο"
 
 #: templates/pagination/pagination.html:19
 msgid "next"

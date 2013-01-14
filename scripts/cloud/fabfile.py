@@ -170,13 +170,19 @@ def deploy_default_geonode():
     # User needs to provide local_settings - where?
     setup_pgsql('geonode')
 
+def deploy_geonode_snapshot_package():
+    sudo('add-apt-repository -y ppa:geonode/snapshots') 
+    sudo('apt-get update')
+    sudo('apt-get install -f -y geonode')
+
 def deploy_geonode_dev_package():
     sudo('add-apt-repository -y ppa:geonode/unstable') 
     sudo('apt-get update')
-    sudo('wget http://build.geonode.org/geonode/latest/geonode_2.0.0%2balpha0_all.deb')
+    sudo('wget -e robots=off --wait 0.25 -r -l1 --no-parent -A.deb http://build.geonode.org/geonode/latest/')
     with settings(warn_only=True):
-        sudo('dpkg -i geonode_2.0.0+alpha0_all.deb')
+        sudo('cd build.geonode.org/geonode/latest;dpkg -i geonode_2.0.0*.deb',shell=True)
     sudo('apt-get install -f -y')
+    sudo ('source /var/lib/geonode/bin/activate; geonode-updateip alpha.dev.geonode.org')
 
 def change_admin_password():
     put('../misc/changepw.py', '/home/ubuntu/')

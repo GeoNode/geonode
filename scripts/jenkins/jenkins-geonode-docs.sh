@@ -38,14 +38,14 @@ rm -rf /var/www/workshops/user/*
 cp -R build/html/* /var/www/workshops/user/
 cp -R build/latex/GeoNodeUsersWorkshop.pdf /var/www/workshops/user/
 
-cd ${WORKSPACE}/geonode-workshops/admin
+cd ${WORKSPACE}/geonode-workshops/admin/doc
 make html
 make latexpdf
 rm -rf /var/www/workshops/admin/*
 cp -R build/html/* /var/www/workshops/admin/
 cp -R build/latex/GeoNodeAdministratorsWorkshop.pdf /var/www/workshops/admin/
 
-cd ${WORKSPACE}/geonode-workshops/devel
+cd ${WORKSPACE}/geonode-workshops/devel/doc
 make html
 make latexpdf
 rm -rf /var/www/workshops/devel/*
@@ -56,7 +56,16 @@ cp -R build/latex/GeoNodeDevelopersWorkshop.pdf /var/www/workshops/devel/
 cd ${WORKSPACE}/geonode.github.com/
 cactus build
 cp -R build/* .
-# TODO: Publish workshops to main site
+
+# Publish Workshops
+rm -rf workshops/*
+mkdir workshops/user
+cp -R ${WORKSPACE}/geonode-workshops/user/doc/build/html/* workshops/user/
+cp -R ${WORKSPACE}/geonode-workshops/user/doc/build/latex/*.pdf workshops/user/
+mkdir workshops/admin
+cp -R ${WORKSPACE}/geonode-workshops/admin/doc/build/html/* workshops/admin/
+cp -R ${WORKSPACE}/geonode-workshops/admin/doc/build/latex/*.pdf workshops/admin/
+git add .
 git commit -am "Update GeoNode Website"
 git push origin master
 rm -rf /var/www/site/*

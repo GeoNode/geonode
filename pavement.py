@@ -23,6 +23,7 @@ import time
 import urllib
 import zipfile
 import shutil
+import glob
 from StringIO import StringIO
 
 from paver.easy import task, options, cmdopts, needs
@@ -85,28 +86,10 @@ def setup_geoserver(options):
             z.extractall(geoserver_dir)
 
 
-@task
-def setup_geoexplorer(options):
-    """
-    Fetch GeoExplorer
-    """
-    geoxp_zip = StringIO()
-    geoxp_zip.write(urllib.urlopen("http://suite.opengeo.org/builds/geoexplorer/opengeosuite-dev-geoexplorer-static.zip").read())
-    geoxp_zipfile = zipfile.ZipFile(geoxp_zip)
-    filelist = geoxp_zipfile.filelist
-    root_dir = filelist[0].filename
-    for afile in filelist:
-        geoxp_zipfile.extract(afile, "geonode/static/")
-    geoxp_zipfile.close()
-    if os.path.exists("geonode/static/geoexplorer"):
-        shutil.rmtree("geonode/static/geoexplorer")
-    shutil.move("geonode/static/%s" % root_dir, "geonode/static/geoexplorer")
-
 
 @task
 @needs([
     'setup_geoserver',
-    'setup_geoexplorer',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
@@ -163,9 +146,18 @@ def package(options):
     out_pkg_tar = path("%s.tar.gz" % pkgname)
 
     # Create a distribution in zip format for the geonode python package.
+    dist_dir = path('dist')
+    dist_dir.rmtree()
     sh('python setup.py sdist --format=zip')
 
     with pushd('package'):
+
+        #Delete old tar files in that directory
+        for f in glob.glob('GeoNode*.tar.gz'):
+            old_package = path(f)
+            if old_package != out_pkg_tar:
+                old_package.remove()
+	
         if out_pkg_tar.exists():
             info('There is already a package for version %s' % version)
             return
@@ -180,12 +172,6 @@ def package(options):
         # And copy the default files from the package folder.
         justcopy(support_folder, out_pkg / 'support')
         justcopy(install_file, out_pkg)
-
-        # Package Geoserver's war.
-        geoserver_path = ('../geoserver-geonode-ext/target/'
-                          'geonode-geoserver-ext-0.3.jar')
-        geoserver_target = path(geoserver_path)
-        geoserver_target.copy(out_pkg)
 
         geonode_dist = path('..') / 'dist' / 'GeoNode-%s.zip' % version
         justcopy(geonode_dist, out_pkg)
@@ -203,7 +189,7 @@ def package(options):
         out_pkg.rmtree()
 
     # Report the info about the new package.
-    info("%s.tar.gz created" % out_pkg.abspath())
+    info("%s created" % out_pkg_tar.abspath())
 
 
 @task
@@ -417,11 +403,7 @@ def deb(options):
 
     major, minor, revision, stage, edition = raw_version
 
-    # create a temporary file with the name of the branch
-    sh('echo `git rev-parse --abbrev-ref HEAD` > .git_branch')
-    branch = open('.git_branch', 'r').read().strip()
-    # remove the temporary file
-    sh('rm .git_branch')
+    branch = 'dev'
 
     if stage == 'alpha' and edition == 0:
         tail = '%s%s' % (branch, timestamp)
@@ -441,23 +423,31 @@ def deb(options):
         # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
         path('.git').makedirs()
 
+        # Install requirements
         #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
-        #sh(('git-dch --git-author --new-version=%s'
-        #    ' --id-length=6 --ignore-branch' % (
-        #    simple_version)))
+        sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
+            ' --id-length=6 --ignore-branch --release' % (
+            simple_version)))
 
-        # Revert workaround for git-dhc bug
+        ## Revert workaround for git-dhc bug
         path('.git').rmtree()
 
-        if key is None:
+        if key is None and ppa is None:
+            # A local installable package
             sh('debuild -uc -us -A')
-        else:
-            if ppa is None:
-                sh('debuild -k%s -A' % key)
-            else:
-                sh('debuild -k%s -S' % key)
-                sh('dput ppa:%s geonode_*.sources' % ppa)
+	elif key is None and ppa is not None:
+            # A sources package, signed by daemon
+            sh('debuild -S')
+	elif key is not None and ppa is None:
+            # A signed installable package
+            sh('debuild -k%s -A' % key)
+	elif key is not None and ppa is not None:
+            # A signed, source package
+            sh('debuild -k%s -S' % key)
+
+    if ppa is not None:
+        sh('dput ppa:%s geonode_%s_source.changes' % (ppa, simple_version))
 
 
 def kill(arg1, arg2):
