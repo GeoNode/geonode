@@ -49,7 +49,7 @@ urlpatterns = patterns('',
     url(r'^help/$', 'django.views.generic.simple.direct_to_template',
                 {'template': 'help.html'}, name='help'),
     url(r'^developer/$', 'django.views.generic.simple.direct_to_template',
-                {'template': 'developer.html'}, name='dev'),
+                {'template': 'developer.html'}, name='developer'),
     url(r'^about/$', 'django.views.generic.simple.direct_to_template',
                 {'template': 'about.html'}, name='about'),
 
