@@ -2,7 +2,7 @@ function pollProgress(redirectTo, progressEndpoint, form) {
     var progress = Ext.MessageBox.progress("Please wait","Ingesting data"),
     formDom = form.dom;
     function success(response,redirectTo) {
-        var state, msg;
+        var percent, msg;
         response = Ext.decode(response.responseText);
         // response will contain state, one of :
         // PENDING, READY, RUNNING, NO_CRS, NO_BOUNDS, ERROR, COMPLETE
@@ -16,7 +16,9 @@ function pollProgress(redirectTo, progressEndpoint, form) {
             return;
         } else if ('progress' in response) {
             msg = 'Ingested ' + response.progress + " of " + response.total;
-            progress.updateProgress( response.progress/response.total, msg );
+            percent = response.progress/response.total;
+            percent = isNaN(percent) ? 0 : percent;
+            progress.updateProgress( percent, msg );
         } else {
             switch (response.state) {
                 // give it a chance to start running or return complete
@@ -57,14 +59,26 @@ function enableUploadProgress(uploadFormID) {
             // AJAX submit form
             var form = Ext.get(uploadFormID), extForm = new Ext.form.BasicForm(form);
             form.on('submit',function(ev) {
-                ev.preventDefault();
+                // IE8 event handling doesn't order the handlers properly
+                // if more than one is added to the form submit listeners
+                if ('beforeaction' in form) {
+                    if (form.beforeaction() == false) {
+                        ev.preventDefault();
+                        return;
+                    }
+                }
                 extForm.on('actioncomplete',function(form,xhrlike) {
                     var resp = Ext.decode(xhrlike.response.responseText);
-                    pollProgress(resp.redirect_to, resp.progress, Ext.get(uploadFormID));
+                    if (resp.progress) {
+                        pollProgress(resp.redirect_to, resp.progress, Ext.get(uploadFormID));
+                    } else {
+                        // if there is no progress, we should just continue on to the next step
+                        document.location = resp.redirect_to;
+                    }
                 });
                 extForm.on('actionfailed',function(form,xhrlike) {
                     var msg = "result" in xhrlike ? 
-                        xhrlike.result.errors.join("\n") : 
+                        xhrlike.result.errors.join("<br/>") : 
                         xhrlike.response.responseText;
                     Ext.MessageBox.show({
                         icon : Ext.MessageBox.ERROR,

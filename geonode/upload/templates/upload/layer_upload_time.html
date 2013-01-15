@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block title %} {% trans "Upload Layer Step 2" %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+<style type="text/css">
+    /* bootstrap workaround */
+    #timeForm label {
+        display: inline;
+    }
+    .formSection {
+        margin-bottom: 1em;
+    }
+    .right input, .right select {
+    }
+    .left input {
+        line-height: 2em;
+    }
+    form input, form select {
+        font-size: small;
+    }
+    form label {
+        line-height: 2em;
+    }
+    .clearfix:after {
+      content: ".";
+      display: block;
+      height: 0;
+      clear: both;
+      visibility: hidden;
+    }
+    .clearfix {
+      display: inline-block;
+    }
+    * html .clearfix {
+      height: 1%;
+    } /* Hides from IE-mac \*/
+    .clearfix {
+      display: block;
+    }
+    #format_input input {
+        width:8em;
+    }
+    #timehelp p {
+        color: black !important;
+    }
+    #timehelp code {
+        background: lightgray;
+    }
+</style>
+{{ block.super }}
+{% endblock %}
+{% block body %}
+<div class="twocol">
+  <h2> {% trans "Editing details for " %} {{ layer_name }} </h2>
+
+  <form method="POST" id="timeForm">
+      
+  {% if missing_crs %}
+  <h3>Coordinate Reference System</h3>
+  <p>A coordinate reference system for this layer could not be determined.
+  Locate or enter the appropriate ESPG code for this layer below.
+  One way to do this is do visit: <a href="http://prj2epsg.org/search" target="_">prj2epsg</a> and enter the following:
+  </p>
+  <pre>
+  {{ native_crs }}
+  </pre>
+  <label for="srs">EPSG Code (SRS)  :</label><input type="text" name="srs">
+  {% endif %}
+
+  <h3>Time Options</h3>
+    {% csrf_token %}
+    
+    <h4>Choose time attribute:</h4>
+    <div class="formSection clearfix" title="Map animations will not be enabled">
+        <input type="radio" name="timetype" checked="checked" id="notime">
+        <label for="notime">{% trans "This data does not have a time attribute" %}</label>
+    </div>
+    {% if time_form.time_attribute %}
+    <div class="formSection clearfix right" title="Use an existing timestamp attribute in the data">
+        <input type="radio" name="timetype" id="existing">
+        <label for="existing">{% trans "Existing Time Attribute" %}  :</label>{{ time_form.time_attribute }}
+    </div>
+    {% endif %}
+    {% if time_form.text_attribute %}
+    <div class="formSection clearfix right" title="Convert text in the data to a timestamp using standard date/time representation or a custom format">
+        <input type="radio" name="timetype" id="textattribute">
+        <label for="textattribute">{% trans "Convert Text Attribute" %}  :</label>{{ time_form.text_attribute }}
+        <label for="format_select">{% trans "Date Format" %}  :
+        <select id="format_select">
+            <option selected="true" value="0">Best Guess</option>
+            <option value="1">Custom</option>
+        </select>
+        <div id="format_input" style="display: inline; visibility: hidden;" class="clearfix">
+            {{ time_form.text_attribute_format }}
+        </div>
+    </div>
+    {% endif %}
+    {% if time_form.year_attribute %}
+    <div class="formSection clearfix right" title="Convert a number field into a year">
+        <input type="radio" name="timetype" id="convertnumber">
+        <label for="convertnumber">{% trans "Convert Number (As Year)" %}  :</label>{{ time_form.year_attribute }}
+    </div>
+    {% endif %}
+    
+    <h4>Choose optional end time attribute:</h4>
+    {% if time_form.time_attribute %}
+    <div class="formSection clearfix right" title="Use an existing timestamp attribute in the data">
+        <input type="radio" name="end_timetype" id="end_existing">
+        <label for="end_existing">{% trans "Existing Time Attribute" %}  :</label>{{ time_form.end_time_attribute }}
+    </div>
+    {% endif %}
+    {% if time_form.text_attribute %}
+    <div class="formSection clearfix right" title="Convert text in the data to a timestamp using standard date/time representation or a custom format">
+        <input type="radio" name="end_timetype" id="textattribute">
+        <label for="end_textattribute">{% trans "Convert Text Attribute" %}  :</label>{{ time_form.end_text_attribute }}
+        <label for="end_format_select">{% trans "Date Format" %}  :
+        <select id="end_format_select">
+            <option selected="true" value="0">Best Guess</option>
+            <option value="1">Custom</option>
+        </select>
+        <div id="format_input" style="display: inline; visibility: hidden;" class="clearfix">
+            {{ time_form.end_text_attribute_format }}
+        </div>
+    </div>
+    {% endif %}
+    {% if time_form.year_attribute %}
+    <div class="formSection clearfix right" title="Convert a number field into a year">
+        <input type="radio" name="end_timetype" id="end_convertnumber">
+        <label for="end_convertnumber">{% trans "Convert Number (As Year)" %}  :</label>{{ time_form.end_year_attribute }}
+    </div>
+    {% endif %}
+
+    <div id="presentation" class="formSection left">
+        <h4>Present time attribute as:</h4>
+        <div>
+            <input id="LIST" type='radio' value='LIST' checked='checked' name='presentation_strategy'/>
+            <label for="LIST"><strong>List</strong> of all the distinct time values</label>
+        </div>
+        <div>
+            <input id="DISCRETE_INTERVAL" type='radio' value='DISCRETE_INTERVAL' name='presentation_strategy'/>
+            <label for="DISCRETE_INTERVAL"><strong>Intervals</strong> defined by the resolution</label>
+        </div>
+        <div>
+            <input id="CONTINUOUS_INTERVAL" type='radio' value='CONTINUOUS_INTERVAL' name='presentation_strategy'/>
+            <label for="CONTINUOUS_INTERVAL"><strong>Continuous Intervals</strong> for data that is frequently updated, resolution describes the frequency of updates</label>
+        </div>
+        
+        <div id="precision" style="display:none">
+            <p><strong>Resolution of time attribute: <input type="text" name="precision_value" size="3"/>
+            {{ time_form.precision_step }}
+            </p>
+        </div>
+    </div>
+    
+    <input type="submit" value="{% trans "Next" %}"/>
+  </form>
+</div>
+<div id="timehelp" class="threecol">
+    <h3>Need Help?</h3>
+    <h4>Enabling Time</h4>
+    <p>A feature can currently support one or two time attributes. If a single
+    attribute is used, the feature is considered relevant at that single point in time. If two
+    attributes are used, the second attribute represents the end of a valid period for the
+    feature.</p>
+    <h4>Selecting an Attribute</h4>
+    <p>A time attribute can be one of:</p>
+    <ul>
+        <li>An existing date</li>
+        <li>Text that can be converted to a timestamp</li>
+        <li>A number representing a year</li>
+    </ul>
+    <p>
+    For text attributes, one can specify a custom format or use the 'best guess' approach.
+    The most common formatting flags are:
+    </p>
+    <ul>
+        <li><code>y</code> year</li>
+        <li><code>M</code> month</li>
+        <li><code>d</code> day of month</li>
+        <li><code>H</code> hour of day (0-23)</li>
+        <li><code>k</code> hour of day (1-24)</li>
+        <li><code>m</code> minute in hour</li>
+        <li><code>s</code> second in minute</li>
+    </ul>
+    
+    <p class="alert alert-info">Note that single quotes represent a literal character.</p>
+    <p class="alert alert-info">To remove ambiguity, repeat a code to represent the maximum number of digits - for example yyyy</p>
+    
+    The 'best guess' will handle date and optional time variants of <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO-8601</a>.
+    In terms of the formatting flags noted above, these are:
+    <pre>
+    yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+    yyyy-MM-dd'T'HH:mm:sss'Z'
+    yyyy-MM-dd'T'HH:mm:ss'Z'
+    yyyy-MM-dd'T'HH:mm'Z'
+    yyyy-MM-dd'T'HH'Z'
+    yyyy-MM-dd
+    yyyy-MM
+    yyyy
+    </pre>
+    </p>
+</div>
+<script type="text/javascript" src="{{ STATIC_URL }}geonode/js/upload/ext/layer_upload_time.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}geonode/js/upload/ext/upload_common.js"></script>
+<script type="text/javascript">
+{% autoescape off %}
+{% if async_upload %}
+enableUploadProgress('timeForm');
+{% endif %}
+{% endautoescape %}
+</script>
+{% endblock %}
