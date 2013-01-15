@@ -6,10 +6,15 @@
 
 {% block main_class %}data upload{% endblock main_class %}
 
+{% block extra_head %}
+
+{% endblock %}
+
+
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
-{% include "geonode/geo_header.html" %}
+
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geonode/css/fileuploadfield.css"/>
 <style type="text/css">
     .uip {
@@ -22,6 +27,12 @@
     #base_file-file {
         width: auto;
     }
+    #drop-zone {
+      background: #eee;
+      height: 100px;
+      margin-bottom: 10px;
+      padding: 5px;
+    }
 </style>
 {{ block.super }}
 {% endblock %}
@@ -30,6 +41,7 @@
   <div class="block">
     <div class="span8">
       <h2 class="page-title">{% trans "Upload Layers" %}</h2>
+
         {% if incomplete %}
             <section style="border: none" class="uip">
                 <h3 class="uip">Incomplete Uploads</h3>
@@ -63,28 +75,53 @@
         {% endif %}
 
         {% if enough_storage %}
-            <div id="upload_form"></div>
-            <script type="text/javascript" src="{% static "geonode/js/upload/ext/layer_upload.js" %}"></script>
-            <script type="text/javascript" src="{% static "geonode/js/upload/ext/upload_common.js" %}"></script>
+
+
+            <section id="drop-zone">
+              <h2>Drag and Drop files here</h2>
+            </section>
+
+            <form id="file-uploader" method="post" enctype="multipart/form-data">
+              <input class="btn" id="file-input" type="file" multiple>
+            </form>
+
+            <section class="widget">
+              <ul id="global-errors"></ul>
+              <h2>{% trans "Files to be uploaded" %}</h2>
+              <div id="file-queue">
+              </div>
+            </section>
+
+            <section>
+              <a href="#" id="clear-button">Clear</a>
+              <a href="#" id="upload-button" class="btn">Upload files</a>
+            </section>
+
+            <script data-main="{{STATIC_URL}}/geonode/js/upload/main"
+                    src="{{ STATIC_URL }}geonode/libs/require.js">
+            </script>
+
             <script type="text/javascript">
             {% autoescape off %}
-                setup({
-                    csrf_token : "{{ csrf_token }}",
-                    form_target : "{% url data_upload %}",
-                    userLookup : "{% url geonode.views.ajax_lookup %}"
-                });
-                {% if async_upload %}
+            csrf_token =  "{{ csrf_token }}",
+            form_target = "{% url data_upload %}",
+            userLookup = "{% url geonode.views.ajax_lookup %}"
+
+            {% if async_upload %}
                     enableUploadProgress('upload_form');
-                {% endif %}
-                {% endautoescape %}
+            {% endif %}
+
+            {% endautoescape %}
+
             </script>
+
         {% endif %}
         </div>
     </div>
 {% endblock %}
 
 {% block sidebar %}
-    
+
 {% if enough_storage %}
 <h3>{%trans "Permissions"  %}</h3>
 
