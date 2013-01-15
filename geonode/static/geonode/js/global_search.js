@@ -114,6 +114,7 @@ var doSearch = function (options) {
 
     $("#search-results").html("<p>Searching...</p>");
 
+    $(".search_query").html("");
     for(var key in query){
         if(query[key] != ""){
             $(".search_query").append('<li>' + key + ': ' + query[key]);
