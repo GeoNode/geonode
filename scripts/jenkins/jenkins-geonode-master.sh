@@ -20,6 +20,7 @@ pip install --quiet nosexcover
 pip install --quiet pylint
 pip install --quiet pyflakes
 pip install --quiet clonedigger
+pip install --quiet pep8
 
 # Setup and Build GeoNode
 git clean -dxff
