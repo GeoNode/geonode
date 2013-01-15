@@ -50,7 +50,7 @@ from .utils import check_layer, get_web_page
 
 from geonode.maps.utils import *
 
-from geonode.gs_helpers import cascading_delete, fixup_style
+from geonode.geoserver.helpers import cascading_delete, fixup_style
 import gisdata
 
 import zipfile
@@ -383,6 +383,7 @@ class GeoNodeMapTest(TestCase):
         self.assertRaises(ObjectDoesNotExist,
             lambda: Layer.objects.get(pk=shp_layer_id))
 
+    # geonode.geoserver.helpers
         # If catalogue is installed, then check that it is deleted from there too.
         if 'geonode.catalogue' in settings.INSTALLED_APPS:
             from geonode.catalogue import get_catalogue
@@ -393,10 +394,8 @@ class GeoNodeMapTest(TestCase):
             assert shp_layer_gn_info == None
 
 
-    # geonode.maps.gs_helpers
-
     def test_cascading_delete(self):
-        """Verify that the gs_helpers.cascading_delete() method is working properly
+        """Verify that the helpers.cascading_delete() method is working properly
         """
         gs_cat = Layer.objects.gs_catalog
 

@@ -1,0 +1,73 @@
+{% extends "upload/base.html" %}
+{% load upload_tags %}
+{% block extra_head %}
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="{{ STATIC_URL }}fileupload/css/bootstrap-responsive.min.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}fileupload/css/bootstrap-image-gallery.min.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}fileupload/css/jquery.fileupload-ui.css">
+
+{% endblock extra_head %}
+{% block body %}
+    <div class="uploader well" align='center'>
+        <!-- The file upload form used as target for the file upload widget -->
+        <form id="fileupload" action="." method="POST" enctype="multipart/form-data">
+        {% csrf_token %} 
+            <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+            <div class="row fileupload-buttonbar" align='center'>
+                <div class="span7">
+                    <h3>Drag &amp; drop the file here</h3>
+                    <div class="note">We support Shapefile and GeoTIFF uploads.</div>
+                <span class="btn btn-success fileinput-button">
+                    <i class="icon-plus icon-white"></i>
+                    <span>Choose files to Upload</span>
+                    <input type="file" name="file" multiple>
+                </span>
+                <button type="submit" class="btn btn-primary start">
+                    <i class="icon-upload icon-white"></i>
+                    <span>Start upload</span>
+                </button>
+                <button type="reset" class="btn btn-warning cancel">
+                    <i class="icon-ban-circle icon-white"></i>
+                    <span>Cancel upload</span>
+                </button>
+                <button type="button" class="btn btn-danger delete">
+                    <i class="icon-trash icon-white"></i>
+                    <span>Delete</span>
+                </button>
+                <input type="checkbox" class="toggle">
+            </div>
+                <!-- The global progress information -->
+                <div class="fileupload-progress fade">
+                    <!-- The global progress bar -->
+                    <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                        <div class="bar" style="width:0%;"></div>
+                    </div>
+                    <!-- The extended global progress information -->
+                    <div class="progress-extended">&nbsp;</div>
+                </div>
+            </div>
+            <!-- The loading indicator is shown during file processing -->
+            <div class="fileupload-loading"></div>
+            <br>
+            <!-- The table listing the files available for upload/download -->
+            <table role="presentation" class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+        </form>
+    </div>
+    <center><button class="btn btn-large">Next</button></center>
+{% endblock %}
+{% block extra_script %}
+{% upload_js %}
+<script src="{{ STATIC_URL }}fileupload/js/jquery.ui.widget.js"></script>
+<script src="{{ STATIC_URL }}fileupload/js/tmpl.min.js"></script>
+<script src="{{ STATIC_URL }}fileupload/js/load-image.min.js"></script>
+<script src="{{ STATIC_URL }}fileupload/js/canvas-to-blob.min.js"></script>
+<script src="{{ STATIC_URL }}fileupload/js/bootstrap.min.js"></script>
+<script src="{{ STATIC_URL }}fileupload/js/bootstrap-image-gallery.min.js"></script>
+<script src="{{ STATIC_URL }}fileupload/js/jquery.iframe-transport.js"></script>
+<script src="{{ STATIC_URL }}fileupload/js/jquery.fileupload.js"></script>
+<script src="{{ STATIC_URL }}fileupload/js/jquery.fileupload-fp.js"></script>
+<script src="{{ STATIC_URL }}fileupload/js/jquery.fileupload-ui.js"></script>
+<script src="{{ STATIC_URL }}fileupload/js/locale.js"></script>
+<script src="{{ STATIC_URL }}fileupload/js/main.js"></script>
+<script src="{{ STATIC_URL }}fileupload/js/csrf.js"></script>
+{% endblock %}
