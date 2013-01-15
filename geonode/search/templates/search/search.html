@@ -36,13 +36,13 @@
             </header>
             <div id="filter-classes" class="collapse in">
                 <form action="">
-                  <label class="checkbox" data-class="Map">
+                  <label class="checkbox" data-class="map">
                     <input type="checkbox" id="filter-maps" /> Maps <span>(<span class="count">0</span>)</span>
                   </label>
-                  <label class="checkbox" data-class="Layer">
+                  <label class="checkbox" data-class="layer">
                     <input type="checkbox" id="filter-data" /> Layers <span>(<span class="count">0</span>)</span>
                   </label>
-                  <div class="subgroup">
+                  <div class="subgroup" data-class="layer">
                     <label class="checkbox" data-class="coverageStore">
                       <input type="checkbox" /> Raster <span>(<span class="count">0</span>)</span>
                     </label>
@@ -51,17 +51,17 @@
                     </label>
                   </div>
                   {%  if DOCUMENTS_APP %}
-                  <label class="checkbox" data-class="Document">
+                  <label class="checkbox" data-class="document">
                     <input type="checkbox" /> Documents <span>(<span class="count">0</span>)</span>
                   </label>
                   {% endif %}
-                  <label class="checkbox" data-class="Feed">
+                  <label class="checkbox" data-class="feed">
                     <input type="checkbox" /> Feeds <span>(<span class="count">0</span>)</span>
                   </label>
-                  <label class="checkbox" data-class="User">
+                  <label class="checkbox" data-class="user">
                     <input type="checkbox" /> Users <span>(<span class="count">0</span>)</span>
                   </label>
-                  <label class="checkbox" data-class="Group">
+                  <label class="checkbox" data-class="group">
                     <input type="checkbox" /> Groups <span>(<span class="count">0</span>)</span>
                   </label>
                 </form>

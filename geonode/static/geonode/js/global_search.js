@@ -132,6 +132,7 @@ var doSearch = function (options) {
             $.each(data.results, function (index, item) {
                 var context = {
                     "display_type": item._display_type,
+                    "type": item._type,
                     "storeType": item.storeType,
                     "date": item.date,
                     "url": item.detail,
@@ -160,14 +161,14 @@ var doSearch = function (options) {
             $("#id_data_begins").val(d1.split("T")[0]);
             $(".info-bar").show().find(".count").html($("#search-results article").size());
             
-            if(query['filter_categories'] == undefined || query['filter_categories'] == 'all'){
+            if(query['type'] == undefined || query['type'] == 'all'){
                 $("#filter-classes :checkbox").attr("checked", true);
             }
             else{
                 $("#filter-classes :checkbox").attr("checked", false);
-                $("[data-class='"+query['filter_categories']+"'] :checkbox").attr("checked", true);
+                $("[data-class='"+query['type']+"'] :checkbox").attr("checked", true);
                 $("#search-results article").hide();
-                filterResults(query['filter_categories'],true);
+                filterResults(query['type'],true);
             }
 
 

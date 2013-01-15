@@ -311,7 +311,8 @@ def combined_search_results(query):
     facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'document', 'user')])
     results = {'facets' : facets}
 
-    bytype = query.type
+    bytype = None if query.type == u'all' else query.type
+    query.type = bytype
 
     if bytype is None or bytype == u'map':
         q = _get_map_results(query)
