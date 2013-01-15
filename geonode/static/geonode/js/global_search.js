@@ -201,7 +201,10 @@ $(function () {
 
     $("form.search-box").bind("submit", function (e) {
         e.preventDefault();
-        window.globalDoSearch($(this).find("input[name=q]").val());
+        var query = {
+            'q': $(this).find("input[name=q]").val()
+        }
+        window.globalDoSearch(query);
     });
 
     $("#filter-classes label.checkbox").each(function () {
