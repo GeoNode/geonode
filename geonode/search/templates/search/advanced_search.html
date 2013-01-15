@@ -37,16 +37,16 @@
               </div>
               <div class="control-group">
                 <label for="id_filter_categories_all" class="radio inline">
-                  <input type="radio"  id="id_filter_categories_all" checked /> {% trans 'All categories' %}
+                  <input type="radio" name="filter_categories" value='all' id="id_filter_categories_all" checked /> {% trans 'All categories' %}
                 </label>
                 <label for="id_filter_categories_maps" class="radio inline">
-                  <input type="radio"  id="id_filter_categories_maps" /> {% trans 'Maps only' %}
+                  <input type="radio" name="filter_categories" value='Map' id="id_filter_categories_maps" /> {% trans 'Maps only' %}
                 </label>
                 <label for="id_filter_categories_datasets" class="radio inline">
-                  <input type="radio"  id="id_filter_categories_datasets" /> {% trans 'Layers only' %}
+                  <input type="radio" name="filter_categories" value='Layer' id="id_filter_categories_datasets" /> {% trans 'Layers only' %}
                 </label>
                 <label for="id_filter_categories_groups" class="radio inline">
-                  <input type="radio"  id="id_filter_categories_groups" /> {% trans 'Groups only' %}
+                  <input type="radio" name="filter_categories" value='Group' id="id_filter_categories_groups" /> {% trans 'Groups only' %}
                 </label>
               </div>
             </div>

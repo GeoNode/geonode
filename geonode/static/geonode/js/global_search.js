@@ -159,7 +159,17 @@ var doSearch = function (options) {
 
             $("#id_data_begins").val(d1.split("T")[0]);
             $(".info-bar").show().find(".count").html($("#search-results article").size());
-            $("#filter-classes :checkbox").attr("checked", "checked");
+            
+            if(query['filter_categories'] == undefined || query['filter_categories'] == 'all'){
+                $("#filter-classes :checkbox").attr("checked", true);
+            }
+            else{
+                $("#filter-classes :checkbox").attr("checked", false);
+                $("[data-class='"+query['filter_categories']+"'] :checkbox").attr("checked", true);
+                $("#search-results article").hide();
+                filterResults(query['filter_categories'],true);
+            }
+
 
             $("#filter-classes span.count").each(function () {
                 $(this).html(
