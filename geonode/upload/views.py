@@ -37,7 +37,7 @@ from geonode.upload import forms
 from geonode.upload.models import Upload, UploadFile
 from geonode.upload import upload
 from geonode.upload.utils import rename_and_prepare, find_sld, get_upload_type
-from geonode.upload.forms import UploadFileForm 
+from geonode.upload.forms import UploadFileForm
 
 from geonode.geoserver.uploader import uploader
 
@@ -86,6 +86,17 @@ def json_response(*args, **kw):
     if 'exception' in kw:
         logger.warn(traceback.format_exc(kw['exception']))
     return do_json_response(*args, **kw)
+
+
+class JSONResponse(HttpResponse):
+    """JSON response class."""
+    def __init__(self,
+                 obj='',
+                 json_opts={},
+                 mimetype="application/json", *args, **kwargs):
+
+        content = json.dumps(obj, **json_opts)
+        super(JSONResponse, self).__init__(content, mimetype, *args, **kwargs)
 
 
 def _error_response(req, exception=None, errors=None, force_ajax=False):
@@ -139,7 +150,7 @@ def _next_step_response(req, upload_session, force_ajax=False):
         return json_response(redirect_to=reverse('data_upload', args=[next]),
                              content_type=content_type)
     return HttpResponseRedirect(reverse('data_upload', args=[next]))
-    
+
 
 def _create_time_form(import_session, form_data):
     feature_type = import_session.tasks[0].items[0].resource
@@ -168,7 +179,7 @@ def save_step_view(req, session):
             'async_upload' : _ASYNC_UPLOAD,
             'incomplete' : Upload.objects.get_incomplete_uploads(req.user)
         }))
-        
+
     assert session is None
 
     form = LayerUploadForm(req.POST, req.FILES)
@@ -235,7 +246,7 @@ def srs_step_view(req, upload_session):
                                         'layer_name' : name
                                   }))
     # mark this completed since there is no post-back when skipping
-    upload_session.completed_step = 'srs'                              
+    upload_session.completed_step = 'srs'
     return _next_step_response(req, upload_session)
 
 
@@ -400,7 +411,7 @@ def run_response(req, upload_session):
     if _ASYNC_UPLOAD:
         next = get_next_step(upload_session)
         return _progress_redirect(next)
-        
+
     return _next_step_response(req, upload_session)
 
 
@@ -470,7 +481,7 @@ def view(req, step):
             if session:
                 req.session[_SESSION_KEY] = session
                 return _next_step_response(req, session)
-        
+
         step = 'save'
 
         # delete existing session
@@ -527,11 +538,16 @@ class UploadFileCreateView(CreateView):
     def form_valid(self, form):
         self.object = form.save()
         f = self.request.FILES.get('file')
-        data = [{'name': f.name, 'url': settings.MEDIA_URL + "uploads/" + f.name.replace(" ", "_"), 'thumbnail_url': settings.MEDIA_URL + "pictures/" + f.name.replace(" ", "_"), 'delete_url': reverse('data_upload_remove', args=[self.object.id]), 'delete_type': "DELETE"}]
+        data = [{
+            'name': f.name,
+            'url': settings.MEDIA_URL + "uploads/" + f.name.replace(" ", "_"),
+            'thumbnail_url': settings.MEDIA_URL + "pictures/" + f.name.replace(" ", "_"),
+            'delete_url': reverse('data_upload_remove', args=[self.object.id]), 'delete_type': "DELETE"}
+        ]
         response = JSONResponse(data, {}, response_mimetype(self.request))
         response['Content-Disposition'] = 'inline; filename=files.json'
         return response
-    
+
     def form_invalid(self, form):
         data = [{}]
         response = JSONResponse(data, {}, response_mimetype(self.request))
@@ -562,9 +578,3 @@ class UploadFileDeleteView(DeleteView):
         else:
             return HttpResponseRedirect(reverse('data_upload_new'))
 
-
-class JSONResponse(HttpResponse):
-    """JSON response class."""
-    def __init__(self,obj='',json_opts={},mimetype="application/json",*args,**kwargs):
-        content = json.dumps(obj,**json_opts)
-        super(JSONResponse,self).__init__(content,mimetype,*args,**kwargs)
