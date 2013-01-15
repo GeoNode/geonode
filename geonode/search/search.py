@@ -151,13 +151,13 @@ def _get_owner_results(query):
     if query.owner:
         q = q.filter(user__username__icontains = query.owner)
 
-    if query.extent:
-        q = filter_by_extent(Map, q, query.extent, True) | \
-            filter_by_extent(Layer, q, query.extent, True)
+    # if query.extent:
+    #     q = filter_by_extent(Map, q, query.extent, True) | \
+    #         filter_by_extent(Layer, q, query.extent, True)
 
-    if query.period:
-        q = filter_by_period(Map, q, *query.period, user=True) | \
-            filter_by_period(Layer, q, *query.period, user=True)
+    # if query.period:
+    #     q = filter_by_period(Map, q, *query.period, user=True) | \
+    #         filter_by_period(Layer, q, *query.period, user=True)
 
     if query.added:
         q = q.filter(user__date_joined__gt = query.added)
@@ -195,7 +195,7 @@ def _get_map_results(query):
         q = q.filter(last_modified__gte=query.added)
 
     if query.period:
-        q = filter_by_period(Map, q, *query.period)
+        q = filter_by_period(Map, q, query.period)
 
     if query.kw:
         # this is a somewhat nested query but it performs way faster than
@@ -219,7 +219,7 @@ def _get_layer_results(query):
 
     q = extension.layer_query(query)
 
-    q = _filter_security(q, query.user, Layer, 'view_layer')
+    #q = _filter_security(q, query.user, Layer, 'view_layer')
 
     if extension.exclude_patterns:
         name_filter = reduce(operator.or_,[ Q(name__regex=f) for f in extension.exclude_patterns])
@@ -241,7 +241,7 @@ def _get_layer_results(query):
         q = q.filter(date__gte=query.added)
 
     if query.period:
-        q = filter_by_period(Layer, q, *query.period)
+        q = filter_by_period(Layer, q, query.period)
 
     # this is a special optimization for prefetching results when requesting
     # all records via search
@@ -288,7 +288,7 @@ def _get_document_results(query):
         q = q.filter(date__gte=query.added)
 
     if query.period:
-        q = filter_by_period(Layer, q, *query.period)
+        q = filter_by_period(Layer, q, query.period)
 
     # this is a special optimization for prefetching results when requesting
     # all records via search

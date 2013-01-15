@@ -106,15 +106,19 @@ var filterDates = function (dates) {
 /* 
    Main search function
 */
-var doSearch = function (options) {
-    var query      = options.query,
-        categories = options.categories,
-        keywords   = options.keywords;
+var doSearch = function (query) {
 
     $("#search-results").html("<p>Searching...</p>");
-    $(".search_query").html(query);
+    var list = ""
 
-    $.getJSON('/search/api', {"q": query, "limit": "none"}, function (data) {
+    for(var key in query.query){
+        if(query.query[key] != undefined){
+            list += query.query[key] + "\n"
+        }
+    }
+    $(".search_query").html(list);
+    query.query['limit'] = 'none';
+    $.getJSON('/search/api', query.query, function (data) {
         $("#search-results").html("");
 
         // if there are results
