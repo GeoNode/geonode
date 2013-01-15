@@ -568,7 +568,8 @@ def resolve_object(request, model, query, permission=None,
     return obj
 
 
-def json_response(body=None, errors=None, redirect_to=None, exception=None, content_type=None):
+def json_response(body=None, errors=None, redirect_to=None, exception=None,
+                  content_type=None):
    """Create a proper JSON response. If body is provided, this is the response.
    If errors is not None, the response is a success/errors json object.
    If redirect_to is not None, the response is a success=True, redirect_to object
@@ -576,7 +577,11 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None, cont
    exception message will be used as a format option to that string and the
    result will be a success=False, errors = body % exception
    """
+   if content_type is None:
+       content_type = "application/json"
    if errors:
+       if isinstance(errors, basestring):
+           errors = [errors]
        body = {
            'success' : False,
            'errors' : errors
@@ -602,4 +607,4 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None, cont
 
    if not isinstance(body, basestring):
        body = json.dumps(body)
-   return HttpResponse(body, mimetype = "application/json")
+   return HttpResponse(body, content_type=content_type)
