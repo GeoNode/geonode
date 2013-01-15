@@ -104,16 +104,47 @@ define(['jquery',
         }
     };
 
+
+
     initialize = function (options) {
         var file_input = document.getElementById('file-input'),
-            file_queue = $(options.file_queue);
+            dropZone = document.querySelector(options.dropZone),
+            file_queue = $(options.file_queue),
+            doClearState = function () {
+                // set the global layer object to empty
+                layers = {};
+                // redraw the file display view
+                displayFiles(file_queue);
+            },
+            runUpload = function (files) {
+                buildFileInfo(_.groupBy(files, LayerInfo.getName));
+                displayFiles(file_queue);
+            },
+            handleDragOver = function (e) {
+                // this seems to be required in order for dragging and dropping to work
+                e.stopPropagation();
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+                return false;
+            };
+
+        // setup the drop zone target
+        dropZone.addEventListener('dragover', handleDragOver, false);
+
+        dropZone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            var files = e.dataTransfer.files;
+            runUpload(files);
+        });
+
+
 
         $(options.form).change(function (event) {
             // this is a mess
             buildFileInfo(_.groupBy(file_input.files, LayerInfo.getName));
             displayFiles(file_queue);
         });
-
+        $(options.clear_button).on('click', doClearState);
         $(options.upload_button).on('click', doUploads);
     };
 
