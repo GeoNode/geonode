@@ -107,6 +107,7 @@ function setup_django_every_time() {
     # Set up logging symlink
     ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
 
+    export PYTHONPATH=/var/lib/geonode/lib/python2.7/site-packages
     export DJANGO_SETTINGS_MODULE=geonode.settings
     django-admin syncdb --all --noinput
     #django-admin migrate --noinput
