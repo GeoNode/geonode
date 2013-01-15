@@ -113,10 +113,10 @@ var doSearch = function (query) {
 
     for(var key in query.query){
         if(query.query[key] != undefined){
-            list += query.query[key] + "\n"
+            $(".search_query").append('<li>' + key + ': ' + query.query[key]);
         }
     }
-    $(".search_query").html(list);
+    //$(".search_query").append(list);
     query.query['limit'] = 'none';
     $.getJSON('/search/api', query.query, function (data) {
         $("#search-results").html("");
