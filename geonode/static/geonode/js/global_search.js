@@ -106,19 +106,22 @@ var filterDates = function (dates) {
 /* 
    Main search function
 */
-var doSearch = function (query) {
+var doSearch = function (options) {
+
+    var query      = options.query,
+        categories = options.categories,
+        keywords   = options.keywords;
 
     $("#search-results").html("<p>Searching...</p>");
-    var list = ""
 
-    for(var key in query.query){
-        if(query.query[key] != undefined){
-            $(".search_query").append('<li>' + key + ': ' + query.query[key]);
+    for(var key in query){
+        if(query[key] != ""){
+            $(".search_query").append('<li>' + key + ': ' + query[key]);
         }
     }
     //$(".search_query").append(list);
-    query.query['limit'] = 'none';
-    $.getJSON('/search/api', query.query, function (data) {
+    query['limit'] = 'none';
+    $.getJSON('/search/api', query, function (data) {
         $("#search-results").html("");
 
         // if there are results
@@ -142,8 +145,8 @@ var doSearch = function (query) {
 
                 if (item.category !== undefined) {
                     // use dot notation instead of array look up syntax
-                    context.category = item.category[0];
-                    context.category_slug = item.category[0].toLowerCase().replace(/ /g, "-");
+                    context.category = item.category;
+                    context.category_slug = item.category.toLowerCase().replace(/ /g, "-");
                 }
 
                 $("#search-results").append(srt.render(context));
@@ -172,7 +175,7 @@ var doSearch = function (query) {
         }
 
         keywords.update_counts();
-        categories.limit();
+        //categories.limit();
         categories.update_counts();
     });
     // end of response to ajax call
