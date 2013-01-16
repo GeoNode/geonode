@@ -322,8 +322,8 @@ def combined_search_results(query):
     if bytype is None or bytype in (u'layer', u'raster', u'vector'):
         q = _get_layer_results(query)
         facets['layer'] = q.count()
-        facets['raster'] = q.filter(storeType='raster').count()
-        facets['vector'] = q.filter(storeType='vector').count()
+        facets['raster'] = q.filter(storeType='coverageStore').count()
+        facets['vector'] = q.filter(storeType='dataStore').count()
         results['layers'] = q
 
     if bytype is None or bytype == u'document':
