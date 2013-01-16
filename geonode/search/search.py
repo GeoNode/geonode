@@ -219,7 +219,7 @@ def _get_layer_results(query):
 
     q = extension.layer_query(query)
 
-    #q = _filter_security(q, query.user, Layer, 'view_layer')
+    q = _filter_security(q, query.user, Layer, 'view_layer')
 
     if extension.exclude_patterns:
         name_filter = reduce(operator.or_,[ Q(name__regex=f) for f in extension.exclude_patterns])
