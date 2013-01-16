@@ -27,16 +27,16 @@ from geonode.search.util import iso_fmt
 
 from datetime import datetime
 
-def filter_by_period(model, q, start, end, user=None):
+def filter_by_period(model, q, period, user=None):
     '''modify the query to filter the given model for dates between start and end
     start, end - iso str ('-5000-01-01T12:00:00Z')
     '''
-    parse = lambda v: datetime.strptime(v, iso_fmt)
-    if model == Layer and not user:
-        if start:
-            q = q.filter(temporal_extent_start__gte = parse(start))
-        if end:
-            q = q.filter(temporal_extent_end__lte = parse(end))
+    #parse = lambda v: datetime.strptime(v, iso_fmt)
+    parse = lambda v: datetime.strptime(v, "%Y-%M-%d")
+    #if model == Layer and not user:
+    if period:
+        q = q.filter(date__gte = parse(period[0]))
+        q = q.filter(date__lte = parse(period[1]))
     else:
         # @todo handle map and/or users - either directly if implemented or ...
         # this will effectively short-circuit the query at this point

@@ -1,0 +1,1036 @@
+[
+  {
+    "pk": 1,
+    "model": "auth.user",
+    "fields": {
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": true,
+      "is_staff": true,
+      "last_login": "2012-09-28T17:26:42.320",
+      "groups": [],
+      "user_permissions": [],
+      "password": "pbkdf2_sha256$10000$LaaGZBGeJ7Ew$XjMtWwwDMcolUJwO7mabwLvYIkbCYpo0hiFCUvK35nY=",
+      "email": "a@d.min",
+      "date_joined": "2012-09-28T17:26:42.320"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "auth.user",
+    "fields": {
+      "username": "user1",
+      "first_name": "uniquefirst",
+      "last_name": "foo",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2012-09-28T19:19:32.632",
+      "groups": [],
+      "user_permissions": [],
+      "password": "!",
+      "email": "",
+      "date_joined": "2012-09-28T19:19:32.632"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "auth.user",
+    "fields": {
+      "username": "user2",
+      "first_name": "foo",
+      "last_name": "uniquelast",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2012-09-28T19:19:33.296",
+      "groups": [],
+      "user_permissions": [],
+      "password": "!",
+      "email": "",
+      "date_joined": "2012-09-28T19:19:33.296"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "auth.user",
+    "fields": {
+      "username": "unique_username",
+      "first_name": "foo",
+      "last_name": "uniquelast",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2012-09-28T19:19:33.843",
+      "groups": [],
+      "user_permissions": [],
+      "password": "!",
+      "email": "",
+      "date_joined": "2012-09-28T19:19:33.843"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "auth.user",
+    "fields": {
+      "username": "jblaze",
+      "first_name": "johnny",
+      "last_name": "blaze",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2012-09-28T19:19:34.376",
+      "groups": [],
+      "user_permissions": [],
+      "password": "!",
+      "email": "",
+      "date_joined": "2012-09-28T19:19:34.376"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "auth.user",
+    "fields": {
+      "username": "foo",
+      "first_name": "bar",
+      "last_name": "baz",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2012-09-28T19:19:34.964",
+      "groups": [],
+      "user_permissions": [],
+      "password": "!",
+      "email": "",
+      "date_joined": "2012-09-28T19:19:34.964"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "people.profile",
+    "fields": {
+      "profile": null,
+      "city": null,
+      "fax": null,
+      "name": "admin",
+      "area": null,
+      "country": null,
+      "zipcode": null,
+      "delivery": null,
+      "user": [
+        "admin"
+      ],
+      "position": null,
+      "organization": null,
+      "voice": null,
+      "email": null
+    }
+  },
+  {
+    "pk": 2,
+    "model": "people.profile",
+    "fields": {
+      "profile": "this contains all my interesting profile information",
+      "city": null,
+      "fax": null,
+      "name": "user1",
+      "area": null,
+      "country": null,
+      "zipcode": null,
+      "delivery": null,
+      "user": [
+        "user1"
+      ],
+      "position": null,
+      "organization": null,
+      "voice": null,
+      "email": null
+    }
+  },
+  {
+    "pk": 3,
+    "model": "people.profile",
+    "fields": {
+      "profile": "some other information goes here",
+      "city": null,
+      "fax": null,
+      "name": "user2",
+      "area": null,
+      "country": null,
+      "zipcode": null,
+      "delivery": null,
+      "user": [
+        "user2"
+      ],
+      "position": null,
+      "organization": null,
+      "voice": null,
+      "email": null
+    }
+  },
+  {
+    "pk": 4,
+    "model": "people.profile",
+    "fields": {
+      "profile": "this contains all my interesting profile information",
+      "city": null,
+      "fax": null,
+      "name": "unique_username",
+      "area": null,
+      "country": null,
+      "zipcode": null,
+      "delivery": null,
+      "user": [
+        "unique_username"
+      ],
+      "position": null,
+      "organization": null,
+      "voice": null,
+      "email": null
+    }
+  },
+  {
+    "pk": 5,
+    "model": "people.profile",
+    "fields": {
+      "profile": "some other information goes here",
+      "city": null,
+      "fax": null,
+      "name": "jblaze",
+      "area": null,
+      "country": null,
+      "zipcode": null,
+      "delivery": null,
+      "user": [
+        "jblaze"
+      ],
+      "position": null,
+      "organization": null,
+      "voice": null,
+      "email": null
+    }
+  },
+  {
+    "pk": 6,
+    "model": "people.profile",
+    "fields": {
+      "profile": "this contains all my interesting profile information",
+      "city": null,
+      "fax": null,
+      "name": "foo",
+      "area": null,
+      "country": null,
+      "zipcode": null,
+      "delivery": null,
+      "user": [
+        "foo"
+      ],
+      "position": null,
+      "organization": null,
+      "voice": null,
+      "email": null
+    }
+  },
+  {
+    "pk": 1,
+    "model": "layers.layer",
+    "fields": {
+      "constraints_other": null,
+      "bbox_x0": "-180",
+      "csw_mdsource": "local",
+      "bbox_y1": "90",
+      "csw_typename": "gmd:MD_Metadata",
+      "date_type": "publication",
+      "srid": "EPSG:4326",
+      "bbox_x1": "180",
+      "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xsi:schemaLocation=\"http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd\">\n   <gmd:fileIdentifier>\n     <gco:CharacterString>95632946-3f41-4dae-9c85-35c7f8fd7b50</gco:CharacterString>\n   </gmd:fileIdentifier>\n   <gmd:language>\n     <gco:CharacterString>eng</gco:CharacterString>\n   </gmd:language>\n   <gmd:characterSet>\n     <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n   </gmd:characterSet>\n   <gmd:hierarchyLevel>\n    <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n   </gmd:hierarchyLevel>\n   <gmd:contact> \n     <gmd:CI_ResponsibleParty>\n       <gmd:individualName >\n          <gco:CharacterString>admin</gco:CharacterString> \n       </gmd:individualName>\n       <gmd:organisationName gco:nilReason=\"missing\">\n         \n       </gmd:organisationName>\n       <gmd:positionName gco:nilReason=\"missing\">\n         \n       </gmd:positionName>\n       <gmd:contactInfo>\n         <gmd:CI_Contact>\n           <gmd:phone>\n             <gmd:CI_Telephone>\n               <gmd:voice gco:nilReason=\"missing\">\n                 \n               </gmd:voice>\n               <gmd:facsimile gco:nilReason=\"missing\">\n                 \n               </gmd:facsimile>\n             </gmd:CI_Telephone>\n           </gmd:phone>\n           <gmd:address>\n             <gmd:CI_Address>\n               <gmd:deliveryPoint gco:nilReason=\"missing\">\n                 \n               </gmd:deliveryPoint>\n               <gmd:city gco:nilReason=\"missing\">\n                 \n               </gmd:city>\n               <gmd:administrativeArea gco:nilReason=\"missing\">\n                 \n               </gmd:administrativeArea>\n               <gmd:postalCode gco:nilReason=\"missing\">\n                 \n               </gmd:postalCode>\n               <gmd:country gco:nilReason=\"missing\">\n                 \n               </gmd:country>\n               <gmd:electronicMailAddress gco:nilReason=\"missing\">\n                 \n               </gmd:electronicMailAddress>\n             </gmd:CI_Address>\n           </gmd:address>\n           \n           <gmd:onlineResource>\n                <gmd:CI_OnlineResource>\n                    <gmd:linkage>\n                        <gmd:URL>http://localhost:8000/profiles/profile/admin/</gmd:URL>\n                    </gmd:linkage>\n                    <gmd:protocol>\n                        <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n                    </gmd:protocol>\n                    <gmd:description>\n                        <gco:CharacterString>GeoNode profile page</gco:CharacterString>\n                    </gmd:description>\n                </gmd:CI_OnlineResource>\n           </gmd:onlineResource>\n           \n         </gmd:CI_Contact>\n       </gmd:contactInfo>\n       <gmd:role>\n         <gmd:CI_RoleCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode\" codeListValue=\"pointOfContact\">pointOfContact</gmd:CI_RoleCode>\n       </gmd:role>\n     </gmd:CI_ResponsibleParty>\n   </gmd:contact> \n   <gmd:dateStamp>\n     <gco:DateTime>2012-09-28T19:19:40Z</gco:DateTime>\n   </gmd:dateStamp>\n   <gmd:metadataStandardName>\n     <gco:CharacterString>ISO 19115:2003 - Geographic information - Metadata</gco:CharacterString>\n   </gmd:metadataStandardName>\n   <gmd:metadataStandardVersion>\n     <gco:CharacterString>ISO 19115:2003</gco:CharacterString>\n   </gmd:metadataStandardVersion>\n   <gmd:spatialRepresentationInfo />\n   <gmd:referenceSystemInfo>\n     <gmd:MD_ReferenceSystem>\n       <gmd:referenceSystemIdentifier>\n         <gmd:RS_Identifier>\n           <gmd:code>\n             <gco:CharacterString>4326</gco:CharacterString>\n           </gmd:code>\n           <gmd:codeSpace>\n             <gco:CharacterString>EPSG</gco:CharacterString>\n           </gmd:codeSpace>\n           <gmd:version>\n             <gco:CharacterString>6.11</gco:CharacterString>\n           </gmd:version>\n         </gmd:RS_Identifier>\n       </gmd:referenceSystemIdentifier>\n     </gmd:MD_ReferenceSystem>\n   </gmd:referenceSystemInfo>\n   <gmd:identificationInfo>\n     <gmd:MD_DataIdentification>\n       <gmd:citation>\n         <gmd:CI_Citation>\n           <gmd:title>\n             <gco:CharacterString>layer1</gco:CharacterString>\n           </gmd:title>\n           <gmd:date>\n             <gmd:CI_Date>\n               <gmd:date>\n                 <gco:DateTime>2012-09-28T19:19:40Z</gco:DateTime>\n               </gmd:date>\n               <gmd:dateType>\n                 <gmd:CI_DateTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode\" codeListValue=\"publication\">publication</gmd:CI_DateTypeCode>\n               </gmd:dateType>\n             </gmd:CI_Date>\n           </gmd:date>\n           <gmd:edition gco:nilReason=\"missing\">\n                 \n           </gmd:edition>\n           <gmd:presentationForm>\n             <gmd:CI_PresentationFormCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode\" codeListValue=\"mapDigital\">mapDigital</gmd:CI_PresentationFormCode>\n           </gmd:presentationForm>\n         </gmd:CI_Citation>\n       </gmd:citation>\n       <gmd:abstract>\n         <gco:CharacterString>abstract1</gco:CharacterString>\n       </gmd:abstract>\n       <gmd:purpose gco:nilReason=\"missing\">\n             \n       </gmd:purpose>\n       <gmd:status>\n         <gmd:MD_ProgressCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode\" codeListValue=\"completed\">completed</gmd:MD_ProgressCode>\n       </gmd:status>\n       \n       <gmd:graphicOverview>\n         <gmd:MD_BrowseGraphic>\n           <gmd:fileName>\n             <gco:CharacterString>http://localhost:8080/geoserver/wms?layers=geonode%3Alayer1&amp;width=20&amp;version=1.1.1&amp;bbox=-180%2C180%2C-90%2C90&amp;service=WMS&amp;format=image%2Fpng&amp;srs=EPSG%3A4326&amp;request=GetMap&amp;height=20</gco:CharacterString>\n           </gmd:fileName>\n           <gmd:fileDescription>\n             <gco:CharacterString>Thumbnail for 'layer1'</gco:CharacterString>\n           </gmd:fileDescription>\n           <gmd:fileType>\n             <gco:CharacterString>image/png</gco:CharacterString>\n           </gmd:fileType>\n         </gmd:MD_BrowseGraphic>\n       </gmd:graphicOverview>\n       <gmd:resourceFormat>\n         <gmd:MD_Format>\n           <gmd:name>\n             \n             <gco:CharacterString>ESRI Shapefile</gco:CharacterString>\n             \n           </gmd:name>\n           <gmd:version>\n             <gco:CharacterString>1.0</gco:CharacterString>\n           </gmd:version>\n         </gmd:MD_Format>\n       </gmd:resourceFormat>\n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           \n           <gmd:keyword>\n             <gco:CharacterString>populartag</gco:CharacterString>\n           </gmd:keyword>\n           \n           <gmd:keyword>\n             <gco:CharacterString>here</gco:CharacterString>\n           </gmd:keyword>\n           \n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"theme\">theme</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           <gmd:keyword>\n             <gco:CharacterString>United States of America</gco:CharacterString>\n           </gmd:keyword>\n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"place\">place</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       <gmd:resourceConstraints>\n         <gmd:MD_Constraints>\n           <gmd:useLimitation>\n             <gco:CharacterString>copyright</gco:CharacterString>\n           </gmd:useLimitation>\n         </gmd:MD_Constraints>\n       </gmd:resourceConstraints>\n       <gmd:spatialRepresentationType>\n         <gmd:MD_SpatialRepresentationTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode\" codeListValue=\"None\">None</gmd:MD_SpatialRepresentationTypeCode>\n       </gmd:spatialRepresentationType>\n       <gmd:language>\n         <gco:CharacterString>eng</gco:CharacterString>\n       </gmd:language>\n       <gmd:characterSet>\n         <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n       </gmd:characterSet>\n       <gmd:topicCategory >\n         \n         <gmd:MD_TopicCategoryCode>location</gmd:MD_TopicCategoryCode>\n         \n       </gmd:topicCategory>\n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:geographicElement>\n             <gmd:EX_GeographicBoundingBox>\n               <gmd:westBoundLongitude>\n                 <gco:Decimal>-180</gco:Decimal>\n               </gmd:westBoundLongitude>\n               <gmd:eastBoundLongitude>\n                 <gco:Decimal>180</gco:Decimal>\n               </gmd:eastBoundLongitude>\n               <gmd:southBoundLatitude>\n                 <gco:Decimal>-90</gco:Decimal>\n               </gmd:southBoundLatitude>\n               <gmd:northBoundLatitude>\n                 <gco:Decimal>90</gco:Decimal>\n               </gmd:northBoundLatitude>\n             </gmd:EX_GeographicBoundingBox>\n           </gmd:geographicElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:temporalElement>\n             <gmd:EX_TemporalExtent>\n               <gmd:extent>\n                 <gml:TimePeriod gml:id=\"T_01\">\n                   <gml:beginPosition>Jan. 1, 1985, midnight</gml:beginPosition>\n                   <gml:endPosition>Jan. 1, 1986, midnight</gml:endPosition>\n                 </gml:TimePeriod>\n               </gmd:extent>\n             </gmd:EX_TemporalExtent>\n           </gmd:temporalElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:supplementalInformation>\n         <gco:CharacterString>No information provided</gco:CharacterString>\n       </gmd:supplementalInformation>\n     </gmd:MD_DataIdentification>\n   </gmd:identificationInfo>\n   <gmd:distributionInfo>\n     <gmd:MD_Distribution>\n       <gmd:transferOptions>\n         <gmd:MD_DigitalTransferOptions>\n           <gmd:onLine>\n             <gmd:CI_OnlineResource>\n               <gmd:linkage>\n                   <gmd:URL>http://localhost:8000/data/geonode:layer1</gmd:URL>\n               </gmd:linkage>\n               <gmd:protocol>\n                 <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n               </gmd:protocol>\n               <gmd:description>\n                 <gco:CharacterString>Online link to the 'layer1' description on GeoNode</gco:CharacterString>\n               </gmd:description>\n             </gmd:CI_OnlineResource>\n           </gmd:onLine>\n           \n         </gmd:MD_DigitalTransferOptions>\n       </gmd:transferOptions>\n     </gmd:MD_Distribution>\n   </gmd:distributionInfo>\n   <gmd:dataQualityInfo>\n     <gmd:DQ_DataQuality>\n       <gmd:scope>\n         <gmd:DQ_Scope>\n           <gmd:level>\n             <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n           </gmd:level>\n         </gmd:DQ_Scope>\n       </gmd:scope>\n       <gmd:lineage>\n         <gmd:LI_Lineage>\n           <gmd:statement gco:nilReason=\"missing\"/>\n         </gmd:LI_Lineage>\n       </gmd:lineage>\n     </gmd:DQ_DataQuality>\n   </gmd:dataQualityInfo>\n </gmd:MD_Metadata>\n",
+      "edition": null,
+      "owner": [
+        "user1"
+      ],
+      "distribution_url": "http://localhost:8000/data/geonode:layer1",
+      "spatial_representation_type": null,
+      "uuid": "95632946-3f41-4dae-9c85-35c7f8fd7b50",
+      "title": "layer1",
+      "csw_schema": "http://www.isotc211.org/2005/gmd",
+      "storeType": "raster",
+      "abstract": "abstract1",
+      "store": "",
+      "bbox_y0": "-90",
+      "distribution_description": "layer1",
+      "topic_category": "location",
+      "csw_insert_date": "2012-09-28T19:19:40.555",
+      "purpose": null,
+      "date": "2012-09-28T19:19:40.176",
+      "name": "layer1",
+      "temporal_extent_end": "1986-01-01",
+      "data_quality_statement": null,
+      "language": "eng",
+      "keywords_region": "USA",
+      "maintenance_frequency": null,
+      "csw_anytext": "\n    \n      95632946-3f41-4dae-9c85-35c7f8fd7b50 \n    \n    \n      eng \n    \n    \n      utf8 \n    \n    \n     dataset \n    \n     \n      \n        \n           admin  \n        \n        \n         \n        \n        \n         \n        \n        \n          \n            \n              \n                \n                 \n                \n                \n                 \n                \n              \n            \n            \n              \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n              \n            \n           \n            \n                 \n                     \n                         http://localhost:8000/profiles/profile/admin/ \n                     \n                     \n                         WWW:LINK-1.0-http--link \n                     \n                     \n                         GeoNode profile page \n                     \n                 \n            \n           \n          \n        \n        \n          pointOfContact \n        \n      \n     \n    \n      2012-09-28T19:19:40Z \n    \n    \n      ISO 19115:2003 - Geographic information - Metadata \n    \n    \n      ISO 19115:2003 \n    \n    \n    \n      \n        \n          \n            \n              4326 \n            \n            \n              EPSG \n            \n            \n              6.11 \n            \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              layer1 \n            \n            \n              \n                \n                  2012-09-28T19:19:40Z \n                \n                \n                  publication \n                \n              \n            \n            \n                 \n            \n            \n              mapDigital \n            \n          \n        \n        \n          abstract1 \n        \n        \n             \n        \n        \n          completed \n        \n       \n        \n          \n            \n              http://localhost:8080/geoserver/wms?layers=geonode%3Alayer1&width=20&version=1.1.1&bbox=-180%2C180%2C-90%2C90&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=20 \n            \n            \n              Thumbnail for 'layer1' \n            \n            \n              image/png \n            \n          \n        \n        \n          \n            \n             \n              ESRI Shapefile \n             \n            \n            \n              1.0 \n            \n          \n        \n       \n        \n          \n           \n            \n              populartag \n            \n           \n            \n              here \n            \n           \n            \n               theme \n             \n          \n        \n       \n       \n        \n          \n            \n              United States of America \n            \n            \n               place \n             \n          \n        \n       \n        \n          \n            \n              copyright \n            \n          \n        \n        \n          None \n        \n        \n          eng \n        \n        \n          utf8 \n        \n        \n         \n          location \n         \n        \n        \n          \n            \n              \n                \n                  -180 \n                \n                \n                  180 \n                \n                \n                  -90 \n                \n                \n                  90 \n                \n              \n            \n          \n        \n       \n        \n          \n            \n              \n                \n                  \n                    Jan. 1, 1985, midnight \n                    Jan. 1, 1986, midnight \n                  \n                \n              \n            \n          \n        \n       \n        \n          No information provided \n        \n      \n    \n    \n      \n        \n          \n            \n              \n                \n                    http://localhost:8000/data/geonode:layer1 \n                \n                \n                  WWW:LINK-1.0-http--link \n                \n                \n                  Online link to the 'layer1' description on GeoNode \n                \n              \n            \n           \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              dataset \n            \n          \n        \n        \n          \n            \n          \n        \n      \n    \n ",
+      "supplemental_information": "No information provided",
+      "typename": "geonode:layer1",
+      "csw_type": "dataset",
+      "workspace": "",
+      "metadata_uploaded": false,
+      "csw_wkt_geometry": "SRID=EPSG:4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))",
+      "temporal_extent_start": "1985-01-01",
+      "constraints_use": "copyright"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "layers.layer",
+    "fields": {
+      "constraints_other": null,
+      "bbox_x0": "-180",
+      "csw_mdsource": "local",
+      "bbox_y1": "90",
+      "csw_typename": "gmd:MD_Metadata",
+      "date_type": "publication",
+      "srid": "EPSG:4326",
+      "bbox_x1": "180",
+      "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xsi:schemaLocation=\"http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd\">\n   <gmd:fileIdentifier>\n     <gco:CharacterString>747926c4-cc41-4a6f-8127-57528571f0ee</gco:CharacterString>\n   </gmd:fileIdentifier>\n   <gmd:language>\n     <gco:CharacterString>eng</gco:CharacterString>\n   </gmd:language>\n   <gmd:characterSet>\n     <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n   </gmd:characterSet>\n   <gmd:hierarchyLevel>\n    <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n   </gmd:hierarchyLevel>\n   <gmd:contact> \n     <gmd:CI_ResponsibleParty>\n       <gmd:individualName >\n          <gco:CharacterString>admin</gco:CharacterString> \n       </gmd:individualName>\n       <gmd:organisationName gco:nilReason=\"missing\">\n         \n       </gmd:organisationName>\n       <gmd:positionName gco:nilReason=\"missing\">\n         \n       </gmd:positionName>\n       <gmd:contactInfo>\n         <gmd:CI_Contact>\n           <gmd:phone>\n             <gmd:CI_Telephone>\n               <gmd:voice gco:nilReason=\"missing\">\n                 \n               </gmd:voice>\n               <gmd:facsimile gco:nilReason=\"missing\">\n                 \n               </gmd:facsimile>\n             </gmd:CI_Telephone>\n           </gmd:phone>\n           <gmd:address>\n             <gmd:CI_Address>\n               <gmd:deliveryPoint gco:nilReason=\"missing\">\n                 \n               </gmd:deliveryPoint>\n               <gmd:city gco:nilReason=\"missing\">\n                 \n               </gmd:city>\n               <gmd:administrativeArea gco:nilReason=\"missing\">\n                 \n               </gmd:administrativeArea>\n               <gmd:postalCode gco:nilReason=\"missing\">\n                 \n               </gmd:postalCode>\n               <gmd:country gco:nilReason=\"missing\">\n                 \n               </gmd:country>\n               <gmd:electronicMailAddress gco:nilReason=\"missing\">\n                 \n               </gmd:electronicMailAddress>\n             </gmd:CI_Address>\n           </gmd:address>\n           \n           <gmd:onlineResource>\n                <gmd:CI_OnlineResource>\n                    <gmd:linkage>\n                        <gmd:URL>http://localhost:8000/profiles/profile/admin/</gmd:URL>\n                    </gmd:linkage>\n                    <gmd:protocol>\n                        <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n                    </gmd:protocol>\n                    <gmd:description>\n                        <gco:CharacterString>GeoNode profile page</gco:CharacterString>\n                    </gmd:description>\n                </gmd:CI_OnlineResource>\n           </gmd:onlineResource>\n           \n         </gmd:CI_Contact>\n       </gmd:contactInfo>\n       <gmd:role>\n         <gmd:CI_RoleCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode\" codeListValue=\"pointOfContact\">pointOfContact</gmd:CI_RoleCode>\n       </gmd:role>\n     </gmd:CI_ResponsibleParty>\n   </gmd:contact> \n   <gmd:dateStamp>\n     <gco:DateTime>2012-09-28T19:19:43Z</gco:DateTime>\n   </gmd:dateStamp>\n   <gmd:metadataStandardName>\n     <gco:CharacterString>ISO 19115:2003 - Geographic information - Metadata</gco:CharacterString>\n   </gmd:metadataStandardName>\n   <gmd:metadataStandardVersion>\n     <gco:CharacterString>ISO 19115:2003</gco:CharacterString>\n   </gmd:metadataStandardVersion>\n   <gmd:spatialRepresentationInfo />\n   <gmd:referenceSystemInfo>\n     <gmd:MD_ReferenceSystem>\n       <gmd:referenceSystemIdentifier>\n         <gmd:RS_Identifier>\n           <gmd:code>\n             <gco:CharacterString>4326</gco:CharacterString>\n           </gmd:code>\n           <gmd:codeSpace>\n             <gco:CharacterString>EPSG</gco:CharacterString>\n           </gmd:codeSpace>\n           <gmd:version>\n             <gco:CharacterString>6.11</gco:CharacterString>\n           </gmd:version>\n         </gmd:RS_Identifier>\n       </gmd:referenceSystemIdentifier>\n     </gmd:MD_ReferenceSystem>\n   </gmd:referenceSystemInfo>\n   <gmd:identificationInfo>\n     <gmd:MD_DataIdentification>\n       <gmd:citation>\n         <gmd:CI_Citation>\n           <gmd:title>\n             <gco:CharacterString>layer2</gco:CharacterString>\n           </gmd:title>\n           <gmd:date>\n             <gmd:CI_Date>\n               <gmd:date>\n                 <gco:DateTime>2012-09-28T19:19:43Z</gco:DateTime>\n               </gmd:date>\n               <gmd:dateType>\n                 <gmd:CI_DateTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode\" codeListValue=\"publication\">publication</gmd:CI_DateTypeCode>\n               </gmd:dateType>\n             </gmd:CI_Date>\n           </gmd:date>\n           <gmd:edition gco:nilReason=\"missing\">\n                 \n           </gmd:edition>\n           <gmd:presentationForm>\n             <gmd:CI_PresentationFormCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode\" codeListValue=\"mapDigital\">mapDigital</gmd:CI_PresentationFormCode>\n           </gmd:presentationForm>\n         </gmd:CI_Citation>\n       </gmd:citation>\n       <gmd:abstract>\n         <gco:CharacterString>abstract2</gco:CharacterString>\n       </gmd:abstract>\n       <gmd:purpose gco:nilReason=\"missing\">\n             \n       </gmd:purpose>\n       <gmd:status>\n         <gmd:MD_ProgressCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode\" codeListValue=\"completed\">completed</gmd:MD_ProgressCode>\n       </gmd:status>\n       \n       <gmd:graphicOverview>\n         <gmd:MD_BrowseGraphic>\n           <gmd:fileName>\n             <gco:CharacterString>http://localhost:8080/geoserver/wms?layers=geonode%3Alayer2&amp;width=20&amp;version=1.1.1&amp;bbox=-180%2C180%2C-90%2C90&amp;service=WMS&amp;format=image%2Fpng&amp;srs=EPSG%3A4326&amp;request=GetMap&amp;height=20</gco:CharacterString>\n           </gmd:fileName>\n           <gmd:fileDescription>\n             <gco:CharacterString>Thumbnail for 'layer2'</gco:CharacterString>\n           </gmd:fileDescription>\n           <gmd:fileType>\n             <gco:CharacterString>image/png</gco:CharacterString>\n           </gmd:fileType>\n         </gmd:MD_BrowseGraphic>\n       </gmd:graphicOverview>\n       <gmd:resourceFormat>\n         <gmd:MD_Format>\n           <gmd:name>\n             \n             <gco:CharacterString>ESRI Shapefile</gco:CharacterString>\n             \n           </gmd:name>\n           <gmd:version>\n             <gco:CharacterString>1.0</gco:CharacterString>\n           </gmd:version>\n         </gmd:MD_Format>\n       </gmd:resourceFormat>\n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           \n           <gmd:keyword>\n             <gco:CharacterString>populartag</gco:CharacterString>\n           </gmd:keyword>\n           \n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"theme\">theme</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           <gmd:keyword>\n             <gco:CharacterString>United States of America</gco:CharacterString>\n           </gmd:keyword>\n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"place\">place</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       <gmd:resourceConstraints>\n         <gmd:MD_Constraints>\n           <gmd:useLimitation>\n             <gco:CharacterString>copyright</gco:CharacterString>\n           </gmd:useLimitation>\n         </gmd:MD_Constraints>\n       </gmd:resourceConstraints>\n       <gmd:spatialRepresentationType>\n         <gmd:MD_SpatialRepresentationTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode\" codeListValue=\"None\">None</gmd:MD_SpatialRepresentationTypeCode>\n       </gmd:spatialRepresentationType>\n       <gmd:language>\n         <gco:CharacterString>eng</gco:CharacterString>\n       </gmd:language>\n       <gmd:characterSet>\n         <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n       </gmd:characterSet>\n       <gmd:topicCategory >\n         \n         <gmd:MD_TopicCategoryCode>location</gmd:MD_TopicCategoryCode>\n         \n       </gmd:topicCategory>\n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:geographicElement>\n             <gmd:EX_GeographicBoundingBox>\n               <gmd:westBoundLongitude>\n                 <gco:Decimal>-180</gco:Decimal>\n               </gmd:westBoundLongitude>\n               <gmd:eastBoundLongitude>\n                 <gco:Decimal>180</gco:Decimal>\n               </gmd:eastBoundLongitude>\n               <gmd:southBoundLatitude>\n                 <gco:Decimal>-90</gco:Decimal>\n               </gmd:southBoundLatitude>\n               <gmd:northBoundLatitude>\n                 <gco:Decimal>90</gco:Decimal>\n               </gmd:northBoundLatitude>\n             </gmd:EX_GeographicBoundingBox>\n           </gmd:geographicElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:temporalElement>\n             <gmd:EX_TemporalExtent>\n               <gmd:extent>\n                 <gml:TimePeriod gml:id=\"T_01\">\n                   <gml:beginPosition>May 1, 1980, midnight</gml:beginPosition>\n                   <gml:endPosition>May 1, 1981, midnight</gml:endPosition>\n                 </gml:TimePeriod>\n               </gmd:extent>\n             </gmd:EX_TemporalExtent>\n           </gmd:temporalElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:supplementalInformation>\n         <gco:CharacterString>No information provided</gco:CharacterString>\n       </gmd:supplementalInformation>\n     </gmd:MD_DataIdentification>\n   </gmd:identificationInfo>\n   <gmd:distributionInfo>\n     <gmd:MD_Distribution>\n       <gmd:transferOptions>\n         <gmd:MD_DigitalTransferOptions>\n           <gmd:onLine>\n             <gmd:CI_OnlineResource>\n               <gmd:linkage>\n                   <gmd:URL>http://localhost:8000/data/geonode:layer2</gmd:URL>\n               </gmd:linkage>\n               <gmd:protocol>\n                 <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n               </gmd:protocol>\n               <gmd:description>\n                 <gco:CharacterString>Online link to the 'layer2' description on GeoNode</gco:CharacterString>\n               </gmd:description>\n             </gmd:CI_OnlineResource>\n           </gmd:onLine>\n           \n         </gmd:MD_DigitalTransferOptions>\n       </gmd:transferOptions>\n     </gmd:MD_Distribution>\n   </gmd:distributionInfo>\n   <gmd:dataQualityInfo>\n     <gmd:DQ_DataQuality>\n       <gmd:scope>\n         <gmd:DQ_Scope>\n           <gmd:level>\n             <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n           </gmd:level>\n         </gmd:DQ_Scope>\n       </gmd:scope>\n       <gmd:lineage>\n         <gmd:LI_Lineage>\n           <gmd:statement gco:nilReason=\"missing\"/>\n         </gmd:LI_Lineage>\n       </gmd:lineage>\n     </gmd:DQ_DataQuality>\n   </gmd:dataQualityInfo>\n </gmd:MD_Metadata>\n",
+      "edition": null,
+      "owner": [
+        "user2"
+      ],
+      "distribution_url": "http://localhost:8000/data/geonode:layer2",
+      "spatial_representation_type": null,
+      "uuid": "747926c4-cc41-4a6f-8127-57528571f0ee",
+      "title": "layer2",
+      "csw_schema": "http://www.isotc211.org/2005/gmd",
+      "storeType": "vector",
+      "abstract": "abstract2",
+      "store": "",
+      "bbox_y0": "-90",
+      "distribution_description": "layer2",
+      "topic_category": "location",
+      "csw_insert_date": "2012-09-28T19:19:43.525",
+      "purpose": null,
+      "date": "2012-09-28T19:19:43.237",
+      "name": "layer2",
+      "temporal_extent_end": "1981-05-01",
+      "data_quality_statement": null,
+      "language": "eng",
+      "keywords_region": "USA",
+      "maintenance_frequency": null,
+      "csw_anytext": "\n    \n      747926c4-cc41-4a6f-8127-57528571f0ee \n    \n    \n      eng \n    \n    \n      utf8 \n    \n    \n     dataset \n    \n     \n      \n        \n           admin  \n        \n        \n         \n        \n        \n         \n        \n        \n          \n            \n              \n                \n                 \n                \n                \n                 \n                \n              \n            \n            \n              \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n              \n            \n           \n            \n                 \n                     \n                         http://localhost:8000/profiles/profile/admin/ \n                     \n                     \n                         WWW:LINK-1.0-http--link \n                     \n                     \n                         GeoNode profile page \n                     \n                 \n            \n           \n          \n        \n        \n          pointOfContact \n        \n      \n     \n    \n      2012-09-28T19:19:43Z \n    \n    \n      ISO 19115:2003 - Geographic information - Metadata \n    \n    \n      ISO 19115:2003 \n    \n    \n    \n      \n        \n          \n            \n              4326 \n            \n            \n              EPSG \n            \n            \n              6.11 \n            \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              layer2 \n            \n            \n              \n                \n                  2012-09-28T19:19:43Z \n                \n                \n                  publication \n                \n              \n            \n            \n                 \n            \n            \n              mapDigital \n            \n          \n        \n        \n          abstract2 \n        \n        \n             \n        \n        \n          completed \n        \n       \n        \n          \n            \n              http://localhost:8080/geoserver/wms?layers=geonode%3Alayer2&width=20&version=1.1.1&bbox=-180%2C180%2C-90%2C90&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=20 \n            \n            \n              Thumbnail for 'layer2' \n            \n            \n              image/png \n            \n          \n        \n        \n          \n            \n             \n              ESRI Shapefile \n             \n            \n            \n              1.0 \n            \n          \n        \n       \n        \n          \n           \n            \n              populartag \n            \n           \n            \n               theme \n             \n          \n        \n       \n       \n        \n          \n            \n              United States of America \n            \n            \n               place \n             \n          \n        \n       \n        \n          \n            \n              copyright \n            \n          \n        \n        \n          None \n        \n        \n          eng \n        \n        \n          utf8 \n        \n        \n         \n          location \n         \n        \n        \n          \n            \n              \n                \n                  -180 \n                \n                \n                  180 \n                \n                \n                  -90 \n                \n                \n                  90 \n                \n              \n            \n          \n        \n       \n        \n          \n            \n              \n                \n                  \n                    May 1, 1980, midnight \n                    May 1, 1981, midnight \n                  \n                \n              \n            \n          \n        \n       \n        \n          No information provided \n        \n      \n    \n    \n      \n        \n          \n            \n              \n                \n                    http://localhost:8000/data/geonode:layer2 \n                \n                \n                  WWW:LINK-1.0-http--link \n                \n                \n                  Online link to the 'layer2' description on GeoNode \n                \n              \n            \n           \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              dataset \n            \n          \n        \n        \n          \n            \n          \n        \n      \n    \n ",
+      "supplemental_information": "No information provided",
+      "typename": "geonode:layer2",
+      "csw_type": "dataset",
+      "workspace": "",
+      "metadata_uploaded": false,
+      "csw_wkt_geometry": "SRID=EPSG:4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))",
+      "temporal_extent_start": "1980-05-01",
+      "constraints_use": "copyright"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "layers.layer",
+    "fields": {
+      "constraints_other": null,
+      "bbox_x0": "-180",
+      "csw_mdsource": "local",
+      "bbox_y1": "90",
+      "csw_typename": "gmd:MD_Metadata",
+      "date_type": "publication",
+      "srid": "EPSG:4326",
+      "bbox_x1": "180",
+      "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xsi:schemaLocation=\"http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd\">\n   <gmd:fileIdentifier>\n     <gco:CharacterString>7373d024-4273-4c6b-9a36-41878f4ce67b</gco:CharacterString>\n   </gmd:fileIdentifier>\n   <gmd:language>\n     <gco:CharacterString>eng</gco:CharacterString>\n   </gmd:language>\n   <gmd:characterSet>\n     <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n   </gmd:characterSet>\n   <gmd:hierarchyLevel>\n    <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n   </gmd:hierarchyLevel>\n   <gmd:contact> \n     <gmd:CI_ResponsibleParty>\n       <gmd:individualName >\n          <gco:CharacterString>admin</gco:CharacterString> \n       </gmd:individualName>\n       <gmd:organisationName gco:nilReason=\"missing\">\n         \n       </gmd:organisationName>\n       <gmd:positionName gco:nilReason=\"missing\">\n         \n       </gmd:positionName>\n       <gmd:contactInfo>\n         <gmd:CI_Contact>\n           <gmd:phone>\n             <gmd:CI_Telephone>\n               <gmd:voice gco:nilReason=\"missing\">\n                 \n               </gmd:voice>\n               <gmd:facsimile gco:nilReason=\"missing\">\n                 \n               </gmd:facsimile>\n             </gmd:CI_Telephone>\n           </gmd:phone>\n           <gmd:address>\n             <gmd:CI_Address>\n               <gmd:deliveryPoint gco:nilReason=\"missing\">\n                 \n               </gmd:deliveryPoint>\n               <gmd:city gco:nilReason=\"missing\">\n                 \n               </gmd:city>\n               <gmd:administrativeArea gco:nilReason=\"missing\">\n                 \n               </gmd:administrativeArea>\n               <gmd:postalCode gco:nilReason=\"missing\">\n                 \n               </gmd:postalCode>\n               <gmd:country gco:nilReason=\"missing\">\n                 \n               </gmd:country>\n               <gmd:electronicMailAddress gco:nilReason=\"missing\">\n                 \n               </gmd:electronicMailAddress>\n             </gmd:CI_Address>\n           </gmd:address>\n           \n           <gmd:onlineResource>\n                <gmd:CI_OnlineResource>\n                    <gmd:linkage>\n                        <gmd:URL>http://localhost:8000/profiles/profile/admin/</gmd:URL>\n                    </gmd:linkage>\n                    <gmd:protocol>\n                        <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n                    </gmd:protocol>\n                    <gmd:description>\n                        <gco:CharacterString>GeoNode profile page</gco:CharacterString>\n                    </gmd:description>\n                </gmd:CI_OnlineResource>\n           </gmd:onlineResource>\n           \n         </gmd:CI_Contact>\n       </gmd:contactInfo>\n       <gmd:role>\n         <gmd:CI_RoleCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode\" codeListValue=\"pointOfContact\">pointOfContact</gmd:CI_RoleCode>\n       </gmd:role>\n     </gmd:CI_ResponsibleParty>\n   </gmd:contact> \n   <gmd:dateStamp>\n     <gco:DateTime>2012-09-28T19:19:45Z</gco:DateTime>\n   </gmd:dateStamp>\n   <gmd:metadataStandardName>\n     <gco:CharacterString>ISO 19115:2003 - Geographic information - Metadata</gco:CharacterString>\n   </gmd:metadataStandardName>\n   <gmd:metadataStandardVersion>\n     <gco:CharacterString>ISO 19115:2003</gco:CharacterString>\n   </gmd:metadataStandardVersion>\n   <gmd:spatialRepresentationInfo />\n   <gmd:referenceSystemInfo>\n     <gmd:MD_ReferenceSystem>\n       <gmd:referenceSystemIdentifier>\n         <gmd:RS_Identifier>\n           <gmd:code>\n             <gco:CharacterString>4326</gco:CharacterString>\n           </gmd:code>\n           <gmd:codeSpace>\n             <gco:CharacterString>EPSG</gco:CharacterString>\n           </gmd:codeSpace>\n           <gmd:version>\n             <gco:CharacterString>6.11</gco:CharacterString>\n           </gmd:version>\n         </gmd:RS_Identifier>\n       </gmd:referenceSystemIdentifier>\n     </gmd:MD_ReferenceSystem>\n   </gmd:referenceSystemInfo>\n   <gmd:identificationInfo>\n     <gmd:MD_DataIdentification>\n       <gmd:citation>\n         <gmd:CI_Citation>\n           <gmd:title>\n             <gco:CharacterString>uniquetitle</gco:CharacterString>\n           </gmd:title>\n           <gmd:date>\n             <gmd:CI_Date>\n               <gmd:date>\n                 <gco:DateTime>2012-09-28T19:19:45Z</gco:DateTime>\n               </gmd:date>\n               <gmd:dateType>\n                 <gmd:CI_DateTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode\" codeListValue=\"publication\">publication</gmd:CI_DateTypeCode>\n               </gmd:dateType>\n             </gmd:CI_Date>\n           </gmd:date>\n           <gmd:edition gco:nilReason=\"missing\">\n                 \n           </gmd:edition>\n           <gmd:presentationForm>\n             <gmd:CI_PresentationFormCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode\" codeListValue=\"mapDigital\">mapDigital</gmd:CI_PresentationFormCode>\n           </gmd:presentationForm>\n         </gmd:CI_Citation>\n       </gmd:citation>\n       <gmd:abstract>\n         <gco:CharacterString>something here</gco:CharacterString>\n       </gmd:abstract>\n       <gmd:purpose gco:nilReason=\"missing\">\n             \n       </gmd:purpose>\n       <gmd:status>\n         <gmd:MD_ProgressCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode\" codeListValue=\"completed\">completed</gmd:MD_ProgressCode>\n       </gmd:status>\n       \n       <gmd:graphicOverview>\n         <gmd:MD_BrowseGraphic>\n           <gmd:fileName>\n             <gco:CharacterString>http://localhost:8080/geoserver/wms?layers=geonode%3Amylayer&amp;width=20&amp;version=1.1.1&amp;bbox=-180%2C180%2C-90%2C90&amp;service=WMS&amp;format=image%2Fpng&amp;srs=EPSG%3A4326&amp;request=GetMap&amp;height=20</gco:CharacterString>\n           </gmd:fileName>\n           <gmd:fileDescription>\n             <gco:CharacterString>Thumbnail for 'uniquetitle'</gco:CharacterString>\n           </gmd:fileDescription>\n           <gmd:fileType>\n             <gco:CharacterString>image/png</gco:CharacterString>\n           </gmd:fileType>\n         </gmd:MD_BrowseGraphic>\n       </gmd:graphicOverview>\n       <gmd:resourceFormat>\n         <gmd:MD_Format>\n           <gmd:name>\n             \n             <gco:CharacterString>ESRI Shapefile</gco:CharacterString>\n             \n           </gmd:name>\n           <gmd:version>\n             <gco:CharacterString>1.0</gco:CharacterString>\n           </gmd:version>\n         </gmd:MD_Format>\n       </gmd:resourceFormat>\n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           \n           <gmd:keyword>\n             <gco:CharacterString>populartag</gco:CharacterString>\n           </gmd:keyword>\n           \n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"theme\">theme</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           <gmd:keyword>\n             <gco:CharacterString>United States of America</gco:CharacterString>\n           </gmd:keyword>\n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"place\">place</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       <gmd:resourceConstraints>\n         <gmd:MD_Constraints>\n           <gmd:useLimitation>\n             <gco:CharacterString>copyright</gco:CharacterString>\n           </gmd:useLimitation>\n         </gmd:MD_Constraints>\n       </gmd:resourceConstraints>\n       <gmd:spatialRepresentationType>\n         <gmd:MD_SpatialRepresentationTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode\" codeListValue=\"None\">None</gmd:MD_SpatialRepresentationTypeCode>\n       </gmd:spatialRepresentationType>\n       <gmd:language>\n         <gco:CharacterString>eng</gco:CharacterString>\n       </gmd:language>\n       <gmd:characterSet>\n         <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n       </gmd:characterSet>\n       <gmd:topicCategory >\n         \n         <gmd:MD_TopicCategoryCode>location</gmd:MD_TopicCategoryCode>\n         \n       </gmd:topicCategory>\n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:geographicElement>\n             <gmd:EX_GeographicBoundingBox>\n               <gmd:westBoundLongitude>\n                 <gco:Decimal>-180</gco:Decimal>\n               </gmd:westBoundLongitude>\n               <gmd:eastBoundLongitude>\n                 <gco:Decimal>180</gco:Decimal>\n               </gmd:eastBoundLongitude>\n               <gmd:southBoundLatitude>\n                 <gco:Decimal>-90</gco:Decimal>\n               </gmd:southBoundLatitude>\n               <gmd:northBoundLatitude>\n                 <gco:Decimal>90</gco:Decimal>\n               </gmd:northBoundLatitude>\n             </gmd:EX_GeographicBoundingBox>\n           </gmd:geographicElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:temporalElement>\n             <gmd:EX_TemporalExtent>\n               <gmd:extent>\n                 <gml:TimePeriod gml:id=\"T_01\">\n                   <gml:beginPosition>Oct. 1, 1990, midnight</gml:beginPosition>\n                   <gml:endPosition>Oct. 1, 1991, midnight</gml:endPosition>\n                 </gml:TimePeriod>\n               </gmd:extent>\n             </gmd:EX_TemporalExtent>\n           </gmd:temporalElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:supplementalInformation>\n         <gco:CharacterString>No information provided</gco:CharacterString>\n       </gmd:supplementalInformation>\n     </gmd:MD_DataIdentification>\n   </gmd:identificationInfo>\n   <gmd:distributionInfo>\n     <gmd:MD_Distribution>\n       <gmd:transferOptions>\n         <gmd:MD_DigitalTransferOptions>\n           <gmd:onLine>\n             <gmd:CI_OnlineResource>\n               <gmd:linkage>\n                   <gmd:URL>http://localhost:8000/data/geonode:mylayer</gmd:URL>\n               </gmd:linkage>\n               <gmd:protocol>\n                 <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n               </gmd:protocol>\n               <gmd:description>\n                 <gco:CharacterString>Online link to the 'uniquetitle' description on GeoNode</gco:CharacterString>\n               </gmd:description>\n             </gmd:CI_OnlineResource>\n           </gmd:onLine>\n           \n         </gmd:MD_DigitalTransferOptions>\n       </gmd:transferOptions>\n     </gmd:MD_Distribution>\n   </gmd:distributionInfo>\n   <gmd:dataQualityInfo>\n     <gmd:DQ_DataQuality>\n       <gmd:scope>\n         <gmd:DQ_Scope>\n           <gmd:level>\n             <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n           </gmd:level>\n         </gmd:DQ_Scope>\n       </gmd:scope>\n       <gmd:lineage>\n         <gmd:LI_Lineage>\n           <gmd:statement gco:nilReason=\"missing\"/>\n         </gmd:LI_Lineage>\n       </gmd:lineage>\n     </gmd:DQ_DataQuality>\n   </gmd:dataQualityInfo>\n </gmd:MD_Metadata>\n",
+      "edition": null,
+      "owner": [
+        "unique_username"
+      ],
+      "distribution_url": "http://localhost:8000/data/geonode:mylayer",
+      "spatial_representation_type": null,
+      "uuid": "7373d024-4273-4c6b-9a36-41878f4ce67b",
+      "title": "uniquetitle",
+      "csw_schema": "http://www.isotc211.org/2005/gmd",
+      "storeType": "raster",
+      "abstract": "something here",
+      "store": "",
+      "bbox_y0": "-90",
+      "distribution_description": "uniquetitle",
+      "topic_category": "location",
+      "csw_insert_date": "2012-09-28T19:19:45.779",
+      "purpose": null,
+      "date": "2012-09-28T19:19:45.470",
+      "name": "mylayer",
+      "temporal_extent_end": "1991-10-01",
+      "data_quality_statement": null,
+      "language": "eng",
+      "keywords_region": "USA",
+      "maintenance_frequency": null,
+      "csw_anytext": "\n    \n      7373d024-4273-4c6b-9a36-41878f4ce67b \n    \n    \n      eng \n    \n    \n      utf8 \n    \n    \n     dataset \n    \n     \n      \n        \n           admin  \n        \n        \n         \n        \n        \n         \n        \n        \n          \n            \n              \n                \n                 \n                \n                \n                 \n                \n              \n            \n            \n              \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n              \n            \n           \n            \n                 \n                     \n                         http://localhost:8000/profiles/profile/admin/ \n                     \n                     \n                         WWW:LINK-1.0-http--link \n                     \n                     \n                         GeoNode profile page \n                     \n                 \n            \n           \n          \n        \n        \n          pointOfContact \n        \n      \n     \n    \n      2012-09-28T19:19:45Z \n    \n    \n      ISO 19115:2003 - Geographic information - Metadata \n    \n    \n      ISO 19115:2003 \n    \n    \n    \n      \n        \n          \n            \n              4326 \n            \n            \n              EPSG \n            \n            \n              6.11 \n            \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              uniquetitle \n            \n            \n              \n                \n                  2012-09-28T19:19:45Z \n                \n                \n                  publication \n                \n              \n            \n            \n                 \n            \n            \n              mapDigital \n            \n          \n        \n        \n          something here \n        \n        \n             \n        \n        \n          completed \n        \n       \n        \n          \n            \n              http://localhost:8080/geoserver/wms?layers=geonode%3Amylayer&width=20&version=1.1.1&bbox=-180%2C180%2C-90%2C90&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=20 \n            \n            \n              Thumbnail for 'uniquetitle' \n            \n            \n              image/png \n            \n          \n        \n        \n          \n            \n             \n              ESRI Shapefile \n             \n            \n            \n              1.0 \n            \n          \n        \n       \n        \n          \n           \n            \n              populartag \n            \n           \n            \n               theme \n             \n          \n        \n       \n       \n        \n          \n            \n              United States of America \n            \n            \n               place \n             \n          \n        \n       \n        \n          \n            \n              copyright \n            \n          \n        \n        \n          None \n        \n        \n          eng \n        \n        \n          utf8 \n        \n        \n         \n          location \n         \n        \n        \n          \n            \n              \n                \n                  -180 \n                \n                \n                  180 \n                \n                \n                  -90 \n                \n                \n                  90 \n                \n              \n            \n          \n        \n       \n        \n          \n            \n              \n                \n                  \n                    Oct. 1, 1990, midnight \n                    Oct. 1, 1991, midnight \n                  \n                \n              \n            \n          \n        \n       \n        \n          No information provided \n        \n      \n    \n    \n      \n        \n          \n            \n              \n                \n                    http://localhost:8000/data/geonode:mylayer \n                \n                \n                  WWW:LINK-1.0-http--link \n                \n                \n                  Online link to the 'uniquetitle' description on GeoNode \n                \n              \n            \n           \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              dataset \n            \n          \n        \n        \n          \n            \n          \n        \n      \n    \n ",
+      "supplemental_information": "No information provided",
+      "typename": "geonode:mylayer",
+      "csw_type": "dataset",
+      "workspace": "",
+      "metadata_uploaded": false,
+      "csw_wkt_geometry": "SRID=EPSG:4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))",
+      "temporal_extent_start": "1990-10-01",
+      "constraints_use": "copyright"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "layers.layer",
+    "fields": {
+      "constraints_other": null,
+      "bbox_x0": "-180",
+      "csw_mdsource": "local",
+      "bbox_y1": "90",
+      "csw_typename": "gmd:MD_Metadata",
+      "date_type": "publication",
+      "srid": "EPSG:4326",
+      "bbox_x1": "180",
+      "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xsi:schemaLocation=\"http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd\">\n   <gmd:fileIdentifier>\n     <gco:CharacterString>3e00ceb3-5848-475e-960f-1845f4ad9549</gco:CharacterString>\n   </gmd:fileIdentifier>\n   <gmd:language>\n     <gco:CharacterString>eng</gco:CharacterString>\n   </gmd:language>\n   <gmd:characterSet>\n     <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n   </gmd:characterSet>\n   <gmd:hierarchyLevel>\n    <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n   </gmd:hierarchyLevel>\n   <gmd:contact> \n     <gmd:CI_ResponsibleParty>\n       <gmd:individualName >\n          <gco:CharacterString>admin</gco:CharacterString> \n       </gmd:individualName>\n       <gmd:organisationName gco:nilReason=\"missing\">\n         \n       </gmd:organisationName>\n       <gmd:positionName gco:nilReason=\"missing\">\n         \n       </gmd:positionName>\n       <gmd:contactInfo>\n         <gmd:CI_Contact>\n           <gmd:phone>\n             <gmd:CI_Telephone>\n               <gmd:voice gco:nilReason=\"missing\">\n                 \n               </gmd:voice>\n               <gmd:facsimile gco:nilReason=\"missing\">\n                 \n               </gmd:facsimile>\n             </gmd:CI_Telephone>\n           </gmd:phone>\n           <gmd:address>\n             <gmd:CI_Address>\n               <gmd:deliveryPoint gco:nilReason=\"missing\">\n                 \n               </gmd:deliveryPoint>\n               <gmd:city gco:nilReason=\"missing\">\n                 \n               </gmd:city>\n               <gmd:administrativeArea gco:nilReason=\"missing\">\n                 \n               </gmd:administrativeArea>\n               <gmd:postalCode gco:nilReason=\"missing\">\n                 \n               </gmd:postalCode>\n               <gmd:country gco:nilReason=\"missing\">\n                 \n               </gmd:country>\n               <gmd:electronicMailAddress gco:nilReason=\"missing\">\n                 \n               </gmd:electronicMailAddress>\n             </gmd:CI_Address>\n           </gmd:address>\n           \n           <gmd:onlineResource>\n                <gmd:CI_OnlineResource>\n                    <gmd:linkage>\n                        <gmd:URL>http://localhost:8000/profiles/profile/admin/</gmd:URL>\n                    </gmd:linkage>\n                    <gmd:protocol>\n                        <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n                    </gmd:protocol>\n                    <gmd:description>\n                        <gco:CharacterString>GeoNode profile page</gco:CharacterString>\n                    </gmd:description>\n                </gmd:CI_OnlineResource>\n           </gmd:onlineResource>\n           \n         </gmd:CI_Contact>\n       </gmd:contactInfo>\n       <gmd:role>\n         <gmd:CI_RoleCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode\" codeListValue=\"pointOfContact\">pointOfContact</gmd:CI_RoleCode>\n       </gmd:role>\n     </gmd:CI_ResponsibleParty>\n   </gmd:contact> \n   <gmd:dateStamp>\n     <gco:DateTime>2012-09-28T19:19:47Z</gco:DateTime>\n   </gmd:dateStamp>\n   <gmd:metadataStandardName>\n     <gco:CharacterString>ISO 19115:2003 - Geographic information - Metadata</gco:CharacterString>\n   </gmd:metadataStandardName>\n   <gmd:metadataStandardVersion>\n     <gco:CharacterString>ISO 19115:2003</gco:CharacterString>\n   </gmd:metadataStandardVersion>\n   <gmd:spatialRepresentationInfo />\n   <gmd:referenceSystemInfo>\n     <gmd:MD_ReferenceSystem>\n       <gmd:referenceSystemIdentifier>\n         <gmd:RS_Identifier>\n           <gmd:code>\n             <gco:CharacterString>4326</gco:CharacterString>\n           </gmd:code>\n           <gmd:codeSpace>\n             <gco:CharacterString>EPSG</gco:CharacterString>\n           </gmd:codeSpace>\n           <gmd:version>\n             <gco:CharacterString>6.11</gco:CharacterString>\n           </gmd:version>\n         </gmd:RS_Identifier>\n       </gmd:referenceSystemIdentifier>\n     </gmd:MD_ReferenceSystem>\n   </gmd:referenceSystemInfo>\n   <gmd:identificationInfo>\n     <gmd:MD_DataIdentification>\n       <gmd:citation>\n         <gmd:CI_Citation>\n           <gmd:title>\n             <gco:CharacterString>common blar</gco:CharacterString>\n           </gmd:title>\n           <gmd:date>\n             <gmd:CI_Date>\n               <gmd:date>\n                 <gco:DateTime>2012-09-28T19:19:47Z</gco:DateTime>\n               </gmd:date>\n               <gmd:dateType>\n                 <gmd:CI_DateTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode\" codeListValue=\"publication\">publication</gmd:CI_DateTypeCode>\n               </gmd:dateType>\n             </gmd:CI_Date>\n           </gmd:date>\n           <gmd:edition gco:nilReason=\"missing\">\n                 \n           </gmd:edition>\n           <gmd:presentationForm>\n             <gmd:CI_PresentationFormCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode\" codeListValue=\"mapDigital\">mapDigital</gmd:CI_PresentationFormCode>\n           </gmd:presentationForm>\n         </gmd:CI_Citation>\n       </gmd:citation>\n       <gmd:abstract>\n         <gco:CharacterString>lorem ipsum</gco:CharacterString>\n       </gmd:abstract>\n       <gmd:purpose gco:nilReason=\"missing\">\n             \n       </gmd:purpose>\n       <gmd:status>\n         <gmd:MD_ProgressCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode\" codeListValue=\"completed\">completed</gmd:MD_ProgressCode>\n       </gmd:status>\n       \n       <gmd:graphicOverview>\n         <gmd:MD_BrowseGraphic>\n           <gmd:fileName>\n             <gco:CharacterString>http://localhost:8080/geoserver/wms?layers=geonode%3Afoo&amp;width=20&amp;version=1.1.1&amp;bbox=-180%2C180%2C-90%2C90&amp;service=WMS&amp;format=image%2Fpng&amp;srs=EPSG%3A4326&amp;request=GetMap&amp;height=20</gco:CharacterString>\n           </gmd:fileName>\n           <gmd:fileDescription>\n             <gco:CharacterString>Thumbnail for 'common blar'</gco:CharacterString>\n           </gmd:fileDescription>\n           <gmd:fileType>\n             <gco:CharacterString>image/png</gco:CharacterString>\n           </gmd:fileType>\n         </gmd:MD_BrowseGraphic>\n       </gmd:graphicOverview>\n       <gmd:resourceFormat>\n         <gmd:MD_Format>\n           <gmd:name>\n             \n             <gco:CharacterString>ESRI Shapefile</gco:CharacterString>\n             \n           </gmd:name>\n           <gmd:version>\n             <gco:CharacterString>1.0</gco:CharacterString>\n           </gmd:version>\n         </gmd:MD_Format>\n       </gmd:resourceFormat>\n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           \n           <gmd:keyword>\n             <gco:CharacterString>populartag</gco:CharacterString>\n           </gmd:keyword>\n           \n           <gmd:keyword>\n             <gco:CharacterString>layertagunique</gco:CharacterString>\n           </gmd:keyword>\n           \n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"theme\">theme</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           <gmd:keyword>\n             <gco:CharacterString>United States of America</gco:CharacterString>\n           </gmd:keyword>\n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"place\">place</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       <gmd:resourceConstraints>\n         <gmd:MD_Constraints>\n           <gmd:useLimitation>\n             <gco:CharacterString>copyright</gco:CharacterString>\n           </gmd:useLimitation>\n         </gmd:MD_Constraints>\n       </gmd:resourceConstraints>\n       <gmd:spatialRepresentationType>\n         <gmd:MD_SpatialRepresentationTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode\" codeListValue=\"None\">None</gmd:MD_SpatialRepresentationTypeCode>\n       </gmd:spatialRepresentationType>\n       <gmd:language>\n         <gco:CharacterString>eng</gco:CharacterString>\n       </gmd:language>\n       <gmd:characterSet>\n         <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n       </gmd:characterSet>\n       <gmd:topicCategory >\n         \n         <gmd:MD_TopicCategoryCode>location</gmd:MD_TopicCategoryCode>\n         \n       </gmd:topicCategory>\n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:geographicElement>\n             <gmd:EX_GeographicBoundingBox>\n               <gmd:westBoundLongitude>\n                 <gco:Decimal>-180</gco:Decimal>\n               </gmd:westBoundLongitude>\n               <gmd:eastBoundLongitude>\n                 <gco:Decimal>180</gco:Decimal>\n               </gmd:eastBoundLongitude>\n               <gmd:southBoundLatitude>\n                 <gco:Decimal>-90</gco:Decimal>\n               </gmd:southBoundLatitude>\n               <gmd:northBoundLatitude>\n                 <gco:Decimal>90</gco:Decimal>\n               </gmd:northBoundLatitude>\n             </gmd:EX_GeographicBoundingBox>\n           </gmd:geographicElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:temporalElement>\n             <gmd:EX_TemporalExtent>\n               <gmd:extent>\n                 <gml:TimePeriod gml:id=\"T_01\">\n                   <gml:beginPosition>June 3, 1900, midnight</gml:beginPosition>\n                   <gml:endPosition>June 3, 1901, midnight</gml:endPosition>\n                 </gml:TimePeriod>\n               </gmd:extent>\n             </gmd:EX_TemporalExtent>\n           </gmd:temporalElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:supplementalInformation>\n         <gco:CharacterString>No information provided</gco:CharacterString>\n       </gmd:supplementalInformation>\n     </gmd:MD_DataIdentification>\n   </gmd:identificationInfo>\n   <gmd:distributionInfo>\n     <gmd:MD_Distribution>\n       <gmd:transferOptions>\n         <gmd:MD_DigitalTransferOptions>\n           <gmd:onLine>\n             <gmd:CI_OnlineResource>\n               <gmd:linkage>\n                   <gmd:URL>http://localhost:8000/data/geonode:foo</gmd:URL>\n               </gmd:linkage>\n               <gmd:protocol>\n                 <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n               </gmd:protocol>\n               <gmd:description>\n                 <gco:CharacterString>Online link to the 'common blar' description on GeoNode</gco:CharacterString>\n               </gmd:description>\n             </gmd:CI_OnlineResource>\n           </gmd:onLine>\n           \n         </gmd:MD_DigitalTransferOptions>\n       </gmd:transferOptions>\n     </gmd:MD_Distribution>\n   </gmd:distributionInfo>\n   <gmd:dataQualityInfo>\n     <gmd:DQ_DataQuality>\n       <gmd:scope>\n         <gmd:DQ_Scope>\n           <gmd:level>\n             <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n           </gmd:level>\n         </gmd:DQ_Scope>\n       </gmd:scope>\n       <gmd:lineage>\n         <gmd:LI_Lineage>\n           <gmd:statement gco:nilReason=\"missing\"/>\n         </gmd:LI_Lineage>\n       </gmd:lineage>\n     </gmd:DQ_DataQuality>\n   </gmd:dataQualityInfo>\n </gmd:MD_Metadata>\n",
+      "edition": null,
+      "owner": [
+        "jblaze"
+      ],
+      "distribution_url": "http://localhost:8000/data/geonode:foo",
+      "spatial_representation_type": null,
+      "uuid": "3e00ceb3-5848-475e-960f-1845f4ad9549",
+      "title": "common blar",
+      "csw_schema": "http://www.isotc211.org/2005/gmd",
+      "storeType": "vector",
+      "abstract": "lorem ipsum",
+      "store": "",
+      "bbox_y0": "-90",
+      "distribution_description": "common blar",
+      "topic_category": "location",
+      "csw_insert_date": "2012-09-28T19:19:47.953",
+      "purpose": null,
+      "date": "2012-09-28T19:19:47.668",
+      "name": "foo",
+      "temporal_extent_end": "1901-06-03",
+      "data_quality_statement": null,
+      "language": "eng",
+      "keywords_region": "USA",
+      "maintenance_frequency": null,
+      "csw_anytext": "\n    \n      3e00ceb3-5848-475e-960f-1845f4ad9549 \n    \n    \n      eng \n    \n    \n      utf8 \n    \n    \n     dataset \n    \n     \n      \n        \n           admin  \n        \n        \n         \n        \n        \n         \n        \n        \n          \n            \n              \n                \n                 \n                \n                \n                 \n                \n              \n            \n            \n              \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n              \n            \n           \n            \n                 \n                     \n                         http://localhost:8000/profiles/profile/admin/ \n                     \n                     \n                         WWW:LINK-1.0-http--link \n                     \n                     \n                         GeoNode profile page \n                     \n                 \n            \n           \n          \n        \n        \n          pointOfContact \n        \n      \n     \n    \n      2012-09-28T19:19:47Z \n    \n    \n      ISO 19115:2003 - Geographic information - Metadata \n    \n    \n      ISO 19115:2003 \n    \n    \n    \n      \n        \n          \n            \n              4326 \n            \n            \n              EPSG \n            \n            \n              6.11 \n            \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              common blar \n            \n            \n              \n                \n                  2012-09-28T19:19:47Z \n                \n                \n                  publication \n                \n              \n            \n            \n                 \n            \n            \n              mapDigital \n            \n          \n        \n        \n          lorem ipsum \n        \n        \n             \n        \n        \n          completed \n        \n       \n        \n          \n            \n              http://localhost:8080/geoserver/wms?layers=geonode%3Afoo&width=20&version=1.1.1&bbox=-180%2C180%2C-90%2C90&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=20 \n            \n            \n              Thumbnail for 'common blar' \n            \n            \n              image/png \n            \n          \n        \n        \n          \n            \n             \n              ESRI Shapefile \n             \n            \n            \n              1.0 \n            \n          \n        \n       \n        \n          \n           \n            \n              populartag \n            \n           \n            \n              layertagunique \n            \n           \n            \n               theme \n             \n          \n        \n       \n       \n        \n          \n            \n              United States of America \n            \n            \n               place \n             \n          \n        \n       \n        \n          \n            \n              copyright \n            \n          \n        \n        \n          None \n        \n        \n          eng \n        \n        \n          utf8 \n        \n        \n         \n          location \n         \n        \n        \n          \n            \n              \n                \n                  -180 \n                \n                \n                  180 \n                \n                \n                  -90 \n                \n                \n                  90 \n                \n              \n            \n          \n        \n       \n        \n          \n            \n              \n                \n                  \n                    June 3, 1900, midnight \n                    June 3, 1901, midnight \n                  \n                \n              \n            \n          \n        \n       \n        \n          No information provided \n        \n      \n    \n    \n      \n        \n          \n            \n              \n                \n                    http://localhost:8000/data/geonode:foo \n                \n                \n                  WWW:LINK-1.0-http--link \n                \n                \n                  Online link to the 'common blar' description on GeoNode \n                \n              \n            \n           \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              dataset \n            \n          \n        \n        \n          \n            \n          \n        \n      \n    \n ",
+      "supplemental_information": "No information provided",
+      "typename": "geonode:foo",
+      "csw_type": "dataset",
+      "workspace": "",
+      "metadata_uploaded": false,
+      "csw_wkt_geometry": "SRID=EPSG:4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))",
+      "temporal_extent_start": "1900-06-03",
+      "constraints_use": "copyright"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "layers.layer",
+    "fields": {
+      "constraints_other": null,
+      "bbox_x0": "0",
+      "csw_mdsource": "local",
+      "bbox_y1": "1",
+      "csw_typename": "gmd:MD_Metadata",
+      "date_type": "publication",
+      "srid": "EPSG:4326",
+      "bbox_x1": "1",
+      "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xsi:schemaLocation=\"http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd\">\n   <gmd:fileIdentifier>\n     <gco:CharacterString>33f457e3-1566-4c0d-abee-f1780f71781b</gco:CharacterString>\n   </gmd:fileIdentifier>\n   <gmd:language>\n     <gco:CharacterString>eng</gco:CharacterString>\n   </gmd:language>\n   <gmd:characterSet>\n     <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n   </gmd:characterSet>\n   <gmd:hierarchyLevel>\n    <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n   </gmd:hierarchyLevel>\n   <gmd:contact> \n     <gmd:CI_ResponsibleParty>\n       <gmd:individualName >\n          <gco:CharacterString>admin</gco:CharacterString> \n       </gmd:individualName>\n       <gmd:organisationName gco:nilReason=\"missing\">\n         \n       </gmd:organisationName>\n       <gmd:positionName gco:nilReason=\"missing\">\n         \n       </gmd:positionName>\n       <gmd:contactInfo>\n         <gmd:CI_Contact>\n           <gmd:phone>\n             <gmd:CI_Telephone>\n               <gmd:voice gco:nilReason=\"missing\">\n                 \n               </gmd:voice>\n               <gmd:facsimile gco:nilReason=\"missing\">\n                 \n               </gmd:facsimile>\n             </gmd:CI_Telephone>\n           </gmd:phone>\n           <gmd:address>\n             <gmd:CI_Address>\n               <gmd:deliveryPoint gco:nilReason=\"missing\">\n                 \n               </gmd:deliveryPoint>\n               <gmd:city gco:nilReason=\"missing\">\n                 \n               </gmd:city>\n               <gmd:administrativeArea gco:nilReason=\"missing\">\n                 \n               </gmd:administrativeArea>\n               <gmd:postalCode gco:nilReason=\"missing\">\n                 \n               </gmd:postalCode>\n               <gmd:country gco:nilReason=\"missing\">\n                 \n               </gmd:country>\n               <gmd:electronicMailAddress gco:nilReason=\"missing\">\n                 \n               </gmd:electronicMailAddress>\n             </gmd:CI_Address>\n           </gmd:address>\n           \n           <gmd:onlineResource>\n                <gmd:CI_OnlineResource>\n                    <gmd:linkage>\n                        <gmd:URL>http://localhost:8000/profiles/profile/admin/</gmd:URL>\n                    </gmd:linkage>\n                    <gmd:protocol>\n                        <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n                    </gmd:protocol>\n                    <gmd:description>\n                        <gco:CharacterString>GeoNode profile page</gco:CharacterString>\n                    </gmd:description>\n                </gmd:CI_OnlineResource>\n           </gmd:onlineResource>\n           \n         </gmd:CI_Contact>\n       </gmd:contactInfo>\n       <gmd:role>\n         <gmd:CI_RoleCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode\" codeListValue=\"pointOfContact\">pointOfContact</gmd:CI_RoleCode>\n       </gmd:role>\n     </gmd:CI_ResponsibleParty>\n   </gmd:contact> \n   <gmd:dateStamp>\n     <gco:DateTime>2012-09-28T19:19:50Z</gco:DateTime>\n   </gmd:dateStamp>\n   <gmd:metadataStandardName>\n     <gco:CharacterString>ISO 19115:2003 - Geographic information - Metadata</gco:CharacterString>\n   </gmd:metadataStandardName>\n   <gmd:metadataStandardVersion>\n     <gco:CharacterString>ISO 19115:2003</gco:CharacterString>\n   </gmd:metadataStandardVersion>\n   <gmd:spatialRepresentationInfo />\n   <gmd:referenceSystemInfo>\n     <gmd:MD_ReferenceSystem>\n       <gmd:referenceSystemIdentifier>\n         <gmd:RS_Identifier>\n           <gmd:code>\n             <gco:CharacterString>4326</gco:CharacterString>\n           </gmd:code>\n           <gmd:codeSpace>\n             <gco:CharacterString>EPSG</gco:CharacterString>\n           </gmd:codeSpace>\n           <gmd:version>\n             <gco:CharacterString>6.11</gco:CharacterString>\n           </gmd:version>\n         </gmd:RS_Identifier>\n       </gmd:referenceSystemIdentifier>\n     </gmd:MD_ReferenceSystem>\n   </gmd:referenceSystemInfo>\n   <gmd:identificationInfo>\n     <gmd:MD_DataIdentification>\n       <gmd:citation>\n         <gmd:CI_Citation>\n           <gmd:title>\n             <gco:CharacterString>common double it</gco:CharacterString>\n           </gmd:title>\n           <gmd:date>\n             <gmd:CI_Date>\n               <gmd:date>\n                 <gco:DateTime>2012-09-28T19:19:50Z</gco:DateTime>\n               </gmd:date>\n               <gmd:dateType>\n                 <gmd:CI_DateTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode\" codeListValue=\"publication\">publication</gmd:CI_DateTypeCode>\n               </gmd:dateType>\n             </gmd:CI_Date>\n           </gmd:date>\n           <gmd:edition gco:nilReason=\"missing\">\n                 \n           </gmd:edition>\n           <gmd:presentationForm>\n             <gmd:CI_PresentationFormCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode\" codeListValue=\"mapDigital\">mapDigital</gmd:CI_PresentationFormCode>\n           </gmd:presentationForm>\n         </gmd:CI_Citation>\n       </gmd:citation>\n       <gmd:abstract>\n         <gco:CharacterString>whatever</gco:CharacterString>\n       </gmd:abstract>\n       <gmd:purpose gco:nilReason=\"missing\">\n             \n       </gmd:purpose>\n       <gmd:status>\n         <gmd:MD_ProgressCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode\" codeListValue=\"completed\">completed</gmd:MD_ProgressCode>\n       </gmd:status>\n       \n       <gmd:graphicOverview>\n         <gmd:MD_BrowseGraphic>\n           <gmd:fileName>\n             <gco:CharacterString>http://localhost:8080/geoserver/wms?layers=geonode%3Awhatever&amp;width=20&amp;version=1.1.1&amp;bbox=0%2C1%2C0%2C1&amp;service=WMS&amp;format=image%2Fpng&amp;srs=EPSG%3A4326&amp;request=GetMap&amp;height=20</gco:CharacterString>\n           </gmd:fileName>\n           <gmd:fileDescription>\n             <gco:CharacterString>Thumbnail for 'common double it'</gco:CharacterString>\n           </gmd:fileDescription>\n           <gmd:fileType>\n             <gco:CharacterString>image/png</gco:CharacterString>\n           </gmd:fileType>\n         </gmd:MD_BrowseGraphic>\n       </gmd:graphicOverview>\n       <gmd:resourceFormat>\n         <gmd:MD_Format>\n           <gmd:name>\n             \n             <gco:CharacterString>ESRI Shapefile</gco:CharacterString>\n             \n           </gmd:name>\n           <gmd:version>\n             <gco:CharacterString>1.0</gco:CharacterString>\n           </gmd:version>\n         </gmd:MD_Format>\n       </gmd:resourceFormat>\n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           \n           <gmd:keyword>\n             <gco:CharacterString>populartag</gco:CharacterString>\n           </gmd:keyword>\n           \n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"theme\">theme</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           <gmd:keyword>\n             <gco:CharacterString>United States of America</gco:CharacterString>\n           </gmd:keyword>\n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"place\">place</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       <gmd:resourceConstraints>\n         <gmd:MD_Constraints>\n           <gmd:useLimitation>\n             <gco:CharacterString>copyright</gco:CharacterString>\n           </gmd:useLimitation>\n         </gmd:MD_Constraints>\n       </gmd:resourceConstraints>\n       <gmd:spatialRepresentationType>\n         <gmd:MD_SpatialRepresentationTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode\" codeListValue=\"None\">None</gmd:MD_SpatialRepresentationTypeCode>\n       </gmd:spatialRepresentationType>\n       <gmd:language>\n         <gco:CharacterString>eng</gco:CharacterString>\n       </gmd:language>\n       <gmd:characterSet>\n         <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n       </gmd:characterSet>\n       <gmd:topicCategory >\n         \n         <gmd:MD_TopicCategoryCode>location</gmd:MD_TopicCategoryCode>\n         \n       </gmd:topicCategory>\n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:geographicElement>\n             <gmd:EX_GeographicBoundingBox>\n               <gmd:westBoundLongitude>\n                 <gco:Decimal>0</gco:Decimal>\n               </gmd:westBoundLongitude>\n               <gmd:eastBoundLongitude>\n                 <gco:Decimal>1</gco:Decimal>\n               </gmd:eastBoundLongitude>\n               <gmd:southBoundLatitude>\n                 <gco:Decimal>0</gco:Decimal>\n               </gmd:southBoundLatitude>\n               <gmd:northBoundLatitude>\n                 <gco:Decimal>1</gco:Decimal>\n               </gmd:northBoundLatitude>\n             </gmd:EX_GeographicBoundingBox>\n           </gmd:geographicElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:temporalElement>\n             <gmd:EX_TemporalExtent>\n               <gmd:extent>\n                 <gml:TimePeriod gml:id=\"T_01\">\n                   <gml:beginPosition>Nov. 1, 5000, midnight</gml:beginPosition>\n                   <gml:endPosition>Nov. 1, 5001, midnight</gml:endPosition>\n                 </gml:TimePeriod>\n               </gmd:extent>\n             </gmd:EX_TemporalExtent>\n           </gmd:temporalElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:supplementalInformation>\n         <gco:CharacterString>No information provided</gco:CharacterString>\n       </gmd:supplementalInformation>\n     </gmd:MD_DataIdentification>\n   </gmd:identificationInfo>\n   <gmd:distributionInfo>\n     <gmd:MD_Distribution>\n       <gmd:transferOptions>\n         <gmd:MD_DigitalTransferOptions>\n           <gmd:onLine>\n             <gmd:CI_OnlineResource>\n               <gmd:linkage>\n                   <gmd:URL>http://localhost:8000/data/geonode:whatever</gmd:URL>\n               </gmd:linkage>\n               <gmd:protocol>\n                 <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n               </gmd:protocol>\n               <gmd:description>\n                 <gco:CharacterString>Online link to the 'common double it' description on GeoNode</gco:CharacterString>\n               </gmd:description>\n             </gmd:CI_OnlineResource>\n           </gmd:onLine>\n           \n         </gmd:MD_DigitalTransferOptions>\n       </gmd:transferOptions>\n     </gmd:MD_Distribution>\n   </gmd:distributionInfo>\n   <gmd:dataQualityInfo>\n     <gmd:DQ_DataQuality>\n       <gmd:scope>\n         <gmd:DQ_Scope>\n           <gmd:level>\n             <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n           </gmd:level>\n         </gmd:DQ_Scope>\n       </gmd:scope>\n       <gmd:lineage>\n         <gmd:LI_Lineage>\n           <gmd:statement gco:nilReason=\"missing\"/>\n         </gmd:LI_Lineage>\n       </gmd:lineage>\n     </gmd:DQ_DataQuality>\n   </gmd:dataQualityInfo>\n </gmd:MD_Metadata>\n",
+      "edition": null,
+      "owner": [
+        "foo"
+      ],
+      "distribution_url": "http://localhost:8000/data/geonode:whatever",
+      "spatial_representation_type": null,
+      "uuid": "33f457e3-1566-4c0d-abee-f1780f71781b",
+      "title": "common double it",
+      "csw_schema": "http://www.isotc211.org/2005/gmd",
+      "storeType": "raster",
+      "abstract": "whatever",
+      "store": "",
+      "bbox_y0": "0",
+      "distribution_description": "common double it",
+      "topic_category": "location",
+      "csw_insert_date": "2012-09-28T19:19:50.939",
+      "purpose": null,
+      "date": "2012-09-28T19:19:50.616",
+      "name": "whatever",
+      "temporal_extent_end": "5001-11-01",
+      "data_quality_statement": null,
+      "language": "eng",
+      "keywords_region": "USA",
+      "maintenance_frequency": null,
+      "csw_anytext": "\n    \n      33f457e3-1566-4c0d-abee-f1780f71781b \n    \n    \n      eng \n    \n    \n      utf8 \n    \n    \n     dataset \n    \n     \n      \n        \n           admin  \n        \n        \n         \n        \n        \n         \n        \n        \n          \n            \n              \n                \n                 \n                \n                \n                 \n                \n              \n            \n            \n              \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n              \n            \n           \n            \n                 \n                     \n                         http://localhost:8000/profiles/profile/admin/ \n                     \n                     \n                         WWW:LINK-1.0-http--link \n                     \n                     \n                         GeoNode profile page \n                     \n                 \n            \n           \n          \n        \n        \n          pointOfContact \n        \n      \n     \n    \n      2012-09-28T19:19:50Z \n    \n    \n      ISO 19115:2003 - Geographic information - Metadata \n    \n    \n      ISO 19115:2003 \n    \n    \n    \n      \n        \n          \n            \n              4326 \n            \n            \n              EPSG \n            \n            \n              6.11 \n            \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              common double it \n            \n            \n              \n                \n                  2012-09-28T19:19:50Z \n                \n                \n                  publication \n                \n              \n            \n            \n                 \n            \n            \n              mapDigital \n            \n          \n        \n        \n          whatever \n        \n        \n             \n        \n        \n          completed \n        \n       \n        \n          \n            \n              http://localhost:8080/geoserver/wms?layers=geonode%3Awhatever&width=20&version=1.1.1&bbox=0%2C1%2C0%2C1&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=20 \n            \n            \n              Thumbnail for 'common double it' \n            \n            \n              image/png \n            \n          \n        \n        \n          \n            \n             \n              ESRI Shapefile \n             \n            \n            \n              1.0 \n            \n          \n        \n       \n        \n          \n           \n            \n              populartag \n            \n           \n            \n               theme \n             \n          \n        \n       \n       \n        \n          \n            \n              United States of America \n            \n            \n               place \n             \n          \n        \n       \n        \n          \n            \n              copyright \n            \n          \n        \n        \n          None \n        \n        \n          eng \n        \n        \n          utf8 \n        \n        \n         \n          location \n         \n        \n        \n          \n            \n              \n                \n                  0 \n                \n                \n                  1 \n                \n                \n                  0 \n                \n                \n                  1 \n                \n              \n            \n          \n        \n       \n        \n          \n            \n              \n                \n                  \n                    Nov. 1, 5000, midnight \n                    Nov. 1, 5001, midnight \n                  \n                \n              \n            \n          \n        \n       \n        \n          No information provided \n        \n      \n    \n    \n      \n        \n          \n            \n              \n                \n                    http://localhost:8000/data/geonode:whatever \n                \n                \n                  WWW:LINK-1.0-http--link \n                \n                \n                  Online link to the 'common double it' description on GeoNode \n                \n              \n            \n           \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              dataset \n            \n          \n        \n        \n          \n            \n          \n        \n      \n    \n ",
+      "supplemental_information": "No information provided",
+      "typename": "geonode:whatever",
+      "csw_type": "dataset",
+      "workspace": "",
+      "metadata_uploaded": false,
+      "csw_wkt_geometry": "SRID=EPSG:4326;POLYGON((0 0,0 1,1 1,1 0,0 0))",
+      "temporal_extent_start": "5000-11-01",
+      "constraints_use": "copyright"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "layers.layer",
+    "fields": {
+      "constraints_other": null,
+      "bbox_x0": "0",
+      "csw_mdsource": "local",
+      "bbox_y1": "5",
+      "csw_typename": "gmd:MD_Metadata",
+      "date_type": "publication",
+      "srid": "EPSG:4326",
+      "bbox_x1": "5",
+      "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xsi:schemaLocation=\"http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd\">\n   <gmd:fileIdentifier>\n     <gco:CharacterString>c5a70533-aa3e-47c6-ad65-11435eeb22a8</gco:CharacterString>\n   </gmd:fileIdentifier>\n   <gmd:language>\n     <gco:CharacterString>eng</gco:CharacterString>\n   </gmd:language>\n   <gmd:characterSet>\n     <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n   </gmd:characterSet>\n   <gmd:hierarchyLevel>\n    <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n   </gmd:hierarchyLevel>\n   <gmd:contact> \n     <gmd:CI_ResponsibleParty>\n       <gmd:individualName >\n          <gco:CharacterString>admin</gco:CharacterString> \n       </gmd:individualName>\n       <gmd:organisationName gco:nilReason=\"missing\">\n         \n       </gmd:organisationName>\n       <gmd:positionName gco:nilReason=\"missing\">\n         \n       </gmd:positionName>\n       <gmd:contactInfo>\n         <gmd:CI_Contact>\n           <gmd:phone>\n             <gmd:CI_Telephone>\n               <gmd:voice gco:nilReason=\"missing\">\n                 \n               </gmd:voice>\n               <gmd:facsimile gco:nilReason=\"missing\">\n                 \n               </gmd:facsimile>\n             </gmd:CI_Telephone>\n           </gmd:phone>\n           <gmd:address>\n             <gmd:CI_Address>\n               <gmd:deliveryPoint gco:nilReason=\"missing\">\n                 \n               </gmd:deliveryPoint>\n               <gmd:city gco:nilReason=\"missing\">\n                 \n               </gmd:city>\n               <gmd:administrativeArea gco:nilReason=\"missing\">\n                 \n               </gmd:administrativeArea>\n               <gmd:postalCode gco:nilReason=\"missing\">\n                 \n               </gmd:postalCode>\n               <gmd:country gco:nilReason=\"missing\">\n                 \n               </gmd:country>\n               <gmd:electronicMailAddress gco:nilReason=\"missing\">\n                 \n               </gmd:electronicMailAddress>\n             </gmd:CI_Address>\n           </gmd:address>\n           \n           <gmd:onlineResource>\n                <gmd:CI_OnlineResource>\n                    <gmd:linkage>\n                        <gmd:URL>http://localhost:8000/profiles/profile/admin/</gmd:URL>\n                    </gmd:linkage>\n                    <gmd:protocol>\n                        <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n                    </gmd:protocol>\n                    <gmd:description>\n                        <gco:CharacterString>GeoNode profile page</gco:CharacterString>\n                    </gmd:description>\n                </gmd:CI_OnlineResource>\n           </gmd:onlineResource>\n           \n         </gmd:CI_Contact>\n       </gmd:contactInfo>\n       <gmd:role>\n         <gmd:CI_RoleCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode\" codeListValue=\"pointOfContact\">pointOfContact</gmd:CI_RoleCode>\n       </gmd:role>\n     </gmd:CI_ResponsibleParty>\n   </gmd:contact> \n   <gmd:dateStamp>\n     <gco:DateTime>2012-09-28T19:19:52Z</gco:DateTime>\n   </gmd:dateStamp>\n   <gmd:metadataStandardName>\n     <gco:CharacterString>ISO 19115:2003 - Geographic information - Metadata</gco:CharacterString>\n   </gmd:metadataStandardName>\n   <gmd:metadataStandardVersion>\n     <gco:CharacterString>ISO 19115:2003</gco:CharacterString>\n   </gmd:metadataStandardVersion>\n   <gmd:spatialRepresentationInfo />\n   <gmd:referenceSystemInfo>\n     <gmd:MD_ReferenceSystem>\n       <gmd:referenceSystemIdentifier>\n         <gmd:RS_Identifier>\n           <gmd:code>\n             <gco:CharacterString>4326</gco:CharacterString>\n           </gmd:code>\n           <gmd:codeSpace>\n             <gco:CharacterString>EPSG</gco:CharacterString>\n           </gmd:codeSpace>\n           <gmd:version>\n             <gco:CharacterString>6.11</gco:CharacterString>\n           </gmd:version>\n         </gmd:RS_Identifier>\n       </gmd:referenceSystemIdentifier>\n     </gmd:MD_ReferenceSystem>\n   </gmd:referenceSystemInfo>\n   <gmd:identificationInfo>\n     <gmd:MD_DataIdentification>\n       <gmd:citation>\n         <gmd:CI_Citation>\n           <gmd:title>\n             <gco:CharacterString>common double time</gco:CharacterString>\n           </gmd:title>\n           <gmd:date>\n             <gmd:CI_Date>\n               <gmd:date>\n                 <gco:DateTime>2012-09-28T19:19:52Z</gco:DateTime>\n               </gmd:date>\n               <gmd:dateType>\n                 <gmd:CI_DateTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode\" codeListValue=\"publication\">publication</gmd:CI_DateTypeCode>\n               </gmd:dateType>\n             </gmd:CI_Date>\n           </gmd:date>\n           <gmd:edition gco:nilReason=\"missing\">\n                 \n           </gmd:edition>\n           <gmd:presentationForm>\n             <gmd:CI_PresentationFormCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode\" codeListValue=\"mapDigital\">mapDigital</gmd:CI_PresentationFormCode>\n           </gmd:presentationForm>\n         </gmd:CI_Citation>\n       </gmd:citation>\n       <gmd:abstract>\n         <gco:CharacterString>else</gco:CharacterString>\n       </gmd:abstract>\n       <gmd:purpose gco:nilReason=\"missing\">\n             \n       </gmd:purpose>\n       <gmd:status>\n         <gmd:MD_ProgressCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode\" codeListValue=\"completed\">completed</gmd:MD_ProgressCode>\n       </gmd:status>\n       \n       <gmd:graphicOverview>\n         <gmd:MD_BrowseGraphic>\n           <gmd:fileName>\n             <gco:CharacterString>http://localhost:8080/geoserver/wms?layers=geonode%3Afooey&amp;width=20&amp;version=1.1.1&amp;bbox=0%2C5%2C0%2C5&amp;service=WMS&amp;format=image%2Fpng&amp;srs=EPSG%3A4326&amp;request=GetMap&amp;height=20</gco:CharacterString>\n           </gmd:fileName>\n           <gmd:fileDescription>\n             <gco:CharacterString>Thumbnail for 'common double time'</gco:CharacterString>\n           </gmd:fileDescription>\n           <gmd:fileType>\n             <gco:CharacterString>image/png</gco:CharacterString>\n           </gmd:fileType>\n         </gmd:MD_BrowseGraphic>\n       </gmd:graphicOverview>\n       <gmd:resourceFormat>\n         <gmd:MD_Format>\n           <gmd:name>\n             \n             <gco:CharacterString>ESRI Shapefile</gco:CharacterString>\n             \n           </gmd:name>\n           <gmd:version>\n             <gco:CharacterString>1.0</gco:CharacterString>\n           </gmd:version>\n         </gmd:MD_Format>\n       </gmd:resourceFormat>\n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           \n           <gmd:keyword>\n             <gco:CharacterString>populartag</gco:CharacterString>\n           </gmd:keyword>\n           \n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"theme\">theme</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           <gmd:keyword>\n             <gco:CharacterString>United States of America</gco:CharacterString>\n           </gmd:keyword>\n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"place\">place</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       <gmd:resourceConstraints>\n         <gmd:MD_Constraints>\n           <gmd:useLimitation>\n             <gco:CharacterString>copyright</gco:CharacterString>\n           </gmd:useLimitation>\n         </gmd:MD_Constraints>\n       </gmd:resourceConstraints>\n       <gmd:spatialRepresentationType>\n         <gmd:MD_SpatialRepresentationTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode\" codeListValue=\"None\">None</gmd:MD_SpatialRepresentationTypeCode>\n       </gmd:spatialRepresentationType>\n       <gmd:language>\n         <gco:CharacterString>eng</gco:CharacterString>\n       </gmd:language>\n       <gmd:characterSet>\n         <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n       </gmd:characterSet>\n       <gmd:topicCategory >\n         \n         <gmd:MD_TopicCategoryCode>location</gmd:MD_TopicCategoryCode>\n         \n       </gmd:topicCategory>\n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:geographicElement>\n             <gmd:EX_GeographicBoundingBox>\n               <gmd:westBoundLongitude>\n                 <gco:Decimal>0</gco:Decimal>\n               </gmd:westBoundLongitude>\n               <gmd:eastBoundLongitude>\n                 <gco:Decimal>5</gco:Decimal>\n               </gmd:eastBoundLongitude>\n               <gmd:southBoundLatitude>\n                 <gco:Decimal>0</gco:Decimal>\n               </gmd:southBoundLatitude>\n               <gmd:northBoundLatitude>\n                 <gco:Decimal>5</gco:Decimal>\n               </gmd:northBoundLatitude>\n             </gmd:EX_GeographicBoundingBox>\n           </gmd:geographicElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:temporalElement>\n             <gmd:EX_TemporalExtent>\n               <gmd:extent>\n                 <gml:TimePeriod gml:id=\"T_01\">\n                   <gml:beginPosition>Jan. 1, 1, midnight</gml:beginPosition>\n                   <gml:endPosition>Jan. 1, 2, midnight</gml:endPosition>\n                 </gml:TimePeriod>\n               </gmd:extent>\n             </gmd:EX_TemporalExtent>\n           </gmd:temporalElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:supplementalInformation>\n         <gco:CharacterString>No information provided</gco:CharacterString>\n       </gmd:supplementalInformation>\n     </gmd:MD_DataIdentification>\n   </gmd:identificationInfo>\n   <gmd:distributionInfo>\n     <gmd:MD_Distribution>\n       <gmd:transferOptions>\n         <gmd:MD_DigitalTransferOptions>\n           <gmd:onLine>\n             <gmd:CI_OnlineResource>\n               <gmd:linkage>\n                   <gmd:URL>http://localhost:8000/data/geonode:fooey</gmd:URL>\n               </gmd:linkage>\n               <gmd:protocol>\n                 <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n               </gmd:protocol>\n               <gmd:description>\n                 <gco:CharacterString>Online link to the 'common double time' description on GeoNode</gco:CharacterString>\n               </gmd:description>\n             </gmd:CI_OnlineResource>\n           </gmd:onLine>\n           \n         </gmd:MD_DigitalTransferOptions>\n       </gmd:transferOptions>\n     </gmd:MD_Distribution>\n   </gmd:distributionInfo>\n   <gmd:dataQualityInfo>\n     <gmd:DQ_DataQuality>\n       <gmd:scope>\n         <gmd:DQ_Scope>\n           <gmd:level>\n             <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n           </gmd:level>\n         </gmd:DQ_Scope>\n       </gmd:scope>\n       <gmd:lineage>\n         <gmd:LI_Lineage>\n           <gmd:statement gco:nilReason=\"missing\"/>\n         </gmd:LI_Lineage>\n       </gmd:lineage>\n     </gmd:DQ_DataQuality>\n   </gmd:dataQualityInfo>\n </gmd:MD_Metadata>\n",
+      "edition": null,
+      "owner": [
+        "user1"
+      ],
+      "distribution_url": "http://localhost:8000/data/geonode:fooey",
+      "spatial_representation_type": null,
+      "uuid": "c5a70533-aa3e-47c6-ad65-11435eeb22a8",
+      "title": "common double time",
+      "csw_schema": "http://www.isotc211.org/2005/gmd",
+      "storeType": "vector",
+      "abstract": "else",
+      "store": "",
+      "bbox_y0": "0",
+      "distribution_description": "common double time",
+      "topic_category": "location",
+      "csw_insert_date": "2012-09-28T19:19:53.240",
+      "purpose": null,
+      "date": "2012-09-28T19:19:52.907",
+      "name": "fooey",
+      "temporal_extent_end": "0002-01-01",
+      "data_quality_statement": null,
+      "language": "eng",
+      "keywords_region": "USA",
+      "maintenance_frequency": null,
+      "csw_anytext": "\n    \n      c5a70533-aa3e-47c6-ad65-11435eeb22a8 \n    \n    \n      eng \n    \n    \n      utf8 \n    \n    \n     dataset \n    \n     \n      \n        \n           admin  \n        \n        \n         \n        \n        \n         \n        \n        \n          \n            \n              \n                \n                 \n                \n                \n                 \n                \n              \n            \n            \n              \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n              \n            \n           \n            \n                 \n                     \n                         http://localhost:8000/profiles/profile/admin/ \n                     \n                     \n                         WWW:LINK-1.0-http--link \n                     \n                     \n                         GeoNode profile page \n                     \n                 \n            \n           \n          \n        \n        \n          pointOfContact \n        \n      \n     \n    \n      2012-09-28T19:19:52Z \n    \n    \n      ISO 19115:2003 - Geographic information - Metadata \n    \n    \n      ISO 19115:2003 \n    \n    \n    \n      \n        \n          \n            \n              4326 \n            \n            \n              EPSG \n            \n            \n              6.11 \n            \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              common double time \n            \n            \n              \n                \n                  2012-09-28T19:19:52Z \n                \n                \n                  publication \n                \n              \n            \n            \n                 \n            \n            \n              mapDigital \n            \n          \n        \n        \n          else \n        \n        \n             \n        \n        \n          completed \n        \n       \n        \n          \n            \n              http://localhost:8080/geoserver/wms?layers=geonode%3Afooey&width=20&version=1.1.1&bbox=0%2C5%2C0%2C5&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=20 \n            \n            \n              Thumbnail for 'common double time' \n            \n            \n              image/png \n            \n          \n        \n        \n          \n            \n             \n              ESRI Shapefile \n             \n            \n            \n              1.0 \n            \n          \n        \n       \n        \n          \n           \n            \n              populartag \n            \n           \n            \n               theme \n             \n          \n        \n       \n       \n        \n          \n            \n              United States of America \n            \n            \n               place \n             \n          \n        \n       \n        \n          \n            \n              copyright \n            \n          \n        \n        \n          None \n        \n        \n          eng \n        \n        \n          utf8 \n        \n        \n         \n          location \n         \n        \n        \n          \n            \n              \n                \n                  0 \n                \n                \n                  5 \n                \n                \n                  0 \n                \n                \n                  5 \n                \n              \n            \n          \n        \n       \n        \n          \n            \n              \n                \n                  \n                    Jan. 1, 1, midnight \n                    Jan. 1, 2, midnight \n                  \n                \n              \n            \n          \n        \n       \n        \n          No information provided \n        \n      \n    \n    \n      \n        \n          \n            \n              \n                \n                    http://localhost:8000/data/geonode:fooey \n                \n                \n                  WWW:LINK-1.0-http--link \n                \n                \n                  Online link to the 'common double time' description on GeoNode \n                \n              \n            \n           \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              dataset \n            \n          \n        \n        \n          \n            \n          \n        \n      \n    \n ",
+      "supplemental_information": "No information provided",
+      "typename": "geonode:fooey",
+      "csw_type": "dataset",
+      "workspace": "",
+      "metadata_uploaded": false,
+      "csw_wkt_geometry": "SRID=EPSG:4326;POLYGON((0 0,0 5,5 5,5 0,0 0))",
+      "temporal_extent_start": "0001-01-01",
+      "constraints_use": "copyright"
+    }
+  },
+  {
+    "pk": 7,
+    "model": "layers.layer",
+    "fields": {
+      "constraints_other": null,
+      "bbox_x0": "0",
+      "csw_mdsource": "local",
+      "bbox_y1": "10",
+      "csw_typename": "gmd:MD_Metadata",
+      "date_type": "publication",
+      "srid": "EPSG:4326",
+      "bbox_x1": "10",
+      "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xsi:schemaLocation=\"http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd\">\n   <gmd:fileIdentifier>\n     <gco:CharacterString>49c815a0-8d5e-4c7d-812f-c125185a9a16</gco:CharacterString>\n   </gmd:fileIdentifier>\n   <gmd:language>\n     <gco:CharacterString>eng</gco:CharacterString>\n   </gmd:language>\n   <gmd:characterSet>\n     <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n   </gmd:characterSet>\n   <gmd:hierarchyLevel>\n    <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n   </gmd:hierarchyLevel>\n   <gmd:contact> \n     <gmd:CI_ResponsibleParty>\n       <gmd:individualName >\n          <gco:CharacterString>admin</gco:CharacterString> \n       </gmd:individualName>\n       <gmd:organisationName gco:nilReason=\"missing\">\n         \n       </gmd:organisationName>\n       <gmd:positionName gco:nilReason=\"missing\">\n         \n       </gmd:positionName>\n       <gmd:contactInfo>\n         <gmd:CI_Contact>\n           <gmd:phone>\n             <gmd:CI_Telephone>\n               <gmd:voice gco:nilReason=\"missing\">\n                 \n               </gmd:voice>\n               <gmd:facsimile gco:nilReason=\"missing\">\n                 \n               </gmd:facsimile>\n             </gmd:CI_Telephone>\n           </gmd:phone>\n           <gmd:address>\n             <gmd:CI_Address>\n               <gmd:deliveryPoint gco:nilReason=\"missing\">\n                 \n               </gmd:deliveryPoint>\n               <gmd:city gco:nilReason=\"missing\">\n                 \n               </gmd:city>\n               <gmd:administrativeArea gco:nilReason=\"missing\">\n                 \n               </gmd:administrativeArea>\n               <gmd:postalCode gco:nilReason=\"missing\">\n                 \n               </gmd:postalCode>\n               <gmd:country gco:nilReason=\"missing\">\n                 \n               </gmd:country>\n               <gmd:electronicMailAddress gco:nilReason=\"missing\">\n                 \n               </gmd:electronicMailAddress>\n             </gmd:CI_Address>\n           </gmd:address>\n           \n           <gmd:onlineResource>\n                <gmd:CI_OnlineResource>\n                    <gmd:linkage>\n                        <gmd:URL>http://localhost:8000/profiles/profile/admin/</gmd:URL>\n                    </gmd:linkage>\n                    <gmd:protocol>\n                        <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n                    </gmd:protocol>\n                    <gmd:description>\n                        <gco:CharacterString>GeoNode profile page</gco:CharacterString>\n                    </gmd:description>\n                </gmd:CI_OnlineResource>\n           </gmd:onlineResource>\n           \n         </gmd:CI_Contact>\n       </gmd:contactInfo>\n       <gmd:role>\n         <gmd:CI_RoleCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode\" codeListValue=\"pointOfContact\">pointOfContact</gmd:CI_RoleCode>\n       </gmd:role>\n     </gmd:CI_ResponsibleParty>\n   </gmd:contact> \n   <gmd:dateStamp>\n     <gco:DateTime>2012-09-28T19:19:55Z</gco:DateTime>\n   </gmd:dateStamp>\n   <gmd:metadataStandardName>\n     <gco:CharacterString>ISO 19115:2003 - Geographic information - Metadata</gco:CharacterString>\n   </gmd:metadataStandardName>\n   <gmd:metadataStandardVersion>\n     <gco:CharacterString>ISO 19115:2003</gco:CharacterString>\n   </gmd:metadataStandardVersion>\n   <gmd:spatialRepresentationInfo />\n   <gmd:referenceSystemInfo>\n     <gmd:MD_ReferenceSystem>\n       <gmd:referenceSystemIdentifier>\n         <gmd:RS_Identifier>\n           <gmd:code>\n             <gco:CharacterString>4326</gco:CharacterString>\n           </gmd:code>\n           <gmd:codeSpace>\n             <gco:CharacterString>EPSG</gco:CharacterString>\n           </gmd:codeSpace>\n           <gmd:version>\n             <gco:CharacterString>6.11</gco:CharacterString>\n           </gmd:version>\n         </gmd:RS_Identifier>\n       </gmd:referenceSystemIdentifier>\n     </gmd:MD_ReferenceSystem>\n   </gmd:referenceSystemInfo>\n   <gmd:identificationInfo>\n     <gmd:MD_DataIdentification>\n       <gmd:citation>\n         <gmd:CI_Citation>\n           <gmd:title>\n             <gco:CharacterString>common bar</gco:CharacterString>\n           </gmd:title>\n           <gmd:date>\n             <gmd:CI_Date>\n               <gmd:date>\n                 <gco:DateTime>2012-09-28T19:19:55Z</gco:DateTime>\n               </gmd:date>\n               <gmd:dateType>\n                 <gmd:CI_DateTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode\" codeListValue=\"publication\">publication</gmd:CI_DateTypeCode>\n               </gmd:dateType>\n             </gmd:CI_Date>\n           </gmd:date>\n           <gmd:edition gco:nilReason=\"missing\">\n                 \n           </gmd:edition>\n           <gmd:presentationForm>\n             <gmd:CI_PresentationFormCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode\" codeListValue=\"mapDigital\">mapDigital</gmd:CI_PresentationFormCode>\n           </gmd:presentationForm>\n         </gmd:CI_Citation>\n       </gmd:citation>\n       <gmd:abstract>\n         <gco:CharacterString>uniqueabstract</gco:CharacterString>\n       </gmd:abstract>\n       <gmd:purpose gco:nilReason=\"missing\">\n             \n       </gmd:purpose>\n       <gmd:status>\n         <gmd:MD_ProgressCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode\" codeListValue=\"completed\">completed</gmd:MD_ProgressCode>\n       </gmd:status>\n       \n       <gmd:graphicOverview>\n         <gmd:MD_BrowseGraphic>\n           <gmd:fileName>\n             <gco:CharacterString>http://localhost:8080/geoserver/wms?layers=geonode%3Aquux&amp;width=20&amp;version=1.1.1&amp;bbox=0%2C10%2C0%2C10&amp;service=WMS&amp;format=image%2Fpng&amp;srs=EPSG%3A4326&amp;request=GetMap&amp;height=20</gco:CharacterString>\n           </gmd:fileName>\n           <gmd:fileDescription>\n             <gco:CharacterString>Thumbnail for 'common bar'</gco:CharacterString>\n           </gmd:fileDescription>\n           <gmd:fileType>\n             <gco:CharacterString>image/png</gco:CharacterString>\n           </gmd:fileType>\n         </gmd:MD_BrowseGraphic>\n       </gmd:graphicOverview>\n       <gmd:resourceFormat>\n         <gmd:MD_Format>\n           <gmd:name>\n             \n             <gco:CharacterString>ESRI Shapefile</gco:CharacterString>\n             \n           </gmd:name>\n           <gmd:version>\n             <gco:CharacterString>1.0</gco:CharacterString>\n           </gmd:version>\n         </gmd:MD_Format>\n       </gmd:resourceFormat>\n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           \n           <gmd:keyword>\n             <gco:CharacterString>populartag</gco:CharacterString>\n           </gmd:keyword>\n           \n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"theme\">theme</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           <gmd:keyword>\n             <gco:CharacterString>United States of America</gco:CharacterString>\n           </gmd:keyword>\n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"place\">place</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       <gmd:resourceConstraints>\n         <gmd:MD_Constraints>\n           <gmd:useLimitation>\n             <gco:CharacterString>copyright</gco:CharacterString>\n           </gmd:useLimitation>\n         </gmd:MD_Constraints>\n       </gmd:resourceConstraints>\n       <gmd:spatialRepresentationType>\n         <gmd:MD_SpatialRepresentationTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode\" codeListValue=\"None\">None</gmd:MD_SpatialRepresentationTypeCode>\n       </gmd:spatialRepresentationType>\n       <gmd:language>\n         <gco:CharacterString>eng</gco:CharacterString>\n       </gmd:language>\n       <gmd:characterSet>\n         <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n       </gmd:characterSet>\n       <gmd:topicCategory >\n         \n         <gmd:MD_TopicCategoryCode>location</gmd:MD_TopicCategoryCode>\n         \n       </gmd:topicCategory>\n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:geographicElement>\n             <gmd:EX_GeographicBoundingBox>\n               <gmd:westBoundLongitude>\n                 <gco:Decimal>0</gco:Decimal>\n               </gmd:westBoundLongitude>\n               <gmd:eastBoundLongitude>\n                 <gco:Decimal>10</gco:Decimal>\n               </gmd:eastBoundLongitude>\n               <gmd:southBoundLatitude>\n                 <gco:Decimal>0</gco:Decimal>\n               </gmd:southBoundLatitude>\n               <gmd:northBoundLatitude>\n                 <gco:Decimal>10</gco:Decimal>\n               </gmd:northBoundLatitude>\n             </gmd:EX_GeographicBoundingBox>\n           </gmd:geographicElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:temporalElement>\n             <gmd:EX_TemporalExtent>\n               <gmd:extent>\n                 <gml:TimePeriod gml:id=\"T_01\">\n                   <gml:beginPosition>Dec. 9, 1950, midnight</gml:beginPosition>\n                   <gml:endPosition>Dec. 9, 1951, midnight</gml:endPosition>\n                 </gml:TimePeriod>\n               </gmd:extent>\n             </gmd:EX_TemporalExtent>\n           </gmd:temporalElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:supplementalInformation>\n         <gco:CharacterString>No information provided</gco:CharacterString>\n       </gmd:supplementalInformation>\n     </gmd:MD_DataIdentification>\n   </gmd:identificationInfo>\n   <gmd:distributionInfo>\n     <gmd:MD_Distribution>\n       <gmd:transferOptions>\n         <gmd:MD_DigitalTransferOptions>\n           <gmd:onLine>\n             <gmd:CI_OnlineResource>\n               <gmd:linkage>\n                   <gmd:URL>http://localhost:8000/data/geonode:quux</gmd:URL>\n               </gmd:linkage>\n               <gmd:protocol>\n                 <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n               </gmd:protocol>\n               <gmd:description>\n                 <gco:CharacterString>Online link to the 'common bar' description on GeoNode</gco:CharacterString>\n               </gmd:description>\n             </gmd:CI_OnlineResource>\n           </gmd:onLine>\n           \n         </gmd:MD_DigitalTransferOptions>\n       </gmd:transferOptions>\n     </gmd:MD_Distribution>\n   </gmd:distributionInfo>\n   <gmd:dataQualityInfo>\n     <gmd:DQ_DataQuality>\n       <gmd:scope>\n         <gmd:DQ_Scope>\n           <gmd:level>\n             <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n           </gmd:level>\n         </gmd:DQ_Scope>\n       </gmd:scope>\n       <gmd:lineage>\n         <gmd:LI_Lineage>\n           <gmd:statement gco:nilReason=\"missing\"/>\n         </gmd:LI_Lineage>\n       </gmd:lineage>\n     </gmd:DQ_DataQuality>\n   </gmd:dataQualityInfo>\n </gmd:MD_Metadata>\n",
+      "edition": null,
+      "owner": [
+        "user2"
+      ],
+      "distribution_url": "http://localhost:8000/data/geonode:quux",
+      "spatial_representation_type": null,
+      "uuid": "49c815a0-8d5e-4c7d-812f-c125185a9a16",
+      "title": "common bar",
+      "csw_schema": "http://www.isotc211.org/2005/gmd",
+      "storeType": "raster",
+      "abstract": "uniqueabstract",
+      "store": "",
+      "bbox_y0": "0",
+      "distribution_description": "common bar",
+      "topic_category": "location",
+      "csw_insert_date": "2012-09-28T19:19:55.536",
+      "purpose": null,
+      "date": "2012-09-28T19:19:55.213",
+      "name": "quux",
+      "temporal_extent_end": "1951-12-09",
+      "data_quality_statement": null,
+      "language": "eng",
+      "keywords_region": "USA",
+      "maintenance_frequency": null,
+      "csw_anytext": "\n    \n      49c815a0-8d5e-4c7d-812f-c125185a9a16 \n    \n    \n      eng \n    \n    \n      utf8 \n    \n    \n     dataset \n    \n     \n      \n        \n           admin  \n        \n        \n         \n        \n        \n         \n        \n        \n          \n            \n              \n                \n                 \n                \n                \n                 \n                \n              \n            \n            \n              \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n              \n            \n           \n            \n                 \n                     \n                         http://localhost:8000/profiles/profile/admin/ \n                     \n                     \n                         WWW:LINK-1.0-http--link \n                     \n                     \n                         GeoNode profile page \n                     \n                 \n            \n           \n          \n        \n        \n          pointOfContact \n        \n      \n     \n    \n      2012-09-28T19:19:55Z \n    \n    \n      ISO 19115:2003 - Geographic information - Metadata \n    \n    \n      ISO 19115:2003 \n    \n    \n    \n      \n        \n          \n            \n              4326 \n            \n            \n              EPSG \n            \n            \n              6.11 \n            \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              common bar \n            \n            \n              \n                \n                  2012-09-28T19:19:55Z \n                \n                \n                  publication \n                \n              \n            \n            \n                 \n            \n            \n              mapDigital \n            \n          \n        \n        \n          uniqueabstract \n        \n        \n             \n        \n        \n          completed \n        \n       \n        \n          \n            \n              http://localhost:8080/geoserver/wms?layers=geonode%3Aquux&width=20&version=1.1.1&bbox=0%2C10%2C0%2C10&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=20 \n            \n            \n              Thumbnail for 'common bar' \n            \n            \n              image/png \n            \n          \n        \n        \n          \n            \n             \n              ESRI Shapefile \n             \n            \n            \n              1.0 \n            \n          \n        \n       \n        \n          \n           \n            \n              populartag \n            \n           \n            \n               theme \n             \n          \n        \n       \n       \n        \n          \n            \n              United States of America \n            \n            \n               place \n             \n          \n        \n       \n        \n          \n            \n              copyright \n            \n          \n        \n        \n          None \n        \n        \n          eng \n        \n        \n          utf8 \n        \n        \n         \n          location \n         \n        \n        \n          \n            \n              \n                \n                  0 \n                \n                \n                  10 \n                \n                \n                  0 \n                \n                \n                  10 \n                \n              \n            \n          \n        \n       \n        \n          \n            \n              \n                \n                  \n                    Dec. 9, 1950, midnight \n                    Dec. 9, 1951, midnight \n                  \n                \n              \n            \n          \n        \n       \n        \n          No information provided \n        \n      \n    \n    \n      \n        \n          \n            \n              \n                \n                    http://localhost:8000/data/geonode:quux \n                \n                \n                  WWW:LINK-1.0-http--link \n                \n                \n                  Online link to the 'common bar' description on GeoNode \n                \n              \n            \n           \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              dataset \n            \n          \n        \n        \n          \n            \n          \n        \n      \n    \n ",
+      "supplemental_information": "No information provided",
+      "typename": "geonode:quux",
+      "csw_type": "dataset",
+      "workspace": "",
+      "metadata_uploaded": false,
+      "csw_wkt_geometry": "SRID=EPSG:4326;POLYGON((0 0,0 10,10 10,10 0,0 0))",
+      "temporal_extent_start": "1950-12-09",
+      "constraints_use": "copyright"
+    }
+  },
+  {
+    "pk": 8,
+    "model": "layers.layer",
+    "fields": {
+      "constraints_other": null,
+      "bbox_x0": "0",
+      "csw_mdsource": "local",
+      "bbox_y1": "50",
+      "csw_typename": "gmd:MD_Metadata",
+      "date_type": "publication",
+      "srid": "EPSG:4326",
+      "bbox_x1": "50",
+      "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xsi:schemaLocation=\"http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd\">\n   <gmd:fileIdentifier>\n     <gco:CharacterString>5da8e574-7dda-4d1f-82c7-57168ec5c2c9</gco:CharacterString>\n   </gmd:fileIdentifier>\n   <gmd:language>\n     <gco:CharacterString>eng</gco:CharacterString>\n   </gmd:language>\n   <gmd:characterSet>\n     <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n   </gmd:characterSet>\n   <gmd:hierarchyLevel>\n    <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n   </gmd:hierarchyLevel>\n   <gmd:contact> \n     <gmd:CI_ResponsibleParty>\n       <gmd:individualName >\n          <gco:CharacterString>admin</gco:CharacterString> \n       </gmd:individualName>\n       <gmd:organisationName gco:nilReason=\"missing\">\n         \n       </gmd:organisationName>\n       <gmd:positionName gco:nilReason=\"missing\">\n         \n       </gmd:positionName>\n       <gmd:contactInfo>\n         <gmd:CI_Contact>\n           <gmd:phone>\n             <gmd:CI_Telephone>\n               <gmd:voice gco:nilReason=\"missing\">\n                 \n               </gmd:voice>\n               <gmd:facsimile gco:nilReason=\"missing\">\n                 \n               </gmd:facsimile>\n             </gmd:CI_Telephone>\n           </gmd:phone>\n           <gmd:address>\n             <gmd:CI_Address>\n               <gmd:deliveryPoint gco:nilReason=\"missing\">\n                 \n               </gmd:deliveryPoint>\n               <gmd:city gco:nilReason=\"missing\">\n                 \n               </gmd:city>\n               <gmd:administrativeArea gco:nilReason=\"missing\">\n                 \n               </gmd:administrativeArea>\n               <gmd:postalCode gco:nilReason=\"missing\">\n                 \n               </gmd:postalCode>\n               <gmd:country gco:nilReason=\"missing\">\n                 \n               </gmd:country>\n               <gmd:electronicMailAddress gco:nilReason=\"missing\">\n                 \n               </gmd:electronicMailAddress>\n             </gmd:CI_Address>\n           </gmd:address>\n           \n           <gmd:onlineResource>\n                <gmd:CI_OnlineResource>\n                    <gmd:linkage>\n                        <gmd:URL>http://localhost:8000/profiles/profile/admin/</gmd:URL>\n                    </gmd:linkage>\n                    <gmd:protocol>\n                        <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n                    </gmd:protocol>\n                    <gmd:description>\n                        <gco:CharacterString>GeoNode profile page</gco:CharacterString>\n                    </gmd:description>\n                </gmd:CI_OnlineResource>\n           </gmd:onlineResource>\n           \n         </gmd:CI_Contact>\n       </gmd:contactInfo>\n       <gmd:role>\n         <gmd:CI_RoleCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode\" codeListValue=\"pointOfContact\">pointOfContact</gmd:CI_RoleCode>\n       </gmd:role>\n     </gmd:CI_ResponsibleParty>\n   </gmd:contact> \n   <gmd:dateStamp>\n     <gco:DateTime>2012-09-28T19:19:57Z</gco:DateTime>\n   </gmd:dateStamp>\n   <gmd:metadataStandardName>\n     <gco:CharacterString>ISO 19115:2003 - Geographic information - Metadata</gco:CharacterString>\n   </gmd:metadataStandardName>\n   <gmd:metadataStandardVersion>\n     <gco:CharacterString>ISO 19115:2003</gco:CharacterString>\n   </gmd:metadataStandardVersion>\n   <gmd:spatialRepresentationInfo />\n   <gmd:referenceSystemInfo>\n     <gmd:MD_ReferenceSystem>\n       <gmd:referenceSystemIdentifier>\n         <gmd:RS_Identifier>\n           <gmd:code>\n             <gco:CharacterString>4326</gco:CharacterString>\n           </gmd:code>\n           <gmd:codeSpace>\n             <gco:CharacterString>EPSG</gco:CharacterString>\n           </gmd:codeSpace>\n           <gmd:version>\n             <gco:CharacterString>6.11</gco:CharacterString>\n           </gmd:version>\n         </gmd:RS_Identifier>\n       </gmd:referenceSystemIdentifier>\n     </gmd:MD_ReferenceSystem>\n   </gmd:referenceSystemInfo>\n   <gmd:identificationInfo>\n     <gmd:MD_DataIdentification>\n       <gmd:citation>\n         <gmd:CI_Citation>\n           <gmd:title>\n             <gco:CharacterString>common morx</gco:CharacterString>\n           </gmd:title>\n           <gmd:date>\n             <gmd:CI_Date>\n               <gmd:date>\n                 <gco:DateTime>2012-09-28T19:19:57Z</gco:DateTime>\n               </gmd:date>\n               <gmd:dateType>\n                 <gmd:CI_DateTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode\" codeListValue=\"publication\">publication</gmd:CI_DateTypeCode>\n               </gmd:dateType>\n             </gmd:CI_Date>\n           </gmd:date>\n           <gmd:edition gco:nilReason=\"missing\">\n                 \n           </gmd:edition>\n           <gmd:presentationForm>\n             <gmd:CI_PresentationFormCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode\" codeListValue=\"mapDigital\">mapDigital</gmd:CI_PresentationFormCode>\n           </gmd:presentationForm>\n         </gmd:CI_Citation>\n       </gmd:citation>\n       <gmd:abstract>\n         <gco:CharacterString>lorem ipsum</gco:CharacterString>\n       </gmd:abstract>\n       <gmd:purpose gco:nilReason=\"missing\">\n             \n       </gmd:purpose>\n       <gmd:status>\n         <gmd:MD_ProgressCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode\" codeListValue=\"completed\">completed</gmd:MD_ProgressCode>\n       </gmd:status>\n       \n       <gmd:graphicOverview>\n         <gmd:MD_BrowseGraphic>\n           <gmd:fileName>\n             <gco:CharacterString>http://localhost:8080/geoserver/wms?layers=geonode%3Afleem&amp;width=20&amp;version=1.1.1&amp;bbox=0%2C50%2C0%2C50&amp;service=WMS&amp;format=image%2Fpng&amp;srs=EPSG%3A4326&amp;request=GetMap&amp;height=20</gco:CharacterString>\n           </gmd:fileName>\n           <gmd:fileDescription>\n             <gco:CharacterString>Thumbnail for 'common morx'</gco:CharacterString>\n           </gmd:fileDescription>\n           <gmd:fileType>\n             <gco:CharacterString>image/png</gco:CharacterString>\n           </gmd:fileType>\n         </gmd:MD_BrowseGraphic>\n       </gmd:graphicOverview>\n       <gmd:resourceFormat>\n         <gmd:MD_Format>\n           <gmd:name>\n             \n             <gco:CharacterString>ESRI Shapefile</gco:CharacterString>\n             \n           </gmd:name>\n           <gmd:version>\n             <gco:CharacterString>1.0</gco:CharacterString>\n           </gmd:version>\n         </gmd:MD_Format>\n       </gmd:resourceFormat>\n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           \n           <gmd:keyword>\n             <gco:CharacterString>populartag</gco:CharacterString>\n           </gmd:keyword>\n           \n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"theme\">theme</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       \n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           <gmd:keyword>\n             <gco:CharacterString>United States of America</gco:CharacterString>\n           </gmd:keyword>\n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode\" codeListValue=\"place\">place</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>\n       \n       <gmd:resourceConstraints>\n         <gmd:MD_Constraints>\n           <gmd:useLimitation>\n             <gco:CharacterString>copyright</gco:CharacterString>\n           </gmd:useLimitation>\n         </gmd:MD_Constraints>\n       </gmd:resourceConstraints>\n       <gmd:spatialRepresentationType>\n         <gmd:MD_SpatialRepresentationTypeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode\" codeListValue=\"None\">None</gmd:MD_SpatialRepresentationTypeCode>\n       </gmd:spatialRepresentationType>\n       <gmd:language>\n         <gco:CharacterString>eng</gco:CharacterString>\n       </gmd:language>\n       <gmd:characterSet>\n         <gmd:MD_CharacterSetCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode\" codeListValue=\"utf8\">utf8</gmd:MD_CharacterSetCode>\n       </gmd:characterSet>\n       <gmd:topicCategory >\n         \n         <gmd:MD_TopicCategoryCode>location</gmd:MD_TopicCategoryCode>\n         \n       </gmd:topicCategory>\n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:geographicElement>\n             <gmd:EX_GeographicBoundingBox>\n               <gmd:westBoundLongitude>\n                 <gco:Decimal>0</gco:Decimal>\n               </gmd:westBoundLongitude>\n               <gmd:eastBoundLongitude>\n                 <gco:Decimal>50</gco:Decimal>\n               </gmd:eastBoundLongitude>\n               <gmd:southBoundLatitude>\n                 <gco:Decimal>0</gco:Decimal>\n               </gmd:southBoundLatitude>\n               <gmd:northBoundLatitude>\n                 <gco:Decimal>50</gco:Decimal>\n               </gmd:northBoundLatitude>\n             </gmd:EX_GeographicBoundingBox>\n           </gmd:geographicElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:temporalElement>\n             <gmd:EX_TemporalExtent>\n               <gmd:extent>\n                 <gml:TimePeriod gml:id=\"T_01\">\n                   <gml:beginPosition>Aug. 29, 1963, midnight</gml:beginPosition>\n                   <gml:endPosition>Aug. 28, 1964, midnight</gml:endPosition>\n                 </gml:TimePeriod>\n               </gmd:extent>\n             </gmd:EX_TemporalExtent>\n           </gmd:temporalElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n       \n       <gmd:supplementalInformation>\n         <gco:CharacterString>No information provided</gco:CharacterString>\n       </gmd:supplementalInformation>\n     </gmd:MD_DataIdentification>\n   </gmd:identificationInfo>\n   <gmd:distributionInfo>\n     <gmd:MD_Distribution>\n       <gmd:transferOptions>\n         <gmd:MD_DigitalTransferOptions>\n           <gmd:onLine>\n             <gmd:CI_OnlineResource>\n               <gmd:linkage>\n                   <gmd:URL>http://localhost:8000/data/geonode:fleem</gmd:URL>\n               </gmd:linkage>\n               <gmd:protocol>\n                 <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>\n               </gmd:protocol>\n               <gmd:description>\n                 <gco:CharacterString>Online link to the 'common morx' description on GeoNode</gco:CharacterString>\n               </gmd:description>\n             </gmd:CI_OnlineResource>\n           </gmd:onLine>\n           \n         </gmd:MD_DigitalTransferOptions>\n       </gmd:transferOptions>\n     </gmd:MD_Distribution>\n   </gmd:distributionInfo>\n   <gmd:dataQualityInfo>\n     <gmd:DQ_DataQuality>\n       <gmd:scope>\n         <gmd:DQ_Scope>\n           <gmd:level>\n             <gmd:MD_ScopeCode codeSpace=\"ISOTC211/19115\" codeList=\"http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode\" codeListValue=\"dataset\">dataset</gmd:MD_ScopeCode>\n           </gmd:level>\n         </gmd:DQ_Scope>\n       </gmd:scope>\n       <gmd:lineage>\n         <gmd:LI_Lineage>\n           <gmd:statement gco:nilReason=\"missing\"/>\n         </gmd:LI_Lineage>\n       </gmd:lineage>\n     </gmd:DQ_DataQuality>\n   </gmd:dataQualityInfo>\n </gmd:MD_Metadata>\n",
+      "edition": null,
+      "owner": [
+        "unique_username"
+      ],
+      "distribution_url": "http://localhost:8000/data/geonode:fleem",
+      "spatial_representation_type": null,
+      "uuid": "5da8e574-7dda-4d1f-82c7-57168ec5c2c9",
+      "title": "common morx",
+      "csw_schema": "http://www.isotc211.org/2005/gmd",
+      "storeType": "vector",
+      "abstract": "lorem ipsum",
+      "store": "",
+      "bbox_y0": "0",
+      "distribution_description": "common morx",
+      "topic_category": "location",
+      "csw_insert_date": "2012-09-28T19:19:57.911",
+      "purpose": null,
+      "date": "2012-09-28T19:19:57.569",
+      "name": "fleem",
+      "temporal_extent_end": "1964-08-28",
+      "data_quality_statement": null,
+      "language": "eng",
+      "keywords_region": "USA",
+      "maintenance_frequency": null,
+      "csw_anytext": "\n    \n      5da8e574-7dda-4d1f-82c7-57168ec5c2c9 \n    \n    \n      eng \n    \n    \n      utf8 \n    \n    \n     dataset \n    \n     \n      \n        \n           admin  \n        \n        \n         \n        \n        \n         \n        \n        \n          \n            \n              \n                \n                 \n                \n                \n                 \n                \n              \n            \n            \n              \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n                \n                 \n                \n              \n            \n           \n            \n                 \n                     \n                         http://localhost:8000/profiles/profile/admin/ \n                     \n                     \n                         WWW:LINK-1.0-http--link \n                     \n                     \n                         GeoNode profile page \n                     \n                 \n            \n           \n          \n        \n        \n          pointOfContact \n        \n      \n     \n    \n      2012-09-28T19:19:57Z \n    \n    \n      ISO 19115:2003 - Geographic information - Metadata \n    \n    \n      ISO 19115:2003 \n    \n    \n    \n      \n        \n          \n            \n              4326 \n            \n            \n              EPSG \n            \n            \n              6.11 \n            \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              common morx \n            \n            \n              \n                \n                  2012-09-28T19:19:57Z \n                \n                \n                  publication \n                \n              \n            \n            \n                 \n            \n            \n              mapDigital \n            \n          \n        \n        \n          lorem ipsum \n        \n        \n             \n        \n        \n          completed \n        \n       \n        \n          \n            \n              http://localhost:8080/geoserver/wms?layers=geonode%3Afleem&width=20&version=1.1.1&bbox=0%2C50%2C0%2C50&service=WMS&format=image%2Fpng&srs=EPSG%3A4326&request=GetMap&height=20 \n            \n            \n              Thumbnail for 'common morx' \n            \n            \n              image/png \n            \n          \n        \n        \n          \n            \n             \n              ESRI Shapefile \n             \n            \n            \n              1.0 \n            \n          \n        \n       \n        \n          \n           \n            \n              populartag \n            \n           \n            \n               theme \n             \n          \n        \n       \n       \n        \n          \n            \n              United States of America \n            \n            \n               place \n             \n          \n        \n       \n        \n          \n            \n              copyright \n            \n          \n        \n        \n          None \n        \n        \n          eng \n        \n        \n          utf8 \n        \n        \n         \n          location \n         \n        \n        \n          \n            \n              \n                \n                  0 \n                \n                \n                  50 \n                \n                \n                  0 \n                \n                \n                  50 \n                \n              \n            \n          \n        \n       \n        \n          \n            \n              \n                \n                  \n                    Aug. 29, 1963, midnight \n                    Aug. 28, 1964, midnight \n                  \n                \n              \n            \n          \n        \n       \n        \n          No information provided \n        \n      \n    \n    \n      \n        \n          \n            \n              \n                \n                    http://localhost:8000/data/geonode:fleem \n                \n                \n                  WWW:LINK-1.0-http--link \n                \n                \n                  Online link to the 'common morx' description on GeoNode \n                \n              \n            \n           \n          \n        \n      \n    \n    \n      \n        \n          \n            \n              dataset \n            \n          \n        \n        \n          \n            \n          \n        \n      \n    \n ",
+      "supplemental_information": "No information provided",
+      "typename": "geonode:fleem",
+      "csw_type": "dataset",
+      "workspace": "",
+      "metadata_uploaded": false,
+      "csw_wkt_geometry": "SRID=EPSG:4326;POLYGON((0 0,0 50,50 50,50 0,0 0))",
+      "temporal_extent_start": "1963-08-29",
+      "constraints_use": "copyright"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "maps.map",
+    "fields": {
+      "projection": "EPSG:4326",
+      "title": "lorem ipsum",
+      "abstract": "common lorem ipsum",
+      "zoom": 4,
+      "center_x": 42.0,
+      "center_y": -73.0,
+      "last_modified": "2012-09-28T19:19:35.529",
+      "owner": [
+        "user1"
+      ]
+    }
+  },
+  {
+    "pk": 2,
+    "model": "maps.map",
+    "fields": {
+      "projection": "EPSG:4326",
+      "title": "ipsum lorem",
+      "abstract": "common ipsum lorem",
+      "zoom": 4,
+      "center_x": 42.0,
+      "center_y": -73.0,
+      "last_modified": "2012-09-28T19:19:36.095",
+      "owner": [
+        "user2"
+      ]
+    }
+  },
+  {
+    "pk": 3,
+    "model": "maps.map",
+    "fields": {
+      "projection": "EPSG:4326",
+      "title": "lorem1 ipsum1",
+      "abstract": "common abstract1",
+      "zoom": 4,
+      "center_x": 42.0,
+      "center_y": -73.0,
+      "last_modified": "2012-09-28T19:19:36.957",
+      "owner": [
+        "unique_username"
+      ]
+    }
+  },
+  {
+    "pk": 4,
+    "model": "maps.map",
+    "fields": {
+      "projection": "EPSG:4326",
+      "title": "ipsum foo",
+      "abstract": "common bar lorem",
+      "zoom": 4,
+      "center_x": 42.0,
+      "center_y": -73.0,
+      "last_modified": "2012-09-28T19:19:37.355",
+      "owner": [
+        "jblaze"
+      ]
+    }
+  },
+  {
+    "pk": 5,
+    "model": "maps.map",
+    "fields": {
+      "projection": "EPSG:4326",
+      "title": "map one",
+      "abstract": "common this is a unique thing",
+      "zoom": 4,
+      "center_x": 42.0,
+      "center_y": -73.0,
+      "last_modified": "2012-09-28T19:19:38.036",
+      "owner": [
+        "foo"
+      ]
+    }
+  },
+  {
+    "pk": 6,
+    "model": "maps.map",
+    "fields": {
+      "projection": "EPSG:4326",
+      "title": "quux",
+      "abstract": "common double thing",
+      "zoom": 4,
+      "center_x": 42.0,
+      "center_y": -73.0,
+      "last_modified": "2012-09-28T19:19:38.459",
+      "owner": [
+        "user1"
+      ]
+    }
+  },
+  {
+    "pk": 7,
+    "model": "maps.map",
+    "fields": {
+      "projection": "EPSG:4326",
+      "title": "morx",
+      "abstract": "common thing double",
+      "zoom": 4,
+      "center_x": 42.0,
+      "center_y": -73.0,
+      "last_modified": "2012-09-28T19:19:38.873",
+      "owner": [
+        "user2"
+      ]
+    }
+  },
+  {
+    "pk": 8,
+    "model": "maps.map",
+    "fields": {
+      "projection": "EPSG:4326",
+      "title": "titledupe something else ",
+      "abstract": "whatever common",
+      "zoom": 4,
+      "center_x": 42.0,
+      "center_y": -73.0,
+      "last_modified": "2012-09-28T19:19:39.280",
+      "owner": [
+        "unique_username"
+      ]
+    }
+  },
+  {
+    "pk": 9,
+    "model": "maps.map",
+    "fields": {
+      "projection": "EPSG:4326",
+      "title": "something titledupe else ",
+      "abstract": "bar common",
+      "zoom": 4,
+      "center_x": 42.0,
+      "center_y": -73.0,
+      "last_modified": "2012-09-28T19:19:39.762",
+      "owner": [
+        "jblaze"
+      ]
+    }
+  },
+  {
+    "pk": 1,
+    "model": "taggit.tag",
+    "fields": {
+      "name": "populartag",
+      "slug": "populartag"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "taggit.tag",
+    "fields": {
+      "name": "maptagunique",
+      "slug": "maptagunique"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "taggit.tag",
+    "fields": {
+      "name": "here",
+      "slug": "here"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "taggit.tag",
+    "fields": {
+      "name": "layertagunique",
+      "slug": "layertagunique"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "maps",
+        "map"
+      ],
+      "object_id": 1
+    }
+  },
+  {
+    "pk": 2,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "maps",
+        "map"
+      ],
+      "object_id": 2
+    }
+  },
+  {
+    "pk": 3,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 2,
+      "content_type": [
+        "maps",
+        "map"
+      ],
+      "object_id": 2
+    }
+  },
+  {
+    "pk": 4,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "maps",
+        "map"
+      ],
+      "object_id": 3
+    }
+  },
+  {
+    "pk": 5,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "maps",
+        "map"
+      ],
+      "object_id": 4
+    }
+  },
+  {
+    "pk": 6,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "maps",
+        "map"
+      ],
+      "object_id": 5
+    }
+  },
+  {
+    "pk": 7,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "maps",
+        "map"
+      ],
+      "object_id": 6
+    }
+  },
+  {
+    "pk": 8,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "maps",
+        "map"
+      ],
+      "object_id": 7
+    }
+  },
+  {
+    "pk": 9,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "maps",
+        "map"
+      ],
+      "object_id": 8
+    }
+  },
+  {
+    "pk": 10,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "maps",
+        "map"
+      ],
+      "object_id": 9
+    }
+  },
+  {
+    "pk": 11,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "layers",
+        "layer"
+      ],
+      "object_id": 1
+    }
+  },
+  {
+    "pk": 12,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 3,
+      "content_type": [
+        "layers",
+        "layer"
+      ],
+      "object_id": 1
+    }
+  },
+  {
+    "pk": 13,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "layers",
+        "layer"
+      ],
+      "object_id": 2
+    }
+  },
+  {
+    "pk": 14,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "layers",
+        "layer"
+      ],
+      "object_id": 3
+    }
+  },
+  {
+    "pk": 15,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "layers",
+        "layer"
+      ],
+      "object_id": 4
+    }
+  },
+  {
+    "pk": 16,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 4,
+      "content_type": [
+        "layers",
+        "layer"
+      ],
+      "object_id": 4
+    }
+  },
+  {
+    "pk": 17,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "layers",
+        "layer"
+      ],
+      "object_id": 5
+    }
+  },
+  {
+    "pk": 18,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "layers",
+        "layer"
+      ],
+      "object_id": 6
+    }
+  },
+  {
+    "pk": 19,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "layers",
+        "layer"
+      ],
+      "object_id": 7
+    }
+  },
+  {
+    "pk": 20,
+    "model": "taggit.taggeditem",
+    "fields": {
+      "tag": 1,
+      "content_type": [
+        "layers",
+        "layer"
+      ],
+      "object_id": 8
+    }
+  }
+]

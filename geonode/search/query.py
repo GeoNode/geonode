@@ -38,8 +38,9 @@ _SEARCH_PARAMS = [
     'extent',
     'added',
     'period',
+    'start_date',
+    'end_date',
     'start',
-    'end',
     'exclude',
     'cache']
 
@@ -107,12 +108,12 @@ class Query(object):
         val = filters['period']
         self.period = tuple(val.split(',')) if val else None
 
-        start = filters['start']
-        end = filters['end']
-        if start or end:
+        start_date = filters['start_date']
+        end_date = filters['end_date']
+        if start_date or end_date:
             if self.period:
                 raise BadQuery('period and start/end both provided')
-            self.period = (start, end)
+            self.period = (start_date, end_date)
 
         val = filters['extent']
         if val:
