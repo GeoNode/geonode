@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-09 16:12-0600\n"
-"PO-Revision-Date: 2013-01-16 12:26+0200\n"
+"PO-Revision-Date: 2013-01-16 12:44+0200\n"
 "Last-Translator: Angelos Tzotsos <gcpp.kalxas@gmail.com>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/"
 "el/)\n"
@@ -320,7 +320,7 @@ msgstr "συλλογή υλισμικού"
 
 #: layers/enumerations.py:29
 msgid "collection session"
-msgstr ""
+msgstr "συνεδρία συλλογής"
 
 #: layers/enumerations.py:30
 msgid "non-geographic data"
@@ -332,7 +332,7 @@ msgstr "τύπος χαρακτηριστικού"
 
 #: layers/enumerations.py:32
 msgid "field session"
-msgstr ""
+msgstr "συνεδρία τομέα"
 
 #: layers/enumerations.py:33
 msgid "dataset"
@@ -419,6 +419,8 @@ msgid ""
 "three-dimensional view formed by the intersecting homologous           rays "
 "of an overlapping pair of images"
 msgstr ""
+"τρισδιάστατη προβολή που σχηματίζεται από τις τεμνόμενες ομόλογες ακτίνες σε "
+"ένα επικαλυπτόμενο ζεύγος εικόνων"
 
 #: layers/enumerations.py:74
 msgid "textual or tabular data"
@@ -438,7 +440,7 @@ msgstr "πληροφορία που αφορά τις επιστήμες της 
 
 #: layers/enumerations.py:82
 msgid "rearing of animals and/or cultivation of plants"
-msgstr ""
+msgstr "εκτροφή των ζώων και / ή καλλιέργεια των φυτών"
 
 #: layers/enumerations.py:83
 msgid "height above or below sea level"
@@ -449,74 +451,82 @@ msgid ""
 "energy, water and waste systems and communications infrastructure           "
 "and services"
 msgstr ""
+"ενέργεια, νερό, συστήματα αποβλήτων και συστήματα επικοινωνίας υποδομών και "
+"υπηρεσιών"
 
 #: layers/enumerations.py:88
 msgid ""
 "features and characteristics of salt water bodies (excluding           "
 "inland waters)"
 msgstr ""
+"οντότητες και χαρακτηριστικά των θαλάσσιων υδάτων (πλην των εσωτερικών "
+"υδάτων)"
 
 #: layers/enumerations.py:90
 msgid "legal land descriptions"
-msgstr ""
+msgstr "νομικές περιγραφές γης"
 
 #: layers/enumerations.py:92
 msgid ""
 "inland water features, drainage systems and           their characteristics"
 msgstr ""
+"χαρακτηριστικά των επίγειων υδάτων, συστήματα αποχέτευσης και τα "
+"χαρακτηριστικά τους"
 
 #: layers/enumerations.py:94
 msgid "military bases, structures, activities"
-msgstr ""
+msgstr "στρατιωτικές βάσεις, δομές, δραστηριότητες"
 
 #: layers/enumerations.py:95
 msgid "environmental resources, protection and conservation"
-msgstr ""
+msgstr "περιβαλλοντικοί πόροι, προστασία και διατήρηση"
 
 #: layers/enumerations.py:96
 msgid "positional information and services"
-msgstr ""
+msgstr "πληροφορίες θέσης και υπηρεσίες"
 
 #: layers/enumerations.py:97
 msgid "economic activities, conditions and employment"
-msgstr ""
+msgstr "οικονομικές δραστηριότητες, συνθήκες και απασχόληση"
 
 #: layers/enumerations.py:99
 msgid ""
 "information used for appropriate actions for future use of the           land"
 msgstr ""
+"πληροφορίες που χρησιμοποιούνται για κατάλληλα μέτρα για τη μελλοντική χρήση "
+"της γης"
 
 #: layers/enumerations.py:101
 msgid "flora and/or fauna in natural environment"
-msgstr ""
+msgstr "χλωρίδα ή / και πανίδα στο φυσικό περιβάλλον"
 
 #: layers/enumerations.py:102
 msgid "health, health services, human ecology, and safety"
-msgstr ""
+msgstr "υγεία, υπηρεσίες υγείας, ανθρώπινη οικολογία και ασφάλεια"
 
 #: layers/enumerations.py:103
 msgid "base maps"
-msgstr ""
+msgstr "χάρτες υποβάθρου"
 
 #: layers/enumerations.py:104
 msgid "means and aids for conveying persons and/or goods"
-msgstr ""
+msgstr "μέσα και βοηθήματα για τη μεταφορά προσώπων ή / και αγαθών"
 
 #: layers/enumerations.py:105
 msgid "characteristics of society and cultures"
-msgstr ""
+msgstr "χαρακτηριστικά της κοινωνίας και των πολιτισμών"
 
 #: layers/enumerations.py:106
 msgid "man-made construction"
-msgstr ""
+msgstr "ανθρωπογενείς κατασκευές"
 
 #: layers/enumerations.py:108
 msgid "processes and phenomena of the atmosphere"
-msgstr ""
+msgstr "διαδικασίες και φαινόμενα της ατμόσφαιρας"
 
 #: layers/enumerations.py:127
 msgid "No information provided"
-msgstr ""
+msgstr "Δεν παρέχεται καμία πληροφορία"
 
 #: layers/enumerations.py:131
 msgid "Afghanistan"
@@ -1468,7 +1478,7 @@ msgstr "Ζιμπάμπουε"
 
 #: layers/forms.py:57 maps/forms.py:29 people/forms.py:49
 msgid "A space or comma-separated list of keywords"
-msgstr ""
+msgstr "Μια λίστα λέξεων κλειδιών χωρισμένες με κόμμα ή κενό "
 
 #: layers/models.py:63
 #, fuzzy
@@ -1477,15 +1487,15 @@ msgstr "στυλ"
 
 #: layers/models.py:65
 msgid "sld text"
-msgstr ""
+msgstr "κείμενο sld"
 
 #: layers/models.py:66
 msgid "sld version"
-msgstr ""
+msgstr "έκδοση sld"
 
 #: layers/models.py:67
 msgid "sld url"
-msgstr ""
+msgstr "ηλεκτρονική διεύθυνση sld"
 
 #: layers/models.py:118 security/models.py:54
 msgid "title"
