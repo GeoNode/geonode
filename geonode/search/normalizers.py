@@ -171,7 +171,7 @@ class LayerNormalizer(Normalizer):
         doc['id'] = layer.id
         doc['_type'] = 'layer'
 #        doc['owsUrl'] = layer.get_virtual_wms_url()
-        doc['category'] = layer.topic_category
+        doc['category'] = layer.category.slug if layer.category else 'location'
         doc['name'] = layer.typename
         doc['abstract'] = defaultfilters.linebreaks(layer.abstract)
         doc['storeType'] = layer.storeType
