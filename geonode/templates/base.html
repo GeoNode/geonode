@@ -175,8 +175,8 @@
       <div class="container">
           <div class="pull-left">
               {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
-              {% trans "Developers" %} <a href="{% url developer %}">{% trans "Developers" %}</a> |
-              {% trans "About" %} <a href="{% url about %}">{% trans "About" %}</a>
+              <a href="{% url developer %}">{% trans "Developers" %}</a> |
+              <a href="{% url about %}">{% trans "About" %}</a>
           </div>
           <div class="pull-right">
             {% if csrf_token != "NOTPROVIDED" %}
