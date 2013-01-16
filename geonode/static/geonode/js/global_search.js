@@ -33,7 +33,15 @@ Keyword.prototype.filter = function (keyword, show) {
     if (show) {
         $("#search-results article[data-keywords*=" + keyword + "]").show();
     } else {
-        $("#search-results article[data-keywords*=" + keyword + "]").hide();
+        $("#search-results article[data-keywords*=" + keyword + "]").each(function(index, item){
+            var keywords = this.dataset.keywords.split(",");
+            $(item).hide();
+            keywords.forEach(function(keyword){
+                if($('#filter-keywords').find("input[value='"+keyword+"']").first().attr('checked')=='checked'){
+                    $(item).show();
+                };
+            });
+        });
     }
 };
 
