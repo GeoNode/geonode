@@ -227,7 +227,16 @@ $(function () {
 
     $("#id_sorting").change(function () {
         var sortby = $(this).val();
-        $('#search-results > article').tsort({order: 'desc', data: sortby});
+        switch(sortby){
+            case 'alphaaz':
+                $('#search-results > article').tsort({order: 'asc', data: 'title'});
+                break;
+            case 'alphaza':
+                $('#search-results > article').tsort({order: 'desc', data: 'title'});
+                break;
+            default:
+                $('#search-results > article').tsort({order: 'desc', data: sortby});
+        }
     });
 
     $(".expand-content").click(function (event) {
