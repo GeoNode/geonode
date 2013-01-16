@@ -104,6 +104,7 @@
                 {% for category in categories %}
                 <label class="checkbox" data-category="{{ category.slug }}">
                     <input type="checkbox" value="{{ category|slugify }}" checked="checked" /> {{ category }}
+                    (<span class="count">0</span>)
                 </label>
                 {% endfor %}
               </ul>
@@ -121,6 +122,7 @@
               {% for tag in tags %}
               <label class="checkbox" data-tag="{{ tag }}">
                 <input type="checkbox" value="{{ tag }}" checked="checked" /> {{ tag }}
+                (<span class="count">0</span>)
               </label>
               {% endfor %}
             </div>

@@ -14,19 +14,15 @@ var RelatedSearch = function () {
 RelatedSearch.prototype.load = function (data) {
     $.each(data.items, function (index, item) {
         this.container.append($('<li/>', {text: item}));
-        // this.container.append("<li>" + item + "</li>");
     });
 };
 
 var Keyword = function () {
     this.keywords = $("#filter-keywords label");
-    this.keywords.append($('<span/>', {'class': 'count', 'text': 0}));
-    // this.keywords.append(" (<span class=\"count\">0</span>)");
 };
 
 Keyword.prototype.limit = function () {
     this.keywords.hide().each(function () {
-
         if ($("[data-keywords~=" + $(this).find("input").val() + "]").size()) {
             $(this).show().find("input").attr("checked", "checked");
         }
@@ -34,17 +30,16 @@ Keyword.prototype.limit = function () {
 };
 
 Keyword.prototype.filter = function (keyword, show) {
-
     if (show) {
-        $("#search-results article[data-keywords~=" + keyword + "]").show();
+        $("#search-results article[data-keywords*=" + keyword + "]").show();
     } else {
-        $("#search-results article[data-keywords~=" + keyword + "]").hide();
+        $("#search-results article[data-keywords*=" + keyword + "]").hide();
     }
 };
 
 Keyword.prototype.update_counts = function () {
     this.keywords.each(function () {
-        var count = $("#search-results article[data-keywords~=" + $(this).find("input").val() + "]").size();
+        var count = $("#search-results article[data-keywords*='" + $(this).find("input").val() + "']").size();
         $(this).find("span.count").html(count);
     });
 };
@@ -52,7 +47,6 @@ Keyword.prototype.update_counts = function () {
 
 var Category = function () {
     this.categories = $("#filter-categories label");
-    this.categories.append(" (<span class=\"count\">0</span>)");
 };
 
 Category.prototype.limit = function () {
@@ -120,7 +114,6 @@ var doSearch = function (options) {
             $(".search_query").append('<li>' + key + ': ' + query[key]);
         }
     }
-    //$(".search_query").append(list);
     query['limit'] = 'none';
     $.getJSON('/search/api', query, function (data) {
         $("#search-results").html("");
@@ -171,7 +164,6 @@ var doSearch = function (options) {
                 filterResults(query['type'],true);
             }
 
-
             $("#filter-classes span.count").each(function () {
                 $(this).html(
                     $("#search-results article." + $(this).parents("label").data("class")).size()
@@ -187,7 +179,6 @@ var doSearch = function (options) {
         }
 
         keywords.update_counts();
-        //categories.limit();
         categories.update_counts();
     });
     // end of response to ajax call
