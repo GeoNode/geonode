@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-09 16:12-0600\n"
-"PO-Revision-Date: 2013-01-16 12:06+0200\n"
+"PO-Revision-Date: 2013-01-16 12:26+0200\n"
 "Last-Translator: Angelos Tzotsos <gcpp.kalxas@gmail.com>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/"
 "el/)\n"
@@ -396,23 +396,23 @@ msgstr "τα δεδομένα ανανεώνονται κάθε δυο εβδο�
 
 #: layers/enumerations.py:52
 msgid "data is updated in intervals that are uneven in duration"
-msgstr ""
+msgstr "τα δεδομένα ανανεώνονται σε μη περιοδικά χρονικά διαστήματα"
 
 #: layers/enumerations.py:53
 msgid "data is updated on a weekly basis"
-msgstr ""
+msgstr "τα δεδομένα ανανεώνονται κάθε εβδομάδα"
 
 #: layers/enumerations.py:54
 msgid "data is updated twice each year"
-msgstr ""
+msgstr "τα δεδομένα ανανεώνονται δύο φορές το έτος"
 
 #: layers/enumerations.py:55
 msgid "data is updated every three months"
-msgstr ""
+msgstr "τα δεδομένα ανανεώνονται κάθε τρείς μήνες"
 
 #: layers/enumerations.py:70
 msgid "grid data"
-msgstr ""
+msgstr "καναβοποιημένα δεδομένα"
 
 #: layers/enumerations.py:72
 msgid ""
@@ -422,19 +422,19 @@ msgstr ""
 
 #: layers/enumerations.py:74
 msgid "textual or tabular data"
-msgstr ""
+msgstr "λεκτικά ή πινακοποιημένα δεδομένα"
 
 #: layers/enumerations.py:75
 msgid "triangulated irregular network"
-msgstr ""
+msgstr "μη κανονικό δίκτυο τριγωνισμού (TIN)"
 
 #: layers/enumerations.py:76
 msgid "vector data"
-msgstr ""
+msgstr "διανυσματικά δεδομένα"
 
 #: layers/enumerations.py:81
 msgid "information pertaining to earth sciences"
-msgstr ""
+msgstr "πληροφορία που αφορά τις επιστήμες της γης"
 
 #: layers/enumerations.py:82
 msgid "rearing of animals and/or cultivation of plants"
@@ -442,7 +442,7 @@ msgstr ""
 
 #: layers/enumerations.py:83
 msgid "height above or below sea level"
-msgstr ""
+msgstr "υψόμετρο πάνω ή κάτω από την μέση στάθμη της θάλασσας"
 
 #: layers/enumerations.py:85
 msgid ""
@@ -3349,20 +3349,20 @@ msgstr ""
 #: templates/announcements/announcement_detail.html:3
 #, python-format
 msgid "Announcements : %(object)s"
-msgstr ""
+msgstr "Ανακοινώσεις : %(object)s"
 
 #: templates/announcements/announcement_list.html:3
 #: templates/announcements/announcement_list.html:6
 msgid "Announcements"
-msgstr ""
+msgstr "Ανακοινώσεις"
 
 #: templates/announcements/announcement_list.html:13
 msgid "Hide announcement"
-msgstr ""
+msgstr "Απόκρυψη ανακοίνωσης"
 
 #: templates/announcements/announcement_list.html:18
 msgid "There are no announcements for you."
-msgstr ""
+msgstr "Δεν υπάρχουν ανακοινώσεις για εσάς"
 
 #: templates/avatar/add.html:6
 msgid "Your current avatar: "
@@ -3370,11 +3370,11 @@ msgstr "Το τρέχον σας εικονίδιο:"
 
 #: templates/avatar/add.html:12
 msgid "Upload an Avatar"
-msgstr ""
+msgstr "Ανεβάστε ένα εικονίδιο"
 
 #: templates/avatar/add.html:18
 msgid "Upload avatar"
-msgstr ""
+msgstr "Ανέβασμα εικονιδίου χρήστη"
 
 #: templates/geonode/resourcebase_info_panel.html:14
 msgid "Abstract"
@@ -3414,7 +3414,7 @@ msgstr "χρονική διάρκεια τέλος"
 
 #: templates/geonode/resourcebase_info_panel.html:110
 msgid "Data Quality"
-msgstr ""
+msgstr "Ποιότητα Δεδομένων"
 
 #: templates/geonode/resourcebase_info_panel.html:117
 msgid "Supplemental Information"
@@ -3438,16 +3438,16 @@ msgstr "Ρυθμίσεις"
 
 #: templates/notification/base.html:17
 msgid "Observed objects"
-msgstr ""
+msgstr "Παρατηρούμενα αντικείμενα"
 
 #: templates/notification/notice_settings.html:5
 #: templates/notification/notice_settings.html:10
 msgid "Notification Settings"
-msgstr ""
+msgstr "Ρυθμίσεις Ειδοποιήσεων"
 
 #: templates/notification/notice_settings.html:15
 msgid "Primary email"
-msgstr ""
+msgstr "Βασική ηλεκτρονική διεύθυνση"
 
 #: templates/notification/notice_settings.html:17
 #, python-format
@@ -3456,7 +3456,7 @@ msgstr ""
 
 #: templates/notification/notice_settings.html:21
 msgid "Note"
-msgstr ""
+msgstr "Σημείωμα"
 
 #: templates/notification/notice_settings.html:22
 #, python-format
@@ -3467,7 +3467,7 @@ msgstr ""
 
 #: templates/notification/notice_settings.html:30
 msgid "Notification Type"
-msgstr ""
+msgstr "Τύπος Ειδοποίησης"
 
 #: templates/notification/notice_settings.html:48
 #, fuzzy
@@ -3476,11 +3476,11 @@ msgstr "Ακύρωση"
 
 #: templates/notification/notices.html:16
 msgid "Mark all unseen notices seen"
-msgstr ""
+msgstr "Μαρκάρισμα ειδοποιήσεων ως αναγνωσμένα"
 
 #: templates/notification/notices.html:22
 msgid "MONTH_DAY_FORMAT"
-msgstr ""
+msgstr "ΠΡΟΤΥΠΟ_ΗΜΕΡΟΜΗΝΙΑΣ"
 
 #: templates/notification/notices.html:33
 #, fuzzy
@@ -3489,7 +3489,7 @@ msgstr "Φωνή"
 
 #: templates/notification/notices.html:41
 msgid "No notices."
-msgstr ""
+msgstr "Καμία ειδοποίηση "
 
 #: templates/notification/single.html:6 templates/notification/single.html:9
 #, fuzzy
@@ -3498,11 +3498,11 @@ msgstr "Φωνή"
 
 #: templates/pagination/pagination.html:8
 msgid "Previous"
-msgstr ""
+msgstr "Προηγούμενο"
 
 #: templates/pagination/pagination.html:10
 msgid "previous"
-msgstr ""
+msgstr "προηγούμενο"
 
 #: templates/pagination/pagination.html:17
 msgid "Next"
@@ -3510,65 +3510,65 @@ msgstr "Επόμενο"
 
 #: templates/pagination/pagination.html:19
 msgid "next"
-msgstr ""
+msgstr "επόμενο"
 
 #: templates/relationships/_manage_connections.html:4
 msgid "Manage Connections"
-msgstr ""
+msgstr "Διαχείριση Συνδέσεων"
 
 #: templates/relationships/_manage_connections.html:6
 msgid "Following"
-msgstr ""
+msgstr "Παρακολούθηση"
 
 #: templates/relationships/_manage_connections.html:7
 msgid "Blocking"
-msgstr ""
+msgstr "Κατάσταση Αποσιώπησης"
 
 #: templates/relationships/confirm.html:4
 #: templates/relationships/confirm.html:7
 msgid "No longer"
-msgstr ""
+msgstr "Πλέον Όχι"
 
 #: templates/relationships/confirm.html:12
 msgid "Confirm"
-msgstr ""
+msgstr "Επιβεβαίωση"
 
 #: templates/relationships/relationship_list.html:16
 msgid "Unfollow"
-msgstr ""
+msgstr "Απενεργοποίηση Παρακολούθησης"
 
 #: templates/relationships/relationship_list.html:20
 msgid "Unblock"
-msgstr ""
+msgstr "Απενεργοποίηση Αποσιώπησης"
 
 #: templates/relationships/success.html:5
 msgid "Success"
-msgstr ""
+msgstr "Επιτυχία"
 
 #: templates/relationships/success.html:6
 msgid "You are "
-msgstr ""
+msgstr "Είστε"
 
 #: templates/relationships/success.html:6
 msgid "now"
-msgstr ""
+msgstr "τώρα"
 
 #: templates/relationships/success.html:6
 msgid "no longer"
-msgstr ""
+msgstr "πλέον όχι"
 
 #: templates/relationships/success.html:7
 #, python-format
 msgid "%(to_user_username)s's profile"
-msgstr ""
+msgstr "Στο προφίλ του %(to_user_username)s"
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
-msgstr ""
+msgstr "Εισερχόμενα Μηνύματα"
 
 #: templates/user_messages/inbox.html:12
 msgid "With"
-msgstr ""
+msgstr "Με"
 
 #: templates/user_messages/inbox.html:13
 #, fuzzy
@@ -3577,20 +3577,20 @@ msgstr "Υποβολή"
 
 #: templates/user_messages/inbox.html:14
 msgid "Last Sender"
-msgstr ""
+msgstr "Τελευταίος Αποστολέας"
 
 #: templates/user_messages/inbox.html:15
 msgid "Preview"
-msgstr ""
+msgstr "Προεπισκόπηση"
 
 #: templates/user_messages/inbox.html:16
 msgid "Delete?"
-msgstr ""
+msgstr "Διαγραφή;"
 
 #: templates/user_messages/inbox.html:33
 #: templates/user_messages/thread_detail.html:14
 msgid "you"
-msgstr ""
+msgstr "εσείς"
 
 #: templates/user_messages/inbox.html:55
 #: templates/user_messages/message_create.html:5
@@ -3601,16 +3601,16 @@ msgstr "Δημιουργήστε Χάρτη"
 
 #: templates/user_messages/message_create.html:14
 msgid "Send message"
-msgstr ""
+msgstr "Αποστολή Μηνύματος"
 
 #: templates/user_messages/message_create.html:19
 #: templates/user_messages/thread_detail.html:32
 msgid "Back to Inbox"
-msgstr ""
+msgstr "Επιστροφή στα Εισερχόμενα"
 
 #: templates/user_messages/thread_detail.html:25
 msgid "Send Reply"
-msgstr ""
+msgstr "Αποστολή Απάντησης"
 
 #~ msgid "Browse Data"
 #~ msgstr "Αναζήτηση Δεδομένων"
