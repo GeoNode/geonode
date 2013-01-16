@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-09 16:12-0600\n"
-"PO-Revision-Date: 2013-01-16 12:44+0200\n"
+"PO-Revision-Date: 2013-01-16 14:47+0200\n"
 "Last-Translator: Angelos Tzotsos <gcpp.kalxas@gmail.com>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/"
 "el/)\n"
@@ -1503,7 +1503,7 @@ msgstr "τίτλος"
 
 #: layers/models.py:118
 msgid "name by which the cited resource is known"
-msgstr ""
+msgstr "όνομα με το οποίο η αναφερόμενη πηγή είναι γνωστή"
 
 #: layers/models.py:119
 msgid "date"
@@ -1511,7 +1511,7 @@ msgstr "ημερομηνία"
 
 #: layers/models.py:119
 msgid "reference date for the cited resource"
-msgstr ""
+msgstr "ημερομηνία αναφοράς του πόρου που αναφέρεται"
 
 #: layers/models.py:121
 msgid "date type"
@@ -1519,7 +1519,7 @@ msgstr "τύπος ημερομηνίας"
 
 #: layers/models.py:121
 msgid "identification of when a given event occurred"
-msgstr ""
+msgstr "αναγνώριση του χρόνου που συνέβη ένα δεδομένο συμβάν"
 
 #: layers/models.py:123
 msgid "edition"
@@ -1527,7 +1527,7 @@ msgstr "έκδοση"
 
 #: layers/models.py:123
 msgid "version of the cited resource"
-msgstr ""
+msgstr "έκδοση του αναφερόμενου πόρου"
 
 #: layers/models.py:124
 msgid "abstract"
@@ -1535,7 +1535,7 @@ msgstr "περίληψη"
 
 #: layers/models.py:124
 msgid "brief narrative summary of the content of the resource(s)"
-msgstr ""
+msgstr "σύντομη συνοπτική περιγραφή του περιεχομένου του πόρου"
 
 #: layers/models.py:125
 msgid "purpose"
@@ -1543,7 +1543,7 @@ msgstr "σκοπός"
 
 #: layers/models.py:125
 msgid "summary of the intentions with which the resource(s) was developed"
-msgstr ""
+msgstr "περίληψη των προθέσεων με την οποία αναπτύχθηκε ο πόρος"
 
 #: layers/models.py:127
 msgid "maintenance frequency"
@@ -1554,6 +1554,8 @@ msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr ""
+"συχνότητα με την οποία οι τροποποιήσεις και διαγραφές που γίνονται στα "
+"δεδομένα μετά την ημερομηνία παραγωγής"
 
 #: layers/models.py:133
 msgid "keywords"
@@ -1564,6 +1566,8 @@ msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
 msgstr ""
+"συχνά χρησιμοποιούμενες λέξεις ή τυποποιημένες λέξεις ή φράσεις που "
+"χρησιμοποιείται για να περιγραφεί το θέμα (διαχωρίζονται με κόμμα ή κενό)"
 
 #: layers/models.py:134
 msgid "keywords region"
@@ -1571,7 +1575,7 @@ msgstr "λέξεις-κλειδιά περιοχή"
 
 #: layers/models.py:134
 msgid "keyword identifies a location"
-msgstr ""
+msgstr "λέξη-κλειδί που προσδιορίζει μια θέση"
 
 #: layers/models.py:135
 msgid "constraints use"
@@ -1583,6 +1587,10 @@ msgid ""
 "property, and any special restrictions or limitations or warnings on using "
 "the resource or metadata"
 msgstr ""
+"περιορισμοί που εφαρμόζονται για τη διασφάλιση της προστασίας της ιδιωτικής "
+"ζωής ή της πνευματικής ιδιοκτησίας, καθώς και τυχόν ειδικοί περιορισμοί ή "
+"απαγορεύσεις ή προειδοποιήσεις σχετικά με τη χρήση του πόρου ή των "
+"μεταδεδομένων."
 
 #: layers/models.py:136
 msgid "constraints other"
@@ -1593,6 +1601,8 @@ msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr ""
+"άλλοι περιορισμοί και νομικές προϋποθέσεις για την πρόσβαση και χρήση του "
+"πόρου ή των μεταδεδομένων"
 
 #: layers/models.py:137
 msgid "spatial representation type"
@@ -1601,6 +1611,8 @@ msgstr "τύπος χωρικής αναπαράστασης"
 #: layers/models.py:137
 msgid "method used to represent geographic information in the dataset"
 msgstr ""
+"μέθοδος που χρησιμοποιείται για να αναπαρασταθεί γεωγραφική πληροφορία στο "
+"σύνολο δεδομένων"
 
 #: layers/models.py:140
 msgid "language"
@@ -1608,7 +1620,7 @@ msgstr "γλώσσα"
 
 #: layers/models.py:140
 msgid "language used within the dataset"
-msgstr ""
+msgstr "γλώσσα που χρησιμοποιείται στο σύνολο δεδομένων"
 
 #: layers/models.py:141
 msgid "topic_category"
@@ -1619,6 +1631,8 @@ msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
 msgstr ""
+"υψηλού επιπέδου θεματική κατηγοριοποίηση γεωγραφικών δεδομένων που βοηθά "
+"στην ομαδοποίηση και την αναζήτηση των διαθέσιμων γεωγραφικών δεδομένων."
 
 #: layers/models.py:145
 msgid "temporal extent start"
@@ -1627,6 +1641,8 @@ msgstr "χρονική διάρκεια έναρξη"
 #: layers/models.py:145
 msgid "time period covered by the content of the dataset (start)"
 msgstr ""
+"χρονική περίοδος που καλύπτεται από το περιεχόμενο του συνόλου δεδομένων "
+"(έναρξη)"
 
 #: layers/models.py:146
 msgid "temporal extent end"
@@ -1635,6 +1651,8 @@ msgstr "χρονική διάρκεια τέλος"
 #: layers/models.py:146
 msgid "time period covered by the content of the dataset (end)"
 msgstr ""
+"χρονική περίοδος που καλύπτεται από το περιεχόμενο του συνόλου δεδομένων "
+"(λήξη)"
 
 #: layers/models.py:148
 msgid "supplemental information"
@@ -1642,7 +1660,7 @@ msgstr "συμπληρωματικές πληροφορίες"
 
 #: layers/models.py:148
 msgid "any other descriptive information about the dataset"
-msgstr ""
+msgstr "τυχόν άλλες περιγραφικές πληροφορίες σχετικά με το σύνολο δεδομένων"
 
 #: layers/models.py:151
 msgid "distribution URL"
@@ -1653,6 +1671,9 @@ msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
 msgstr ""
+"πληροφορίες σχετικά με διαδικτυακές πηγές από τις οποίες το σύνολο "
+"δεδομένων, οι προδιαγραφές, ή το όνομα προφίλ της κοινότητας και εκτεταμένα "
+"μεταδεδομένα μπορούν να ληφθούν"
 
 #: layers/models.py:152
 msgid "distribution description"
@@ -1661,6 +1682,7 @@ msgstr "περιγραφή διανομής"
 #: layers/models.py:152
 msgid "detailed text description of what the online resource is/does"
 msgstr ""
+"λεπτομερής περιγραφή σχετικά με το ποιος και τι είναι ο διαδικτυακός πόρος"
 
 #: layers/models.py:155
 msgid "data quality statement"
@@ -1671,58 +1693,64 @@ msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr ""
+"γενική εξήγηση της γνώσης του παραγωγού των δεδομένων σχετικά με την "
+"καταγωγή τους"
 
 #: layers/models.py:169
 msgid "CSW typename"
-msgstr ""
+msgstr "όνομα τύπου καταλόγου CSW "
 
 #: layers/models.py:170
 msgid "CSW schema"
-msgstr ""
+msgstr "σχήμα καταλόγου CSW"
 
 #: layers/models.py:171
 msgid "CSW source"
-msgstr ""
+msgstr "πηγή καταλόγου CSW"
 
 #: layers/models.py:172
 msgid "CSW insert date"
-msgstr ""
+msgstr "ημερομηνία εισαγωγής καταλόγου CSW"
 
 #: layers/models.py:173
 msgid "CSW type"
-msgstr ""
+msgstr "τύπος καταλόγου CSW"
 
 #: layers/models.py:174
 msgid "CSW anytext"
-msgstr ""
+msgstr "πεδίο καταλόγου CSW anytext "
 
 #: layers/models.py:175
 msgid "CSW WKT geometry"
-msgstr ""
+msgstr "γεωμετρία καταλόγου CSW σε μορφή WKT"
 
 #: layers/models.py:417
 msgid "attribute name"
-msgstr ""
+msgstr "όνομα χαρακτηριστικού"
 
 #: layers/models.py:417
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr ""
+"όνομα του χαρακτηριστικού όπως είναι αποθηκευμένο σε shapefile / χωρική βάση "
+"δεδομένων"
 
 #: layers/models.py:418
 msgid "attribute label"
-msgstr ""
+msgstr "ετικέτα χαρακτηριστικού"
 
 #: layers/models.py:418
 msgid "title of attribute as displayed in GeoNode"
-msgstr ""
+msgstr "τίτλος του χαρακτηριστικού, όπως εμφανίζεται στο GeoNode"
 
 #: layers/models.py:419
 msgid "attribute type"
-msgstr ""
+msgstr "τύπος χαρακτηριστικού"
 
 #: layers/models.py:419
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr ""
+"ο τύπος δεδομένων του χαρακτηριστικού (ακέραιος, αλφαριθμητικό, γεωμετρία, "
+"κλπ)"
 
 #: layers/models.py:420
 msgid "visible?"
