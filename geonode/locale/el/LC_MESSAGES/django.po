@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-09 16:12-0600\n"
-"PO-Revision-Date: 2013-01-16 14:47+0200\n"
+"PO-Revision-Date: 2013-01-16 14:58+0200\n"
 "Last-Translator: Angelos Tzotsos <gcpp.kalxas@gmail.com>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/"
 "el/)\n"
@@ -1754,33 +1754,37 @@ msgstr ""
 
 #: layers/models.py:420
 msgid "visible?"
-msgstr ""
+msgstr "ορατό;"
 
 #: layers/models.py:420
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr ""
+"καθορίζει εάν το χαρακτηριστικό θα πρέπει να εμφανίζεται σε αναγνωριστικά "
+"αποτελέσματα"
 
 #: layers/models.py:421
 msgid "display order"
-msgstr ""
+msgstr "σειρά παρουσίασης"
 
 #: layers/models.py:421
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr ""
+"καθορίζει τη σειρά με την οποία το χαρακτηριστικό θα πρέπει να εμφανίζεται "
+"σε αναγνωριστικά αποτελέσματα"
 
 #: layers/models.py:492
 msgid "For example \"kml\""
-msgstr ""
+msgstr "Για παράδειγμα \"kml\""
 
 #: layers/models.py:494
 msgid "For example \"View in Google Earth\""
-msgstr ""
+msgstr "Για παράδειγμα \"View in Google Earth\""
 
 #: layers/models.py:495
 msgid "For example \"text/xml\""
-msgstr ""
+msgstr "Για παράδειγμα \"text/xml\""
 
 #: layers/models.py:700
 msgid "KML"
@@ -1846,7 +1850,7 @@ msgstr "Δεν επιτρέπεται να διαγράψετε αυτή την 
 
 #: layers/views.py:79
 msgid "You do not have permissions for this layer."
-msgstr ""
+msgstr "Δεν έχετε πρόσβαση για αυτή την επιφάνεια "
 
 #: layers/views.py:80
 msgid "You are not permitted to modify this layer"
@@ -1871,28 +1875,28 @@ msgstr "Ανεβάστε"
 
 #: layers/management/__init__.py:30
 msgid "A layer was uploaded"
-msgstr ""
+msgstr "Ανέβηκε μια επιφάνεια"
 
 #: layers/management/__init__.py:31
 msgid "Comment on Layer"
-msgstr ""
+msgstr "Σχόλιο σχετικά με την Επιφάνεια"
 
 #: layers/management/__init__.py:31
 msgid "A layer was commented on"
-msgstr ""
+msgstr "Σχολιάστηκε μια επιφάνεια"
 
 #: layers/management/__init__.py:32
 msgid "Rating for Layer"
-msgstr ""
+msgstr "Βαθμολογία μιας Επιφάνειας"
 
 #: layers/management/__init__.py:32
 msgid "A rating was given to a layer"
-msgstr ""
+msgstr "Βαθμολογήθηκε μια επιφάνεια"
 
 #: layers/templates/layers/_actions.html:3
 #: maps/templates/maps/map_detail.html:49 templates/_actions.html:3
 msgid "Info"
-msgstr ""
+msgstr "Πληροφορίες"
 
 #: layers/templates/layers/_actions.html:4
 #: layers/templates/layers/layer_metadata.html:30
@@ -1902,13 +1906,13 @@ msgstr "Χαρακτηριστικά"
 #: layers/templates/layers/_actions.html:5
 #: maps/templates/maps/map_detail.html:52 templates/_actions.html:5
 msgid "Share"
-msgstr ""
+msgstr "Μοίρασμα"
 
 #: layers/templates/layers/_actions.html:6
 #: maps/templates/maps/map_detail.html:53
 #: maps/templates/maps/map_detail.html:88
 msgid "Flag"
-msgstr ""
+msgstr "Σημαία"
 
 #: layers/templates/layers/_actions.html:7
 #: maps/templates/maps/map_detail.html:51
@@ -1920,28 +1924,28 @@ msgstr "Ρυθμίσεις"
 #: maps/templates/maps/map_detail.html:50
 #: maps/templates/maps/map_detail.html:61 templates/_comments.html:8
 msgid "Comments"
-msgstr ""
+msgstr "Σχόλια"
 
 #: layers/templates/layers/_layer_widget_item.html:11
 #, python-format
 msgid "view%(layer.popular_count|pluralize)s"
-msgstr ""
+msgstr "θέαση %(layer.popular_count|pluralize)s"
 
 #: layers/templates/layers/layer_base.html:13
 #: layers/templates/layers/layer_list.html:9
 #: layers/templates/layers/layer_list.html:15 templates/index.html:28
 msgid "Explore Layers"
-msgstr ""
+msgstr "Εξερεύνηση Επιφανειών"
 
 #: layers/templates/layers/layer_base.html:14
 #: layers/templates/layers/layer_search.html:4
 msgid "Search Layers"
-msgstr ""
+msgstr "Αναζήτηση Επιφανειών"
 
 #: layers/templates/layers/layer_base.html:15
 #: layers/templates/layers/layer_upload.html:32 templates/index.html:59
 msgid "Upload Layers"
-msgstr ""
+msgstr "Μεταφόρτωση (ανέβασμα) Επιφανειών"
 
 #: layers/templates/layers/layer_change_poc.html:5 templates/base.html:110
 msgid "Home"
@@ -1954,7 +1958,7 @@ msgstr "Αλλαγή σημείου επαφής"
 
 #: layers/templates/layers/layer_change_poc.html:10
 msgid "Assign a new point of contact to the layers below:"
-msgstr ""
+msgstr "Αντιστοιχίστε ένα νέο σημείο επαφής για τις επιφάνειες παρακάτω:"
 
 #: layers/templates/layers/layer_change_poc.html:17
 #: people/templates/people/forgot_username_form.html:17
@@ -1965,19 +1969,19 @@ msgstr "Υποβολή"
 #: layers/templates/layers/layer_detail.html:194
 #: search/templates/search/search.html:183
 msgid "Download Layer"
-msgstr ""
+msgstr "Μεταφόρτωση (κατέβασμα) Επιφανειών"
 
 #: layers/templates/layers/layer_detail.html:39
 msgid "Download Metadata"
-msgstr ""
+msgstr "Μεταφόρτωση (κατέβασμα) Μεταδεδομένων"
 
 #: layers/templates/layers/layer_detail.html:53
 msgid "Edit Layer"
-msgstr ""
+msgstr "Επεξεργασία Επιφάνειας"
 
 #: layers/templates/layers/layer_detail.html:58
 msgid "Edit Metadata"
-msgstr ""
+msgstr "Επεξεργασία Μεταδεδομένων"
 
 #: layers/templates/layers/layer_detail.html:59
 msgid "Edit Styles"
@@ -1985,7 +1989,7 @@ msgstr "Επεξεργασία Στυλ"
 
 #: layers/templates/layers/layer_detail.html:60
 msgid "Edit Permissions"
-msgstr ""
+msgstr "Επεξεργασία Δικαιωμάτων"
 
 #: layers/templates/layers/layer_detail.html:61
 #, fuzzy
@@ -1994,35 +1998,35 @@ msgstr "Ενημέρωση Επιφάνειας"
 
 #: layers/templates/layers/layer_detail.html:62
 msgid "Remove this Layer"
-msgstr ""
+msgstr "Διέγραψε αυτή την Επιφάνεια"
 
 #: layers/templates/layers/layer_detail.html:85
 msgid "Attribute Name"
-msgstr ""
+msgstr "Όνομα Ιδιότητας"
 
 #: layers/templates/layers/layer_detail.html:86
 msgid "Range"
-msgstr ""
+msgstr "Έκταση"
 
 #: layers/templates/layers/layer_detail.html:87
 msgid "Mean"
-msgstr ""
+msgstr "Μέση τιμή"
 
 #: layers/templates/layers/layer_detail.html:88
 msgid "Median"
-msgstr ""
+msgstr "Ενδιάμεση τιμή"
 
 #: layers/templates/layers/layer_detail.html:89
 msgid "Std. Dev."
-msgstr ""
+msgstr "Τυπική Απόκλιση"
 
 #: layers/templates/layers/layer_detail.html:109
 msgid "Share This Layer"
-msgstr ""
+msgstr "Μοιράσου αυτή την Επιφάνεια"
 
 #: layers/templates/layers/layer_detail.html:126
 msgid "Rate this layer"
-msgstr ""
+msgstr "Βαθμολόγησε αυτή την Επιφάνεια"
 
 #: layers/templates/layers/layer_detail.html:130
 #: maps/templates/maps/map_detail.html:73
@@ -2032,7 +2036,7 @@ msgstr "Αργεντινή"
 
 #: layers/templates/layers/layer_detail.html:139
 msgid "Maps using this layer"
-msgstr ""
+msgstr "Χάρτες που χρησιμοποιούν αυτή την επιφάνεια"
 
 #: layers/templates/layers/layer_detail.html:141
 msgid "List of maps using this layer:"
