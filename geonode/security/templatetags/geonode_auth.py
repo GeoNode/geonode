@@ -32,7 +32,11 @@ class HasObjPermNode(template.Node):
     def render(self, context):
         user = self.user.resolve(context)
         obj = self.obj.resolve(context)
-        context[self.varname] = user.has_perm(self.perm, obj=obj)
+        # in case the user is the owner, he/she has always permissions, otherwise we need to check
+        if user == obj.owner:
+            context[self.varname] = True
+        else:
+            context[self.varname] = user.has_perm(self.perm, obj=obj)
         return ''
 
 def _check_quoted(string):
