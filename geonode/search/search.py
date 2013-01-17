@@ -152,11 +152,11 @@ def _get_owner_results(query):
         q = q.filter(user__username__icontains = query.owner)
 
     if query.extent:
-         q = filter_by_extent(Map, q, query.extent, True) | \
+        q = filter_by_extent(Map, q, query.extent, True) | \
              filter_by_extent(Layer, q, query.extent, True)
 
     if query.period:
-         q = filter_by_period(Map, q, *query.period, user=True) | \
+        q = filter_by_period(Map, q, *query.period, user=True) | \
              filter_by_period(Layer, q, *query.period, user=True)
 
     if query.added:
