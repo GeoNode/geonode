@@ -37,16 +37,16 @@
               </div>
               <div class="control-group">
                 <label for="id_filter_categories_all" class="radio inline">
-                  <input type="radio" name="filter_categories" id="id_filter_categories_all" checked /> {% trans 'All categories' %}
+                  <input type="radio" name="type" value='all' id="id_filter_categories_all" checked /> {% trans 'All categories' %}
                 </label>
                 <label for="id_filter_categories_maps" class="radio inline">
-                  <input type="radio" name="filter_categories" id="id_filter_categories_maps" /> {% trans 'Maps only' %}
+                  <input type="radio" name="type" value='map' id="id_filter_categories_maps" /> {% trans 'Maps only' %}
                 </label>
                 <label for="id_filter_categories_datasets" class="radio inline">
-                  <input type="radio" name="filter_categories" id="id_filter_categories_datasets" /> {% trans 'Layers only' %}
+                  <input type="radio" name="type" value='layer' id="id_filter_categories_datasets" /> {% trans 'Layers only' %}
                 </label>
                 <label for="id_filter_categories_groups" class="radio inline">
-                  <input type="radio" name="filter_categories" id="id_filter_categories_groups" /> {% trans 'Groups only' %}
+                  <input type="radio" name="type" value='group' id="id_filter_categories_groups" /> {% trans 'Groups only' %}
                 </label>
               </div>
             </div>
@@ -93,13 +93,19 @@
             <div class="control-group">
               <label class="control-label" for="id_meta_date_since">{% trans 'Since this date' %}</label>
               <div class="controls">
-                <input id="id_meta_date_since" data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
+                <div class=" input-append date"  data-date="2013-01-01" data-date-format="yyyy-mm-dd">
+                  <input name="start_date" id="id_meta_date_since" type="text" class="span2" placeholder="yyyy-mm-dd" />
+                  <span class="add-on"><i class="icon-calendar"></i></span>
+                </div>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="id_meta_date_until">{% trans 'Until this date' %}</label>
               <div class="controls">
-                <input id="id_meta_date_until" data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
+                <div class=" input-append date"  data-date="2013-01-01" data-date-format="yyyy-mm-dd">
+                  <input name="end_date" id="id_meta_date_until" type="text" class="span2" placeholder="yyyy-mm-dd" />
+                  <span class="add-on"><i class="icon-calendar"></i></span>
+                </div>
               </div>
             </div>
           </fieldset>
