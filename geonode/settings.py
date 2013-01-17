@@ -142,7 +142,7 @@ INSTALLED_APPS = (
     'taggit_templatetags',
     'south',
     'friendlytagloader',
-    'leaflet',
+    'geoexplorer',
     'request',
 
     # Theme
@@ -163,6 +163,7 @@ INSTALLED_APPS = (
 
     # GeoNode internal apps
     'geonode.maps',
+    'geonode.upload',
     'geonode.layers',
     'geonode.people',
     'geonode.proxy',
@@ -171,7 +172,7 @@ INSTALLED_APPS = (
     'geonode.catalogue',
     'geonode.documents',
 )
-    
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -197,7 +198,7 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
-    "loggers": {        
+    "loggers": {
         "django": {
             "handlers": ["console"],
             "level": "ERROR",
@@ -271,7 +272,7 @@ MIDDLEWARE_CLASSES = (
 AUTHENTICATION_BACKENDS = ('geonode.security.auth.GranularBackend',)
 
 def get_user_url(u):
-    return u.profile.get_absolute_url() 
+    return u.profile.get_absolute_url()
 
 
 ABSOLUTE_URL_OVERRIDES = {
@@ -434,14 +435,14 @@ MAP_BASELAYERS = [{
         "restUrl": "/gs/rest"
      }
   },{
-    "source": {"ptype": "gx_olsource"},
+    "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
     "visibility": False,
     "fixed": True,
     "group":"background"
   }, {
-    "source": {"ptype": "gx_olsource"},
+    "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer.OSM",
     "args":["OpenStreetMap"],
     "visibility": False,
@@ -466,7 +467,7 @@ MAP_BASELAYERS = [{
   },{
     "source": {"ptype": "gxp_mapboxsource"},
   }, {
-    "source": {"ptype": "gx_olsource"},
+    "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer.WMS",
     "group":"background",
     "visibility": False,
@@ -500,6 +501,10 @@ DB_DATASTORE_TYPE = ''
 DB_DATASTORE_NAME = ''
 
 #The name of the store in Geoserver
+
+LEAFLET_CONFIG = {
+    'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
+}
 
 # Load more settings from a file called local_settings.py if it exists
 try:

@@ -10,7 +10,7 @@ requirejs.config({
     }
 });
 
-requirejs(['jquery', 'underscore', 'text!../../js/templates/search.html', 'jquery.timeago'],
+requirejs(['jquery', 'underscore', 'text!../../geonode/js/templates/search.html', 'jquery.timeago'],
 function($, _, tmpl, timeago){
 
     $(function() {

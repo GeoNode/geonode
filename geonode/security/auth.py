@@ -67,7 +67,11 @@ class GranularBackend(ModelBackend):
                 return all_perms
 
     def has_perm(self, user_obj, perm, obj=None):
-        return perm in self.get_all_permissions(user_obj, obj=obj)
+        # in case the user is the owner, he/she has always permissions, otherwise we need to check
+        if user_obj == obj.owner:
+            return True
+        else:
+            return perm in self.get_all_permissions(user_obj, obj=obj)
 
     def _cache_key_for_obj(self, obj):
         model = obj.__class__

@@ -8,10 +8,8 @@ pip-log.txt
 
 # supporting stuff pulled in by paver script
 geonode/development.db
-geoserver-geonode-ext/jetty.log
-paster.log
-paster.pid
-geoserver-geonode-ext/logs/
+geoserver
+downloaded
 
 # Static media handling
 geonode/static/components/

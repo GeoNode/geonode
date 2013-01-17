@@ -14,7 +14,9 @@ button.login {
     display:none;
 }
 </style>
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/maps/GeoNode-GeoExplorer.js"></script>
 <script type="text/javascript">
+<<<<<<< HEAD
 Ext.ns("GeoNode.plugins");
 /** api: constructor
  *  .. class:: LayerInfo(config)
@@ -537,6 +539,8 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
     }
 
 });
+=======
+>>>>>>> origin/dev
 var app;
 Ext.onReady(function() {
 {% autoescape off %}
@@ -549,6 +553,7 @@ Ext.onReady(function() {
          * maps on the server for sharing and editing.
          */
         rest: "{% url maps_browse %}",
+        ajaxLoginUrl: "{% url account_ajax_login %}",
         homeUrl: "{% url home %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
         localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",

@@ -49,7 +49,9 @@ urlpatterns = patterns('',
     url(r'^help/$', 'django.views.generic.simple.direct_to_template',
                 {'template': 'help.html'}, name='help'),
     url(r'^developer/$', 'django.views.generic.simple.direct_to_template',
-                {'template': 'developer.html'}, name='dev'),
+                {'template': 'developer.html'}, name='developer'),
+    url(r'^about/$', 'django.views.generic.simple.direct_to_template',
+                {'template': 'about.html'}, name='about'),
 
     # Layer views
     (r'^layers/', include('geonode.layers.urls')),
@@ -62,6 +64,9 @@ urlpatterns = patterns('',
 
     # Search views
     (r'^search/', include('geonode.search.urls')),
+
+    # Upload views
+    (r'^upload/', include('geonode.upload.urls')),
 
     # Social views
     (r"^account/", include("account.urls")),

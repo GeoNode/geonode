@@ -59,7 +59,7 @@ _viewer_config = _create_viewer_config()
 
 
 def search_page(request, **kw):
-    params = {}
+    params = request.GET.dict()
     if kw:
         params.update(kw)
 
