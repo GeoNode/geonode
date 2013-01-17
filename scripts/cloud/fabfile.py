@@ -174,7 +174,6 @@ def deploy_geonode_testing_package():
     sudo('add-apt-repository -y ppa:geonode/testing') 
     sudo('apt-get update')
     sudo('apt-get install -f -y geonode')
-    sudo ('source /var/lib/geonode/bin/activate; geonode-updateip alpha.dev.geonode.org')
 
 def deploy_geonode_snapshot_package():
     sudo('add-apt-repository -y ppa:geonode/snapshots') 
@@ -188,7 +187,6 @@ def deploy_geonode_dev_package():
     with settings(warn_only=True):
         sudo('cd build.geonode.org/geonode/latest;dpkg -i geonode_2.0.0*.deb',shell=True)
     sudo('apt-get install -f -y')
-    sudo ('source /var/lib/geonode/bin/activate; geonode-updateip alpha.dev.geonode.org')
 
 def change_admin_password():
     put('../misc/changepw.py', '/home/ubuntu/')
@@ -196,6 +194,9 @@ def change_admin_password():
     run("perl -pi -e 's/replace.me.admin.pw/%s/g' ~/changepw.py" % ADMIN_PASSWORD)
     sudo('source /var/lib/geonode/bin/activate;cat ~/changepw.py | django-admin.py shell --settings=geonode.settings')
     run('rm ~/changepw.py')
+
+def geonode_updateip(server_name="alpha.dev.geonode.org"):
+    sudo ('geonode-updateip %s' % server_name)
 
 def update_instance():
     put('../misc/update-instance', '/home/ubuntu/')
