@@ -67,7 +67,11 @@ class GranularBackend(ModelBackend):
                 return all_perms
 
     def has_perm(self, user_obj, perm, obj=None):
-        return perm in self.get_all_permissions(user_obj, obj=obj)
+        # in case the user is the owner, he/she has always permissions, otherwise we need to check
+        if user_obj == obj.owner:
+            return True
+        else:
+            return perm in self.get_all_permissions(user_obj, obj=obj)
 
     def _cache_key_for_obj(self, obj):
         model = obj.__class__
@@ -103,7 +107,6 @@ class GranularBackend(ModelBackend):
             for rm in UserObjectRoleMapping.objects.select_related('role', 'role__permissions', 'role__permissions__content_type').filter(object_id=obj.id, object_ct=ct, user=user_obj).all():
                 for perm in rm.role.permissions.all():
                     obj_perms.add((perm.content_type.app_label, perm.codename))
-
         return obj_perms
 
         
