@@ -156,9 +156,9 @@ class searchTest(TestCase):
         self.search_assert(self.request('common'), n_results=10, n_total=23)
 
     def test_pagination(self):
-        self.search_assert(self.request('common', startIndex=0), n_results=10, n_total=23)
-        self.search_assert(self.request('common', startIndex=10), n_results=10, n_total=23)
-        self.search_assert(self.request('common', startIndex=20), n_results=3, n_total=23)
+        self.search_assert(self.request('common', start=0), n_results=10, n_total=23)
+        self.search_assert(self.request('common', start=10), n_results=10, n_total=23)
+        self.search_assert(self.request('common', start=20), n_results=3, n_total=23)
 
     def test_bbox_query(self):
         # @todo since maps and users are excluded at the moment, this will have
@@ -186,7 +186,7 @@ class searchTest(TestCase):
         self.search_assert(self.request(period=',1995-01-01T00:00:00Z'),
                            n_results=7)
         self.search_assert(self.request(period='1980-01-01T00:00:00Z,'),
-                           n_results=4)
+                           n_results=10, n_total=22)
 
     def test_errors(self):
         self.assert_error(self.request(sort='foo'),
@@ -195,7 +195,7 @@ class searchTest(TestCase):
             'extent filter must contain x0,x1,y0,y1 comma separated')
         self.assert_error(self.request(extent='a,b,c,d'),
             'extent filter must contain x0,x1,y0,y1 comma separated')
-        self.assert_error(self.request(startIndex='x'),
+        self.assert_error(self.request(start='x'),
             'startIndex must be valid number')
         self.assert_error(self.request(limit='x'),
             'limit must be valid number')
@@ -208,10 +208,10 @@ class searchTest(TestCase):
         self.assertEquals(msg, obj['errors'][0])
 
     def test_sort(self):
-        self.search_assert(self.request('foo', sort='newest'),
-                           first_title='common double time', sorted_by='-last_modified')
-        self.search_assert(self.request('foo', sort='oldest'),
-                           first_title='uniquefirst foo', sorted_by='last_modified')
+        self.search_assert(self.request('foo', sort='newest',type='layer'),
+                           first_title='common blar', sorted_by='-last_modified')
+        self.search_assert(self.request('foo', sort='oldest',type='layer'),
+                           first_title='common double time', sorted_by='last_modified')
         self.search_assert(self.request('foo', sort='alphaaz'),
                            first_title='bar baz', sorted_by='title')
         self.search_assert(self.request('foo', sort='alphaza'),
@@ -245,8 +245,8 @@ class searchTest(TestCase):
         self.search_assert(self.request('common', type='document'), n_results=9, n_total=9)
         self.search_assert(self.request('foo', type='owner'), n_results=4, n_total=4)
         # there are 8 total layers, half vector, half raster
-        self.search_assert(self.request('', type='raster'), n_results=4, n_total=4)
-        self.search_assert(self.request('', type='vector'), n_results=4, n_total=4)
+        self.search_assert(self.request('', type='coverageStore'), n_results=4, n_total=4)
+        self.search_assert(self.request('', type='dataStore'), n_results=4, n_total=4)
 
     def test_kw_query(self):
         # a kw-only query should filter out those not matching the keyword

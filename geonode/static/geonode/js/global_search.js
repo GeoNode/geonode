@@ -14,19 +14,15 @@ var RelatedSearch = function () {
 RelatedSearch.prototype.load = function (data) {
     $.each(data.items, function (index, item) {
         this.container.append($('<li/>', {text: item}));
-        // this.container.append("<li>" + item + "</li>");
     });
 };
 
 var Keyword = function () {
     this.keywords = $("#filter-keywords label");
-    this.keywords.append($('<span/>', {'class': 'count', 'text': 0}));
-    // this.keywords.append(" (<span class=\"count\">0</span>)");
 };
 
 Keyword.prototype.limit = function () {
     this.keywords.hide().each(function () {
-
         if ($("[data-keywords~=" + $(this).find("input").val() + "]").size()) {
             $(this).show().find("input").attr("checked", "checked");
         }
@@ -34,17 +30,24 @@ Keyword.prototype.limit = function () {
 };
 
 Keyword.prototype.filter = function (keyword, show) {
-
     if (show) {
-        $("#search-results article[data-keywords~=" + keyword + "]").show();
+        $("#search-results article[data-keywords*=" + keyword + "]").show();
     } else {
-        $("#search-results article[data-keywords~=" + keyword + "]").hide();
+        $("#search-results article[data-keywords*=" + keyword + "]").each(function(index, item){
+            var keywords = this.dataset.keywords.split(",");
+            $(item).hide();
+            keywords.forEach(function(keyword){
+                if($('#filter-keywords').find("input[value='"+keyword+"']").first().attr('checked')=='checked'){
+                    $(item).show();
+                };
+            });
+        });
     }
 };
 
 Keyword.prototype.update_counts = function () {
     this.keywords.each(function () {
-        var count = $("#search-results article[data-keywords~=" + $(this).find("input").val() + "]").size();
+        var count = $("#search-results article[data-keywords*='" + $(this).find("input").val() + "']").size();
         $(this).find("span.count").html(count);
     });
 };
@@ -52,7 +55,6 @@ Keyword.prototype.update_counts = function () {
 
 var Category = function () {
     this.categories = $("#filter-categories label");
-    this.categories.append(" (<span class=\"count\">0</span>)");
 };
 
 Category.prototype.limit = function () {
@@ -107,14 +109,21 @@ var filterDates = function (dates) {
    Main search function
 */
 var doSearch = function (options) {
+
     var query      = options.query,
         categories = options.categories,
         keywords   = options.keywords;
 
     $("#search-results").html("<p>Searching...</p>");
-    $(".search_query").html(query);
 
-    $.getJSON('/search/api', {"q": query, "limit": "none"}, function (data) {
+    $(".search_query").html("");
+    for(var key in query){
+        if(query[key] != ""){
+            $(".search_query").append('<li>' + key + ': ' + query[key]);
+        }
+    }
+    query['limit'] = 'none';
+    $.getJSON('/search/api', query, function (data) {
         $("#search-results").html("");
 
         // if there are results
@@ -124,6 +133,7 @@ var doSearch = function (options) {
             $.each(data.results, function (index, item) {
                 var context = {
                     "display_type": item._display_type,
+                    "type": item._type,
                     "storeType": item.storeType,
                     "date": item.date,
                     "url": item.detail,
@@ -138,8 +148,8 @@ var doSearch = function (options) {
 
                 if (item.category !== undefined) {
                     // use dot notation instead of array look up syntax
-                    context.category = item.category[0];
-                    context.category_slug = item.category[0].toLowerCase().replace(/ /g, "-");
+                    context.category = item.category;
+                    context.category_slug = item.category.toLowerCase().replace(/ /g, "-");
                 }
 
                 $("#search-results").append(srt.render(context));
@@ -151,7 +161,16 @@ var doSearch = function (options) {
 
             $("#id_data_begins").val(d1.split("T")[0]);
             $(".info-bar").show().find(".count").html($("#search-results article").size());
-            $("#filter-classes :checkbox").attr("checked", "checked");
+            
+            if(query['type'] == undefined || query['type'] == 'all'){
+                $("#filter-classes :checkbox").attr("checked", true);
+            }
+            else{
+                $("#filter-classes :checkbox").attr("checked", false);
+                $("[data-class='"+query['type']+"'] :checkbox").attr("checked", true);
+                $("#search-results article").hide();
+                filterResults(query['type'],true);
+            }
 
             $("#filter-classes span.count").each(function () {
                 $(this).html(
@@ -168,7 +187,6 @@ var doSearch = function (options) {
         }
 
         keywords.update_counts();
-        categories.limit();
         categories.update_counts();
     });
     // end of response to ajax call
@@ -194,7 +212,10 @@ $(function () {
 
     $("form.search-box").bind("submit", function (e) {
         e.preventDefault();
-        window.globalDoSearch($(this).find("input[name=q]").val());
+        var query = {
+            'q': $(this).find("input[name=q]").val()
+        }
+        window.globalDoSearch(query);
     });
 
     $("#filter-classes label.checkbox").each(function () {
@@ -206,7 +227,16 @@ $(function () {
 
     $("#id_sorting").change(function () {
         var sortby = $(this).val();
-        $('#search-results > article').tsort({order: 'desc', data: sortby});
+        switch(sortby){
+            case 'alphaaz':
+                $('#search-results > article').tsort({order: 'asc', data: 'title'});
+                break;
+            case 'alphaza':
+                $('#search-results > article').tsort({order: 'desc', data: 'title'});
+                break;
+            default:
+                $('#search-results > article').tsort({order: 'desc', data: sortby});
+        }
     });
 
     $(".expand-content").click(function (event) {
