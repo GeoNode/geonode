@@ -95,8 +95,8 @@
                   </ul>
                 </div>
               </div>
-              <form class="input-append form-inline search-box pull-right" action="{% url search %}" method="POST">
-                {% csrf_token %}
+              <form class="input-append form-inline search-box pull-right" action="{% url search %}" method="GET">
+                {# csrf_token #}
                 <input type="text" name="q" placeholder="{% trans 'Search ...' %}" />
                 <button type="submit" class="btn btn-small"><i class="icon-search"></i></button>
               </form>
