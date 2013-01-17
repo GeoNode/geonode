@@ -1,6 +1,12 @@
 #! /bin/bash 
 NEWIP=$1
 
+if [[ $UID != 0 ]]; then
+    echo "Please run this script with sudo:"
+    echo "sudo $0 $*"
+    exit 1
+fi
+
 #FIXME(Ariel): Make these variables replaceable from config.sh
 GEONODE_ETC=/etc/geonode
 GEOSERVER_DATA_DIR=/usr/share/geoserver/data/
