@@ -174,6 +174,7 @@ def deploy_geonode_testing_package():
     sudo('add-apt-repository -y ppa:geonode/testing') 
     sudo('apt-get update')
     sudo('apt-get install -f -y geonode')
+    sudo ('source /var/lib/geonode/bin/activate; geonode-updateip alpha.dev.geonode.org')
 
 def deploy_geonode_snapshot_package():
     sudo('add-apt-repository -y ppa:geonode/snapshots') 
