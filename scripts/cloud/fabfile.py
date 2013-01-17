@@ -242,4 +242,4 @@ def build_geonode_ami():
     print "AMI %s Ready for Use" % (ami_id)
 
 def install_sample_data():
-    sudo('source /var/lib/geonode/bin/activate; geonode importlayers /var/lib/geonode/lib/python2.7/site-packages/gisdata/data/good')
+    sudo('source /var/lib/geonode/bin/activate; geonode importlayers /var/lib/geonode/lib/python2.7/site-packages/gisdata/data/good; geonode loaddata sample_admin.json')
