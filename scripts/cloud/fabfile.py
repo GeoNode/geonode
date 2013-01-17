@@ -170,6 +170,11 @@ def deploy_default_geonode():
     # User needs to provide local_settings - where?
     setup_pgsql('geonode')
 
+def deploy_geonode_testing_package():
+    sudo('add-apt-repository -y ppa:geonode/testing') 
+    sudo('apt-get update')
+    sudo('apt-get install -f -y geonode')
+
 def deploy_geonode_snapshot_package():
     sudo('add-apt-repository -y ppa:geonode/snapshots') 
     sudo('apt-get update')

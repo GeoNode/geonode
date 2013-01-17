@@ -11,7 +11,7 @@ echo $host
 echo $key
 
 cd $WORKSPACE/scripts/cloud/
-fab -i $key -H ubuntu@$host deploy_geonode_snapshot_package
+fab -i $key -H ubuntu@$host deploy_geonode_testing_package
 fab -i $key -H ubuntu@$host install_sample_data
 
 python ec2.py set_alpha_ip
