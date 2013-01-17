@@ -40,7 +40,7 @@ If instead, you are interested in doing development on the source code, here are
     workon geonode
        
     # Clone GeoNode
-    git clone https://github.com/GeoNode/geonode.git
+    git clone https://github.com/KDMgit/geonode.git
     
     # Install GeoNode in the local virtualenv
     pip install -e geonode --use-mirrors
@@ -81,7 +81,7 @@ openSUSE Development Build Instructions::
     cd venv
 
     # Clone GeoNode
-    git clone https://github.com/GeoNode/geonode.git
+    git clone https://github.com/KDMgit/geonode.git
 
     # Install GeoNode in the local virtualenv
     pip install -e geonode --use-mirrors
@@ -119,7 +119,7 @@ Windows Development Build Instructions::
     # this command will look for and install binary distributions (pip install will attempt to build and fail)
 
     # Clone GeoNode
-    git clone https://github.com/GeoNode/geonode.git
+    git clone https://github.com/KDMgit/geonode.git
     
     # Install GeoNode in the local virtualenv
     pip install -e geonode --use-mirrors
