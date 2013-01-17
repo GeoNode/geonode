@@ -174,6 +174,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             if (config.tools[i].ptype === "gxp_addlayers") {
                 config.tools[i].search = true;
                 config.tools[i].catalogSourceKey = catalogSourceKey;
+                config.tools[i].feeds = true;
                 break;
             }
         }
@@ -184,11 +185,13 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             url: "/search/api"
         };
         config.tools.push({
-            actions: ["map-title-header"],
+            agxp_addlayersctions: ["map-title-header"],
             actionTarget: "paneltbar"
         }, {
             ptype: "gn_layerinfo",
             actionTarget: ["layers.contextMenu"]
+        }, {
+            ptype: "gxp_getfeedfeatureinfo"
         });
         GeoNode.Composer.superclass.loadConfig.apply(this, arguments);
         for (key in this.tools) {
