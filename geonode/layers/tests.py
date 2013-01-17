@@ -252,6 +252,9 @@ class LayersTest(TestCase):
         self.assertEqual(info[geonode.maps.models.AUTHENTICATED_USERS], layer.LEVEL_READ)
 
         self.assertEqual(info['users'], sorted(layer_info['users'].items()))
+        
+        # Test that layer owner can edit layer
+        self.assertTrue(layer.owner.has_perm(set([u'layers.change_layer']), layer))
 
         # TODO Much more to do here once jj0hns0n understands the ACL system better
 

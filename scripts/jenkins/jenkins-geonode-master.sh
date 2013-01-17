@@ -2,7 +2,7 @@
 PATH=/home/jenkins/apache-maven-2.2.1/bin/:$PATH
 MAVEN_HOME=/home/jenkins/apache-maven-2.2.1/
 JAVA_HOME=/usr/lib/jvm/java-6-sun/
-PYENV_HOME=$HOME/.pyenv-dev/
+PYENV_HOME=$HOME/.pyenv-master/
 DL_ROOT=/var/www/geonode
 GIT_REV=$(git log -1 --pretty=format:%h)
 
@@ -20,6 +20,7 @@ pip install --quiet nosexcover
 pip install --quiet pylint
 pip install --quiet pyflakes
 pip install --quiet clonedigger
+pip install --quiet pep8
 
 # Setup and Build GeoNode
 git clean -dxff

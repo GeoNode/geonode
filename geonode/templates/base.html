@@ -174,7 +174,9 @@
     <footer class="footer">
       <div class="container">
           <div class="pull-left">
-              {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em>
+              {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
+              <a href="{% url developer %}">{% trans "Developers" %}</a> |
+              <a href="{% url about %}">{% trans "About" %}</a>
           </div>
           <div class="pull-right">
             {% if csrf_token != "NOTPROVIDED" %}
