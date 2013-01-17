@@ -185,7 +185,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
             url: "/search/api"
         };
         config.tools.push({
-            agxp_addlayersctions: ["map-title-header"],
+            actions: ["map-title-header"],
             actionTarget: "paneltbar"
         }, {
             ptype: "gn_layerinfo",
