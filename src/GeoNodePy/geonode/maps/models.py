@@ -2078,6 +2078,8 @@ class MapLayer(models.Model):
 
         if self.ows_url:
             cfg["url"] = ows_sub.sub('',self.ows_url)
+            if "ptype" not in cfg:
+                cfg["ptype"] = "gxp_wmscsource"
 
         if "ptype" in cfg and cfg["ptype"] == "gxp_gnsource":
             cfg["restUrl"] = "/gs/rest"
