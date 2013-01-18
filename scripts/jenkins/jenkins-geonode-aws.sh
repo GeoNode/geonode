@@ -15,10 +15,11 @@ fab -i $key -H ubuntu@$host deploy_geonode_testing_package
 
 fab -i $key -H ubuntu@$host install_sample_data
 
-fab -i $key -H ubuntu@$host geonode_updateip:server_name=alpha.dev.geonode.org
-
+# Set an internal hosts record so when updateip calls updatelayers we dont have problems
 ip=`wget -qO- http://instance-data/latest/meta-data/public-ipv4`
 echo "$ip alpha.dev.geonode.org" >> /etc/hosts
+
+fab -i $key -H ubuntu@$host geonode_updateip:server_name=alpha.dev.geonode.org
 
 python ec2.py set_alpha_ip
 #python ec2.py terminate
