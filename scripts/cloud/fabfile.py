@@ -198,6 +198,9 @@ def change_admin_password():
 def geonode_updateip(server_name="alpha.dev.geonode.org"):
     sudo ('geonode-updateip %s' % server_name)
 
+def set_hosts_entry(server_name="alpha.dev.geonode.org"):
+    sudo("ip=`wget -qO- http://instance-data/latest/meta-data/public-ipv4`;sudo echo '$ip alpha.dev.geonode.org' >> /etc/hosts'")
+
 def update_instance():
     put('../misc/update-instance', '/home/ubuntu/')
     sudo('mv /home/ubuntu/update-instance /etc/init.d')
