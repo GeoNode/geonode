@@ -15,6 +15,10 @@ fab -i $key -H ubuntu@$host deploy_geonode_testing_package
 
 fab -i $key -H ubuntu@$host install_sample_data
 
-python ec2.py set_alpha_ip
 fab -i $key -H ubuntu@$host geonode_updateip:server_name=alpha.dev.geonode.org
+
+ip=`wget -qO- http://instance-data/latest/meta-data/public-ipv4`
+echo "$ip alpha.dev.geonode.org" >> /etc/hosts
+
+python ec2.py set_alpha_ip
 #python ec2.py terminate
