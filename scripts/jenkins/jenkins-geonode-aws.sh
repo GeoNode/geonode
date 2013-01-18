@@ -13,9 +13,9 @@ echo $key
 cd $WORKSPACE/scripts/cloud/
 fab -i $key -H ubuntu@$host deploy_geonode_testing_package
 
-fab -i $key -H ubuntu@$host install_sample_data
+fab -i $key -H ubuntu@$host set_hosts_entry:server_name=alpha.dev.geonode.org
 
-fab -i $key -H ubuntu@$host  set_hosts_entry:server_name=alpha.dev.geonode.org
+fab -i $key -H ubuntu@$host install_sample_data
 
 fab -i $key -H ubuntu@$host geonode_updateip:server_name=alpha.dev.geonode.org
 
