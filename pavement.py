@@ -266,6 +266,8 @@ def start_geoserver(options):
     with pushd(data_dir):
         sh(('java -Xmx512m -XX:MaxPermSize=256m'
             ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
+            # workaround for JAI sealed jar issue and jetty classloader
+            ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
             ' -jar %(jetty_runner)s'
             ' --log %(log_file)s'
             ' --path /geoserver %(web_app)s'
