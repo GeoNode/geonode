@@ -17,7 +17,7 @@ fab -i $key -H ubuntu@$host install_sample_data
 
 # Set an internal hosts record so when updateip calls updatelayers we dont have problems
 ip=`wget -qO- http://instance-data/latest/meta-data/public-ipv4`
-sudo echo "$ip alpha.dev.geonode.org" >> /etc/hosts
+su - -c 'echo "$ip alpha.dev.geonode.org" >> /etc/hosts'
 
 fab -i $key -H ubuntu@$host geonode_updateip:server_name=alpha.dev.geonode.org
 
