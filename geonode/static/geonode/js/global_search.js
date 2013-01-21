@@ -141,7 +141,8 @@ var doSearch = function (options) {
                     "keywords": item.keywords,
                     "owner": item.owner,
                     "owner_url": item.owner_detail,
-                    "popular": index === 0 ? item.rating : 23, // item.rating when popularity data is established
+                    "popular": item.rating, 
+                    "relevance": item.relevance,
                     "last_modified": item.last_modified.split(".")[0].replace(/[\-T:]/g, ""),
                     "last_modified_date": item.last_modified.split("T")[0].replace(/-/g, "")
                 };
