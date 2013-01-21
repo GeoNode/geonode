@@ -1,39 +1,27 @@
 /*jslint nomen: true */
-/*global define:true, $:true, FormData: true, alert: true */
+/*global define:true, $:true, FormData: true, alert: true, window:true */
 'use strict';
 
 define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, upload) {
-    var Request, LayerInfo;
+    var make_request, LayerInfo;
 
-    // we have a different notion of success and failure then http
-    Request = (function () {
+    // we have a different notion of success and failure
 
-        var Request = function (options) {
-            _.extend(this, options);
-            if (!this.type) {
-                this.type = 'GET';
-            }
-        };
-
-        Request.prototype.do = function () {
-
-            var options = _.clone(this),
-                success = options.success,
+    make_request = (function () {
+        return function (options) {
+            var success = options.success,
                 failure = options.failure;
 
             delete options.success;
             delete options.failure;
-
-            $.ajax(options).done(function (resp) {
+            $.ajax(options).done(function (resp, status) {
                 if (resp.success === true) {
-                    success(resp);
+                    success(resp, status);
                 } else {
-                    failure(resp);
+                    failure(resp, status);
                 }
-            });
-            return this;
+            }).fail(failure);
         };
-        return Request;
     }());
 
     /** Creates an instance of a LayerInfo
@@ -197,23 +185,23 @@ define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, uploa
 
     LayerInfo.prototype.doFinal = function (resp) {
         var self = this;
-        (new Request({
+        make_request({
             url: resp.redirect_to,
             failure: function (resp) {self.markError(resp); },
-            success: function (resp) {},
-        })).do();
+            success: function (resp) {window.location = resp.url; },
+        });
     };
 
     LayerInfo.prototype.doSrs = function (resp) {
         // at this point we need to allow the user to select an srs
         var self = this;
-        (new Request({
+        make_request({
             url: resp.redirect_to,
             failure: function (resp) {
                 self.markError(resp);
             },
             success: function (resp) { self.doFinal(resp); }
-        })).do();
+        });
     };
 
     LayerInfo.prototype.uploadFiles = function () {
@@ -232,7 +220,7 @@ define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, uploa
         }).done(function (resp) {
             self.doSrs(resp);
         }).fail(function (resp) {
-            alert('Response failed,' + resp.errors); 
+            alert('Response failed,' + resp.errors);
         });
     };
 
