@@ -419,9 +419,11 @@ def final_step_view(req, upload_session):
     saved_layer = upload.final_step(upload_session, req.user)
     # this response is different then all of the other views in the
     # upload as it does not return a response as a json object
-    return json_response({'url': saved_layer.get_absolute_url()})
-#return HttpResponseRedirect(saved_layer.get_absolute_url())
-
+    return json_response(
+        {'url': saved_layer.get_absolute_url(),
+         'success': True
+         }
+    )
 
 _steps = {
     'save': save_step_view,
@@ -580,4 +582,3 @@ class UploadFileDeleteView(DeleteView):
             return response
         else:
             return HttpResponseRedirect(reverse('data_upload_new'))
-
