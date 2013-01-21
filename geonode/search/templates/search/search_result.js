@@ -23,7 +23,7 @@
       <div class="span2 offset1">
         <ul class="unstyled">
           <li class="vector"><a href="{{zip}}">Zipped Shapefile</a></li>
-          <li><a href="{{jpeg}}">JPEG</a></li>
+          <li><a href="{{jpg}}">JPEG</a></li>
           <li class="vector"><a href="{{gml}}">GML 2.0</a></li>
           <li><a href="{{pdf}}">PDF</a></li>
           <li class="vector"><a href="{{gml}}">GML 3.1.1</a></li>
