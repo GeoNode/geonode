@@ -1747,6 +1747,19 @@ class Map(models.Model, PermissionLevelMixin):
                 if x not in results: results.append(x)
             return results
 
+
+        def uniqifydict(seq, item):
+            """
+            get a list of unique dictionary elements based on a certain  item (ie 'group').
+            """
+            results = []
+            items = []
+            for x in seq:
+                if x[item] not in items:
+                    items.append(x[item])
+                    results.append(x)
+            return results
+
         configs = [l.source_config() for l in layers]
         configs.append({"ptype":"gxp_gnsource", "url": settings.GEOSERVER_BASE_URL + "wms", "restUrl":"/gs/rest"})
 
@@ -1794,7 +1807,7 @@ class Map(models.Model, PermissionLevelMixin):
 
         if self.group_params:
             #config["treeconfig"] = json.loads(self.group_params)
-            config["map"]["groups"] = json.loads(self.group_params)
+            config["map"]["groups"] = uniqifydict(json.loads(self.group_params), 'group')
 
         '''
         # Mark the last added layer as selected - important for data page
