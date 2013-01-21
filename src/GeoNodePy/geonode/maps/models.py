@@ -1540,8 +1540,8 @@ class Layer(models.Model, PermissionLevelMixin):
         bbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][0])
         llbbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][1])
 
-        self.bbox = [float(l) for l in bbox]
-        self.llbbox = [float(l) for l in llbbox]
+        self.bbox = str([float(l) for l in bbox])
+        self.llbbox = str([float(l) for l in llbbox])
         self.set_bbox(bbox, srs=self.srs)
 
         # Use update to avoid unnecessary post_save signal
@@ -1746,6 +1746,19 @@ class Map(models.Model, PermissionLevelMixin):
                 if x not in results: results.append(x)
             return results
 
+
+        def uniqifydict(seq, item):
+            """
+            get a list of unique dictionary elements based on a certain  item (ie 'group').
+            """
+            results = []
+            items = []
+            for x in seq:
+                if x[item] not in items:
+                    items.append(x[item])
+                    results.append(x)
+            return results
+
         configs = [l.source_config() for l in layers]
         configs.append({"ptype":"gxp_gnsource", "url": settings.GEOSERVER_BASE_URL + "wms", "restUrl":"/gs/rest"})
 
@@ -1793,7 +1806,7 @@ class Map(models.Model, PermissionLevelMixin):
 
         if self.group_params:
             #config["treeconfig"] = json.loads(self.group_params)
-            config["map"]["groups"] = json.loads(self.group_params)
+            config["map"]["groups"] = uniqifydict(json.loads(self.group_params), 'group')
 
         '''
         # Mark the last added layer as selected - important for data page
