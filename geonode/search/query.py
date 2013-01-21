@@ -102,8 +102,11 @@ class Query(object):
         self.type = filters.get('type')
         self.owner = filters.get('owner')
         self.kw = filters.get('kw')
+        self.exclude = filters.get('exclude')
         if self.kw:
             self.kw = tuple(self.kw.split(','))
+        if self.exclude:
+            self.exclude = tuple(self.exclude.split(','))
 
         val = filters['period']
         self.period = tuple(val.split(',')) if val else None
