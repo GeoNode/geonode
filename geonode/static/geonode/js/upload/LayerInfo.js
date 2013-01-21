@@ -3,10 +3,15 @@
 'use strict';
 
 define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, upload) {
+
     var make_request, LayerInfo;
 
-    // we have a different notion of success and failure
-
+    /** We have a different notion of success and failure for GeoNode's
+     * urls this function allows the user to define two functions, success
+     * and failure and have the failure function called when an bad
+     * http response is returns and also when there is not success
+     * property define in the response.
+     */
     make_request = (function () {
         return function (options) {
             var success = options.success,
@@ -14,6 +19,7 @@ define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, uploa
 
             delete options.success;
             delete options.failure;
+
             $.ajax(options).done(function (resp, status) {
                 if (resp.success === true) {
                     success(resp, status);
@@ -30,7 +36,6 @@ define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, uploa
      *  @this {LayerInfo}
      *  @param {name, files}
      */
-
 
     LayerInfo = function (options) {
 
@@ -187,8 +192,8 @@ define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, uploa
         var self = this;
         make_request({
             url: resp.redirect_to,
-            failure: function (resp) {self.markError(resp); },
-            success: function (resp) {window.location = resp.url; },
+            failure: function (resp, status) {self.markError(resp); },
+            success: function (resp, status) {window.location = resp.url; },
         });
     };
 
@@ -197,10 +202,8 @@ define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, uploa
         var self = this;
         make_request({
             url: resp.redirect_to,
-            failure: function (resp) {
-                self.markError(resp);
-            },
-            success: function (resp) { self.doFinal(resp); }
+            failure: function (resp, status) { self.markError(resp); },
+            success: function (resp, status) { self.doFinal(resp); }
         });
     };
 
@@ -225,9 +228,8 @@ define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, uploa
     };
 
     LayerInfo.prototype.display  = function (file_queue) {
-        var layerTemplate =_.template($('#layerTemplate').html());
-
-        var li = layerTemplate({
+        var layerTemplate = _.template($('#layerTemplate').html()),
+            li = layerTemplate({
                 name: this.name,
                 type: this.type.name,
             });
