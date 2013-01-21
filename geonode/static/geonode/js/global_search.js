@@ -167,6 +167,9 @@ var doSearch = function (options) {
                 if(item._type != 'layer'){
                     $("#article-"+item.id+" .actions").detach();
                 }
+                if(item._type == 'owner'){
+                    $("#article-"+item.id+" .meta").detach();
+                }
             });
             // end of each loop
 
