@@ -1,3 +1,4 @@
+/*jslint nomen: true */
 /*global $:true, document:true, define: true, alert:true, requirejs: true  */
 
 'use strict';
