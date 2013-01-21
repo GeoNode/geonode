@@ -1,0 +1,5 @@
+[opengeo]
+name=opengeo
+baseurl=http://opengeo:apt78902@yum.opengeo.org/centos/
+enabled=1
+gpgcheck=0

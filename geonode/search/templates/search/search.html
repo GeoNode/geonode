@@ -31,18 +31,18 @@
         <section>
             <header>
                 <h4>
-                    <a href="#filter1" class="expand-content" data-toggle="collapse">Type <i class="icon-chevron-right pull-right"></i></a>
+                    <a href="#filter-classes" class="expand-content" data-toggle="collapse">Type <i class="icon-chevron-right pull-right"></i></a>
                 </h4>
             </header>
             <div id="filter-classes" class="collapse in">
                 <form action="">
-                  <label class="checkbox" data-class="Map">
+                  <label class="checkbox" data-class="map">
                     <input type="checkbox" id="filter-maps" /> Maps <span>(<span class="count">0</span>)</span>
                   </label>
-                  <label class="checkbox" data-class="Layer">
+                  <label class="checkbox" data-class="layer">
                     <input type="checkbox" id="filter-data" /> Layers <span>(<span class="count">0</span>)</span>
                   </label>
-                  <div class="subgroup">
+                  <div class="subgroup" data-class="layer">
                     <label class="checkbox" data-class="coverageStore">
                       <input type="checkbox" /> Raster <span>(<span class="count">0</span>)</span>
                     </label>
@@ -51,17 +51,17 @@
                     </label>
                   </div>
                   {%  if DOCUMENTS_APP %}
-                  <label class="checkbox" data-class="Document">
+                  <label class="checkbox" data-class="document">
                     <input type="checkbox" /> Documents <span>(<span class="count">0</span>)</span>
                   </label>
                   {% endif %}
-                  <label class="checkbox" data-class="Feed">
+                  <label class="checkbox" data-class="feed">
                     <input type="checkbox" /> Feeds <span>(<span class="count">0</span>)</span>
                   </label>
-                  <label class="checkbox" data-class="User">
+                  <label class="checkbox" data-class="owner">
                     <input type="checkbox" /> Users <span>(<span class="count">0</span>)</span>
                   </label>
-                  <label class="checkbox" data-class="Group">
+                  <label class="checkbox" data-class="group">
                     <input type="checkbox" /> Groups <span>(<span class="count">0</span>)</span>
                   </label>
                 </form>
@@ -104,6 +104,7 @@
                 {% for category in categories %}
                 <label class="checkbox" data-category="{{ category.slug }}">
                     <input type="checkbox" value="{{ category|slugify }}" checked="checked" /> {{ category }}
+                    (<span class="count">0</span>)
                 </label>
                 {% endfor %}
               </ul>
@@ -121,6 +122,7 @@
               {% for tag in tags %}
               <label class="checkbox" data-tag="{{ tag }}">
                 <input type="checkbox" value="{{ tag }}" checked="checked" /> {{ tag }}
+                (<span class="count">0</span>)
               </label>
               {% endfor %}
             </div>
@@ -141,7 +143,7 @@
   </aside>
   <div class="span8">
     <h2 class="page-title">{% trans "Search Results" %}</h2>
-    <h4>You searched for &ldquo;<span class="search_query"></span>&rdquo;</h4>
+    <h4>You searched for:<ul class="search_query"></ul></h4>
     <div class="row">
       <div class="span6">
         <p class="related-search">
@@ -158,13 +160,15 @@
     </div>
 
     <div class="well info-bar hide">
-      <div class="results-counter"><strong><span class="count">0</span> results</strong> found for <strong class="search_query"></strong></div>
-      <a href="#" class="save-search"><i class="icon-star"></i> Save Search</a>
+      <div class="results-counter"><strong><span class="count">0</span> results</strong> found</div>
+      <!--<a href="#" class="save-search"><i class="icon-star"></i> Save Search</a>-->
       <form action="" class="form-inline">
         <label for="">sort by:</label>
         <select name="" id="id_sorting" class="span1">
           <option value="modified">Newest</option>
           <option value="popular">Popular</option>
+          <option value="alphaaz">A-Z</option>
+          <option value="alphaza">Z-A</option>
         </select>
       </form>
     </div>
@@ -219,7 +223,7 @@
     <script src="{{ STATIC_URL }}geonode/js/global_search.js"></script>
     <script>        
         $(function() {
-           window.globalDoSearch("{{ init_search.q }}");
+           window.globalDoSearch({{ init_search|safe }});
         });
     </script>
 {% endblock %}

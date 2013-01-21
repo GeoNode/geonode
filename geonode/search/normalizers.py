@@ -146,7 +146,7 @@ class MapNormalizer(Normalizer):
         doc['id'] = mapobj.id
         doc['title'] = mapobj.title
         doc['abstract'] = defaultfilters.linebreaks(mapobj.abstract)
-        doc['category'] = mapobj.topic_category,
+        doc['category'] = mapobj.category.slug if mapobj.category else 'location'
         doc['detail'] = reverse('map_detail', args=(mapobj.id,))
         doc['owner'] = mapobj.owner.username
         doc['owner_detail'] = mapobj.owner.get_absolute_url()
@@ -171,7 +171,7 @@ class LayerNormalizer(Normalizer):
         doc['id'] = layer.id
         doc['_type'] = 'layer'
 #        doc['owsUrl'] = layer.get_virtual_wms_url()
-        doc['category'] = layer.topic_category
+        doc['category'] = layer.category.slug if layer.category else 'location'
         doc['name'] = layer.typename
         doc['abstract'] = defaultfilters.linebreaks(layer.abstract)
         doc['storeType'] = layer.storeType
@@ -212,7 +212,7 @@ class DocumentNormalizer(Normalizer):
         doc['id'] = document.id
         doc['title'] = document.title
         doc['abstract'] = defaultfilters.linebreaks(document.abstract)
-        doc['category'] = document.topic_category,
+        doc['category'] = document.category.slug if document.category else 'location'
         doc['detail'] = reverse('document_detail', args=(document.id,))
         doc['owner'] = document.owner.username
         doc['owner_detail'] = document.owner.get_absolute_url()
