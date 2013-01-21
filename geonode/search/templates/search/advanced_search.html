@@ -32,21 +32,21 @@
               </div>
               <div class="control-group">
                 <label for="id_exclusions">{% trans 'Exclude words from your search' %}<br />
-                  <input type="text" id="id_exclusions" />
+                  <input type="text" id="id_exclusions" name="exclude"/>
                 </label>
               </div>
               <div class="control-group">
                 <label for="id_filter_categories_all" class="radio inline">
-                  <input type="radio" name="type" value='all' id="id_filter_categories_all" checked /> {% trans 'All categories' %}
+                  <input type="radio" name="type" value="all" id="id_filter_categories_all" checked /> {% trans 'All categories' %}
                 </label>
                 <label for="id_filter_categories_maps" class="radio inline">
-                  <input type="radio" name="type" value='map' id="id_filter_categories_maps" /> {% trans 'Maps only' %}
+                  <input type="radio" name="type" value="map" id="id_filter_categories_maps" /> {% trans 'Maps only' %}
                 </label>
                 <label for="id_filter_categories_datasets" class="radio inline">
-                  <input type="radio" name="type" value='layer' id="id_filter_categories_datasets" /> {% trans 'Layers only' %}
+                  <input type="radio" name="type" value="layer" id="id_filter_categories_datasets" /> {% trans 'Layers only' %}
                 </label>
                 <label for="id_filter_categories_groups" class="radio inline">
-                  <input type="radio" name="type" value='group' id="id_filter_categories_groups" /> {% trans 'Groups only' %}
+                  <input type="radio" name="type" value="group" id="id_filter_categories_groups" /> {% trans 'Groups only' %}
                 </label>
               </div>
             </div>
