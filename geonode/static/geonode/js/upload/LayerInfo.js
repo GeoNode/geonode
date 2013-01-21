@@ -1,7 +1,40 @@
-/*global define: true, gn:true, $:true, FormData: true */
+/*jslint nomen: true */
+/*global define:true, $:true, FormData: true, alert: true */
+'use strict';
 
-define(['underscore', './FileTypes'], function (_, fileTypes, upload){
-    'use strict';
+define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, upload) {
+    var Request, LayerInfo;
+
+    // we have a different notion of success and failure then http
+    Request = (function () {
+
+        var Request = function (options) {
+            _.extend(this, options);
+            if (!this.type) {
+                this.type = 'GET';
+            }
+        };
+
+        Request.prototype.do = function () {
+
+            var options = _.clone(this),
+                success = options.success,
+                failure = options.failure;
+
+            delete options.success;
+            delete options.failure;
+
+            $.ajax(options).done(function (resp) {
+                if (resp.success === true) {
+                    success(resp);
+                } else {
+                    failure(resp);
+                }
+            });
+            return this;
+        };
+        return Request;
+    }());
 
     /** Creates an instance of a LayerInfo
      *  @constructor
@@ -9,7 +42,9 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
      *  @this {LayerInfo}
      *  @param {name, files}
      */
-    var LayerInfo = function (options) {
+
+
+    LayerInfo = function (options) {
 
         this.name     = null;
         this.files    = null;
@@ -127,40 +162,58 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
 
         return form_data;
     };
+    LayerInfo.prototype.logStatus = function (options) {
+        var status = this.element.find('#status'),
+            empty = options.empty;
 
-    LayerInfo.prototype.markSuccess = function (resp) {
-        var self = this;
+        if (empty) {
+            status.empty();
+        }
 
-        $.ajax({
-            url: resp.redirect_to
-        }).done(function (resp) {
-            var status = self.element.find('#status'), a;
-            if (resp.success) {
-                status.empty();
-                // At this point we need access to the host name
-                // Not sure the best way to access
-                status.append(self.successTemplate({
-                    name: resp.name
-                }));
-            } else {
-                status.empty();
-                status.append(self.progressTemplate({
-                    alertLevel: 'alert-error',
-                    message: 'There was an error in uploading your file, ' + resp.errors.join(', ')
-                }));
-            }
-        });
-
+        status.append(this.progressTemplate({
+            message: options.msg,
+            alertLevel: options.level
+        }));
+    };
+    LayerInfo.prototype.markError = function (error) {
+        this.logStatus({msg: '[ ' + error + ' ]'});
     };
 
-    LayerInfo.prototype.markStart = function () {
+    // make this into an abstract method so we can mark events in a
+    // more generic way
 
-        this.element.find('#status').append(
-            this.progressTemplate({
-                message: 'Your upload has started.',
-                alertLevel: 'alert-success'
-            })
-        );
+    LayerInfo.prototype.markStart = function () {
+        this.logStatus({
+            msg: 'Your upload has started',
+            level: 'alert-success'
+        });
+    };
+
+    /*
+
+      We need to add a step for the srs url and then the final
+
+     */
+
+    LayerInfo.prototype.doFinal = function (resp) {
+        var self = this;
+        (new Request({
+            url: resp.redirect_to,
+            failure: function (resp) {self.markError(resp); },
+            success: function (resp) {},
+        })).do();
+    };
+
+    LayerInfo.prototype.doSrs = function (resp) {
+        // at this point we need to allow the user to select an srs
+        var self = this;
+        (new Request({
+            url: resp.redirect_to,
+            failure: function (resp) {
+                self.markError(resp);
+            },
+            success: function (resp) { self.doFinal(resp); }
+        })).do();
     };
 
     LayerInfo.prototype.uploadFiles = function () {
@@ -168,7 +221,7 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
             self = this;
 
         $.ajax({
-            url: "",
+            url: "", // is this right?
             type: "POST",
             data: form_data,
             processData: false, // make sure that jquery does not process the form data
@@ -177,13 +230,9 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
                 self.markStart();
             }
         }).done(function (resp) {
-            var status, msg;
-            if (resp.success === true) {
-                self.markSuccess(resp);
-            } else {
-                status = self.element.find('#status');
-                console.log(status);
-            }
+            self.doSrs(resp);
+        }).fail(function (resp) {
+            alert('Response failed,' + resp.errors); 
         });
     };
 
