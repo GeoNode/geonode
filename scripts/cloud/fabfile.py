@@ -170,6 +170,11 @@ def deploy_default_geonode():
     # User needs to provide local_settings - where?
     setup_pgsql('geonode')
 
+def deploy_geonode_testing_package():
+    sudo('add-apt-repository -y ppa:geonode/testing') 
+    sudo('apt-get update')
+    sudo('apt-get install -f -y geonode')
+
 def deploy_geonode_snapshot_package():
     sudo('add-apt-repository -y ppa:geonode/snapshots') 
     sudo('apt-get update')
@@ -182,7 +187,6 @@ def deploy_geonode_dev_package():
     with settings(warn_only=True):
         sudo('cd build.geonode.org/geonode/latest;dpkg -i geonode_2.0.0*.deb',shell=True)
     sudo('apt-get install -f -y')
-    sudo ('source /var/lib/geonode/bin/activate; geonode-updateip alpha.dev.geonode.org')
 
 def change_admin_password():
     put('../misc/changepw.py', '/home/ubuntu/')
@@ -190,6 +194,12 @@ def change_admin_password():
     run("perl -pi -e 's/replace.me.admin.pw/%s/g' ~/changepw.py" % ADMIN_PASSWORD)
     sudo('source /var/lib/geonode/bin/activate;cat ~/changepw.py | django-admin.py shell --settings=geonode.settings')
     run('rm ~/changepw.py')
+
+def geonode_updateip(server_name="alpha.dev.geonode.org"):
+    sudo ('geonode-updateip %s' % server_name)
+
+def set_hosts_entry(server_name="alpha.dev.geonode.org"):
+    sudo("IP=`wget -qO- http://instance-data/latest/meta-data/public-ipv4`; echo $IP alpha.dev.geonode.org >> /etc/hosts")
 
 def update_instance():
     put('../misc/update-instance', '/home/ubuntu/')
@@ -235,3 +245,6 @@ def build_geonode_ami():
     if MAKE_PUBLIC:
         sudo("ec2-modify-image-attribute -l -a all -K ~/.ssh/pk-*.pem -C ~/.ssh/cert-*.pem %s" % (ami_id))
     print "AMI %s Ready for Use" % (ami_id)
+
+def install_sample_data():
+    sudo('source /var/lib/geonode/bin/activate; geonode importlayers /var/lib/geonode/lib/python2.7/site-packages/gisdata/data/good; geonode loaddata sample_admin.json')

@@ -109,10 +109,10 @@ function setup_django_every_time() {
 
     export PYTHONPATH=/var/lib/geonode/lib/python2.7/site-packages
     export DJANGO_SETTINGS_MODULE=geonode.settings
-    django-admin syncdb --all --noinput
+    django-admin.py syncdb --all --noinput
     #django-admin migrate --noinput
-    django-admin collectstatic --noinput
-    django-admin loaddata $GEONODE_SHARE/admin.json
+    django-admin.py collectstatic --noinput
+    django-admin.py loaddata $GEONODE_SHARE/admin.json
 
     popd
 }

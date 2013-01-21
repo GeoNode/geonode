@@ -64,7 +64,7 @@ def search_page(request, **kw):
         params.update(kw)
 
     context = _get_search_context()
-    context['init_search'] = params
+    context['init_search'] = json.dumps(params)
 
     return render_to_response('search/search.html', RequestContext(request, context))
 
