@@ -2134,7 +2134,7 @@ class MapLayer(models.Model):
         if self.group: cfg["group"] = self.group
         cfg["visibility"] = self.visibility
 
-        if self.source_params.find( "gxp_gnsource") > -1:
+        if self.name is not None and self.source_params.find( "gxp_gnsource") > -1:
             #Get parameters from GeoNode instead of WMS GetCapabilities
             try:
                 gnLayer = Layer.objects.get(typename=self.name)
@@ -2158,7 +2158,7 @@ class MapLayer(models.Model):
                 cfg['visibility'] = False
                 cfg['abstract'] = ''
                 cfg['styles'] =''
-                logger.error("Could not retrieve Layer with typename of %s : %s", self.name, str(e))
+                logger.info("Could not retrieve Layer with typename of %s : %s", self.name, str(e))
         elif self.source_params.find( "gxp_hglsource") > -1:
             # call HGL ServiceStarter asynchronously to load the layer into HGL geoserver
             from geonode.queue.tasks import loadHGL

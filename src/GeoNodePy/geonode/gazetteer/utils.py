@@ -11,7 +11,7 @@ from django.conf import settings
 import psycopg2
 from django.db.models import Q
 from geonode.maps.models import Layer, LayerAttribute, MapLayer, Map
-
+from django.core.cache import cache
 
 
 GAZETTEER_TABLE = 'gazetteer_gazetteerentry'
@@ -66,7 +66,10 @@ def getGazetteerEntry(id):
 
 
 def formatSourceLink(layer_name):
-    layer = Layer.objects.get(name=layer_name)
+    layer = cache.get("layerinfo_" + layer_name)
+    if layer is None:
+        layer = Layer.objects.get(name=layer_name)
+        cache.add("layerinfo_" + layer_name, layer)
     return "<a href='{0}data/{1}' target='_blank'>{2}</a>".format(settings.SITEURL, layer.typename, layer.name)
 
 
@@ -137,9 +140,9 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
     if project:
         criteria = criteria & Q(project__exact=project)
 
-    matchingEntries=GazetteerEntry.objects.extra(
+    matchingEntries=(GazetteerEntry.objects.extra(
         where=['placename_tsv @@ to_tsquery(%s)'],
-        params=[place_name + ":*"]).filter(criteria) if settings.GAZETTEER_FULLTEXTSEARCH else GazetteerEntry.objects.filter(criteria)
+        params=[place_name]).filter(criteria)) if settings.GAZETTEER_FULLTEXTSEARCH else GazetteerEntry.objects.filter(criteria)
 
 
     posts = []
