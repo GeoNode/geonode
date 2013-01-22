@@ -11,6 +11,7 @@
       <link href="{{ STATIC_URL }}libs/datatables/css/datatables.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}libs/select2/select2.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}libs/css/jquery-ui-1.10.0.autocomplete.css" rel="stylesheet"/>
       {% block extra_head %}{% endblock %}
     {% endblock %}
     <!--[if lt IE 9]>
@@ -97,8 +98,9 @@
               </div>
               <form class="input-append form-inline search-box pull-right" action="{% url search %}" method="GET">
                 {# csrf_token #}
-                <input type="text" name="q" placeholder="{% trans 'Search ...' %}" />
+                <input id="search" type="text" name="q" placeholder="{% trans 'Search ...' %}" />
                 <button type="submit" class="btn btn-small"><i class="icon-search"></i></button>
+                <div id="search-autocomplete"></div>
               </form>
             </div>
            </div>
@@ -197,15 +199,53 @@
       </div>
     </footer>
     {% endblock footer %}
-
     <script src="{{ STATIC_URL }}libs/js/jquery-1.8.0.js"></script>
     <script src="{{ STATIC_URL }}libs/bootstrap/js/bootstrap.min.js"></script>
     <script src="{{ STATIC_URL }}libs/datatables/js/jquery.dataTables.min.js"></script>
     <script src="{{ STATIC_URL }}libs/js/hogan.js"></script>
     <script src="{{ STATIC_URL }}libs/js/jquery.timeago.js"></script>
+    <script src="{{ STATIC_URL }}libs/js/jquery.timeago.js"></script>
     <script src="{{ STATIC_URL }}libs/js/json2.js"></script>
-    <script src="{{ STATIC_URL }}libs/select2/select2.js"></script>
+    <script src="{{ STATIC_URL }}libs/js/jquery-ui-1.10.0.autocomplete.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
+    <script>
+      $.widget( "custom.typecomplete", $.ui.autocomplete, {
+        _renderMenu: function( ul, items ) {
+          var that = this,
+            currentType = "";
+          $.each( items, function( index, item ) {
+            if ( item.type != currentType ) {
+              ul.append( "<li class='ui-autocomplete-type'>" + item.type + "</li>" );
+              currentType = item.type;
+            }
+            that._renderItemData( ul, item );
+          });
+        }
+      });
+      $( "#search" ).typecomplete({
+        appendTo: '#search-autocomplete',
+        delay: 0,
+        source: function(request, response){
+          $.ajax({
+            url: '{% url search_api %}',
+            data:{
+              type: 'all',
+              limit: 'none',
+              q: request.term
+            },
+            success: function( data ) {
+              var results = data.results;
+              response( $.map( data.results, function( item ) {
+                return {
+                  label: item.title,
+                  type: item._type
+                }
+              }));
+            }            
+          });
+        }
+      });
+    </script>
 
     {% block extra_script %}{% endblock extra_script %}
 
