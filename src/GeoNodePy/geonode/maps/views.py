@@ -1995,7 +1995,7 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
     keywords = _split_query(query)
     map_query = Map.objects.filter()
     for keyword in keywords:
-        map_query.filter(
+        map_query = map_query.filter(
               Q(title__icontains=keyword)
             | Q(keywords__name__icontains=keyword)
             | Q(abstract__icontains=keyword)).distinct()
