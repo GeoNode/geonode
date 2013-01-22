@@ -21,12 +21,13 @@ __author__ = 'mbertrand'
 logger = logging.getLogger("geonode.gazetteer.utils")
 
 '''
-ALTER TABLE gazetteer_placename ADD COLUMN text_search tsvector;
-UPDATE gazetteer_placename SET text_search =
+ALTER TABLE gazetteer_gazetteerentry ADD COLUMN placename_tsv tsvector;
+CREATE INDEX placename_tsv_index on gazetteer_gazetteerentry using gin(placename_tsv);
+UPDATE gazetteer_gazetteerentry SET text_search =
      to_tsvector('english', coalesce(place_name,''));
 CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
-  ON gazetteer_placename FOR EACH ROW EXECUTE PROCEDURE
-  tsvector_update_trigger(text_search, 'pg_catalog.english', place_name);
+  ON gazetteer_gazetteerentry FOR EACH ROW EXECUTE PROCEDURE
+  tsvector_update_trigger(placename_tsv, 'pg_catalog.english', place_name);
 '''
 
 def get_geometry_type(layer_name):
