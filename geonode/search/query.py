@@ -116,9 +116,10 @@ class Query(object):
         if start_date or end_date:
             if self.period:
                 raise BadQuery('period and start/end both provided')
-            if len(start_date) == 10 and len(start_date) == 10:
-                #if the date is in the format 'yyyy-mm-dd' make it iso format
+            #if the date is in the format 'yyyy-mm-dd' make it iso format
+            if len(start_date) == 10:   
                 start_date += 'T00:00:00Z'
+            if len(end_date) == 10:
                 end_date += 'T00:00:00Z'
             self.period = (start_date, end_date)
 
