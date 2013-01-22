@@ -230,7 +230,7 @@
             url: '{% url search_api %}',
             data:{
               type: 'all',
-              limit: 'none',
+              limit: 20,
               q: request.term
             },
             success: function( data ) {
