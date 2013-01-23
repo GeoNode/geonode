@@ -19,6 +19,7 @@
 
 import os
 import re
+import shutil
 import sys
 import time
 import urllib
@@ -79,16 +80,28 @@ def setup_geoserver(options):
         with zipfile.ZipFile(geoserver_bin, "r") as z:
             z.extractall(webapp_dir)
 
-        print 'extracting datadir'
-        with zipfile.ZipFile(data_dir, "r") as z:
-            z.extractall(geoserver_dir)
+        _install_data_dir()
 
-        config = geoserver_dir / 'data/security/auth/geonodeAuthProvider/config.xml'
-        with open(config) as f:
-            xml = f.read()
-            m = re.search('baseUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
-        with open(config, 'w') as f: f.write(xml)
+
+def _install_data_dir():
+    data_dir = path('geoserver/data')
+    if data_dir.exists():
+        data_dir.rmtree()
+    
+    geoserver_dir = path('geoserver')
+    download_dir = path('downloaded')
+    data_dir_zip = download_dir / os.path.basename(DATA_DIR_URL)
+
+    print 'extracting datadir'
+    with zipfile.ZipFile(data_dir_zip, "r") as z:
+        z.extractall(geoserver_dir)
+
+    config = geoserver_dir / 'data/security/auth/geonodeAuthProvider/config.xml'
+    with open(config) as f:
+        xml = f.read()
+        m = re.search('baseUrl>([^<]+)', xml)
+        xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
+    with open(config, 'w') as f: f.write(xml)
 
 
 @task
@@ -353,7 +366,7 @@ def reset():
 
 def _reset():
     sh("rm -rf geonode/development.db")
-    # Reset data dir (how do we do it?)
+    _install_data_dir()
 
 
 @needs(['reset'])
