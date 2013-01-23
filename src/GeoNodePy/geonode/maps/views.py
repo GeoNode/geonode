@@ -540,9 +540,6 @@ def set_map_permissions(m, perm_spec, use_email = False):
             user = User.objects.get(username=username)
             m.set_user_level(user, level)
 
-def ajax_layer_permissions_by_email(request, layername):
-    return ajax_layer_permissions(request, layername, True)
-
 def ajax_layer_permissions(request, layername, use_email=False):
     layer = get_object_or_404(Layer, typename=layername)
 
