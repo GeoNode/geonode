@@ -254,6 +254,16 @@ class searchTest(TestCase):
         # no matches
         self.search_assert(self.request('', kw='foobar', type='layer'), n_results=0, n_total=0)
 
+    def test_exclude_query(self):
+        # exclude one layer
+        self.search_assert(self.request('', exclude='layer1'), n_results=10, n_total=31)
+        # exclude one general word
+        self.search_assert(self.request('', exclude='common'), n_results=10, n_total=27)
+        # exclude more than one word
+        self.search_assert(self.request('', exclude='common,something'), n_results=10, n_total=23)
+        # exclude almost everything
+        self.search_assert(self.request('', exclude='common,something,ipsum,quux,morx,one'), n_results=9, n_total=9)
+
     def test_author_endpoint(self):
         resp = self.c.get('/search/api/authors')
         jsobj = json.loads(resp.content)

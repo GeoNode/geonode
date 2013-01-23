@@ -133,39 +133,6 @@ $.fn.serializeObject = function() {
 // This section could be update to use require.js
 
 var pub = {
-    mapPermsSubmit: function() {
-        var form = $(this);
-        var action = form.attr("action");
-
-        permissions = permissionsString(form, "maps");
-
-        $.ajax({
-            type: "POST",
-            url: action,
-            data: JSON.stringify(permissions),
-            success: function(data) {
-                $("#modal_perms").modal("hide");
-            }
-        });
-        return false;
-    },
-
-    layerPermsSubmit: function() {
-        var form = $(this);
-        var action = form.attr("action");
-
-        permissions = permissionsString(form, "layer");
-
-        $.ajax({
-            type: "POST",
-            url: action,
-            data: JSON.stringify(permissions),
-            success: function(data) {
-                $("#modal_perms").modal("hide");
-            }
-        });
-        return false;
-    },
 
     batch_delete: function() {
       var form = $(this);
@@ -244,68 +211,4 @@ var pub = {
         });
         return false;
     },
-    permissionsString: function(form, type) {
-      var anonymousPermissions, authenticatedPermissions, levels;
-
-        var data = form.serializeObject();
-
-        if (type == "maps") {
-            levels = {
-                'readonly': 'map_readonly',
-                'readwrite': 'map_readwrite',
-                'admin': 'map_admin',
-                'none': '_none'
-            };
-        } else {
-            levels = {
-                'admin': 'layer_admin',
-                'readwrite': 'layer_readwrite',
-                'readonly': 'layer_readonly',
-                'none': '_none'
-            };
-        }
-
-        if (data["viewmode"] === "ANYONE") {
-            anonymousPermissions = levels['readonly'];
-        } else {
-            anonymousPermissions = levels['none'];
-        }
-
-        if (data["editmode"] === "REGISTERED") {
-            authenticatedPermissions = levels['readwrite'];
-        } else if (data["viewmode"] === 'REGISTERED') {
-            authenticatedPermissions = levels['readonly'];
-        } else {
-            authenticatedPermissions = levels['none'];
-        }
-
-        var perUserPermissions = [];
-        if (data["editmode"] === "LIST") {
-            var editusers = form.find("input[name=editusers]").select2("val");
-            if (editusers instanceof Array) {
-                $.each(editusers, function(index, value) {
-                    perUserPermissions.push([value, levels["readwrite"]]);
-                });
-            } else {
-                perUserPermissions.push([editusers, levels["readwrite"]]);
-            }
-        }
-
-        var manageusers = form.find("input[name=manageusers]").select2("val");
-        if (manageusers) {
-            if (manageusers instanceof Array) {
-                $.each(manageusers, function(index, value) {
-                    perUserPermissions.push([value, levels["admin"]]);
-                });
-            } else {
-                perUserPermissions.push([manageusers, levels["admin"]]);
-            }
-        }
-
-        return {
-            anonymous: anonymousPermissions,
-            authenticated: authenticatedPermissions,
-            users: perUserPermissions
-        };
-    }
 };
