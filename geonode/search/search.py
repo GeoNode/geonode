@@ -137,7 +137,6 @@ def _build_map_layer_text_query(q, query, query_keywords=False):
 def _build_kw_only_query(keywords):
     return reduce(operator.or_, [Q(keywords__name__contains=kw) for kw in keywords])
 
-
 def _get_owner_results(query):
     # make sure all contacts have a user attached
     q = extension.owner_query(query)
@@ -204,6 +203,9 @@ def _get_map_results(query):
         map_layers_with = MapLayer.objects.filter(name__in=layers_with_kw).values('map')
         q = q.filter(id__in=map_layers_with)
 
+    if query.exclude:
+        q = q.exclude(reduce(operator.or_, [Q(title__contains=ex) for ex in query.exclude]))
+
     if query.query:
         q = _build_map_layer_text_query(q, query, query_keywords=True)
         rules = _rank_rules(Map,
@@ -227,6 +229,9 @@ def _get_layer_results(query):
 
     if query.kw:
         q = q.filter(_build_kw_only_query(query.kw))
+
+    if query.exclude:
+        q = q.exclude(reduce(operator.or_, [Q(title__contains=ex) for ex in query.exclude]))
 
     if query.owner:
         q = q.filter(owner__username=query.owner)
@@ -274,6 +279,9 @@ def _get_document_results(query):
 
     if query.kw:
         q = q.filter(_build_kw_only_query(query.kw))
+
+    if query.exclude:
+        q = q.exclude(reduce(operator.or_, [Q(title__contains=ex) for ex in query.exclude]))
 
     if query.owner:
         q = q.filter(owner__username=query.owner)

@@ -132,20 +132,25 @@ var doSearch = function (options) {
 
             $.each(data.results, function (index, item) {
                 var context = {
+                    "id": item.id,
                     "display_type": item._display_type,
                     "type": item._type,
                     "storeType": item.storeType,
+                    "typename": item.name,
                     "date": item.date,
                     "url": item.detail,
                     "title": item.title,
                     "keywords": item.keywords,
                     "owner": item.owner,
                     "owner_url": item.owner_detail,
-                    "popular": index === 0 ? item.rating : 23, // item.rating when popularity data is established
+                    "popular": item.rating, 
+                    "relevance": item.relevance,
                     "last_modified": item.last_modified.split(".")[0].replace(/[\-T:]/g, ""),
                     "last_modified_date": item.last_modified.split("T")[0].replace(/-/g, "")
                 };
-
+                for(var link in item.links){
+                    context[link] = item.links[link]['url'];
+                }
                 if (item.category !== undefined) {
                     // use dot notation instead of array look up syntax
                     context.category = item.category;
@@ -155,6 +160,18 @@ var doSearch = function (options) {
                 $("#search-results").append(srt.render(context));
                 if (d1 > item.last_modified) {
                     d1 = item.last_modified;
+                }
+                if(item.storeType == 'coverageStore'){
+                    $("#download-"+item.id+" .vector").detach();
+                }
+                if(item.storeType == 'dataStore'){
+                    $("#download-"+item.id+" .raster").detach();
+                }
+                if(item._type != 'layer'){
+                    $("#article-"+item.id+" .actions").detach();
+                }
+                if(item._type == 'owner'){
+                    $("#article-"+item.id+" .meta").detach();
                 }
             });
             // end of each loop
@@ -274,4 +291,11 @@ $(function () {
         event.preventDefault();
     });
 
+    $("#clear-search").click(function(event){
+        window.globalDoSearch({type: 'all'});
+
+        $("#filter-categories input[type=checkbox]").attr("checked","checked");
+
+        $("#filter-keywords input[type=checkbox]").attr("checked","checked");
+    });
 });
