@@ -37,6 +37,8 @@
           <li class="vector"><a href="{{excel}}">Excel</a></li>
           <li class="vector"><a href="{{json}}">GeoJSON</a></li>
           <li><a href="{{kml}}">View in Google Earth</a></li>
+          <li class="raster"><a href="{{GeoTIFF}}">GeoTIFF</a></li>
+          <li><a href="{{tiles}}">TILES</a></li>
         </ul>
       </div>
     </div>
