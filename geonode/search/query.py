@@ -195,7 +195,8 @@ def query_from_request(request, extra):
             'alphaaz' : ('title',True),
             'alphaza' : ('title',False),
             'popularity' : ('rank',False),
-            'rel' : ('relevance',False)
+            'rel' : ('relevance',False),
+            'none' : (None,False)
         }
         try:
             sort_field, sort_asc = sorts[params.get('sort','newest')]
