@@ -90,50 +90,6 @@ class ContactForm(forms.ModelForm):
         exclude = ('user','is_org_member',)
 
 
-class LayerCategoryChoiceField(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-            return '<a href="#" onclick=\'javascript:Ext.Msg.show({title:"' + escape(obj.title) + '",msg:"' + escape(obj.description) + '",buttons: Ext.Msg.OK, minWidth: 300});return false;\'>' + obj.title + '</a>'
-
-
-
-class LayerCategoryForm(forms.Form):
-    category_choice_field = LayerCategoryChoiceField(required=False, label = '*' + _('Category'), empty_label=None,
-                               queryset = LayerCategory.objects.extra(order_by = ['title']))
-
-
-    def clean(self):
-        cleaned_data = self.data
-        ccf_data = cleaned_data.get("category_choice_field")
-
-
-        if not ccf_data:
-            msg = u"This field is required."
-            self._errors = self.error_class([msg])
-
-
-
-
-        # Always return the full collection of cleaned data.
-        return cleaned_data
-
-
-
-class LayerAttributeForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(LayerAttributeForm, self).__init__(*args, **kwargs)
-        instance = getattr(self, 'instance', None)
-        if instance and instance.attribute_type != 'xsd:string':
-            self.fields['searchable'].widget.attrs['disabled'] = True
-            self.fields['in_gazetteer'].widget.attrs['disabled'] = True
-        self.fields['attribute'].widget.attrs['readonly'] = True
-        self.fields['display_order'].widget.attrs['size'] = 3
-
-
-
-    class Meta:
-        model = LayerAttribute
-        exclude = ('attribute_type',)
-
 class GazetteerForm(forms.Form):
 
     project = forms.CharField(label=_('Project'), max_length=128, required=False)
@@ -537,20 +493,6 @@ Contents:
         resp,content = h.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 
-
-
-def view_map_permissions(request, mapid):
-    map = get_object_or_404(Map,pk=mapid)
-
-    if not request.user.has_perm('maps.change_map_permissions', obj=map):
-        return HttpResponse(loader.render_to_string('401.html',
-            RequestContext(request, {'error_message':
-                _("You are not permitted to view this map's permissions")})), status=401)
-
-    ctx = _view_perms_context(map, MAP_LEV_NAMES)
-    ctx['map'] = map
-    return render_to_response("maps/permissions.html", RequestContext(request, ctx))
-
 def set_layer_permissions(layer, perm_spec, use_email = False):
     if "authenticated" in perm_spec:
         layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
@@ -597,9 +539,6 @@ def set_map_permissions(m, perm_spec, use_email = False):
         for username, level in perm_spec['users']:
             user = User.objects.get(username=username)
             m.set_user_level(user, level)
-
-def ajax_layer_permissions_by_email(request, layername):
-    return ajax_layer_permissions(request, layername, True)
 
 def ajax_layer_permissions(request, layername, use_email=False):
     layer = get_object_or_404(Layer, typename=layername)
@@ -703,9 +642,8 @@ def mapdetail(request,mapid):
     if not request.user.has_perm('maps.view_map', obj=map_obj):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
-                _("You are not allowed to view this map.")})), status=401)
-
-    config = map_obj.viewer_json()
+                _("You are not allowed to view this map.")})), status=401)    
+    config = map_obj.viewer_json(request.user)
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
     mapstats, created = MapStats.objects.get_or_create(map=map_obj.id)
@@ -902,14 +840,6 @@ def tweetview(request):
         'urlsuffix': get_suffix_if_custom(map),
         'tweetdownload': request.user.is_authenticated() and request.user.get_profile().is_org_member
         }))
-
-def official_site(request, site):
-    """
-    The view that returns the map composer opened to
-    the map with the given official site url.
-    """
-    map = get_object_or_404(Map,officialurl=site)
-    return view(request, str(map.id))
 
 def embed(request, mapid=None, snapshot=None):
     if mapid is None:
@@ -1268,7 +1198,7 @@ def upload_layer(request):
                     "success": True,
                     "redirect_to": redirect_to}))
             except Exception, e:
-                logger.exception("Unexpected error during upload.")
+                logger.error("Unexpected error during upload: %s : %s", name, escape(str(e)))
                 return HttpResponse(json.dumps({
                     "success": False,
                     "errormsgs": ["Unexpected error during upload: " + escape(str(e))]}))
@@ -1375,18 +1305,6 @@ _suffix = re.compile(r"\..*$", re.IGNORECASE) #Accept zipped uploads with more t
 _xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
 
 
-@login_required
-def view_layer_permissions(request, layername):
-    layer = get_object_or_404(Layer,typename=layername)
-
-    if not request.user.has_perm('maps.change_layer_permissions', obj=layer):
-        return HttpResponse(loader.render_to_string('401.html',
-            RequestContext(request, {'error_message':
-                _("You are not permitted to view this layer's permissions")})), status=401)
-
-    ctx = _view_perms_context(layer, LAYER_LEV_NAMES)
-    ctx['layer'] = layer
-    return render_to_response("maps/layer_permissions.html", RequestContext(request, ctx))
 
 def _view_perms_context(obj, level_names):
 
