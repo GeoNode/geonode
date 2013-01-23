@@ -206,14 +206,16 @@ def _search(query):
 
     # @todo - sorting should be done in the backend as it can optimize if
     # the query is restricted to one model. has implications for caching...
-    if query.sort == 'title':
-        keyfunc = lambda r: r.title().lower()
-    elif query.sort == 'last_modified':
-        old = datetime(1,1,1)
-        keyfunc = lambda r: r.last_modified() or old
-    else:
-        keyfunc = lambda r: getattr(r, query.sort)()
-    results.sort(key=keyfunc, reverse=not query.order)
+    if query.sort != None:
+        if query.sort == 'title':
+            keyfunc = lambda r: r.title().lower()
+        elif query.sort == 'last_modified':
+            old = datetime(1,1,1)
+            keyfunc = lambda r: r.last_modified() or old
+        else:
+            keyfunc = lambda r: getattr(r, query.sort)()
+
+        results.sort(key=keyfunc, reverse=not query.order)
 
     return results, facets
 
