@@ -647,7 +647,7 @@ def mapdetail(request,mapid):
             RequestContext(request, {'error_message': 
                 _("You are not allowed to view this map.")})), status=401)
      
-    config = map_obj.viewer_json()
+    config = map_obj.viewer_json(request.user)
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id) 
     mapstats, created = MapStats.objects.get_or_create(map=map_obj.id)
