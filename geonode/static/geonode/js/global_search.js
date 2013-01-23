@@ -164,6 +164,9 @@ var doSearch = function (options) {
                 if(item.storeType == 'coverageStore'){
                     $("#download-"+item.id+" .vector").detach();
                 }
+                if(item.storeType == 'dataStore'){
+                    $("#download-"+item.id+" .raster").detach();
+                }
                 if(item._type != 'layer'){
                     $("#article-"+item.id+" .actions").detach();
                 }
