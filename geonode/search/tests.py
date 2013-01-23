@@ -190,7 +190,7 @@ class searchTest(TestCase):
 
     def test_errors(self):
         self.assert_error(self.request(sort='foo'),
-            "valid sorting values are: ['alphaaz', 'newest', 'popularity', 'alphaza', 'rel', 'oldest']")
+            "valid sorting values are: ['alphaaz', 'newest', 'popularity', 'alphaza', 'none', 'rel', 'oldest']")
         self.assert_error(self.request(extent='1,2,3'),
             'extent filter must contain x0,x1,y0,y1 comma separated')
         self.assert_error(self.request(extent='a,b,c,d'),
