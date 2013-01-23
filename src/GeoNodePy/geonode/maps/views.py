@@ -646,7 +646,7 @@ def mapdetail(request,mapid):
             RequestContext(request, {'error_message':
                 _("You are not allowed to view this map.")})), status=401)
 
-    config = map_obj.viewer_json()
+    config = map_obj.viewer_json(request.user)
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
     mapstats, created = MapStats.objects.get_or_create(map=map_obj.id)
@@ -1412,18 +1412,23 @@ def resolve_user(request):
     user = None
     geoserver = False
     superuser = False
+    logger.info("getting user")
     if 'HTTP_AUTHORIZATION' in request.META:
         username, password = _get_basic_auth_info(request)
+        logger.info("%s:%s",username,password)
         acl_user = authenticate(username=username, password=password)
         if acl_user:
             user = acl_user.username
             superuser = acl_user.is_superuser
+            logger.info("acluser:%s",user)
         elif _get_basic_auth_info(request) == settings.GEOSERVER_CREDENTIALS:
             geoserver = True
             superuser = True
+            logger.info("geoserver")
     elif not request.user.is_anonymous():
         user = request.user.username
         superuser = request.user.is_superuser
+        logger.info("not anon:%s",user)
     return HttpResponse(json.dumps({
         'user' : user,
         'geoserver' : geoserver,
@@ -1441,6 +1446,7 @@ def layer_acls(request):
     # the layer_acls view supports basic auth, and a special
     # user which represents the geoserver administrator that
     # is not present in django.
+    logger.info("WTF is this still used?")
     acl_user = request.user
     if 'HTTP_AUTHORIZATION' in request.META:
         try:
