@@ -11,7 +11,6 @@
       <link href="{{ STATIC_URL }}libs/datatables/css/datatables.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}libs/select2/select2.css" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}libs/css/jquery-ui-1.10.0.autocomplete.css" rel="stylesheet"/>
       {% block extra_head %}{% endblock %}
     {% endblock %}
     <!--[if lt IE 9]>
@@ -96,11 +95,9 @@
                   </ul>
                 </div>
               </div>
-              <form class="input-append form-inline search-box pull-right" action="{% url search %}" method="GET">
+              <form class="input-append  pull-right" action="{% url search %}" method="GET">
                 {# csrf_token #}
-                <input id="search" type="text" name="q" placeholder="{% trans 'Search ...' %}" />
-                <button type="submit" class="btn btn-small"><i class="icon-search"></i></button>
-                <div id="search-autocomplete"></div>
+                <input id="search" type="text" name="q"/>
               </form>
             </div>
            </div>
@@ -206,43 +203,38 @@
     <script src="{{ STATIC_URL }}libs/js/jquery.timeago.js"></script>
     <script src="{{ STATIC_URL }}libs/js/jquery.timeago.js"></script>
     <script src="{{ STATIC_URL }}libs/js/json2.js"></script>
-    <script src="{{ STATIC_URL }}libs/js/jquery-ui-1.10.0.autocomplete.js"></script>
+    <script src="{{ STATIC_URL }}libs/select2/select2.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
     <script>
-      $.widget( "custom.typecomplete", $.ui.autocomplete, {
-        _renderMenu: function( ul, items ) {
-          var that = this,
-            currentType = "";
-          $.each( items, function( index, item ) {
-            if ( item.type != currentType ) {
-              ul.append( "<li class='ui-autocomplete-type'>" + item.type + "</li>" );
-              currentType = item.type;
-            }
-            that._renderItemData( ul, item );
-          });
-        }
-      });
-      $( "#search" ).typecomplete({
-        appendTo: '#search-autocomplete',
-        delay: 0,
-        source: function(request, response){
-          $.ajax({
-            url: '{% url search_api %}',
-            data:{
+      $("#search").select2({
+        minimumInputLength: 1,
+        placeholder: 'Search...',     
+        ajax: {
+          url: '{% url search_api %}',
+          data: function(term,page){
+            page = (page - 1) * 10;
+            return {
               type: 'all',
-              limit: 20,
-              q: request.term
-            },
-            success: function( data ) {
-              var results = data.results;
-              response( $.map( data.results, function( item ) {
-                return {
-                  label: item.title,
-                  type: item._type
-                }
-              }));
-            }            
-          });
+              limit: 10,
+              sort: 'none',
+              start: page,
+              q: term
+            }
+          },
+          results: function(data, page) {
+            var more = (page * 10) < data.total;
+            return {
+              results: data.results,
+              more: more
+            }
+          }          
+        },
+        formatResult: function(item){
+          return item.title;
+        },
+        formatSelection: function(item){
+          $('#search').val(item.title);
+          $('#search').parent().submit();
         }
       });
     </script>
@@ -251,5 +243,10 @@
 
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
     <script type="text/javascript" src="{% url lang %}"></script>
+    <style type="text/css">
+      .select2-drop{
+        color: black;
+      }
+    </style>
   </body>
 </html>
