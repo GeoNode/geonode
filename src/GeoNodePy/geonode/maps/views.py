@@ -58,7 +58,7 @@ def default_map_config():
     _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
 
     _default_map = Map(
-        title=DEFAULT_TITLE, 
+        title=DEFAULT_TITLE,
         abstract=DEFAULT_ABSTRACT,
         projection="EPSG:900913",
         center_x=_DEFAULT_MAP_CENTER[0],
@@ -89,50 +89,6 @@ class ContactForm(forms.ModelForm):
         model = Contact
         exclude = ('user','is_org_member',)
 
-
-class LayerCategoryChoiceField(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-            return '<a href="#" onclick=\'javascript:Ext.Msg.show({title:"' + escape(obj.title) + '",msg:"' + escape(obj.description) + '",buttons: Ext.Msg.OK, minWidth: 300});return false;\'>' + obj.title + '</a>'
-
-
-
-class LayerCategoryForm(forms.Form):
-    category_choice_field = LayerCategoryChoiceField(required=False, label = '*' + _('Category'), empty_label=None,
-                               queryset = LayerCategory.objects.extra(order_by = ['title']))
-
-
-    def clean(self):
-        cleaned_data = self.data
-        ccf_data = cleaned_data.get("category_choice_field")
-
-
-        if not ccf_data:
-            msg = u"This field is required."
-            self._errors = self.error_class([msg])
-
-
-
-
-        # Always return the full collection of cleaned data.
-        return cleaned_data
-
-
-
-class LayerAttributeForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(LayerAttributeForm, self).__init__(*args, **kwargs)
-        instance = getattr(self, 'instance', None)
-        if instance and instance.attribute_type != 'xsd:string':
-            self.fields['searchable'].widget.attrs['disabled'] = True
-            self.fields['in_gazetteer'].widget.attrs['disabled'] = True
-        self.fields['attribute'].widget.attrs['readonly'] = True
-        self.fields['display_order'].widget.attrs['size'] = 3
-
-
-
-    class Meta:
-        model = LayerAttribute
-        exclude = ('attribute_type',)
 
 class GazetteerForm(forms.Form):
 
@@ -536,20 +492,6 @@ Contents:
         url = "%srest/process/batchDownload/status/%s" % (settings.GEOSERVER_BASE_URL, download_id)
         resp,content = h.request(url,'GET')
         return HttpResponse(content, status=resp.status)
-
-
-
-def view_map_permissions(request, mapid):
-    map = get_object_or_404(Map,pk=mapid)
-
-    if not request.user.has_perm('maps.change_map_permissions', obj=map):
-        return HttpResponse(loader.render_to_string('401.html',
-            RequestContext(request, {'error_message':
-                _("You are not permitted to view this map's permissions")})), status=401)
-
-    ctx = _view_perms_context(map, MAP_LEV_NAMES)
-    ctx['map'] = map
-    return render_to_response("maps/permissions.html", RequestContext(request, ctx))
 
 def set_layer_permissions(layer, perm_spec, use_email = False):
     if "authenticated" in perm_spec:
@@ -1178,7 +1120,7 @@ def upload_layer(request):
                     "success": True,
                     "redirect_to": redirect_to}))
             except Exception, e:
-                logger.exception("Unexpected error during upload.")
+                logger.error("Unexpected error during upload: %s : %s", name, escape(str(e)))
                 return HttpResponse(json.dumps({
                     "success": False,
                     "errormsgs": ["Unexpected error during upload: " + escape(str(e))]}))
@@ -1285,18 +1227,6 @@ _suffix = re.compile(r"\..*$", re.IGNORECASE) #Accept zipped uploads with more t
 _xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
 
 
-@login_required
-def view_layer_permissions(request, layername):
-    layer = get_object_or_404(Layer,typename=layername)
-
-    if not request.user.has_perm('maps.change_layer_permissions', obj=layer):
-        return HttpResponse(loader.render_to_string('401.html',
-            RequestContext(request, {'error_message':
-                _("You are not permitted to view this layer's permissions")})), status=401)
-
-    ctx = _view_perms_context(layer, LAYER_LEV_NAMES)
-    ctx['layer'] = layer
-    return render_to_response("maps/layer_permissions.html", RequestContext(request, ctx))
 
 def _view_perms_context(obj, level_names):
 
@@ -2242,7 +2172,6 @@ def addLayerJSON(request):
 
     else:
         return HttpResponse(status=500)
-        logger.debug("addLayerJSON DID NOT WORK")
 
 
 def ajax_layer_edit_check(request, layername):
