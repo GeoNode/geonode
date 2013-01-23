@@ -287,4 +287,12 @@ $(function () {
         $('#search-results article img').attr('width', '25%');
         event.preventDefault();
     });
+
+    $("#clear-search").click(function(event){
+        window.globalDoSearch({type: 'all'});
+
+        $("#filter-categories input[type=checkbox]").attr("checked","checked");
+
+        $("#filter-keywords input[type=checkbox]").attr("checked","checked");
+    });
 });
