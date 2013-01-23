@@ -12,6 +12,10 @@ import psycopg2
 from django.db.models import Q
 from geonode.maps.models import Layer, LayerAttribute, MapLayer, Map
 from django.core.cache import cache
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 
 
 GAZETTEER_TABLE = 'gazetteer_gazetteerentry'

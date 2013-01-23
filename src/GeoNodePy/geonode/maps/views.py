@@ -493,7 +493,6 @@ Contents:
         resp,content = h.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 
-
 def set_layer_permissions(layer, perm_spec, use_email = False):
     if "authenticated" in perm_spec:
         layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
@@ -645,7 +644,6 @@ def mapdetail(request,mapid):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
                 _("You are not allowed to view this map.")})), status=401)
-
     config = map_obj.viewer_json(request.user)
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
