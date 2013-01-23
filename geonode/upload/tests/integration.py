@@ -252,7 +252,11 @@ class UploaderBase(TestCase):
         # @todo - this is obviously the brute force approach - ideally,
         # these cases would be more declarative and delete only the things
         # they mess with
-        Layer.objects.all().delete()
+        for l in Layer.objects.all():
+            try:
+                l.delete()
+            except:
+                print 'unable to delete layer', l
         # and destroy anything left dangling on geoserver
         cat = Layer.objects.gs_catalog
         map(lambda name: cascading_delete(cat, name), [l.name for l in cat.get_layers()])

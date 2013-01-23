@@ -18,13 +18,12 @@
 #########################################################################
 
 import os
+import re
 import sys
 import time
 import urllib
 import zipfile
-import shutil
 import glob
-from StringIO import StringIO
 
 from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, pushd, info, call_task
@@ -46,7 +45,6 @@ def grab(src, dest, name):
         urllib.urlretrieve(str(src), str(dest))
 
 GEOSERVER_URL="http://build.geonode.org/geoserver/latest/geoserver.war"
-# @todo this needs creating, for now just zip a data dir and put it in downloads
 DATA_DIR_URL="http://build.geonode.org/geoserver/latest/data.zip"
 JETTY_RUNNER_URL="http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar"
 
@@ -85,6 +83,12 @@ def setup_geoserver(options):
         with zipfile.ZipFile(data_dir, "r") as z:
             z.extractall(geoserver_dir)
 
+        config = geoserver_dir / 'data/security/auth/geonodeAuthProvider/config.xml'
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('baseUrl>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
+        with open(config, 'w') as f: f.write(xml)
 
 
 @task
@@ -266,6 +270,8 @@ def start_geoserver(options):
     with pushd(data_dir):
         sh(('java -Xmx512m -XX:MaxPermSize=256m'
             ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
+            # workaround for JAI sealed jar issue and jetty classloader
+            ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
             ' -jar %(jetty_runner)s'
             ' --log %(log_file)s'
             ' --path /geoserver %(web_app)s'
