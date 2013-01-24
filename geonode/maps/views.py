@@ -392,7 +392,6 @@ def new_map_config(request):
 
 #### MAPS DOWNLOAD ####
 
-@login_required
 def map_download(request, mapid, template='maps/map_download.html'):
     """
     Download all the layers of a map as a batch
@@ -406,7 +405,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
         url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
 
         def perm_filter(layer):
-            return request.user.has_perm('maps.view_layer', obj=layer)
+            return request.user.has_perm('layers.view_layer', obj=layer)
 
         mapJson = mapObject.json(perm_filter)
 
@@ -436,7 +435,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 remote_layers.append(lyr)
             else:
                 ownable_layer = Layer.objects.get(typename=lyr.name)
-                if not request.user.has_perm('maps.view_layer', obj=ownable_layer):
+                if not request.user.has_perm('layers.view_layer', obj=ownable_layer):
                     locked_layers.append(lyr)
                 else:
                     # we need to add the layer only once
