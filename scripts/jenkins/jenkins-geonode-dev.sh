@@ -58,6 +58,13 @@ cp -R coverage integration-coverage
 #cp coverage.xml csw-coverage.xml
 #cp coverage -R csw-coverage
 
+# Run the uploader integration tests
+REUSE_DB=1
+paver test_integration -n geonode.upload.tests.integration
+cp TEST-nose.xml upload-TEST-nose.xml
+cp coverage.xml upload-coverage.xml
+cp coverage -R upload-coverage
+
 # Run the javascript tests 
 paver test_javascript
 
