@@ -60,7 +60,7 @@ cp -R coverage integration-coverage
 
 # Run the uploader integration tests
 paver reset
-python manage.py syncdb --all
+python manage.py syncdb --all --noinput
 python manage.py loaddata sample_admin
 paver start_geoserver
 REUSE_DB=1 python manage.py test geonode.upload.tests.integration
