@@ -59,8 +59,11 @@ cp -R coverage integration-coverage
 #cp coverage -R csw-coverage
 
 # Run the uploader integration tests
-REUSE_DB=1
-paver test_integration -n geonode.upload.tests.integration
+paver reset
+python manage.py syncdb --all
+python manage.py loaddata sample_admin
+paver start_geoserver
+REUSE_DB=1 python manage.py test geonode.upload.tests.integration
 cp TEST-nose.xml upload-TEST-nose.xml
 cp coverage.xml upload-coverage.xml
 cp coverage -R upload-coverage
