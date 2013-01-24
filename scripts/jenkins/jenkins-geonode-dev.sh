@@ -63,6 +63,7 @@ paver reset
 python manage.py syncdb --all --noinput
 python manage.py loaddata sample_admin
 paver start_geoserver
+sleep 60
 REUSE_DB=1 python manage.py test geonode.upload.tests.integration
 cp TEST-nose.xml upload-TEST-nose.xml
 cp coverage.xml upload-coverage.xml
