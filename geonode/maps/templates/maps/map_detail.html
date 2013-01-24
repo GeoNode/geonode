@@ -121,7 +121,7 @@
     <div class='well'>
         <h2>{% trans "Copy this map" %}</h2>
         <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
-        <a href="{% url "new_map" %}" class="btn btn-large">{% trans "Create a New Map" %}</a>
+        <a href="{% url "new_map" %}?copy={{ map.id }}" class="btn btn-large">{% trans "Create a New Map" %}</a>
     </div>
     <div class="well last">
       {% with map.owner as owner %}
