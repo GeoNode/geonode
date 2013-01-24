@@ -1544,6 +1544,20 @@ class Layer(models.Model, PermissionLevelMixin):
         self.llbbox = str([float(l) for l in llbbox])
         self.set_bbox(bbox, srs=self.srs)
 
+        #Update Geoserver bounding boxes
+        if (self._resource_cache):
+            resource_bbox = list(self.resource.native_bbox)
+            resource_llbbox = list(self.resource.latlon_bbox)
+            
+            for coord in range[0,3]:
+                resource_bbox[coord] = str(bbox[2]) if coord == 1 else str(bbox[1]) if coord == 2 else str(bbox[coord])
+                resource_llbbox[coord] = str(llbbox[2]) if coord == 1 else str(llbbox[1]) if coord == 2 else str(llbbox[coord])
+                
+            self.resource.native_bbox = tuple(resource_bbox)
+            self.resource.latlon_bbox = tuple(resource_llbbox)
+            Layer.objects.gs_catalog.save(self._resource_cache)
+
+        
         # Use update to avoid unnecessary post_save signal
         Layer.objects.filter(id=self.id).update(bbox=self.bbox,llbbox=self.llbbox,geographic_bounding_box=self.geographic_bounding_box )
 
