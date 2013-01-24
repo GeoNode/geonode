@@ -385,7 +385,13 @@ class MapLayer(models.Model, GXPLayerBase):
                     cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
         return cfg
 
-
+    @property
+    def layer_title(self):
+        if self.local:
+            title = Layer.objects.get(typename=self.name).title
+        else:
+            title = ""
+        return title
 
     @property
     def local_link(self):
