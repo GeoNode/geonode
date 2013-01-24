@@ -390,7 +390,7 @@ class MapLayer(models.Model, GXPLayerBase):
         if self.local:
             title = Layer.objects.get(typename=self.name).title
         else:
-            title = ""
+            title = self.name
         return title
 
     @property
