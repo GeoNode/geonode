@@ -35,7 +35,7 @@ cp *.changes $DL_ROOT/$GIT_REV/.
 cp package/*.gz $DL_ROOT/$GIT_REV/.
 
 # Make the Debian package (upload to ppa)
-paver deb -p geonode/dev
+paver deb -p geonode/unstable
 
 rm -rf $DL_ROOT/latest
 ln -sf $DL_ROOT/$GIT_REV $DL_ROOT/latest
