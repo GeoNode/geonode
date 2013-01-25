@@ -22,7 +22,7 @@ mvn clean install
 
 # Build for launchpad
 debuild -S
-dput ppa:geonode/snapshot ../geoserver-geonode_*_source.changes
+dput ppa:geonode/snapshots ../geoserver-geonode_*_source.changes
 rm ../geoserver-geonode*
 
 # Re-build local debs
