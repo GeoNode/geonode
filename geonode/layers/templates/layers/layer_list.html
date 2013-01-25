@@ -33,7 +33,9 @@
                 {% layer_categories as category_list %}
                 <li><a href="{% url "layer_browse" %}"{% if not layer_category %} class="active"{% endif %}>{% trans "All Categories" %}</a></li>
                 {% for category in category_list %}
-                <li><a href="{% url "layer_browse_category" category.slug %}"{% ifequal layer_category category %} class="active"{% endifequal %}>{{ category }}</a></li>
+                <li><a href="{% url "layer_browse_category" category.slug %}"{% ifequal layer_category category %} class="active"{% endifequal %}>{{ category }}
+                {% if category.layer_set.count > 0 %}({{ category.layer_set.count }}){% endif %}
+                </a></li>
                 {% endfor %}
               </ul>
             </nav>

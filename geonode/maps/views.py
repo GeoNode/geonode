@@ -228,7 +228,7 @@ def map_view(request, mapid, template='maps/map_view.html'):
 
 def map_view_js(request, mapid):
     map_obj = _resolve_map(request, mapid, 'maps.view_map')
-    config = map.viewer_json()
+    config = map_obj.viewer_json()
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 def map_json(request, mapid):
