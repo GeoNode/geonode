@@ -18,9 +18,11 @@ pushd tmp
 
 GIT_REV=$(git log -1 --pretty=format:%h)
 
+mvn clean install
+
 # Build for launchpad
 debuild -S
-dput ppa:geonode/unstable ../geoserver-geonode_2.0_source.changes
+dput ppa:geonode/snapshots ../geoserver-geonode_*_source.changes
 rm ../geoserver-geonode*
 
 # Re-build local debs
