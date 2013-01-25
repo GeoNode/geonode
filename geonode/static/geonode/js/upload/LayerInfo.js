@@ -187,13 +187,19 @@ define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, uploa
       We need to add a step for the srs url and then the final
 
      */
-
     LayerInfo.prototype.doFinal = function (resp) {
         var self = this;
         make_request({
             url: resp.redirect_to,
             failure: function (resp, status) {self.markError(resp); },
-            success: function (resp, status) {window.location = resp.url; },
+            success: function (resp, status) {
+                // hack find a better way of creating a string
+                var a = '<a href="' + resp.url + '">Layer page</a>';
+                self.logStatus({
+                    msg: '<p> Your layer was successful uploaded, please visit the ' + a + ' page </p>',
+                    level: 'alert-success'
+                });
+            },
         });
     };
 
