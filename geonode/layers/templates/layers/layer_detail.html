@@ -183,41 +183,21 @@
     </div>
     {% endif %}
     <div class="well">
-      {% with layer.owner as owner %}
-          {% include "people/_profile_about_item.html" %}
+      <h2>{% trans "About" %}</h2>
+      {% trans "Layer Owner" %}
+      {% with layer.owner.profile as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
+      {% trans "Point of Contact" %}
+      {% with layer.poc as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
+      {% trans "Metadata Author" %}
+      {% with layer.metadata_author as profile %}
+        {% include "people/_profile_about_item.html" %}
       {% endwith %}
     </div>
   </aside>
-<div class="modal custom hide" id="download-layer">
-    <div class="modal-header">
-      <button class="close" data-dismiss="modal">×</button>
-      <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
-    </div>
-    <div class="modal-body">
-      <p></p>
-    </div>
-    <div class="modal-footer">
-      <div class="span2 offset1">
-        <ul class="unstyled">
-          <li><a href="#">Zipped Shapefile</a></li>
-          <li><a href="#">JPEG</a></li>
-          <li><a href="#">GML 2.0</a></li>
-          <li><a href="#">PDF</a></li>
-          <li><a href="#">GML 3.1.1</a></li>
-          <li><a href="#">PNG</a></li>
-        </ul>
-      </div>
-      <div class="span2">
-        <ul class="unstyled">
-          <li><a href="#">CSV</a></li>
-          <li><a href="#">KML</a></li>
-          <li><a href="#">Excel</a></li>
-          <li><a href="#">GeoJSON</a></li>
-          <li><a href="#">{% trans "View in Google Earth" %}</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
   {% include "_permissions_form.html" %}
 {% endblock %}
 {% block extra_script %}
@@ -241,7 +221,7 @@
             half: true,
             readOnly: true,
             start: $('div.overall_rating').data('rating'),
-            path: "{{ STATIC_URL }}libs/agon_ratings/img/"
+            path: "{{ STATIC_URL }}agon_ratings/img/"
         });
     });
     </script>

@@ -3,11 +3,14 @@
 {% load i18n %}
 
 <section class="last">
-    <h2>{% trans "About the Layer Owner" %}</h2>
-    <a href="{% url profile_detail owner.get_profile.user.username %}">{% avatar owner.get_profile.user 80 %}</a>
-    <h4><a href="{{ owner.get_profile.get_absolute_url }}">{{ owner.get_profile.name|default:owner }}</a></h4>
-    <p class="clear"></p>
-    <a href="{% url profile_detail owner.get_profile.user.username %}" class="read-more">
-        {% trans "Read more about the owner" %}
+    {% if profile.user %}
+    <a href="{% url profile_detail profile.user.username %}">{% avatar profile.user 80 %}</a>
+    <h4><a href="{{ profile.get_absolute_url }}">{{ profile.name }}</a></h4>
+    <a href="{% url profile_detail profile.user.username %}" class="read-more">
+      {% trans "Read more about " %}{{ profile.name }}
     </a>
+    {% else %}
+      <p>{{ profile.name }}</p>
+      <p>{{ profile.organization }}</p>
+    {% endif %}
 </section>
