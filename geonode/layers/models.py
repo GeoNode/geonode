@@ -683,6 +683,8 @@ def geoserver_post_save(instance, sender, **kwargs):
     elif instance.storeType == 'coverageStore':
         #FIXME(Ariel): This works for public layers, does it work for restricted too?
         # would those end up with no geotiff links, like, forever?
+        pass
+        """
         links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename)
         for ext, name, mime, wcs_url in links:
             instance.link_set.get_or_create(url=wcs_url,
@@ -693,7 +695,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                 link_type='data',
                                 )
                                )
-
+        """
 
     kml_reflector_link_download = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
         'layers': instance.typename,

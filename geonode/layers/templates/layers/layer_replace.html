@@ -101,6 +101,12 @@
         });
         form_fields = [layer_name, base_file];
       }
+      
+      form_fields.push({
+              xtype: "hidden",
+              name: "csrfmiddlewaretoken",
+              value: "{{ csrf_token }}"
+          });
 
       var fp = new Ext.FormPanel({
         renderTo: 'upload_form',

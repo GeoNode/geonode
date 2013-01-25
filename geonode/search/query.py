@@ -102,8 +102,11 @@ class Query(object):
         self.type = filters.get('type')
         self.owner = filters.get('owner')
         self.kw = filters.get('kw')
+        self.exclude = filters.get('exclude')
         if self.kw:
             self.kw = tuple(self.kw.split(','))
+        if self.exclude:
+            self.exclude = tuple(self.exclude.split(','))
 
         val = filters['period']
         self.period = tuple(val.split(',')) if val else None
@@ -113,9 +116,10 @@ class Query(object):
         if start_date or end_date:
             if self.period:
                 raise BadQuery('period and start/end both provided')
-            if len(start_date) == 10 and len(start_date) == 10:
-                #if the date is in the format 'yyyy-mm-dd' make it iso format
+            #if the date is in the format 'yyyy-mm-dd' make it iso format
+            if len(start_date) == 10:   
                 start_date += 'T00:00:00Z'
+            if len(end_date) == 10:
                 end_date += 'T00:00:00Z'
             self.period = (start_date, end_date)
 
@@ -191,7 +195,8 @@ def query_from_request(request, extra):
             'alphaaz' : ('title',True),
             'alphaza' : ('title',False),
             'popularity' : ('rank',False),
-            'rel' : ('relevance',False)
+            'rel' : ('relevance',False),
+            'none' : (None,False)
         }
         try:
             sort_field, sort_asc = sorts[params.get('sort','newest')]

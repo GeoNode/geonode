@@ -21,7 +21,7 @@
       <section class="selections">
         <h4>
           {% trans "Your selections" %}
-          <a href="#" class="pull-right">Clear all</a>
+          <a href="#" id="clear-search" class="pull-right">Clear all</a>
         </h4>
         <ul class="unstyled">
         </ul>
@@ -55,26 +55,26 @@
                     <input type="checkbox" /> Documents <span>(<span class="count">0</span>)</span>
                   </label>
                   {% endif %}
-                  <label class="checkbox" data-class="feed">
+                  <!--<label class="checkbox" data-class="feed">
                     <input type="checkbox" /> Feeds <span>(<span class="count">0</span>)</span>
-                  </label>
+                  </label>-->
                   <label class="checkbox" data-class="owner">
                     <input type="checkbox" /> Users <span>(<span class="count">0</span>)</span>
                   </label>
-                  <label class="checkbox" data-class="group">
+                  <!--<label class="checkbox" data-class="group">
                     <input type="checkbox" /> Groups <span>(<span class="count">0</span>)</span>
-                  </label>
+                  </label>-->
                 </form>
             </div>
         </section>
 
-        <section>
+        <!--<section>
           <header>
               <h4>
                   <a href="#filter2" class="expand-content" data-toggle="collapse">Spatial Extent <i class="icon-chevron-right pull-right"></i></a>
               </h4>
           </header>
-        </section>
+        </section>-->
 
         <section>
             <header>
@@ -128,7 +128,7 @@
             </div>
         </section>
 
-        <section>
+        <!--<section>
             <header>
                 <h4>
                     <a href="#filter6" class="expand-content" data-toggle="collapse">Metadata Date <i class="icon-chevron-right pull-right"></i></a>
@@ -137,7 +137,7 @@
             <div id="filter6" class="collapse">
               <p>Metadata Date</p>
             </div>
-        </section>
+        </section>-->
       </div>
     </div>
   </aside>
@@ -167,6 +167,7 @@
         <select name="" id="id_sorting" class="span1">
           <option value="modified">Newest</option>
           <option value="popular">Popular</option>
+          <option value="relevance">Relevance</option>
           <option value="alphaaz">A-Z</option>
           <option value="alphaza">Z-A</option>
         </select>
@@ -180,35 +181,6 @@
 
     {# {% include "_pagination.html" %} #}
 
-  </div>
-<div class="modal custom hide" id="download-layer">
-    <div class="modal-header">
-      <button class="close" data-dismiss="modal">×</button>
-      <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
-    </div>
-    <div class="modal-body">
-    </div>
-    <div class="modal-footer">
-      <div class="span2 offset1">
-        <ul class="unstyled">
-          <li><a href="#">Zipped Shapefile</a></li>
-          <li><a href="#">JPEG</a></li>
-          <li><a href="#">GML 2.0</a></li>
-          <li><a href="#">PDF</a></li>
-          <li><a href="#">GML 3.1.1</a></li>
-          <li><a href="#">PNG</a></li>
-        </ul>
-      </div>
-      <div class="span2">
-        <ul class="unstyled">
-          <li><a href="#">CSV</a></li>
-          <li><a href="#">KML</a></li>
-          <li><a href="#">Excel</a></li>
-          <li><a href="#">GeoJSON</a></li>
-          <li><a href="#">View in Google Earth</a></li>
-        </ul>
-      </div>
-    </div>
   </div>
 
 {% endblock %}

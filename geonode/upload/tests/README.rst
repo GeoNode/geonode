@@ -9,7 +9,7 @@ Run geoserver. Make sure that geonode.upload is in INSTALLED_APPS:
 
 While geoserver is running, run tests:
 
-  REUSE_DB=1 python manage.py test geonode.upload.integrationtests
+  REUSE_DB=1 python manage.py test geonode.upload.tests.integration
 
 These tests will internally run a django server and modify the settings as
 needed to adjust differences in configuration.
