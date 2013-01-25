@@ -352,13 +352,13 @@ class UploaderBase(TestCase):
             self.assertEquals(current_step, upload_step('final'))
             resp = self.client.get(current_step)
 
+        self.assertEquals(resp.code, 200)
+        url = json.loads(resp.read())['url']
         # and the final page should redirect to tha layer page
         # @todo - make the check match completely (endswith at least)
         # currently working around potential 'orphaned' db tables
-        self.assertTrue(layer_name in resp.geturl())
-        self.assertEquals(resp.code, 200)
-
-        return resp.geturl()
+        self.assertTrue(layer_name in url, 'expected %s in URL, got %s' % (layer_name, url))
+        return url
 
     def check_upload_model(self, original_name):
         # we can only test this if we're using the same DB as the test instance
@@ -543,11 +543,12 @@ class TestUploadDBDataStore(TestUpload):
         form_data = dict(lat='lat', lng='lon', csrfmiddlewaretoken=self.client.get_crsf_token())
         resp = self.client.make_request(csv_step, form_data)
 
-        self.assertTrue(resp.geturl().endswith(layer_name),
-            'expected url to end with %s, but got %s' % (layer_name, resp.geturl()))
+        url = json.loads(resp.read())['url']
+        self.assertTrue(url.endswith(layer_name),
+            'expected url to end with %s, but got %s' % (layer_name, url))
         self.assertEquals(resp.code, 200)
 
-        self.check_layer_complete(resp.geturl(), layer_name)
+        self.check_layer_complete(url, layer_name)
 
     def test_time(self):
         """Verify that uploading time based csv files works properly"""
@@ -572,11 +573,12 @@ class TestUploadDBDataStore(TestUpload):
                     )
         resp = self.client.make_request(upload_step('time'), data)
 
-        self.assertTrue(resp.geturl().endswith(layer_name),
-            'expected url to end with %s, but got %s' % (layer_name, resp.geturl()))
+        url = json.loads(resp.read())['url']
+        self.assertTrue(url.endswith(layer_name),
+            'expected url to end with %s, but got %s' % (layer_name, url))
         self.assertEquals(resp.code, 200)
 
-        self.check_layer_complete(resp.geturl(), layer_name)
+        self.check_layer_complete(url, layer_name)
         # verify our 100 timestamps appear in the WMS caps doc
         wms = get_wms(layer_name=layer_name)
         layer_info = wms.items()[0][1]
