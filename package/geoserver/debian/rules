@@ -12,10 +12,6 @@
 %:
 	dh $@ 
 
-build:
-	# build geoserver with exts
-	mvn clean install -s ./debian/mvn_settings.xml
-
 install:
 	dh_testdir
 	dh_testroot
@@ -32,7 +28,7 @@ install:
 	mkdir -p $(CURDIR)/debian/geoserver-geonode-suite/usr/share/opengeo-suite/geoserver/WEB-INF/lib/
 	unzip $(CURDIR)/target/geonode-geoserver-ext-0.3-geoserver-plugin.zip -d $(CURDIR)/debian/geoserver-geonode-suite/usr/share/opengeo-suite/geoserver/WEB-INF/lib/
 
-binary-indep: build install
+binary-indep: install
 
 binary-arch: install
 	dh_testdir
