@@ -1,7 +1,8 @@
 package org.geonode.security;
 
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.providers.AbstractAuthenticationToken;
+import java.util.Collection;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 public class GeoNodeSessionAuthToken extends AbstractAuthenticationToken {
 
@@ -10,12 +11,12 @@ public class GeoNodeSessionAuthToken extends AbstractAuthenticationToken {
      */
     private static final long serialVersionUID = -3781584924355064548L;
 
-    private Object principal;
+    private final Object principal;
 
-    private Object credentials;
+    private final Object credentials;
 
     public GeoNodeSessionAuthToken(Object principal, Object credentials,
-            GrantedAuthority[] authorities) {
+            Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         super.setAuthenticated(true);
         this.principal = principal;

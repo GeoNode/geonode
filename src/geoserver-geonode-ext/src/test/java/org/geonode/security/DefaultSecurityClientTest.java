@@ -4,24 +4,19 @@
  */
 package org.geonode.security;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
-import javax.servlet.ServletContext;
-
-import junit.framework.TestCase;
-
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
 import org.apache.commons.codec.binary.Base64;
 import org.easymock.classextension.EasyMock;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
-
-import com.mockrunner.mock.web.MockServletContext;
+import org.geoserver.security.GeoServerSecurityTestSupport;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * Unit test suite for {@link DefaultSecurityClient}
@@ -29,36 +24,24 @@ import com.mockrunner.mock.web.MockServletContext;
  * @author groldan
  * 
  */
-public class DefaultSecurityClientTest extends TestCase {
+public class DefaultSecurityClientTest extends GeoServerSecurityTestSupport {
 
     private HTTPClient mockHttpClient;
 
     private DefaultSecurityClient client;
 
     @Override
-    public void setUp() {
+    protected void setUpInternal() throws Exception {
+        super.setUpInternal();
         mockHttpClient = EasyMock.createNiceMock(HTTPClient.class);
-        client = new DefaultSecurityClient(mockHttpClient);
-        client.setApplicationContext(null);
+        client = new DefaultSecurityClient("http://localhost:8000/", mockHttpClient);
     }
 
     public void testSetApplicationContext() throws Exception {
         final String baseUrl = "http://127.0.0.1/fake";
+        DefaultSecurityClient client2 = new DefaultSecurityClient(baseUrl, mockHttpClient);
 
-        final MockServletContext mockServletContext = new MockServletContext();
-        mockServletContext.setInitParameter("GEONODE_BASE_URL", baseUrl);
-        WebApplicationContext appCtx = new XmlWebApplicationContext() {
-            @Override
-            public ServletContext getServletContext() {
-                return mockServletContext;
-            }
-        };
-
-        client.setApplicationContext(null);
-        assertEquals("http://localhost:8000/", client.getBaseUrl());
-
-        client.setApplicationContext(appCtx);
-        assertEquals(baseUrl + "/", client.getBaseUrl());
+        assertEquals(baseUrl, client2.getBaseUrl());
     }
 
     public void testAuthenticateAnonymous() throws Exception {
@@ -76,18 +59,19 @@ public class DefaultSecurityClientTest extends TestCase {
         assertTrue(authentication.isAuthenticated());
         assertEquals("anonymous", authentication.getPrincipal());
 
-        GrantedAuthority[] authorities = authentication.getAuthorities();
-        assertEquals(3, authorities.length);
-        assertTrue(authorities[0] instanceof LayersGrantedAuthority);
-        assertEquals(LayerMode.READ_ONLY, ((LayersGrantedAuthority) authorities[0]).getAccessMode());
-        assertEquals(0, ((LayersGrantedAuthority) authorities[0]).getLayerNames().size());
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        authorities.addAll(authentication.getAuthorities());
+        assertEquals(3, authorities.size());
+        assertTrue(authorities.get(0) instanceof LayersGrantedAuthority);
+        assertEquals(LayerMode.READ_ONLY, ((LayersGrantedAuthority) authorities.get(0)).getAccessMode());
+        assertEquals(0, ((LayersGrantedAuthority) authorities.get(0)).getLayerNames().size());
 
         assertEquals(LayerMode.READ_WRITE,
-                ((LayersGrantedAuthority) authorities[1]).getAccessMode());
-        assertEquals(0, ((LayersGrantedAuthority) authorities[1]).getLayerNames().size());
+                ((LayersGrantedAuthority) authorities.get(1)).getAccessMode());
+        assertEquals(0, ((LayersGrantedAuthority) authorities.get(1)).getLayerNames().size());
 
-        assertTrue(authorities[2] instanceof GrantedAuthority);
-        assertEquals("ROLE_ANONYMOUS", authorities[2].getAuthority());
+        assertTrue(authorities.get(2) instanceof GrantedAuthority);
+        assertEquals("ROLE_ANONYMOUS", authorities.get(2).getAuthority());
 
     }
 
@@ -111,20 +95,21 @@ public class DefaultSecurityClientTest extends TestCase {
         assertTrue(authentication.isAuthenticated());
         assertEquals("aang", authentication.getPrincipal());
 
-        GrantedAuthority[] authorities = authentication.getAuthorities();
-        assertEquals(3, authorities.length);
-        assertTrue(authorities[0] instanceof LayersGrantedAuthority);
-        assertEquals(LayerMode.READ_ONLY, ((LayersGrantedAuthority) authorities[0]).getAccessMode());
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        authorities.addAll(authentication.getAuthorities());
+        assertEquals(5, authorities.size());
+        assertTrue(authorities.get(0) instanceof LayersGrantedAuthority);
+        assertEquals(LayerMode.READ_ONLY, ((LayersGrantedAuthority) authorities.get(0)).getAccessMode());
         assertEquals(Collections.singletonList("layer3"),
-                ((LayersGrantedAuthority) authorities[0]).getLayerNames());
+                ((LayersGrantedAuthority) authorities.get(0)).getLayerNames());
 
         assertEquals(LayerMode.READ_WRITE,
-                ((LayersGrantedAuthority) authorities[1]).getAccessMode());
+                ((LayersGrantedAuthority) authorities.get(1)).getAccessMode());
         assertEquals(Arrays.asList("layer1", "layer2"),
-                ((LayersGrantedAuthority) authorities[1]).getLayerNames());
+                ((LayersGrantedAuthority) authorities.get(1)).getLayerNames());
 
-        assertTrue(authorities[2] instanceof GrantedAuthority);
-        assertEquals(GeoNodeDataAccessManager.ADMIN_ROLE, authorities[2].getAuthority());
+        assertTrue(authorities.get(2) instanceof GrantedAuthority);
+        assertTrue(authorities.contains(GeoNodeDataAccessManager.getAdminRole()));
     }
 
     public void testAuthenticateUserPassword() throws Exception {
@@ -148,17 +133,17 @@ public class DefaultSecurityClientTest extends TestCase {
         assertTrue(authentication.isAuthenticated());
         assertEquals("aang", authentication.getPrincipal());
 
-        GrantedAuthority[] authorities = authentication.getAuthorities();
-        assertEquals(2, authorities.length);
-        assertTrue(authorities[0] instanceof LayersGrantedAuthority);
-        assertEquals(LayerMode.READ_ONLY, ((LayersGrantedAuthority) authorities[0]).getAccessMode());
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        authorities.addAll(authentication.getAuthorities());
+        assertEquals(3, authorities.size());
+        assertTrue(authorities.get(0) instanceof LayersGrantedAuthority);
+        assertEquals(LayerMode.READ_ONLY, ((LayersGrantedAuthority) authorities.get(0)).getAccessMode());
         assertEquals(Arrays.asList("layer2", "layer3"),
-                ((LayersGrantedAuthority) authorities[0]).getLayerNames());
+                ((LayersGrantedAuthority) authorities.get(0)).getLayerNames());
 
         assertEquals(LayerMode.READ_WRITE,
-                ((LayersGrantedAuthority) authorities[1]).getAccessMode());
+                ((LayersGrantedAuthority) authorities.get(1)).getAccessMode());
         assertEquals(Arrays.asList("layer1"),
-                ((LayersGrantedAuthority) authorities[1]).getLayerNames());
-
+                ((LayersGrantedAuthority) authorities.get(1)).getLayerNames());
     }
 }

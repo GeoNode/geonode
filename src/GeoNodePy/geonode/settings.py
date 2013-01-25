@@ -284,13 +284,13 @@ SITEURL = "http://localhost:8000/"
 # GeoServer information
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://localhost:8001/geoserver/"
+GEOSERVER_BASE_URL = "http://localhost:8080/geoserver/"
 
 # The username and password for a user that can add and edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "geoserver_admin", SECRET_KEY
 
 # The FULLY QUALIFIED url to the GeoNetwork instance for this GeoNode
-GEONETWORK_BASE_URL = "http://localhost:8001/geonetwork/"
+GEONETWORK_BASE_URL = "http://localhost:8080/geonetwork/"
 
 # The username and password for a user with write access to GeoNetwork
 GEONETWORK_CREDENTIALS = "admin", "admin"
@@ -326,6 +326,7 @@ DEFAULT_LAYER_SOURCE = {
 REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 30
 SERVE_MEDIA = DEBUG;
+
 
 MAP_BASELAYERS = [
  {

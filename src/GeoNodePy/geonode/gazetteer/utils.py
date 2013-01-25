@@ -14,7 +14,6 @@ from geonode.maps.models import Layer, LayerAttribute, MapLayer, Map
 from django.core.cache import cache
 
 
-
 GAZETTEER_TABLE = 'gazetteer_gazetteerentry'
 
 __author__ = 'mbertrand'

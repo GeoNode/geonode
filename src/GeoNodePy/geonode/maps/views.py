@@ -1444,6 +1444,7 @@ def layer_acls(request):
     # the layer_acls view supports basic auth, and a special
     # user which represents the geoserver administrator that
     # is not present in django.
+    logger.info("WTF is this still used?")
     acl_user = request.user
     if 'HTTP_AUTHORIZATION' in request.META:
         try:
@@ -1456,11 +1457,11 @@ def layer_acls(request):
                 password == settings.GEOSERVER_CREDENTIALS[1]):
                 # great, tell geoserver it's an admin.
                 result = {
-                   'rw': [],
-                   'ro': [],
-                   'name': username,
-                   'is_superuser':  True,
-                   'is_anonymous': False
+                    'rw': [],
+                    'ro': [],
+                    'name': username,
+                    'is_superuser':  True,
+                    'is_anonymous': False
                 }
                 return HttpResponse(json.dumps(result), mimetype="application/json")
         except Exception:
@@ -1468,17 +1469,15 @@ def layer_acls(request):
 
         if acl_user is None:
             return HttpResponse(_("Bad HTTP Authorization Credentials."),
-                                status=401,
-                                mimetype="text/plain")
-
-
+                status=401,
+                mimetype="text/plain")
     all_readable = set()
     all_writable = set()
     for bck in get_auth_backends():
         if hasattr(bck, 'objects_with_perm'):
             all_readable.update(bck.objects_with_perm(acl_user,
-                                                      'maps.view_layer',
-                                                      Layer))
+                'maps.view_layer',
+                Layer))
             all_writable.update(bck.objects_with_perm(acl_user,
                                                       'maps.change_layer',
                                                       Layer))
@@ -1497,6 +1496,7 @@ def layer_acls(request):
     }
 
     return HttpResponse(json.dumps(result), mimetype="application/json")
+
 
 
 def _split_query(query):
@@ -2266,6 +2266,7 @@ def addLayerJSON(request):
     logger.debug("Enter addLayerJSON")
     layername = request.POST.get('layername', False)
     logger.debug("layername is [%s]", layername)
+    
     if layername:
         try:
             layer = Layer.objects.get(typename=layername)
@@ -2312,7 +2313,6 @@ def ajax_layer_update(request, layername):
 def ajax_map_edit_check_permissions(request, mapid):
     mapeditlevel = 'None'
     if not request.user.has_perm("maps.change_map_permissions", obj=map):
-
         return HttpResponse(
             'You are not allowed to change permissions for this map',
             status=401,

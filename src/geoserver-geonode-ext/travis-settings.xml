@@ -1,0 +1,10 @@
+<settings>
+ <mirrors>
+  <mirror>
+   <id>travis</id>
+   <name>OpenGeo Travis Mirror</name>
+   <url>http://maven.mirrors.travis-ci.org/nexus/content/repositories/opengeo</url>
+   <mirrorOf>opengeo</mirrorOf>
+  </mirror>
+ </mirrors>
+</settings>
