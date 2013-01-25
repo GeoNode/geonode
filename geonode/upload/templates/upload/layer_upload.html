@@ -125,6 +125,30 @@
 {% if enough_storage %}
 <h3>{%trans "Permissions"  %}</h3>
 
-<div id="permissions_form"></div>
+<div id="permissions_form">
+
+  <form>
+
+    <label>{% trans "View Layer" %}</label>
+    <select>
+      <option>{% trans "Any Registered User" %}</option>
+      <option></option>
+    </select>
+
+    <label>{% trans "Download Layer" %}</label>
+    <select>
+      <option>{% trans "Any Registered User" %}</option>
+    </select>
+
+    <label>{% trans "Edit layer" %}</label>
+    <select>
+      <option>{% trans "Only the following groups"%}</option>
+    </select>
+
+
+  </form>
+
+</div>
+
 {% endif %}
 {% endblock %}
