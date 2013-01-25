@@ -80,4 +80,4 @@ def user_post_save(sender, **kwargs):
     """
     user, created = kwargs["instance"], kwargs["created"]
     if created:
-        profile=Profile.objects.create(user=user, name=user.username, email=user.email)
+        Profile.objects.create(user=user, name=user.username, email=user.email)
