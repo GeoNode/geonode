@@ -39,8 +39,9 @@
               </li>
               {% for category in category_list %}
                 <li>
-                  <a href="{% url "maps_browse_category" category.slug %}"{% ifequal map_category category %} class="active"{% endifequal %}>{{ category }}</a>
-                </li>
+                  <a href="{% url "maps_browse_category" category.slug %}"{% ifequal map_category category %} class="active"{% endifequal %}>{{ category }}
+                  {% if category.map_set.count > 0 %}({{ category.map_set.count }}){% endif %}
+                </a></li>
               {% endfor %}
             </ul>
           </nav>
