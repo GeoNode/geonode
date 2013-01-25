@@ -58,6 +58,15 @@ cp -R coverage integration-coverage
 #cp coverage.xml csw-coverage.xml
 #cp coverage -R csw-coverage
 
+# Run the uploader integration tests
+cp /var/lib/jenkins/local_settings_db_datastore.py geonode/upload/tests/local_settings.py
+paver start_geoserver
+sleep 60
+DELETE_LAYERS= REUSE_DB=1 DJANGO_SETTINGS_MODULE=geonode.upload.tests.test_settings python manage.py test geonode.upload.tests.integration
+cp TEST-nose.xml upload-TEST-nose.xml
+cp coverage.xml upload-coverage.xml
+cp coverage -R upload-coverage
+
 # Run the javascript tests 
 paver test_javascript
 

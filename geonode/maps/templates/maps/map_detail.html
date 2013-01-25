@@ -22,6 +22,22 @@
   </div>
   <div class="span12  action-group">
     <div class="hd-actions pull-right">
+      {% has_obj_perm user map "map.change_map" as can_edit_map %}
+      {% if can_edit_map %}
+      <div class="btn-group pull-right">
+        <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
+          {% trans "Edit Map" %}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <!--li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li-->
+          <li><a href="{% url "map_metadata" map.id %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
+          <!--li><a href="{% url "layer_style" layer.typename %}">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li-->
+          <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+          <li><a href="{% url "map_remove" map.id %}">{% trans "Remove this Map" %} <i class="icon-chevron-right"></i></a></li>
+        </ul>
+      </div>
+      {% endif %}
       <div class="btn-group">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
           {% trans "Download Map" %}
@@ -121,10 +137,12 @@
     <div class='well'>
         <h2>{% trans "Copy this map" %}</h2>
         <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
-        <a href="{% url "new_map" %}" class="btn btn-large">{% trans "Create a New Map" %}</a>
+        <a href="{% url "new_map" %}?copy={{ map.id }}" class="btn btn-large">{% trans "Create a New Map" %}</a>
     </div>
     <div class="well last">
-      {% with map.owner as owner %}
+    <h2>{% trans "About" %}</h2>
+    {% trans "Map Owner" %}
+      {% with map.owner.profile as profile %}
         {% include "people/_profile_about_item.html" %} 
       {% endwith %}
     </div>
