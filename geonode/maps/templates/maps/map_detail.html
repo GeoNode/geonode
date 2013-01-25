@@ -124,7 +124,9 @@
         <a href="{% url "new_map" %}" class="btn btn-large">{% trans "Create a New Map" %}</a>
     </div>
     <div class="well last">
-      {% with map.owner as owner %}
+    <h2>{% trans "About" %}</h2>
+    {% trans "Map Owner" %}
+      {% with map.owner.profile as profile %}
         {% include "people/_profile_about_item.html" %} 
       {% endwith %}
     </div>
