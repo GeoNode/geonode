@@ -540,6 +540,7 @@ def set_map_permissions(m, perm_spec, use_email = False):
             user = User.objects.get(username=username)
             m.set_user_level(user, level)
 
+
 def ajax_layer_permissions(request, layername, use_email=False):
     layer = get_object_or_404(Layer, typename=layername)
 
@@ -825,9 +826,10 @@ def tweetview(request):
         geops_ip = request.GET["geopsip"]
 
     try:
-        testUrl = "http://" +  geops_ip  + "/?LAYERS=point&TRANSPARENT=TRUE&FORMAT=image%2Fpng&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&RND=0.7935556590091437&SQL=SELECT%20goog_x%2C%20goog_y%2C%20%20tweet_text%20%20from%20oct_tweets%20WHERE%20time%20%3E%201354300501%20AND%20time%20%3C%201354905302&RADIUS=1&R=0&G=0&B=255&NUM_REQUESTS=1&_OLSALT=0.731751827057451&SRS=EPSG%3A900913&BBOX=-16280475.52625,-4924280.9318723,16280475.52625,4924280.9318723&WIDTH=1664&HEIGHT=503"
+        conn = httplib2.Http(timeout=10)
+        testUrl = "http://" +  settings.GEOPS_IP  + "/?LAYERS=point&TRANSPARENT=TRUE&FORMAT=image%2Fpng&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&RND=0.7935556590091437&SQL=SELECT%20goog_x%2C%20goog_y%2C%20%20tweet_text%20%20from%20oct_tweets%20WHERE%20time%20%3E%201354300501%20AND%20time%20%3C%201354905302&RADIUS=1&R=0&G=0&B=255&NUM_REQUESTS=1&_OLSALT=0.731751827057451&SRS=EPSG%3A900913&BBOX=-16280475.52625,-4924280.9318723,16280475.52625,4924280.9318723&WIDTH=1664&HEIGHT=503"
         #testUrl = "http://worldmap.harvard.edu"
-        resp, content = h.request(testUrl, 'GET')
+        resp, content = conn.request(testUrl, 'GET')
     except:
         redirectPage = "maps/tweetstartup.html"
 
@@ -1403,6 +1405,34 @@ def _get_basic_auth_info(request):
         raise ValueError
     username, password = base64.b64decode(auth).split(':')
     return username, password
+
+def resolve_user(request):
+    user = None
+    geoserver = False
+    superuser = False
+    logger.info("getting user")
+    if 'HTTP_AUTHORIZATION' in request.META:
+        username, password = _get_basic_auth_info(request)
+        logger.info("%s:%s",username,password)
+        acl_user = authenticate(username=username, password=password)
+        if acl_user:
+            user = acl_user.username
+            superuser = acl_user.is_superuser
+            logger.info("acluser:%s",user)
+        elif _get_basic_auth_info(request) == settings.GEOSERVER_CREDENTIALS:
+            geoserver = True
+            superuser = True
+            logger.info("geoserver")
+    elif not request.user.is_anonymous():
+        user = request.user.username
+        superuser = request.user.is_superuser
+        logger.info("not anon:%s",user)
+    return HttpResponse(json.dumps({
+        'user' : user,
+        'geoserver' : geoserver,
+        'superuser' : superuser
+    }))
+
 
 def layer_acls(request):
     """

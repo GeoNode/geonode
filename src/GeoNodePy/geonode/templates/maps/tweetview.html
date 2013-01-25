@@ -187,6 +187,7 @@ OpenLayers.Layer.Grid.prototype.initSingleTile = function (bounds) {
 
 
 var app;
+var geopsip = "{{GEOPS_IP}}"
 var init = function () {
     {% autoescape off %}
     var config = Ext.apply({
@@ -306,6 +307,8 @@ var is_authorized = "{{tweetdownload}}";
 
 var updateCQL = function (layers) {
 
+	
+	
     if (Math.floor(tweetDateEndField.getValue().getTime()) >= Math.floor(firstEndDate)) {
         var rightNow = new Date();
         tweetDateEndField.setValue(rightNow);
@@ -332,7 +335,8 @@ var updateCQL = function (layers) {
 
         layer.getLayer().params["RND"] = randomNum;
 
-        if (layer.get("name") == "heatmap") {
+        if (layer.get("name").indexOf("heatmap") > -1) {
+        	layer.getLayer().params["LAYERS"] = Ext.getCmp("lsh_checkbox").checked ? "lsh_heatmap" : "heatmap";
             layer["cql_filter"] = startFilter + keywordFilter + fromFilter + " WHERE " + timeFilter;
             layer.getLayer().params["SQL"] = layer["cql_filter"];
             layer.getLayer().params["BLUR"] = Ext.getCmp("slider_blur").value;
@@ -346,6 +350,7 @@ var updateCQL = function (layers) {
             }
 
         } else {
+        	layer.getLayer().params["LAYERS"] = Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point";
             layer["cql_filter"] = startFilter + " tweet_text " + fromFilter + " WHERE " + timeFilter + (keywords ? " AND " + keywordFilter : "");
             layer.getLayer().params["SQL"] = layer["cql_filter"];
             layer.getLayer().params["RADIUS"] = 1;
@@ -377,6 +382,7 @@ function getUrlParams(url) {
 
 var getDownloadLink = function () {
     var params = getUrlParams(tweetPointRecord.getLayer().grid[0][0].url);
+    var layerName = Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point";
     return "/tweetDownload/?LAYERS=POINT&SQL=" + params.SQL.replace(/goog_x%2C(%20)+goog_y%2C(%20)+tweet_text/g, "lat%2C%20lon%2C%20sender_name%2C%20time%2C%20tweet_id%2C%20tweet_text") + "&BBOX=" + params.BBOX;
 }
 
@@ -454,7 +460,7 @@ var cqlOverlay = new Ext.FormPanel({
         msgTarget:'side'
     },
     width:600,
-    height:140,
+    height:160,
     layout:"fit",
     items:[
         {
@@ -542,6 +548,17 @@ var cqlOverlay = new Ext.FormPanel({
                     items:[
                         {xtype:"container",
                             html:"<div style='padding-bottom:10px;'></div>"},
+                            {
+                                xtype:"checkbox",
+                                id:"lsh_checkbox",
+                                boxLabel:"LSH Matching",
+                                style:"display:inline-block;",
+                                checked:false,
+                                hidden: (geopsip !== "geops.csail.mit.edu:8080"),
+                                listeners:{
+                                	"check":updateLayer
+                                }
+                            },
                         {
                             xtype:"checkbox",
                             id:"auto_max_checkbox",
@@ -651,7 +668,7 @@ tweetPointRecord.set("name", "point");
 tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
         "Tweets",
         tweetConfig.url, {
-            layers:"point",
+            layers: Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point",
             transparent:"transparent" in tweetConfig ? tweetConfig.transparent : true,
             format:tweetConfig.format,
             tiled:false
@@ -688,7 +705,7 @@ var tweetHeatRecord = feedSource.createLazyLayerRecord(tweetConfig);
 tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
         "Tweet Heatmap",
         tweetConfig.url, {
-            layers:'heatmap',
+            layers: Ext.getCmp("lsh_checkbox").checked ? "lsh_heatmap" : 'heatmap',
             transparent:"transparent" in tweetConfig ? tweetConfig.transparent : true,
             format:tweetConfig.format,
             tiled:false
