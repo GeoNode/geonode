@@ -16,13 +16,19 @@ git clone $GEOSERVER_EXT_GIT tmp
 cp -r debian tmp
 pushd tmp
 
+git config user.email "mweisman@opengeo.org"
+git config user.name "Michael Weisman"
+
 GIT_REV=$(git log -1 --pretty=format:%h)
+
+DEB_VERSION=2.0+$(date +"%Y%m%d%H%M")
 
 mvn clean install
 
 # Build for launchpad
+git-dch --spawn-editor=snapshot --new-version=$DEB_VERSION --git-author --id-length=6 --ignore-branch  --auto --release
 debuild -S
-dput ppa:geonode/snapshots ../geoserver-geonode_*_source.changes
+dput ppa:geonode/snapshots ../geoserver-geonode_${DEB_VERSION}_source.changes
 rm ../geoserver-geonode*
 
 # Re-build local debs
