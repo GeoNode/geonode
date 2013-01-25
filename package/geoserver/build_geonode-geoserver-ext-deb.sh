@@ -21,7 +21,7 @@ git config user.name "Michael Weisman"
 
 GIT_REV=$(git log -1 --pretty=format:%h)
 
-DEB_VERSION=2.2+$(date +"%Y%m%d%H%M")
+DEB_VERSION=2.0+$(date +"%Y%m%d%H%M")
 
 mvn clean install
 
