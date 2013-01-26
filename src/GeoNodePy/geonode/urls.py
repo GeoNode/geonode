@@ -30,7 +30,7 @@ urlpatterns = patterns('',
                 {'template': 'help.html'}, name='help'),
     url(r'^developer/$', 'django.views.generic.simple.direct_to_template',
                 {'template': 'developer.html'}, name='dev'),
-    url(r'^maps\/upload_terms/$', 'django.views.generic.simple.direct_to_template',
+    url(r'^upload_terms/$', 'django.views.generic.simple.direct_to_template',
             {'template': 'maps/upload_terms.html'}, name='upload_terms'),
      # Data views
     (r'^data/', include(geonode.maps.urls.datapatterns)),
