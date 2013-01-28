@@ -10,7 +10,6 @@
         <th>{% trans "Type" %}</th>
         <th>{% trans "Title" %}</th>
         <th>{% trans "Date" %}</th>
-        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -19,7 +18,6 @@
           <td>{% trans "Layer" %}</td>
           <td><a href="{{ layer.get_absolute_url }}">{{ layer.title }}</a></td>
           <td>{{ layer.date|date:"Y-m-d" }}</td>
-          <td><input type="checkbox" class="asset-selector pull-right" data-id="{{ layer.id }}" data-type="layer"></td>
         </tr>
       {% endfor %}
 
@@ -28,7 +26,6 @@
           <td>{% trans "Map" %}</td>
           <td><a href="{{ map.get_absolute_url }}">{{ map.title }}</a></td>
           <td>{{ map.last_modified|date:"Y-m-d" }}</td>
-          <td><input type="checkbox" class="asset-selector pull-right" data-id="{{ map.id }}" data-type="map"></td>
         </tr>
       {% endfor %}
 
@@ -37,7 +34,6 @@
           <td>{% trans "Document" %}</td>
           <td><a href="{{ doc.get_absolute_url }}">{{ doc.title }}</a></td>
           <td>{{ doc.date|date:"Y-m-d" }}</td>
-          <td><input type="checkbox" class="asset-selector pull-right" data-id="{{ doc.id }}" data-type="document"></td>
         </tr>
       {% endfor %}
     </tbody>
