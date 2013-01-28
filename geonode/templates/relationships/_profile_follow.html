@@ -8,3 +8,11 @@
     {# they are not following them, so show a link to start following #}
     <a href="{{ profile.user|add_relationship_url:"following" }}" class="btn btn-info" type="button">Follow</a>
 {% endif_relationship %}
+
+{% if_relationship request.user profile.user "blocking" %}
+    {# they are blocking them, so show a "remove" url #}
+    <a href="{{ profile.user|remove_relationship_url:"blocking" }}" class="btn btn-info" type="button">Unblock</a>
+{% else %}
+    {# they are not blocking them, so show a link to start blocking #}
+    <a href="{{ profile.user|add_relationship_url:"blocking" }}" class="btn btn-info" type="button">Block</a>
+{% endif_relationship %}
