@@ -24,24 +24,26 @@
     <div class="modal-body">
     </div>
     <div class="modal-footer">
-      {% for link in layer.link_set.download %}
-      {% if forloop.counter0 == 0 %}
-      <div class="span2 offset1">
-        <ul class="unstyled">
+      {% if layer.link_set.download|length > 0 %}
+        {% for link in layer.link_set.download %}
+        {% if forloop.counter0 == 0 %}
+        <div class="span2 offset1">
+          <ul class="unstyled">
+              <li><a href="{{ link.url }}">{{ link.name }}</a></li>
+        {% endif %}
+        {% if forloop.counter0 >= forloop.revcounter0 and forloop.revcounter0|add:1 >= forloop.counter0 %}
+          </ul>
+        </div>
+        <div class="span2">
+          <ul class="unstyled">
             <li><a href="{{ link.url }}">{{ link.name }}</a></li>
-      {% endif %}
-      {% if forloop.counter0 >= forloop.revcounter0 and forloop.revcounter0|add:1 >= forloop.counter0 %}
+        {% else %}
+            <li><a href="{{ link.url }}">{{ link.name }}</a></li>
+        {% endif %}
+        {% endfor %} 
         </ul>
       </div>
-      <div class="span2">
-        <ul class="unstyled">
-          <li><a href="{{ link.url }}">{{ link.name }}</a></li>
-      {% else %}
-          <li><a href="{{ link.url }}">{{ link.name }}</a></li>
-      {% endif %}
-      {% endfor %}
-        </ul>
-      </div>
+    {% endif %} 
     </div>
   </div>
 </article>
