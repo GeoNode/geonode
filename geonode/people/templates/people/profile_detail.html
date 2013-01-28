@@ -4,6 +4,8 @@
 {% friendly_load i18n avatar_tags relationship_tags activity_tags %}
 
 {% block body %}
+
+  {% if profile.user.layer_set.all or profile.user.map_set.all or profile.user.document_set.all %}
   <table class="table table-striped table-bordered table-condensed">
     <thead>
       <tr>
@@ -38,6 +40,10 @@
       {% endfor %}
     </tbody>
   </table>
+  {% else %}
+    <p>No content added by {{ profile.user.username }}</p> 
+  {% endif %}
+  
   {% if user == profile.user %}
 
   {% comment %}
