@@ -1679,7 +1679,7 @@ def search_result_detail(request):
         return HttpResponse(status=404)
     rec = recs[0]
     raw_xml = csw._exml.find(nspath('MD_Metadata', namespaces['gmd']))
-    extra_links = _extract_links(raw_xml)
+    extra_links = _extract_links(rec, raw_xml)
     category = ''
 
     try:
