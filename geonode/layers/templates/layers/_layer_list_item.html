@@ -30,8 +30,7 @@
         <div class="span2 offset1">
           <ul class="unstyled">
               <li><a href="{{ link.url }}">{{ link.name }}</a></li>
-        {% endif %}
-        {% if forloop.counter0 >= forloop.revcounter0 and forloop.revcounter0|add:1 >= forloop.counter0 %}
+        {% elif forloop.counter0 >= forloop.revcounter0 and forloop.revcounter0|add:1 >= forloop.counter0 %}
           </ul>
         </div>
         <div class="span2">
