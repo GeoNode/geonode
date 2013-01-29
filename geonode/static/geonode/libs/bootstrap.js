@@ -18,7 +18,7 @@ Envjs({
 
         'qunit': function (script) {
             var count = 0,
-                junitXml = '<?xml version="1.0" encoding="UTF-8"?>\n',
+                junitXml = '',
                 module,
                 moduleStart,
                 testStart,
@@ -39,24 +39,12 @@ Envjs({
             };
 
             QUnit.moduleDone = function (context) {
-                var i, l,
-                    xml = '<testsuite ' +
-                    ' name="' + context.name +  '"' +
-                    ' errors="0" failures="' + context.failed +  '"' +
-                    ' tests="' + context.total + '"' +
+                var i, l, xml = '';
 
-                    ' time="'  + (new Date() -  moduleStart) / 1000 + '  "';
-
-
-                if (testCases.length) {
-                    xml += '>\n';
-                    for (i = 0, l = testCases.length; i < l; i += 1) {
-                        xml += testCases[i];
-                    }
-                    xml += '</testsuite>\n\n';
-                } else {
-                    xml += '/>\n\n';
+                for (i = 0, l = testCases.length; i < l; i += 1) {
+                    xml += testCases[i];
                 }
+
 
                 junitXml += xml;
             };
@@ -116,12 +104,21 @@ Envjs({
 
 
             QUnit.done = function (details) {
-                var out = new java.io.File('junit.xml'), bw;
+                var out = new java.io.File('junit.xml'), bw, header, xml;
+
+                header = '<testsuite ' +
+                    ' name="' + details.name +  '"' +
+                    ' errors="0" failures="' + testFailed +  '"' +
+                    ' tests="' + (testFailed + testPassed) + '">\n\n';
+
+
 
                 console.log('\n');
                 console.log(testPassed + ' tests passed');
                 console.log(testFailed + ' tests failed');
                 console.log('\n');
+
+                xml = '<?xml version="1.0" encoding="UTF-8"?>\n' + header + junitXml + '</testsuite>';
 
                 if (!out.exists()) {
                     out.createNewFile();
@@ -129,7 +126,7 @@ Envjs({
 
                 // really java?
                 bw = new java.io.BufferedWriter(new java.io.FileWriter(out.getAbsoluteFile()));
-                bw.write(junitXml);
+                bw.write(xml);
                 bw.close();
 
             };
