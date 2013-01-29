@@ -74,23 +74,38 @@ def profile_detail(request, username):
     qs_layers = []
     qs_maps = []
     qs_docs = []
+    content_filter = 'all'
+    sortby_field = 'date'
     if ('content' in request.GET):
       content = request.GET['content']
-      if (content == 'layers'): 
-          qs_layers = profile.user.layer_set.all()
-      if (content == 'maps'):
-          qs_maps = profile.user.map_set.all()
-      if (content == 'docs'):
-          qs_docs = profile.user.document_set.all()
-    else:
+      if content != 'all':
+          if (content == 'layers'):
+              content_filter = 'layers'
+              qs_layers = profile.user.layer_set.all()
+          if (content == 'maps'):
+              content_filter = 'maps'
+              qs_maps = profile.user.map_set.all()
+          if (content == 'docs'):
+              content_filter = 'docs'
+              qs_docs = profile.user.document_set.all()
+    if content_filter == 'all':
         qs_layers = profile.user.layer_set.all()
         qs_maps = profile.user.map_set.all()
         qs_docs = profile.user.document_set.all()
+    # chain objects
     object_list = list(chain(qs_layers, qs_maps, qs_docs))
-    object_list.sort(key=lambda x: x.date, reverse=True)
+    sortby_field = 'date'
+    if ('sortby' in request.GET):
+        sortby_field = request.GET['sortby']
+    if sortby_field == 'title':
+        object_list.sort(key=lambda x: x.title, reverse=False)
+    else:
+        object_list.sort(key=lambda x: x.date, reverse=True)
     
     return render(request, "people/profile_detail.html", {
         "profile": profile,
+        "sortby_field": sortby_field,
+        "content_filter": content_filter,
         "object_list": object_list,
     })
 
