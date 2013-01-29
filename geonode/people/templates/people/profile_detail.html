@@ -2,112 +2,96 @@
 {% load static %}
 {% load friendly_loader %}
 {% friendly_load i18n avatar_tags relationship_tags activity_tags %}
+{% load pagination_tags %}
+
+{% block title %} {% trans "Profile of " %}{{ profile.user.username }} {% endblock %}
 
 {% block body %}
 
-  {% if profile.user.layer_set.all or profile.user.map_set.all or profile.user.document_set.all %}
-  <table class="table table-striped table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>{% trans "Type" %}</th>
-        <th>{% trans "Title" %}</th>
-        <th>{% trans "Date" %}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for layer in profile.user.layer_set.all %}
-        <tr data-type="layer">
-          <td>{% trans "Layer" %}</td>
-          <td><a href="{{ layer.get_absolute_url }}">{{ layer.title }}</a></td>
-          <td>{{ layer.date|date:"Y-m-d" }}</td>
-        </tr>
-      {% endfor %}
-
-      {% for map in profile.user.map_set.all %}
-        <tr data-type="map">
-          <td>{% trans "Map" %}</td>
-          <td><a href="{{ map.get_absolute_url }}">{{ map.title }}</a></td>
-          <td>{{ map.last_modified|date:"Y-m-d" }}</td>
-        </tr>
-      {% endfor %}
-
-      {% for doc in profile.user.document_set.all %}
-        <tr data-type="doc">
-          <td>{% trans "Document" %}</td>
-          <td><a href="{{ doc.get_absolute_url }}">{{ doc.title }}</a></td>
-          <td>{{ doc.date|date:"Y-m-d" }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-    <p>No content added by {{ profile.user.username }}</p> 
-  {% endif %}
-  
-  {% if user == profile.user %}
-
-  {% comment %}
-  <div class="pull-right">
-    <a href="#modal_perms" class="btn disabled asset-modifier" data-toggle="modal"><i class="icon-lock"></i> {% trans "Change permissions on selected" %}</a>
-    <a href="#modal_delete" class="btn disabled asset-modifier" data-toggle="modal"><i class="icon-remove"></i> {% trans "Remove selected" %}</a>
-  </div>
-  {% endcomment %}
-
-  <div class="modal fade" id="modal_delete" style="display:none">
-    <form id="delete_form" accept-charset="UTF-8" action="" data-remote="true" method="post" class="modal-form">
-      <div class="modal-header">
-        <a class="close" data-dismiss="modal">×</a>
-        <h3>{% trans "Delete Layers" %}</h3>
+<div class="row">
+  <div class="span12">
+    <h2 class="page-title">{% trans "Profile of " %}{{ profile.user.username }}</h2>
+    <div class="row">
+      <div class="span8">
+        {% include "people/_profile_filters.html" %}
       </div>
-      <div class="modal-body">
-        <p>{% trans "You're about to delete multiple layers and maps.  Is that really what you want to do?" %}</p>
+      <div class="span4">
+        <div class="pull-right" data-viewby="list">
+          {% include "_viewby.html" %}
+        </div>
       </div>
-      <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
-        <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+    </div>
+    <div class="row">
+      <div class="span9">
+        <div class="tab-content span7 paginate paginate-auto">
+        <div class="tab-pane active list paginate-contents" id="all">
+          {% if object_list|length > 0 %}
+            {% autopaginate object_list 5 %}
+              {% for obj in object_list %}
+              <article>
+                <div class="details">
+                  {% if obj.class_name = 'Map' %}
+                    <img src="{% static 'geonode/img/geosilk/map.png' %}" alt="{% trans 'Map' %}"></img>
+                  {% endif %}
+                  {% if obj.class_name = 'Layer' %}
+                    <img src="{% static 'geonode/img/geosilk/layers.png' %}" alt="{% trans 'Layer' %}"></img>
+                  {% endif %}
+                  {% if obj.class_name = 'Document' %}
+                    <img src="{% static 'geonode/img/geosilk/page_white.png' %}" alt="{% trans 'Document' %}"></img>
+                  {% endif %}
+                  <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
+                  <div class="meta">{{ obj.date|date:"Y-m-d" }}</div>
+                  <p class="abstract">{{ obj.abstract }}</p>
+                </div>
+              </article>
+              {% endfor %}
+          {% else %}
+            <p>{% trans "No data found" %}</p>
+          {% endif %}
+        </div>
+        {% if object_list|length > 0 %}
+          {% paginate %}
+        {% endif %}
+        </div>
       </div>
-    </form>
-  </div>
-  {% with "/data/api/batch_permissions/" as form_action %}
-      {% include "_permissions_form.html" %}
-  {% endwith %}
-  {% endif %} 
-{% endblock %}
-
-{% block sidebar %}
-  <div class="pull-right">{% avatar profile.user 80 %}</div>
-  <h3>{{ profile.name }}</h3>
-    {% if_has_tag actor_url %}
-        <p><a href="{% actor_url profile.user %}" class="btn btn-primary" type="button">Activities</a></p>
-    {% endif_has_tag %}
-  {% if user == profile.user %}
-        <h3>{% trans "Actions" %}</h3>
-        <ul class="nav nav-list">
-            <li><a href="{% url profile_edit user.username %}">{% trans "Edit profile information" %}</a></li>
-            <li><a href="{% url account_settings %}">{% trans "Account Settings" %}</a></li>
-            <li><a href="{% url account_password %}">{% trans "Change password" %}</a></li>
-            <li><a href="{% url layer_upload %}">{% trans "Upload new layers" %}</a></li>
-            <li><a href="{% url new_map %}">{% trans "Create a new map" %}</a></li>
-        </ul>
-        {% if_has_tag if_relationship %}
-            {% include "relationships/_manage_connections.html" %}
+      <div class="span3">
+        <div class="pull-right">{% avatar profile.user 65 %}</div>
+        <h3>{{ profile.name }}</h3>
+        {% if_has_tag actor_url %}
+            <p><a href="{% actor_url profile.user %}" class="btn btn-primary" type="button">Activities</a></p>
         {% endif_has_tag %}
-  {% else %}
+        {% if user == profile.user %}
+          <h3>{% trans "Actions" %}</h3>
+          <ul class="nav nav-list">
+              <li><a href="{% url profile_edit user.username %}">{% trans "Edit profile information" %}</a></li>
+              <li><a href="{% url account_settings %}">{% trans "Account Settings" %}</a></li>
+              <li><a href="{% url account_password %}">{% trans "Change password" %}</a></li>
+              <li><a href="{% url layer_upload %}">{% trans "Upload new layers" %}</a></li>
+              <li><a href="{% url new_map %}">{% trans "Create a new map" %}</a></li>
+          </ul>
+          {% if_has_tag if_relationship %}
+              {% include "relationships/_manage_connections.html" %}
+          {% endif_has_tag %}
+        {% else %}
+          {% if_has_tag if_relationship %}
+              {% include "relationships/_profile_follow.html" %}
+          {% endif_has_tag %}
+        {% endif %}
         {% if_has_tag if_relationship %}
-            {% include "relationships/_profile_follow.html" %}
+          {% include "relationships/_list_connections.html" %}
         {% endif_has_tag %}
-  {% endif %}
-  {% if_has_tag if_relationship %}
-    {% include "relationships/_list_connections.html" %}
-  {% endif_has_tag %}
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_script %}
-  <script src="{% static "geonode/js/utils.js" %}"></script>
-  <script>
-    $(function() {
-      $("#permission_form").submit(pub.batch_perms_submit);
-      $("#delete_form").submit(batch_delete);
-    });
-  </script>
+  <script src="{% static "libs/js/waypoints.js" %}"></script>
+  <script src="{% static "libs/js/loadmore.js" %}"></script>
+  <script src="{% static "libs/js/jquery.raty.js" %}"></script>
+  <script src="{% static "geonode/js/explore.js" %}"></script>
+  <script src="{% static "geonode/js/paginate.js" %}"></script>
 {% endblock extra_script %}
+

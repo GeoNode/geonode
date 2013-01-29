@@ -31,6 +31,8 @@ from django.views.generic.list import ListView
 from django.contrib.sites.models import Site
 from django.conf import settings
 
+from itertools import chain
+
 from geonode.people.models import Profile
 from geonode.people.forms import ProfileForm
 from geonode.people.forms import ForgotUsernameForm
@@ -68,9 +70,28 @@ def profile_edit(request, username=None):
 
 def profile_detail(request, username):
     profile = get_object_or_404(Profile, user__username=username)
-
+    # combined queryset from each model content type
+    qs_layers = []
+    qs_maps = []
+    qs_docs = []
+    if ('content' in request.GET):
+      content = request.GET['content']
+      if (content == 'layers'): 
+          qs_layers = profile.user.layer_set.all()
+      if (content == 'maps'):
+          qs_maps = profile.user.map_set.all()
+      if (content == 'docs'):
+          qs_docs = profile.user.document_set.all()
+    else:
+        qs_layers = profile.user.layer_set.all()
+        qs_maps = profile.user.map_set.all()
+        qs_docs = profile.user.document_set.all()
+    object_list = list(chain(qs_layers, qs_maps, qs_docs))
+    object_list.sort(key=lambda x: x.date, reverse=True)
+    
     return render(request, "people/profile_detail.html", {
         "profile": profile,
+        "object_list": object_list,
     })
 
 def forgot_username(request):
