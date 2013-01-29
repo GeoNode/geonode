@@ -5,7 +5,7 @@
 {% load i18n %}
 
 <div class="well">
-    <a href="{% url profile_detail profile.user.username %}">{% avatar profile.user 80 %} </a>
+    <a href="{% url profile_detail profile.user.username %}">{% avatar profile.user 65 %} </a>
     
     <a href="{% url profile_detail profile.user.username %}">{{ profile.name }}</a> {% if profile.organization %}({{ profile.organization }}){% endif %}
 
