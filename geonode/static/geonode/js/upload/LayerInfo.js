@@ -317,23 +317,38 @@ define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, uploa
         }
 
     };
-    /*
+
+
+    /**
      * @returns {array}
      */
-
-    //TODO use regex to get filename parts
-
     LayerInfo.getBase = function (file) {
-        return file.name.match(/(\w+)\.(\w+)/);
+        var parts = file.name.split('.');
+
+        if (parts) {
+            return parts;
+        }
+
+        return null;
     };
 
     LayerInfo.getExt = function (file) {
-        var parts = LayerInfo.getBase(file);
-        return parts[parts.length - 1];
+        var parts = LayerInfo.getBase(file), ext = null;
+
+        if (parts) {
+            ext = parts[parts.length - 1].toLowerCase();
+        }
+        return ext;
     };
 
     LayerInfo.getName = function (file) {
-        return LayerInfo.getBase(file)[1];
+        var parts = LayerInfo.getBase(file);
+
+        if (parts.length > 1) {
+            parts.splice(parts.length - 1);
+            return parts.join('.');
+        }
+        return parts[0];
     };
 
     return LayerInfo;

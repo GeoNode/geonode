@@ -2,8 +2,10 @@
 
 requirejs.config({
     baseUrl: 'js/',
+
     paths: {
-        underscore: '../libs/underscore'
+        underscore: '../libs/underscore',
+        jquery: '../libs/jquery-1.8.3.min'
     }
 });
 
@@ -16,6 +18,62 @@ var deps = [
 
 define(deps, function (FileType, FileTypes, LayerInfo, UploadSession) {
     'use strict';
+
+
+    module('Test correctly splitting the file name');
+    test('That layer names without an extension are correctly parsed', function () {
+        var n1 = {name: 'test.shp'},
+            n2 = {name: 'test'},
+            awfulName = {name: 'This --- []is .an awful.shp.shpfile.shp'};
+
+        ok(LayerInfo.getBase(n1), 'Make sure getBase works with name with an extension');
+
+        strictEqual(
+            LayerInfo.getBase(n2)[0],
+            'test',
+            'Make sure getBase works with names without an extension'
+        );
+
+
+        strictEqual(
+            LayerInfo.getBase({name: 'thingaf [(.shp'})[0],
+            'thingaf [('
+        );
+
+        strictEqual(
+            LayerInfo.getExt({name: 'name.shp'}),
+            'shp',
+            'Make sure that getExt works with names with an extension'
+        );
+
+        strictEqual(
+            LayerInfo.getExt({name: 'name.SHP'}),
+            'shp',
+            'Make sure case does not matter'
+        );
+
+        strictEqual(
+            LayerInfo.getExt(awfulName),
+            'shp',
+            'Make sure getExt (get extension) works on a poor file name'
+        );
+
+        strictEqual(
+            LayerInfo.getName(awfulName),
+            'This --- []is .an awful.shp.shpfile',
+            'Make sure getName (get name) works on a poor file name'
+        );
+
+        strictEqual(
+            LayerInfo.getName({name: 'File Name without extension'}),
+            'File Name without extension',
+            'Make sure that file names without extensions work'
+        );
+
+
+
+    });
+
 
     module('FileType');
     test('if FileType class works', function () {
@@ -32,11 +90,13 @@ define(deps, function (FileType, FileTypes, LayerInfo, UploadSession) {
             false,
             'Make sure the type can check files that are not its type'
         );
+
         strictEqual(
             type.isType({name: 'this-is.test'}),
             true,
             'Make sure the type can correctly identify its own type'
         );
+
         strictEqual(
             type.findTypeErrors(['test']).length,
             0,
