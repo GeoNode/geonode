@@ -18,7 +18,7 @@ Envjs({
 
         'qunit': function (script) {
             var count = 0,
-                junitXml = '',
+                junitXml = '<?xml version="1.0" encoding="UTF-8"?>\n',
                 module,
                 moduleStart,
                 testStart,
@@ -26,6 +26,7 @@ Envjs({
                 testFailed = 0,
                 testPassed = 0,
                 current_test_assertions = [];
+
 
             QUnit.moduleStart = function (details) {
                 moduleStart = new Date();
@@ -35,6 +36,29 @@ Envjs({
 
             QUnit.testStart = function () {
                 testStart = new Date();
+            };
+
+            QUnit.moduleDone = function (context) {
+                var i, l,
+                    xml = '<testsuite ' +
+                    ' name="' + context.name +  '"' +
+                    ' errors="0" failures="' + context.failed +  '"' +
+                    ' tests="' + context.total + '"' +
+
+                    ' time="'  + (new Date() -  moduleStart) / 1000 + '  "';
+
+
+                if (testCases.length) {
+                    xml += '>\n';
+                    for (i = 0, l = testCases.length; i < l; i += 1) {
+                        xml += testCases[i];
+                    }
+                    xml += '</testsuite>\n\n';
+                } else {
+                    xml += '/>\n\n';
+                }
+
+                junitXml += xml;
             };
 
 
@@ -68,28 +92,6 @@ Envjs({
                 testCases.push(xml);
             };
 
-            QUnit.moduleDone = function (context) {
-                var i, l,
-                    xml = '<testsuite ' +
-                    ' name="' + context.name +  '"' +
-                    ' errors="0" failures="' + context.failed +  '"' +
-                    ' tests="' + context.total + '"' +
-
-                    ' time="'  + (new Date() -  moduleStart) / 1000 + '  "';
-
-
-                if (testCases.length) {
-                    xml += '>\n';
-                    for (i = 0, l = testCases.length; i < l; i += 1) {
-                        xml += testCases[i];
-                    }
-                    xml += '</testsuite>\n\n';
-                } else {
-                    xml += '/>\n\n';
-                }
-
-                junitXml += xml;
-            };
 
 
             QUnit.log = function (details) {
