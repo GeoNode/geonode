@@ -218,6 +218,9 @@ class ResourceBase(models.Model, PermissionLevelMixin):
             return ','.join([kw.name for kw in keywords_qs])
         else:
             return ''
+            
+    def class_name(value): 
+        return value.__class__.__name__ 
 
     class Meta:
         abstract = True
