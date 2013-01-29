@@ -28,6 +28,7 @@ import errno
 
 from datetime import datetime
 from lxml import etree
+from urlparse import urlparse
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -740,6 +741,14 @@ def geoserver_post_save(instance, sender, **kwargs):
                         link_type='image',
                         )
                        )
+
+    #remove links that belong to and old address
+
+    for link in instance.link_set.all():
+        if not urlparse(settings.SITEURL).hostname == urlparse(link.url).hostname and not \
+                    urlparse(settings.GEOSERVER_BASE_URL).hostname == urlparse(link.url).hostname:
+
+            link.delete()
 
     #Save layer attributes
     set_attributes(instance)
