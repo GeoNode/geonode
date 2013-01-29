@@ -738,6 +738,11 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
                        )
 
+    #remove links that belong to and old address
+    for link in instance.link_set.all():
+        if not settings.GEOSERVER_BASE_URL in link.url or settings.SITEURL in link.url:
+            link.delete()
+
     #Save layer attributes
     set_attributes(instance)
 
