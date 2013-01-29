@@ -74,6 +74,7 @@ cp coverage -R upload-coverage
 
 # Run the javascript tests 
 paver test_javascript
+mv geonode/static/geonode/junit.xml ./javascript-TEST-nose.xml
 
 # Run Code Quality Tools
 export DJANGO_SETTINGS_MODULE=geonode.settings
