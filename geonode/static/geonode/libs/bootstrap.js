@@ -74,7 +74,9 @@ Envjs({
                     ' name="' + context.name +  '"' +
                     ' errors="0" failures="' + context.failed +  '"' +
                     ' tests="' + context.total + '"' +
+
                     ' time="'  + (new Date() -  moduleStart) / 1000 + '  "';
+
 
                 if (testCases.length) {
                     xml += '>\n';
