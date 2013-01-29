@@ -48,12 +48,12 @@ Envjs({
                 }
 
                 xml = '<testcase classname= "' + module.name + '"' +
-                      'name="' + context.name + '"' +
-                      'time="' + (new Date() - testStart) / 1000  + '"';
+                      ' name="' + context.name + '"' +
+                      ' time="' + (new Date() - testStart) / 1000  + '"';
 
 
                 if (context.failed) {
-                    xml += '/>\n';
+                    xml += '>\n';
                     for (i = 0; i < l; i += 1) {
                         xml += current_test_assertions[i];
                     }
@@ -71,10 +71,10 @@ Envjs({
             QUnit.moduleDone = function (context) {
                 var i, l,
                     xml = '<testsuite ' +
-                    'name="' + context.name +  '"' +
-                    'errors="0" failures="' + context.failed +  '"' +
-                    'tests="' + context.total + '"' +
-                    'time="'  + (new Date() -  moduleStart) / 1000 + '  "';
+                    ' name="' + context.name +  '"' +
+                    ' errors="0" failures="' + context.failed +  '"' +
+                    ' tests="' + context.total + '"' +
+                    ' time="'  + (new Date() -  moduleStart) / 1000 + '  "';
 
                 if (testCases.length) {
                     xml += '>\n';
