@@ -266,6 +266,12 @@ def gs_slurp(self, ignore_errors=True, verbosity=1, console=None, owner=None, wo
             })
 
             layer.save()
+
+            #remove links that belong to and old address
+            for link in layer.link_set.all():
+                if not settings.GEOSERVER_BASE_URL in link.url or settings.SITEURL in link.url:
+                    link.delete()
+
         except Exception, e:
             if ignore_errors:
                 status = 'failed'
