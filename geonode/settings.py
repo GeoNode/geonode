@@ -94,6 +94,14 @@ STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, "static"),
 ]
 
+# List of finder classes that know how to find static files in
+# various locations.
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+)
+
 # Note that Django automatically includes the "templates" dir in all the
 # INSTALLED_APPS, se there is no need to add maps/templates or admin/templates
 TEMPLATE_DIRS = (
