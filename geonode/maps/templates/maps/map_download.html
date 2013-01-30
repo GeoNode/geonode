@@ -108,7 +108,7 @@
     {% if map_status %} 
       <div id="cancel"> </div>
       <div id="pb"></div>
-    {% else %} 
+    {% elif downloadable_layers|length > 0 %} 
       <form action="{{site}}maps/{{map.id}}/download" method="POST"> 
         {% csrf_token %}
         <div class="form-actions">
