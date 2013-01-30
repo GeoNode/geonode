@@ -26,7 +26,6 @@ define(deps, function (FileType, FileTypes, LayerInfo, UploadSession) {
             n2 = {name: 'test'},
             awfulName = {name: 'This --- []is .an awful.shp.shpfile.shp'};
 
-        ok(false, 'This should blow up');
 
         ok(LayerInfo.getBase(n1), 'Make sure getBase works with name with an extension');
 
