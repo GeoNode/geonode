@@ -649,6 +649,11 @@ def upload(incoming, user=None, overwrite=False,
             save_it = False
             status = 'skipped'
             layer = existing_layers[0]
+            if verbosity > 0:
+                msg = ('Stopping process because '
+                       '--overwrite was not set '
+                       'and a layer with this name already exists.')
+                print >> sys.stderr, msg
         else:
             save_it = True
 
