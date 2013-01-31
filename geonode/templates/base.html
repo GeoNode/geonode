@@ -207,7 +207,8 @@
     <script>
       $("#search").select2({
         minimumInputLength: 1,
-        placeholder: 'Search...',     
+        placeholder: 'Search...',
+        width: 'element',     
         ajax: {
           url: '{% url search_api %}',
           data: function(term,page){
