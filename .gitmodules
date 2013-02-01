@@ -3,10 +3,10 @@
 	url = git://github.com/openlayers/openlayers.git
 [submodule "src/geonode-client/app/static/externals/PrintPreview"]
 	path = src/geonode-client/app/static/externals/PrintPreview
-	url = git://github.com/GeoNode/PrintPreview.git
-[submodule "src/geonode-client/externals/buildkit"]
-	path = src/geonode-client/externals/buildkit
-	url = git://github.com/opengeo/buildkit.git
+	url = git://github.com/opengeo/PrintPreview.git
+[submodule "src/geonode-client/externals/stick"]
+	path = src/geonode-client/externals/stick
+	url = git://github.com/hns/stick.git
 [submodule "src/geonode-client/externals/ringo"]
 	path = src/geonode-client/externals/ringo
 	url = git://github.com/ringo/ringojs.git

@@ -21,6 +21,63 @@
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
 <style type="text/css">
     #templates { display: none; }
+    
+.myToolbar {
+    margin: 5px 5px 0 0;
+}
+.myToolbar div {
+    background: url("/static/theme/img/anno/editing_tool_bar.png");
+    background-repeat: no-repeat;
+    margin: 0 0 5px 5px;
+    width: 24px;
+    height: 22px;
+    cursor: pointer
+}
+/* positions */
+.myToolbar {
+    right: 50;
+    top: 50;
+}
+.myModToolbar {
+    right: 0;
+    top: 50;
+}
+
+.myToolbar div {
+    float: right;
+}
+/* individual controls */
+.myToolbar .olControlNavigationItemInactive {
+    background-position: -103px -1px;
+}
+.myToolbar .olControlNavigationItemActive {
+    background-position: -103px -24px;
+}
+.myToolbar .olControlDrawFeaturePointItemInactive {
+    background-position: -77px -1px;
+}
+.myToolbar .olControlDrawFeaturePointItemActive {
+    background-position: -77px -24px;
+}
+.myToolbar .olControlDrawFeaturePathItemInactive {
+    background-position: -51px -1px;
+}
+.myToolbar .olControlDrawFeaturePathItemActive {
+    background-position: -51px -24px;
+}
+.myToolbar .olControlDrawFeaturePolygonItemInactive{
+    background-position: -26px -1px;
+}
+.myToolbar .olControlDrawFeaturePolygonItemActive {
+    background-position: -26px -24px;
+}
+.myToolbar .olControlModifyFeatureItemInactive {
+    background-position: -77px -1px;
+}
+.myToolbar .olControlModifyFeatureItemActive {
+    background-position: -77px -24px;
+}    
+    
 </style>
 
 <script src="{{ GEONODE_CLIENT_LOCATION }}script/PrintPreview.js"></script>
@@ -50,9 +107,6 @@ var init = function() {
     var gazetteerText = gettext('Placename gazetteer');
 
 
-
-
-
     var config = Ext.apply({
         tools:  [{
             ptype: "gxp_geonodequerytool",
@@ -64,6 +118,10 @@ var init = function() {
             featurePanel: 'queryPanel',
             attributePanel: 'gridWinPanel',
             toggleGroup: 'featureGroup'
+        },{
+            ptype: "app_annotation",
+            title: "Add Notes",
+            actionTarget:  {target: "paneltbar"}
         },
             {
                 ptype: "gxp_coordinatetool",
@@ -144,9 +202,11 @@ var init = function() {
         Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.officialurl ? '' : 'Current Map: ') + (config.about.title ? config.about.title : 'New Map')}));
 
 
-
+	
 
     }, this);
+    
+    
     {% endautoescape %}
     }
 
@@ -222,6 +282,18 @@ var init = function() {
         </div>
     </div>
 
+</div>
+<div id="featuredetails" style="float:right; width: 300px">
+</div>
+<div id="annotation_detail_div" style="float:right; width: 400px; display:block;">
+  <form id="data_form" name="data_form" onsubmit="save_annotation(); return false">
+    Title: <input type="text" value="" name="title" /><br />
+    Description:<br />
+    <textarea name="description"></textarea>
+    <input type="submit" value="Save" />
+ 
+    <input type="button" text="Delete" onclick="currentFeature.state = OpenLayers.State.DELETE; save_annotation(); return false;" />
+  </form>
 </div>
 {% endblock %}
 

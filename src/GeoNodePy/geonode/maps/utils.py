@@ -351,7 +351,8 @@ def save(layer, base_file, user, overwrite = True, title=None,
         store, gs_resource = create_store_and_resource(name, data, overwrite=overwrite, charset=charset)
     except geoserver.catalog.UploadError, e:
         msg = ('Could not save the layer %s, there was an upload '
-               'error: %s' % (name, str(e)))
+               'error: %s' % (name, "Invalid/missing projection information in image" 
+                    if "Error auto-configuring coverage:null" in str(e) else str(e)))
         logger.warn(msg)
         e.args = (msg,)
         raise

@@ -128,6 +128,7 @@ INSTALLED_APPS = (
     'geonode.proxy',
     'geonode.profile',
     'geonode.register',
+    'geonode.geoanno',
     #'geonode.gazetteer',
     #'geonode.queue',
     #'djcelery',
