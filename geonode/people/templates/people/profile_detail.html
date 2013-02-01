@@ -31,13 +31,13 @@
               <article>
                 <div class="details">
                   {% if obj.class_name = 'Map' %}
-                    <img src="{% static 'geonode/img/geosilk/map.png' %}" alt="{% trans 'Map' %}"></img>
+                    <img src="{% static 'people/img/map.png' %}" alt="{% trans 'Map' %}"></img>
                   {% endif %}
                   {% if obj.class_name = 'Layer' %}
-                    <img src="{% static 'geonode/img/geosilk/layers.png' %}" alt="{% trans 'Layer' %}"></img>
+                    <img src="{% static 'people/img/layers.png' %}" alt="{% trans 'Layer' %}"></img>
                   {% endif %}
                   {% if obj.class_name = 'Document' %}
-                    <img src="{% static 'geonode/img/geosilk/page_white.png' %}" alt="{% trans 'Document' %}"></img>
+                    <img src="{% static 'people/img/page_white.png' %}" alt="{% trans 'Document' %}"></img>
                   {% endif %}
                   <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
                   <div class="meta">{{ obj.date|date:"Y-m-d" }}</div>
