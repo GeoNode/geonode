@@ -198,12 +198,17 @@ def change_admin_password():
 def geonode_updateip(server_name="alpha.dev.geonode.org"):
     sudo ('geonode-updateip %s' % server_name)
 
-def set_hosts_entry(server_name="alpha.dev.geonode.org"):
+def set_temp_hosts_entry(server_name="alpha.dev.geonode.org"):
     sudo("IP=`wget -qO- http://instance-data/latest/meta-data/public-ipv4`; echo $IP alpha.dev.geonode.org >> /etc/hosts")
+
+def remove_temp_hosts_entry()
+    sudo("sed '$d' /etc/hosts > temp; mv temp /etc/hosts")
 
 def update_geoserver_geonode_auth():
     sudo('perl -pi -e "s/:8000//g" /usr/share/geoserver/data/security/auth/geonodeAuthProvider/config.xml')
     sudo('/etc/init.d/tomcat7 restart')
+
+
 
 def update_instance():
     put('../misc/update-instance', '/home/ubuntu/')
