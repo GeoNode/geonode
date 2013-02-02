@@ -34,6 +34,7 @@ class LayerAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     list_editable = ('title', 'category')
     list_filter  = ('date', 'date_type', 'constraints_use', 'category')
+    search_fields = ('typename', 'title', 'abstract', 'purpose',)
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')
@@ -51,29 +52,34 @@ class ContactRoleAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     list_display = ('id','contact', 'layer', 'role')
     list_editable = ('contact', 'layer', 'role')
+    search_fields = ('contact__name', 'layer__typename',)
 
 class TopicCategoryAdmin(admin.ModelAdmin):
     model = TopicCategory
     list_display_links = ('name',)
     list_display = ('id', 'name', 'slug', 'description')
+    search_fields = ('name', 'description',)
 
 class LinkAdmin(admin.ModelAdmin):
     model = Link
     list_display_links = ('id',)
     list_display = ('id', 'layer', 'extension', 'link_type', 'name', 'mime')
-    list_filter = ('layer', 'extension', 'link_type', 'mime')  
+    list_filter = ('layer', 'extension', 'link_type', 'mime')
+    search_fields = ('name', 'layer__typename',)
 
 class AttributeAdmin(admin.ModelAdmin):
     model = Attribute
     list_display_links = ('id',)
     list_display = ('id', 'layer', 'attribute', 'attribute_label', 'attribute_type', 'display_order')
     list_filter = ('layer', 'attribute_type')
+    search_fields = ('attribute', 'attribute_label',)
 
 class StyleAdmin(admin.ModelAdmin):
     model = Style
     list_display_links = ('name',)
     list_display = ('id', 'name', 'workspace', 'sld_url')
     list_filter = ('workspace',)
+    search_fields = ('name', 'workspace',)
 
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
