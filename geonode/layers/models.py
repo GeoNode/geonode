@@ -105,6 +105,7 @@ class TopicCategory(models.Model):
 
     class Meta:
         ordering = ("name",)
+        verbose_name_plural = "Topic Categories"
 
 
 class ResourceBase(models.Model, PermissionLevelMixin):
