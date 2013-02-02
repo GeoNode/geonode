@@ -201,7 +201,7 @@ def geonode_updateip(server_name="alpha.dev.geonode.org"):
 def set_temp_hosts_entry(server_name="alpha.dev.geonode.org"):
     sudo("IP=`wget -qO- http://instance-data/latest/meta-data/public-ipv4`; echo $IP alpha.dev.geonode.org >> /etc/hosts")
 
-def remove_temp_hosts_entry()
+def remove_temp_hosts_entry():
     sudo("sed '$d' /etc/hosts > temp; mv temp /etc/hosts")
 
 def update_geoserver_geonode_auth():
