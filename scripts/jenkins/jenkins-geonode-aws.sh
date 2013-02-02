@@ -20,4 +20,6 @@ fab -i $key -H ubuntu@$host install_sample_data
 fab -i $key -H ubuntu@$host geonode_updateip:server_name=alpha.dev.geonode.org
 
 python ec2.py set_alpha_ip
+fab -i $key -H ubuntu@$host update_geoserver_geonode_auth
 #python ec2.py terminate
+
