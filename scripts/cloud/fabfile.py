@@ -203,7 +203,7 @@ def set_hosts_entry(server_name="alpha.dev.geonode.org"):
 
 def update_geoserver_geonode_auth():
     sudo('perl -pi -e "s/:8000//g" /usr/share/geoserver/data/security/auth/geonodeAuthProvider/config.xml')
-    sudo('/etc/init.d/tomcat7/restart')
+    sudo('/etc/init.d/tomcat7 restart')
 
 def update_instance():
     put('../misc/update-instance', '/home/ubuntu/')
