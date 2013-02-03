@@ -115,7 +115,16 @@ define(function (require) {
     });
 
 
+
     module('LayerInfo');
+    test('Make sure that the file selector is safe', function () {
+        var unSafe = '[a](b)';
+        strictEqual(
+            LayerInfo.safeSelector(unSafe),
+            '_a__b_'
+        );
+    });
+
     test('LayerInfo should work on a valid shapefile', function () {
         var shpInfo = new LayerInfo({
             name: 'nybb',
@@ -125,10 +134,11 @@ define(function (require) {
             errors,
             mock_form_data = {append: function (key, value) { res[key] = value; }};
 
-        strictEqual(shpInfo instanceof LayerInfo,
-                    true,
-                    'The constructor should return the correct type'
-                   );
+        strictEqual(
+            shpInfo instanceof LayerInfo,
+            true,
+            'The constructor should return the correct type'
+        );
 
         shpInfo.prepareFormData(mock_form_data);
         $.each(['base_file', 'permissions', 'prj_file', 'dbf_file', 'shx_file'], function (i, thing) {
