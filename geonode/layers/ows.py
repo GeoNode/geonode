@@ -19,9 +19,14 @@
 
 import logging
 
+from lxml import etree
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django.template import Context
+from django.template.loader import get_template
 from owslib.wcs import WebCoverageService
 from owslib.coverage.wcsBase import ServiceException
+from owslib.util import http_post
 import urllib
 from geonode import GeoNodeException
 
@@ -119,3 +124,35 @@ def wms_links(wms_url, identifier, bbox, srid, height, width):
         url = _wms_link(wms_url, identifier, mime, height, width, srid, bbox)
         output.append((ext, name, mime, url))
     return output
+
+def wps_execute_gs_aggregate(layer_name, field):
+    """Derive an aggregate statistic from WPS endpoint"""
+
+    # generate statistics using WPS
+    url = '%s/ows' % (settings.GEOSERVER_BASE_URL)
+
+    # TODO: use owslib.wps.WebProcessingService for WPS interaction
+    # this requires GeoServer's WPS gs:Aggregate function to
+    # return a proper wps:ExecuteResponse
+
+    tpl = get_template('layers/wps_execute_gs_aggregate.xml')
+    ctx = Context({
+        'layer_name': 'geonode:%s' %  layer_name,
+        'field': field,
+    })
+    request = tpl.render(ctx).encode('utf-8')
+
+    response = http_post(url, request)
+
+    exml = etree.fromstring(response)
+
+    result = {}
+
+    for f in ['Min', 'Max', 'Average', 'Median', 'StandardDeviation', 'Sum']:
+        fr = exml.find(f)
+        if fr is not None:
+            result[f] = fr.text
+        else:
+            result[f] = 'NA'
+    
+    return result
