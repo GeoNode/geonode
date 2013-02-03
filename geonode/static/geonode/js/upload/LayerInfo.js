@@ -56,8 +56,15 @@ define(function (require, exports) {
         if (!this.main || !this.type) {
             this.guessFileType();
         }
-        this.selector = '#' + this.name + '-element';
+
+        // need to find a way converting this name to a safe selector
+        this.selector = '#' + LayerInfo.safeSelector(this.name) + '-element';
+
         this.errors = this.collectErrors();
+    };
+
+    LayerInfo.safeSelector = function (name) {
+        return name.replace(/\[|\]|\(|\)/g, '_');
     };
 
     LayerInfo.prototype.progressTemplate  = function (options) {
@@ -196,6 +203,7 @@ define(function (require, exports) {
         var self = this;
         make_request({
             url: resp.redirect_to,
+            async: false,
             failure: function (resp, status) {self.markError(resp); },
             success: function (resp, status) {
                 // hack find a better way of creating a string
@@ -213,6 +221,7 @@ define(function (require, exports) {
         var self = this;
         make_request({
             url: resp.redirect_to,
+            async: false,
             failure: function (resp, status) { self.markError(resp); },
             success: function (resp, status) { self.doFinal(resp); }
         });
@@ -224,6 +233,7 @@ define(function (require, exports) {
 
         $.ajax({
             url: "", // is this right?
+            async: false,
             type: "POST",
             data: form_data,
             processData: false, // make sure that jquery does not process the form data
@@ -242,6 +252,7 @@ define(function (require, exports) {
         var layerTemplate = _.template($('#layerTemplate').html()),
             li = layerTemplate({
                 name: this.name,
+                selector: LayerInfo.safeSelector(this.name),
                 type: this.type.name,
             });
 
@@ -266,7 +277,7 @@ define(function (require, exports) {
 
     LayerInfo.prototype.displayFiles = function () {
         var self = this,
-            ul = $('#' + this.name + '-element .files');
+            ul = $('#' + LayerInfo.safeSelector(this.name) + '-element .files');
 
         ul.empty();
 
@@ -293,7 +304,7 @@ define(function (require, exports) {
     };
 
     LayerInfo.prototype.displayErrors = function () {
-        var ul = $('#' + this.name + '-element .errors').first();
+        var ul = $('#' + LayerInfo.safeSelector(this.name) + '-element .errors').first();
         ul.empty();
 
         $.each(this.errors, function (idx, error) {
