@@ -2,9 +2,14 @@
 /*global define:true, $:true, FormData: true, alert: true, window:true */
 'use strict';
 
-define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, upload) {
+define(function (require, exports) {
 
-    var make_request, LayerInfo;
+    var $        = require('jquery'),
+        _        = require('underscore'),
+        fileTypes = require('upload/FileTypes'),
+        path     = require('upload/path'),
+        make_request,
+        LayerInfo;
 
     /** We have a different notion of success and failure for GeoNode's
      * urls this function allows the user to define two functions, success
@@ -122,7 +127,7 @@ define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, uploa
 
         for (i = 0; i < files.length; i += 1) {
             file = files[i];
-            extension = LayerInfo.getExt(file);
+            extension = path.getExt(file);
             res.push(extension);
         }
         return res;
@@ -148,7 +153,7 @@ define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, uploa
         for (i = 0; i < this.files.length; i += 1) {
             file = this.files[i];
             if (file.name !== this.main.name) {
-                ext = LayerInfo.getExt(file);
+                ext = path.getExt(file);
                 form_data.append(ext + '_file', file);
             }
         }
@@ -316,39 +321,6 @@ define(['jquery', 'underscore', './FileTypes'], function ($, _, fileTypes, uploa
             }
         }
 
-    };
-
-
-    /**
-     * @returns {array}
-     */
-    LayerInfo.getBase = function (file) {
-        var parts = file.name.split('.');
-
-        if (parts) {
-            return parts;
-        }
-
-        return null;
-    };
-
-    LayerInfo.getExt = function (file) {
-        var parts = LayerInfo.getBase(file), ext = null;
-
-        if (parts) {
-            ext = parts[parts.length - 1].toLowerCase();
-        }
-        return ext;
-    };
-
-    LayerInfo.getName = function (file) {
-        var parts = LayerInfo.getBase(file);
-
-        if (parts.length > 1) {
-            parts.splice(parts.length - 1);
-            return parts.join('.');
-        }
-        return parts[0];
     };
 
     return LayerInfo;
