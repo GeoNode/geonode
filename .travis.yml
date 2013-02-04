@@ -24,7 +24,7 @@ script:
   - python manage.py test geonode.tests.smoke
   - paver test
   - paver test_integration
-  # - paver test_integration -n geonode.tests.csw
+  - paver test_integration -n geonode.tests.csw
   - paver test_javascript
 
 after_script:
