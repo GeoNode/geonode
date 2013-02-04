@@ -437,7 +437,7 @@ class Attribute(models.Model):
     median = models.CharField(_('median'), help_text=_('median value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
     stddev = models.CharField(_('standard deviation'), help_text=_('standard deviation for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
     sum = models.CharField(_('sum'), help_text=_('sum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
-    last_modified = models.DateTimeField(_('last modified'), default=datetime.now, help_text=_('date when attribute statistics were last updated')) # passing the method itself, not
+    last_stats_updated = models.DateTimeField(_('last modified'), default=datetime.now, help_text=_('date when attribute statistics were last updated')) # passing the method itself, not
 
     objects = AttributeManager()
 
@@ -906,7 +906,7 @@ def set_attributes(layer):
                         la.median = result['Median']
                         la.stddev = result['StandardDeviation']
                         la.sum = result['Sum']
-                        la.last_modified = datetime.now()
+                        la.last_stats_updated = datetime.now()
                     la.attribute_label = field.title()
                     la.visible = ftype.find("gml:") != 0
                     la.display_order = iter
