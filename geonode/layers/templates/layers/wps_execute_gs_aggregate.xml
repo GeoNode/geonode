@@ -21,6 +21,12 @@
     <wps:Input>
       <ows:Identifier>function</ows:Identifier>
       <wps:Data>
+        <wps:LiteralData>Count</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>function</ows:Identifier>
+      <wps:Data>
         <wps:LiteralData>Min</wps:LiteralData>
       </wps:Data>
     </wps:Input>

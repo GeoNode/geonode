@@ -47,7 +47,7 @@ from geonode.people.models import Profile, Role
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.ows import wcs_links, wfs_links, wms_links, \
-    wps_execute_gs_aggregate
+    wps_execute_layer_attribute_statistics
 from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
     SPATIAL_REPRESENTATION_TYPES,  TOPIC_CATEGORIES, \
@@ -431,18 +431,23 @@ class Attribute(models.Model):
     display_order = models.IntegerField(_('display order'), help_text=_('specifies the order in which attribute should be displayed in identify results'), default=1)
 
     # statistical derivations
+    count = models.IntegerField(_('count'), help_text=_('count value for this field'), default=1)
     min = models.CharField(_('min'), help_text=_('minimum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
     max = models.CharField(_('max'), help_text=_('maximum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
     average = models.CharField(_('average'), help_text=_('average value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
     median = models.CharField(_('median'), help_text=_('median value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
     stddev = models.CharField(_('standard deviation'), help_text=_('standard deviation for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
     sum = models.CharField(_('sum'), help_text=_('sum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    unique_values = models.TextField(_('unique values for this field'), null=True, blank=True, default='NA')
     last_stats_updated = models.DateTimeField(_('last modified'), default=datetime.now, help_text=_('date when attribute statistics were last updated')) # passing the method itself, not
 
     objects = AttributeManager()
 
     def __str__(self):
         return "%s" % self.attribute_label if self.attribute_label else self.attribute
+
+    def unique_values_as_list(self):
+        return self.unique_values.split(',')
 
 class ContactRole(models.Model):
     """
@@ -794,6 +799,7 @@ def save_style(gs_style):
     style.save()
     return style
 
+
 def is_layer_attribute_aggregable(store_type, field_name, field_type):
     """
     Dechiper whether layer attribute is suitable for statistical derivation
@@ -811,20 +817,19 @@ def is_layer_attribute_aggregable(store_type, field_name, field_type):
 
     return True
 
+
 def get_attribute_statistics(layer_name, field):
     """
-    Generate statistics (range, mean, median, standard deviation)
+    Generate statistics (range, mean, median, standard deviation, unique values)
     for layer attribute
     """
 
     logger.debug('Deriving aggregate statistics for attribute %s', field)
 
     try:
-        result = wps_execute_gs_aggregate(layer_name, field)
+        return wps_execute_layer_attribute_statistics(layer_name, field)
     except Exception, err:
-        raise RuntimeError('Error generating layer aggregate statistics: %s', err)
-
-    return result
+        logger.exception('Error generating layer aggregate statistics')
 
 
 def set_attributes(layer):
@@ -900,13 +905,16 @@ def set_attributes(layer):
                     if is_layer_attribute_aggregable(layer.storeType, field, ftype):
                         logger.debug("Generating layer attribute statistics")
                         result = get_attribute_statistics(layer.name, field)
-                        la.min = result['Min']
-                        la.max = result['Max']
-                        la.average = result['Average']
-                        la.median = result['Median']
-                        la.stddev = result['StandardDeviation']
-                        la.sum = result['Sum']
-                        la.last_stats_updated = datetime.now()
+                        if result is not None:
+                            la.count = result['Count']
+                            la.min = result['Min']
+                            la.max = result['Max']
+                            la.average = result['Average']
+                            la.median = result['Median']
+                            la.stddev = result['StandardDeviation']
+                            la.sum = result['Sum']
+                            la.unique_values = result['unique_values']
+                            la.last_stats_updated = datetime.now()
                     la.attribute_label = field.title()
                     la.visible = ftype.find("gml:") != 0
                     la.display_order = iter

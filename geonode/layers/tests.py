@@ -334,12 +334,14 @@ class LayersTest(TestCase):
         self.assertEqual(custom_attributes[0].attribute_label, "Place Name")
         self.assertEqual(custom_attributes[1].attribute_label, "Description")
         # TODO: do test against layer with actual attribute statistics
+        self.assertEqual(custom_attributes[1].count, 1)
         self.assertEqual(custom_attributes[1].min, "NA")
         self.assertEqual(custom_attributes[1].max, "NA")
         self.assertEqual(custom_attributes[1].average, "NA")
         self.assertEqual(custom_attributes[1].median, "NA")
         self.assertEqual(custom_attributes[1].stddev, "NA")
         self.assertEqual(custom_attributes[1].sum, "NA")
+        self.assertEqual(custom_attributes[1].unique_values, "NA")
 
     def test_layer_attribute_config(self):
         lyr = Layer.objects.get(pk=1)
