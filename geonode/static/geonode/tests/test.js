@@ -1,5 +1,5 @@
 /*global $:true, requirejs: true, define: true, module: true, test: true, ok:true, strictEqual:true */
-
+'use strict';
 requirejs.config({
     baseUrl: 'js/',
 
@@ -9,15 +9,16 @@ requirejs.config({
     }
 });
 
-var deps = [
-    'upload/FileType',
-    'upload/FileTypes',
-    'upload/LayerInfo',
-    'status/UploadSession'
-];
+define(function (require) {
 
-define(deps, function (FileType, FileTypes, LayerInfo, UploadSession) {
-    'use strict';
+    var FileType      = require('upload/FileType'),
+        FileTypes     = require('upload/FileTypes'),
+        LayerInfo     = require('upload/LayerInfo'),
+        UploadSession = require('status/UploadSession'),
+        getBase       = require('upload/path').getBase,
+        getExt        = require('upload/path').getExt,
+        getName       = require('upload/path').getName;
+
 
 
     module('Test correctly splitting the file name');
@@ -27,46 +28,53 @@ define(deps, function (FileType, FileTypes, LayerInfo, UploadSession) {
             awfulName = {name: 'This --- []is .an awful.shp.shpfile.shp'};
 
 
-        ok(LayerInfo.getBase(n1), 'Make sure getBase works with name with an extension');
+        ok(getBase(n1), 'Make sure getBase works with name with an extension');
 
         strictEqual(
-            LayerInfo.getBase(n2)[0],
+            getBase(n2)[0],
             'test',
             'Make sure getBase works with names without an extension'
         );
 
-
         strictEqual(
-            LayerInfo.getBase({name: 'thingaf [(.shp'})[0],
-            'thingaf [('
+            getBase({name: 'thingaf [(.shp'})[0],
+            'thingaf [(',
+            'Make sure that the getBase function can handle file names with strange chars'
         );
 
         strictEqual(
-            LayerInfo.getExt({name: 'name.shp'}),
+            getExt({name: 'name.shp'}),
             'shp',
             'Make sure that getExt works with names with an extension'
         );
 
         strictEqual(
-            LayerInfo.getExt({name: 'name.SHP'}),
+            getExt({name: 'name'}),
+            null,
+            'Make sure that getExt works with a file without an extension'
+        );
+
+
+        strictEqual(
+            getExt({name: 'name.SHP'}),
             'shp',
             'Make sure case does not matter'
         );
 
         strictEqual(
-            LayerInfo.getExt(awfulName),
+            getExt(awfulName),
             'shp',
             'Make sure getExt (get extension) works on a poor file name'
         );
 
         strictEqual(
-            LayerInfo.getName(awfulName),
+            getName(awfulName),
             'This --- []is .an awful.shp.shpfile',
             'Make sure getName (get name) works on a poor file name'
         );
 
         strictEqual(
-            LayerInfo.getName({name: 'File Name without extension'}),
+            getName({name: 'File Name without extension'}),
             'File Name without extension',
             'Make sure that file names without extensions work'
         );
@@ -107,7 +115,16 @@ define(deps, function (FileType, FileTypes, LayerInfo, UploadSession) {
     });
 
 
+
     module('LayerInfo');
+    test('Make sure that the file selector is safe', function () {
+        var unSafe = '[a](b)';
+        strictEqual(
+            LayerInfo.safeSelector(unSafe),
+            '_a__b_'
+        );
+    });
+
     test('LayerInfo should work on a valid shapefile', function () {
         var shpInfo = new LayerInfo({
             name: 'nybb',
@@ -117,10 +134,11 @@ define(deps, function (FileType, FileTypes, LayerInfo, UploadSession) {
             errors,
             mock_form_data = {append: function (key, value) { res[key] = value; }};
 
-        strictEqual(shpInfo instanceof LayerInfo,
-                    true,
-                    'The constructor should return the correct type'
-                   );
+        strictEqual(
+            shpInfo instanceof LayerInfo,
+            true,
+            'The constructor should return the correct type'
+        );
 
         shpInfo.prepareFormData(mock_form_data);
         $.each(['base_file', 'permissions', 'prj_file', 'dbf_file', 'shx_file'], function (i, thing) {
