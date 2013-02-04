@@ -93,10 +93,16 @@
                 {% for attribute in layer.attribute_set.all %}
                   <tr>
                     <td>{{ attribute }}</td>
-                    {% if attribute.min == "NA" and attribute.max == "NA" %}
-                    <td>{{ attribute.min }}</td>
+                    {% if attribute.unique_values == "NA" %}
+                    <td>{{ attribute.unique_values }}</td>
                     {% else %}
-                    <td>{{ attribute.min }} - {{ attribute.max }}</td>
+                    <td>
+                      <select name="unique_values">
+                      {% for value in attribute.unique_values_as_list %}
+                        <option value="{{ value }}">{{ value }}</option>
+                      {% endfor %}
+                      </select>
+                    </td>
                     {% endif %}
                     <td>{{ attribute.average }}</td>
                     <td>{{ attribute.median }}</td>
