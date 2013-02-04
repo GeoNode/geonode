@@ -2,15 +2,16 @@
 /*global $:true, document:true, define: true, alert:true, requirejs: true  */
 
 'use strict';
+var layers = {};
 
 define(['jquery',
         'underscore',
         'upload/LayerInfo',
         'upload/FileTypes',
-        'text!templates/upload.html'], function ($, _, LayerInfo, fileTypes, upload) {
+        'upload/path',
+        'text!templates/upload.html'], function ($, _, LayerInfo, fileTypes, path, upload) {
 
-    var layers = {},
-        templates = {},
+    var templates = {},
         findFileType,
         initialize,
         log_error,
@@ -62,8 +63,11 @@ define(['jquery',
 
         for (name in files) {
             // filter out the prototype properties
+
             if (files.hasOwnProperty(name)) {
+
                 // check to see if the layer was already defined
+
                 if (layers.hasOwnProperty(name)) {
                     info = layers[name];
                     $.merge(info.files, files[name]);
@@ -75,6 +79,7 @@ define(['jquery',
                     });
                     info.collectErrors();
                     layers[name] = info;
+
                 }
             }
         }
@@ -82,6 +87,7 @@ define(['jquery',
 
     displayFiles = function (file_queue) {
         file_queue.empty();
+
         $.each(layers, function (name, info) {
             if (!info.type) {
                 log_error({
@@ -118,7 +124,7 @@ define(['jquery',
                 displayFiles(file_queue);
             },
             runUpload = function (files) {
-                buildFileInfo(_.groupBy(files, LayerInfo.getName));
+                buildFileInfo(_.groupBy(files, path.getName));
                 displayFiles(file_queue);
             },
             handleDragOver = function (e) {
@@ -142,7 +148,7 @@ define(['jquery',
 
         $(options.form).change(function (event) {
             // this is a mess
-            buildFileInfo(_.groupBy(file_input.files, LayerInfo.getName));
+            buildFileInfo(_.groupBy(file_input.files, path.getName));
             displayFiles(file_queue);
         });
         $(options.clear_button).on('click', doClearState);
