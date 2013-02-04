@@ -46,11 +46,13 @@ from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Profile, Role
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.layers.ows import wcs_links, wfs_links, wms_links
+from geonode.layers.ows import wcs_links, wfs_links, wms_links, \
+    wps_execute_gs_aggregate
 from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
     SPATIAL_REPRESENTATION_TYPES,  TOPIC_CATEGORIES, \
-    DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
+    DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES, \
+    LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 
 from geoserver.catalog import Catalog, FailedRequestError
 from taggit.managers import TaggableManager
@@ -427,6 +429,16 @@ class Attribute(models.Model):
     attribute_type = models.CharField(_('attribute type'), help_text=_('the data type of the attribute (integer, string, geometry, etc)'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
     visible = models.BooleanField(_('visible?'), help_text=_('specifies if the attribute should be displayed in identify results'), default=True)
     display_order = models.IntegerField(_('display order'), help_text=_('specifies the order in which attribute should be displayed in identify results'), default=1)
+
+    # statistical derivations
+    min = models.CharField(_('min'), help_text=_('minimum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    max = models.CharField(_('max'), help_text=_('maximum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    average = models.CharField(_('average'), help_text=_('average value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    median = models.CharField(_('median'), help_text=_('median value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    stddev = models.CharField(_('standard deviation'), help_text=_('standard deviation for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    sum = models.CharField(_('sum'), help_text=_('sum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    last_stats_updated = models.DateTimeField(_('last modified'), default=datetime.now, help_text=_('date when attribute statistics were last updated')) # passing the method itself, not
+
     objects = AttributeManager()
 
     def __str__(self):
@@ -782,6 +794,39 @@ def save_style(gs_style):
     style.save()
     return style
 
+def is_layer_attribute_aggregable(store_type, field_name, field_type):
+    """
+    Dechiper whether layer attribute is suitable for statistical derivation
+    """
+
+    # must be vector layer
+    if store_type != 'dataStore':
+        return False
+    # must be a numeric data type
+    if field_type not in LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES:
+        return False
+    # must not be an identifier type field
+    if field_name.lower() in ['id', 'identifier']:
+        return False
+
+    return True
+
+def get_attribute_statistics(layer_name, field):
+    """
+    Generate statistics (range, mean, median, standard deviation)
+    for layer attribute
+    """
+
+    logger.debug('Deriving aggregate statistics for attribute %s', field)
+
+    try:
+        result = wps_execute_gs_aggregate(layer_name, field)
+    except Exception, err:
+        raise RuntimeError('Error generating layer aggregate statistics: %s', err)
+
+    return result
+
+
 def set_attributes(layer):
     """
     Retrieve layer attribute names & types from Geoserver,
@@ -852,6 +897,16 @@ def set_attributes(layer):
             if field is not None:
                 la, created = Attribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
                 if created:
+                    if is_layer_attribute_aggregable(layer.storeType, field, ftype):
+                        logger.debug("Generating layer attribute statistics")
+                        result = get_attribute_statistics(layer.name, field)
+                        la.min = result['Min']
+                        la.max = result['Max']
+                        la.average = result['Average']
+                        la.median = result['Median']
+                        la.stddev = result['StandardDeviation']
+                        la.sum = result['Sum']
+                        la.last_stats_updated = datetime.now()
                     la.attribute_label = field.title()
                     la.visible = ftype.find("gml:") != 0
                     la.display_order = iter
