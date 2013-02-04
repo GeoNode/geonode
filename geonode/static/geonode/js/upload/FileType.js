@@ -1,7 +1,9 @@
 /*global define: true, $:true */
+'use strict';
 
-define(function () {
-    'use strict';
+define(function (require, exports) {
+    var getExt = require('upload/path').getExt,
+        FileType;
 
     /** Create an instance of a FileType object
      *  @constructor
@@ -10,7 +12,7 @@ define(function () {
      *  @param {name, main, requires}
      */
 
-    var FileType = function (options) {
+    FileType = function (options) {
         this.name = null;
         this.main = null;
         this.requires = null;
@@ -19,8 +21,7 @@ define(function () {
 
 
     FileType.prototype.isType = function (file) {
-        var name = file.name;
-        return (this.main === name.match(/(\w+)\.(\w+)$/)[2]);
+        return (this.main === getExt(file));
     };
 
     FileType.prototype.findTypeErrors = function (extensions) {
