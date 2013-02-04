@@ -484,3 +484,20 @@ ALL_LANGUAGES = (
 )
 
 LINK_TYPES = ['original', 'data', 'image', 'metadata']
+
+LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES = [
+    'xsd:byte',
+    'xsd:decimal',
+    'xsd:int',
+    'xsd:integer',
+    'xsd:long',
+    'xsd:negativeInteger',
+    'xsd:nonNegativeInteger',
+    'xsd:nonPositiveInteger',
+    'xsd:positiveInteger',
+    'xsd:short',
+    'xsd:unsignedLong',
+    'xsd:unsignedInt',
+    'xsd:unsignedShort',
+    'xsd:unsignedByte',
+]
