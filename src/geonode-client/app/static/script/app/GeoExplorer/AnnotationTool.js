@@ -22,7 +22,7 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
         var layer = new OpenLayers.Layer.Vector('geo_annotation_layer', {
         	displayInLayerSwitcher: false,
         	projection: this.projection,
-            strategies: [new OpenLayers.Strategy.BBOX({resFactor: 1, ratio: 1}), new OpenLayers.Strategy.Save()],
+            strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
             protocol: new OpenLayers.Protocol.HTTP({
                 url: "/annotations/" + this.target.mapID,
                 format: new OpenLayers.Format.GeoJSON()
@@ -113,6 +113,7 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
                 
                 selectAnnoControl.popup = new GeoExt.Popup({
                     title:currentFeature.attributes.title,
+                    closeAction: "close",
                     autoScroll: true,
                     height: 300,
                     listeners: {
@@ -188,7 +189,8 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
         }
         
         function added(evt) {
-           if (currentFeature && currentFeature.state == "Insert" && currentFeature != evt.feature) {
+        if (!evt.feature.fid) {
+           if (currentFeature != evt.feature) {
                 layer.removeFeatures(currentFeature);
             }   
             //displayForm(evt.feature);
@@ -200,6 +202,7 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
                modControl.popup = new GeoExt.Popup({
                    title:"New Note",
                    width: 450,
+                   closeAction: "close",
                    listeners: {
                    	'beforeclose': function() {
                            modControl.unselectFeature(currentFeature);
@@ -212,6 +215,9 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
                modControl.popup.show(); 
                
            }
+          } else if (modControl && modControl.popup) {
+        	  modControl.popup.close();
+          }
         }
 
         function displayForm(feature) {
@@ -284,6 +290,38 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
                             scope: this
                         }
                     }),
+                    new Ext.menu.Menu({
+                    	items: [
+                                new Ext.menu.CheckItem({
+                                    groupClass: null,
+                                    text: this.pointText,
+                                    group: toggleGroup,
+                                    iconCls: 'gxp-icon-point',
+                                    listeners: {
+                                        checkchange: addPointControl.activate();
+                                    }
+                                }),
+                                new Ext.menu.CheckItem({
+                                    groupClass: null,
+                                    text: this.lineText,
+                                    group: toggleGroup,
+                                    iconCls: 'gxp-icon-line',
+                                    listeners: {
+                                        checkchange: addLineControl.activate();
+                                    }
+                                }),
+                                new Ext.menu.CheckItem({
+                                    groupClass: null,
+                                    text: this.polygonText,
+                                    group: toggleGroup,
+                                    iconCls: 'gxp-icon-polygon',
+                                    listeners: {
+                                        checkchange: checkChange.createDelegate(this, [OpenLayers.Handler.Polygon], 2)
+                                    }
+                                })
+                    	        ]
+                    }),
+                    
                     new Ext.menu.CheckItem({
                         checked: false,
                         text: "Add Notes",
