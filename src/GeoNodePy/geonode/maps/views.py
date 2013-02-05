@@ -1140,7 +1140,8 @@ def layer_replace(request, layername):
                 _("You are not permitted to modify this layer")})), status=401)
     if request.method == 'GET':
         cat = Layer.objects.gs_catalog
-        info = cat.get_resource(layer.name)
+        store = cat.get_store(layer.store)
+        info = cat.get_resource(layer.name,store=store)
         is_featuretype = info.resource_type == FeatureType.resource_type
         
         return render_to_response('maps/layer_replace.html',

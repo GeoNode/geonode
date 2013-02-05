@@ -1379,7 +1379,8 @@ class Layer(models.Model, PermissionLevelMixin):
             Layer.objects.gs_catalog.save(self.publishing)
 
     def  _populate_from_gs(self):
-        gs_resource = Layer.objects.gs_catalog.get_resource(self.name)
+        gs_store = Layer.objects.gs_catalog.get_store(self.store)
+        gs_resource = Layer.objects.gs_catalog.get_resource(self.name, gs_store)
         if gs_resource is None:
             return
         self.srs = gs_resource.projection
