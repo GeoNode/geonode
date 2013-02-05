@@ -509,7 +509,7 @@ def save(layer, base_file, user, overwrite=True, title=None,
 
     # Verify the object was saved to the Django database
     try:
-        Layer.objects.get(name=name)
+        Layer.objects.get(typename=typename)
     except Layer.DoesNotExist, e:
         msg = ('There was a problem saving the layer %s to Catalogue/Django. '
                'Error is: %s' % (layer, str(e)))
@@ -649,6 +649,11 @@ def upload(incoming, user=None, overwrite=False,
             save_it = False
             status = 'skipped'
             layer = existing_layers[0]
+            if verbosity > 0:
+                msg = ('Stopping process because '
+                       '--overwrite was not set '
+                       'and a layer with this name already exists.')
+                print >> sys.stderr, msg
         else:
             save_it = True
 

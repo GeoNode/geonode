@@ -27,6 +27,8 @@ class ContactRoleInline(admin.TabularInline):
 
 class ProfileAdmin(admin.ModelAdmin):
     inlines = [ContactRoleInline]
+    list_display = ('id','user', 'name', 'organization',)
+    search_fields = ('name','organization', 'profile', )
 
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Role)

@@ -38,7 +38,7 @@ CENTOS_54_64="ami-ccb35ea5"
 CENTOS_62_32="ami-5c4e9235"
 CENTOS_62_64=""
 
-DEFAULT_BASE=PRECISE_32
+DEFAULT_BASE=PRECISE_64
 DEFAULT_INSTANCE_TYPE='m1.small'
 
 GEONODE_LUCID_32=""
@@ -46,13 +46,15 @@ GEONODE_LUCID_64=""
 GEONODE_MAVERIK_32=""
 GEONODE_MAVERIK_64=""
 GEONODE_NATTY_32=""
-GEONODE_NATTY_64="ami-4e63bf27"
+GEONODE_NATTY_64=""
 GEONODE_ONEIRIC_32=""
 GEONODE_ONEIRIC_64=""
-GEONODE_PRECISE_32="ami-d32694ba"
-GEONODE_PRECISE_64="ami-fbf44992"
+GEONODE_PRECISE_32=""
+GEONODE_PRECISE_64=""
 
 DEFAULT_BASE_GEONODE=GEONODE_PRECISE_32
+
+ALPHA_ELASTIC_IP="54.235.204.189"
 
 def writeconfig(config):
     # Writing our configuration file to CONFIG_FILE
@@ -87,6 +89,14 @@ def launch_geonode():
 def launch_base():
     readconfig(default_ami=DEFAULT_BASE)
     launch()
+    
+def set_alpha_ip():
+    config = readconfig()
+    conn = boto.connect_ec2()
+    # Assign elastic ip to instance
+    instance_id = config.get('ec2', 'INSTANCE')
+    conn.associate_address(instance_id=instance_id, public_ip=ALPHA_ELASTIC_IP)
+
 
 def launch():
     config = readconfig()
@@ -151,7 +161,7 @@ def launch():
         config.set('ec2', 'HOST', dns)
         config.set('ec2', 'INSTANCE', instance.id)
         writeconfig(config)
-
+        
         print "ssh -i %s ubuntu@%s" % (KEY_PATH, dns)
         print "Terminate the instance via the web interface %s" % instance
 
@@ -187,6 +197,8 @@ if sys.argv[1] == "launch_geonode":
     launch_geonode()
 elif sys.argv[1] == "launch_base":
     launch_base()
+elif sys.argv[1] == "set_alpha_ip":
+    set_alpha_ip()
 elif sys.argv[1] == "terminate":
     terminate()
 elif sys.argv[1] == "host":

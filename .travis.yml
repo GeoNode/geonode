@@ -18,10 +18,7 @@ install:
   - pip install -e . --use-mirrors
 
 before_script:
-  - cd geoserver-geonode-ext
-  - mvn -s travis-settings.xml install
-  - cd ..
-  - paver setup -f
+  - paver setup
 
 script:
   - python manage.py test geonode.tests.smoke
@@ -33,10 +30,10 @@ script:
 after_script:
   - paver reset_hard
 
-# notifications:
-#   irc:
-#     channels:
-#       - "irc.freenode.org#geonode"
-#     use_notice: true
-#   email:
-# #    - geonode-dev@opengeo.org
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.org#geonode"
+    use_notice: true
+  email:
+#    - geonode-dev@opengeo.org

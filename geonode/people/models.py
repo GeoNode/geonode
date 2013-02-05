@@ -28,6 +28,8 @@ from django.core.urlresolvers import reverse
 
 from django.contrib.auth.models import User, Permission
 
+from taggit.managers import TaggableManager
+
 from geonode.layers.enumerations import COUNTRIES
 from geonode.people.enumerations import ROLE_VALUES, CONTACT_FIELDS
 
@@ -46,6 +48,7 @@ class Profile(models.Model):
     zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True, help_text=_('ZIP or other postal code'))
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True, help_text=_('country of the physical address'))
     email = models.EmailField(blank=True, null=True, help_text=_('address of the electronic mailbox of the responsible organization or individual'))
+    keywords = TaggableManager(_('keywords'), blank=True, help_text=_('commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject (space or comma-separated'))
 
     def clean(self):
         # the specification says that either name or organization should be provided
@@ -80,4 +83,4 @@ def user_post_save(sender, **kwargs):
     """
     user, created = kwargs["instance"], kwargs["created"]
     if created:
-        Profile.objects.create(user=user, name=user.username)
+        Profile.objects.create(user=user, name=user.username, email=user.email)

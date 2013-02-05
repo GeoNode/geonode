@@ -137,7 +137,6 @@ def _build_map_layer_text_query(q, query, query_keywords=False):
 def _build_kw_only_query(keywords):
     return reduce(operator.or_, [Q(keywords__name__contains=kw) for kw in keywords])
 
-
 def _get_owner_results(query):
     # make sure all contacts have a user attached
     q = extension.owner_query(query)
@@ -153,11 +152,11 @@ def _get_owner_results(query):
 
     if query.extent:
         q = filter_by_extent(Map, q, query.extent, True) | \
-            filter_by_extent(Layer, q, query.extent, True)
+             filter_by_extent(Layer, q, query.extent, True)
 
     if query.period:
         q = filter_by_period(Map, q, *query.period, user=True) | \
-            filter_by_period(Layer, q, *query.period, user=True)
+             filter_by_period(Layer, q, *query.period, user=True)
 
     if query.added:
         q = q.filter(user__date_joined__gt = query.added)
@@ -204,6 +203,9 @@ def _get_map_results(query):
         map_layers_with = MapLayer.objects.filter(name__in=layers_with_kw).values('map')
         q = q.filter(id__in=map_layers_with)
 
+    if query.exclude:
+        q = q.exclude(reduce(operator.or_, [Q(title__contains=ex) for ex in query.exclude]))
+
     if query.query:
         q = _build_map_layer_text_query(q, query, query_keywords=True)
         rules = _rank_rules(Map,
@@ -227,6 +229,9 @@ def _get_layer_results(query):
 
     if query.kw:
         q = q.filter(_build_kw_only_query(query.kw))
+
+    if query.exclude:
+        q = q.exclude(reduce(operator.or_, [Q(title__contains=ex) for ex in query.exclude]))
 
     if query.owner:
         q = q.filter(owner__username=query.owner)
@@ -275,6 +280,9 @@ def _get_document_results(query):
     if query.kw:
         q = q.filter(_build_kw_only_query(query.kw))
 
+    if query.exclude:
+        q = q.exclude(reduce(operator.or_, [Q(title__contains=ex) for ex in query.exclude]))
+
     if query.owner:
         q = q.filter(owner__username=query.owner)
 
@@ -311,18 +319,19 @@ def combined_search_results(query):
     facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'document', 'user')])
     results = {'facets' : facets}
 
-    bytype = query.type
+    bytype = None if query.type == u'all' else query.type
+    query.type = bytype
 
     if bytype is None or bytype == u'map':
         q = _get_map_results(query)
         facets['map'] = q.count()
         results['maps'] = q
 
-    if bytype is None or bytype in (u'layer', u'raster', u'vector'):
+    if bytype is None or bytype in (u'layer', u'coverageStore', u'dataStore'):
         q = _get_layer_results(query)
         facets['layer'] = q.count()
-        facets['raster'] = q.filter(storeType='raster').count()
-        facets['vector'] = q.filter(storeType='vector').count()
+        facets['raster'] = q.filter(storeType='coverageStore').count()
+        facets['vector'] = q.filter(storeType='dataStore').count()
         results['layers'] = q
 
     if bytype is None or bytype == u'document':

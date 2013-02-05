@@ -2,6 +2,9 @@
 {% load bootstrap_tags %}
 {% load pagination_tags %}
 {% load url from future %}
+{% load friendly_loader %}
+{% friendly_load avatar_tags %}
+
 {% load i18n %}
 <div class="comments paginate paginate-manual">
     <header>
@@ -15,6 +18,7 @@
     {% autopaginate comment_list 5 %}
     {% for comment in comment_list %}      
     <article>
+        <p><a href="{{ comment.author.get_profile.get_absolute_url }}">{% avatar comment.author 80 %}</a></p>
         <p>{{ comment.comment }}</p>
         <footer><a href="{{ comment.author.get_profile.get_absolute_url }}" rel="author">{{ comment.author }}</a> on <time>{{ comment.submit_date|date:"M j, Y" }}</time></footer>
       </article>

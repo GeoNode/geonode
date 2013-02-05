@@ -28,6 +28,7 @@ import errno
 
 from datetime import datetime
 from lxml import etree
+from urlparse import urlparse
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -45,17 +46,22 @@ from geonode.gs_helpers import cascading_delete
 from geonode.people.models import Profile, Role
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.layers.ows import wcs_links, wfs_links, wms_links
+from geonode.layers.ows import wcs_links, wfs_links, wms_links, \
+    wps_execute_layer_attribute_statistics
 from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
     SPATIAL_REPRESENTATION_TYPES,  TOPIC_CATEGORIES, \
-    DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
+    DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES, \
+    LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 
 from geoserver.catalog import Catalog, FailedRequestError
 from taggit.managers import TaggableManager
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
+
+def get_default_category():
+    return TopicCategory.objects.get(slug='location')
 
 class Style(models.Model):
     """Model for storing styles.
@@ -101,6 +107,7 @@ class TopicCategory(models.Model):
 
     class Meta:
         ordering = ("name",)
+        verbose_name_plural = "Topic Categories"
 
 
 class ResourceBase(models.Model, PermissionLevelMixin):
@@ -139,7 +146,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng', help_text=_('language used within the dataset'))
     topic_category = models.CharField(_('topic_category'), editable=False, max_length=255, choices=TOPIC_CATEGORIES, default='location')
-    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True, blank=True)
+    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True, blank=True, default=get_default_category)
 
     # Section 5
     temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True, help_text=_('time period covered by the content of the dataset (start)'))
@@ -218,6 +225,9 @@ class ResourceBase(models.Model, PermissionLevelMixin):
             return ','.join([kw.name for kw in keywords_qs])
         else:
             return ''
+            
+    def class_name(value): 
+        return value.__class__.__name__ 
 
     class Meta:
         abstract = True
@@ -391,6 +401,11 @@ class Layer(ResourceBase):
 
     def tiles_url(self):
         return self.link_set.get(name='Tiles').url
+        
+    def maps(self):
+        from geonode.maps.models import MapLayer
+        return  MapLayer.objects.filter(name=self.typename)
+        
 
 class AttributeManager(models.Manager):
     """Helper class to access filtered attributes
@@ -414,10 +429,25 @@ class Attribute(models.Model):
     attribute_type = models.CharField(_('attribute type'), help_text=_('the data type of the attribute (integer, string, geometry, etc)'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
     visible = models.BooleanField(_('visible?'), help_text=_('specifies if the attribute should be displayed in identify results'), default=True)
     display_order = models.IntegerField(_('display order'), help_text=_('specifies the order in which attribute should be displayed in identify results'), default=1)
+
+    # statistical derivations
+    count = models.IntegerField(_('count'), help_text=_('count value for this field'), default=1)
+    min = models.CharField(_('min'), help_text=_('minimum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    max = models.CharField(_('max'), help_text=_('maximum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    average = models.CharField(_('average'), help_text=_('average value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    median = models.CharField(_('median'), help_text=_('median value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    stddev = models.CharField(_('standard deviation'), help_text=_('standard deviation for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    sum = models.CharField(_('sum'), help_text=_('sum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    unique_values = models.TextField(_('unique values for this field'), null=True, blank=True, default='NA')
+    last_stats_updated = models.DateTimeField(_('last modified'), default=datetime.now, help_text=_('date when attribute statistics were last updated')) # passing the method itself, not
+
     objects = AttributeManager()
 
     def __str__(self):
         return "%s" % self.attribute_label if self.attribute_label else self.attribute
+
+    def unique_values_as_list(self):
+        return self.unique_values.split(',')
 
 class ContactRole(models.Model):
     """
@@ -518,6 +548,12 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.contactrole_set.create(role=instance.metadata_author_role,
                                          contact=Layer.objects.admin_contact())
 
+def post_delete_layer(instance, sender, **kwargs):
+    """Removed the layer from any associated map, if any.
+    """
+    from geonode.maps.models import MapLayer
+    logger.debug("Going to delete associated maplayers for [%s]", instance.typename)
+    MapLayer.objects.filter(name=instance.typename).delete()
 
 def geoserver_pre_save(instance, sender, **kwargs):
     """Send information to geoserver.
@@ -727,6 +763,14 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
                        )
 
+    #remove links that belong to and old address
+
+    for link in instance.link_set.all():
+        if not urlparse(settings.SITEURL).hostname == urlparse(link.url).hostname and not \
+                    urlparse(settings.GEOSERVER_BASE_URL).hostname == urlparse(link.url).hostname:
+
+            link.delete()
+
     #Save layer attributes
     set_attributes(instance)
 
@@ -754,6 +798,39 @@ def save_style(gs_style):
     style.sld_url = gs_style.body_href()
     style.save()
     return style
+
+
+def is_layer_attribute_aggregable(store_type, field_name, field_type):
+    """
+    Dechiper whether layer attribute is suitable for statistical derivation
+    """
+
+    # must be vector layer
+    if store_type != 'dataStore':
+        return False
+    # must be a numeric data type
+    if field_type not in LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES:
+        return False
+    # must not be an identifier type field
+    if field_name.lower() in ['id', 'identifier']:
+        return False
+
+    return True
+
+
+def get_attribute_statistics(layer_name, field):
+    """
+    Generate statistics (range, mean, median, standard deviation, unique values)
+    for layer attribute
+    """
+
+    logger.debug('Deriving aggregate statistics for attribute %s', field)
+
+    try:
+        return wps_execute_layer_attribute_statistics(layer_name, field)
+    except Exception, err:
+        logger.exception('Error generating layer aggregate statistics')
+
 
 def set_attributes(layer):
     """
@@ -825,6 +902,19 @@ def set_attributes(layer):
             if field is not None:
                 la, created = Attribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
                 if created:
+                    if is_layer_attribute_aggregable(layer.storeType, field, ftype):
+                        logger.debug("Generating layer attribute statistics")
+                        result = get_attribute_statistics(layer.name, field)
+                        if result is not None:
+                            la.count = result['Count']
+                            la.min = result['Min']
+                            la.max = result['Max']
+                            la.average = result['Average']
+                            la.median = result['Median']
+                            la.stddev = result['StandardDeviation']
+                            la.sum = result['Sum']
+                            la.unique_values = result['unique_values']
+                            la.last_stats_updated = datetime.now()
                     la.attribute_label = field.title()
                     la.visible = ftype.find("gml:") != 0
                     la.display_order = iter
@@ -838,3 +928,5 @@ signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.pre_save.connect(geoserver_pre_save, sender=Layer)
 signals.pre_delete.connect(geoserver_pre_delete, sender=Layer)
 signals.post_save.connect(geoserver_post_save, sender=Layer)
+signals.post_delete.connect(post_delete_layer, sender=Layer)
+
