@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+  <ows:Identifier>gs:Aggregate</ows:Identifier>
+  <wps:DataInputs>
+    <wps:Input>
+      <ows:Identifier>features</ows:Identifier>
+      <wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wfs" method="POST">
+        <wps:Body>
+          <wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:geonode="http://www.geonode.org/">
+            <wfs:Query typeName="{{ layer_name }}"/>
+          </wfs:GetFeature>
+        </wps:Body>
+      </wps:Reference>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>aggregationAttribute</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>{{ field }}</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>function</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>Count</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>function</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>Min</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>function</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>Max</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>function</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>Average</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>function</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>Median</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>function</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>StdDev</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>function</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>Sum</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+    <wps:Input>
+      <ows:Identifier>singlePass</ows:Identifier>
+      <wps:Data>
+        <wps:LiteralData>True</wps:LiteralData>
+      </wps:Data>
+    </wps:Input>
+  </wps:DataInputs>
+<!--
+  <wps:ResponseForm>
+    <wps:ResponseDocument lineage="true" storeExecuteResponse="true" status="true">
+      <wps:Output>
+        <ows:Identifier>result</ows:Identifier>
+      </wps:Output>
+    </wps:ResponseDocument>
+  </wps:ResponseForm>
+-->
+  <wps:ResponseForm>
+    <wps:RawDataOutput mimeType="text/xml">
+      <ows:Identifier>result</ows:Identifier>
+    </wps:RawDataOutput>
+  </wps:ResponseForm>
+</wps:Execute>
