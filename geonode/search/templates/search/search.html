@@ -2,6 +2,8 @@
 {% load i18n %}
 {% load layers_tags %}
 {% load taggit_extras %}
+{% load pagination_tags %}
+{% load staticfiles %}
 
 {% block title %} {% trans "Search " %} - {{ block.super }} {% endblock %}
 
@@ -174,28 +176,70 @@
       </form>
     </div>
 
-    {# {% include "_pagination.html" %} #}
-
-    <div id="search-results">
+    <div class="row">
+      <div class="span8 paginate paginate-auto">
+        <div class="widget list paginate-contents">
+          {% if object_list|length > 0 %}
+          {% autopaginate object_list 2 %}
+          {% for object in object_list %}
+            {% if object.class_name == 'Layer' %}
+              {% with object as layer %}
+                {% include "layers/_layer_list_item.html" %}
+              {% endwith %}
+            {% elif object.class_name == 'Map' %}
+              {% with object as map %}
+                {% include "maps/_map_list_item.html" %}
+              {% endwith %}
+            {% elif object.class_name == 'Document' %}
+              {% with object as document %}
+                {% include "documents/_document_list_item.html" %}
+              {% endwith %}
+            {% elif object.class_name == 'Profile' %}
+              {% with object as profile %}
+                {% include "people/_profile_list_item.html" %}
+              {% endwith %}
+            {% endif %}
+          {% endfor %}
+          {% else %}
+            <p>{% trans "No data found" %}</p>
+          {% endif %}
+        </div>
+          {% if object_list|length > 0 %}
+            {% paginate %}
+          {% endif %}
+      </div>
     </div>
-
-    {# {% include "_pagination.html" %} #}
-
   </div>
 
 {% endblock %}
 
 {% block extra_script %}
-    <script src="{{ STATIC_URL }}libs/js/bootstrap-datepicker.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}libs/js/jquery.tinysort.min.js"></script>
-    <script src="{{ STATIC_URL }}libs/js/hogan.js"></script>
-    <script id="searchResult" type="text/html">
-      {% include "search/search_result.js" %}
-    </script>
-    <script src="{{ STATIC_URL }}geonode/js/global_search.js"></script>
-    <script>        
-        $(function() {
-           window.globalDoSearch({{ init_search|safe }});
+    <script src="{% static "libs/js/bootstrap-datepicker.js" %}" type="text/javascript"></script>
+    <script src="{% static "libs/js/jquery.tinysort.min.js" %}"></script>
+    <script src="{% static "libs/js/waypoints.js" %}"></script>
+    <script src="{% static "libs/js/loadmore.js" %}"></script>
+    <script src="{% static "libs/js/jquery.raty.js" %}"></script>
+    <script src="{% static "geonode/js/paginate.js" %}"></script>
+    <script type="text/javascript">
+     $(function() {
+       $('.overall_rating').each(function() {
+        var rating = $(this).parents(".avg_rating").data('rating');
+        star(this, rating);
+      });
+       $(".loadmore").on("load.loadmore", function(e, o) {          
+        o.find(".overall_rating").each(function() {
+          var rating = $(this).parents(".avg_rating").data('rating');
+          star(this, rating);
         });
-    </script>
+       });
+     });
+      function star(elem, rating) {
+          $(elem).raty({
+            half: true,
+           readOnly: true,
+           score: rating,
+           path: "{% static "agon_ratings/img/" %}"
+          });        
+      }
+  </script>
 {% endblock %}
