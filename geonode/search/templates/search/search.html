@@ -2,12 +2,12 @@
 {% load i18n %}
 {% load layers_tags %}
 {% load taggit_extras %}
-{% load pagination_tags %}
 {% load staticfiles %}
+{% load url from future %}
 
-{% block title %} {% trans "Search " %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Search" %} - {{ block.super }} {% endblock %}
 
-{% block body_class %}search-results search{% endblock %}
+{% block body_class %}search{% endblock %}
 
 {% block head %}
 {{ block.super }}
@@ -15,231 +15,114 @@
 {% endblock %}
 
 {% block body_outer %}
-  <aside class="span4 search-filters">
-    <div class="well">
-      <header class="well-header">
-        <h3>{% trans "Refine your search" %}</h3>
-      </header>
-      <section class="selections">
-        <h4>
-          {% trans "Your selections" %}
-          <a href="#" id="clear-search" class="pull-right">Clear all</a>
-        </h4>
-        <ul class="unstyled">
-        </ul>
-      </section>
-
-      <div class="refine-search">
-        <section>
-            <header>
-                <h4>
-                    <a href="#filter-classes" class="expand-content" data-toggle="collapse">Type <i class="icon-chevron-right pull-right"></i></a>
-                </h4>
-            </header>
-            <div id="filter-classes" class="collapse in">
-                <form action="">
+    <div class="span12">
+      <h2 class="page-title">{% trans "Search" %}</h2>
+    </div>
+    <div class="span8">      
+      {% include "layers/_layer_filters.html" %}
+    </div>
+    <div class="span4">
+      <div class="pull-right" data-viewby="list">
+        {% include "_viewby.html" %}
+      </div>
+    </div>
+    <div class="span12">
+      <div class="row" id="contain-slider">
+        <div class="span4">
+          <div class="selections">
+            <h4>
+              {% trans "Your selections" %}
+              <a href="#" id="clear-search" class="pull-right">Clear all</a>
+            </h4>
+          </div>
+          <div id="slide-pane">
+            <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
+            <nav class="tabs-left" id="nav-categories">
+              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Type" %}</a></h2>
+                <ul class="nav">
                   <label class="checkbox" data-class="map">
-                    <input type="checkbox" id="filter-maps" /> Maps <span>(<span class="count">0</span>)</span>
+                    <input type="checkbox" id="filter-maps" {% if facets.map > 0 %}checked="checked"{% endif %} /> Maps <span>(<span class="count">{{ facets.map }}</span>)</span>
                   </label>
                   <label class="checkbox" data-class="layer">
-                    <input type="checkbox" id="filter-data" /> Layers <span>(<span class="count">0</span>)</span>
+                    <input type="checkbox" id="filter-data" {% if facets.layer > 0 %}checked="checked"{% endif %} /> Layers <span>(<span class="count">{{ facets.layer }}</span>)</span>
                   </label>
                   <div class="subgroup" data-class="layer">
                     <label class="checkbox" data-class="coverageStore">
-                      <input type="checkbox" /> Raster <span>(<span class="count">0</span>)</span>
+                      <input type="checkbox" {% if facets.raster > 0 %}checked="checked"{% endif %} /> Raster <span>(<span class="count">{{ facets.raster }}</span>)</span>
                     </label>
                     <label class="checkbox" data-class="dataStore">
-                      <input type="checkbox" /> Vector <span>(<span class="count">0</span>)</span>
+                      <input type="checkbox" {% if facets.vector > 0 %}checked="checked"{% endif %} /> Vector <span>(<span class="count">{{ facets.vector }}</span>)</span>
                     </label>
                   </div>
-                  {%  if DOCUMENTS_APP %}
                   <label class="checkbox" data-class="document">
-                    <input type="checkbox" /> Documents <span>(<span class="count">0</span>)</span>
-                  </label>
-                  {% endif %}
-                  <!--<label class="checkbox" data-class="feed">
-                    <input type="checkbox" /> Feeds <span>(<span class="count">0</span>)</span>
-                  </label>-->
+                    <input type="checkbox" {% if facets.document > 0 %}checked="checked"{% endif %} /> Documents <span>(<span class="count">{{ facets.document }}</span>)</span>
+                  </label> 
                   <label class="checkbox" data-class="owner">
-                    <input type="checkbox" /> Users <span>(<span class="count">0</span>)</span>
+                    <input type="checkbox" {% if facets.user > 0 %}checked="checked"{% endif %} /> Users <span>(<span class="count">{{ facets.user }}</span>)</span>
                   </label>
-                  <!--<label class="checkbox" data-class="group">
-                    <input type="checkbox" /> Groups <span>(<span class="count">0</span>)</span>
-                  </label>-->
-                </form>
-            </div>
-        </section>
-
-        <!--<section>
-          <header>
-              <h4>
-                  <a href="#filter2" class="expand-content" data-toggle="collapse">Spatial Extent <i class="icon-chevron-right pull-right"></i></a>
-              </h4>
-          </header>
-        </section>-->
-
-        <section>
-            <header>
-                <h4>
-                    <a href="#filter3" class="expand-content" data-toggle="collapse">Temporal Extent <i class="icon-chevron-right pull-right"></i></a>
-                </h4>
-            </header>
-            <div id="filter3" class="collapse in">
-                <p>Limit the search to a specific time period</p>
-                <form action="">
-                    <label for="id_data_begins">Layers begins after:</label>
-                    <input id="id_data_begins" value="{% now "Y" %}-01-01" data-date-format="yyyy-mm-dd" type="text" class="span2 datepicker" placeholder="yyyy-mm-dd" />
-                    <label for="id_data_ends">Layers ends before:</label>
-                    <input id="id_data_ends" value="{% now "Y-m-d" %}" data-date-format="yyyy-mm-dd" type="text" class="span2 datepicker" placeholder="yyyy-mm-dd" />
-                </form>
-            </div>
-        </section>
-
-        <section>
-            <header>
-                <h4>
-                    <a href="#filter-categories" class="expand-content" data-toggle="collapse">Category <i class="icon-chevron-right pull-right"></i></a>
-                </h4>
-            </header>
-            <div id="filter-categories" class="collapse">
-                {% layer_categories as categories %}
-                {% for category in categories %}
-                <label class="checkbox" data-category="{{ category.slug }}">
-                    <input type="checkbox" value="{{ category|slugify }}" checked="checked" /> {{ category }}
-                    (<span class="count">0</span>)
-                </label>
+                </ul>
+            </nav>
+            <nav class="tabs-left" id="nav-categories">
+              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Categories" %}</a></h2>
+              <ul class="nav">
+                {% layer_categories as category_list %}
+                <li><a {% if not layer_category %} class="active"{% endif %}>{% trans "All Categories" %}</a></li>
+                {% for category in category_list %}
+                <li><a {% ifequal layer_category category %} class="active"{% endifequal %}>{{ category }}
+                {% if category.layer_set.count > 0 %}({{ category.layer_set.count }}){% endif %}
+                </a></li>
                 {% endfor %}
               </ul>
-            </div>
-        </section>
-
-        {% get_taglist as tags for 'layers.Layer' %}
-        <section>
-            <header>
-                <h4>
-                    <a href="#filter-keywords" class="expand-content" data-toggle="collapse">Keywords <i class="icon-chevron-right pull-right"></i></a>
-                </h4>
-            </header>
-            <div id="filter-keywords" class="collapse">
-              {% for tag in tags %}
-              <label class="checkbox" data-tag="{{ tag }}">
-                <input type="checkbox" value="{{ tag }}" checked="checked" /> {{ tag }}
-                (<span class="count">0</span>)
-              </label>
-              {% endfor %}
-            </div>
-        </section>
-
-        <!--<section>
-            <header>
-                <h4>
-                    <a href="#filter6" class="expand-content" data-toggle="collapse">Metadata Date <i class="icon-chevron-right pull-right"></i></a>
-                </h4>
-            </header>
-            <div id="filter6" class="collapse">
-              <p>Metadata Date</p>
-            </div>
-        </section>-->
-      </div>
-    </div>
-  </aside>
-  <div class="span8">
-    <h2 class="page-title">{% trans "Search Results" %}</h2>
-    <h4>You searched for:<ul class="search_query"></ul></h4>
-    <div class="row">
-      <div class="span6">
-        <p class="related-search">
-          
-        </p>
-      </div>
-      <div class="span2">
-        <div class="view">
-          <strong>View:</strong>
-          <a href="#" class="list current"><i class="icon-th-list"></i></a>
-          <a href="#" class="thumb"><i class="icon-th-large"></i></a>
+            </nav>
+            <nav class="" id="nav-keywords">
+              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> {% trans "Keywords" %}</a></h2>
+              <ul class="nav">
+                {% get_taglist as tags for 'layers.Layer' %}
+                {% for tag in tags %}
+                  <li><a href="{% url "layer_browse_tag" tag.slug %}"{% if tag.slug == layer_tag %} class="active"{% endif %}>{{ tag }}</a> <span class="count">({{ tag.num_times }})</span></li>
+                {% endfor %}
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <div class="tab-content span8 paginate paginate-auto">
+          {% include 'search/search_content.html' %}
         </div>
       </div>
     </div>
-
-    <div class="well info-bar hide">
-      <div class="results-counter"><strong><span class="count">0</span> results</strong> found</div>
-      <!--<a href="#" class="save-search"><i class="icon-star"></i> Save Search</a>-->
-      <form action="" class="form-inline">
-        <label for="">sort by:</label>
-        <select name="" id="id_sorting" class="span1">
-          <option value="modified">Newest</option>
-          <option value="popular">Popular</option>
-          <option value="relevance">Relevance</option>
-          <option value="alphaaz">A-Z</option>
-          <option value="alphaza">Z-A</option>
-        </select>
-      </form>
-    </div>
-
-    <div class="row">
-      <div class="span8 paginate paginate-auto">
-        <div class="widget list paginate-contents">
-          {% if object_list|length > 0 %}
-          {% autopaginate object_list 2 %}
-          {% for object in object_list %}
-            {% if object.class_name == 'Layer' %}
-              {% with object as layer %}
-                {% include "layers/_layer_list_item.html" %}
-              {% endwith %}
-            {% elif object.class_name == 'Map' %}
-              {% with object as map %}
-                {% include "maps/_map_list_item.html" %}
-              {% endwith %}
-            {% elif object.class_name == 'Document' %}
-              {% with object as document %}
-                {% include "documents/_document_list_item.html" %}
-              {% endwith %}
-            {% elif object.class_name == 'Profile' %}
-              {% with object as profile %}
-                {% include "people/_profile_list_item.html" %}
-              {% endwith %}
-            {% endif %}
-          {% endfor %}
-          {% else %}
-            <p>{% trans "No data found" %}</p>
-          {% endif %}
-        </div>
-          {% if object_list|length > 0 %}
-            {% paginate %}
-          {% endif %}
-      </div>
-    </div>
-  </div>
-
 {% endblock %}
 
 {% block extra_script %}
-    <script src="{% static "libs/js/bootstrap-datepicker.js" %}" type="text/javascript"></script>
-    <script src="{% static "libs/js/jquery.tinysort.min.js" %}"></script>
-    <script src="{% static "libs/js/waypoints.js" %}"></script>
-    <script src="{% static "libs/js/loadmore.js" %}"></script>
-    <script src="{% static "libs/js/jquery.raty.js" %}"></script>
-    <script src="{% static "geonode/js/paginate.js" %}"></script>
-    <script type="text/javascript">
-     $(function() {
-       $('.overall_rating').each(function() {
+  <script src="{% static "libs/js/bootstrap-datepicker.js" %}" type="text/javascript"></script>
+  <script src="{% static "libs/js/jquery.tinysort.min.js" %}"></script>
+  <script src="{% static "libs/js/waypoints.js" %}"></script>
+  <script src="{% static "libs/js/loadmore.js" %}"></script>
+  <script src="{% static "libs/js/jquery.raty.js" %}"></script>
+  <script src="{% static "geonode/js/explore.js" %}"></script>
+  <script src="{% static "geonode/js/paginate.js" %}"></script>
+  <script type="text/javascript">
+    var search_status = {{ query|safe }}
+  </script>
+  <script type="text/javascript">
+    $(function() {
+      $('.overall_rating').each(function() {
         var rating = $(this).parents(".avg_rating").data('rating');
         star(this, rating);
       });
-       $(".loadmore").on("load.loadmore", function(e, o) {          
+      $(".loadmore").on("load.loadmore", function(e, o) {          
         o.find(".overall_rating").each(function() {
           var rating = $(this).parents(".avg_rating").data('rating');
           star(this, rating);
         });
-       });
-     });
-      function star(elem, rating) {
-          $(elem).raty({
-            half: true,
-           readOnly: true,
-           score: rating,
-           path: "{% static "agon_ratings/img/" %}"
-          });        
-      }
+      });
+    });
+    function star(elem, rating) {
+      $(elem).raty({
+        half: true,
+       readOnly: true,
+       score: rating,
+       path: "{% static "agon_ratings/img/" %}"
+      });        
+    }
   </script>
-{% endblock %}
+{% endblock extra_script %}
