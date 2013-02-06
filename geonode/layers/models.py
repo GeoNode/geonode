@@ -42,7 +42,7 @@ from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
 from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
-from geonode.gs_helpers import cascading_delete
+from geonode.geoserver.helpers import cascading_delete
 from geonode.people.models import Profile, Role
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -708,6 +708,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     elif instance.storeType == 'coverageStore':
         #FIXME(Ariel): This works for public layers, does it work for restricted too?
         # would those end up with no geotiff links, like, forever?
+ 
         links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename)
         for ext, name, mime, wcs_url in links:
             instance.link_set.get_or_create(url=wcs_url,
@@ -718,7 +719,6 @@ def geoserver_post_save(instance, sender, **kwargs):
                                 link_type='data',
                                 )
                                )
-
 
     kml_reflector_link_download = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
         'layers': instance.typename,

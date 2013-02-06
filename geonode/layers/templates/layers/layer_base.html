@@ -11,7 +11,9 @@
       <!--nav class="back"><a href="{% url "layer_browse" %}"><i class="icon-chevron-left"></i> See all Layers</a></nav-->
       <ul class="nav nav-tabs" id="subnav-tabs">
             <li><a href="{% url "layer_browse" %}" class="explore">{% trans "Explore Layers" %}</a></li>
-            <li><a href="{% url "layer_search_page" %}" class="search">{% trans "Search Layers" %}</a></li>
+            <li><a href="{% url "layer_search_page" %}"
+            class="search">{% trans "Search Layers" %}</a></li>
+            <!-- switch to us the new upload -->
             <li><a href="{% url "layer_upload" %}" class="upload">{% trans "Upload Layers" %}</a></li>
       </ul>
     </div>

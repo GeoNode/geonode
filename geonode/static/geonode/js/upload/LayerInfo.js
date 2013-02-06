@@ -1,7 +1,39 @@
-/*global define: true, gn:true, $:true, FormData: true */
+/*jslint nomen: true */
+/*global define:true, $:true, FormData: true, alert: true, window:true */
+'use strict';
 
-define(['underscore', './FileTypes'], function (_, fileTypes, upload){
-    'use strict';
+define(function (require, exports) {
+
+    var $        = require('jquery'),
+        _        = require('underscore'),
+        fileTypes = require('upload/FileTypes'),
+        path     = require('upload/path'),
+        make_request,
+        LayerInfo;
+
+    /** We have a different notion of success and failure for GeoNode's
+     * urls this function allows the user to define two functions, success
+     * and failure and have the failure function called when an bad
+     * http response is returns and also when there is not success
+     * property define in the response.
+     */
+    make_request = (function () {
+        return function (options) {
+            var success = options.success,
+                failure = options.failure;
+
+            delete options.success;
+            delete options.failure;
+
+            $.ajax(options).done(function (resp, status) {
+                if (resp.success === true) {
+                    success(resp, status);
+                } else {
+                    failure(resp, status);
+                }
+            }).fail(failure);
+        };
+    }());
 
     /** Creates an instance of a LayerInfo
      *  @constructor
@@ -9,7 +41,8 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
      *  @this {LayerInfo}
      *  @param {name, files}
      */
-    var LayerInfo = function (options) {
+
+    LayerInfo = function (options) {
 
         this.name     = null;
         this.files    = null;
@@ -23,8 +56,15 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
         if (!this.main || !this.type) {
             this.guessFileType();
         }
-        this.selector = '#' + this.name + '-element';
+
+        // need to find a way converting this name to a safe selector
+        this.selector = '#' + LayerInfo.safeSelector(this.name) + '-element';
+
         this.errors = this.collectErrors();
+    };
+
+    LayerInfo.safeSelector = function (name) {
+        return name.replace(/\[|\]|\(|\)/g, '_');
     };
 
     LayerInfo.prototype.progressTemplate  = function (options) {
@@ -94,7 +134,7 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
 
         for (i = 0; i < files.length; i += 1) {
             file = files[i];
-            extension = LayerInfo.getExt(file);
+            extension = path.getExt(file);
             res.push(extension);
         }
         return res;
@@ -120,47 +160,71 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
         for (i = 0; i < this.files.length; i += 1) {
             file = this.files[i];
             if (file.name !== this.main.name) {
-                ext = LayerInfo.getExt(file);
+                ext = path.getExt(file);
                 form_data.append(ext + '_file', file);
             }
         }
 
         return form_data;
     };
+    LayerInfo.prototype.logStatus = function (options) {
+        var status = this.element.find('#status'),
+            empty = options.empty;
 
-    LayerInfo.prototype.markSuccess = function (resp) {
-        var self = this;
+        if (empty) {
+            status.empty();
+        }
 
-        $.ajax({
-            url: resp.redirect_to
-        }).done(function (resp) {
-            var status = self.element.find('#status'), a;
-            if (resp.success) {
-                status.empty();
-                // At this point we need access to the host name
-                // Not sure the best way to access
-                status.append(self.successTemplate({
-                    name: resp.name
-                }));
-            } else {
-                status.empty();
-                status.append(self.progressTemplate({
-                    alertLevel: 'alert-error',
-                    message: 'There was an error in uploading your file, ' + resp.errors.join(', ')
-                }));
-            }
-        });
-
+        status.append(this.progressTemplate({
+            message: options.msg,
+            alertLevel: options.level
+        }));
+    };
+    LayerInfo.prototype.markError = function (error) {
+        this.logStatus({msg: '[ ' + error + ' ]'});
     };
 
-    LayerInfo.prototype.markStart = function () {
+    // make this into an abstract method so we can mark events in a
+    // more generic way
 
-        this.element.find('#status').append(
-            this.progressTemplate({
-                message: 'Your upload has started.',
-                alertLevel: 'alert-success'
-            })
-        );
+    LayerInfo.prototype.markStart = function () {
+        this.logStatus({
+            msg: 'Your upload has started',
+            level: 'alert-success'
+        });
+    };
+
+    /*
+
+      We need to add a step for the srs url and then the final
+
+     */
+    LayerInfo.prototype.doFinal = function (resp) {
+        var self = this;
+        make_request({
+            url: resp.redirect_to,
+            async: false,
+            failure: function (resp, status) {self.markError(resp); },
+            success: function (resp, status) {
+                // hack find a better way of creating a string
+                var a = '<a href="' + resp.url + '">Layer page</a>';
+                self.logStatus({
+                    msg: '<p> Your layer was successful uploaded, please visit the ' + a + ' page </p>',
+                    level: 'alert-success'
+                });
+            },
+        });
+    };
+
+    LayerInfo.prototype.doSrs = function (resp) {
+        // at this point we need to allow the user to select an srs
+        var self = this;
+        make_request({
+            url: resp.redirect_to,
+            async: false,
+            failure: function (resp, status) { self.markError(resp); },
+            success: function (resp, status) { self.doFinal(resp); }
+        });
     };
 
     LayerInfo.prototype.uploadFiles = function () {
@@ -168,7 +232,8 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
             self = this;
 
         $.ajax({
-            url: "",
+            url: "", // is this right?
+            async: false,
             type: "POST",
             data: form_data,
             processData: false, // make sure that jquery does not process the form data
@@ -177,21 +242,17 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
                 self.markStart();
             }
         }).done(function (resp) {
-            var status, msg;
-            if (resp.success === true) {
-                self.markSuccess(resp);
-            } else {
-                status = self.element.find('#status');
-                console.log(status);
-            }
+            self.doSrs(resp);
+        }).fail(function (resp) {
+            alert('Response failed,' + resp.errors);
         });
     };
 
     LayerInfo.prototype.display  = function (file_queue) {
-        var layerTemplate =_.template($('#layerTemplate').html());
-
-        var li = layerTemplate({
+        var layerTemplate = _.template($('#layerTemplate').html()),
+            li = layerTemplate({
                 name: this.name,
+                selector: LayerInfo.safeSelector(this.name),
                 type: this.type.name,
             });
 
@@ -216,7 +277,7 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
 
     LayerInfo.prototype.displayFiles = function () {
         var self = this,
-            ul = $('#' + this.name + '-element .files');
+            ul = $('#' + LayerInfo.safeSelector(this.name) + '-element .files');
 
         ul.empty();
 
@@ -243,7 +304,7 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
     };
 
     LayerInfo.prototype.displayErrors = function () {
-        var ul = $('#' + this.name + '-element .errors').first();
+        var ul = $('#' + LayerInfo.safeSelector(this.name) + '-element .errors').first();
         ul.empty();
 
         $.each(this.errors, function (idx, error) {
@@ -271,24 +332,6 @@ define(['underscore', './FileTypes'], function (_, fileTypes, upload){
             }
         }
 
-    };
-    /*
-     * @returns {array}
-     */
-
-    //TODO use regex to get filename parts
-
-    LayerInfo.getBase = function (file) {
-        return file.name.match(/(\w+)\.(\w+)/);
-    };
-
-    LayerInfo.getExt = function (file) {
-        var parts = LayerInfo.getBase(file);
-        return parts[parts.length - 1];
-    };
-
-    LayerInfo.getName = function (file) {
-        return LayerInfo.getBase(file)[1];
     };
 
     return LayerInfo;

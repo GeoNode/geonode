@@ -68,6 +68,9 @@ urlpatterns = patterns('',
     # Printing Views
     (r'^printing/', include('geonode.printing.urls')),
 
+    # Upload views
+    (r'^upload/', include('geonode.upload.urls')),
+
     # Social views
     (r"^account/", include("account.urls")),
     (r'^people/', include('geonode.people.urls')),
