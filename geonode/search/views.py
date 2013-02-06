@@ -59,15 +59,18 @@ def _create_viewer_config():
 _viewer_config = _create_viewer_config()
 
 
-def search_page(request, **kw):
-    
-    results = search_api(request, format='natural', **kw)
-    facets = results['facets']
-    results = list(chain(results['layers'],results['maps'],results['documents'],results['owners']))
+def search_page(request, template='search/search.html', **kw): 
+    results, query = search_api(request, format='natural', **kw)
+    facets = results.pop('facets')    
+    chained = chain()
+    for key in results.keys():
+        chained = chain(chained, results[key])
+    results = list(chained)
     total = 0
     for val in facets.values(): total+=val
 
-    return render_to_response('search/search.html', RequestContext(request, {'object_list': results, 'total': total}))
+    return render_to_response(template, RequestContext(request, {'object_list': results, 'total': total, 
+        'facets': facets, 'query': json.dumps(query.get_query_response())}))
 
 def advanced_search(request, **kw):
     params = {}
@@ -145,7 +148,7 @@ def search_api(request, format='json', **kwargs):
             logger.debug('generated combined search results in %s, %s',ts1,ts2)
             logger.debug('with %s db queries',len(connection.queries))
         if format == 'natural':
-            return items
+            return items, query
         else:
             return results
     except Exception, ex:
