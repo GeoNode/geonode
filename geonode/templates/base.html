@@ -5,7 +5,9 @@
     <meta charset="utf-8">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
+      {% block bootstrap-src %}
       <link href="{{ STATIC_URL }}libs/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+      {% endblock %}
       <link href='{{ STATIC_URL }}geonode/font/lato_font.css' rel='stylesheet' type='text/css' />
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}libs/datatables/css/datatables.css" rel="stylesheet" />
