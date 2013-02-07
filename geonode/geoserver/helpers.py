@@ -30,7 +30,7 @@ from geonode.utils import _user, _password
 
 from geoserver.catalog import Catalog, FailedRequestError
 
-logger = logging.getLogger("geonode.maps.gs_helpers")
+logger = logging.getLogger(__name__)
 
 _punc = re.compile(r"[\.:]") #regex for punctuation that confuses restconfig
 _foregrounds = ["#ffbbbb", "#bbffbb", "#bbbbff", "#ffffbb", "#bbffff", "#ffbbff"]

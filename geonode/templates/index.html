@@ -12,6 +12,7 @@
 
 {% block body_outer %}
 <div class="span12">
+  {% block hero %}
   <div class="hero-unit">
     <h1>{% trans "Welcome" %}</h1>
     <div class="hero-unit-content">
@@ -33,6 +34,8 @@
       </div>
     </div>
   </div>
+  {% endblock %}
+  {% block mainbody %}
   <div class="row">
     <div class="span8 paginate paginate-auto">
       <section class="widget list paginate-contents">
@@ -75,6 +78,7 @@
       </div>
     </aside>
   </div>
+  {% endblock %}
 </div>
 {% endblock %}
 
