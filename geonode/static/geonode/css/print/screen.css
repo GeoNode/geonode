@@ -1,0 +1,247 @@
+body	{
+	font: 100 10px/15px Arial, sans-serif;
+	color: #333;
+}
+
+h1	{
+	font-size: 2.2em;
+	line-height: 2.4em;
+	border-bottom: 1px solid #888;
+}
+
+h2	{
+	font-size: 1.5em;
+	line-height: 2em;
+	color: #888;
+}
+
+h3	{
+	font-size: 1.4em;
+	line-height: 1.4em;
+	margin-bottom: 0.1em;
+	font-weight: 100;
+	color: #888;
+}
+
+ul.horizontal li	{
+	display:inline;
+	float: left;
+}
+
+ul.list	{
+	padding-left: 10%;
+	margin-top: 0.4em;
+}
+ul.list li	{
+	font-size: 1.2em;
+}
+
+.resource	{
+	font-size: 1.2em;
+}
+
+.resource-divider:after	{
+	content: "/";
+}
+
+.section	{
+	border-bottom: 1px solid #ccc;
+	padding-bottom: 0.8em;
+	margin-bottom: 0.4em;
+}
+.binder	{
+	margin: 0.8em 0;
+}
+
+.key-val	{
+	overflow: hidden;
+	font-size: 1.2em;
+}
+
+.key-val .key	{
+	float: left;
+	text-align: left;
+	color: #888;
+}
+.key-val .val	{
+	float: right;
+	text-align: right;
+	color: #555;
+}
+
+.canvas {
+	margin-left: auto;
+	margin-right: auto;
+	width: 896px;
+	height: 1263px;
+	
+	margin-top: 30px;
+	margin-bottom: 30px;
+	border: 1px solid #cdcdcd;
+	box-shadow: 5px 5px 20px #ccc;
+}
+
+.printable	{
+	margin: 5%;
+}
+
+.grid_1,
+.grid_2,
+.grid_3 {
+	display: inline;
+	float: left;
+	position: relative;
+	margin-left: 2.5%;
+	margin-right: 2.5%;
+}
+
+.canvas .grid_1 {
+	width: 30%;
+/*	background:#efefef; */
+}
+.canvas .grid_2 {
+	width: 65%;
+/*	background:#efefef; */
+}
+.canvas .grid_3 {
+	width: 100%;
+}
+
+.alpha {
+	margin-left: 0;
+}
+
+.omega {
+	margin-right: 0;
+}
+
+.spacer	{
+	margin-top: 2em;
+}
+
+.map	{
+	position: relative;
+}
+
+.map-image	{
+	position: relative;
+	z-index: 1;
+}
+
+.map-scale	{
+	position: absolute;
+	left: 2%;
+	bottom: 2%;
+	background: rgba(255, 255, 255, 0.7);
+	z-index: 2;
+	padding: 0.6em 2em 0.1em 0.8em;
+}
+
+.scale-border 	{
+	border: 1px solid #000;
+	width: 5em;
+}
+.scale-fill	{
+	background: #000;
+	height: 0.2em;
+	width:33%;
+	margin-left: 33%;
+}
+.map-scale .val-1	{
+	left: 0;
+}
+.map-scale .val-2	{
+	position: absolute;
+	left: 27%;
+}
+.map-scale .val-3	{
+	position: absolute;
+	left: 60%;
+}
+
+.map-legend	{
+	position: absolute;
+	right: 2%;
+	bottom: 2%;
+	background: rgba(255, 255, 255, 0.7);
+	z-index: 2;
+	padding: 0.4em 0.2em;
+	max-width: 45%;
+}
+
+.map-legend ul	{
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+.map-legend ul li	{
+	margin: 0 0.5em;
+	padding: 0;
+}
+
+.map-legend .fill	{
+	float: left;
+	width: 1em;
+	height: 1em;
+	margin-right: 1em;
+	border: 1px solid #fff;
+	background: #eee;
+}
+
+.map-legend  .red	{
+	background: red;
+}
+.map-legend  .orange	{
+	background: orange;
+}
+.map-legend  .yellow	{
+	background: yellow;
+}
+.map-legend  .sky	{
+	background: aqua;
+}
+.map-legend  .blue	{
+	background: blue;
+}
+.map-legend  .navy	{
+	background: navy;
+}
+.map-legend  .white	{
+	background: white;
+	border-color: black;
+}
+/* `Clear Floated Elements
+----------------------------------------------------------------------------------------------------*/
+
+/* http://sonspring.com/journal/clearing-floats */
+
+.clear {
+	clear: both;
+	display: block;
+	overflow: hidden;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+}
+
+/* http://perishablepress.com/press/2009/12/06/new-clearfix-hack */
+
+.clearfix:after {
+	clear: both;
+	content: ' ';
+	display: block;
+	font-size: 0;
+	line-height: 0;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+}
+
+/*
+	The following zoom:1 rule is specifically for IE6 + IE7.
+	Move to separate stylesheet if invalid CSS is a problem.
+*/
+* html .clearfix,
+*:first-child+html .clearfix {
+	zoom: 1;
+}

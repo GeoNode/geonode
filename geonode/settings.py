@@ -106,6 +106,7 @@ STATICFILES_FINDERS = (
 # INSTALLED_APPS, se there is no need to add maps/templates or admin/templates
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, "templates"),
+    os.path.join(STATICFILES_DIRS[0], "print_templates"),
 )
 
 # Location of translation files
@@ -174,6 +175,7 @@ INSTALLED_APPS = (
     'geonode.upload',
     'geonode.layers',
     'geonode.people',
+    'geonode.printing',
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
@@ -359,6 +361,8 @@ GEOSERVER_BASE_URL = "http://localhost:8080/geoserver/"
 # The username and password for a user that can add and
 # edit layer details on GeoServer
 GEOSERVER_CREDENTIALS = "admin", "geoserver"
+
+GEOSERVER_PRINT_URL = "".join([GEOSERVER_BASE_URL, "rest/printng/render."])
 
 # CSW settings
 CATALOGUE = {
