@@ -1,15 +1,17 @@
+/*jslint nomen: true */
 /*global $:true, document:true, define: true, alert:true, requirejs: true  */
 
 'use strict';
+var layers = {};
 
 define(['jquery',
         'underscore',
         'upload/LayerInfo',
         'upload/FileTypes',
-        'text!templates/upload.html'], function ($, _, LayerInfo, fileTypes, upload) {
+        'upload/path',
+        'text!templates/upload.html'], function ($, _, LayerInfo, fileTypes, path, upload) {
 
-    var layers = {},
-        templates = {},
+    var templates = {},
         findFileType,
         initialize,
         log_error,
@@ -61,8 +63,11 @@ define(['jquery',
 
         for (name in files) {
             // filter out the prototype properties
+
             if (files.hasOwnProperty(name)) {
+
                 // check to see if the layer was already defined
+
                 if (layers.hasOwnProperty(name)) {
                     info = layers[name];
                     $.merge(info.files, files[name]);
@@ -74,6 +79,7 @@ define(['jquery',
                     });
                     info.collectErrors();
                     layers[name] = info;
+
                 }
             }
         }
@@ -81,6 +87,7 @@ define(['jquery',
 
     displayFiles = function (file_queue) {
         file_queue.empty();
+
         $.each(layers, function (name, info) {
             if (!info.type) {
                 log_error({
@@ -104,16 +111,47 @@ define(['jquery',
         }
     };
 
+
+
     initialize = function (options) {
         var file_input = document.getElementById('file-input'),
-            file_queue = $(options.file_queue);
+            dropZone = document.querySelector(options.dropZone),
+            file_queue = $(options.file_queue),
+            doClearState = function () {
+                // set the global layer object to empty
+                layers = {};
+                // redraw the file display view
+                displayFiles(file_queue);
+            },
+            runUpload = function (files) {
+                buildFileInfo(_.groupBy(files, path.getName));
+                displayFiles(file_queue);
+            },
+            handleDragOver = function (e) {
+                // this seems to be required in order for dragging and dropping to work
+                e.stopPropagation();
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+                return false;
+            };
+
+        // setup the drop zone target
+        dropZone.addEventListener('dragover', handleDragOver, false);
+
+        dropZone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            var files = e.dataTransfer.files;
+            runUpload(files);
+        });
+
+
 
         $(options.form).change(function (event) {
             // this is a mess
-            buildFileInfo(_.groupBy(file_input.files, LayerInfo.getName));
+            buildFileInfo(_.groupBy(file_input.files, path.getName));
             displayFiles(file_queue);
         });
-
+        $(options.clear_button).on('click', doClearState);
         $(options.upload_button).on('click', doUploads);
     };
 

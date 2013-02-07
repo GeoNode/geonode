@@ -84,19 +84,29 @@
                 <tr>
                   <th>{% trans "Attribute Name" %}</th>
                   <th>{% trans "Range" %}</th>
-                  <th>{% trans "Mean" %}</th>
+                  <th>{% trans "Average" %}</th>
                   <th>{% trans "Median" %}</th>
-                  <th>{% trans "Std. Dev." %}</th>
+                  <th>{% trans "Standard Deviation" %}</th>
                 </tr>
               </thead>
               <tbody>
                 {% for attribute in layer.attribute_set.all %}
                   <tr>
                     <td>{{ attribute }}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    {% if attribute.unique_values == "NA" %}
+                    <td>{{ attribute.unique_values }}</td>
+                    {% else %}
+                    <td>
+                      <select name="unique_values">
+                      {% for value in attribute.unique_values_as_list %}
+                        <option value="{{ value }}">{{ value }}</option>
+                      {% endfor %}
+                      </select>
+                    </td>
+                    {% endif %}
+                    <td>{{ attribute.average }}</td>
+                    <td>{{ attribute.median }}</td>
+                    <td>{{ attribute.stddev }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
