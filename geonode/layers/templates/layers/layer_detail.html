@@ -104,9 +104,9 @@
                       </select>
                     </td>
                     {% endif %}
-                    <td>{{ attribute.average }}</td>
-                    <td>{{ attribute.median }}</td>
-                    <td>{{ attribute.stddev }}</td>
+                    <td>{{ attribute.average|floatformat:"2" }}</td>
+                    <td>{{ attribute.median|floatformat:"2" }}</td>
+                    <td>{{ attribute.stddev|floatformat:"2" }}</td>
                   </tr>
                 {% endfor %}
               </tbody>

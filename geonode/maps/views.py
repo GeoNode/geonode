@@ -48,7 +48,7 @@ from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
 from geonode.utils import resolve_object
 from geonode.maps.forms import MapForm
-from geonode.people.models import Profile 
+from geonode.people.models import Profile
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
 
@@ -133,10 +133,10 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
     The view that show details of each map
     '''
     map_obj = _resolve_map(request, mapid, 'maps.view_map', _PERMISSION_MSG_VIEW)
-	
+
     map_obj.popular_count += 1
     map_obj.save()
-	
+
     config = map_obj.viewer_json()
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
@@ -416,7 +416,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
             if(len([l for l in j_layers if l == j_layer]))>1:
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
-        
+
         resp, content = http_client.request(url, 'POST', body=mapJson)
 
         if resp.status not in (400, 404, 417):
