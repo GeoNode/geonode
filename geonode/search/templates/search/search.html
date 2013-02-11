@@ -37,46 +37,32 @@
           </div>
           <div id="slide-pane">
             <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
-            <nav class="tabs-left" id="nav-categories">
+            <nav class="tabs-left">
               <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Type" %}</a></h2>
-                <ul class="nav">
-                  <label class="checkbox" data-class="map">
-                    <input type="checkbox" id="filter-maps" {% if facets.map > 0 %}checked="checked"{% endif %} /> Maps <span>(<span class="count">{{ facets.map }}</span>)</span>
-                  </label>
-                  <label class="checkbox" data-class="layer">
-                    <input type="checkbox" id="filter-data" {% if facets.layer > 0 %}checked="checked"{% endif %} /> Layers <span>(<span class="count">{{ facets.layer }}</span>)</span>
-                  </label>
-                  <div class="subgroup" data-class="layer">
-                    <label class="checkbox" data-class="coverageStore">
-                      <input type="checkbox" {% if facets.raster > 0 %}checked="checked"{% endif %} /> Raster <span>(<span class="count">{{ facets.raster }}</span>)</span>
-                    </label>
-                    <label class="checkbox" data-class="dataStore">
-                      <input type="checkbox" {% if facets.vector > 0 %}checked="checked"{% endif %} /> Vector <span>(<span class="count">{{ facets.vector }}</span>)</span>
-                    </label>
-                  </div>
-                  <label class="checkbox" data-class="document">
-                    <input type="checkbox" {% if facets.document > 0 %}checked="checked"{% endif %} /> Documents <span>(<span class="count">{{ facets.document }}</span>)</span>
-                  </label> 
-                  <label class="checkbox" data-class="owner">
-                    <input type="checkbox" {% if facets.user > 0 %}checked="checked"{% endif %} /> Users <span>(<span class="count">{{ facets.user }}</span>)</span>
-                  </label>
-                </ul>
+              <ul class="nav unstyled" id="types">
+                <li><a data-class="map" {% if facets.map > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Maps <span>(<span class="count">{{ facets.map }}</span>)</span></a></li>
+                <li><a data-class="layer" {% if facets.layer > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Layers <span>(<span class="count">{{ facets.layer }}</span>)</span></a></li>
+                <li><a data-class="coverageStore" {% if facets.raster > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Rasters <span>(<span class="count">{{ facets.raster }}</span>)</span></a></li>
+                <li><a data-class="dataStore" {% if facets.vector > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Vectors <span>(<span class="count">{{ facets.vector }}</span>)</span></a></li>
+                <li><a data-class="document" {% if facets.document > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Documents <span>(<span class="count">{{ facets.document }}</span>)</span></a></li>
+                <li><a data-class="user" {% if facets.user > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Users <span>(<span class="count">{{ facets.user }}</span>)</span></a></li>
+              </ul>
             </nav>
-            <nav class="tabs-left" id="nav-categories">
+            <nav class="tabs-left">
               <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Categories" %}</a></h2>
-              <ul class="nav">
+              <ul class="nav" id="categories">
                 {% layer_categories as category_list %}
-                <li><a {% if not layer_category %} class="active"{% endif %}>{% trans "All Categories" %}</a></li>
+                <li><a {% if not layer_category %} class="active trigger-query"{% endif %}>{% trans "All Categories" %}</a></li>
                 {% for category in category_list %}
-                <li><a {% ifequal layer_category category %} class="active"{% endifequal %}>{{ category }}
+                <li><a data-class="{{category.slug}}" {% ifequal layer_category category %} class="active trigger-query"{% else %}class="trigger-query"{% endifequal %}>{{ category }}
                 {% if category.layer_set.count > 0 %}({{ category.layer_set.count }}){% endif %}
                 </a></li>
                 {% endfor %}
               </ul>
             </nav>
-            <nav class="" id="nav-keywords">
+            <nav class="tabs-left">
               <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> {% trans "Keywords" %}</a></h2>
-              <ul class="nav">
+              <ul class="nav" id="keywords">
                 {% get_taglist as tags for 'layers.Layer' %}
                 {% for tag in tags %}
                   <li><a href="{% url "layer_browse_tag" tag.slug %}"{% if tag.slug == layer_tag %} class="active"{% endif %}>{{ tag }}</a> <span class="count">({{ tag.num_times }})</span></li>
@@ -100,9 +86,7 @@
   <script src="{% static "libs/js/jquery.raty.js" %}"></script>
   <script src="{% static "geonode/js/explore.js" %}"></script>
   <script src="{% static "geonode/js/paginate.js" %}"></script>
-  <script type="text/javascript">
-    var search_status = {{ query|safe }}
-  </script>
+  <script src="{% static "geonode/js/global_search.js" %}"></script>
   <script type="text/javascript">
     $(function() {
       $('.overall_rating').each(function() {

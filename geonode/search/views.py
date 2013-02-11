@@ -60,7 +60,7 @@ _viewer_config = _create_viewer_config()
 
 
 def search_page(request, template='search/search.html', **kw): 
-    results, query = search_api(request, format='natural', **kw)
+    results, query = search_api(request, format='html', **kw)
     facets = results.pop('facets')    
     chained = chain()
     for key in results.keys():
@@ -134,20 +134,20 @@ def search_api(request, format='json', **kwargs):
     ts = time()
     try:
         query = query_from_request(request, kwargs)
-        if format != 'natural':
+        if format != 'html':
             items, facets = _search(query)
         else:
             items = _search_natural(query)
         ts1 = time() - ts
         if debug:
             ts = time()
-        if format != 'natural':
+        if format != 'html':
             results = _search_json(query, items, facets, ts1)
         if debug:
             ts2 = time() - ts
             logger.debug('generated combined search results in %s, %s',ts1,ts2)
             logger.debug('with %s db queries',len(connection.queries))
-        if format == 'natural':
+        if format == 'html':
             return items, query
         else:
             return results
