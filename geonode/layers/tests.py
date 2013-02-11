@@ -252,7 +252,7 @@ class LayersTest(TestCase):
         self.assertEqual(info[geonode.maps.models.AUTHENTICATED_USERS], layer.LEVEL_READ)
 
         self.assertEqual(info['users'], sorted(layer_info['users'].items()))
-        
+
         # Test that layer owner can edit layer
         self.assertTrue(layer.owner.has_perm(set([u'layers.change_layer']), layer))
 
@@ -324,7 +324,6 @@ class LayersTest(TestCase):
 
     def test_layer_attributes(self):
         lyr = Layer.objects.get(pk=1)
-        print Layer.objects.all()
         #There should be a total of 3 attributes
         self.assertEqual(len(lyr.attribute_set.all()), 3)
         #2 out of 3 attributes should be visible
@@ -759,14 +758,14 @@ class LayersTest(TestCase):
 
         # First test un-authenticated
         response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
-        response_json = json.loads(response.content) 
+        response_json = json.loads(response.content)
         self.assertEquals(response_json['authorized'], False)
 
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
         response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
-        response_json = json.loads(response.content) 
+        response_json = json.loads(response.content)
         self.assertEquals(response_json['authorized'], False)
 
         # Login as a user with the proper permission and test the endpoint
@@ -776,7 +775,7 @@ class LayersTest(TestCase):
         response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
 
         # Test that the method returns 401 because it's not a datastore
-        response_json = json.loads(response.content) 
+        response_json = json.loads(response.content)
         self.assertEquals(response_json['authorized'], False)
 
         layer = Layer.objects.all()[0]
@@ -788,5 +787,5 @@ class LayersTest(TestCase):
         with self.settings(DB_DATASTORE=True):
             # The check was moved from the template into the view
             response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
-            response_json = json.loads(response.content) 
+            response_json = json.loads(response.content)
             self.assertEquals(response_json['authorized'], True)
