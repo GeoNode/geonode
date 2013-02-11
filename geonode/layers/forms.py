@@ -129,6 +129,11 @@ class NewLayerUploadForm(LayerUploadForm):
 
     spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file", "xml_file")
 
+class LayerCreateFromTemplateForm(forms.Form):
+    
+    abstract = forms.CharField(required=False)
+    layer_title = forms.CharField(required=False)
+    permissions = JSONField()
 
 class LayerDescriptionForm(forms.Form):
     title = forms.CharField(300)

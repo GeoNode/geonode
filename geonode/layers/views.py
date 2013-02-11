@@ -45,7 +45,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
-from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
+from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm, LayerCreateFromTemplateForm
 from geonode.layers.models import Layer, ContactRole, Attribute, TopicCategory
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
@@ -146,7 +146,6 @@ def layer_upload(request, template='layers/layer_upload.html'):
             try:
                 tempdir, base_file = form.write_files()
                 title = form.cleaned_data["layer_title"]
-
                 # Replace dots in filename - GeoServer REST API upload bug
                 # and avoid any other invalid characters.
                 # Use the title if possible, otherwise default to the filename
@@ -180,6 +179,37 @@ def layer_upload(request, template='layers/layer_upload.html'):
                 errormsgs.extend([escape(v) for v in e])
             return HttpResponse(json.dumps({ "success": False, "errors": form.errors, "errormsgs": errormsgs}))
 
+@login_required
+def layer_simpli_upload(request, template='layers/layer_simpli_upload.html'):
+    if request.method == 'GET':
+        return render_to_response(template,
+                                  RequestContext(request, {}))
+    elif request.method == 'POST': 
+        
+        form = LayerCreateFromTemplateForm(request.POST)
+        if form.is_valid():
+            #TODO gestire nome vuoto
+            base_file = os.getcwd()+"/geonode/shapefile_templates/"+request.POST['ctype']+".shp"
+            
+            name = request.POST['ctype']
+            
+            #request.POST["permissions"]
+            
+            saved_layer = save(name, base_file, request.user,
+                            overwrite = False,
+                            abstract = request.POST['abstract'],
+                            title = request.POST['layer_title'],
+                            permissions = form.cleaned_data["permissions"]
+                            )
+            return HttpResponse(json.dumps({
+                        "success": True,
+                        "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
+        """except Exception, e:
+                logger.exception("Unexpected error during upload.")
+                return HttpResponse(json.dumps({
+                    "success": False,
+                    "errormsgs": ["Unexpected error during upload: " + escape(str(e))]}))"""
+        
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
