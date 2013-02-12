@@ -85,10 +85,11 @@
   <script src="{% static "libs/js/loadmore.js" %}"></script>
   <script src="{% static "libs/js/jquery.raty.js" %}"></script>
   <script src="{% static "geonode/js/explore.js" %}"></script>
-  <script src="{% static "geonode/js/paginate.js" %}"></script>
+  
   <script src="{% static "geonode/js/global_search.js" %}"></script>
   <script type="text/javascript">
-    $(function() {
+    $(rateMore());
+    function rateMore() {
       $('.overall_rating').each(function() {
         var rating = $(this).parents(".avg_rating").data('rating');
         star(this, rating);
@@ -99,7 +100,7 @@
           star(this, rating);
         });
       });
-    });
+    }
     function star(elem, rating) {
       $(elem).raty({
         half: true,
@@ -109,4 +110,5 @@
       });        
     }
   </script>
+  <script src="{% static "geonode/js/paginate.js" %}"></script>
 {% endblock extra_script %}

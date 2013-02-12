@@ -30,7 +30,6 @@ function paginate() {
                     fetchMore(this);
                 }));
             }
-
         }
     });
 }
@@ -50,6 +49,7 @@ function fetchMore(a) {
                 $(this).find('.more').attr("href", more);
                 if ($(this).hasClass("paginate-auto")) $(this).find(".pagination").waypoint(opts);
             } else $(this).find('.more').remove();
+            rateMore();
         }
     });
 }

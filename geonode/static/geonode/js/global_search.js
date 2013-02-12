@@ -36,6 +36,7 @@ $(function(){
                 success: function(data){
                     $('#search-content').html(data);
                     paginate();
+                    rateMore();
                 }
             });
         }
