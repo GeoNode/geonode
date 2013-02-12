@@ -23,19 +23,38 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
     lineText: "Line",
 
     polygonText: "Shape",
+    
+    currentFeature:  null,
+    
+    saveFailTitle: "Could not save note",
+    
+    saveFailText: "Edit failed.  You might not have permission to save this note.",
+    
+    
 
     /**
      * api: method[addActions]
      */
     addActions: function () {
-        var currentFeature = null;
+    	
+    	function saveFail(evt) {
+    		Ext.Msg.alert(this.saveFailTitle, this.saveFailText);
+    	}
+    	
+    	var saveStrategy = new OpenLayers.Strategy.Save();
+    	saveStrategy.events.register('fail', this, saveFail);
+    
+
+    	var currentUser = this.user;
+    	var isMapEditor = this.target.config["edit_map"];
+    	
         var layer = new OpenLayers.Layer.Vector(
             'geo_annotation_layer', {
             displayInLayerSwitcher: false,
             projection: this.projection,
             strategies: [
             new OpenLayers.Strategy.BBOX(),
-            new OpenLayers.Strategy.Save()],
+            saveStrategy],
             protocol: new OpenLayers.Protocol.HTTP({
                 url: "/annotations/" + this.target.mapID,
                 format: new OpenLayers.Format.GeoJSON()
@@ -65,7 +84,7 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
             vertexRenderIntent: 'temporary'
         });
         var selectAnnoControl = new OpenLayers.LayerFeatureAgent(
-        layer, {selectStyle: "olHandlerBoxSelectFeature"});
+        layer, {renderIntent: "select"});
 
 
         function checkAddChange(checkbox) {
@@ -100,37 +119,54 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
                 default:
                     break;
             }
-
-
+        }
+        
+        
+        function multipleSelected(evt) {
+        	var html = "<h3>Available Notes<h3>";
+        	var items = []
+        	var multiplePopup = null;
+        	
+        	for (var f =0; f < evt.features.length; f++) {
+        		var feature = evt.features[f];
+        		
+        		items.push(
+        			{
+                    xtype: 'button',
+                    text: "" + f + " " + feature.attributes.title,
+                    feature: feature,
+                    cls: 'x-btn-text',
+                    handler: function (e) {
+                    	featureSelected(e);
+                    	multiplePopup.close();
+                        return false;
+                    },
+                    scope: this       			
+        		});	
+        	}
+        	
+        	multiplePopup = new GeoExt.Popup({
+                title: "Select Note",
+                closeAction: "close",
+                autoScroll: true,
+                location: evt.features[0],
+                items: [items]
+            });
+        	multiplePopup.show();
+        	
         }
 
         function featureSelected(evt) {
-            if (currentFeature && currentFeature != evt.feature) {
-            	selectAnnoControl.unhighlight(currentFeature);
+            if (this.currentFeature && this.currentFeature != evt.feature) {
+            	selectAnnoControl.unhighlight(this.currentFeature);
             }
-
-            if (Ext.getCmp("check_edit_annotations").checked) {
-            	added(evt);
-            	return false;
-            }
-            
-            
-            
-            var type = evt.feature.layer.name;
-            var html = '<b>' + type + '</b><ul>';
-            for (var key in evt.feature.attributes) {
-                html += '<li><b>' + key + '</b>: ' + evt.feature.attributes[key] + "</li>";
-            }
-            document.getElementById("featuredetails").innerHTML = html;
-
-            // modControl.selectFeature(evt.feature);
 
             var pos = evt.feature.geometry;
 
             if (selectAnnoControl) {
-//                if (selectAnnoControl.popup) {
-//                    selectAnnoControl.popup.close();
-//                }
+                if (selectAnnoControl.popup) {
+                    selectAnnoControl.popup.close();
+                }
 
                 var newPanel = new Ext.Panel({
                     autoLoad: {
@@ -138,24 +174,56 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
                         scripts: true
                     }
                 })
-                currentFeature = evt.feature;
-                selectAnnoControl.highlight(evt.feature);
-                var popup = new GeoExt.Popup({
+                this.currentFeature = evt.feature;
+                selectAnnoControl.highlight(this.currentFeature);
+                selectAnnoControl.popup = new GeoExt.Popup({
                     title: evt.feature.attributes.title,
                     closeAction: "close",
                     autoScroll: true,
                     height: 300,
+                    width:400,
                     listeners: {
                         'beforeclose': function () {
                             selectAnnoControl.unhighlight(evt.feature);
                             evt.feature = null;
-                            currentFeature = null;
+                            this.currentFeature = null;
                         }
                     },
                     location: evt.feature,
-                    items: [newPanel]
+                    items: [newPanel],
+                    bbar: [{
+                        xtype: 'button',
+                        id: 'anno_editButton',
+                        text: "Edit",
+                        disabled: currentUser != this.currentFeature.attributes["owner_id"]
+                        	&& !isMapEditor,
+                        cls: 'x-btn-text',
+                        style: "display:inline-block;",
+                        handler: function (e) {
+                            addEditNote.call(this, evt);
+                            selectAnnoControl.popup.close();
+                            return false;
+                        },
+                        scope: this
+                    },
+                        "->", {
+                        xtype: 'button',
+                        id: 'anno_deleteButton',
+                        disabled: currentUser != this.currentFeature.attributes["owner_id"]
+                    		&& !isMapEditor,
+                        text: "Delete",
+                        cls: 'x-btn-text',
+                        style: "display:inline-block;",
+                        handler: function (e) {
+                        	this.currentFeature.state = OpenLayers.State.DELETE;
+                        	save_annotation.call(this);
+                        	selectAnnoControl.popup.close()
+                            return false;
+                        },
+                        scope: this
+                    }]
                 });
-                popup.show();
+                selectAnnoControl.popup.show();
             }
         }
 
@@ -168,132 +236,134 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
             this.events.unregister('loadend', this, register);
         }
 
-        function getForm() {
-            return {
-                xtype: "form",
-                bodyStyle: {
-                    padding: "5px"
-                },
-                labelAlign: "top",
-                items: [{
-                    xtype: 'textfield',
-                    fieldLabel: "Title",
-                    id: "popup_form_title",
-                    value: currentFeature && currentFeature.attributes["title"] ? currentFeature.attributes["title"] : ""
-                }, {
-                    xtype: 'textarea',
-                    width: 400,
-                    height: 100,
-                    fieldLabel: "Note",
-                    id: "popup_form_content",
-                    value: currentFeature && currentFeature.attributes["content"] ? currentFeature.attributes["content"] : ""
-                }],
-                bbar: [{
-                    xtype: 'button',
-                    id: 'anno_saveButton',
-                    text: "Save",
-                    cls: 'x-btn-text',
-                    style: "display:inline-block;",
-                    handler: function (e) {
-                        save_annotation();
-                        return false;
-                    },
-                    scope: this
-                },
-                    "->", {
-                    xtype: 'button',
-                    id: 'anno_deleteButton',
-                    text: "Delete",
-                    cls: 'x-btn-text',
-                    style: "display:inline-block;",
-                    handler: function (e) {
-                    	if (currentFeature.fid) {
-                    		currentFeature.state = OpenLayers.State.DELETE;
-                    		save_annotation();
-                    	} else {
-                    		modControl.popup.close();
-                    	}
-                        return false;
-                    },
-                    scope: this
-                }]
-            };
-        }
 
         function added(evt) {
-//            if (currentFeature != evt.feature) {
-//                layer.removeFeatures(currentFeature);
-//            }
-//            if (!evt.feature.fid) {
-                // displayForm(evt.feature);
-                currentFeature = evt.feature;                
-                if (modControl) {
-                    if (modControl.popup) {
-                        modControl.popup.close();
-                    }
-                    modControl.popup = new GeoExt.Popup({
-                        title: "New Note",
-                        width: 450,
-                        closeAction: "close",
-                        listeners: {
-                            'beforeclose': function () {
-                                modControl.unselectFeature(currentFeature);
-                                if (currentFeature && !currentFeature.fid) {
-                                	layer.removeFeatures(currentFeature);
-                                }
-                            }
-                        },
-                        location: evt.feature,
-                        items: [getForm()]
-                    });
-                    modControl.popup.show();
-
-                }
-//            } else if (modControl && modControl.popup) {
-//                modControl.popup.close();
-//            }
+        	if (!evt.feature.fid) {
+        		addEditNotecall(this,evt);
+        	}
         }
-
-        function displayForm(feature) {
-            currentFeature = feature;
-            var form = 'data_form';
-            var formdom = document.forms['data_form'];
-            for (var i = 0; i < formdom.length; i++) {
-                if (formdom[i].type == "submit") {
-                    continue;
-                }
-                if (currentFeature.attributes[formdom[i].name] != undefined) {
-                    formdom[i].value = currentFeature.attributes[formdom[i].name] || "";
-                } else {
-                    formdom[i].value = "";
-                }
+        
+        function cancelEdit() {
+        	modControl.unselectFeature(this.currentFeature);
+        	if (!this.currentFeature.saved) {
+            	layer.refresh({force:true});
             }
+            modControl.deactivate();
+            selectAnnoControl.activate();
+            selectAnnoControl.unhighlight(this.currentFeature);
         }
+        
+        function addEditNote(evt) {
+        	selectAnnoControl.deactivate();
+            this.currentFeature = evt.feature;  
+            this.currentFeature.saved = false;
+            
+            
+            if (modControl) {
+                modControl.activate();
+                modControl.selectFeature(this.currentFeature);
+                if (!this.currentFeature.state)
+                	this.currentFeature.state = OpenLayers.State.UPDATE;
+                if (modControl.popup) {
+                    modControl.popup.close();
+                }
+                modControl.popup = new GeoExt.Popup({
+                    title: "New Note",
+                    width: 450,
+                    closeAction: "close",
+                    listeners: {
+                        'beforeclose': cancelEdit,
+                        scope: this
+                    },
+                    scope: this,
+                    location: evt.feature,
+                    items: [{
+                            xtype: "form",
+                            bodyStyle: {
+                                padding: "5px"
+                            },
+                            labelAlign: "top",
+                            items: [{
+                                xtype: 'textfield',
+                                fieldLabel: "Title",
+                                id: "popup_form_title",
+                                value: this.currentFeature && this.currentFeature.attributes["title"] ? 
+                                		this.currentFeature.attributes["title"] : ""
+                            }, {
+                                xtype: 'textarea',
+                                width: 400,
+                                height: 100,
+                                fieldLabel: "Note",
+                                id: "popup_form_content",
+                                value: this.currentFeature && this.currentFeature.attributes["content"] ? 
+                                		this.currentFeature.attributes["content"] : ""
+                            }]
+                    		}
+                            ],
+                    bbar: [{
+                        xtype: 'button',
+                        id: 'anno_saveButton',
+                        text: "Save",
+                        cls: 'x-btn-text',
+                        style: "display:inline-block;",
+                        handler: function (e) {
+                            save_annotation.call(this);
+                            return false;
+                        },
+                        scope: this
+                    },
+                        "->", {
+                        xtype: 'button',
+                        id: 'anno_cancelButton',
+                        text: "Cancel",
+                        cls: 'x-btn-text',
+                        style: "display:inline-block;",
+                        handler: function (e) {
+                            modControl.popup.close();
+                            return false;
+                        },
+                        scope: this
+                    }
+                    ]
+                });
+                modControl.popup.show();
+
+            }     	
+        }
+
+
 
         function save_annotation() {
-            currentFeature.attributes["title"] = Ext.getCmp(
+        	if (this.currentFeature.state != OpenLayers.State.DELETE) {
+        		this.currentFeature.attributes["title"] = Ext.getCmp(
                 "popup_form_title").getValue();
-            currentFeature.attributes["content"] = Ext.getCmp(
+        		this.currentFeature.attributes["content"] = Ext.getCmp(
                 "popup_form_content").getValue();
-            layer.strategies[1].save([currentFeature]);
-            currentFeature = null;
+        	}
+            layer.strategies[1].save([this.currentFeature]);
+            this.currentFeature.saved = true;
+            modControl.unselectFeature(this.currentFeature);
             if (modControl.popup) {
                 modControl.popup.close();
             }
 
-        }
+        }        
 
-        layer.events.register('loadend', layer, register);
-        layer.events.register('featureselected', this, featureSelected);
 
-        this.target.mapPanel.map.addControls([modControl,
-         addPointControl,addLineControl, addPolygonControl]);
 
         return GeoExplorer.plugins.AnnotationTool.superclass.addActions.apply(
         this, [{
             text: this.notesText,
             disabled: !this.target.mapID,
             iconCls: this.iconCls,
+            toggleGroup: this.toggleGroup,
+            enableToggle: true,
+            allowDepress: false,
+            toggleHandler: function(button, pressed) {
+                    if (!pressed) {
+                    	Ext.getCmp("check_view_annotations").setChecked(false);
+                    }
+            },
             menu: new Ext.menu.Menu({
                 items: [
                 new Ext.menu.CheckItem({
@@ -305,14 +375,32 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
                         item,
                         checked) {
                             if (checked === true) {
+                            	if (this.target.selectControl) {
+                            		this.target.selectControl.deactivate();
+                            	}
+                                this.target.mapPanel.map.addControls([modControl,
+                                                                      addPointControl,addLineControl, addPolygonControl]);
                                 this.target.mapPanel.map.addLayer(layer);
                                 selectAnnoControl.activate();
+                                layer.events.register('loadend', layer, register);
+                                layer.events.register('featureselected', this, featureSelected);
+                                layer.events.register('multipleselected', this, multipleSelected);
                             } else {
+                            	if (this.target.selectControl) {
+                            		this.target.selectControl.activate();
+                            	}
                                 this.target.mapPanel.map.removeLayer(layer);
                                 selectAnnoControl.deactivate();
                                 Ext.getCmp("check_add_annotations").setChecked(
                                 false);
-
+                                layer.events.unregister('loadend', layer, register);
+                                layer.events.unregister('featureselected', this, featureSelected);
+                                layer.events.unregister('multipleselected', this, multipleSelected);
+                                for (var control in [modControl,
+                                          addPointControl,addLineControl, addPolygonControl]) {
+                                	this.target.mapPanel.map.removeControl(control);
+                                }
+                                
                             }
                         },
                         scope: this
@@ -357,32 +445,6 @@ GeoExplorer.plugins.AnnotationTool = Ext.extend(gxp.plugins.Tool, {
                             scope: this
                         }
                     })]
-                }),
-                new Ext.menu.CheckItem({
-                    id: "check_edit_annotations",
-                    checked: false,
-                    text: this.editNotesText,
-                    listeners: {
-                        checkchange: function (
-                        item,
-                        checked) {
-                            if (checked === true) {
-                                Ext.getCmp("check_view_annotations").setChecked(
-                                        true);
-                                Ext.getCmp("check_add_annotations").setChecked(
-                                        false);
-//                                this.target.mapPanel.map.addLayer(layer);
-//                                addPointControl.deactivate();
-//                                addLineControl.deactivate();
-//                                addPolygonControl.deactivate();
-                                selectAnnoControl.activate();
-                                modControl.activate();
-                            } else {
-                                modControl.deactivate();
-                            }
-                        },
-                        scope: this
-                    }
                 })
                 ]
             })

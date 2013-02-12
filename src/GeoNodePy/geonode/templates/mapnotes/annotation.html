@@ -32,7 +32,7 @@ function addComment() {
 </script>
 
 <h3>{{ annotation.title }}</h3>
-<p>{{ annotation.content }}</p>
+<p>{{ annotation.content|linebreaks }}</p>
 <hr/>
 <p>Author: <a href="/profiles/{{ annotation.owner.username }}">{{ annotation.owner.username }}</a></p>
 <p>Date: {{ annotation.modified_dttm }}</p>

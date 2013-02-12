@@ -63,25 +63,24 @@ OpenLayers.LayerFeatureAgent = OpenLayers.Class({
      */
     onClick: function(evt) {
         var features = this.getFeatures(evt.clientX, evt.clientY);
-        // fire featureclick events
-        var feature, layer, more, clicked = {};
-        for (i=0, len=features.length; i<len; ++i) {
-            feature = features[i];
-            layer = feature.layer;
-            clicked[layer.id] = true;
-            more = layer.events.triggerEvent(
-                "featureselected", {feature: feature}
-            );
-            if (more === false) {
-                break;
-            }
+        if (features.length > 1) {
+        	this.layer.events.triggerEvent(
+                    "multipleselected", {features: features});
+        } else {
+        	// fire featureclick events
+        	var feature, more, clicked = {};
+        	for (i=0, len=features.length; i<len; ++i) {
+        		feature = features[i];
+        		//layer = feature.layer;
+        		clicked[this.layer.id] = true;
+        		more = this.layer.events.triggerEvent(
+        				"featureselected", {feature: feature}
+        		);
+        		if (more === false) {
+        			break;
+        		}
+        	}
         }
-        // fire nofeatureclick events on all layers with no targets
-
-            if (!clicked[this.layer.id]) {
-                this.layer.events.triggerEvent("nofeatureclick");
-            }
-        
     },
 
  
@@ -149,11 +148,11 @@ OpenLayers.LayerFeatureAgent = OpenLayers.Class({
      * feature - {<OpenLayers.Feature.Vector>} 
      */
     highlight: function(feature) {
-        var layer = feature.layer;
+
             feature._prevHighlighter = feature._lastHighlighter;
             feature._lastHighlighter = this.id;
             var style = this.selectStyle || this.renderIntent;
-            layer.drawFeature(feature, style);
+            this.layer.drawFeature(feature, style);
         
     },
 
@@ -183,7 +182,7 @@ OpenLayers.LayerFeatureAgent = OpenLayers.Class({
             feature._lastHighlighter = feature._prevHighlighter;
             delete feature._prevHighlighter;
         }
-        layer.drawFeature(feature, feature.style || feature.layer.style ||
+        this.layer.drawFeature(feature, feature.style || this.layer.style ||
             "default");
     },    
     

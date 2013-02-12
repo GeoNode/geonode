@@ -894,7 +894,7 @@ class Layer(models.Model, PermissionLevelMixin):
 
     # section 3
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
-    keywords_region = models.CharField(_('keywords region'), max_length=3, choices= COUNTRIES, default = 'USA')
+    keywords_region = models.CharField(_('keywords region'), max_length=3, choices=KEYWORD_REGIONS + COUNTRIES, default = 'GLO')
     constraints_use = models.CharField(_('constraints use'), max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True)
     spatial_representation_type = models.CharField(_('spatial representation type'), max_length=255, choices=[(x,x) for x in SPATIAL_REPRESENTATION_TYPES], blank=True, null=True)
@@ -950,7 +950,10 @@ class Layer(models.Model, PermissionLevelMixin):
     # see metadata_author property definition below
 
     def llbbox_coords(self):
-        return [float(n) for n in re.findall('[0-9\.\-]+', self.llbbox)]
+        try:
+            return [float(n) for n in re.findall('[0-9\.\-]+', self.llbbox)]
+        except:
+            return [-180.0,-90.0,180.0,90.0]
 
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data

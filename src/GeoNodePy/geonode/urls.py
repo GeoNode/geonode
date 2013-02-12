@@ -6,7 +6,7 @@ from geonode.sitemap import LayerSitemap, MapSitemap
 import geonode.proxy.urls
 import geonode.maps.urls
 import geonode.gazetteer.urls
-import geonode.geoanno.urls
+import geonode.mapnotes.urls
 
 
 # Uncomment the next two lines to enable the admin:
@@ -37,7 +37,7 @@ urlpatterns = patterns('',
      # Data views
     (r'^data/', include(geonode.maps.urls.datapatterns)),
     (r'^maps/', include(geonode.maps.urls.urlpatterns)),
-    (r'^annotations/', include(geonode.geoanno.urls.urlpatterns)),
+    (r'^annotations/', include(geonode.mapnotes.urls.urlpatterns)),
     (r'^comments/', include('dialogos.urls')),
     (r'^ratings/', include('agon_ratings.urls')),
 

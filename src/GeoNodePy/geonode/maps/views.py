@@ -749,6 +749,7 @@ def view(request, mapid, snapshot=None):
     request.session['lastmapTitle'] = map_obj.title
 
     config['first_visit'] = first_visit
+    config['uid'] = request.user.id
     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map_obj)
     config['topic_categories'] = category_list()
     return render_to_response('maps/view.html', RequestContext(request, {

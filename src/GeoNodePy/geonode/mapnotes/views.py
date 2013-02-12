@@ -5,7 +5,7 @@ from django.contrib.gis.gdal.envelope import Envelope
 from vectorformats.Formats import Django, GeoJSON
 from geonode.maps.models import Map
 from django.contrib.auth.models import User
-from geonode.geoanno.models import GeoAnnotation
+from geonode.mapnotes.models import MapNote
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render_to_response
 from django.template import RequestContext, loader
@@ -16,7 +16,7 @@ import json
 
 def serialize(features, properties=None):
     if not properties:
-        properties = ['title', 'description']
+        properties = ['title', 'description', 'owner_id']
     djf = Django.Django(geodjango="geometry", properties=properties) 
     geoj = GeoJSON.GeoJSON()
     jsonstring = geoj.encode(djf.decode(features))
@@ -35,7 +35,8 @@ def applyGeometry(obj, feature):
         geom = geomcls(*feature.geometry['coordinates'])
     obj.geometry = geom
     for key, value in feature.properties.items():
-        setattr(obj, key, value)
+        if key != 'owner_id':
+            setattr(obj, key, value)
     obj.save()    
     return obj
 
@@ -44,31 +45,37 @@ def applyGeometry(obj, feature):
 def annotations(request, mapid, id=None):
     geoj = GeoJSON.GeoJSON()
     if id != None:
-        obj = GeoAnnotation.objects.get(pk=id)
+        obj = MapNote.objects.get(pk=id)
         if  request.method == "DELETE":
             obj.delete()
             return HttpResponse(status=200)
         elif request.method != "GET":
-            features = geoj.decode(request.raw_post_data)
-            obj = apply(obj, features[0])
-        return HttpResponse(serialize([obj], ['title','content']))
+            map_obj = Map.objects.get(id=mapid)
+            if request.user.id == obj.owner_id or request.user == request.user.has_perm('maps.change_map', obj=map_obj):
+                features = geoj.decode(request.raw_post_data)
+                obj = applyGeometry(obj, features[0])
+            else:
+                return HttpResponse(status=403)
+        return HttpResponse(serialize([obj], ['title','content', 'owner_id']))
     if request.method == "GET":
         bbox = [float(n) for n in re.findall('[0-9\.\-]+', request.GET["bbox"])]
-        features = GeoAnnotation.objects.filter(map=Map.objects.get(pk=mapid),geometry__intersects=Envelope(bbox).wkt)
+        features = MapNote.objects.filter(map=Map.objects.get(pk=mapid),geometry__intersects=Envelope(bbox).wkt)
     else:
-        features = geoj.decode(request.raw_post_data)
-        created_features = []
-        for feature in features:
-            obj = GeoAnnotation(map=Map.objects.get(id=mapid), owner=request.user)
-            obj = applyGeometry(obj, feature)
-            obj.save()
-            created_features.append(obj)
-        features = created_features
-    return HttpResponse(serialize(features, ['title','content']))
+        if request.user.id is not None:
+            features = geoj.decode(request.raw_post_data)
+            created_features = []
+            for feature in features:
+                obj = MapNote(map=Map.objects.get(id=mapid), owner=request.user)
+                obj = applyGeometry(obj, feature)
+                created_features.append(obj)
+                features = created_features
+    return HttpResponse(serialize(features, ['title','content', 'owner_id']))
 
 def annotation_details(request, id):
-    annotation = GeoAnnotation.objects.get(pk=id)
-    return render_to_response('geoanno/annotation.html', RequestContext(request, {
+    annotation = MapNote.objects.get(pk=id)
+    can_edit = request.user.id == annotation.owner.id
+    return render_to_response('mapnotes/annotation.html', RequestContext(request, {
+        "owner_id": request.user.id,                                                                          
         "annotation": annotation
     }))
 
