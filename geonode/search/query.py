@@ -99,7 +99,7 @@ class Query(object):
         self.user = user
         self.cache = cache
 
-        self.type = filters.get('type')
+        self.type = tuple(filters.get('type').split(',')) if filters.get('type') else (None,)
         self.owner = filters.get('owner')
         self.kw = filters.get('kw')
         self.exclude = filters.get('exclude')

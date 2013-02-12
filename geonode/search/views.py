@@ -61,7 +61,7 @@ _viewer_config = _create_viewer_config()
 
 def search_page(request, template='search/search.html', **kw): 
     results, query = search_api(request, format='html', **kw)
-    facets = results.pop('facets')    
+    facets = results.pop('facets')
     chained = chain()
     for key in results.keys():
         chained = chain(chained, results[key])
@@ -134,10 +134,10 @@ def search_api(request, format='json', **kwargs):
     ts = time()
     try:
         query = query_from_request(request, kwargs)
-        if format != 'html':
-            items, facets = _search(query)
-        else:
+        if format == 'html':
             items = _search_natural(query)
+        else:
+            items, facets = _search(query)
         ts1 = time() - ts
         if debug:
             ts = time()
@@ -191,24 +191,8 @@ def cache_key(query,filters):
     return str(reduce(operator.xor,map(hash,filters.items())) ^ hash(query))
 
 def _search_natural(query):
-    results = None
-    cache_time = 60
-    if query.cache:
-        key = query.cache_key()
-        results = cache.get(key)
-        if results:
-            # put it back again - this basically extends the lease
-            cache.add(key, results, cache_time)
 
-    if not results:
-        results = combined_search_results(query)
-        if query.cache:
-            dumped = zlib.compress(pickle.dumps((results)))
-            logger.debug("cached search results %s", len(dumped))
-            cache.set(key, dumped, cache_time)
-
-    else:
-        results = pickle.loads(zlib.decompress(results))
+    results = combined_search_results(query)
     return results
 
 def _search(query):
