@@ -1,6 +1,8 @@
 var loading = "<div class='loading'><p>Loading more items&hellip;</p></div>";
 
-$(function () {
+$(paginate());
+
+function paginate() {
     $(".paginate").each(function() {
         var p$ = $(this);
         var auto = p$.hasClass("paginate-auto") ? true : false,
@@ -31,7 +33,7 @@ $(function () {
 
         }
     });
-});
+}
 
 function fetchMore(a) {
     $(a).before($(loading));

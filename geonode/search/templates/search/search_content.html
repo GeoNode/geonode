@@ -2,7 +2,7 @@
 {% load i18n %}
 <div class="tab-pane active list paginate-contents" id="all">
 {% if object_list|length > 0 %}
-{% autopaginate object_list 2 %}
+{% autopaginate object_list 4 %}
 {% for object in object_list %}
   {% if object.class_name == 'Layer' %}
     {% with object as layer %}
