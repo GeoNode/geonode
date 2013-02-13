@@ -36,6 +36,8 @@ from geonode.search.normalizers import apply_normalizers
 from geonode.search.query import query_from_request
 from geonode.search.query import BadQuery
 
+from taggit.models import Tag
+
 from datetime import datetime
 from time import time
 from itertools import chain
@@ -68,9 +70,8 @@ def search_page(request, template='search/search.html', **kw):
     results = list(chained)
     total = 0
     for val in facets.values(): total+=val
-
     return render_to_response(template, RequestContext(request, {'object_list': results, 'total': total, 
-        'facets': facets, 'query': json.dumps(query.get_query_response())}))
+        'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': Tag.objects.all()}))
 
 def advanced_search(request, **kw):
     params = {}
