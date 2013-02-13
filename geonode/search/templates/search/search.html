@@ -42,8 +42,8 @@
               <ul class="nav" id="types">
                 <li><a data-class="map" {% if facets.map > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Maps <span>(<span class="count">{{ facets.map }}</span>)</span></a></li>
                 <li><a data-class="layer" {% if facets.layer > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Layers <span>(<span class="count">{{ facets.layer }}</span>)</span></a></li>
-                <li><a style="padding-left: 60px" data-class="raster" {% if facets.raster > 0 %} class="active trigger-query" {% else %} class="trigger-query offset1"{% endif %}>Rasters <span>(<span class="count">{{ facets.raster }}</span>)</span></a></li>
-                <li><a style="padding-left: 60px" data-class="vector" {% if facets.vector > 0 %} class="active trigger-query" {% else %} class="trigger-query offset1"{% endif %}>Vectors <span>(<span class="count">{{ facets.vector }}</span>)</span></a></li>
+                <li><a style="padding-left: 60px" data-class="raster" {% if facets.raster > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Rasters <span>(<span class="count">{{ facets.raster }}</span>)</span></a></li>
+                <li><a style="padding-left: 60px" data-class="vector" {% if facets.vector > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Vectors <span>(<span class="count">{{ facets.vector }}</span>)</span></a></li>
                 <li><a data-class="document" {% if facets.document > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Documents <span>(<span class="count">{{ facets.document }}</span>)</span></a></li>
                 <li><a data-class="user" {% if facets.user > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Users <span>(<span class="count">{{ facets.user }}</span>)</span></a></li>
               </ul>
