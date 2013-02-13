@@ -61,10 +61,21 @@
               </ul>
             </nav>
             <nav class="tabs-left">
+              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Date" %}</a></h2>
+              <ul class="nav" id="date_start">
+                <label>Date begins after:</label>
+                <li><input value="yyyy-mm-dd" data-date-format="yyyy-mm-dd" type="text" class="datepicker" placeholder="yyyy-mm-dd" /></li>
+              </ul>
+              <ul class="nav" id="date_end">
+                <label>Date ends before:</label>
+                <li><input value="yyyy-mm-dd" data-date-format="yyyy-mm-dd" type="text" class="datepicker" placeholder="yyyy-mm-dd" /></li>
+              </ul>
+            </nav>
+            <nav class="tabs-left">
               <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> {% trans "Keywords" %}</a></h2>
               <ul class="nav" id="keywords">
                 {% for tag in tags %}
-                  <li><a data-class="{{ tag.slug }}" class="trigger-query">{{ tag }} <span>(<span class="count">{{ tag.taggit_taggeditem_items.count }}</span>)</span></a> </li>
+                  <li><a data-class="{{ tag.slug }}" class="trigger-query">{{ tag }} <span>(<span class="count">{{ tag.taggit_taggeditem_items.count }}</span>)</span></a></li>
                 {% endfor %}
               </ul>
             </nav>
