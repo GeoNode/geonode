@@ -42,7 +42,8 @@ _SEARCH_PARAMS = [
     'end_date',
     'start',
     'exclude',
-    'cache']
+    'cache',
+    'category']
 
 # settings API
 _search_config = getattr(settings,'SIMPLE_SEARCH_SETTINGS', {})
@@ -103,6 +104,7 @@ class Query(object):
         self.owner = filters.get('owner')
         self.kw = filters.get('kw')
         self.exclude = filters.get('exclude')
+        self.categories = tuple(filters.get('category').split(',')) if filters.get('category') else None
         if self.kw:
             self.kw = tuple(self.kw.split(','))
         if self.exclude:
@@ -203,6 +205,7 @@ def query_from_request(request, extra):
         except KeyError:
             raise BadQuery('valid sorting values are: %s' % sorts.keys())
 
+    params['category'] = None if 'all' in params.get('category', '') else params.get('category', '')
     filters = dict([(k,params.get(k,None) or None) for k in _SEARCH_PARAMS])
 
     aliases = dict(bbox='extent')

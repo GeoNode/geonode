@@ -265,6 +265,16 @@ class searchTest(TestCase):
         # exclude almost everything
         self.search_assert(self.request('', exclude='common,something,ipsum,quux,morx,one'), n_results=9, n_total=9)
 
+    def test_category_search(self):
+        #search no categories
+        self.search_assert(self.request('', category=''), n_results=10, n_total=32)
+        #search, one category
+        self.search_assert(self.request('', category='location'), n_results=9, n_total=9)
+        # search two categories
+        self.search_assert(self.request('', category='location,biota'), n_results=10, n_total=17)
+        # search with all three categories
+        self.search_assert(self.request('', category='location,biota,elevation'), n_results=10, n_total=26)
+
     def test_author_endpoint(self):
         resp = self.c.get('/search/api/authors')
         jsobj = json.loads(resp.content)
