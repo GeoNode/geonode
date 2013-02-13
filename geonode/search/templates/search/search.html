@@ -52,9 +52,9 @@
               <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Categories" %}</a></h2>
               <ul class="nav" id="categories">
                 {% layer_categories as category_list %}
-                <li><a {% if not layer_category %} class="active trigger-query"{% endif %}>{% trans "All Categories" %}</a></li>
+                <li><a data-class="all" class="active trigger-query">{% trans "All Categories" %}</a></li>
                 {% for category in category_list %}
-                <li><a data-class="{{category.slug}}" {% ifequal layer_category category %} class="active trigger-query"{% else %}class="trigger-query"{% endifequal %}>{{ category }}
+                <li><a data-class="{{category.slug}}" class="active trigger-query">{{ category }}
                 {% if category.layer_set.count > 0 %}({{ category.layer_set.count }}){% endif %}
                 </a></li>
                 {% endfor %}
