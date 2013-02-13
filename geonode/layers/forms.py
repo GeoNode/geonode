@@ -132,7 +132,7 @@ class NewLayerUploadForm(LayerUploadForm):
 class LayerCreateFromTemplateForm(forms.Form):
     
     abstract = forms.CharField(required=False)
-    layer_title = forms.CharField(required=False)
+    layer_title = forms.CharField(required=True)
     permissions = JSONField()
 
 class LayerDescriptionForm(forms.Form):
