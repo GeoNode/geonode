@@ -100,14 +100,14 @@ var init = function() {
                 editFeatureActionText: '<span class="x-btn-text">' + "Edit Feature" + '</span>',
                 actionTarget:  {target: "paneltbar", index: 4},
                 toggleGroup: 'featureGroup'
-            }{% endif %}{% if user.is_authenticated %},
+            }{% endif %},
             {
                 ptype: "app_annotation",
                 title: "Add Notes",
-                user: {{ user.id }},
+                user: "{{ user.id }}",
                 toggleGroup: 'featureGroup',
                 actionTarget:  {target: "paneltbar", index: 16}
-            }{% endif %}
+            }
             ],
             proxy: "/proxy/?url=",
 

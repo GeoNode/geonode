@@ -51,7 +51,7 @@ def annotations(request, mapid, id=None):
             return HttpResponse(status=200)
         elif request.method != "GET":
             map_obj = Map.objects.get(id=mapid)
-            if request.user.id == obj.owner_id or request.user == request.user.has_perm('maps.change_map', obj=map_obj):
+            if request.user.id == obj.owner_id or request.user.has_perm('maps.change_map', obj=map_obj):
                 features = geoj.decode(request.raw_post_data)
                 obj = applyGeometry(obj, features[0])
             else:
