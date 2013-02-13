@@ -46,6 +46,7 @@ $(function(){
                 });
             });
             
+            //from the client we don't use the all key for the categories
             if(params['categories'][0] === 'all'){
                 params['categories'].shift();
             }
@@ -55,11 +56,14 @@ $(function(){
                 url: '/search/html',
                 data: {
                     type: params['types'].join(','),
-                    category: params['categories'].join(',')
+                    category: params['categories'].join(','),
+                    kw: params['keywords'].join(',')
                 }, 
                 success: function(data){
                     $('#search-content').html(data);
+                    //call the pagination
                     paginate();
+                    //call the rating update
                     rateMore();
                 }
             });
