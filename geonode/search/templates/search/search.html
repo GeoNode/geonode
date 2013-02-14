@@ -55,7 +55,7 @@
                 <li><a data-class="all" class="active trigger-query">{% trans "All Categories" %}</a></li>
                 {% for category in category_list %}
                 <li><a data-class="{{category.slug}}" class="active trigger-query">{{ category }}
-                {% if category.layer_set.count > 0 %}({{ category.layer_set.count }}){% endif %}
+                {% if category.layer_set.count > 0 %}({{ category.layer_set.count }}){% else %}(0){% endif %}
                 </a></li>
                 {% endfor %}
               </ul>
