@@ -429,14 +429,13 @@ GeoExplorer.plugins.AnnotationTool = Ext
 																										this,
 																										multipleSelected);
 																					} else {
+																						selectAnnoControl.deactivate();
 																						if (this.target.selectControl) {
 																							this.target.selectControl
 																									.activate();
 																						}
 																						this.target.mapPanel.map
 																								.removeLayer(layer);
-																						selectAnnoControl
-																								.deactivate();
 																						Ext
 																								.getCmp(
 																										"check_add_annotations")
@@ -454,13 +453,15 @@ GeoExplorer.plugins.AnnotationTool = Ext
 																						layer.events.unregister('featureadded', layer, added);
 																						layer.events.unregister('beforefeaturemodified', layer, added);
 
-																						for ( var control in [
-																								modControl,
+																						var controls = new Array(modControl,
 																								addPointControl,
 																								addLineControl,
-																								addPolygonControl ]) {
+																								addPolygonControl);
+																						
+																						for(var control = 0; control < controls.length; control++) {
+																							controls[control].deactivate();
 																							this.target.mapPanel.map
-																									.removeControl(control);
+																									.removeControl(controls[control]);
 																						}
 
 																					}
