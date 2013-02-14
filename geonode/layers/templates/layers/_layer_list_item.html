@@ -10,7 +10,10 @@
       <img src="{{ layer|layer_thumbnail }}" />
   </a>
   <div class="details">
-    <a href="#download-{{layer.id}}" data-toggle="modal" class="btn btn-info download">{% trans "Download" %}</a>
+    <div class="pull-right">
+      <a href="#download-{{layer.id}}" data-toggle="modal" class="btn btn-info">{% trans "Download" %}</a>
+      <a href="{% url "new_map" %}?layer={{ layer.typename }}" class="btn btn-info">  {% trans "Create a map" %}</a>
+    </div>
     <a href="{% url "layer_detail" layer.typename %}"><h3>{{ layer.title }}</h3></a>
     <div class="meta">{% trans 'from' %} <a href="{% url "profile_detail" layer.owner.username %}">{{ layer.owner }}</a>, {{ layer.date|timesince }} {% trans 'ago' %}</div>
     <p class="abstract">{{ layer.abstract }}</p>
@@ -19,7 +22,7 @@
   <div class="modal custom hide" id="download-{{layer.id}}">
     <div class="modal-header">
       <button class="close" data-dismiss="modal">×</button>
-      <h2><i class="icon-download-alt"></i>  "Download Layer {{layer.title}}"</h2>
+      <h2><i class="icon-download-alt"></i>  "Download Layer {{layer.title}}"</h2>    
     </div>
     <div class="modal-body">
     </div>

@@ -27,7 +27,7 @@ from geonode.security.models import UserObjectRoleMapping
 from geonode.security.models import GenericObjectRoleMapping
 from geonode.security.models import ANONYMOUS_USERS
 from geonode.security.models import AUTHENTICATED_USERS
-from geonode.maps.models import Layer
+from geonode.maps.models import Layer, TopicCategory
 from geonode.maps.models import Map
 from geonode.maps.models import MapLayer
 from geonode.documents.models import Document
@@ -77,6 +77,17 @@ def _filter_security(q, user, model, permission):
         q = q | getattr(model, 'objects').filter(owner=user)
 
     return q
+
+def _filter_category(q, categories):
+    _categories = []
+    for category in categories:
+        try:
+            _categories.append(TopicCategory.objects.get(slug=category))
+        except TopicCategory.DoesNotExist:
+            # FIXME Do something here
+            pass
+
+    return q.filter(category__in=_categories)
 
 def _add_relevance(q, query, rank_rules):
     # for unittests, it doesn't make sense to test this as it's postgres
@@ -206,6 +217,9 @@ def _get_map_results(query):
     if query.exclude:
         q = q.exclude(reduce(operator.or_, [Q(title__contains=ex) for ex in query.exclude]))
 
+    if query.categories:
+        q = _filter_category(q, query.categories)
+
     if query.query:
         q = _build_map_layer_text_query(q, query, query_keywords=True)
         rules = _rank_rules(Map,
@@ -236,9 +250,6 @@ def _get_layer_results(query):
     if query.owner:
         q = q.filter(owner__username=query.owner)
 
-    if query.type and query.type != 'layer':
-        q = q.filter(storeType = query.type)
-
     if query.extent:
         q = filter_by_extent(Layer, q, query.extent)
 
@@ -247,6 +258,9 @@ def _get_layer_results(query):
 
     if query.period:
         q = filter_by_period(Layer, q, *query.period)
+
+    if query.categories:
+        q = _filter_category(q, query.categories)
 
     # this is a special optimization for prefetching results when requesting
     # all records via search
@@ -286,9 +300,6 @@ def _get_document_results(query):
     if query.owner:
         q = q.filter(owner__username=query.owner)
 
-    if query.type and query.type != 'document':
-        q = q.filter(storeType = query.type)
-
     if query.extent:
         q = filter_by_extent(Document, q, query.extent)
 
@@ -296,7 +307,10 @@ def _get_document_results(query):
         q = q.filter(date__gte=query.added)
 
     if query.period:
-        q = filter_by_period(Layer, q, *query.period)
+        q = filter_by_period(Document, q, *query.period)
+
+    if query.categories:
+        q = _filter_category(q, query.categories)
 
     # this is a special optimization for prefetching results when requesting
     # all records via search
@@ -319,29 +333,33 @@ def combined_search_results(query):
     facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'document', 'user')])
     results = {'facets' : facets}
 
-    bytype = None if query.type == u'all' else query.type
+    bytype = (None,) if u'all' in query.type else query.type
     query.type = bytype
 
-    if bytype is None or bytype == u'map':
+    if None in bytype  or u'map' in bytype:
         q = _get_map_results(query)
         facets['map'] = q.count()
         results['maps'] = q
 
-    if bytype is None or bytype in (u'layer', u'coverageStore', u'dataStore'):
+    if None in bytype or u'layer' in bytype or u'raster' in bytype or u'vector' in bytype:
         q = _get_layer_results(query)
+        if u'raster' in bytype and not u'vector' in bytype:
+            q = q.filter(storeType='coverageStore')
+        if u'vector' in bytype and not u'raster' in bytype:
+            q = q.filter(storeType='dataStore')
         facets['layer'] = q.count()
         facets['raster'] = q.filter(storeType='coverageStore').count()
         facets['vector'] = q.filter(storeType='dataStore').count()
         results['layers'] = q
 
-    if bytype is None or bytype == u'document':
+    if None in bytype or u'document' in bytype:
         q = _get_document_results(query)
         facets['document'] = q.count()
         results['documents'] = q
 
-    if bytype is None or bytype == u'owner':
-        q = _get_owner_results(query)
-        facets['user'] = q.count()
-        results['owners'] = q
-
+    if not query.categories: 
+        if None in bytype or u'user' in bytype:
+            q = _get_owner_results(query)
+            facets['user'] = q.count()
+            results['users'] = q
     return results

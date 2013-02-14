@@ -21,7 +21,7 @@ from datetime import datetime
 from datetime import timedelta
 from django.core.serializers import serialize
 from django.contrib.auth.models import User
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, TopicCategory
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.people.models import Profile 
@@ -36,17 +36,21 @@ import os.path
 # primarly used as a first step to generate the json data for the fixture using
 # django's dumpdata
 
+biota = TopicCategory.objects.get(slug='biota')
+location = TopicCategory.objects.get(slug='location')
+elevation = TopicCategory.objects.get(slug='elevation')
+
 
 map_data = [
-        ('lorem ipsum', 'common lorem ipsum', ('populartag',), [-180, 180, -90, 90]),
-        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'maptagunique'), [-180, 180, -90, 90]),
-        ('lorem1 ipsum1', 'common abstract1', ('populartag',), [-180, 180, -90, 90]),
-        ('ipsum foo', 'common bar lorem', ('populartag',), [-180, 180, -90, 90]),
-        ('map one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1]),
-        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5]),
-        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10]),
-        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10]),
-        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50]),
+        ('lorem ipsum', 'common lorem ipsum', ('populartag',), [-180, 180, -90, 90], biota),
+        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'maptagunique'), [-180, 180, -90, 90], biota),
+        ('lorem1 ipsum1', 'common abstract1', ('populartag',), [-180, 180, -90, 90], biota),
+        ('ipsum foo', 'common bar lorem', ('populartag',), [-180, 180, -90, 90], location),
+        ('map one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1], location),
+        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
+        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
+        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
+        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
         ]
 
 user_data = [
@@ -63,26 +67,26 @@ people_data = [
         ]
 
 layer_data = [
-        ('layer1', 'abstract1', 'layer1', 'geonode:layer1', [-180, 180, -90, 90], '19850101', ('populartag','here')),
-        ('layer2', 'abstract2', 'layer2', 'geonode:layer2', [-180, 180, -90, 90], '19800501', ('populartag',)),
-        ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', [-180, 180, -90, 90], '19901001', ('populartag',)),
-        ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', [-180, 180, -90, 90], '19000603', ('populartag', 'layertagunique')),
-        ('common double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], '50001101', ('populartag',)),
-        ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], '00010101', ('populartag',)),
-        ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], '19501209', ('populartag',)),
-        ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], '19630829', ('populartag',)),
+        ('layer1', 'abstract1', 'layer1', 'geonode:layer1', [-180, 180, -90, 90], '19850101', ('populartag','here'), elevation),
+        ('layer2', 'abstract2', 'layer2', 'geonode:layer2', [-180, 180, -90, 90], '19800501', ('populartag',), elevation),
+        ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', [-180, 180, -90, 90], '19901001', ('populartag',), elevation),
+        ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', [-180, 180, -90, 90], '19000603', ('populartag', 'layertagunique'), location),
+        ('common double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], '50001101', ('populartag',), location),
+        ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], '00010101', ('populartag',), location),
+        ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], '19501209', ('populartag',), biota),
+        ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], '19630829', ('populartag',), biota),
         ]
 
 document_data = [
-        ('lorem ipsum', 'common lorem ipsum', ('populartag',), [-180, 180, -90, 90]),
-        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique'), [-180, 180, -90, 90]),
-        ('lorem1 ipsum1', 'common abstract1', ('populartag',), [-180, 180, -90, 90]),
-        ('ipsum foo', 'common bar lorem', ('populartag',), [-180, 180, -90, 90]),
-        ('doc one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1]),
-        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5]),
-        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10]),
-        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10]),
-        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50]),
+        ('lorem ipsum', 'common lorem ipsum', ('populartag',), [-180, 180, -90, 90], biota),
+        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique'), [-180, 180, -90, 90], biota),
+        ('lorem1 ipsum1', 'common abstract1', ('populartag',), [-180, 180, -90, 90], biota),
+        ('ipsum foo', 'common bar lorem', ('populartag',), [-180, 180, -90, 90], location),
+        ('doc one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1], location),
+        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
+        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
+        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
+        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
         ]
 
 def create_models():
@@ -103,7 +107,7 @@ def create_models():
         users.append(u)
 
     for md, user in zip(map_data, cycle(users)):
-        title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1) = md
+        title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = md
         m = Map(title=title,
                 abstract=abstract,
                 zoom=4,
@@ -114,7 +118,8 @@ def create_models():
                 bbox_x0=bbox_x0,
                 bbox_x1=bbox_x1,
                 bbox_y0=bbox_y0,
-                bbox_y1=bbox_y1
+                bbox_y1=bbox_y1,
+                category = category,
                 )
         m.save()
         for kw in kws:
@@ -122,7 +127,7 @@ def create_models():
             m.save()
 
     for dd, user in zip(document_data, cycle(users)):
-        title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1) = dd
+        title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = dd
         m = Document(title=title,
                 abstract=abstract,
                 owner=user,
@@ -130,6 +135,7 @@ def create_models():
                 bbox_x1=bbox_x1,
                 bbox_y0=bbox_y0,
                 bbox_y1=bbox_y1,
+                category = category,
                 )
         m.save()
         for kw in kws:
@@ -137,7 +143,7 @@ def create_models():
             m.save()
 
     for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('coverageStore','dataStore'))):
-        title, abstract, name, typename, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), dt, kws = ld
+        title, abstract, name, typename, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), dt, kws, category = ld
         year, month, day = map(int, (dt[:4], dt[4:6], dt[6:]))
         start = datetime(year, month, day)
         end = start + timedelta(days=365)
@@ -154,7 +160,8 @@ def create_models():
                   temporal_extent_start=start,
                   temporal_extent_end=end,
                   date=start,
-                  storeType=storeType
+                  storeType=storeType,
+                  category = category,
                   )
         l.save()
         for kw in kws:
