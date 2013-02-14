@@ -246,12 +246,6 @@ GeoExplorer.plugins.AnnotationTool = Ext
 							}
 						}
 
-						function register() {
-							this.events.register('featureadded', this, added);
-							this.events.register('beforefeaturemodified', this,
-									added);
-							this.events.unregister('loadend', this, register);
-						}
 
 						function added(evt) {
 							if (!evt.feature.fid) {
@@ -422,11 +416,8 @@ GeoExplorer.plugins.AnnotationTool = Ext
 																								.addLayer(layer);
 																						selectAnnoControl
 																								.activate();
-																						layer.events
-																								.register(
-																										'loadend',
-																										layer,
-																										register);
+																						layer.events.register('featureadded', layer, added);
+																						layer.events.register('beforefeaturemodified', layer, added);
 																						layer.events
 																								.register(
 																										'featureselected',
@@ -451,21 +442,18 @@ GeoExplorer.plugins.AnnotationTool = Ext
 																										"check_add_annotations")
 																								.setChecked(
 																										false);
-																						layer.events
-																								.unregister(
-																										'loadend',
-																										layer,
-																										register);
+																						layer.events.unregister(
+																								'multipleselected',
+																								this,
+																								multipleSelected);
 																						layer.events
 																								.unregister(
 																										'featureselected',
 																										this,
 																										featureSelected);
-																						layer.events
-																								.unregister(
-																										'multipleselected',
-																										this,
-																										multipleSelected);
+																						layer.events.unregister('featureadded', layer, added);
+																						layer.events.unregister('beforefeaturemodified', layer, added);
+
 																						for ( var control in [
 																								modControl,
 																								addPointControl,
