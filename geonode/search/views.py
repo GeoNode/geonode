@@ -193,8 +193,26 @@ def cache_key(query,filters):
     return str(reduce(operator.xor,map(hash,filters.items())) ^ hash(query))
 
 def _search_natural(query):
+    # to support super fast paging results, cache the intermediates
+    results = None
+    cache_time = 60
+    if query.cache:
+        key = query.cache_key()
+        results = cache.get(key)
+        if results:
+            # put it back again - this basically extends the lease
+            cache.add(key, results, cache_time)
 
-    results = combined_search_results(query)
+    if not results:
+        results = combined_search_results(query)
+        if query.cache:
+            dumped = zlib.compress(pickle.dumps((results)))
+            logger.debug("cached search results %s", len(dumped))
+            cache.set(key, dumped, cache_time)
+
+    else:
+        results = pickle.loads(zlib.decompress(results))
+
     return results
 
 def _search(query):

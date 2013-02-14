@@ -281,6 +281,8 @@ class searchTest(TestCase):
         self.assertEquals(6, jsobj['total'])
 
     def test_search_page(self):
+        from django.core.cache import cache
+        cache.clear()
         resp = self.c.get(reverse('search'))
         self.assertEquals(200, resp.status_code)
 
