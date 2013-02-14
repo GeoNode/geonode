@@ -45,10 +45,7 @@ $(function(){
                 });
             });
             
-            //from the client we don't use the all key for the categories
-            if(params['categories'][0] === 'all'){
-                params['categories'].shift();
-            }
+           
             if(params['date_start'][0] === 'yyyy-mm-dd'){
                 params['date_start'] = ['']
             }
