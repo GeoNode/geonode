@@ -21,6 +21,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.test.client import Client
 from django.test import TestCase
+from django.core.urlresolvers import reverse
 from geonode.security.models import AUTHENTICATED_USERS
 from geonode.security.models import ANONYMOUS_USERS
 from geonode.layers.models import Layer
@@ -108,7 +109,7 @@ class searchTest(TestCase):
 
         contains_username = options.pop('contains_username', None)
         if contains_username:
-            self.assert_results_contain_title(jsonvalue, contains_username, 'owner')
+            self.assert_results_contain_title(jsonvalue, contains_username, 'user')
 
         n_results = options.pop('n_results', None)
         if n_results:
@@ -243,10 +244,10 @@ class searchTest(TestCase):
         self.search_assert(self.request('common', type='map'), n_results=9, n_total=9)
         self.search_assert(self.request('common', type='layer'), n_results=5, n_total=5)
         self.search_assert(self.request('common', type='document'), n_results=9, n_total=9)
-        self.search_assert(self.request('foo', type='owner'), n_results=4, n_total=4)
+        self.search_assert(self.request('foo', type='user'), n_results=4, n_total=4)
         # there are 8 total layers, half vector, half raster
-        self.search_assert(self.request('', type='coverageStore'), n_results=4, n_total=4)
-        self.search_assert(self.request('', type='dataStore'), n_results=4, n_total=4)
+        self.search_assert(self.request('', type='raster'), n_results=4, n_total=4)
+        self.search_assert(self.request('', type='vector'), n_results=4, n_total=4)
 
     def test_kw_query(self):
         # a kw-only query should filter out those not matching the keyword
@@ -264,13 +265,25 @@ class searchTest(TestCase):
         # exclude almost everything
         self.search_assert(self.request('', exclude='common,something,ipsum,quux,morx,one'), n_results=9, n_total=9)
 
+    def test_category_search(self):
+        #search no categories
+        self.search_assert(self.request('', category=''), n_results=10, n_total=32)
+        #search, one category
+        self.search_assert(self.request('', category='location'), n_results=9, n_total=9)
+        # search two categories
+        self.search_assert(self.request('', category='location,biota'), n_results=10, n_total=17)
+        # search with all three categories
+        self.search_assert(self.request('', category='location,biota,elevation'), n_results=10, n_total=26)
+
     def test_author_endpoint(self):
         resp = self.c.get('/search/api/authors')
         jsobj = json.loads(resp.content)
         self.assertEquals(6, jsobj['total'])
 
     def test_search_page(self):
-        resp = self.c.get('/search/')
+        from django.core.cache import cache
+        cache.clear()
+        resp = self.c.get(reverse('search'))
         self.assertEquals(200, resp.status_code)
 
     def test_util(self):

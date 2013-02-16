@@ -13,7 +13,7 @@
 {% block body_outer %}
   <div class="span12">
     <h2 class="page-title">{% trans "Search" %}</h2>
-    <form action="{% url search %}" class="form-horizontal advanced-search">
+    <form action="{% url search %}" class="form-horizontal advanced-search" method="POST">
       <div class="row">
         <div class="span2">
           <h3>{% trans "Search for: "%}</h3>
@@ -111,7 +111,7 @@
             </div>
           </fieldset>
         </div>
-        
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{csrf_token}}" />
         <div class="span12">
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">{% trans "Search "%}</button>

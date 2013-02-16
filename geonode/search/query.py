@@ -42,7 +42,8 @@ _SEARCH_PARAMS = [
     'end_date',
     'start',
     'exclude',
-    'cache']
+    'cache',
+    'category']
 
 # settings API
 _search_config = getattr(settings,'SIMPLE_SEARCH_SETTINGS', {})
@@ -99,10 +100,11 @@ class Query(object):
         self.user = user
         self.cache = cache
 
-        self.type = filters.get('type')
+        self.type = tuple(filters.get('type').split(',')) if filters.get('type') else (None,)
         self.owner = filters.get('owner')
         self.kw = filters.get('kw')
         self.exclude = filters.get('exclude')
+        self.categories = tuple(filters.get('category').split(',')) if filters.get('category') else None
         if self.kw:
             self.kw = tuple(self.kw.split(','))
         if self.exclude:
@@ -117,9 +119,9 @@ class Query(object):
             if self.period:
                 raise BadQuery('period and start/end both provided')
             #if the date is in the format 'yyyy-mm-dd' make it iso format
-            if len(start_date) == 10:   
+            if start_date and len(start_date) == 10:   
                 start_date += 'T00:00:00Z'
-            if len(end_date) == 10:
+            if end_date and len(end_date) == 10:
                 end_date += 'T00:00:00Z'
             self.period = (start_date, end_date)
 
@@ -203,6 +205,7 @@ def query_from_request(request, extra):
         except KeyError:
             raise BadQuery('valid sorting values are: %s' % sorts.keys())
 
+    params['category'] = None if 'all' in params.get('category', '') else params.get('category', '')
     filters = dict([(k,params.get(k,None) or None) for k in _SEARCH_PARAMS])
 
     aliases = dict(bbox='extent')
