@@ -36,8 +36,11 @@ from geonode.search.normalizers import apply_normalizers
 from geonode.search.query import query_from_request
 from geonode.search.query import BadQuery
 
+from taggit.models import Tag
+
 from datetime import datetime
 from time import time
+from itertools import chain
 import json
 import cPickle as pickle
 import operator
@@ -58,15 +61,18 @@ def _create_viewer_config():
 _viewer_config = _create_viewer_config()
 
 
-def search_page(request, **kw):
-    params = request.GET.dict()
-    if kw:
-        params.update(kw)
-
-    context = _get_search_context()
-    context['init_search'] = json.dumps(params)
-
-    return render_to_response('search/search.html', RequestContext(request, context))
+def search_page(request, template='search/search.html', **kw): 
+    results, query = search_api(request, format='html', **kw)
+    facets = results.pop('facets')
+    chained = chain()
+    for key in results.keys():
+        chained = chain(chained, results[key])
+    results = list(chained)
+    total = 0
+    for val in facets.values(): total+=val
+    total -= facets['raster'] + facets['vector']
+    return render_to_response(template, RequestContext(request, {'object_list': results, 'total': total, 
+        'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': Tag.objects.all()}))
 
 def advanced_search(request, **kw):
     params = {}
@@ -121,7 +127,7 @@ def _get_all_keywords():
     return allkw
 
 
-def search_api(request, **kwargs):
+def search_api(request, format='json', **kwargs):
     if request.method not in ('GET','POST'):
         return HttpResponse(status=405)
     debug = logger.isEnabledFor(logging.DEBUG)
@@ -130,16 +136,23 @@ def search_api(request, **kwargs):
     ts = time()
     try:
         query = query_from_request(request, kwargs)
-        items, facets = _search(query)
+        if format == 'html':
+            items = _search_natural(query)
+        else:
+            items, facets = _search(query)
         ts1 = time() - ts
         if debug:
             ts = time()
-        results = _search_json(query, items, facets, ts1)
+        if format != 'html':
+            results = _search_json(query, items, facets, ts1)
         if debug:
             ts2 = time() - ts
             logger.debug('generated combined search results in %s, %s',ts1,ts2)
             logger.debug('with %s db queries',len(connection.queries))
-        return results
+        if format == 'html':
+            return items, query
+        else:
+            return results
     except Exception, ex:
         if not isinstance(ex, BadQuery):
             logger.exception("error during search")
@@ -148,7 +161,6 @@ def search_api(request, **kwargs):
             'success' : False,
             'errors' : [str(ex)]
         }), status=400)
-
 
 def _search_json(query, items, facets, time):
     total = len(items)
@@ -180,6 +192,28 @@ def _search_json(query, items, facets, time):
 def cache_key(query,filters):
     return str(reduce(operator.xor,map(hash,filters.items())) ^ hash(query))
 
+def _search_natural(query):
+    # to support super fast paging results, cache the intermediates
+    results = None
+    cache_time = 60
+    if query.cache:
+        key = query.cache_key()
+        results = cache.get(key)
+        if results:
+            # put it back again - this basically extends the lease
+            cache.add(key, results, cache_time)
+
+    if not results:
+        results = combined_search_results(query)
+        if query.cache:
+            dumped = zlib.compress(pickle.dumps((results)))
+            logger.debug("cached search results %s", len(dumped))
+            cache.set(key, dumped, cache_time)
+
+    else:
+        results = pickle.loads(zlib.decompress(results))
+
+    return results
 
 def _search(query):
     # to support super fast paging results, cache the intermediates

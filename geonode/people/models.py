@@ -63,6 +63,9 @@ class Profile(models.Model):
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.organization)
 
+    def class_name(value): 
+        return value.__class__.__name__ 
+
 
 class Role(models.Model):
     """
