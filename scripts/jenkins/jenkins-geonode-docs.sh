@@ -77,4 +77,4 @@ git add .
 git commit -am "Update GeoNode Website"
 git push origin master
 rm -rf /var/www/site/*
-cp -R build/* /var/www/site/
+cp -R .build/* /var/www/site/
