@@ -89,7 +89,7 @@ def apply_normalizers(results):
         ('maps', MapNormalizer),
         ('layers', LayerNormalizer),
         ('documents', DocumentNormalizer),
-        ('owners', OwnerNormalizer),
+        ('users', OwnerNormalizer),
     ]
     for k,n in mapping:
         r = results.get(k, None)

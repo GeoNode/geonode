@@ -1,0 +1,32 @@
+{% load pagination_tags %}
+{% load i18n %}
+<div class="tab-pane active list paginate-contents" id="all">
+  <p> Total: {{ total }}</p>
+{% if object_list|length > 0 %}
+{% autopaginate object_list 4 %}
+{% for object in object_list %}
+  {% if object.class_name == 'Layer' %}
+    {% with object as layer %}
+      {% include "layers/_layer_list_item.html" %}
+    {% endwith %}
+  {% elif object.class_name == 'Map' %}
+    {% with object as map %}
+      {% include "maps/_map_list_item.html" %}
+    {% endwith %}
+  {% elif object.class_name == 'Document' %}
+    {% with object as document %}
+      {% include "documents/_document_list_item.html" %}
+    {% endwith %}
+  {% elif object.class_name == 'Profile' %}
+    {% with object as profile %}
+      {% include "people/_profile_list_item.html" %}
+    {% endwith %}
+  {% endif %}
+{% endfor %}
+{% else %}
+  <p>{% trans "No data found" %}</p>
+{% endif %}
+</div>
+{% if object_list|length > 0 %}
+  {% paginate %}
+{% endif %}

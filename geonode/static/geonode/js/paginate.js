@@ -1,6 +1,8 @@
 var loading = "<div class='loading'><p>Loading more items&hellip;</p></div>";
 
-$(function () {
+$(paginate());
+
+function paginate() {
     $(".paginate").each(function() {
         var p$ = $(this);
         var auto = p$.hasClass("paginate-auto") ? true : false,
@@ -28,10 +30,9 @@ $(function () {
                     fetchMore(this);
                 }));
             }
-
         }
     });
-});
+}
 
 function fetchMore(a) {
     $(a).before($(loading));
@@ -48,6 +49,7 @@ function fetchMore(a) {
                 $(this).find('.more').attr("href", more);
                 if ($(this).hasClass("paginate-auto")) $(this).find(".pagination").waypoint(opts);
             } else $(this).find('.more').remove();
+            rateMore();
         }
     });
 }
