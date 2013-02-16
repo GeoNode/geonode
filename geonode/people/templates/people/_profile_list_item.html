@@ -4,7 +4,7 @@
 {% friendly_load activity_tags %}
 {% load i18n %}
 
-<div class="well">
+<article class="well">
     <a href="{% url profile_detail profile.user.username %}">{% avatar profile.user 65 %} </a>
     
     <a href="{% url profile_detail profile.user.username %}">{{ profile.name }}</a> {% if profile.organization %}({{ profile.organization }}){% endif %}
@@ -29,4 +29,4 @@
     {% if_has_tag actor_url %}
         <p><a href="{% actor_url profile.user %}" class="btn btn-primary" type="button">Activities</a></p>
     {% endif_has_tag %}
-</div>
+</article>

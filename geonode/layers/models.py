@@ -225,9 +225,9 @@ class ResourceBase(models.Model, PermissionLevelMixin):
             return ','.join([kw.name for kw in keywords_qs])
         else:
             return ''
-            
-    def class_name(value): 
-        return value.__class__.__name__ 
+
+    def class_name(value):
+        return value.__class__.__name__
 
     class Meta:
         abstract = True
@@ -401,11 +401,11 @@ class Layer(ResourceBase):
 
     def tiles_url(self):
         return self.link_set.get(name='Tiles').url
-        
+
     def maps(self):
         from geonode.maps.models import MapLayer
         return  MapLayer.objects.filter(name=self.typename)
-        
+
 
 class AttributeManager(models.Manager):
     """Helper class to access filtered attributes
@@ -708,7 +708,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     elif instance.storeType == 'coverageStore':
         #FIXME(Ariel): This works for public layers, does it work for restricted too?
         # would those end up with no geotiff links, like, forever?
- 
+
         links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename)
         for ext, name, mime, wcs_url in links:
             instance.link_set.get_or_create(url=wcs_url,
