@@ -55,7 +55,7 @@ cp -R build/latex/GeoNodeDevelopersWorkshop.pdf /var/www/workshops/devel/
 # Compile and Publish Website
 cd ${WORKSPACE}/geonode.github.com/
 cactus build
-cp -R build/* .
+cp -R .build/* .
 
 # Publish Workshops
 echo "Publishing Workshops"
