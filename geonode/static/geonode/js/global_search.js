@@ -45,7 +45,6 @@ $(function(){
                 });
             });
             
-           
             if(params['date_start'][0] === 'yyyy-mm-dd'){
                 params['date_start'] = ['']
             }
