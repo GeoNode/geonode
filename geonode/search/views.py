@@ -88,7 +88,11 @@ def search_page(request, template='search/search.html', **kw):
 
         results.sort(key=keyfunc, reverse=not query.order)
 
-    for u in users: results.append(u)
+    try:
+        for u in users: results.append(u)
+    except UnboundLocalError:
+        pass
+
     total = 0
     for val in facets.values(): total+=val
     total -= facets['raster'] + facets['vector']
