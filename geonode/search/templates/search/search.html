@@ -95,7 +95,6 @@
   <script src="{% static "libs/js/loadmore.js" %}"></script>
   <script src="{% static "libs/js/jquery.raty.js" %}"></script>
   <script src="{% static "geonode/js/explore.js" %}"></script>
-  
   <script src="{% static "geonode/js/global_search.js" %}"></script>
   <script type="text/javascript">
     $(rateMore());
@@ -114,9 +113,9 @@
     function star(elem, rating) {
       $(elem).raty({
         half: true,
-       readOnly: true,
-       score: rating,
-       path: "{% static "agon_ratings/img/" %}"
+        readOnly: true,
+        score: rating,
+        path: "{% static "agon_ratings/img/" %}"
       });        
     }
   </script>

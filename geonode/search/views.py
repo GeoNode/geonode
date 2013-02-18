@@ -65,9 +65,30 @@ def search_page(request, template='search/search.html', **kw):
     results, query = search_api(request, format='html', **kw)
     facets = results.pop('facets')
     chained = chain()
+    
+    try:
+        users = results.pop('users')
+    except KeyError:
+        pass
+    
     for key in results.keys():
         chained = chain(chained, results[key])
     results = list(chained)
+    
+    if query.sort != None:
+        if query.sort == 'title':
+            keyfunc = lambda r: r.title.lower()
+        elif query.sort == 'last_modified':
+            old = datetime(1,1,1)
+            keyfunc = lambda r: r.date or old
+        elif query.sort == 'rank':
+            keyfunc = lambda r: r.rating or old
+        else:
+            keyfunc = lambda r: getattr(r, query.sort)()
+
+        results.sort(key=keyfunc, reverse=not query.order)
+
+    for u in users: results.append(u)
     total = 0
     for val in facets.values(): total+=val
     total -= facets['raster'] + facets['vector']
