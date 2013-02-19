@@ -87,7 +87,6 @@ function build_query(){
     if(params['date_end'][0] === 'yyyy-mm-dd'){
         params['date_end'] = ['']
     }
-
     //from the client we don't use the all key for the categories
     if(params['categories'][0] === 'all'){
         params['categories'].shift();
@@ -100,6 +99,9 @@ function build_query(){
         'start_date': params['date_start'][0],
         'end_date': params['date_end'][0],
         'sort': params['sort'][0]
+    }
+    if (typeof default_type != 'undefined'){
+        data['type'] = default_type;
     }
     return data
 }

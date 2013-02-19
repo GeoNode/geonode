@@ -28,7 +28,7 @@ js_info_dict = {
 
 urlpatterns = patterns(
     'geonode.layers.views',
-    url(r'^$', LayerListView.as_view(), name='layer_browse'),
+    url(r'^$', 'layer_list', name='layer_browse'),
     url(r'^popular/$', LayerListView.as_view(
         layer_filter="popular_count"),
         name='layer_browse_popular'),
