@@ -357,7 +357,7 @@ def combined_search_results(query):
         facets['document'] = q.count()
         results['documents'] = q
 
-    if not query.categories: 
+    if not query.categories and not query.kw: 
         if None in bytype or u'user' in bytype:
             q = _get_owner_results(query)
             facets['user'] = q.count()
