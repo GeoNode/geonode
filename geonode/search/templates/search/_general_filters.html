@@ -8,7 +8,15 @@
     <li><a data-class="all" class="active trigger-query">{% trans "All Categories" %}</a></li>
     {% for category in category_list %}
     <li><a data-class="{{category.slug}}" class="active trigger-query">{{ category }}
-    {% if category.layer_set.count > 0 %}({{ category.layer_set.count }}){% else %}(0){% endif %}
+    {% if type == 'layer' %}
+    ({{ category.layer_set.count }})
+    {% elif type == 'map' %}
+    ({{ category.map_set.count }})
+    {% elif type == 'document' %}
+    ({{ category.document_set.count }})
+    {% else %}
+    ({{ category.layer_set.count|add:category.map_set.count|add:category.document_set.count }})
+    {% endif %}
     </a></li>
     {% endfor %}
   </ul>
@@ -27,8 +35,8 @@
 <nav class="filter">
   <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> {% trans "Keywords" %}</a></h2>
   <ul class="nav" id="keywords">
-    {% for tag in tags %}
-      <li><a data-class="{{ tag.slug }}" class="trigger-query">{{ tag }} <span>(<span class="count">{{ tag.taggit_taggeditem_items.count }}</span>)</span></a></li>
+    {% for tag in tags.values %}
+      <li><a data-class="{{ tag.slug }}" class="trigger-query">{{ tag.name }} <span>(<span class="count">{{ tag.count }}</span>)</span></a></li>
     {% endfor %}
   </ul>
 </nav>

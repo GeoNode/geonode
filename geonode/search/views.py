@@ -62,12 +62,21 @@ _viewer_config = _create_viewer_config()
 
 def search_page(request, template='search/search.html', **kw): 
     results, facets, query = search_api(request, format='html', **kw)
+    tags = {}
+
+    # get the keywords and their count
+    for item in results:
+        for tagged_item in item.o.tagged_items.all():
+                tags[tagged_item.tag.slug] = tags.get(tagged_item.tag.slug,{})
+                tags[tagged_item.tag.slug]['slug'] = tagged_item.tag.slug
+                tags[tagged_item.tag.slug]['name'] = tagged_item.tag.name
+                tags[tagged_item.tag.slug]['count'] = tags[tagged_item.tag.slug].get('count',0) + 1
 
     total = 0
     for val in facets.values(): total+=val
     total -= facets['raster'] + facets['vector']
     return render_to_response(template, RequestContext(request, {'object_list': results, 'total': total, 
-        'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': Tag.objects.all()}))
+        'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': tags}))
 
 def advanced_search(request, **kw):
     params = {}
