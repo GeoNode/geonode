@@ -5,14 +5,15 @@
 
 {% overall_rating document "document" as document_rating %}
 <article>
-<a href="{% url "document_detail" document.id %}">
+    <h2>Document</h2>
+    <a href="{% url "document_detail" document.id %}">
       <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
-  </a>
-  <div class="details">
-    <a href="#" class="btn btn-info download">{% trans "Download" %}</a>
-    <a href="{% url "document_detail" document.id %}"><h3>{{ document.title }}</h3></a>
-    <div class="meta">{% trans 'from' %} <a href="{% url "profile_detail" document.owner.username %}">{{ document.owner }}</a>, {{ document.date|timesince }} {% trans 'ago' %}</div>
-    <p class="abstract">{{ document.abstract }}</p>
-    <p class="activity">{{ document.popular_count }} {% trans "view" %}{{ document.popular_count|pluralize }} | <span class="avg_rating" data-rating="{{ document_rating }}">{% trans "Average rating" %} <span class="overall_rating"></span></span></p>
-  </div>
+    </a>
+    <div class="details">
+        <a href="#" class="btn btn-info download">{% trans "Download" %}</a>
+        <a href="{% url "document_detail" document.id %}"><h3>{{ document.title }}</h3></a>
+        <div class="meta">{% trans 'from' %} <a href="{% url "profile_detail" document.owner.username %}">{{ document.owner }}</a>, {{ document.date|timesince }} {% trans 'ago' %}</div>
+        <p class="abstract">{{ document.abstract }}</p>
+        <p class="activity">{{ document.popular_count }} {% trans "view" %}{{ document.popular_count|pluralize }} | <span class="avg_rating" data-rating="{{ document_rating }}">{% trans "Average rating" %} <span class="overall_rating"></span></span></p>
+    </div>
 </article>

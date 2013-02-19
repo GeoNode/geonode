@@ -5,6 +5,7 @@
 
 {% overall_rating layer "layer" as layer_rating %}
 <article>
+  <h2>Layer</h2>
   <a href="{% url "layer_detail" layer.typename %}">
       <!--div class="img-placeholder pl-153-113">{% trans "No Image Available" %}</div-->
       <img src="{{ layer|layer_thumbnail }}" />
