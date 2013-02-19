@@ -4,7 +4,7 @@
 
 {% overall_rating map "map" as map_rating %}
 <article>
-  <h2>Map</h2>
+  <h3>Map</h3>
   <header>
     <a href="{% url "map_download" map.id %}" class="btn btn-info download">{% trans "Download" %}</a>
     <h3><a href="{% url "map_detail" map.id %}">{{ map.title }}</a></h3>
