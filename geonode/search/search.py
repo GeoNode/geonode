@@ -156,7 +156,7 @@ def _get_owner_results(query):
 
     if query.kw:
         # hard to handle - not supporting at the moment
-        return
+        return Profile.objects.none()
 
     if query.owner:
         q = q.filter(user__username__icontains = query.owner)
@@ -357,9 +357,10 @@ def combined_search_results(query):
         facets['document'] = q.count()
         results['documents'] = q
 
-    if not query.categories and not query.kw: 
+    if query.categories and len(query.categories) == TopicCategory.objects.count() or not query.categories:
         if None in bytype or u'user' in bytype:
             q = _get_owner_results(query)
             facets['user'] = q.count()
             results['users'] = q
+    
     return results

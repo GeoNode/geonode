@@ -87,6 +87,12 @@ function build_query(){
     if(params['date_end'][0] === 'yyyy-mm-dd'){
         params['date_end'] = ['']
     }
+
+    //from the client we don't use the all key for the categories
+    if(params['categories'][0] === 'all'){
+        params['categories'].shift();
+    }
+
      var data = {
         'type': params['types'].join(','),
         'category': params['categories'].join(','),
