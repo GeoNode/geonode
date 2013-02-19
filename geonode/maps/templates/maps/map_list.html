@@ -8,75 +8,49 @@
 
 {% block body_class %}maps explore{% endblock %}
 
+{% block head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}libs/css/datepicker.css" type="text/css" media="screen" />
+{% endblock %}
+
 {% block body %}
-  <div class="span8">
-    <h2 class="page-title">{% trans "Explore Maps" %}</h2>
-  </div>
-  <div class="span4">
-    <a href="{% url "new_map" %}" class="btn btn-large btn-primary pull-right strong">{% trans "Create a New Map" %}</a>
-  </div>
-  <div class="span8">
-    {% include "maps/_map_filters.html" %}
-  </div>
-  <div class="span4">
-    <div class="pull-right" data-viewby="list">
-      {% include "_viewby.html" %}
+    <div class="span12">
+      <h2 class="page-title">{% trans "Explore Maps" %}</h2>
     </div>
-  </div>
-  <div class="span12">
-    <div class="row" id="contain-slider">
-      <div class="span4">
-        <div id="slide-pane">
-          <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
-          <nav class="tabs-left" id="nav-categories">
-            <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Categories" %}</a></h2>
-            <ul class="nav">
-              {% map_categories as category_list %}
-              <li>
-                <a href="{% url "maps_browse" %}"{% if not map_category %} class="active"{% endif %}>
-                  {% trans "All Categories" %}
-                </a>
-              </li>
-              {% for category in category_list %}
-                <li>
-                  <a href="{% url "maps_browse_category" category.slug %}"{% ifequal map_category category %} class="active"{% endifequal %}>{{ category }}
-                  {% if category.map_set.count > 0 %}({{ category.map_set.count }}){% endif %}
-                </a></li>
-              {% endfor %}
-            </ul>
-          </nav>
-          <nav class="" id="nav-keywords">
-            <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> {% trans "Keywords" %}</a></h2>
-            <ul class="nav">
-              {% get_taglist as tags for 'maps.Map' %}
-              {% for tag in tags %}
-                <li><a href="{% url "map_browse_tag" tag.slug %}"{% if tag.slug == map_tag %} class="active"{% endif %}>{{ tag }}</a> <span class="count">({{ tag.num_times }})</span></li>
-              {% endfor %}
-            </ul>
-          </nav>
+    <div class="span8 filter">      
+      {% include "search/_sort_filters.html" %}
+    </div>
+    <div class="span4">
+      <div class="pull-right" data-viewby="list">
+        {% include "_viewby.html" %}
+      </div>
+    </div>
+    <div class="span12">
+      <div class="row" id="contain-slider">
+        <div class="span4">
+          <div class="selections">
+            <h4>
+              {% trans "Your selections" %}
+              <a href="." id="clear-search" class="pull-right">Clear all</a>
+            </h4>
+          </div>
+          <div id="slide-pane">
+            <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
+            {% with type='map' %} 
+            {% include "search/_general_filters.html" %}
+            {% endwith %}
+          </div>
+        </div>
+        <div class="tab-content span8 paginate paginate-auto" id="search-content">
+          {% include 'search/search_content.html' %}
         </div>
       </div>
-      <div class="tab-content span8">
-        <div class="tab-pane active list loadmore" id="all">
-          {% if object_list.count %}
-          {% autopaginate object_list 10 %}
-          {% for map in object_list %}
-            {% include "maps/_map_list_item.html" %}
-          {% endfor %}
-          {% else %}
-            <p>{% trans "No data found" %}</p>
-          {% endif %}
-        </div>
-        {% if object_list.count %}
-          {% paginate %}
-        {% endif %}
-        </div>
     </div>
-  </div> <!-- End Nav -->
-
 {% endblock %}
 
 {% block extra_script %}
+  <script src="{% static "libs/js/bootstrap-datepicker.js" %}" type="text/javascript"></script>
+  <script src="{% static "libs/js/jquery.tinysort.min.js" %}"></script>
   <script src="{% static "libs/js/waypoints.js" %}"></script>
   <script src="{% static "libs/js/loadmore.js" %}"></script>
   <script src="{% static "libs/js/jquery.raty.js" %}"></script>
@@ -98,11 +72,14 @@
     function star(elem, rating) {
       $(elem).raty({
         half: true,
-       readOnly: true,
-       score: rating,
-       path: "{% static "agon_ratings/img/" %}"
+        readOnly: true,
+        score: rating,
+        path: "{% static "agon_ratings/img/" %}"
       });        
     }
   </script>
-  <script src="{% static "geonode/js/paginate.js" %}"></script>
-{% endblock %}
+  <script type="text/javascript">
+  var default_type = 'map';
+  </script>
+  <script src="{% static "geonode/js/global_search.js" %}"></script>
+{% endblock extra_script %}
