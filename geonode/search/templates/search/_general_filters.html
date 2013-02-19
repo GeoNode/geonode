@@ -1,0 +1,34 @@
+{% load i18n %}
+{% load layers_tags %}
+{% load taggit_extras %}
+<nav class="filter">
+  <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Categories" %}</a></h2>
+  <ul class="nav" id="categories">
+    {% layer_categories as category_list %}
+    <li><a data-class="all" class="active trigger-query">{% trans "All Categories" %}</a></li>
+    {% for category in category_list %}
+    <li><a data-class="{{category.slug}}" class="active trigger-query">{{ category }}
+    {% if category.layer_set.count > 0 %}({{ category.layer_set.count }}){% else %}(0){% endif %}
+    </a></li>
+    {% endfor %}
+  </ul>
+</nav>
+<nav class="filter">
+  <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Date" %}</a></h2>
+  <ul class="nav" id="date_start">
+    <label>Date begins after:</label>
+    <li><input value="yyyy-mm-dd" data-date-format="yyyy-mm-dd" type="text" class="datepicker" placeholder="yyyy-mm-dd" /></li>
+  </ul>
+  <ul class="nav" id="date_end">
+    <label>Date ends before:</label>
+    <li><input value="yyyy-mm-dd" data-date-format="yyyy-mm-dd" type="text" class="datepicker" placeholder="yyyy-mm-dd" /></li>
+  </ul>
+</nav>
+<nav class="filter">
+  <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> {% trans "Keywords" %}</a></h2>
+  <ul class="nav" id="keywords">
+    {% for tag in tags %}
+      <li><a data-class="{{ tag.slug }}" class="trigger-query">{{ tag }} <span>(<span class="count">{{ tag.taggit_taggeditem_items.count }}</span>)</span></a></li>
+    {% endfor %}
+  </ul>
+</nav>
