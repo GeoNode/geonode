@@ -10,12 +10,17 @@
 
 {% block body_class %}data data-list explore{% endblock %}
 
+{% block head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}libs/css/datepicker.css" type="text/css" media="screen" />
+{% endblock %}
+
 {% block body %}
     <div class="span12">
       <h2 class="page-title">{% trans "Explore Layers" %}</h2>
     </div>
-    <div class="span8">      
-      {% include "layers/_layer_filters.html" %}
+    <div class="span8 filter">      
+      {% include "search/_sort_filters.html" %}
     </div>
     <div class="span4">
       <div class="pull-right" data-viewby="list">
@@ -25,51 +30,27 @@
     <div class="span12">
       <div class="row" id="contain-slider">
         <div class="span4">
+          <div class="selections">
+            <h4>
+              {% trans "Your selections" %}
+              <a href="." id="clear-search" class="pull-right">Clear all</a>
+            </h4>
+          </div>
           <div id="slide-pane">
             <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
-            <nav class="tabs-left" id="nav-categories">
-              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Categories" %}</a></h2>
-              <ul class="nav">
-                {% layer_categories as category_list %}
-                <li><a href="{% url "layer_browse" %}"{% if not layer_category %} class="active"{% endif %}>{% trans "All Categories" %}</a></li>
-                {% for category in category_list %}
-                <li><a href="{% url "layer_browse_category" category.slug %}"{% ifequal layer_category category %} class="active"{% endifequal %}>{{ category }}
-                {% if category.layer_set.count > 0 %}({{ category.layer_set.count }}){% endif %}
-                </a></li>
-                {% endfor %}
-              </ul>
-            </nav>
-            <nav class="" id="nav-keywords">
-              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> {% trans "Keywords" %}</a></h2>
-              <ul class="nav">
-                {% get_taglist as tags for 'layers.Layer' %}
-                {% for tag in tags %}
-                  <li><a href="{% url "layer_browse_tag" tag.slug %}"{% if tag.slug == layer_tag %} class="active"{% endif %}>{{ tag }}</a> <span class="count">({{ tag.num_times }})</span></li>
-                {% endfor %}
-              </ul>
-            </nav>
+            {% include "search/_general_filters.html" %}
           </div>
         </div>
-        <div class="tab-content span8 paginate paginate-auto">
-          <div class="tab-pane active list paginate-contents" id="all">
-            {% if object_list.count %}
-            {% autopaginate object_list 2 %}
-            {% for layer in object_list %}
-              {% include "layers/_layer_list_item.html" %}
-            {% endfor %}
-            {% else %}
-              <p>{% trans "No data found" %}</p>
-            {% endif %}
-          </div>
-          {% if object_list.count %}
-            {% paginate %}
-          {% endif %}
+        <div class="tab-content span8 paginate paginate-auto" id="search-content">
+          {% include 'search/search_content.html' %}
         </div>
       </div>
     </div>
 {% endblock %}
 
 {% block extra_script %}
+  <script src="{% static "libs/js/bootstrap-datepicker.js" %}" type="text/javascript"></script>
+  <script src="{% static "libs/js/jquery.tinysort.min.js" %}"></script>
   <script src="{% static "libs/js/waypoints.js" %}"></script>
   <script src="{% static "libs/js/loadmore.js" %}"></script>
   <script src="{% static "libs/js/jquery.raty.js" %}"></script>
@@ -91,11 +72,14 @@
     function star(elem, rating) {
       $(elem).raty({
         half: true,
-       readOnly: true,
-       score: rating,
-       path: "{% static "agon_ratings/img/" %}"
+        readOnly: true,
+        score: rating,
+        path: "{% static "agon_ratings/img/" %}"
       });        
     }
   </script>
-  <script src="{% static "geonode/js/paginate.js" %}"></script>
+  <script type="text/javascript">
+  var default_type = 'layer';
+  </script>
+  <script src="{% static "geonode/js/global_search.js" %}"></script>
 {% endblock extra_script %}

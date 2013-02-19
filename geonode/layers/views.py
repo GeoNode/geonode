@@ -58,6 +58,7 @@ from geonode.security.views import _perms_info_json
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from django.forms.models import inlineformset_factory
 from geoserver.resource import FeatureType
+from geonode.search.views import search_page
 
 logger = logging.getLogger("geonode.layers.views")
 
@@ -93,21 +94,11 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 
 #### Basic Layer Views ####
 
-
-class LayerListView(ListView):
-
-    layer_filter = "date"
-    queryset = Layer.objects.all()
-
-    def __init__(self, *args, **kwargs):
-        self.layer_filter = kwargs.pop("layer_filter", "date")
-        self.queryset = self.queryset.order_by("-{0}".format(self.layer_filter))
-        super(LayerListView, self).__init__(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        kwargs.update({"layer_filter": self.layer_filter})
-        return kwargs
-
+def layer_list(request, template='layers/layer_list.html'):
+    post = request.POST.copy()
+    post.update({'type': 'layer'})
+    request.POST = post
+    return search_page(request, template=template)
 
 def layer_category(request, slug, template='layers/layer_list.html'):
     category = get_object_or_404(TopicCategory, slug=slug)
