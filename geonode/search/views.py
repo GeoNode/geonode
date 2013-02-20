@@ -79,13 +79,8 @@ def search_page(request, template='search/search.html', **kw):
         'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': tags}))
 
 def advanced_search(request, **kw):
-    params = {}
-    if kw:
-        params.update(kw)
-
-    context = _get_search_context()
-    context['init_search'] = json.dumps(params)
-    return render_to_response('search/advanced_search.html', RequestContext(request, context))
+    
+    return render_to_response('search/advanced_search.html', RequestContext(request))
 
 def _get_search_context():
     cache_key = 'simple_search_context'
