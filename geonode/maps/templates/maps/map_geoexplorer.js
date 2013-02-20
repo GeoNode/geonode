@@ -32,7 +32,8 @@ Ext.onReady(function() {
         homeUrl: "{% url home %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
         localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",
-        csrfToken: "{{ csrf_token }}"
+        csrfToken: "{{ csrf_token }}",
+        tools: [{ptype: "gxp_getfeedfeatureinfo"}],
     }, {{ config }});
 
 
