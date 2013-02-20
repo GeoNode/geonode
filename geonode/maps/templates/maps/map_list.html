@@ -50,7 +50,7 @@
             <ul class="nav">
               {% get_taglist as tags for 'maps.Map' %}
               {% for tag in tags %}
-                <li><a href="{% url "map_browse_tag" tag.slug %}"{% if tag.slug == map_tag %} class="active"{% endif %}>{{ tag }}</a> <span class="count">({{ tag.num_times }})</span></li>
+                <li><a href="{% url "maps_browse_tag" tag.slug %}"{% if tag.slug == map_tag %} class="active"{% endif %}>{{ tag }}</a> <span class="count">({{ tag.num_times }})</span></li>
               {% endfor %}
             </ul>
           </nav>
