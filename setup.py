@@ -108,8 +108,6 @@ setup(name='GeoNode',
         "pycsw>=1.4.0",
         # setup
         "Paver",
-        # assembling javascript
-        "jstools==0.6",
         # sample and test data / metadata
         "gisdata==0.5.4",
         # testing
