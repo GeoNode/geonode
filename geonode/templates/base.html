@@ -226,16 +226,17 @@
           results: function(data, page) {
             var more = (page * 10) < data.total;
             return {
-              results: data.results,
+              results: $.map(data.results,function(object){
+                return {id: object.id, text: object.title};
+              }),
               more: more
             }
           }          
         },
-        formatResult: function(item){
-          return item.title;
+        createSearchChoice:function(term, data) { if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} 
         },
         formatSelection: function(item){
-          $('#search').val(item.title);
+          $('#search').val(item.text);
           $('#search').parent().submit();
         }
       });
