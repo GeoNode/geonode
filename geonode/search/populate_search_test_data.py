@@ -36,60 +36,65 @@ import os.path
 # primarly used as a first step to generate the json data for the fixture using
 # django's dumpdata
 
-biota = TopicCategory.objects.get(slug='biota')
-location = TopicCategory.objects.get(slug='location')
-elevation = TopicCategory.objects.get(slug='elevation')
+def create_fixtures():
+    biota = TopicCategory.objects.get(slug='biota')
+    location = TopicCategory.objects.get(slug='location')
+    elevation = TopicCategory.objects.get(slug='elevation')
 
 
-map_data = [
-        ('lorem ipsum', 'common lorem ipsum', ('populartag',), [-180, 180, -90, 90], biota),
-        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'maptagunique'), [-180, 180, -90, 90], biota),
-        ('lorem1 ipsum1', 'common abstract1', ('populartag',), [-180, 180, -90, 90], biota),
-        ('ipsum foo', 'common bar lorem', ('populartag',), [-180, 180, -90, 90], location),
-        ('map one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1], location),
-        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
-        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
-        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
-        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
-        ]
+    map_data = [
+            ('lorem ipsum', 'common lorem ipsum', ('populartag',), [-180, 180, -90, 90], biota),
+            ('ipsum lorem', 'common ipsum lorem', ('populartag', 'maptagunique'), [-180, 180, -90, 90], biota),
+            ('lorem1 ipsum1', 'common abstract1', ('populartag',), [-180, 180, -90, 90], biota),
+            ('ipsum foo', 'common bar lorem', ('populartag',), [-180, 180, -90, 90], location),
+            ('map one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1], location),
+            ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
+            ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
+            ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
+            ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
+            ]
 
-user_data = [
-        ('user1', 'pass', 'uniquefirst', 'foo'),
-        ('user2', 'pass', 'foo', 'uniquelast'),
-        ('unique_username', 'pass', 'foo', 'uniquelast'),
-        ('jblaze', 'pass', 'johnny', 'blaze'),
-        ('foo', 'pass', 'bar', 'baz'),
-        ]
+    user_data = [
+            ('user1', 'pass', 'uniquefirst', 'foo'),
+            ('user2', 'pass', 'foo', 'uniquelast'),
+            ('unique_username', 'pass', 'foo', 'uniquelast'),
+            ('jblaze', 'pass', 'johnny', 'blaze'),
+            ('foo', 'pass', 'bar', 'baz'),
+            ]
 
-people_data = [
-        ('this contains all my interesting profile information',),
-        ('some other information goes here',),
-        ]
+    people_data = [
+            ('this contains all my interesting profile information',),
+            ('some other information goes here',),
+            ]
 
-layer_data = [
-        ('layer1', 'abstract1', 'layer1', 'geonode:layer1', [-180, 180, -90, 90], '19850101', ('populartag','here'), elevation),
-        ('layer2', 'abstract2', 'layer2', 'geonode:layer2', [-180, 180, -90, 90], '19800501', ('populartag',), elevation),
-        ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', [-180, 180, -90, 90], '19901001', ('populartag',), elevation),
-        ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', [-180, 180, -90, 90], '19000603', ('populartag', 'layertagunique'), location),
-        ('common double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], '50001101', ('populartag',), location),
-        ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], '00010101', ('populartag',), location),
-        ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], '19501209', ('populartag',), biota),
-        ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], '19630829', ('populartag',), biota),
-        ]
+    layer_data = [
+            ('layer1', 'abstract1', 'layer1', 'geonode:layer1', [-180, 180, -90, 90], '19850101', ('populartag','here'), elevation),
+            ('layer2', 'abstract2', 'layer2', 'geonode:layer2', [-180, 180, -90, 90], '19800501', ('populartag',), elevation),
+            ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', [-180, 180, -90, 90], '19901001', ('populartag',), elevation),
+            ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', [-180, 180, -90, 90], '19000603', ('populartag', 'layertagunique'), location),
+            ('common double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], '50001101', ('populartag',), location),
+            ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], '00010101', ('populartag',), location),
+            ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], '19501209', ('populartag',), biota),
+            ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], '19630829', ('populartag',), biota),
+            ]
 
-document_data = [
-        ('lorem ipsum', 'common lorem ipsum', ('populartag',), [-180, 180, -90, 90], biota),
-        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique'), [-180, 180, -90, 90], biota),
-        ('lorem1 ipsum1', 'common abstract1', ('populartag',), [-180, 180, -90, 90], biota),
-        ('ipsum foo', 'common bar lorem', ('populartag',), [-180, 180, -90, 90], location),
-        ('doc one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1], location),
-        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
-        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
-        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
-        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
-        ]
+    document_data = [
+            ('lorem ipsum', 'common lorem ipsum', ('populartag',), [-180, 180, -90, 90], biota),
+            ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique'), [-180, 180, -90, 90], biota),
+            ('lorem1 ipsum1', 'common abstract1', ('populartag',), [-180, 180, -90, 90], biota),
+            ('ipsum foo', 'common bar lorem', ('populartag',), [-180, 180, -90, 90], location),
+            ('doc one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1], location),
+            ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
+            ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
+            ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
+            ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
+            ]
+
+    return map_data, user_data, people_data, layer_data, document_data
 
 def create_models():
+    map_data, user_data, people_data, layer_data, document_data = create_fixtures()
+    
     u, _ = User.objects.get_or_create(username='admin',is_superuser=True)
     u.set_password('admin')
     u.save()
