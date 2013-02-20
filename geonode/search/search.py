@@ -208,11 +208,7 @@ def _get_map_results(query):
         q = filter_by_period(Map, q, *query.period)
 
     if query.kw:
-        # this is a somewhat nested query but it performs way faster than
-        # other approaches
-        layers_with_kw = Layer.objects.filter(_build_kw_only_query(query.kw)).values('typename')
-        map_layers_with = MapLayer.objects.filter(name__in=layers_with_kw).values('map')
-        q = q.filter(id__in=map_layers_with)
+        q = q.filter(_build_kw_only_query(query.kw))
 
     if query.exclude:
         q = q.exclude(reduce(operator.or_, [Q(title__contains=ex) for ex in query.exclude]))
