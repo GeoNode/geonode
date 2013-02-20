@@ -170,10 +170,10 @@ INSTALLED_APPS = (
     'user_messages',
 
     # GeoNode internal apps
-    'geonode.maps',
-    'geonode.upload',
-    'geonode.layers',
     'geonode.people',
+    'geonode.layers',
+    'geonode.upload',
+    'geonode.maps',
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
