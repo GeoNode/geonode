@@ -52,6 +52,7 @@ from geonode.people.models import Profile
 from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
 
+
 logger = logging.getLogger("geonode.maps.views")
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
@@ -88,33 +89,12 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 
 #### BASIC MAP VIEWS ####
 
-class MapListView(ListView):
-
-    map_filter = "last_modified"
-    queryset = Map.objects.all()
-
-    def __init__(self, *args, **kwargs):
-        self.map_filter = kwargs.pop("map_filter", "last_modified")
-        self.queryset = self.queryset.order_by("-{0}".format(self.map_filter))
-        super(MapListView, self).__init__(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        kwargs.update({"map_filter": self.map_filter})
-        return kwargs
-
-
-def maps_category(request, slug, template='maps/map_list.html'):
-    category = get_object_or_404(TopicCategory, slug=slug)
-    map_list = category.map_set.all()
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "object_list": map_list,
-            "layer_category": category
-            }
-        )
-    )
-
+def map_list(request, template='maps/map_list.html'):
+    from geonode.search.views import search_page
+    post = request.POST.copy()
+    post.update({'type': 'map'})
+    request.POST = post
+    return search_page(request, template=template)
 
 def maps_tag(request, slug, template='maps/map_list.html'):
     map_list = Map.objects.filter(keywords__slug__in=[slug])

@@ -20,23 +20,13 @@
 
 from django.conf.urls.defaults import patterns, url
 
-from geonode.layers.views import LayerListView
-
 js_info_dict = {
     'packages': ('geonode.layers',),
 }
 
 urlpatterns = patterns(
     'geonode.layers.views',
-    url(r'^$', LayerListView.as_view(), name='layer_browse'),
-    url(r'^popular/$', LayerListView.as_view(
-        layer_filter="popular_count"),
-        name='layer_browse_popular'),
-    url(r'^shared/$', LayerListView.as_view(
-        layer_filter="share_count"),
-        name='layer_browse_shared'),
-    url(r'^category/(?P<slug>[-\w]+?)/$', 'layer_category',
-        name='layer_browse_category'),
+    url(r'^$', 'layer_list', name='layer_browse'),
     url(r'^tag/(?P<slug>[-\w]+?)/$', 'layer_tag', name='layer_browse_tag'),
     url(r'^acls/?$', 'layer_acls', name='layer_acls'),
     url(r'^resolve_user/?$', 'resolve_user', name='layer_resolve_user'),
