@@ -40,7 +40,6 @@ from taggit.models import Tag
 
 from datetime import datetime
 from time import time
-from itertools import chain
 import json
 import cPickle as pickle
 import operator
@@ -62,51 +61,26 @@ _viewer_config = _create_viewer_config()
 
 
 def search_page(request, template='search/search.html', **kw): 
-    results, query = search_api(request, format='html', **kw)
-    facets = results.pop('facets')
-    chained = chain()
-    
-    try:
-        users = results.pop('users')
-    except KeyError:
-        pass
-    
-    for key in results.keys():
-        chained = chain(chained, results[key])
-    results = list(chained)
-    
-    if query.sort != None:
-        if query.sort == 'title':
-            keyfunc = lambda r: r.title.lower()
-        elif query.sort == 'last_modified':
-            old = datetime(1,1,1)
-            keyfunc = lambda r: r.date or old
-        elif query.sort == 'rank':
-            keyfunc = lambda r: r.rating or old
-        else:
-            keyfunc = lambda r: getattr(r, query.sort)()
+    results, facets, query = search_api(request, format='html', **kw)
+    tags = {}
 
-        results.sort(key=keyfunc, reverse=not query.order)
-
-    try:
-        for u in users: results.append(u)
-    except UnboundLocalError:
-        pass
+    # get the keywords and their count
+    for item in results:
+        for tagged_item in item.o.tagged_items.all():
+                tags[tagged_item.tag.slug] = tags.get(tagged_item.tag.slug,{})
+                tags[tagged_item.tag.slug]['slug'] = tagged_item.tag.slug
+                tags[tagged_item.tag.slug]['name'] = tagged_item.tag.name
+                tags[tagged_item.tag.slug]['count'] = tags[tagged_item.tag.slug].get('count',0) + 1
 
     total = 0
     for val in facets.values(): total+=val
     total -= facets['raster'] + facets['vector']
     return render_to_response(template, RequestContext(request, {'object_list': results, 'total': total, 
-        'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': Tag.objects.all()}))
+        'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': tags}))
 
 def advanced_search(request, **kw):
-    params = {}
-    if kw:
-        params.update(kw)
-
-    context = _get_search_context()
-    context['init_search'] = json.dumps(params)
-    return render_to_response('search/advanced_search.html', RequestContext(request, context))
+    
+    return render_to_response('search/advanced_search.html', RequestContext(request))
 
 def _get_search_context():
     cache_key = 'simple_search_context'
@@ -161,10 +135,7 @@ def search_api(request, format='json', **kwargs):
     ts = time()
     try:
         query = query_from_request(request, kwargs)
-        if format == 'html':
-            items = _search_natural(query)
-        else:
-            items, facets = _search(query)
+        items, facets = _search(query)
         ts1 = time() - ts
         if debug:
             ts = time()
@@ -175,9 +146,10 @@ def search_api(request, format='json', **kwargs):
             logger.debug('generated combined search results in %s, %s',ts1,ts2)
             logger.debug('with %s db queries',len(connection.queries))
         if format == 'html':
-            return items, query
+            return items, facets, query
         else:
             return results
+
     except Exception, ex:
         if not isinstance(ex, BadQuery):
             logger.exception("error during search")
@@ -216,29 +188,6 @@ def _search_json(query, items, facets, time):
 
 def cache_key(query,filters):
     return str(reduce(operator.xor,map(hash,filters.items())) ^ hash(query))
-
-def _search_natural(query):
-    # to support super fast paging results, cache the intermediates
-    results = None
-    cache_time = 60
-    if query.cache:
-        key = query.cache_key()
-        results = cache.get(key)
-        if results:
-            # put it back again - this basically extends the lease
-            cache.add(key, results, cache_time)
-
-    if not results:
-        results = combined_search_results(query)
-        if query.cache:
-            dumped = zlib.compress(pickle.dumps((results)))
-            logger.debug("cached search results %s", len(dumped))
-            cache.set(key, dumped, cache_time)
-
-    else:
-        results = pickle.loads(zlib.decompress(results))
-
-    return results
 
 def _search(query):
     # to support super fast paging results, cache the intermediates

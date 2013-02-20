@@ -1,8 +1,6 @@
 {% extends "documents/document_base.html" %}
 {% load i18n %}
-{% load documents_tags %}
 {% load pagination_tags %}
-{% load taggit_extras %}
 {% load staticfiles %}
 {% load url from future %}
 
@@ -10,12 +8,17 @@
 
 {% block body_class %}documents documents-list explore{% endblock %}
 
+{% block head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}libs/css/datepicker.css" type="text/css" media="screen" />
+{% endblock %}
+
 {% block body %}
     <div class="span12">
       <h2 class="page-title">{% trans "Explore Documents" %}</h2>
     </div>
-    <div class="span8">      
-      {% include "documents/_document_filters.html" %}
+    <div class="span8 filter">      
+      {% include "search/_sort_filters.html" %}
     </div>
     <div class="span4">
       <div class="pull-right" data-viewby="list">
@@ -25,74 +28,58 @@
     <div class="span12">
       <div class="row" id="contain-slider">
         <div class="span4">
+          <div class="selections">
+            <h4>
+              {% trans "Your selections" %}
+              <a href="." id="clear-search" class="pull-right">Clear all</a>
+            </h4>
+          </div>
           <div id="slide-pane">
             <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
-            <nav class="tabs-left" id="nav-categories">
-              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Categories" %}</a></h2>
-              <ul class="nav">
-                {% document_categories as category_list %}
-                <li><a href="{% url "documents_browse" %}"{% if not document_category %} class="active"{% endif %}>{% trans "All Categories" %}</a></li>
-                {% for category in category_list %}
-                <li><a href="{% url "document_browse_category" category.slug %}"{% ifequal document_category category %} class="active"{% endifequal %}>{{ category }}</a></li>
-                {% endfor %}
-              </ul>
-            </nav>
-            <nav class="" id="nav-keywords">
-              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> {% trans "Keywords" %}</a></h2>
-              <ul class="nav">
-                {% get_taglist as tags for 'documents.Document' %}
-                {% for tag in tags %}
-                  <li><a href="{% url "document_browse_tag" tag.slug %}"{% if tag.slug == layer_tag %} class="active"{% endif %}>{{ tag }}</a> <span class="count">({{ tag.num_times }})</span></li>
-                {% endfor %}
-              </ul>
-            </nav>
+            {% with type='document' %} 
+            {% include "search/_general_filters.html" %}
+            {% endwith %}
           </div>
         </div>
-        <div class="tab-content span8 paginate paginate-auto">
-          <div class="tab-pane active list paginate-contents" id="all">
-            {% if object_list.count %}
-            {% autopaginate object_list 2 %}
-            {% for document in object_list %}
-              {% include "documents/_document_list_item.html" %}
-            {% endfor %}
-            {% else %}
-              <p>{% trans "No data found" %}</p>
-            {% endif %}
-          </div>
-          {% if object_list.count %}
-            {% paginate %}
-          {% endif %}
-          </div>
+        <div class="tab-content span8 paginate paginate-auto" id="search-content">
+          {% include 'search/search_content.html' %}
+        </div>
       </div>
     </div>
 {% endblock %}
 
 {% block extra_script %}
+  <script src="{% static "libs/js/bootstrap-datepicker.js" %}" type="text/javascript"></script>
+  <script src="{% static "libs/js/jquery.tinysort.min.js" %}"></script>
   <script src="{% static "libs/js/waypoints.js" %}"></script>
   <script src="{% static "libs/js/loadmore.js" %}"></script>
   <script src="{% static "libs/js/jquery.raty.js" %}"></script>
   <script src="{% static "geonode/js/explore.js" %}"></script>
-  <script src="{% static "geonode/js/paginate.js" %}"></script>
   <script type="text/javascript">
-     $(function() {
-       $('.overall_rating').each(function() {
+    $(rateMore());
+    function rateMore() {
+      $('.overall_rating').each(function() {
         var rating = $(this).parents(".avg_rating").data('rating');
         star(this, rating);
       });
-       $(".loadmore").on("load.loadmore", function(e, o) {          
+      $(".loadmore").on("load.loadmore", function(e, o) {          
         o.find(".overall_rating").each(function() {
           var rating = $(this).parents(".avg_rating").data('rating');
           star(this, rating);
         });
-       });
-     });
-      function star(elem, rating) {
-          $(elem).raty({
-            half: true,
-           readOnly: true,
-           score: rating,
-           path: "{% static "agon_ratings/img/" %}"
-          });        
-      }
+      });
+    }
+    function star(elem, rating) {
+      $(elem).raty({
+        half: true,
+        readOnly: true,
+        score: rating,
+        path: "{% static "agon_ratings/img/" %}"
+      });        
+    }
   </script>
+  <script type="text/javascript">
+  var default_type = 'document';
+  </script>
+  <script src="{% static "geonode/js/global_search.js" %}"></script>
 {% endblock extra_script %}

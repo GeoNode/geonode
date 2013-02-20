@@ -93,34 +93,12 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 
 #### Basic Layer Views ####
 
-
-class LayerListView(ListView):
-
-    layer_filter = "date"
-    queryset = Layer.objects.all()
-
-    def __init__(self, *args, **kwargs):
-        self.layer_filter = kwargs.pop("layer_filter", "date")
-        self.queryset = self.queryset.order_by("-{0}".format(self.layer_filter))
-        super(LayerListView, self).__init__(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        kwargs.update({"layer_filter": self.layer_filter})
-        return kwargs
-
-
-def layer_category(request, slug, template='layers/layer_list.html'):
-    category = get_object_or_404(TopicCategory, slug=slug)
-    layer_list = category.layer_set.all()
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "object_list": layer_list,
-            "layer_category": category
-            }
-        )
-    )
-
+def layer_list(request, template='layers/layer_list.html'):
+    from geonode.search.views import search_page
+    post = request.POST.copy()
+    post.update({'type': 'layer'})
+    request.POST = post
+    return search_page(request, template=template)
 
 def layer_tag(request, slug, template='layers/layer_list.html'):
     layer_list = Layer.objects.filter(keywords__slug__in=[slug])
@@ -132,7 +110,6 @@ def layer_tag(request, slug, template='layers/layer_list.html'):
             }
         )
     )
-
 
 @login_required
 def layer_upload(request, template='layers/layer_upload.html'):

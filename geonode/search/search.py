@@ -156,7 +156,7 @@ def _get_owner_results(query):
 
     if query.kw:
         # hard to handle - not supporting at the moment
-        return
+        return Profile.objects.none()
 
     if query.owner:
         q = q.filter(user__username__icontains = query.owner)
@@ -208,11 +208,7 @@ def _get_map_results(query):
         q = filter_by_period(Map, q, *query.period)
 
     if query.kw:
-        # this is a somewhat nested query but it performs way faster than
-        # other approaches
-        layers_with_kw = Layer.objects.filter(_build_kw_only_query(query.kw)).values('typename')
-        map_layers_with = MapLayer.objects.filter(name__in=layers_with_kw).values('map')
-        q = q.filter(id__in=map_layers_with)
+        q = q.filter(_build_kw_only_query(query.kw))
 
     if query.exclude:
         q = q.exclude(reduce(operator.or_, [Q(title__contains=ex) for ex in query.exclude]))
@@ -357,9 +353,10 @@ def combined_search_results(query):
         facets['document'] = q.count()
         results['documents'] = q
 
-    if not query.categories and not query.kw: 
+    if query.categories and len(query.categories) == TopicCategory.objects.count() or not query.categories:
         if None in bytype or u'user' in bytype:
             q = _get_owner_results(query)
             facets['user'] = q.count()
             results['users'] = q
+    
     return results
