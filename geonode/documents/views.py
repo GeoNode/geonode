@@ -33,32 +33,12 @@ DOCUMENT_LEV_NAMES = {
     Document.LEVEL_ADMIN : _('Administrative')
 }
 
-class DocumentListView(ListView):
-
-    document_filter = "date"
-    queryset = Document.objects.all()
-
-    def __init__(self, *args, **kwargs):
-        self.layer_filter = kwargs.pop("document_filter", "date")
-        self.queryset = self.queryset.order_by("-{0}".format(self.document_filter))
-        super(DocumentListView, self).__init__(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        kwargs.update({"document_filter": self.document_filter})
-        return kwargs
-
-def document_category(request, slug, template='documents/document_list.html'):
-    category = get_object_or_404(TopicCategory, slug=slug)
-    document_list = category.document_set.all()
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "object_list": document_list,
-            "document_category": category
-            }
-        )
-    )
-
+def document_list(request, template='documents/document_list.html'):
+    from geonode.search.views import search_page
+    post = request.POST.copy()
+    post.update({'type': 'document'})
+    request.POST = post
+    return search_page(request, template=template)
 
 def document_tag(request, slug, template='documents/document_list.html'):
     document_list = Document.objects.filter(keywords__slug__in=[slug])
@@ -71,7 +51,7 @@ def document_tag(request, slug, template='documents/document_list.html'):
         )
     )
 
-def documentdetail(request, docid):
+def document_detail(request, docid):
     """
     The view that show details of each document
     """
