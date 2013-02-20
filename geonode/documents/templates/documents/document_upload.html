@@ -3,205 +3,210 @@
 
 {% block title %} {% trans "Upload Document" %} - {{ block.super }} {% endblock %}
 
+{% block body_class %}data upload{% endblock body_class %}
+
 {% block head %}
-	{% include "geonode/ext_header.html" %}
-	{% include "geonode/app_header.html" %}
-	<link rel="stylesheet" type="text/css"
-		  href="{{ STATIC_URL }}geonode/css/fileuploadfield.css"/>
-	{{ block.super }}
+    {% include "geonode/ext_header.html" %}
+    {% include "geonode/app_header.html" %}
+    <link rel="stylesheet" type="text/css"
+          href="{{ STATIC_URL }}geonode/css/fileuploadfield.css"/>
+    {{ block.super }}
 {% endblock %}
 
 {% block body %}
-	<div class="twocol">
-		<h2>{% trans "Add document" %}</h2>
-		{% if errors %}
-			<div id="errors">
-				{% for error in errors %}
-					<div>{{ error }}</div>
-				{% endfor %}
-			</div>
-		{% endif %}
+    <div class="block">
+        <div class="span8">
+          <h2 class="page-title">{% trans "Upload Documents" %}</h2>
 
-		<div id="upload_form">
-		</div>
-	</div>
-	<script type="text/javascript">
-		{% autoescape off %}
-			Ext.onReady(function() {
-				Ext.QuickTips.init();
+          {% if errors %}
+            <div id="errors">
+              {% for error in errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+            <div id="upload_form">
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        {% autoescape off %}
+            Ext.onReady(function() {
+                Ext.QuickTips.init();
 
-				var form_target = "{% url document_upload %}";
+                var form_target = "{% url document_upload %}";
 
-				var title = new Ext.form.TextField({
-					id: 'title',
-					fieldLabel: gettext('Title'),
-					emptyText: gettext('Choose a title'),
-					name: 'title'
-				});
+                var title = new Ext.form.TextField({
+                    id: 'title',
+                    fieldLabel: gettext('Title'),
+                    emptyText: gettext('Choose a title'),
+                    name: 'title'
+                });
 
-				var listeners = {
-					"fileselected": function(cmp, value) {
-						// remove the path from the filename - avoids C:/fakepath etc.
-						cmp.setValue(value.split(/[/\\]/).pop());
-					}
-				};
+                var listeners = {
+                    "fileselected": function(cmp, value) {
+                        // remove the path from the filename - avoids C:/fakepath etc.
+                        cmp.setValue(value.split(/[/\\]/).pop());
+                    }
+                };
 
-				var ctype = new Ext.form.ComboBox({
-					typeAhead: true,
-					triggerAction: 'all',
-					id: 'ctype',
-					mode: 'local',
-					fieldLabel: gettext('Link to a'),
-					emptyText: gettext('Select a resource type to link the document with'),
-					autoSelect: true,
-					name: 'ctype',
-					forceSelection: true,
-					store: [['layer','Layer'],['map','Map']],
-					hiddenName: 'ctype',
-					listeners:{
-						select: function(){
-							var type = this.getValue();
-							var form = Ext.getCmp('doc_form');
-							if(form.getComponent('objid')){
-								form.remove(form.getComponent('objid'));
-							};
-							form.insert(1,getObjidCombo(type));
-							form.doLayout();
-						}
-					}
-				});
+                var ctype = new Ext.form.ComboBox({
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    id: 'ctype',
+                    mode: 'local',
+                    fieldLabel: gettext('Link to a'),
+                    emptyText: gettext('Select a resource type to link the document with'),
+                    autoSelect: true,
+                    name: 'ctype',
+                    forceSelection: true,
+                    store: [['layer','Layer'],['map','Map']],
+                    hiddenName: 'ctype',
+                    listeners:{
+                        select: function(){
+                            var type = this.getValue();
+                            var form = Ext.getCmp('doc_form');
+                            if(form.getComponent('objid')){
+                                form.remove(form.getComponent('objid'));
+                            };
+                            form.insert(1,getObjidCombo(type));
+                            form.doLayout();
+                        }
+                    }
+                });
 
-				
+                
 
-				var getObjidCombo = function(type){
+                var getObjidCombo = function(type){
 
-					return new Ext.form.ComboBox({
-						triggerAction: 'all',
-						id: 'objid',
-						mode: 'local',
-						fieldLabel: gettext('Entitled'),
-						emptyText: gettext('Select the one'),
-						autoSelect: true,
-						name: 'objid',
-						forceSelection: true,
-						valueField: 'id',
-						displayField: 'title',
-						hiddenName: 'objid',
-						store: new Ext.data.JsonStore({
-							url: 'resources/search/api/',
-							baseParams:{
-								type: type
-							},
-							root:'rows',
-							storeId: 'objects',
-							fields: ['id','title'],
-							idProperty: 'id',
-							autodestroy: true,
-							autoLoad: true
-						}),
-						listeners: {
-							afterrender: function(){
-								this.focus();
-								this.expand();
-							}
-						}
-					});
-				};
+                    return new Ext.form.ComboBox({
+                        triggerAction: 'all',
+                        id: 'objid',
+                        mode: 'local',
+                        fieldLabel: gettext('Entitled'),
+                        emptyText: gettext('Select the one'),
+                        autoSelect: true,
+                        name: 'objid',
+                        forceSelection: true,
+                        valueField: 'id',
+                        displayField: 'title',
+                        hiddenName: 'objid',
+                        store: new Ext.data.JsonStore({
+                            url: 'resources/search/api/',
+                            baseParams:{
+                                type: type
+                            },
+                            root:'rows',
+                            storeId: 'objects',
+                            fields: ['id','title'],
+                            idProperty: 'id',
+                            autodestroy: true,
+                            autoLoad: true
+                        }),
+                        listeners: {
+                            afterrender: function(){
+                                this.focus();
+                                this.expand();
+                            }
+                        }
+                    });
+                };
 
-				var base_file = new Ext.ux.form.FileUploadField({
-					id: 'base_file',
-					emptyText: gettext('Select a document data file'),
-					fieldLabel: gettext('File'),
-					name: 'file',
-					allowBlank: false,
-					listeners: listeners
-				});
+                var base_file = new Ext.ux.form.FileUploadField({
+                    id: 'base_file',
+                    emptyText: gettext('Select a document data file'),
+                    fieldLabel: gettext('File'),
+                    name: 'file',
+                    allowBlank: false,
+                    listeners: listeners
+                });
 
-				var permissionsField = new Ext.form.Hidden({
-					name: "permissions"
-				});
+                var permissionsField = new Ext.form.Hidden({
+                    name: "permissions"
+                });
 
-				var fp = new Ext.FormPanel({
-					id: 'doc_form',
-					renderTo: 'upload_form',
-					fileUpload: true,
-					width: 500,
-					frame: true,
-					autoHeight: true,
-					unstyled: true,
-					labelWidth: 50,
-					defaults: {
-						anchor: '95%',
-						msgTarget: 'side'
-					},
-					items: [ctype, title, base_file, permissionsField, {
-						xtype: "hidden",
-						name: "csrfmiddlewaretoken",
-						value: "{{ csrf_token }}"
-					}],
-					buttons: [{
-						text: gettext('Upload'),
-						handler: function(){
-							if (fp.getForm().isValid()) {
-								fp.getForm().submit({
-									url: form_target,
-									waitMsg: gettext('Uploading your data...'),
-									success: function(fp, o) {
-										document.location = o.result.redirect_to;
-									},
-									failure: function(fp, o) {
-										error_message = '<ul>';
-										for (var i = 0; i < o.result.errors.length; i++) {
-											error_message += '<li>' + o.result.errors[i] + '</li>'
-										}
-										error_message += '</ul>';
+                var fp = new Ext.FormPanel({
+                    id: 'doc_form',
+                    renderTo: 'upload_form',
+                    fileUpload: true,
+                    width: 500,
+                    frame: true,
+                    autoHeight: true,
+                    unstyled: true,
+                    labelWidth: 50,
+                    defaults: {
+                        anchor: '95%',
+                        msgTarget: 'side'
+                    },
+                    items: [ctype, title, base_file, permissionsField, {
+                        xtype: "hidden",
+                        name: "csrfmiddlewaretoken",
+                        value: "{{ csrf_token }}"
+                    }],
+                    buttons: [{
+                        text: gettext('Upload'),
+                        handler: function(){
+                            if (fp.getForm().isValid()) {
+                                fp.getForm().submit({
+                                    url: form_target,
+                                    waitMsg: gettext('Uploading your data...'),
+                                    success: function(fp, o) {
+                                        document.location = o.result.redirect_to;
+                                    },
+                                    failure: function(fp, o) {
+                                        error_message = '<ul>';
+                                        for (var i = 0; i < o.result.errors.length; i++) {
+                                            error_message += '<li>' + o.result.errors[i] + '</li>'
+                                        }
+                                        error_message += '</ul>';
 
-										Ext.Msg.show({
-											title: gettext("Error"),
-											msg: error_message,
-											minWidth: 200,
-											modal: true,
-											icon: Ext.Msg.ERROR,
-											buttons: Ext.Msg.OK
-										});
-									}
-								});
-							}
-						}
-					}]
-				});
+                                        Ext.Msg.show({
+                                            title: gettext("Error"),
+                                            msg: error_message,
+                                            minWidth: 200,
+                                            modal: true,
+                                            icon: Ext.Msg.ERROR,
+                                            buttons: Ext.Msg.OK
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    }]
+                });
 
-				var permissionsEditor = new GeoNode.PermissionsEditor({
-					levels: {
-						'admin': 'document_admin',
-						'readwrite': 'document_readwrite',
-						'readonly': 'document_readonly',
-						'none': '_none'
-					},
-					renderTo: "permissions_form",
-					userLookup: "{% url geonode.views.ajax_lookup %}",
-					listeners: {
-						updated: function(pe) {
-							permissionsField.setValue(Ext.util.JSON.encode(pe.writePermissions()));
-						}
-					},
-					permissions: {
-						anonymous: 'document_readonly',
-						authenticated: 'document_readonly',
-						users:[]
-					}
-				});
-				permissionsEditor.fireEvent("updated", permissionsEditor);
-			});
-		{% endautoescape %}
-	</script>
+                var permissionsEditor = new GeoNode.PermissionsEditor({
+                    levels: {
+                        'admin': 'document_admin',
+                        'readwrite': 'document_readwrite',
+                        'readonly': 'document_readonly',
+                        'none': '_none'
+                    },
+                    renderTo: "permissions_form",
+                    userLookup: "{% url geonode.views.ajax_lookup %}",
+                    listeners: {
+                        updated: function(pe) {
+                            permissionsField.setValue(Ext.util.JSON.encode(pe.writePermissions()));
+                        }
+                    },
+                    permissions: {
+                        anonymous: 'document_readonly',
+                        authenticated: 'document_readonly',
+                        users:[]
+                    }
+                });
+                permissionsEditor.fireEvent("updated", permissionsEditor);
+            });
+        {% endautoescape %}
+    </script>
 
 {% endblock %}
 
 {% block sidebar %}
-	<div class="threecol">
-		<h3>{% trans "Permissions" %}</h3>
-
-		<div id="permissions_form"></div>
-	</div>
+<ul class="nav nav-list">
+  <li class="nav-header">{% trans "Permissions" %}</li>
+  <li class="form-inline">
+    <div id="permissions_form"></div>
+  </li>
+</ul>
 {% endblock %}
