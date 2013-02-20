@@ -1,7 +1,5 @@
 {% extends "site_base.html" %}
 {% load i18n %}
-{% load layers_tags %}
-{% load taggit_extras %}
 {% load staticfiles %}
 {% load url from future %}
 
@@ -37,48 +35,8 @@
           </div>
           <div id="slide-pane">
             <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
-            <nav class="filter">
-              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Type" %}</a></h2>
-              <ul class="nav" id="types">
-                <li><a data-class="map" {% if facets.map > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Maps <span>(<span class="count">{{ facets.map }}</span>)</span></a></li>
-                <li><a data-class="layer" {% if facets.layer > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Layers <span>(<span class="count">{{ facets.layer }}</span>)</span></a></li>
-                <li><a style="padding-left: 60px" data-class="raster" {% if facets.raster > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Rasters <span>(<span class="count">{{ facets.raster }}</span>)</span></a></li>
-                <li><a style="padding-left: 60px" data-class="vector" {% if facets.vector > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Vectors <span>(<span class="count">{{ facets.vector }}</span>)</span></a></li>
-                <li><a data-class="document" {% if facets.document > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Documents <span>(<span class="count">{{ facets.document }}</span>)</span></a></li>
-                <li><a data-class="user" {% if facets.user > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Users <span>(<span class="count">{{ facets.user }}</span>)</span></a></li>
-              </ul>
-            </nav>
-            <nav class="filter">
-              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Categories" %}</a></h2>
-              <ul class="nav" id="categories">
-                {% layer_categories as category_list %}
-                <li><a data-class="all" class="active trigger-query">{% trans "All Categories" %}</a></li>
-                {% for category in category_list %}
-                <li><a data-class="{{category.slug}}" class="active trigger-query">{{ category }}
-                {% if category.layer_set.count > 0 %}({{ category.layer_set.count }}){% else %}(0){% endif %}
-                </a></li>
-                {% endfor %}
-              </ul>
-            </nav>
-            <nav class="filter">
-              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Date" %}</a></h2>
-              <ul class="nav" id="date_start">
-                <label>Date begins after:</label>
-                <li><input value="yyyy-mm-dd" data-date-format="yyyy-mm-dd" type="text" class="datepicker" placeholder="yyyy-mm-dd" /></li>
-              </ul>
-              <ul class="nav" id="date_end">
-                <label>Date ends before:</label>
-                <li><input value="yyyy-mm-dd" data-date-format="yyyy-mm-dd" type="text" class="datepicker" placeholder="yyyy-mm-dd" /></li>
-              </ul>
-            </nav>
-            <nav class="filter">
-              <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> {% trans "Keywords" %}</a></h2>
-              <ul class="nav" id="keywords">
-                {% for tag in tags %}
-                  <li><a data-class="{{ tag.slug }}" class="trigger-query">{{ tag }} <span>(<span class="count">{{ tag.taggit_taggeditem_items.count }}</span>)</span></a></li>
-                {% endfor %}
-              </ul>
-            </nav>
+            {% include "search/_type_filters.html" %}
+            {% include "search/_general_filters.html" %}
           </div>
         </div>
         <div class="tab-content span8 paginate paginate-auto" id="search-content">
