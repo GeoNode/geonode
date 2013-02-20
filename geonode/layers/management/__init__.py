@@ -24,14 +24,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 if "notification" in settings.INSTALLED_APPS:
-    from notification import models as notification
+    import notification
 
     def create_notice_types(app, created_models, verbosity, **kwargs):
-        notification.create_notice_type("layer_uploaded", _("Layer Uploaded"), _("A layer was uploaded"))
-        notification.create_notice_type("layer_comment", _("Comment on Layer"), _("A layer was commented on"))
-        notification.create_notice_type("layer_rated", _("Rating for Layer"), _("A rating was given to a layer"))
+        notification.models.NoticeType.create("layer_uploaded", _("Layer Uploaded"), _("A layer was uploaded"))
+        notification.models.NoticeType.create("layer_comment", _("Comment on Layer"), _("A layer was commented on"))
+        notification.models.NoticeType.create("layer_rated", _("Rating for Layer"), _("A rating was given to a layer"))
 
-    signals.post_syncdb.connect(create_notice_types, sender=notification)
+    signals.post_syncdb.connect(create_notice_types, sender=notification.models)
     logger.info("Notifications Configured for geonode.layers.managment.commands")
 else:
     logger.info("Skipping creation of NoticeTypes for geonode.layers.management.commands, since notification app was not found.")
