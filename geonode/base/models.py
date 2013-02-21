@@ -21,7 +21,7 @@ class ContactRole(models.Model):
     """
     ContactRole is an intermediate abstract model to bind Profiles as Contacts to Layers and apply roles.
     """
-    resource = models.ForeignKey('ResourceBase')
+    resource = models.ForeignKey('ResourceBase', null=True)
     contact = models.ForeignKey(Profile)
     role = models.ForeignKey(Role)
 
@@ -151,6 +151,9 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     # metadata XML specific fields
     metadata_uploaded = models.BooleanField(default=False)
     metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
+
+    def __unicode__(self):
+        return self.title
 
     @property
     def bbox(self):
