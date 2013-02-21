@@ -40,8 +40,7 @@ from django.http import HttpResponse
 # from geonode import GeoNodeException
 #from geonode.layers.models import Layer
 #from geonode.maps.models import Map
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.security.models import INVALID_PERMISSION_MESSAGE
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS, INVALID_PERMISSION_MESSAGE
 
 _wms = None
 _csw = None

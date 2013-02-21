@@ -26,14 +26,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login
 
-# implicitly defined 'generic' groups of users
-ANONYMOUS_USERS = 'anonymous'
-AUTHENTICATED_USERS = 'authenticated'
-GENERIC_GROUP_NAMES = {
-    ANONYMOUS_USERS: _('Anonymous Users'),
-    AUTHENTICATED_USERS: _('Registered Users')
-}
-INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
+from geonode.security.enumerations import ROLE_VALUES, GENERIC_GROUP_NAMES
 
 class ObjectRoleManager(models.Manager):
     def get_by_natural_key(self, codename, app_label, model):
@@ -41,7 +34,6 @@ class ObjectRoleManager(models.Manager):
             codename=codename,
             content_type=ContentType.objects.get_by_natural_key(app_label, model)
         )
-
 
 class ObjectRole(models.Model):
     """
@@ -66,6 +58,15 @@ class ObjectRole(models.Model):
     def natural_key(self):
         return (self.codename,) + self.content_type.natural_key()
 
+class Role(models.Model):
+    """
+    Roles are a generic way to create groups of permissions.
+    """
+    value = models.CharField('Role', choices=ROLE_VALUES, max_length=255, unique=True, help_text=_('function performed by the responsible party'))
+    permissions = models.ManyToManyField(Permission, verbose_name=_('permissions'), blank=True)
+
+    def __unicode__(self):
+        return self.get_value_display()
 
 class UserObjectRoleMapping(models.Model):
     """

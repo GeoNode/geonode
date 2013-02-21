@@ -30,8 +30,9 @@ from django.contrib.auth.models import User, Permission
 
 from taggit.managers import TaggableManager
 
-from geonode.layers.enumerations import COUNTRIES
-from geonode.people.enumerations import ROLE_VALUES, CONTACT_FIELDS
+from geonode.base.enumerations import COUNTRIES
+from geonode.people.enumerations import CONTACT_FIELDS
+from geonode.security.enumerations import ROLE_VALUES
 
 
 class Profile(models.Model):
@@ -65,17 +66,6 @@ class Profile(models.Model):
 
     def class_name(value): 
         return value.__class__.__name__ 
-
-
-class Role(models.Model):
-    """
-    Roles are a generic way to create groups of permissions.
-    """
-    value = models.CharField('Role', choices=ROLE_VALUES, max_length=255, unique=True, help_text=_('function performed by the responsible party'))
-    permissions = models.ManyToManyField(Permission, verbose_name=_('permissions'), blank=True)
-
-    def __unicode__(self):
-        return self.get_value_display()
 
 @receiver(post_save, sender=User)
 def user_post_save(sender, **kwargs):

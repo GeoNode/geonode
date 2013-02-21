@@ -9,43 +9,14 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes import generic
 
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.layers.models import ResourceBase, Layer
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.models import Role
+from geonode.layers.models import Layer
+from geonode.base.models import TopicCategory, ResourceBase
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 from geonode.utils import bbox_to_wkt
-from geonode.people.models import Profile, Role
-
-class ContactRole(models.Model):
-    """
-    ContactRole is an intermediate model to bind Contacts and Documents and apply roles.
-    """
-    contact = models.ForeignKey(Profile, related_name='document_contact')
-    document = models.ForeignKey('Document', null=True)
-    role = models.ForeignKey(Role, related_name='document_role')
-
-    def clean(self):
-        """
-        Make sure there is only one poc and author per document
-        """
-        if (self.role == self.document.poc_role) or (self.role == self.document.metadata_author_role):
-            contacts = self.ladocumentyer.contacts.filter(contactrole__role=self.role)
-            if contacts.count() == 1:
-                # only allow this if we are updating the same contact
-                if self.contact != contacts.get():
-                    raise ValidationError('There can be only one %s for a given document' % self.role)
-        if self.contact.user is None:
-            # verify that any unbound contact is only associated to one document
-            bounds = ContactRole.objects.filter(contact=self.contact).count()
-            if bounds > 1:
-                raise ValidationError('There can be one and only one document linked to an unbound contact' % self.role)
-            elif bounds == 1:
-                # verify that if there was one already, it corresponds to this instace
-                if ContactRole.objects.filter(contact=self.contact).get().id != self.id:
-                    raise ValidationError('There can be one and only one document linked to an unbound contact' % self.role)
-
-    class Meta:
-        unique_together = (("contact", "document", "role"),)
+from geonode.people.models import Profile
 
 class Document(ResourceBase):
     """
@@ -64,37 +35,6 @@ class Document(ResourceBase):
 
     def __unicode__(self):  
         return self.title
-        
-    def _set_poc(self, poc):
-        # reset any poc asignation to this document
-        ContactRole.objects.filter(role=self.poc_role, document=self).delete()
-        #create the new assignation
-        ContactRole.objects.create(role=self.poc_role, document=self, contact=poc)
-
-    def _get_poc(self):
-        try:
-            the_poc = ContactRole.objects.get(role=self.poc_role, document=self).contact
-        except ContactRole.DoesNotExist:
-            the_poc = None
-        return the_poc
-
-    poc = property(_get_poc, _set_poc)
-
-    def _set_metadata_author(self, metadata_author):
-        # reset any metadata_author asignation to this document
-        ContactRole.objects.filter(role=self.metadata_author_role, document=self).delete()
-        #create the new assignation
-        ContactRole.objects.create(role=self.metadata_author_role,
-                                                  document=self, contact=metadata_author)
-
-    def _get_metadata_author(self):
-        try:
-            the_ma = ContactRole.objects.get(role=self.metadata_author_role, document=self).contact
-        except ContactRole.DoesNotExist:
-            the_ma = None
-        return the_ma
-
-    metadata_author = property(_get_metadata_author, _set_metadata_author)
         
     def get_absolute_url(self):
         return reverse('document_detail', args=(self.id,))

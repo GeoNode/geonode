@@ -23,14 +23,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import backend
 from django.db.models import Q
 
-from geonode.security.models import UserObjectRoleMapping
-from geonode.security.models import GenericObjectRoleMapping
-from geonode.security.models import ANONYMOUS_USERS
-from geonode.security.models import AUTHENTICATED_USERS
-from geonode.maps.models import Layer, TopicCategory
+from geonode.security.models import UserObjectRoleMapping, GenericObjectRoleMapping
+from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.maps.models import Map
 from geonode.maps.models import MapLayer
 from geonode.documents.models import Document
+from geonode.layers.models import Layer
 from geonode.people.models import Profile 
 
 from geonode.search import extension

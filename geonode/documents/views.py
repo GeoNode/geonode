@@ -15,7 +15,7 @@ from django.db.models import Q
 from django.views.generic.list import ListView
 
 from geonode.maps.views import _perms_info
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map
 from geonode.layers.models import Layer, TopicCategory
 from geonode.people.models import Profile
