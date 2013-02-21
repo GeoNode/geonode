@@ -46,7 +46,8 @@ from django.shortcuts import get_object_or_404
 
 from geonode.utils import http_client, _split_query, _get_basic_auth_info
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
-from geonode.layers.models import Layer, ContactRole, Attribute, TopicCategory
+from geonode.layers.models import Layer, Attribute
+from geonode.base.models import ContactRole, TopicCategory
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -55,7 +56,7 @@ from geonode.layers.utils import layer_set_permissions
 from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from django.forms.models import inlineformset_factory
 from geoserver.resource import FeatureType
 

@@ -49,7 +49,7 @@ from geonode.utils import default_map_config
 from geonode.utils import resolve_object
 from geonode.maps.forms import MapForm
 from geonode.people.models import Profile
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
 
 

@@ -33,10 +33,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
-from geonode.layers.models import Layer, TopicCategory, ResourceBase
+from geonode.layers.models import Layer
+from geonode.base.models import TopicCategory, ResourceBase
 from geonode.maps.signals import map_changed_signal
 from geonode.security.models import PermissionLevelMixin
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config

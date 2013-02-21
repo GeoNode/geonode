@@ -41,7 +41,7 @@ os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
+        'NAME': os.path.join(PROJECT_ROOT, 'development_base.db'),
     }
 }
 
@@ -171,6 +171,7 @@ INSTALLED_APPS = (
 
     # GeoNode internal apps
     'geonode.people',
+    'geonode.base',
     'geonode.layers',
     'geonode.upload',
     'geonode.maps',
