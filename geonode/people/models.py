@@ -32,8 +32,6 @@ from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
 from geonode.people.enumerations import CONTACT_FIELDS
-from geonode.security.enumerations import ROLE_VALUES
-
 
 class Profile(models.Model):
     user = models.OneToOneField(User, related_name="profile", null=True, blank=True)
