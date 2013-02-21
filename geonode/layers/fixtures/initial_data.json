@@ -45,7 +45,7 @@
 
     {
         "pk": 13, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "flora and/or fauna in natural environment", 
             "name": "Biota", 
@@ -54,7 +54,7 @@
     }, 
     {
         "pk": 6, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "legal land descriptions", 
             "name": "Boundaries", 
@@ -63,7 +63,7 @@
     }, 
     {
         "pk": 19, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "processes and phenomena of the atmosphere", 
             "name": "Climatology Meteorology Atmosphere", 
@@ -72,7 +72,7 @@
     }, 
     {
         "pk": 11, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "economic activities, conditions and employment", 
             "name": "Economy", 
@@ -81,7 +81,7 @@
     }, 
     {
         "pk": 3, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "height above or below sea level", 
             "name": "Elevation", 
@@ -90,7 +90,7 @@
     }, 
     {
         "pk": 9, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "environmental resources, protection and conservation", 
             "name": "Environment", 
@@ -99,7 +99,7 @@
     }, 
     {
         "pk": 2, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "rearing of animals and/or cultivation of plants", 
             "name": "Farming", 
@@ -108,7 +108,7 @@
     }, 
     {
         "pk": 1, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "information pertaining to earth sciences", 
             "name": "Geoscientific Information", 
@@ -117,7 +117,7 @@
     }, 
     {
         "pk": 14, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "health, health services, human ecology, and safety", 
             "name": "Health", 
@@ -126,7 +126,7 @@
     }, 
     {
         "pk": 15, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "base maps", 
             "name": "Imagery Base Maps Earth Cover", 
@@ -135,7 +135,7 @@
     }, 
     {
         "pk": 7, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "inland water features, drainage systems and their characteristics", 
             "name": "Inland Waters", 
@@ -144,7 +144,7 @@
     }, 
     {
         "pk": 8, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "military bases, structures, activities", 
             "name": "Intelligence Military", 
@@ -153,7 +153,7 @@
     }, 
     {
         "pk": 10, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "positional information and services", 
             "name": "Location", 
@@ -162,7 +162,7 @@
     }, 
     {
         "pk": 5, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "features and characteristics of salt water bodies (excluding inland waters)", 
             "name": "Oceans", 
@@ -171,7 +171,7 @@
     }, 
     {
         "pk": 12, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "information used for appropriate actions for future use of the land", 
             "name": "Planning Cadastre", 
@@ -180,7 +180,7 @@
     }, 
     {
         "pk": 17, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "characteristics of society and cultures", 
             "name": "Society", 
@@ -189,7 +189,7 @@
     }, 
     {
         "pk": 18, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "man-made construction", 
             "name": "Structure", 
@@ -198,7 +198,7 @@
     }, 
     {
         "pk": 16, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "means and aids for conveying persons and/or goods", 
             "name": "Transportation", 
@@ -207,7 +207,7 @@
     }, 
     {
         "pk": 4, 
-        "model": "layers.topiccategory", 
+        "model": "base.topiccategory", 
         "fields": {
             "description": "energy, water and waste systems and communications infrastructure and services", 
             "name": "Utilities Communication", 
