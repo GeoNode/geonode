@@ -29,7 +29,8 @@ from geonode.maps.models import Map
 from geonode.maps.models import MapLayer
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
-from geonode.people.models import Profile 
+from geonode.people.models import Profile
+from geonode.base.models import TopicCategory
 
 from geonode.search import extension
 from geonode.search.models import filter_by_period

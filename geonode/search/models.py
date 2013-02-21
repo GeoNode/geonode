@@ -19,10 +19,10 @@
 
 from django.conf import settings
 
-from geonode.layers.models import Layer, ResourceBase
+from geonode.base.models import ResourceBase
+from geonode.layers.models import Layer, add_bbox_query
 from geonode.maps.models import Map
 from geonode.documents.models import Document
-from geonode.layers.models import add_bbox_query
 from geonode.search.util import iso_fmt
 
 from datetime import datetime
