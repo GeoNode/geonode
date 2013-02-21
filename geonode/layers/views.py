@@ -188,8 +188,8 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
 
     poc = layer.poc
     metadata_author = layer.metadata_author
-    ContactRole.objects.get(layer=layer, role=layer.poc_role)
-    ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
+    ContactRole.objects.get(resource=layer, role=layer.poc_role)
+    ContactRole.objects.get(resource=layer, role=layer.metadata_author_role)
 
     if request.method == "POST":
         layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
