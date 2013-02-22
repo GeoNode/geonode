@@ -3,17 +3,15 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.core.exceptions import ValidationError
 
 from geonode.base.enumerations import COUNTRIES, ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
-    SPATIAL_REPRESENTATION_TYPES,  TOPIC_CATEGORIES, \
+    SPATIAL_REPRESENTATION_TYPES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION
 from geonode.utils import bbox_to_wkt
 from geonode.people.models import Profile
 from geonode.security.models import PermissionLevelMixin, Role
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
 from taggit.managers import TaggableManager
 
