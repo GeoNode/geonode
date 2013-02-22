@@ -41,7 +41,7 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
-from geonode.base.models import TopicCategory, ResourceBase
+from geonode.base.models import TopicCategory, ResourceBase, ResourceBaseManager
 from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
 from geonode.geoserver.helpers import cascading_delete
 from geonode.people.models import Profile
@@ -77,24 +77,12 @@ class Style(models.Model):
     def __str__(self):
         return "%s" % self.name
 
-class LayerManager(models.Manager):
+class LayerManager(ResourceBaseManager):
 
     def __init__(self):
         models.Manager.__init__(self)
         url = "%srest" % settings.GEOSERVER_BASE_URL
         self.gs_catalog = Catalog(url, _user, _password)
-
-
-    def admin_contact(self):
-        # this assumes there is at least one superuser
-        superusers = User.objects.filter(is_superuser=True).order_by('id')
-        if superusers.count() == 0:
-            raise RuntimeError('GeoNode needs at least one admin/superuser set')
-
-        contact = Profile.objects.get_or_create(user=superusers[0],
-                                                defaults={"name": "Geonode Admin"})[0]
-        return contact
-
 
 def add_bbox_query(q, bbox):
     '''modify the queryset q to limit to the provided bbox
