@@ -50,9 +50,6 @@ var init = function() {
     var gazetteerText = gettext('Placename gazetteer');
 
 
-
-
-
     var config = Ext.apply({
         tools:  [{
             ptype: "gxp_geonodequerytool",
@@ -103,7 +100,14 @@ var init = function() {
                 editFeatureActionText: '<span class="x-btn-text">' + "Edit Feature" + '</span>',
                 actionTarget:  {target: "paneltbar", index: 4},
                 toggleGroup: 'featureGroup'
-            }{% endif %}
+            }{% endif %},
+            {
+                ptype: "app_annotation",
+                title: "Add Notes",
+                user: "{{ user.id }}",
+                toggleGroup: 'featureGroup',
+                actionTarget:  {target: "paneltbar", index: 16}
+            }
             ],
             proxy: "/proxy/?url=",
 
@@ -144,9 +148,11 @@ var init = function() {
         Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.officialurl ? '' : 'Current Map: ') + (config.about.title ? config.about.title : 'New Map')}));
 
 
-
+	
 
     }, this);
+    
+    
     {% endautoescape %}
     }
 
@@ -222,6 +228,8 @@ var init = function() {
         </div>
     </div>
 
+</div>
+<div id="featuredetails" style="float:right; width: 300px">
 </div>
 {% endblock %}
 

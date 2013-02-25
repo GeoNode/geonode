@@ -102,7 +102,7 @@ def get_files(filename, sldfile):
 
         for ext, pattern in required_extensions.iteritems():
             logger.debug('basename + pattern:%s', base_name+pattern)
-            if re.search(base_name + pattern, zipString) is None:
+            if re.search(re.escape(base_name) + pattern, zipString) is None:
                 msg = ('Expected helper file %s does not exist; a Shapefile '
                        'requires helper files with the following extensions: '
                        '%s') % (base_name + "." + ext,
@@ -317,12 +317,14 @@ def save(layer, base_file, user, overwrite = True, title=None,
         else:
             def create_store_and_resource(name, data, overwrite, charset):
                 cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
-                return cat.get_store(name), cat.get_resource(name)
+                featurestore = cat.get_store(name)
+                return featurestore, cat.get_resource(name,store=featurestore)
     elif the_layer_type == Coverage.resource_type:
         logger.debug("Uploading raster layer: [%s]", base_file)
         def create_store_and_resource(name, data, overwrite, charset):
             cat.create_coveragestore(name, data, overwrite=overwrite)
-            return cat.get_store(name), cat.get_resource(name)
+            coverage_store = cat.get_store(name)
+            return coverage_store, cat.get_resource(name,store=coverage_store)
     else:
         msg = ('The layer type for name %s is %s. It should be '
                '%s or %s,' % (name,
@@ -351,7 +353,8 @@ def save(layer, base_file, user, overwrite = True, title=None,
         store, gs_resource = create_store_and_resource(name, data, overwrite=overwrite, charset=charset)
     except geoserver.catalog.UploadError, e:
         msg = ('Could not save the layer %s, there was an upload '
-               'error: %s' % (name, str(e)))
+               'error: %s' % (name, "Invalid/missing projection information in image" 
+                    if "Error auto-configuring coverage:null" in str(e) else str(e)))
         logger.warn(msg)
         e.args = (msg,)
         raise

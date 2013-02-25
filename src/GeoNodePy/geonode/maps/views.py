@@ -507,7 +507,7 @@ def set_layer_permissions(layer, perm_spec, use_email = False):
             try:
                 user = User.objects.get(email=useremail)
             except User.DoesNotExist:
-                 user = _create_new_user(useremail, layer.title, reverse('geonode.maps.views.layer_detail', args=(layer.typename,)), layer.owner_id)
+                user = _create_new_user(useremail, layer.title, reverse('geonode.maps.views.layer_detail', args=(layer.typename,)), layer.owner_id)
             layer.set_user_level(user, level)
     else:
         layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
@@ -748,6 +748,7 @@ def view(request, mapid, snapshot=None):
     request.session['lastmapTitle'] = map_obj.title
 
     config['first_visit'] = first_visit
+    config['uid'] = request.user.id
     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map_obj)
     config['topic_categories'] = category_list()
     return render_to_response('maps/view.html', RequestContext(request, {
@@ -860,7 +861,7 @@ def embed(request, mapid=None, snapshot=None):
         else:
             config = snapshot_config(snapshot, map_obj, request.user)
         config['first_visit'] = False
-
+        
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
     }))
@@ -1223,7 +1224,8 @@ def layer_replace(request, layername):
                 _("You are not permitted to modify this layer")})), status=401)
     if request.method == 'GET':
         cat = Layer.objects.gs_catalog
-        info = cat.get_resource(layer.name)
+        store = cat.get_store(layer.store)
+        info = cat.get_resource(layer.name,store=store)
         is_featuretype = info.resource_type == FeatureType.resource_type
 
         return render_to_response('maps/layer_replace.html',
