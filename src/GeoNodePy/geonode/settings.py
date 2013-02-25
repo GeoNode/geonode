@@ -19,16 +19,20 @@ DEBUG = TEMPLATE_DEBUG = True
 #DEFAULT_FROM_EMAIL = 'your_email@gmail.com'
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #EMAIL_HOST = 'smtp.gmail.com'
-#EMAIL_HOST_USER = 'your_email@gmail.com'#EMAIL_HOST_PASSWORD = 'password'
+#EMAIL_HOST_USER = 'your_email@gmail.com'
+#EMAIL_HOST_PASSWORD = 'password'
 #EMAIL_PORT = 587
 #EMAIL_USE_TLS = True
 
 # Defines settings for development
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(PROJECT_ROOT, '..', '..', '..', 'development.db'),
-    }
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'wm_db',
+        'USER': 'wm_user',
+        'PASSWORD': 'wm_password',
+        'HOST': 'localhost', 'PORT': '5432'
+        }
 }
 
 # Local time zone for this installation. Choices can be found here:
@@ -36,7 +40,7 @@ DATABASES = {
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'America/New_York'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -473,17 +477,7 @@ MAP_BASELAYERS = [
         "visibility": False,
         "fixed": True,
         "group": "background"
-    },
-    {
-        "source": {
-            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer",
-            "ptype": "gxp_arcrestsource"},
-        "group": "background",
-        "name": "NatGeo1_World_Map",
-        "visibility": False,
-        "fixed": True,
-        "title": "National Geographic World Map"
-    },
+    }
 ]
 
 

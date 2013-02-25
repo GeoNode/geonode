@@ -778,7 +778,8 @@ def embed(request, mapid=None, snapshot=None):
             config = map_obj.viewer_json(request.user)
         else:
             config = snapshot_config(snapshot, map_obj, request.user)
-
+        config['first_visit'] = False
+        
     return render_to_response('maps/embed.html', RequestContext(request, {
         'config': json.dumps(config)
     }))

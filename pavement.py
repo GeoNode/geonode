@@ -586,7 +586,7 @@ def start_geoserver(options):
 
     def jetty_is_up():
         try:
-            urllib.urlopen("http://" + options.host.bind + ":8001/geoserver/web/")
+            urllib.urlopen("http://" + options.host.bind + ":8080/geoserver/web/")
             return True
         except Exception, e:
             return False
@@ -645,7 +645,7 @@ def host(options):
 
     def jetty_is_up():
         try:
-            urllib.urlopen("http://" + options.host.bind + ":8001/geoserver/web/")
+            urllib.urlopen("http://" + options.host.bind + ":8080/geoserver/web/")
             return True
         except Exception, e:
             return False
@@ -669,7 +669,7 @@ def host(options):
         time.sleep(2)
 
     try:
-        sh("django-admin.py updatelayers --settings=geonode.settings")
+        #sh("django-admin.py updatelayers --settings=geonode.settings")
 
         info("Development GeoNode is running at http://" + options.host.bind + ":8000/")
         info("The GeoNode is an unstoppable machine")
