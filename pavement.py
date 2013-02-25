@@ -26,9 +26,7 @@ import urllib
 import zipfile
 import glob
 
-from paver.easy import task, options, cmdopts, needs
-from paver.easy import path, sh, pushd, info, call_task
-from paver.easy import BuildFailure
+from paver.easy import *
 
 assert sys.version_info >= (2, 6, 2), \
     SystemError("GeoNode Build requires python 2.6.2 or better")
@@ -57,7 +55,8 @@ def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     fast = options.get('fast', False)
     download_dir = path('downloaded')
-    download_dir.makedirs()
+    if not download_dir.exists():
+        download_dir.makedirs()
 
     geoserver_dir = path('geoserver')
 
@@ -87,7 +86,7 @@ def _install_data_dir():
     data_dir = path('geoserver/data')
     if data_dir.exists():
         data_dir.rmtree()
-    
+
     geoserver_dir = path('geoserver')
     download_dir = path('downloaded')
     data_dir_zip = download_dir / os.path.basename(DATA_DIR_URL)
@@ -174,7 +173,7 @@ def package(options):
             old_package = path(f)
             if old_package != out_pkg_tar:
                 old_package.remove()
-	
+
         if out_pkg_tar.exists():
             info('There is already a package for version %s' % version)
             return
