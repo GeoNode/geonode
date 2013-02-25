@@ -819,34 +819,75 @@ window.onload = init;
 
 {% block body %}
 
-
 <div id="header-wrapper">
     {{ block.super }}
+
     <div id="dataTabs" class="x-hidden">
 
-        <div id="searchDiv" style="background-color:#fff;width:800px;">
-            <div style="float:left;position:relative;margin:10px;width:580px;">
-                <div class="block">
-                    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
+<div id="searchDiv" style="background-color:#fff;width:800px;">
+<div style="float:left;position:relative;margin:10px;width:580px;">
+  <div class="block">
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
 
-                    <div id="search_results"></div>
+    <div id="search_results"></div>
 
+  </div>
+
+  <div class="block wrap selfclear">
+  <h3>Selected Data</h3>
+  <div id="selection">
+    <div id="data_cart"></div>
+    </div>
+    <div id="data_ops">
+    </div>
+  </div>
+
+
+</div>
+
+
+
+<div style="position:relative;float:right;width:200px">
+  <div id="refine" class="block">
+    <h3>{% trans "Refine Search" %}</h3>
+    <div class="bbox-controls">
+      <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
+      <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
+      <div class="bbox-expand">
+      </div>
+    </div>
+    <div class="search-button">Refine</div>
+  </div>
+
+</div>
+</div>
+        <div id="externalDiv"></div>
+        {% if user.is_authenticated %}
+            <div id="uploadDiv"></div>
+            {% if DB_DATASTORE  %}
+                <div id="createDiv"></div>
+            {% endif %}
+        {% endif %}
+        <div id="warpDiv">
+            <div id="tabContainer" style="padding:20px;">
+
+                <div style="position:relative;float:left;">
+
+
+                    <h3>{%trans "Rectify Images"  %}</h3>    
+                    
+                    <p style="font-size: 14px">Use <a target="_blank" href="http://warp.worldmap.harvard.edu">WorldMap WARP</a> to upload and rectify scanned maps for use in WorldMap. <br/><br/> Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 4.5 in <a href="{{ STATIC_URL }}docs/WorldMap_Help.pdf">WorldMap Help</a>.</p>
+                    <br/><br/>
+                    <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{{ STATIC_URL }}theme/img/warper-sample.jpg" border="0" /></a></div>
                 </div>
-
-                <div class="block wrap selfclear">
-                    <h3>Selected Data</h3>
-
-                    <div id="selection">
-                        <div id="data_cart"></div>
-                    </div>
-                    <div id="data_ops">
-                    </div>
-                </div>
-
-
             </div>
+        </div>
+    </div>
 
-            <div id="chartDiv">
+</div>
+
+    
+                <div id="chartDiv">
                 <!--
                 <input type="text" size="16" id="tokenInput" value="lol">
                 <button id="submitQuery" style="width:100px;">Submit</button>
@@ -862,30 +903,5 @@ window.onload = init;
 
 
             </div>
-
-            <div id="externalDiv"></div>
-            <div id="uploadDiv"></div>
-            <div id="createDiv"></div>
-            <div id="warpDiv">
-                <div id="tabContainer" style="padding:20px;">
-
-                    <div style="position:relative;float:left;">
-
-                        <h3>{%trans "Rectify Images" %}</h3>
-
-                        <p style="font-size: 14px">Use <a target="_blank" href="http://warp.worldmap.harvard.edu">WorldMap
-                            WARP</a> to upload and rectify scanned maps for use in WorldMap. <br/><br/> Maps rectified
-                            using this tool can be brought into WorldMap by following the instructions under Section
-                            3.9.1 in <a href="http://localhost:8000/media/docs/WorldMap_Help.pdf">WorldMap Help</a>.</p>
-                        <br/><br/>
-
-                        <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img
-                                src="{{ STATIC_URL }}theme/img/warper-sample.jpg" border="0"/></a></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
     {% endblock %}
 
