@@ -27,8 +27,9 @@ import zipfile
 import glob
 
 from paver.easy import task, options, cmdopts, needs
-from paver.easy import path, sh, pushd, info, call_task
+from paver.easy import path, sh, info, call_task
 from paver.easy import BuildFailure
+from paver.path import pushd
 
 assert sys.version_info >= (2, 6, 2), \
     SystemError("GeoNode Build requires python 2.6.2 or better")
