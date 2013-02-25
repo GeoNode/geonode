@@ -31,7 +31,17 @@ from django.contrib.auth.models import User, Permission
 from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
-from geonode.people.enumerations import CONTACT_FIELDS
+from geonode.people.enumerations import CONTACT_FIELDS, ROLE_VALUES
+
+class Role(models.Model):
+    """
+    Roles are a generic way to create groups of permissions.
+    """
+    value = models.CharField('Role', choices=ROLE_VALUES, max_length=255, unique=True, help_text=_('function performed by the responsible party'))
+    permissions = models.ManyToManyField(Permission, verbose_name=_('permissions'), blank=True)
+
+    def __unicode__(self):
+        return self.get_value_display()
 
 class Profile(models.Model):
     user = models.OneToOneField(User, related_name="profile", null=True, blank=True)

@@ -22,7 +22,7 @@ import logging
 
 from django.conf import settings
 from django.db.models import signals
-from geonode.base.models import ResourceBase
+from geonode.layers.models import Layer
 from geonode.catalogue import get_catalogue
 
 
@@ -43,6 +43,7 @@ def catalogue_post_save(instance, sender, **kwargs):
         catalogue = get_catalogue()
         catalogue.create_record(instance)
         record = catalogue.get_record(instance.uuid)
+        import ipdb; ipdb.set_trace()
     except EnvironmentError, err:
         msg = 'Could not connect to catalogue' \
                'to save information for layer "%s"' % (instance.name)
@@ -108,6 +109,6 @@ def catalogue_pre_save(instance, sender, **kwargs):
             instance.distribution_description = res.description
 
 if 'geonode.catalogue' in settings.INSTALLED_APPS:
-    signals.pre_save.connect(catalogue_pre_save, sender=ResourceBase)
-    signals.post_save.connect(catalogue_post_save, sender=ResourceBase)
-    signals.pre_delete.connect(catalogue_pre_delete, sender=ResourceBase)
+    signals.pre_save.connect(catalogue_pre_save, sender=Layer)
+    signals.post_save.connect(catalogue_post_save, sender=Layer)
+    signals.pre_delete.connect(catalogue_pre_delete, sender=Layer)

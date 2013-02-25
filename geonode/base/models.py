@@ -10,8 +10,8 @@ from geonode.base.enumerations import COUNTRIES, ALL_LANGUAGES, \
     SPATIAL_REPRESENTATION_TYPES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION
 from geonode.utils import bbox_to_wkt
-from geonode.people.models import Profile
-from geonode.security.models import PermissionLevelMixin, Role
+from geonode.people.models import Profile, Role
+from geonode.security.models import PermissionLevelMixin
 
 from taggit.managers import TaggableManager
 

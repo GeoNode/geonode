@@ -1,7 +1,7 @@
 [
 {
     "pk": 1, 
-    "model": "security.role",
+    "model": "people.role",
     "fields": {
         "value": "pointOfContact", 
         "permissions": []
@@ -9,7 +9,7 @@
 }, 
 {
     "pk": 2, 
-    "model": "security.role", 
+    "model": "people.role", 
     "fields": {
         "value": "author", 
         "permissions": []

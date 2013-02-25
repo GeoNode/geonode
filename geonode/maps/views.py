@@ -40,7 +40,8 @@ from django.db.models import Q
 from django.views.decorators.http import require_POST
 
 from geonode.utils import _split_query, http_client
-from geonode.layers.models import Layer, TopicCategory
+from geonode.layers.models import Layer
+from geonode.base.models import TopicCategory
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import forward_mercator
 from geonode.utils import DEFAULT_TITLE
