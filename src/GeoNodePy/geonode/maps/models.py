@@ -724,6 +724,7 @@ class LayerManager(models.Manager):
         cat = self.gs_catalog
         resources = []
         if workspace is not None:
+            print >> console, "Workspace is  %s" % workspace
             workspace = cat.get_workspace(workspace)
             resources = cat.get_resources(workspace=workspace)
         output = []
@@ -1544,23 +1545,21 @@ class Layer(models.Model, PermissionLevelMixin):
         bbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][0])
         llbbox = re.findall(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", bboxes[0][1])
 
+        #Assign new bbox to Layer
         self.bbox = str([float(l) for l in bbox])
         self.llbbox = str([float(l) for l in llbbox])
         self.set_bbox(bbox, srs=self.srs)
 
-        #Update Geoserver bounding boxes
-        if (self._resource_cache):
-            resource_bbox = list(self.resource.native_bbox)
-            resource_llbbox = list(self.resource.latlon_bbox)
-            
-            for coord in range[0,3]:
-                resource_bbox[coord] = str(bbox[2]) if coord == 1 else str(bbox[1]) if coord == 2 else str(bbox[coord])
-                resource_llbbox[coord] = str(llbbox[2]) if coord == 1 else str(llbbox[1]) if coord == 2 else str(llbbox[coord])
-                
-            self.resource.native_bbox = tuple(resource_bbox)
-            self.resource.latlon_bbox = tuple(resource_llbbox)
-            Layer.objects.gs_catalog.save(self._resource_cache)
-
+        #Update Geoserver bounding boxes        
+        resource_bbox = list(self.resource.native_bbox)
+        resource_llbbox = list(self.resource.latlon_bbox)                
+ 
+        (resource_bbox[0],resource_bbox[1],resource_bbox[2],resource_bbox[3]) = str(bbox[0]), str(bbox[2]), str(bbox[1]), str(bbox[3])
+        (resource_llbbox[0],resource_llbbox[1],resource_llbbox[2],resource_llbbox[3]) = str(llbbox[0]), str(llbbox[2]), str(llbbox[1]), str(llbbox[3])
+                                
+        self.resource.native_bbox = tuple(resource_bbox)
+        self.resource.latlon_bbox = tuple(resource_llbbox)
+        Layer.objects.gs_catalog.save(self._resource_cache)
         
         # Use update to avoid unnecessary post_save signal
         Layer.objects.filter(id=self.id).update(bbox=self.bbox,llbbox=self.llbbox,geographic_bounding_box=self.geographic_bounding_box )

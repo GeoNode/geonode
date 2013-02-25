@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 import org.geotools.util.logging.Logging;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
-import org.springframework.security.Authentication;
+import org.springframework.security.core.Authentication;
 import org.springframework.util.Assert;
 
 public class AuthCache {

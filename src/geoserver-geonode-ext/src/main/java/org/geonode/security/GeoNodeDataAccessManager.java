@@ -4,28 +4,51 @@
  */
 package org.geonode.security;
 
-import org.geonode.security.LayersGrantedAuthority.LayerMode;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.DataAccessManager;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
+import org.geoserver.security.GeoServerRoleService;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.impl.GeoServerRole;
+import org.geotools.util.logging.Logging;
+import org.springframework.security.core.Authentication;
 
 /**
  * An access manager that uses the special authentication tokens setup by the
- * {@link GeonodeSecurityClient} to check if a layer can be accessed, or not
+ * {@link GeoNodeSecurityClient} to check if a layer can be accessed, or not
  * 
  * @author Andrea Aime - OpenGeo
  */
 public class GeoNodeDataAccessManager implements DataAccessManager {
-
-    public static final String ADMIN_ROLE = "ROLE_ADMINISTRATOR";
+    private static final Logger LOG = Logging.getLogger(GeoNodeDataAccessManager.class);
 
     boolean authenticationEnabled = true;
+    
+    private final GeoNodeSecurityClient.Provider securityClientProvider;
 
+    public GeoNodeDataAccessManager(GeoNodeSecurityClient.Provider securityClientProvider) {
+        this.securityClientProvider = securityClientProvider;
+    }
+    
+    public static GeoServerRole getAdminRole() {
+        return roleService().getAdminRole();
+    }
+    
+    private static GeoServerSecurityManager securityManager() {
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class);
+    }
+    
+    private static GeoServerRoleService roleService() {
+        return securityManager().getActiveRoleService();
+    }
+    
     /**
      * @see org.geoserver.security.DataAccessManager#canAccess(org.springframework.security.Authentication,
      *      org.geoserver.catalog.WorkspaceInfo, org.geoserver.security.AccessMode)
@@ -64,27 +87,16 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
             //throw new NullPointerException("user is null");
             return true;
         }
-
-        if (user != null && user.getAuthorities() != null) {
-            for (GrantedAuthority ga : user.getAuthorities()) {
-                if (ga instanceof LayersGrantedAuthority) {
-                    LayersGrantedAuthority lga = ((LayersGrantedAuthority) ga);
-                    // see if the layer is contained in the granted authority list with
-                    // sufficient privileges
-                    if (mode == AccessMode.READ
-                            || ((mode == AccessMode.WRITE) && lga.getAccessMode() == LayerMode.READ_WRITE)) {
-                        if (lga.getLayerNames().contains(resource.getPrefixedName())) {
-                            return true;
-                        }
-                    }
-                } else if (ADMIN_ROLE.equals(ga.getAuthority())) {
-                    // admin is all powerful
-                    return true;
-                }
-            }
+                
+        if (LOG.isLoggable(Level.FINER)) {
+            LOG.finer("Checking permissions for " + user +" with authorities " + user.getAuthorities() + " accessing " + resource);
         }
-        // if we got here sorry, no luck
-        return false;
+        
+        if (user.getAuthorities().contains(GeoNodeDataAccessManager.getAdminRole())) {
+            return true;
+        }
+        
+        return securityClientProvider.getSecurityClient().authorize(user, resource, mode);
     }
 
     /**

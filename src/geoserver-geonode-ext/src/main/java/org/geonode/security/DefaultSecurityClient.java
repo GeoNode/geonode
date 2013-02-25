@@ -21,17 +21,16 @@ import net.sf.json.JSONSerializer;
 
 import org.apache.commons.codec.binary.Base64;
 import org.geonode.security.LayersGrantedAuthority.LayerMode;
-import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.security.AccessMode;
+import org.geoserver.security.impl.GeoServerRole;
 import org.geotools.util.logging.Logging;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 
 /**
@@ -44,7 +43,7 @@ import org.springframework.util.Assert;
  * 
  * @author Andrea Aime - OpenGeo
  */
-public class DefaultSecurityClient implements GeonodeSecurityClient, ApplicationContextAware {
+public class DefaultSecurityClient implements GeoNodeSecurityClient {
     static final Logger LOGGER = Logging.getLogger(DefaultSecurityClient.class);
 
     private final HTTPClient client;
@@ -62,9 +61,10 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
      */
     private Lock authLock = new ReentrantLock();
 
-    public DefaultSecurityClient(final HTTPClient httpClient) {
+    public DefaultSecurityClient(String baseUrl, final HTTPClient httpClient) {
         this.client = httpClient;
         this.authCache = new AuthCache();
+        this.baseUrl = baseUrl;
     }
 
     /**
@@ -77,7 +77,7 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
     }
 
     /**
-     * @see org.geonode.security.GeonodeSecurityClient#authenticateCookie(java.lang.String)
+     * @see org.geonode.security.GeoNodeSecurityClient#authenticateCookie(java.lang.String)
      */
     public Authentication authenticateCookie(final String cookieValue)
             throws AuthenticationException, IOException {
@@ -110,7 +110,7 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
     }
 
     /**
-     * @see org.geonode.security.GeonodeSecurityClient#authenticateUserPwd(java.lang.String,
+     * @see org.geonode.security.GeoNodeSecurityClient#authenticateUserPwd(java.lang.String,
      *      java.lang.String)
      */
     public Authentication authenticateUserPwd(String username, String password)
@@ -123,7 +123,7 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
     }
 
     /**
-     * @see org.geonode.security.GeonodeSecurityClient#authenticateAnonymous()
+     * @see org.geonode.security.GeoNodeSecurityClient#authenticateAnonymous()
      */
     public Authentication authenticateAnonymous() throws AuthenticationException, IOException {
         Authentication cachedAuth = authCache.get("__anonymous__");
@@ -172,55 +172,52 @@ public class DefaultSecurityClient implements GeonodeSecurityClient, Application
             authorities.add(new LayersGrantedAuthority(rwLayers, LayerMode.READ_WRITE));
         }
         if (json.getBoolean("is_superuser")) {
-            authorities.add(new GrantedAuthorityImpl(GeoNodeDataAccessManager.ADMIN_ROLE));
+            authorities.add(GeoServerRole.ADMIN_ROLE);
+            authorities.add(GeoNodeDataAccessManager.getAdminRole());
         }
 
         final Authentication authentication;
 
         if (json.getBoolean("is_anonymous")) {
-            authorities.add(new GrantedAuthorityImpl("ROLE_ANONYMOUS"));
+            authorities.add(GeoServerRole.ANONYMOUS_ROLE);
             String key = "geonode";
             Object principal = "anonymous";
-            GrantedAuthority[] grantedAuthorities = authorities
-                    .toArray(new GrantedAuthority[authorities.size()]);
 
-            authentication = new AnonymousAuthenticationToken(key, principal, grantedAuthorities);
+            authentication = new AnonymousAuthenticationToken(key, principal, authorities);
         } else {
             String userName = "";
             if (json.containsKey("name")) {
                 userName = json.getString("name");
             }
-            GrantedAuthority[] grantedAuthorities = authorities
-                    .toArray(new GrantedAuthority[authorities.size()]);
-
-            authentication = new UsernamePasswordAuthenticationToken(userName, credentials,
-                    grantedAuthorities);
+            authorities.add(GeoServerRole.AUTHENTICATED_ROLE);
+            authentication = new UsernamePasswordAuthenticationToken(
+                userName, credentials, authorities);
         }
         return authentication;
     }
 
-    /**
-     * Looks up for the {@code GEONODE_BASE_URL} property (either a System property, a servlet
-     * context parameter or an environment variable) to be used as the base URL for the GeoNode
-     * authentication requests (for which {@code 'data/acls'} will be appended).
-     * <p>
-     * If not provided, defaults to {@code http://localhost:8000}
-     * </p>
-     * 
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     * @see GeoServerExtensions#getProperty(String, ApplicationContext)
-     */
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        // determine where geonode is
-        this.baseUrl = GeoServerExtensions.getProperty("GEONODE_BASE_URL", applicationContext);
-        if (baseUrl == null) {
-            LOGGER.log(Level.WARNING, "GEONODE_BASE_URL is not set, "
-                    + "assuming http://localhost:8000/");
-            baseUrl = "http://localhost:8000/";
-        }
-        if (!baseUrl.endsWith("/")) {
-            baseUrl += "/";
-        }
+    public boolean authorize(Authentication user, ResourceInfo resource, AccessMode mode) {
+        return authorizeUsingAuthorities(user, resource, mode);
     }
-
+    
+    static boolean authorizeUsingAuthorities(Authentication user, ResourceInfo resource, AccessMode mode) {
+        boolean authorized = false;
+        if (user != null && user.getAuthorities() != null) {
+            for (GrantedAuthority ga : user.getAuthorities()) {
+                if (ga instanceof LayersGrantedAuthority) {
+                    LayersGrantedAuthority lga = ((LayersGrantedAuthority) ga);
+                    // see if the layer is contained in the granted authority list with
+                    // sufficient privileges
+                    if (mode == AccessMode.READ
+                            || ((mode == AccessMode.WRITE) && lga.getAccessMode() == LayersGrantedAuthority.LayerMode.READ_WRITE)) {
+                        if (lga.getLayerNames().contains(resource.prefixedName())) {
+                            authorized = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return authorized;
+    }
 }

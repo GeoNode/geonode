@@ -25,8 +25,14 @@
       -->
     <param-value>FILE</param-value>
   </context-param>
-  
-  <!-- If true, enable versioning datastore as well -->
+
+    <context-param>
+        <param-name>org.geonode.security.databaseSecurityClient.url</param-name>
+        <param-value>jdbc:postgresql://localhost:5432/worldmap?user=wmuser&amp;=wmus3r2012</param-value>
+    </context-param>
+
+
+    <!-- If true, enable versioning datastore as well -->
   <context-param>
     <param-name>enableVersioning</param-name>
     <param-value>true</param-value>
@@ -43,7 +49,7 @@
     <!-- 
     <context-param>
       <param-name>PROXY_BASE_URL</param-name>
-      <param-value>http://82.58.146.45/</param-value>
+      <param-value>http://82.58.146.45/geoserver</param-value>
     </context-param>
      -->
    
@@ -53,25 +59,31 @@
         <param-value>C:\eclipse\workspace\geoserver_trunk\cite\confCiteWFSPostGIS</param-value>
     </context-param> 
    -->
-  
+    
     <!-- pick up all spring application contexts -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <!-- param-value>classpath*:/applicationContext.xml classpath*:/applicationSecurityContext.xml</param-value-->
-        <param-value>classpath*:/applicationContext.xml classpath*:/geonodeApplicationSecurityContext.xml</param-value>
+        <param-value>classpath*:/applicationContext.xml classpath*:/applicationSecurityContext.xml</param-value>
     </context-param>
-
-    <!-- Use GeoNode specific filter chain -->
+    
     <filter>
-     <filter-name>Spring Security Filter Chain Proxy</filter-name>
-     <filter-class>org.springframework.security.util.FilterToBeanProxy</filter-class>
-     <init-param>
-       <param-name>targetBean</param-name>
-       <param-value>geonodeFilterChainProxy</param-value>
+     <filter-name>SessionDebugger</filter-name>
+     <filter-class>org.geoserver.filters.SessionDebugFilter</filter-class>
+    </filter>
+
+    <filter>
+    <filter-name>filterChainProxy</filter-name>     
+     <filter-class> org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+     
+<!-- <filter-name>Spring Security Filter Chain Proxy</filter-name> 
+    <init-param>
+       <param-name>targetClass</param-name>
+       <param-value>org.springframework.security.util.FilterChainProxy</param-value>
      </init-param>
+-->
     </filter>
     
-       <filter>
+   <filter>
     <filter-name>Set Character Encoding</filter-name>
     <filter-class>org.vfny.geoserver.filters.SetCharacterEncodingFilter</filter-class>
     <init-param>
@@ -80,30 +92,6 @@
     </init-param>
   </filter>
 
-   <filter>
-    <filter-name>Reverse Proxy Filter</filter-name>
-    <filter-class>org.geoserver.filters.ReverseProxyFilter</filter-class>
-    <init-param>
-      <param-name>enabled</param-name>
-      <param-value>false</param-value>
-      <description>
-        Whether to enable the reverse proxy filter or not. Defaults to false. Set to true
-        in order for GeoServer to perform URL translation for the proxyfied base URL on
-        textual content whose MIME type matches one of the regular expressions set through
-        the mime-types init parameter.
-      </description>
-    </init-param>
-    <init-param>
-      <param-name>mime-types</param-name>
-      <param-value>text/html.*,text/css.*,text/javascript.*,application/x-javascript.*</param-value>
-      <description>
-        Comma separated list of response MIME types the filter shall process in order to translate
-        absolute urls using the configured proxyBaseUrl. Each token in the comma separated list
-        is interpreted as a java regular expression.
-      </description>
-    </init-param>
-   </filter>
-   
    <filter>
      <filter-name>GZIP Compression Filter</filter-name>
      <filter-class>org.geoserver.filters.GZIPFilter</filter-class>
@@ -173,15 +161,15 @@
    </filter>
 
     <filter-mapping>
+      <filter-name>SessionDebugger</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
       <filter-name>GZIP Compression Filter</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
     
-    <filter-mapping>
-      <filter-name>Reverse Proxy Filter</filter-name>
-      <url-pattern>/*</url-pattern>
-    </filter-mapping>
-  
     <filter-mapping>
       <filter-name>Request Logging Filter</filter-name>
       <url-pattern>/*</url-pattern>
@@ -191,7 +179,7 @@
       If you want to use your security system comment out this one too
     -->
     <filter-mapping>
-      <filter-name>Spring Security Filter Chain Proxy</filter-name>
+      <filter-name>filterChainProxy</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
     
@@ -230,6 +218,10 @@
       <listener-class>org.geoserver.platform.GeoServerContextLoaderListener</listener-class>
     </listener>
     
+    <!--  http session listener proxy -->
+    <listener>
+      <listener-class>org.geoserver.platform.GeoServerHttpSessionListenerProxy</listener-class>
+    </listener>
     
     <!-- spring dispatcher servlet, dispatches all incoming requests -->
     <servlet>
@@ -237,6 +229,8 @@
       <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     </servlet>
     
+    <!-- single mapping to spring, this only works properly if the advanced dispatch filter is 
+         active -->
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/*</url-pattern>

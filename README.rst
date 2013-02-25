@@ -313,6 +313,7 @@ GAZETTEER
 ..............
 The gazetteer is disabled by default because it adds a bit of complexity to the setup process.
 It should be enabled only if PostGIS integration is also enabled.
+
 In your settings.py file:
 * uncomment the following in INSTALLED_APPS:
     * #geonode.gazetteer,
@@ -321,7 +322,7 @@ In your settings.py file:
 
 QUEUE
 ..............
-WorldMap can now optionally make use of the Celery project to send certain tasks (updating
+WorldMap can now optionally make use of Celery (http://celeryproject.org/) to send certain tasks (updating
 the gazetteer, updating layer boundaries after creating/editing features) to a job queue
 where they will be processed later.
 
@@ -330,12 +331,34 @@ In your settings.py file, uncomment the following in INSTALLED_APPS:
 * #'djcelery',
 * #'djkombu',
 
-The default run interval is determined by QUEUE_INTERVAL - the default is 10 minutes.
+The run interval is determined by QUEUE_INTERVAL - the default is 10 minutes.
 
 You will need to manually setup and run the celery processes on your server.  For basic
 instructions on doing so see  :file:`docs/deploy/celery_queue.txt`
 
 
+
+ALTERNATE LAYER-SPECIFIC SECURITY SYSTEM
+...........................................................................................
+Place config.xml file in geoserver's data/security/auth/geonodeAuthProvider:
+
+<org.geonode.security.GeoNodeAuthProviderConfig>
+  <id>-53e27318:1396869cb2d:-7fef</id>
+  <name>geonodeAuthProvider</name>
+  <className>org.geonode.security.GeoNodeAuthenticationProvider</className>
+  <baseUrl>http://localhost:8000/</baseUrl>
+</org.geonode.security.GeoNodeAuthProviderConfig>
+
+Change baseUrl if necessary.
+
+
+In WEB-INF/web.xml, add the following, and change the user/password values:
+    <context-param>
+        <param-name>org.geonode.security.databaseSecurityClient.url</param-name>
+        <param-value>jdbc:postgresql://localhost:5432/worldmap?user=wmuser&amp;password=wmus3r2012</param-value>
+    </context-param>
+
+Add the function in src/geoserver-geonode-ext/src/main/resources/org/geonode/security/geonode_authorize_layer.sql to the worldmap database
 
 
 

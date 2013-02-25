@@ -408,17 +408,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             };
         }
         config.tools = (config.tools || []).concat(
-{
-            ptype: "gxp_layermanager",
-            groups: (config.map.groups || config.treeconfig),
-            id: "treecontentmgr",
-            outputConfig: {
-                id: "treecontent",
-                autoScroll: true,
-                tbar: {id: 'treetbar'}
+            {
+                ptype: "gxp_layermanager",
+                groups: (config.map.groups || config.treeconfig),
+                id: "treecontentmgr",
+                outputConfig: {
+                    id: "treecontent",
+                    autoScroll: true,
+                    tbar: {id: 'treetbar'}
                 },
-            outputTarget: "westpanel"
-        },{
+                outputTarget: "westpanel"
+            },{
                 ptype: "gxp_zoomtolayerextent",
                 actionTarget: "treecontent.contextMenu"
             },{

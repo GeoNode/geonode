@@ -493,6 +493,25 @@ div.cga-link {
     background-color: #fff !important;
 }
 
+
+div.cql-overlay {
+    z-index: 10000;
+    position: absolute;
+    margin: 0 15%;
+    background:#FFF;
+    opacity: 0.9
+}
+
+div.chart-overlay {
+    z-index: 10000;
+    position: absolute;
+    //left: 10px;
+    bottom: 10px;
+    margin: 0 15%;
+    background:#FFF;
+    opacity: 1.0
+}
+
 .icon-picasa {
     background-image: url('img/picasa.png');
 }
