@@ -10,13 +10,12 @@ from django.core.exceptions import ValidationError
 from django.contrib.contenttypes import generic
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.security.models import Role
 from geonode.layers.models import Layer
 from geonode.base.models import TopicCategory, ResourceBase
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 from geonode.utils import bbox_to_wkt
-from geonode.people.models import Profile
+from geonode.people.models import Profile, Role
 
 class Document(ResourceBase):
     """

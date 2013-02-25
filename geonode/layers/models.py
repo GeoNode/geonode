@@ -44,8 +44,8 @@ from geonode import GeoNodeException
 from geonode.base.models import TopicCategory, ResourceBase, ResourceBaseManager
 from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
 from geonode.geoserver.helpers import cascading_delete
-from geonode.people.models import Profile
-from geonode.security.models import PermissionLevelMixin, Role
+from geonode.people.models import Profile, Role
+from geonode.security.models import PermissionLevelMixin
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.ows import wcs_links, wfs_links, wms_links, \
     wps_execute_layer_attribute_statistics
