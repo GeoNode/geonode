@@ -43,7 +43,6 @@ def catalogue_post_save(instance, sender, **kwargs):
         catalogue = get_catalogue()
         catalogue.create_record(instance)
         record = catalogue.get_record(instance.uuid)
-        import ipdb; ipdb.set_trace()
     except EnvironmentError, err:
         msg = 'Could not connect to catalogue' \
                'to save information for layer "%s"' % (instance.name)
