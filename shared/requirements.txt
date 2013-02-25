@@ -36,3 +36,5 @@ pytz
 python-dateutil==1.5 #For Python < 3.0
 datautil
 jdcal
+#For mapnotes
+vectorformats
