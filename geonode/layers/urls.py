@@ -43,6 +43,7 @@ urlpatterns = patterns(
     url(r'^search/?$', 'layer_search_page', name='layer_search_page'),
     url(r'^upload$', 'layer_upload', name='layer_upload'),
     url(r'^simpli_upload$', 'layer_simpli_upload', name='layer_simpli_upload'),
+    url(r'^get_layer_template$', 'get_layer_template', name='get_layer_template'),
     url(r'^download$', 'layer_batch_download', name='layer_batch_download'),
     url(r'^(?P<layername>[^/]*)$', 'layer_detail', name="layer_detail"),
     url(r'^(?P<layername>[^/]*)/metadata$', 'layer_metadata',

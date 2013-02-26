@@ -150,6 +150,11 @@
 	        name: 'abstract',
 	        allowBlank: true
 	    });
+	    
+	    var templetizeCheck = new Ext.form.Checkbox({
+	    	id: 'templetize',
+	    	fieldLabel: gettext('Templetize this layer')
+	    });
 
 	    var permissionsField = new Ext.form.Hidden({
 	        name: "permissions"
@@ -167,7 +172,7 @@
 	            anchor: '95%',
 	            msgTarget: 'side'
 	        },
-	        items: [layer_title, base_file, dbf_file, shx_file, prj_file, sld_file, xml_file, abstractField, permissionsField, {
+	        items: [layer_title, base_file, dbf_file, shx_file, prj_file, sld_file, xml_file, abstractField, permissionsField, templetizeCheck, {
 	            xtype: "hidden",
 	            name: "csrfmiddlewaretoken",
 	            value: "{{ csrf_token }}"

@@ -67,14 +67,23 @@
             typeAhead: true,
             triggerAction: 'all',
             id: 'ctype',
-            mode: 'local',
+            xtype: 'combo',
             fieldLabel: gettext('Template'),
             emptyText: gettext('Seleziona il template del layer che desideri inserire'),
             autoSelect: true,
             name: 'ctype',
             allowBlank: false,
             forceSelection: true,
-            store: [['scuole','Scuole'],['negozi','Negozi']],
+            store: new Ext.data.JsonStore({
+                url: 'get_layer_template',
+                root: 'data',
+                totalProperty: 'total',
+                fields: [
+                    {name: 'name', mapping: 'fields.name'},
+                ]
+            }),
+            displayField: 'name',
+            valueField: 'name',
             hiddenName: 'ctype',
             listeners:{
                 select: function(){

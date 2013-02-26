@@ -250,7 +250,7 @@ def cleanup(name, uuid):
 
 
 def save(layer, base_file, user, overwrite=True, title=None,
-         abstract=None, permissions=None, keywords=()):
+         abstract=None, permissions=None, templetize=None, keywords=()):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer
@@ -353,6 +353,14 @@ def save(layer, base_file, user, overwrite=True, title=None,
         main_file = files['base']
         data = main_file
     # ------------------
+
+    path = os.getcwd()+"/geonode/shapefile_templates/"
+    dirs = os.listdir(path)
+    
+    for file in dirs:
+        extension = os.path.splitext(os.path.basename(file))[1]
+        if extension.lower() in ['.shp']:
+            lt = LayerTemplate.objects.create(name=os.path.splitext(file)[0])
 
     try:
         store, gs_resource = create_store_and_resource(name,

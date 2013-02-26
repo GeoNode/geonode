@@ -345,7 +345,7 @@ SITEURL = "http://localhost:8000/"
 # GeoServer information
 
 # The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://localhost:8080/geoserver/"
+GEOSERVER_BASE_URL = "http://127.0.0.1:8080/geoserver/"
 
 # The username and password for a user that can add and
 # edit layer details on GeoServer
@@ -488,16 +488,16 @@ MAP_BASELAYERS = [{
 # GeoNode vector data backend configuration.
 
 #Import uploaded shapefiles into a database such as PostGIS?
-DB_DATASTORE = False
+DB_DATASTORE = True
 
 #Database datastore connection settings
-DB_DATASTORE_DATABASE = ''
-DB_DATASTORE_USER = ''
-DB_DATASTORE_PASSWORD = ''
-DB_DATASTORE_HOST = ''
-DB_DATASTORE_PORT = ''
-DB_DATASTORE_TYPE = ''
-DB_DATASTORE_NAME = ''
+DB_DATASTORE_DATABASE = 'ocd_db'
+DB_DATASTORE_USER = 'postgres'
+DB_DATASTORE_PASSWORD = 'postgres'
+DB_DATASTORE_HOST = '127.0.0.1'
+DB_DATASTORE_PORT = '5432'
+DB_DATASTORE_TYPE = 'postgis'
+DB_DATASTORE_NAME = 'yuridb'
 
 #The name of the store in Geoserver
 
