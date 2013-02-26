@@ -40,14 +40,9 @@
     <div class="span8 paginate paginate-auto">
       <section class="widget list paginate-contents">
         <h2>{% trans "Latest Layers" %}</h2>
-        {% featured_layers 100 as featured_layers %}
-        {% if featured_layers.count %}
-        {% autopaginate featured_layers 4 %}
-        {% for layer in featured_layers %}
-          {% include "layers/_layer_list_item.html" %}
-        {% endfor %}
-        {% paginate %}
-        {% endif %}
+        <div class="paginate paginate-auto" id="search-content">
+          {% include 'search/search_content.html' %}
+        </div>
       </section>
     </div>
     <aside class="span4">
