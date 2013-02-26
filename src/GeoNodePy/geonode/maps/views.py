@@ -2754,3 +2754,25 @@ def category_list():
     for topic in topics:
         topicArray.append([topic.name, topic.title])
     return topicArray
+
+def mobilemap(request, mapid=None, snapshot=None):
+    if mapid is None and permalink is None:
+        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+        config = DEFAULT_MAP_CONFIG
+    else:
+
+        if mapid.isdigit():
+            map = Map.objects.get(pk=mapid)
+        else:
+            map = Map.objects.get(urlsuffix=mapid)
+
+        if not request.user.has_perm('maps.view_map', obj=map):
+            return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
+        if snapshot is None:
+            config = map.viewer_json(request.user)
+        else:
+            config = snapshot_config(snapshot, map, request.user)
+
+    return render_to_response('maps/mobilemap.html', RequestContext(request, {
+        'config': json.dumps(config)
+    }))

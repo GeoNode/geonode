@@ -5,17 +5,13 @@
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
-{% include "geonode/geo_header.html" %}
+{% include "geonode/geo_mobile_header.html" %}
 {{ block.super }}
-<<<<<<< HEAD
-<script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
-=======
 {% if "gme-" in GOOGLE_API_KEY %}
 <script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
 {% else %}
 <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
 {% endif %}
->>>>>>> master
 <script type="text/javascript">
     google.load("earth", "1");
 </script>
@@ -31,12 +27,16 @@ Ext.onReady(function() {
                     // uncomment the line below if you want feature info in a grid
                     format: "grid",
                     actionTarget: "main.tbar",
-                    iconCls: "icon-getfeatureinfo",
-                    outputConfig: {width: 100, height: 100, panIn: false}
+                    //iconCls: "icon-getfeatureinfo",
+                    iconCls: null,
+                    text: "Identify",
+                    outputConfig: {width: 50, height: 50, panIn: false}
         },{
                     ptype: "gxp_geolocator",
                     maxZoom: 15,
-                    iconCls: "icon-geolocate",
+                    //iconCls: "icon-geolocate",
+                    iconCls: null,
+                    text: "Locate Me",
                     actionTarget: "main.tbar"
         }],
         proxy: "/proxy/?url=",
@@ -57,7 +57,7 @@ Ext.onReady(function() {
         }
     };
     Ext.apply(config, {{ config }});
-    app = new GeoExplorer.Viewer(config);
+    app = new GeoExplorer.ViewerMobile(config);
 {% endautoescape %}
 });
 </script>

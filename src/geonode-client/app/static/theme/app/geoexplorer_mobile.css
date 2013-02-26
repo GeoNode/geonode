@@ -1,0 +1,23 @@
+.x-btn-noicon .x-btn-small .x-btn-text {
+    color: #18469C;
+    height: 24px;
+    text-decoration: underline;
+}
+
+.x-btn-icon .x-btn-small .x-btn-text
+{
+	height: 50px;
+	width: 50px;
+}
+
+.x-btn .icon-layer-switcher {
+    background-size:50px 50px;
+}
+
+.x-btn .gxp-icon-getfeatureinfo, .x-menu-item .gxp-icon-getfeatureinfo, .x-tree-node .gxp-icon-getfeatureinfo  {
+    background-size:50px 50px;
+}
+
+.x-btn .gxp-icon-geolocate, .x-menu-item .gxp-icon-geolocate, .x-tree-node .gxp-icon-geolocate {
+    background-size:50px 50px;
+}
