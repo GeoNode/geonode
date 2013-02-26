@@ -295,7 +295,13 @@ def forward_mercator(lonlat):
         If the lat value is out of range, -inf will be returned as the y value
     """
     x = lonlat[0] * 20037508.34 / 180
-    n = math.tan((90 + lonlat[1]) * math.pi / 360)
+    try:
+        # With data sets that only have one point the value of this
+        # expression becomes negative infinity. In order to continue,
+        # we wrap this in a try catch block.
+        n = math.tan((90 + lonlat[1]) * math.pi / 360)
+    except ValueError:
+        n = 0
     if n <= 0:
         y = float("-inf")
     else:
