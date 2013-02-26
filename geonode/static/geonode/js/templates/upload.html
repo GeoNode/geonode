@@ -1,0 +1,42 @@
+<script type='text/html' id='errorTemplate'>
+  <li class='alert alert-error'>
+    <button class='close' data-dismiss='alert'>&times;</button>
+    <strong><%= title %></strong><p><%= message %></p>
+  </li>
+</script>
+
+<script type='text/html' id='infoTemplate'>
+  <div class='alert <%= level %><p><%= message %></p></div>
+</script>
+
+<script type='text/html' id='layerTemplate'>
+  <div class='file-element' id='<%= selector %>-element'>
+    <div class='row'>
+      <div class='span4'><h3><%= name %></h3></div>
+      <div class='span2'><h3><%= type %><h3></div>
+    </div>
+    <hr />
+    <div>
+      <ul class='files'></ul>
+      <ul class='errors'></ul>
+      <div id='status'></div>
+    </div>
+  </div>
+</script>
+
+
+<script type='text/html' id='progressTemplate'>
+  <div class='alert <%= alertLevel %>'>
+    <p><%= message %></p>
+  </div>
+</script>
+
+
+<script type='text/html' id='successTemplate'>
+
+  <div class='alert alert-success'>
+    <p>Your layer has been upload successfully</p>
+    a href="/data/geonode:<%= name %>" class='btn'>Layer page</a>
+  </div>
+
+</script>

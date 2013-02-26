@@ -12,6 +12,7 @@
 
 {% block body_outer %}
 <div class="span12">
+  {% block hero %}
   <div class="hero-unit">
     <h1>{% trans "Welcome" %}</h1>
     <div class="hero-unit-content">
@@ -33,18 +34,15 @@
       </div>
     </div>
   </div>
+  {% endblock %}
+  {% block mainbody %}
   <div class="row">
     <div class="span8 paginate paginate-auto">
       <section class="widget list paginate-contents">
         <h2>{% trans "Latest Layers" %}</h2>
-        {% featured_layers 100 as featured_layers %}
-        {% if featured_layers.count %}
-        {% autopaginate featured_layers 4 %}
-        {% for layer in featured_layers %}
-          {% include "layers/_layer_list_item.html" %}
-        {% endfor %}
-        {% paginate %}
-        {% endif %}
+        <div class="paginate paginate-auto" id="search-content">
+          {% include 'search/search_content.html' %}
+        </div>
       </section>
     </div>
     <aside class="span4">
@@ -75,6 +73,7 @@
       </div>
     </aside>
   </div>
+  {% endblock %}
 </div>
 {% endblock %}
 
@@ -82,26 +81,5 @@
   <script src="{% static "libs/js/waypoints.js" %}"></script>
   <script src="{% static "libs/js/jquery.raty.js" %}"></script>
   <script src="{% static "geonode/js/paginate.js" %}"></script>
-  <script type="text/javascript">
-     $(function() {
-       $('.overall_rating').each(function() {
-        var rating = $(this).parents(".avg_rating").data('rating');
-        star(this, rating);
-      });
-       $(".loadmore").on("load.loadmore", function(e, o) {          
-        o.find(".overall_rating").each(function() {
-          var rating = $(this).parents(".avg_rating").data('rating');
-          star(this, rating);
-        });
-       });
-     });
-      function star(elem, rating) {
-          $(elem).raty({
-            half: true,
-           readOnly: true,
-           score: rating,
-           path: "{% static "agon_ratings/img/" %}"
-          });        
-      }
-  </script>
+  {% include 'rate.js' %}
 {% endblock extra_script %}

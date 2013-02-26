@@ -94,6 +94,14 @@ STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, "static"),
 ]
 
+# List of finder classes that know how to find static files in
+# various locations.
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+)
+
 # Note that Django automatically includes the "templates" dir in all the
 # INSTALLED_APPS, se there is no need to add maps/templates or admin/templates
 TEMPLATE_DIRS = (
@@ -155,16 +163,17 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    #'notification',
+    'notification',
     'announcements',
     'actstream',
     'relationships',
     'user_messages',
 
     # GeoNode internal apps
-    'geonode.maps',
-    'geonode.layers',
     'geonode.people',
+    'geonode.layers',
+    'geonode.upload',
+    'geonode.maps',
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
@@ -245,7 +254,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    'announcements.context_processors.site_wide_announcements',
     'account.context_processors.account',
     # The context processor below adds things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext

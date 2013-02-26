@@ -6,7 +6,7 @@
  GeoNode
 =========
 
-If you just want to try GeoNode, it is recommended to use Ubuntu 10.04 and install the latest stable release::
+If you just want to try GeoNode, it is recommended to use Ubuntu 12.04 and install the latest stable release::
 
     sudo add-apt-repository ppa:geonode/release
     sudo apt-get update

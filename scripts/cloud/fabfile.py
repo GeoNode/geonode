@@ -48,7 +48,6 @@ ACT = 'source ' + GEONODEDIR + '/bin/activate'
 
 # Install GeoNode dependencies
 def install_depend():
-    sudo('apt-get install -y python-virtualenv')
     sudo('cd %s; virtualenv geonode --system-site-packages;' % INSTALLDIR)
     sudo('apt-get install -y gcc python-pastescript python-dev libxml2-dev libxslt1-dev openjdk-6-jdk python-psycopg2')
     # Web server
@@ -78,6 +77,7 @@ def create_postgis_template():
 
 # Install GeoNode library
 def deploy_geonode():
+    sudo('apt-get install -y python-virtualenv')
     with cd(GEONODEDIR), prefix(ACT):
         # Fetch from GitHub
         sudo('apt-get install -y git')
@@ -85,13 +85,13 @@ def deploy_geonode():
         sudo('git clone -b %s %s setup' % (GEONODE_BRANCH, GEONODE_GIT_URL))
         # Install requirements, setup
         sudo('pip install -e setup')
-        sudo('cd setup; paver setup')
         sudo('cp -r setup/geonode %s' % PYLIBS )
-        sudo('cp setup/geoserver-geonode-ext/target/geoserver.war /var/lib/tomcat6/webapps/')
         sudo('cp setup/package/support/geonode.apache /etc/apache2/sites-available/geonode')
         sudo('rm -rf setup')
     sed('/etc/apache2/sites-available/geonode', 'REPLACE_WITH_SITEDIR', PYLIBS, use_sudo=True)
     sed('/etc/apache2/sites-available/geonode', '/var/www/geonode/wsgi/geonode.wsgi', PYLIBS+'/geonode/wsgi.py', use_sudo=True)
+    # Fix geoserver auth config file
+    sed('/usr/share/geoserver/data/security/auth/geonodeAuthProvider/config.xml','localhost:8000','localhost', use_sudo=True)
     # Use debian package instead
     #sudo('git branch deb;paver deb')
     #sudo('dpkg -i geonode/geonode*.deb')
@@ -110,6 +110,8 @@ def deploy_project(project):
         sudo('rm requirements.txt')
     put('%s/%s.apache' % (project,project),'/etc/apache2/sites-available/%s' % project, use_sudo=True)
     sed('/etc/apache2/sites-available/%s' % project, 'REPLACE_WITH_SITEDIR', PYLIBS, use_sudo=True)
+    with cd(os.path.join(PYLIBS,project)):
+        sudo('ln -s settings_production.py local_settings.py')
 
 def enable_site(project):
     with cd(PYLIBS), prefix(ACT):
@@ -143,15 +145,13 @@ def create_database(db,user,password):
 def setup_pgsql(project):
     import sys
     sys.path.append('.')
-    #with cd(PYLIBS), fab_settings(warn_only=True):
-    #    sudo('cd %s; ln -s settings_production.py local_settings.py' % project)
-    #exec('import ' + project + '.settings_production as settings')
+    exec('import %s.settings_production as settings' % project)
     db = settings.DATABASES['default']['NAME']
     user = settings.DATABASES['default']['USER']
     password = settings.DATABASES['default']['PASSWORD']
     create_database(db,user,password)
     with prefix(ACT):
-        sudo('django-admin.py syncdb --settings=%s.settings' % project)
+        sudo('django-admin.py syncdb --all --settings=%s.settings' % project)
     # Need to restore database and GeoServer data
     #put('data/%s.sql' % db, GEONODEDIR, use_sudo=True)
     #sudo('psql -d %s -f %s/%s.sql' % (db, GEONODEDIR, db), user='postgres')
@@ -170,19 +170,28 @@ def deploy_default_geonode():
     # User needs to provide local_settings - where?
     setup_pgsql('geonode')
 
+def deploy_geonode_testing_package():
+    sudo('add-apt-repository -y ppa:geonode/testing') 
+    sudo('apt-get update')
+    sudo('apt-get install -f -y geonode')
+
 def deploy_geonode_snapshot_package():
     sudo('add-apt-repository -y ppa:geonode/snapshots') 
     sudo('apt-get update')
     sudo('apt-get install -f -y geonode')
 
-def deploy_geonode_dev_package():
+def deploy_geonode_unstable_package():
+    sudo('add-apt-repository -y ppa:geonode/unstable') 
+    sudo('apt-get update')
+    sudo('apt-get install -f -y geonode')
+
+def deploy_geonode_dev_deb():
     sudo('add-apt-repository -y ppa:geonode/unstable') 
     sudo('apt-get update')
     sudo('wget -e robots=off --wait 0.25 -r -l1 --no-parent -A.deb http://build.geonode.org/geonode/latest/')
     with settings(warn_only=True):
         sudo('cd build.geonode.org/geonode/latest;dpkg -i geonode_2.0.0*.deb',shell=True)
     sudo('apt-get install -f -y')
-    sudo ('source /var/lib/geonode/bin/activate; geonode-updateip alpha.dev.geonode.org')
 
 def change_admin_password():
     put('../misc/changepw.py', '/home/ubuntu/')
@@ -190,6 +199,21 @@ def change_admin_password():
     run("perl -pi -e 's/replace.me.admin.pw/%s/g' ~/changepw.py" % ADMIN_PASSWORD)
     sudo('source /var/lib/geonode/bin/activate;cat ~/changepw.py | django-admin.py shell --settings=geonode.settings')
     run('rm ~/changepw.py')
+
+def geonode_updateip(server_name="alpha.dev.geonode.org"):
+    sudo ('geonode-updateip %s' % server_name)
+
+def set_temp_hosts_entry(server_name="alpha.dev.geonode.org"):
+    sudo("IP=`wget -qO- http://instance-data/latest/meta-data/public-ipv4`; echo $IP alpha.dev.geonode.org >> /etc/hosts")
+
+def remove_temp_hosts_entry():
+    sudo("sed '$d' /etc/hosts > temp; mv temp /etc/hosts")
+
+def update_geoserver_geonode_auth():
+    sudo('perl -pi -e "s/:8000//g" /usr/share/geoserver/data/security/auth/geonodeAuthProvider/config.xml')
+    sudo('/etc/init.d/tomcat7 restart')
+
+
 
 def update_instance():
     put('../misc/update-instance', '/home/ubuntu/')
@@ -235,3 +259,6 @@ def build_geonode_ami():
     if MAKE_PUBLIC:
         sudo("ec2-modify-image-attribute -l -a all -K ~/.ssh/pk-*.pem -C ~/.ssh/cert-*.pem %s" % (ami_id))
     print "AMI %s Ready for Use" % (ami_id)
+
+def install_sample_data():
+    sudo('source /var/lib/geonode/bin/activate; geonode importlayers /var/lib/geonode/lib/python2.7/site-packages/gisdata/data/good; geonode loaddata sample_admin.json')

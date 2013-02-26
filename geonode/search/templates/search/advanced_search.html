@@ -13,7 +13,7 @@
 {% block body_outer %}
   <div class="span12">
     <h2 class="page-title">{% trans "Search" %}</h2>
-    <form action="{% url search %}" class="form-horizontal advanced-search">
+    <form action="{% url search %}" class="form-horizontal advanced-search" method="POST">
       <div class="row">
         <div class="span2">
           <h3>{% trans "Search for: "%}</h3>
@@ -32,27 +32,28 @@
               </div>
               <div class="control-group">
                 <label for="id_exclusions">{% trans 'Exclude words from your search' %}<br />
-                  <input type="text" id="id_exclusions" />
+                  <input type="text" id="id_exclusions" name="exclude"/>
                 </label>
               </div>
               <div class="control-group">
                 <label for="id_filter_categories_all" class="radio inline">
-                  <input type="radio" name="filter_categories" id="id_filter_categories_all" checked /> {% trans 'All categories' %}
+                  <input type="radio" name="type" value="all" id="id_filter_categories_all" checked /> {% trans 'All categories' %}
                 </label>
                 <label for="id_filter_categories_maps" class="radio inline">
-                  <input type="radio" name="filter_categories" id="id_filter_categories_maps" /> {% trans 'Maps only' %}
+                  <input type="radio" name="type" value="map" id="id_filter_categories_maps" /> {% trans 'Maps only' %}
                 </label>
                 <label for="id_filter_categories_datasets" class="radio inline">
-                  <input type="radio" name="filter_categories" id="id_filter_categories_datasets" /> {% trans 'Layers only' %}
+                  <input type="radio" name="type" value="layer" id="id_filter_categories_datasets" /> {% trans 'Layers only' %}
                 </label>
                 <label for="id_filter_categories_groups" class="radio inline">
-                  <input type="radio" name="filter_categories" id="id_filter_categories_groups" /> {% trans 'Groups only' %}
+                  <input type="radio" name="type" value="owner" id="id_filter_categories_groups" /> {% trans 'Users only' %}
                 </label>
               </div>
             </div>
           </fieldset>
         </div>
-        <div class="span2">
+        <!-- TODO implement search from portals/organization/group/geographic region-->
+        <!--<div class="span2">
           <h3>{% trans "Type: "%}</h3>
         </div>
         <div class="span10">
@@ -84,7 +85,7 @@
               </div>
             </div>
           </fieldset>
-        </div>
+        </div>-->
         <div class="span2">
           <h3>{% trans "Metadata: "%}</h3>
         </div>
@@ -93,18 +94,24 @@
             <div class="control-group">
               <label class="control-label" for="id_meta_date_since">{% trans 'Since this date' %}</label>
               <div class="controls">
-                <input id="id_meta_date_since" data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
+                <div class=" input-append date"  data-date="2013-01-01" data-date-format="yyyy-mm-dd">
+                  <input name="start_date" id="id_meta_date_since" type="text" class="span2" placeholder="yyyy-mm-dd" />
+                  <span class="add-on"><i class="icon-calendar"></i></span>
+                </div>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="id_meta_date_until">{% trans 'Until this date' %}</label>
               <div class="controls">
-                <input id="id_meta_date_until" data-datepicker="datepicker" type="text" class="span2 date" placeholder="yyyy-mm-dd" />
+                <div class=" input-append date"  data-date="2013-01-01" data-date-format="yyyy-mm-dd">
+                  <input name="end_date" id="id_meta_date_until" type="text" class="span2" placeholder="yyyy-mm-dd" />
+                  <span class="add-on"><i class="icon-calendar"></i></span>
+                </div>
               </div>
             </div>
           </fieldset>
         </div>
-        
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{csrf_token}}" />
         <div class="span12">
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">{% trans "Search "%}</button>

@@ -6,10 +6,12 @@
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
       <link href="{{ STATIC_URL }}libs/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+      {% block css-src %}
+      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
+      {% endblock %}
       <link href='{{ STATIC_URL }}geonode/font/lato_font.css' rel='stylesheet' type='text/css' />
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}libs/datatables/css/datatables.css" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}libs/select2/select2.css" rel="stylesheet"/>
       {% block extra_head %}{% endblock %}
     {% endblock %}
@@ -44,7 +46,7 @@
                           <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                          <li><a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}"><i class="icon-user"></i> {% trans "Profile" %}</a></li>
+                          <li><a href="{{ user.get_profile.get_absolute_url }}"><i class="icon-user"></i> {% trans "Profile" %}</a></li>
                           {% if user.is_staff %}
                             <li><a href="{% url admin:index %}"><i class="icon-cog"></i> {% trans "Admin" %}</a></li>
                           {% endif %}
@@ -59,7 +61,7 @@
                       <li class="actions">
                         <!--a href="#" rel="tooltip" title="{% trans 'Notifications' %}"><i class="icon-bullhorn"></i></a>
                         <a href="#" rel="tooltip" title="{% trans 'Messages' %}"><i class="icon-envelope"></i></a-->
-                        <a href="{% url layer_upload %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a>
+                        <a href="{% url data_upload %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a>
                         <a href="{% url help %}" rel="tooltip" title="{% trans 'Help' %}"><i class="icon-question-sign"></i></a>
                       </li>
                     {% else %}
@@ -95,10 +97,9 @@
                   </ul>
                 </div>
               </div>
-              <form class="input-append form-inline search-box pull-right" action="{% url search %}" method="POST">
-                {% csrf_token %}
-                <input type="text" name="q" placeholder="{% trans 'Search ...' %}" />
-                <button type="submit" class="btn btn-small"><i class="icon-search"></i></button>
+              <form class="input-append  pull-right" action="{% url search %}" method="GET">
+                {# csrf_token #}
+                <input id="search" type="text" name="q"/>
               </form>
             </div>
            </div>
@@ -127,6 +128,7 @@
                   <li id="nav_search">
                     <a href="{% url advanced_search %}">{% trans "Search" %}</a>
                   </li>
+                  {% block extra-nav %}{% endblock %}
                 </ul>
               </nav>
             </div>
@@ -197,19 +199,57 @@
       </div>
     </footer>
     {% endblock footer %}
-
     <script src="{{ STATIC_URL }}libs/js/jquery-1.8.0.js"></script>
     <script src="{{ STATIC_URL }}libs/bootstrap/js/bootstrap.min.js"></script>
     <script src="{{ STATIC_URL }}libs/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="{{ STATIC_URL }}libs/js/hogan.js"></script>
     <script src="{{ STATIC_URL }}libs/js/jquery.timeago.js"></script>
     <script src="{{ STATIC_URL }}libs/js/json2.js"></script>
     <script src="{{ STATIC_URL }}libs/select2/select2.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
+    <script>
+      $("#search").select2({
+        minimumInputLength: 1,
+        placeholder: 'Search...',
+        width: 'element',     
+        ajax: {
+          url: '{% url search_api %}',
+          data: function(term,page){
+            page = (page - 1) * 10;
+            return {
+              type: 'all',
+              limit: 10,
+              sort: 'none',
+              start: page,
+              q: term
+            }
+          },
+          results: function(data, page) {
+            var more = (page * 10) < data.total;
+            return {
+              results: $.map(data.results,function(object){
+                return {id: object.id, text: object.title};
+              }),
+              more: more
+            }
+          }          
+        },
+        createSearchChoice:function(term, data) { if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} 
+        },
+        formatSelection: function(item){
+          $('#search').val(item.text);
+          $('#search').parent().submit();
+        }
+      });
+    </script>
 
     {% block extra_script %}{% endblock extra_script %}
 
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
     <script type="text/javascript" src="{% url lang %}"></script>
+    <style type="text/css">
+      .select2-drop{
+        color: black;
+      }
+    </style>
   </body>
 </html>

@@ -1,0 +1,154 @@
+{% extends "upload/base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block title %} {% trans "Upload Layer"  %} - {{ block.super }}  {% endblock %}
+
+{% block main_class %}data upload{% endblock main_class %}
+
+{% block extra_head %}
+
+{% endblock %}
+
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geonode/css/fileuploadfield.css"/>
+<style type="text/css">
+    .uip {
+        border: 1px solid gray;
+        border-radius: 3px;
+        padding: .5em;
+        margin: .5em
+    }
+    /* workaround bizarre firefox bug where filechooser button doesn't work */
+    #base_file-file {
+        width: auto;
+    }
+    #drop-zone {
+      background: #eee;
+      height: 100px;
+      margin-bottom: 10px;
+      padding: 5px;
+    }
+</style>
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+  <div class="block">
+    <div class="span8">
+      <h2 class="page-title">{% trans "Upload Layers" %}</h2>
+
+        {% if incomplete %}
+            <section style="border: none" class="uip">
+                <h3 class="uip">Incomplete Uploads</h3>
+                <p>You have the following incomplete uploads:</p>
+                {% for u in incomplete %}
+                    <div class="clearfix uip" style="">
+                        <div class="pull-left">{{ u.name }}, last updated on {{ u.date }}</div>
+                        <div class="upload_actions pull-right">
+                            <a class="btn btn-mini" href="{{ u.get_resume_url }}">Resume</a>
+                            <a class="btn btn-mini icon-trash" href="{{ u.get_delete_url }}">Delete</a>
+                        </div>
+                    </div>
+            </section>
+            {% endfor %}
+            <div id="confirm-delete" class="hide alert alert-warn" style="padding:10px; margin: 10px 0;">
+                Are you sure you want to delete this upload?
+                <div style="margin: 5px 0">
+                <a href="#y" class="btn btn-danger">Delete</a>
+                <a href="#n" class="btn">Cancel</a>
+                </div>
+                <a href="#yy" style="font-weight:normal">Delete, and don't ask me again.</a>
+            </div>
+        {% endif %}
+        {% block additional_info %}{% endblock %}
+        {% if errors %}
+            <div id="errors">
+                {% for error in errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if enough_storage %}
+
+
+            <section id="drop-zone">
+              <h2>Drag and Drop files here</h2>
+            </section>
+
+            <form id="file-uploader" method="post" enctype="multipart/form-data">
+              <input class="btn" id="file-input" type="file" multiple>
+            </form>
+
+            <section class="widget">
+              <ul id="global-errors"></ul>
+              <h2>{% trans "Files to be uploaded" %}</h2>
+              <div id="file-queue">
+              </div>
+            </section>
+
+            <section>
+              <a href="#" id="clear-button">Clear</a>
+              <a href="#" id="upload-button" class="btn">Upload files</a>
+            </section>
+
+            <script data-main="{{STATIC_URL}}/geonode/js/upload/main"
+                    src="{{ STATIC_URL }}geonode/libs/require.js">
+            </script>
+
+            <script type="text/javascript">
+            {% autoescape off %}
+            csrf_token =  "{{ csrf_token }}",
+            form_target = "{% url data_upload %}",
+            userLookup = "{% url geonode.views.ajax_lookup %}"
+
+            {% if async_upload %}
+                    enableUploadProgress('upload_form');
+            {% endif %}
+
+            {% endautoescape %}
+
+            </script>
+
+        {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+
+{% if enough_storage %}
+<h3>{%trans "Permissions"  %}</h3>
+
+<div id="permissions_form">
+
+  <form>
+
+    <label>{% trans "View Layer" %}</label>
+    <select>
+      <option>{% trans "Any Registered User" %}</option>
+      <option></option>
+    </select>
+
+    <label>{% trans "Download Layer" %}</label>
+    <select>
+      <option>{% trans "Any Registered User" %}</option>
+    </select>
+
+    <label>{% trans "Edit layer" %}</label>
+    <select>
+      <option>{% trans "Only the following groups"%}</option>
+    </select>
+
+
+  </form>
+
+</div>
+
+{% endif %}
+{% endblock %}

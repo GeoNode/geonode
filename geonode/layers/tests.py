@@ -253,6 +253,9 @@ class LayersTest(TestCase):
 
         self.assertEqual(info['users'], sorted(layer_info['users'].items()))
 
+        # Test that layer owner can edit layer
+        self.assertTrue(layer.owner.has_perm(set([u'layers.change_layer']), layer))
+
         # TODO Much more to do here once jj0hns0n understands the ACL system better
 
         # Test with a Map object
@@ -329,6 +332,15 @@ class LayersTest(TestCase):
         #place_ name should come before description
         self.assertEqual(custom_attributes[0].attribute_label, "Place Name")
         self.assertEqual(custom_attributes[1].attribute_label, "Description")
+        # TODO: do test against layer with actual attribute statistics
+        self.assertEqual(custom_attributes[1].count, 1)
+        self.assertEqual(custom_attributes[1].min, "NA")
+        self.assertEqual(custom_attributes[1].max, "NA")
+        self.assertEqual(custom_attributes[1].average, "NA")
+        self.assertEqual(custom_attributes[1].median, "NA")
+        self.assertEqual(custom_attributes[1].stddev, "NA")
+        self.assertEqual(custom_attributes[1].sum, "NA")
+        self.assertEqual(custom_attributes[1].unique_values, "NA")
 
     def test_layer_attribute_config(self):
         lyr = Layer.objects.get(pk=1)
@@ -746,14 +758,14 @@ class LayersTest(TestCase):
 
         # First test un-authenticated
         response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
-        response_json = json.loads(response.content) 
+        response_json = json.loads(response.content)
         self.assertEquals(response_json['authorized'], False)
 
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
         response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
-        response_json = json.loads(response.content) 
+        response_json = json.loads(response.content)
         self.assertEquals(response_json['authorized'], False)
 
         # Login as a user with the proper permission and test the endpoint
@@ -763,7 +775,7 @@ class LayersTest(TestCase):
         response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
 
         # Test that the method returns 401 because it's not a datastore
-        response_json = json.loads(response.content) 
+        response_json = json.loads(response.content)
         self.assertEquals(response_json['authorized'], False)
 
         layer = Layer.objects.all()[0]
@@ -775,5 +787,5 @@ class LayersTest(TestCase):
         with self.settings(DB_DATASTORE=True):
             # The check was moved from the template into the view
             response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
-            response_json = json.loads(response.content) 
+            response_json = json.loads(response.content)
             self.assertEquals(response_json['authorized'], True)
