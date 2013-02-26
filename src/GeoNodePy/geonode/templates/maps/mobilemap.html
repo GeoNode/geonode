@@ -23,20 +23,19 @@ Ext.onReady(function() {
    var config = {
         useCapabilities: false,
         tools: [{
-                    ptype: "gxp_wmsgetfeatureinfo",
-                    // uncomment the line below if you want feature info in a grid
-                    format: "grid",
-                    actionTarget: "main.tbar",
-                    //iconCls: "icon-getfeatureinfo",
-                    iconCls: null,
-                    text: "Identify",
-                    outputConfig: {width: 50, height: 50, panIn: false}
+            ptype: "gxp_geonodequerytool",
+            id: "worldmap_query_tool",
+            actionTarget:  {target: "main.tbar"},
+            //toolText: '<span class="x-btn-text">Identify</span>',
+            outputConfig: {width: 400, height: 200, panIn: false},
+            featurePanel: 'queryPanel',
+            attributePanel: 'gridWinPanel',
+            toggleGroup: 'featureGroup'
         },{
                     ptype: "gxp_geolocator",
                     maxZoom: 15,
-                    //iconCls: "icon-geolocate",
-                    iconCls: null,
-                    text: "Locate Me",
+                    iconCls: "icon-geolocate",
+                    //toolText: '<span class="x-btn-text">Position</span>',
                     actionTarget: "main.tbar"
         }],
         proxy: "/proxy/?url=",
@@ -57,6 +56,16 @@ Ext.onReady(function() {
         }
     };
     Ext.apply(config, {{ config }});
+    
+    config.map.controls = [
+                           new OpenLayers.Control.TouchNavigation({
+                                                      dragPanOptions: {
+                                                          enableKinetic: true
+                                                      }
+                           }),
+                           new OpenLayers.Control.Zoom(),
+                           new OpenLayers.Control.Attribution()];
+    
     app = new GeoExplorer.ViewerMobile(config);
 {% endautoescape %}
 });

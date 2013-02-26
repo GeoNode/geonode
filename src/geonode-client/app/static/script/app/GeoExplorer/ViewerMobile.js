@@ -9,7 +9,7 @@
  *  class = Embed
  *  base_link = GeoExplorer
  */
-Ext.namespace("GeoExplorer");
+Ext.namespace("gxp");
 
 /** api: constructor
  *  ..class:: GeoExplorer.Viewer(config)
@@ -26,6 +26,43 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
      *  ``Boolean`` If set to false, no top toolbar will be rendered.
      */
 
+	
+    initMapPanel: function() {
+        this.mapItems = [];
+
+        OpenLayers.IMAGE_RELOAD_ATTEMPTS = 5;
+        OpenLayers.Util.onImageLoadErrorColor = "transparent";
+
+        GeoExplorer.superclass.initMapPanel.apply(this, arguments);
+
+        var incrementLayerStats = function(layer) {
+            Ext.Ajax.request({
+                url: "/data/layerstats/",
+                method: "POST",
+                params: {layername:layer.params.LAYERS}
+            });
+        }
+        this.mapPlugins = [{
+            ptype: "gxp_loadingindicator",
+            onlyShowOnFirstLoad: true
+        }];
+
+        this.mapPanel.map.events.register("preaddlayer", this, function(e) {
+            var layer = e.layer;
+            if (layer instanceof OpenLayers.Layer.WMS) {
+                layer.events.on({
+                    "loadend": function() {
+                        incrementLayerStats(layer);
+                        layer.events.unregister("loadend", this, arguments.callee);
+                    },
+                    scope: this
+                });
+            }
+        });
+
+    },	
+	
+	
     loadConfig: function(config) {
         var source;
         for (var s in config.sources) {
@@ -115,6 +152,36 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
         this.portalItems = [
             this.mapPanelContainer
         ];
+        
+        var gridWinPanel = new Ext.Panel({
+            id: 'gridWinPanel',
+            collapseMode: "mini",
+            title: 'Identify Results',
+            region: "west",
+            autoScroll: true,
+            split: true,
+            items: []
+        });
+
+        var gridResultsPanel = new Ext.Panel({
+            id: 'gridResultsPanel',
+            title: 'Feature Details',
+            region: "center",
+            collapseMode: "mini",
+            autoScroll: true,
+            split: true,
+            items: []
+        });
+
+
+        var identifyWindow = new Ext.Window({
+            id: 'queryPanel',
+            layout: "border",
+            closeAction: "hide",
+            items: [gridWinPanel, gridResultsPanel],
+            width: "100%",
+            height: 400
+        });
         
         GeoExplorer.superclass.initPortal.apply(this, arguments);
 
