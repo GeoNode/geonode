@@ -92,7 +92,7 @@ function build_query(){
         params['categories'].shift();
     }
 
-     var data = {
+    var data = {
         'type': params['types'].join(','),
         'category': params['categories'].join(','),
         'kw': params['keywords'].join(','),
@@ -131,7 +131,7 @@ function manage_element(element){
     */
 
     // logic to make sure that whne clicking on the layer filter it also 
-    //activats/deactivated vector and raster
+    //activate/deactivated vector and raster
     if ($(element).attr('data-class') === 'layer'){
         if($(element).hasClass('active')){
             $('a[data-class="raster"]').addClass('active');
