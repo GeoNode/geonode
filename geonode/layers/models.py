@@ -52,7 +52,7 @@ from geonode.layers.ows import wcs_links, wfs_links, wms_links, \
 from geonode.base.enumerations import COUNTRIES, ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
     SPATIAL_REPRESENTATION_TYPES,  TOPIC_CATEGORIES, \
-    DEFAULT_SUPPLEMENTAL_INFORMATION    
+    DEFAULT_SUPPLEMENTAL_INFORMATION
 from geonode.layers.enumerations import LINK_TYPES, LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 
 from geoserver.catalog import Catalog, FailedRequestError
