@@ -22,20 +22,6 @@ import geonode.security
 imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
                                 '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
 
-def create_map():
-    m, created = Map.objects.get_or_create(id=1, title='foo', projection='4326', zoom=2, center_x=0, center_y=0,
-                                      owner=User.objects.get(username='bobby'))
-    for ord, lyr in enumerate(settings.MAP_BASELAYERS):
-        MapLayer.objects.from_viewer_config(
-            map=m,
-            layer=lyr,
-            source=lyr["source"],
-            ordering=ord
-        ).save()
-    m.set_default_permissions()
-
-    return m, created
-
 class EventsTest(TestCase):
     fixtures = ['map_data.json', 'intial_data.json']
     
