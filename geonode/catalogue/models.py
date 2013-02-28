@@ -52,6 +52,13 @@ def catalogue_post_save(instance, sender, **kwargs):
         else:
             raise err
 
+    msg = ('Metadata record for %s does not exist,'
+           ' check the catalogue signals.' % instance.name)
+    assert record is not None, msg
+
+    msg = ('Metadata record for %s should contain links.' % instance.name)
+    assert hasattr(record, 'links'), msg
+
     # Create the different metadata links with the available formats
     for mime, name, metadata_url in record.links['metadata']:
         instance.link_set.get_or_create(url=metadata_url,
