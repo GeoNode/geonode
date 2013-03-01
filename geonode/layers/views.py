@@ -180,9 +180,9 @@ def layer_simpli_upload(request, template='layers/layer_simpli_upload.html'):
                                                 "success": True,
                                                 "redirect_to": reverse('layer_simpli_upload')}))
             
-            base_file = os.getcwd()+"/geonode/shapefile_templates/"+request.POST['ctype']+".shp"          
-                  
-            
+            saved_template = LayerTemplate.objects.get(name=template_name)
+            base_file = os.getcwd()+"/geonode/shapefile_templates/"+str(saved_template.id)+"/"+saved_template.base_file
+                        
             saved_layer = save(template_name, base_file, request.user,
                                overwrite = False,
                                abstract = form.cleaned_data['abstract'],

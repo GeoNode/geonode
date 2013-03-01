@@ -615,7 +615,6 @@ def remove_template(template_name):
     """ Remove Geonode record and spatial files of the template
     """
     saved_template = LayerTemplate.objects.get(name=template_name)
-    filename = os.path.splitext(saved_template.base_file)
     template_dir = os.getcwd()+"/geonode/shapefile_templates/"+str(saved_template.id)
     
     try:
@@ -629,8 +628,7 @@ def remove_template(template_name):
                'Error is: %s' % (template_name, str(e)))
         logger.exception(msg)
         e.args = (msg,)
-        raise 
-    
+        raise     
                               
 def get_default_user():
     """Create a default user
