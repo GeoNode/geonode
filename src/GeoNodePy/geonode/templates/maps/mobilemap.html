@@ -37,6 +37,28 @@ Ext.onReady(function() {
                     iconCls: "icon-geolocate",
                     //toolText: '<span class="x-btn-text">Position</span>',
                     actionTarget: "main.tbar"
+        },
+        {
+            ptype: "gxp_featuremanager",
+            id: "feature_manager",
+            paging: false,
+            autoSetLayer: true,
+            autoLoadFeatures: true,
+            listeners: {
+                'layerchange': function(mgr, layer, schema) {
+                    app.checkLayerPermissions(layer);
+                }
+            },
+            actionTarget:  "main.tbar",
+            toggleGroup: 'featureGroup'
+        },
+        {
+            ptype: "gxp_featureeditor",
+            id: "gn_layer_editor",
+            featureManager: "feature_manager",
+            autoLoadFeature: true,
+            actionTarget: "main.tbar",
+            toggleGroup: 'featureGroup'
         }],
         proxy: "/proxy/?url=",
 
@@ -46,13 +68,6 @@ Ext.onReady(function() {
          */
         rest: "/maps/",
         createTools: function() {
-                    return [new Ext.Button({
-                        tooltip: GeoExplorer.prototype.backgroundContainerText,
-                        iconCls: 'icon-layer-switcher',
-                        menu: new gxp.menu.LayerMenu({
-                            layers: this.mapPanel.layers
-                        })
-                    })]
         }
     };
     Ext.apply(config, {{ config }});

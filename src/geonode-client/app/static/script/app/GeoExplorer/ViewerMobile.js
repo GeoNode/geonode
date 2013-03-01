@@ -59,6 +59,18 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
                 });
             }
         });
+        
+        this.westPanel = new Ext.Panel({
+            layout: "fit",
+            id: "westpanel",
+            border: false,
+            collapsed: true,
+            header: false,
+            split: true,
+            region: "west",
+            autoScroll:true,
+            width:"90%"
+        });        
 
     },	
 	
@@ -93,8 +105,21 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
                 id: "styler",
                 rasterStyling: true,
                 actionTarget: undefined
+            },{
+                ptype: "gxp_layermanager",
+                groups: (config.map.groups || config.treeconfig),
+                id: "treecontentmgr",
+                outputConfig: {
+                    id: "treecontent",
+                    autoScroll: true
+                },
+                outputTarget: "westpanel"
             });
         }
+        
+
+        
+        
         // load the super's super, because we don't want the default tools from
         // GeoExplorer
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
@@ -122,6 +147,8 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
             this.on("ready", function() {this.toolbar.enable();}, this);
         }
 
+
+        
         this.mapPanelContainer = new Ext.Panel({
             layout: "card",
             region: "center",
@@ -136,21 +163,11 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
             ref: "../main",
             activeItem: 0
         });
-        if (window.google && google.earth) {
-            this.mapPanelContainer.add(
-                new gxp.GoogleEarthPanel({
-                    mapPanel: this.mapPanel,
-                    listeners: {
-                        beforeadd: function(record) {
-                            return record.get("group") !== "background";
-                        }
-                    }
-                })
-            );
-        }
+
 
         this.portalItems = [
-            this.mapPanelContainer
+            this.mapPanelContainer,
+            this.westPanel
         ];
         
         var gridWinPanel = new Ext.Panel({
