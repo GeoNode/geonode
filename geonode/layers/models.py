@@ -524,15 +524,11 @@ class Link(models.Model):
     
     
 class LayerTemplate(models.Model):
-    name = models.CharField(max_length=30)
-    #base_file = models.CharField(max_length=100)
-    
-    """def __init__(self, name):
-        models.Model.__init__(self)
-        
-        self.name = 
-    """ 
-
+    """Model to store information about a template
+    """
+    name = models.CharField(unique=True, max_length=30)
+    base_file = models.CharField(max_length=100)
+    author = models.CharField(max_length=80)
 
 def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer

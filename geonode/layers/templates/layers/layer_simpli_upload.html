@@ -53,7 +53,7 @@
           id: 'layer_title',
           fieldLabel: gettext('Title'),
           name: 'layer_title',
-          allowBlank: false
+          allowBlank: true
         });
     
         var listeners = {
@@ -69,7 +69,7 @@
             id: 'ctype',
             xtype: 'combo',
             fieldLabel: gettext('Template'),
-            emptyText: gettext('Seleziona il template del layer che desideri inserire'),
+            emptyText: gettext('Seleziona un template'),
             autoSelect: true,
             name: 'ctype',
             allowBlank: false,
@@ -146,6 +146,11 @@
         var permissionsField = new Ext.form.Hidden({
             name: "permissions"
         });
+        
+        var removeCheck = new Ext.form.Checkbox({
+            id: 'remove',
+            fieldLabel: gettext('Remove the selected template')
+        });
 
         var fp = new Ext.FormPanel({
             renderTo: 'upload_form',
@@ -159,7 +164,7 @@
                 anchor: '95%',
                 msgTarget: 'side'
             },
-            items: [layer_title, ctype, abstractField, permissionsField, {
+            items: [layer_title, ctype, abstractField, permissionsField, removeCheck, {
                 xtype: "hidden",
                 name: "csrfmiddlewaretoken",
                 value: "{{ csrf_token }}"

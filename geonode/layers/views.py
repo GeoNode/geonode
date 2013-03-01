@@ -51,7 +51,7 @@ from geonode.layers.models import Layer, ContactRole, Attribute, TopicCategory, 
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
-from geonode.layers.utils import save
+from geonode.layers.utils import save, save_template, remove_template
 from geonode.layers.utils import layer_set_permissions
 from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
@@ -134,12 +134,16 @@ def layer_upload(request, template='layers/layer_upload.html'):
 
                 name = slugify(name_base.replace(".","_"))
 
-                saved_layer = save(name, base_file, request.user,
+                if form.cleaned_data["templetize"] == True:
+                    saved_template = save_template(name, base_file, request.user)
+                    return HttpResponse(json.dumps({
+                                                    "success": True,
+                                                    "redirect_to": reverse('layer_simpli_upload')}))
+                saved_layer = save(name, base_file, request.user, 
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
-                        permissions = form.cleaned_data["permissions"],
-                        templetize = form.cleaned_data["templetize"]
+                        permissions = form.cleaned_data["permissions"]
                         )
                 return HttpResponse(json.dumps({
                     "success": True,
@@ -168,19 +172,31 @@ def layer_simpli_upload(request, template='layers/layer_simpli_upload.html'):
         
         form = LayerCreateFromTemplateForm(request.POST)
         if form.is_valid():
+            template_name = request.POST['ctype'] 
+            
+            if form.cleaned_data["remove"] == True:
+                remove_template(template_name)
+                return HttpResponse(json.dumps({
+                                                "success": True,
+                                                "redirect_to": reverse('layer_simpli_upload')}))
             
             base_file = os.getcwd()+"/geonode/shapefile_templates/"+request.POST['ctype']+".shp"          
-            name = request.POST['ctype']           
+                  
             
-            saved_layer = save(name, base_file, request.user,
-                            overwrite = False,
-                            abstract = form.cleaned_data['abstract'],
-                            title = form.cleaned_data['layer_title'],
-                            permissions = form.cleaned_data["permissions"]
-                            )
+            saved_layer = save(template_name, base_file, request.user,
+                               overwrite = False,
+                               abstract = form.cleaned_data['abstract'],
+                               title = form.cleaned_data['layer_title'],
+                               permissions = form.cleaned_data["permissions"]
+                               )
             return HttpResponse(json.dumps({
                         "success": True,
-                        "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))       
+                        "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
+        else:
+            errormsgs = []
+            for e in form.errors.values():
+                errormsgs.extend([escape(v) for v in e])
+            return HttpResponse(json.dumps({ "success": False, "errors": form.errors, "errormsgs": errormsgs}))       
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
@@ -701,7 +717,7 @@ def feature_edit_check(request, layername):
 
 def get_layer_template(request):
     """
-    Return the list of shapefiles stored in geonode/shapefile_templates/
+    Return the list of templates
     """            
     queryset = LayerTemplate.objects.all()
     data = '{"total": %s, "%s": %s}' % \
