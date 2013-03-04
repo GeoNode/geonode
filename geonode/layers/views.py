@@ -135,8 +135,9 @@ def layer_upload(request, template='layers/layer_upload.html'):
                 name = slugify(name_base.replace(".","_"))
 
                 if form.cleaned_data["templetize"] == True:
-                    saved_template = save_template(name, base_file, request.user)
-                    return HttpResponse(json.dumps({
+                    if request.user.is_superuser:
+                        saved_template = save_template(name, base_file, request.user)
+                        return HttpResponse(json.dumps({
                                                     "success": True,
                                                     "redirect_to": reverse('layer_simpli_upload')}))
                 saved_layer = save(name, base_file, request.user, 
@@ -175,8 +176,9 @@ def layer_simpli_upload(request, template='layers/layer_simpli_upload.html'):
             template_name = request.POST['ctype'] 
             
             if form.cleaned_data["remove"] == True:
-                remove_template(template_name)
-                return HttpResponse(json.dumps({
+                if request.user.is_superuser:
+                    remove_template(template_name)
+                    return HttpResponse(json.dumps({
                                                 "success": True,
                                                 "redirect_to": reverse('layer_simpli_upload')}))
             
