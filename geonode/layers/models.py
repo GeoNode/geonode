@@ -317,11 +317,17 @@ def geoserver_pre_delete(instance, sender, **kwargs):
 
 
 def pre_save_layer(instance, sender, **kwargs):
+    if kwargs.get('raw', False):
+        instance.owner = instance.resourcebase_ptr.owner
+        instance.resourcebase_ptr.contactrole_set.create(role=instance.poc_role,
+                                         contact=Layer.objects.admin_contact())
+        instance.resourcebase_ptr.contactrole_set.create(role=instance.metadata_author_role,
+                                         contact=Layer.objects.admin_contact())
+
     if instance.abstract == '' or instance.abstract is None:
         instance.abstract = 'No abstract provided'
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
-
     # Stay away from setting poc or metadata author in the usual way,
     # it requires the layer to be saved to the database.
     # By using contact_role_set we bypass that restriction.

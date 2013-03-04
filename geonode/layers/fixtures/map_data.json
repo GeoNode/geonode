@@ -36,11 +36,44 @@
          }
      },
     {
-        "pk": 1,
-        "model": "base.resourcebase",
-        "fields": {
-            "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298"
-            
+    "pk": 1, 
+    "model": "base.resourcebase", 
+    "fields": {
+        "constraints_other": "", 
+        "csw_mdsource": "local", 
+        "distribution_description": "", 
+        "csw_typename": "gmd:MD_Metadata", 
+        "date_type": "publication", 
+        "srid": "EPSG:4326", 
+        "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\"/>", 
+        "edition": "", 
+        "owner": 1, 
+        "category": null, 
+        "spatial_representation_type": null, 
+        "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298", 
+        "title": "CA", 
+        "csw_schema": "http://www.isotc211.org/2005/gmd", 
+        "abstract": "No abstract provided", 
+        "distribution_url": "", 
+        "csw_insert_date": "2010-01-01T00:00:00", 
+        "purpose": "", 
+        "date": "2010-01-01T00:00:00", 
+        "temporal_extent_end": null, 
+        "data_quality_statement": "", 
+        "language": "eng", 
+        "keywords_region": "USA", 
+        "maintenance_frequency": null, 
+        "csw_anytext": null, 
+        "supplemental_information": "No information provided", 
+        "csw_type": "dataset", 
+        "metadata_uploaded": false, 
+        "csw_wkt_geometry": "SRID=4326;POLYGON((0 0,0 1,1 1,1 0,0 0))", 
+        "temporal_extent_start": null, 
+        "constraints_use": "copyright",
+        "bbox_x0": 0,
+        "bbox_x1": 1,
+        "bbox_y0": 0,
+        "bbox_y1": 1
         }
     },
     {
@@ -48,14 +81,10 @@
             "typename": "base:CA",
             "store": "CA",
             "name": "CA",
-            "workspace": "base",
-            "owner": 1,
-            "bbox_x0": 0,
-            "bbox_x1": 1,
-            "bbox_y0": 0,
-            "bbox_y1": 1
+            "workspace": "base"
         },
         "model": "layers.layer",
+        "resourcebase_ptr_id": 1,
         "pk": 1
     },
     {
