@@ -69,7 +69,7 @@
             id: 'ctype',
             xtype: 'combo',
             fieldLabel: gettext('Template'),
-            emptyText: gettext('Seleziona un template'),
+            emptyText: gettext('Choose a template'),
             autoSelect: true,
             name: 'ctype',
             allowBlank: false,
@@ -149,7 +149,18 @@
         
         var removeCheck = new Ext.form.Checkbox({
             id: 'remove',
-            fieldLabel: gettext('Remove the selected template')
+            fieldLabel: gettext('Remove the selected template'),
+            listeners: {
+                check: function(checkbox, checked){
+                    var formButton = Ext.getCmp('formbutton');
+                    if (checked) {
+                        formButton.setText("Remove");
+                    }
+                    else {
+                        formButton.setText("Upload");
+                    }
+                }
+            }
         });
 
         var fp = new Ext.FormPanel({
@@ -168,8 +179,11 @@
                 xtype: "hidden",
                 name: "csrfmiddlewaretoken",
                 value: "{{ csrf_token }}"
-            }],
-            buttons: [{
+            },
+            {
+            	id:'formbutton',
+                xtype:'button',
+                width: 'auto',
                 text: gettext('Upload'),
                 handler: function(){
                     if (fp.getForm().isValid()) {
@@ -198,7 +212,8 @@
                         });
                     }
                 }
-            }]
+            }
+            ]
         });
 
         var disable_title_and_abstract_inputs = function() {
