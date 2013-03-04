@@ -16,25 +16,12 @@ from django.core.urlresolvers import reverse
 
 from geonode.maps.models import Map, MapLayer
 from geonode.documents.models import Document
+from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 import geonode.documents.views
 import geonode.security
 
 imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
                                 '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
-
-def create_map():
-    m, created = Map.objects.get_or_create(id=1, title='foo', projection='4326', zoom=2, center_x=0, center_y=0,
-                                      owner=User.objects.get(username='bobby'))
-    for ord, lyr in enumerate(settings.MAP_BASELAYERS):
-        MapLayer.objects.from_viewer_config(
-            map=m,
-            layer=lyr,
-            source=lyr["source"],
-            ordering=ord
-        ).save()
-    m.set_default_permissions()
-
-    return m, created
 
 class EventsTest(TestCase):
     fixtures = ['map_data.json', 'intial_data.json']
@@ -144,8 +131,8 @@ class EventsTest(TestCase):
         geonode.documents.views.set_document_permissions(document, self.perm_spec)
 
         # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
-        self.assertEqual(document.get_gen_level(geonode.security.models.ANONYMOUS_USERS), document.LEVEL_NONE) 
-        self.assertEqual(document.get_gen_level(geonode.security.models.AUTHENTICATED_USERS), document.LEVEL_NONE)
+        self.assertEqual(document.get_gen_level(ANONYMOUS_USERS), document.LEVEL_NONE) 
+        self.assertEqual(document.get_gen_level(AUTHENTICATED_USERS), document.LEVEL_NONE)
 
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the document owner) were removed
