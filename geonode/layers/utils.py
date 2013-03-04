@@ -591,12 +591,15 @@ def save_template(template, base_file, user):
     logger.info('>>> Step 2. Coping spatial files into template default dir ')
     files = get_files(base_file)
     #destination folder name
-    template_dir = os.getcwd()+"/geonode/shapefile_templates/"+str(saved_template.id)
+    templates_dir = os.getcwd()+"/geonode/shapefile_templates/"
+    template_dir = templates_dir+str(saved_template.name)
+    
     base_name = os.path.basename(base_file)
     saved_template.base_file = base_name
     saved_template.save()
     try:
-        
+        if not os.path.exists(templates_dir):
+            os.mkdir(templates_dir)
         os.mkdir(template_dir)                 
         for file in files:         
             shutil.copy(files[file], template_dir)
@@ -615,7 +618,7 @@ def remove_template(template_name):
     """ Remove Geonode record and spatial files of the template
     """
     saved_template = LayerTemplate.objects.get(name=template_name)
-    template_dir = os.getcwd()+"/geonode/shapefile_templates/"+str(saved_template.id)
+    template_dir = os.getcwd()+"/geonode/shapefile_templates/"+str(saved_template.name)
     
     try:
         #remove dir
