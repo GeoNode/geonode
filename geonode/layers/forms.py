@@ -125,10 +125,19 @@ class NewLayerUploadForm(LayerUploadForm):
 
     abstract = forms.CharField(required=False)
     layer_title = forms.CharField(required=False)
+    
+    templetize = forms.BooleanField(required=False)
+    
     permissions = JSONField()
 
     spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file", "xml_file")
 
+class LayerCreateFromTemplateForm(forms.Form):
+    
+    abstract = forms.CharField(required=False)
+    layer_title = forms.CharField(required=False)
+    permissions = JSONField()
+    remove = forms.BooleanField(required=False)
 
 class LayerDescriptionForm(forms.Form):
     title = forms.CharField(300)

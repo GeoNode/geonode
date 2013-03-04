@@ -149,6 +149,26 @@
 	        name: 'abstract',
 	        allowBlank: true
 	    });
+	    
+	    var templetizeCheck = new Ext.form.Checkbox({
+	    	id: 'templetize',
+	    	fieldLabel: gettext('Create new template'),
+	    	listeners: {
+	    		check: function(checkbox, checked){
+	    			var formButton = Ext.getCmp('formbutton');
+	    		    if (checked) {
+	    		    	formButton.setText("Create");
+	    		    }
+	    		    else {
+	    		    	formButton.setText("Upload");
+	    		    }
+	    		}
+	    	}
+	    });
+	    
+	    if ('{{ request.user.is_superuser }}' == 'False') {
+	    	templetizeCheck.hide();
+        }
 
 	    var permissionsField = new Ext.form.Hidden({
 	        name: "permissions"
@@ -166,41 +186,44 @@
 	            anchor: '95%',
 	            msgTarget: 'side'
 	        },
-	        items: [layer_title, base_file, dbf_file, shx_file, prj_file, sld_file, xml_file, abstractField, permissionsField, {
+	        items: [layer_title, base_file, dbf_file, shx_file, prj_file, sld_file, xml_file, abstractField, permissionsField, templetizeCheck, {
 	            xtype: "hidden",
 	            name: "csrfmiddlewaretoken",
 	            value: "{{ csrf_token }}"
-	        }],
-	        buttons: [{
-	            text: gettext('Upload'),
-	            handler: function(){
-	                if (fp.getForm().isValid()) {
-	                    fp.getForm().submit({
-	                        url: form_target,
-	                        waitMsg: gettext('Uploading your data...'),
-	                        success: function(fp, o) {
-	                            document.location = o.result.redirect_to;
-	                        },
-	                        failure: function(fp, o) {
-	                            error_message = '<ul>';
-	                            for (var i = 0; i < o.result.errormsgs.length; i++) {
-	                                error_message += '<li>' + o.result.errormsgs[i] + '</li>'
-	                            }
-	                            error_message += '</ul>'
+	        },{
+	            id:'formbutton',
+	            xtype:'button',
+                text: gettext('Upload'),
+                width: 'auto',
+                handler: function(){
+                    if (fp.getForm().isValid()) {
+                        fp.getForm().submit({
+                            url: form_target,
+                            waitMsg: gettext('Uploading your data...'),
+                            success: function(fp, o) {
+                                document.location = o.result.redirect_to;
+                            },
+                            failure: function(fp, o) {
+                                error_message = '<ul>';
+                                for (var i = 0; i < o.result.errormsgs.length; i++) {
+                                    error_message += '<li>' + o.result.errormsgs[i] + '</li>'
+                                }
+                                error_message += '</ul>'
 
-	                            Ext.Msg.show({
-	                                title: gettext("Error"),
-	                                msg: error_message,
-	                                minWidth: 200,
-	                                modal: true,
-	                                icon: Ext.Msg.ERROR,
-	                                buttons: Ext.Msg.OK
-	                            });
-	                        }
-	                    });
-	                }
-	            }
-	        }]
+                                Ext.Msg.show({
+                                    title: gettext("Error"),
+                                    msg: error_message,
+                                    minWidth: 200,
+                                    modal: true,
+                                    icon: Ext.Msg.ERROR,
+                                    buttons: Ext.Msg.OK
+                                });
+                            }
+                        });
+                    }
+                }
+            } 
+	        ]
 	    });
 
 	    var disable_shapefile_inputs = function() {
