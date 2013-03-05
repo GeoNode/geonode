@@ -309,6 +309,10 @@ class Map(ResourceBase, GXPMapBase):
 
         self.set_default_permissions()
 
+    @property
+    def class_name(self):
+        return self.__class__.__name__
+
 class MapLayer(models.Model, GXPLayerBase):
     """
     The MapLayer model represents a layer included in a map.  This doesn't just

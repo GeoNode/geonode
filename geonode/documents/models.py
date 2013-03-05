@@ -62,7 +62,11 @@ class Document(ResourceBase):
         
         # assign owner admin privs
         if self.owner:
-            self.set_user_level(self.owner, self.LEVEL_ADMIN) 
+            self.set_user_level(self.owner, self.LEVEL_ADMIN)
+
+    @property
+    def class_name(self):
+        return self.__class__.__name__
 
 def pre_save_document(instance, sender, **kwargs):
     base_name, extension = os.path.splitext(instance.doc_file.name)

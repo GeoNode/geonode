@@ -61,9 +61,6 @@ from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
 
-def get_default_category():
-    return TopicCategory.objects.get(slug='location')
-
 class Style(models.Model):
     """Model for storing styles.
     """
@@ -224,6 +221,9 @@ class Layer(ResourceBase):
         from geonode.maps.models import MapLayer
         return  MapLayer.objects.filter(name=self.typename)
 
+    @property
+    def class_name(self):
+        return self.__class__.__name__
 
 class AttributeManager(models.Manager):
     """Helper class to access filtered attributes
@@ -319,6 +319,11 @@ def geoserver_pre_delete(instance, sender, **kwargs):
 def pre_save_layer(instance, sender, **kwargs):
     if kwargs.get('raw', False):
         instance.owner = instance.resourcebase_ptr.owner
+        instance.uuid = instance.resourcebase_ptr.uuid
+        instance.bbox_x0 = instance.resourcebase_ptr.bbox_x0
+        instance.bbox_x1 = instance.resourcebase_ptr.bbox_x1
+        instance.bbox_y0 = instance.resourcebase_ptr.bbox_y0
+        instance.bbox_y1 = instance.resourcebase_ptr.bbox_y1
         instance.resourcebase_ptr.contactrole_set.create(role=instance.poc_role,
                                          contact=Layer.objects.admin_contact())
         instance.resourcebase_ptr.contactrole_set.create(role=instance.metadata_author_role,

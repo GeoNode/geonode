@@ -15,6 +15,9 @@ from geonode.security.models import PermissionLevelMixin
 
 from taggit.managers import TaggableManager
 
+def get_default_category():
+    return TopicCategory.objects.get(slug='location')
+
 class ContactRole(models.Model):
     """
     ContactRole is an intermediate abstract model to bind Profiles as Contacts to Layers and apply roles.
@@ -136,7 +139,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
 
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng', help_text=_('language used within the dataset'))
-    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True, blank=True)
+    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True, blank=True, default=get_default_category)
 
     # Section 5
     temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True, help_text=_('time period covered by the content of the dataset (start)'))

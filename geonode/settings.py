@@ -178,7 +178,7 @@ INSTALLED_APPS = (
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
-    #'geonode.catalogue',
+    'geonode.catalogue',
     'geonode.documents',
 )
 
