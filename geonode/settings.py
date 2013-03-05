@@ -514,6 +514,9 @@ LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
 }
 
+# Default TopicCategory to be used for resources. Use the slig field here
+DEFAULT_TOPICCATEGORY = 'location' 
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *

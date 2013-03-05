@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.conf import settings
 
 from geonode.base.enumerations import COUNTRIES, ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
@@ -16,7 +17,13 @@ from geonode.security.models import PermissionLevelMixin
 from taggit.managers import TaggableManager
 
 def get_default_category():
-    return TopicCategory.objects.get(slug='location')
+    if settings.DEFAULT_TOPICCATEGORY:
+        try:
+            return TopicCategory.objects.get(slug=settings.DEFAULT_TOPICCATEGORY)
+        except TopicCategory.DoesNotExist:
+            raise TopicCategory.DoesNotExist('The default TopicCategory indicated in settings is not found.')
+    else:
+        return TopicCategory.objects.get(slug='location')
 
 class ContactRole(models.Model):
     """
