@@ -41,7 +41,7 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
-from geonode.base.models import TopicCategory, ResourceBase, ResourceBaseManager
+from geonode.base.models import TopicCategory, ResourceBase, ResourceBaseManager, Link
 from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
 from geonode.geoserver.helpers import cascading_delete
 from geonode.people.models import Profile, Role
@@ -53,7 +53,7 @@ from geonode.base.enumerations import COUNTRIES, ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
     SPATIAL_REPRESENTATION_TYPES,  TOPIC_CATEGORIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION
-from geonode.layers.enumerations import LINK_TYPES, LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 
 from geoserver.catalog import Catalog, FailedRequestError
 from taggit.managers import TaggableManager
@@ -267,47 +267,6 @@ class Attribute(models.Model):
     def unique_values_as_list(self):
         return self.unique_values.split(',')
 
-class LinkManager(models.Manager):
-    """Helper class to access links grouped by type
-    """
-
-    def data(self):
-        return self.get_query_set().filter(link_type='data')
-
-    def image(self):
-        return self.get_query_set().filter(link_type='image')
-
-    def download(self):
-        return self.get_query_set().filter(link_type__in=['image', 'data'])
-
-    def metadata(self):
-        return self.get_query_set().filter(link_type='metadata')
-
-    def original(self):
-        return self.get_query_set().filter(link_type='original')
-
-class Link(models.Model):
-    """Auxiliary model for storying links for layers.
-
-       This helps avoiding the need for runtime lookups
-       to the OWS server or the CSW Catalogue.
-
-       There are four types of links:
-        * original: For uploaded files (Shapefiles or GeoTIFFs)
-        * data: For WFS and WCS links that allow access to raw data
-        * image: For WMS and TMS links
-        * metadata: For CSW links
-    """
-    layer = models.ForeignKey(Layer)
-    extension = models.CharField(max_length=255, help_text=_('For example "kml"'))
-    link_type = models.CharField(max_length=255, choices = [(x, x) for x in LINK_TYPES])
-    name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
-    mime = models.CharField(max_length=255, help_text=_('For example "text/xml"'))
-    url = models.TextField(unique=True, max_length=1000)
-
-    objects = LinkManager()
-
-
 def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer
     """
@@ -477,28 +436,29 @@ def geoserver_post_save(instance, sender, **kwargs):
                     instance.srid, height, width)
 
     for ext, name, mime, wms_url in links:
-        instance.link_set.get_or_create(url=wms_url,
-                          defaults=dict(
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=wms_url,
+                        defaults=dict(
                             extension=ext,
                             name=name,
                             mime=mime,
                             link_type='image',
                            )
-        )
-
+                        )
 
     if instance.storeType == "dataStore":
         links = wfs_links(settings.GEOSERVER_BASE_URL + 'wfs?', instance.typename)
         for ext, name, mime, wfs_url in links:
-            instance.link_set.get_or_create(url=wfs_url,
-                           defaults=dict(
-                            extension=ext,
-                            name=name,
-                            mime=mime,
+            Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                             url=wfs_url,
-                            link_type='data',
+                            defaults=dict(
+                                extension=ext,
+                                name=name,
+                                mime=mime,
+                                url=wfs_url,
+                                link_type='data',
                             )
-            )
+                        )
 
 
     elif instance.storeType == 'coverageStore':
@@ -507,42 +467,45 @@ def geoserver_post_save(instance, sender, **kwargs):
 
         links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename)
         for ext, name, mime, wcs_url in links:
-            instance.link_set.get_or_create(url=wcs_url,
-                              defaults=dict(
-                                extension=ext,
-                                name=name,
-                                mime=mime,
-                                link_type='data',
+            Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                                url=wcs_url,
+                                defaults=dict(
+                                    extension=ext,
+                                    name=name,
+                                    mime=mime,
+                                    link_type='data',
                                 )
-                               )
+                            )
 
     kml_reflector_link_download = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
         'layers': instance.typename,
         'mode': "download"
     })
 
-    instance.link_set.get_or_create(url=kml_reflector_link_download,
-                       defaults=dict(
-                        extension='kml',
-                        name=_("KML"),
-                        mime='text/xml',
-                        link_type='data',
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=kml_reflector_link_download,
+                        defaults=dict(
+                            extension='kml',
+                            name=_("KML"),
+                            mime='text/xml',
+                            link_type='data',
                         )
-                       )
+                    )
 
     kml_reflector_link_view = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
         'layers': instance.typename,
         'mode': "refresh"
     })
 
-    instance.link_set.get_or_create(url=kml_reflector_link_view,
-                       defaults=dict(
-                        extension='kml',
-                        name=_("View in Google Earth"),
-                        mime='text/xml',
-                        link_type='data',
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=kml_reflector_link_view,
+                        defaults=dict(
+                            extension='kml',
+                            name=_("View in Google Earth"),
+                            mime='text/xml',
+                            link_type='data',
                         )
-                       )
+                    )
 
     tile_url = ('%sgwc/service/gmaps?' % settings.GEOSERVER_BASE_URL +
                 'layers=%s' % instance.typename +
@@ -550,14 +513,15 @@ def geoserver_post_save(instance, sender, **kwargs):
                 '&format=image/png8'
                 )
 
-    instance.link_set.get_or_create(url=tile_url,
-                       defaults=dict(
-                        extension='tiles',
-                        name=_("Tiles"),
-                        mime='text/png',
-                        link_type='image',
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr, 
+                        url=tile_url,
+                        defaults=dict(
+                            extension='tiles',
+                            name=_("Tiles"),
+                            mime='text/png',
+                            link_type='image',
+                            )
                         )
-                       )
 
     #remove links that belong to and old address
 

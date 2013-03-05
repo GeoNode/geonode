@@ -20,6 +20,8 @@
 
 from django.utils.translation import ugettext_lazy as _
 
+LINK_TYPES = ['original', 'data', 'image', 'metadata']
+
 HIERARCHY_LEVELS = (
     ('series', _('series')),
     ('software', _('computer program or routine')),

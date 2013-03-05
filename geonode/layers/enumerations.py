@@ -20,8 +20,6 @@
 
 from django.utils.translation import ugettext_lazy as _
 
-LINK_TYPES = ['original', 'data', 'image', 'metadata']
-
 LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES = [
     'xsd:byte',
     'xsd:decimal',
