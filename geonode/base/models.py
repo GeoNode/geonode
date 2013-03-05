@@ -3,7 +3,7 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 from geonode.base.enumerations import COUNTRIES, ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
@@ -54,6 +54,31 @@ class TopicCategory(models.Model):
 
     def __unicode__(self):
         return u"{0}".format(self.name)
+
+    @property
+    def counts(self):
+        counts = {
+            'layers': 0,
+            'maps': 0,
+            'documents': 0
+        }
+        for resource in self.resourcebase_set.all():
+            try:
+                resource.layer
+                counts['layers'] += 1
+            except ObjectDoesNotExist:
+                pass
+            try:
+                resource.map
+                counts['maps'] += 1
+            except ObjectDoesNotExist:
+                pass
+            try: 
+                resource.document
+                counts['documents'] += 1
+            except ObjectDoesNotExist:
+                pass
+        return counts
 
     class Meta:
         ordering = ("name",)
