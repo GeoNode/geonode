@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from geonode.base.enumerations import COUNTRIES, ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
     SPATIAL_REPRESENTATION_TYPES, \
-    DEFAULT_SUPPLEMENTAL_INFORMATION
+    DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
 from geonode.utils import bbox_to_wkt
 from geonode.people.models import Profile, Role
 from geonode.security.models import PermissionLevelMixin
@@ -266,3 +266,43 @@ class ResourceBase(models.Model, PermissionLevelMixin):
         return the_ma
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
+
+class LinkManager(models.Manager):
+    """Helper class to access links grouped by type
+    """
+
+    def data(self):
+        return self.get_query_set().filter(link_type='data')
+
+    def image(self):
+        return self.get_query_set().filter(link_type='image')
+
+    def download(self):
+        return self.get_query_set().filter(link_type__in=['image', 'data'])
+
+    def metadata(self):
+        return self.get_query_set().filter(link_type='metadata')
+
+    def original(self):
+        return self.get_query_set().filter(link_type='original')
+
+class Link(models.Model):
+    """Auxiliary model for storying links for resources.
+
+       This helps avoiding the need for runtime lookups
+       to the OWS server or the CSW Catalogue.
+
+       There are four types of links:
+        * original: For uploaded files (Shapefiles or GeoTIFFs)
+        * data: For WFS and WCS links that allow access to raw data
+        * image: For WMS and TMS links
+        * metadata: For CSW links
+    """
+    resource = models.ForeignKey(ResourceBase)
+    extension = models.CharField(max_length=255, help_text=_('For example "kml"'))
+    link_type = models.CharField(max_length=255, choices = [(x, x) for x in LINK_TYPES])
+    name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
+    mime = models.CharField(max_length=255, help_text=_('For example "text/xml"'))
+    url = models.TextField(unique=True, max_length=1000)
+
+    objects = LinkManager()

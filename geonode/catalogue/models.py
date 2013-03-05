@@ -24,6 +24,7 @@ from django.conf import settings
 from django.db.models import signals
 from geonode.layers.models import Layer
 from geonode.catalogue import get_catalogue
+from geonode.base.models import Link
 
 
 LOGGER = logging.getLogger(__name__)
@@ -61,14 +62,15 @@ def catalogue_post_save(instance, sender, **kwargs):
 
     # Create the different metadata links with the available formats
     for mime, name, metadata_url in record.links['metadata']:
-        instance.link_set.get_or_create(url=metadata_url,
-                         defaults=dict(
-                           name=name,
-                           extension='xml',
-                           mime=mime,
-                           link_type='metadata',
-                          )
-                         )
+        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                url=metadata_url,
+                defaults=dict(
+                   name=name,
+                   extension='xml',
+                   mime=mime,
+                   link_type='metadata',
+                )
+            )
 
     # generate and save CSW specific fields
     signals.post_save.disconnect(catalogue_post_save, sender=Layer)
