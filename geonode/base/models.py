@@ -23,7 +23,7 @@ def get_default_category():
         except TopicCategory.DoesNotExist:
             raise TopicCategory.DoesNotExist('The default TopicCategory indicated in settings is not found.')
     else:
-        return TopicCategory.objects.get(slug='location')
+        return TopicCategory.objects.all()[0]
 
 class ContactRole(models.Model):
     """
