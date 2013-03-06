@@ -381,10 +381,16 @@ class MapLayer(models.Model, GXPLayerBase):
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
         if self.local:
-            layer = Layer.objects.get(typename=self.name)
-            attribute_cfg = layer.attribute_config()
-            if "getFeatureInfo" in attribute_cfg:
+            if Layer.objects.filter(typename=self.name).exists():
+                layer = Layer.objects.get(typename=self.name)
+                attribute_cfg = layer.attribute_config()
+                if "getFeatureInfo" in attribute_cfg:
                     cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
+            else:
+                # shows maplayer with pink tiles, 
+                # and signals that there is problem
+                # TODO: clear orphaned MapLayers
+                layer = None
         return cfg
 
     @property

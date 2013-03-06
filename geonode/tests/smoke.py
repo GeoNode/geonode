@@ -177,6 +177,13 @@ class GeoNodeUtilsTests(TestCase):
         ne = forward_mercator((180, 90))
         sw = forward_mercator((-180, -90))
 
+        inf_test = forward_mercator(
+            (-8.988465674311579e+307, -8.988465674311579e+307)
+        )
+
+        self.assertEqual(inf_test[0], float('-inf'))
+        self.assertEqual(inf_test[1], float('-inf'))
+
         self.assertEqual(round(arctic[0]), 0, "Arctic longitude is correct")
         self.assertEqual(round(arctic[1]), 19971869, "Arctic latitude is correct")
 
