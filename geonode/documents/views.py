@@ -65,7 +65,7 @@ def document_detail(request, docid):
     except:
         related = ''
 
-    return render_to_response("documents/docinfo.html", RequestContext(request, {
+    return render_to_response("documents/document_detail.html", RequestContext(request, {
         'permissions_json': json.dumps(_perms_info(document, DOCUMENT_LEV_NAMES)),
         'document': document,
         'imgtypes': IMGTYPES,
@@ -163,113 +163,6 @@ def document_metadata(request, docid, template='documents/document_metadata.html
         "poc_form": poc_form,
         "author_form": author_form,
     }))
-        
-#### DOCUMENTS SEARCHING ####
-
-DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
-MAX_MAPS_SEARCH_BATCH_SIZE = 25
-
-def documents_search(request):
-    """
-    Returns a json structure
-    """
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    # grab params directly to implement defaults as
-    # opposed to panicy django forms behavior.
-    query = params.get('q', '')
-    try:
-        start = int(params.get('start', '0'))
-    except:
-        start = 0
-    try:
-        limit = min(int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE)),
-                    MAX_MAPS_SEARCH_BATCH_SIZE)
-    except: 
-        limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
-
-    try:
-        related_id = int(params.get('related_id', None))
-    except: 
-        related_id = None
-
-    related_type = params.get('related_type', None)
-
-    sort_field = params.get('sort', u'')
-    sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')  
-    sort_dir = params.get('dir', 'ASC')
-    result = _documents_search(query, start, limit, sort_field, sort_dir, related_id, related_type)
-
-    result['success'] = True
-    return HttpResponse(json.dumps(result), mimetype="application/json")
-
-def _documents_search(query, start, limit, sort_field, sort_dir, related_id, related_type):
-
-    keywords = _split_query(query)
-
-    documents = Document.objects
-
-    if related_id is not None:
-        ctype = ContentType.objects.get(name=related_type)
-        documents = documents.filter(content_type=ctype, object_id=related_id)
-
-    for keyword in keywords:
-        documents = documents.filter(
-              Q(title__icontains=keyword)
-            | Q(type__icontains=keyword))
-
-    if sort_field:
-        order_by = ("" if sort_dir == "ASC" else "-") + sort_field
-        documents = documents.order_by(order_by)
-
-    documents_list = []
-
-    for document in documents.all()[start:start+limit]:
-        try:
-            owner_name = Profile.objects.get(user=document.owner).name
-        except:
-            owner_name = document.owner.first_name + " " + document.owner.last_name
-
-        try:
-            related = document.content_type.get_object_for_this_type(id=document.object_id)
-        except:
-            related = ''
-
-        mapdict = {
-            'id' : document.id,
-            'title' : document.title,
-            'detail' : reverse('document_detail', args=(document.id,)),
-            'owner' : owner_name,
-            'owner_detail' : document.owner.get_profile().get_absolute_url(),
-            'related': related.title if related != '' else '',
-            'related_url': related.get_absolute_url() if related != '' else '',
-            'type': document.extension,
-            }
-        documents_list.append(mapdict)
-
-    result = {'rows': documents_list,'total': documents.count()}
-
-    result['query_info'] = {
-        'start': start,
-        'limit': limit,
-        'q': query
-    }
-    if start > 0: 
-        prev = max(start - limit, 0)
-        params = urlencode({'q': query, 'start': prev, 'limit': limit})
-        result['prev'] = reverse('documents.views.documents_search') + '?' + params
-
-    next = start + limit + 1
-    if next < documents.count():
-         params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
-         result['next'] = reverse('documents.views.documents_search') + '?' + params
-    
-    return result
 
 def document_search_page(request):
     # for non-ajax requests, render a generic search page
@@ -285,30 +178,6 @@ def document_search_page(request):
         'init_search': json.dumps(params or {}),
          "site" : settings.SITEURL
     }))
-
-def _split_query(query):
-    """
-    split and strip keywords, preserve space 
-    separated quoted blocks.
-    """
-
-    qq = query.split(' ')
-    keywords = []
-    accum = None
-    for kw in qq: 
-        if accum is None: 
-            if kw.startswith('"'):
-                accum = kw[1:]
-            elif kw: 
-                keywords.append(kw)
-        else:
-            accum += ' ' + kw
-            if kw.endswith('"'):
-                keywords.append(accum[0:-1])
-                accum = None
-    if accum is not None:
-        keywords.append(accum)
-    return [kw.strip() for kw in keywords if kw.strip()]
 
 def ajax_document_permissions(request, docid):
     document = get_object_or_404(Document, pk=docid)
@@ -371,3 +240,11 @@ def resources_search(request):
 
     result = {'rows': resources_list,'total': qset.count()}
     return HttpResponse(json.dumps(result))
+
+def document_replace(docid):
+    #TODO
+    pass
+
+def document_remove(docid):
+    #TODO
+    pass
