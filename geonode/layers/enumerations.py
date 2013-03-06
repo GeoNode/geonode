@@ -18,8 +18,6 @@
 #
 #########################################################################
 
-from django.utils.translation import ugettext_lazy as _
-
 LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES = [
     'xsd:byte',
     'xsd:decimal',

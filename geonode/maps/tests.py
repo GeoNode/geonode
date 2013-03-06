@@ -20,7 +20,6 @@
 
 from lxml import etree
 
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
@@ -30,7 +29,6 @@ from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
 
 import geonode.maps.models
-import geonode.maps.views
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.utils import default_map_config
@@ -524,65 +522,6 @@ community."
         response = c.put(url)
         self.assertEquals(response.status_code,405)
 
-
-    def test_maps_search_page(self):
-        """Test maps search page can be properly rendered
-        """
-        c = Client()
-
-        url = reverse('maps_search') + '?'
-
-        # Test GET method
-        response = c.get(url,{'keyword':'keyword'})
-        self.assertEquals(response.status_code,200)
-        response_dict = json.loads(response.context['init_search'])
-        self.assertEquals(response_dict['keyword'],'keyword')
-        self.assertEquals(response.context['site'],settings.SITEURL)
-
-        # Test POST method
-        response = c.post(url)
-        self.assertEquals(response.status_code,200)
-
-        # Test methods other than GET or POST
-        response = c.put(url)
-        self.assertEquals(response.status_code,405)
-
-
-    def test_maps_search(self):
-        """Test maps search can function properly
-        """
-        # first create two maps
-        c = Client()
-
-        # Test successful new map creation
-        c.login(username=self.user, password=self.passwd)
-
-        new_map = reverse('new_map_json')
-        response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,200)
-        map_id = int(json.loads(response.content)['id'])
-        response = c.post(new_map, data=self.viewer_config_alternative,content_type="text/json")
-        self.assertEquals(response.status_code,200)
-        map_id_2 = int(json.loads(response.content)['id'])
-        c.logout()
-
-        url = reverse('maps_search_api') + '?'
-
-        # Test GET method
-        response = c.get(url, {'q': '', 'start': 1}, content_type="text/json")
-        self.assertEquals(response.status_code,200)
-        response_dict = json.loads(response.content)
-        self.assertEquals(response_dict['success'], True)
-
-        # Test POST method
-        response = c.post(url, {'q': '', 'start': 1}, content_type="text/json")
-        self.assertEquals(response.status_code,200)
-        response_dict = json.loads(response.content)
-        self.assertEquals(response_dict['success'], True)
-
-        # Test methods other than GET or POST
-        response = c.put(url)
-        self.assertEquals(response.status_code,405)
 
     def test_rating_map_remove(self):
         """Test map rating is removed on map remove

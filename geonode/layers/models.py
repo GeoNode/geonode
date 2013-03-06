@@ -22,41 +22,29 @@ from urlparse import urlparse
 import httplib2
 import urllib
 import logging
-import sys
-import uuid
-import errno
 
 from datetime import datetime
 from lxml import etree
-from urlparse import urlparse
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import signals
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
-from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
-from geonode.base.models import TopicCategory, ResourceBase, ResourceBaseManager, Link
-from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
+from geonode.base.models import ResourceBase, ResourceBaseManager, Link
+from geonode.utils import  _user, _password, get_wms
 from geonode.geoserver.helpers import cascading_delete
-from geonode.people.models import Profile, Role
-from geonode.security.models import PermissionLevelMixin
+from geonode.people.models import Profile
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.ows import wcs_links, wfs_links, wms_links, \
     wps_execute_layer_attribute_statistics
-from geonode.base.enumerations import COUNTRIES, ALL_LANGUAGES, \
-    HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
-    SPATIAL_REPRESENTATION_TYPES,  TOPIC_CATEGORIES, \
-    DEFAULT_SUPPLEMENTAL_INFORMATION
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 
 from geoserver.catalog import Catalog, FailedRequestError
-from taggit.managers import TaggableManager
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
@@ -588,7 +576,7 @@ def get_attribute_statistics(layer_name, field):
 
     try:
         return wps_execute_layer_attribute_statistics(layer_name, field)
-    except Exception, err:
+    except Exception:
         logger.exception('Error generating layer aggregate statistics')
 
 

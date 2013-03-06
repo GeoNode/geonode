@@ -17,9 +17,6 @@
 #
 #########################################################################
 
-import datetime
-import os
-import subprocess
 import httplib2
 import base64
 import re
@@ -34,7 +31,6 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from owslib.wms import WebMapService
-from owslib.csw import CatalogueServiceWeb
 from django.http import HttpResponse
 
 # from geonode import GeoNodeException

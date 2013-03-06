@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 
-from geonode.maps.models import Map, MapLayer
+from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 import geonode.documents.views
@@ -74,7 +74,7 @@ class EventsTest(TestCase):
             log = c.login(username='bobby', password='bob')
             self.assertTrue(log)
             response = c.get(reverse('document_upload'))
-            #self.assertTrue('Add document' in response.content)
+            self.assertTrue('Upload Documents' in response.content)
         else:
             pass
 
