@@ -93,7 +93,7 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
                         }
                     }
                 }
-            },
+            }
         });        
 
     },	
