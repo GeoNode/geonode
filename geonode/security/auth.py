@@ -73,7 +73,7 @@ class GranularBackend(ModelBackend):
         else:
             # in case the user is the owner, he/she has always permissions, 
             # otherwise we need to check
-            if user_obj == obj.owner:
+            if hasattr(obj, 'owner') and user_obj == obj.owner:
                 return True
             else:
                 return perm in self.get_all_permissions(user_obj, obj=obj)
