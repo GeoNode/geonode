@@ -96,3 +96,23 @@ div.olControlZoom a:hover {
     -ms-perspective: 1000;
     perspective: 1000;
 }
+
+.css-vertical-text {
+	color:#333;
+	border:0px solid red;
+	writing-mode:tb-rl;
+	-webkit-transform:rotate(270deg);
+	-moz-transform:rotate(270deg);
+	-o-transform: rotate(270deg);
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	white-space:nowrap;
+	display:block;
+	bottom:0px;
+	margin-top: 200px,
+	width:14px;
+	height:14px;
+	font-family: ‘Trebuchet MS’, Helvetica, sans-serif;
+	font-size:14px;
+	font-weight:normal;
+	text-shadow: 0px 0px 1px #333;
+}

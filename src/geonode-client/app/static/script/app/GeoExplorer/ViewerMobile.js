@@ -65,11 +65,35 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
             id: "westpanel",
             border: false,
             collapsed: true,
-            header: false,
             split: true,
             region: "west",
             autoScroll:true,
-            width:"90%"
+            width:"90%",
+            title: "Layers",
+            plugins: {
+                init: function (p) {
+                    if (p.collapsed) {
+                        var r = p.region;
+                        if ((r == 'east') || (r == 'west')) {
+                            p.on('render', function () {
+                                var ct = p.ownerCt;
+                                ct.on('afterlayout', function () {
+                                    p.collapsedTitleEl = ct.layout[r].collapsedEl.createChild({
+                                        tag: 'span',
+                                        cls: 'css-vertical-text',
+                                        html: p.title
+                                    });
+                                    p.setTitle = Ext.Panel.prototype.setTitle.createSequence(function (t) {
+                                        p.collapsedTitleEl.dom.innerHTML = t;
+                                    });
+                                }, false, {
+                                    single: true
+                                });
+                            });
+                        }
+                    }
+                }
+            },
         });        
 
     },	

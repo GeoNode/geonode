@@ -17,9 +17,121 @@
 </script>
 
 <script type="text/javascript">
+
+
+var touchNav = new OpenLayers.Control.TouchNavigation({  
+	id: "touchNavControl",
+    dragPanOptions: {
+        enableKinetic: false
+    }
+});
+
+gxp.plugins.TouchFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor, {
+	addActions: function() {
+		actions = gxp.plugins.FeatureEditor.prototype.addActions.apply(this, arguments);
+		
+		this.drawControl.events.register("activate", this.drawControl, function(evt){
+			touchNav.deactivate();
+		});
+		
+		this.drawControl.events.register("deactivate", this.drawControl,  function(evt){
+			touchNav.activate();
+		});
+		
+		this.selectControl.events.register("activate", this.selectControl, function() {
+			touchNav.deactivate();
+		});
+		this.selectControl.events.register("deactivate", this.selectControl, function() {
+			touchNav.activate();
+		});				
+		
+		return actions;		
+	}
+});
+
+var featureEditStartEditing = gxp.FeatureEditPopup.prototype.startEditing;
+
+gxp.FeatureEditPopup.prototype.startEditing = function() {
+    touchNav.deactivate();
+
+    if(!this.editing) {
+        this.fireEvent("startedit", this);
+        this.editing = true;
+        this.anc && this.unanchorPopup();
+
+        this.editButton.hide();
+        this.deleteButton.hide();
+        this.saveButton.show();
+        this.cancelButton.show();
+        
+        this.geometry = this.feature.geometry && this.feature.geometry.clone();
+        this.attributes = Ext.apply({}, this.feature.attributes);
+
+        this.modifyControl = new OpenLayers.Control.ModifyFeature(
+            this.feature.layer,
+            {standalone: true, vertexRenderIntent: this.vertexRenderIntent,
+              mode: OpenLayers.Control.ModifyFeature.RESHAPE}
+        );
+        this.feature.layer.map.addControl(this.modifyControl);
+        this.modifyControl.activate();
+        if (this.feature.geometry) {
+            this.modifyControl.selectFeature(this.feature);
+        }
+    }
+
+       //featureEditStartEditing.apply(this, arguments);
+       //touchNav.deactivate();
+}
+
+var featureEditStopEditing = gxp.FeatureEditPopup.prototype.stopEditing;
+gxp.FeatureEditPopup.prototype.stopEditing = function() {
+	featureEditStopEditing.apply(this, arguments);
+	touchNav.activate();
+}
+
+
+OpenLayers.Handler.Feature.prototype.touchmove = function(evt) {
+        if (!this.callbacks['over'] && !this.callbacks['out']) {
+            return true;
+        }
+        this.handle(evt);
+        return true;
+}
+
 var app;
 Ext.onReady(function() {
 {% autoescape off %}
+
+
+
+
+var featureManager = new gxp.plugins.FeatureManager ({
+        ptype: "gxp_featuremanager",
+        id: "feature_manager",
+        paging: false,
+        autoSetLayer: true,
+        autoLoadFeatures: true,
+        listeners: {
+            'layerchange': function(mgr, layer, schema) {
+                app.checkLayerPermissions(layer);
+            }
+        },
+        actionTarget:  "main.tbar",
+        toggleGroup: 'featureGroup'
+    });
+    
+    
+var featureEditor = new gxp.plugins.TouchFeatureEditor({
+        id: "gn_layer_editor",
+        featureManager: "feature_manager",
+        autoLoadFeature: true,
+        actionTarget: "main.tbar",
+        toggleGroup: 'featureGroup'
+    });
+
+
+
+
    var config = {
         useCapabilities: false,
         tools: [{
@@ -37,29 +149,9 @@ Ext.onReady(function() {
                     iconCls: "icon-geolocate",
                     //toolText: '<span class="x-btn-text">Position</span>',
                     actionTarget: "main.tbar"
-        },
-        {
-            ptype: "gxp_featuremanager",
-            id: "feature_manager",
-            paging: false,
-            autoSetLayer: true,
-            autoLoadFeatures: true,
-            listeners: {
-                'layerchange': function(mgr, layer, schema) {
-                    app.checkLayerPermissions(layer);
-                }
-            },
-            actionTarget:  "main.tbar",
-            toggleGroup: 'featureGroup'
-        },
-        {
-            ptype: "gxp_featureeditor",
-            id: "gn_layer_editor",
-            featureManager: "feature_manager",
-            autoLoadFeature: true,
-            actionTarget: "main.tbar",
-            toggleGroup: 'featureGroup'
-        }],
+        }{% if user.is_authenticated   %},
+        featureManager,
+        featureEditor{% endif %}],
         proxy: "/proxy/?url=",
 
         /* The URL to a REST map configuration service.  This service
@@ -72,12 +164,14 @@ Ext.onReady(function() {
     };
     Ext.apply(config, {{ config }});
     
+
+    
+
+
+    
     config.map.controls = [
-                           new OpenLayers.Control.TouchNavigation({
-                                                      dragPanOptions: {
-                                                          enableKinetic: true
-                                                      }
-                           }),
+                           touchNav,
+                           //new OpenLayers.Control.PanPanel(),
                            new OpenLayers.Control.Zoom(),
                            new OpenLayers.Control.Attribution()];
     

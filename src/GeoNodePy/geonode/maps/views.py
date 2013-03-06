@@ -2756,23 +2756,27 @@ def category_list():
     return topicArray
 
 def mobilemap(request, mapid=None, snapshot=None):
-    if mapid is None and permalink is None:
-        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
-        config = DEFAULT_MAP_CONFIG
+    if mapid is None:
+        return newmap(request);
     else:
-
         if mapid.isdigit():
-            map = Map.objects.get(pk=mapid)
+            map_obj = Map.objects.get(pk=mapid)
         else:
-            map = Map.objects.get(urlsuffix=mapid)
+            map_obj = Map.objects.get(urlsuffix=mapid)
 
-        if not request.user.has_perm('maps.view_map', obj=map):
+        if not request.user.has_perm('maps.view_map', obj=map_obj):
             return HttpResponse(_("Not Permitted"), status=401, mimetype="text/plain")
         if snapshot is None:
-            config = map.viewer_json(request.user)
+            config = map_obj.viewer_json(request.user)
         else:
-            config = snapshot_config(snapshot, map, request.user)
+            config = snapshot_config(snapshot, map_obj, request.user)
 
     return render_to_response('maps/mobilemap.html', RequestContext(request, {
-        'config': json.dumps(config)
+        'config': json.dumps(config),
+        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        'GEONETWORK_BASE_URL' : settings.GEONETWORK_BASE_URL,
+        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        'DB_DATASTORE' : settings.DB_DATASTORE,
+        'maptitle': map_obj.title,
+        'urlsuffix': get_suffix_if_custom(map_obj),
     }))
