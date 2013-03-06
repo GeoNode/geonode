@@ -41,7 +41,7 @@ os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(PROJECT_ROOT, 'development_base.db'),
+        'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
     }
 }
 
@@ -514,7 +514,7 @@ LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
 }
 
-# Default TopicCategory to be used for resources. Use the slig field here
+# Default TopicCategory to be used for resources. Use the slug field here
 DEFAULT_TOPICCATEGORY = 'location' 
 
 # Load more settings from a file called local_settings.py if it exists

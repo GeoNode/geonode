@@ -6,16 +6,14 @@ from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ValidationError
 from django.contrib.contenttypes import generic
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
-from geonode.base.models import TopicCategory, ResourceBase
+from geonode.base.models import ResourceBase
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
-from geonode.utils import bbox_to_wkt
-from geonode.people.models import Profile, Role
+from geonode.people.models import Profile
 
 class Document(ResourceBase):
     """

@@ -34,17 +34,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
 from geonode.layers.models import Layer
-from geonode.base.models import TopicCategory, ResourceBase
+from geonode.base.models import ResourceBase
 from geonode.maps.signals import map_changed_signal
-from geonode.security.models import PermissionLevelMixin
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
 from geonode.utils import forward_mercator
-
-from taggit.managers import TaggableManager
 
 from geoserver.catalog import Catalog
 from geoserver.layer import Layer as GsLayer

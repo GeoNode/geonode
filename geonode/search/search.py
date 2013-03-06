@@ -26,7 +26,6 @@ from django.db.models import Q
 from geonode.security.models import UserObjectRoleMapping, GenericObjectRoleMapping
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.maps.models import Map
-from geonode.maps.models import MapLayer
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
@@ -87,11 +86,6 @@ def _filter_category(q, categories):
             pass
 
     return q.filter(category__in=_categories)
-
-def _add_relevance(q, query, rank_rules):
-    # for unittests, it doesn't make sense to test this as it's postgres
-    # specific SQL - instead test/verify directly using a query and getting SQL
-    if 'sqlite' in backend.__name__: return q
 
 def _add_relevance(query, rank_rules):
     eq = """CASE WHEN %s = '%s' THEN %s ELSE 0 END"""

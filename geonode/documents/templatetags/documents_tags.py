@@ -1,6 +1,6 @@
 from django import template
  
-from geonode.layers.models import TopicCategory
+from geonode.base.models import TopicCategory
 
 from geonode.documents.models import Document
 

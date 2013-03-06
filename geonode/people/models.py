@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save
@@ -31,7 +30,7 @@ from django.contrib.auth.models import User, Permission
 from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
-from geonode.people.enumerations import CONTACT_FIELDS, ROLE_VALUES
+from geonode.people.enumerations import ROLE_VALUES
 
 class Role(models.Model):
     """

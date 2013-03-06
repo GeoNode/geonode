@@ -21,7 +21,6 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse

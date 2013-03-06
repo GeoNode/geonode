@@ -1,6 +1,4 @@
-import json, unicodedata
-
-from urllib import urlencode
+import json
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -11,14 +9,11 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.db.models import Q
-from django.views.generic.list import ListView
 
 from geonode.maps.views import _perms_info
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map
-from geonode.layers.models import Layer, TopicCategory
-from geonode.people.models import Profile
+from geonode.layers.models import Layer
 from geonode.people.forms import ProfileForm
 
 from geonode.documents.models import Document
