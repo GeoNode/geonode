@@ -5,40 +5,147 @@
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
-{% include "geonode/geo_header.html" %}
+{% include "geonode/geo_mobile_header.html" %}
 {{ block.super }}
-<<<<<<< HEAD
-<script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
-=======
 {% if "gme-" in GOOGLE_API_KEY %}
 <script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
 {% else %}
 <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
 {% endif %}
->>>>>>> master
 <script type="text/javascript">
     google.load("earth", "1");
 </script>
 
 <script type="text/javascript">
+
+
+var touchNav = new OpenLayers.Control.TouchNavigation({  
+	id: "touchNavControl",
+    dragPanOptions: {
+        enableKinetic: false
+    }
+});
+
+/*
+ * Deactivate navigation control when FeatureEditor's draw and select controls
+ are active - conflicts with touch actions.
+ */
+gxp.plugins.TouchFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor, {
+	addActions: function() {
+		actions = gxp.plugins.FeatureEditor.prototype.addActions.apply(this, arguments);                 
+		
+		this.drawControl.events.register("activate", this.drawControl, function(evt){
+			touchNav.deactivate();
+		});
+		
+		this.drawControl.events.register("deactivate", this.drawControl,  function(evt){
+			touchNav.activate();
+		});
+		
+
+
+		this.selectControl.events.register("activate", this.selectControl, function() {
+			touchNav.deactivate();
+		});
+		this.selectControl.events.register("deactivate", this.selectControl, function() {
+			touchNav.activate();
+		});				
+		
+		return actions;		
+	}
+});
+
+/*
+ * Deactivate navigation control when feature editing is occurring.
+ */
+var featureEditStartEditing = gxp.FeatureEditPopup.prototype.startEditing;
+gxp.FeatureEditPopup.prototype.startEditing = function() {
+    touchNav.deactivate();
+    featureEditStartEditing.apply(this, arguments);
+}
+
+var featureEditStopEditing = gxp.FeatureEditPopup.prototype.stopEditing;
+gxp.FeatureEditPopup.prototype.stopEditing = function() {
+	featureEditStopEditing.apply(this, arguments);
+	touchNav.activate();
+}
+
+
 var app;
 Ext.onReady(function() {
 {% autoescape off %}
+
+/*
+ * Don't use default symbolizer; causes difficulty in draggoing vertices
+ */
+var featureManager = new gxp.plugins.FeatureManager({
+    ptype: "gxp_featuremanager",
+    id: "feature_manager",
+    paging: false,
+    autoSetLayer: true,
+    autoLoadFeatures: true,
+    listeners: {
+        'layerchange': function (mgr, layer, schema) {
+            app.checkLayerPermissions(layer);
+        }
+    },
+    actionTarget: "main.tbar",
+    toggleGroup: 'featureGroup',
+    symbolizer: {
+        "Point": {
+            fillColor: "#EF9E0F",
+            strokeColor: "#EF9E0F",
+            strokeWidth: 2,
+            fillOpacity: 1,
+            strokeOpacity: 1,
+            pointRadius: 5,
+            labelAlign: 'cm'
+        },
+        "Line": {
+            strokeWidth: 4,
+            strokeOpacity: 1,
+            strokeColor: "#ff9933"
+        },
+        "Polygon": {
+            strokeWidth: 2,
+            strokeOpacity: 1,
+            strokeColor: "#ff6633",
+            fillColor: "white",
+            fillOpacity: 0.3
+        }
+    }
+});
+    
+    
+var featureEditor = new gxp.plugins.TouchFeatureEditor({
+        id: "gn_layer_editor",
+        featureManager: "feature_manager",
+        autoLoadFeature: true,
+        actionTarget: "main.tbar",
+        toggleGroup: 'featureGroup'
+    });
+
+
+
+
    var config = {
         useCapabilities: false,
         tools: [{
-                    ptype: "gxp_wmsgetfeatureinfo",
-                    // uncomment the line below if you want feature info in a grid
-                    format: "grid",
-                    actionTarget: "main.tbar",
-                    iconCls: "icon-getfeatureinfo",
-                    outputConfig: {width: 100, height: 100, panIn: false}
+            ptype: "gxp_geonodequerytool",
+            id: "worldmap_query_tool",
+            actionTarget:  {target: "main.tbar"},
+            outputConfig: {width: 400, height: 200, panIn: false},
+            featurePanel: 'queryPanel',
+            attributePanel: 'gridWinPanel',
+            toggleGroup: 'featureGroup'
         },{
                     ptype: "gxp_geolocator",
                     maxZoom: 15,
                     iconCls: "icon-geolocate",
                     actionTarget: "main.tbar"
-        }],
+        }{% if user.is_authenticated   %},
+        featureManager,
+        featureEditor{% endif %}],
         proxy: "/proxy/?url=",
 
         /* The URL to a REST map configuration service.  This service
@@ -47,17 +154,21 @@ Ext.onReady(function() {
          */
         rest: "/maps/",
         createTools: function() {
-                    return [new Ext.Button({
-                        tooltip: GeoExplorer.prototype.backgroundContainerText,
-                        iconCls: 'icon-layer-switcher',
-                        menu: new gxp.menu.LayerMenu({
-                            layers: this.mapPanel.layers
-                        })
-                    })]
         }
     };
     Ext.apply(config, {{ config }});
-    app = new GeoExplorer.Viewer(config);
+    
+
+    
+
+
+    
+    config.map.controls = [
+                           touchNav,
+                           new OpenLayers.Control.Zoom(),
+                           new OpenLayers.Control.Attribution()];
+    
+    app = new GeoExplorer.ViewerMobile(config);
 {% endautoescape %}
 });
 </script>
