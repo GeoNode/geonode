@@ -26,9 +26,13 @@ var touchNav = new OpenLayers.Control.TouchNavigation({
     }
 });
 
+/*
+ * Deactivate navigation control when FeatureEditor's draw and select controls
+ are active - conflicts with touch actions.
+ */
 gxp.plugins.TouchFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor, {
 	addActions: function() {
-		actions = gxp.plugins.FeatureEditor.prototype.addActions.apply(this, arguments);
+		actions = gxp.plugins.FeatureEditor.prototype.addActions.apply(this, arguments);                 
 		
 		this.drawControl.events.register("activate", this.drawControl, function(evt){
 			touchNav.deactivate();
@@ -38,6 +42,8 @@ gxp.plugins.TouchFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor, {
 			touchNav.activate();
 		});
 		
+
+
 		this.selectControl.events.register("activate", this.selectControl, function() {
 			touchNav.deactivate();
 		});
@@ -49,38 +55,13 @@ gxp.plugins.TouchFeatureEditor = Ext.extend(gxp.plugins.FeatureEditor, {
 	}
 });
 
+/*
+ * Deactivate navigation control when feature editing is occurring.
+ */
 var featureEditStartEditing = gxp.FeatureEditPopup.prototype.startEditing;
-
 gxp.FeatureEditPopup.prototype.startEditing = function() {
     touchNav.deactivate();
-
-    if(!this.editing) {
-        this.fireEvent("startedit", this);
-        this.editing = true;
-        this.anc && this.unanchorPopup();
-
-        this.editButton.hide();
-        this.deleteButton.hide();
-        this.saveButton.show();
-        this.cancelButton.show();
-        
-        this.geometry = this.feature.geometry && this.feature.geometry.clone();
-        this.attributes = Ext.apply({}, this.feature.attributes);
-
-        this.modifyControl = new OpenLayers.Control.ModifyFeature(
-            this.feature.layer,
-            {standalone: true, vertexRenderIntent: this.vertexRenderIntent,
-              mode: OpenLayers.Control.ModifyFeature.RESHAPE}
-        );
-        this.feature.layer.map.addControl(this.modifyControl);
-        this.modifyControl.activate();
-        if (this.feature.geometry) {
-            this.modifyControl.selectFeature(this.feature);
-        }
-    }
-
-       //featureEditStartEditing.apply(this, arguments);
-       //touchNav.deactivate();
+    featureEditStartEditing.apply(this, arguments);
 }
 
 var featureEditStopEditing = gxp.FeatureEditPopup.prototype.stopEditing;
@@ -90,35 +71,50 @@ gxp.FeatureEditPopup.prototype.stopEditing = function() {
 }
 
 
-OpenLayers.Handler.Feature.prototype.touchmove = function(evt) {
-        if (!this.callbacks['over'] && !this.callbacks['out']) {
-            return true;
-        }
-        this.handle(evt);
-        return true;
-}
-
 var app;
 Ext.onReady(function() {
 {% autoescape off %}
 
-
-
-
-var featureManager = new gxp.plugins.FeatureManager ({
-        ptype: "gxp_featuremanager",
-        id: "feature_manager",
-        paging: false,
-        autoSetLayer: true,
-        autoLoadFeatures: true,
-        listeners: {
-            'layerchange': function(mgr, layer, schema) {
-                app.checkLayerPermissions(layer);
-            }
+/*
+ * Don't use default symbolizer; causes difficulty in draggoing vertices
+ */
+var featureManager = new gxp.plugins.FeatureManager({
+    ptype: "gxp_featuremanager",
+    id: "feature_manager",
+    paging: false,
+    autoSetLayer: true,
+    autoLoadFeatures: true,
+    listeners: {
+        'layerchange': function (mgr, layer, schema) {
+            app.checkLayerPermissions(layer);
+        }
+    },
+    actionTarget: "main.tbar",
+    toggleGroup: 'featureGroup',
+    symbolizer: {
+        "Point": {
+            fillColor: "#EF9E0F",
+            strokeColor: "#EF9E0F",
+            strokeWidth: 2,
+            fillOpacity: 1,
+            strokeOpacity: 1,
+            pointRadius: 5,
+            labelAlign: 'cm'
         },
-        actionTarget:  "main.tbar",
-        toggleGroup: 'featureGroup'
-    });
+        "Line": {
+            strokeWidth: 4,
+            strokeOpacity: 1,
+            strokeColor: "#ff9933"
+        },
+        "Polygon": {
+            strokeWidth: 2,
+            strokeOpacity: 1,
+            strokeColor: "#ff6633",
+            fillColor: "white",
+            fillOpacity: 0.3
+        }
+    }
+});
     
     
 var featureEditor = new gxp.plugins.TouchFeatureEditor({
@@ -138,7 +134,6 @@ var featureEditor = new gxp.plugins.TouchFeatureEditor({
             ptype: "gxp_geonodequerytool",
             id: "worldmap_query_tool",
             actionTarget:  {target: "main.tbar"},
-            //toolText: '<span class="x-btn-text">Identify</span>',
             outputConfig: {width: 400, height: 200, panIn: false},
             featurePanel: 'queryPanel',
             attributePanel: 'gridWinPanel',
@@ -147,7 +142,6 @@ var featureEditor = new gxp.plugins.TouchFeatureEditor({
                     ptype: "gxp_geolocator",
                     maxZoom: 15,
                     iconCls: "icon-geolocate",
-                    //toolText: '<span class="x-btn-text">Position</span>',
                     actionTarget: "main.tbar"
         }{% if user.is_authenticated   %},
         featureManager,
@@ -171,7 +165,6 @@ var featureEditor = new gxp.plugins.TouchFeatureEditor({
     
     config.map.controls = [
                            touchNav,
-                           //new OpenLayers.Control.PanPanel(),
                            new OpenLayers.Control.Zoom(),
                            new OpenLayers.Control.Attribution()];
     
