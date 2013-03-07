@@ -29,7 +29,7 @@ urlpatterns = patterns('geonode.maps.views',
         name='ajax_map_permissions_by_email'),
     (r'^(?P<mapid>[A-Za-z0-9_\-]+)/(?P<snapshot>[A-Za-z0-9_\-]+)/?$', 'view'),
     (r'^(?P<mapid>[A-Za-z0-9_\-]+)/(?P<snapshot>[A-Za-z0-9_\-]+)/embed/?$', 'embed'),
-    (r'^(?P<mapid>[A-Za-z0-9_\-]+)/(?P<snapshot>\w+)/mobile/?$', 'mobilemap'),   
+    (r'^(?P<mapid>[A-Za-z0-9_\-]+)/(?P<snapshot>[A-Za-z0-9_\-]+)/mobile/?$', 'mobilemap'),   
     (r'^(?P<mapid>[A-Za-z0-9_\-]+)/?$', 'view'),
 )
 

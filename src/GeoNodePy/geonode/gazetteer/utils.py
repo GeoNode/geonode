@@ -99,8 +99,6 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
         layers = [layer]
 
 ## The following retrieves results using the GazetteerEntry model.
-## Unfortunately, python datetime can't handle dates < 1 AD (WTF!?)so
-## going back to using direct SQL queries for now
 
     criteria = Q() if settings.GAZETTEER_FULLTEXTSEARCH else Q(place_name__istartswith=place_name)
     if layers:

@@ -85,11 +85,15 @@
 	<div class="overall_rating" data-rating="{{ map_rating }}"></div>
   <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
   <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
+
     <p><strong>{% trans "Abstract:" %}</strong> {{map.abstract}}</p>
   <p><strong>{% trans "Keywords:" %}</strong> {{map.keywords.all|join:", "}}
 
     <div id="embedded_map">
     </div>
+   {% autoescape off %}
+   <p>{{map.content}}</p>
+   {% endautoescape %}
     <p><strong>{% trans "Contact:" %}</strong> <a href="{{ map.owner.get_profile.get_absolute_url }}">{{ map.owner }}</a></a></p>
 
     <h3>{% trans "Comments" %}</h1>

@@ -1124,7 +1124,7 @@ def layer_detail(request, layername):
 
     metadata = layer.metadata_csw()
 
-    maplayer = MapLayer(name = layer.typename, styles=[layer.default_style.name], source_params = '{"ptype": "gxp_gnsource"}', ows_url = settings.GEOSERVER_BASE_URL + "wms",  layer_params= '{"tiled":true, "title":" '+ layer.title + '"}')
+    maplayer = MapLayer(name = layer.typename, styles=[layer.default_style.name], source_params = '{"ptype": "gxp_gnsource"}', ows_url = settings.GEOSERVER_BASE_URL + "wms",  layer_params= '{"tiled":true, "title":" '+ layer.title + '", ' + json.dumps(layer.attribute_config()) + '}')
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = Map(projection="EPSG:900913")

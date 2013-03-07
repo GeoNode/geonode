@@ -55,6 +55,9 @@ software installed and in your PATH:
 
 * Apache Tomcat 6.x or Jetty
 
+* PostgreSQL 8.x and PostGIS 1.5
+
+
 Additionally, WorldMap uses a number of native-code libraries in Python.  You
 can install these libraries manually, or allow the WorldMap setup script to
 compile them for you.   In the latter case, you will need to install a C
@@ -318,6 +321,18 @@ In your settings.py file:
 * uncomment the following in INSTALLED_APPS:
     * #geonode.gazetteer,
 * uncomment and modify if necessary the entire "GAZETTEER SETTINGS" section
+
+If you want to enable full-text search for the gazetteer, run the following commands in the DB_DATASTORE database:
+    ALTER TABLE gazetteer_gazetteerentry ADD COLUMN placename_tsv tsvector;
+    CREATE INDEX placename_tsv_index on gazetteer_gazetteerentry using gin(placename_tsv);
+    UPDATE gazetteer_gazetteerentry SET text_search =
+         to_tsvector('english', coalesce(place_name,''));
+    CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
+      ON gazetteer_gazetteerentry FOR EACH ROW EXECUTE PROCEDURE
+      tsvector_update_trigger(placename_tsv, 'pg_catalog.english', place_name);
+
+and then set GAZETTEER_FULLTEXTSEARCH = True in settings
+
 
 
 QUEUE

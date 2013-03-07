@@ -1137,6 +1137,18 @@ class Layer(models.Model, PermissionLevelMixin):
             logger.debug("cache created for layer %s", self.typename)
         return attribute_fields
 
+
+    def attribute_config(self):
+        #Get custom attribute sort order and labels if any
+            cfg = {}
+            visible_attributes =  self.attribute_set.visible()
+            if (visible_attributes.count() > 0):
+                cfg["getFeatureInfo"] = {
+                    "fields":  [l.attribute for l in visible_attributes],
+                    "propertyNames":   dict([(l.attribute,l.attribute_label) for l in visible_attributes])
+                }
+            return cfg
+
     def maps(self):
         """Return a list of all the maps that use this layer"""
         local_wms = "%swms" % settings.GEOSERVER_BASE_URL
@@ -1570,7 +1582,14 @@ class Layer(models.Model, PermissionLevelMixin):
         self.save_to_geonetwork()
 
 
+class LayerAttributeManager(models.Manager):
+    """Helper class to access filtered attributes
+    """
+    def visible(self):
+        return self.get_query_set().filter(visible=True).order_by('display_order')
+
 class LayerAttribute(models.Model):
+    objects = LayerAttributeManager()
     layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
     attribute = models.CharField(_('Attribute Name'), max_length=255, blank=False, null=True, unique=False)
     attribute_label = models.CharField(_('Attribute Label'), max_length=255, blank=False, null=True, unique=False)
@@ -2159,6 +2178,9 @@ class MapLayer(models.Model):
                 if gnLayer.bbox: cfg['bbox'] = json.loads(gnLayer.bbox)
                 if gnLayer.llbbox: cfg['llbbox'] = json.loads(gnLayer.llbbox)
                 cfg['attributes'] = (gnLayer.layer_attributes())
+                attribute_cfg = gnLayer.attribute_config()
+                if "getFeatureInfo" in attribute_cfg:
+                    cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
                 cfg['queryable'] = (gnLayer.storeType == 'dataStore'),
                 cfg['disabled'] =  user is not None and not user.has_perm('maps.view_layer', obj=gnLayer)
                 #cfg["displayOutsideMaxExtent"] = user is not None and  user.has_perm('maps.change_layer', obj=gnLayer)
