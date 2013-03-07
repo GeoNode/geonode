@@ -22,7 +22,22 @@ Ext.onReady(function() {
 {% autoescape off %}
     var config = {
         useCapabilities: false,
-        useToolbar: false,
+        tools: [{
+            ptype: "gxp_wmsgetfeatureinfo",
+            // uncomment the line below if you want feature info in a grid
+            format: "grid",
+            actionTarget: "main.tbar",
+            outputConfig: {width: 400, height: 200, panIn: false}
+        }],
+        createTools: function() {
+            return [new Ext.Button({
+                tooltip: GeoExplorer.prototype.backgroundContainerText,
+                iconCls: 'icon-layer-switcher',
+                menu: new gxp.menu.LayerMenu({
+                    layers: this.mapPanel.layers
+                })
+            })]
+        },
         proxy: "/proxy/?url=",
         siteUrl: "{{ SITE_URL }}",
 
@@ -34,7 +49,6 @@ Ext.onReady(function() {
     };
 
     Ext.apply(config, {{ config }});
-    config.tools = [];
     app = new GeoExplorer.Viewer(config);
 {% endautoescape %}
 });

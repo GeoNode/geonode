@@ -134,7 +134,7 @@ var featureEditor = new gxp.plugins.TouchFeatureEditor({
             ptype: "gxp_geonodequerytool",
             id: "worldmap_query_tool",
             actionTarget:  {target: "main.tbar"},
-            outputConfig: {width: 400, height: 200, panIn: false},
+            outputConfig: {autoHeight:true, autoWidth: true,panIn: false},
             featurePanel: 'queryPanel',
             attributePanel: 'gridWinPanel',
             toggleGroup: 'featureGroup'
