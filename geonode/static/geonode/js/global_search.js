@@ -148,13 +148,13 @@ function manage_element(element){
     if ($(element).parents('ul').attr('id') === 'categories' && $(element).attr('data-class') === 'all'){
         if ($(element).hasClass('active')){
             $('#categories').find('a').each(function(){
-                $(this).addClass('active');
-            })
-        } else {
-            $('#categories').find('a').each(function(){
                 $(this).removeClass('active');
             })
-        }
+            $(element).addClass('active');
+        } 
+    }
+    else if ($(element).parents('ul').attr('id') === 'categories'){
+        $('a[data-class="all"]').removeClass('active');
     }
 }
 
