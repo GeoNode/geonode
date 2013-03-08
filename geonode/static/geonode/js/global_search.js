@@ -149,7 +149,7 @@ function manage_element(element){
         if ($(element).hasClass('active')){
             $('#categories').find('a').each(function(){
                 $(this).removeClass('active');
-            })
+            });
             $(element).addClass('active');
         } 
     }

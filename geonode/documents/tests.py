@@ -128,7 +128,7 @@ class EventsTest(TestCase):
         document = Document.objects.all()[0]
        
         # Set the Permissions
-        geonode.documents.views.set_document_permissions(document, self.perm_spec)
+        geonode.documents.views.document_set_permissions(document, self.perm_spec)
 
         # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
         self.assertEqual(document.get_gen_level(ANONYMOUS_USERS), document.LEVEL_NONE) 
@@ -162,19 +162,19 @@ class EventsTest(TestCase):
             c = Client()
 
             # Test that an invalid document is handled for properly
-            response = c.post(reverse('ajax_document_permissions', args=(invalid_document_id,)), 
+            response = c.post(reverse('document_permissions', args=(invalid_document_id,)), 
                                 data=json.dumps(self.perm_spec),
                                 content_type="application/json")
             self.assertEquals(response.status_code, 404) 
 
             # Test that POST is required
-            response = c.get(reverse('ajax_document_permissions', args=(document_id,)))
+            response = c.get(reverse('document_permissions', args=(document_id,)))
             self.assertEquals(response.status_code, 405)
             
             # Test that a user is required to have documents.change_layer_permissions
 
             # First test un-authenticated
-            response = c.post(reverse('ajax_document_permissions', args=(document_id,)), 
+            response = c.post(reverse('document_permissions', args=(document_id,)), 
                                 data=json.dumps(self.perm_spec),
                                 content_type="application/json")
             self.assertEquals(response.status_code, 401) 
@@ -182,7 +182,7 @@ class EventsTest(TestCase):
             # Next Test with a user that does NOT have the proper perms
             logged_in = c.login(username='bobby', password='bob')
             self.assertEquals(logged_in, True) 
-            response = c.post(reverse('ajax_document_permissions', args=(document_id,)), 
+            response = c.post(reverse('document_permissions', args=(document_id,)), 
                                 data=json.dumps(self.perm_spec),
                                 content_type="application/json")
             self.assertEquals(response.status_code, 401) 
@@ -190,7 +190,7 @@ class EventsTest(TestCase):
             # Login as a user with the proper permission and test the endpoint
             logged_in = c.login(username='admin', password='admin')
             self.assertEquals(logged_in, True)
-            response = c.post(reverse('ajax_document_permissions', args=(document_id,)), 
+            response = c.post(reverse('document_permissions', args=(document_id,)), 
                                 data=json.dumps(self.perm_spec),
                                 content_type="application/json")
 
