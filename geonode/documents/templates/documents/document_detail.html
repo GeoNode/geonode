@@ -1,4 +1,4 @@
-{% extends "layers/layer_base.html" %}
+{% extends "documents/document_base.html" %}
 {% load geonode_auth %}
 {% load i18n %}
 {% load dialogos_tags %}
@@ -34,7 +34,8 @@
         {% trans "Edit Document" %}
         <span class="caret"></span>
       </a>
-      <ul class="dropdown-menu">      
+      <ul class="dropdown-menu">
+        <li><a href="{% url "document_metadata" document.id %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
         <!--<li><a href="{% url "document_replace" document.id %}">{% trans "Replace this Document" %} <i class="icon-chevron-right"></i></a></li>-->
         <li><a href="{% url "document_remove" document.id %}">{% trans "Remove this Document" %} <i class="icon-chevron-right"></i></a></li>

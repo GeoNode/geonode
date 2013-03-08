@@ -9,7 +9,10 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.views.decorators.http import require_POST
+from django.core.exceptions import PermissionDenied
 
+from geonode.utils import resolve_object
 from geonode.maps.views import _perms_info
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map
@@ -27,6 +30,20 @@ DOCUMENT_LEV_NAMES = {
     Document.LEVEL_WRITE : _('Read/Write'),
     Document.LEVEL_ADMIN : _('Administrative')
 }
+
+_PERMISSION_MSG_DELETE = _("You are not permitted to delete this document")
+_PERMISSION_MSG_GENERIC = _('You do not have permissions for this document.')
+_PERMISSION_MSG_MODIFY = _("You are not permitted to modify this document")
+_PERMISSION_MSG_METADATA = _("You are not permitted to modify this document's metadata")
+_PERMISSION_MSG_VIEW = _("You are not permitted to view this document")
+
+def _resolve_document(request, docid, permission='layers.change_layer',
+                   msg=_PERMISSION_MSG_GENERIC, **kwargs):
+    '''
+    Resolve the layer by the provided typename and check the optional permission.
+    '''
+    return resolve_object(request, Document, {'pk':docid},
+                          permission = permission, permission_msg=msg, **kwargs)
 
 def document_list(request, template='documents/document_list.html'):
     from geonode.search.views import search_page
@@ -95,10 +112,9 @@ def document_upload(request):
         document = Document(content_type=content_type, object_id=object_id, title=title, doc_file=doc_file)
         document.owner = request.user
         document.save()
-        document.set_default_permissions()
         permissionsStr = request.POST['permissions']
         permissions = json.loads(permissionsStr)
-        set_document_permissions(document, permissions)
+        document_set_permissions(document, permissions)
 
         return HttpResponse(json.dumps({'success': True,'redirect_to': reverse('document_metadata', 
                 args=(document.id,))}))
@@ -174,42 +190,38 @@ def document_search_page(request):
          "site" : settings.SITEURL
     }))
 
-def ajax_document_permissions(request, docid):
-    document = get_object_or_404(Document, pk=docid)
-
-    if not request.method == 'POST':
+@require_POST
+def document_permissions(request, docid):
+    try:
+        document = _resolve_document(request, docid, 'documents.change_document_permissions')
+    except PermissionDenied:
+        # we are handling this in a non-standard way
         return HttpResponse(
-            'You must use POST for editing document permissions',
-            status=405,
-            mimetype='text/plain'
-        )
-
-    if not request.user.has_perm("documents.change_document_permissions", obj=document):
-        return HttpResponse(
-            'You are not allowed to change permissions for this document',
+            'You are not allowed to change permissions for this layer',
             status=401,
-            mimetype='text/plain'
-        )
+            mimetype='text/plain')
 
-    spec = json.loads(request.raw_post_data)
-    set_document_permissions(document, spec)
+    permission_spec = json.loads(request.raw_post_data)
+    document_set_permissions(document, permission_spec)
 
     return HttpResponse(
-        "Permissions updated",
+        json.dumps({'success': True}),
         status=200,
         mimetype='text/plain'
     )
 
-def set_document_permissions(m, perm_spec):
+def document_set_permissions(document, perm_spec):
     if "authenticated" in perm_spec:
-        m.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+        document.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
     if "anonymous" in perm_spec:
-        m.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-    users = [n for (n, p) in perm_spec['users']]
-    m.get_user_levels().exclude(user__username__in = users + [m.owner]).delete()
+        document.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+    users = [n[0] for n in perm_spec['users']]
+    excluded = users + [document.owner]
+    existing = document.get_user_levels().exclude(user__username__in=excluded)
+    existing.delete()
     for username, level in perm_spec['users']:
         user = User.objects.get(username=username)
-        m.set_user_level(user, level)
+        document.set_user_level(user, level)
 
 def resources_search(request):
     """
@@ -236,10 +248,22 @@ def resources_search(request):
     result = {'rows': resources_list,'total': qset.count()}
     return HttpResponse(json.dumps(result))
 
-def document_replace(docid):
-    #TODO
+@login_required
+def document_replace(request, docid, template='documents/document_replace.html'):
+    #TODO?
     pass
 
-def document_remove(docid):
-    #TODO
-    pass
+@login_required
+def document_remove(request, docid, template='documents/document_remove.html'):
+    document = _resolve_document(request, docid, 'documents.delete_document',
+                           _PERMISSION_MSG_DELETE)
+
+    if (request.method == 'GET'):
+        return render_to_response(template,RequestContext(request, {
+            "document": document
+        }))
+    if (request.method == 'POST'):
+        document.delete()
+        return HttpResponseRedirect(reverse("documents_browse"))
+    else:
+        return HttpResponse("Not allowed",status=403)
