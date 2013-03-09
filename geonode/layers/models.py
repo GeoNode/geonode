@@ -521,7 +521,14 @@ class Link(models.Model):
     url = models.TextField(unique=True, max_length=1000)
 
     objects = LinkManager()
-
+    
+    
+class LayerTemplate(models.Model):
+    """Model to store information about a template
+    """
+    name = models.CharField(unique=True, max_length=30)
+    base_file = models.CharField(max_length=100)
+    author = models.CharField(max_length=80)
 
 def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer
