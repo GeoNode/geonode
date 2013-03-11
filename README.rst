@@ -83,7 +83,13 @@ WorldMap site.
 Install
 =======
 
-The following steps should prepare a Python virtual environment for you::
+
+The following steps should prepare a Python virtual environment for you.  Note that you will need 
+to manually create a PostGIS datbase and user first.  The default connection settings are
+stored in src/GeoNodePy/geonode/settings.py:
+database name: wm_db
+user: wm_user
+password: wm_password
 
 
   git clone git://github.com/cga-harvard/cga-worldmap.git cga-worldmap
