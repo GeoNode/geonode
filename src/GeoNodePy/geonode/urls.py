@@ -32,7 +32,7 @@ urlpatterns = patterns('',
                 {'template': 'help.html'}, name='help'),
     url(r'^developer/$', 'django.views.generic.simple.direct_to_template',
                 {'template': 'developer.html'}, name='dev'),
-    url(r'^maps\/upload_terms/$', 'django.views.generic.simple.direct_to_template',
+    url(r'^upload_terms/$', 'django.views.generic.simple.direct_to_template',
             {'template': 'maps/upload_terms.html'}, name='upload_terms'),
      # Data views
     (r'^data/', include(geonode.maps.urls.datapatterns)),
@@ -76,6 +76,7 @@ urlpatterns += geonode.proxy.urls.urlpatterns
 official_site_url_patterns = patterns('',
     (r'^tweetmap/$', 'geonode.maps.views.tweetview'),
     (r'^(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.official_site'),
+    (r'^(?P<site>[A-Za-z0-9_\-]+)/mobile/?$', 'geonode.maps.views.official_site_mobile'),
     (r'^(?P<site>[A-Za-z0-9_\-]+)/edit$', 'geonode.maps.views.official_site_controller'),
 )
 
