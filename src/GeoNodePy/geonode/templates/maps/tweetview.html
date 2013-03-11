@@ -274,7 +274,8 @@ var tweetDateStartField = new Ext.ux.form.DateTime({
         altFormats:'Y-m-d|Y-n-d', allowBlank:true,
         minValue:new Date(2012, 9, 1),
         maxValue:new Date(Date.now() + 86400000),
-        value:new Date(Date.now() - (86400000 * 7))
+        value:new Date(2012,11,10)
+//        value:new Date(Date.now() - (86400000 * 7))
     },
     width:200
 });
@@ -291,7 +292,8 @@ var tweetDateEndField = new Ext.ux.form.DateTime({
         altFormats:'Y-m-d|Y-n-d', allowBlank:true,
         minValue:new Date(2012, 9, 1),
         maxValue:new Date(Date.now() + 86400000),
-        value:new Date(Date.now())
+        value:new Date(2012,11,31)
+//        value:new Date(Date.now())
     },
     width:200
 });
@@ -309,10 +311,12 @@ var updateCQL = function (layers) {
 
 	
 	
-    if (Math.floor(tweetDateEndField.getValue().getTime()) >= Math.floor(firstEndDate)) {
+
+    /*if (Math.floor(tweetDateEndField.getValue().getTime()) >= Math.floor(firstEndDate)) {
         var rightNow = new Date();
         tweetDateEndField.setValue(rightNow);
     }
+    */
 
     var randomNum = Math.random();
     var startFilter = "SELECT goog_x, goog_y, ";
@@ -796,12 +800,12 @@ app.on("ready", function () {
     app.mapPanel.map.events.register("moveend", app.mapPanel.map, function (e) {
 
         // var mapExtent = app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent() : config["map"]["maxExtent"];
-
+	/*
         if (Math.floor(tweetDateEndField.getValue().getTime()) >= Math.floor(firstEndDate)) {
             var rightNow = new Date();
             tweetDateEndField.setValue(rightNow);
             updateLayer();
-        }
+        }*/
     }, this);
 
 
@@ -833,6 +837,7 @@ window.onload = init;
 
   </div>
 
+
   <div class="block wrap selfclear">
   <h3>Selected Data</h3>
   <div id="selection">
@@ -841,7 +846,6 @@ window.onload = init;
     <div id="data_ops">
     </div>
   </div>
-
 
 </div>
 
@@ -903,5 +907,7 @@ window.onload = init;
 
 
             </div>
-    {% endblock %}
+
+
+{% endblock %}
 
