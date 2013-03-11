@@ -187,6 +187,7 @@ OpenLayers.Layer.Grid.prototype.initSingleTile = function (bounds) {
 
 
 var app;
+var geopsip = "{{GEOPS_IP}}"
 var init = function () {
     {% autoescape off %}
     var config = Ext.apply({
@@ -273,7 +274,8 @@ var tweetDateStartField = new Ext.ux.form.DateTime({
         altFormats:'Y-m-d|Y-n-d', allowBlank:true,
         minValue:new Date(2012, 9, 1),
         maxValue:new Date(Date.now() + 86400000),
-        value:new Date(Date.now() - (86400000 * 7))
+        value:new Date(2012,11,10)
+//        value:new Date(Date.now() - (86400000 * 7))
     },
     width:200
 });
@@ -290,7 +292,8 @@ var tweetDateEndField = new Ext.ux.form.DateTime({
         altFormats:'Y-m-d|Y-n-d', allowBlank:true,
         minValue:new Date(2012, 9, 1),
         maxValue:new Date(Date.now() + 86400000),
-        value:new Date(Date.now())
+        value:new Date(2012,11,31)
+//        value:new Date(Date.now())
     },
     width:200
 });
@@ -306,10 +309,13 @@ var is_authorized = "{{tweetdownload}}";
 
 var updateCQL = function (layers) {
 
-    if (Math.floor(tweetDateEndField.getValue().getTime()) >= Math.floor(firstEndDate)) {
+	
+	
+    /*if (Math.floor(tweetDateEndField.getValue().getTime()) >= Math.floor(firstEndDate)) {
         var rightNow = new Date();
         tweetDateEndField.setValue(rightNow);
     }
+    */
 
     var randomNum = Math.random();
     var startFilter = "SELECT goog_x, goog_y, ";
@@ -332,7 +338,8 @@ var updateCQL = function (layers) {
 
         layer.getLayer().params["RND"] = randomNum;
 
-        if (layer.get("name") == "heatmap") {
+        if (layer.get("name").indexOf("heatmap") > -1) {
+        	layer.getLayer().params["LAYERS"] = Ext.getCmp("lsh_checkbox").checked ? "lsh_heatmap" : "heatmap";
             layer["cql_filter"] = startFilter + keywordFilter + fromFilter + " WHERE " + timeFilter;
             layer.getLayer().params["SQL"] = layer["cql_filter"];
             layer.getLayer().params["BLUR"] = Ext.getCmp("slider_blur").value;
@@ -346,6 +353,7 @@ var updateCQL = function (layers) {
             }
 
         } else {
+        	layer.getLayer().params["LAYERS"] = Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point";
             layer["cql_filter"] = startFilter + " tweet_text " + fromFilter + " WHERE " + timeFilter + (keywords ? " AND " + keywordFilter : "");
             layer.getLayer().params["SQL"] = layer["cql_filter"];
             layer.getLayer().params["RADIUS"] = 1;
@@ -377,6 +385,7 @@ function getUrlParams(url) {
 
 var getDownloadLink = function () {
     var params = getUrlParams(tweetPointRecord.getLayer().grid[0][0].url);
+    var layerName = Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point";
     return "/tweetDownload/?LAYERS=POINT&SQL=" + params.SQL.replace(/goog_x%2C(%20)+goog_y%2C(%20)+tweet_text/g, "lat%2C%20lon%2C%20sender_name%2C%20time%2C%20tweet_id%2C%20tweet_text") + "&BBOX=" + params.BBOX;
 }
 
@@ -454,7 +463,7 @@ var cqlOverlay = new Ext.FormPanel({
         msgTarget:'side'
     },
     width:600,
-    height:140,
+    height:160,
     layout:"fit",
     items:[
         {
@@ -542,6 +551,17 @@ var cqlOverlay = new Ext.FormPanel({
                     items:[
                         {xtype:"container",
                             html:"<div style='padding-bottom:10px;'></div>"},
+                            {
+                                xtype:"checkbox",
+                                id:"lsh_checkbox",
+                                boxLabel:"LSH Matching",
+                                style:"display:inline-block;",
+                                checked:false,
+                                hidden: (geopsip !== "geops.csail.mit.edu:8080"),
+                                listeners:{
+                                	"check":updateLayer
+                                }
+                            },
                         {
                             xtype:"checkbox",
                             id:"auto_max_checkbox",
@@ -651,7 +671,7 @@ tweetPointRecord.set("name", "point");
 tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
         "Tweets",
         tweetConfig.url, {
-            layers:"point",
+            layers: Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point",
             transparent:"transparent" in tweetConfig ? tweetConfig.transparent : true,
             format:tweetConfig.format,
             tiled:false
@@ -688,7 +708,7 @@ var tweetHeatRecord = feedSource.createLazyLayerRecord(tweetConfig);
 tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
         "Tweet Heatmap",
         tweetConfig.url, {
-            layers:'heatmap',
+            layers: Ext.getCmp("lsh_checkbox").checked ? "lsh_heatmap" : 'heatmap',
             transparent:"transparent" in tweetConfig ? tweetConfig.transparent : true,
             format:tweetConfig.format,
             tiled:false
@@ -779,12 +799,12 @@ app.on("ready", function () {
     app.mapPanel.map.events.register("moveend", app.mapPanel.map, function (e) {
 
         // var mapExtent = app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent() : config["map"]["maxExtent"];
-
+	/*
         if (Math.floor(tweetDateEndField.getValue().getTime()) >= Math.floor(firstEndDate)) {
             var rightNow = new Date();
             tweetDateEndField.setValue(rightNow);
             updateLayer();
-        }
+        }*/
     }, this);
 
 
@@ -802,34 +822,75 @@ window.onload = init;
 
 {% block body %}
 
-
 <div id="header-wrapper">
     {{ block.super }}
+
     <div id="dataTabs" class="x-hidden">
 
-        <div id="searchDiv" style="background-color:#fff;width:800px;">
-            <div style="float:left;position:relative;margin:10px;width:580px;">
-                <div class="block">
-                    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
+<div id="searchDiv" style="background-color:#fff;width:800px;">
+<div style="float:left;position:relative;margin:10px;width:580px;">
+  <div class="block">
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
 
-                    <div id="search_results"></div>
+    <div id="search_results"></div>
 
+  </div>
+
+  <div class="block wrap selfclear">
+  <h3>Selected Data</h3>
+  <div id="selection">
+    <div id="data_cart"></div>
+    </div>
+    <div id="data_ops">
+    </div>
+  </div>
+
+
+</div>
+
+
+
+<div style="position:relative;float:right;width:200px">
+  <div id="refine" class="block">
+    <h3>{% trans "Refine Search" %}</h3>
+    <div class="bbox-controls">
+      <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
+      <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
+      <div class="bbox-expand">
+      </div>
+    </div>
+    <div class="search-button">Refine</div>
+  </div>
+
+</div>
+</div>
+        <div id="externalDiv"></div>
+        {% if user.is_authenticated %}
+            <div id="uploadDiv"></div>
+            {% if DB_DATASTORE  %}
+                <div id="createDiv"></div>
+            {% endif %}
+        {% endif %}
+        <div id="warpDiv">
+            <div id="tabContainer" style="padding:20px;">
+
+                <div style="position:relative;float:left;">
+
+
+                    <h3>{%trans "Rectify Images"  %}</h3>    
+                    
+                    <p style="font-size: 14px">Use <a target="_blank" href="http://warp.worldmap.harvard.edu">WorldMap WARP</a> to upload and rectify scanned maps for use in WorldMap. <br/><br/> Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 4.5 in <a href="{{ STATIC_URL }}docs/WorldMap_Help.pdf">WorldMap Help</a>.</p>
+                    <br/><br/>
+                    <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{{ STATIC_URL }}theme/img/warper-sample.jpg" border="0" /></a></div>
                 </div>
-
-                <div class="block wrap selfclear">
-                    <h3>Selected Data</h3>
-
-                    <div id="selection">
-                        <div id="data_cart"></div>
-                    </div>
-                    <div id="data_ops">
-                    </div>
-                </div>
-
-
             </div>
+        </div>
+    </div>
 
-            <div id="chartDiv">
+</div>
+
+    
+                <div id="chartDiv">
                 <!--
                 <input type="text" size="16" id="tokenInput" value="lol">
                 <button id="submitQuery" style="width:100px;">Submit</button>
@@ -846,29 +907,5 @@ window.onload = init;
 
             </div>
 
-            <div id="externalDiv"></div>
-            <div id="uploadDiv"></div>
-            <div id="createDiv"></div>
-            <div id="warpDiv">
-                <div id="tabContainer" style="padding:20px;">
-
-                    <div style="position:relative;float:left;">
-
-                        <h3>{%trans "Rectify Images" %}</h3>
-
-                        <p style="font-size: 14px">Use <a target="_blank" href="http://warp.worldmap.harvard.edu">WorldMap
-                            WARP</a> to upload and rectify scanned maps for use in WorldMap. <br/><br/> Maps rectified
-                            using this tool can be brought into WorldMap by following the instructions under Section
-                            3.9.1 in <a href="http://localhost:8000/media/docs/WorldMap_Help.pdf">WorldMap Help</a>.</p>
-                        <br/><br/>
-
-                        <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img
-                                src="{{ STATIC_URL }}theme/img/warper-sample.jpg" border="0"/></a></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-    {% endblock %}
+{% endblock %}
 
