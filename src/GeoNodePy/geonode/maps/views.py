@@ -2496,6 +2496,7 @@ def official_site_mobile(request, site):
     map_obj = get_object_or_404(Map,officialurl=site)
     return mobilemap(request, str(map_obj.id))
 
+
 def official_site_controller(request, site):
     '''
     main view for map resources, dispatches to correct
