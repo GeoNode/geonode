@@ -23,15 +23,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import backend
 from django.db.models import Q
 
-from geonode.security.models import UserObjectRoleMapping
-from geonode.security.models import GenericObjectRoleMapping
-from geonode.security.models import ANONYMOUS_USERS
-from geonode.security.models import AUTHENTICATED_USERS
-from geonode.maps.models import Layer, TopicCategory
+from geonode.security.models import UserObjectRoleMapping, GenericObjectRoleMapping
+from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.maps.models import Map
-from geonode.maps.models import MapLayer
 from geonode.documents.models import Document
-from geonode.people.models import Profile 
+from geonode.layers.models import Layer
+from geonode.people.models import Profile
+from geonode.base.models import TopicCategory, ResourceBase
 
 from geonode.search import extension
 from geonode.search.models import filter_by_period
@@ -88,11 +86,6 @@ def _filter_category(q, categories):
             pass
 
     return q.filter(category__in=_categories)
-
-def _add_relevance(q, query, rank_rules):
-    # for unittests, it doesn't make sense to test this as it's postgres
-    # specific SQL - instead test/verify directly using a query and getting SQL
-    if 'sqlite' in backend.__name__: return q
 
 def _add_relevance(query, rank_rules):
     eq = """CASE WHEN %s = '%s' THEN %s ELSE 0 END"""
@@ -218,7 +211,7 @@ def _get_map_results(query):
 
     if query.query:
         q = _build_map_layer_text_query(q, query, query_keywords=True)
-        rules = _rank_rules(Map,
+        rules = _rank_rules(ResourceBase,
             ['title',10, 5],
             ['abstract',5, 2],
         )
@@ -268,8 +261,7 @@ def _get_layer_results(query):
     if query.query:
         q = _build_map_layer_text_query(q, query, query_keywords=True) |\
             q.filter(name__icontains=query.query) # map doesn't have name
-        rules = _rank_rules(Layer,
-            ['name',10, 1],
+        rules = _rank_rules(ResourceBase,
             ['title',10, 5],
             ['abstract',5, 2],
         )
@@ -317,7 +309,7 @@ def _get_document_results(query):
 
     if query.query:
         q = _build_map_layer_text_query(q, query, query_keywords=True)
-        rules = _rank_rules(Document,
+        rules = _rank_rules(ResourceBase,
             ['title',10, 5],
             ['abstract',5, 2],
         )

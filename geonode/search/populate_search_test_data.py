@@ -21,7 +21,8 @@ from datetime import datetime
 from datetime import timedelta
 from django.core.serializers import serialize
 from django.contrib.auth.models import User
-from geonode.layers.models import Layer, TopicCategory
+from geonode.layers.models import Layer
+from geonode.base.models import TopicCategory
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.people.models import Profile 

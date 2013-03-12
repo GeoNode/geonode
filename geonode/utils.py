@@ -17,9 +17,6 @@
 #
 #########################################################################
 
-import datetime
-import os
-import subprocess
 import httplib2
 import base64
 import re
@@ -34,14 +31,12 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from owslib.wms import WebMapService
-from owslib.csw import CatalogueServiceWeb
 from django.http import HttpResponse
 
 # from geonode import GeoNodeException
 #from geonode.layers.models import Layer
 #from geonode.maps.models import Map
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.security.models import INVALID_PERMISSION_MESSAGE
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS, INVALID_PERMISSION_MESSAGE
 
 _wms = None
 _csw = None

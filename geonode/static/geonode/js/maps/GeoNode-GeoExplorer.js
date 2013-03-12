@@ -86,7 +86,7 @@ GeoNode.Composer = Ext.extend(GeoExplorer.Composer, {
      *  Construct the composer.
      */
     constructor: function(config) {
-        this.titleTemplate = new Ext.Template("<a class='maplist' href='" + this.rest + "'>Maps</a> / <strong>{title}");
+        this.titleTemplate = new Ext.Template("<a class='maplist' href='" + config.rest + "'>Maps</a> / <strong>{title}");
         // global request proxy and error handling
         OpenLayers.Request.events.on({
             "failure": function(evt) {
