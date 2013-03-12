@@ -29,7 +29,7 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
-from geonode.base.models import TopicCategory
+from geonode.base.models import TopicCategory, ResourceBase
 
 from geonode.search import extension
 from geonode.search.models import filter_by_period
@@ -211,7 +211,7 @@ def _get_map_results(query):
 
     if query.query:
         q = _build_map_layer_text_query(q, query, query_keywords=True)
-        rules = _rank_rules(Map,
+        rules = _rank_rules(ResourceBase,
             ['title',10, 5],
             ['abstract',5, 2],
         )
@@ -261,8 +261,7 @@ def _get_layer_results(query):
     if query.query:
         q = _build_map_layer_text_query(q, query, query_keywords=True) |\
             q.filter(name__icontains=query.query) # map doesn't have name
-        rules = _rank_rules(Layer,
-            ['name',10, 1],
+        rules = _rank_rules(ResourceBase,
             ['title',10, 5],
             ['abstract',5, 2],
         )
@@ -310,7 +309,7 @@ def _get_document_results(query):
 
     if query.query:
         q = _build_map_layer_text_query(q, query, query_keywords=True)
-        rules = _rank_rules(Document,
+        rules = _rank_rules(ResourceBase,
             ['title',10, 5],
             ['abstract',5, 2],
         )
