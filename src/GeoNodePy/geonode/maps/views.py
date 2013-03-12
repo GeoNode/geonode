@@ -2488,6 +2488,13 @@ def official_site(request, site):
     map_obj = get_object_or_404(Map,officialurl=site)
     return view(request, str(map_obj.id))
 
+def official_site_mobile(request, site):
+    """
+    The view that returns the map composer opened to
+    the map with the given official site url.
+    """
+    map_obj = get_object_or_404(Map,officialurl=site)
+    return mobilemap(request, str(map_obj.id))
 
 
 def official_site_controller(request, site):

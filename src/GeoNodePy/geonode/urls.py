@@ -76,6 +76,7 @@ urlpatterns += geonode.proxy.urls.urlpatterns
 official_site_url_patterns = patterns('',
     (r'^tweetmap/$', 'geonode.maps.views.tweetview'),
     (r'^(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.official_site'),
+    (r'^(?P<site>[A-Za-z0-9_\-]+)/mobile/?$', 'geonode.maps.views.official_site_mobile'),
     (r'^(?P<site>[A-Za-z0-9_\-]+)/edit$', 'geonode.maps.views.official_site_controller'),
 )
 
