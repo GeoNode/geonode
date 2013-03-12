@@ -33,17 +33,15 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
-from geonode.layers.models import Layer, TopicCategory, ResourceBase
+from geonode.layers.models import Layer
+from geonode.base.models import ResourceBase
 from geonode.maps.signals import map_changed_signal
-from geonode.security.models import PermissionLevelMixin
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
 from geonode.utils import forward_mercator
-
-from taggit.managers import TaggableManager
 
 from geoserver.catalog import Catalog
 from geoserver.layer import Layer as GsLayer
@@ -307,6 +305,10 @@ class Map(ResourceBase, GXPMapBase):
             ml.save()
 
         self.set_default_permissions()
+
+    @property
+    def class_name(self):
+        return self.__class__.__name__
 
 class MapLayer(models.Model, GXPLayerBase):
     """

@@ -1,8 +1,0 @@
-<article class="span4">
-  <a href="{% url document_detail document.id %}"><img src="{{ STATIC_URL }}geonode/img/placeholder2.png" width="100%" alt="{{ document.title }}" /></a>
-  <div class="details">
-    <a href="{% url document_detail document.id %}"><h3>{{ document.title }}</h3></a>
-    <div class="meta">{% trans 'from' %} <a href="{% url profile_detail document.owner.username %}">{{ document.owner }}</a>, {{ document.date|timesince }} ago</div>
-    <p>{{ document.abstract }}</p>
-  </div>
-</article>

@@ -19,10 +19,7 @@
 #########################################################################
 
 import math
-import unicodedata
 import logging
-
-from urllib import urlencode
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -30,17 +27,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
-from django.views.generic.list import ListView
-from django.db.models import Q
 from django.views.decorators.http import require_POST
 
-from geonode.utils import _split_query, http_client
-from geonode.layers.models import Layer, TopicCategory
+from geonode.utils import http_client
+from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import forward_mercator
 from geonode.utils import DEFAULT_TITLE
@@ -48,8 +43,7 @@ from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
 from geonode.utils import resolve_object
 from geonode.maps.forms import MapForm
-from geonode.people.models import Profile
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
 
 
@@ -538,127 +532,6 @@ def maps_search_page(request, template='maps/map_search.html'):
         "search_action": reverse("maps_search"),
         "search_type": "map"
     }))
-
-
-def maps_search(request):
-    """
-    handles a basic search for maps using the Catalogue.
-
-    the search accepts:
-    q - general query for keywords across all fields
-    start - skip to this point in the results
-    limit - max records to return
-    sort - field to sort results on
-    dir - ASC or DESC, for ascending or descending order
-
-    for ajax requests, the search returns a json structure
-    like this:
-
-    {
-    'total': <total result count>,
-    'next': <url for next batch if exists>,
-    'prev': <url for previous batch if exists>,
-    'query_info': {
-        'start': <integer indicating where this batch starts>,
-        'limit': <integer indicating the batch size used>,
-        'q': <keywords used to query>,
-    },
-    'rows': [
-      {
-        'title': <map title,
-        'abstract': '...',
-        'detail' : <url geonode detail page>,
-        'owner': <name of the map's owner>,
-        'owner_detail': <url of owner's profile page>,
-        'last_modified': <date and time of last modification>
-      },
-      ...
-    ]}
-    """
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    # grab params directly to implement defaults as
-    # opposed to panicy django forms behavior.
-    query = params.get('q', '')
-    try:
-        start = int(params.get('start', '0'))
-    except Exception:
-        start = 0
-
-    try:
-        limit = min(int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE)),
-                    MAX_MAPS_SEARCH_BATCH_SIZE)
-    except Exception:
-        limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
-
-
-    sort_field = params.get('sort', u'')
-    sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')
-    sort_dir = params.get('dir', 'ASC')
-    result = _maps_search(query, start, limit, sort_field, sort_dir)
-
-    result['success'] = True
-    return HttpResponse(json.dumps(result), mimetype="application/json")
-
-
-def _maps_search(query, start, limit, sort_field, sort_dir):
-
-    keywords = _split_query(query)
-
-    map_query = Map.objects
-    for keyword in keywords:
-        map_query = map_query.filter(
-              Q(title__icontains=keyword)
-            | Q(abstract__icontains=keyword))
-
-    if sort_field:
-        order_by = ("" if sort_dir == "ASC" else "-") + sort_field
-        map_query = map_query.order_by(order_by)
-
-    maps_list = []
-
-    for m in map_query.all()[start:start+limit]:
-        try:
-            owner_name = Profile.objects.get(user=m.owner).name
-        except Exception:
-            owner_name = m.owner.first_name + " " + m.owner.last_name
-
-        mapdict = {
-            'id' : m.id,
-            'title' : m.title,
-            'abstract' : m.abstract,
-            'detail' : reverse('map_detail', args=(m.id,)),
-            'owner' : owner_name,
-            'owner_detail' : reverse('profile_detail', args=(m.owner.username,)),
-            'last_modified' : m.last_modified.isoformat()
-            }
-        maps_list.append(mapdict)
-
-    result = {'rows': maps_list,
-              'total': map_query.count()}
-
-    result['query_info'] = {
-        'start': start,
-        'limit': limit,
-        'q': query
-    }
-    if start > 0:
-        prev = max(start - limit, 0)
-        params = urlencode({'q': query, 'start': prev, 'limit': limit})
-        result['prev'] = reverse('maps_search') + '?' + params
-
-    next_page = start + limit + 1
-    if next_page < map_query.count():
-        params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
-        result['next'] = reverse('maps_search') + '?' + params
-
-    return result
-
 
 def maplayer_attributes(request, layername):
     #Return custom layer attribute labels/order in JSON format

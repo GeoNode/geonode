@@ -18,19 +18,14 @@
 #
 #########################################################################
 
-LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES = [
-    'xsd:byte',
-    'xsd:decimal',
-    'xsd:int',
-    'xsd:integer',
-    'xsd:long',
-    'xsd:negativeInteger',
-    'xsd:nonNegativeInteger',
-    'xsd:nonPositiveInteger',
-    'xsd:positiveInteger',
-    'xsd:short',
-    'xsd:unsignedLong',
-    'xsd:unsignedInt',
-    'xsd:unsignedShort',
-    'xsd:unsignedByte',
-]
+from django.utils.translation import ugettext as _
+
+# implicitly defined 'generic' groups of users
+ANONYMOUS_USERS = 'anonymous'
+AUTHENTICATED_USERS = 'authenticated'
+
+GENERIC_GROUP_NAMES = {
+    ANONYMOUS_USERS: _('Anonymous Users'),
+    AUTHENTICATED_USERS: _('Registered Users')
+}
+INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")

@@ -1,6 +1,4 @@
-import json, unicodedata
-
-from urllib import urlencode
+import json
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -11,14 +9,14 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.db.models import Q
-from django.views.generic.list import ListView
+from django.views.decorators.http import require_POST
+from django.core.exceptions import PermissionDenied
 
+from geonode.utils import resolve_object
 from geonode.maps.views import _perms_info
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.maps.models import Map
-from geonode.layers.models import Layer, TopicCategory
-from geonode.people.models import Profile
+from geonode.layers.models import Layer
 from geonode.people.forms import ProfileForm
 
 from geonode.documents.models import Document
@@ -32,6 +30,20 @@ DOCUMENT_LEV_NAMES = {
     Document.LEVEL_WRITE : _('Read/Write'),
     Document.LEVEL_ADMIN : _('Administrative')
 }
+
+_PERMISSION_MSG_DELETE = _("You are not permitted to delete this document")
+_PERMISSION_MSG_GENERIC = _('You do not have permissions for this document.')
+_PERMISSION_MSG_MODIFY = _("You are not permitted to modify this document")
+_PERMISSION_MSG_METADATA = _("You are not permitted to modify this document's metadata")
+_PERMISSION_MSG_VIEW = _("You are not permitted to view this document")
+
+def _resolve_document(request, docid, permission='layers.change_layer',
+                   msg=_PERMISSION_MSG_GENERIC, **kwargs):
+    '''
+    Resolve the layer by the provided typename and check the optional permission.
+    '''
+    return resolve_object(request, Document, {'pk':docid},
+                          permission = permission, permission_msg=msg, **kwargs)
 
 def document_list(request, template='documents/document_list.html'):
     from geonode.search.views import search_page
@@ -65,7 +77,7 @@ def document_detail(request, docid):
     except:
         related = ''
 
-    return render_to_response("documents/docinfo.html", RequestContext(request, {
+    return render_to_response("documents/document_detail.html", RequestContext(request, {
         'permissions_json': json.dumps(_perms_info(document, DOCUMENT_LEV_NAMES)),
         'document': document,
         'imgtypes': IMGTYPES,
@@ -100,10 +112,9 @@ def document_upload(request):
         document = Document(content_type=content_type, object_id=object_id, title=title, doc_file=doc_file)
         document.owner = request.user
         document.save()
-        document.set_default_permissions()
         permissionsStr = request.POST['permissions']
         permissions = json.loads(permissionsStr)
-        set_document_permissions(document, permissions)
+        document_set_permissions(document, permissions)
 
         return HttpResponse(json.dumps({'success': True,'redirect_to': reverse('document_metadata', 
                 args=(document.id,))}))
@@ -163,113 +174,6 @@ def document_metadata(request, docid, template='documents/document_metadata.html
         "poc_form": poc_form,
         "author_form": author_form,
     }))
-        
-#### DOCUMENTS SEARCHING ####
-
-DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
-MAX_MAPS_SEARCH_BATCH_SIZE = 25
-
-def documents_search(request):
-    """
-    Returns a json structure
-    """
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    # grab params directly to implement defaults as
-    # opposed to panicy django forms behavior.
-    query = params.get('q', '')
-    try:
-        start = int(params.get('start', '0'))
-    except:
-        start = 0
-    try:
-        limit = min(int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE)),
-                    MAX_MAPS_SEARCH_BATCH_SIZE)
-    except: 
-        limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
-
-    try:
-        related_id = int(params.get('related_id', None))
-    except: 
-        related_id = None
-
-    related_type = params.get('related_type', None)
-
-    sort_field = params.get('sort', u'')
-    sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')  
-    sort_dir = params.get('dir', 'ASC')
-    result = _documents_search(query, start, limit, sort_field, sort_dir, related_id, related_type)
-
-    result['success'] = True
-    return HttpResponse(json.dumps(result), mimetype="application/json")
-
-def _documents_search(query, start, limit, sort_field, sort_dir, related_id, related_type):
-
-    keywords = _split_query(query)
-
-    documents = Document.objects
-
-    if related_id is not None:
-        ctype = ContentType.objects.get(name=related_type)
-        documents = documents.filter(content_type=ctype, object_id=related_id)
-
-    for keyword in keywords:
-        documents = documents.filter(
-              Q(title__icontains=keyword)
-            | Q(type__icontains=keyword))
-
-    if sort_field:
-        order_by = ("" if sort_dir == "ASC" else "-") + sort_field
-        documents = documents.order_by(order_by)
-
-    documents_list = []
-
-    for document in documents.all()[start:start+limit]:
-        try:
-            owner_name = Profile.objects.get(user=document.owner).name
-        except:
-            owner_name = document.owner.first_name + " " + document.owner.last_name
-
-        try:
-            related = document.content_type.get_object_for_this_type(id=document.object_id)
-        except:
-            related = ''
-
-        mapdict = {
-            'id' : document.id,
-            'title' : document.title,
-            'detail' : reverse('document_detail', args=(document.id,)),
-            'owner' : owner_name,
-            'owner_detail' : document.owner.get_profile().get_absolute_url(),
-            'related': related.title if related != '' else '',
-            'related_url': related.get_absolute_url() if related != '' else '',
-            'type': document.extension,
-            }
-        documents_list.append(mapdict)
-
-    result = {'rows': documents_list,'total': documents.count()}
-
-    result['query_info'] = {
-        'start': start,
-        'limit': limit,
-        'q': query
-    }
-    if start > 0: 
-        prev = max(start - limit, 0)
-        params = urlencode({'q': query, 'start': prev, 'limit': limit})
-        result['prev'] = reverse('documents.views.documents_search') + '?' + params
-
-    next = start + limit + 1
-    if next < documents.count():
-         params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
-         result['next'] = reverse('documents.views.documents_search') + '?' + params
-    
-    return result
 
 def document_search_page(request):
     # for non-ajax requests, render a generic search page
@@ -286,66 +190,38 @@ def document_search_page(request):
          "site" : settings.SITEURL
     }))
 
-def _split_query(query):
-    """
-    split and strip keywords, preserve space 
-    separated quoted blocks.
-    """
-
-    qq = query.split(' ')
-    keywords = []
-    accum = None
-    for kw in qq: 
-        if accum is None: 
-            if kw.startswith('"'):
-                accum = kw[1:]
-            elif kw: 
-                keywords.append(kw)
-        else:
-            accum += ' ' + kw
-            if kw.endswith('"'):
-                keywords.append(accum[0:-1])
-                accum = None
-    if accum is not None:
-        keywords.append(accum)
-    return [kw.strip() for kw in keywords if kw.strip()]
-
-def ajax_document_permissions(request, docid):
-    document = get_object_or_404(Document, pk=docid)
-
-    if not request.method == 'POST':
+@require_POST
+def document_permissions(request, docid):
+    try:
+        document = _resolve_document(request, docid, 'documents.change_document_permissions')
+    except PermissionDenied:
+        # we are handling this in a non-standard way
         return HttpResponse(
-            'You must use POST for editing document permissions',
-            status=405,
-            mimetype='text/plain'
-        )
-
-    if not request.user.has_perm("documents.change_document_permissions", obj=document):
-        return HttpResponse(
-            'You are not allowed to change permissions for this document',
+            'You are not allowed to change permissions for this layer',
             status=401,
-            mimetype='text/plain'
-        )
+            mimetype='text/plain')
 
-    spec = json.loads(request.raw_post_data)
-    set_document_permissions(document, spec)
+    permission_spec = json.loads(request.raw_post_data)
+    document_set_permissions(document, permission_spec)
 
     return HttpResponse(
-        "Permissions updated",
+        json.dumps({'success': True}),
         status=200,
         mimetype='text/plain'
     )
 
-def set_document_permissions(m, perm_spec):
+def document_set_permissions(document, perm_spec):
     if "authenticated" in perm_spec:
-        m.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+        document.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
     if "anonymous" in perm_spec:
-        m.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-    users = [n for (n, p) in perm_spec['users']]
-    m.get_user_levels().exclude(user__username__in = users + [m.owner]).delete()
+        document.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+    users = [n[0] for n in perm_spec['users']]
+    excluded = users + [document.owner]
+    existing = document.get_user_levels().exclude(user__username__in=excluded)
+    existing.delete()
     for username, level in perm_spec['users']:
         user = User.objects.get(username=username)
-        m.set_user_level(user, level)
+        document.set_user_level(user, level)
 
 def resources_search(request):
     """
@@ -371,3 +247,23 @@ def resources_search(request):
 
     result = {'rows': resources_list,'total': qset.count()}
     return HttpResponse(json.dumps(result))
+
+@login_required
+def document_replace(request, docid, template='documents/document_replace.html'):
+    #TODO?
+    pass
+
+@login_required
+def document_remove(request, docid, template='documents/document_remove.html'):
+    document = _resolve_document(request, docid, 'documents.delete_document',
+                           _PERMISSION_MSG_DELETE)
+
+    if (request.method == 'GET'):
+        return render_to_response(template,RequestContext(request, {
+            "document": document
+        }))
+    if (request.method == 'POST'):
+        document.delete()
+        return HttpResponseRedirect(reverse("documents_browse"))
+    else:
+        return HttpResponse("Not allowed",status=403)
