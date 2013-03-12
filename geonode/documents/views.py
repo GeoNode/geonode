@@ -111,7 +111,6 @@ def document_upload(request):
 
         if not os.path.splitext(request.FILES['file'].name)[1].lower()[1:] in ALLOWED_DOC_TYPES:
             return HttpResponse(json.dumps({'success': False, 'errormsgs': ['This file type is not allowed.']}))
-        import ipdb; ipdb.set_trace()
         if not request.FILES['file'].size < settings.MAX_DOCUMENT_SIZE * 1024 * 1024:
             return HttpResponse(json.dumps({'success': False, 'errormsgs': ['This file is too big.']}))
 
