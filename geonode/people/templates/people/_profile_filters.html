@@ -5,7 +5,7 @@
   <li><a href="{% url "profile_detail" profile.user.username %}" {% if content_filter  == "all" %}class="selected"{% endif %}>{% trans "All contents" %}</a></li>
   <li><a href="{% url "profile_detail" profile.user.username %}?content=layers"{% if content_filter == "layers" %} class="selected"{% endif %}>{% trans "Layers" %}</a></li>
   <li><a href="{% url "profile_detail" profile.user.username %}?content=maps"{% if content_filter == "maps" %} class="selected"{% endif %}>{% trans "Maps" %}</a></li>
-  <li><a href="{% url "profile_detail" profile.user.username %}?content=docs"{% if content_filter == "documents" %} class="selected"{% endif %}>{% trans "Documents" %}</a></li>
+  <li><a href="{% url "profile_detail" profile.user.username %}?content=documents"{% if content_filter == "documents" %} class="selected"{% endif %}>{% trans "Documents" %}</a></li>
 </ul>
 
 <ul class="nav nav-pills filter">
