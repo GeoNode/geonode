@@ -21,7 +21,6 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
@@ -67,13 +66,35 @@ def profile_edit(request, username=None):
         "form": form,
     })
 
+def _get_user_objects(profile):   
+    qs_layers = []
+    qs_maps = []
+    qs_docs = []
+
+    for obj in profile.user.resourcebase_set.all():
+            try:
+                obj.map
+                qs_maps.append(obj.map)
+            except:
+                pass
+            try:
+                obj.layer
+                qs_layers.append(obj.layer)
+            except:
+                pass
+            try: 
+                obj.document
+                qs_docs.append(obj.document)
+            except:
+                pass
+    # chain objects
+    return qs_layers, qs_maps, qs_docs
 
 def profile_detail(request, username):
     profile = get_object_or_404(Profile, user__username=username)
     # combined queryset from each model content type
-    qs_layers = []
-    qs_maps = []
-    qs_docs = []
+    qs_layers, qs_maps, qs_docs = _get_user_objects(profile)
+    object_list = []
     content_filter = 'all'
     sortby_field = 'date'
     if ('content' in request.GET):
@@ -81,19 +102,16 @@ def profile_detail(request, username):
       if content != 'all':
           if (content == 'layers'):
               content_filter = 'layers'
-              qs_layers = profile.user.layer_set.all()
+              object_list = qs_layers
           if (content == 'maps'):
               content_filter = 'maps'
-              qs_maps = profile.user.map_set.all()
-          if (content == 'docs'):
-              content_filter = 'docs'
-              qs_docs = profile.user.document_set.all()
-    if content_filter == 'all':
-        qs_layers = profile.user.layer_set.all()
-        qs_maps = profile.user.map_set.all()
-        qs_docs = profile.user.document_set.all()
-    # chain objects
-    object_list = list(chain(qs_layers, qs_maps, qs_docs))
+              object_list = qs_maps
+          if (content == 'documents'):
+              content_filter = 'documents'
+              object_list = qs_docs
+    if content_filter == 'all':       
+        object_list = list(chain(qs_layers,qs_maps,qs_docs))
+
     sortby_field = 'date'
     if ('sortby' in request.GET):
         sortby_field = request.GET['sortby']

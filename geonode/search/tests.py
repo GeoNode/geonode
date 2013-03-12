@@ -22,8 +22,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.test.client import Client
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from geonode.security.models import AUTHENTICATED_USERS
-from geonode.security.models import ANONYMOUS_USERS
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document

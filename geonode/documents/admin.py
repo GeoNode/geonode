@@ -1,5 +1,5 @@
 from django.contrib import admin
-from geonode.documents.models import Document, ContactRole
+from geonode.documents.models import Document
 
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'date', 'category')
@@ -9,4 +9,3 @@ class DocumentAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
 
 admin.site.register(Document, DocumentAdmin)
-admin.site.register(ContactRole)
