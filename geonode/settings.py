@@ -171,6 +171,7 @@ INSTALLED_APPS = (
 
     # GeoNode internal apps
     'geonode.people',
+    'geonode.base',
     'geonode.layers',
     'geonode.upload',
     'geonode.maps',
@@ -512,6 +513,9 @@ DB_DATASTORE_NAME = ''
 LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
 }
+
+# Default TopicCategory to be used for resources. Use the slug field here
+DEFAULT_TOPICCATEGORY = 'location' 
 
 # Load more settings from a file called local_settings.py if it exists
 try:

@@ -36,8 +36,6 @@ from geonode.search.normalizers import apply_normalizers
 from geonode.search.query import query_from_request
 from geonode.search.query import BadQuery
 
-from taggit.models import Tag
-
 from datetime import datetime
 from time import time
 import json
