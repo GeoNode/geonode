@@ -68,7 +68,7 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
             split: true,
             region: "west",
             autoScroll:true,
-            width:"90%",
+            width: "90%",
             title: "Layers",
             plugins: {
                 init: function (p) {
@@ -133,8 +133,10 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
                 ptype: "gxp_layermanager",
                 groups: (config.map.groups || config.treeconfig),
                 id: "treecontentmgr",
+                autoScroll: true,
                 outputConfig: {
                     id: "treecontent",
+		    width: "100%",
                     autoScroll: true
                 },
                 outputTarget: "westpanel"
