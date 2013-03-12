@@ -21,8 +21,8 @@
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.contenttypes.models import ContentType 
 from django.db import models
-from geonode.security.models import ANONYMOUS_USERS, AUTHENTICATED_USERS, \
-     GenericObjectRoleMapping, Permission, UserObjectRoleMapping
+from geonode.security.models import GenericObjectRoleMapping, Permission, UserObjectRoleMapping
+from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 
 class GranularBackend(ModelBackend):
     """
@@ -67,11 +67,16 @@ class GranularBackend(ModelBackend):
                 return all_perms
 
     def has_perm(self, user_obj, perm, obj=None):
-        # in case the user is the owner, he/she has always permissions, otherwise we need to check
-        if user_obj == obj.owner:
-            return True
+        if obj is None:
+            # fallback to Django default permission backend
+            return ModelBackend.has_perm(self, user_obj, perm)
         else:
-            return perm in self.get_all_permissions(user_obj, obj=obj)
+            # in case the user is the owner, he/she has always permissions, 
+            # otherwise we need to check
+            if hasattr(obj, 'owner') and user_obj == obj.owner:
+                return True
+            else:
+                return perm in self.get_all_permissions(user_obj, obj=obj)
 
     def _cache_key_for_obj(self, obj):
         model = obj.__class__
