@@ -13,7 +13,11 @@ button.logout {
 button.login {
     display:none;
 }
+.map-title-header {
+    margin-right: 10px;
+}
 </style>
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/maps/GeoNode-mixin.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/maps/GeoNode-GeoExplorer.js"></script>
 <script type="text/javascript">
 var app;
