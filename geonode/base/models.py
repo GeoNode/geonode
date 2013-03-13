@@ -29,7 +29,7 @@ class ContactRole(models.Model):
     """
     ContactRole is an intermediate abstract model to bind Profiles as Contacts to Layers and apply roles.
     """
-    resource = models.ForeignKey('ResourceBase', null=True)
+    resource = models.ForeignKey('ResourceBase')
     contact = models.ForeignKey(Profile)
     role = models.ForeignKey(Role)
 
@@ -313,3 +313,23 @@ class Link(models.Model):
     url = models.TextField(unique=True, max_length=1000)
 
     objects = LinkManager()
+
+def resourcebase_post_save(instance, sender, **kwargs):
+    """
+    Since django signals are not propagated from child to parent classes we need to call this 
+    from the childs.
+    TODO: once the django will support signal propagation we need to attach a single signal here
+    """
+    resourcebase = instance.resourcebase_ptr
+    if resourcebase.owner:
+        user = resourcebase.owner
+    else:
+        user = ResourceBase.objects.admin_contact()
+
+    pc, __ = Profile.objects.get_or_create(user=user,
+                                           defaults={"name": resourcebase.owner.username})
+    ac, __ = Profile.objects.get_or_create(user=user,
+                                           defaults={"name": resourcebase.owner.username}
+                                           )
+    resourcebase.poc = pc
+    resourcebase.metadata_author = ac
