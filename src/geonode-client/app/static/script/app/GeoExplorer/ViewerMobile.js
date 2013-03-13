@@ -136,7 +136,7 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
                 autoScroll: true,
                 outputConfig: {
                     id: "treecontent",
-		    width: "100%",
+		            width: "100%",
                     autoScroll: true
                 },
                 outputTarget: "westpanel"
@@ -151,6 +151,40 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
     },
 
+    
+    initInfoTextWindow: function() {
+        this.infoTextPanel = new Ext.FormPanel({
+        	layout: 'fit',
+            bodyStyle: {padding: "5px"},
+            labelAlign: "top",
+            preventBodyReset: true,
+            autoScroll:false,
+            autoWidth: true,
+            html: this.about['introtext']
+        });
+
+
+
+
+        this.infoTextWindow = new Ext.Window({
+            title: this.about.title,
+            closeAction: 'hide',
+            items: this.infoTextPanel,
+            modal: true,
+            width: "100%",
+            autoHeight: true,
+            autoScroll: true,
+            bbar: [{
+                text: 'Close',
+                width: "100%",
+                handler: function(){
+                   this.close(); 
+                }
+                }]
+        });
+    },
+    
+    
     /** private: method[initPortal]
      * Create the various parts that compose the layout.
      */
@@ -226,7 +260,22 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
             height: 400
         });
         
+        
+        this.about["introtext"] = "Hello";
+        
         GeoExplorer.superclass.initPortal.apply(this, arguments);
+        
+        
+        //Show the info window if it's the first time here
+        if (this.config.first_visit_mobile) {
+        	this.about["introtext"] = Ext.get("mobile_intro").dom.innerHTML;
+            if (!this.infoTextWindow) {
+                this.initInfoTextWindow();
+            }
+            this.infoTextWindow.show();  	
+            this.infoTextWindow.alignTo(document, 'tl-tl');
+        }
+
 
     },
     
