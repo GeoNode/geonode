@@ -180,6 +180,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
 
     poc = layer.poc
     metadata_author = layer.metadata_author
+    
     ContactRole.objects.get(resource=layer, role=layer.poc_role)
     ContactRole.objects.get(resource=layer, role=layer.metadata_author_role)
 
@@ -214,12 +215,11 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                 la.save()
 
         if new_poc is not None and new_author is not None:
-            the_layer = layer_form.save(commit=False)
+            the_layer = layer_form.save()
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
             the_layer.keywords.clear()
             the_layer.keywords.add(*new_keywords)
-            the_layer.save()
             return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
 
     if poc.user is None:

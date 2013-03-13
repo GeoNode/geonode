@@ -35,7 +35,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
-from geonode.base.models import ResourceBase, ResourceBaseManager, Link
+from geonode.base.models import ResourceBase, ResourceBaseManager, Link, resourcebase_post_save
 from geonode.utils import  _user, _password, get_wms
 from geonode.geoserver.helpers import cascading_delete
 from geonode.people.models import Profile
@@ -271,25 +271,11 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_x1 = instance.resourcebase_ptr.bbox_x1
         instance.bbox_y0 = instance.resourcebase_ptr.bbox_y0
         instance.bbox_y1 = instance.resourcebase_ptr.bbox_y1
-        instance.resourcebase_ptr.contactrole_set.create(role=instance.poc_role,
-                                         contact=Layer.objects.admin_contact())
-        instance.resourcebase_ptr.contactrole_set.create(role=instance.metadata_author_role,
-                                         contact=Layer.objects.admin_contact())
 
     if instance.abstract == '' or instance.abstract is None:
         instance.abstract = 'No abstract provided'
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
-    # Stay away from setting poc or metadata author in the usual way,
-    # it requires the layer to be saved to the database.
-    # By using contact_role_set we bypass that restriction.
-    if instance.poc is None:
-        instance.contactrole_set.create(role=instance.poc_role,
-                                         contact=Layer.objects.admin_contact())
-
-    if instance.metadata_author is None:
-        instance.contactrole_set.create(role=instance.metadata_author_role,
-                                         contact=Layer.objects.admin_contact())
 
 def post_delete_layer(instance, sender, **kwargs):
     """Removed the layer from any associated map, if any.
@@ -677,4 +663,4 @@ signals.pre_save.connect(geoserver_pre_save, sender=Layer)
 signals.pre_delete.connect(geoserver_pre_delete, sender=Layer)
 signals.post_save.connect(geoserver_post_save, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)
-
+signals.post_save.connect(resourcebase_post_save, sender=Layer)
