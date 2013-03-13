@@ -1,4 +1,4 @@
-import json
+import json, os
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -23,6 +23,8 @@ from geonode.documents.models import Document
 from geonode.documents.forms import DocumentForm
 
 IMGTYPES = ['jpg','jpeg','tif','tiff','png','gif']
+
+ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
 DOCUMENT_LEV_NAMES = {
     Document.LEVEL_NONE  : _('No Permissions'),
@@ -106,6 +108,11 @@ def document_upload(request):
         except: 
             if object_id is not None:
                 object_id = Layer.objects.get(uuid=object_id).id
+
+        if not os.path.splitext(request.FILES['file'].name)[1].lower()[1:] in ALLOWED_DOC_TYPES:
+            return HttpResponse(json.dumps({'success': False, 'errormsgs': ['This file type is not allowed.']}))
+        if not request.FILES['file'].size < settings.MAX_DOCUMENT_SIZE * 1024 * 1024:
+            return HttpResponse(json.dumps({'success': False, 'errormsgs': ['This file is too big.']}))
 
         doc_file = request.FILES['file']
         title = request.POST['title']
