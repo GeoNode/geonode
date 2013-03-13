@@ -2779,6 +2779,13 @@ def mobilemap(request, mapid=None, snapshot=None):
         else:
             config = snapshot_config(snapshot, map_obj, request.user)
 
+        first_visit_mobile = True
+        if request.session.get('visit_mobile' + str(map_obj.id), False):
+            first_visit_mobile = False
+        else:
+            request.session['visit_mobile' + str(map_obj.id)] = True
+        config['first_visit_mobile'] = first_visit_mobile
+        
     return render_to_response('maps/mobilemap.html', RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
