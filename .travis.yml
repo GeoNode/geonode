@@ -8,7 +8,7 @@ virtualenv:
 
 branches:
   only:
-    - dev
+    - master 
 
 install:
   - sudo apt-get update
