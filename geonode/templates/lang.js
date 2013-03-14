@@ -4,14 +4,19 @@ if (window.GeoExt && GeoExt.Lang) {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
 }
 
-if (window.GeoNode && GeoNode.Composer) {
-    Ext.apply(GeoNode.Composer.prototype, {
+if (window.GeoNode && GeoNode.plugins.Save) {
+    Ext.apply(GeoNode.plugins.Save.prototype, {
         metadataFormCancelText : gettext("Cancel"),
         metadataFormSaveAsCopyText : gettext("Save as Copy"),
         metaDataHeader: gettext("About this Map"),
         metaDataMapAbstract: gettext("Abstract"),
         metadataFormSaveText : gettext("Save"),
-        metaDataMapTitle: gettext("Title"),
+        metaDataMapTitle: gettext("Title")
+    });
+}
+
+if (window.GeoNode && GeoNode.plugins.XHRTrouble) {
+    Ext.apply(GeoNode.plugins.XHRTrouble.prototype, {
         connErrorTitleText: gettext("Connection Error"),
         connErrorText: gettext("The server returned an error"),
         connErrorDetailsText: gettext("Details...")
