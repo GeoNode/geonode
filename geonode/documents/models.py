@@ -10,7 +10,7 @@ from django.contrib.contenttypes import generic
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 from geonode.people.models import Profile
@@ -78,28 +78,12 @@ def pre_save_document(instance, sender, **kwargs):
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 
-    if instance.poc is None:
-        instance.contactrole_set.create(role=instance.poc_role,
-                                         contact=Layer.objects.admin_contact())
-
-    if instance.metadata_author is None:
-        instance.contactrole_set.create(role=instance.metadata_author_role,
-                                         contact=Layer.objects.admin_contact())
     if instance.resource:
         instance.csw_wkt_geometry = instance.resource.geographic_bounding_box
         instance.bbox_x0 = instance.resource.bbox_x0
         instance.bbox_x1 = instance.resource.bbox_x1
         instance.bbox_y0 = instance.resource.bbox_y0
         instance.bbox_y1 = instance.resource.bbox_y1
-
-def post_save_document(instance,sender, **kwargs):
-    pc, __ = Profile.objects.get_or_create(user=instance.owner,
-                                           defaults={"name": instance.owner.username})
-    ac, __ = Profile.objects.get_or_create(user=instance.owner,
-                                           defaults={"name": instance.owner.username}
-                                           )
-    instance.poc = pc
-    instance.metadata_author = ac
 
 def update_documents_extent(sender, **kwargs):
     model = 'map' if isinstance(sender, Map) else 'layer'
@@ -108,5 +92,5 @@ def update_documents_extent(sender, **kwargs):
         document.save()
 
 signals.pre_save.connect(pre_save_document, sender=Document)
-signals.post_save.connect(post_save_document, sender=Document)
+signals.post_save.connect(resourcebase_post_save, sender=Document)
 map_changed_signal.connect(update_documents_extent)
