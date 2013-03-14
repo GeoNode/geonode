@@ -6,10 +6,12 @@
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
       <link href="{{ STATIC_URL }}libs/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+      {% block css-src %}
+      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
+      {% endblock %}
       <link href='{{ STATIC_URL }}geonode/font/lato_font.css' rel='stylesheet' type='text/css' />
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}libs/datatables/css/datatables.css" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}libs/select2/select2.css" rel="stylesheet"/>
       {% block extra_head %}{% endblock %}
     {% endblock %}
@@ -126,6 +128,7 @@
                   <li id="nav_search">
                     <a href="{% url advanced_search %}">{% trans "Search" %}</a>
                   </li>
+                  {% block extra-nav %}{% endblock %}
                 </ul>
               </nav>
             </div>
@@ -199,7 +202,6 @@
     <script src="{{ STATIC_URL }}libs/js/jquery-1.8.0.js"></script>
     <script src="{{ STATIC_URL }}libs/bootstrap/js/bootstrap.min.js"></script>
     <script src="{{ STATIC_URL }}libs/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="{{ STATIC_URL }}libs/js/hogan.js"></script>
     <script src="{{ STATIC_URL }}libs/js/jquery.timeago.js"></script>
     <script src="{{ STATIC_URL }}libs/js/json2.js"></script>
     <script src="{{ STATIC_URL }}libs/select2/select2.js"></script>
@@ -207,7 +209,8 @@
     <script>
       $("#search").select2({
         minimumInputLength: 1,
-        placeholder: 'Search...',     
+        placeholder: 'Search...',
+        width: 'element',     
         ajax: {
           url: '{% url search_api %}',
           data: function(term,page){
@@ -223,16 +226,17 @@
           results: function(data, page) {
             var more = (page * 10) < data.total;
             return {
-              results: data.results,
+              results: $.map(data.results,function(object){
+                return {id: object.id, text: object.title};
+              }),
               more: more
             }
           }          
         },
-        formatResult: function(item){
-          return item.title;
+        createSearchChoice:function(term, data) { if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} 
         },
         formatSelection: function(item){
-          $('#search').val(item.title);
+          $('#search').val(item.text);
           $('#search').parent().submit();
         }
       });

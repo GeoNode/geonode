@@ -139,7 +139,6 @@ class LayerDescriptionForm(forms.Form):
 class LayerAttributeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(LayerAttributeForm, self).__init__(*args, **kwargs)
-        instance = getattr(self, 'instance', None)
         self.fields['attribute'].widget.attrs['readonly'] = True
         self.fields['display_order'].widget.attrs['size'] = 3
 

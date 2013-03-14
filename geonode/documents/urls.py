@@ -20,28 +20,21 @@
 
 from django.conf.urls.defaults import patterns, url
 
-from geonode.documents.views import DocumentListView
-
 js_info_dict = {
     'packages': ('geonode.documents',),
 }
 
 urlpatterns = patterns('geonode.documents.views',
-    url(r'^$', DocumentListView.as_view(), name='documents_browse'),
-    url(r'^popular/$', DocumentListView.as_view(
-        document_filter="popular_count"),
-        name='document_browse_popular'),
-    url(r'^shared/$', DocumentListView.as_view(
-        document_filter="share_count"),
-        name='document_browse_shared'),
-    url(r'^category/(?P<slug>[-\w]+?)/$', 'document_category',
-        name='document_browse_category'),
+    url(r'^$', 'document_list', name='documents_browse'),
     url(r'^tag/(?P<slug>[-\w]+?)/$', 'document_tag', name='document_browse_tag'),
-    url(r'^(?P<docid>\d+)/?$', 'documentdetail', name='document_detail'),
+    url(r'^(?P<docid>\d+)/?$', 'document_detail', name='document_detail'),
+    url(r'^(?P<docid>\d+)/replace$', 'document_replace',
+        name="document_replace"),
+    url(r'^(?P<docid>\d+)/remove$', 'document_remove',
+        name="document_remove"),
     url(r'^upload/?$', 'document_upload', name='document_upload'),
     url(r'^search/?$', 'document_search_page', name='document_search_page'),
-    url(r'^search/api/?$', 'documents_search', name='documents_search_api'),
-    url(r'^(?P<docid>\d+)/ajax-permissions$', 'ajax_document_permissions', name='ajax_document_permissions'),
+    url(r'^(?P<docid>\d+)/permissions$', 'document_permissions', name='document_permissions'),
     url(r'^(?P<docid>\d+)/metadata$', 'document_metadata', name='document_metadata'),
     url(r'^resources/search/api/?$', 'resources_search', name='resources_search'),
 )

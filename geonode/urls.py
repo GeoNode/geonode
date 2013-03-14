@@ -44,8 +44,7 @@ sitemaps = {
 urlpatterns = patterns('',
 
     # Static pages
-    url(r'^$', 'django.views.generic.simple.direct_to_template',
-                {'template': 'index.html'}, name='home'),
+    url(r'^$', 'geonode.views.index', name='home'),
     url(r'^help/$', 'django.views.generic.simple.direct_to_template',
                 {'template': 'help.html'}, name='help'),
     url(r'^developer/$', 'django.views.generic.simple.direct_to_template',

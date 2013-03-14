@@ -46,7 +46,8 @@
 
             config = Ext.apply(config, {{ viewer|safe }});
 
-            app = new GeoNode.Viewer(config);
-        }); 
+            app = new GeoExplorer.Viewer(config);
+
+        });
     {% endautoescape %}
     </script>

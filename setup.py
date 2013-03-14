@@ -91,11 +91,11 @@ setup(name='GeoNode',
         "django-friendly-tag-loader==1.1",
         "django-taggit==0.9.3",
         "django-taggit-templatetags",
-        "django-geoexplorer==3.0.1.dev84743c70",
+        "django-geoexplorer==3.0.2.devdc5e859e",
         "django-user-accounts==1.0b7",
         "django-relationships==0.3.2",
-        "django-notification==0.2",
-        "django-announcements==0.1.2",
+        "django-notification==1.0",
+        "django-announcements==1.0.2",
         "django-activity-stream==0.4.4",
         "django-request==0.3",
         "user-messages==0.1.1",
@@ -108,8 +108,6 @@ setup(name='GeoNode',
         "pycsw>=1.4.0",
         # setup
         "Paver",
-        # assembling javascript
-        "jstools==0.6",
         # sample and test data / metadata
         "gisdata==0.5.4",
         # testing

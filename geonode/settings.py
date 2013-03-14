@@ -129,6 +129,11 @@ LOGOUT_URL = '/account/logout/'
 
 # Activate the Documents application
 DOCUMENTS_APP = True
+ALLOWED_DOCUMENT_TYPES = [
+    'doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt'
+]
+MAX_DOCUMENT_SIZE = 2 # MB
+
 
 INSTALLED_APPS = (
 
@@ -164,18 +169,19 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    #'notification',
+    'notification',
     'announcements',
     'actstream',
     'relationships',
     'user_messages',
 
     # GeoNode internal apps
-    'geonode.maps',
-    'geonode.upload',
-    'geonode.layers',
     'geonode.people',
     'geonode.printing',
+    'geonode.base',
+    'geonode.layers',
+    'geonode.upload',
+    'geonode.maps',
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
@@ -256,7 +262,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    'announcements.context_processors.site_wide_announcements',
     'account.context_processors.account',
     # The context processor below adds things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
@@ -517,6 +522,9 @@ DB_DATASTORE_NAME = ''
 LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
 }
+
+# Default TopicCategory to be used for resources. Use the slug field here
+DEFAULT_TOPICCATEGORY = 'location' 
 
 # Load more settings from a file called local_settings.py if it exists
 try:

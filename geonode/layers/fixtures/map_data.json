@@ -1,4 +1,4 @@
-[
+[   
     {
         "fields": {
             "date_joined": "2010-07-20 13:31:27",
@@ -35,22 +35,56 @@
              "date_joined": "2010-06-10 16:58:18"
          }
      },
-
-
+    {
+    "pk": 1, 
+    "model": "base.resourcebase", 
+    "fields": {
+        "constraints_other": "", 
+        "csw_mdsource": "local", 
+        "distribution_description": "", 
+        "csw_typename": "gmd:MD_Metadata", 
+        "date_type": "publication", 
+        "srid": "EPSG:4326", 
+        "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\"/>", 
+        "edition": "", 
+        "owner": 1, 
+        "category": null, 
+        "spatial_representation_type": null, 
+        "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298", 
+        "title": "CA", 
+        "csw_schema": "http://www.isotc211.org/2005/gmd", 
+        "abstract": "No abstract provided", 
+        "distribution_url": "", 
+        "csw_insert_date": "2010-01-01T00:00:00", 
+        "purpose": "", 
+        "date": "2010-01-01T00:00:00", 
+        "temporal_extent_end": null, 
+        "data_quality_statement": "", 
+        "language": "eng", 
+        "keywords_region": "USA", 
+        "maintenance_frequency": null, 
+        "csw_anytext": null, 
+        "supplemental_information": "No information provided", 
+        "csw_type": "dataset", 
+        "metadata_uploaded": false, 
+        "csw_wkt_geometry": "SRID=4326;POLYGON((0 0,0 1,1 1,1 0,0 0))", 
+        "temporal_extent_start": null, 
+        "constraints_use": "copyright",
+        "bbox_x0": 0,
+        "bbox_x1": 1,
+        "bbox_y0": 0,
+        "bbox_y1": 1
+        }
+    },
     {
         "fields": {
             "typename": "base:CA",
             "store": "CA",
             "name": "CA",
-            "workspace": "base",
-            "owner": 1,
-            "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298",
-            "bbox_x0": 0,
-            "bbox_x1": 1,
-            "bbox_y0": 0,
-            "bbox_y1": 1
+            "workspace": "base"
         },
         "model": "layers.layer",
+        "resourcebase_ptr_id": 1,
         "pk": 1
     },
     {
@@ -90,25 +124,64 @@
         "pk": 3
     },
     {
+    "pk": 2, 
+    "model": "base.resourcebase", 
+    "fields": {
+        "constraints_other": "", 
+        "csw_mdsource": "local", 
+        "distribution_description": "", 
+        "csw_typename": "gmd:MD_Metadata", 
+        "date_type": "publication", 
+        "srid": "EPSG:4326", 
+        "metadata_xml": "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\"/>", 
+        "edition": "", 
+        "owner": 1, 
+        "category": null, 
+        "spatial_representation_type": null, 
+        "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298", 
+        "title": "GeoNode Default Map",
+        "csw_schema": "http://www.isotc211.org/2005/gmd", 
+        "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community.",
+        "distribution_url": "", 
+        "csw_insert_date": "2010-01-01T00:00:00", 
+        "purpose": "", 
+        "date": "2010-01-01T00:00:00", 
+        "temporal_extent_end": null, 
+        "data_quality_statement": "", 
+        "language": "eng", 
+        "keywords_region": "USA", 
+        "maintenance_frequency": null, 
+        "csw_anytext": null, 
+        "supplemental_information": "No information provided", 
+        "csw_type": "dataset", 
+        "metadata_uploaded": false, 
+        "csw_wkt_geometry": "SRID=4326;POLYGON((0 0,0 1,1 1,1 0,0 0))", 
+        "temporal_extent_start": null, 
+        "constraints_use": "copyright",
+        "bbox_x0": 0,
+        "bbox_x1": 1,
+        "bbox_y0": 0,
+        "bbox_y1": 1
+        }
+    },
+    {
         "fields": {
-            "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community.",
             "center_x": -9428760.8701902702,
             "center_y": 1427430.7410345681,
-            "owner": 1,
             "projection": "EPSG:900913",
-            "title": "GeoNode Default Map",
             "last_modified": "2010-07-20 13:31:27",
             "zoom": 7
         },
         "model": "maps.map",
-        "pk": 1
+        "pk": 2,
+        "resourcebase_ptr_id": 2
     },
     {
         "fields": {
             "fixed": false,
             "group": "background",
             "layer_params": "",
-            "map": 1,
+            "map": 2,
             "name": "base:CA",
             "ows_url": "http://localhost:8080/geoserver/wms",
             "source_params": "",
@@ -123,7 +196,7 @@
             "format": null,
             "group": "background",
             "layer_params": "{\"args\": [\"bluemarble\", \"http://maps.opengeo.org/geowebcache/service/wms\", {\"layers\": [\"bluemarble\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
-            "map": 1,
+            "map": 2,
             "name": null,
             "opacity": 1,
             "ows_url": null,
@@ -142,7 +215,7 @@
             "format": null,
             "group": "background",
             "layer_params": "{\"args\": [\"base:CA\", \"http://localhost:8080/geoserver/wms\", {\"layers\": [\"base:CA\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
-            "map": 1,
+            "map": 2,
             "name": null,
             "opacity": 1,
             "ows_url": null,
@@ -161,7 +234,7 @@
             "format": null,
             "group": "background",
             "layer_params": "{}",
-            "map": 1,
+            "map": 2,
             "name": "SATELLITE",
             "opacity": 1,
             "ows_url": null,
@@ -180,7 +253,7 @@
             "format": null,
             "group": "background",
             "layer_params": "{\"args\": [\"No background\"], \"type\": \"OpenLayers.Layer\"}",
-            "map": 1,
+            "map": 2,
             "name": null,
             "opacity": 1,
             "ows_url": null,
