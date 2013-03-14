@@ -410,11 +410,13 @@ GeoNode.Composer = window.GeoExplorer && Ext.extend(GeoExplorer.Composer, {
             }
         }
         for (var i=0, ii=config.tools.length; i<ii; i++) {
+            if (config.tools[i].ptype === "gxp_styler") {
+                config.tools[i].rasterStyling = true;
+            }
             if (config.tools[i].ptype === "gxp_addlayers") {
                 config.tools[i].search = true;
                 config.tools[i].catalogSourceKey = catalogSourceKey;
                 config.tools[i].feeds = true;
-                break;
             }
         }
         // add catalog source
