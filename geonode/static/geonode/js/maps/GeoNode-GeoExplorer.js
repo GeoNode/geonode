@@ -413,6 +413,7 @@ GeoNode.Composer = window.GeoExplorer && Ext.extend(GeoExplorer.Composer, {
             if (config.tools[i].ptype === "gxp_addlayers") {
                 config.tools[i].search = true;
                 config.tools[i].catalogSourceKey = catalogSourceKey;
+                config.tools[i].feeds = true;
                 break;
             }
         }
@@ -433,6 +434,8 @@ GeoNode.Composer = window.GeoExplorer && Ext.extend(GeoExplorer.Composer, {
         }, {
             ptype: "gn_layerinfo",
             actionTarget: ["layers.contextMenu"]
+        }, {
+            ptype: "gxp_getfeedfeatureinfo"
         });
         GeoNode.Composer.superclass.loadConfig.apply(this, arguments);
         for (key in this.tools) {
