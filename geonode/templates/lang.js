@@ -4,7 +4,7 @@ if (window.GeoExt && GeoExt.Lang) {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
 }
 
-if (window.GeoNode && GeoNode.plugins.Save) {
+if (window.GeoNode && GeoNode.plugins && GeoNode.plugins.Save) {
     Ext.apply(GeoNode.plugins.Save.prototype, {
         metadataFormCancelText : gettext("Cancel"),
         metadataFormSaveAsCopyText : gettext("Save as Copy"),
@@ -15,7 +15,7 @@ if (window.GeoNode && GeoNode.plugins.Save) {
     });
 }
 
-if (window.GeoNode && GeoNode.plugins.XHRTrouble) {
+if (window.GeoNode && GeoNode.plugins && GeoNode.plugins.XHRTrouble) {
     Ext.apply(GeoNode.plugins.XHRTrouble.prototype, {
         connErrorTitleText: gettext("Connection Error"),
         connErrorText: gettext("The server returned an error"),
