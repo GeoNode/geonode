@@ -10,7 +10,7 @@
       <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
     </a>
     <div class="details">
-        <a href="#" class="btn btn-info download">{% trans "Download" %}</a>
+        <a href="{% if document.doc_file %}{{ document.doc_file.url }}{% endif %}" class="btn btn-info download">{% trans "Download" %}</a>
         <a href="{% url "document_detail" document.id %}"><h3>{{ document.title }}</h3></a>
         <div class="meta">{% trans 'from' %} <a href="{% url "profile_detail" document.owner.username %}">{{ document.owner }}</a>, {{ document.date|timesince }} {% trans 'ago' %}</div>
         <p class="abstract">{{ document.abstract }}</p>
