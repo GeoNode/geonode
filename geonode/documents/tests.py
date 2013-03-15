@@ -86,7 +86,7 @@ class EventsTest(TestCase):
             c = Client()
             
             c.login(username='admin', password='admin')
-            response = c.post(reverse('document_upload'), data={'file': f, 'title': 'uploaded_document', 'objid': m.id, 'ctype': 'map', 
+            response = c.post(reverse('document_upload'), data={'file': f, 'title': 'uploaded_document', 'q': m.id, 'type': 'map', 
                 'permissions': '{"anonymous":"document_readonly","users":[]}'},
                               follow=True)
             self.assertEquals(response.status_code, 200)

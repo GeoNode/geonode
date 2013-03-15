@@ -98,8 +98,8 @@ def document_upload(request):
     elif request.method == 'POST':
         
         try:
-            content_type = ContentType.objects.get(name=request.POST['ctype'])
-            object_id = request.POST['objid']
+            content_type = ContentType.objects.get(name=request.POST['type'])
+            object_id = request.POST['q']
         except:
             content_type = None
             object_id = None
@@ -123,8 +123,7 @@ def document_upload(request):
         permissions = json.loads(permissionsStr)
         document_set_permissions(document, permissions)
 
-        return HttpResponse(json.dumps({'success': True,'redirect_to': reverse('document_metadata', 
-                args=(document.id,))}))
+        return HttpResponseRedirect(reverse('document_metadata', args=(document.id,)))
 
 @login_required
 def document_metadata(request, docid, template='documents/document_metadata.html'):
@@ -229,31 +228,6 @@ def document_set_permissions(document, perm_spec):
     for username, level in perm_spec['users']:
         user = User.objects.get(username=username)
         document.set_user_level(user, level)
-
-def resources_search(request):
-    """
-    Search for maps and layers. Has no limit and allows sorting.
-    """
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    ctype = params.get('type','layer')
-    qset = Layer.objects.all().order_by('title') if ctype == 'layer' else Map.objects.all().order_by('title')
-
-    resources_list= []
-
-    for item in qset:
-         resources_list.append({
-            'id' : item.id,
-            'title' : item.title,
-        })
-
-    result = {'rows': resources_list,'total': qset.count()}
-    return HttpResponse(json.dumps(result))
 
 @login_required
 def document_replace(request, docid, template='documents/document_replace.html'):

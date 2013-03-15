@@ -36,5 +36,4 @@ urlpatterns = patterns('geonode.documents.views',
     url(r'^search/?$', 'document_search_page', name='document_search_page'),
     url(r'^(?P<docid>\d+)/permissions$', 'document_permissions', name='document_permissions'),
     url(r'^(?P<docid>\d+)/metadata$', 'document_metadata', name='document_metadata'),
-    url(r'^resources/search/api/?$', 'resources_search', name='resources_search'),
 )
