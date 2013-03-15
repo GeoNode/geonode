@@ -16,17 +16,21 @@
 
 .x-btn .gxp-icon-getfeatureinfo, .x-menu-item .gxp-icon-getfeatureinfo, .x-tree-node .gxp-icon-getfeatureinfo  {
     background-size:32px 32px;
+    background-image: url(img/mobile/information-32.png);
 }
 
 .x-btn .gxp-icon-geolocate, .x-menu-item .gxp-icon-geolocate, .x-tree-node .gxp-icon-geolocate {
     background-size:32px 32px;
+    background-image: url(img/mobile/geolocate-32.png);
 }
 
 .x-btn .gxp-icon-addfeature, .x-menu-item .gxp-icon-addfeature {
     background-size:32px 32px;
+    background-image: url(img/mobile/pencil_add-32.png);
 }
 .x-btn .gxp-icon-editfeature, .x-menu-item .gxp-icon-editfeature {
     background-size:32px 32px;
+    background-image: url(img/mobile/map_edit-32.png);
 }
 
 div.olControlZoom {
