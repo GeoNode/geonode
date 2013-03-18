@@ -234,7 +234,7 @@ class GeoNodeUtilsTests(TestCase):
 
     def test_split_query(self):
         query = 'alpha "beta gamma"   delta  '
-        from geonode.maps.views import _split_query
+        from geonode.utils import _split_query 
         keywords = _split_query(query)
         self.assertEqual(keywords[0], "alpha")
         self.assertEqual(keywords[1], "beta gamma")
