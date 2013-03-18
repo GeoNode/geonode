@@ -1,0 +1,41 @@
+Installing Dependencies
+    bower component.json
+
+css & less (bootstrap)
+    bootswatch
+
+javascript jquery 
+    core
+    portals
+    search
+    status
+    upload
+
+require.js
+
+javascript extjs
+        geonode
+        print
+        upload
+
+rhino
+
+images
+fonts
+i18n/l10n
+
+Building with makefile 
+    lessc dependency
+    build base.css
+    build geonode.js
+    build GeoNode.js
+
+Testing
+    qunit
+    rhino
+    require
+   
+TODO:
+    Finish Bower
+    Integrate Remnant geonode-client components into geoexplorer
+    Custom Client documentation (use salamati)
