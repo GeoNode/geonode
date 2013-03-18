@@ -511,28 +511,6 @@ def _map_fix_perms_for_editor(info):
 
     return info
 
-
-#### MAPS SEARCHING ####
-
-
-def maps_search_page(request, template='maps/map_search.html'):
-    # for non-ajax requests, render a generic search page
-
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    return render_to_response(template, RequestContext(request, {
-        'init_search': json.dumps(params or {}),
-        "site" : settings.SITEURL,
-        "search_api": reverse("maps_search_api"),
-        "search_action": reverse("maps_search"),
-        "search_type": "map"
-    }))
-
 def maplayer_attributes(request, layername):
     #Return custom layer attribute labels/order in JSON format
     layer = Layer.objects.get(typename=layername)
