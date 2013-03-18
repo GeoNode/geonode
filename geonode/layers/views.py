@@ -397,7 +397,6 @@ def layer_batch_download(request):
         resp,content = http_client.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 
-
 @require_POST
 def layer_permissions(request, layername):
     try:

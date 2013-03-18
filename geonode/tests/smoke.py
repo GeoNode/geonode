@@ -62,7 +62,7 @@ class GeoNodeSmokeTests(TestCase):
         response = c.get(reverse('help'))
         self.failUnlessEqual(response.status_code, 200)
 
-    #### Data/Layer Pages ####
+    #### Layer Pages ####
 
     def test_layer_page(self):
         'Test if the layer home page renders.'
