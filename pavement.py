@@ -575,7 +575,7 @@ def start_geoserver(options):
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
             "-Djetty.host=" + options.host.bind,
             "-Xmx512M",
-            "-XX:MaxPermSize=128m"
+            "-XX:MaxPermSize=256m"
             #"-Xdebug -Xrunjdwp:transport= dt_socket,address=8020,server=y,suspend=n"
         ])
         mvn = subprocess.Popen(
@@ -628,7 +628,7 @@ def host(options):
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
             "-Djetty.host=" + options.host.bind,
             "-Xmx512M",
-            "-XX:MaxPermSize=128m"
+            "-XX:MaxPermSize=256m"
         ])
         mvn = subprocess.Popen(
             ["mvn", "jetty:run"],
