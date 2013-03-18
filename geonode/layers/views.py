@@ -397,33 +397,6 @@ def layer_batch_download(request):
         resp,content = http_client.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 
-
-#### Layers Search ####
-
-
-def layer_search_page(request, template='layers/layer_search.html'):
-    DEFAULT_BASE_LAYERS = default_map_config()[1]
-    # for non-ajax requests, render a generic search page
-
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    map_obj = GXPMap(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
-
-    return render_to_response(template, RequestContext(request, {
-        'init_search': json.dumps(params or {}),
-        'viewer_config': json.dumps(map_obj.viewer_json(*DEFAULT_BASE_LAYERS)),
-        "site" : settings.SITEURL,
-        "search_api": reverse("layer_search_api"),
-        "search_action": reverse("layer_search_page"),
-        "search_type": "layer",
-    }))
-
-
 @require_POST
 def layer_permissions(request, layername):
     try:

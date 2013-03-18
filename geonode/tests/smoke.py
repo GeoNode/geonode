@@ -70,12 +70,6 @@ class GeoNodeSmokeTests(TestCase):
         response = c.get(reverse('layer_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_data_search(self):
-        'Test if the data search page renders.'
-        c = Client()
-        response = c.get(reverse('layer_search_page'))
-        self.failUnlessEqual(response.status_code, 200)
-
     def test_data_acls(self):
         'Test if the data/acls endpoint renders.'
         c = Client()
@@ -89,20 +83,6 @@ class GeoNodeSmokeTests(TestCase):
 
         c = Client()
         response = c.get(reverse('maps_browse'))
-        self.failUnlessEqual(response.status_code, 200)
-
-    def test_maps_search_page(self):
-        '''Test Maps Search page renders.'''
-
-        c = Client()
-        response = c.get(reverse('maps_search'))
-        self.failUnlessEqual(response.status_code, 200)
-
-    def test_maps_search_api(self):
-        '''Test Maps Search API page renders.'''
-
-        c = Client()
-        response = c.get(reverse('maps_search_api'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_new_map_page(self):
