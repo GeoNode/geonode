@@ -1,0 +1,26 @@
+{
+  "name": "myProject",
+  "version": "1.0.0",
+  "main": "./path/to/main.css",
+  "dependencies": {
+    "bootstrap": "2.2.1",
+    "datatables": "1.9.4",
+    "select2": "3.2.0",
+    "bootstrap-datepicker": "2edb8c5cc4d1aacf8a5d8a6fbe5bf8775f9e9824",
+    "hogan": "d7ab5575bbf657b18ee80557a102769c9e2225c7",
+    "jquery": "1.8.3",
+    "raty": "8e7798a1d4c550309ebb772e28abd9d47426736c",
+    "jquery-timeago": "0.11.4",
+    "json2": "43d7836c8ec9b31a02a31ae0c400bdae04d3650d",
+    "requirejs": "2.1.2",
+    "requirejs-text": "2.0.3",
+    "underscore": "1.4.2",
+    "jquery-waypoints": "1.1.7",
+    "tinysort": "git://github.com/Sjeiti/TinySort.git",
+    "jquery-loadmore": "git://github.com/voxpelli/jquery-loadmore.git",
+    "wysihtml5": "0.3.0",
+    "bootstrap-wysiwyghtml5":"https://github.com/jhollingworth/bootstrap-wysihtml5.git",
+    "jquery-miniColors.git":"https://github.com/claviska/jquery-miniColors.git",
+    "fontselect-jquery-plugin":"https://github.com/tommoor/fontselect-jquery-plugin.git"
+  }
+}
