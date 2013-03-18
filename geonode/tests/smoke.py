@@ -64,20 +64,14 @@ class GeoNodeSmokeTests(TestCase):
 
     #### Data/Layer Pages ####
 
-    def test_data_page(self):
-        'Test if the data home page renders.'
+    def test_layer_page(self):
+        'Test if the layer home page renders.'
         c = Client()
         response = c.get(reverse('layer_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_data_search(self):
-        'Test if the data search page renders.'
-        c = Client()
-        response = c.get(reverse('layer_search_page'))
-        self.failUnlessEqual(response.status_code, 200)
-
-    def test_data_acls(self):
-        'Test if the data/acls endpoint renders.'
+    def test_layer_acls(self):
+        'Test if the layer/acls endpoint renders.'
         c = Client()
         response = c.get(reverse('layer_acls'))
         self.failUnlessEqual(response.status_code, 200)
@@ -89,20 +83,6 @@ class GeoNodeSmokeTests(TestCase):
 
         c = Client()
         response = c.get(reverse('maps_browse'))
-        self.failUnlessEqual(response.status_code, 200)
-
-    def test_maps_search_page(self):
-        '''Test Maps Search page renders.'''
-
-        c = Client()
-        response = c.get(reverse('maps_search'))
-        self.failUnlessEqual(response.status_code, 200)
-
-    def test_maps_search_api(self):
-        '''Test Maps Search API page renders.'''
-
-        c = Client()
-        response = c.get(reverse('maps_search_api'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_new_map_page(self):
@@ -234,7 +214,7 @@ class GeoNodeUtilsTests(TestCase):
 
     def test_split_query(self):
         query = 'alpha "beta gamma"   delta  '
-        from geonode.maps.views import _split_query
+        from geonode.utils import _split_query 
         keywords = _split_query(query)
         self.assertEqual(keywords[0], "alpha")
         self.assertEqual(keywords[1], "beta gamma")
