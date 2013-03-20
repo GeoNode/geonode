@@ -1,4 +1,4 @@
-geonode (2.0.0+alpha4) precise; urgency=low
+geonode (2.0.0+alpha5) precise; urgency=low
 
   [ Ariel Núñez ]
   * [36d39b] Add back git-dch step in paver deb
