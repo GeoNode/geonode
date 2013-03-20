@@ -1,0 +1,168 @@
+{% extends "documents/document_base.html" %}
+{% load geonode_auth %}
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load bootstrap_tags %}
+{% load url from future %}
+
+{% block title %}{{ document.title }} — {{ block.super }}{% endblock %}
+
+{% block head %}
+
+{{ block.super }}
+{% endblock %}
+
+
+{% block body_class %}document{% endblock %}
+
+{% block body_outer %}
+  <div class="span6">
+    <h2 class="page-title">{{ document.title }}</h2>
+  </div>
+  <div class="span6 action-group">
+    <div class="pull-right">
+      <div class="btn-group">
+      </div>
+      <div class="btn-group">
+      </div>
+    </div>
+    {% has_obj_perm user document "document.change_document" as can_edit_document %}
+    {% if can_edit_document %}
+    <div class="btn-group pull-right">
+      <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
+        {% trans "Edit Document" %}
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a href="{% url "document_metadata" document.id %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
+        <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+        <!--<li><a href="{% url "document_replace" document.id %}">{% trans "Replace this Document" %} <i class="icon-chevron-right"></i></a></li>-->
+        <li><a href="{% url "document_remove" document.id %}">{% trans "Remove this Document" %} <i class="icon-chevron-right"></i></a></li>
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+  <div class="span8">
+    <div class="tab-content">
+      {% if document.extension|lower in imgtypes %}
+      <div id="embedded_map">
+        <img src="{{document.doc_file.url}}" width='100%' />
+      </div>
+      {% else %}
+        <a href="{{ document.doc_file.url }}" target="_blank">Download the {{ document }} document</a>
+      {%  endif %}
+
+    {% include "geonode/resourcebase_info_panel.html" with resourcebase=document %}
+
+      <article id="share" class="tab-pane">
+        <!-- TODO: Move this to a reusable template snippet -->
+        <header>
+            <h3>{% trans "Share This Layer" %}</h3>
+        </header>
+        <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
+        <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
+        <!-- TODO: Add more sharing options -->
+      </article>
+      <!--article id="flag" class="tab-pane">
+        <p>Flag this Layer</p>
+      </article-->
+      <article id="comments" class="tab-pane">
+        {% with document as obj %}
+          {% include "_comments.html" %}
+        {% endwith %}
+      </article>
+      <article id="rate" class="tab-pane">
+        <!-- TODO: Move this to a reusable template snippet -->
+        {% if request.user.is_authenticated %}
+        <h3>{% trans "Rate this document" %}</h3>
+        {% user_rating request.user document "document" as user_document_rating %}
+        <div id="user_rating" class="category-layer"></div>
+        {% endif %}
+        <h3>{% trans 'Average Rating' %}</h3>
+        {% overall_rating document "document" as document_rating %}
+        <div class="overall_rating" data-rating="{{ document_rating }}"></div>
+        <!-- TODO: Add display of who gave what rating based -->
+      </article>
+    </div>
+  </div>
+  <aside class="span4">
+    <div class="well">
+        <h2>{% trans "Resources using this document" %}</h2>
+        {% if layer.maps %}
+        <p>{% trans "List of resources using this document:" %}</p>
+        {% endif %}
+        <ul class="unstyled space">
+          {% if related.title %}
+          <p>{% trans "This document is related to a " %} {{ document.content_type.name }}</p>
+          <a href='{{ related.get_absolute_url }}'>{{ related.title }}</a>
+          {% else %}
+          <p>{% trans "This document is not related to any maps or layers" %}</p>
+          {% endif %}
+        </ul>
+    </div>
+    {% has_obj_perm user document "document.change_document_permissions" as can_change_permissions %}
+    {% if can_change_permissions %}
+    <div class="well">
+        <h2>{% trans "Permissions" %}</h2>
+        <p>{% trans "Click the button below to change the permissions of this document." %}</p>
+        <p><a href="#modal_perms" data-toggle="modal" class="btn btn-large">{% trans "Change Document Permissions" %}</a></p>
+    </div>
+    {% endif %}
+    <div class="well">
+      <h2>{% trans "About" %}</h2>
+      {% trans "Document Owner" %}
+      {% with document.owner.profile as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
+      {% trans "Point of Contact" %}
+      {% with document.poc as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
+      {% trans "Metadata Author" %}
+      {% with document.metadata_author as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
+    </div>
+  </aside>
+  {% include "_permissions_form.html" %}
+{% endblock %}
+{% block extra_script %}
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+    {% if request.user.is_authenticated %}
+        {% user_rating_js request.user document "document" %}
+    {% else %}
+        <script src="{{ STATIC_URL }}libs/js/jquery.raty.js"></script>
+    {% endif %}
+    <script type="text/javascript">
+    $(function() {
+        $('div.overall_rating').raty({
+            half: true,
+            readOnly: true,
+            start: $('div.overall_rating').data('rating'),
+            path: "{{ STATIC_URL }}agon_ratings/img/"
+        });
+    });
+    </script>
+    <script>
+        $(function () {
+            var activeTab = $('[href=' + location.hash + ']');
+            activeTab && activeTab.tab('show');
+        });
+
+        (function() {
+            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+            po.src = 'https://apis.google.com/js/plusone.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+        })();
+    </script>
+    {% include "_permissions_form_js.html" %}
+{% endblock extra_script %}

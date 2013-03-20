@@ -17,9 +17,6 @@
 #
 #########################################################################
 
-import datetime
-import os
-import subprocess
 import httplib2
 import base64
 import re
@@ -34,14 +31,12 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from owslib.wms import WebMapService
-from owslib.csw import CatalogueServiceWeb
 from django.http import HttpResponse
 
 # from geonode import GeoNodeException
 #from geonode.layers.models import Layer
 #from geonode.maps.models import Map
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.security.models import INVALID_PERMISSION_MESSAGE
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS, INVALID_PERMISSION_MESSAGE
 
 _wms = None
 _csw = None
@@ -295,7 +290,13 @@ def forward_mercator(lonlat):
         If the lat value is out of range, -inf will be returned as the y value
     """
     x = lonlat[0] * 20037508.34 / 180
-    n = math.tan((90 + lonlat[1]) * math.pi / 360)
+    try:
+        # With data sets that only have one point the value of this
+        # expression becomes negative infinity. In order to continue,
+        # we wrap this in a try catch block.
+        n = math.tan((90 + lonlat[1]) * math.pi / 360)
+    except ValueError:
+        n = 0
     if n <= 0:
         y = float("-inf")
     else:

@@ -1,8 +1,0 @@
-<article class="span4">
-  <a href="{% url layer_detail layer.typename %}"><img src="{{ STATIC_URL }}geonode/img/placeholder2.png" width="100%" alt="{{ layer.title }}" /></a>
-  <div class="details">
-    <a href="{% url layer_detail layer.typename %}"><h3>{{ layer.title }}</h3></a>
-    <div class="meta">{% trans 'from' %} <a href="{% url profile_detail layer.owner.username %}">{{ layer.owner }}</a>, {{ layer.date|timesince }} ago</div>
-    <p>{{ layer.abstract }}</p>
-  </div>
-</article>

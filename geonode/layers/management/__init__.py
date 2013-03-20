@@ -31,7 +31,7 @@ if "notification" in settings.INSTALLED_APPS:
         notification.models.NoticeType.create("layer_comment", _("Comment on Layer"), _("A layer was commented on"))
         notification.models.NoticeType.create("layer_rated", _("Rating for Layer"), _("A rating was given to a layer"))
 
-    signals.post_syncdb.connect(create_notice_types, sender=notification.models)
+    signals.post_syncdb.connect(create_notice_types, sender=notification)
     logger.info("Notifications Configured for geonode.layers.managment.commands")
 else:
     logger.info("Skipping creation of NoticeTypes for geonode.layers.management.commands, since notification app was not found.")

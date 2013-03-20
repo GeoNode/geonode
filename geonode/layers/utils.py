@@ -43,9 +43,7 @@ from geonode.layers.models import Layer
 from geonode.people.models import Profile 
 from geonode.geoserver.helpers import cascading_delete, get_sld_for, delete_from_postgis
 from geonode.layers.metadata import set_metadata
-from geonode.people.models import Profile
-from django.contrib.auth.models import User
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 # Geoserver functionality
 import geoserver
 from geoserver.catalog import FailedRequestError
@@ -479,21 +477,6 @@ def save(layer, base_file, user, overwrite=True, title=None,
 
     saved_layer.keywords.add(*keywords)
 
-    # Step 9. Create the points of contact records for the layer
-    # A user without a profile might be uploading this
-    logger.info('>>> Step 9. Creating points of contact records for '
-                '[%s]', name)
-    pc, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": user.username})
-    ac, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": user.username}
-                                           )
-
-    logger.debug('Creating poc and author records for %s', user)
-
-    saved_layer.poc = pc
-    saved_layer.metadata_author = ac
-
     logger.info('>>> Step XML. Processing XML metadata (if available)')
     # Step XML. If an XML metadata document is uploaded,
     # parse the XML metadata and update uuid and URLs as per the content model
@@ -514,7 +497,7 @@ def save(layer, base_file, user, overwrite=True, title=None,
 
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook
-    logger.info('>>> Step 11. Setting default permissions for [%s]', name)
+    logger.info('>>> Step 10. Setting default permissions for [%s]', name)
     if permissions is not None:
 
         layer_set_permissions(saved_layer, permissions)
@@ -522,7 +505,7 @@ def save(layer, base_file, user, overwrite=True, title=None,
         saved_layer.set_default_permissions()
 
     # Step 12. Verify the layer was saved correctly and clean up if needed
-    logger.info('>>> Step 12. Verifying the layer [%s] was created '
+    logger.info('>>> Step 11. Verifying the layer [%s] was created '
                 'correctly' % name)
 
     # Verify the object was saved to the Django database

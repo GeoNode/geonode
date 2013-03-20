@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <div class="modal fade" id="modal_perms" style="display:none">
-  <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% if layer %}{% url layer_permissions layer.typename %}{% elif map %}{% url map_permissions map.id %}{% else %}/api/batch_permissions{%endif %}">
+  <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% if layer %}{% url layer_permissions layer.typename %}{% elif map %}{% url map_permissions map.id %}{% elif document %}{% url document_permissions document.id %}{% else %}/api/batch_permissions{% endif %}">
     <div class="modal-header">
       <a class="close" data-dismiss="modal">×</a>
       <h3>{% trans "Permissions" %}</h3>

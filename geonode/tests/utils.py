@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-import os
 import urllib, urllib2, cookielib
 import contextlib
 from geonode.maps.models import Layer

@@ -23,6 +23,13 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.utils import simplejson as json
 
+def index(request, template='index.html'):
+    from geonode.search.views import search_page
+    post = request.POST.copy()
+    post.update({'type': 'layer'})
+    request.POST = post
+    return search_page(request, template=template)
+
 class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
     username = forms.CharField()
