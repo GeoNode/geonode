@@ -1,3 +1,116 @@
+geonode (2.0.0+alpha6) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [9d5a91] initial work on concrete resourcebase
+  * [02315a] make resource fk nullable
+  * [b83d1b] bump to base module in topicCategory fixtures
+  * [4447ee] move to new ContactRole model
+  * [095d9d] other minor adjustments
+  * [d5913f] put fixtures where should be
+  * [7af75c] fix more imports
+  * [616959] inherit from Resourcebase manager
+  * [33048d] some cleanup
+  * [af7807] move catalogue signals to ResourceBase
+  * [29407a] roll back to Role in people
+  * [f6685d] clean
+
+  [ Ivan Willig ]
+  * [72047f] Handle if the download folder already exists
+
+  [ Simone Dalmasso ]
+  * [290ded] get rid of the search pages
+  * [82f664] use search engine in home for layers
+  * [b66536] unify the rating functions in the proper template
+  * [32a3bc] add the rate.js file
+
+  [ Ivan Willig ]
+  * [72e3b3] Use a try except ImportError to import the pushd function
+  * [3c0e24] Make the forward_mercator function's handling of edge cases better.
+
+  [ Simone Dalmasso ]
+  * [188859] cleanup the paginate js
+
+  [ Ariel Núñez ]
+  * [276537] Better error messages when catalogue does not create the record
+  * [eb7297] Getting rid of whitespace
+  * [682914] Disabling the catalogue until pycsw is upgraded
+
+  [ Simone Dalmasso ]
+  * [324527] create the resource base in fixtures
+  * [508d4d] Make layer test pass
+  * [5e6bba] make map test to pass
+  * [a6495a] make documents test to pass
+  * [a0ecca] make search tests to pass
+  * [730325] reenable catalogue and make every test pass, fix search
+  * [77b672] move links to base, attache them to resourceBase and adjust the logic to make it work
+  * [444674] modify the default topic category behavior
+  * [1806c4] use the first in case none indicated
+
+  [ Christian Spanring ]
+  * [5fd70f] updates minified base.css
+  * [1ca5a0] Adds CSS cursor pointer on maps and layer list pages
+  * [196d0f] Minor HTML tweak to eliminate heading indent on map_list page
+  * [9d40b1] Prevents orphaned maplayers from breaking the map detail views
+
+  [ Simone Dalmasso ]
+  * [d06ddd] bump document detail to the new layout
+  * [a3d17f] general cleanup of unneeded code and some pyflakes clean
+  * [c4a377] add missed template
+
+  [ Matthew Hanson ]
+  * [718ab5] fixed notification for updatelayers
+
+  [ Christian Spanring ]
+  * [1bb139] Adds fallback to default auth backend in has_perm permission lookup function
+  * [5baf98] adds check for owner attr in obj in has_perm permission lookup
+
+  [ Simone Dalmasso ]
+  * [71ced0] fix categories behavior
+
+  [ Bart van den Eijnden ]
+  * [eb129c] make sure that Maps link in GeoExplorer works, thanks @cspanring for confirming that it works (closes #681)
+
+  [ Simone Dalmasso ]
+  * [0d493b] add document remove and fix document permissions
+  * [3ed443] add document type and size check
+  * [db16a8] fix mb count in document upload
+  * [c07afa] remove unwanted ipdb
+  * [506ddd] fix profile detail to reflect ResourceBase
+  * [6bbd8b] make search add relevance query resourcebase
+  * [21273e] delegate to resource base post save the contactroles creation and management
+  * [4fe747] don't save again the layer after pc and ac change in metadata.
+
+  [ Bart van den Eijnden ]
+  * [b166e0] restructure the GeoNode-GeoExplorer.js file so that it is easier to use an SDK application in GeoNode, a new mixin class was added in a separate file that is mixed in with GeoNode.Composer, an can be mixed in with any gxp.Viewer of an SDK application
+  * [066ad8] set rasterStyling to true on the styler plugin
+  * [b1a53a] add back accidentally removed code with https://github.com/GeoNode/geonode/pull/815 cc @jj0hns0n
+  * [392d57] fix issue reported by @simod I now get a Uncaught TypeError: Cannot read property 'Save' of undefined here both at layer/upload and document/upload pages.
+
+  [ Jeffrey Johnson ]
+  * [8fc5c0] Switch travis to build master
+
+  [ Bart van den Eijnden ]
+  * [a16f9b] add map_sdk.js and sdk_header.html template to make it easier to integrate OpenGeo Suite SDK apps in GeoNode
+
+  [ Simone Dalmasso ]
+  * [c75422] get rid of ext in documents upload
+  * [ee2792] check if the file exists before putting the url (mostly for tests)
+
+  [ Jeffrey Johnson ]
+  * [d70d4a] Fix _split_query import
+  * [972d33] Completely remove old layers/maps search implementation
+  * [1409df] Use consistent layer terminology in tests/smoke.py
+  * [1831e7] Make sure failing smoke tests fail the build
+  * [c08df9] Hook the javascript tests results up in jenkins
+
+  [ Simone Dalmasso ]
+  * [026522] select2 icon was missing
+
+  [ Ariel Núñez ]
+  * [5110a8] Updated changelog to alpha5
+
+ -- Ariel Núñez <ingenieroariel@gmail.com>  Wed, 20 Mar 2013 05:15:35 +0000
+
 geonode (2.0.0+alpha5) precise; urgency=low
 
   [ Ariel Núñez ]
