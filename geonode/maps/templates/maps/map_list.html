@@ -15,8 +15,8 @@
 
 {% block body %}
     <div class="span12">
-      <h2 class="page-title span8">{% trans "Explore Maps" %}</h2>
-      <a href="{% url "new_map" %}" class="btn btn-large btn-primary pull-right strong span2">{% trans "Create a New Map" %}</a>
+      <a href="{% url "new_map" %}" class="btn btn-large btn-primary pull-right strong">{% trans "Create a New Map" %}</a>
+      <h2 class="page-title">{% trans "Explore Maps" %}</h2>
     </div>
     <div class="span8 filter">      
       {% include "search/_sort_filters.html" %}
@@ -57,30 +57,8 @@
   <script src="{% static "libs/js/jquery.raty.js" %}"></script>
   <script src="{% static "geonode/js/explore.js" %}"></script>
   <script type="text/javascript">
-    $(rateMore());
-    function rateMore() {
-      $('.overall_rating').each(function() {
-        var rating = $(this).parents(".avg_rating").data('rating');
-        star(this, rating);
-      });
-      $(".loadmore").on("load.loadmore", function(e, o) {          
-        o.find(".overall_rating").each(function() {
-          var rating = $(this).parents(".avg_rating").data('rating');
-          star(this, rating);
-        });
-      });
-    }
-    function star(elem, rating) {
-      $(elem).raty({
-        half: true,
-        readOnly: true,
-        score: rating,
-        path: "{% static "agon_ratings/img/" %}"
-      });        
-    }
-  </script>
-  <script type="text/javascript">
   var default_type = 'map';
   </script>
   <script src="{% static "geonode/js/global_search.js" %}"></script>
+  {% include 'rate.js' %}
 {% endblock extra_script %}

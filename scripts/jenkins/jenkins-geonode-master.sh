@@ -35,6 +35,9 @@ cp /var/lib/jenkins/local_settings_with_coverage.py geonode/local_settings.py
 
 # Run the smoke tests
 python manage.py test geonode.tests.smoke
+cp TEST-nose.xml smoke-TEST-nose.xml
+cp coverage.xml smoke-coverage.xml
+cp -R coverage smoke-coverage
 
 # Run the unit tests
 python manage.py test
@@ -60,6 +63,7 @@ cp coverage -R csw-coverage
 
 # Run the javascript tests 
 paver test_javascript
+mv geonode/static/geonode/junit.xml ./javascript-TEST-nose.xml
 
 # Run Code Quality Tools
 export DJANGO_SETTINGS_MODULE=geonode.settings

@@ -18,17 +18,12 @@
 #
 #########################################################################
 
-import re
 import os
 import logging
 import shutil
 
-from urllib import urlencode
-from urlparse import urlparse
-
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseRedirect
@@ -39,14 +34,13 @@ from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import escape
 from django.views.decorators.http import require_POST
-from django.views.generic.list import ListView
 from django.template.defaultfilters import slugify
-from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from geonode.utils import http_client, _split_query, _get_basic_auth_info
+from geonode.utils import http_client, _get_basic_auth_info
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
-from geonode.layers.models import Layer, ContactRole, Attribute, TopicCategory
+from geonode.layers.models import Layer, Attribute
+from geonode.base.models import ContactRole
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -55,7 +49,6 @@ from geonode.layers.utils import layer_set_permissions
 from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from django.forms.models import inlineformset_factory
 from geoserver.resource import FeatureType
 
@@ -187,8 +180,9 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
 
     poc = layer.poc
     metadata_author = layer.metadata_author
-    ContactRole.objects.get(layer=layer, role=layer.poc_role)
-    ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
+    
+    ContactRole.objects.get(resource=layer, role=layer.poc_role)
+    ContactRole.objects.get(resource=layer, role=layer.metadata_author_role)
 
     if request.method == "POST":
         layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
@@ -221,12 +215,11 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                 la.save()
 
         if new_poc is not None and new_author is not None:
-            the_layer = layer_form.save(commit=False)
+            the_layer = layer_form.save()
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
             the_layer.keywords.clear()
             the_layer.keywords.add(*new_keywords)
-            the_layer.save()
             return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
 
     if poc.user is None:
@@ -403,158 +396,6 @@ def layer_batch_download(request):
         url = "%srest/process/batchDownload/status/%s" % (settings.GEOSERVER_BASE_URL, download_id)
         resp,content = http_client.request(url,'GET')
         return HttpResponse(content, status=resp.status)
-
-
-#### Layers Search ####
-
-
-def layer_search_page(request, template='layers/layer_search.html'):
-    DEFAULT_BASE_LAYERS = default_map_config()[1]
-    # for non-ajax requests, render a generic search page
-
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    map_obj = GXPMap(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
-
-    return render_to_response(template, RequestContext(request, {
-        'init_search': json.dumps(params or {}),
-        'viewer_config': json.dumps(map_obj.viewer_json(*DEFAULT_BASE_LAYERS)),
-        "site" : settings.SITEURL,
-        "search_api": reverse("layer_search_api"),
-        "search_action": reverse("layer_search_page"),
-        "search_type": "layer",
-    }))
-
-
-def layer_search(request):
-    """
-    handles a basic search for data
-
-    the search accepts:
-    q - general query for keywords across all fields
-    start - skip to this point in the results
-    limit - max records to return
-
-    for ajax requests, the search returns a json structure
-    like this:
-    {
-    'total': <total result count>,
-    'next': <url for next batch if exists>,
-    'prev': <url for previous batch if exists>,
-    'query_info': {
-    'start': <integer indicating where this batch starts>,
-    'limit': <integer indicating the batch size used>,
-    'q': <keywords used to query>,
-    },
-    'rows': [
-    {
-    'name': <typename>,
-    'abstract': '...',
-    'keywords': ['foo', ...],
-    'detail' = <link to geonode detail page>,
-    'attribution': {
-    'title': <language neutral attribution>,
-    'href': <url>
-    },
-    'download_links': [
-    ['pdf', 'PDF', <url>],
-    ['kml', 'KML', <url>],
-    [<format>, <name>, <url>]
-    ...
-    ],
-    'metadata_links': [
-    ['text/xml', 'TC211', <url>],
-    [<mime>, <name>, <url>],
-    ...
-    ]
-    },
-    ...
-    ]}
-    """
-    query_string = ''
-    found_entries = Layer.objects.all()
-    result = {}
-
-    if ('q' in request.GET) and request.GET['q'].strip():
-        query_string = request.GET['q']
-
-        entry_query = get_query(query_string, ['title', 'abstract',])
-
-        found_entries = Layer.objects.filter(entry_query)
-
-    result['total'] = len(found_entries)
-
-    rows = []
-
-    for layer in found_entries:
-        doc = {}
-        doc['uuid'] = layer.uuid
-        doc['name'] = layer.name
-        doc['title'] = layer.title
-        doc['abstract'] = layer.abstract
-        doc['detail'] = layer.get_absolute_url()
-        doc['_local'] = True
-        doc['_permissions'] = {
-            'view': request.user.has_perm('layers.view_layer', obj=layer),
-            'change': request.user.has_perm('layers.change_layer', obj=layer),
-            'delete': request.user.has_perm('layers.delete_layer', obj=layer),
-            'change_permissions': request.user.has_perm('layers.change_layer_permissions', obj=layer),
-        }
-        download_links = []
-        for link in layer.link_set.download():
-            download_links.append((link.extension, link.name, link.url))
-        doc['download_links'] = download_links
-
-        metadata_links = []
-        for link in layer.link_set.metadata():
-            metadata_links.append((link.mime, link.extension, link.url))
-
-        doc['metadata_links'] = metadata_links
-
-        if doc['_permissions']['view']:
-            rows.append(doc)
-
-    result['rows'] = rows
-    result['success'] = True
-    return HttpResponse(json.dumps(result), mimetype="application/json")
-
-
-def normalize_query(query_string,
-                    findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
-                    normspace=re.compile(r'\s{2,}').sub):
-    ''' Splits the query string in invidual keywords, getting rid of unecessary spaces
-        and grouping quoted words together.
-        Example:
-        >>> normalize_query(' some random words "with quotes " and spaces')
-        ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
-    '''
-    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
-
-def get_query(query_string, search_fields):
-    ''' Returns a query, that is a combination of Q objects. That combination
-        aims to search keywords within a model by testing the given search fields.
-    '''
-    query = None # Query to search for every search term
-    terms = normalize_query(query_string)
-    for term in terms:
-        or_query = None # Query to search for a given term in each field
-        for field_name in search_fields:
-            q = Q(**{"%s__icontains" % field_name: term})
-            if or_query is None:
-                or_query = q
-            else:
-                or_query = or_query | q
-        if query is None:
-            query = or_query
-        else:
-            query = query & or_query
-    return query
-
 
 @require_POST
 def layer_permissions(request, layername):

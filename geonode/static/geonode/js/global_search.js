@@ -92,7 +92,7 @@ function build_query(){
         params['categories'].shift();
     }
 
-     var data = {
+    var data = {
         'type': params['types'].join(','),
         'category': params['categories'].join(','),
         'kw': params['keywords'].join(','),
@@ -131,7 +131,7 @@ function manage_element(element){
     */
 
     // logic to make sure that whne clicking on the layer filter it also 
-    //activats/deactivated vector and raster
+    //activate/deactivated vector and raster
     if ($(element).attr('data-class') === 'layer'){
         if($(element).hasClass('active')){
             $('a[data-class="raster"]').addClass('active');
@@ -148,13 +148,13 @@ function manage_element(element){
     if ($(element).parents('ul').attr('id') === 'categories' && $(element).attr('data-class') === 'all'){
         if ($(element).hasClass('active')){
             $('#categories').find('a').each(function(){
-                $(this).addClass('active');
-            })
-        } else {
-            $('#categories').find('a').each(function(){
                 $(this).removeClass('active');
-            })
-        }
+            });
+            $(element).addClass('active');
+        } 
+    }
+    else if ($(element).parents('ul').attr('id') === 'categories'){
+        $('a[data-class="all"]').removeClass('active');
     }
 }
 

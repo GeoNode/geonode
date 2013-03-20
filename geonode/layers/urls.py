@@ -30,7 +30,6 @@ urlpatterns = patterns(
     url(r'^tag/(?P<slug>[-\w]+?)/$', 'layer_tag', name='layer_browse_tag'),
     url(r'^acls/?$', 'layer_acls', name='layer_acls'),
     url(r'^resolve_user/?$', 'resolve_user', name='layer_resolve_user'),
-    url(r'^search/?$', 'layer_search_page', name='layer_search_page'),
     url(r'^upload$', 'layer_upload', name='layer_upload'),
     url(r'^download$', 'layer_batch_download', name='layer_batch_download'),
     url(r'^(?P<layername>[^/]*)$', 'layer_detail', name="layer_detail"),

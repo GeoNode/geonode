@@ -4,13 +4,12 @@
 
 {% block title %} {{ block.super }} {% endblock %}
 
-{% block body_class %}data{% endblock %}
+{% block body_class %}documents{% endblock %}
 
 {% block body_outer %}
     <div class="span12">
       <ul class="nav nav-tabs" id="subnav-tabs">
             <li><a href="{% url "documents_browse" %}" class="explore">{% trans "Explore Documents" %}</a></li>
-            <li><a href="{% url "document_search_page" %}" class="search">{% trans "Search Documents" %}</a></li>
             <li><a href="{% url "document_upload" %}" class="upload">{% trans "Upload Documents" %}</a></li>
       </ul>
     </div>
