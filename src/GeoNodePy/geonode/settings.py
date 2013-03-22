@@ -376,6 +376,7 @@ MAP_BASELAYERS = [
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
+        "tiled": False,
         "title": "ESRI World Physical Map"
     },
     {
@@ -384,6 +385,7 @@ MAP_BASELAYERS = [
             "ptype": "gxp_arcrestsource"},
         "group": "background",
         "name": "World Street Map",
+        "tiled": False,
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
@@ -397,6 +399,7 @@ MAP_BASELAYERS = [
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
+        "tiled": False,
         "title": "ESRI World Topography"
     },
     {
@@ -408,6 +411,7 @@ MAP_BASELAYERS = [
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
+        "tiled": False,
         "title": "ESRI World Shaded Relief"
     }, {
         "source": {
@@ -418,6 +422,7 @@ MAP_BASELAYERS = [
         "name": "World Imagery",
         "visibility": False,
         "fixed": True,
+        "tiled": False,
         "title": "ESRI World Imagery"
     },
     {
@@ -429,6 +434,7 @@ MAP_BASELAYERS = [
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
+        "tiled": False,
         "title": "ESRI World Ocean Basemap"
     },
     {
@@ -440,6 +446,7 @@ MAP_BASELAYERS = [
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
+        "tiled": False,
         "title": "ESRI Light Gray Reference"
     },
     {
@@ -451,6 +458,7 @@ MAP_BASELAYERS = [
         "format": "jpeg",
         "visibility": False,
         "fixed": True,
+        "tiled": False,
         "title": "National Geographic World Map"
     },
     {
