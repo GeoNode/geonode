@@ -312,7 +312,7 @@ def new_map_config(request):
                     # bad layer, skip
                     continue
 
-                if not request.user.has_perm('maps.view_layer', obj=layer):
+                if not request.user.has_perm('layers.view_layer', obj=layer):
                     # invisible layer, skip inclusion
                     continue
 
