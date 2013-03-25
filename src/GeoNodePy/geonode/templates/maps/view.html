@@ -30,7 +30,7 @@ var isMobile = {
 if (isMobile.any()) {
 	redirect=confirm("Would you like to view the alpha mobile version of this map?");
 	if (redirect===true){
-		window.location = document.URL + "/mobile/";
+		window.location = document.URL.replace(/\/$/g,"") + "/mobile/";
 	}
 }
 </script>
