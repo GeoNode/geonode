@@ -372,87 +372,95 @@ MAP_BASELAYERS = [
     {
         "source": {
             "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer",
-            "ptype": "gxp_arcgiscachesource"},
+            "ptype": "gxp_arcrestsource"},
         "group": "background",
         "name": "World Physical Map",
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
+        "tiled" : False,
         "title": "ESRI World Physical Map"
     },
     {
         "source": {
             "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
-            "ptype": "gxp_arcgiscachesource"},
+            "ptype": "gxp_arcrestsource"},
         "group": "background",
         "name": "World Street Map",
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
+        "tiled" : False,
         "title": "ESRI World Street Map"
     },
     {
         "source": {"url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer",
-                   "ptype": "gxp_arcgiscachesource"},
+                   "ptype": "gxp_arcrestsource"},
         "group": "background",
         "name": "Topographic Info",
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
+        "tiled" : False,
         "title": "ESRI World Topography"
     },
     {
         "source": {
             "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer",
-            "ptype": "gxp_arcgiscachesource"},
+            "ptype": "gxp_arcrestsource"},
         "group": "background",
         "name": "World Shaded Relief",
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
+        "tiled" : False,
         "title": "ESRI World Shaded Relief"
     }, {
         "source": {
             "url": "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
-            "ptype": "gxp_arcgiscachesource"},
+            "ptype": "gxp_arcrestsource"},
         "group": "background",
         "format": "jpeg",
         "name": "World Imagery",
         "visibility": False,
         "fixed": True,
+        "tiled" : False,
         "title": "ESRI World Imagery"
     },
     {
         "source": {
             "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer",
-            "ptype": "gxp_arcgiscachesource"},
+            "ptype": "gxp_arcrestsource"},
         "group": "background",
         "name": "Ocean_Basemap",
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
+        "tiled" : False,
         "title": "ESRI World Ocean Basemap"
     },
     {
         "source": {
             "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer",
-            "ptype": "gxp_arcgiscachesource"},
+            "ptype": "gxp_arcrestsource"},
         "group": "background",
         "name": "Light Gray Canvas Base",
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
+        "tiled" : False,
         "title": "ESRI Light Gray Reference"
     },
     {
         "source": {
             "url": "http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer",
-            "ptype": "gxp_arcgiscachesource"},
+            "ptype": "gxp_arcrestsource"},
         "group": "background",
         "name": "NatGeo_World_Map",
         "format": "jpeg",
         "visibility": False,
         "fixed": True,
+        "tiled" : False,
         "title": "National Geographic World Map"
     },
     {
