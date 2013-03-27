@@ -190,10 +190,10 @@
   $("#comment_submit_btn").click(function(event) {
     $.ajax({
       type: "POST",
-      url: $("#comment_post_form").attr('action'),
-      data: $("#comment_post_form").serialize(),
+      url: $("#form_post_comment").attr('action'),
+      data: $("#form_post_comment").serialize(),
       success: function() {
-        $('#form_post_comment').modal('hide');
+        $('#form_post_comment_div').modal('hide');
         $('#comments_section').load(window.location.pathname + ' #comments_section', 
         		function(){$(this).children().unwrap()})
       }
