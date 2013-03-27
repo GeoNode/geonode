@@ -247,6 +247,18 @@
             po.src = 'https://apis.google.com/js/plusone.js';
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
         })();
+        $("#comment_submit_btn").click(function(event) {
+            $.ajax({
+              type: "POST",
+              url: $("#comment_post_form").attr('action'),
+              data: $("#comment_post_form").serialize(),
+              success: function() {
+                $('#form_post_comment').modal('hide');
+                $('#comments_section').load(window.location.pathname + ' #comments_section')
+              }
+            });
+            return false;
+          });        
     </script>
     {% include "_permissions_form_js.html" %}
 {% endblock extra_script %}
