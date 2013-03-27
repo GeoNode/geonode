@@ -36,7 +36,7 @@
     </div>
     <div class="modal-body">
         {% comment_form obj as form %}
-        <form class="well" action="{% comment_target obj %}" method="POST" id="form_post_comment">
+        <form action="{% comment_target obj %}" method="POST" id="form_post_comment">
         {% csrf_token %}
         {{ form }}
     </div>
