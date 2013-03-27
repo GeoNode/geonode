@@ -1,0 +1,18 @@
+@page {
+  size: A4 portrait;
+  margin: 0cm;
+}
+
+.canvas	{
+	margin: 0;
+	width: auto;
+	height: auto;
+	
+	margin: 0;
+	border: 0;
+	box-shadow: none;
+}
+
+.printable	{
+	margin: 0;
+}

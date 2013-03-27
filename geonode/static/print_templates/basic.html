@@ -1,0 +1,24 @@
+<html>
+    <head>
+<style type="text/css">
+    @page{
+        margin-left: 0.0in;
+        margin-right: 0.0in;
+        margin-top: 0.0in;
+        margin-bottom: 0.0in;
+    }
+    body{
+        margin:0;
+    }
+
+</style>
+{{ styles|safe }}
+    </head>
+    <body style="width:{{ width|default:512 }}px; height:{{ height|default:256 }}px;">
+    <body>
+        <h1>{% firstof map_title layer_title %}</h1>
+        <div id="mapframe">
+            {{ map_html|safe }}
+        </div>
+    </body>
+</html>

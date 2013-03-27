@@ -65,13 +65,13 @@ class GeoNodeSmokeTests(TestCase):
     #### Layer Pages ####
 
     def test_layer_page(self):
-        'Test if the data home page renders.'
+        'Test if the layer home page renders.'
         c = Client()
         response = c.get(reverse('layer_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_layer_acls(self):
-        'Test if the data/acls endpoint renders.'
+        'Test if the layer/acls endpoint renders.'
         c = Client()
         response = c.get(reverse('layer_acls'))
         self.failUnlessEqual(response.status_code, 200)
