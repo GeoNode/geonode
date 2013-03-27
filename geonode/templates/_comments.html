@@ -6,7 +6,7 @@
 {% friendly_load avatar_tags %}
 
 {% load i18n %}
-<div class="comments paginate paginate-manual">
+<div id="comments_section" class="comments paginate paginate-manual">
     <header>
         <h3>{% trans 'Comments' %} <span class="total">({% comment_count obj %} total)</span></h3>
         {% if user.is_authenticated %}
@@ -36,13 +36,13 @@
     </div>
     <div class="modal-body">
         {% comment_form obj as form %}
-        <form class="well" action="{% comment_target obj %}" method="POST" id="form_post_comment">
+        <form action="{% comment_target obj %}" method="POST" id="comment_post_form">
         {% csrf_token %}
         {{ form }}
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-        <button class="btn btn-primary">{% trans 'Submit Comments' %}</button>
+        <button id="comment_submit_btn" class="btn btn-primary">{% trans 'Submit Comments' %}</button>
     </div>
         </form>
 </div>

@@ -194,7 +194,8 @@
       data: $("#comment_post_form").serialize(),
       success: function() {
         $('#form_post_comment').modal('hide');
-        $('#comments_section').load(window.location.pathname + ' #comments_section')
+        $('#comments_section').load(window.location.pathname + ' #comments_section', 
+        		function(){$(this).children().unwrap()})
       }
     });
     return false;
