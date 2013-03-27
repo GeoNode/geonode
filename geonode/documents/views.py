@@ -103,12 +103,7 @@ def document_upload(request):
         except:
             content_type = None
             object_id = None
-        try:
-            int(object_id)
-        except: 
-            if object_id is not None:
-                object_id = Layer.objects.get(uuid=object_id).id
-
+        
         if not os.path.splitext(request.FILES['file'].name)[1].lower()[1:] in ALLOWED_DOC_TYPES:
             return HttpResponse(json.dumps({'success': False, 'errormsgs': ['This file type is not allowed.']}))
         if not request.FILES['file'].size < settings.MAX_DOCUMENT_SIZE * 1024 * 1024:
