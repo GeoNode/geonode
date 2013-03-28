@@ -185,7 +185,22 @@
             var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
             po.src = 'https://apis.google.com/js/plusone.js';
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-        })();
+        })();      
+
+  $("#comment_submit_btn").click(function(event) {
+    $.ajax({
+      type: "POST",
+      url: $("#form_post_comment").attr('action'),
+      data: $("#form_post_comment").serialize(),
+      success: function() {
+        $('#form_post_comment_div').modal('hide');
+        $('#comments_section').load(window.location.pathname + ' #comments_section', 
+        		function(){$(this).children().unwrap()})
+      }
+    });
+    return false;
+  });
+ 
 </script>
 {% include "_permissions_form_js.html" %}
 {% endblock %}
