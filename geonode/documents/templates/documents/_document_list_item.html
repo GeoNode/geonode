@@ -2,8 +2,10 @@
 {% load i18n %}
 {% load agon_ratings_tags %}
 {% load documents_tags %}
+{% load base_tags %}
 
 {% overall_rating document "document" as document_rating %}
+{% num_ratings document as num_votes %}
 <article>
     <h3>Document</h3>
     <a href="{% url "document_detail" document.id %}">
@@ -14,6 +16,6 @@
         <a href="{% url "document_detail" document.id %}"><h3>{{ document.title }}</h3></a>
         <div class="meta">{% trans 'from' %} <a href="{% url "profile_detail" document.owner.username %}">{{ document.owner }}</a>, {{ document.date|timesince }} {% trans 'ago' %}</div>
         <p class="abstract">{{ document.abstract }}</p>
-        <p class="activity">{{ document.popular_count }} {% trans "view" %}{{ document.popular_count|pluralize }} | <span class="avg_rating" data-rating="{{ document_rating }}">{% trans "Average rating" %} <span class="overall_rating"></span></span></p>
+        <p class="activity">{{ document.popular_count }} {% trans "view" %}{{ document.popular_count|pluralize }} | <span class="avg_rating" data-rating="{{ document_rating }}">{% trans "Average rating" %} <span class="overall_rating"></span> ({{num_votes}})</span></p>
     </div>
 </article>
