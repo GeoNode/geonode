@@ -5,6 +5,7 @@
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load url from future %}
+{% load base_tags %}
 
 {% block title %}{{ document.title }} — {{ block.super }}{% endblock %}
 
@@ -81,7 +82,8 @@
         {% endif %}
         <h3>{% trans 'Average Rating' %}</h3>
         {% overall_rating document "document" as document_rating %}
-        <div class="overall_rating" data-rating="{{ document_rating }}"></div>
+        {% num_ratings document as num_votes %}
+        <div class="overall_rating" style="float:left" data-rating="{{ document_rating }}"></div> ({{num_votes}})
         <!-- TODO: Add display of who gave what rating based -->
       </article>
     </div>
