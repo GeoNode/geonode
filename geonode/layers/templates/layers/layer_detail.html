@@ -5,6 +5,7 @@
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load url from future %}
+{% load base_tags %}
 
 {% block title %}{{ layer.title|default:layer.typename }} — {{ block.super }}{% endblock %}
 
@@ -139,7 +140,9 @@
         {% endif %}
         <h3>{% trans 'Average Rating' %}</h3>
         {% overall_rating layer "layer" as layer_rating %}
-        <div class="overall_rating" data-rating="{{ layer_rating }}"></div>
+        {% num_ratings layer as num_votes %}
+        <div class="overall_rating" style="float:left" data-rating="{{ layer_rating }}"></div> ({{num_votes}})
+        
         <!-- TODO: Add display of who gave what rating based -->
       </article>
     </div>
