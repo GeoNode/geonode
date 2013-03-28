@@ -5,6 +5,7 @@
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
 {% load url from future %}
+{% load base_tags %}
 
 {% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
 
@@ -88,7 +89,8 @@
         {% endif %}
         <h3>{% trans 'Average Rating' %}</h3>
         {% overall_rating map "map" as map_rating %}
-        <div class="overall_rating" data-rating="{{ map_rating }}"></div>
+        {% num_ratings map as num_votes %}
+        <div class="overall_rating" style="float:left" data-rating="{{ map_rating }}"></div> ({{num_votes}})
         <!-- TODO: Add display of who gave what rating based -->
       </article>
       <article class="tab-pane" id="share">
@@ -171,7 +173,7 @@
      half: true,
      readOnly: true,
      start: $('div.overall_rating').data('rating'),
-     path: "{{ STATIC_URL }}libs/agon_ratings/img/"
+     path: "{{ STATIC_URL }}agon_ratings/img/"
    });
    $("#rate-map").raty();
  });
