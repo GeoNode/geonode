@@ -447,7 +447,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 rasterStyling: true,
                 actionTarget: ["treecontent.contextMenu"]
             }, {
-                ptype: "gxp_print",
+                ptype: "gxp_printpage",
                 openInNewWindow: true,
                 includeLegend: true,
                 printCapabilities: window.printCapabilities,

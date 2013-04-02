@@ -328,7 +328,7 @@ var updateCQL = function (layers) {
         for (var k = 0; k < keywords.length; k++) {
             keywordFilter += (k > 0 ? " AND " : "") + "tweet_text ilike '" + keywords[k].replace(/["]/g, '') + "'";
         }
-    }
+    } else keywordFilter = "tweet_text";
 
     var timeFilter =  "time > " + (Math.floor(new Date(tweetDateStartField.getValue()).getTime()/1000)) + " AND time < " + (Math.floor(new Date(tweetDateEndField.getValue()).getTime() /1000)) ;
     var fromFilter = " from oct_tweets";
@@ -349,13 +349,11 @@ var updateCQL = function (layers) {
             if (keywords && keywords != "") {
                 layer.getLayer().setVisibility(true);
                 numLayersVisible++;
-            } else if (!keywords || keywords == "") {
-                layer.getLayer().setVisibility(false);
             }
 
         } else {
         	layer.getLayer().params["LAYERS"] = Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point";
-            layer["cql_filter"] = startFilter + " tweet_text " + fromFilter + " WHERE " + timeFilter + (keywords ? " AND " + keywordFilter : "");
+            layer["cql_filter"] = startFilter + " tweet_text" + fromFilter + " WHERE " + timeFilter + (keywords ? " AND " + keywordFilter : "");
             layer.getLayer().params["SQL"] = layer["cql_filter"];
             layer.getLayer().params["RADIUS"] = 1;
             layer.getLayer().params["R"] = 0;
@@ -727,7 +725,7 @@ tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
 tweetHeatRecord.group = tweetConfig.group;
 
 tweetHeatRecord.getLayer().events.register("loadend", tweetPointRecord.getLayer(), function () {
-    if (tweetHeatRecord.getLayer().getVisibility() === true) {
+    if (tweetHeatRecord.getLayer().getVisibility() === true  && tweetFilterField.getValue() != "") {
         var layer_bbox = getUrlParams(tweetHeatRecord.getLayer().grid[0][0].url).BBOX.split(",");
         graphBounds = new OpenLayers.Bounds(
                 parseFloat(layer_bbox[0]), parseFloat(layer_bbox[1]),

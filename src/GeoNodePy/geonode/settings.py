@@ -372,95 +372,113 @@ MAP_BASELAYERS = [
     {
         "source": {
             "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer",
-            "ptype": "gxp_arcrestsource"},
+            "ptype": "gxp_arcgiscachesource"},
         "group": "background",
         "name": "World Physical Map",
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
-        "tiled" : False,
-        "title": "ESRI World Physical Map"
+        "title": "ESRI World Physical Map",
+        "tileInfo": {
+                     "origin": {"y": 20037508.342787, "x": -20037508.342787}, 
+                     "rows": 256, "format": "JPEG", "cols": 256, "compressionQuality": 90, 
+                     "lods": [
+                        {"scale": 591657527.591555, "endTileCol": 0, "level": 0, "startTileCol": 0, 
+                         "endTileRow": 0, "startTileRow": 0, "resolution": 156543.033928}, 
+                        {"scale": 295828763.795777, "endTileCol": 1, "level": 1, "startTileCol": 0, 
+                         "endTileRow": 1, "startTileRow": 0, "resolution": 78271.5169639999}, 
+                        {"scale": 147914381.897889, "endTileCol": 3, "level": 2, "startTileCol": 0, 
+                         "endTileRow": 3, "startTileRow": 0, "resolution": 39135.7584820001}, 
+                        {"scale": 73957190.948944, "endTileCol": 7, "level": 3, "startTileCol": 0, 
+                         "endTileRow": 7, "startTileRow": 0, "resolution": 19567.8792409999}, 
+                        {"scale": 36978595.474472, "endTileCol": 15, "level": 4, "startTileCol": 0, 
+                         "endTileRow": 15, "startTileRow": 0, "resolution": 9783.93962049996}, 
+                        {"scale": 18489297.737236, "endTileCol": 31, "level": 5, "startTileCol": 0, 
+                         "endTileRow": 31, "startTileRow": 0, "resolution": 4891.96981024998}, 
+                        {"scale": 9244648.868618, "endTileCol": 63, "level": 6, "startTileCol": 0, 
+                         "endTileRow": 63, "startTileRow": 0, "resolution": 2445.98490512499}, 
+                        {"scale": 4622324.434309, "endTileCol": 127, "level": 7, "startTileCol": 0, 
+                         "endTileRow": 127, "startTileRow": 0, "resolution": 1222.99245256249}, 
+                        {"scale": 2311162.217155, "endTileCol": 255, "level": 8, "startTileCol": 0, 
+                         "endTileRow": 255, "startTileRow": 0, "resolution": 611.49622628138}], 
+                         "spatialReference": {"wkid": 102100}, "dpi": 96},
+        "fullExtent": {"xmin": -20037507.0671618, "ymin": -19971868.8804086, 
+                       "ymax": 19971868.8804086, "xmax": 20037507.0671618, 
+                       "spatialReference": {"wkid": 102100}}
     },
     {
         "source": {
             "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
-            "ptype": "gxp_arcrestsource"},
+            "ptype": "gxp_arcgiscachesource"},
         "group": "background",
         "name": "World Street Map",
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
-        "tiled" : False,
         "title": "ESRI World Street Map"
     },
     {
         "source": {"url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer",
-                   "ptype": "gxp_arcrestsource"},
+                   "ptype": "gxp_arcgiscachesource"},
         "group": "background",
         "name": "Topographic Info",
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
-        "tiled" : False,
         "title": "ESRI World Topography"
     },
     {
         "source": {
             "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer",
-            "ptype": "gxp_arcrestsource"},
+            "ptype": "gxp_arcgiscachesource"},
         "group": "background",
         "name": "World Shaded Relief",
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
-        "tiled" : False,
         "title": "ESRI World Shaded Relief"
     }, {
         "source": {
             "url": "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
-            "ptype": "gxp_arcrestsource"},
+            "ptype": "gxp_arcgiscachesource"},
         "group": "background",
         "format": "jpeg",
         "name": "World Imagery",
         "visibility": False,
         "fixed": True,
-        "tiled" : False,
         "title": "ESRI World Imagery"
     },
     {
         "source": {
             "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer",
-            "ptype": "gxp_arcrestsource"},
+            "ptype": "gxp_arcgiscachesource"},
         "group": "background",
         "name": "Ocean_Basemap",
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
-        "tiled" : False,
         "title": "ESRI World Ocean Basemap"
     },
     {
         "source": {
             "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer",
-            "ptype": "gxp_arcrestsource"},
+            "ptype": "gxp_arcgiscachesource"},
         "group": "background",
         "name": "Light Gray Canvas Base",
         "visibility": False,
         "fixed": True,
         "format": "jpeg",
-        "tiled" : False,
         "title": "ESRI Light Gray Reference"
     },
     {
         "source": {
             "url": "http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer",
-            "ptype": "gxp_arcrestsource"},
+            "ptype": "gxp_arcgiscachesource"},
         "group": "background",
         "name": "NatGeo_World_Map",
         "format": "jpeg",
         "visibility": False,
         "fixed": True,
-        "tiled" : False,
         "title": "National Geographic World Map"
     },
     {
