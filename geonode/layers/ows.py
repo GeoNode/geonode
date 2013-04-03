@@ -32,7 +32,7 @@ from geonode import GeoNodeException
 logger = logging.getLogger(__name__)
 
 DEFAULT_EXCLUDE_FORMATS = ['PNG', 'JPEG', 'GIF', 'TIFF']
-def wcs_links(wcs_url, identifier, bbox=None, crs=None,
+def wcs_links(wcs_url, identifier, bbox=None, crs=None, height=None, width=None,
              exclude_formats=True,
              quiet=True, version='1.0.0'):
     #FIXME(Ariel): This would only work for layers marked for public view,
@@ -65,7 +65,8 @@ def wcs_links(wcs_url, identifier, bbox=None, crs=None,
         for f in formats:
             if exclude_formats and f in DEFAULT_EXCLUDE_FORMATS:
                 continue
-            url = wcs.getCoverage(identifier=coverage.id, format=f, bbox=bbox, crs=crs).geturl()
+            url = wcs.getCoverage(identifier=coverage.id, format=f, bbox=bbox, crs=crs, 
+                height=height, width=width).geturl()
             # The outputs are: (ext, name, mime, url)
             # FIXME(Ariel): Find a way to get proper ext, name and mime 
             # using format as a default for all is not good enough
