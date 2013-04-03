@@ -139,6 +139,13 @@ var init = function() {
                 user: "{{ user.id }}",
                 toggleGroup: 'featureGroup',
                 actionTarget:  {target: "paneltbar", index: 16}
+            },
+            {
+            	ptype: 'gxp_mapshare',
+            	target: this,
+            	buttonText: '<span class="x-btn-text">Share Map</span>',
+            	iconCls: null,
+                actionTarget:  {target: "paneltbar", index: 24}
             }
             ],
             proxy: "/proxy/?url=",
@@ -161,7 +168,7 @@ var init = function() {
 
 
     app = new GeoExplorer(config, true);
-
+    
     var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
     var permalink = function(id) {
         return permalinkTemplate.apply({
