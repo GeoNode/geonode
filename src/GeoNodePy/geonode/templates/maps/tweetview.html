@@ -319,16 +319,16 @@ var updateCQL = function (layers) {
     */
 
     var randomNum = Math.random();
-    var startFilter = "SELECT goog_x, goog_y, ";
+    var startFilter = "SELECT goog_x, goog_y";
 
 
     var keywordFilter = "";
     var keywords = tweetFilterField.getValue().replace("'", "''").match(/[^"\s]+|"[^"]+"/g);
     if (keywords) {
         for (var k = 0; k < keywords.length; k++) {
-            keywordFilter += (k > 0 ? " AND " : "") + "tweet_text ilike '" + keywords[k].replace(/["]/g, '') + "'";
+            keywordFilter += (k > 0 ? " AND " : " ") + "tweet_text ilike '" + keywords[k].replace(/["]/g, '') + "'";
         }
-    } else keywordFilter = "tweet_text";
+    }
 
     var timeFilter =  "time > " + (Math.floor(new Date(tweetDateStartField.getValue()).getTime()/1000)) + " AND time < " + (Math.floor(new Date(tweetDateEndField.getValue()).getTime() /1000)) ;
     var fromFilter = " from oct_tweets";
@@ -341,7 +341,7 @@ var updateCQL = function (layers) {
 
         if (layer.get("name").indexOf("heatmap") > -1) {
         	layer.getLayer().params["LAYERS"] = Ext.getCmp("lsh_checkbox").checked ? "lsh_heatmap" : "heatmap";
-            layer["cql_filter"] = startFilter + keywordFilter + fromFilter + " WHERE " + timeFilter;
+            layer["cql_filter"] = startFilter + "," + keywordFilter + fromFilter + " WHERE " + timeFilter;
             layer.getLayer().params["SQL"] = layer["cql_filter"];
             layer.getLayer().params["BLUR"] = Ext.getCmp("slider_blur").value;
             layer.getLayer().params["MIN"] = Ext.getCmp("slider_min").value / 100;
@@ -353,7 +353,7 @@ var updateCQL = function (layers) {
 
         } else {
         	layer.getLayer().params["LAYERS"] = Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point";
-            layer["cql_filter"] = startFilter + " tweet_text" + fromFilter + " WHERE " + timeFilter + (keywords ? " AND " + keywordFilter : "");
+            layer["cql_filter"] = startFilter + ", tweet_text " + fromFilter + " WHERE " + timeFilter + (keywords ? " AND " + keywordFilter : "");
             layer.getLayer().params["SQL"] = layer["cql_filter"];
             layer.getLayer().params["RADIUS"] = 1;
             layer.getLayer().params["R"] = 0;
