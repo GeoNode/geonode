@@ -1636,7 +1636,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
         this.mapPanel.add(moreButton);
-        
+
         var svt = new StreetViewPopup({mapPanel: mapPanel, titleHeader: this.streetViewBtnText, popupHeight: 300, popupWidth: 600});
         mapPanel.map.addControl(svt);
 
@@ -1663,15 +1663,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 document.location.href = "/maps/" + this.mapID + "/edit";
         };
 
-        var shareMapButton = new Ext.Button({
-            id: 'shareMapButton',
-            text: '<span class="x-btn-text">' + this.shareMapText + '</span>',
-            handler: this.initMapShareWindow,
-            cls: 'x-btn-link-medium',
-            hidden: !this.config["edit_map"],
-            disabled: !this.mapID,
-            scope: this
-        });
 
 
         var publishAction = new Ext.Action({
@@ -1707,7 +1698,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             infoButton,"-",
             "-",streetViewButton,"-",
             '->',
-            historyAction, shareMapButton
+            historyAction
         ];
         
 
@@ -2115,32 +2106,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
     },
 
-    initMapShareWindow: function() {
 
-
-        var mapSharePanel = new Ext.Panel({
-            id: 'worldmap_mapshare_panel',
-            title: 'Share Map',
-            header: false,
-            autoLoad: {url: '/maps/' + this.mapID + '/share/', scripts: true},
-            autoScroll: true
-        });
-
-        var mapShareWindow = new Ext.Window({
-            title: "Share Map",
-            closeAction: 'destroy',
-            layout: 'fit',
-            width: 300,
-            height:400,
-            items: [mapSharePanel],
-            modal: true,
-            autoScroll: false,
-            bodyStyle: 'background-color:#FFF'
-        });
-
-        mapShareWindow.show();
-
-    },
 
     /*  Set up a simplified map config with just background layers and
      the current map extent, to be used on the data search map */

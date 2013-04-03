@@ -507,7 +507,7 @@ def set_layer_permissions(layer, perm_spec, use_email = False):
             try:
                 user = User.objects.get(email=useremail)
             except User.DoesNotExist:
-                 user = _create_new_user(useremail, layer.title, reverse('geonode.maps.views.layer_detail', args=(layer.typename,)), layer.owner_id)
+                user = _create_new_user(useremail, layer.title, reverse('geonode.maps.views.layer_detail', args=(layer.typename,)), layer.owner_id)
             layer.set_user_level(user, level)
     else:
         layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
@@ -643,7 +643,7 @@ def mapdetail(request,mapid):
     if not request.user.has_perm('maps.view_map', obj=map_obj):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
-                _("You are not allowed to view this map.")})), status=401)
+                _("You are not allowed to view this map.")})), status=401)    
     config = map_obj.viewer_json(request.user)
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
@@ -843,7 +843,6 @@ def tweetview(request):
         'urlsuffix': get_suffix_if_custom(map),
         'tweetdownload': request.user.is_authenticated() and request.user.get_profile().is_org_member
         }))
-
 
 def embed(request, mapid=None, snapshot=None):
     if mapid is None:
