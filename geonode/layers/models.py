@@ -439,7 +439,8 @@ def geoserver_post_save(instance, sender, **kwargs):
         #FIXME(Ariel): This works for public layers, does it work for restricted too?
         # would those end up with no geotiff links, like, forever?
 
-        links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename, bbox=instance.bbox[:-1], crs=instance.bbox[-1])
+        links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename, 
+            bbox=instance.bbox[:-1], crs=instance.bbox[-1], height=height, width=width)
         for ext, name, mime, wcs_url in links:
             Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                                 url=wcs_url,
