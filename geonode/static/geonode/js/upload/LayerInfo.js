@@ -219,6 +219,7 @@ define(function (require, exports) {
     LayerInfo.prototype.doSrs = function (resp) {
         // at this point we need to allow the user to select an srs
         var self = this;
+        var resp = $.parseJSON(resp);
         make_request({
             url: resp.redirect_to,
             async: false,
@@ -232,7 +233,7 @@ define(function (require, exports) {
             self = this;
 
         $.ajax({
-            url: "", // is this right?
+            url: form_target, // is this right?
             async: false,
             type: "POST",
             data: form_data,
