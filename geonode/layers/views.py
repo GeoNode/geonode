@@ -126,7 +126,6 @@ def layer_upload(request, template='layers/layer_upload.html'):
                     name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
 
                 name = slugify(name_base.replace(".","_"))
-
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
@@ -340,7 +339,16 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             "layer": layer
         }))
     if (request.method == 'POST'):
-        layer.delete()
+        # if the layer styles are not associated to any other layer we need to 
+        # remove them
+        for style in layer.styles.all():
+            if style.layer_styles.all().count()==1:
+                if layer.default_style != style:
+                    style.delete()
+                else:
+                    default_style = layer.default_style
+        # layer.delete()
+        default_style.delete() # this will remove the layer as well
         return HttpResponseRedirect(reverse("layer_browse"))
     else:
         return HttpResponse("Not allowed",status=403)

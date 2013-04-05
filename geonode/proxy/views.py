@@ -81,6 +81,13 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
         url, request.method,
         body=request.raw_post_data or None,
         headers=headers)
+        
+    # we need to sync django here
+    # we should remove this geonode dependence calling layers.views straigh
+    # from GXP, bypassing the proxy
+    if downstream_path == 'rest/styles':
+        from geonode.layers import utils
+        utils.style_update(request, url)
 
     return HttpResponse(
         content=content,
