@@ -284,7 +284,7 @@ class Map(ResourceBase, GXPMapBase):
             bbox = self.set_bounds_from_layers(layer_objects)
 
             if bbox is not None:
-                minx, maxx, miny, maxy = [float(c) for c in bbox]
+                minx, miny, maxx, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
                 (self.center_x,self.center_y) = forward_mercator((x,y))

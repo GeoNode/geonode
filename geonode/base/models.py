@@ -190,7 +190,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
 
     @property
     def bbox(self):
-        return [self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, self.srid]
+        return [self.bbox_x0, self.bbox_y0, self.bbox_x1, self.bbox_y1, self.srid]
 
     @property
     def bbox_string(self):
