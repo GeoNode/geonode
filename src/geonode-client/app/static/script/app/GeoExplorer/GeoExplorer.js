@@ -1637,6 +1637,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.mapPanel.add(moreButton);
 
+
         var svt = new StreetViewPopup({mapPanel: mapPanel, titleHeader: this.streetViewBtnText, popupHeight: 300, popupWidth: 600});
         mapPanel.map.addControl(svt);
 
@@ -2109,7 +2110,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.dataTabPanel.add(this.warperPanel);
 
     },
-
 
 
     /*  Set up a simplified map config with just background layers and
