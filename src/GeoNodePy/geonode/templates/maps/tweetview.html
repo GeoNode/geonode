@@ -726,7 +726,7 @@ tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
 tweetHeatRecord.group = tweetConfig.group;
 
 tweetHeatRecord.getLayer().events.register("loadend", tweetPointRecord.getLayer(), function () {
-    if (tweetHeatRecord.getLayer().getVisibility() === true) {
+    if (tweetHeatRecord.getLayer().getVisibility() === true && tweetFilterField.getValue() != "") {
         var layer_bbox = getUrlParams(tweetHeatRecord.getLayer().grid[0][0].url).BBOX.split(",");
         graphBounds = new OpenLayers.Bounds(
                 parseFloat(layer_bbox[0]), parseFloat(layer_bbox[1]),
