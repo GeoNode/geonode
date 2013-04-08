@@ -1,3 +1,12 @@
+geonode (2.0.0+alpha7) precise; urgency=low
+
+  * [9248b1] Upgraded gsconfig.py
+  * [d122db] Upgraded django-geoexplorer
+  * [0c9675] Modify port for accessing GeoNode before building debian package. Fixes #808
+  * [94edb1] Bumped to 2.0a7
+
+ -- Ariel Núñez <ingenieroariel@gmail.com>  Thu, 21 Mar 2013 13:29:43 +0000
+
 geonode (2.0.0+alpha6) precise; urgency=high
 
   [ Simone Dalmasso ]
