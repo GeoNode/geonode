@@ -72,7 +72,7 @@ public class DatabaseSecurityClient implements GeoNodeSecurityClient {
         // these can be stored longer maybe? just in case, expire this cache
         // after 1 day
         authenticationCache = CacheBuilder.newBuilder().
-                maximumSize(100).expireAfterWrite(1, TimeUnit.DAYS).build();
+                maximumSize(1000).expireAfterWrite(30, TimeUnit.DAYS).build();
         // the idea w/ expiration after access is that if someone has access to
         // a layer, it will probably not change quickly after that. cache
         // extension makes the standard pan/zoom or time playback perform much
@@ -80,7 +80,7 @@ public class DatabaseSecurityClient implements GeoNodeSecurityClient {
         // the issue of a new layer not appearing in the cache is not a problem
         // with this client as it caches layers individually and not in bulk
         authorizationCache = CacheBuilder.newBuilder().
-                maximumSize(10000).expireAfterAccess(1, TimeUnit.MINUTES).build();
+                maximumSize(1000).expireAfterAccess(1, TimeUnit.MINUTES).build();
     }
 
     public Authentication authenticateCookie(String cookieValue) throws AuthenticationException, IOException {
@@ -216,6 +216,7 @@ public class DatabaseSecurityClient implements GeoNodeSecurityClient {
         String resourceName = resource.prefixedName();
         AuthorizationKey key = new AuthorizationKey(user.getName(), resourceName);
         Byte bits = authorizationCache.getIfPresent(key);
+        LOGGER.log(Level.SEVERE, "Got bits");
         if (bits == null) {
         	LOGGER.log(Level.SEVERE, "bits is null");
             bits = computeBits(user, resource, mode);
