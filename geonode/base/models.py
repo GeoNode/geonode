@@ -190,11 +190,11 @@ class ResourceBase(models.Model, PermissionLevelMixin):
 
     @property
     def bbox(self):
-        return [self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, self.srid]
+        return [self.bbox_x0, self.bbox_y0, self.bbox_x1, self.bbox_y1, self.srid]
 
     @property
     def bbox_string(self):
-        return ",".join([str(self.bbox_x0), str(self.bbox_x1), str(self.bbox_y0), str(self.bbox_y1)])
+        return ",".join([str(self.bbox_x0), str(self.bbox_y0), str(self.bbox_x1), str(self.bbox_y1)])
 
     @property
     def geographic_bounding_box(self):

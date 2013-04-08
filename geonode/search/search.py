@@ -139,7 +139,7 @@ def _build_map_layer_text_query(q, query, query_keywords=False):
 
 
 def _build_kw_only_query(keywords):
-    return reduce(operator.or_, [Q(keywords__name__contains=kw) for kw in keywords])
+    return reduce(operator.or_, [Q(keywords__slug__contains=kw) for kw in keywords])
 
 def _get_owner_results(query):
     # make sure all contacts have a user attached

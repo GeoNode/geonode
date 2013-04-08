@@ -5,6 +5,7 @@
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load url from future %}
+{% load base_tags %}
 
 {% block title %}{{ layer.title|default:layer.typename }} — {{ block.super }}{% endblock %}
 
@@ -139,7 +140,9 @@
         {% endif %}
         <h3>{% trans 'Average Rating' %}</h3>
         {% overall_rating layer "layer" as layer_rating %}
-        <div class="overall_rating" data-rating="{{ layer_rating }}"></div>
+        {% num_ratings layer as num_votes %}
+        <div class="overall_rating" style="float:left" data-rating="{{ layer_rating }}"></div> ({{num_votes}})
+        
         <!-- TODO: Add display of who gave what rating based -->
       </article>
     </div>
@@ -235,7 +238,6 @@
         });
     });
     </script>
-    <script src="{{ STATIC_URL }}geonode/js/paginate.js"></script>
     <script>
         $(function () {
             var activeTab = $('[href=' + location.hash + ']');
@@ -247,6 +249,19 @@
             po.src = 'https://apis.google.com/js/plusone.js';
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
         })();
+        $("#comment_submit_btn").click(function(event) {
+            $.ajax({
+              type: "POST",
+              url: $("#form_post_comment").attr('action'),
+              data: $("#form_post_comment").serialize(),
+              success: function() {
+                $('#form_post_comment_div').modal('hide');
+                $('#comments_section').load(window.location.pathname + ' #comments_section', 
+                		function(){$(this).children().unwrap()})
+              }
+            });
+            return false;
+          });        
     </script>
     {% include "_permissions_form_js.html" %}
 {% endblock extra_script %}
