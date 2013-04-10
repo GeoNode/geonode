@@ -1,0 +1,4 @@
+-------------------------------------------------------------------
+Sat Mar 30 10:33:06 UTC 2013 - Angelos Tzotsos <tzotsos@opensuse.org>
+
+- Initial spec file to install GeoNode plug-in for GeoServer under default tomcat

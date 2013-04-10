@@ -496,11 +496,13 @@ def final_step(upload_session, user):
 
     cat._cache.clear()
 
+    storeType = 'dataStore' if target.resource_type == 'featureType' else 'coverageStore'
+
     saved_layer, created = Layer.objects.get_or_create(
         name=resource.name,
         defaults=dict(
             store=target.name,
-            storeType=target.resource_type,
+            storeType=storeType,
             typename=typename,
             workspace=target.workspace.name,
             title=title or resource.title,
