@@ -123,32 +123,16 @@
 {% block sidebar %}
 
 {% if enough_storage %}
-<h3>{%trans "Permissions"  %}</h3>
-
+<h3>{% trans "Permissions"  %}</h3>
 <div id="permissions_form">
-
-  <form>
-
-    <label>{% trans "View Layer" %}</label>
-    <select>
-      <option>{% trans "Any Registered User" %}</option>
-      <option></option>
-    </select>
-
-    <label>{% trans "Download Layer" %}</label>
-    <select>
-      <option>{% trans "Any Registered User" %}</option>
-    </select>
-
-    <label>{% trans "Edit layer" %}</label>
-    <select>
-      <option>{% trans "Only the following groups"%}</option>
-    </select>
-
-
+  <form id="permission_form">
+    {% include "_permissions.html" %}
   </form>
-
 </div>
 
 {% endif %}
 {% endblock %}
+
+{% block extra_script %}
+  {% include "_permissions_form_js.html" %}
+{% endblock extra_script %}
