@@ -37,6 +37,7 @@ from django.core.urlresolvers import reverse
 from geonode import GeoNodeException
 from geonode.base.models import ResourceBase, ResourceBaseManager, Link, resourcebase_post_save
 from geonode.utils import  _user, _password, get_wms
+from geonode.utils import http_client
 from geonode.geoserver.helpers import cascading_delete
 from geonode.people.models import Profile
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -110,7 +111,20 @@ class Layer(ResourceBase):
         links.append((self.title, self.title, 'WWW:LINK-1.0-http--link', abs_url))
         return links
 
-    def thumbnail(self, width=20, height=None):
+
+    def update_thumbnail(self, save=True):
+        self.save_thumbnail(self._thumbnail_url(width=159, height=63), save)
+
+
+    def _render_thumbnail(self, spec):
+        resp, content = http_client.request(spec)
+        if resp.status < 200 or resp.status > 299:
+            logger.warning('Unable to obtain thumbnail: %s', content)
+            return
+        return content
+
+
+    def _thumbnail_url(self, width=20, height=None):
         """ Generate a URL representing thumbnail of the layer """
 
         params = {
@@ -362,6 +376,9 @@ def geoserver_pre_save(instance, sender, **kwargs):
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
 
+    instance.update_thumbnail(save=False)
+
+
 def geoserver_post_save(instance, sender, **kwargs):
     """Save keywords to GeoServer
 
@@ -511,6 +528,7 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     #Save layer styles
     set_styles(instance, gs_catalog)
+
 
 def set_styles(layer, gs_catalog):
     style_set = []

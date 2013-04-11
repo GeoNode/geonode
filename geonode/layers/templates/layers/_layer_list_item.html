@@ -11,7 +11,7 @@
   <h3>Layer</h3>
   <a href="{% url "layer_detail" layer.typename %}">
       <!--div class="img-placeholder pl-153-113">{% trans "No Image Available" %}</div-->
-      <img src="{{ layer|layer_thumbnail }}" />
+      <img src="{{ layer.get_thumbnail_url }}" />
   </a>
   <div class="details">
     <div class="pull-right">
