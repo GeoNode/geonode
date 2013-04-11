@@ -2640,7 +2640,7 @@ def create_pg_layer(request):
                                           settings.DB_DATASTORE_NAME,
                                           name,
                                           name,
-                                          layer_form.cleaned_data['title'],
+                                          escape(layer_form.cleaned_data['title']),
                                           layer_form.cleaned_data['srs'],
                                           attribute_list)
 
