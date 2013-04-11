@@ -195,7 +195,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     saveMapAsText: "UT: Save Map As",
     saveNotAuthorizedMessage: "UT: You Must be logged in to save this map.",
     shareLayerText: 'UT: Share Layer',
-    shareMapText: 'UT: Share Map',
     smallSizeLabel: 'UT: Small',
     sourceLoadFailureMessage: 'UT: Error contacting server.\n Please check the url and try again.',
     switchTo3DActionText: "UT:Switch to Google Earth 3D Viewer",
@@ -1704,8 +1703,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.on("saved", function() {
             // enable the "Publish Map" button
             publishAction.enable();
-            shareMapButton.show();
-            shareMapButton.enable();
             this.modified ^= this.modified & 1;
         }, this);
 
