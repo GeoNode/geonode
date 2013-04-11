@@ -141,7 +141,7 @@
           var data = [];
           var val = element.val().split(",");
           $(element.val().split(",")).each(function (index,value) {
-              data.push({id: value, text: value});
+              data.push({username: value});
           });
           callback(data);
         }
