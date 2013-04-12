@@ -28,12 +28,12 @@
 <h3>{% trans "Are you sure you want to delete"  %} <strong>{{ map.title }}</strong>?</h3>
 
  <div style="float:left;">
-<form action="/maps/{{map.id}}/edit/?remove" method="POST" class="inline">
+<form action="/maps/{{map.id}}/info/?remove" method="POST" class="inline">
     {% csrf_token %}
     <input type="hidden" value="{{next}}" id="next" name="next">
     <input type="submit" class="submit_btn" value="{% trans "Yes, delete"  %}" />
 </form>
-     <form action="/maps/{{map.id}}/edit/" method="GET" class="inline">
+     <form action="/maps/{{map.id}}/info/" method="GET" class="inline">
          <button type="submit"  class="cancel_btn" onclick="javascript: history.go(-1);return false;">{% trans "No, cancel" %}</button>
      </form>
  </div>
