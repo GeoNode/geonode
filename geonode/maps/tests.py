@@ -261,9 +261,9 @@ community."
                           content_type="application/json")
         self.assertEquals(response.status_code, 404)
 
-        # Test that POST is required
+        # Test that GET retunrs permissions
         response = c.get(url(mapid))
-        self.assertEquals(response.status_code, 405)
+        assert('permissions' in response.content)
 
         # Test that a user is required to have permissions
 
