@@ -277,6 +277,10 @@ msgstr ""
 "Verwende die Checkboxen in der Suche nach Resultaten, um Daten zur Auswahl "
 "hinzuzufügen."
 
+#: people/templates/people/profile_detail.html:61
+msgid "My Activities"
+msgstr "Meine Aktivitäten"
+
 #: documents/templates/documents/document_search.html:62
 #: people/templates/people/profile_detail.html:89
 msgid "Create a new map"
