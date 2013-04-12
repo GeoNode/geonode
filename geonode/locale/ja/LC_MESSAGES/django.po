@@ -2587,6 +2587,10 @@ msgstr ""
 msgid "Delete Layers"
 msgstr ""
 
+#: people/templates/people/profile_detail.html:61
+msgid "My Activities"
+msgstr ""
+
 #: people/templates/people/profile_detail.html:62
 msgid ""
 "You're about to delete multiple layers and maps.  Is that really what you "
