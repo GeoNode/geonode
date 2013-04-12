@@ -91,18 +91,24 @@
               if (perms["authenticated"].split('_')[1] === 'readwrite'){
                 $('#perms_edit_registered').attr("checked", "checked");
               }
-            } else {
+            } else if (!("anonymous" in perms)){
               $('#perms_view_editors').attr("checked", "checked");
             }
             if (!$('#perms_edit_registered').attr("checked")){
               $('#perms_edit_list').attr("checked", "checked");
-              var users = []
+              var users = [];         
               for (var key in perms["users"]){
                 users.push(key);
               }
               $("#perms_edit_editusers").val(users.join());
-              console.log($("#perms_edit_editusers").val());
             }
+            var admins = [];
+            for (var key in perms["users"]){
+              if(perms["users"][key].split('_')[1] === 'admin'){
+                admins.push(key);
+              }
+            }
+            $("#perms_edit_manageusers").val(admins.join());
             addSelectUsers();
           }
         }
@@ -141,6 +147,7 @@
         }
       });
     }
+    
     function userID(user) {
       return user.username
     }
