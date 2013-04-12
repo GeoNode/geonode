@@ -185,7 +185,7 @@
         userLookup: "{% url geonode.views.ajax_lookup_email %}",
         customGroup: "{{ CUSTOM_GROUP_NAME }}",
         listeners: {
-            updatedCreate: function(pe) {
+            updated: function(pe) {
                 permissionsFieldCreate.setValue(Ext.util.JSON.encode(pe.writePermissions()));
             }
         },
@@ -195,7 +195,7 @@
             users:[]
         }
     });
-    permissionsEditorCreate.fireEvent("updatedCreate", permissionsEditorCreate);
+    permissionsEditorCreate.fireEvent("updated", permissionsEditorCreate);
 
 
     var showTOC = function() {
