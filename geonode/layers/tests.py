@@ -152,9 +152,9 @@ class LayersTest(TestCase):
                             content_type="application/json")
         self.assertEquals(response.status_code, 404)
 
-        # Test that POST is required
+        # Test that GET returns permissions
         response = c.get(reverse('layer_permissions', args=(valid_layer_typename,)))
-        self.assertEquals(response.status_code, 405)
+        assert('permissions' in response.content)
 
         # Test that a user is required to have maps.change_layer_permissions
 
