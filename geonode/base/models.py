@@ -1,10 +1,14 @@
 from datetime import datetime
+import os
+import hashlib
 
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.files.base import ContentFile
 from django.conf import settings
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from geonode.base.enumerations import COUNTRIES, ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
@@ -94,6 +98,69 @@ class TopicCategory(models.Model):
         ordering = ("name",)
         verbose_name_plural = 'Topic Categories'
 
+
+class Thumbnail(models.Model):
+
+    thumb_file = models.FileField(upload_to='thumbs')
+    thumb_spec = models.TextField(null=True, blank=True)
+    version = models.PositiveSmallIntegerField(null=True, default=0)
+
+    def save_thumb(self, image, id):
+        '''image must be png data in a string for now'''
+        self._delete_thumb()
+        md5 = hashlib.md5()
+        md5.update(id + str(self.version))
+        self.version = self.version + 1
+        self.thumb_file.save(md5.hexdigest() + ".png", ContentFile(image))
+
+    def _delete_thumb(self):
+        try:
+            self.thumb_file.delete()
+        except OSError:
+            pass
+
+    def delete(self):
+        self._delete_thumb()
+        super(Thumbnail,self).delete()
+
+
+class ThumbnailMixin(object):
+    '''Add Thumbnail management behavior. The model must declared a field
+    named thumbnail.'''
+
+    def save_thumbnail(self, spec, save=True):
+        '''generic support for saving. `render` implementation must exist
+        and return image as bytes of a png image (for now)
+        '''
+        render = getattr(self, '_render_thumbnail', None)
+        if render is None:
+            raise Exception('Must have _render_thumbnail(spec) function')
+        image = render(spec)
+        if self.thumbnail is None:
+            self.thumbnail = Thumbnail.objects.create()
+        path = self._thumbnail_path()
+        self.thumbnail.thumb_spec = spec
+        self.thumbnail.save_thumb(image, path)
+        # have to save the thumb ref if new but also trigger XML regeneration
+        if save:
+            self.save()
+
+    def _thumbnail_path(self):
+        return '%s-%s' % (self._meta.object_name, self.pk)
+
+    def _get_default_thumbnail(self):
+        return getattr(self, "_missing_thumbnail", staticfiles.static(settings.MISSING_THUMBNAIL))
+
+    def get_thumbnail_url(self):
+        thumb = self.thumbnail
+        return thumb == None and self._get_default_thumbnail() or thumb.thumb_file.url
+
+    def has_thumbnail(self):
+        '''Determine if the thumbnail object exists and an image exists'''
+        thumb = self.thumbnail
+        return os.path.exists(thumb.get_thumbnail_path()) if thumb else False
+
+
 class ResourceBaseManager(models.Manager):
 
     def __init__(self):
@@ -109,7 +176,8 @@ class ResourceBaseManager(models.Manager):
                                                 defaults={"name": "Geonode Admin"})[0]
         return contact
 
-class ResourceBase(models.Model, PermissionLevelMixin):
+
+class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     """
     Base Resource Object loosely based on ISO 19115:2003
     """
@@ -184,6 +252,8 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     # metadata XML specific fields
     metadata_uploaded = models.BooleanField(default=False)
     metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
+
+    thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True)
 
     def __unicode__(self):
         return self.title

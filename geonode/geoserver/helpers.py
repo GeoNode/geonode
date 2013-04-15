@@ -226,7 +226,7 @@ def delete_from_postgis(resource_name):
     finally:
         conn.close()
 
-def gs_slurp(self, ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None):
+def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None):
     """Configure the layers available in GeoServer in GeoNode.
 
        It returns a list of dictionaries with the name of the layer,
