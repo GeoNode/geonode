@@ -27,6 +27,6 @@
     {% endif %}
 
     {% if_has_tag actor_url %}
-        <p><a href="{% actor_url profile.user %}" class="btn btn-primary" type="button">Activities</a></p>
+        <p><a href="{% actor_url profile.user %}" class="btn btn-primary" type="button">{% trans "My Activities" %}</a></p>
     {% endif_has_tag %}
 </article>
