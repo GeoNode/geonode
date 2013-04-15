@@ -520,7 +520,9 @@ LEAFLET_CONFIG = {
 }
 
 # Default TopicCategory to be used for resources. Use the slug field here
-DEFAULT_TOPICCATEGORY = 'location' 
+DEFAULT_TOPICCATEGORY = 'location'
+
+MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 
 # Load more settings from a file called local_settings.py if it exists
 try:
