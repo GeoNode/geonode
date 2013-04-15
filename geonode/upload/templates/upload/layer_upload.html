@@ -126,7 +126,7 @@
 <h3>{% trans "Permissions"  %}</h3>
 <div id="permissions_form">
   <form id="permission_form">
-    {% include "_permissions.html" %}
+        {% include "_permissions.html" %}
   </form>
 </div>
 
@@ -134,5 +134,7 @@
 {% endblock %}
 
 {% block extra_script %}
-  {% include "_permissions_form_js.html" %}
+{% with "layer" as layer %}
+{% include "_permissions_form_js.html" %}
+{% endwith %}
 {% endblock extra_script %}

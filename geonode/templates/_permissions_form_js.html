@@ -122,7 +122,7 @@
         var form = $(this);
         var action = form.attr("action");
 
-        var permissions = permissionsString(form, {% if layer %}'layers'{% elif map %}'maps'{% else %}'documents'{% endif %});
+        var permissions = permissionsString(form, {% if layer %}'layers'{% elif map %}'maps'{% elif document %}'documents'{% endif %});
         $.ajax(
           {
             type: "POST",
