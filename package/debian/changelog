@@ -1,3 +1,54 @@
+geonode (2.0.0+beta1) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [fa7d46] correctly check permissions on layers for new map with layers
+  * [94478b] use keyword slug instead of name in search
+  * [1eb916] don't look for layer uuid since search now returns the id
+  * [361b55] remove the paginate.js in layer detail
+  * [0e1625] permissions in new uploader
+  * [da46f2] correctly assign data type
+
+  [ Matt Bertrand ]
+  * [704333] Make comment textarea wider
+  * [3046dd] Remove unnecessary class
+  * [fee410] Submit comments via ajax and reload comments section of page only
+  * [918abb] Use jquery & ajax to submit comment  and reload comments div instead of entire page
+  * [c3bb71] Rename comment form and enclosing div id's
+  * [86f70a] Update comment width css to reflect modified element id's.
+  * [ad5d4d] Display number of ratings next to average rating for maps, layers, documents Created new base tagtemplate to return number of ratings for a given object & id
+
+  [ Simone Dalmasso ]
+  * [3cc472] correctly assign the bbox_string used by download links
+
+  [ Angelos Tzotsos ]
+  * [3c0061] updated geoserver specs to 2.3.0
+  * [e5d90b] Added spec file for geonode-geoserver plugin
+
+  [ Tom Kralidis ]
+  * [1410e6] strip whitespace from XML text() values
+
+  [ Angelos Tzotsos ]
+  * [acb202] Added initial openSUSE rpm file for v2.0
+  * [d474a0] Fix for #842
+
+  [ Simone Dalmasso ]
+  * [36e8e4] add bbox and crd parameters to wcs requests
+  * [1e6055] fix the height and width
+  * [8a5fe4] update new map to reflect the new bbox order
+  * [f2ea52] update map models to reflect the new bbox order
+
+  [ Matthew Hanson ]
+  * [8c9b2a] fixed bad url name to registration
+
+  [ Simone Dalmasso ]
+  * [61518c] remove unneeded pagination class
+
+  [ Ariel Núñez ]
+  * [060d54] Updated changelog
+  * [db3d50] Reset version on master in preparation for beta
+
+ -- Ariel Núñez <ingenieroariel@gmail.com>  Mon, 08 Apr 2013 14:02:56 +0000
+
 geonode (2.0.0+alpha7) precise; urgency=low
 
   * [9248b1] Upgraded gsconfig.py

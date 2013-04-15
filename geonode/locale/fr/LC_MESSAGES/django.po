@@ -271,6 +271,10 @@ msgstr ""
 "Utiliser les cases à cocher dans les résultats de la recherche pour ajouter "
 "des données à votre sélection."
 
+#: people/templates/people/profile_detail.html:61
+msgid "My Activities"
+msgstr "Mes Activités"
+
 #: documents/templates/documents/document_search.html:62
 #: people/templates/people/profile_detail.html:89
 msgid "Create a new map"
