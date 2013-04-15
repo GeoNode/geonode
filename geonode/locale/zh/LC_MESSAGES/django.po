@@ -273,6 +273,10 @@ msgstr "已选数据"
 msgid "Use the checkboxes in the search results to add data to your selection."
 msgstr "使用在搜索结果中的复选框将数据添加到您的选择。"
 
+#: people/templates/people/profile_detail.html:61
+msgid "My Activities"
+msgstr "我的活动"
+
 #: documents/templates/documents/document_search.html:62
 #: people/templates/people/profile_detail.html:89
 msgid "Create a new map"
