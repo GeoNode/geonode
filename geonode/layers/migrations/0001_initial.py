@@ -6,6 +6,10 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ("maps", "0009_move_models_to_layers"),
+    )
+    
     def forwards(self, orm):
         # nothing to do, as the initial models have been moved from maps
         pass
