@@ -270,6 +270,10 @@ msgstr ""
 msgid "Use the checkboxes in the search results to add data to your selection."
 msgstr "Gunakan checkbox pada hasil pencarian untuk menambah data "
 
+#: people/templates/people/profile_detail.html:61
+msgid "My Activities"
+msgstr "Kegiatan saya"
+
 #: documents/templates/documents/document_search.html:62
 #: people/templates/people/profile_detail.html:89
 msgid "Create a new map"
