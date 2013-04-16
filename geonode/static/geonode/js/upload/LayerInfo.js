@@ -26,8 +26,8 @@ define(function (require, exports) {
             delete options.failure;
 
             $.ajax(options).done(function (resp, status) {
-                if (resp.success === true) {
-                    success(resp, status);
+                if (status === "success") {
+                    window.location.href = options.url;
                 } else {
                     failure(resp, status);
                 }
