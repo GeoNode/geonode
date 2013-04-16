@@ -167,9 +167,9 @@ class EventsTest(TestCase):
                                 content_type="application/json")
             self.assertEquals(response.status_code, 404) 
 
-            # Test that POST is required
+            # Test that GET returns permissions
             response = c.get(reverse('document_permissions', args=(document_id,)))
-            self.assertEquals(response.status_code, 405)
+            assert('permissions' in response.content)
             
             # Test that a user is required to have documents.change_layer_permissions
 
