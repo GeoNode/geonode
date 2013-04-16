@@ -258,6 +258,7 @@ define(function (require, exports) {
             });
 
         file_queue.append(li);
+        this.errors = this.collectErrors();
         this.displayFiles();
         this.displayErrors();
         this.element = $(this.selector);
@@ -309,7 +310,12 @@ define(function (require, exports) {
         ul.empty();
 
         $.each(this.errors, function (idx, error) {
-            $('<li/>', {text: error, 'class': 'alert alert-error'}).appendTo(ul);
+            var li = $('<li/>', {text: error, 'class': 'alert alert-error'});
+            li.appendTo(ul);
+            console.log(li);
+            li.animate({opacity:1}, 5000, 'linear', function() { 
+                li.animate({opacity:0}, 1000, 'linear', function() {li.remove(); }); 
+            });
         });
     };
 
