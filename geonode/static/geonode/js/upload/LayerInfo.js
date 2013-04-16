@@ -312,7 +312,6 @@ define(function (require, exports) {
         $.each(this.errors, function (idx, error) {
             var li = $('<li/>', {text: error, 'class': 'alert alert-error'});
             li.appendTo(ul);
-            console.log(li);
             li.animate({opacity:1}, 5000, 'linear', function() { 
                 li.animate({opacity:0}, 1000, 'linear', function() {li.remove(); }); 
             });
