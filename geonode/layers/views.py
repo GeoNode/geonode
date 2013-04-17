@@ -341,13 +341,11 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
     if (request.method == 'POST'):
         # if the layer styles are not associated to any other layer we need to 
         # remove them
+        default_style = layer.default_style
         for style in layer.styles.all():
             if style.layer_styles.all().count()==1:
-                if layer.default_style != style:
+                if style != default_style:
                     style.delete()
-                else:
-                    default_style = layer.default_style
-        # layer.delete()
         default_style.delete() # this will remove the layer as well
         return HttpResponseRedirect(reverse("layer_browse"))
     else:
