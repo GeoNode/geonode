@@ -4,6 +4,7 @@
 
 <script type="text/javascript">
 {% autoescape off %}
+        var map;
         var styleEditor, modified = false;
         Ext.onReady(function() {
             var config = {
@@ -31,7 +32,7 @@
 
                 listeners: {
                     "ready": function() {
-                        var map = app.mapPanel.map;
+                        map = app.mapPanel.map;
                         map.zoomToExtent(map.layers.slice(-1)[0].maxExtent);
                     },
                     "beforeunload": function() {
@@ -47,8 +48,36 @@
 
             app = new GeoExplorer.Viewer(config);
 
-
+            // change style displayed in map
+            Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
+                app.selectedLayer.getLayer().mergeNewParams({
+                    "STYLES": elem.id,
+                    "_dc": Math.random()
+                }); 
+            });
+            
+            // edit style
+            Ext.get(Ext.DomQuery.select(".style-edit")).on("click", function(evt, elem) {
+                showStyle(Ext.get(elem).prev("input").getAttribute("value"));
+            }); 
 
         });
+        
+        function showStyle(styleName) {
+            /* TODO
+            if (!styleName) {
+                Ext.ComponentMgr.all.on("add", function(index, object) {
+                    if (object instanceof gxp.WMSStylesDialog) {
+                        Ext.ComponentMgr.all.un("add", arguments.callee);
+                        object.on("ready", function() {
+                            object.addStyle();
+                        }, this, {single: true});
+                    }
+                });
+            }
+            app.tools["styler"].actions[0].execute();
+            */
+        }
+    
     {% endautoescape %}
     </script>

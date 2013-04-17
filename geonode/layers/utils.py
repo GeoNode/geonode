@@ -39,7 +39,7 @@ from django.conf import settings
 from geonode import GeoNodeException
 from geonode.utils import check_geonode_is_up
 from geonode.people.utils import get_valid_user
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, Style
 from geonode.people.models import Profile 
 from geonode.geoserver.helpers import cascading_delete, get_sld_for, delete_from_postgis
 from geonode.layers.metadata import set_metadata
@@ -738,3 +738,41 @@ def _create_db_featurestore(name, data, overwrite=False, charset=None):
         delete_from_postgis(name)
         raise
 
+def style_update(request, url):
+    """ 
+    Sync style stuff from GS to GN.
+    Ideally we should call this from a view straight from GXP, and we should use
+    gsConfig, that at this time does not support styles updates. Before gsConfig
+    is updated, for now we need to parse xml.
+    In case of a DELETE, we need to query request.path to get the style name, 
+    and then remove it.
+    In case of a POST or PUT, we need to parse the xml from 
+    request.raw_post_data, which is in this format:
+    """
+    if request.method in ('POST', 'PUT'): # we need to parse xml
+        import xml.etree.ElementTree as ET
+        tree = ET.ElementTree(ET.fromstring(request.raw_post_data))
+        elm_namedlayer_name=tree.findall('.//{http://www.opengis.net/sld}Name')[0]
+        elm_user_style_name=tree.findall('.//{http://www.opengis.net/sld}Name')[1]
+        elm_user_style_title=tree.find('.//{http://www.opengis.net/sld}Title')
+        layer_name=elm_namedlayer_name.text
+        style_name=elm_user_style_name.text
+        sld_body='<?xml version="1.0" encoding="UTF-8"?>%s' % request.raw_post_data
+        if request.method == 'POST': # add style in GN and associate it to layer
+            style = Style(name=style_name, sld_body=sld_body, sld_url=url)
+            style.save()
+            layer = Layer.objects.all().filter(typename=layer_name)[0]
+            style.layer_styles.add(layer)
+            style.save()
+        if request.method == 'PUT': # update style in GN
+            style = Style.objects.all().filter(name=style_name)[0]
+            style.sld_body=sld_body
+            style.sld_url=url
+            if len(elm_user_style_title.text)>0:
+                style.sld_title = elm_user_style_title.text
+            style.save()
+    if request.method == 'DELETE': # delete style from GN
+        style_name = os.path.basename(request.path)
+        style = Style.objects.all().filter(name=style_name)[0]
+        style.delete()
+    
