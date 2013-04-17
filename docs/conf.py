@@ -16,7 +16,10 @@ import sys, os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+DOC_PATH = os.path.dirname(__file__)
+PROJ_PATH = os.path.join(DOC_PATH, '..')
+sys.path.extend([DOC_PATH, PROJ_PATH])
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 
 # -- General configuration -----------------------------------------------------
 
@@ -25,7 +28,7 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = []
+extensions = ['sphinx.ext.autodoc']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -254,3 +257,7 @@ epub_copyright = u'2013, GeoNode Development Team'
 
 # Allow duplicate toc entries.
 #epub_tocdup = True
+
+def setup(app):
+    from _ext import django_model_fields
+    app.connect('autodoc-process-docstring', django_model_fields.process_docstring)

@@ -1,0 +1,83 @@
+=====================
+GeoNode API Reference
+=====================
+
+Models
+------
+
+This section covers the GeoNode models and related API.
+
+.. py:module:: geonode.base.models
+
+Base
+....
+
+.. autoclass:: geonode.base.models.ResourceBase
+   :members:
+
+   .. note:: ResourceBase is a base class for other models.
+
+.. autoclass:: geonode.base.models.ContactRole
+   :members:
+
+.. autoclass:: geonode.base.models.TopicCategory
+   :members:
+
+.. autoclass:: geonode.base.models.Link
+   :members:
+
+
+.. py:module:: geonode.layers.models
+
+Layers
+......
+
+.. autoclass:: geonode.layers.models.Layer
+   :members:
+
+   .. note:: Inherits from :py:class:`ResourceBase`
+
+.. autoclass:: geonode.layers.models.Attribute
+   :members:
+
+.. autoclass:: geonode.layers.models.Style
+   :members:
+
+.. py:module:: geonode.maps
+
+Maps
+....
+
+.. autoclass:: geonode.maps.models.Map
+   :members:
+
+   .. note:: Inherits from :py:class:`geonode.base.models.ResourceBase` and :py:class:`geonode.utils.GXPMapBase`
+
+.. autoclass:: geonode.maps.models.MapLayer
+   :members:
+
+   .. note:: Inherits from and :py:class:`geonode.utils.GXPLayerBase`
+
+.. py:module:: geonode.documents
+
+Documents
+.........
+
+.. autoclass:: geonode.documents.models.Document
+   :members:
+   
+   .. note:: Inherits from :py:class:`geonode.base.models.ResourceBase`
+   
+Utilities
+.........
+
+.. py:module:: geonode.utils
+
+.. autoclass:: geonode.utils.GXPMapBase
+   :members:
+
+.. autoclass:: geonode.utils.GXPLayerBase
+   :members:
+
+
+
