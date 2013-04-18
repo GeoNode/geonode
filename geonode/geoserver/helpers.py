@@ -53,6 +53,7 @@ def _add_sld_boilerplate(symbolizer):
     <Name>%(name)s</Name>
     <UserStyle>
     <Name>%(name)s</Name>
+    <Title>%(name)s</Title>
       <FeatureTypeStyle>
         <Rule>
 """ + symbolizer + """
