@@ -181,14 +181,20 @@
         <ul class="unstyled space">
           {% for style in layer.styles.all %}
             <li>
-              <a href="#">
                 {% if style.sld_title %}
-                  {{ style.sld_title }}
+                  {% if layer.default_style == style %}
+                    <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+                    <a class="style-edit" href="#" id="{{ style.name }}" >{{ style.sld_title }}</a> (default style)
+                  {% else %}
+                    <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+                    <a class="style-edit" href="#" id="{{ style.name }}" >{{ style.sld_title }}</a>
+                  {% endif %} 
                 {% else %}
-                  {{ style.name|title }}
+                  <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+                  <a class="style-edit" href="#" id="{{ style.name }}" >{{ style.name }}</a>
                 {% endif %}
-              </a>
-            <li>
+                (<a href="{{ GEOSERVER_BASE_URL }}styles/{{ style.name }}.sld">SLD</a>)
+            </li>
           {% empty %}
             <li>{% trans "No styles associated with this layer" %}</li>
           {% endfor %}
