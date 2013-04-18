@@ -291,12 +291,28 @@ def pre_save_layer(instance, sender, **kwargs):
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 
+def pre_delete_layer(instance, sender, **kwargs):
+    """
+    Remove any associated style to the layer, if it is not used by other layers.
+    Default style will be deleted in post_delete_layer
+    """
+    logger.debug("Going to delete the styles associated for [%s]", instance.typename)
+    default_style = instance.default_style
+    for style in instance.styles.all():
+        if style.layer_styles.all().count()==1:
+            if style != default_style:
+                style.delete()
+    
 def post_delete_layer(instance, sender, **kwargs):
-    """Removed the layer from any associated map, if any.
+    """
+    Removed the layer from any associated map, if any.
+    Remove the layer default style.
     """
     from geonode.maps.models import MapLayer
     logger.debug("Going to delete associated maplayers for [%s]", instance.typename)
     MapLayer.objects.filter(name=instance.typename).delete()
+    logger.debug("Going to delete the default style for [%s]", instance.typename)
+    instance.default_style.delete()
 
 def geoserver_pre_save(instance, sender, **kwargs):
     """Send information to geoserver.
@@ -681,5 +697,6 @@ signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.pre_save.connect(geoserver_pre_save, sender=Layer)
 signals.pre_delete.connect(geoserver_pre_delete, sender=Layer)
 signals.post_save.connect(geoserver_post_save, sender=Layer)
+signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)
 signals.post_save.connect(resourcebase_post_save, sender=Layer)
