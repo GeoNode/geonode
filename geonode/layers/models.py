@@ -227,6 +227,10 @@ class Layer(ResourceBase):
     def class_name(self):
         return self.__class__.__name__
 
+class Layer_Styles(models.Model):
+    layer = models.ForeignKey(Layer)
+    style = models.ForeignKey(Style)
+    
 class AttributeManager(models.Manager):
     """Helper class to access filtered attributes
     """

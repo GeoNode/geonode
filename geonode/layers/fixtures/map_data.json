@@ -80,15 +80,42 @@
         "pk": 1, 
         "model": "layers.style", 
         "fields": {
-            "name": "test_style", 
+            "name": "test_style_1", 
             "sld_url": "http://localhost:8080/geoserver/rest/styles/test_style.sld", 
             "sld_version": null, 
             "sld_title": null, 
-            "sld_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><sld:StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" xmlns:sld=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\" version=\"1.0.0\"><sld:NamedLayer><sld:Name>test_style</sld:Name><sld:UserStyle><sld:Name>test_style</sld:Name><sld:Title/><sld:FeatureTypeStyle><sld:Name>name</sld:Name><sld:Rule><sld:PolygonSymbolizer><sld:Fill><sld:CssParameter name=\"fill\">#888800</sld:CssParameter></sld:Fill><sld:Stroke><sld:CssParameter name=\"stroke\">#ffffbb</sld:CssParameter><sld:CssParameter name=\"stroke-width\">0.7</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer></sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>", 
+            "sld_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><sld:StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" xmlns:sld=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\" version=\"1.0.0\"><sld:NamedLayer><sld:Name>test_style_1</sld:Name><sld:UserStyle><sld:Name>test_style_1</sld:Name><sld:Title/><sld:FeatureTypeStyle><sld:Name>name</sld:Name><sld:Rule><sld:PolygonSymbolizer><sld:Fill><sld:CssParameter name=\"fill\">#888800</sld:CssParameter></sld:Fill><sld:Stroke><sld:CssParameter name=\"stroke\">#ffffbb</sld:CssParameter><sld:CssParameter name=\"stroke-width\">0.7</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer></sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>", 
             "workspace": null
         }
     },
     {
+        "pk": 2, 
+        "model": "layers.style", 
+        "fields": {
+            "name": "test_style_2", 
+            "sld_url": "http://localhost:8080/geoserver/rest/styles/test_style.sld", 
+            "sld_version": null, 
+            "sld_title": null, 
+            "sld_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><sld:StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" xmlns:sld=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\" version=\"1.0.0\"><sld:NamedLayer><sld:Name>test_style_2</sld:Name><sld:UserStyle><sld:Name>test_style_2</sld:Name><sld:Title/><sld:FeatureTypeStyle><sld:Name>name</sld:Name><sld:Rule><sld:PolygonSymbolizer><sld:Fill><sld:CssParameter name=\"fill\">#888800</sld:CssParameter></sld:Fill><sld:Stroke><sld:CssParameter name=\"stroke\">#ffffbb</sld:CssParameter><sld:CssParameter name=\"stroke-width\">0.7</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer></sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>", 
+            "workspace": null
+        }
+    },
+    {
+        "pk": 3, 
+        "model": "layers.style", 
+        "fields": {
+            "name": "test_style_3", 
+            "sld_url": "http://localhost:8080/geoserver/rest/styles/test_style.sld", 
+            "sld_version": null, 
+            "sld_title": null, 
+            "sld_body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><sld:StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" xmlns:sld=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\" version=\"1.0.0\"><sld:NamedLayer><sld:Name>test_style_3</sld:Name><sld:UserStyle><sld:Name>test_style_3</sld:Name><sld:Title/><sld:FeatureTypeStyle><sld:Name>name</sld:Name><sld:Rule><sld:PolygonSymbolizer><sld:Fill><sld:CssParameter name=\"fill\">#888800</sld:CssParameter></sld:Fill><sld:Stroke><sld:CssParameter name=\"stroke\">#ffffbb</sld:CssParameter><sld:CssParameter name=\"stroke-width\">0.7</sld:CssParameter></sld:Stroke></sld:PolygonSymbolizer></sld:Rule></sld:FeatureTypeStyle></sld:UserStyle></sld:NamedLayer></sld:StyledLayerDescriptor>", 
+            "workspace": null
+        }
+    },
+    {
+        "pk": 1,
+        "model": "layers.layer",
+        "resourcebase_ptr_id": 1,
         "fields": {
             "typename": "base:CA",
             "store": "CA",
@@ -98,11 +125,32 @@
             "default_style": 1, 
             "share_count": 0,
             "default_style": 1 
-        },
-        "model": "layers.layer",
-        "resourcebase_ptr_id": 1,
-        "pk": 1
-    },     
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "layers.layer_styles", 
+        "fields": {
+            "layer": 1, 
+            "style": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "layers.layer_styles", 
+        "fields": {
+            "layer": 1, 
+            "style": 2
+        }
+    },
+    {
+        "pk": 3, 
+        "model": "layers.layer_styles", 
+        "fields": {
+            "layer": 1, 
+            "style": 3
+        }
+    },
     {
         "fields": {
             "layer": 1,
