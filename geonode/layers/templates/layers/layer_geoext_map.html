@@ -56,7 +56,12 @@
             });
             
             Ext.get(Ext.DomQuery.select(".style-edit")).on("click", function(evt, elem) {
-                app.tools["ext-gen9"].actions[0].execute();
+                for (var key in app.tools) {
+                    var tool = app.tools[key];
+                    if (tool.ptype == 'gxp_styler') {
+                        tool.actions[0].execute();
+                    };
+                }
             });
 
         });
