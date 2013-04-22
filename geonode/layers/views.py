@@ -396,7 +396,6 @@ def layer_batch_download(request):
         resp,content = http_client.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 
-@require_POST
 def layer_permissions(request, layername):
     try:
         layer = _resolve_layer(request, layername, 'layers.change_layer_permissions')
@@ -407,14 +406,28 @@ def layer_permissions(request, layername):
             status=401,
             mimetype='text/plain')
 
-    permission_spec = json.loads(request.raw_post_data)
-    layer_set_permissions(layer, permission_spec)
+    if request.method == 'POST':
+        permission_spec = json.loads(request.raw_post_data)
+        layer_set_permissions(layer, permission_spec)
 
-    return HttpResponse(
-        json.dumps({'success': True}),
-        status=200,
-        mimetype='text/plain'
-    )
+        return HttpResponse(
+            json.dumps({'success': True}),
+            status=200,
+            mimetype='text/plain'
+        )
+
+    elif request.method == 'GET':
+        permission_spec = json.dumps(layer.get_all_level_info())
+        return HttpResponse(
+            json.dumps({'success': True, 'permissions': permission_spec}),
+            status=200,
+            mimetype='text/plain'
+        )
+    else:
+        return HttpResponse(
+            'No methods other than get and post are allowed',
+            status=401,
+            mimetype='text/plain')
 
 
 def resolve_user(request):
