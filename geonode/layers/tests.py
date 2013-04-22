@@ -40,7 +40,7 @@ import geonode.layers.models
 
 from geonode import GeoNodeException
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, Style
 from geonode.layers.forms import JSONField, LayerUploadForm
 from geonode.layers.utils import layer_type, get_files, get_valid_name, \
                                 get_valid_layer_name
@@ -331,6 +331,12 @@ class LayersTest(TestCase):
         self.assertEqual(custom_attributes["propertyNames"]["description"], "Description")
         self.assertEqual(custom_attributes["propertyNames"]["place_name"], "Place Name")
 
+    def test_layer_styles(self):
+        lyr = Layer.objects.get(pk=1)
+        #There should be a total of 3 styles
+        self.assertEqual(len(lyr.styles.all()), 3)
+        #One of the style is the default one
+        self.assertEqual(lyr.default_style, Style.objects.get(id=lyr.default_style.id))
 
     def test_layer_save(self):
         lyr = Layer.objects.get(pk=1)
@@ -376,6 +382,9 @@ class LayersTest(TestCase):
 
         #test that the layer is actually removed
         self.assertEquals(Layer.objects.filter(pk=layer.pk).count(), 0)
+        
+        #test that all styles associated to the layer are removed
+        self.assertEquals(Style.objects.count(), 0)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user

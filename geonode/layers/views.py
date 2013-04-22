@@ -126,7 +126,6 @@ def layer_upload(request, template='layers/layer_upload.html'):
                     name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
 
                 name = slugify(name_base.replace(".","_"))
-
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
