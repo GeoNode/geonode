@@ -95,7 +95,7 @@
             } else if (!("anonymous" in perms)){
               $('#perms_view_editors').attr("checked", "checked");
             }
-            if (!$('#perms_edit_registered').attr("checked")){
+            if (!("authenticated" in perms) || perms['authenticated'].split('_')[1] === 'readonly'){
               $('#perms_edit_list').attr("checked", "checked");
               var users = [];         
               for (var key in perms["users"]){
