@@ -1,18 +1,18 @@
 {% load i18n %}
-<div class="modal-body">
+<div class="modal-body" id="permissions-body" >
   <div class="control-group">
     <label class="control-label"><strong>{% trans "Who can view and download this data?" %}</strong></label>
     <div class="controls">
       <label class="radio inline">
-        <input type="radio" name="viewmode" id="perms_view" value="ANYONE">
+        <input type="radio" name="viewmode" id="perms_view_anyone" value="ANYONE">
         {% trans "Anyone" %}
       </label>
       <label class="radio inline">
-        <input type="radio" name="viewmode" id="perms_view2" value="REGISTERED">
+        <input type="radio" name="viewmode" id="perms_view_registered" value="REGISTERED">
         {% trans "Any registered user" %}
       </label>
       <label class="radio inline">
-        <input type="radio" name="viewmode" id="perms_view3" value="EDITORS">
+        <input type="radio" name="viewmode" id="perms_view_editors" value="EDITORS">
         {% trans "Only users who can edit" %}
       </label>
     </div>
@@ -21,21 +21,21 @@
     <label class="control-label"><strong>{% trans "Who can edit this data?" %}</strong></label>
     <div class="controls">
       <label class="radio">
-        <input type="radio" name="editmode" id="perms_edit1" value="REGISTERED">
+        <input type="radio" name="editmode" id="perms_edit_registered" value="REGISTERED">
         {% trans "Any registered user" %}
       </label>
       <label class="radio">
-        <input type="radio" name="editmode" id="perms_edit2" value="LIST">
+        <input type="radio" name="editmode" id="perms_edit_list" value="LIST">
         {% trans "Only the following users or groups:" %}
       </label>
-      <input name="editusers" class="user-select" data-placeholder="{% trans "Choose a user or group..." %}">
+      <input type="text" name="editusers" class="user-select" id="perms_edit_editusers">
       </input>
     </div>
   </div>
   <div class="control-group">
     <label class="control-label"><strong>{% trans "Who can manage and edit this data?" %}</strong></label>
     <div class="controls">
-      <input name="manageusers" class="user-select" data-placeholder="{% trans "Choose a user or group..." %}">
+      <input type="text" name="manageusers" class="user-select" id="perms_edit_manageusers">
       </input>
     </div>
   </div>
