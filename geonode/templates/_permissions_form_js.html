@@ -1,82 +1,130 @@
 {% load i18n %}
 <script type="text/javascript">
 
-      function permissionsString(form, type) {
-        var anonymousPermissions, authenticatedPermissions, levels;
+  function permissionsString(form, type) {
+    var anonymousPermissions, authenticatedPermissions, levels;
 
-          var data = form.serializeObject();
+    var data = form.serializeObject();
 
-          if (type == "maps") {
-              levels = {
-                  'readonly': 'map_readonly',
-                  'readwrite': 'map_readwrite',
-                  'admin': 'map_admin',
-                  'none': '_none'
-              };
-          } else if (type == "layers"){
-              levels = {
-                  'admin': 'layer_admin',
-                  'readwrite': 'layer_readwrite',
-                  'readonly': 'layer_readonly',
-                  'none': '_none'
-              };
-          } else if (type == "documents"){
-              levels = {
-                  'admin': 'document_admin',
-                  'readwrite': 'document_readwrite',
-                  'readonly': 'document_readonly',
-                  'none': '_none'
-              };
-          }
-
-          if (data["viewmode"] === "ANYONE") {
-              anonymousPermissions = levels['readonly'];
-          } else {
-              anonymousPermissions = levels['none'];
-          }
-
-          if (data["editmode"] === "REGISTERED") {
-              authenticatedPermissions = levels['readwrite'];
-          } else if (data["viewmode"] === 'REGISTERED') {
-              authenticatedPermissions = levels['readonly'];
-          } else {
-              authenticatedPermissions = levels['none'];
-          }
-
-          var perUserPermissions = [];
-          if (data["editmode"] === "LIST") {
-              var editusers = form.find("input[name=editusers]").select2("val");
-              if (editusers instanceof Array) {
-                  $.each(editusers, function(index, value) {
-                      perUserPermissions.push([value, levels["readwrite"]]);
-                  });
-              } else {
-                  perUserPermissions.push([editusers, levels["readwrite"]]);
-              }
-          }
-
-          var manageusers = form.find("input[name=manageusers]").select2("val");
-          if (manageusers) {
-              if (manageusers instanceof Array) {
-                  $.each(manageusers, function(index, value) {
-                      perUserPermissions.push([value, levels["admin"]]);
-                  });
-              } else {
-                  perUserPermissions.push([manageusers, levels["admin"]]);
-              }
-          }
-
-          return {
-              anonymous: anonymousPermissions,
-              authenticated: authenticatedPermissions,
-              users: perUserPermissions
-          };
+    if (type == "maps") {
+      levels = {
+          'readonly': 'map_readonly',
+          'readwrite': 'map_readwrite',
+          'admin': 'map_admin',
+          'none': '_none'
       };
-    $(function() {
+    } else if (type == "layers"){
+      levels = {
+          'admin': 'layer_admin',
+          'readwrite': 'layer_readwrite',
+          'readonly': 'layer_readonly',
+          'none': '_none'
+      };
+    } else if (type == "documents"){
+      levels = {
+          'admin': 'document_admin',
+          'readwrite': 'document_readwrite',
+          'readonly': 'document_readonly',
+          'none': '_none'
+      };
+    }
+
+    if (data["viewmode"] === "ANYONE") {
+      anonymousPermissions = levels['readonly'];
+    } else {
+      anonymousPermissions = levels['none'];
+    }
+
+    if (data["editmode"] === "REGISTERED") {
+      authenticatedPermissions = levels['readwrite'];
+    } else if (data["viewmode"] === 'REGISTERED') {
+      authenticatedPermissions = levels['readonly'];
+    } else {
+      authenticatedPermissions = levels['none'];
+    }
+
+    var perUserPermissions = [];
+    if (data["editmode"] === "LIST") {
+      var editusers = form.find("input[name=editusers]").select2("val");
+      if (editusers instanceof Array) {
+        $.each(editusers, function(index, value) {
+          perUserPermissions.push([value, levels["readwrite"]]);
+        });
+      } else {
+        perUserPermissions.push([editusers, levels["readwrite"]]);
+      }
+    }
+
+    var manageusers = form.find("input[name=manageusers]").select2("val");
+    if (manageusers) {
+      if (manageusers instanceof Array) {
+        $.each(manageusers, function(index, value) {
+          perUserPermissions.push([value, levels["admin"]]);
+        });
+      } else {
+        perUserPermissions.push([manageusers, levels["admin"]]);
+      }
+    }
+
+    return {
+        anonymous: anonymousPermissions,
+        authenticated: authenticatedPermissions,
+        users: perUserPermissions
+    };
+  };
+
+  $(function() {
+
+    $('#permissions-body').ready(function(){
+      {% if layer != "layer" %}
+      $.ajax(
+        "{% if layer %}{% url layer_permissions layer.typename %}{% elif map %}{% url map_permissions map.id %}{% elif document %}{% url document_permissions document.id %}{% endif %}",
+        {
+          success: function(data){
+            var perms = $.parseJSON($.parseJSON(data).permissions);
+            if ("anonymous" in perms){
+              $('#perms_view_anyone').attr("checked", "checked");
+            }
+            if ("authenticated" in perms){
+              if (!("anonymous" in perms)){
+                $('#perms_view_registered').attr("checked", "checked");
+              }
+              if (perms["authenticated"].split('_')[1] === 'readwrite'){
+                $('#perms_edit_registered').attr("checked", "checked");
+              }
+            } else if (!("anonymous" in perms)){
+              $('#perms_view_editors').attr("checked", "checked");
+            }
+            if (!$('#perms_edit_registered').attr("checked")){
+              $('#perms_edit_list').attr("checked", "checked");
+              var users = [];         
+              for (var key in perms["users"]){
+                users.push(key);
+              }
+              $("#perms_edit_editusers").val(users.join());
+            }
+            var admins = [];
+            for (var key in perms["users"]){
+              if(perms["users"][key].split('_')[1] === 'admin'){
+                admins.push(key);
+              }
+            }
+            $("#perms_edit_manageusers").val(admins.join());
+            addSelectUsers();
+          }
+        }
+      );
+      {% else %}
+      addSelectUsers();
+      {% endif %}
+    });
+    
+    function addSelectUsers(){
       $("input.user-select").select2({
-        placeholder: {title: '{% trans "Add User..." %}', id: ""},
+        placeholder: '{% trans "Choose a user or group..." %}',
         minimumInputLength: 1,
         multiple: true,
+        width: 'element',
         ajax: {
           url: "{% url account_ajax_lookup %}",
           dataType: "json",
@@ -92,54 +140,64 @@
         },
         id: userID,
         formatResult: userFormatResult,
-        formatSelection: userFormatSelection
-      });
-
-      function userID(user) {
-        return user.username
-      }
-
-      function userFormatResult(user) {
-        return user.username
-      }
-
-      function userFormatSelection(user) {
-          return user.username;
-      }
-
-      var toggle_buttons = function() {
-        if ($("input.asset-selector:checked").length) {
-          $(".asset-modifier").removeClass("disabled");
-        } else {
-          $(".asset-modifier").addClass("disabled");
+        formatSelection: userFormatSelection,
+        initSelection: function(element, callback) {
+          var data = [];
+          var val = element.val().split(",");
+          $(element.val().split(",")).each(function (index,value) {
+              data.push({username: value});
+          });
+          callback(data);
         }
-      };
-
-      $("input.asset-selector").live("change", toggle_buttons);
-      toggle_buttons();
-
-      var perms_submit = function() {
-        var form = $(this);
-        var action = form.attr("action");
-
-        var permissions = permissionsString(form, {% if layer %}'layers'{% elif map %}'maps'{% elif document %}'documents'{% endif %});
-        $.ajax(
-          {
-            type: "POST",
-            url: action,
-            data: JSON.stringify(permissions),
-            success: function(data) {
-              $("#modal_perms").modal("hide");
-            }
-          }
-        );
-        return false;
-      };
-
-      $("#perms_submit").click(function(){
-          $("#permission_form").submit();
       });
-      {% if layer or map or document %}
-      $("#permission_form").submit({% if layer or map or document %}perms_submit{% else %}batch_perms_submit{% endif %});
-      {% endif %}
-    });</script>
+    }
+    
+    function userID(user) {
+      return user.username
+    }
+
+    function userFormatResult(user) {
+      return user.username
+    }
+
+    function userFormatSelection(user) {
+        return user.username;
+    }
+
+    var toggle_buttons = function() {
+      if ($("input.asset-selector:checked").length) {
+        $(".asset-modifier").removeClass("disabled");
+      } else {
+        $(".asset-modifier").addClass("disabled");
+      }
+    };
+
+    $("input.asset-selector").live("change", toggle_buttons);
+    toggle_buttons();
+
+    var perms_submit = function() {
+      var form = $(this);
+      var action = form.attr("action");
+
+      var permissions = permissionsString(form, {% if layer %}'layers'{% elif map %}'maps'{% elif document %}'documents'{% endif %});
+      $.ajax(
+        {
+          type: "POST",
+          url: action,
+          data: JSON.stringify(permissions),
+          success: function(data) {
+            $("#modal_perms").modal("hide");
+          }
+        }
+      );
+      return false;
+    };
+
+    $("#perms_submit").click(function(){
+        $("#permission_form").submit();
+    });
+    {% if layer or map or document %}
+    $("#permission_form").submit({% if layer or map or document %}perms_submit{% else %}batch_perms_submit{% endif %});
+    {% endif %}
+  });
+</script>

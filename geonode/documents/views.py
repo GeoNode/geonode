@@ -191,7 +191,6 @@ def document_search_page(request):
          "site" : settings.SITEURL
     }))
 
-@require_POST
 def document_permissions(request, docid):
     try:
         document = _resolve_document(request, docid, 'documents.change_document_permissions')
@@ -202,14 +201,28 @@ def document_permissions(request, docid):
             status=401,
             mimetype='text/plain')
 
-    permission_spec = json.loads(request.raw_post_data)
-    document_set_permissions(document, permission_spec)
+    if request.method == 'POST':
+        permission_spec = json.loads(request.raw_post_data)
+        document_set_permissions(document, permission_spec)
 
-    return HttpResponse(
-        json.dumps({'success': True}),
-        status=200,
-        mimetype='text/plain'
-    )
+        return HttpResponse(
+            json.dumps({'success': True}),
+            status=200,
+            mimetype='text/plain'
+        )
+
+    elif request.method == 'GET':
+        permission_spec = json.dumps(document.get_all_level_info())
+        return HttpResponse(
+            json.dumps({'success': True, 'permissions': permission_spec}),
+            status=200,
+            mimetype='text/plain'
+        )
+    else:
+        return HttpResponse(
+            'No methods other than get and post are allowed',
+            status=401,
+            mimetype='text/plain')
 
 def document_set_permissions(document, perm_spec):
     if "authenticated" in perm_spec:
