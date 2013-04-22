@@ -76,7 +76,7 @@
   $(function() {
 
     $('#permissions-body').ready(function(){
-      {% if layer != "layer" %}
+      {% if layer != "none" and document != "none" %}
       $.ajax(
         "{% if layer %}{% url layer_permissions layer.typename %}{% elif map %}{% url map_permissions map.id %}{% elif document %}{% url document_permissions document.id %}{% endif %}",
         {
