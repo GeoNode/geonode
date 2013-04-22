@@ -239,19 +239,25 @@ def document_set_permissions(document, perm_spec):
 
 @login_required
 def document_replace(request, docid, template='documents/document_replace.html'):
-    #TODO?
-    pass
+    document = _resolve_document(request, docid, 'documents.change_document')
+
+    if request.method == 'GET':
+        return render_to_response(template,RequestContext(request, {
+            "document": document
+        }))
+    if request.method == 'POST':
+        pass
 
 @login_required
 def document_remove(request, docid, template='documents/document_remove.html'):
     document = _resolve_document(request, docid, 'documents.delete_document',
                            _PERMISSION_MSG_DELETE)
 
-    if (request.method == 'GET'):
+    if request.method == 'GET':
         return render_to_response(template,RequestContext(request, {
             "document": document
         }))
-    if (request.method == 'POST'):
+    if request.method == 'POST':
         document.delete()
         return HttpResponseRedirect(reverse("documents_browse"))
     else:
