@@ -4,7 +4,7 @@
     <label class="control-label"><strong>{% trans "Who can view and download this data?" %}</strong></label>
     <div class="controls">
       <label class="radio inline">
-        <input type="radio" name="viewmode" id="perms_view_anyone" value="ANYONE">
+        <input type="radio" name="viewmode" id="perms_view_anyone" value="ANYONE" checked="checked">
         {% trans "Anyone" %}
       </label>
       <label class="radio inline">
@@ -21,7 +21,7 @@
     <label class="control-label"><strong>{% trans "Who can edit this data?" %}</strong></label>
     <div class="controls">
       <label class="radio">
-        <input type="radio" name="editmode" id="perms_edit_registered" value="REGISTERED">
+        <input type="radio" name="editmode" id="perms_edit_registered" value="REGISTERED" checked="checked">
         {% trans "Any registered user" %}
       </label>
       <label class="radio">

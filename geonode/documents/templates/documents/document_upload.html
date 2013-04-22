@@ -23,12 +23,12 @@
               {% endfor %}
             </div>
           {% endif %}
-            <div id="upload_form">
-                <form method="post" enctype="multipart/form-data" action="{% url document_upload %}">
+            <div>
+                <form id="upload_form" method="post" enctype="multipart/form-data" action="{% url document_upload %}">
                     <label for="title">Type a title</label><input id="title" name="title" type="text" placeholder="Title" />
-                    <label for="resource">Link to</label><input id="resource" name="q" type="text" />                 
+                    <label for="resource">Link to</label><input id="resource" name="q" type="text" />
                     <label for="doc_file">Choose a file</label><input id="doc_file" name="file" type="file" />
-                    <input type="hidden" name="permissions" id="permissions" value/>
+                    <input type="hidden" name="permissions" id="permissions" value=""/>
                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
                     <input type="hidden" name="type" id="resource_type" value="" />
                     <div><input type="submit" value="Upload" /></div>
@@ -42,7 +42,7 @@
 {% block sidebar %}
 
 <h3>{% trans "Permissions"  %}</h3>
-<div id="permissions_form">
+<div>
   <form id="permission_form">
         {% include "_permissions.html" %}
   </form>
@@ -78,5 +78,8 @@
         }
       });
     $('#resource').on('change',function(e){$('#resource_type').val($('#resource').select2('data').type)});
+    $('#upload_form').submit(function(){
+      $('#permissions').val(JSON.stringify(permissionsString($('#permission_form'),'documents')));
+    });
 </script>
 {% endblock extra_script %}
