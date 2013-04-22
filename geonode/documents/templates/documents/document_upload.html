@@ -23,12 +23,12 @@
               {% endfor %}
             </div>
           {% endif %}
-            <div id="upload_form">
-                <form method="post" enctype="multipart/form-data" action="{% url document_upload %}">
+            <div>
+                <form id="upload_form" method="post" enctype="multipart/form-data" action="{% url document_upload %}">
                     <label for="title">Type a title</label><input id="title" name="title" type="text" placeholder="Title" />
-                    <label for="resource">Link to</label><input id="resource" name="q" type="text" />                 
+                    <label for="resource">Link to</label><input id="resource" name="q" type="text" />
                     <label for="doc_file">Choose a file</label><input id="doc_file" name="file" type="file" />
-                    <input type="hidden" name="permissions" id="permissions" value/>
+                    <input type="hidden" name="permissions" id="permissions" value=""/>
                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
                     <input type="hidden" name="type" id="resource_type" value="" />
                     <div><input type="submit" value="Upload" /></div>
@@ -40,65 +40,46 @@
 {% endblock %}
 
 {% block sidebar %}
-<ul class="nav nav-list">
-  <li class="nav-header">{% trans "Permissions" %}</li>
-  <li class="form-inline">
-    <div id="permissions_form"></div>
-  </li>
-</ul>
+
+<h3>{% trans "Permissions"  %}</h3>
+<div>
+  <form id="permission_form">
+        {% include "_permissions.html" %}
+  </form>
+</div>
+
 {% endblock %}
 
 {% block extra_script %}
+{% with "none" as document %}
+{% include "_permissions_form_js.html" %}
+{% endwith %}
+
 <script type="text/javascript">
-        $("#resource").select2({
-            minimumInputLength: 1,
-            placeholder: 'Select layer, map or empty',
-            width: 'element',
-            ajax: {
-              url: '{% url search_api %}',
-              data: function(term,page){
-                return {
-                  type: 'layer,map',
-                  q: term
-                }
-              },
-              results: function(data) {
-                return {
-                  results: $.map(data.results,function(object){
-                    return {id: object.id, text: object.title, type: object._type};
-                  })
-                }
-              }          
+    $("#resource").select2({
+        minimumInputLength: 1,
+        placeholder: 'Select layer, map or empty',
+        width: 'element',
+        ajax: {
+          url: '{% url search_api %}',
+          data: function(term,page){
+            return {
+              type: 'layer,map',
+              q: term
             }
-          });
-        $('#resource').on('change',function(e){$('#resource_type').val($('#resource').select2('data').type)});
-    </script>
-    <script type="text/javascript">
-    {% autoescape off %}
-    Ext.onReady(function(){
-        var permissionsField = Ext.get('permissions');
-        var permissionsEditor = new GeoNode.PermissionsEditor({
-            levels: {
-                'admin': 'document_admin',
-                'readwrite': 'document_readwrite',
-                'readonly': 'document_readonly',
-                'none': '_none'
-            },
-            renderTo: "permissions_form",
-            userLookup: "{% url geonode.views.ajax_lookup %}",
-            listeners: {
-                updated: function(pe) {
-                    permissionsField.set({'value': Ext.util.JSON.encode(pe.writePermissions())});
-                }
-            },
-            permissions: {
-                anonymous: 'document_readonly',
-                authenticated: 'document_readonly',
-                users:[]
+          },
+          results: function(data) {
+            return {
+              results: $.map(data.results,function(object){
+                return {id: object.id, text: object.title, type: object._type};
+              })
             }
-        });
-        permissionsEditor.fireEvent("updated", permissionsEditor);
+          }          
+        }
+      });
+    $('#resource').on('change',function(e){$('#resource_type').val($('#resource').select2('data').type)});
+    $('#upload_form').submit(function(){
+      $('#permissions').val(JSON.stringify(permissionsString($('#permission_form'),'documents')));
     });
-    {% endautoescape %}
-    </script>
+</script>
 {% endblock extra_script %}

@@ -105,9 +105,9 @@ def document_upload(request):
             object_id = None
         
         if not os.path.splitext(request.FILES['file'].name)[1].lower()[1:] in ALLOWED_DOC_TYPES:
-            return HttpResponse(json.dumps({'success': False, 'errormsgs': ['This file type is not allowed.']}))
+            return HttpResponse('This file type is not allowed.')
         if not request.FILES['file'].size < settings.MAX_DOCUMENT_SIZE * 1024 * 1024:
-            return HttpResponse(json.dumps({'success': False, 'errormsgs': ['This file is too big.']}))
+            return HttpResponse('This file is too big.')
 
         doc_file = request.FILES['file']
         title = request.POST['title']
@@ -239,19 +239,33 @@ def document_set_permissions(document, perm_spec):
 
 @login_required
 def document_replace(request, docid, template='documents/document_replace.html'):
-    #TODO?
-    pass
+    document = _resolve_document(request, docid, 'documents.change_document')
+
+    if request.method == 'GET':
+        return render_to_response(template,RequestContext(request, {
+            "document": document
+        }))
+    if request.method == 'POST':
+        if not os.path.splitext(request.FILES['file'].name)[1].lower()[1:] in ALLOWED_DOC_TYPES:
+            return HttpResponse('This file type is not allowed.')
+        if not request.FILES['file'].size < settings.MAX_DOCUMENT_SIZE * 1024 * 1024:
+            return HttpResponse('This file is too big.')
+
+        doc_file = request.FILES['file']
+        document.doc_file=doc_file
+        document.save()
+        return HttpResponseRedirect(reverse('document_detail', args=(document.id,)))
 
 @login_required
 def document_remove(request, docid, template='documents/document_remove.html'):
     document = _resolve_document(request, docid, 'documents.delete_document',
                            _PERMISSION_MSG_DELETE)
 
-    if (request.method == 'GET'):
+    if request.method == 'GET':
         return render_to_response(template,RequestContext(request, {
             "document": document
         }))
-    if (request.method == 'POST'):
+    if request.method == 'POST':
         document.delete()
         return HttpResponseRedirect(reverse("documents_browse"))
     else:
