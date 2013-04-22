@@ -26,8 +26,8 @@ define(function (require, exports) {
             delete options.failure;
 
             $.ajax(options).done(function (resp, status) {
-                if (resp.success === true) {
-                    success(resp, status);
+                if (status === "success") {
+                    window.location.href = options.url;
                 } else {
                     failure(resp, status);
                 }
@@ -219,6 +219,7 @@ define(function (require, exports) {
     LayerInfo.prototype.doSrs = function (resp) {
         // at this point we need to allow the user to select an srs
         var self = this;
+        var resp = $.parseJSON(resp);
         make_request({
             url: resp.redirect_to,
             async: false,
@@ -232,7 +233,7 @@ define(function (require, exports) {
             self = this;
 
         $.ajax({
-            url: "", // is this right?
+            url: form_target, // is this right?
             async: false,
             type: "POST",
             data: form_data,
@@ -257,6 +258,7 @@ define(function (require, exports) {
             });
 
         file_queue.append(li);
+        this.errors = this.collectErrors();
         this.displayFiles();
         this.displayErrors();
         this.element = $(this.selector);
@@ -308,7 +310,11 @@ define(function (require, exports) {
         ul.empty();
 
         $.each(this.errors, function (idx, error) {
-            $('<li/>', {text: error, 'class': 'alert alert-error'}).appendTo(ul);
+            var li = $('<li/>', {text: error, 'class': 'alert alert-error'});
+            li.appendTo(ul);
+            li.animate({opacity:1}, 5000, 'linear', function() { 
+                li.animate({opacity:0}, 1000, 'linear', function() {li.remove(); }); 
+            });
         });
     };
 
