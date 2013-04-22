@@ -105,9 +105,9 @@ def document_upload(request):
             object_id = None
         
         if not os.path.splitext(request.FILES['file'].name)[1].lower()[1:] in ALLOWED_DOC_TYPES:
-            return HttpResponse(json.dumps({'success': False, 'errormsgs': ['This file type is not allowed.']}))
+            return HttpResponse('This file type is not allowed.')
         if not request.FILES['file'].size < settings.MAX_DOCUMENT_SIZE * 1024 * 1024:
-            return HttpResponse(json.dumps({'success': False, 'errormsgs': ['This file is too big.']}))
+            return HttpResponse('This file is too big.')
 
         doc_file = request.FILES['file']
         title = request.POST['title']
@@ -246,7 +246,15 @@ def document_replace(request, docid, template='documents/document_replace.html')
             "document": document
         }))
     if request.method == 'POST':
-        pass
+        if not os.path.splitext(request.FILES['file'].name)[1].lower()[1:] in ALLOWED_DOC_TYPES:
+            return HttpResponse('This file type is not allowed.')
+        if not request.FILES['file'].size < settings.MAX_DOCUMENT_SIZE * 1024 * 1024:
+            return HttpResponse('This file is too big.')
+
+        doc_file = request.FILES['file']
+        document.doc_file=doc_file
+        document.save()
+        return HttpResponseRedirect(reverse('document_detail', args=(document.id,)))
 
 @login_required
 def document_remove(request, docid, template='documents/document_remove.html'):
