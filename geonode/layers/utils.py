@@ -771,6 +771,8 @@ def style_update(request, url):
             if len(elm_user_style_title.text)>0:
                 style.sld_title = elm_user_style_title.text
             style.save()
+            for layer in style.layer_styles.all():
+                layer.update_thumbnail()
     if request.method == 'DELETE': # delete style from GN
         style_name = os.path.basename(request.path)
         style = Style.objects.all().filter(name=style_name)[0]
