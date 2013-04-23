@@ -18,9 +18,8 @@
   <p>GeoNode is built using several open source projects, each with its own community. If you are interested in contributing new features to the GeoNode, we encourage you to do so by contributing to one of the projects on which it is built:</p>
   <ul>
     <li><a href="http://geoext.org">GeoExt</a> - The JavaScript toolkit for rich web mapping applications</li>
-    <li><a href="http://openlayers.org">OpenLayers</a> - Pure JavaScript library powering the maps of GeoExt</li>
-    <li><a href="http://geowebcache.org">GeoWebCache</a> - Cache engine for WMS Tiles</li>
     <li><a href="http://geoserver.org">GeoServer</a> - Standards based server for geospatial information</li>
+    <li><a href="http://geowebcache.org">GeoWebCache</a> - Cache engine for WMS Tiles</li><li><a href="http://openlayers.org">OpenLayers</a> - Pure JavaScript library powering the maps of GeoExt</li>
     <li><a href="http://pycsw.org">pycsw</a> - CSW metadata catalogue server</li>
   </ul>
 
@@ -54,19 +53,19 @@
   <table class="table table-striped table-condensed">
     <tr>
       <td><strong>{% trans "Dynamic tiles via WMS:" %}</strong></td>
-      <td><a href="{{GEOSERVER_BASE_URL}}wms?request=GetCapabilities&version=1.1.1&service=WMS">WMS 1.1.1</a></td>
+      <td><a href="{{GEOSERVER_BASE_URL}}wms?service=WMS&version=1.1.1&request=GetCapabilities">WMS 1.1.1</a></td>
     </tr>
     <tr>
       <td><strong>{% trans "Vector data via WFS:" %}</strong></td>
-      <td><a href="{{GEOSERVER_BASE_URL}}wfs?request=GetCapabilities&version=1.1.0&service=WFS">WFS 1.1.0</a></td>
+      <td><a href="{{GEOSERVER_BASE_URL}}wfs?service=WFS&version=1.1.0&request=GetCapabilities">WFS 1.1.0</a></td>
     </tr>
     <tr>
       <td><strong>{% trans "Metadata search via CSW:" %}</strong></td>
-      <td><a href="{{CATALOGUE_BASE_URL}}?request=GetCapabilities&version=2.0.2&service=CSW">CSW 2.0.2</a></td>
+      <td><a href="{{CATALOGUE_BASE_URL}}?service=CSW&version=2.0.2&request=GetCapabilities">CSW 2.0.2</a></td>
     </tr>
     <tr>
       <td><strong>{% trans "Cached tiles via WMTS:" %}</strong></td>
-      <td><a href="{{GEOSERVER_BASE_URL}}gwc/service/wmts?service=WMTS&request=GetCapabilities&version=1.0.0">WMTS 1.0.0</a></td>
+      <td><a href="{{GEOSERVER_BASE_URL}}gwc/service/wmts?service=WMTS&version=1.0.0&request=GetCapabilities">WMTS 1.0.0</a></td>
     </tr>
   </table>
 {% endblock %}
