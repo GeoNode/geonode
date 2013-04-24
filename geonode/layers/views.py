@@ -112,42 +112,46 @@ def layer_upload(request, template='layers/layer_upload.html'):
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
+        errormsgs = []
+        out = {'success': False}
+
         if form.is_valid():
+            tempdir, base_file = form.write_files()
+            title = form.cleaned_data["layer_title"]
+
+            # Replace dots in filename - GeoServer REST API upload bug
+            # and avoid any other invalid characters.
+            # Use the title if possible, otherwise default to the filename
+            if title is not None and len(title) > 0:
+                name_base = title
+            else:
+                name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+
+            name = slugify(name_base.replace(".","_"))
+
             try:
-                tempdir, base_file = form.write_files()
-                title = form.cleaned_data["layer_title"]
-
-                # Replace dots in filename - GeoServer REST API upload bug
-                # and avoid any other invalid characters.
-                # Use the title if possible, otherwise default to the filename
-                if title is not None and len(title) > 0:
-                    name_base = title
-                else:
-                    name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
-
-                name = slugify(name_base.replace(".","_"))
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
                         permissions = form.cleaned_data["permissions"]
                         )
-                return HttpResponse(json.dumps({
-                    "success": True,
-                    "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
             except Exception, e:
-                logger.exception("Unexpected error during upload.")
-                return HttpResponse(json.dumps({
-                    "success": False,
-                    "errormsgs": ["Unexpected error during upload: " + escape(str(e))]}))
+                raise e
+            else:
+                out["success"] = True
+                out["redirect_to"] = reverse('layer_metadata', args=[saved_layer.typename])
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
-            errormsgs = []
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
-            return HttpResponse(json.dumps({ "success": False, "errors": form.errors, "errormsgs": errormsgs}))
+
+        out["errors"] = form.errors
+        out["errormsgs"] = errormsgs
+
+        return HttpResponse(json.dumps(out))
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
@@ -179,7 +183,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
 
     poc = layer.poc
     metadata_author = layer.metadata_author
-    
+
     ContactRole.objects.get(resource=layer, role=layer.poc_role)
     ContactRole.objects.get(resource=layer, role=layer.metadata_author_role)
 
