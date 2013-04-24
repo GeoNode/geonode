@@ -40,13 +40,14 @@ from geonode import GeoNodeException
 from geonode.utils import check_geonode_is_up
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, Style
-from geonode.people.models import Profile 
+from geonode.people.models import Profile
 from geonode.geoserver.helpers import cascading_delete, get_sld_for, delete_from_postgis
 from geonode.layers.metadata import set_metadata
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 # Geoserver functionality
 import geoserver
-from geoserver.catalog import FailedRequestError
+from geoserver.catalog import FailedRequestError, UploadError
+from geoserver.catalog import ConflictingDataError
 from geoserver.resource import FeatureType, Coverage
 from zipfile import ZipFile
 
@@ -75,7 +76,7 @@ def layer_type(filename):
        that can be either 'featureType' or 'coverage'
     """
     base_name, extension = os.path.splitext(filename)
-    
+
     shp_exts = ['.shp',]
     cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
     csv_exts = ['.csv']
@@ -307,16 +308,10 @@ def save(layer, base_file, user, overwrite=True, title=None,
     else:
         # If we get a store, we do the following:
         resources = store.get_resources()
-        # Is it empty?
+
+        # If the store is empty, we just delete it.
         if len(resources) == 0:
-            # What should we do about that empty store?
-            if overwrite:
-                # We can just delete it and recreate it later.
-                store.delete()
-            else:
-                msg = ('The layer exists and the overwrite parameter is '
-                       '%s' % overwrite)
-                raise GeoNodeException(msg)
+            cat.delete(store)
         else:
             # If our resource is already configured in the store it needs
             # to have the right resource type
@@ -374,13 +369,13 @@ def save(layer, base_file, user, overwrite=True, title=None,
         store, gs_resource = create_store_and_resource(name,
                                                        data,
                                                        overwrite=overwrite)
-    except geoserver.catalog.UploadError, e:
+    except UploadError, e:
         msg = ('Could not save the layer %s, there was an upload '
                'error: %s' % (name, str(e)))
         logger.warn(msg)
         e.args = (msg,)
         raise
-    except geoserver.catalog.ConflictingDataError, e:
+    except ConflictingDataError, e:
         # A datastore of this name already exists
         msg = ('GeoServer reported a conflict creating a store with name %s: '
                '"%s". This should never happen because a brand new name '
@@ -739,14 +734,14 @@ def _create_db_featurestore(name, data, overwrite=False, charset=None):
         raise
 
 def style_update(request, url):
-    """ 
+    """
     Sync style stuff from GS to GN.
     Ideally we should call this from a view straight from GXP, and we should use
     gsConfig, that at this time does not support styles updates. Before gsConfig
     is updated, for now we need to parse xml.
-    In case of a DELETE, we need to query request.path to get the style name, 
+    In case of a DELETE, we need to query request.path to get the style name,
     and then remove it.
-    In case of a POST or PUT, we need to parse the xml from 
+    In case of a POST or PUT, we need to parse the xml from
     request.raw_post_data, which is in this format:
     """
     if request.method in ('POST', 'PUT'): # we need to parse xml
@@ -777,4 +772,4 @@ def style_update(request, url):
         style_name = os.path.basename(request.path)
         style = Style.objects.all().filter(name=style_name)[0]
         style.delete()
-    
+
