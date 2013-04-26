@@ -68,7 +68,7 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
             split: true,
             region: "west",
             autoScroll:true,
-            width:"90%",
+            width: "90%",
             title: "Layers",
             plugins: {
                 init: function (p) {

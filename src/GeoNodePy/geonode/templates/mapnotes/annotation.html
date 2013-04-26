@@ -69,7 +69,7 @@ function addComment() {
             <input type="hidden" id="id_next" name="next" value="{{ request.path }}" />
         </form>
     {% else %}
-        <p><a href="{% url auth_login %}">{% trans "Login to add a comment" %}</a></p>
+        <p><a href="{% url auth_login %}?next=/maps/{{annotation.map.id}}">{% trans "Login to add a comment" %}</a></p>
     {% endif %}
 </div>
 </div>

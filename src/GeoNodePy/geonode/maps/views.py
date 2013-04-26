@@ -867,6 +867,10 @@ def embed(request, mapid=None, snapshot=None):
     }))
 
 
+def printmap(request, mapid=None, snapshot=None):
+        
+    return render_to_response('maps/map_print.html', RequestContext(request, {}))
+
 def data(request):
     return render_to_response('data.html', RequestContext(request, {
         'GEOSERVER_BASE_URL':settings.GEOSERVER_BASE_URL

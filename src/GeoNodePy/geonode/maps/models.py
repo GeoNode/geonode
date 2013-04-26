@@ -1572,6 +1572,7 @@ class Layer(models.Model, PermissionLevelMixin):
         self.resource.native_bbox = tuple(resource_bbox)
         self.resource.latlon_bbox = tuple(resource_llbbox)
         Layer.objects.gs_catalog.save(self._resource_cache)
+
         
         # Use update to avoid unnecessary post_save signal
         Layer.objects.filter(id=self.id).update(bbox=self.bbox,llbbox=self.llbbox,geographic_bounding_box=self.geographic_bounding_box )

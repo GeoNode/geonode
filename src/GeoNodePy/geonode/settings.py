@@ -254,6 +254,8 @@ AGON_RATINGS_CATEGORY_CHOICES = {
 }
 
 # For South migrations
+#If upgrading from an earlier version of WorldMap,
+#you may need to comment this out
 SOUTH_MIGRATION_MODULES = {
     'registration': 'geonode.migrations.registration',
     'avatar': 'geonode.migrations.avatar',

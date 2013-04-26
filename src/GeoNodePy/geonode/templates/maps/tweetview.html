@@ -311,6 +311,7 @@ var updateCQL = function (layers) {
 
 	
 	
+
     /*if (Math.floor(tweetDateEndField.getValue().getTime()) >= Math.floor(firstEndDate)) {
         var rightNow = new Date();
         tweetDateEndField.setValue(rightNow);
@@ -318,14 +319,14 @@ var updateCQL = function (layers) {
     */
 
     var randomNum = Math.random();
-    var startFilter = "SELECT goog_x, goog_y, ";
+    var startFilter = "SELECT goog_x, goog_y";
 
 
     var keywordFilter = "";
     var keywords = tweetFilterField.getValue().replace("'", "''").match(/[^"\s]+|"[^"]+"/g);
     if (keywords) {
         for (var k = 0; k < keywords.length; k++) {
-            keywordFilter += (k > 0 ? " AND " : "") + "tweet_text ilike '" + keywords[k].replace(/["]/g, '') + "'";
+            keywordFilter += (k > 0 ? " AND " : " ") + "tweet_text ilike '" + keywords[k].replace(/["]/g, '') + "'";
         }
     }
 
@@ -340,7 +341,7 @@ var updateCQL = function (layers) {
 
         if (layer.get("name").indexOf("heatmap") > -1) {
         	layer.getLayer().params["LAYERS"] = Ext.getCmp("lsh_checkbox").checked ? "lsh_heatmap" : "heatmap";
-            layer["cql_filter"] = startFilter + keywordFilter + fromFilter + " WHERE " + timeFilter;
+            layer["cql_filter"] = startFilter + "," + keywordFilter + fromFilter + " WHERE " + timeFilter;
             layer.getLayer().params["SQL"] = layer["cql_filter"];
             layer.getLayer().params["BLUR"] = Ext.getCmp("slider_blur").value;
             layer.getLayer().params["MIN"] = Ext.getCmp("slider_min").value / 100;
@@ -348,13 +349,11 @@ var updateCQL = function (layers) {
             if (keywords && keywords != "") {
                 layer.getLayer().setVisibility(true);
                 numLayersVisible++;
-            } else if (!keywords || keywords == "") {
-                layer.getLayer().setVisibility(false);
             }
 
         } else {
         	layer.getLayer().params["LAYERS"] = Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point";
-            layer["cql_filter"] = startFilter + " tweet_text " + fromFilter + " WHERE " + timeFilter + (keywords ? " AND " + keywordFilter : "");
+            layer["cql_filter"] = startFilter + ", tweet_text " + fromFilter + " WHERE " + timeFilter + (keywords ? " AND " + keywordFilter : "");
             layer.getLayer().params["SQL"] = layer["cql_filter"];
             layer.getLayer().params["RADIUS"] = 1;
             layer.getLayer().params["R"] = 0;
@@ -836,6 +835,7 @@ window.onload = init;
 
   </div>
 
+
   <div class="block wrap selfclear">
   <h3>Selected Data</h3>
   <div id="selection">
@@ -844,7 +844,6 @@ window.onload = init;
     <div id="data_ops">
     </div>
   </div>
-
 
 </div>
 
@@ -906,6 +905,7 @@ window.onload = init;
 
 
             </div>
+
 
 {% endblock %}
 

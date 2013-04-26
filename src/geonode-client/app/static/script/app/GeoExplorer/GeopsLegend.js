@@ -43,6 +43,13 @@ GeoExt.GeopsLegend = Ext.extend(GeoExt.WMSLegend, {
 
 });
 
+/** private: method[supports]
+ *  Private override
+ */
+GeoExt.GeopsLegend.supports = function(layerRecord) {
+    return layerRecord.getLayer() instanceof OpenLayers.Layer.WMS ? 1 : 0;
+};
+
 /** api: legendtype = gx_wmslegend */
 GeoExt.LayerLegend.types["gx_geopslegend"] = GeoExt.GeopsLegend;
 

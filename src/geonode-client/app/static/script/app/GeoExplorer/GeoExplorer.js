@@ -446,18 +446,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 rasterStyling: true,
                 actionTarget: ["treecontent.contextMenu"]
             }, {
-                ptype: "gxp_print",
+                ptype: "gxp_printpage",
                 openInNewWindow: true,
                 includeLegend: true,
                 printCapabilities: window.printCapabilities,
                 text: '<span class="x-btn-text">' + this.printBtnText + '</span>',
                 iconCls: null,
-                actionTarget: {target: "paneltbar", index: 10}
+                actionTarget: {target: "paneltbar", index: 9}
             },{
                 ptype: "gxp_googleearth",
                 text: '<span class="x-btn-text">' + this.googleEarthBtnText + '</span>',
                 iconCls: null,
-                actionTarget: {target: "paneltbar", index: 14}
+                actionTarget: {target: "paneltbar", index: 13}
             });
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
 

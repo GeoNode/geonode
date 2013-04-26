@@ -93,6 +93,7 @@ public class GeoNodeDataAccessManager implements DataAccessManager {
         }
         
         if (user.getAuthorities().contains(GeoNodeDataAccessManager.getAdminRole())) {
+        	LOG.finer("ADMIN ROLE for " + user);
             return true;
         }
         
