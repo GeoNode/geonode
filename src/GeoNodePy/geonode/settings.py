@@ -370,42 +370,6 @@ MAP_BASELAYERS = [
         "source": {"ptype": "gxp_mapboxsource"},
     },
     {
-        "source": {
-            "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
-            "ptype": "gxp_arcrestsource"},
-        "group": "background",
-        "name": "World Street Map",
-        "visibility": False,
-        "fixed": True,
-        "format": "jpeg",
-        "tiled" : False,
-        "title": "ESRI World Street Map"
-    },
-    {
-        "source": {
-            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
-            "ptype": "gxp_arcrestsource"},
-        "group": "background",
-        "format": "jpeg",
-        "name": "World Imagery",
-        "visibility": False,
-        "fixed": True,
-        "tiled" : False,
-        "title": "ESRI World Imagery"
-    },
-    {
-        "source": {
-            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer",
-            "ptype": "gxp_arcrestsource"},
-        "group": "background",
-        "name": "Light Gray Canvas Base",
-        "visibility": False,
-        "fixed": True,
-        "format": "jpeg",
-        "tiled" : False,
-        "title": "ESRI Light Gray Reference"
-    },
-    {
         "source": {"ptype": "gx_googlesource"},
         "group": "background",
         "name": "SATELLITE",
