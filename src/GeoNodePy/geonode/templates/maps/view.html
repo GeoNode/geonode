@@ -75,17 +75,12 @@ var app;
 var init = function() {
 {% autoescape off %}
 
-    var identifyText = gettext('Identify');
-    var coordinateText = gettext('Map Coordinates - longitude, latitude');
-    var gazetteerText = gettext('Placename gazetteer');
-
-
     var config = Ext.apply({
         tools:  [{
             ptype: "gxp_geonodequerytool",
             id: "worldmap_query_tool",
-            actionTarget:  {target: "paneltbar", index: 5},
-            toolText: '<span class="x-btn-text">' + identifyText + '</span>',
+            actionTarget:  {target: "paneltbar", index: 2},
+            toolText: '<span class="x-btn-text">' + gettext('Identify') + '</span>',
             iconCls: null,
             outputConfig: {width: 400, height: 200, panIn: false},
             featurePanel: 'queryPanel',
@@ -94,17 +89,46 @@ var init = function() {
         },
             {
                 ptype: "gxp_coordinatetool",
-                title: coordinateText,
+                title: '<span class="x-btn-text">' + 
+                	gettext('Map Coordinates - longitude, latitude') + '</span>',
                 actionTarget:  {target: "paneltbar"}
+            },
+            {
+                ptype: "gxp_printpage",
+                openInNewWindow: true,
+                includeLegend: true,
+                text: '<span class="x-btn-text">' + gettext('Print') + '</span>',
+                iconCls: null,
+                actionTarget: {target: "paneltbar", index: 4}
+            },
+            {
+                ptype: "app_annotation",
+                user: "{{ user.id }}",
+                toggleGroup: 'featureGroup',
+                actionTarget:  {target: "paneltbar", index: 6}
+            },
+            {
+                ptype: "gxp_googleearth",
+                text: '<span class="x-btn-text">' + gettext('Google Earth') + '</span>',
+                iconCls: null,
+                actionTarget: {target: "paneltbar", index: 7}
+            },
+            {
+            	ptype: 'gxp_mapshare',
+            	target: this,
+            	text: '<span class="x-btn-text">' + gettext('Share Map') + '</span>',
+            	iconCls: null,
+                actionTarget:  {target: "paneltbar", index: 24}
             }{% if USE_GAZETTEER %},
             {
                 ptype: "gxp_gazetteertool",
-                actionTarget:  {target: "paneltbar", index: 7},
-                title: gazetteerText,
+                actionTarget:  {target: "paneltbar", index: 5},
+                title: '<span class="x-btn-text">' + gettext('Gazetteer') + '</span>',
                 iconCls: null,
                 toggleGroup: 'featureGroup',
                 pressed: false
-            }{% endif %}{% if user.is_authenticated and DB_DATASTORE  %},
+            }{% endif %}
+            {% if user.is_authenticated and DB_DATASTORE  %},
             {
                 ptype: "gxp_featuremanager",
                 id: "feature_manager",
@@ -126,25 +150,11 @@ var init = function() {
                 autoLoadFeature: true,
                 iconClsAdd: null,
                 iconClsEdit: null,
-                createFeatureActionText: '<span class="x-btn-text" >' + "Create Feature" + '</span>',
-                editFeatureActionText: '<span class="x-btn-text">' + "Edit Feature" + '</span>',
-                actionTarget:  {target: "paneltbar", index: 4},
+                createFeatureActionText: '<span class="x-btn-text" >' + gettext("Create Feature") + '</span>',
+                editFeatureActionText: '<span class="x-btn-text">' + gettext("Edit Feature") + '</span>',
+                actionTarget:  {target: "paneltbar", index: 2},
                 toggleGroup: 'featureGroup'
-            }{% endif %},
-            {
-                ptype: "app_annotation",
-                title: "Add Notes",
-                user: "{{ user.id }}",
-                toggleGroup: 'featureGroup',
-                actionTarget:  {target: "paneltbar", index: 15}
-            },
-            {
-            	ptype: 'gxp_mapshare',
-            	target: this,
-            	toolText: '<span class="x-btn-text">Share Map</span>',
-            	iconCls: null,
-                actionTarget:  {target: "paneltbar", index: 24}
-            }
+            }{% endif %}
             ],
             proxy: "/proxy/?url=",
 
