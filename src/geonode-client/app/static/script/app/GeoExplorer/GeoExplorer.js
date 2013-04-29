@@ -445,19 +445,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 ptype: "gxp_styler",
                 rasterStyling: true,
                 actionTarget: ["treecontent.contextMenu"]
-            }, {
-                ptype: "gxp_printpage",
-                openInNewWindow: true,
-                includeLegend: true,
-                printCapabilities: window.printCapabilities,
-                text: '<span class="x-btn-text">' + this.printBtnText + '</span>',
-                iconCls: null,
-                actionTarget: {target: "paneltbar", index: 9}
-            },{
-                ptype: "gxp_googleearth",
-                text: '<span class="x-btn-text">' + this.googleEarthBtnText + '</span>',
-                iconCls: null,
-                actionTarget: {target: "paneltbar", index: 13}
             });
         GeoExplorer.superclass.loadConfig.apply(this, arguments);
 
@@ -930,7 +917,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             id: 'paneltbar',
             items: [
                 addLayerButton,
-                "-",
                 this.createTools()
             ]
         });
@@ -1655,16 +1641,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
 
-        var advancedToolsLink = function() {
-            if (!this.mapID) {
-                Ext.Msg.alert("Save your Map View", "You must save this map view before using advanced map tools");
-            }
-            else
-                document.location.href = "/maps/" + this.mapID + "/edit";
-        };
-
-
-
         var publishAction = new Ext.Action({
             tooltip: this.publishActionText,
             handler: this.makeExportDialog,
@@ -1691,13 +1667,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 scope: this,
                 disabled: !this.config["edit_map"],
                 text: '<span class="x-btn-text">' + this.saveMapBtnText + '</span>'
-            }), "-","-","-",
-            "-",
+            }),
             publishAction,
-            "-","-",
-            infoButton,"-",
-            "-",streetViewButton,"-",
-            '->',
+            infoButton,
+            streetViewButton,
+            "->",
             historyAction
         ];
         

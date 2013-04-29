@@ -84,7 +84,7 @@ var init = function() {
         tools:  [{
             ptype: "gxp_geonodequerytool",
             id: "worldmap_query_tool",
-            actionTarget:  {target: "paneltbar", index: 5},
+            actionTarget:  {target: "paneltbar", index: 2},
             toolText: '<span class="x-btn-text">' + identifyText + '</span>',
             iconCls: null,
             outputConfig: {width: 400, height: 200, panIn: false},
@@ -96,15 +96,43 @@ var init = function() {
                 ptype: "gxp_coordinatetool",
                 title: coordinateText,
                 actionTarget:  {target: "paneltbar"}
+            },
+            {
+                ptype: "gxp_printpage",
+                openInNewWindow: true,
+                includeLegend: true,
+                text: '<span class="x-btn-text">Print</span>',
+                iconCls: null,
+                actionTarget: {target: "paneltbar", index: 4}
+            },
+            {
+                ptype: "app_annotation",
+                user: "{{ user.id }}",
+                toggleGroup: 'featureGroup',
+                actionTarget:  {target: "paneltbar", index: 6}
+            },
+            {
+                ptype: "gxp_googleearth",
+                text: '<span class="x-btn-text">Google Earth</span>',
+                iconCls: null,
+                actionTarget: {target: "paneltbar", index: 7}
+            },
+            {
+            	ptype: 'gxp_mapshare',
+            	target: this,
+            	toolText: '<span class="x-btn-text">Share Map</span>',
+            	iconCls: null,
+                actionTarget:  {target: "paneltbar", index: 24}
             }{% if USE_GAZETTEER %},
             {
                 ptype: "gxp_gazetteertool",
-                actionTarget:  {target: "paneltbar", index: 7},
+                actionTarget:  {target: "paneltbar", index: 5},
                 title: gazetteerText,
                 iconCls: null,
                 toggleGroup: 'featureGroup',
                 pressed: false
-            }{% endif %}{% if user.is_authenticated and DB_DATASTORE  %},
+            }{% endif %}
+            {% if user.is_authenticated and DB_DATASTORE  %},
             {
                 ptype: "gxp_featuremanager",
                 id: "feature_manager",
@@ -128,23 +156,9 @@ var init = function() {
                 iconClsEdit: null,
                 createFeatureActionText: '<span class="x-btn-text" >' + "Create Feature" + '</span>',
                 editFeatureActionText: '<span class="x-btn-text">' + "Edit Feature" + '</span>',
-                actionTarget:  {target: "paneltbar", index: 4},
+                actionTarget:  {target: "paneltbar", index: 2},
                 toggleGroup: 'featureGroup'
-            }{% endif %},
-            {
-                ptype: "app_annotation",
-                title: "Add Notes",
-                user: "{{ user.id }}",
-                toggleGroup: 'featureGroup',
-                actionTarget:  {target: "paneltbar", index: 15}
-            },
-            {
-            	ptype: 'gxp_mapshare',
-            	target: this,
-            	toolText: '<span class="x-btn-text">Share Map</span>',
-            	iconCls: null,
-                actionTarget:  {target: "paneltbar", index: 24}
-            }
+            }{% endif %}
             ],
             proxy: "/proxy/?url=",
 

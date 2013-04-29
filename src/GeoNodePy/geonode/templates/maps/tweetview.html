@@ -41,10 +41,6 @@
     }
 </style>
 
-<script src="{{ GEONODE_CLIENT_LOCATION }}script/PrintPreview.js"></script>
-<link rel="stylesheet" type="text/css"
-      href="{{ GEONODE_CLIENT_LOCATION }}externals/PrintPreview/resources/css/printpreview.css"/>
-<script src="{{GEOSERVER_BASE_URL}}pdf/info.json?var=printCapabilities" type="text/javascript"></script>
 {{ block.super }}
 
 <script type="text/javascript">
@@ -684,7 +680,6 @@ tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
             projection:'EPSG:900913'
         }
 ));
-tweetPointRecord.group = tweetConfig.group;
 tweetPointRecord.group = tweetConfig.group;
 
 tweetPointRecord.getLayer().events.register("loadend", tweetPointRecord.getLayer(), function () {

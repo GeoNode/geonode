@@ -784,23 +784,10 @@ def ajax_start_twitter(request):
         )
 
 def tweetview(request):
-#    from boto.ec2.connection import EC2Connection
     map = get_object_or_404(Map,urlsuffix="tweetmap")
     config = map.viewer_json(request.user)
 
     redirectPage = 'maps/tweetview.html'
-
-    #Check if twitter server is running
-#    ec2 = EC2Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
-#    twitterInstance = ec2.get_all_instances(instance_ids=[settings.AWS_INSTANCE_ID])[0].instances[0]
-#
-#
-#    instanceStarted = twitterInstance.state == 'running'
-#
-#    if not instanceStarted:
-#        redirectPage = 'maps/tweetstartup.html'
-
-
 
     first_visit = True
     if request.session.get('visit' + str(map.id), False):
