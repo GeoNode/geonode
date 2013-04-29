@@ -66,15 +66,13 @@ urlpatterns = patterns('',
     (r'^profiles/', include('geonode.profile.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/(?P<format>[^/]*)/?$','geonode.proxy.views.download'),
-    (r'^gazetteer/', include('geonode.gazetteer.urls')),
-    (r'^bostonhoods/?', include('geonode.hoods.urls')),
+    (r'^gazetteer/', include('geonode.gazetteer.urls'))
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns
 
 
 official_site_url_patterns = patterns('',
-    (r'^tweetmap/$', 'geonode.maps.views.tweetview'),
     (r'^(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.official_site'),
     (r'^(?P<site>[A-Za-z0-9_\-]+)/mobile/?$', 'geonode.maps.views.official_site_mobile'),
     (r'^(?P<site>[A-Za-z0-9_\-]+)/info$', 'geonode.maps.views.official_site_controller'),
