@@ -27,6 +27,9 @@
 
 {{block.super}}
 <script type="text/javascript">
+
+
+
     Ext.onReady(function() {
         {% autoescape off %}
         // get #poc_form and #metadata_form, and add a `onchange` handler
@@ -57,17 +60,6 @@
         toggleFormat(Ext.get('id_startDate'), 'startDateFormatCell');
         toggleFormat(Ext.get('id_endDate'), 'endDateFormatCell');
 
-		/*
-
-
-
-		Ext.get('id_layer-topic_category').on('change', function() {
-	        if (this.getValue()===""){
-			    Ext.get("id_layer-topic_category_new").up("li").show();
-			}else{
-				Ext.get("id_layer-topic_category_new").up("li").hide();
-			}
-		});	*/
     	var mapCrumb = "";
     	if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
     		{
@@ -77,6 +69,7 @@
         var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}}</a><span>&nbsp;/&nbsp;Edit</span>");
 		Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
         showGazetteerOptions(Ext.get("gazetteer_include").dom);
+
 
         {% endautoescape %}
     });
@@ -147,6 +140,7 @@
         <div align="center"><p><input type="submit" class="submit_btn" value="{% trans "Update" %}"/></p></div>
   </form>
 </div>
+
 <script type="text/javascript">
     {% autoescape off %}
     // Extify form fields

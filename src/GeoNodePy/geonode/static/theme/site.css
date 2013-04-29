@@ -981,3 +981,27 @@ Comments
   //position:relative;
   //top:1px;
   }
+  
+  
+.helptext {
+	display: inline-block;
+	font-size: 0px;
+	vertical-align: top;
+	width: 22px;
+	height: 22px;
+	background: url('img/system_help_22.png');
+}
+
+.modal_help {
+	display:none;
+	height:auto;
+	width:auto;
+	display:block;
+	position: fixed;
+	top: 25%;
+	left: 50%;
+	margin: 10px;
+	padding: 10px;
+	background-color: #ced9e7;
+	border: 1px solid #000;
+}
