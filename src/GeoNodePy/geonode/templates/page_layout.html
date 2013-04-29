@@ -28,6 +28,24 @@
     {% autoescape off %}
         {{ GOOGLE_ANALYTICS_CODE }}
     {% endautoescape %}
+    
+    <script type="text/javascript">
+		function hideModal() {
+			Ext.get("modalhelp").setStyle("display","none");
+		}
+		function showModal(text) {
+			Ext.get("modalhelp").setStyle("display","block").update(text);
+		}
+		function showHelp(event) {
+			showModal(event.target.innerHTML);
+		}
+        Ext.onReady(function() {
+        	{% autoescape off %}
+            	Ext.select(".helptext").on('mouseover',showHelp);
+        		Ext.select(".helptext").on('mouseout',hideModal);
+            {% endautoescape %}
+    	});
+   </script>        
 </head>
 <body>
 {% block start_body_js %}{% endblock %}
@@ -79,5 +97,6 @@
     </div><!-- /.wrap -->
   </div><!-- /#footer -->
   {% block end_body_js %}{% endblock %}
+  <div id="modalhelp" class="modal_help"></div>
 </body>
 </html>

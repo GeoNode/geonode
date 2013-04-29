@@ -183,7 +183,9 @@
 
     {% if layer.constraints_use or layer.constraints_other %}
     <p> <strong>{% trans "Citation" %}:</strong>
-        {{ layer.constraints_use}} {{ layer.contraints_other}}
+        {{ layer.constraints_use}} 
+        <br/><br/>
+        {{ layer.constraints_other}}
     </p>
     {% endif %}
 

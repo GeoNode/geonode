@@ -117,6 +117,26 @@ class LayerContactForm(forms.Form):
 
 
 class LayerForm(forms.ModelForm):
+    from geonode.maps.models import CONSTRAINT_OPTIONS
+    CONSTRAINT_HELP = '''<p>Please choose the appropriate type of restriction (if any) for the use of your data. 
+    Then use the "Constraints Other" form below to provide any necessary details.</p>
+    <p>
+    Public Domain Dedication and License<br />
+    http://opendatacommons.org/licenses/pddl/
+    </p>
+    <p>
+    Attribution License (ODC-By)<br />
+    http://opendatacommons.org/licenses/by/
+    </p>
+    <p>
+    Open Database License (ODC-ODbL)<br />
+    http://opendatacommons.org/licenses/odbl/
+    </p>
+    <p>
+    CC-BY-SA<br />
+    http://creativecommons.org/licenses/by-sa/2.0/
+    '''
+    
     map_id = forms.CharField(widget=forms.HiddenInput(), initial='', required=False)
     date = forms.DateTimeField(label='*' + ('Date'), widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"date"}
@@ -125,6 +145,8 @@ class LayerForm(forms.ModelForm):
     temporal_extent_end = forms.DateField(required=False,label= _('Temporal Extent End Date'), widget=forms.DateInput(attrs={"class":"date"}))
     title = forms.CharField(label = '*' + _('Title'), max_length=255)
     abstract = forms.CharField(label = '*' + _('Abstract'), widget=forms.Textarea)
+    constraints_use = forms.ChoiceField(label= _('Contraints'), choices=[(x, x) for x in CONSTRAINT_OPTIONS], 
+                                        help_text=CONSTRAINT_HELP)
     keywords = taggit.forms.TagField(required=False)
     class Meta:
         model = Layer
@@ -2160,7 +2182,7 @@ def batch_delete(request):
 
 class LayerCategoryChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return '<a href="#" onclick=\'javascript:Ext.Msg.show({title:"' + escape(obj.title) + '",msg:"' + escape(obj.description) + '",buttons: Ext.Msg.OK, minWidth: 300});return false;\'>' + obj.title + '</a>'
+        return '<a href="#" onmouseover=\'javascript:showModal("' + escape(obj.description) + '")\' onmouseout=\'javascript:hideModal()\';return false;\'>' + obj.title + '</a>'
 
 
 
