@@ -1625,7 +1625,7 @@ class Map(models.Model, PermissionLevelMixin):
     title = models.TextField(_('Title'))
     # A display name suitable for search results and page headers
 
-    abstract = models.TextField(_('Abstract'))
+    abstract = models.TextField(_('Abstract'), blank=True, null=True)
     # A longer description of the themes in the map.
 
     # viewer configuration
@@ -2041,11 +2041,11 @@ class MapLayer(models.Model):
     # The z-index of this layer in the map; layers with a higher stack_order will
     # be drawn on top of others.
 
-    format = models.CharField(_('format'), null=True, max_length=200)
+    format = models.CharField(_('format'), blank=True, null=True, max_length=200)
     # The mimetype of the image format to use for tiles (image/png, image/jpeg,
     # image/gif...)
 
-    name = models.CharField(_('name'), null=True, max_length=200)
+    name = models.CharField(_('name'), blank=True, null=True, max_length=200)
     # The name of the layer to load.
 
     # The interpretation of this name depends on the source of the layer (Google
@@ -2055,7 +2055,7 @@ class MapLayer(models.Model):
     opacity = models.FloatField(_('opacity'), default=1.0)
     # The opacity with which to render this layer, on a scale from 0 to 1.
 
-    styles = models.CharField(_('styles'), null=True,max_length=200)
+    styles = models.CharField(_('styles'), blank=True, null=True,max_length=200)
     # The name of the style to use for this layer (only useful for WMS layers.)
 
     transparent = models.BooleanField(_('transparent'))
@@ -2072,7 +2072,7 @@ class MapLayer(models.Model):
     visibility = models.BooleanField(_('visibility'), default=True)
     # A boolean value, true if this layer should be visible when the map loads.
 
-    ows_url = models.URLField(_('ows URL'), null=True)
+    ows_url = models.URLField(_('ows URL'), blank=True, null=True)
     # The URL of the OWS service providing this layer, if any exists.
 
     layer_params = models.TextField(_('layer params'))
