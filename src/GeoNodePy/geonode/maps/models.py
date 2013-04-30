@@ -1625,7 +1625,7 @@ class Map(models.Model, PermissionLevelMixin):
     title = models.TextField(_('Title'))
     # A display name suitable for search results and page headers
 
-    abstract = models.TextField(_('Abstract'), blank=True, null=True)
+    abstract = models.TextField(_('Abstract'), blank=True)
     # A longer description of the themes in the map.
 
     # viewer configuration
@@ -1660,12 +1660,12 @@ class Map(models.Model, PermissionLevelMixin):
     The last time the map was modified.
     """
 
-    urlsuffix = models.CharField(_('Site URL'), max_length=255, blank=True, null=True)
+    urlsuffix = models.CharField(_('Site URL'), max_length=255, blank=True)
     """
     Alphanumeric alternative to referencing maps by id, appended to end of URL instead of id, ie http://domain/maps/someview
     """
 
-    officialurl = models.CharField(_('Official Harvard Site URL'), max_length=255, blank=True, null=True)
+    officialurl = models.CharField(_('Official Harvard Site URL'), max_length=255, blank=True)
     """
     Full URL for official/sponsored map view, ie http://domain/someview
     """
@@ -1680,7 +1680,7 @@ class Map(models.Model, PermissionLevelMixin):
     Whether to show default banner/styles or custom ones.
     """
 
-    group_params = models.TextField(_('Layer Category Parameters'), blank=True, null=True)
+    group_params = models.TextField(_('Layer Category Parameters'), blank=True)
     """
     Layer categories (names, expanded)
     """
