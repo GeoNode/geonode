@@ -283,12 +283,12 @@ class LayersTest(TestCase):
         c = Client()
 
         # Test redirection to login form when not logged in
-        response = c.get(reverse('layer_upload'))
+        response = c.get(reverse('data_upload'))
         self.assertEquals(response.status_code,302)
 
         # Test return of upload form when logged in
         c.login(username="bobby", password="bob")
-        response = c.get(reverse('layer_upload'))
+        response = c.get(reverse('data_upload'))
         self.assertEquals(response.status_code,200)
 
     def test_describe_data(self):
