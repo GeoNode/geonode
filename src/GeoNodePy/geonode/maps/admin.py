@@ -39,15 +39,9 @@ class LayerAdmin(admin.ModelAdmin):
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')
-    inlines = [ContactRoleInline]
     search_fields = ['typename','title']
     actions = ['change_poc']
     ordering = ('-date',)
-
-    def change_poc(modeladmin, request, queryset):
-        selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
-        return HttpResponseRedirect(reverse('change_poc', kwargs={"ids": "_".join(selected)}))
-    change_poc.short_description = "Change the point of contact for the selected layers"
 
 class LayerCategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'title')
