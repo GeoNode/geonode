@@ -45,6 +45,7 @@ from datetime import datetime, timedelta
 from geonode.maps.gs_helpers import get_sld_for, get_postgis_bbox
 from geonode.maps.encode import num_encode, num_decode
 from django.db import transaction
+import autocomplete_light
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -84,7 +85,6 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
 
 class ContactForm(forms.ModelForm):
-    keywords = taggit.forms.TagField(required=False)
     class Meta:
         model = Contact
         exclude = ('user','is_org_member',)
@@ -109,11 +109,16 @@ class GazetteerForm(forms.Form):
 class LayerContactForm(forms.Form):
     poc = forms.ModelChoiceField(empty_label = _("Person outside WorldMap (fill form)"),
         label = "*" + _("Point Of Contact"), required=False,
-        queryset = Contact.objects.exclude(user=None))
+        queryset = Contact.objects.exclude(user=None),
+        widget=autocomplete_light.ChoiceWidget('ContactAutocomplete'))
 
     metadata_author = forms.ModelChoiceField(empty_label = _("Person outside WorldMap (fill form)"),
         label = _("Metadata Author"), required=False,
-        queryset = Contact.objects.exclude(user=None))
+        queryset = Contact.objects.exclude(user=None),
+        widget=autocomplete_light.ChoiceWidget('ContactAutocomplete'))
+    
+    class Meta:
+        model = Contact
 
 
 class LayerForm(forms.ModelForm):

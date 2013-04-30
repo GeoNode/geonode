@@ -39,3 +39,5 @@ datautil
 jdcal
 #For mapnotes
 vectorformats
+#For autocomplete
+django-autocomplete-light

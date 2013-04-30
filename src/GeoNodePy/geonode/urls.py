@@ -11,6 +11,8 @@ import geonode.mapnotes.urls
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
+import autocomplete_light
+autocomplete_light.autodiscover()
 admin.autodiscover()
 
 js_info_dict = {
@@ -66,7 +68,8 @@ urlpatterns = patterns('',
     (r'^profiles/', include('geonode.profile.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/(?P<format>[^/]*)/?$','geonode.proxy.views.download'),
-    (r'^gazetteer/', include('geonode.gazetteer.urls'))
+    (r'^gazetteer/', include('geonode.gazetteer.urls')),
+     url(r'^autocomplete/', include('autocomplete_light.urls')),
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns
