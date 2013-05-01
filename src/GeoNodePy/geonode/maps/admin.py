@@ -4,19 +4,23 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from dialogos.models import Comment
+import autocomplete_light
 
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
 
 class ContactRoleInline(admin.TabularInline):
     model = ContactRole
+    extra = 0
+    form = autocomplete_light.modelform_factory(ContactRole)
 
 class ContactRoleAdmin(admin.ModelAdmin):
     model = ContactRole
     list_display_links = ('id',)
     list_display = ('id','contact', 'layer', 'role')
-    list_editable = ('contact', 'layer', 'role')
-    search_fields = ['contact','layer']
+    list_editable = ('layer', 'role')
+    search_fields = ['contact__name','layer__name']
+    form = autocomplete_light.modelform_factory(ContactRole)
 
 class MapAdmin(admin.ModelAdmin):
     inlines = [MapLayerInline,]
@@ -30,6 +34,7 @@ class ContactAdmin(admin.ModelAdmin):
     inlines = [ContactRoleInline]
     list_display = ('id', 'name', 'user')
     search_fields = ['name']
+    form = autocomplete_light.modelform_factory(Contact)
 
 class LayerAdmin(admin.ModelAdmin):
     list_display = ('id','title', 'date', 'owner', 'topic_category')
@@ -39,9 +44,11 @@ class LayerAdmin(admin.ModelAdmin):
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')
+    inlines = [ContactRoleInline]
     search_fields = ['typename','title']
     actions = ['change_poc']
     ordering = ('-date',)
+    form = autocomplete_light.modelform_factory(Layer)
 
 class LayerCategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'title')

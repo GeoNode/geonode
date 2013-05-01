@@ -125,6 +125,7 @@ INSTALLED_APPS = (
     'agon_ratings',
     'taggit',
     'south',
+    'autocomplete_light',
 
     # GeoNode internal apps
     'geonode.core',

@@ -7,6 +7,9 @@
 <head>
   <title>{% block title %} {{ SITENAME }} {% endblock %}</title>
   <link rel="shortcut icon" href="{{ STATIC_URL }}theme/img/favicon.ico"/>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js" type="text/javascript"></script>
+  <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/ext/adapter/ext-jquery-adapter.js"></script>
+  {% include 'autocomplete_light/static.html' %}    
   {% block head_extra_meta %}{% endblock %}
   {% block head %}
 
@@ -21,10 +24,11 @@
     	  <!--[if lte IE 6]><link rel="stylesheet" href="{{ STATIC_URL }}theme/boilerplate-ie-min.css" type="text/css" media="screen" charset="utf-8"><![endif]-->
     {% endif %}
     <script type="text/javascript" src="{% url jscat %}"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}/jquery-1.6.4.min.js"></script>
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
-  <script type="text/javascript" src="{% url lang %}"></script>
-  {% endblock %}
+    <script type="text/javascript" src="{% url lang %}"></script>
+   
+    
+  	{% endblock %}
     {% autoescape off %}
         {{ GOOGLE_ANALYTICS_CODE }}
     {% endautoescape %}
