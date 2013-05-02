@@ -21,7 +21,8 @@ define(['jquery',
         displayFiles,
         doUploads,
         doSuccessfulUpload,
-        attach_events;
+        attach_events,
+        checkFiles;
 
     $('body').append(upload);
 
@@ -101,9 +102,27 @@ define(['jquery',
         });
     };
 
+    checkFiles = function(){
+        var files = layers[Object.keys(layers)[0]]['files'];
+        var types = [];
+        for (var i = 0; i<files.length; i++){
+            var ext = files[i].name.split('.')[1];
+            if ($.inArray(ext,types) == -1){
+                types.push(ext);
+            }
+        }
+        if (types.length < 4){
+            return false;    
+        }
+        else{
+            return true;
+        }
+    }
+
     doUploads = function () {
-        if ($.isEmptyObject(layers)) {
-            alert('You must select some files first.');
+        var checked = checkFiles();
+        if ($.isEmptyObject(layers) || !checked) {
+            alert('You are uploading an incomplete set of files.');
         } else {
             $.each(layers, function (name, layerinfo) {
                 layerinfo.uploadFiles();
