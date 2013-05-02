@@ -111,11 +111,11 @@ define(['jquery',
                 types.push(ext);
             }
         }
-        if (types.length < 4 || types[0] === 'tif'){
-            return false;    
+        if (types.length === 4 || types[0] === 'tif' || types[0] === 'tiff'){
+            return true;    
         }
         else{
-            return true;
+            return false;
         }
     }
 
