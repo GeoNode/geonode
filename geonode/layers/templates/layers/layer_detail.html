@@ -59,6 +59,7 @@
         <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
         <!--li><a href="{% url "layer_style" layer.typename %}">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li-->
         <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+        <li><a class="style-edit" href="#">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="{% url "layer_replace" layer.typename %}">{% trans "Replace this Layer" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %} <i class="icon-chevron-right"></i></a></li>
       </ul>
@@ -181,19 +182,13 @@
         <ul class="unstyled space">
           {% for style in layer.styles.all %}
             <li>
-                {% if style.sld_title %}
-                  {% if layer.default_style == style %}
+                {% if layer.default_style == style %}
                     <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
-                    <a class="style-edit" href="#" id="{{ style.name }}" >{{ style.sld_title }}</a> (default style)
-                  {% else %}
-                    <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
-                    <a class="style-edit" href="#" id="{{ style.name }}" >{{ style.sld_title }}</a>
-                  {% endif %} 
+                    (default style)
                 {% else %}
-                  <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
-                  <a class="style-edit" href="#" id="{{ style.name }}" >{{ style.name }}</a>
+                    <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
                 {% endif %}
-                (<a href="{{ GEOSERVER_BASE_URL }}styles/{{ style.name }}.sld">SLD</a>)
+                <a href="{{ GEOSERVER_BASE_URL }}styles/{{ style.name }}.sld" >{{ style.sld_title }}</a>
             </li>
           {% empty %}
             <li>{% trans "No styles associated with this layer" %}</li>
