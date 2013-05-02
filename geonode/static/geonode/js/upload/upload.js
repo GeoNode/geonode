@@ -111,7 +111,7 @@ define(['jquery',
                 types.push(ext);
             }
         }
-        if (types.length < 4){
+        if (types.length < 4 || types[0] === 'tif'){
             return false;    
         }
         else{
