@@ -12,6 +12,11 @@ define(['./FileType'], function (FileType) {
             name: 'GeoTiff File',
             main: 'tif',
             requires: ['tif']
+        }),
+        TIFF: new FileType({
+            name: 'GeoTiff File',
+            main: 'tiff',
+            requires: ['tiff']
         })//,
         // CSV: new FileType({
         //     name: 'Comma Separated File',
