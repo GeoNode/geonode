@@ -21,6 +21,11 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
             ptype: "gxp_getfeedfeatureinfo",
             checked: true
         });
+        config.viewerTools.splice(5, 0, {
+            id: "styler",
+            ptype: "gxp_styler",
+            checked: true
+        });
     GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
 };
 
