@@ -4,8 +4,7 @@
 
 <script type="text/javascript">
 {% autoescape off %}
-        var map;
-        var styleEditor, modified = false;
+        var app;
         Ext.onReady(function() {
             var config = {
                 tools: [{
@@ -56,28 +55,16 @@
                 }); 
             });
             
-            // edit style
             Ext.get(Ext.DomQuery.select(".style-edit")).on("click", function(evt, elem) {
-                showStyle(Ext.get(elem).prev("input").getAttribute("value"));
-            }); 
+                for (var key in app.tools) {
+                    var tool = app.tools[key];
+                    if (tool.ptype == 'gxp_styler') {
+                        tool.actions[0].execute();
+                    };
+                }
+            });
 
         });
-        
-        function showStyle(styleName) {
-            /* TODO
-            if (!styleName) {
-                Ext.ComponentMgr.all.on("add", function(index, object) {
-                    if (object instanceof gxp.WMSStylesDialog) {
-                        Ext.ComponentMgr.all.un("add", arguments.callee);
-                        object.on("ready", function() {
-                            object.addStyle();
-                        }, this, {single: true});
-                    }
-                });
-            }
-            app.tools["styler"].actions[0].execute();
-            */
-        }
     
     {% endautoescape %}
     </script>
