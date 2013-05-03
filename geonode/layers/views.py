@@ -36,6 +36,7 @@ from django.utils.html import escape
 from django.views.decorators.http import require_POST
 from django.template.defaultfilters import slugify
 from django.shortcuts import get_object_or_404
+from django.forms.models import inlineformset_factory
 
 from geonode.utils import http_client, _get_basic_auth_info
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
@@ -49,7 +50,8 @@ from geonode.layers.utils import layer_set_permissions
 from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
-from django.forms.models import inlineformset_factory
+from geonode.documents.models import get_related_documents
+
 from geoserver.resource import FeatureType
 
 logger = logging.getLogger("geonode.layers.views")
@@ -172,6 +174,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "layer": layer,
         "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
+        "documents": get_related_documents(layer),
     }))
 
 

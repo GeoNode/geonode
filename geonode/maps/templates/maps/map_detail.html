@@ -123,6 +123,17 @@
           {% endfor %}
         </ul>
     </div>
+    {% if documents.count > 0 %}
+    <div class="well">
+        <h2>{% trans "Documents related to this map" %}</h2>
+        <p>{% trans "List of documents related to this map:" %}</p>
+        <ul class="unstyled space">
+          {% for document in documents %} 
+            <li><a href="{{ document.get_absolute_url }}">{{ document.title }}</a></li>
+          {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
     <div class='well'>
         <h2>{% trans "View map" %}</h2>
         <p>{% trans "View this map in the GeoExplorer GIS Client" %}</p>
