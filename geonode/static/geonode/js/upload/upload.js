@@ -22,7 +22,8 @@ define(['jquery',
         doUploads,
         doSuccessfulUpload,
         attach_events,
-        checkFiles;
+        checkFiles,
+        fileTypes = require('upload/FileTypes');
 
     $('body').append(upload);
 
@@ -111,12 +112,18 @@ define(['jquery',
                 types.push(ext);
             }
         }
-        if (types.length === 4 || types[0] === 'tif' || types[0] === 'tiff'){
-            return true;    
+        var matched = false;
+        for (var file_type in fileTypes){
+            var required = fileTypes[file_type]['requires'];
+            if ($(required).not(types).length == 0 && $(types).not(required).length == 0){
+                matched = true;
+                break;
+            }
+            else{
+                matched = false;
+            }
         }
-        else{
-            return false;
-        }
+        return matched;
     }
 
     doUploads = function () {
