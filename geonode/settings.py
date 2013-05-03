@@ -314,6 +314,9 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     },
     "layers.Layer": {
         "layer": "How good is this layer?"
+    },
+    "documents.Document": {
+        "document": "How good is this document?"
     }
 }
 
