@@ -69,20 +69,23 @@
         <article id="share" class="tab-pane">
           <!-- TODO: Move this to a reusable template snippet -->
           <header>
-              <h3>{% trans "Share This Layer" %}</h3>
+              <h3>{% trans "Share This Document" %}</h3>
           </header>
           <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
           <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
           <!-- TODO: Add more sharing options -->
         </article>
+
         <!--article id="flag" class="tab-pane">
           <p>Flag this Layer</p>
         </article-->
+        
         <article id="comments" class="tab-pane">
           {% with document as obj %}
             {% include "_comments.html" %}
           {% endwith %}
         </article>
+        
         <article id="rate" class="tab-pane">
           <!-- TODO: Move this to a reusable template snippet -->
           {% if request.user.is_authenticated %}
