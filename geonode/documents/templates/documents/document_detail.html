@@ -15,7 +15,7 @@
 {% endblock %}
 
 
-{% block body_class %}document{% endblock %}
+{% block body_class %}documents{% endblock %}
 
 {% block body_outer %}
   <div class="span6">
@@ -45,7 +45,7 @@
     {% endif %}
   </div>
   <div class="span8">
-    <div class="tab-content">
+   
       {% if document.extension|lower in imgtypes %}
       <div id="embedded_map">
         <img src="{{document.doc_file.url}}" width='100%' />
@@ -53,40 +53,50 @@
       {% else %}
         <a href="{{ document.doc_file.url }}" target="_blank">Download the {{ document }} document</a>
       {%  endif %}
+       
+      <div class="map-actions">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#info" data-toggle="tab"><i class="icon-info-sign"></i>{% trans "Info" %}</a></li>
+          <li><a href="#comments" data-toggle="tab"><i class="icon-comment"></i> {% trans "Comments" %}</a></li>
+          <li><a href="#rate" data-toggle="tab"><i class="icon-star"></i>{% trans "Ratings" %}</a></li>
+          <li><a href="#share" data-toggle="tab"><i class="icon-share"></i>{% trans "Share" %}</a></li>
+          <!-- li><a href="#flag" data-toggle="tab"><i class="icon-flag"></i>{% trans "Flag" %}</a></li -->
+        </ul>
+      </div>
+      <div class="tab-content">
+        {% include "geonode/resourcebase_info_panel.html" with resourcebase=document %}
 
-    {% include "geonode/resourcebase_info_panel.html" with resourcebase=document %}
-
-      <article id="share" class="tab-pane">
-        <!-- TODO: Move this to a reusable template snippet -->
-        <header>
-            <h3>{% trans "Share This Layer" %}</h3>
-        </header>
-        <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
-        <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
-        <!-- TODO: Add more sharing options -->
-      </article>
-      <!--article id="flag" class="tab-pane">
-        <p>Flag this Layer</p>
-      </article-->
-      <article id="comments" class="tab-pane">
-        {% with document as obj %}
-          {% include "_comments.html" %}
-        {% endwith %}
-      </article>
-      <article id="rate" class="tab-pane">
-        <!-- TODO: Move this to a reusable template snippet -->
-        {% if request.user.is_authenticated %}
-        <h3>{% trans "Rate this document" %}</h3>
-        {% user_rating request.user document "document" as user_document_rating %}
-        <div id="user_rating" class="category-layer"></div>
-        {% endif %}
-        <h3>{% trans 'Average Rating' %}</h3>
-        {% overall_rating document "document" as document_rating %}
-        {% num_ratings document as num_votes %}
-        <div class="overall_rating" style="float:left" data-rating="{{ document_rating }}"></div> ({{num_votes}})
-        <!-- TODO: Add display of who gave what rating based -->
-      </article>
-    </div>
+        <article id="share" class="tab-pane">
+          <!-- TODO: Move this to a reusable template snippet -->
+          <header>
+              <h3>{% trans "Share This Layer" %}</h3>
+          </header>
+          <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
+          <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
+          <!-- TODO: Add more sharing options -->
+        </article>
+        <!--article id="flag" class="tab-pane">
+          <p>Flag this Layer</p>
+        </article-->
+        <article id="comments" class="tab-pane">
+          {% with document as obj %}
+            {% include "_comments.html" %}
+          {% endwith %}
+        </article>
+        <article id="rate" class="tab-pane">
+          <!-- TODO: Move this to a reusable template snippet -->
+          {% if request.user.is_authenticated %}
+          <h3>{% trans "Rate this document" %}</h3>
+          {% user_rating request.user document "document" as user_document_rating %}
+          <div id="user_rating" class="category-layer"></div>
+          {% endif %}
+          <h3>{% trans 'Average Rating' %}</h3>
+          {% overall_rating document "document" as document_rating %}
+          {% num_ratings document as num_votes %}
+          <div class="overall_rating" style="float:left" data-rating="{{ document_rating }}"></div> ({{num_votes}})
+          <!-- TODO: Add display of who gave what rating based -->
+        </article>
+      </div>
   </div>
   <aside class="span4">
     <div class="well">
