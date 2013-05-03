@@ -162,6 +162,17 @@
           {% endfor %}
         </ul>
     </div>
+    {% if documents.count > 0 %}
+    <div class="well">
+        <h2>{% trans "Documents related to this layer" %}</h2>
+        <p>{% trans "List of documents related to this layer:" %}</p>
+        <ul class="unstyled space">
+          {% for document in documents %} 
+            <li><a href="{{ document.get_absolute_url }}">{{ document.title }}</a></li>
+          {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
     <div class="well">
         <h2>{% trans "Create a map using this layer" %}</h2>
         <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>

@@ -45,6 +45,7 @@ from geonode.utils import resolve_object
 from geonode.maps.forms import MapForm
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
+from geonode.documents.models import get_related_documents
 
 
 logger = logging.getLogger("geonode.maps.views")
@@ -119,6 +120,7 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         'map': map_obj,
         'layers': layers,
         'permissions_json': json.dumps(_perms_info(map_obj, MAP_LEV_NAMES)),
+        "documents": get_related_documents(map_obj),
     }))
 
 

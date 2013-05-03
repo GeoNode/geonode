@@ -66,6 +66,12 @@ class Document(ResourceBase):
     def class_name(self):
         return self.__class__.__name__
 
+def get_related_documents(resource):
+    if isinstance(resource, Layer) or isinstance(resource, Map):
+        ct = ContentType.objects.get_for_model(resource)
+        return Document.objects.filter(content_type=ct,object_id=resource.pk)
+    else: return None
+
 def pre_save_document(instance, sender, **kwargs):
     base_name, extension = os.path.splitext(instance.doc_file.name)
     instance.extension=extension[1:]

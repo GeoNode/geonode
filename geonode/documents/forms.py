@@ -1,6 +1,7 @@
 import taggit
 
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from geonode.people.models import Profile
 from geonode.documents.models import Document
@@ -19,7 +20,8 @@ class DocumentForm(forms.ModelForm):
     metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                              label = "Metadata Author", required=False,
                                              queryset = Profile.objects.exclude(user=None))
-    keywords = taggit.forms.TagField()
+    keywords = taggit.forms.TagField(required=False,
+                                     help_text=_("A space or comma-separated list of keywords"))
     class Meta:
         model = Document
         exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename',
