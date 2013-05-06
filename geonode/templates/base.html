@@ -5,7 +5,9 @@
     <meta charset="utf-8">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
+      {% block bootstrap %}
       <link href="{{ STATIC_URL }}libs/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+      {% endblock %}
       {% block css-src %}
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       {% endblock %}
