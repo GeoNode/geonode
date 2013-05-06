@@ -74,7 +74,7 @@
           >{% trans "Sign in" %}</a>
       {% endif %}
           | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
-          | <a class="" id="viewLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
+          | <a class="" id="viewLink" href="{% url maps_search %}">{% trans "View Map" %}</a>
           | <a class="" id="helpLink" href="{{ STATIC_URL }}docs/WorldMap_Help.pdf" target="_blank">Help</a>
       </div>
     </div><!-- /.wrap -->
