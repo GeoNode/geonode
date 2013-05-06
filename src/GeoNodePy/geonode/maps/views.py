@@ -123,7 +123,7 @@ class LayerContactForm(forms.Form):
 
 class LayerForm(forms.ModelForm):
     from geonode.maps.models import CONSTRAINT_OPTIONS
-    CONSTRAINT_HELP = '''<p>Please choose the appropriate type of restriction (if any) for the use of your data. 
+    CONSTRAINT_HELP = _('''<p>Please choose the appropriate type of restriction (if any) for the use of your data. 
     Then use the "Constraints Other" form below to provide any necessary details.</p>
     <p>
     Public Domain Dedication and License<br />
@@ -140,10 +140,10 @@ class LayerForm(forms.ModelForm):
     <p>
     CC-BY-SA<br />
     http://creativecommons.org/licenses/by-sa/2.0/
-    '''
+    ''')
     
     map_id = forms.CharField(widget=forms.HiddenInput(), initial='', required=False)
-    date = forms.DateTimeField(label='*' + ('Date'), widget=forms.SplitDateTimeWidget)
+    date = forms.DateTimeField(label='*' + (_('Date')), widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"date"}
     date.widget.widgets[1].attrs = {"class":"time"}
     temporal_extent_start = forms.DateField(required=False,label= _('Temporal Extent Start Date'), widget=forms.DateInput(attrs={"class":"date"}))
@@ -163,7 +163,7 @@ class RoleForm(forms.ModelForm):
         exclude = ('contact', 'layer')
 
 class PocForm(forms.Form):
-    contact = forms.ModelChoiceField(label = "New point of contact",
+    contact = forms.ModelChoiceField(label = _("New point of contact"),
                                      queryset = Contact.objects.exclude(user=None))
 
 
@@ -234,18 +234,18 @@ def mapJSON(request, mapid):
             )
         map_obj = get_object_or_404(Map, pk=mapid)
         if not request.user.has_perm('maps.change_map', obj=map_obj):
-            return HttpResponse("You are not allowed to modify this map.", status=403)
+            return HttpResponse(_("You are not allowed to modify this map."), status=403)
         try:
             map_obj.update_from_viewer(request.raw_post_data)
             MapSnapshot.objects.create(config=clean_config(request.raw_post_data),map=Map.objects.get(id=map_obj.id),user=request.user)
             return HttpResponse(
-                "Map successfully updated.",
+                _("Map successfully updated."),
                 mimetype="text/plain",
                 status=204
             )
         except Exception, e:
             return HttpResponse(
-                "The server could not understand the request." + str(e),
+                _("The server could not understand the request.") + str(e),
                 mimetype="text/plain",
                 status=400
             )
@@ -573,14 +573,14 @@ def ajax_layer_permissions(request, layername, use_email=False):
 
     if not request.method == 'POST':
         return HttpResponse(
-            'You must use POST for editing layer permissions',
+            _('You must use POST for editing layer permissions'),
             status=405,
             mimetype='text/plain'
         )
 
     if not request.user.has_perm("maps.change_layer_permissions", obj=layer):
         return HttpResponse(
-            'You are not allowed to change permissions for this layer',
+            _('You are not allowed to change permissions for this layer'),
             status=401,
             mimetype='text/plain'
         )
@@ -599,7 +599,7 @@ def ajax_map_permissions(request, mapid, use_email=False):
 
     if not request.user.has_perm("maps.change_map_permissions", obj=map_obj):
         return HttpResponse(
-            'You are not allowed to change permissions for this map',
+            _('You are not allowed to change permissions for this map'),
             status=401,
             mimetype='text/plain'
         )
@@ -1176,7 +1176,7 @@ def upload_layer(request):
                 logger.error("Unexpected error during upload: %s : %s", name, escape(str(e)))
                 return HttpResponse(json.dumps({
                     "success": False,
-                    "errormsgs": ["Unexpected error during upload: " + escape(str(e))]}))
+                    "errormsgs": [_("Unexpected error during upload: ") + escape(str(e))]}))
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
@@ -1265,7 +1265,7 @@ def layer_replace(request, layername):
                 logger.exception("Unexpected error during upload.")
                 return HttpResponse(json.dumps({
                     "success": False,
-                    "errors": ["Unexpected error during upload: " + escape(str(e))]}))
+                    "errors": [_("Unexpected error during upload: ") + escape(str(e))]}))
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)

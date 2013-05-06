@@ -484,23 +484,23 @@ UPDATE_FREQUENCIES = [
 
 CONSTRAINT_OPTIONS = [
     # Shortcuts added for convenience in Open Data cases.
-    'Public Domain Dedication and License (PDDL)',
-    'Attribution License (ODC-By)',
-    'Open Database License (ODC-ODbL)',
-    'CC-BY-SA',
+    ['Public Domain Dedication and License (PDDL)',_('Public Domain Dedication and License (PDDL)')],
+    ['Attribution License (ODC-By)', _('Attribution License (ODC-By)')],
+    ['Open Database License (ODC-ODbL)',_('Open Database License (ODC-ODbL)')],
+    ['CC-BY-SA',_('CC-BY-SA')],
 
     # ISO standard constraint options.
-    'copyright',
-    'intellectualPropertyRights',
-    'license',
-    'otherRestrictions',
-    'patent',
-    'patentPending',
-    'restricted',
-    'trademark',
-    'public',
-    'no restrictions',
-    ]
+    ['copyright', _('Copyright')],
+    ['intellectualPropertyRights', _('Intellectual Porperty Rights')],
+    ['license', _('License')],
+    ['otherRestrictions', _('Other Restrictions')],
+    ['patent', _('patent')],
+    ['patentPending', _('Patent Pending')],
+    ['restricted', _('Restricted')],
+    ['trademark', _('Trademark')],
+    ['public', _('Public')],
+    ['no restrictions', _('No Restrictions')],
+]
 
 SPATIAL_REPRESENTATION_TYPES = [
     'grid', 'steroModel', 'textTable', 'tin', 'vector'
@@ -508,23 +508,21 @@ SPATIAL_REPRESENTATION_TYPES = [
 
 
 CONTACT_FIELDS = [
-    "name",
-    "organization",
-    "position",
-    "voice",
-    "facsimile",
-    "delivery_point",
-    "city",
-    "administrative_area",
-    "postal_code",
-    "country",
-    "email",
-    "role"
+    _("name"),
+    _("organization"),
+    _("position"),
+    _("voice"),
+    _("facsimile"),
+    _("delivery_point"),
+    _("city"),
+    _("administrative_area"),
+    _("postal_code"),
+    _("country"),
+    _("email"),
+    _("role")
 ]
 
-DEFAULT_SUPPLEMENTAL_INFORMATION=_(
-    ''
-)
+DEFAULT_SUPPLEMENTAL_INFORMATION=''
 
 DEFAULT_CONTENT=_(
     '<h3>The Harvard WorldMap Project</h3>\
@@ -613,9 +611,9 @@ class Contact(models.Model):
         valid_name = (self.name != None and self.name != '')
         valid_organization = (self.organization != None and self.organization !='')
         if not (valid_name or valid_organization):
-            raise ValidationError('Either name or organization should be provided')
+            raise ValidationError(_('Either name or organization should be provided'))
         if self.email and User.objects.filter(email=self.email).exclude(username=self.user.username if self.user else '').count():
-            raise ValidationError(u'The email address is already registered.')
+            raise ValidationError(_('The email address is already registered.'))
 
     def get_absolute_url(self):
         return ('profiles_profile_detail', (), { 'username': self.user.username })
