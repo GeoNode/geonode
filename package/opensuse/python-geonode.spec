@@ -54,6 +54,13 @@ Requires:	python-pinax-theme-bootstrap-account
 Requires:	python-django-user-accounts
 Requires:	python-django-pagination
 Requires:	python-django-jsonfield
+Requires:	python-django-friendly-tag-loader
+Requires:	python-django-taggit
+Requires:	python-django-taggit-templatetags
+Requires:	python-django-geoexplorer
+Requires:	python-django-relationships
+Requires:	python-django-notification
+Requires:	python-django-announcements
 # catalogue
 Requires:	python-Shapely
 Requires:	python-pycsw
