@@ -52,6 +52,8 @@ Requires:	python-httplib2
 Requires:	python-pinax-theme-bootstrap
 Requires:	python-pinax-theme-bootstrap-account
 Requires:	python-django-user-accounts
+Requires:	python-django-pagination
+Requires:	python-django-jsonfield
 # catalogue
 Requires:	python-Shapely
 Requires:	python-pycsw
