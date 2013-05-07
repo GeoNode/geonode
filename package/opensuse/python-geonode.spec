@@ -61,6 +61,13 @@ Requires:	python-django-geoexplorer
 Requires:	python-django-relationships
 Requires:	python-django-notification
 Requires:	python-django-announcements
+Requires:	python-django-activity-stream
+Requires:	python-django-request
+Requires:	python-user-messages
+Requires:	python-geonode-avatar
+Requires:	python-dialogos
+Requires:	python-agon-ratings
+Requires:	python-South
 # catalogue
 Requires:	python-Shapely
 Requires:	python-pycsw
