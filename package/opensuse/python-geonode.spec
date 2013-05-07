@@ -28,7 +28,7 @@
 %define pyname geonode
 
 Name:           python-%{pyname}
-Version:        2.0a7
+Version:        2.0b1
 Release:        1
 License:        GPL-3.0
 Summary:        GeoNode is a platform for the management and publication of geospatial data
@@ -49,12 +49,14 @@ Requires:	python-owslib
 Requires:	python-django
 Requires:	python-httplib2
 # Django Apps
-
+Requires:	python-pinax-theme-bootstrap
+Requires:	python-pinax-theme-bootstrap-account
+Requires:	python-django-user-accounts
 # catalogue
 Requires:	python-Shapely
 Requires:	python-pycsw
 # setup
-
+Requires:	python-Paver
 # sample and test data / metadata
 
 # testing
