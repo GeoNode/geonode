@@ -750,6 +750,8 @@ def style_update(request, url):
         elm_namedlayer_name=tree.findall('.//{http://www.opengis.net/sld}Name')[0]
         elm_user_style_name=tree.findall('.//{http://www.opengis.net/sld}Name')[1]
         elm_user_style_title=tree.find('.//{http://www.opengis.net/sld}Title')
+        if not elm_user_style_title:
+            elm_user_style_title = elm_user_style_name
         layer_name=elm_namedlayer_name.text
         style_name=elm_user_style_name.text
         sld_body='<?xml version="1.0" encoding="UTF-8"?>%s' % request.raw_post_data
