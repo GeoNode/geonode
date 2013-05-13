@@ -268,9 +268,9 @@ var tweetDateStartField = new Ext.ux.form.DateTime({
         altFormats:'H:i:s', allowBlank:true
     }, dateFormat:'n/d/Y', dateConfig:{
         altFormats:'Y-m-d|Y-n-d', allowBlank:true,
-        minValue:new Date(2012, 9, 1),
+        minValue:new Date(2013, 3, 12),
         maxValue:new Date(Date.now() + 86400000),
-        value:new Date(2012,11,10)
+        value:new Date(2013,3,12)
 //        value:new Date(Date.now() - (86400000 * 7))
     },
     width:200
@@ -286,9 +286,9 @@ var tweetDateEndField = new Ext.ux.form.DateTime({
         value:new Date(Date.now())
     }, dateFormat:'n/d/Y', dateConfig:{
         altFormats:'Y-m-d|Y-n-d', allowBlank:true,
-        minValue:new Date(2012, 9, 1),
+        minValue:new Date(2012, 3, 12),
         maxValue:new Date(Date.now() + 86400000),
-        value:new Date(2012,11,31)
+        value:new Date(2013,4,7)
 //        value:new Date(Date.now())
     },
     width:200
@@ -327,7 +327,7 @@ var updateCQL = function (layers) {
     }
 
     var timeFilter =  "time > " + (Math.floor(new Date(tweetDateStartField.getValue()).getTime()/1000)) + " AND time < " + (Math.floor(new Date(tweetDateEndField.getValue()).getTime() /1000)) ;
-    var fromFilter = " from oct_tweets";
+    var fromFilter = " from tweets";
 
     var numLayersVisible = 0;
     for (var x = 0; x < layers.length; x++) {
