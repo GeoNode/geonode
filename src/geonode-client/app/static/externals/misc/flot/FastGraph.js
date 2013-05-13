@@ -272,7 +272,7 @@ function getPercent (histStart, histEnd, histBins) {
     var preToken =  $("#tweetFilter")[0].value.replace("'", "''")
     var token = encodeURIComponent(preToken);
     
-    var sqlRequest = "select time, tweet_text ilike '" + token + "' from oct_tweets where time > " + histStart + " and time < " + histEnd + " and lon > " + graphBounds[0] + " and lon < " + graphBounds[2]  + " and lat > " + 
+    var sqlRequest = "select time, tweet_text ilike '" + token + "' from tweets where time > " + histStart + " and time < " + histEnd + " and lon > " + graphBounds[0] + " and lon < " + graphBounds[2]  + " and lat > " + 
 graphBounds[1] + " and lat < " + graphBounds[3];
     var request = host +  "/?Request=Graph&SQL="+sqlRequest + "&histStart=" + histStart + "&histEnd=" + histEnd + "&histBins=" + histBins;
     var getPercentRequest = new RequestInfo( {path: request, processor: processPercent});     
