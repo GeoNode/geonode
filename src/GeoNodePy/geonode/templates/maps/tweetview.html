@@ -319,7 +319,8 @@ var updateCQL = function (layers) {
 
 
     var keywordFilter = "";
-    var keywords = tweetFilterField.getValue().replace("'", "''").match(/[^"\s]+|"[^"]+"/g);
+    var searchFilter = tweetFilterField.getValue().replace(/'/g, "''");
+    var keywords = searchFilter.match(/[^"\s]+|"[^"]+"/g);
     if (keywords) {
         for (var k = 0; k < keywords.length; k++) {
             keywordFilter += (k > 0 ? " AND " : " ") + "tweet_text ilike '" + keywords[k].replace(/["]/g, '') + "'";
