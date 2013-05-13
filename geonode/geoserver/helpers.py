@@ -168,6 +168,9 @@ def cascading_delete(cat, layer_name):
         if layer_name.find(':') != -1:
             workspace, name = layer_name.split(':')
             ws = cat.get_workspace(workspace)
+            if ws == None:
+                logger.debug('cascading delete was called on a layer where the workspace was not found')
+                return
             resource = cat.get_resource(name, workspace = workspace)
         else:
             resource = cat.get_resource(layer_name)
