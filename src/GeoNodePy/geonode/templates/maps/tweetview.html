@@ -724,7 +724,7 @@ tweetHeatRecord.getLayer().events.register("loadend", tweetPointRecord.getLayer(
         var layer_bbox = getUrlParams(tweetHeatRecord.getLayer().grid[0][0].url).BBOX.split(",");
         graphBounds = new OpenLayers.Bounds(
                 parseFloat(layer_bbox[0]), parseFloat(layer_bbox[1]),
-                parseFloat(layer_bbox[2]), parseFloat(layer_bbox[3])).transform("EPSG:900913", "EPSG:4326").toBBOX().split(",");
+                parseFloat(layer_bbox[2]), parseFloat(layer_bbox[3])).toBBOX().split(",");
         if (firstHeatMap === true) {
             firstHeatMap = false;
             if (!Ext.isIE) {

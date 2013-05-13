@@ -1,6 +1,6 @@
 //var host = "http://192.168.1.90:8083"
-//var host = "http://geops.csail.mit.edu:8083"
-var host = "http://geops.cga.harvard.edu:8083";
+var host = "http://geops.csail.mit.edu:8083"
+//var host = "http://geops.cga.harvard.edu:8083";
 //var epochStart = "1350259200"
 //var epochEnd = "1350345599"
 //var epochStart = 1354318270
@@ -272,8 +272,8 @@ function getPercent (histStart, histEnd, histBins) {
     var preToken =  $("#tweetFilter")[0].value.replace("'", "''")
     var token = encodeURIComponent(preToken);
     
-    var sqlRequest = "select time, tweet_text ilike '" + token + "' from tweets where time > " + histStart + " and time < " + histEnd + " and lon > " + graphBounds[0] + " and lon < " + graphBounds[2]  + " and lat > " + 
-graphBounds[1] + " and lat < " + graphBounds[3];
+    var sqlRequest = "select time, tweet_text ilike '" + token + "' from tweets where time > " + histStart + " and time < " + histEnd + " and goog_x > " + graphBounds[0] + " and goog_x < " + graphBounds[2]  + " and goog_y > " + 
+graphBounds[1] + " and goog_y < " + graphBounds[3];
     var request = host +  "/?Request=Graph&SQL="+sqlRequest + "&histStart=" + histStart + "&histEnd=" + histEnd + "&histBins=" + histBins;
     var getPercentRequest = new RequestInfo( {path: request, processor: processPercent});     
     makeRequest(getPercentRequest);

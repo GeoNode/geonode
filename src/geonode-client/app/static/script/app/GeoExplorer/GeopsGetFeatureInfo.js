@@ -76,10 +76,16 @@ GeoExplorer.GeopsGetFeatureInfo = OpenLayers.Class(OpenLayers.Control.WMSGetFeat
             projection = layerProj.getCode();
         }
 
-        var lonlat = this.map.getLonLatFromViewPortPx(clickPosition).transform(projection, layerProj);
-        var SQL =  firstLayer.params["SQL"] + " AND  dist(point(lon,lat),point(" + lonlat.lon + "," +  lonlat.lat + ")) < " + (this.radius / this.map.zoom) +
-            " order by dist(point(lon,lat), point(" + lonlat.lon + "," +  lonlat.lat + "))" +
-            " LIMIT " + this.maxFeatures;
+        var pixelTolerance = 5; // for getFeatureInfo - will get all points within roughly 5 pixels regardless of zoom
+        var mapRes = this.map.resolution * pixelTolerance;
+        var boundingCircSq = mapRes*mapRes + mapRes*mapRes;
+        
+        
+        var lonlat = this.map.getLonLatFromViewPortPx(clickPosition);
+        var distString = "orddist(point(goog_x,goog_y), point(" + lonlat.lon + "," + lonlat.lat + "))"
+        var SQL =  (firstLayer.params["SQL"] + " AND  " + distString + " < " + boundingCircSq +
+            " order by " + distString +
+            " LIMIT " + this.maxFeatures).toLowerCase();
 
 
         var params = OpenLayers.Util.extend({
