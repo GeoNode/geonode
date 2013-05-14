@@ -61,6 +61,7 @@ def layer_set_permissions(layer, perm_spec):
         layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
     if "anonymous" in perm_spec:
         layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+    if isinstance(perm_spec['users'], dict): perm_spec['users'] = perm_spec['users'].items()
     users = [n[0] for n in perm_spec['users']]
     excluded = users + [layer.owner]
     existing = layer.get_user_levels().exclude(user__username__in=excluded)

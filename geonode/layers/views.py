@@ -317,7 +317,8 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                saved_layer = save(layer, base_file, request.user, overwrite=True)
+                saved_layer = save(layer, base_file, request.user, overwrite=True, 
+                    permissions=layer.get_all_level_info())
                 return HttpResponse(json.dumps({
                     "success": True,
                     "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
