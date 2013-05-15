@@ -19,7 +19,6 @@
 #########################################################################
 
 import os
-from ConfigParser import SafeConfigParser
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
@@ -37,16 +36,7 @@ def csw_global_dispatch(request):
         'geonode.catalogue.backends.pycsw_local'):
         return HttpResponseRedirect(settings.CATALOGUE['default']['URL'])
 
-    # serialize pycsw settings into SafeConfigParser
-    # object for interaction with pycsw
-    # TODO: pass just dict when pycsw supports it
     mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
-    config = SafeConfigParser()
-
-    for section, options in mdict.iteritems():
-        config.add_section(section)
-        for option, value in options.iteritems():
-            config.set(section, option, value)
 
     env = request.META.copy()
     env.update({
@@ -54,7 +44,7 @@ def csw_global_dispatch(request):
             'REQUEST_URI': request.build_absolute_uri(),
             })
 
-    csw = server.Csw(config, env)
+    csw = server.Csw(mdict, env)
 
     content = csw.dispatch_wsgi()
 
