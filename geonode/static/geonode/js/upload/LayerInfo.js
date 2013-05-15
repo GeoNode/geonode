@@ -151,7 +151,12 @@ define(function (require, exports) {
             form_data = new FormData();
         }
         // this should be generate from the permission widget
-        perm = permissionsString($('#permission_form'),'layers');
+        if (typeof permissionsString == 'undefined'){
+            perm = {}
+        }
+        else {
+            perm = permissionsString($('#permission_form'),'layers');
+        }
 
         form_data.append('base_file', this.main);
         form_data.append('permissions', JSON.stringify(perm));

@@ -129,7 +129,7 @@ define(['jquery',
     doUploads = function () {
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
-            alert('You are uploading an incomplete set of files.');
+            alert('You are uploading an incomplete set of files or not necessary files');
         } else {
             $.each(layers, function (name, layerinfo) {
                 layerinfo.uploadFiles();
