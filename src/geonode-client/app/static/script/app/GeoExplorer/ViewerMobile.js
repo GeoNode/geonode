@@ -178,8 +178,9 @@ GeoExplorer.ViewerMobile = Ext.extend(GeoExplorer, {
                 text: 'Close',
                 width: "100%",
                 handler: function(){
-                   this.close(); 
-                }
+                	this.infoTextWindow.close(); 
+                },
+                scope: this
                 }]
         });
     },
