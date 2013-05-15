@@ -169,17 +169,17 @@ define(function (require) {
     });
 
     // can we roll this into a single test case?
-    module('LayerInfo csv file');
-    test('The LayerInfo type on a CSV file', function () {
-        var csvInfo = new LayerInfo({
-            name: 'test-csv',
-            files: [{name: 'test.csv'}]
-        });
-        strictEqual(csvInfo instanceof LayerInfo, true, 'Should return the correct class');
-        strictEqual(csvInfo.type, FileTypes.CSV, 'Should return the correct type');
-        strictEqual(csvInfo.errors.length, 0, 'Should return no errors');
+    // module('LayerInfo csv file');
+    // test('The LayerInfo type on a CSV file', function () {
+    //     var csvInfo = new LayerInfo({
+    //         name: 'test-csv',
+    //         files: [{name: 'test.csv'}]
+    //     });
+    //     strictEqual(csvInfo instanceof LayerInfo, true, 'Should return the correct class');
+    //     strictEqual(csvInfo.type, FileTypes.CSV, 'Should return the correct type');
+    //     strictEqual(csvInfo.errors.length, 0, 'Should return no errors');
 
-    });
+    // });
 
     module('LayerInfo Tiff');
     test('The LayerInfo type on a Tiff file', function () {
@@ -189,13 +189,13 @@ define(function (require) {
         strictEqual(tifInfo.errors.length, 0, 'Should return no errors');
     });
 
-    module('LayerInfo Zip');
-    test('The LayerInfo type on a Zip file', function () {
-        var tifInfo = new LayerInfo({name: 'test-zip', files: [{name: 'test.zip'}]});
-        strictEqual(tifInfo instanceof LayerInfo, true, 'Should return the correct class');
-        strictEqual(tifInfo.type, FileTypes.ZIP, 'Should return the correct file type');
-        strictEqual(tifInfo.errors.length, 0, 'Should return on errors');
-    });
+    // module('LayerInfo Zip');
+    // test('The LayerInfo type on a Zip file', function () {
+    //     var tifInfo = new LayerInfo({name: 'test-zip', files: [{name: 'test.zip'}]});
+    //     strictEqual(tifInfo instanceof LayerInfo, true, 'Should return the correct class');
+    //     strictEqual(tifInfo.type, FileTypes.ZIP, 'Should return the correct file type');
+    //     strictEqual(tifInfo.errors.length, 0, 'Should return on errors');
+    // });
 
     module('Upload Session');
     test('The UploadSession should be able', function () {
