@@ -220,7 +220,7 @@ class searchTest(TestCase):
         # apply some ratings
         ct = ContentType.objects.get_for_model(Layer)
         for l in Layer.objects.all():
-            OverallRating.objects.create(content_type=ct, object_id=l.pk, rating=l.pk, category=2)
+            OverallRating.objects.create(content_type=ct, object_id=l.pk, rating=l.pk, category=3)
         ct = ContentType.objects.get_for_model(Map)
         for l in Map.objects.all():
             OverallRating.objects.create(content_type=ct, object_id=l.pk, rating=l.pk, category=1)
