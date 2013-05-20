@@ -4,15 +4,27 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from dialogos.models import Comment
+from django.contrib.contenttypes import generic
+from agon_ratings.models import OverallRating, Rating
 import autocomplete_light
 
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
+    extra = 0
 
 class ContactRoleInline(admin.TabularInline):
     model = ContactRole
     extra = 0
     form = autocomplete_light.modelform_factory(ContactRole)
+
+class MapOverallRatingInline(generic.GenericTabularInline):
+    model = OverallRating
+    extra = 0
+
+class MapRatingInline(generic.GenericTabularInline):
+    model = Rating
+    extra = 0
+    form = autocomplete_light.modelform_factory(Rating)
 
 class ContactRoleAdmin(admin.ModelAdmin):
     model = ContactRole
@@ -23,12 +35,13 @@ class ContactRoleAdmin(admin.ModelAdmin):
     form = autocomplete_light.modelform_factory(ContactRole)
 
 class MapAdmin(admin.ModelAdmin):
-    inlines = [MapLayerInline,]
+    inlines = [MapLayerInline,MapOverallRatingInline,MapRatingInline]
     list_display = ('id', 'title','owner','created_dttm', 'last_modified')
     list_filter  = ('created_dttm','owner')
     date_hierarchy = 'created_dttm'
     search_fields = ['title','keywords']
     ordering = ('-created_dttm',)
+    form = autocomplete_light.modelform_factory(Map)
 
 class ContactAdmin(admin.ModelAdmin):
     inlines = [ContactRoleInline]
@@ -71,6 +84,9 @@ class MapStatsAdmin(admin.ModelAdmin):
 
 class LayerStatsAdmin(admin.ModelAdmin):
     list_display = ('layer','visits', 'uniques','downloads','last_modified')
+
+
+
 
 admin.site.register(Map, MapAdmin)
 admin.site.register(Contact, ContactAdmin)
