@@ -70,6 +70,7 @@ urlpatterns = patterns('',
     (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/(?P<format>[^/]*)/?$','geonode.proxy.views.download'),
     (r'^gazetteer/', include('geonode.gazetteer.urls')),
      url(r'^autocomplete/', include('autocomplete_light.urls')),
+    (r'getCapabilities/', 'geonode.getcapabilities.views.GetCapabilities_1_3'),
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns
