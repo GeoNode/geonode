@@ -206,25 +206,32 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.doFinal = function (resp) {
         var self = this;
-        make_request({
-            url: resp.redirect_to,
-            async: false,
-            failure: function (resp, status) {self.markError(resp); },
-            success: function (resp, status) {
-                // hack find a better way of creating a string
-                var a = '<a href="' + resp.url + '">Layer page</a>';
-                self.logStatus({
-                    msg: '<p> Your layer was successful uploaded, please visit the ' + a + ' page </p>',
-                    level: 'alert-success'
-                });
-            },
-        });
+        if (resp.status === "incomplete") {
+            var a = '<a id="next_step">Layer Upload</a>';
+            self.logStatus({
+                msg:'<p>You need to specify more information in order to complete your upload. You can continue your ' + a + '.</p>',
+                level: 'alert-success'
+            });
+            //$("#next_step").on('click', resp, self.doSomething); 
+            return;
+        } else if (resp.status === "other") {
+            self.logStatus({
+                msg:'<p>You need to specify more information in order to complete your upload</p>',
+                level: 'alert-success'
+            });
+        } else {
+            // hack find a bktter way of creating a string
+            var a = '<a href="' + resp.url + '">Layer page</a>';
+            var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
+            self.logStatus({
+                msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ' page, or edit the ' + b + '.</p>',
+                level: 'alert-success'
+            });
+        }
     };
 
-    LayerInfo.prototype.doSrs = function (resp) {
-        // at this point we need to allow the user to select an srs
+    LayerInfo.prototype.doStep = function (resp) {
         var self = this;
-        var resp = $.parseJSON(resp);
         make_request({
             url: resp.redirect_to,
             async: false,
@@ -238,19 +245,20 @@ define(function (require, exports) {
             self = this;
 
         $.ajax({
-            url: form_target, // is this right?
+            url: form_target,
             async: false,
             type: "POST",
             data: form_data,
-            processData: false, // make sure that jquery does not process the form data
+            processData: false,
             contentType: false,
             beforeSend: function () {
                 self.markStart();
             }
         }).done(function (resp) {
-            self.doSrs(resp);
+            // Go straight to doFinal when using the rest based uploader
+            self.doFinal(resp);
         }).fail(function (resp) {
-            alert('Response failed,' + resp.errors);
+            self.markError(resp);
         });
     };
 
@@ -278,8 +286,6 @@ define(function (require, exports) {
 
         this.removeFile(file_name);
         this.displayRefresh();
-
-
     };
 
     LayerInfo.prototype.displayFiles = function () {
@@ -305,9 +311,7 @@ define(function (require, exports) {
                 self.removeFile(file_name);
                 self.displayRefresh();
             });
-
         });
-
     };
 
     LayerInfo.prototype.displayErrors = function () {
@@ -342,7 +346,6 @@ define(function (require, exports) {
                 break;
             }
         }
-
     };
 
     return LayerInfo;
