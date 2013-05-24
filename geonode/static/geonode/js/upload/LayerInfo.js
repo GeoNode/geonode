@@ -253,7 +253,13 @@ define(function (require, exports) {
             processData: false,
             contentType: false,
             beforeSend: function () { self.markStart(); },
-            error: function (jqXHR) { self.markError($.parseJSON(jqXHR.responseText).errors);},
+            error: function (jqXHR) {
+                if (jqXHR === null) {
+                    self.markError("Unexpected Error")'
+                } else {
+                    self.markError($.parseJSON(jqXHR.responseText).errors);
+                }
+            },
             success: function (resp, status) { self.doFinal(resp); }
         });
     };
