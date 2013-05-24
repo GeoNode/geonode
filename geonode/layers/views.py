@@ -107,7 +107,7 @@ def layer_tag(request, slug, template='layers/layer_list.html'):
     )
 
 @login_required
-def layer_upload(request, template='layers/layer_upload.html'):
+def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
         return render_to_response(template,
                                   RequestContext(request, {}))
@@ -139,7 +139,8 @@ def layer_upload(request, template='layers/layer_upload.html'):
                         permissions = form.cleaned_data["permissions"]
                         )
             except Exception, e:
-                raise e
+                out['success'] = False
+                out['errors'] = str(e)
             else:
                 out['success'] = True
                 out['url'] = reverse('layer_detail', args=[saved_layer.typename])
@@ -150,10 +151,14 @@ def layer_upload(request, template='layers/layer_upload.html'):
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
 
-        out['errors'] = form.errors
-        out['errormsgs'] = errormsgs
+            out['errors'] = form.errors
+            out['errormsgs'] = errormsgs
 
-        return HttpResponse(json.dumps(out), mimetype='application/json')
+        if out['success']:
+            status_code = 200
+        else:
+            status_code = 500
+        return HttpResponse(json.dumps(out), mimetype='application/json', status=status_code)
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):

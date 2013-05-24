@@ -185,8 +185,9 @@ define(function (require, exports) {
             alertLevel: options.level
         }));
     };
+
     LayerInfo.prototype.markError = function (error) {
-        this.logStatus({msg: '[ ' + error + ' ]'});
+        this.logStatus({msg: error, level: 'alert-error'});
     };
 
     // make this into an abstract method so we can mark events in a
@@ -220,7 +221,7 @@ define(function (require, exports) {
                 level: 'alert-success'
             });
         } else {
-            // hack find a bktter way of creating a string
+            // hack find a better way of creating a string
             var a = '<a href="' + resp.url + '">Layer page</a>';
             var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
             self.logStatus({
@@ -235,30 +236,25 @@ define(function (require, exports) {
         make_request({
             url: resp.redirect_to,
             async: false,
+            type: 'POST',
             failure: function (resp, status) { self.markError(resp); },
             success: function (resp, status) { self.doFinal(resp); }
         });
     };
 
     LayerInfo.prototype.uploadFiles = function () {
-        var form_data = this.prepareFormData(),
-            self = this;
+        var form_data = this.prepareFormData(), self = this;
 
         $.ajax({
             url: form_target,
             async: false,
-            type: "POST",
+            type: 'POST',
             data: form_data,
             processData: false,
             contentType: false,
-            beforeSend: function () {
-                self.markStart();
-            }
-        }).done(function (resp) {
-            // Go straight to doFinal when using the rest based uploader
-            self.doFinal(resp);
-        }).fail(function (resp) {
-            self.markError(resp);
+            beforeSend: function () { self.markStart(); },
+            error: function (jqXHR) { self.markError($.parseJSON(jqXHR.responseText).errors);},
+            success: function (resp, status) { self.doFinal(resp); }
         });
     };
 
