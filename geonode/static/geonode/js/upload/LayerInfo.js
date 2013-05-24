@@ -222,10 +222,10 @@ define(function (require, exports) {
             });
         } else {
             // hack find a better way of creating a string
-            var a = '<a href="' + resp.url + '">Layer page</a>';
+            var a = '<a href="' + resp.url + '">Layer Info page</a>';
             var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
             self.logStatus({
-                msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ' page, or edit the ' + b + '.</p>',
+                msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ', or edit the ' + b + '.</p>',
                 level: 'alert-success'
             });
         }
