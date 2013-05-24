@@ -141,8 +141,8 @@ def layer_upload(request, template='layers/layer_upload.html'):
             except Exception, e:
                 raise e
             else:
-                out["success"] = True
-                out["redirect_to"] = reverse('layer_metadata', args=[saved_layer.typename])
+                out['success'] = True
+                out['url'] = reverse('layer_detail', args=[saved_layer.typename])
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
@@ -150,10 +150,10 @@ def layer_upload(request, template='layers/layer_upload.html'):
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
 
-        out["errors"] = form.errors
-        out["errormsgs"] = errormsgs
+        out['errors'] = form.errors
+        out['errormsgs'] = errormsgs
 
-        return HttpResponse(json.dumps(out))
+        return HttpResponse(json.dumps(out), mimetype='application/json')
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
