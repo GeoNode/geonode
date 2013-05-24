@@ -157,6 +157,7 @@ INSTALLED_APPS = (
     'friendlytagloader',
     'geoexplorer',
     'request',
+    'django_extensions',
 
     # Theme
     "pinax_theme_bootstrap_account",
