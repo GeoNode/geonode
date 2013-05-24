@@ -255,7 +255,7 @@ define(function (require, exports) {
             beforeSend: function () { self.markStart(); },
             error: function (jqXHR) {
                 if (jqXHR === null) {
-                    self.markError("Unexpected Error")'
+                    self.markError("Unexpected Error");
                 } else {
                     self.markError($.parseJSON(jqXHR.responseText).errors);
                 }
