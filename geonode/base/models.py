@@ -65,34 +65,12 @@ class TopicCategory(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField()
     description = models.TextField(blank=True)
+    layers_count = models.IntegerField(default=0)
+    maps_count = models.IntegerField(default=0)
+    documents_count = models.IntegerField(default=0)
 
     def __unicode__(self):
         return u"{0}".format(self.name)
-
-    @property
-    def counts(self):
-        counts = {
-            'layers': 0,
-            'maps': 0,
-            'documents': 0
-        }
-        for resource in self.resourcebase_set.all():
-            try:
-                resource.layer
-                counts['layers'] += 1
-            except ObjectDoesNotExist:
-                pass
-            try:
-                resource.map
-                counts['maps'] += 1
-            except ObjectDoesNotExist:
-                pass
-            try: 
-                resource.document
-                counts['documents'] += 1
-            except ObjectDoesNotExist:
-                pass
-        return counts
 
     class Meta:
         ordering = ("name",)
@@ -384,10 +362,35 @@ class Link(models.Model):
 
     objects = LinkManager()
 
+def update_counts(instance, type, increment = 0):
+        category = instance.category
+        if type == 'Layer':
+            category.layers_count += increment
+        elif type == 'Map':
+            category.maps_count += increment
+        elif type == 'Document':
+            category.documents_count += increment
+        category.save()
+
+def resourcebase_pre_save(instance, sender, **kwargs):
+    
+    try: # check is not created
+        old_resourcebase = ResourceBase.objects.get(pk=instance.pk)
+        old_category = old_resourcebase.category
+        new_category = instance.category
+
+        if old_category != new_category:
+            update_counts(old_resourcebase, instance.class_name, increment = -1)
+            update_counts(instance, instance.class_name, increment = 1)
+
+    except ResourceBase.DoesNotExist: # is created
+        update_counts(instance, instance.class_name, increment = 1)
+
+
 def resourcebase_post_save(instance, sender, **kwargs):
     """
     Since django signals are not propagated from child to parent classes we need to call this 
-    from the childs.
+    from the children.
     TODO: once the django will support signal propagation we need to attach a single signal here
     """
     resourcebase = instance.resourcebase_ptr
@@ -395,7 +398,6 @@ def resourcebase_post_save(instance, sender, **kwargs):
         user = resourcebase.owner
     else:
         user = ResourceBase.objects.admin_contact()
-
     pc, __ = Profile.objects.get_or_create(user=user,
                                            defaults={"name": resourcebase.owner.username})
     ac, __ = Profile.objects.get_or_create(user=user,
@@ -403,3 +405,8 @@ def resourcebase_post_save(instance, sender, **kwargs):
                                            )
     resourcebase.poc = pc
     resourcebase.metadata_author = ac
+
+def resourcebase_post_delete(instance, sender, **kwargs):
+    resourcebase = instance.resourcebase_ptr
+    update_counts(resourcebase, instance.class_name, increment = -1)
+
