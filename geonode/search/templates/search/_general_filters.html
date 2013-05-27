@@ -9,13 +9,13 @@
     {% for category in category_list %}
     <li><a data-class="{{category.slug}}" class="trigger-query">{{ category }}
     {% if type == 'layer' %}
-    ({{ category.counts.layers }})
+    ({{ category.layers_count }})
     {% elif type == 'map' %}
-    ({{ category.counts.maps }})
+    ({{ category.maps_count }})
     {% elif type == 'document' %}
-    ({{ category.counts.documents }})
+    ({{ category.documents_count }})
     {% else %}
-    ({{ category.counts.layers|add:category.counts.maps|add:category.counts.documents }})
+    ({{ category.layers_count|add:category.maps_count|add:category.documents_count }})
     {% endif %}
     </a></li>
     {% endfor %}
