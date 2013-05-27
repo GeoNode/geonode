@@ -153,12 +153,12 @@ class searchTest(TestCase):
 
     def test_text_across_types(self):
         self.search_assert(self.request('foo'), n_results=8, n_total=8)
-        self.search_assert(self.request('common'), n_results=10, n_total=23)
+        self.search_assert(self.request('common'), n_results=10, n_total=22)
 
     def test_pagination(self):
-        self.search_assert(self.request('common', start=0), n_results=10, n_total=23)
-        self.search_assert(self.request('common', start=10), n_results=10, n_total=23)
-        self.search_assert(self.request('common', start=20), n_results=3, n_total=23)
+        self.search_assert(self.request('common', start=0), n_results=10, n_total=22)
+        self.search_assert(self.request('common', start=10), n_results=10, n_total=22)
+        self.search_assert(self.request('common', start=20), n_results=2, n_total=22)
 
     def test_bbox_query(self):
         # @todo since maps and users are excluded at the moment, this will have
@@ -240,7 +240,7 @@ class searchTest(TestCase):
         self.search_assert(self.request('po ma la'), n_results=0, n_total=0)
 
     def test_type_query(self):
-        self.search_assert(self.request('common', type='map'), n_results=9, n_total=9)
+        self.search_assert(self.request('common', type='map'), n_results=8, n_total=8)
         self.search_assert(self.request('common', type='layer'), n_results=5, n_total=5)
         self.search_assert(self.request('common', type='document'), n_results=9, n_total=9)
         self.search_assert(self.request('foo', type='user'), n_results=4, n_total=4)
@@ -256,17 +256,17 @@ class searchTest(TestCase):
 
     def test_exclude_query(self):
         # exclude one layer
-        self.search_assert(self.request('', exclude='layer1'), n_results=10, n_total=31)
+        self.search_assert(self.request('', exclude='CA'), n_results=10, n_total=32)
         # exclude one general word
-        self.search_assert(self.request('', exclude='common'), n_results=10, n_total=27)
+        self.search_assert(self.request('', exclude='common'), n_results=10, n_total=28)
         # exclude more than one word
-        self.search_assert(self.request('', exclude='common,something'), n_results=10, n_total=23)
+        self.search_assert(self.request('', exclude='common,something'), n_results=10, n_total=24)
         # exclude almost everything
-        self.search_assert(self.request('', exclude='common,something,ipsum,quux,morx,one'), n_results=9, n_total=9)
+        self.search_assert(self.request('', exclude='common,something,ipsum,quux,morx,one'), n_results=10, n_total=11)
 
     def test_category_search(self):
         #search no categories
-        self.search_assert(self.request('', category=''), n_results=10, n_total=32)
+        self.search_assert(self.request('', category=''), n_results=10, n_total=33)
         #search, one category
         self.search_assert(self.request('', category='location'), n_results=9, n_total=9)
         # search two categories
@@ -277,7 +277,7 @@ class searchTest(TestCase):
     def test_author_endpoint(self):
         resp = self.c.get('/search/api/authors')
         jsobj = json.loads(resp.content)
-        self.assertEquals(6, jsobj['total'])
+        self.assertEquals(7, jsobj['total'])
 
     def test_search_page(self):
         from django.core.cache import cache
