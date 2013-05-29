@@ -39,8 +39,8 @@ def get_capabilities(request, user=None, mapid=None, category=None):
     filtered by user, map, or category
     """
     if "SERVICE" in request.GET:
-        #This should be redirected to GeoServer
-        new_url = "%s%s?%s" % (settings.GEOSERVER_BASE_URL,request.GET["SERVICE"].lower(),request.META["QUERY_STRING"])
+        # This should be redirected to GeoServer
+        new_url = "%s%s?%s" % (settings.GEOSERVER_BASE_URL, request.GET["SERVICE"].lower(), request.META["QUERY_STRING"])
         return redirect(new_url, permanent=True)
     
     rootdoc = None
@@ -57,16 +57,16 @@ def get_capabilities(request, user=None, mapid=None, category=None):
         for maplayer in map_obj.maplayers:
             if maplayer.local:
                 typenames.append(maplayer.name)               
-        layers = Layer.objects.filter(typename__in=typenames)
-        for layer in layers:
-            try:
-                workspace, layername = layer.typename.split(":")
-                if rootdoc is None:  # 1st one, seed with real GetCapabilities doc
+                layers = Layer.objects.filter(typename__in=typenames)
+    for layer in layers:
+        try:
+            workspace, layername = layer.typename.split(":")
+            if rootdoc is None:  # 1st one, seed with real GetCapabilities doc
                     layercap = etree.fromstring(get_layer_capabilities(workspace, layername))
                     rootdoc = etree.ElementTree(layercap)
                     rootlayerelem = rootdoc.find('.//Capability/Layer')
                     format_online_resource(workspace, layername, rootdoc)
-                else:  
+            else:  
                     # Get the required info from layer model
                     tpl = get_template("capabilities/layer.xml")
                     ctx = Context({
@@ -78,11 +78,10 @@ def get_capabilities(request, user=None, mapid=None, category=None):
                     gc_str = gc_str.encode("utf-8")
                     layerelem = etree.XML(gc_str)            
                     rootlayerelem.append(layerelem)
-            except Exception, e:
+        except Exception, e:
                 logger.error("Error occurred creating GetCapabilities for %s:%s") % (layer.typename, str(e))
                 pass
-        if rootdoc is not None:
-            capabilities = etree.tostring(rootdoc, xml_declaration=True, encoding='UTF-8', pretty_print=True)
-            response = HttpResponse(capabilities, content_type="text/xml")
-            return response
-        return HttpResponse(status=200)
+    if rootdoc is not None:
+        capabilities = etree.tostring(rootdoc, xml_declaration=True, encoding='UTF-8', pretty_print=True)
+        return HttpResponse(capabilities, content_type="text/xml")
+    return HttpResponse(status=200)
