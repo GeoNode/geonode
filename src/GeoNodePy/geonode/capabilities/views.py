@@ -38,7 +38,7 @@ def get_capabilities(request, user=None, mapid=None, category=None):
     Compile a GetCapabilities document containing public layers 
     filtered by user, map, or category
     """
-    if "SERVICE" in request.GET:
+    if "REQUEST" in request.GET and request.GET["REQUEST"].lower() != "getcapabilities":
         # This should be redirected to GeoServer
         new_url = "%s%s?%s" % (settings.GEOSERVER_BASE_URL, request.GET["SERVICE"].lower(), request.META["QUERY_STRING"])
         return redirect(new_url, permanent=True)
