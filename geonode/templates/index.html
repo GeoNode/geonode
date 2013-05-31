@@ -78,8 +78,5 @@
 {% endblock %}
 
 {% block extra_script %}  
-  <script src="{% static "libs/js/waypoints.js" %}"></script>
-  <script src="{% static "libs/js/jquery.raty.js" %}"></script>
-  <script src="{% static "geonode/js/global_search.js" %}"></script>
-  {% include 'rate.js' %}
+  {% include 'search_scripts.html' %}
 {% endblock extra_script %}
