@@ -82,7 +82,7 @@ def catalogue_post_save(instance, sender, **kwargs):
     instance.csw_anytext = \
         catalogue.catalogue.csw_gen_anytext(instance.metadata_xml)
 
-    instance.csw_wkt_geometry = instance.geographic_bounding_box
+    instance.csw_wkt_geometry = instance.geographic_bounding_box.split(';')[-1]
 
     instance.save()
 
