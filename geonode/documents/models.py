@@ -86,7 +86,7 @@ def pre_save_document(instance, sender, **kwargs):
         instance.title = instance.name
 
     if instance.resource:
-        instance.csw_wkt_geometry = instance.resource.geographic_bounding_box
+        instance.csw_wkt_geometry = instance.resource.geographic_bounding_box.split(';')[-1]
         instance.bbox_x0 = instance.resource.bbox_x0
         instance.bbox_x1 = instance.resource.bbox_x1
         instance.bbox_y0 = instance.resource.bbox_y0
