@@ -61,7 +61,7 @@ class LayerForm(forms.ModelForm):
                    'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid',
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext',
-                   'popular_count', 'share_count')
+                   'popular_count', 'share_count', 'thumbnail')
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
