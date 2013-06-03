@@ -165,6 +165,13 @@ class Layer(ResourceBase):
         }).get(self.storeType, "Data")
 
     @property
+    def store_type(self):
+        cat = Layer.objects.gs_catalog
+        res = cat.get_resource(self.name)
+        res.store.fetch()
+        return res.store.dom.find('type').text
+
+    @property
     def service_type(self):
         if self.storeType == 'coverageStore':
             return "WCS"
