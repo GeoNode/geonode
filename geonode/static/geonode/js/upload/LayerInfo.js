@@ -8,32 +8,8 @@ define(function (require, exports) {
         _        = require('underscore'),
         fileTypes = require('upload/FileTypes'),
         path     = require('upload/path'),
-        make_request,
+        common     = require('upload/common'),
         LayerInfo;
-
-    /** We have a different notion of success and failure for GeoNode's
-     * urls this function allows the user to define two functions, success
-     * and failure and have the failure function called when an bad
-     * http response is returns and also when there is not success
-     * property define in the response.
-     */
-    make_request = (function () {
-        return function (options) {
-            var success = options.success,
-                failure = options.failure;
-
-            delete options.success;
-            delete options.failure;
-
-            $.ajax(options).done(function (resp, status) {
-                if (status === "success") {
-                    window.location.href = options.url;
-                } else {
-                    failure(resp, status);
-                }
-            }).fail(failure);
-        };
-    }());
 
     /** Creates an instance of a LayerInfo
      *  @constructor
@@ -41,7 +17,6 @@ define(function (require, exports) {
      *  @this {LayerInfo}
      *  @param {name, files}
      */
-
     LayerInfo = function (options) {
 
         this.name     = null;
@@ -49,7 +24,6 @@ define(function (require, exports) {
 
         this.type     = null;
         this.main     = null;
-
 
         this.element  = null;
         $.extend(this, options || {});
@@ -63,15 +37,30 @@ define(function (require, exports) {
         this.errors = this.collectErrors();
     };
 
+    /** Function to safely select a filename 
+     *
+     *  @params name 
+     *  @returns string 
+     */
     LayerInfo.safeSelector = function (name) {
         return name.replace(/\[|\]|\(|\)/g, '_');
     };
 
+    /** Function to get progress template 
+     *
+     *  @params {options}
+     *  @returns 
+     */
     LayerInfo.prototype.progressTemplate  = function (options) {
         var template =  _.template($('#progressTemplate').html());
         return template(options);
     };
 
+    /** Function to return the success template  
+     *
+     *  @params {options}
+     *  @returns 
+     */
     LayerInfo.prototype.successTemplate = function (options) {
         var template = _.template($('#successTemplate').html());
         return template(options);
@@ -94,9 +83,10 @@ define(function (require, exports) {
         return res;
     };
 
-
-    /** Checks the type of the Layer.
+    /** Function to check the type of a Layer 
      *
+     *  @params {options}
+     *  @returns {string}
      */
     LayerInfo.prototype.guessFileType = function () {
         var self = this;
@@ -114,6 +104,9 @@ define(function (require, exports) {
 
     /** Delegates to the Layer Type to find all of the errors
      *  associated with this type.
+     *
+     *  @params {options}
+     *  @returns {string}
      */
     LayerInfo.prototype.collectErrors = function () {
         var errors = [];
@@ -125,6 +118,12 @@ define(function (require, exports) {
         return errors;
     };
 
+    /** Function to get all the file extensions in
+     *  the current list of files being handled. 
+     *
+     *  @params {options}
+     *  @returns {string}
+     */
     LayerInfo.prototype.getExtensions = function () {
         var files = this.files,
             extension,
@@ -142,6 +141,7 @@ define(function (require, exports) {
 
     /** Build a new FormData object from the current state of the
      *  LayerInfo object.
+     * 
      *  @returns {FromData}
      */
     LayerInfo.prototype.prepareFormData = function (form_data) {
@@ -172,6 +172,12 @@ define(function (require, exports) {
 
         return form_data;
     };
+
+    /** Log the status to the status div 
+     *
+     *  @params {options}
+     *  @returns {string}
+     */
     LayerInfo.prototype.logStatus = function (options) {
         var status = this.element.find('#status'),
             empty = options.empty;
@@ -186,24 +192,48 @@ define(function (require, exports) {
         }));
     };
 
-    LayerInfo.prototype.markError = function (error) {
+    /** Function to mark errors in the the status 
+     *
+     *  @params {error}
+     *  @returns {string}
+     */
+    LayerInfo.prototype.markError = function (error, status) {
         this.logStatus({msg: error, level: 'alert-error'});
     };
 
-    // make this into an abstract method so we can mark events in a
-    // more generic way
-
+    /** Function to mark the start of the upload
+     *
+     *  @params {options}
+     *  @returns {string}
+     *
+     *  TODO: make this into an abstract method so we can mark events in a
+     *  more generic way
+     */
     LayerInfo.prototype.markStart = function () {
         this.logStatus({
             msg: 'Your upload has started',
             level: 'alert-success'
         });
     };
+    
+    LayerInfo.prototype.doSomething = function (event) {
+        console.log(event.data);
+        common.make_request({
+            url: event.data.url,
+            async: false,
+            failure: function (resp, status) {self.markError(resp, status); },
+            success: function (resp, status) {
+                window.location = resp.redirect_to; 
+            },
+        });
 
-    /*
+        return false;
+    }
 
-      We need to add a step for the srs url and then the final
-
+    /** Function to deal with the final step in the upload process 
+     *
+     *  @params {options}
+     *  @returns {string}
      */
     LayerInfo.prototype.doFinal = function (resp) {
         var self = this;
@@ -222,33 +252,67 @@ define(function (require, exports) {
             });
         } else {
             // hack find a better way of creating a string
-            var a = '<a href="' + resp.url + '">Layer Info page</a>';
+            var a = '<a href="' + resp.url + '">Layer Info</a>';
             var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
             self.logStatus({
-                msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ', or edit the ' + b + '.</p>',
+                msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ' page, or edit the ' + b + '.</p>',
                 level: 'alert-success'
             });
         }
-    };
 
-    LayerInfo.prototype.doStep = function (resp) {
-        var self = this;
-        make_request({
+        /*
+        common.make_request({
             url: resp.redirect_to,
             async: false,
-            type: 'POST',
-            failure: function (resp, status) { self.markError(resp); },
+            failure: function (resp, status) {self.markError(resp, status); },
+            success: function (resp, status) {
+                if (resp.status === "other") {
+                    self.logStatus({
+                        msg:'<p>You need to specify more information in order to complete your upload</p>',
+                        level: 'alert-success'
+                    });
+                } else {
+                    // hack find a better way of creating a string
+                    var a = '<a href="' + resp.url + '">Layer page</a>';
+                    var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
+                    self.logStatus({
+                        msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ' page, or edit the ' + b + '.</p>',
+                        level: 'alert-success'
+                    });
+                }
+            },
+        });
+        */
+    };
+
+    /** Function to deal with the Steps in the upload process
+     *
+     *  @params {options}
+     *  @returns {string}
+     */
+    LayerInfo.prototype.doStep = function (resp) {
+        var self = this;
+        common.make_request({
+            url: resp.redirect_to,
+            async: false,
+            failure: function (resp, status) { self.markError(resp, status); },
             success: function (resp, status) { self.doFinal(resp); }
         });
     };
 
+    /** Function to upload the files against the specified endpoint
+     *
+     *  @params
+     *  @returns
+     */
     LayerInfo.prototype.uploadFiles = function () {
-        var form_data = this.prepareFormData(), self = this;
+        var form_data = this.prepareFormData(),
+            self = this;
 
         $.ajax({
             url: form_target,
             async: false,
-            type: 'POST',
+            type: "POST",
             data: form_data,
             processData: false,
             contentType: false,
@@ -260,18 +324,23 @@ define(function (require, exports) {
                     self.markError($.parseJSON(jqXHR.responseText).errors);
                 }
             },
-            success: function (resp, status) { self.doFinal(resp); }
+            success: function (resp, status) { self.doStep(resp); }
         });
     };
 
-    LayerInfo.prototype.display  = function (file_queue) {
+    /** Function to display the layers collected from the files
+     * selected for uploading 
+     *
+     *  @params {file_queue}
+     *  @returns {string}
+     */
+    LayerInfo.prototype.display = function (file_queue) {
         var layerTemplate = _.template($('#layerTemplate').html()),
             li = layerTemplate({
                 name: this.name,
                 selector: LayerInfo.safeSelector(this.name),
                 type: this.type.name,
             });
-
         file_queue.append(li);
         this.errors = this.collectErrors();
         this.displayFiles();
@@ -280,16 +349,44 @@ define(function (require, exports) {
         return li;
     };
 
-    LayerInfo.prototype.removeFile = function (event) {
+    /** Event handler to deal with user clicking on remove link 
+     *
+     *  @params event
+     *  @returns none 
+     */
+    LayerInfo.prototype.removeFileHandler = function (event) {
         var target = $(event.target),
             layer_info,
             layer_name = target.data('layer'),
             file_name  = target.data('file');
-
         this.removeFile(file_name);
         this.displayRefresh();
     };
 
+    /** Function to remove a file from the file list
+     *
+     *  @params {options}
+     *  @returns {string}
+     */
+    LayerInfo.prototype.removeFile = function (name) {
+        var length = this.files.length,
+            i,
+            file;
+
+        for (i = 0; i < length; i += 1) {
+            file = this.files[i];
+            if (name === file.name) {
+                this.files.splice(i, 1);
+                break;
+            }
+        }
+    };
+
+    /** Function to display the files selected for uploading 
+     *
+     *  @params
+     *  @returns
+     */
     LayerInfo.prototype.displayFiles = function () {
         var self = this,
             ul = $('#' + LayerInfo.safeSelector(this.name) + '-element .files');
@@ -309,13 +406,17 @@ define(function (require, exports) {
                     layer_info,
                     layer_name = target.data('layer'),
                     file_name  = target.data('file');
-
                 self.removeFile(file_name);
                 self.displayRefresh();
             });
         });
     };
 
+    /** Function to display errors 
+     *
+     *  @params 
+     *  @returns 
+     */
     LayerInfo.prototype.displayErrors = function () {
         var ul = $('#' + LayerInfo.safeSelector(this.name) + '-element .errors').first();
         ul.empty();
@@ -329,27 +430,16 @@ define(function (require, exports) {
         });
     };
 
+    /** Function to refresh display after adding or removing files 
+     *
+     *  @params {options}
+     *  @returns {string}
+     */
     LayerInfo.prototype.displayRefresh = function () {
-
         this.errors = this.collectErrors();
         this.displayFiles();
         this.displayErrors();
     };
 
-    LayerInfo.prototype.removeFile = function (name) {
-        var length = this.files.length,
-            i,
-            file;
-
-        for (i = 0; i < length; i += 1) {
-            file = this.files[i];
-            if (name === file.name) {
-                this.files.splice(i, 1);
-                break;
-            }
-        }
-    };
-
     return LayerInfo;
-
 });
