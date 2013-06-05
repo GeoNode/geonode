@@ -216,20 +216,6 @@ define(function (require, exports) {
         });
     };
     
-    LayerInfo.prototype.doSomething = function (event) {
-        console.log(event.data);
-        common.make_request({
-            url: event.data.url,
-            async: false,
-            failure: function (resp, status) {self.markError(resp, status); },
-            success: function (resp, status) {
-                window.location = resp.redirect_to; 
-            },
-        });
-
-        return false;
-    }
-
     /** Function to deal with the final step in the upload process 
      *
      *  @params {options}
@@ -237,20 +223,29 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.doFinal = function (resp) {
         var self = this;
-        if (resp.status === "incomplete") {
-            var a = '<a id="next_step">Layer Upload</a>';
-            self.logStatus({
-                msg:'<p>You need to specify more information in order to complete your upload. You can continue your ' + a + '.</p>',
-                level: 'alert-success'
+        if (resp.redirect_to === '/upload/final') {
+            common.make_request({
+                url: resp.redirect_to,
+                async: false,
+                failure: function (resp, status) {self.markError(resp, status); },
+                success: function (resp, status) {
+                    if (resp.status === "other") {
+                        self.logStatus({
+                            msg:'<p>You need to specify more information in order to complete your upload</p>',
+                            level: 'alert-success'
+                        });
+                    } else {
+                        // hack find a better way of creating a string
+                        var a = '<a href="' + resp.url + '">Layer page</a>';
+                        var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
+                        self.logStatus({
+                            msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ' page, or edit the ' + b + '.</p>',
+                            level: 'alert-success'
+                        });
+                    }
+                },
             });
-            //$("#next_step").on('click', resp, self.doSomething); 
-            return;
-        } else if (resp.status === "other") {
-            self.logStatus({
-                msg:'<p>You need to specify more information in order to complete your upload</p>',
-                level: 'alert-success'
-            });
-        } else {
+        } else if (resp.success === true) {
             // hack find a better way of creating a string
             var a = '<a href="' + resp.url + '">Layer Info</a>';
             var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
@@ -258,31 +253,25 @@ define(function (require, exports) {
                 msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ' page, or edit the ' + b + '.</p>',
                 level: 'alert-success'
             });
+        } else if (resp.status === "incomplete") {
+            var a = '<a id="next_step">Layer Upload</a>';
+            self.logStatus({
+                msg:'<p>You need to specify more information in order to complete your upload. You can continue your ' + a + '.</p>',
+                level: 'alert-success'
+            });
+            return;
+        } else if (resp.status === "other") {
+            self.logStatus({
+                msg:'<p>You need to specify more information in order to complete your upload</p>',
+                level: 'alert-success'
+            });
+        } else {
+            self.logStatus({
+                msg:'<p>Unexpected Error</p>',
+                level: 'alert-error'
+            });
         }
 
-        /*
-        common.make_request({
-            url: resp.redirect_to,
-            async: false,
-            failure: function (resp, status) {self.markError(resp, status); },
-            success: function (resp, status) {
-                if (resp.status === "other") {
-                    self.logStatus({
-                        msg:'<p>You need to specify more information in order to complete your upload</p>',
-                        level: 'alert-success'
-                    });
-                } else {
-                    // hack find a better way of creating a string
-                    var a = '<a href="' + resp.url + '">Layer page</a>';
-                    var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
-                    self.logStatus({
-                        msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ' page, or edit the ' + b + '.</p>',
-                        level: 'alert-success'
-                    });
-                }
-            },
-        });
-        */
     };
 
     /** Function to deal with the Steps in the upload process
@@ -292,12 +281,19 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.doStep = function (resp) {
         var self = this;
-        common.make_request({
-            url: resp.redirect_to,
-            async: false,
-            failure: function (resp, status) { self.markError(resp, status); },
-            success: function (resp, status) { self.doFinal(resp); }
-        });
+        if (resp.success === true && typeof resp.url != 'undefined') {
+            self.doFinal(resp);
+        } else { 
+            common.make_request({
+                url: resp.redirect_to,
+                async: false,
+                failure: function (resp, status) { self.markError(resp, status); },
+                success: function (resp, status) { 
+                    // TODO Need to handle for additional steps
+                    self.doFinal(resp); 
+                }
+            });
+        }
     };
 
     /** Function to upload the files against the specified endpoint
