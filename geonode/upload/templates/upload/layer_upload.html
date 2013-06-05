@@ -4,7 +4,7 @@
 
 {% block title %} {% trans "Upload Layer"  %} - {{ block.super }}  {% endblock %}
 
-{% block main_class %}data upload{% endblock main_class %}
+{% block body_class %}data data-list upload{% endblock %}
 
 {% block extra_head %}
 
@@ -45,11 +45,11 @@
                 <h3 class="uip">Incomplete Uploads</h3>
                 <p>You have the following incomplete uploads:</p>
                 {% for u in incomplete %}
-                    <div class="clearfix uip" style="">
+                    <div class="clearfix uip" style="" id="incomplete-{{ u.import_id }}">
                         <div class="pull-left">{{ u.name }}, last updated on {{ u.date }}</div>
                         <div class="upload_actions pull-right">
-                            <a class="btn btn-mini" href="{{ u.get_resume_url }}">Resume</a>
-                            <a class="btn btn-mini icon-trash" href="{{ u.get_delete_url }}">Delete</a>
+                            <a class="btn btn-mini" href="#" id="resume-{{ u.import_id }}">Resume</a>
+                            <a class="btn btn-mini icon-trash" href="#" id="delete-{{ u.import_id }}">Delete</a>
                         </div>
                     </div>
             </section>
@@ -103,7 +103,7 @@
             {% autoescape off %}
             
             csrf_token =  "{{ csrf_token }}",
-            form_target = "{% url layer_upload %}",
+            form_target = "{{ UPLOADER_URL }}",
             userLookup = "{% url geonode.views.ajax_lookup %}"
 
             {% endautoescape %}

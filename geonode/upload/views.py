@@ -99,7 +99,7 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, mimetype, *args, **kwargs)
 
 
-def _error_response(req, exception=None, errors=None, force_ajax=False):
+def _error_response(req, exception=None, errors=None, force_ajax=True):
     if exception:
         logger.exception('Unexpected error in upload step')
     else:
@@ -116,7 +116,7 @@ def _error_response(req, exception=None, errors=None, force_ajax=False):
     }))
 
 
-def _next_step_response(req, upload_session, force_ajax=False):
+def _next_step_response(req, upload_session, force_ajax=True):
     # if the current step is the view POST for this step, advance one
     if req.method == 'POST':
         if upload_session.completed_step:
@@ -132,7 +132,17 @@ def _next_step_response(req, upload_session, force_ajax=False):
         feature_type = import_session.tasks[0].items[0].resource
         if feature_type.resource_type == 'coverage':
             upload_session.completed_step = 'time'
-            return _next_step_response(req, upload_session)
+            return _next_step_response(req, upload_session, force_ajax)
+    if next == 'time' and force_ajax:
+        import_session = upload_session.import_session
+        url = reverse('data_upload') + "?id=%s" % import_session.id
+        return json_response(
+            {'url': url,
+            'status': 'incomplete',
+            'success': True,
+            'redirect_to': '/upload/time',
+            }
+        )
 
     # @todo this is not handled cleanly - run is not a real step in that it
     # has no corresponding view served by the 'view' function.
@@ -149,7 +159,7 @@ def _next_step_response(req, upload_session, force_ajax=False):
         content_type = 'text/html' if not req.is_ajax() else None
         return json_response(redirect_to=reverse('data_upload', args=[next]),
                              content_type=content_type)
-    return HttpResponseRedirect(reverse('data_upload', args=[next]))
+    #return HttpResponseRedirect(reverse('data_upload', args=[next]))
 
 
 def _create_time_form(import_session, form_data):
@@ -356,11 +366,11 @@ def time_step_view(request, upload_session):
 
     form = _create_time_form(import_session, request.POST)
     #@todo validation feedback, though we shouldn't get here
-    if not form.is_valid():
-        logger.warning('Invalid upload form: %s', form.errors)
-        return _error_response(request, errors=["Invalid Submission"])
+    #if not form.is_valid():
+    #    logger.warning('Invalid upload form: %s', form.errors)
+    #    return _error_response(request, errors=["Invalid Submission"])
 
-    cleaned = form.cleaned_data
+    cleaned = form.data
 
     time_attribute, time_transform_type = None, None
     end_time_attribute, end_time_transform_type = None, None
@@ -463,6 +473,8 @@ def get_next_step(upload_session, offset = 1):
 
 def get_previous_step(upload_session, post_to):
     pages = _pages[upload_session.upload_type]
+    if post_to == "undefined":
+        post_to = "final"
     index = pages.index(post_to) - 1
     if index < 0: return 'save'
     return pages[index]
@@ -504,7 +516,9 @@ def view(req, step):
             # could happen if the form is ajax w/ progress monitoring as
             # the advance would have already happened @hacky
             upload_session.completed_step = get_previous_step(upload_session, step)
-
+       
+        if step == "undefined":
+            step = "final" 
         resp = _steps[step](req, upload_session)
         # must be put back to update object in session
         if upload_session:
@@ -533,7 +547,10 @@ def delete(req, id):
     if req.user != upload.user:
         raise PermissionDenied()
     upload.delete()
-    return HttpResponse('OK')
+    return json_response(dict(
+        success = True,
+    ))
+
 
 
 class UploadFileCreateView(CreateView):
