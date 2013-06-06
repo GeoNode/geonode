@@ -73,7 +73,6 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.findFileType = function (file) {
         var i, type, res;
-
         $.each(fileTypes, function (name, type) {
             if (type.isType(file)) {
                 res = {type: type, file: file};
@@ -90,7 +89,6 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.guessFileType = function () {
         var self = this;
-
         $.each(this.files, function (idx, file) {
             var results = self.findFileType(file);
             // if we find the type of the file, we also find the "main"
@@ -215,7 +213,19 @@ define(function (require, exports) {
             level: 'alert-success'
         });
     };
-    
+   
+    LayerInfo.prototype.doResume = function (event) {
+        common.make_request({
+            url: event.data.url,
+            async: false,
+            failure: function (resp, status) {self.markError(resp, status); },
+            success: function (resp, status) {
+                window.location = resp.redirect_to; 
+            },
+        });
+        return false;
+    };
+ 
     /** Function to deal with the final step in the upload process 
      *
      *  @params {options}
@@ -245,24 +255,25 @@ define(function (require, exports) {
                     }
                 },
             });
-        } else if (resp.success === true) {
-            // hack find a better way of creating a string
-            var a = '<a href="' + resp.url + '">Layer Info</a>';
-            var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
-            self.logStatus({
-                msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ' page, or edit the ' + b + '.</p>',
-                level: 'alert-success'
-            });
         } else if (resp.status === "incomplete") {
             var a = '<a id="next_step">Layer Upload</a>';
             self.logStatus({
                 msg:'<p>You need to specify more information in order to complete your upload. You can continue your ' + a + '.</p>',
                 level: 'alert-success'
             });
+            $("#next_step").on('click', resp, self.doResume);
             return;
         } else if (resp.status === "other") {
             self.logStatus({
                 msg:'<p>You need to specify more information in order to complete your upload</p>',
+                level: 'alert-success'
+            });
+        } else if (resp.success === true) {
+            // hack find a better way of creating a string
+            var a = '<a href="' + resp.url + '">Layer Info</a>';
+            var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
+            self.logStatus({
+                msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ' page, or edit the ' + b + '.</p>',
                 level: 'alert-success'
             });
         } else {
@@ -281,18 +292,27 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.doStep = function (resp) {
         var self = this;
-        if (resp.success === true && typeof resp.url != 'undefined') {
-            self.doFinal(resp);
-        } else { 
+        if (resp.success === true && resp.status === 'incomplete') {
             common.make_request({
-                url: resp.redirect_to,
+                url: resp.redirect_to + '?force_ajax=true',
                 async: false,
-                failure: function (resp, status) { self.markError(resp, status); },
-                success: function (resp, status) { 
-                    // TODO Need to handle for additional steps
-                    self.doFinal(resp); 
+                failure: function (resp, status) {
+                    self.markError(resp, status);
+                },
+                success: function (resp, status) {
+                    if (resp.status === 'incomplete') {
+                        if (resp.input_required === true) {
+                            self.doFinal(resp);
+                        } else {
+                            self.doStep(resp);
+                        }
+                    } else if (resp.redirect_to === '/upload/final') {
+                        self.doFinal(resp);
+                    }
                 }
             });
+        } else if (resp.success === true && typeof resp.url != 'undefined') {
+            self.doFinal(resp);
         }
     };
 
