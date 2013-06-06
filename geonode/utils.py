@@ -401,6 +401,11 @@ class GXPMapBase(object):
             if source: cfg["source"] = source
             return cfg
 
+        if not settings.MAP_BASELAYERS[0]['source'] in sources.values():
+            keys = sources.keys()
+            keys.sort()
+            sources[str(int(keys[-1])+1)] = settings.MAP_BASELAYERS[0]['source']
+
         config = {
             'id': self.id,
             'about': {
@@ -421,7 +426,6 @@ class GXPMapBase(object):
         config["map"]["layers"][len(layers)-1]["selected"] = True
 
         config["map"].update(_get_viewer_projection_info(self.projection))
-
         return config
 
 
