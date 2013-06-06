@@ -138,7 +138,7 @@ define(['jquery','waypoints'],function($){
         $(".paginate").each(function() {
             var p$ = $(this);
             var auto = p$.hasClass("paginate-auto") ? true : false,
-            hasMore = parseInt(p$.find(".pagination .current.page").html()) < parseInt(p$.find(".pagination .page_total").html()),
+            hasMore = parseInt(p$.find(".pagination .current.page").html(),10) < parseInt(p$.find(".pagination .page_total").html(),10),
             $pages = p$.find(".pagination");
             opts = {
                 offset: '100%'

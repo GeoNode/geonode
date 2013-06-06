@@ -4,7 +4,7 @@ requirejs.config({
     baseUrl: '/static/libs/js'
 });
 
-define(['jquery-1.8.0'],function($){
+define(['jquery'],function($){
     return {
         batch_delete: function() {
             var form = $(this);
