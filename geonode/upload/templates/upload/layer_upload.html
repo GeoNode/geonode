@@ -1,4 +1,4 @@
-{% extends "upload/base.html" %}
+{% extends "upload/layer_upload_base.html" %}
 {% load i18n %}
 {% load static from staticfiles %}
 
@@ -13,6 +13,7 @@
 
 {% block head %}
 
+<!-- TODO Move this to site-wide css or remove -->
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geonode/css/fileuploadfield.css"/>
 <style type="text/css">
     .uip {
@@ -20,10 +21,6 @@
         border-radius: 3px;
         padding: .5em;
         margin: .5em
-    }
-    /* workaround bizarre firefox bug where filechooser button doesn't work */
-    #base_file-file {
-        width: auto;
     }
     #drop-zone {
       background: #eee;
@@ -72,9 +69,6 @@
             </div>
         {% endif %}
 
-        {% if enough_storage %}
-
-
             <section id="drop-zone">
               <h2>Drag and Drop files here</h2>
             </section>
@@ -109,23 +103,18 @@
             {% endautoescape %}
 
             </script>
-
-        {% endif %}
         </div>
     </div>
 {% endblock %}
 
 {% block sidebar %}
 
-{% if enough_storage %}
 <h3>{% trans "Permissions"  %}</h3>
 <div>
   <form id="permission_form">
         {% include "_permissions.html" %}
   </form>
 </div>
-
-{% endif %}
 {% endblock %}
 
 {% block extra_script %}

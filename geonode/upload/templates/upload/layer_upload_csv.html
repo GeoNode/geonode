@@ -1,15 +1,11 @@
-{% extends "upload/base.html" %}
+{% extends "upload/layer_upload_base.html" %}
 {% load i18n %}
 {% load static from staticfiles %}
 
+{% block body_class %}data data-list upload{% endblock %}
+
 {% block title %} {% trans "Upload Layer" %} - {{ block.super }} {% endblock %}
 
-{% block head %}
-{% include "geonode/ext_header.html" %}
-{% include "geonode/app_header.html" %}
-{% include "geonode/geo_header.html" %}
-{{ block.super }}
-{% endblock %}
 {% block body %}
 {% if present_choices %}
 <h2>Geospatial Data</h2>
@@ -53,14 +49,6 @@ attributes are selected below.</p>
   </div>
   <input type="submit" value="Next" />
 </form>
-<script type="text/javascript" src="{{ STATIC_URL }}geonode/js/upload/ext/upload_common.js"></script>
-<script type="text/javascript">
-{% autoescape off %}
-{% if async_upload %}
-enableUploadProgress('csvForm');
-{% endif %}
-{% endautoescape %}
-</script>
 {% else %}
 <p>We did not detect columns that could be used for the latitude and longitude.
 Please verify that you have two columns in your csv file that can be used for

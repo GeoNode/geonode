@@ -111,7 +111,7 @@ def _error_response(req, exception=None, errors=None, force_ajax=True):
     # not sure if any responses will (ideally) ever be non-ajax
     if errors:
         exception = "<br>".join(errors)
-    return render_to_response('upload/upload_error.html', RequestContext(req,{
+    return render_to_response('upload/layer_upload_error.html', RequestContext(req,{
         'error_msg' : 'Unexpected error : %s,' % exception
     }))
 
@@ -180,12 +180,8 @@ def _create_time_form(import_session, form_data):
 
 def save_step_view(req, session):
     if req.method == 'GET':
-        s = os.statvfs('/')
-        mb = s.f_bsize * s.f_bavail / (1024. * 1024)
         return render_to_response('upload/layer_upload.html',
             RequestContext(req, {
-            'storage_remaining': "%d MB" % mb,
-            'enough_storage': mb > 64,
             'async_upload' : _ASYNC_UPLOAD,
             'incomplete' : Upload.objects.get_incomplete_uploads(req.user)
         }))
@@ -350,7 +346,7 @@ def time_step_view(request, upload_session):
             if invalid:
                 att_list = "<pre>%s</pre>" % '. '.join([a.name for a in invalid])
                 msg = "Attributes with spaces are not supported : %s" % att_list
-                return render_to_response('upload/upload_error.html', RequestContext(request,{
+                return render_to_response('upload/layer_upload_error.html', RequestContext(request,{
                     'error_msg' : msg
                 }))
         context = {
@@ -507,7 +503,7 @@ def view(req, step):
 
     else:
         if not _SESSION_KEY in req.session:
-            return render_to_response("upload/no_upload.html", RequestContext(req,{}))
+            return render_to_response("upload/layer_upload_invalid.html", RequestContext(req,{}))
         upload_session = req.session[_SESSION_KEY]
 
     try:
