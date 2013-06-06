@@ -1,10 +1,13 @@
-{% extends "upload/base.html" %}
+{% extends "upload/layer_upload_base.html" %}
 {% load i18n %}
 {% load static from staticfiles %}
+
+{% block body_class %}data data-list upload{% endblock %}
 
 {% block title %} {% trans "Upload Layer Step 2" %} - {{ block.super }} {% endblock %}
 
 {% block head %}
+<!-- TODO Move this to site-wide css or remove -->
 <style type="text/css">
     /* bootstrap workaround */
     #timeForm label {
@@ -58,18 +61,6 @@
 
   <form method="POST" id="timeForm">
       
-  {% if missing_crs %}
-  <h3>Coordinate Reference System</h3>
-  <p>A coordinate reference system for this layer could not be determined.
-  Locate or enter the appropriate ESPG code for this layer below.
-  One way to do this is do visit: <a href="http://prj2epsg.org/search" target="_">prj2epsg</a> and enter the following:
-  </p>
-  <pre>
-  {{ native_crs }}
-  </pre>
-  <label for="srs">EPSG Code (SRS)  :</label><input type="text" name="srs">
-  {% endif %}
-
   <h3>Time Options</h3>
     {% csrf_token %}
     
