@@ -56,7 +56,7 @@
 {{ block.super }}
 {% endblock %}
 {% block body %}
-<div class="twocol">
+<div class="span7">
   <h2> {% trans "Editing details for " %} {{ layer_name }} </h2>
 
   <form method="POST" id="timeForm">
@@ -149,7 +149,7 @@
     <input id='next' type="button" value="{% trans "Next" %}"/>
   </form>
 </div>
-<div id="timehelp" class="threecol">
+<div id="timehelp" class="span5">
     <h3>Need Help?</h3>
     <h4>Enabling Time</h4>
     <p>A feature can currently support one or two time attributes. If a single
