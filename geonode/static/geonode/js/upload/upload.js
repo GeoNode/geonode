@@ -23,6 +23,7 @@ define(['jquery',
         displayFiles,
         doUploads,
         doTime,
+        doSrs,
         doDelete,
         doResume,
         doSuccessfulUpload,
@@ -163,9 +164,8 @@ define(['jquery',
         }).done(function (resp) {
             var div = "incomplete-" + id;
             $(div).hide();
-            console.log('deleted');
         }).fail(function (resp) {
-            console.log('failed');
+            //
         });
     };
 
@@ -182,22 +182,50 @@ define(['jquery',
                     url: data.redirect_to,
                     async: false,
                     failure: function (resp, status) {
-                        //self.markError(resp, status); 
-                        console.log('no bueno');
+                        self.markError(resp, status); 
                     },
                     success: function (resp, status) {
                         window.location = resp.url;
                     },
                 });
             } else if ('url' in data) {
-                console.log(data.url);
                 window.location = data.url;
             } else {
-                console.log('no bueno');
+                self.markError(resp, status); 
             }
         }).fail(function (resp) {
-            console.log('failed');
+            self.markError(resp, status); 
         });
+    };
+
+    doSrs = function (event) {
+        var form = $("#srsForm")
+        $.ajax({
+           type: "POST",
+           url: '/upload/srs',
+           data: form.serialize(), // serializes the form's elements.
+           success: function(data)
+           {
+               if('redirect_to' in data) {
+                    common.make_request({
+                        url: data.redirect_to,
+                        async: false,
+                        failure: function (resp, status) {self.markError(resp, status); },
+                        success: function (resp, status) {
+                            window.location = resp.url;
+                        },
+                    });
+                } else if ('url' in data) {
+                    window.location = data.url; 
+                } else {
+                    self.markError(resp, status); 
+                }
+           },
+           failure: function (resp, status) {
+                self.markError(resp, status); 
+           },
+        });
+        return false; 
     };
 
     doTime = function (event) {
@@ -218,14 +246,14 @@ define(['jquery',
                         },
                     });
                 } else if ('url' in data) {
-                    console.log(data.url);
                     window.location = data.url; 
                 } else {
-                    console.log('no bueno');
+                    self.markError(resp, status); 
                 }
-                
            },
-           failure: function (resp, status) {console.log(resp, status) },
+           failure: function (resp, status) {
+                    self.markError(resp, status); 
+           },
         });
         return false;        
     };
@@ -299,6 +327,7 @@ define(['jquery',
     return {
         initialize: initialize,
         doTime: doTime,
+        doSrs: doSrs,
         doDelete: doDelete,
         doResume: doResume
     };
