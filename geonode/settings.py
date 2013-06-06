@@ -449,8 +449,7 @@ MAP_BASELAYERS = [{
     "source": {
         "ptype": "gxp_wmscsource",
         "url": GEOSERVER_BASE_URL + "wms",
-        "restUrl": "/gs/rest",
-        "title": "Local Geoserver"
+        "restUrl": "/gs/rest"
      }
   },{
     "source": {"ptype": "gxp_olsource"},

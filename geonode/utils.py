@@ -401,9 +401,11 @@ class GXPMapBase(object):
             if source: cfg["source"] = source
             return cfg
 
-        if not settings.MAP_BASELAYERS[0]['source'] in sources.values():
+        source_urls = [source['url'] for source in sources.values() if source.has_key('url')]
+        if not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
             keys = sources.keys()
             keys.sort()
+            settings.MAP_BASELAYERS[0]['source']['title'] = 'Local Geoserver'
             sources[str(int(keys[-1])+1)] = settings.MAP_BASELAYERS[0]['source']
 
         config = {
