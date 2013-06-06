@@ -117,6 +117,7 @@ def _error_response(req, exception=None, errors=None, force_ajax=True):
 
 
 def _next_step_response(req, upload_session, force_ajax=True):
+    print "force_ajax = " + str(force_ajax)
     # if the current step is the view POST for this step, advance one
     if req.method == 'POST':
         if upload_session.completed_step:
@@ -125,6 +126,7 @@ def _next_step_response(req, upload_session, force_ajax=True):
             upload_session.completed_step = 'save'
 
     next = get_next_step(upload_session)
+    print "next = " + str(next)
 
     if next == 'time':
         # @TODO we skip time steps for coverages currently
@@ -141,6 +143,26 @@ def _next_step_response(req, upload_session, force_ajax=True):
             'status': 'incomplete',
             'success': True,
             'redirect_to': '/upload/time',
+            }
+        )
+    if next == 'srs' and force_ajax:
+        import_session = upload_session.import_session
+        url = reverse('data_upload') + "?id=%s" % import_session.id
+        return json_response(
+            {'url': url,
+            'status': 'incomplete',
+            'success': True,
+            'redirect_to': '/upload/srs',
+            }
+        )
+    if next == 'csv' and force_ajax:
+        import_session = upload_session.import_session
+        url = reverse('data_upload') + "?id=%s" % import_session.id
+        return json_response(
+            {'url': url,
+            'status': 'incomplete',
+            'success': True,
+            'redirect_to': '/upload/csv',
             }
         )
 
@@ -230,6 +252,7 @@ def srs_step_view(req, upload_session):
     import_session = upload_session.import_session
 
     form = None
+
     if req.method == 'POST':
         form = forms.SRSForm(req.POST)
         if form.is_valid():
@@ -238,10 +261,21 @@ def srs_step_view(req, upload_session):
             return _next_step_response(req, upload_session)
 
     if import_session.tasks[0].state == 'INCOMPLETE':
-        # CRS missing/unknown
-        if import_session.tasks[0].items[0].state == 'NO_CRS':
-            native_crs = import_session.tasks[0].items[0].resource.nativeCRS
-            form = form or forms.SRSForm()
+        if req.GET.__contains__('force_ajax') and req.GET['force_ajax']:
+            url = reverse('data_upload') + "?id=%s" % import_session.id
+            return json_response(
+                {'url': url,
+                'status': 'incomplete',
+                'success': True,
+                'redirect_to': '/upload/srs',
+                'input_required': True,
+                }
+            )
+        else:
+            # CRS missing/unknown
+            if import_session.tasks[0].items[0].state == 'NO_CRS':
+                native_crs = import_session.tasks[0].items[0].resource.nativeCRS
+                form = form or forms.SRSForm()
 
     if form:
         name = import_session.tasks[0].items[0].layer.name
@@ -270,6 +304,18 @@ def is_longitude(colname):
 
 def csv_step_view(request, upload_session):
     import_session = upload_session.import_session
+
+    if request.GET.__contains__('force_ajax') and request.GET['force_ajax']:
+        url = reverse('data_upload') + "?id=%s" % import_session.id
+        return json_response(
+            {'url': url,
+            'status': 'incomplete',
+            'success': True,
+            'redirect_to': '/upload/csv',
+            'input_required': True,
+            }
+        )
+
     item = import_session.tasks[0].items[0]
     feature_type = item.resource
     attributes = feature_type.attributes
@@ -337,6 +383,18 @@ def csv_step_view(request, upload_session):
 
 def time_step_view(request, upload_session):
     import_session = upload_session.import_session
+    
+    if request.GET.__contains__('force_ajax') and request.GET['force_ajax']:
+        url = reverse('data_upload') + "?id=%s" % import_session.id
+        return json_response(
+            {'url': url,
+            'status': 'incomplete',
+            'success': True,
+            'redirect_to': '/upload/time',
+            'input_required': True,
+            }
+        )
+
 
     if request.method == 'GET':
         # check for invalid attribute names
