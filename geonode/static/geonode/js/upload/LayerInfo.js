@@ -218,7 +218,9 @@ define(function (require, exports) {
         common.make_request({
             url: event.data.url,
             async: false,
-            failure: function (resp, status) {self.markError(resp, status); },
+            failure: function (resp, status) {
+                self.markError(resp.errors, status);
+            },
             success: function (resp, status) {
                 window.location = resp.redirect_to; 
             },
@@ -237,7 +239,9 @@ define(function (require, exports) {
             common.make_request({
                 url: resp.redirect_to,
                 async: false,
-                failure: function (resp, status) {self.markError(resp, status); },
+                failure: function (resp, status) {
+                    self.markError(resp.errors, status); 
+                },
                 success: function (resp, status) {
                     if (resp.status === "other") {
                         self.logStatus({
@@ -297,7 +301,7 @@ define(function (require, exports) {
                 url: resp.redirect_to + '?force_ajax=true',
                 async: false,
                 failure: function (resp, status) {
-                    self.markError(resp, status);
+                    self.markError(resp.errors, status);
                 },
                 success: function (resp, status) {
                     if (resp.status === 'incomplete') {
