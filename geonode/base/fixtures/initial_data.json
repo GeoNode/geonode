@@ -169,5 +169,65 @@
             "name": "Utilities Communication", 
             "slug": "utilities-communication"
         }
+    },
+    {
+        "pk": 2, 
+        "model": "base.spatialrepresentationtype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "grid data is used to represent geographic data", 
+            "identifier": "grid", 
+            "description": "grid data is used to represent geographic data"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "base.spatialrepresentationtype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "three-dimensional view formed by the intersecting homologous rays of an overlapping pair of images", 
+            "identifier": "stereoModel", 
+            "description": "three-dimensional view formed by the intersecting homologous rays of an overlapping pair of images"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "base.spatialrepresentationtype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "textual or tabular data is used to represent geographic data", 
+            "identifier": "textTable", 
+            "description": "textual or tabular data is used to represent geographic data"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "base.spatialrepresentationtype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "triangulated irregular network", 
+            "identifier": "tin", 
+            "description": "triangulated irregular network"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "base.spatialrepresentationtype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "vector data is used to represent geographic data", 
+            "identifier": "vector", 
+            "description": "vector data is used to represent geographic data"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "base.spatialrepresentationtype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "scene from a video recording", 
+            "identifier": "video", 
+            "description": "scene from a video recording"
+        }
     }
 ]

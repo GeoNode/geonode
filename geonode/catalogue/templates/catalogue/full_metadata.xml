@@ -209,7 +209,7 @@
          </gmd:MD_Constraints>
        </gmd:resourceConstraints>
        <gmd:spatialRepresentationType>
-         <gmd:MD_SpatialRepresentationTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="{{layer.spatial_representation_type}}">{{layer.spatial_representation_type}}</gmd:MD_SpatialRepresentationTypeCode>
+         <gmd:MD_SpatialRepresentationTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="{{layer.spatial_representation_type.identifier}}">{{layer.spatial_representation_type.identifier}}</gmd:MD_SpatialRepresentationTypeCode>
        </gmd:spatialRepresentationType>
        <gmd:language>
          <gco:CharacterString>{{layer.language}}</gco:CharacterString>
@@ -217,9 +217,9 @@
        <gmd:characterSet>
          <gmd:MD_CharacterSetCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
        </gmd:characterSet>
-       <gmd:topicCategory {% if not layer.topic_category %}gco:nilReason="missing"{% endif %}>
-         {% if layer.topic_category %}
-         <gmd:MD_TopicCategoryCode>{{layer.topic_category}}</gmd:MD_TopicCategoryCode>
+       <gmd:topicCategory {% if not layer.category %}gco:nilReason="missing"{% endif %}>
+         {% if layer.category %}
+         <gmd:MD_TopicCategoryCode>{{layer.category}}</gmd:MD_TopicCategoryCode>
          {% endif %}
        </gmd:topicCategory>
        <gmd:extent>
