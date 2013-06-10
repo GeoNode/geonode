@@ -3,6 +3,7 @@ import os
 import hashlib
 
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -74,7 +75,23 @@ class TopicCategory(models.Model):
 
     class Meta:
         ordering = ("name",)
-        verbose_name_plural = 'Topic Categories'
+        verbose_name_plural = 'Metadata Topic Categories'
+        
+class SpatialRepresentationType(models.Model):
+    """
+    Metadata information about the spatial representation type.
+    """
+    identifier = models.CharField(max_length=255, editable=False)
+    description = models.CharField(max_length=255, editable=False)
+    gn_description = models.CharField('GeoNode description', max_length=255)
+    is_choice = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.gn_description
+
+    class Meta:
+        ordering = ("identifier",)
+        verbose_name_plural = 'Metadata Spatial Representation Types'
 
 
 class Thumbnail(models.Model):
@@ -188,11 +205,12 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     keywords_region = models.CharField(_('keywords region'), max_length=3, choices=COUNTRIES, default='USA', help_text=_('keyword identifies a location'))
     constraints_use = models.CharField(_('constraints use'), max_length=255, choices=CONSTRAINT_OPTIONS, default='copyright', help_text=_('constraints applied to assure the protection of privacy or intellectual property, and any special restrictions or limitations or warnings on using the resource or metadata'))
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True, help_text=_('other restrictions and legal prerequisites for accessing and using the resource or metadata'))
-    spatial_representation_type = models.CharField(_('spatial representation type'), max_length=255, choices=SPATIAL_REPRESENTATION_TYPES, blank=True, null=True, help_text=_('method used to represent geographic information in the dataset'))
 
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng', help_text=_('language used within the dataset'))
     category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True, blank=True, default=get_default_category)
+    
+    spatial_representation_type = models.ForeignKey(SpatialRepresentationType, help_text=_('method used to represent geographic information in the dataset.'), null=True, blank=True, limit_choices_to=Q(is_choice=True))
 
     # Section 5
     temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True, help_text=_('time period covered by the content of the dataset (start)'))
