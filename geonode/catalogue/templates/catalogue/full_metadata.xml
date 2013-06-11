@@ -189,18 +189,18 @@
          </gmd:MD_Keywords>
        </gmd:descriptiveKeywords>
        {% endif %}
-       {% if layer.keywords_region %}
+       {% for region in layer.regions.all %}
        <gmd:descriptiveKeywords>
          <gmd:MD_Keywords>
            <gmd:keyword>
-             <gco:CharacterString>{{layer.eval_keywords_region}}</gco:CharacterString>
+             <gco:CharacterString>{{region.name}}</gco:CharacterString>
            </gmd:keyword>
            <gmd:type>
               <gmd:MD_KeywordTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="place">place</gmd:MD_KeywordTypeCode>
             </gmd:type>
          </gmd:MD_Keywords>
        </gmd:descriptiveKeywords>
-       {% endif %}
+       {% endfor %}
        <gmd:resourceConstraints>
          <gmd:MD_Constraints>
            <gmd:useLimitation>

@@ -11,7 +11,7 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 
-from geonode.base.enumerations import COUNTRIES, ALL_LANGUAGES, \
+from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
 from geonode.utils import bbox_to_wkt
@@ -94,6 +94,18 @@ class SpatialRepresentationType(models.Model):
     class Meta:
         ordering = ("identifier",)
         verbose_name_plural = 'Metadata Spatial Representation Types'
+        
+class Region(models.Model):
+
+    code = models.CharField(max_length=50)
+    name = models.CharField(max_length=255)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ("name",)
+        verbose_name_plural = 'Metadata Regions'
         
 class RestrictionCodeType(models.Model):
     """
@@ -222,7 +234,7 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
 
     # section 3
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_('commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject (space or comma-separated'))
-    keywords_region = models.CharField(_('keywords region'), max_length=3, choices=COUNTRIES, default='USA', help_text=_('keyword identifies a location'))
+    regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), help_text=_('keyword identifies a location'))
     restriction_code_type = models.ForeignKey(RestrictionCodeType, verbose_name=_('restrictions'), help_text=_('limitation(s) placed upon the access or use of the data.'), null=True, blank=True, limit_choices_to=Q(is_choice=True))
     constraints_other = models.TextField(_('restrictions other'), blank=True, null=True, help_text=_('other restrictions and legal prerequisites for accessing and using the resource or metadata'))
 
@@ -289,14 +301,6 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
         """Generate minx/miny/maxx/maxy of map extent"""
 
         return self.bbox
-
-    def eval_keywords_region(self):
-        """Returns expanded keywords_region tuple'd value"""
-        index = next((i for i,(k,v) in enumerate(COUNTRIES) if k==self.keywords_region),None)
-        if index is not None:
-            return COUNTRIES[index][1]
-        else:
-            return self.keywords_region
 
     @property
     def poc_role(self):
