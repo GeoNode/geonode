@@ -28,6 +28,7 @@ import uuid
 import os
 import glob
 import sys
+import datetime
 
 # Django functionality
 from django.contrib.auth.models import User
@@ -299,7 +300,6 @@ def save(layer, base_file, user, overwrite=True, title=None,
 
     # Get a short handle to the gsconfig geoserver catalog
     cat = Layer.objects.gs_catalog
-
     # Check if the store exists in geoserver
     try:
         store = cat.get_store(name)
@@ -350,10 +350,8 @@ def save(layer, base_file, user, overwrite=True, title=None,
                               Coverage.resource_type))
         logger.warn(msg)
         raise GeoNodeException(msg)
-
     # Step 4. Create the store in GeoServer
     logger.info('>>> Step 4. Starting upload of [%s] to GeoServer...', name)
-
     # Get the helper files if they exist
     files = get_files(base_file)
 
@@ -484,12 +482,14 @@ def save(layer, base_file, user, overwrite=True, title=None,
 
         # set taggit keywords
         saved_layer.keywords.add(*keywords)
-
         # set model properties
         for (key, value) in vals.items():
             setattr(saved_layer, key, value)
-
-        saved_layer.save()
+        if vals["date"] is not None:
+            saved_layer.save()
+        else:
+            saved_layer.date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+            saved_layer.save()
 
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook
