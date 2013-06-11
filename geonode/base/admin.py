@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from geonode.base.models import (TopicCategory, SpatialRepresentationType,
-    RestrictionCodeType, ContactRole, ResourceBase, Link)
+    Region, RestrictionCodeType, ContactRole, ResourceBase, Link)
 
 class ResourceBaseAdmin(admin.ModelAdmin):
     list_display = ('id','title', 'date', 'category')
@@ -11,6 +11,11 @@ class TopicCategoryAdmin(admin.ModelAdmin):
     model = TopicCategory
     list_display_links = ('name',)
     list_display = ('id', 'name', 'slug', 'description')
+    
+class RegionAdmin(admin.ModelAdmin):
+    model = Region
+    list_display_links = ('name',)
+    list_display = ('code', 'name')
     
 class SpatialRepresentationTypeAdmin(admin.ModelAdmin):
     model = SpatialRepresentationType
@@ -52,6 +57,7 @@ class LinkAdmin(admin.ModelAdmin):
     search_fields = ('name', 'resource__title',)
 
 admin.site.register(TopicCategory, TopicCategoryAdmin)
+admin.site.register(Region, RegionAdmin)
 admin.site.register(SpatialRepresentationType, SpatialRepresentationTypeAdmin)
 admin.site.register(RestrictionCodeType, RestrictionCodeTypeAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
