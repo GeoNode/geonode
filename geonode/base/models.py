@@ -12,8 +12,7 @@ from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 
 from geonode.base.enumerations import COUNTRIES, ALL_LANGUAGES, \
-    HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
-    SPATIAL_REPRESENTATION_TYPES, \
+    HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
 from geonode.utils import bbox_to_wkt
 from geonode.people.models import Profile, Role
@@ -80,6 +79,9 @@ class TopicCategory(models.Model):
 class SpatialRepresentationType(models.Model):
     """
     Metadata information about the spatial representation type.
+    It should reflect a list of codes from TC211
+    See: http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml
+    <CodeListDictionary gml:id="MD_SpatialRepresentationTypeCode">
     """
     identifier = models.CharField(max_length=255, editable=False)
     description = models.CharField(max_length=255, editable=False)
@@ -92,7 +94,25 @@ class SpatialRepresentationType(models.Model):
     class Meta:
         ordering = ("identifier",)
         verbose_name_plural = 'Metadata Spatial Representation Types'
+        
+class RestrictionCodeType(models.Model):
+    """
+    Metadata information about the spatial representation type.
+    It should reflect a list of codes from TC211
+    See: http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml
+    <CodeListDictionary gml:id="MD_RestrictionCode">
+    """
+    identifier = models.CharField(max_length=255, editable=False)
+    description = models.TextField(max_length=255, editable=False)
+    gn_description = models.TextField('GeoNode description', max_length=255)
+    is_choice = models.BooleanField(default=True)
 
+    def __unicode__(self):
+        return self.gn_description
+
+    class Meta:
+        ordering = ("identifier",)
+        verbose_name_plural = 'Metadata Restriction Code Types'
 
 class Thumbnail(models.Model):
 
@@ -203,13 +223,12 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     # section 3
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_('commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject (space or comma-separated'))
     keywords_region = models.CharField(_('keywords region'), max_length=3, choices=COUNTRIES, default='USA', help_text=_('keyword identifies a location'))
-    constraints_use = models.CharField(_('constraints use'), max_length=255, choices=CONSTRAINT_OPTIONS, default='copyright', help_text=_('constraints applied to assure the protection of privacy or intellectual property, and any special restrictions or limitations or warnings on using the resource or metadata'))
-    constraints_other = models.TextField(_('constraints other'), blank=True, null=True, help_text=_('other restrictions and legal prerequisites for accessing and using the resource or metadata'))
+    restriction_code_type = models.ForeignKey(RestrictionCodeType, verbose_name=_('restrictions'), help_text=_('limitation(s) placed upon the access or use of the data.'), null=True, blank=True, limit_choices_to=Q(is_choice=True))
+    constraints_other = models.TextField(_('restrictions other'), blank=True, null=True, help_text=_('other restrictions and legal prerequisites for accessing and using the resource or metadata'))
 
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng', help_text=_('language used within the dataset'))
     category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True, blank=True, default=get_default_category)
-    
     spatial_representation_type = models.ForeignKey(SpatialRepresentationType, help_text=_('method used to represent geographic information in the dataset.'), null=True, blank=True, limit_choices_to=Q(is_choice=True))
 
     # Section 5
