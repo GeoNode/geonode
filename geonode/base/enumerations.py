@@ -57,27 +57,6 @@ UPDATE_FREQUENCIES = (
     ('quarterly', _('data is updated every three months')),
 )
 
-CONSTRAINT_OPTIONS = (
-    ('copyright', _('exclusive right to the publication, production, or sale of the rights to a literary, dramatic, musical, or artistic work, or to the use of a commercial print or label, granted by law for a specified period of time to an author, composer, artist, distributor')),
-    ('intellectualPropertyRights', _('rights to financial benefit from and control of distribution of non-tangible property that is a result of creativity')),
-    ('license', _('formal permission to do something')),
-    ('otherRestrictions', _('limitation not listed')),
-    ('patent', _('government has granted exclusive right to make, sell, use or license an invention or discovery')),
-    ('patentPending', _('produced or sold information awaiting a patent')),
-    ('restricted', _('withheld from general circulation or disclosure')),
-    ('trademark', _('a name, symbol, or other device identifying a product, officially registered and legally restricted to the use of the owner or manufacturer')),
-)
-
-SPATIAL_REPRESENTATION_TYPES = (
-    ('grid', _('grid data')),
-    ('stereoModel',
-        _('three-dimensional view formed by the intersecting homologous\
-           rays of an overlapping pair of images')),
-    ('textTable', _('textual or tabular data')),
-    ('tin', _('triangulated irregular network')),
-    ('vector', _('vector data')),
-)
-
 TOPIC_CATEGORIES = (
     ('geoscientificInformation',
         _('information pertaining to earth sciences')),

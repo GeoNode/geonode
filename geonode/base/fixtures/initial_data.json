@@ -229,5 +229,85 @@
             "identifier": "video", 
             "description": "scene from a video recording"
         }
+    },
+     {
+        "pk": 1, 
+        "model": "base.restrictioncodetype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "exclusive right to the publication, production, or sale of the rights to a literary, dramatic, musical, or artistic work, or to the use of a commercial print or label, granted by law for a specified period of time to an author, composer, artist, distributor", 
+            "identifier": "copyright", 
+            "description": "exclusive right to the publication, production, or sale of the rights to a literary, dramatic, musical, or artistic work, or to the use of a commercial print or label, granted by law for a specified period of time to an author, composer, artist, distributor"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "base.restrictioncodetype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "rights to financial benefit from and control of distribution of non-tangible property that is a result of creativity", 
+            "identifier": "intellectualPropertyRights", 
+            "description": "rights to financial benefit from and control of distribution of non-tangible property that is a result of creativity"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "base.restrictioncodetype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "formal permission to do something", 
+            "identifier": "license", 
+            "description": "formal permission to do something"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "base.restrictioncodetype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "otherRestrictions", 
+            "identifier": "limitation not listed", 
+            "description": "otherRestrictions"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "base.restrictioncodetype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "government has granted exclusive right to make, sell, use or license an invention or discovery", 
+            "identifier": "patent", 
+            "description": "government has granted exclusive right to make, sell, use or license an invention or discovery"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "base.restrictioncodetype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "produced or sold information awaiting a patent", 
+            "identifier": "patentPending", 
+            "description": "produced or sold information awaiting a patent"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "base.restrictioncodetype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "withheld from general circulation or disclosure", 
+            "identifier": "restricted", 
+            "description": "withheld from general circulation or disclosure"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "base.restrictioncodetype", 
+        "fields": {
+            "is_choice": true, 
+            "gn_description": "a name, symbol, or other device identifying a product, officially registered and legally restricted to the use of the owner or manufacturer", 
+            "identifier": "trademark", 
+            "description": "a name, symbol, or other device identifying a product, officially registered and legally restricted to the use of the owner or manufacturer"
+        }
     }
 ]
