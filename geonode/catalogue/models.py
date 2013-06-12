@@ -76,9 +76,11 @@ def catalogue_post_save(instance, sender, **kwargs):
     signals.post_save.disconnect(catalogue_post_save, sender=Layer)
 
     # generate an XML document (GeoNode's default is ISO)
-    md_doc = catalogue.catalogue.csw_gen_xml(instance,
-             'catalogue/full_metadata.xml')
-    instance.metadata_xml = md_doc
+    if not instance.metadata_uploaded:
+        md_doc = catalogue.catalogue.csw_gen_xml(instance,
+                 'catalogue/full_metadata.xml')
+        instance.metadata_xml = md_doc
+
     instance.csw_anytext = \
         catalogue.catalogue.csw_gen_anytext(instance.metadata_xml)
 
