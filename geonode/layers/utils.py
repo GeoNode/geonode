@@ -61,6 +61,7 @@ def layer_set_permissions(layer, perm_spec):
         layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
     if "anonymous" in perm_spec:
         layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+    if isinstance(perm_spec['users'], dict): perm_spec['users'] = perm_spec['users'].items()
     users = [n[0] for n in perm_spec['users']]
     excluded = users + [layer.owner]
     existing = layer.get_user_levels().exclude(user__username__in=excluded)
@@ -477,9 +478,13 @@ def save(layer, base_file, user, overwrite=True, title=None,
     # parse the XML metadata and update uuid and URLs as per the content model
 
     if 'xml' in files:
+        md_xml = open(files['xml']).read()
+
+        saved_layer.metadata_xml = md_xml
         saved_layer.metadata_uploaded = True
+
         # get model properties from XML
-        vals, keywords = set_metadata(open(files['xml']).read())
+        vals, keywords = set_metadata(md_xml)
 
         # set taggit keywords
         saved_layer.keywords.add(*keywords)

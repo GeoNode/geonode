@@ -51,15 +51,8 @@
 {% endblock %}
 
 {% block extra_script %}
-  <script src="{% static "libs/js/bootstrap-datepicker.js" %}" type="text/javascript"></script>
-  <script src="{% static "libs/js/jquery.tinysort.min.js" %}"></script>
-  <script src="{% static "libs/js/waypoints.js" %}"></script>
-  <script src="{% static "libs/js/loadmore.js" %}"></script>
-  <script src="{% static "libs/js/jquery.raty.js" %}"></script>
-  <script src="{% static "geonode/js/explore.js" %}"></script>
   <script type="text/javascript">
   var default_type = 'layer';
   </script>
-  <script src="{% static "geonode/js/global_search.js" %}"></script>
-  {% include 'rate.js' %}
+  {% include 'search_scripts.html' %}
 {% endblock extra_script %}

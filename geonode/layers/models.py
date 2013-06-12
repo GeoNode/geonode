@@ -35,7 +35,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
-from geonode.base.models import ResourceBase, ResourceBaseManager, Link, resourcebase_post_save
+from geonode.base.models import ResourceBase, ResourceBaseManager, Link, \
+    resourcebase_post_save, resourcebase_post_delete, resourcebase_pre_save
 from geonode.utils import  _user, _password, get_wms
 from geonode.utils import http_client
 from geonode.geoserver.helpers import cascading_delete
@@ -162,6 +163,13 @@ class Layer(ResourceBase):
             "dataStore" : "Vector Data",
             "coverageStore": "Raster Data",
         }).get(self.storeType, "Data")
+
+    @property
+    def store_type(self):
+        cat = Layer.objects.gs_catalog
+        res = cat.get_resource(self.name)
+        res.store.fetch()
+        return res.store.dom.find('type').text
 
     @property
     def service_type(self):
@@ -703,4 +711,6 @@ signals.pre_delete.connect(geoserver_pre_delete, sender=Layer)
 signals.post_save.connect(geoserver_post_save, sender=Layer)
 signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)
+signals.post_delete.connect(resourcebase_post_delete, sender=Layer)
 signals.post_save.connect(resourcebase_post_save, sender=Layer)
+signals.pre_save.connect(resourcebase_pre_save, sender=Layer)
