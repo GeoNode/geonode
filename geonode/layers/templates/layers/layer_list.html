@@ -16,38 +16,38 @@
 {% endblock %}
 
 {% block body %}
-<div class="span12">
-  <h2 class="page-title">{% trans "Explore Layers" %}</h2>
-</div>
-<div class="span8 filter">      
-  {% include "search/_sort_filters.html" %}
-</div>
-<div class="span4">
-  <div class="pull-right" data-viewby="list">
-  {% include "_viewby.html" %}
-  </div>
-</div>
-<div class="span12">
-  <div class="row" id="contain-slider">
+    <div class="span12">
+      <h2 class="page-title">{% trans "Explore Layers" %}</h2>
+    </div>
+    <div class="span8 filter">      
+      {% include "search/_sort_filters.html" %}
+    </div>
     <div class="span4">
-      <div class="selections">
-        <h4>
-        {% trans "Your selections" %}
-          <a href="." id="clear-search" class="pull-right">Clear all</a>
-        </h4>
-      </div>
-      <div id="slide-pane">
-        <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
-        {% with type='layer' %} 
-          {% include "search/_general_filters.html" %}
-        {% endwith %}
+      <div class="pull-right" data-viewby="list">
+        {% include "_viewby.html" %}
       </div>
     </div>
-    <div class="tab-content span12 paginate paginate-auto" id="search-content">
-      {% include 'search/search_content.html' %}
+    <div class="span12">
+      <div class="row" id="contain-slider">
+        <div class="span4">
+          <div class="selections">
+            <h4>
+              {% trans "Your selections" %}
+              <a href="." id="clear-search" class="pull-right">Clear all</a>
+            </h4>
+          </div>
+          <div id="slide-pane">
+            <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
+            {% with type='layer' %} 
+            {% include "search/_general_filters.html" %}
+            {% endwith %}
+          </div>
+        </div>
+        <div class="tab-content span8 paginate paginate-auto" id="search-content">
+          {% include 'search/search_content.html' %}
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 {% endblock %}
 
 {% block extra_script %}
