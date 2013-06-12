@@ -60,7 +60,8 @@ def set_metadata(xml):
         vals, keywords = dc2dict(exml)
     else:
         raise RuntimeError('Unsupported metadata format')
-
+    if vals["date"] is None:
+        vals["date"] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
     return [vals, keywords]
 
 
