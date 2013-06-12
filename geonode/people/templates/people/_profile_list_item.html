@@ -4,29 +4,33 @@
 {% friendly_load activity_tags %}
 {% load i18n %}
 
-<article class="well">
-    <a href="{% url profile_detail profile.user.username %}">{% avatar profile.user 65 %} </a>
-    
-    <a href="{% url profile_detail profile.user.username %}">{{ profile.name }}</a> {% if profile.organization %}({{ profile.organization }}){% endif %}
-
-    <p>{{ profile.user.email }}</p>
-    {% if profile.profile %}
-        <p>{{ profile.profile }}</p>
-    {% endif %}
-
-    <p>{{ profile.user.layer_set.all|length }} Layers</p>
-
-    <p>{{ profile.user.map_set.all|length }} Maps</p>
-    {% if DOCUMENTS_APP %}
-    <p>{{ profile.user.document_set.all|length }} Documents</p>
-    {% endif %}
-    {% if request.user != profile.user %}
+<article>
+  <h3><i class="icon-user"></i> <a href="{% url profile_detail profile.user.username %}">{{ profile.name }}</a>
+    {% if  profile.user.email %}<a href="mailto:{{ profile.user.email }}"><i class="icon-envelope icon-large"></i></a>{% endif %}</h3>
+  <a class="avatar" href="{% url profile_detail profile.user.username %}">{% avatar profile.user 65 %}</a>
+  <div class="details">
+    <div class="pull-right">
+      {% if_has_tag actor_url %}
+      <p><a href="{% actor_url profile.user %}" class="btn btn-primary" type="button">{% trans "My Activities" %}</a></p>
+      {% if request.user != profile.user %}
         {% if_has_tag if_relationship %}
-            {% include "relationships/_profile_follow.html" %}
+          {% include "relationships/_profile_follow.html" %}
         {% endif_has_tag %}
-    {% endif %}
-
-    {% if_has_tag actor_url %}
-        <p><a href="{% actor_url profile.user %}" class="btn btn-primary" type="button">{% trans "My Activities" %}</a></p>
+      {% endif %}
     {% endif_has_tag %}
+    </div>
+    <div class="meta">
+      {% if profile.organization %}<p>{{ profile.organization }}</p>{% endif %}
+        {% if profile.profile %}
+        <p class="abstract">{{ profile.profile }}</p>
+        {% endif %}
+        <ul class="people-activity">
+          <li><a href="#">{{ profile.user.layer_set.all|length }} Layers</a></li>
+          <li><a href="#">{{ profile.user.map_set.all|length }} Maps</a></li>
+          {% if DOCUMENTS_APP %}
+          <li><a href="#">{{ profile.user.document_set.all|length }} Documents</a></li>
+        </ul>
+      {% endif %}
+    </div>    
+  </div>
 </article>

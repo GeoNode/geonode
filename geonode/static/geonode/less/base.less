@@ -46,13 +46,22 @@
 }
 
 // Universal styles
+
 body {
-  padding-top: 80px;
   background:@white;
+  font-family: @customFont;
+  padding-top: 80px;
+}
+
+article {
+  clear: both;
+  padding-bottom: 30px;
+  padding-top: 10px;
 }
 
 h2, h3 {
-  margin-bottom:10px !important;
+  font-weight: normal;
+  margin-bottom: 0 !important;
 }
 
 h2 {
@@ -90,7 +99,7 @@ img.olTileImage {
   }
 
   i {
-    font-size:22px;
+    font-size:14px;
   }
 
   li.actions {
@@ -360,9 +369,32 @@ footer.footer {
 }
 
 // Elements
+
+article h3 [class^="icon-"], a [class*=" icon-"] {
+  color: @blueLight;
+  font-size: 20px;
+  margin-right: 5px;
+  text-decoration: none;
+}
+
+article a [class^="icon-"], a [class*=" icon-"] {
+  color: @grayNeutral;
+  font-size: 14px;
+  margin-left: 5px;
+  text-decoration: none;
+
+  &:hover {
+    color: @grayDark;
+  }
+}
+
 .meta {
   font-size:@baseFontSize - 1;
   color:@graySp;
+}
+
+.meta p {
+  margin-bottom: 0;
 }
 
 .btn {
@@ -515,8 +547,10 @@ section.widget-mini {
   }
 
   img {
+    border: 1px solid @bdrColor;
     float:left;
-    margin:0 15px 15px 0;
+    margin:0 10px 10px 0;
+    padding: 4px;
   }
 
   .details {
@@ -533,12 +567,13 @@ section.widget-mini {
   }
 
   .abstract {
-    margin: 1em 0;
+    margin: 0.4em 0;
   }
 }
 
 .grid article {
-  width: 285px;
+  margin-right: 10px;
+  width: 275px;
   overflow: hidden;
   float: left;
 
@@ -667,7 +702,7 @@ section.article-list {
 
 h2.page-title {
   text-transform:uppercase;
-  font-size:48px;
+  font-size:36px;
   letter-spacing: 0.1em;
   font-family:@customFont;
   font-weight: 300;
@@ -818,7 +853,7 @@ ul.space li {
   .nav a {
     padding: 0.8em;
     color: @grayDark;
-    font-size: 16px;
+    font-size: 13px;
     cursor: pointer;
   }
   .nav a.active {
@@ -915,7 +950,7 @@ ul.space li {
 
 
 .tab-pane article {
-  margin-bottom:40px;
+  margin-bottom:10px;
 
   img {
     margin-bottom:10px;
@@ -975,6 +1010,7 @@ article.abstract {
   }
 
   article {
+    float: left;
     margin-bottom:15px;
 
     p {
@@ -1410,4 +1446,15 @@ ul.list {
 
 #form_post_comment textarea {
   width: 100%;
+}
+
+// people
+.avatar {
+  float: left;
+  margin-bottom: 10px;
+  margin-right: 10px;
+}
+.people-activity li {
+  display: inline-block;
+  list-style-type: none;
 }

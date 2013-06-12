@@ -4,8 +4,8 @@
 {% load base_tags %}
 
 {% overall_rating map "map" as map_rating %} {% num_ratings map as num_votes %}
-<article>
-  <h3>Map</h3>
+<article class="clear">
+  <h3><i class="icon-globe"></i> <a href="{% url "map_detail" map.id %}">{{ map.title }}</a></h3>
   <a href="{% url "map_detail" map.id %}">
     <div class="img-placeholder pl-153-113">{% trans "No Image Available" %}</div>
   </a>
@@ -13,9 +13,8 @@
     <div class="pull-right">
       <a href="{% url "map_download" map.id %}" class="btn btn-info download">{% trans "Download" %}</a>
     </div>
-    <a href="{% url "map_detail" map.id %}"><h3>{{ map.title }}</h3></a>
     <div class="meta">
-      {% trans "from" %} <a href="{% url "profile_detail" map.owner.username %}" rel="author">{{ map.owner }}</a>, {{ map.last_modified|timesince }} {% trans 'ago' %}
+      Map {% trans "from" %} <a href="{% url "profile_detail" map.owner.username %}" rel="author">{{ map.owner }}</a>, {{ map.last_modified|timesince }} {% trans 'ago' %}
     </div>
     <p class="abstract">{{ map.abstract }}</p>
     <p class="activity">{{ map.popular_count }} {% trans "view" %}{{ map.popular_count|pluralize }} | <span class="avg_rating" data-rating="{{ map_rating }}">{% trans "Average rating" %} <span class="overall_rating"></span> ({{num_votes}})</span></p>
