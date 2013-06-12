@@ -516,4 +516,4 @@ class GeoNodeMapTest(TestCase):
                                 'shx_file': layer_shx,
                                 'prj_file': layer_prj
                                 })
-        self.assertEquals(response.status_code, 403)
+        self.assertEquals(response.status_code, 302)
