@@ -6,7 +6,7 @@
 {% block body_class %}profiles{% endblock %}
 
 {% block body %}
-<ul>
+
 {% for profile in object_list %}
     {% if profile.user %}
       {% with profile as profile %}
@@ -14,5 +14,5 @@
       {% endwith %}
     {% endif %}
 {% endfor %}
-</ul>
+
 {% endblock %}
