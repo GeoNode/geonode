@@ -46,22 +46,13 @@
 }
 
 // Universal styles
-
 body {
-  background:@white;
-  font-family: @customFont;
   padding-top: 80px;
-}
-
-article {
-  clear: both;
-  padding-bottom: 30px;
-  padding-top: 10px;
+  background:@white;
 }
 
 h2, h3 {
-  font-weight: normal;
-  margin-bottom: 0 !important;
+  margin-bottom:10px !important;
 }
 
 h2 {
@@ -99,7 +90,7 @@ img.olTileImage {
   }
 
   i {
-    font-size:14px;
+    font-size:22px;
   }
 
   li.actions {
@@ -322,7 +313,7 @@ footer.footer {
     }
 
     label {
-      /*font-weight:bold;*/
+      font-weight:bold;
       font-size:@baseFontSize + 2;
 
       span.note {
@@ -369,32 +360,9 @@ footer.footer {
 }
 
 // Elements
-
-article h3 [class^="icon-"], a [class*=" icon-"] {
-  color: @blueLight;
-  font-size: 20px;
-  margin-right: 5px;
-  text-decoration: none;
-}
-
-article a [class^="icon-"], a [class*=" icon-"] {
-  color: @grayNeutral;
-  font-size: 14px;
-  margin-left: 5px;
-  text-decoration: none;
-
-  &:hover {
-    color: @grayDark;
-  }
-}
-
 .meta {
   font-size:@baseFontSize - 1;
   color:@graySp;
-}
-
-.meta p {
-  margin-bottom: 0;
 }
 
 .btn {
@@ -547,10 +515,8 @@ section.widget-mini {
   }
 
   img {
-    border: 1px solid @bdrColor;
     float:left;
-    margin:0 10px 10px 0;
-    padding: 4px;
+    margin:0 15px 15px 0;
   }
 
   .details {
@@ -567,13 +533,12 @@ section.widget-mini {
   }
 
   .abstract {
-    margin: 0.4em 0;
+    margin: 1em 0;
   }
 }
 
 .grid article {
-  margin-right: 10px;
-  width: 275px;
+  width: 285px;
   overflow: hidden;
   float: left;
 
@@ -692,6 +657,7 @@ section.article-list {
   font-weight:bold;
   display:block;
   margin-bottom:15px;
+  margin-top: 15px;
 }
 .hd-actions a.btn-primary {
   background-color: @orange;
@@ -853,7 +819,7 @@ ul.space li {
   .nav a {
     padding: 0.8em;
     color: @grayDark;
-    font-size: 13px;
+    font-size: 16px;
     cursor: pointer;
   }
   .nav a.active {
@@ -950,7 +916,7 @@ ul.space li {
 
 
 .tab-pane article {
-  margin-bottom:10px;
+  margin-bottom:40px;
 
   img {
     margin-bottom:10px;
@@ -1010,7 +976,6 @@ article.abstract {
   }
 
   article {
-    float: left;
     margin-bottom:15px;
 
     p {
@@ -1446,15 +1411,4 @@ ul.list {
 
 #form_post_comment textarea {
   width: 100%;
-}
-
-// people
-.avatar {
-  float: left;
-  margin-bottom: 10px;
-  margin-right: 10px;
-}
-.people-activity li {
-  display: inline-block;
-  list-style-type: none;
 }
