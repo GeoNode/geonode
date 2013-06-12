@@ -35,8 +35,8 @@ try:
 except ImportError:
     from paver.easy import pushd
 
-assert sys.version_info >= (2, 6, 2), \
-    SystemError("GeoNode Build requires python 2.6.2 or better")
+assert sys.version_info >= (2, 7), \
+    SystemError("GeoNode Build requires python 2.7 or better")
 
 
 def grab(src, dest, name):
