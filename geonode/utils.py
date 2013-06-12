@@ -64,7 +64,7 @@ def check_geonode_is_up():
        this is needed to be able to upload.
     """
     url = "%sweb/" % settings.GEOSERVER_BASE_URL
-    resp, content = h.request(url, "GET")
+    resp, content = http_client.request(url, "GET")
     msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
            'have started it.' % settings.GEOSERVER_BASE_URL)
     assert resp['status'] == '200', msg
