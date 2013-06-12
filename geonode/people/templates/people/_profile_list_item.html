@@ -24,7 +24,7 @@
         {% if profile.profile %}
         <p class="abstract">{{ profile.profile }}</p>
         {% endif %}
-        <ul class="people-activity">
+        <ul class="nav nav-pills">
           <li><a href="#">{{ profile.user.layer_set.all|length }} Layers</a></li>
           <li><a href="#">{{ profile.user.map_set.all|length }} Maps</a></li>
           {% if DOCUMENTS_APP %}
