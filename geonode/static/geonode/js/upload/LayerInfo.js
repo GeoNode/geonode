@@ -185,8 +185,9 @@ define(function (require, exports) {
             alertLevel: options.level
         }));
     };
+
     LayerInfo.prototype.markError = function (error) {
-        this.logStatus({msg: '[ ' + error + ' ]'});
+        this.logStatus({msg: error, level: 'alert-error'});
     };
 
     // make this into an abstract method so we can mark events in a
@@ -206,51 +207,60 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.doFinal = function (resp) {
         var self = this;
-        make_request({
-            url: resp.redirect_to,
-            async: false,
-            failure: function (resp, status) {self.markError(resp); },
-            success: function (resp, status) {
-                // hack find a better way of creating a string
-                var a = '<a href="' + resp.url + '">Layer page</a>';
-                self.logStatus({
-                    msg: '<p> Your layer was successful uploaded, please visit the ' + a + ' page </p>',
-                    level: 'alert-success'
-                });
-            },
-        });
+        if (resp.status === "incomplete") {
+            var a = '<a id="next_step">Layer Upload</a>';
+            self.logStatus({
+                msg:'<p>You need to specify more information in order to complete your upload. You can continue your ' + a + '.</p>',
+                level: 'alert-success'
+            });
+            //$("#next_step").on('click', resp, self.doSomething); 
+            return;
+        } else if (resp.status === "other") {
+            self.logStatus({
+                msg:'<p>You need to specify more information in order to complete your upload</p>',
+                level: 'alert-success'
+            });
+        } else {
+            // hack find a better way of creating a string
+            var a = '<a href="' + resp.url + '">Layer Info page</a>';
+            var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
+            self.logStatus({
+                msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ', or edit the ' + b + '.</p>',
+                level: 'alert-success'
+            });
+        }
     };
 
-    LayerInfo.prototype.doSrs = function (resp) {
-        // at this point we need to allow the user to select an srs
+    LayerInfo.prototype.doStep = function (resp) {
         var self = this;
-        var resp = $.parseJSON(resp);
         make_request({
             url: resp.redirect_to,
             async: false,
+            type: 'POST',
             failure: function (resp, status) { self.markError(resp); },
             success: function (resp, status) { self.doFinal(resp); }
         });
     };
 
     LayerInfo.prototype.uploadFiles = function () {
-        var form_data = this.prepareFormData(),
-            self = this;
+        var form_data = this.prepareFormData(), self = this;
 
         $.ajax({
-            url: form_target, // is this right?
+            url: form_target,
             async: false,
-            type: "POST",
+            type: 'POST',
             data: form_data,
-            processData: false, // make sure that jquery does not process the form data
+            processData: false,
             contentType: false,
-            beforeSend: function () {
-                self.markStart();
-            }
-        }).done(function (resp) {
-            self.doSrs(resp);
-        }).fail(function (resp) {
-            alert('Response failed,' + resp.errors);
+            beforeSend: function () { self.markStart(); },
+            error: function (jqXHR) {
+                if (jqXHR === null) {
+                    self.markError("Unexpected Error");
+                } else {
+                    self.markError($.parseJSON(jqXHR.responseText).errors);
+                }
+            },
+            success: function (resp, status) { self.doFinal(resp); }
         });
     };
 
@@ -278,8 +288,6 @@ define(function (require, exports) {
 
         this.removeFile(file_name);
         this.displayRefresh();
-
-
     };
 
     LayerInfo.prototype.displayFiles = function () {
@@ -305,9 +313,7 @@ define(function (require, exports) {
                 self.removeFile(file_name);
                 self.displayRefresh();
             });
-
         });
-
     };
 
     LayerInfo.prototype.displayErrors = function () {
@@ -342,7 +348,6 @@ define(function (require, exports) {
                 break;
             }
         }
-
     };
 
     return LayerInfo;

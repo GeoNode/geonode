@@ -10,7 +10,8 @@ from django.contrib.contenttypes import generic
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save
+from geonode.base.models import ResourceBase, resourcebase_post_save, \
+    resourcebase_pre_save, resourcebase_post_delete
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 from geonode.people.models import Profile
@@ -85,7 +86,7 @@ def pre_save_document(instance, sender, **kwargs):
         instance.title = instance.name
 
     if instance.resource:
-        instance.csw_wkt_geometry = instance.resource.geographic_bounding_box
+        instance.csw_wkt_geometry = instance.resource.geographic_bounding_box.split(';')[-1]
         instance.bbox_x0 = instance.resource.bbox_x0
         instance.bbox_x1 = instance.resource.bbox_x1
         instance.bbox_y0 = instance.resource.bbox_y0
@@ -99,4 +100,6 @@ def update_documents_extent(sender, **kwargs):
 
 signals.pre_save.connect(pre_save_document, sender=Document)
 signals.post_save.connect(resourcebase_post_save, sender=Document)
+signals.pre_save.connect(resourcebase_pre_save, sender=Document)
+signals.post_delete.connect(resourcebase_post_delete, sender=Document)
 map_changed_signal.connect(update_documents_extent)

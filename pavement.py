@@ -228,7 +228,7 @@ def start():
     """
     info("GeoNode is now available.")
 
-
+@task
 def stop_django():
     """
     Stop the GeoNode Django application
@@ -236,6 +236,7 @@ def stop_django():
     kill('python', 'runserver')
 
 
+@task
 def stop_geoserver():
     """
     Stop GeoServer

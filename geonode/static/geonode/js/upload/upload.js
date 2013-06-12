@@ -115,7 +115,7 @@ define(['jquery',
         var matched = false;
         for (var file_type in fileTypes){
             var required = fileTypes[file_type]['requires'];
-            if ($(required).not(types).length == 0 && $(types).not(required).length == 0){
+            if ($(required).not(types).length == 0){
                 matched = true;
                 break;
             }
@@ -129,7 +129,7 @@ define(['jquery',
     doUploads = function () {
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
-            alert('You are uploading an incomplete set of files or not necessary files');
+            alert('You are uploading an incomplete set of files.');
         } else {
             $.each(layers, function (name, layerinfo) {
                 layerinfo.uploadFiles();
