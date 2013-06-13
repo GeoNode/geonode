@@ -23,7 +23,8 @@ from taggit.managers import TaggableManager
 def get_default_category():
     if settings.DEFAULT_TOPICCATEGORY:
         try:
-            return TopicCategory.objects.get(slug=settings.DEFAULT_TOPICCATEGORY)
+            #return TopicCategory.objects.get(identifier=settings.DEFAULT_TOPICCATEGORY)
+            return TopicCategory.objects.all()[0]
         except TopicCategory.DoesNotExist:
             raise TopicCategory.DoesNotExist('The default TopicCategory indicated in settings is not found.')
     else:
@@ -61,19 +62,25 @@ class ContactRole(models.Model):
         unique_together = (("contact", "resource", "role"),)
 
 class TopicCategory(models.Model):
-
-    name = models.CharField(max_length=50)
-    slug = models.SlugField()
-    description = models.TextField(blank=True)
+    """
+    Metadata about high-level geographic data thematic classification.
+    It should reflect a list of codes from TC211
+    See: http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml
+    <CodeListDictionary gml:id="MD_MD_TopicCategoryCode">
+    """
+    identifier = models.CharField(max_length=255, editable=False, default='location')
+    description = models.TextField(editable=False)
+    gn_description = models.TextField('GeoNode description', default='')
+    is_choice = models.BooleanField(default=True)
     layers_count = models.IntegerField(default=0)
     maps_count = models.IntegerField(default=0)
     documents_count = models.IntegerField(default=0)
 
     def __unicode__(self):
-        return u"{0}".format(self.name)
+        return u"{0}".format(self.gn_description)
 
     class Meta:
-        ordering = ("name",)
+        ordering = ("identifier",)
         verbose_name_plural = 'Metadata Topic Categories'
         
 class SpatialRepresentationType(models.Model):
@@ -240,7 +247,7 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
 
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng', help_text=_('language used within the dataset'))
-    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True, blank=True, default=get_default_category)
+    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True, blank=True, default=get_default_category(), limit_choices_to=Q(is_choice=True))
     spatial_representation_type = models.ForeignKey(SpatialRepresentationType, help_text=_('method used to represent geographic information in the dataset.'), null=True, blank=True, limit_choices_to=Q(is_choice=True))
 
     # Section 5

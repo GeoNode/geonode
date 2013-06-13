@@ -57,38 +57,6 @@ UPDATE_FREQUENCIES = (
     ('quarterly', _('data is updated every three months')),
 )
 
-TOPIC_CATEGORIES = (
-    ('geoscientificInformation',
-        _('information pertaining to earth sciences')),
-    ('farming', _('rearing of animals and/or cultivation of plants')),
-    ('elevation', _('height above or below sea level')),
-    ('utilitiesCommunication',
-        _('energy, water and waste systems and communications infrastructure\
-           and services')),
-    ('oceans', 
-        _('features and characteristics of salt water bodies (excluding\
-           inland waters)')),
-    ('boundaries', _('legal land descriptions')),
-    ('inlandWaters',
-        _('inland water features, drainage systems and\
-           their characteristics')),
-    ('intelligenceMilitary', _('military bases, structures, activities')),
-    ('environment', _('environmental resources, protection and conservation')),
-    ('location', _('positional information and services')),
-    ('economy', _('economic activities, conditions and employment')),
-    ('planningCadastre',
-        _('information used for appropriate actions for future use of the\
-           land')),
-    ('biota', _('flora and/or fauna in natural environment')),
-    ('health', _('health, health services, human ecology, and safety')),
-    ('imageryBaseMapsEarthCover', _('base maps')),
-    ('transportation', _('means and aids for conveying persons and/or goods')),
-    ('society', _('characteristics of society and cultures')),
-    ('structure', _('man-made construction')),
-    ('climatologyMeteorologyAtmosphere',
-        _('processes and phenomena of the atmosphere')),
-)
-
 CONTACT_FIELDS = [
     'name',
     'organization',
