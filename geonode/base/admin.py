@@ -9,8 +9,16 @@ class ResourceBaseAdmin(admin.ModelAdmin):
 
 class TopicCategoryAdmin(admin.ModelAdmin):
     model = TopicCategory
-    list_display_links = ('name',)
-    list_display = ('id', 'name', 'slug', 'description')
+    list_display_links = ('identifier',)
+    list_display = ('identifier', 'description', 'gn_description', 'is_choice')
+    
+    def has_add_permission(self, request):
+        # the records are from the standard TC 211 list, so no way to add
+        return False
+        
+    def has_delete_permission(self, request, obj=None):
+        # the records are from the standard TC 211 list, so no way to remove
+        return False
     
 class RegionAdmin(admin.ModelAdmin):
     model = Region
