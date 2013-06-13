@@ -36,4 +36,5 @@ def resource_urls(request):
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
         DOCUMENTS_APP = settings.DOCUMENTS_APP,
+        METADATA_DOWNLOAD_ALLOWS = settings.METADATA_DOWNLOAD_ALLOWS,
     )
