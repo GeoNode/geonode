@@ -278,6 +278,10 @@ MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # This middleware allows to print private layers.
+    # It sets temporarly the involved layers as public before restoring the permission
+    # Beware of possible risks when activating this
+    #'geonode.middleware.PrintProxyMiddleware',
 )
 
 
