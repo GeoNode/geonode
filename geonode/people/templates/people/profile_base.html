@@ -9,7 +9,7 @@
 {% block body_outer %}
     <div class="span12">
       <ul class="nav nav-tabs" id="subnav-tabs">
-            <li><a href="/people/" class="explore">{% trans "Explore People" %}</a></li>
+            <li><a href="{% url "profile_browse" %}" class="explore">{% trans "Explore People" %}</a></li>
       </ul>
     </div>
     {% block body %}{% endblock body %}
