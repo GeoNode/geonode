@@ -528,6 +528,9 @@ DEFAULT_TOPICCATEGORY = 'location'
 
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 
+# allows/inhibits metadata download (just display or not the link in layer info page)
+METADATA_DOWNLOAD_ALLOWS = True
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *
