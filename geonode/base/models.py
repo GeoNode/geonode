@@ -20,16 +20,6 @@ from geonode.security.models import PermissionLevelMixin
 
 from taggit.managers import TaggableManager
 
-def get_default_category():
-    if settings.DEFAULT_TOPICCATEGORY:
-        try:
-            #return TopicCategory.objects.get(identifier=settings.DEFAULT_TOPICCATEGORY)
-            return TopicCategory.objects.all()[0]
-        except TopicCategory.DoesNotExist:
-            raise TopicCategory.DoesNotExist('The default TopicCategory indicated in settings is not found.')
-    else:
-        return TopicCategory.objects.all()[0]
-
 class ContactRole(models.Model):
     """
     ContactRole is an intermediate abstract model to bind Profiles as Contacts to Layers and apply roles.
