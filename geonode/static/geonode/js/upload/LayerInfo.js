@@ -317,7 +317,7 @@ define(function (require, exports) {
             });
         } else if (resp.success === true && typeof resp.url != 'undefined') {
             self.doFinal(resp);
-        } else if (resp.success === true && response.redirect_to === '/upload/final') {
+        } else if (resp.success === true && resp.redirect_to === '/upload/final') {
             self.doFinal(resp);
         }
     };
@@ -345,7 +345,10 @@ define(function (require, exports) {
                     self.markError($.parseJSON(jqXHR.responseText).errors);
                 }
             },
-            success: function (resp, status) { self.doStep(resp); }
+            success: function (resp, status) {
+                console.log(resp, status);
+                self.doStep(resp); 
+            }
         });
     };
 
