@@ -106,7 +106,7 @@ setup(name='GeoNode',
         "South==0.7.3",
         #catalogue
         "Shapely>=1.2.15",
-        "pycsw>=1.4.1",
+        "pycsw>=1.4.2",
         # setup
         "Paver",
         # sample and test data / metadata
