@@ -9,7 +9,7 @@
     <div class="notice_settings">
         <h1>{% trans "Notification Settings" %}</h1>
         
-        {% url acct_email as email_url %}
+        {% url "acct_email" as email_url %}
         {% if user.email %}
             <p>
                 {% trans "Primary email" %}:<br />
