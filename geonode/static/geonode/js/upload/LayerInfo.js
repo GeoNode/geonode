@@ -227,6 +227,16 @@ define(function (require, exports) {
         });
         return false;
     };
+
+    LayerInfo.prototype.displayUploadedLayerLinks = function(resp) {
+        var self = this;
+        var a = '<a href="' + resp.url + '" class="btn">Layer Info</a>';
+        var b = '<a href="' + resp.url + '/metadata" class="btn">Metadata</a>';
+        self.logStatus({
+            msg: '<p> Your layer was successful uploaded<br/><br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '.</p>',
+            level: 'alert-success'
+        });
+    };
  
     /** Function to deal with the final step in the upload process 
      *
@@ -249,13 +259,7 @@ define(function (require, exports) {
                             level: 'alert-success'
                         });
                     } else {
-                        // hack find a better way of creating a string
-                        var a = '<a href="' + resp.url + '">Layer page</a>';
-                        var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
-                        self.logStatus({
-                            msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ' page, or edit the ' + b + '.</p>',
-                            level: 'alert-success'
-                        });
+                        self.displayUploadedLayerLinks(resp);
                     }
                 },
             });
@@ -273,13 +277,7 @@ define(function (require, exports) {
                 level: 'alert-success'
             });
         } else if (resp.success === true) {
-            // hack find a better way of creating a string
-            var a = '<a href="' + resp.url + '">Layer Info</a>';
-            var b = '<a href="' + resp.url + '/metadata">Metadata</a>';
-            self.logStatus({
-                msg: '<p> Your layer was successful uploaded, you can visit the ' + a + ' page, or edit the ' + b + '.</p>',
-                level: 'alert-success'
-            });
+            self.displayUploadedLayerLinks(resp);
         } else {
             self.logStatus({
                 msg:'<p>Unexpected Error</p>',
@@ -346,7 +344,6 @@ define(function (require, exports) {
                 }
             },
             success: function (resp, status) {
-                console.log(resp, status);
                 self.doStep(resp); 
             }
         });
