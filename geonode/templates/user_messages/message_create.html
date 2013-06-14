@@ -6,7 +6,7 @@
 
 {% block body %}
 <h3>{% trans "Create Message" %}</h3>
-<form method="post" action="{% url message_create %}">
+<form method="post" action="{% url "message_create" %}">
     {% csrf_token %}
 <table width=100%>
     {{ form }}
@@ -16,5 +16,5 @@
 {% endblock %}
 
 {% block sidebar %}
-<a href="{% url messages_inbox %}" class="btn btn-primary" type="button">{% trans "Back to Inbox" %}</a>
+<a href="{% url "messages_inbox" %}" class="btn btn-primary" type="button">{% trans "Back to Inbox" %}</a>
 {% endblock %}
