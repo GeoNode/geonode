@@ -98,7 +98,7 @@
             
             csrf_token =  "{{ csrf_token }}",
             form_target = "{{ UPLOADER_URL }}",
-            userLookup = "{% url geonode.views.ajax_lookup %}"
+            userLookup = "{% url "geonode.views.ajax_lookup" %}"
 
             {% endautoescape %}
 
