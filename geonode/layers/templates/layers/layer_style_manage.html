@@ -5,6 +5,13 @@
 
 {% block body_class %}data{% endblock %}
 
+
+{% block head %}
+<link href="{{ STATIC_URL }}libs/lou-multi-select/css/multi-select.css" media="screen" rel="stylesheet" type="text/css">
+
+{{ block.super }}
+{% endblock %}
+
 {% block body_outer %}
 <div class="row">
   <div class="span8">
@@ -14,20 +21,21 @@
           Manage Available Styles for {{ layer_title }}
         {% endblocktrans %}
       </h2>
-      <h3>GeoServer Styles</h3>
-      <ul>
-      {% for style in gs_styles %}
-        <li>{{ style.name }}</li>
-      {% endfor %}
-      </ul>
-      <h3>Layer Styles</h3>
-      <ul>
-      {% for style in layer_styles %}
-        <li>{{ style.name }}</li>
-      {% endfor %}
-      </ul>
       <h3>Default Style</h3>
-      {{ default_style }}
+      <select id='default_style' name='default_style'>
+      {% for style in layer_styles %}
+        <option value="{{ style }}">{{ style }}</option> 
+      {% endfor %}
+        </select>
+      <h3>Available Styles</h3>
+      <select multiple="multiple" id="style-select" name="style-select">
+      {% for style in gs_styles %}
+        {% if style in layer_styles %}
+        <option value='{{ style }}' selected>{{ style }}</option>
+        {% else %}
+        <option value='{{ style }}'>{{ style }}</option>
+        {% endif %}
+      {% endfor %}
       {% csrf_token %}
       <input type="hidden" value="{{ layer.typename }}" /> 
       <div class="form-actions">
@@ -36,4 +44,28 @@
     </form>
   </div>
 </div>
+{% endblock %}
+{% block extra_script %}
+<script src="{{ STATIC_URL }}libs/lou-multi-select/js/jquery.multi-select.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $('#style-select').multiSelect();
+    });
+
+        $('#style-select').multiSelect({
+            afterSelect: function(values){
+                $('#default_style').append($("<option/>", {
+                    value: values[0],
+                    text: values[0]
+                }));
+            },
+            afterDeselect: function(values){
+                $('#default_style option').each(function() {
+                    if ( $(this).val() == values[0] ) {
+                        $(this).remove();
+                    }
+                });
+            }
+    });
+</script>
 {% endblock %}
