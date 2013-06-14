@@ -6,7 +6,7 @@
 {% block body %}
 <div class="row">
   <div class="span8">
-    <form action="{% url document_remove document.id %}" method="POST">
+    <form action="{% url "document_remove" document.id %}" method="POST">
       <h2>
         {% blocktrans with document.title as document_title %}
           Are you sure you want to remove {{ document_title }}?
