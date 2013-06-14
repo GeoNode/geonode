@@ -21,6 +21,7 @@
 import os
 import logging
 import shutil
+from lxml import etree
 
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
@@ -38,8 +39,8 @@ from django.template.defaultfilters import slugify
 from django.shortcuts import get_object_or_404
 from django.forms.models import inlineformset_factory
 
-from geonode.utils import http_client, _get_basic_auth_info
-from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
+from geonode.utils import http_client, _get_basic_auth_info, json_response
+from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm, LayerStyleUploadForm
 from geonode.layers.models import Layer, Attribute
 from geonode.base.models import ContactRole
 from geonode.utils import default_map_config
@@ -282,6 +283,50 @@ def layer_style(request, layername):
     layer.save()
 
     return HttpResponse("Default style for %s changed to %s" % (layer.name, style_name),status=200)
+
+
+@login_required
+def layer_style_upload(req, layername):
+    def respond(*args,**kw):
+        kw['content_type'] = 'text/html'
+        return json_response(*args,**kw)
+    form = LayerStyleUploadForm(req.POST,req.FILES)
+    if not form.is_valid():
+        return respond(errors="Please provide an SLD file.")
+    
+    data = form.cleaned_data
+    layer = _resolve_layer(req, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
+    
+    sld = req.FILES['sld'].read()
+
+    try:
+        dom = etree.XML(sld)
+    except Exception,ex:
+        return respond(errors="The uploaded SLD file is not valid XML")
+    
+    el = dom.findall("{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
+    if len(el) == 0 and not data.get('name'):
+        return respond(errors="Please provide a name, unable to extract one from the SLD.")
+    name = data.get('name') or el[0].text
+    if data['update']:
+        match = None
+        styles = list(layer.styles) + [layer.default_style]
+        for style in styles:
+            if style.sld_name == name:
+                match = style; break
+        if match is None:
+            return respond(errors="Cannot locate style : " + name)
+        match.update_body(sld)
+    else:
+        try:
+            cat = Layer.objects.gs_catalog
+            cat.create_style(name, sld)
+            layer.styles = layer.styles + [ type('style',(object,),{'name' : name}) ]
+            cat.save(layer.publishing)
+        except ConflictingDataError,e:
+            return respond(errors="""A layer with this name exists. Select
+                                     the update option if you want to update.""")
+    return respond(body={'success':True,'style':name,'updated':data['update']})
 
 
 @login_required
