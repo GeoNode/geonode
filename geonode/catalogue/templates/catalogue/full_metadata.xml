@@ -219,7 +219,7 @@
        </gmd:characterSet>
        <gmd:topicCategory {% if not layer.category %}gco:nilReason="missing"{% endif %}>
          {% if layer.category %}
-         <gmd:MD_TopicCategoryCode>{{layer.category}}</gmd:MD_TopicCategoryCode>
+         <gmd:MD_TopicCategoryCode>{{layer.category.identifier}}</gmd:MD_TopicCategoryCode>
          {% endif %}
        </gmd:topicCategory>
        <gmd:extent>
