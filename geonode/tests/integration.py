@@ -534,7 +534,7 @@ class GeoNodeMapPrintTest(TestCase):
 
     def testPrintProxy(self):
         """ Test the PrintProxyMiddleware if activated.
-            It sould respect the permissions on private layers.
+            It should respect the permissions on private layers.
         """
         
         if 'geonode.middleware.PrintProxyMiddleware' in settings.MIDDLEWARE_CLASSES:
@@ -562,7 +562,7 @@ class GeoNodeMapPrintTest(TestCase):
             resp = client.get(url)
             self.assertEquals(resp.status_code, 200)
 
-            # check is unaccessible when not logged in
+            # check is inaccessible when not logged in
             client.logout()
             resp = client.get(url)
             self.assertEquals(resp.status_code, 302)
@@ -603,7 +603,7 @@ class GeoNodeMapPrintTest(TestCase):
 
             client.post(print_url, post_payload)
 
-            # Test the layer is still unaccessible as non authenticated
+            # Test the layer is still inaccessible as non authenticated
             resp = client.get(url)
             self.assertEquals(resp.status_code, 302)
 
