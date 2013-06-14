@@ -23,7 +23,7 @@
             </div>
           {% endif %}
             <div id="upload_form">
-                <form method="post" enctype="multipart/form-data" action="{% url document_replace document.id %}">
+                <form method="post" enctype="multipart/form-data" action="{% url "document_replace" document.id %}">
                     <label for="doc_file">Choose a file</label><input id="doc_file" name="file" type="file" />
                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
                     <div><input type="submit" value="Upload" /></div>
