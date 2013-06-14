@@ -8,7 +8,7 @@
     {% if not avatars %}
         <p>{% trans "You haven't uploaded an avatar yet. Please upload one now." %}</p>
     {% endif %}
-    <form enctype="multipart/form-data" method="POST" action="{% url avatar_add %}">
+    <form enctype="multipart/form-data" method="POST" action="{% url "avatar_add" %}">
         <legend>{% trans "Upload an Avatar" %}</legend>
         {% csrf_token %}
         <div class="form-controls">

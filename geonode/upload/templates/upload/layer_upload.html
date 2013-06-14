@@ -103,8 +103,8 @@
             {% autoescape off %}
             
             csrf_token =  "{{ csrf_token }}",
-            form_target = "{% url layer_upload %}",
-            userLookup = "{% url geonode.views.ajax_lookup %}"
+            form_target = "{% url "layer_upload" %}",
+            userLookup = "{% url "geonode.views.ajax_lookup" %}"
 
             {% endautoescape %}
 
