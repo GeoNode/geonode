@@ -51,6 +51,9 @@ from .utils import check_layer, get_web_page
 from geonode.maps.utils import *
 
 from geonode.geoserver.helpers import cascading_delete, fixup_style
+
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
+
 import gisdata
 
 import zipfile
@@ -108,7 +111,7 @@ class NormalUserTest(TestCase):
         saved_layer = save("san_andres_y_providencia_poi_by_norman",
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
              norman,
-             overwrite=False,
+             overwrite=True,
         )
 
         url = reverse('layer_metadata', args=[saved_layer.typename])
@@ -517,3 +520,92 @@ class GeoNodeMapTest(TestCase):
                                 'prj_file': layer_prj
                                 })
         self.assertEquals(response.status_code, 302)
+
+class GeoNodeMapPrintTest(TestCase):
+    """Tests geonode.maps print
+    """
+
+    def setUp(self):
+        call_command('loaddata', 'people_data', verbosity=0)
+
+    def tearDown(self):
+        pass
+
+
+    def testPrintProxy(self):
+        """ Test the PrintProxyMiddleware if activated.
+            It should respect the permissions on private layers.
+        """
+        
+        if 'geonode.middleware.PrintProxyMiddleware' in settings.MIDDLEWARE_CLASSES:
+            # STEP 1: Import a layer
+            from django.contrib.auth.models import User
+            from geonode.maps.models import Map
+
+            client = Client()
+            client.login(username='norman', password='norman')
+
+            #TODO: Would be nice to ensure the name is available before
+            #running the test...
+            norman = User.objects.get(username="norman")
+            saved_layer = save("san_andres_y_providencia_poi_by_norman",
+                 os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
+                 norman,
+                 overwrite=True,
+            )
+            # Set the layer private
+            saved_layer.set_gen_level(ANONYMOUS_USERS, saved_layer.LEVEL_NONE)
+
+            url = reverse('layer_metadata', args=[saved_layer.typename])
+
+            # check is accessible while logged in
+            resp = client.get(url)
+            self.assertEquals(resp.status_code, 200)
+
+            # check is inaccessible when not logged in
+            client.logout()
+            resp = client.get(url)
+            self.assertEquals(resp.status_code, 302)
+
+            # STEP 2: Create a Map with that layer
+
+            map_obj = Map(owner=norman, zoom=0,
+                      center_x=0, center_y=0)
+            map_obj.create_from_layer_list(norman, [saved_layer], 'title','')
+            map_obj.set_default_permissions()
+
+            # STEP 3: Print the map
+
+            print_url = settings.GEOSERVER_BASE_URL + 'pdf/create.json'
+
+            post_payload = {
+                'dpi': 75,
+                'layers': [
+                    {
+                        'baseURL': settings.GEOSERVER_BASE_URL + 'wms?SERVICE=WMS&',
+                        'format': "image/png",
+                        'customParams': {
+                            'TILED': True,
+                            'TRANSPARENT': True
+                        },
+                        'layers': [saved_layer.typename],
+                        'opacity': 1,
+                        'singleTile': False,
+                        'type': 'WMS'
+                    }
+                ],
+                'layout': 'A4 portrait',
+                'mapTitle': 'test',
+                'outputFilename': 'print',
+                'srs': 'EPSG:900913',
+                'units': 'm'
+            }
+
+            client.post(print_url, post_payload)
+
+            # Test the layer is still inaccessible as non authenticated
+            resp = client.get(url)
+            self.assertEquals(resp.status_code, 302)
+
+        else:
+            pass
