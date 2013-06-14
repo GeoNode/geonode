@@ -1,0 +1,39 @@
+{% extends "layers/layer_base.html" %}
+{% load i18n %}
+
+{% block title %}{{ layer.typename }} — {{ block.super }}{% endblock %}
+
+{% block body_class %}data{% endblock %}
+
+{% block body_outer %}
+<div class="row">
+  <div class="span8">
+    <form action="{% url "layer_style_manage" layer.typename %}" method="POST">
+      <h2>
+        {% blocktrans with layer.typename as layer_title %}
+          Manage Available Styles for {{ layer_title }}
+        {% endblocktrans %}
+      </h2>
+      <h3>GeoServer Styles</h3>
+      <ul>
+      {% for style in gs_styles %}
+        <li>{{ style.name }}</li>
+      {% endfor %}
+      </ul>
+      <h3>Layer Styles</h3>
+      <ul>
+      {% for style in layer_styles %}
+        <li>{{ style.name }}</li>
+      {% endfor %}
+      </ul>
+      <h3>Default Style</h3>
+      {{ default_style }}
+      {% csrf_token %}
+      <input type="hidden" value="{{ layer.typename }}" /> 
+      <div class="form-actions">
+        <input type="submit" value="{% trans "Update Available Styles" %}" class="btn btn-danger" />
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

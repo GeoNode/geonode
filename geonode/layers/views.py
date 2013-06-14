@@ -41,7 +41,7 @@ from django.forms.models import inlineformset_factory
 
 from geonode.utils import http_client, _get_basic_auth_info, json_response
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm, LayerStyleUploadForm
-from geonode.layers.models import Layer, Attribute
+from geonode.layers.models import Layer, Attribute, set_styles
 from geonode.base.models import ContactRole
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
@@ -278,6 +278,7 @@ def layer_style(request, layername):
 
     new_style = (style for style in layer.styles if style.name == style_name).next()
 
+    # Does this change this in geoserver??
     layer.default_style = new_style
     layer.styles = [s for s in layer.styles if s.name != style_name] + [old_default]
     layer.save()
@@ -328,6 +329,33 @@ def layer_style_upload(req, layername):
                                      the update option if you want to update.""")
     return respond(body={'success':True,'style':name,'updated':data['update']})
 
+@login_required
+def layer_style_manage(req, layername):
+    layer = _resolve_layer(req, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
+    if req.method == 'GET':
+        try:
+            cat = Layer.objects.gs_catalog
+            # First update the layer style info from GS to GeoNode's DB
+            set_styles(layer, cat)
+
+            all_available_gs_styles = cat.get_styles()
+            current_layer_styles = layer.styles.all()
+
+            # Render the form
+            return render_to_response(
+                'layers/layer_style_manage.html',
+                RequestContext(req, {
+                    "layer": layer,
+                    "gs_styles": all_available_gs_styles,
+                    "layer_styles": current_layer_styles,
+                    "default_style": layer.default_style.name
+                    }
+                )
+            )
+        except:
+            pass #BAD!
+    elif req.method == 'POST':
+        return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
 
 @login_required
 def layer_change_poc(request, ids, template = 'layers/layer_change_poc.html'):
