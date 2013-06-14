@@ -562,7 +562,7 @@ def resolve_object(request, model, query, permission=None,
 
 
 def json_response(body=None, errors=None, redirect_to=None, exception=None,
-                  content_type=None):
+                  content_type=None, status=None):
    """Create a proper JSON response. If body is provided, this is the response.
    If errors is not None, the response is a success/errors json object.
    If redirect_to is not None, the response is a success=True, redirect_to object
@@ -597,7 +597,10 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
        pass
    else:
        raise Exception("must call with body, errors or redirect_to")
+   
+   if status==None:
+      status = 200
 
    if not isinstance(body, basestring):
        body = json.dumps(body)
-   return HttpResponse(body, content_type=content_type)
+   return HttpResponse(body, content_type=content_type, status=status)
