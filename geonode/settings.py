@@ -505,6 +505,10 @@ MAP_BASELAYERS = [{
 
 # GeoNode vector data backend configuration.
 
+# Uploader backend (rest or importer)
+
+UPLOADER_BACKEND_URL = 'rest'
+
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE = False
 
