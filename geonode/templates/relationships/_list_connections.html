@@ -3,7 +3,7 @@
 <h3>Following</h3>
 {% if profile.user.relationships.following %}
     {% for u in profile.user.relationships.following %}
-        <a href="{% url profile_detail u.username %}">{% avatar u 65 %}</a>
+        <a href="{% url "profile_detail" u.username %}">{% avatar u 65 %}</a>
     {% endfor %}
 {% else %}
     This user is not following anyone
@@ -11,7 +11,7 @@
 <h3>Followers</h3>
 {% if profile.user.relationships.followers %}
     {% for u in profile.user.relationships.followers %}
-        <a href="{% url profile_detail u.username %}">{% avatar u 65 %}</a>
+        <a href="{% url "profile_detail" u.username %}">{% avatar u 65 %}</a>
     {% endfor %}
 {% else %}
     No one is following this user

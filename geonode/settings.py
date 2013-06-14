@@ -156,7 +156,6 @@ INSTALLED_APPS = (
     'south',
     'friendlytagloader',
     'geoexplorer',
-    'request',
     'django_extensions',
 
     # Theme
@@ -172,7 +171,6 @@ INSTALLED_APPS = (
     'notification',
     'announcements',
     'actstream',
-    'relationships',
     'user_messages',
 
     # GeoNode internal apps
@@ -198,6 +196,11 @@ LOGGING = {
         'simple': {
             'format': '%(message)s',        },
     },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+     }
+    },
     'handlers': {
         'null': {
             'level':'ERROR',
@@ -210,6 +213,7 @@ LOGGING = {
         },
         'mail_admins': {
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
@@ -217,11 +221,6 @@ LOGGING = {
         "django": {
             "handlers": ["console"],
             "level": "ERROR",
-        },
-        "django.request": {
-            "handlers": ["mail_admins"],
-            "level": "ERROR",
-            "propagate": True,
         },
         "geonode": {
             "handlers": ["console"],
@@ -271,7 +270,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'request.middleware.RequestMiddleware',
     # The setting below makes it possible to serve different languages per
     # user depending on things like headers in HTTP requests.
     'django.middleware.locale.LocaleMiddleware',
