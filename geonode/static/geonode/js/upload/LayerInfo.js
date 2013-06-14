@@ -317,6 +317,8 @@ define(function (require, exports) {
             });
         } else if (resp.success === true && typeof resp.url != 'undefined') {
             self.doFinal(resp);
+        } else if (resp.success === true && response.redirect_to === '/upload/final') {
+            self.doFinal(resp);
         }
     };
 
@@ -328,7 +330,6 @@ define(function (require, exports) {
     LayerInfo.prototype.uploadFiles = function () {
         var form_data = this.prepareFormData(),
             self = this;
-
         $.ajax({
             url: form_target,
             async: false,
