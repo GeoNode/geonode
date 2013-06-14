@@ -171,7 +171,6 @@ INSTALLED_APPS = (
     'notification',
     'announcements',
     'actstream',
-    'relationships',
     'user_messages',
 
     # GeoNode internal apps
