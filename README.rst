@@ -93,11 +93,17 @@ password: wm_password
 
 
   git clone git://github.com/cga-harvard/cga-worldmap.git cga-worldmap
+  
   cd cga-worldmap
+  
   git submodule update --init
+  
   python bootstrap.py --no-site-packages # see note below
+  
   source bin/activate
+  
   paver build
+  
   django-admin.py createsuperuser --settings=geonode.settings
 
 
