@@ -339,22 +339,47 @@ def layer_style_manage(req, layername):
             set_styles(layer, cat)
 
             all_available_gs_styles = cat.get_styles()
+            gs_styles = []
+            for style in all_available_gs_styles:
+                gs_styles.append(style.name)
+
             current_layer_styles = layer.styles.all()
+            layer_styles = []
+            for style in current_layer_styles:
+                layer_styles.append(style.name)
 
             # Render the form
             return render_to_response(
                 'layers/layer_style_manage.html',
                 RequestContext(req, {
                     "layer": layer,
-                    "gs_styles": all_available_gs_styles,
-                    "layer_styles": current_layer_styles,
+                    "gs_styles": gs_styles,
+                    "layer_styles": layer_styles,
                     "default_style": layer.default_style.name
                     }
                 )
             )
         except:
+            import sys
+            print sys.exc_info()
             pass #BAD!
     elif req.method == 'POST':
+        selected_styles = req.POST.getlist('style-select')
+        default_style = req.POST['default_style']
+        
+        # Save to GeoServer
+        cat = Layer.objects.gs_catalog
+        gs_layer = cat.get_layer(layer.name)
+        gs_layer.default_style = default_style
+        styles = []
+        for style in selected_styles:
+            styles.append(type('style',(object,),{'name' : style}))
+        gs_layer.styles = styles 
+        cat.save(gs_layer)
+
+        # Save to Django
+        set_styles(layer, cat)
+
         return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
 
 @login_required
