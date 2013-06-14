@@ -277,8 +277,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # This middleware allows to print private layers.
-    # It sets temporarly the involved layers as public before restoring the permission
-    # Beware of possible risks when activating this
+    # It sets temporary the involved layers as public before restoring the permissions.
+    # Beware that for few seconds the involved layers are public there could be risks.
     #'geonode.middleware.PrintProxyMiddleware',
 )
 
