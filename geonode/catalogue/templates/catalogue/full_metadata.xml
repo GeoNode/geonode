@@ -204,7 +204,7 @@
        <gmd:resourceConstraints>
          <gmd:MD_Constraints>
            <gmd:useLimitation>
-             <gco:CharacterString>{{layer.constraints_use}}</gco:CharacterString>
+             <gco:CharacterString>{{layer.restriction_code_type.identifier}}</gco:CharacterString>
            </gmd:useLimitation>
          </gmd:MD_Constraints>
        </gmd:resourceConstraints>
