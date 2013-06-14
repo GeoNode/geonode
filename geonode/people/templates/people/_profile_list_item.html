@@ -7,9 +7,7 @@
 <article>
   <h3><i class="icon-user"></i> <a href="{% url profile_detail profile.user.username %}">{{ profile.name }}</a>
     {% if  profile.user.email %}<a href="mailto:{{ profile.user.email }}"><i class="icon-envelope icon-large"></i></a>{% endif %}</h3>
-  <a class="avatar" href="{% url profile_detail profile.user.username %}">{% avatar profile.user 65 %}</a>
-  <div class="details">
-    <div class="pull-right">
+  <div class="pull-right">
       {% if_has_tag actor_url %}
       <p><a href="{% actor_url profile.user %}" class="btn btn-primary" type="button">{% trans "My Activities" %}</a></p>
       {% if request.user != profile.user %}
@@ -18,17 +16,23 @@
         {% endif_has_tag %}
       {% endif %}
     {% endif_has_tag %}
-    </div>
+  </div>
+  <a class="avatar" href="{% url profile_detail profile.user.username %}">{% avatar profile.user 80 %}</a>
+  <div class="details">
     <div class="meta">
-      {% if profile.organization %}<p>{{ profile.organization }}</p>{% endif %}
-        {% if profile.profile %}
-        <p class="abstract">{{ profile.profile }}</p>
+      {% if profile.organization %}<p>{{ profile.organization }}</p>
+      {% else %}<p>No organization</p>
+      {% endif %}
+      <p class="abstract">
+        {% if profile.profile %}{{ profile.profile }}
+        {% else %}No description
         {% endif %}
-        <ul class="nav nav-pills">
-          <li><a href="#">{{ profile.user.layer_set.all|length }} Layers</a></li>
-          <li><a href="#">{{ profile.user.map_set.all|length }} Maps</a></li>
+      </p>
+        <ul class="nav stats">
+          <li><a href="#"><strong>{{ profile.user.layer_set.all|length }}</strong> Layers</a></li>
+          <li><a href="#"><strong>{{ profile.user.map_set.all|length }}</strong> Maps</a></li>
           {% if DOCUMENTS_APP %}
-          <li><a href="#">{{ profile.user.document_set.all|length }} Documents</a></li>
+          <li><a href="#"><strong>{{ profile.user.document_set.all|length }}</strong> Documents</a></li>
         </ul>
       {% endif %}
     </div>    

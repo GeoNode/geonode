@@ -52,14 +52,15 @@ body {
   font-family:@customFont;
 }
 
-h2, h3 {
-  font-weight: normal;
-  margin-bottom:10px !important;
-}
-
 h2 {
   color:@gray;
   font-size:@baseFontSize + 8;
+  margin-bottom:10px !important;
+}
+
+h3 {
+  font-weight: normal;
+  margin-bottom: 0 !important;
 }
 
 // Fix for openlayers
@@ -363,6 +364,9 @@ footer.footer {
 .meta {
   color:@graySp;
 }
+.meta p {
+  margin-bottom: -10px;
+}
 
 .btn {
   border:0;
@@ -524,10 +528,10 @@ section.widget-mini {
     overflow: hidden;
 
     h3 {
-      width:320px;
+      font-weight: normal;
       overflow: hidden;
-      text-overflow:ellipses;
-      font-weight:normal;
+      text-overflow: ellipses;
+      width: 320px;
     }
   }
 
@@ -537,9 +541,13 @@ section.widget-mini {
 }
 
 .grid article {
-  width: 285px;
-  overflow: hidden;
+  border-right: 1px solid @grayNeutral;
   float: left;
+  margin-right: 10px;
+  overflow: hidden;
+  padding-right: 10px;
+  height: 280px;
+  width: 265px;
 
   .details {
     clear: left;
@@ -549,7 +557,13 @@ section.widget-mini {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    p {margin-bottom: 0}
+    .stats {margin-top: 10px;}
   }
+}
+
+.grid article:last-child {
+  border-right: 0;
 }
 
 aside .well {
@@ -915,7 +929,8 @@ ul.space li {
 
 
 .tab-pane article {
-  margin-bottom:40px;
+  margin-bottom:10px;
+  padding-bottom: 0;
 
   img {
     margin-bottom:10px;
@@ -1423,4 +1438,44 @@ ul.list {
 
 #form_post_comment textarea {
   width: 100%;
+}
+
+// people
+.avatar {
+  width: 80px;
+}
+
+.avatar img {
+  display: block;
+  border-radius: 4px;
+}
+
+ul.stats {
+  margin-left: -10px;
+  margin-top: -10px;
+
+  a {
+    border-left: 1px solid @grayNeutral;
+    display: inline-block;
+    float:left;
+    line-height: 14px;
+    padding:4px 10px;
+    font-size: @baseFontSize - 2;
+    .border-radius(0);
+    cursor: pointer;
+  }
+
+  a.selected { color: black; }
+
+  a:hover {
+    background: none;
+    text-decoration:none;
+  }
+}
+.stats li:first-child a {
+  border-left: 0;
+}
+.stats a strong {
+  display: block;
+  font-size: 14px;
 }
