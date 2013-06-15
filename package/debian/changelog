@@ -1,3 +1,24 @@
+geonode (2.0.0+beta5) precise; urgency=high
+
+  [ Jeffrey Johnson ]
+  * [f45cff] Add jquery requirement to FileType.js
+  * [6cf07a] Return 500 status code from _error_response
+  * [922531] Accept status code to json_response
+  * [9999dd] Handle for direct to final (for TIFF)
+  * [d1c3e2] Fixes in LayerInfo.js
+  * [1cf9f3] Refactor display of uploaded layer links and display as buttons
+
+  [ vagrant ]
+  * [ff57b4] s/alpha/beta
+
+  [ Ariel Nunez ]
+  * [826492] Set ALLOWED_HOSTS in geonode-updateip, refs #910
+
+  [ vagrant ]
+  * [f8f0d9] Update changelog
+
+ -- vagrant <vagrant@precise64>  Sat, 15 Jun 2013 13:03:52 +0000
+
 geonode (2.0.0+beta4) precise; urgency=high
 
   [ Simone Dalmasso ]
