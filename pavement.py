@@ -481,6 +481,20 @@ def deb(options):
     if ppa is not None:
         sh('dput ppa:%s geonode_%s_source.changes' % (ppa, simple_version))
 
+@task
+def publish():
+    if 'GPG_KEY_GEONODE' in os.environ:
+        key = os.environ['GPG_KEY_GEONODE']
+    else:
+        print "You need to set the GPG_KEY_GEONODE environment variable"
+        return
+
+    call_task('deb', options={
+     'k': key,
+     'p': 'geonode/testing',
+    })
+
+
 
 def kill(arg1, arg2):
     """Stops a proces that contains arg1 and is filtered by arg2
