@@ -1,3 +1,15 @@
+geonode (2.0.0+beta6) precise; urgency=high
+
+  [ vagrant ]
+  * [74de25] Removed temporary directory in debian package creation
+
+  [ Ariel Nunez ]
+  * [122879] Updated changelog
+  * [1e207c] Revert last commit
+  * [f86e81] Change priority to high
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sat, 15 Jun 2013 16:02:36 +0000
+
 geonode (2.0.0+beta5) precise; urgency=high
 
   [ Jeffrey Johnson ]
