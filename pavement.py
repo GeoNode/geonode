@@ -25,6 +25,7 @@ import time
 import urllib
 import zipfile
 import glob
+import fileinput
 
 from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, info, call_task
@@ -455,6 +456,11 @@ def deb(options):
         sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
             ' --id-length=6 --ignore-branch --release' % (
             simple_version)))
+
+
+        deb_changelog = path('debian') / 'changelog'
+        for line in fileinput.input([deb_changelog], inplace = True):
+            print line.replace("urgency=low", "urgency=high"),
 
         ## Revert workaround for git-dhc bug
         path('.git').rmtree()
