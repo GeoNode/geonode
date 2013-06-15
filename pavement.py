@@ -422,22 +422,7 @@ def deb(options):
     key = options.get('key', None)
     ppa = options.get('ppa', None)
 
-    import geonode
-    from geonode.version import get_git_changeset
-    raw_version = geonode.__version__
-    version = geonode.get_version()
-    timestamp = get_git_changeset()
-
-    major, minor, revision, stage, edition = raw_version
-
-    branch = 'dev'
-
-    if stage == 'alpha' and edition == 0:
-        tail = '%s%s' % (branch, timestamp)
-    else:
-        tail = '%s%s' % (stage, edition)
-
-    simple_version = '%s.%s.%s+%s' % (major, minor, revision, tail)
+    version, simple_version = versions()
 
     info('Creating package for GeoNode version %s' % version)
 
@@ -456,7 +441,6 @@ def deb(options):
         sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
             ' --id-length=6 --ignore-branch --release' % (
             simple_version)))
-
 
         deb_changelog = path('debian') / 'changelog'
         for line in fileinput.input([deb_changelog], inplace = True):
@@ -481,6 +465,7 @@ def deb(options):
     if ppa is not None:
         sh('dput ppa:%s geonode_%s_source.changes' % (ppa, simple_version))
 
+
 @task
 def publish():
     if 'GPG_KEY_GEONODE' in os.environ:
@@ -490,10 +475,35 @@ def publish():
         return
 
     call_task('deb', options={
-     'k': key,
-     'p': 'geonode/testing',
+     'key': key,
+     'ppa': 'geonode/testing',
     })
 
+    version, simple_version = versions()
+    sh('git tag %s' % version)
+    sh('git push origin %s' % version)
+    sh('git tag debian/%s' % simple_version)
+    sh('git push origin debian/%s' % simple_version)
+
+
+def versions():
+    import geonode
+    from geonode.version import get_git_changeset
+    raw_version = geonode.__version__
+    version = geonode.get_version()
+    timestamp = get_git_changeset()
+
+    major, minor, revision, stage, edition = raw_version
+
+    branch = 'dev'
+
+    if stage == 'alpha' and edition == 0:
+        tail = '%s%s' % (branch, timestamp)
+    else:
+        tail = '%s%s' % (stage, edition)
+
+    simple_version = '%s.%s.%s+%s' % (major, minor, revision, tail)
+    return version, simple_version
 
 
 def kill(arg1, arg2):
