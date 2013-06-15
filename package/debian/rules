@@ -24,6 +24,7 @@ install:
 	# Copying installer and configuration to be used by post installer
 	cp $(CURDIR)/geonode/install.sh $(CURDIR)/debian/geonode/usr/share/geonode
 	cp $(CURDIR)/debian/support/config-post.sh $(CURDIR)/debian/geonode/usr/share/geonode
+	rm -rf $(CURDIR)/geonode
 binary-indep: build install
 
 binary-arch: build install
