@@ -1,3 +1,10 @@
+geonode (2.0.0+beta6) precise; urgency=high
+
+  [ Ariel Nunez ]
+  * [74de25] Removed temporary directory in debian package creation
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sat, 15 Jun 2013 15:57:17 +0000
+
 geonode (2.0.0+beta5) precise; urgency=high
 
   [ Jeffrey Johnson ]
@@ -17,7 +24,7 @@ geonode (2.0.0+beta5) precise; urgency=high
   [ vagrant ]
   * [f8f0d9] Update changelog
 
- -- vagrant <vagrant@precise64>  Sat, 15 Jun 2013 13:03:52 +0000
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sat, 15 Jun 2013 15:57:17 +0000
 
 geonode (2.0.0+beta4) precise; urgency=high
 
@@ -244,7 +251,7 @@ geonode (2.0.0+beta4) precise; urgency=high
 
   [ vagrant ]
 
- -- vagrant <vagrant@precise64>  Fri, 14 Jun 2013 15:32:37 +0000
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 14 Jun 2013 15:57:17 +0000
 
 geonode (2.0.0+beta1) precise; urgency=high
 
@@ -297,7 +304,7 @@ geonode (2.0.0+beta1) precise; urgency=high
 
  -- Ariel Núñez <ingenieroariel@gmail.com>  Mon, 08 Apr 2013 14:02:56 +0000
 
-geonode (2.0.0+alpha7) precise; urgency=low
+geonode (2.0.0+alpha7) precise; urgency=high
 
   * [9248b1] Upgraded gsconfig.py
   * [d122db] Upgraded django-geoexplorer
@@ -419,7 +426,7 @@ geonode (2.0.0+alpha6) precise; urgency=high
 
  -- Ariel Núñez <ingenieroariel@gmail.com>  Wed, 20 Mar 2013 05:15:35 +0000
 
-geonode (2.0.0+alpha5) precise; urgency=low
+geonode (2.0.0+alpha5) precise; urgency=high
 
   [ Ariel Núñez ]
   * [36d39b] Add back git-dch step in paver deb
@@ -537,24 +544,24 @@ geonode (1.2+alpha1) precise; urgency=high
 
  -- Ariel Nunez <ingenieroariel@gmail.com>  Sun, 20 May 2012 18:44:33 -0500
 
-geonode (1.1.1+final2) lucid; urgency=low
+geonode (1.1.1+final2) lucid; urgency=high
   * Fixed bug in first time installs.
 
  -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 19 Mar 2012 18:44:33 -0500
 
-geonode (1.1.1+final) lucid; urgency=low
+geonode (1.1.1+final) lucid; urgency=high
   * Fixed bug in deleting layers using a postgis backend.
 
  -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 12 Mar 2011 18:44:33 -0500
 
-geonode (1.1+final) lucid; urgency=low
+geonode (1.1+final) lucid; urgency=high
   * Moved from SPEED to Partial Buffer in GeoServer's output strategy
   * Proper upgrade support
   * Fixed location of GeoServer's data dir
 
  -- Ariel Nunez <ingenieroariel@gmail.com>  Sun, 5 Feb 2011 18:44:33 -0500
 
-geonode (1.1+RC2) lucid; urgency=low
+geonode (1.1+RC2) lucid; urgency=high
   * Fixed avatar links
   * Added virtualenv upgrade to the installer to avoid bugs in Lucid
   * Fixed admin media configuration
@@ -565,32 +572,32 @@ geonode (1.1+RC2) lucid; urgency=low
 
  -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 2 Sept 2011 13:44:33 -0500
 
-geonode (1.1-rc1) natty; urgency=low
+geonode (1.1-rc1) natty; urgency=high
   * After creating installer
 
  -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 2 Sept 2011 13:44:33 -0500
 
-geonode (1.1-beta4) natty; urgency=low
+geonode (1.1-beta4) natty; urgency=high
   * Using latest master, after move to /geoserver
 
  -- Ariel Nunez <ingenieroariel@gmail.com>  Sun, 28 Aug 2011 17:44:33 -0500
 
-geonode (1.1.beta+2) unstable; urgency=low
+geonode (1.1.beta+2) unstable; urgency=high
   * Update to 1.1beta+2 and added gettext and postgres support
 
  -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 10 Aug 2011 17:44:33 -0500
 
-geonode (1.0.final+1) unstable; urgency=low
+geonode (1.0.final+1) unstable; urgency=high
   * Add dependency on patch command
 
  -- David Winslow <dwinslow@opengeo.org>  Tue, 14 Dec 2010 17:44:33 -0500
 
-geonode (1.0+final) unstable; urgency=low
+geonode (1.0+final) unstable; urgency=high
   * Update to GeoNode 1.0-final
 
  -- David Winslow <dwinslow@opengeo.org>  Tue, 14 Dec 2010 14:59:18 -0500
 
-geonode (1.0+RC4) unstable; urgency=low
+geonode (1.0+RC4) unstable; urgency=high
   * Update to GeoNode 1.0RC4
 
   * Force headless mode for tomcat service
@@ -599,7 +606,7 @@ geonode (1.0+RC4) unstable; urgency=low
 
  -- David Winslow <dwinslow@opengeo.org>  Mon, 06 Dec 2010 15:44:01 -0500
 
-geonode (1.0+RC2) unstable; urgency=low
+geonode (1.0+RC2) unstable; urgency=high
 
   *  First complete release including pre and post install hooks.
 
