@@ -6,11 +6,11 @@
 {% friendly_load avatar_tags %}
 
 {% load i18n %}
-<div class="comments paginate paginate-manual">
+<div id="comments_section" class="comments paginate paginate-manual">
     <header>
         <h3>{% trans 'Comments' %} <span class="total">({% comment_count obj %} total)</span></h3>
         {% if user.is_authenticated %}
-            <a href="#form_post_comment" role="button" class="btn" data-toggle="modal">{% trans 'Add Comment' %}</a>
+            <a href="#form_post_comment_div" role="button" class="btn" data-toggle="modal">{% trans 'Add Comment' %}</a>
         {% endif %}
     </header>
     <div class="paginate-contents">
@@ -29,20 +29,20 @@
 
 <!-- Modal -->
 {% if user.is_authenticated %}
-<div id="form_post_comment" class="modal hide fade" tabindex="-1" role="dialog">
+<div id="form_post_comment_div" class="modal hide fade" tabindex="-1" role="dialog">
     <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3>{% trans 'Add a Comment' %}</h3>
     </div>
     <div class="modal-body">
         {% comment_form obj as form %}
-        <form class="well" action="{% comment_target obj %}" method="POST" id="form_post_comment">
+        <form action="{% comment_target obj %}" method="POST" id="form_post_comment">
         {% csrf_token %}
         {{ form }}
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-        <button class="btn btn-primary">{% trans 'Submit Comments' %}</button>
+        <button id="comment_submit_btn" class="btn btn-primary">{% trans 'Submit Comments' %}</button>
     </div>
         </form>
 </div>

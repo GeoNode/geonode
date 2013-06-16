@@ -115,7 +115,7 @@
     {% if resourcebase.supplemental_information %}
       <li>
         <strong>{% trans "Supplemental Information" %}:</strong> 
-        {{ resourcebase.supplemental_information|escape|urlize|linebreaks|safe|truncatechars:160 }}
+        {{ resourcebase.supplemental_information|truncatechars:160|escape|urlize|linebreaks|safe }}
       </li>
     {% endif %}
 

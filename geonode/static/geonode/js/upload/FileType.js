@@ -2,7 +2,8 @@
 'use strict';
 
 define(function (require, exports) {
-    var getExt = require('upload/path').getExt,
+    var $        = require('jquery'),
+        getExt = require('upload/path').getExt,
         FileType;
 
     /** Create an instance of a FileType object

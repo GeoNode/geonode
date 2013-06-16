@@ -36,6 +36,7 @@ from django.utils.html import escape
 from django.views.decorators.http import require_POST
 from django.template.defaultfilters import slugify
 from django.shortcuts import get_object_or_404
+from django.forms.models import inlineformset_factory
 
 from geonode.utils import http_client, _get_basic_auth_info
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
@@ -49,7 +50,8 @@ from geonode.layers.utils import layer_set_permissions
 from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
-from django.forms.models import inlineformset_factory
+from geonode.documents.models import get_related_documents
+
 from geoserver.resource import FeatureType
 
 logger = logging.getLogger("geonode.layers.views")
@@ -105,50 +107,58 @@ def layer_tag(request, slug, template='layers/layer_list.html'):
     )
 
 @login_required
-def layer_upload(request, template='layers/layer_upload.html'):
+def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
         return render_to_response(template,
                                   RequestContext(request, {}))
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
+        errormsgs = []
+        out = {'success': False}
+
         if form.is_valid():
+            tempdir, base_file = form.write_files()
+            title = form.cleaned_data["layer_title"]
+
+            # Replace dots in filename - GeoServer REST API upload bug
+            # and avoid any other invalid characters.
+            # Use the title if possible, otherwise default to the filename
+            if title is not None and len(title) > 0:
+                name_base = title
+            else:
+                name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+
+            name = slugify(name_base.replace(".","_"))
+
             try:
-                tempdir, base_file = form.write_files()
-                title = form.cleaned_data["layer_title"]
-
-                # Replace dots in filename - GeoServer REST API upload bug
-                # and avoid any other invalid characters.
-                # Use the title if possible, otherwise default to the filename
-                if title is not None and len(title) > 0:
-                    name_base = title
-                else:
-                    name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
-
-                name = slugify(name_base.replace(".","_"))
-
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
                         permissions = form.cleaned_data["permissions"]
                         )
-                return HttpResponse(json.dumps({
-                    "success": True,
-                    "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
             except Exception, e:
-                logger.exception("Unexpected error during upload.")
-                return HttpResponse(json.dumps({
-                    "success": False,
-                    "errormsgs": ["Unexpected error during upload: " + escape(str(e))]}))
+                out['success'] = False
+                out['errors'] = str(e)
+            else:
+                out['success'] = True
+                out['url'] = reverse('layer_detail', args=[saved_layer.typename])
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
-            errormsgs = []
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
-            return HttpResponse(json.dumps({ "success": False, "errors": form.errors, "errormsgs": errormsgs}))
+
+            out['errors'] = form.errors
+            out['errormsgs'] = errormsgs
+
+        if out['success']:
+            status_code = 200
+        else:
+            status_code = 500
+        return HttpResponse(json.dumps(out), mimetype='application/json', status=status_code)
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
@@ -169,6 +179,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "layer": layer,
         "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
+        "documents": get_related_documents(layer),
     }))
 
 
@@ -180,7 +191,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
 
     poc = layer.poc
     metadata_author = layer.metadata_author
-    
+
     ContactRole.objects.get(resource=layer, role=layer.poc_role)
     ContactRole.objects.get(resource=layer, role=layer.metadata_author_role)
 
@@ -311,7 +322,8 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                saved_layer = save(layer, base_file, request.user, overwrite=True)
+                saved_layer = save(layer, base_file, request.user, overwrite=True, 
+                    permissions=layer.get_all_level_info())
                 return HttpResponse(json.dumps({
                     "success": True,
                     "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
@@ -397,7 +409,6 @@ def layer_batch_download(request):
         resp,content = http_client.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 
-@require_POST
 def layer_permissions(request, layername):
     try:
         layer = _resolve_layer(request, layername, 'layers.change_layer_permissions')
@@ -408,14 +419,28 @@ def layer_permissions(request, layername):
             status=401,
             mimetype='text/plain')
 
-    permission_spec = json.loads(request.raw_post_data)
-    layer_set_permissions(layer, permission_spec)
+    if request.method == 'POST':
+        permission_spec = json.loads(request.raw_post_data)
+        layer_set_permissions(layer, permission_spec)
 
-    return HttpResponse(
-        json.dumps({'success': True}),
-        status=200,
-        mimetype='text/plain'
-    )
+        return HttpResponse(
+            json.dumps({'success': True}),
+            status=200,
+            mimetype='text/plain'
+        )
+
+    elif request.method == 'GET':
+        permission_spec = json.dumps(layer.get_all_level_info())
+        return HttpResponse(
+            json.dumps({'success': True, 'permissions': permission_spec}),
+            status=200,
+            mimetype='text/plain'
+        )
+    else:
+        return HttpResponse(
+            'No methods other than get and post are allowed',
+            status=401,
+            mimetype='text/plain')
 
 
 def resolve_user(request):

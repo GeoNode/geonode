@@ -53,6 +53,7 @@ def _add_sld_boilerplate(symbolizer):
     <Name>%(name)s</Name>
     <UserStyle>
     <Name>%(name)s</Name>
+    <Title>%(name)s</Title>
       <FeatureTypeStyle>
         <Rule>
 """ + symbolizer + """
@@ -167,6 +168,9 @@ def cascading_delete(cat, layer_name):
         if layer_name.find(':') != -1:
             workspace, name = layer_name.split(':')
             ws = cat.get_workspace(workspace)
+            if ws == None:
+                logger.debug('cascading delete was called on a layer where the workspace was not found')
+                return
             resource = cat.get_resource(name, workspace = workspace)
         else:
             resource = cat.get_resource(layer_name)
@@ -226,7 +230,7 @@ def delete_from_postgis(resource_name):
     finally:
         conn.close()
 
-def gs_slurp(self, ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None):
+def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None):
     """Configure the layers available in GeoServer in GeoNode.
 
        It returns a list of dictionaries with the name of the layer,

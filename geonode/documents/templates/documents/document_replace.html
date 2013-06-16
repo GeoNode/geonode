@@ -1,0 +1,35 @@
+{% extends "documents/document_base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Replace Document" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}documents replace{% endblock body_class %}
+
+{% block head %}
+    {% include "geonode/app_header.html" %}
+    {{ block.super }}
+{% endblock %}
+
+{% block body %}
+    <div class="block">
+        <div class="span8">
+          <h2 class="page-title">{% trans "Replace " %}{{ document.title }}</h2>
+
+          {% if errors %}
+            <div id="errors">
+              {% for error in errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+            <div id="upload_form">
+                <form method="post" enctype="multipart/form-data" action="{% url "document_replace" document.id %}">
+                    <label for="doc_file">Choose a file</label><input id="doc_file" name="file" type="file" />
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+                    <div><input type="submit" value="Upload" /></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

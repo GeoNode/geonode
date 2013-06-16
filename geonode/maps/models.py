@@ -34,7 +34,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, resourcebase_post_save, \
+        resourcebase_post_delete, resourcebase_pre_save
 from geonode.maps.signals import map_changed_signal
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
@@ -284,7 +285,7 @@ class Map(ResourceBase, GXPMapBase):
             bbox = self.set_bounds_from_layers(layer_objects)
 
             if bbox is not None:
-                minx, maxx, miny, maxy = [float(c) for c in bbox]
+                minx, miny, maxx, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
                 (self.center_x,self.center_y) = forward_mercator((x,y))
@@ -440,4 +441,6 @@ def pre_delete_map(instance, sender, **kwrargs):
 
 signals.pre_save.connect(pre_save_maplayer, sender=MapLayer)
 signals.pre_delete.connect(pre_delete_map, sender=Map)
-
+signals.post_save.connect(resourcebase_post_save, sender=Map)
+signals.post_delete.connect(resourcebase_post_delete, sender=Map)
+signals.pre_save.connect(resourcebase_pre_save, sender=Map)

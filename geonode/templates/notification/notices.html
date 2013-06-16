@@ -13,7 +13,7 @@
     {% autopaginate notices %}
     
     {% if notices %}
-        <a href="{% url notification_mark_all_seen %}">{% trans "Mark all unseen notices seen" %}</a>
+        <a href="{% url "notification_mark_all_seen" %}">{% trans "Mark all unseen notices seen" %}</a>
         
         {# TODO: get timezone support working with regroup #}
         {% regroup notices by added.date as notices_by_date %}
@@ -30,7 +30,7 @@
                     <span class="notice_type">[{% trans notice.notice_type.display %}]</span>
                     <span class="notice_message">{{ notice.message|safe }}</span>
                     <span class="notice_time">{{ notice.added|time:"P" }}</span>
-                    <span class="notice_link"><a href="{% url notification_notice notice.pk %}">{% trans "View Notice" %}</a>
+                    <span class="notice_link"><a href="{% url "notification_notice" notice.pk %}">{% trans "View Notice" %}</a>
                 </div>
             {% endfor %}
         {% endfor %}

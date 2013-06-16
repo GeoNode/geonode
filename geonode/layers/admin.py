@@ -57,8 +57,8 @@ class AttributeAdmin(admin.ModelAdmin):
 
 class StyleAdmin(admin.ModelAdmin):
     model = Style
-    list_display_links = ('name',)
-    list_display = ('id', 'name', 'workspace', 'sld_url')
+    list_display_links = ('sld_title',)
+    list_display = ('id', 'name', 'sld_title', 'workspace', 'sld_url')
     list_filter = ('workspace',)
     search_fields = ('name', 'workspace',)
 
