@@ -154,7 +154,7 @@ msgstr ""
 #: documents/templates/documents/document_list.html:15
 #, fuzzy
 msgid "Explore Documents"
-msgstr "Découvrez les artes"
+msgstr "Découvrez les cartes"
 
 #: documents/templates/documents/document_base.html:13
 #: documents/templates/documents/document_search.html:6
@@ -2265,7 +2265,7 @@ msgstr ""
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
 #: maps/templates/maps/map_list.html:13 templates/index.html:31
 msgid "Explore Maps"
-msgstr "Découvrez les artes"
+msgstr "Découvrez les cartes"
 
 #: maps/templates/maps/map_base.html:13 maps/templates/maps/map_search.html:5
 msgid "Search Maps"
@@ -2399,7 +2399,7 @@ msgstr ""
 #: maps/templates/maps/map_view.html:5
 #, fuzzy
 msgid "GeoExplorer"
-msgstr "Découvrez les artes"
+msgstr "Découvrez les cartes"
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
