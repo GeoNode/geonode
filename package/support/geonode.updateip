@@ -30,11 +30,11 @@ fi
 if grep -q "ALLOWED_HOSTS" "$GEONODE_ETC/local_settings.py"
 then
     echo "Replacing ALLOWED_HOSTS in $GEONODE_ETC/local_settings.py"
-    perl -pi -e 's/ALLOWED_HOSTS(.*)/ALLOWED_HOSTS+=["replaceiphere", "localhost"]/g' $GEONODE_ETC/local_settings.py
+    perl -pi -e 's/ALLOWED_HOSTS(.*)/ALLOWED_HOSTS=["replaceiphere", "localhost"]/g' $GEONODE_ETC/local_settings.py
     sed -i "s#replaceiphere#$NEWIP/#g" $GEONODE_ETC/local_settings.py
 else
     echo "Adding ALLOWED_HOSTS in $GEONODE_ETC/local_settings.py"
-    echo "ALLOWED_HOSTS+=['"$NEWIP"', 'localhost']" >> $GEONODE_ETC/local_settings.py
+    echo "ALLOWED_HOSTS=['"$NEWIP"', 'localhost']" >> $GEONODE_ETC/local_settings.py
 fi
 
 
