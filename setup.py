@@ -64,7 +64,7 @@ setup(name='GeoNode',
       description="Application for serving and sharing geospatial data",
       long_description=open('README').read(),
       classifiers=[
-        "Development Status :: 1 - Planning"],
+        "Development Status :: 4 - Beta"],
       keywords='',
       author='GeoNode Developers',
       author_email='dev@geonode.org',
