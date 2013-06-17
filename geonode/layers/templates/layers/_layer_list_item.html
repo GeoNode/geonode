@@ -7,24 +7,30 @@
 {% overall_rating layer "layer" as layer_rating %}
 {% num_ratings layer as num_votes %}
 
-<article> 
-  <h3><i class="icon-map-marker"></i> <a href="{% url "layer_detail" layer.typename %}">{{ layer.title }}</h3></a>
+<article>
   <a href="{% url "layer_detail" layer.typename %}"><img src="{{ layer.get_thumbnail_url }}" /></a>
-  <div class="details">
-    <div class="pull-right">
-      <a href="#download-{{layer.id}}" data-toggle="modal" class="btn btn-info">{% trans "Download" %}</a>
-      <a href="{% url "new_map" %}?layer={{ layer.typename }}" class="btn btn-info">  {% trans "Create a map" %}</a>
-    </div>
+  <div class="pull-left">
+    <h3><i class="icon-map-marker"></i><a href="{% url "layer_detail" layer.typename %}">{{ layer.title }}</a></h3>
+    <div class="details">
+      <div class="meta">
+        <p>Layer {% trans 'from' %} <a href="{% url "profile_detail" layer.owner.username %}">{{ layer.owner }}</a>, {{ layer.date|timesince }} {% trans 'ago' %}</p>
+        <!-- <p class="abstract">{{ layer.abstract }}</p> -->
+        <ul class="nav stats">
+          <li><a href="#"><strong>{{ layer.popular_count }}</strong> {% trans "view" %}{{ layer.popular_count|pluralize }}</a></li>
+          <li><a href="#"><strong><span class="avg_rating" data-rating="{{ layer_rating }}"> <span class="overall_rating"></span> ({{num_votes}})</span></strong> {% trans "Average rating" %}</a></li>
+        </ul>
+      </div> <!-- /.meta -->
+    </div> <!-- /.details -->
+    <p><a href="#download-{{layer.id}}" data-toggle="modal" class="btn btn-mini">{% trans "Download" %}</a>
+  <a href="{% url "new_map" %}?layer={{ layer.typename }}" class="btn btn-mini">  {% trans "Create a map" %}</a></p>
     
-    <div class="meta">Layer {% trans 'from' %} <a href="{% url "profile_detail" layer.owner.username %}">{{ layer.owner }}</a>, {{ layer.date|timesince }} {% trans 'ago' %}</div>
-    <p class="abstract">{{ layer.abstract }}</p>
-    <p class="activity">{{ layer.popular_count }} {% trans "view" %}{{ layer.popular_count|pluralize }} | <span class="avg_rating" data-rating="{{ layer_rating }}">{% trans "Average rating" %} <span class="overall_rating"></span> ({{num_votes}})</span></p>
-  </div> <!-- /.details -->
+  </div> <!-- /.pull-left -->
+
   
   <div class="modal custom hide" id="download-{{layer.id}}">
     <div class="modal-header">
       <button class="close" data-dismiss="modal">×</button>
-      <h2><i class="icon-download-alt"></i>  "Download Layer {{layer.title}}"</h2>    
+      <h2><i class="icon-download-alt"></i>  Download Layer "{{layer.title}}"</h2>    
     </div>
     <div class="modal-body">
     </div>
