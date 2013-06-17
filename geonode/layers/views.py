@@ -536,7 +536,10 @@ def feature_edit_check(request, layername):
     Otherwise, return a status of 401 (unauthorized).
     """
     layer = get_object_or_404(Layer, typename=layername)
-    if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' and settings.DB_DATASTORE:
+    feature_edit = False
+    if (hasattr(settings, "GEOGIT_DATASTORE") and settings.GEOGIT_DATASTORE) or (hasattr(settings, "DB_DATASTORE") and settings.DB_DATSTORE):
+        feature_edit = True
+    if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
     else:
         return HttpResponse(json.dumps({'authorized': False}), mimetype="application/json")
