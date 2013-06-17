@@ -365,7 +365,7 @@ footer.footer {
   color:@graySp;
 }
 .meta p {
-  margin-bottom: -10px;
+  margin-bottom: 0;
 }
 
 .btn {
@@ -482,8 +482,9 @@ section.widget-mini {
   vertical-align: middle;
 
   &.pl-153-113 {
-    .size(63px, 153px);
-    padding-top:50px;
+    .size(60px, 80px);
+    border-radius: 4px;
+    padding-top:20px;
   }
 
   &.pl-64-70 {
@@ -495,14 +496,12 @@ section.widget-mini {
 
 .list article,
 .grid article {
-
   .rating, .activity {
     color:@graySp;
   }
   .overall_rating {
     color: @orange;
   }
-
 }
 
 .list article {
@@ -519,7 +518,7 @@ section.widget-mini {
 
   img {
     float:left;
-    margin:0 15px 15px 0;
+    margin: 1px 15px 15px 0;
   }
 
   .details {
@@ -543,22 +542,37 @@ section.widget-mini {
 .grid article {
   border-right: 1px solid @grayNeutral;
   float: left;
+  height: 120px;
   margin-right: 10px;
   overflow: hidden;
   padding-right: 10px;
-  height: 280px;
-  width: 265px;
+  width: 280px;
+
+  h3 {
+      color: @blueLight;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 185px;
+    }
+
+  img {
+    float:left;
+    margin: 1px 10px 15px 0;
+  }
 
   .details {
     clear: left;
+    width: 185px;
 
-    h3 {
-      padding-right: 10px;
+    p {
+      margin-bottom: 0;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 125px;
     }
-    p {margin-bottom: 0}
-    .stats {margin-top: 10px;}
+    .stats {margin-top: 0px;}
   }
 }
 
@@ -972,6 +986,10 @@ article a [class^="icon-"], [class*=" icon-"] {
       font-size: 14px;
       margin-left: 5px;
 }
+article a [class^="icon-star"], [class*=" icon-star"] {
+      color: @grayNeutral;
+      margin-left:0;
+}
 article a:hover [class^="icon-"], [class*=" icon-"] {
         color: @grayDark;
     }
@@ -1062,6 +1080,10 @@ body.home {
 
       &.article-list article h6 a {
         color:@linkColor;
+      }
+
+      &.latest-maps .pl-153-113 {
+        display: none;
       }
     }
   }
@@ -1452,7 +1474,7 @@ ul.list {
 
 ul.stats {
   margin-left: -10px;
-  margin-top: -10px;
+  margin-top: 0;
 
   a {
     border-left: 1px solid @grayNeutral;
