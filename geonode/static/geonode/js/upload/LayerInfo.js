@@ -158,7 +158,6 @@ define(function (require, exports) {
 
         geogit = $('#' + this.main.name.slice(0, -4) + '-geogit').is(':checked');
         time = $('#' + this.main.name.slice(0, -4) + '-time').is(':checked');
-        console.log(geogit, time);
 
         form_data.append('base_file', this.main);
         form_data.append('geogit', geogit);

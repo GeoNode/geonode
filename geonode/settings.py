@@ -510,7 +510,7 @@ MAP_BASELAYERS = [{
 
 # Uploader backend (rest or importer)
 
-UPLOADER_BACKEND_URL = 'importer'
+UPLOADER_BACKEND_URL = 'rest'
 
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE = False
@@ -522,11 +522,8 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE = ''
+#The name of the store in Geoserver
 DB_DATASTORE_NAME = ''
-
-# Import uploaded shapefiles into a GeoGit repository
-GEOGIT_DATASTORE = True
-GEOGIT_DATASTORE_NAME = 'geogit-repo'
 
 LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
