@@ -133,6 +133,10 @@ def _next_step_response(req, upload_session, force_ajax=True):
         if feature_type.resource_type == 'coverage':
             upload_session.completed_step = 'time'
             return _next_step_response(req, upload_session, force_ajax)
+    print upload_session.time
+    if next == 'time' and (upload_session.time == None or upload_session.time == False):
+        upload_session.completed_step = 'time'
+        return _next_step_response(req, upload_session, force_ajax)
     if next == 'time' and force_ajax:
         import_session = upload_session.import_session
         url = reverse('data_upload') + "?id=%s" % import_session.id
