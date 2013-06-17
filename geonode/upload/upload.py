@@ -99,6 +99,12 @@ class UploaderSession(object):
     # defaults to REPLACE if not provided. Accepts APPEND, too
     update_mode = None
 
+    # Import to GeoGit repository
+    geogit = None
+
+    # Configure Time for this Layer
+    time = None
+
     # the title given to the layer
     layer_title = None
 
@@ -285,9 +291,18 @@ def run_import(upload_session, async):
 
     # if a target datastore is configured, ensure the datastore exists
     # in geoserver and set the uploader target appropriately
-    if (settings.DB_DATASTORE and
+    if (hasattr(settings, 'GEOGIT_DATASTORE') and settings.GEOGIT_DATASTORE and
+        upload_session.geogit == True and
         import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
-        target = create_geoserver_db_featurestore()
+        target = create_geoserver_db_featurestore(type='geogit')
+        _log('setting target datastore %s %s',
+             target.name, target.workspace.name
+            )
+        import_session.tasks[0].set_target(
+            target.name, target.workspace.name)
+    elif (settings.DB_DATASTORE and
+        import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
+        target = create_geoserver_db_featurestore(type='postgis')
         _log('setting target datastore %s %s',
              target.name, target.workspace.name
             )
