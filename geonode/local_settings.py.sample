@@ -9,6 +9,12 @@ DATABASES = {
 
 # GeoNode vector data backend configuration.
 
+# Import uploaded shapefiles into a GeoGit repository
+GEOGIT_DATASTORE = True
+GEOGIT_DATASTORE_NAME = 'geogit-repo'
+
+UPLOADER_SHOW_TIME_STEP=True
+
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE = True
 
