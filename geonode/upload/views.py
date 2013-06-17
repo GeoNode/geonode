@@ -133,7 +133,6 @@ def _next_step_response(req, upload_session, force_ajax=True):
         if feature_type.resource_type == 'coverage':
             upload_session.completed_step = 'time'
             return _next_step_response(req, upload_session, force_ajax)
-    print upload_session.time
     if next == 'time' and (upload_session.time == None or upload_session.time == False):
         upload_session.completed_step = 'time'
         return _next_step_response(req, upload_session, force_ajax)
