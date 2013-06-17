@@ -38,7 +38,3 @@ docs/_build
 
 # ec2.py
 scripts/cloud/.gnec2.cfg
-
-geonode/people/templates/people/profile_list.html
-
-geonode/people/templates/people/profile_list.html
