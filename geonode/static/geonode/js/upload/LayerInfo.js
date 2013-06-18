@@ -368,6 +368,7 @@ define(function (require, exports) {
                 name: this.name,
                 selector: LayerInfo.safeSelector(this.name),
                 type: this.type.name,
+                format: this.type.format,
                 geogit: geogit_enabled,
                 time: time_enabled,
             });
