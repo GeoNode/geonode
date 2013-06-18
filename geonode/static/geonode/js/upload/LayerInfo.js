@@ -238,9 +238,10 @@ define(function (require, exports) {
     LayerInfo.prototype.displayUploadedLayerLinks = function(resp) {
         var self = this;
         var a = '<a href="' + resp.url + '" class="btn">Layer Info</a>';
-        var b = '<a href="' + resp.url + '/metadata" class="btn">Metadata</a>';
+        var b = '<a href="' + resp.url + '/metadata" class="btn">Edit Metadata</a>';
+        var c = '<a href="' + resp.url + '/style/manage" class="btn">Manage Styles</a>';
         self.logStatus({
-            msg: '<p> Your layer was successful uploaded<br/><br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '.</p>',
+            msg: '<p> Your layer was successfully uploaded<br/><br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '</p>',
             level: 'alert-success'
         });
     };
