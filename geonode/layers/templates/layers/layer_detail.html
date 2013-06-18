@@ -57,8 +57,8 @@
       <ul class="dropdown-menu">
         <!--li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li-->
         <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
-        <!--li><a href="{% url "layer_style" layer.typename %}">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li-->
         <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_style_manage" layer.typename %}">{% trans "Manage Styles" %} <i class="icon-chevron-right"></i></a></li>
         <li><a class="style-edit" href="#">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="{% url "layer_replace" layer.typename %}">{% trans "Replace this Layer" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %} <i class="icon-chevron-right"></i></a></li>
