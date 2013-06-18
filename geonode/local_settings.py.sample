@@ -9,14 +9,18 @@ DATABASES = {
 
 # GeoNode vector data backend configuration.
 
+# Uploader backend (rest or importer)
+
+UPLOADER_BACKEND_URL = 'rest'
+
 # Import uploaded shapefiles into a GeoGit repository
-GEOGIT_DATASTORE = True
+GEOGIT_DATASTORE = False
 GEOGIT_DATASTORE_NAME = 'geogit-repo'
 
-UPLOADER_SHOW_TIME_STEP=True
+UPLOADER_SHOW_TIME_STEP=False
 
 #Import uploaded shapefiles into a database such as PostGIS?
-DB_DATASTORE = True
+DB_DATASTORE = False
 
 #Database datastore connection settings
 DB_DATASTORE_DATABASE = 'geonode_imports'
