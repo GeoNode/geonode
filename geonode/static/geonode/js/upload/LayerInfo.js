@@ -156,12 +156,16 @@ define(function (require, exports) {
             perm = permissionsString($('#permission_form'),'layers');
         }
 
-        geogit = $('#' + this.main.name.slice(0, -4) + '-geogit').is(':checked');
-        time = $('#' + this.main.name.slice(0, -4) + '-time').is(':checked');
+        if (geogit_enabled) {
+            geogit = $('#' + this.main.name.slice(0, -4) + '-geogit').is(':checked');
+            form_data.append('geogit', geogit);
+        }
+        if (time_enabled) {
+            time = $('#' + this.main.name.slice(0, -4) + '-time').is(':checked');
+            form_data.append('time', time);
+        } 
 
         form_data.append('base_file', this.main);
-        form_data.append('geogit', geogit);
-        form_data.append('time', time);
         form_data.append('permissions', JSON.stringify(perm));
 
         for (i = 0; i < this.files.length; i += 1) {
@@ -364,6 +368,9 @@ define(function (require, exports) {
                 name: this.name,
                 selector: LayerInfo.safeSelector(this.name),
                 type: this.type.name,
+                format: this.type.format,
+                geogit: geogit_enabled,
+                time: time_enabled
             });
         file_queue.append(li);
         this.errors = this.collectErrors();
