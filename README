@@ -134,6 +134,26 @@ Windows Development Build Instructions::
     # and a windows batch script for starting jetty    
     paver start
 
+Mac OSX Development Build Instructions::
+    
+    # you may need brew install various dependencies 
+
+    mkdir -p ~/pyenv
+    virtualenv ~/pyenv/geonode    
+    source ~/pyenv/geonode/bin/activate
+    git clone https://github.com/GeoNode/geonode
+    cd geonode
+    pip install lxml
+    pip install pyproj
+    pip install nose
+    pip install httplib2
+    pip install shapely
+    pip install imaging
+    pip install PIL
+    pip install paver
+    paver setup
+    paver start
+
 
 Once fully started, you should see a message indicating the address of your geonode.
 The default username and password are ``admin`` and ``admin``::
