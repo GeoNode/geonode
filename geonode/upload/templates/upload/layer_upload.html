@@ -1,10 +1,10 @@
-{% extends "upload/base.html" %}
+{% extends "upload/layer_upload_base.html" %}
 {% load i18n %}
 {% load static from staticfiles %}
 
 {% block title %} {% trans "Upload Layer"  %} - {{ block.super }}  {% endblock %}
 
-{% block main_class %}data upload{% endblock main_class %}
+{% block body_class %}data data-list upload{% endblock %}
 
 {% block extra_head %}
 
@@ -13,6 +13,7 @@
 
 {% block head %}
 
+<!-- TODO Move this to site-wide css or remove -->
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geonode/css/fileuploadfield.css"/>
 <style type="text/css">
     .uip {
@@ -20,10 +21,6 @@
         border-radius: 3px;
         padding: .5em;
         margin: .5em
-    }
-    /* workaround bizarre firefox bug where filechooser button doesn't work */
-    #base_file-file {
-        width: auto;
     }
     #drop-zone {
       background: #eee;
@@ -45,11 +42,11 @@
                 <h3 class="uip">Incomplete Uploads</h3>
                 <p>You have the following incomplete uploads:</p>
                 {% for u in incomplete %}
-                    <div class="clearfix uip" style="">
+                    <div class="clearfix uip" style="" id="incomplete-{{ u.import_id }}">
                         <div class="pull-left">{{ u.name }}, last updated on {{ u.date }}</div>
                         <div class="upload_actions pull-right">
-                            <a class="btn btn-mini" href="{{ u.get_resume_url }}">Resume</a>
-                            <a class="btn btn-mini icon-trash" href="{{ u.get_delete_url }}">Delete</a>
+                            <a class="btn btn-mini" href="#" id="resume-{{ u.import_id }}">Resume</a>
+                            <a class="btn btn-mini icon-trash" href="#" id="delete-{{ u.import_id }}">Delete</a>
                         </div>
                     </div>
             </section>
@@ -71,9 +68,6 @@
                 {% endfor %}
             </div>
         {% endif %}
-
-        {% if enough_storage %}
-
 
             <section id="drop-zone">
               <h2>Drag and Drop files here</h2>
@@ -103,29 +97,24 @@
             {% autoescape off %}
             
             csrf_token =  "{{ csrf_token }}",
-            form_target = "{% url layer_upload %}",
-            userLookup = "{% url geonode.views.ajax_lookup %}"
+            form_target = "{{ UPLOADER_URL }}",
+            userLookup = "{% url "geonode.views.ajax_lookup" %}"
 
             {% endautoescape %}
 
             </script>
-
-        {% endif %}
         </div>
     </div>
 {% endblock %}
 
 {% block sidebar %}
 
-{% if enough_storage %}
 <h3>{% trans "Permissions"  %}</h3>
 <div>
   <form id="permission_form">
         {% include "_permissions.html" %}
   </form>
 </div>
-
-{% endif %}
 {% endblock %}
 
 {% block extra_script %}

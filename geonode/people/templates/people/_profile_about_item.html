@@ -4,9 +4,9 @@
 
 <section class="last">
     {% if profile.user %}
-    <a href="{% url profile_detail profile.user.username %}">{% avatar profile.user 65 %}</a>
+    <a href="{% url "profile_detail" profile.user.username %}">{% avatar profile.user 65 %}</a>
     <h4><a href="{{ profile.get_absolute_url }}">{{ profile.name }}</a></h4>
-    <a href="{% url profile_detail profile.user.username %}" class="read-more">
+    <a href="{% url "profile_detail" profile.user.username %}" class="read-more">
       {% trans "Read more about " %}{{ profile.name }}
     </a>
     {% else %}

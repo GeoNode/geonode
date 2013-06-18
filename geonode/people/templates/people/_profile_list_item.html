@@ -5,9 +5,9 @@
 {% load i18n %}
 
 <article>
-  <a class="avatar" href="{% url profile_detail profile.user.username %}">{% avatar profile.user 80 %}</a>
+  <a class="avatar" href="{% url "profile_detail" profile.user.username %}">{% avatar profile.user 80 %}</a>
   <div class="pull-left">
-    <h3><i class="icon-user"></i> <a href="{% url profile_detail profile.user.username %}">{{ profile.name }}</a>
+    <h3><i class="icon-user"></i> <a href="{% url "profile_detail" profile.user.username %}">{{ profile.name }}</a>
     {% if  profile.user.email %}<a href="mailto:{{ profile.user.email }}"><i class="icon-envelope icon-large"></i></a>{% endif %}</h3>
     <div class="details">
     <div class="meta">
@@ -26,14 +26,17 @@
         </ul>
     </div> <!-- /meta -->
   </div> <!-- /details -->
-    {% if_has_tag actor_url %}
-    <p><a href="{% actor_url profile.user %}" class="btn btn-mini" type="button">{% trans "My Activities" %}</a>
-      {% if request.user != profile.user %}
+
+    {% if request.user != profile.user %}
         {% if_has_tag if_relationship %}
-          {% include "relationships/_profile_follow.html" %}
+            {% include "relationships/_profile_follow.html" %}
         {% endif_has_tag %}
-      {% endif %}
+    {% endif %}
+
+    {% if_has_tag actor_url %}
+        <p><a href="{% actor_url profile.user %}" class="btn btn-mini" type="button">{% trans "My Activities" %}</a></p>
     {% endif_has_tag %}
-    </p>
+
+
   </div>
 </article>

@@ -78,7 +78,7 @@
     $('#permissions-body').ready(function(){
       {% if layer != "none" and document != "none" %}
       $.ajax(
-        "{% if layer %}{% url layer_permissions layer.typename %}{% elif map %}{% url map_permissions map.id %}{% elif document %}{% url document_permissions document.id %}{% endif %}",
+        "{% if layer %}{% url "layer_permissions" layer.typename %}{% elif map %}{% url "map_permissions" map.id %}{% elif document %}{% url "document_permissions" document.id %}{% endif %}",
         {
           success: function(data){
             var perms = $.parseJSON($.parseJSON(data).permissions);
@@ -126,7 +126,7 @@
         multiple: true,
         width: 'element',
         ajax: {
-          url: "{% url account_ajax_lookup %}",
+          url: "{% url "account_ajax_lookup" %}",
           dataType: "json",
           type: "POST",
           data: function (term, page) {
