@@ -143,7 +143,7 @@ define(function (require, exports) {
      *  @returns {FromData}
      */
     LayerInfo.prototype.prepareFormData = function (form_data) {
-        var i, ext, file, perm;
+        var i, ext, file, perm, geogit, time;
 
         if (!form_data) {
             form_data = new FormData();
@@ -156,9 +156,17 @@ define(function (require, exports) {
             perm = permissionsString($('#permission_form'),'layers');
         }
 
+        if (geogit_enabled) {
+            geogit = $('#' + this.main.name.slice(0, -4) + '-geogit').is(':checked');
+            form_data.append('geogit', geogit);
+        }
+        if (time_enabled) {
+            time = $('#' + this.main.name.slice(0, -4) + '-time').is(':checked');
+            form_data.append('time', time);
+        } 
+
         form_data.append('base_file', this.main);
         form_data.append('permissions', JSON.stringify(perm));
-
 
         for (i = 0; i < this.files.length; i += 1) {
             file = this.files[i];
@@ -167,7 +175,6 @@ define(function (require, exports) {
                 form_data.append(ext + '_file', file);
             }
         }
-
         return form_data;
     };
 
@@ -231,9 +238,10 @@ define(function (require, exports) {
     LayerInfo.prototype.displayUploadedLayerLinks = function(resp) {
         var self = this;
         var a = '<a href="' + resp.url + '" class="btn">Layer Info</a>';
-        var b = '<a href="' + resp.url + '/metadata" class="btn">Metadata</a>';
+        var b = '<a href="' + resp.url + '/metadata" class="btn">Edit Metadata</a>';
+        var c = '<a href="' + resp.url + '/style/manage" class="btn">Manage Styles</a>';
         self.logStatus({
-            msg: '<p> Your layer was successful uploaded<br/><br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '.</p>',
+            msg: '<p> Your layer was successfully uploaded<br/><br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '</p>',
             level: 'alert-success'
         });
     };
@@ -361,6 +369,9 @@ define(function (require, exports) {
                 name: this.name,
                 selector: LayerInfo.safeSelector(this.name),
                 type: this.type.name,
+                format: this.type.format,
+                geogit: geogit_enabled,
+                time: time_enabled
             });
         file_queue.append(li);
         this.errors = this.collectErrors();
