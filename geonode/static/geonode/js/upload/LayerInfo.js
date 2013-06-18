@@ -363,14 +363,13 @@ define(function (require, exports) {
      *  @returns {string}
      */
     LayerInfo.prototype.display = function (file_queue) {
-        console.log(geogit_enabled, time_enabled);
         var layerTemplate = _.template($('#layerTemplate').html()),
             li = layerTemplate({
                 name: this.name,
                 selector: LayerInfo.safeSelector(this.name),
                 type: this.type.name,
-                geogit_enabled: geogit_enabled,
-                time_enabled: time_enabled,
+                geogit: geogit_enabled,
+                time: time_enabled,
             });
         file_queue.append(li);
         this.errors = this.collectErrors();
