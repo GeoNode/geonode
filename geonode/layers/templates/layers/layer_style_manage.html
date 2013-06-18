@@ -13,6 +13,10 @@
 {% endblock %}
 
 {% block body_outer %}
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+{% endif %}
+
 <div class="row">
   <div class="span8">
     <form action="{% url "layer_style_manage" layer.typename %}" method="POST">
