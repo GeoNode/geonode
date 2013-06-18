@@ -484,6 +484,7 @@ def publish():
     sh('git push origin %s' % version)
     sh('git tag debian/%s' % simple_version)
     sh('git push origin debian/%s' % simple_version)
+    sh('python setup.py sdist upload')
 
 
 def versions():
