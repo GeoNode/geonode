@@ -7,15 +7,19 @@
 {% overall_rating document "document" as document_rating %}
 {% num_ratings document as num_votes %}
 <article>
-    <h3>Document</h3>
-    <a href="{% url "document_detail" document.id %}">
-      <div class="placeholder pl-153-113">{% trans "No Image Available" %}</div>
-    </a>
-    <div class="details">
-        <a href="{% if document.doc_file %}{{ document.doc_file.url }}{% endif %}" class="btn btn-info download">{% trans "Download" %}</a>
-        <a href="{% url "document_detail" document.id %}"><h3>{{ document.title }}</h3></a>
-        <div class="meta">{% trans 'from' %} <a href="{% url "profile_detail" document.owner.username %}">{{ document.owner }}</a>, {{ document.date|timesince }} {% trans 'ago' %}</div>
-        <p class="abstract">{{ document.abstract }}</p>
-        <p class="activity">{{ document.popular_count }} {% trans "view" %}{{ document.popular_count|pluralize }} | <span class="avg_rating" data-rating="{{ document_rating }}">{% trans "Average rating" %} <span class="overall_rating"></span> ({{num_votes}})</span></p>
+  <a href="{% url "document_detail" document.id %}"><div class="img-placeholder pl-153-113">{% trans "No Image Available" %}</div></a>
+  <div class="pull-left">
+    <h3><i class="icon-file"></i> <a href="{% url "document_detail" document.id %}">{{ document.title }}</a></h3>
+      <div class="details">
+        <div class="meta">
+          <p>Doc {% trans 'from' %} <a href="{% url "profile_detail" document.owner.username %}">{{ document.owner }}</a>, {{ document.date|timesince }} {% trans 'ago' %}</p>
+          <ul class="nav stats">
+            <li><a href="#"><strong>{{ document.popular_count }}</strong> {% trans "view" %}{{ document.popular_count|pluralize }}</a></li>
+            <li><a href="#"><strong><span class="overall_rating"></span> ({{num_votes}})</strong><span class="avg_rating" data-rating="{{ document_rating }}">{% trans "Average rating" %}</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <p><a href="{% if document.doc_file %}{{ document.doc_file.url }}{% endif %}" class="btn btn-mini">{% trans "Download" %}</a></p>
     </div>
+    <!-- <p class="abstract">{{ document.abstract }}</p> -->
 </article>
