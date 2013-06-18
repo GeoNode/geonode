@@ -537,7 +537,7 @@ def feature_edit_check(request, layername):
     """
     layer = get_object_or_404(Layer, typename=layername)
     feature_edit = False
-    if (hasattr(settings, "GEOGIT_DATASTORE") and settings.GEOGIT_DATASTORE) or (hasattr(settings, "DB_DATASTORE") and settings.DB_DATSTORE):
+    if (hasattr(settings, "GEOGIT_DATASTORE") and settings.GEOGIT_DATASTORE) or (hasattr(settings, "DB_DATASTORE") and settings.DB_DATASTORE):
         feature_edit = True
     if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
