@@ -17,16 +17,22 @@ define(['./FileType'], function (FileType) {
             name: 'GeoTiff File',
             main: 'tiff',
             requires: ['tiff']
-        })//,
-        // CSV: new FileType({
-        //     name: 'Comma Separated File',
-        //     main: 'csv',
-        //     requires: ['csv']
-        // }),
-        // ZIP: new FileType({
-        //     name: 'Zip Archives',
-        //     main: 'zip',
-        //     requires: ['zip']
-        // })
+        }),
+        // These types only supported by importer based Uplaod
+        CSV: new FileType({
+            name: 'Comma Separated File',
+            main: 'csv',
+            requires: ['csv']
+        }),
+        KML: new FileType({
+            name: 'Google Earth KML',
+            main: 'kml',
+            requires: ['kml']
+        }),
+        ZIP: new FileType({
+            name: 'Zip Archives',
+            main: 'zip',
+            requires: ['zip']
+        })
     };
 });
