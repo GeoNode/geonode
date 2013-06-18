@@ -370,7 +370,7 @@ define(function (require, exports) {
                 type: this.type.name,
                 format: this.type.format,
                 geogit: geogit_enabled,
-                time: time_enabled,
+                time: time_enabled
             });
         file_queue.append(li);
         this.errors = this.collectErrors();
