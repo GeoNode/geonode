@@ -16,9 +16,8 @@
       <div class='span2'><h3><%= type %><h3></div>
     </div>
     <div id='<%= name %>-vector-options' class='row span8'>
-        <!-- Only show if the appropriate type (vector) -->
-        <input type='checkbox' id='<%= name %>-geogit' name='<%= name %>-geogit'>Import to GeoGit</input>
-        <input type='checkbox' id='<%= name %>-time' name='<%= name %>-time'>Configure Time</input>
+        <% if(geogit_enabled) { %><input type='checkbox' id='<%= name %>-geogit' name='<%= name %>-geogit'>Import to GeoGit</input> } %>
+        <% if(time_enabled) { %><input type='checkbox' id='<%= name %>-time' name='<%= name %>-time'>Configure Time</input> } %>
     </div>
     <hr />
     <div>
