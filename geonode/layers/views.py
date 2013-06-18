@@ -38,6 +38,9 @@ from django.views.decorators.http import require_POST
 from django.template.defaultfilters import slugify
 from django.shortcuts import get_object_or_404
 from django.forms.models import inlineformset_factory
+from django.utils.datastructures import MultiValueDictKeyError 
+
+from geoserver.catalog import FailedRequestError
 
 from geonode.utils import http_client, _get_basic_auth_info, json_response
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm, LayerStyleUploadForm
@@ -359,28 +362,50 @@ def layer_style_manage(req, layername):
                     }
                 )
             )
-        except:
-            import sys
-            print sys.exc_info()
-            pass #BAD!
+        except (FailedRequestError, EnvironmentError) as e:
+            msg = ('Could not connect to geoserver at "%s"'
+               'to manage style information for layer "%s"' % (
+                settings.GEOSERVER_BASE_URL, layer.name)
+            )
+            logger.warn(msg, e)
+            # If geoserver is not online, return an error
+            return render_to_response(
+                'layers/layer_style_manage.html',
+                RequestContext(req, {
+                    "layer": layer,
+                    "error": msg
+                    }
+                )
+            )
     elif req.method == 'POST':
-        selected_styles = req.POST.getlist('style-select')
-        default_style = req.POST['default_style']
-        
-        # Save to GeoServer
-        cat = Layer.objects.gs_catalog
-        gs_layer = cat.get_layer(layer.name)
-        gs_layer.default_style = default_style
-        styles = []
-        for style in selected_styles:
-            styles.append(type('style',(object,),{'name' : style}))
-        gs_layer.styles = styles 
-        cat.save(gs_layer)
+        try:
+            selected_styles = req.POST.getlist('style-select')
+            default_style = req.POST['default_style']
+            # Save to GeoServer
+            cat = Layer.objects.gs_catalog
+            gs_layer = cat.get_layer(layer.name)
+            gs_layer.default_style = default_style
+            styles = []
+            for style in selected_styles:
+                styles.append(type('style',(object,),{'name' : style}))
+            gs_layer.styles = styles 
+            cat.save(gs_layer)
 
-        # Save to Django
-        set_styles(layer, cat)
-
-        return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
+            # Save to Django
+            set_styles(layer, cat)
+            return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
+        except (FailedRequestError, EnvironmentError, MultiValueDictKeyError) as e:
+            msg = ('Error Saving Styles for Layer "%s"'  % (layer.name)
+            )
+            logger.warn(msg, e)
+            return render_to_response(
+                'layers/layer_style_manage.html',
+                RequestContext(req, {
+                    "layer": layer,
+                    "error": msg
+                    }
+                )
+            )
 
 @login_required
 def layer_change_poc(request, ids, template = 'layers/layer_change_poc.html'):
