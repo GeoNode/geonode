@@ -24,7 +24,7 @@
             </div>
           {% endif %}
             <div>
-                <form id="upload_form" method="post" enctype="multipart/form-data" action="{% url document_upload %}">
+                <form id="upload_form" method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
                     <label for="title">Type a title</label><input id="title" name="title" type="text" placeholder="Title" />
                     <label for="resource">Link to</label><input id="resource" name="q" type="text" />
                     <label for="doc_file">Choose a file</label><input id="doc_file" name="file" type="file" />
@@ -61,7 +61,7 @@
         placeholder: 'Select layer, map or empty',
         width: 'element',
         ajax: {
-          url: '{% url search_api %}',
+          url: '{% url "search_api" %}',
           data: function(term,page){
             return {
               type: 'layer,map',

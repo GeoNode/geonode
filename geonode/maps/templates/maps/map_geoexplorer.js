@@ -31,9 +31,9 @@ Ext.onReady(function() {
          * provides listing and, with an authenticated user, saving of 
          * maps on the server for sharing and editing.
          */
-        rest: "{% url maps_browse %}",
-        ajaxLoginUrl: "{% url account_ajax_login %}",
-        homeUrl: "{% url home %}",
+        rest: "{% url "maps_browse" %}",
+        ajaxLoginUrl: "{% url "account_ajax_login" %}",
+        homeUrl: "{% url "home" %}",
         localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
         localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",
         csrfToken: "{{ csrf_token }}",

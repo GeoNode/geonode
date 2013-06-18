@@ -12,7 +12,7 @@
 {% block body_class %}data{% endblock %}
 
 {% block body_outer %}  
-<form class="form-horizontal" action="{% url document_metadata document.id %}" method="POST">
+<form class="form-horizontal" action="{% url "document_metadata" document.id %}" method="POST">
     <legend>
       {% blocktrans with document.typename as document_title %}
         Editing details for {{ document_title }}

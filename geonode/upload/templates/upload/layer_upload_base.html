@@ -1,0 +1,20 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} {{ block.super }} {% endblock %}
+
+{% block body_class %}data{% endblock %}
+
+{% block body_outer %}
+    <div class="span12">
+      <!--nav class="back"><a href="{% url "layer_browse" %}"><i class="icon-chevron-left"></i> See all Layers</a></nav-->
+      <ul class="nav nav-tabs" id="subnav-tabs">
+            <li><a href="{% url "layer_browse" %}" class="explore">{% trans "Explore Layers" %}</a></li>
+            <!-- switch to us the new upload -->
+            <li><a href="{% url "data_upload" %}" class="upload">{% trans "Upload Layers" %}</a></li>
+      </ul>
+    </div>
+    {% block body %}{% endblock body %}
+    {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}
