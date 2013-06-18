@@ -145,3 +145,9 @@ class LayerAttributeForm(forms.ModelForm):
     class Meta:
         model = Attribute
         exclude = ('attribute_type',)
+
+class LayerStyleUploadForm(forms.Form):
+    layerid = forms.IntegerField()
+    name = forms.CharField(required=False)
+    update = forms.BooleanField(required=False)
+    sld = forms.FileField()
