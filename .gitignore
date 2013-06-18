@@ -5,6 +5,8 @@ build
 target
 *.mo
 pip-log.txt
+MANIFEST
+dist
 
 # supporting stuff pulled in by paver script
 geonode/development.db

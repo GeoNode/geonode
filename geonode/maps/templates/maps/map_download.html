@@ -12,7 +12,7 @@
 
         function update() { 
             Ext.Ajax.request({ 
-                url : "{% url map_download_check %}",
+                url : "{% url "map_download_check" %}",
                 method: "GET",              
                 success: function(result) { 
                     process = Ext.util.JSON.decode(result.responseText);
