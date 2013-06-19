@@ -5,14 +5,14 @@
     <meta charset="utf-8">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
-      <link href="{{ STATIC_URL }}libs/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}components/bootstrap/docs/assets/css/bootstrap.css" rel="stylesheet"/>
       {% block css-src %}
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       {% endblock %}
       <link href='{{ STATIC_URL }}geonode/font/lato_font.css' rel='stylesheet' type='text/css' />
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}libs/datatables/css/datatables.css" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}libs/select2/select2.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}components/datatables/media/css/jquery.dataTables.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}components/select2/select2.css" rel="stylesheet"/>
       {% block extra_head %}{% endblock %}
     {% endblock %}
     <!--[if lt IE 9]>
@@ -198,12 +198,12 @@
       </div>
     </footer>
     {% endblock footer %}
-    <script src="{{ STATIC_URL }}libs/js/jquery.js"></script>
-    <script src="{{ STATIC_URL }}libs/bootstrap/js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}libs/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="{{ STATIC_URL }}libs/js/jquery.timeago.js"></script>
-    <script src="{{ STATIC_URL }}libs/js/json2.js"></script>
-    <script src="{{ STATIC_URL }}libs/select2/select2.js"></script>
+    <script src="{{ STATIC_URL }}components/bootstrap/docs/assets/js/jquery.js"></script>
+    <script src="{{ STATIC_URL }}components/bootstrap/docs/assets/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}components/datatables/media/js/jquery.dataTables.js"></script>
+    <script src="{{ STATIC_URL }}components/jquery-timeago/jquery.timeago.js"></script>
+    <script src="{{ STATIC_URL }}components/hogan/test/json2.js"></script>
+    <script src="{{ STATIC_URL }}components/select2/select2.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/utils.js"></script>
     <script>
       $("#search").select2({
