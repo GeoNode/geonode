@@ -7,7 +7,7 @@
 
 {% block head %}
   {{ block.super }}
-  <link rel="stylesheet" href="{{ STATIC_URL }}libs/css/datepicker.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="{{ STATIC_URL }}components/bootstrap-datepicker/css/datepicker.css" type="text/css" media="screen" />
 {% endblock %}
 
 {% block body_outer %}
@@ -125,7 +125,7 @@
 {% endblock %}
 
 {% block extra_script %}
-    <script src="{{ STATIC_URL }}libs/js/bootstrap-datepicker.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}components/bootstrap-datepicker/js/bootstrap-datepicker.js" type="text/javascript"></script>
     <script type="text/javascript">
         $(function() {
           $(".date").datepicker();
