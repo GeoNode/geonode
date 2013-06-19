@@ -38,6 +38,8 @@ class Command(BaseCommand):
             help="Name of the user account which should own the imported layers"),
         make_option('-f', '--filter', dest="filter", default=None,
             help="Only update data the layers that match the given filter"),
+        make_option('-s', '--store', dest="store", default=None,
+            help="Only update data the layers for the given geoserver store name"),
         make_option('-w', '--workspace', dest="workspace", default=None,
             help="Only update data on specified workspace")
         )
@@ -49,6 +51,7 @@ class Command(BaseCommand):
         owner = get_valid_user(user)
         workspace = options.get('workspace')
         filter = options.get('filter')
+        store = options.get('store')
 
         if verbosity > 0:
             console = sys.stdout
@@ -57,7 +60,7 @@ class Command(BaseCommand):
 
         start = datetime.datetime.now()
         output = gs_slurp(ignore_errors, verbosity=verbosity,
-                owner=owner, console=console, workspace=workspace, filter=filter)
+                owner=owner, console=console, workspace=workspace, store=store, filter=filter)
         updated = [dict_['name'] for dict_ in output if dict_['status']=='updated']
         created = [dict_['name'] for dict_ in output if dict_['status']=='created']
         failed = [dict_['name'] for dict_ in output if dict_['status']=='failed']
