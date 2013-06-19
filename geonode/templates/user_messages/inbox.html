@@ -39,7 +39,7 @@
                 {{ thread.latest_message.content|slice:"50" }}<a href="{{ thread.get_absolute_url }}">...</a>
             </td>
             <td>
-                <form id="thread_delete_{{ thread.pk }}" method="post" action="{% url messages_thread_delete thread.pk %}">
+                <form id="thread_delete_{{ thread.pk }}" method="post" action="{% url "messages_thread_delete" thread.pk %}">
                     {% csrf_token %}
                     <input type="submit" value="{% trans "Delete" %}" class="btn btn-danger" type="button"/>
                 </form>
@@ -52,5 +52,5 @@
 {% endblock %}
 
 {% block sidebar %}
-<a href="{% url message_create %}" class="btn btn-primary" type="button">{% trans "Create Message" %}</a>
+<a href="{% url "message_create" %}" class="btn btn-primary" type="button">{% trans "Create Message" %}</a>
 {% endblock %}

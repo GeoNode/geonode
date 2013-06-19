@@ -4,7 +4,7 @@
 
 <script type="text/javascript">
 {% autoescape off %}
-        var styleEditor, modified = false;
+        var app;
         Ext.onReady(function() {
             var config = {
                 tools: [{
@@ -31,7 +31,7 @@
 
                 listeners: {
                     "ready": function() {
-                        var map = app.mapPanel.map;
+                        map = app.mapPanel.map;
                         map.zoomToExtent(map.layers.slice(-1)[0].maxExtent);
                     },
                     "beforeunload": function() {
@@ -47,8 +47,24 @@
 
             app = new GeoExplorer.Viewer(config);
 
-
+            // change style displayed in map
+            Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
+                app.selectedLayer.getLayer().mergeNewParams({
+                    "STYLES": elem.id,
+                    "_dc": Math.random()
+                }); 
+            });
+            
+            Ext.get(Ext.DomQuery.select(".style-edit")).on("click", function(evt, elem) {
+                for (var key in app.tools) {
+                    var tool = app.tools[key];
+                    if (tool.ptype == 'gxp_styler') {
+                        tool.actions[0].execute();
+                    };
+                }
+            });
 
         });
+    
     {% endautoescape %}
     </script>

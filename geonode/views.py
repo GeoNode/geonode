@@ -20,7 +20,8 @@
 from django import forms
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 
 def index(request, template='index.html'):
@@ -89,3 +90,7 @@ def ajax_lookup(request):
         content=json.dumps(json_dict),
         mimetype='text/plain'
     )
+
+
+def err403(request):
+    return HttpResponseRedirect(reverse('account_login') + '?next=' + request.get_full_path())

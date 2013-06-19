@@ -156,7 +156,7 @@ INSTALLED_APPS = (
     'south',
     'friendlytagloader',
     'geoexplorer',
-    'request',
+    'django_extensions',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -171,7 +171,6 @@ INSTALLED_APPS = (
     'notification',
     'announcements',
     'actstream',
-    'relationships',
     'user_messages',
 
     # GeoNode internal apps
@@ -197,6 +196,11 @@ LOGGING = {
         'simple': {
             'format': '%(message)s',        },
     },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+     }
+    },
     'handlers': {
         'null': {
             'level':'ERROR',
@@ -209,6 +213,7 @@ LOGGING = {
         },
         'mail_admins': {
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
@@ -216,11 +221,6 @@ LOGGING = {
         "django": {
             "handlers": ["console"],
             "level": "ERROR",
-        },
-        "django.request": {
-            "handlers": ["mail_admins"],
-            "level": "ERROR",
-            "propagate": True,
         },
         "geonode": {
             "handlers": ["console"],
@@ -270,13 +270,17 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'request.middleware.RequestMiddleware',
     # The setting below makes it possible to serve different languages per
     # user depending on things like headers in HTTP requests.
     'django.middleware.locale.LocaleMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # This middleware allows to print private layers for the users that have 
+    # the permissions to view them.
+    # It sets temporary the involved layers as public before restoring the permissions.
+    # Beware that for few seconds the involved layers are public there could be risks.
+    #'geonode.middleware.PrintProxyMiddleware',
 )
 
 
@@ -314,6 +318,9 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     },
     "layers.Layer": {
         "layer": "How good is this layer?"
+    },
+    "documents.Document": {
+        "document": "How good is this document?"
     }
 }
 
@@ -501,6 +508,10 @@ MAP_BASELAYERS = [{
 
 # GeoNode vector data backend configuration.
 
+# Uploader backend (rest or importer)
+
+UPLOADER_BACKEND_URL = 'rest'
+
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE = False
 
@@ -511,16 +522,17 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE = ''
-DB_DATASTORE_NAME = ''
-
 #The name of the store in Geoserver
+DB_DATASTORE_NAME = ''
 
 LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
 }
 
 # Default TopicCategory to be used for resources. Use the slug field here
-DEFAULT_TOPICCATEGORY = 'location' 
+DEFAULT_TOPICCATEGORY = 'location'
+
+MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 
 # Load more settings from a file called local_settings.py if it exists
 try:

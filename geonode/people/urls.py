@@ -19,10 +19,8 @@
 
 from django.conf.urls.defaults import *
 
-from geonode.people.views import ProfileListView
-
 urlpatterns = patterns('geonode.people.views',
-    url(r'^$', ProfileListView.as_view(), name='profile_browse'),
+    url(r'^$', 'profile_list' , name='profile_browse'),
     url(r"^edit/(?P<username>[^/]*)$", "profile_edit", name="profile_edit"),
     url(r"^profile/(?P<username>[^/]*)/$", "profile_detail", name="profile_detail"),
     url(r'^forgotname','forgot_username',name='forgot_username'),

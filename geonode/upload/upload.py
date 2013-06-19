@@ -99,6 +99,12 @@ class UploaderSession(object):
     # defaults to REPLACE if not provided. Accepts APPEND, too
     update_mode = None
 
+    # Import to GeoGit repository
+    geogit = None
+
+    # Configure Time for this Layer
+    time = None
+
     # the title given to the layer
     layer_title = None
 
@@ -285,9 +291,18 @@ def run_import(upload_session, async):
 
     # if a target datastore is configured, ensure the datastore exists
     # in geoserver and set the uploader target appropriately
-    if (settings.DB_DATASTORE and
+    if (hasattr(settings, 'GEOGIT_DATASTORE') and settings.GEOGIT_DATASTORE and
+        upload_session.geogit == True and
         import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
-        target = create_geoserver_db_featurestore()
+        target = create_geoserver_db_featurestore(type='geogit')
+        _log('setting target datastore %s %s',
+             target.name, target.workspace.name
+            )
+        import_session.tasks[0].set_target(
+            target.name, target.workspace.name)
+    elif (settings.DB_DATASTORE and
+        import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
+        target = create_geoserver_db_featurestore(type='postgis')
         _log('setting target datastore %s %s',
              target.name, target.workspace.name
             )
@@ -446,6 +461,8 @@ def final_step(upload_session, user):
     # @todo see above in save_step, regarding computed unique name
     name = import_session.tasks[0].items[0].layer.name
 
+    import time
+    time.sleep(4)
     _log('Creating style for [%s]', name)
     publishing = cat.get_layer(name)
     if publishing is None:
@@ -496,11 +513,13 @@ def final_step(upload_session, user):
 
     cat._cache.clear()
 
+    storeType = 'dataStore' if target.resource_type == 'featureType' else 'coverageStore'
+
     saved_layer, created = Layer.objects.get_or_create(
         name=resource.name,
         defaults=dict(
             store=target.name,
-            storeType=target.resource_type,
+            storeType=storeType,
             typename=typename,
             workspace=target.workspace.name,
             title=title or resource.title,
@@ -563,7 +582,7 @@ def final_step(upload_session, user):
     try:
         Layer.objects.get(name=name)
     except Layer.DoesNotExist, e:
-        msg = ('There was a problem saving the layer %s to GeoNetwork/Django. Error is: %s' % (name, str(e)))
+        msg = ('There was a problem saving the layer %s to Django. Error is: %s' % (name, str(e)))
         logger.exception(msg)
         logger.debug('Attempting to clean up after failed save for layer [%s]', name)
         # Since the layer creation was not successful, we need to clean up
@@ -571,11 +590,12 @@ def final_step(upload_session, user):
         # cleanup(name, layer_uuid)
         raise GeoNodeException(msg)
 
-    # Verify it is correctly linked to GeoServer and GeoNetwork
+    # Verify it is correctly linked to GeoServer
+    _log('Verifying the layer [%s] was created in GeoServer correctly' % name)
     try:
         saved_layer.verify()
     except GeoNodeException, e:
-        msg = ('The layer [%s] was not correctly saved to GeoNetwork/GeoServer. Error is: %s' % (name, str(e)))
+        msg = ('The layer [%s] was not correctly saved to GeoServer. Error is: %s' % (name, str(e)))
         logger.exception(msg)
         e.args = (msg,)
         # Deleting the layer
@@ -588,7 +608,9 @@ def final_step(upload_session, user):
     signals.upload_complete.send(sender=final_step, layer=saved_layer)
 
     upload = Upload.objects.get(import_id = upload_session.import_session.id)
+    _log('Reloading Import session for [%s] one last time' % name)
+    import_session = import_session.reload()
+    upload.import_session = import_session
     upload.layer = saved_layer
     upload.save()
-
     return saved_layer

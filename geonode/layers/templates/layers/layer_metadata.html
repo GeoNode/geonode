@@ -12,16 +12,16 @@
 {% block body_class %}data{% endblock %}
 
 {% block body_outer %}  
-<form class="form-horizontal" action="{% url layer_metadata layer.typename %}" method="POST">
+<form class="form-horizontal" action="{% url "layer_metadata" layer.typename %}" method="POST">
     <legend>
       {% blocktrans with layer.typename as layer_title %}
         Editing details for {{ layer_title }}
       {% endblocktrans %}
     </legend>
     {% if layer.metadata_uploaded %}
-	{% blocktrans %}Note: this layer's orginal metadata was populated by importing a metadata XML file.
+	<div style="background-color: pink;">{% blocktrans %}Note: this layer's orginal metadata was populated by importing a metadata XML file.
         GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.
-        Some of your original metadata may have been lost.{% endblocktrans %}"
+        Some of your original metadata may have been lost.{% endblocktrans %}</div>
     {% endif %}
     {% csrf_token %}
     <div class="form-controls">

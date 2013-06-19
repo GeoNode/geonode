@@ -61,7 +61,7 @@ class LayerForm(forms.ModelForm):
                    'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid',
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext',
-                   'popular_count', 'share_count')
+                   'popular_count', 'share_count', 'thumbnail', 'default_style', 'styles')
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
@@ -145,3 +145,9 @@ class LayerAttributeForm(forms.ModelForm):
     class Meta:
         model = Attribute
         exclude = ('attribute_type',)
+
+class LayerStyleUploadForm(forms.Form):
+    layerid = forms.IntegerField()
+    name = forms.CharField(required=False)
+    update = forms.BooleanField(required=False)
+    sld = forms.FileField()

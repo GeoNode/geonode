@@ -200,11 +200,11 @@ def change_admin_password():
     sudo('source /var/lib/geonode/bin/activate;cat ~/changepw.py | django-admin.py shell --settings=geonode.settings')
     run('rm ~/changepw.py')
 
-def geonode_updateip(server_name="alpha.dev.geonode.org"):
+def geonode_updateip(server_name="beta.dev.geonode.org"):
     sudo ('geonode-updateip %s' % server_name)
 
-def set_temp_hosts_entry(server_name="alpha.dev.geonode.org"):
-    sudo("IP=`wget -qO- http://instance-data/latest/meta-data/public-ipv4`; echo $IP alpha.dev.geonode.org >> /etc/hosts")
+def set_temp_hosts_entry(server_name="beta.dev.geonode.org"):
+    sudo("IP=`wget -qO- http://instance-data/latest/meta-data/public-ipv4`; echo $IP beta.dev.geonode.org >> /etc/hosts")
 
 def remove_temp_hosts_entry():
     sudo("sed '$d' /etc/hosts > temp; mv temp /etc/hosts")

@@ -45,6 +45,7 @@ from geonode.utils import resolve_object
 from geonode.maps.forms import MapForm
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
+from geonode.documents.models import get_related_documents
 
 
 logger = logging.getLogger("geonode.maps.views")
@@ -119,6 +120,7 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         'map': map_obj,
         'layers': layers,
         'permissions_json': json.dumps(_perms_info(map_obj, MAP_LEV_NAMES)),
+        "documents": get_related_documents(map_obj),
     }))
 
 
@@ -312,7 +314,7 @@ def new_map_config(request):
                     # bad layer, skip
                     continue
 
-                if not request.user.has_perm('maps.view_layer', obj=layer):
+                if not request.user.has_perm('layers.view_layer', obj=layer):
                     # invisible layer, skip inclusion
                     continue
 
@@ -335,7 +337,7 @@ def new_map_config(request):
                 ))
 
             if bbox is not None:
-                minx, maxx, miny, maxy = [float(c) for c in bbox]
+                minx, miny, maxx, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
 
@@ -472,8 +474,6 @@ def map_set_permissions(m, perm_spec):
         user = User.objects.get(username=username)
         m.set_user_level(user, level)
 
-
-@require_POST
 def map_permissions(request, mapid):
     try:
         map_obj = _resolve_map(request, mapid, 'maps.change_map_permissions')
@@ -485,15 +485,28 @@ def map_permissions(request, mapid):
             mimetype='text/plain'
         )
 
+    if request.method == 'POST':
+        permission_spec = json.loads(request.raw_post_data)
+        map_set_permissions(map_obj, permission_spec)
 
-    permission_spec = json.loads(request.raw_post_data)
-    map_set_permissions(map_obj, permission_spec)
+        return HttpResponse(
+            json.dumps({'success': True}),
+            status=200,
+            mimetype='text/plain'
+        )
 
-    return HttpResponse(
-        json.dumps({'success': True}),
-        status=200,
-        mimetype='text/plain'
-    )
+    elif request.method == 'GET':
+        permission_spec = json.dumps(map_obj.get_all_level_info())
+        return HttpResponse(
+            json.dumps({'success': True, 'permissions': permission_spec}),
+            status=200,
+            mimetype='text/plain'
+        )
+    else:
+        return HttpResponse(
+            'No methods other than get and post are allowed',
+            status=401,
+            mimetype='text/plain')
 
 
 def _map_fix_perms_for_editor(info):

@@ -5,17 +5,18 @@ Name:         %{projname}-tomcat
 License:      GPL
 Group:        Productivity/Scientific/Other
 Summary:      Java based GIS server
-Version:      2.2.3
+Version:      2.3.0
 Release:      1
 URL:          http://geoserver.org
 BuildRoot:    %{_tmppath}/%{name}-%{version}
-Source0:      %{projname}-%{version}-war.tar.bz2
+Source0:      %{projname}-%{version}-war.zip
 Source1:      geoserver_home.desktop
 Source2:      geoserver_home.png
 Provides:     %name-%{version}-%{release}
 Conflicts:    geoserver
 AutoReqProv:  0
-BuildRequires:  fdupes 
+BuildRequires:  fdupes
+BuildRequires:  unzip
 BuildRequires:  tomcat
 BuildRequires: -post-build-checks
 Requires:     java
@@ -33,7 +34,7 @@ and also implements the Web Map Service and Web Coverage Service specifications.
 
 
 %prep
-%setup -q -n %{projname}-%{version}-war
+%setup -q -c -n %{projname}-%{version}-war
 
 
 %build
