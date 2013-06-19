@@ -15,6 +15,7 @@ downloaded
 
 # Static media handling
 geonode/static/components/
+geonode/static/lib/
 geonode/static/geoexplorer/
 geonode/static_root/
 
