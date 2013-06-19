@@ -32,7 +32,9 @@
         </a>
         <ul class="dropdown-menu">
           <li><a href="{% url "map_metadata" map.id %}">{% trans "Edit Map Metadata" %} <i class="icon-chevron-right"></i></a></li>
+          {% if PRINTNG_ENABLED %}
           <li><a href="#" id="set_thumbnail">{% trans "Set Map Thumbnail" %} <i class="icon-chevron-right"></i></a></li>
+          {% endif %}
           <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Map Permissions" %} <i class="icon-chevron-right"></i></a></li>
           <li><a href="{% url "map_remove" map.id %}">{% trans "Remove this Map" %} <i class="icon-chevron-right"></i></a></li>
         </ul>
@@ -208,6 +210,7 @@
     return false;
   });
 
+{% if PRINTNG_ENABLED %}
   $('#set_thumbnail').click(function(){
     var xmap = $('.olMapViewport');
     height = xmap.height();
@@ -234,6 +237,7 @@
     });
     return true;
   });
+{% endif %}
  
 </script>
 {% include "_permissions_form_js.html" %}
