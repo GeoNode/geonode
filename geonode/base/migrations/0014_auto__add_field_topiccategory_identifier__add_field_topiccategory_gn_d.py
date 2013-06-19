@@ -12,7 +12,7 @@ class Migration(SchemaMigration):
         db.add_column('base_topiccategory', 'identifier', self.gf('django.db.models.fields.CharField')(default='location', max_length=255), keep_default=False)
 
         # Adding field 'TopicCategory.gn_description'
-        db.add_column('base_topiccategory', 'gn_description', self.gf('django.db.models.fields.CharField')(default='', max_length=255), keep_default=False)
+        db.add_column('base_topiccategory', 'gn_description', self.gf('django.db.models.fields.CharField')(default='', max_length=255, null=True), keep_default=False)
 
         # Adding field 'TopicCategory.is_choice'
         db.add_column('base_topiccategory', 'is_choice', self.gf('django.db.models.fields.BooleanField')(default=True), keep_default=False)
