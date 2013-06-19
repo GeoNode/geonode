@@ -1,7 +1,8 @@
 requirejs.config({
-    baseUrl: '/static/libs/js',
+    baseUrl: '/static/components',
     paths: {
-        'app': '../../geonode/js'
+        'jquery': 'jquery/jquery',
+        'waypoints': 'jquery-waypoints/waypoints'
     }
 });
 
