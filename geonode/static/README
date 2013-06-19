@@ -1,27 +1,32 @@
+GeoNode's Static Client
+=======================
+
 Installing Dependencies
-    bower component.json
+    bower install 
 
 css & less (bootstrap)
     bootswatch
 
 javascript jquery 
-    core
-    portals
-    search
-    status
-    upload
-
-require.js
-
-javascript extjs
+    extjs
         geonode
         print
         upload
+    maps
+    search
+    status
+    templates
+    upload
+    utils
+
+require.js
 
 rhino
 
 images
+
 fonts
+
 i18n/l10n
 
 Building with makefile 
