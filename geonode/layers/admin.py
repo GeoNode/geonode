@@ -51,7 +51,7 @@ class LayerAdmin(admin.ModelAdmin):
 class AttributeAdmin(admin.ModelAdmin):
     model = Attribute
     list_display_links = ('id',)
-    list_display = ('id', 'layer', 'attribute', 'attribute_label', 'attribute_type', 'display_order')
+    list_display = ('id', 'layer', 'attribute', 'description', 'attribute_label', 'attribute_type', 'display_order')
     list_filter = ('layer', 'attribute_type')
     search_fields = ('attribute', 'attribute_label',)
 
