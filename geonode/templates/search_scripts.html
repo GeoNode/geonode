@@ -1,8 +1,8 @@
 {% load staticfiles %}
-  <script src="{% static "libs/js/bootstrap-datepicker.js" %}" type="text/javascript"></script>
-  <script src="{% static "libs/js/jquery.tinysort.min.js" %}"></script>
+  <script src="{% static "components/bootstrap-datepicker/js/bootstrap-datepicker.js:" %}" type="text/javascript"></script>
+  <script src="{% static "components/tinysort/src/jquery.tinysort.min.js" %}"></script>
   <script src="{% static "geonode/js/explore.js" %}"></script>
   <script data-main="{{STATIC_URL}}geonode/js/global_search"
-                    src="{% STATIC_URL "components/requirejs/require.js" %}">
+                    src="{% static "components/requirejs/require.js" %}">
             </script>
   {% include 'rate.js' %}
