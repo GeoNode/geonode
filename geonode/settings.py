@@ -534,6 +534,8 @@ DEFAULT_TOPICCATEGORY = 'location'
 
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 
+CACHE_TIME=0
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *
