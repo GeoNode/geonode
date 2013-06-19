@@ -1,13 +1,11 @@
 requirejs.config({
     baseUrl: '/static/components',
     paths: {
-        'jquery': 'jquery/jquery',
-        'waypoints': 'jquery-waypoints/waypoints',
-        'utils': '../geonode/js/utils'
+        'waypoints': 'jquery-waypoints/waypoints'
     }
 });
 
-define(['jquery','waypoints','utils'],function($){
+define(['waypoints'],function(){
     
     function build_query(){
         /*
