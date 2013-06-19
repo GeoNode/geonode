@@ -39,6 +39,8 @@ urlpatterns = patterns(
     url(r'^(?P<layername>[^/]*)/replace$', 'layer_replace',
         name="layer_replace"),
     url(r'^(?P<layername>[^/]*)/style$', 'layer_style', name="layer_style"),
+    url(r'^(?P<layername>[^/]*)/style/upload$','layer_style_upload',name='layer_style_upload'),
+    url(r'^(?P<layername>[^/]*)/style/manage$','layer_style_manage',name='layer_style_manage'),
     url(r'^(?P<layername>[^/]*)/permissions$', 'layer_permissions',
         name='layer_permissions'),
     url(r'^(?P<layername>[^/]*)/edit-check?$', 'feature_edit_check',

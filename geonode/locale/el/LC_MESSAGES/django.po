@@ -269,6 +269,10 @@ msgstr ""
 "Χρησιμοποιήστε τα κουτάκια ελέγχου στα αποτελέσματα της αναζήτησης για να "
 "προσθέσετε δεδομένα στην επιλογή σας."
 
+#: people/templates/people/profile_detail.html:61
+msgid "My Activities"
+msgstr "Δραστηριότητες μου"
+
 #: documents/templates/documents/document_search.html:62
 #: people/templates/people/profile_detail.html:89
 msgid "Create a new map"

@@ -37,7 +37,7 @@
   {% endblock %}
   {% block mainbody %}
   <div class="row">
-    <div class="span8 paginate paginate-auto">
+    <div class="span8">
       <section class="widget list paginate-contents">
         <h2>{% trans "Latest Layers" %}</h2>
         <div class="paginate paginate-auto" id="search-content">
@@ -54,7 +54,7 @@
             {% blocktrans %}
               GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. 
             {% endblocktrans %}
-              <a href="{% url "layer_upload" %}" class="btn btn-large">{% trans 'Upload Layers' %}</a>
+              <a href="{% url "data_upload" %}" class="btn btn-large">{% trans 'Upload Layers' %}</a>
             {% blocktrans %}
               GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. 
             {% endblocktrans %}
@@ -65,7 +65,7 @@
       {% endif %}
       <div class="well">
         <h2>{% trans "Latest Maps" %}</h2>
-        <section class="article-list">
+        <section class="article-list latest-maps">
           {% featured_maps as featured_maps %}
           {% for map in featured_maps %}
             {% include "maps/_map_list_item.html" %}
@@ -78,8 +78,5 @@
 {% endblock %}
 
 {% block extra_script %}  
-  <script src="{% static "libs/js/waypoints.js" %}"></script>
-  <script src="{% static "libs/js/jquery.raty.js" %}"></script>
-  <script src="{% static "geonode/js/global_search.js" %}"></script>
-  {% include 'rate.js' %}
+  {% include 'search_scripts.html' %}
 {% endblock extra_script %}

@@ -1,4 +1,4 @@
-{% extends "people/base.html" %}
+{% extends "people/profile_base.html" %}
 {% load static %}
 {% load friendly_loader %}
 {% friendly_load i18n avatar_tags relationship_tags activity_tags %}
@@ -58,16 +58,16 @@
         <div class="pull-right">{% avatar profile.user 65 %}</div>
         <h3>{{ profile.name }}</h3>
         {% if_has_tag actor_url %}
-            <p><a href="{% actor_url profile.user %}" class="btn btn-primary" type="button">Activities</a></p>
+            <p><a href="{% actor_url profile.user %}" class="btn btn-primary" type="button">{% trans "My Activities" %}</a></p>
         {% endif_has_tag %}
         {% if user == profile.user %}
           <h3>{% trans "Actions" %}</h3>
           <ul class="nav nav-list">
-              <li><a href="{% url profile_edit user.username %}">{% trans "Edit profile information" %}</a></li>
-              <li><a href="{% url account_settings %}">{% trans "Account Settings" %}</a></li>
-              <li><a href="{% url account_password %}">{% trans "Change password" %}</a></li>
-              <li><a href="{% url layer_upload %}">{% trans "Upload new layers" %}</a></li>
-              <li><a href="{% url new_map %}">{% trans "Create a new map" %}</a></li>
+              <li><a href="{% url "profile_edit" user.username %}">{% trans "Edit profile information" %}</a></li>
+              <li><a href="{% url "account_settings" %}">{% trans "Account Settings" %}</a></li>
+              <li><a href="{% url "account_password" %}">{% trans "Change password" %}</a></li>
+              <li><a href="{% url "layer_upload" %}">{% trans "Upload new layers" %}</a></li>
+              <li><a href="{% url "new_map" %}">{% trans "Create a new map" %}</a></li>
           </ul>
           {% if_has_tag if_relationship %}
               {% include "relationships/_manage_connections.html" %}

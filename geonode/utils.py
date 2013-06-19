@@ -33,9 +33,6 @@ from django.utils import simplejson as json
 from owslib.wms import WebMapService
 from django.http import HttpResponse
 
-# from geonode import GeoNodeException
-#from geonode.layers.models import Layer
-#from geonode.maps.models import Map
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS, INVALID_PERMISSION_MESSAGE
 
 _wms = None
@@ -63,26 +60,15 @@ DEFAULT_ABSTRACT=""
 
 
 def check_geonode_is_up():
-    """Verifies all of geonetwork, geoserver and the django server are running,
+    """Verifies all geoserver is running,
        this is needed to be able to upload.
     """
-
-    # try:
-    #     Layer.objects.gs_catalog.get_workspaces()
-    # except:
-    #     msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-    #            'have started GeoNode.' % settings.GEOSERVER_BASE_URL)
-    #     raise GeoNodeException(msg)
-
-    # try:
-    #     Layer.objects.gn_catalog.login()
-    # except:
-    #     msg = ('Cannot connect to the GeoNetwork at %s\n'
-    #            'Please make sure you have started '
-    #            'GeoNetwork.' % settings.CATALOGUE['default']['URL'])
-    #     raise GeoNodeException(msg)
-    pass
-
+    url = "%sweb/" % settings.GEOSERVER_BASE_URL
+    resp, content = http_client.request(url, "GET")
+    msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
+           'have started it.' % settings.GEOSERVER_BASE_URL)
+    assert resp['status'] == '200', msg
+       
 
 def get_wms():
     global _wms
@@ -401,6 +387,13 @@ class GXPMapBase(object):
             if source: cfg["source"] = source
             return cfg
 
+        source_urls = [source['url'] for source in sources.values() if source.has_key('url')]
+        if not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
+            keys = sources.keys()
+            keys.sort()
+            settings.MAP_BASELAYERS[0]['source']['title'] = 'Local Geoserver'
+            sources[str(int(keys[-1])+1)] = settings.MAP_BASELAYERS[0]['source']
+
         config = {
             'id': self.id,
             'about': {
@@ -421,7 +414,6 @@ class GXPMapBase(object):
         config["map"]["layers"][len(layers)-1]["selected"] = True
 
         config["map"].update(_get_viewer_projection_info(self.projection))
-
         return config
 
 
@@ -570,7 +562,7 @@ def resolve_object(request, model, query, permission=None,
 
 
 def json_response(body=None, errors=None, redirect_to=None, exception=None,
-                  content_type=None):
+                  content_type=None, status=None):
    """Create a proper JSON response. If body is provided, this is the response.
    If errors is not None, the response is a success/errors json object.
    If redirect_to is not None, the response is a success=True, redirect_to object
@@ -605,7 +597,10 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
        pass
    else:
        raise Exception("must call with body, errors or redirect_to")
+   
+   if status==None:
+      status = 200
 
    if not isinstance(body, basestring):
        body = json.dumps(body)
-   return HttpResponse(body, content_type=content_type)
+   return HttpResponse(body, content_type=content_type, status=status)

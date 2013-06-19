@@ -5,6 +5,8 @@ build
 target
 *.mo
 pip-log.txt
+MANIFEST
+dist
 
 # supporting stuff pulled in by paver script
 geonode/development.db
@@ -24,6 +26,7 @@ geonode/uploaded
 .noseids
 geonode_test_data/
 nosetests.xml
+geonode/static/geonode/junit.xml
 
 #Temporary files
 *~

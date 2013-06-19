@@ -1,6 +1,6 @@
 .. image:: https://secure.travis-ci.org/GeoNode/geonode.png
     :alt: Build Status
-    :target: http://travis-ci.org/#!/GeoNode/geonode
+    :target: http://travis-ci.org/GeoNode/geonode
 
 =========
  GeoNode
@@ -132,6 +132,26 @@ Windows Development Build Instructions::
     # Start the servers
     # This WON'T work on windows without changes to pavement.py 
     # and a windows batch script for starting jetty    
+    paver start
+
+Mac OSX Development Build Instructions::
+    
+    # you may need brew install various dependencies 
+
+    mkdir -p ~/pyenv
+    virtualenv ~/pyenv/geonode    
+    source ~/pyenv/geonode/bin/activate
+    git clone https://github.com/GeoNode/geonode
+    cd geonode
+    pip install lxml
+    pip install pyproj
+    pip install nose
+    pip install httplib2
+    pip install shapely
+    pip install imaging
+    pip install PIL
+    pip install paver
+    paver setup
     paver start
 
 

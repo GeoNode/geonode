@@ -32,21 +32,22 @@ import geonode.maps.models
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.utils import default_map_config
-
+from geonode.search.populate_search_test_data import create_models
+from geonode.maps.populate_maplayers import create_maplayers
 
 
 class MapsTest(TestCase):
     """Tests geonode.maps app/module
     """
 
+    fixtures = ['initial_data.json']
+
     def setUp(self):
         self.user = 'admin'
         self.passwd = 'admin'
-
-    def tearDown(self):
-        pass
-
-    fixtures = ['map_data.json', 'initial_data.json']
+        create_models(type='map')
+        create_models(type='layer')
+        create_maplayers()
 
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
@@ -120,16 +121,15 @@ community."
 
     def test_map_json(self):
         c = Client()
-
         # Test that saving a map when not logged in gives 401
-        response = c.put(reverse('map_json', args=('2',)),data=self.viewer_config,content_type="text/json")
+        response = c.put(reverse('map_json', args=('1',)),data=self.viewer_config,content_type="text/json")
         self.assertEqual(response.status_code, 401)
 
         c.login(username=self.user, password=self.passwd)
-        response = c.put(reverse('map_json', args=('2',)),data=self.viewer_config_alternative,content_type="text/json")
+        response = c.put(reverse('map_json', args=('1',)),data=self.viewer_config_alternative,content_type="text/json")
         self.assertEqual(response.status_code, 200)
 
-        map_obj = Map.objects.get(id=2)
+        map_obj = Map.objects.get(id=1)
         self.assertEquals(map_obj.title, "Title2")
         self.assertEquals(map_obj.abstract, "Abstract2")
         self.assertEquals(map_obj.layer_set.all().count(), 1)
@@ -150,7 +150,8 @@ community."
         map_id = int(json.loads(response.content)['id'])
         c.logout()
 
-        self.assertEquals(map_id,3)
+        # We have now 9 maps and 8 layers so the next pk will be 18
+        self.assertEquals(map_id,18)
         map_obj = Map.objects.get(id=map_id)
         self.assertEquals(map_obj.title, "Title")
         self.assertEquals(map_obj.abstract, "Abstract")
@@ -165,23 +166,23 @@ community."
 
     def test_map_fetch(self):
         """/maps/[id]/data -> Test fetching a map in JSON"""
-        map_obj = Map.objects.get(id=2)
+        map_obj = Map.objects.get(id=1)
         map_obj.set_default_permissions()
         c = Client()
         response = c.get(reverse('map_json', args=(map_obj.id,)))
         self.assertEquals(response.status_code, 200)
         cfg = json.loads(response.content)
-        self.assertEquals(cfg["about"]["abstract"], self.default_abstract)
-        self.assertEquals(cfg["about"]["title"], self.default_title)
+        self.assertEquals(cfg["about"]["abstract"], 'GeoNode default map abstract')
+        self.assertEquals(cfg["about"]["title"], 'GeoNode Default Map')
         self.assertEquals(len(cfg["map"]["layers"]), 5)
 
     def test_map_to_json(self):
         """ Make some assertions about the data structure produced for serialization
             to a JSON map configuration"""
-        map_obj = Map.objects.get(id=2)
+        map_obj = Map.objects.get(id=1)
         cfg = map_obj.viewer_json()
-        self.assertEquals(cfg['about']['abstract'], self.default_abstract)
-        self.assertEquals(cfg['about']['title'], self.default_title)
+        self.assertEquals(cfg['about']['abstract'], 'GeoNode default map abstract')
+        self.assertEquals(cfg['about']['title'], 'GeoNode Default Map')
         def is_wms_layer(x):
             return cfg['sources'][x['source']]['ptype'] == 'gxp_wmscsource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
@@ -193,7 +194,7 @@ community."
             for serialization to a Web Map Context Document
         """
 
-        map_obj = Map.objects.get(id=2)
+        map_obj = Map.objects.get(id=1)
         map_obj.set_default_permissions()
         c = Client()
         response = c.get(reverse('map_wmc', args=(map_obj.id,)))
@@ -206,12 +207,9 @@ community."
         title = '{ns}General/{ns}Title'.format(ns=namespace)
         abstract = '{ns}General/{ns}Abstract'.format(ns=namespace)
 
-        self.assertEquals(wmc.attrib.get('id'), '2')
+        self.assertEquals(wmc.attrib.get('id'), '1')
         self.assertEquals(wmc.find(title).text, 'GeoNode Default Map')
-        self.assertEquals(wmc.find(abstract).text, 'This is a demonstration '\
-            'of GeoNode, an application for assembling and publishing web '\
-            'based maps.  After adding layers to the map, use the Save Map '\
-            'button above to contribute your map to the GeoNode community.')
+        self.assertEquals(wmc.find(abstract).text, 'GeoNode default map abstract')
 
     def test_newmap_to_json(self):
         """ Make some assertions about the data structure produced for serialization
@@ -221,8 +219,8 @@ community."
         self.assertEquals(cfg['defaultSourceType'], "gxp_wmscsource")
 
     def test_map_details(self):
-        """/maps/2 -> Test accessing the map browse view function"""
-        map_obj = Map.objects.get(id=2)
+        """/maps/1 -> Test accessing the map browse view function"""
+        map_obj = Map.objects.get(id=1)
         map_obj.set_default_permissions()
         c = Client()
         response = c.get(reverse('map_detail', args=(map_obj.id,)))
@@ -261,9 +259,9 @@ community."
                           content_type="application/json")
         self.assertEquals(response.status_code, 404)
 
-        # Test that POST is required
+        # Test that GET retunrs permissions
         response = c.get(url(mapid))
-        self.assertEquals(response.status_code, 405)
+        assert('permissions' in response.content)
 
         # Test that a user is required to have permissions
 

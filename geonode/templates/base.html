@@ -26,7 +26,7 @@
         <div class="container">
           <div class="row">
             <div class="span3">
-              <a href="{% url home %}">
+              <a href="{% url "home" %}">
                 <span class="nav-logo">
                   <a class="brand">{{ SITE_NAME }}</a>
                 </span>
@@ -48,28 +48,28 @@
                         <ul class="dropdown-menu">
                           <li><a href="{{ user.get_profile.get_absolute_url }}"><i class="icon-user"></i> {% trans "Profile" %}</a></li>
                           {% if user.is_staff %}
-                            <li><a href="{% url admin:index %}"><i class="icon-cog"></i> {% trans "Admin" %}</a></li>
+                            <li><a href="{% url "admin:index" %}"><i class="icon-cog"></i> {% trans "Admin" %}</a></li>
                           {% endif %}
                           {% if user.is_superuser %}
                             <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="icon-globe"></i> {% trans "GeoServer" %}</a></li>
                           {% endif %}
                           <li class="divider"></li>
-                          <li><a href="{% url account_logout %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
+                          <li><a href="{% url "account_logout" %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
                         </ul>
                       </li>
                       <li class="divider-v">|</li>
                       <li class="actions">
                         <!--a href="#" rel="tooltip" title="{% trans 'Notifications' %}"><i class="icon-bullhorn"></i></a>
                         <a href="#" rel="tooltip" title="{% trans 'Messages' %}"><i class="icon-envelope"></i></a-->
-                        <a href="{% url data_upload %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a>
-                        <a href="{% url help %}" rel="tooltip" title="{% trans 'Help' %}"><i class="icon-question-sign"></i></a>
+                        <a href="{% url "data_upload" %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a>
+                        <a href="{% url "help" %}" rel="tooltip" title="{% trans 'Help' %}"><i class="icon-question-sign"></i></a>
                       </li>
                     {% else %}
                         <li class="dropdown">
                           <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Sign in" %}</a>
                           <ul class="dropdown-menu">
                             <li>
-                                <form action="{% url account_login %}" method="post" class="sign-in">
+                                <form action="{% url "account_login" %}" method="post" class="sign-in">
                                     {% csrf_token %}
                                     <label for="id_username">{% trans "Username" %}:</label>
                                     <input id="id_username" name="username" type="text" />
@@ -80,24 +80,23 @@
                                         {% trans "Remember Me" %}
                                     </label>
                                     <button type="submit" class="btn pull-right">{% trans "Sign in" %}</button>
-                                    <div>{% trans "Don't have an account yet?" %} <a href="{% url account_signup %}">{% trans "Register now" %}</a></div>
                                 </form>
                             </li>
                           </ul>
                         </li>
                         {% if REGISTRATION_OPEN %}
                           <li class="navbar-text">{% trans "or" %}</li>
-                          <li><a href="{% url registration_register %}">{% trans "Register" %}</a></li>
+                          <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
                         {% endif %}
                         <li class="divider-v">|</li>
                         <li class="actions">
-                            <a href="{% url help %}" rel="tooltip" title="help"><i class="icon-question-sign"></i></a>
+                            <a href="{% url "help" %}" rel="tooltip" title="help"><i class="icon-question-sign"></i></a>
                         </li>
                     {% endif %}
                   </ul>
                 </div>
               </div>
-              <form class="input-append  pull-right" action="{% url search %}" method="GET">
+              <form class="input-append  pull-right" action="{% url "search" %}" method="GET">
                 {# csrf_token #}
                 <input id="search" type="text" name="q"/>
               </form>
@@ -108,25 +107,25 @@
               <nav class="main-nav">
                 <ul>
                   <li id="nav_home">
-                    <a href="{% url home %}">{% trans "Home" %}</a>
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
                   </li>
                   <li id="nav_data">
-                    <a href="{% url layer_browse %}">{% trans "Layers" %}</a>
+                    <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
                   </li>
                   <li id="nav_maps">
-                    <a href="{% url maps_browse %}">{% trans "Maps" %}</a>
+                    <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
                   </li>
     
                   {% if DOCUMENTS_APP %}
                   <li id="nav_documents">
-                    <a href="{% url documents_browse %}">{% trans "Documents" %}</a>
+                    <a href="{% url "documents_browse" %}">{% trans "Documents" %}</a>
                   </li>
                   {% endif %}
                   <li id="nav_profiles">
-                    <a href="{% url profile_browse %}">{% trans "People" %}</a>
+                    <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
                   </li>
                   <li id="nav_search">
-                    <a href="{% url advanced_search %}">{% trans "Search" %}</a>
+                    <a href="{% url "advanced_search" %}">{% trans "Search" %}</a>
                   </li>
                   {% block extra-nav %}{% endblock %}
                 </ul>
@@ -151,7 +150,7 @@
             <div id="site_wide_announcements">
                 {% for announcement in site_wide_announcements %}
                 <div class="alert alert-block">
-                    <a type="button" class="close" data-dismiss="alert" href="{% url announcement_hide announcement.pk %}?next={{ request.path }}">×</button>
+                    <a type="button" class="close" data-dismiss="alert" href="{% url "announcement_hide" announcement.pk %}?next={{ request.path }}">×</button>
                     <h4><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a> -</h4>
                     <div>{{ announcement.content }}</div>
                     </div>
@@ -177,8 +176,8 @@
       <div class="container">
           <div class="pull-left">
               {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
-              <a href="{% url developer %}">{% trans "Developers" %}</a> |
-              <a href="{% url about %}">{% trans "About" %}</a>
+              <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
+              <a href="{% url "about" %}">{% trans "About" %}</a>
           </div>
           <div class="pull-right">
             {% if csrf_token != "NOTPROVIDED" %}
@@ -199,7 +198,7 @@
       </div>
     </footer>
     {% endblock footer %}
-    <script src="{{ STATIC_URL }}libs/js/jquery-1.8.0.js"></script>
+    <script src="{{ STATIC_URL }}libs/js/jquery.js"></script>
     <script src="{{ STATIC_URL }}libs/bootstrap/js/bootstrap.min.js"></script>
     <script src="{{ STATIC_URL }}libs/datatables/js/jquery.dataTables.min.js"></script>
     <script src="{{ STATIC_URL }}libs/js/jquery.timeago.js"></script>
@@ -212,7 +211,7 @@
         placeholder: 'Search...',
         width: 'element',     
         ajax: {
-          url: '{% url search_api %}',
+          url: '{% url "search_api" %}',
           data: function(term,page){
             page = (page - 1) * 10;
             return {
@@ -244,8 +243,8 @@
 
     {% block extra_script %}{% endblock extra_script %}
 
-    <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
-    <script type="text/javascript" src="{% url lang %}"></script>
+    <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
+    <script type="text/javascript" src="{% url "lang" %}"></script>
     <style type="text/css">
       .select2-drop{
         color: black;

@@ -125,23 +125,39 @@ def rename_and_prepare(base_file):
     )
         
 
-def create_geoserver_db_featurestore():
+def create_geoserver_db_featurestore(store_type=None):
     cat = Layer.objects.gs_catalog
     # get or create datastore
     try:
-        ds = cat.get_store(settings.DB_DATASTORE_NAME)
+        if store_type == 'geogit' and hasattr(settings, 'GEOGIT_DATASTORE_NAME') and settings.GEOGIT_DATASTORE_NAME:
+            ds = cat.get_store(settings.GEOGIT_DATASTORE_NAME)
+        elif settings.DB_DATASTORE_NAME:
+            ds = cat.get_store(settings.DB_DATASTORE_NAME)
+        else:
+            return None
     except FailedRequestError:
-        logging.info(
-            'Creating target datastore %s' % settings.DB_DATASTORE_NAME)
-        ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
-        ds.connection_parameters.update(
-            host=settings.DB_DATASTORE_HOST,
-            port=settings.DB_DATASTORE_PORT,
-            database=settings.DB_DATASTORE_DATABASE,
-            user=settings.DB_DATASTORE_USER,
-            passwd=settings.DB_DATASTORE_PASSWORD,
-            dbtype=settings.DB_DATASTORE_TYPE)
-        cat.save(ds)
-        ds = cat.get_store(settings.DB_DATASTORE_NAME)
+        if store_type == 'geogit' and hasattr(settings, 'GEOGIT_DATASTORE_NAME') and settings.GEOGIT_DATASTORE_NAME:
+            logging.info(
+                'Creating target datastore %s' % settings.GEOGIT_DATASTORE_NAME)
+            ds = cat.create_datastore(settings.GEOGIT_DATASTORE_NAME)
+            ds.type = "GeoGIT"
+            ds.connection_parameters.update(
+                geogit_repository=settings.GEOGIT_DATASTORE_NAME,
+                create="true")
+            cat.save(ds)
+            ds = cat.get_store(settings.GEOGIT_DATASTORE_NAME)
+        else:
+            logging.info(
+                'Creating target datastore %s' % settings.DB_DATASTORE_NAME)
+            ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
+            ds.connection_parameters.update(
+                host=settings.DB_DATASTORE_HOST,
+                port=settings.DB_DATASTORE_PORT,
+                database=settings.DB_DATASTORE_DATABASE,
+                user=settings.DB_DATASTORE_USER,
+                passwd=settings.DB_DATASTORE_PASSWORD,
+                dbtype=settings.DB_DATASTORE_TYPE)
+            cat.save(ds)
+            ds = cat.get_store(settings.DB_DATASTORE_NAME)
 
     return ds

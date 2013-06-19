@@ -16,6 +16,10 @@ git clone $GEOSERVER_EXT_GIT tmp
 cp -r debian tmp
 pushd tmp
 
+# Replace GeoNode port for production.
+sed -i 's/localhost:8000/127.0.0.1/g' \
+    src/main/java/org/geonode/security/GeoNodeSecurityProvider.java
+
 git config user.email "mweisman@opengeo.org"
 git config user.name "Michael Weisman"
 

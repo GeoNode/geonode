@@ -1,10 +1,14 @@
 from datetime import datetime
+import os
+import hashlib
 
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.files.base import ContentFile
 from django.conf import settings
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from geonode.base.enumerations import COUNTRIES, ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
@@ -61,38 +65,78 @@ class TopicCategory(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField()
     description = models.TextField(blank=True)
+    layers_count = models.IntegerField(default=0)
+    maps_count = models.IntegerField(default=0)
+    documents_count = models.IntegerField(default=0)
 
     def __unicode__(self):
         return u"{0}".format(self.name)
 
-    @property
-    def counts(self):
-        counts = {
-            'layers': 0,
-            'maps': 0,
-            'documents': 0
-        }
-        for resource in self.resourcebase_set.all():
-            try:
-                resource.layer
-                counts['layers'] += 1
-            except ObjectDoesNotExist:
-                pass
-            try:
-                resource.map
-                counts['maps'] += 1
-            except ObjectDoesNotExist:
-                pass
-            try: 
-                resource.document
-                counts['documents'] += 1
-            except ObjectDoesNotExist:
-                pass
-        return counts
-
     class Meta:
         ordering = ("name",)
         verbose_name_plural = 'Topic Categories'
+
+
+class Thumbnail(models.Model):
+
+    thumb_file = models.FileField(upload_to='thumbs')
+    thumb_spec = models.TextField(null=True, blank=True)
+    version = models.PositiveSmallIntegerField(null=True, default=0)
+
+    def save_thumb(self, image, id):
+        '''image must be png data in a string for now'''
+        self._delete_thumb()
+        md5 = hashlib.md5()
+        md5.update(id + str(self.version))
+        self.version = self.version + 1
+        self.thumb_file.save(md5.hexdigest() + ".png", ContentFile(image))
+
+    def _delete_thumb(self):
+        try:
+            self.thumb_file.delete()
+        except OSError:
+            pass
+
+    def delete(self):
+        self._delete_thumb()
+        super(Thumbnail,self).delete()
+
+
+class ThumbnailMixin(object):
+    '''Add Thumbnail management behavior. The model must declared a field
+    named thumbnail.'''
+
+    def save_thumbnail(self, spec, save=True):
+        '''generic support for saving. `render` implementation must exist
+        and return image as bytes of a png image (for now)
+        '''
+        render = getattr(self, '_render_thumbnail', None)
+        if render is None:
+            raise Exception('Must have _render_thumbnail(spec) function')
+        image = render(spec)
+        self.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=self.id)
+        path = self._thumbnail_path()
+        self.thumbnail.thumb_spec = spec
+        self.thumbnail.save_thumb(image, path)
+        # have to save the thumb ref if new but also trigger XML regeneration
+        if save:
+            self.save()
+
+    def _thumbnail_path(self):
+        return '%s-%s' % (self._meta.object_name, self.pk)
+
+    def _get_default_thumbnail(self):
+        return getattr(self, "_missing_thumbnail", staticfiles.static(settings.MISSING_THUMBNAIL))
+
+    def get_thumbnail_url(self):
+        thumb = self.thumbnail
+        return thumb == None and self._get_default_thumbnail() or thumb.thumb_file.url
+
+    def has_thumbnail(self):
+        '''Determine if the thumbnail object exists and an image exists'''
+        thumb = self.thumbnail
+        return os.path.exists(thumb.get_thumbnail_path()) if thumb else False
+
 
 class ResourceBaseManager(models.Manager):
 
@@ -109,7 +153,8 @@ class ResourceBaseManager(models.Manager):
                                                 defaults={"name": "Geonode Admin"})[0]
         return contact
 
-class ResourceBase(models.Model, PermissionLevelMixin):
+
+class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     """
     Base Resource Object loosely based on ISO 19115:2003
     """
@@ -140,7 +185,7 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     # section 3
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_('commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject (space or comma-separated'))
     keywords_region = models.CharField(_('keywords region'), max_length=3, choices=COUNTRIES, default='USA', help_text=_('keyword identifies a location'))
-    constraints_use = models.CharField(_('constraints use'), max_length=255, choices=[(x, x) for x in CONSTRAINT_OPTIONS], default='copyright', help_text=_('constraints applied to assure the protection of privacy or intellectual property, and any special restrictions or limitations or warnings on using the resource or metadata'))
+    constraints_use = models.CharField(_('constraints use'), max_length=255, choices=CONSTRAINT_OPTIONS, default='copyright', help_text=_('constraints applied to assure the protection of privacy or intellectual property, and any special restrictions or limitations or warnings on using the resource or metadata'))
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True, help_text=_('other restrictions and legal prerequisites for accessing and using the resource or metadata'))
     spatial_representation_type = models.CharField(_('spatial representation type'), max_length=255, choices=SPATIAL_REPRESENTATION_TYPES, blank=True, null=True, help_text=_('method used to represent geographic information in the dataset'))
 
@@ -179,22 +224,24 @@ class ResourceBase(models.Model, PermissionLevelMixin):
     csw_insert_date = models.DateTimeField(_('CSW insert date'), auto_now_add=True, null=True)
     csw_type = models.CharField(_('CSW type'), max_length=32, default='dataset', null=False, choices=HIERARCHY_LEVELS)
     csw_anytext = models.TextField(_('CSW anytext'), null=True)
-    csw_wkt_geometry = models.TextField(_('CSW WKT geometry'), null=False, default='SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))')
+    csw_wkt_geometry = models.TextField(_('CSW WKT geometry'), null=False, default='POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))')
 
     # metadata XML specific fields
     metadata_uploaded = models.BooleanField(default=False)
     metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
+
+    thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True)
 
     def __unicode__(self):
         return self.title
 
     @property
     def bbox(self):
-        return [self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, self.srid]
+        return [self.bbox_x0, self.bbox_y0, self.bbox_x1, self.bbox_y1, self.srid]
 
     @property
     def bbox_string(self):
-        return ",".join([str(self.bbox_x0), str(self.bbox_x1), str(self.bbox_y0), str(self.bbox_y1)])
+        return ",".join([str(self.bbox_x0), str(self.bbox_y0), str(self.bbox_x1), str(self.bbox_y1)])
 
     @property
     def geographic_bounding_box(self):
@@ -314,10 +361,35 @@ class Link(models.Model):
 
     objects = LinkManager()
 
+def update_counts(instance, type, increment = 0):
+        category = instance.category
+        if type == 'Layer':
+            category.layers_count += increment
+        elif type == 'Map':
+            category.maps_count += increment
+        elif type == 'Document':
+            category.documents_count += increment
+        category.save()
+
+def resourcebase_pre_save(instance, sender, **kwargs):
+    
+    try: # check is not created
+        old_resourcebase = ResourceBase.objects.get(pk=instance.pk)
+        old_category = old_resourcebase.category
+        new_category = instance.category
+
+        if old_category != new_category:
+            update_counts(old_resourcebase, instance.class_name, increment = -1)
+            update_counts(instance, instance.class_name, increment = 1)
+
+    except ResourceBase.DoesNotExist: # is created
+        update_counts(instance, instance.class_name, increment = 1)
+
+
 def resourcebase_post_save(instance, sender, **kwargs):
     """
     Since django signals are not propagated from child to parent classes we need to call this 
-    from the childs.
+    from the children.
     TODO: once the django will support signal propagation we need to attach a single signal here
     """
     resourcebase = instance.resourcebase_ptr
@@ -325,7 +397,6 @@ def resourcebase_post_save(instance, sender, **kwargs):
         user = resourcebase.owner
     else:
         user = ResourceBase.objects.admin_contact()
-
     pc, __ = Profile.objects.get_or_create(user=user,
                                            defaults={"name": resourcebase.owner.username})
     ac, __ = Profile.objects.get_or_create(user=user,
@@ -333,3 +404,8 @@ def resourcebase_post_save(instance, sender, **kwargs):
                                            )
     resourcebase.poc = pc
     resourcebase.metadata_author = ac
+
+def resourcebase_post_delete(instance, sender, **kwargs):
+    resourcebase = instance.resourcebase_ptr
+    update_counts(resourcebase, instance.class_name, increment = -1)
+
