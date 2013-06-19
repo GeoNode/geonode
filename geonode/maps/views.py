@@ -34,6 +34,7 @@ from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.views.decorators.http import require_POST
 
+from geonode.views import _handleThumbNail
 from geonode.utils import http_client
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
@@ -523,6 +524,9 @@ def _map_fix_perms_for_editor(info):
     info['users'] = [(u, fix(level)) for u, level in info['users']]
 
     return info
+
+def map_thumbnail(request, mapid):
+    return _handleThumbNail(request, _resolve_map(request, mapid))
 
 def maplayer_attributes(request, layername):
     #Return custom layer attribute labels/order in JSON format
