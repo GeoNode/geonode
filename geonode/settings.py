@@ -522,9 +522,8 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE = ''
-DB_DATASTORE_NAME = ''
-
 #The name of the store in Geoserver
+DB_DATASTORE_NAME = ''
 
 LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
