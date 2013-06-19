@@ -21,6 +21,8 @@
     "wysihtml5": "0.3.0",
     "bootstrap-wysiwyghtml5":"https://github.com/jhollingworth/bootstrap-wysihtml5.git",
     "jquery-miniColors.git":"https://github.com/claviska/jquery-miniColors.git",
-    "fontselect-jquery-plugin":"https://github.com/tommoor/fontselect-jquery-plugin.git"
+    "fontselect-jquery-plugin":"https://github.com/tommoor/fontselect-jquery-plugin.git",
+    "multi-select":"https://github.com/lou/multi-select.git",
+    "qunit": "1.11.0"
   }
 }
