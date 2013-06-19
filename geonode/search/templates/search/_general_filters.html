@@ -7,7 +7,7 @@
     {% layer_categories as category_list %}
     <li><a data-class="all" class="active trigger-query">{% trans "All Categories" %}</a></li>
     {% for category in category_list %}
-    <li><a data-class="{{category.slug}}" class="trigger-query">{{ category }}
+    <li><a data-class="{{category.slug}}" class="trigger-query">{{ category.identifier }}
     {% if type == 'layer' %}
     ({{ category.layers_count }})
     {% elif type == 'map' %}

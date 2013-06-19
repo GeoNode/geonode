@@ -60,7 +60,7 @@ class TopicCategory(models.Model):
     """
     identifier = models.CharField(max_length=255, editable=False, default='location')
     description = models.TextField(editable=False)
-    gn_description = models.TextField('GeoNode description', default='')
+    gn_description = models.TextField('GeoNode description', default='', null=True)
     is_choice = models.BooleanField(default=True)
     layers_count = models.IntegerField(default=0)
     maps_count = models.IntegerField(default=0)
