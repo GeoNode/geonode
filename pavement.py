@@ -116,8 +116,8 @@ def setup_static(options):
     with pushd('geonode/static'):
         sh('bower install')
         sh('bower-installer') 
-    #with pushd('geonode/static/geonode'):
-    #    sh('make')
+    with pushd('geonode/static/geonode'):
+        sh('make')
 
 @task
 @needs([
