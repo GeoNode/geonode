@@ -1,13 +1,19 @@
 GeoNode's Static Client
 =======================
 
+Installing tools required for static development
+    npm install -g lessc
+    npm install -g bower
+    npm install -g bower-installer
+
 Installing Dependencies
     bower install 
+    paver setup_static
 
 css & less (bootstrap)
     bootswatch
 
-javascript jquery 
+javascript
     extjs
         geonode
         print
@@ -19,17 +25,19 @@ javascript jquery
     upload
     utils
 
-require.js
-
-rhino
-
 images
 
 fonts
 
 i18n/l10n
 
-Building with makefile 
+require.js
+
+rhino
+
+grunt
+
+Building with Makefile 
     lessc dependency
     build base.css
     build geonode.js
