@@ -210,7 +210,12 @@ def cascading_delete(cat, layer_name):
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
             delete_from_postgis(resource_name)
         else:
-            cat.delete(store)
+            try:
+                cat.delete(store)
+            except FailedRequestError as e:
+                # Trying to delete a shared store will fail 
+                # We'll catch the exception and log it.
+                logger.debug(e) 
 
 
 def delete_from_postgis(resource_name):
