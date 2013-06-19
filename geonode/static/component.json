@@ -1,7 +1,7 @@
 {
-  "name": "myProject",
-  "version": "1.0.0",
-  "main": "./path/to/main.css",
+  "name": "geonode",
+  "version": "2.0.0",
+  "main": "geonode/css/base.css",
   "dependencies": {
     "bootstrap": "2.2.1",
     "datatables": "1.9.4",
@@ -20,10 +20,13 @@
     "json2": "43d7836c8ec9b31a02a31ae0c400bdae04d3650d",
     "jquery-loadmore": "git://github.com/voxpelli/jquery-loadmore.git",
     "tinysort": "git://github.com/Sjeiti/TinySort.git",
-    "bootstrap-wysiwyghtml5":"https://github.com/jhollingworth/bootstrap-wysihtml5.git",
-    "jquery-miniColors.git":"https://github.com/claviska/jquery-miniColors.git",
-    "fontselect-jquery-plugin":"https://github.com/tommoor/fontselect-jquery-plugin.git",
-    "multi-select":"https://github.com/lou/multi-select.git",
+    "bootstrap-wysiwyghtml5": "https://github.com/jhollingworth/bootstrap-wysihtml5.git",
+    "jquery-miniColors.git": "https://github.com/claviska/jquery-miniColors.git",
+    "fontselect-jquery-plugin": "https://github.com/tommoor/fontselect-jquery-plugin.git",
+    "multi-select": "https://github.com/lou/multi-select.git",
     "env-js": "https://github.com/envjs/env-js.git"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1"
   }
 }
