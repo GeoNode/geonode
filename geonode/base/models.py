@@ -3,6 +3,7 @@ import os
 import hashlib
 
 from django.db import models
+from django.db.models import Count
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -361,29 +362,17 @@ class Link(models.Model):
 
     objects = LinkManager()
 
-def update_counts(instance, type, increment = 0):
-        category = instance.category
-        if type == 'Layer':
-            category.layers_count += increment
-        elif type == 'Map':
-            category.maps_count += increment
-        elif type == 'Document':
-            category.documents_count += increment
-        category.save()
-
-def resourcebase_pre_save(instance, sender, **kwargs):
-    
-    try: # check is not created
-        old_resourcebase = ResourceBase.objects.get(pk=instance.pk)
-        old_category = old_resourcebase.category
-        new_category = instance.category
-
-        if old_category != new_category:
-            update_counts(old_resourcebase, instance.class_name, increment = -1)
-            update_counts(instance, instance.class_name, increment = 1)
-
-    except ResourceBase.DoesNotExist: # is created
-        update_counts(instance, instance.class_name, increment = 1)
+def update_category_counts():
+    counts = ('map','layer','document')
+    topics = TopicCategory.objects.all()
+    for c in counts: 
+        topics = topics.annotate(**{ '%s_count' % c : Count('resourcebase__%s__category' % c)})
+    for t in topics: 
+        t.layers_count = t.layer_count
+        t.maps_count = t.map_count
+        t.documents_count = t.document_count
+        t.save()
+    return topics
 
 
 def resourcebase_post_save(instance, sender, **kwargs):
@@ -404,8 +393,9 @@ def resourcebase_post_save(instance, sender, **kwargs):
                                            )
     resourcebase.poc = pc
     resourcebase.metadata_author = ac
+    update_category_counts()
 
 def resourcebase_post_delete(instance, sender, **kwargs):
     resourcebase = instance.resourcebase_ptr
-    update_counts(resourcebase, instance.class_name, increment = -1)
+    update_category_counts()
 

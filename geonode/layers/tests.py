@@ -797,8 +797,10 @@ class LayersTest(TestCase):
         elevation = TopicCategory.objects.get(slug='elevation')
         layer.category = elevation
         layer.save()
-        #reload location since it's caching the old count
+        
+        #reload the categories since it's caching the old count
         location = TopicCategory.objects.get(slug='location')
+        elevation = TopicCategory.objects.get(slug='elevation')
         self.assertEquals(location.layers_count,2)
         self.assertEquals(elevation.layers_count,4)
 
