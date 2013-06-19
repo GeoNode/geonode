@@ -65,7 +65,7 @@
       {% endif %}
       <div class="well">
         <h2>{% trans "Latest Maps" %}</h2>
-        <section class="article-list">
+        <section class="article-list latest-maps">
           {% featured_maps as featured_maps %}
           {% for map in featured_maps %}
             {% include "maps/_map_list_item.html" %}
