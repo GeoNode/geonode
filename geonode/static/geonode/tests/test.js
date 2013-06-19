@@ -5,7 +5,7 @@ requirejs.config({
 
     paths: {
         underscore: '../libs/underscore',
-        jquery: '../libs/jquery-1.8.3.min'
+        jquery: '../../libs/js/jquery'
     }
 });
 

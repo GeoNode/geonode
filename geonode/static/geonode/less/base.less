@@ -49,15 +49,18 @@
 body {
   padding-top: 80px;
   background:@white;
-}
-
-h2, h3 {
-  margin-bottom:10px !important;
+  font-family:@customFont;
 }
 
 h2 {
   color:@gray;
   font-size:@baseFontSize + 8;
+  margin-bottom:10px !important;
+}
+
+h3 {
+  font-weight: normal;
+  margin-bottom: 0 !important;
 }
 
 // Fix for openlayers
@@ -90,7 +93,7 @@ img.olTileImage {
   }
 
   i {
-    font-size:22px;
+    font-size:14px;
   }
 
   li.actions {
@@ -313,8 +316,6 @@ footer.footer {
     }
 
     label {
-      font-weight:bold;
-      font-size:@baseFontSize + 2;
 
       span.note {
         font-weight:normal;
@@ -361,8 +362,10 @@ footer.footer {
 
 // Elements
 .meta {
-  font-size:@baseFontSize - 1;
   color:@graySp;
+}
+.meta p {
+  margin-bottom: 0;
 }
 
 .btn {
@@ -479,8 +482,9 @@ section.widget-mini {
   vertical-align: middle;
 
   &.pl-153-113 {
-    .size(63px, 153px);
-    padding-top:50px;
+    .size(60px, 80px);
+    border-radius: 4px;
+    padding-top:20px;
   }
 
   &.pl-64-70 {
@@ -492,20 +496,16 @@ section.widget-mini {
 
 .list article,
 .grid article {
-
   .rating, .activity {
     color:@graySp;
   }
   .overall_rating {
     color: @orange;
   }
-
 }
 
 .list article {
   border-bottom:1px solid @bdrColor;
-  padding-bottom:20px;
-  margin-bottom:20px;
   overflow:hidden;
   position: relative;
 
@@ -516,7 +516,7 @@ section.widget-mini {
 
   img {
     float:left;
-    margin:0 15px 15px 0;
+    margin: 1px 15px 15px 0;
   }
 
   .details {
@@ -525,10 +525,10 @@ section.widget-mini {
     overflow: hidden;
 
     h3 {
-      width:320px;
+      font-weight: normal;
       overflow: hidden;
-      text-overflow:ellipses;
-      font-weight:normal;
+      text-overflow: ellipses;
+      width: 320px;
     }
   }
 
@@ -538,19 +538,44 @@ section.widget-mini {
 }
 
 .grid article {
-  width: 285px;
-  overflow: hidden;
+  border-right: 1px solid @grayNeutral;
   float: left;
+  height: 120px;
+  margin-right: 10px;
+  overflow: hidden;
+  padding-right: 10px;
+  width: 280px;
+
+  h3 {
+      color: @blueLight;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 185px;
+    }
+
+  img {
+    float:left;
+    margin: 1px 10px 15px 0;
+  }
 
   .details {
     clear: left;
+    width: 185px;
 
-    h3 {
-      padding-right: 10px;
+    p {
+      margin-bottom: 0;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 125px;
     }
+    .stats {margin-top: 0px;}
   }
+}
+
+.grid article:last-child {
+  border-right: 0;
 }
 
 aside .well {
@@ -657,6 +682,7 @@ section.article-list {
   font-weight:bold;
   display:block;
   margin-bottom:15px;
+  margin-top: 15px;
 }
 .hd-actions a.btn-primary {
   background-color: @orange;
@@ -667,7 +693,7 @@ section.article-list {
 
 h2.page-title {
   text-transform:uppercase;
-  font-size:48px;
+  font-size:36px;
   letter-spacing: 0.1em;
   font-family:@customFont;
   font-weight: 300;
@@ -818,7 +844,7 @@ ul.space li {
   .nav a {
     padding: 0.8em;
     color: @grayDark;
-    font-size: 16px;
+    font-size: 13px;
     cursor: pointer;
   }
   .nav a.active {
@@ -915,7 +941,8 @@ ul.space li {
 
 
 .tab-pane article {
-  margin-bottom:40px;
+  padding-bottom: 10px;
+  padding-top: 10px;
 
   img {
     margin-bottom:10px;
@@ -948,6 +975,23 @@ ul.space li {
   }
 }
 
+article h3 [class^="icon-"], [class*=" icon-"] {
+      color: @blueLight;
+      margin-right: 5px;
+    }
+article a [class^="icon-"], [class*=" icon-"] {
+      color: @grayNeutral;
+      font-size: 14px;
+      margin-left: 5px;
+}
+article a [class^="icon-star"], [class*=" icon-star"] {
+  color: orange;
+  margin-left:0;
+}
+article a:hover [class^="icon-"], [class*=" icon-"] {
+  color: orange;
+  margin-left:0;
+  }
 article.abstract {
   border-top:1px solid @bdrColor;
   border-bottom:1px solid @bdrColor;
@@ -1036,6 +1080,10 @@ body.home {
       &.article-list article h6 a {
         color:@linkColor;
       }
+
+      &.latest-maps .pl-153-113 {
+        display: none;
+      }
     }
   }
 }
@@ -1097,6 +1145,7 @@ body.data-list nav.back {
 }
 body.data #subnav-tabs,
 body.maps #subnav-tabs,
+body.people #subnav-tabs,
 body.documents #subnav-tabs {
   background-color: @grayLight;
   color: @graySp;
@@ -1410,4 +1459,44 @@ ul.list {
 
 #form_post_comment textarea {
   width: 100%;
+}
+
+// people
+.avatar {
+  width: 80px;
+}
+
+.avatar img {
+  display: block;
+  border-radius: 4px;
+}
+
+ul.stats {
+  margin-left: -10px;
+  margin-top: 0;
+
+  a {
+    border-left: 1px solid @grayNeutral;
+    display: inline-block;
+    float:left;
+    line-height: 14px;
+    padding:4px 10px;
+    font-size: @baseFontSize - 2;
+    .border-radius(0);
+    cursor: pointer;
+  }
+
+  a.selected { color: black; }
+
+  a:hover {
+    background: none;
+    text-decoration:none;
+  }
+}
+.stats li:first-child a {
+  border-left: 0;
+}
+.stats a strong {
+  display: block;
+  font-size: 14px;
 }

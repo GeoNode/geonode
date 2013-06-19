@@ -114,7 +114,7 @@ class Layer(ResourceBase):
 
 
     def update_thumbnail(self, save=True):
-        self.save_thumbnail(self._thumbnail_url(width=159, height=63), save)
+        self.save_thumbnail(self._thumbnail_url(width=80, height=80), save)
 
 
     def _render_thumbnail(self, spec):

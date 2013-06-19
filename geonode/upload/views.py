@@ -117,7 +117,6 @@ def _error_response(req, exception=None, errors=None, force_ajax=True):
 
 
 def _next_step_response(req, upload_session, force_ajax=True):
-    print "force_ajax = " + str(force_ajax)
     # if the current step is the view POST for this step, advance one
     if req.method == 'POST':
         if upload_session.completed_step:
@@ -126,7 +125,6 @@ def _next_step_response(req, upload_session, force_ajax=True):
             upload_session.completed_step = 'save'
 
     next = get_next_step(upload_session)
-    print "next = " + str(next)
 
     if next == 'time':
         # @TODO we skip time steps for coverages currently
@@ -135,6 +133,9 @@ def _next_step_response(req, upload_session, force_ajax=True):
         if feature_type.resource_type == 'coverage':
             upload_session.completed_step = 'time'
             return _next_step_response(req, upload_session, force_ajax)
+    if next == 'time' and (upload_session.time == None or upload_session.time == False):
+        upload_session.completed_step = 'time'
+        return _next_step_response(req, upload_session, force_ajax)
     if next == 'time' and force_ajax:
         import_session = upload_session.import_session
         url = reverse('data_upload') + "?id=%s" % import_session.id
@@ -212,6 +213,7 @@ def save_step_view(req, session):
 
     form = LayerUploadForm(req.POST, req.FILES)
     tempdir = None
+
     if form.is_valid():
         tempdir, base_file = form.write_files()
         base_file = rename_and_prepare(base_file)
@@ -229,7 +231,9 @@ def save_step_view(req, session):
             layer_title=form.cleaned_data["layer_title"],
             permissions=form.cleaned_data["permissions"],
             import_sld_file = sld,
-            upload_type = upload_type
+            upload_type = upload_type,
+            geogit=form.cleaned_data['geogit'],
+            time=form.cleaned_data['time']
         )
         return _next_step_response(req, upload_session, force_ajax=True)
     else:

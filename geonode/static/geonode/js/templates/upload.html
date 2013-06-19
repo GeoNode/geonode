@@ -12,9 +12,15 @@
 <script type='text/html' id='layerTemplate'>
   <div class='file-element' id='<%= selector %>-element'>
     <div class='row'>
-      <div class='span4'><h3><%= name %></h3></div>
+      <div class='span6'><h3><%= name %></h3></div>
       <div class='span2'><h3><%= type %><h3></div>
     </div>
+    <% if (format !== 'raster') { %>
+    <div id='<%= name %>-vector-options' class='row span8'>
+        <% if (geogit) { %><input type='checkbox' id='<%= name %>-geogit' name='<%= name %>-geogit'>Import to Geogit<% }%>
+        <% if (time) { %><input type='checkbox' id='<%= name %>-time' name='<%= name %>-time'>Configure Time<% }%>
+    </div>
+    <% } %>
     <hr />
     <div>
       <ul class='files'></ul>

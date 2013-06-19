@@ -1,10 +1,10 @@
-{% extends "people/base.html" %}
+{% extends "people/profile_base.html" %}
 {% load friendly_loader %}
 {% load i18n %}
 {% friendly_load avatar_tags %}
 {% friendly_load relationship_tags %}
 
-{% block body_class %}profiles{% endblock %}
+{% block body_class %}people explore{% endblock %}
 
 {% block body %}
     <div class="span12">
@@ -19,8 +19,8 @@
       </div>
     </div>
     <div class="span12">
-      <div class="row" id="contain-slider">
-        <div class="tab-content span8 paginate paginate-auto" id="search-content">
+      <div class="row">
+        <div class="tab-content span12 paginate paginate-auto" id="search-content">
           {% include 'search/search_content.html' %}
         </div>
       </div>
