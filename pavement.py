@@ -112,8 +112,17 @@ def _install_data_dir():
 
 
 @task
+def setup_static(options):
+    with pushd('geonode/static'):
+        sh('bower install')
+        sh('bower-installer') 
+    #with pushd('geonode/static/geonode'):
+    #    sh('make')
+
+@task
 @needs([
     'setup_geoserver',
+    'setup_static',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
