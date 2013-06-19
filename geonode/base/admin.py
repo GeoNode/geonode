@@ -10,6 +10,7 @@ class TopicCategoryAdmin(admin.ModelAdmin):
     model = TopicCategory
     list_display_links = ('name',)
     list_display = ('id', 'name', 'slug', 'description')
+    exclude = ('layers_count', 'maps_count', 'documents_count')
 
 class ContactRoleAdmin(admin.ModelAdmin):
     model = ContactRole
