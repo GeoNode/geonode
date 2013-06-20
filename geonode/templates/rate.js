@@ -2,7 +2,7 @@
 <script type="text/javascript">
   requirejs.config({
     paths:{
-      'jquery.raty': '/static/components/raty/lib/jquery.raty'
+      'jquery.raty': '/static/lib/js/jquery.raty.min'
     } 
   });
   require(['jquery.raty'], function(raty){
