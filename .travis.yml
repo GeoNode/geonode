@@ -29,7 +29,7 @@ script:
   - paver test
   - paver test_integration
   - paver test_integration -n geonode.tests.csw
-  - paver test_javascript
+#  - paver test_javascript
 
 after_script:
   - paver reset_hard
