@@ -60,6 +60,8 @@ def set_metadata(xml):
         vals, keywords = dc2dict(exml)
     else:
         raise RuntimeError('Unsupported metadata format')
+    if vals["date"] is None:
+        vals["date"] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
     return [vals, keywords]
 
@@ -81,8 +83,9 @@ def iso2dict(exml):
         vals['title'] = mdata.identification.title
         vals['abstract'] = mdata.identification.abstract
         vals['purpose'] = mdata.identification.purpose
-        vals['supplemental_information'] = \
-            mdata.identification.supplementalinformation
+        if mdata.identification.supplementalinformation is not None:
+            vals['supplemental_information'] = \
+                mdata.identification.supplementalinformation
 
         vals['temporal_extent_start'] = \
             mdata.identification.temporalextent_start
@@ -131,7 +134,8 @@ def fgdc2dict(exml):
     if hasattr(mdata.idinfo, 'descript'):
         vals['abstract'] = mdata.idinfo.descript.abstract
         vals['purpose'] = mdata.idinfo.descript.purpose
-        vals['supplemental_information'] = mdata.idinfo.descript.supplinf
+        if mdata.idinfo.descript.supplinf is not None:
+            vals['supplemental_information'] = mdata.idinfo.descript.supplinf
 
     if hasattr(mdata.idinfo, 'keywords'):
         if mdata.idinfo.keywords.theme:

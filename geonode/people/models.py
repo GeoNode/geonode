@@ -18,21 +18,32 @@
 #
 #########################################################################
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import signals
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
 
 from django.contrib.auth.models import User, Permission
 
-from idios.models import ProfileBase, create_profile
+from taggit.managers import TaggableManager
 
-from geonode.layers.enumerations import COUNTRIES
-from geonode.people.enumerations import ROLE_VALUES, CONTACT_FIELDS
+from geonode.base.enumerations import COUNTRIES
+from geonode.people.enumerations import ROLE_VALUES
 
+class Role(models.Model):
+    """
+    Roles are a generic way to create groups of permissions.
+    """
+    value = models.CharField('Role', choices=ROLE_VALUES, max_length=255, unique=True, help_text=_('function performed by the responsible party'))
+    permissions = models.ManyToManyField(Permission, verbose_name=_('permissions'), blank=True)
 
-class Contact(ProfileBase):
+    def __unicode__(self):
+        return self.get_value_display()
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, related_name="profile", null=True, blank=True)
     name = models.CharField(_('Individual Name'), max_length=255, blank=True, null=True, help_text=_('name of the responsible personsurname, given name, title separated by a delimiter'))
     organization = models.CharField(_('Organization Name'), max_length=255, blank=True, null=True, help_text=_('name of the responsible organization'))
     profile = models.TextField(_('Profile'), null=True, blank=True)
@@ -45,6 +56,7 @@ class Contact(ProfileBase):
     zipcode = models.CharField(_('Postal Code'), max_length=255, blank=True, null=True, help_text=_('ZIP or other postal code'))
     country = models.CharField(choices=COUNTRIES, max_length=3, blank=True, null=True, help_text=_('country of the physical address'))
     email = models.EmailField(blank=True, null=True, help_text=_('address of the electronic mailbox of the responsible organization or individual'))
+    keywords = TaggableManager(_('keywords'), blank=True, help_text=_('commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject (space or comma-separated'))
 
     def clean(self):
         # the specification says that either name or organization should be provided
@@ -54,41 +66,21 @@ class Contact(ProfileBase):
             raise ValidationError('Either name or organization should be provided')
 
     def get_absolute_url(self):
-        return ('profile_detail', (), { 'username': self.user.username })
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse('profile_detail', args=[self.user.username,]) 
 
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.organization)
 
+    def class_name(value): 
+        return value.__class__.__name__ 
 
-class Role(models.Model):
+@receiver(post_save, sender=User)
+def user_post_save(sender, **kwargs):
     """
-    Roles are a generic way to create groups of permissions.
+    Create a Profile instance for all newly created User instances. We only
+    run on user creation to avoid having to check for existence on each call
+    to User.save.
     """
-    value = models.CharField('Role', choices=ROLE_VALUES, max_length=255, unique=True, help_text=_('function performed by the responsible party'))
-    permissions = models.ManyToManyField(Permission, verbose_name=_('permissions'), blank=True)
-
-    def __unicode__(self):
-        return self.get_value_display()
-
-
-def create_user_profile(instance, sender, created, **kwargs):
-    try:
-        profile = Contact.objects.get(user=instance)
-    except Contact.DoesNotExist:
-        profile = Contact(user=instance)
-        profile.name = instance.username
-        profile.save()
-
-def relationship_post_save(instance, sender, created, **kwargs):
-    if "notification" in settings.INSTALLED_APPS:
-        from notification import models as notification
-        notification.queue([instance.to_user], "user_follow", {"from_user": instance.from_user})
-
-# Remove the idios create_profile handler, which interferes with ours.
-signals.post_save.disconnect(create_profile, sender=User)
-signals.post_save.connect(create_user_profile, sender=User)
-
-if 'relationships' in settings.INSTALLED_APPS:
-    from relationships.models import Relationship
-    signals.post_save.connect(relationship_post_save, sender=Relationship)
+    user, created = kwargs["instance"], kwargs["created"]
+    if created:
+        Profile.objects.create(user=user, name=user.username, email=user.email)

@@ -1,36 +1,299 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-05 23:21-0700\n"
+"POT-Creation-Date: 2013-01-09 16:12-0600\n"
 "PO-Revision-Date: 2012-10-06 06:30+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: Indonesian (http://www.transifex.com/projects/p/geonode/"
+"language/id/)\n"
+"Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: id\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: utils.py:232 security/models.py:34
+#: utils.py:233 security/models.py:33
 msgid "Anonymous Users"
 msgstr "Pengguna anonim"
 
-#: utils.py:236 security/models.py:35
+#: utils.py:237 security/models.py:34
 msgid "Registered Users"
 msgstr "Pengguna terdaftar"
 
-#: utils.py:245
+#: utils.py:246
 msgid "User"
 msgstr "Pengguna"
 
-#: utils.py:565
+#: utils.py:566
 msgid "Permission Denied"
+msgstr ""
+
+#: documents/views.py:30 layers/views.py:72 maps/views.py:63
+msgid "No Permissions"
+msgstr "tidak diijinkan"
+
+#: documents/views.py:31 layers/views.py:73 maps/views.py:64
+msgid "Read Only"
+msgstr "Hanya baca"
+
+#: documents/views.py:32 layers/views.py:74 maps/views.py:65
+msgid "Read/Write"
+msgstr "Baca/Tulis"
+
+#: documents/views.py:33 layers/views.py:75 maps/views.py:66
+msgid "Administrative"
+msgstr "Administratif"
+
+#: documents/views.py:82
+#, fuzzy
+msgid "You are not allowed to view this document."
+msgstr "Anda tidak diijinkan untuk melihat peta ini"
+
+#: documents/templates/documents/_document_filters.html:5
+#: layers/templates/layers/_layer_filters.html:5
+#: maps/templates/maps/_map_filters.html:5
+msgid "Most recent"
+msgstr ""
+
+#: documents/templates/documents/_document_filters.html:6
+#: layers/templates/layers/_layer_filters.html:6
+#: maps/templates/maps/_map_filters.html:6
+msgid "Most popular"
+msgstr ""
+
+#: documents/templates/documents/_document_filters.html:7
+#: layers/templates/layers/_layer_filters.html:7
+#: maps/templates/maps/_map_filters.html:7
+msgid "Most shared"
+msgstr ""
+
+#: documents/templates/documents/_document_grid_item.html:5
+#: documents/templates/documents/_document_list_item.html:14
+#: layers/templates/layers/_layer_grid_item.html:5
+#: layers/templates/layers/_layer_list_item.html:15
+#: layers/templates/layers/_layer_widget_item.html:9
+#: maps/templates/maps/_map_grid_item.html:10
+#: maps/templates/maps/_map_list_item.html:17
+msgid "from"
+msgstr ""
+
+#: documents/templates/documents/_document_list_item.html:9
+#: layers/templates/layers/_layer_list_item.html:9
+#: layers/templates/layers/_layer_widget_item.html:5
+#: maps/templates/maps/_map_list_item.html:12
+msgid "No Image Available"
+msgstr ""
+
+#: documents/templates/documents/_document_list_item.html:12
+#: layers/templates/layers/_layer_list_item.html:13
+#: maps/templates/maps/_map_list_item.html:8
+#: maps/templates/maps/map_download.html:65
+msgid "Download"
+msgstr "Unduh"
+
+#: documents/templates/documents/_document_list_item.html:14
+#: layers/templates/layers/_layer_list_item.html:15
+#: layers/templates/layers/_layer_widget_item.html:9
+#: maps/templates/maps/_map_grid_item.html:10
+#: maps/templates/maps/_map_list_item.html:17
+msgid "ago"
+msgstr ""
+
+#: documents/templates/documents/_document_list_item.html:16
+#: layers/templates/layers/_layer_list_item.html:17
+#: maps/templates/maps/_map_list_item.html:20
+msgid "view"
+msgstr ""
+
+#: documents/templates/documents/_document_list_item.html:16
+#: layers/templates/layers/_layer_list_item.html:17
+#: layers/templates/layers/_layer_widget_item.html:11
+#: maps/templates/maps/_map_grid_item.html:12
+#: maps/templates/maps/_map_list_item.html:20
+msgid "Average rating"
+msgstr ""
+
+#: documents/templates/documents/docinfo.html:51
+#, fuzzy
+msgid "Contact:"
+msgstr "Kontak"
+
+#: documents/templates/documents/docinfo.html:57
+#, fuzzy
+msgid "Link"
+msgstr "Masuk"
+
+#: documents/templates/documents/docinfo.html:60
+msgid "This document is related to a "
+msgstr ""
+
+#: documents/templates/documents/docinfo.html:63
+#, fuzzy
+msgid "This document is not related to any maps or layers"
+msgstr "Layer ini tidak digunakan pada peta manapun"
+
+#: documents/templates/documents/docinfo.html:68
+#: documents/templates/documents/document_upload.html:203
+#: layers/templates/layers/layer_detail.html:159
+#: layers/templates/layers/layer_upload.html:268
+#: maps/templates/maps/map_detail.html:116 templates/_permissions_form.html:7
+msgid "Permissions"
+msgstr "Izin"
+
+#: documents/templates/documents/docinfo.html:69
+msgid "Select what kind of privileges to allow."
+msgstr ""
+
+#: documents/templates/documents/document_base.html:12
+#: documents/templates/documents/document_list.html:9
+#: documents/templates/documents/document_list.html:15
+#, fuzzy
+msgid "Explore Documents"
+msgstr "Telusuri Peta"
+
+#: documents/templates/documents/document_base.html:13
+#: documents/templates/documents/document_search.html:6
+#, fuzzy
+msgid "Search Documents"
+msgstr "Cari Data"
+
+#: documents/templates/documents/document_base.html:14
+msgid "Upload Documents"
+msgstr ""
+
+#: documents/templates/documents/document_list.html:31
+#: layers/templates/layers/layer_list.html:31
+#: maps/templates/maps/map_list.html:32
+msgid "Categories"
+msgstr ""
+
+#: documents/templates/documents/document_list.html:34
+#: layers/templates/layers/layer_list.html:34
+#: maps/templates/maps/map_list.html:37
+msgid "All Categories"
+msgstr ""
+
+#: documents/templates/documents/document_list.html:41
+#: layers/templates/layers/layer_list.html:41
+#: maps/templates/maps/map_list.html:48
+#: templates/geonode/resourcebase_info_panel.html:35
+msgid "Keywords"
+msgstr "Kata Kunci"
+
+#: documents/templates/documents/document_list.html:59
+#: layers/templates/layers/layer_list.html:59
+#: maps/templates/maps/map_list.html:66
+msgid "No data found"
+msgstr ""
+
+#: documents/templates/documents/document_metadata.html:17
+#, python-format
+msgid ""
+"\n"
+"        Editing details for %(document_title)s\n"
+"      "
+msgstr ""
+
+#: documents/templates/documents/document_metadata.html:26
+#: layers/templates/layers/layer_metadata.html:40
+#: templates/geonode/resourcebase_info_panel.html:56
+msgid "Point of Contact"
+msgstr "Kontak"
+
+#: documents/templates/documents/document_metadata.html:30
+#: layers/templates/layers/layer_metadata.html:44
+msgid "Metadata Provider"
+msgstr ""
+
+#: documents/templates/documents/document_metadata.html:34
+#: layers/templates/layers/layer_metadata.html:48
+msgid "Update"
+msgstr "Ubah"
+
+#: documents/templates/documents/document_search.html:14
+msgid "Search for Documents"
+msgstr ""
+
+#: documents/templates/documents/document_search.html:19
+#: search/templates/search/advanced_search.html:4
+#: search/templates/search/advanced_search.html:15
+#: search/templates/search/search_base.html:3 templates/base.html:128
+msgid "Search"
+msgstr "Cari"
+
+#: documents/templates/documents/document_search.html:26
+#: people/templates/people/profile_detail.html:11
+#: search/templates/search/search_base.html:11
+#: templates/geonode/resourcebase_info_panel.html:7
+msgid "Title"
+msgstr "Judul"
+
+#: documents/templates/documents/document_search.html:27
+#: search/templates/search/search_base.html:12
+msgid "Contact"
+msgstr "Kontak"
+
+#: documents/templates/documents/document_search.html:28
+#: search/templates/search/search_base.html:13
+msgid "Last Modified"
+msgstr "Modifikasi Terakhir"
+
+#: documents/templates/documents/document_search.html:29
+msgid "Related Resource"
+msgstr ""
+
+#: documents/templates/documents/document_search.html:45
+msgid "Refine Search"
+msgstr "Afinar la búsqueda"
+
+#: documents/templates/documents/document_search.html:47
+msgid "By area"
+msgstr "Berdasarkan area"
+
+#: documents/templates/documents/document_search.html:48
+msgid "Limit the search to data that includes features in the displayed area."
+msgstr ""
+"Batasi pencarian pada data yang memiliki feature di dalam area yang "
+"ditampilkan."
+
+#: documents/templates/documents/document_search.html:55
+msgid "Selected Data"
+msgstr ""
+
+#: documents/templates/documents/document_search.html:56
+msgid "Use the checkboxes in the search results to add data to your selection."
+msgstr "Gunakan checkbox pada hasil pencarian untuk menambah data "
+
+#: people/templates/people/profile_detail.html:61
+msgid "My Activities"
+msgstr "Kegiatan saya"
+
+#: documents/templates/documents/document_search.html:62
+#: people/templates/people/profile_detail.html:89
+msgid "Create a new map"
+msgstr "Buat peta baru"
+
+#: documents/templates/documents/document_search.html:63
+msgid "Export selected"
+msgstr "Export pada data terpilih"
+
+#: documents/templates/documents/document_search.html:87
+msgid "Your search did not match any items."
+msgstr "Pencarian anda tidak ditemukan"
+
+#: documents/templates/documents/document_upload.html:4
+#, fuzzy
+msgid "Upload Document"
+msgstr "Unggah data baru"
+
+#: documents/templates/documents/document_upload.html:16
+msgid "Add document"
 msgstr ""
 
 #: layers/enumerations.py:24
@@ -218,8 +481,7 @@ msgstr ""
 
 #: layers/enumerations.py:99
 msgid ""
-"information used for appropriate actions for future use of the           "
-"land"
+"information used for appropriate actions for future use of the           land"
 msgstr ""
 
 #: layers/enumerations.py:101
@@ -1202,270 +1464,296 @@ msgstr "Zambia"
 msgid "Zimbabwe"
 msgstr "Zimbabwe"
 
-#: layers/models.py:168 security/models.py:55
+#: layers/forms.py:57 maps/forms.py:29 people/forms.py:49
+msgid "A space or comma-separated list of keywords"
+msgstr ""
+
+#: layers/models.py:63
+#, fuzzy
+msgid "style name"
+msgstr "style"
+
+#: layers/models.py:65
+msgid "sld text"
+msgstr ""
+
+#: layers/models.py:66
+msgid "sld version"
+msgstr ""
+
+#: layers/models.py:67
+msgid "sld url"
+msgstr ""
+
+#: layers/models.py:118 security/models.py:54
 msgid "title"
 msgstr "Judul "
 
-#: layers/models.py:168
+#: layers/models.py:118
 msgid "name by which the cited resource is known"
 msgstr ""
 
-#: layers/models.py:169
+#: layers/models.py:119
 msgid "date"
 msgstr "tanggal"
 
-#: layers/models.py:169
+#: layers/models.py:119
 msgid "reference date for the cited resource"
 msgstr ""
 
-#: layers/models.py:171
+#: layers/models.py:121
 msgid "date type"
 msgstr "tipe tanggal"
 
-#: layers/models.py:171
+#: layers/models.py:121
 msgid "identification of when a given event occurred"
 msgstr ""
 
-#: layers/models.py:173
+#: layers/models.py:123
 msgid "edition"
 msgstr "Edisi"
 
-#: layers/models.py:173
+#: layers/models.py:123
 msgid "version of the cited resource"
 msgstr ""
 
-#: layers/models.py:174
+#: layers/models.py:124
 msgid "abstract"
 msgstr "abstrak"
 
-#: layers/models.py:174
+#: layers/models.py:124
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr ""
 
-#: layers/models.py:175
+#: layers/models.py:125
 msgid "purpose"
 msgstr "tujuan"
 
-#: layers/models.py:175
+#: layers/models.py:125
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr ""
 
-#: layers/models.py:177
+#: layers/models.py:127
 msgid "maintenance frequency"
 msgstr "frekuensi pemeliharaan"
 
-#: layers/models.py:177
+#: layers/models.py:127
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr ""
 
-#: layers/models.py:183 maps/models.py:87
+#: layers/models.py:133
 msgid "keywords"
 msgstr "kata kunci"
 
-#: layers/models.py:183
+#: layers/models.py:133
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
 msgstr ""
 
-#: layers/models.py:184
+#: layers/models.py:134
 msgid "keywords region"
 msgstr "kata kunci wilayah"
 
-#: layers/models.py:184
+#: layers/models.py:134
 msgid "keyword identifies a location"
 msgstr ""
 
-#: layers/models.py:185
+#: layers/models.py:135
 msgid "constraints use"
 msgstr "batasan penggunaan"
 
-#: layers/models.py:185
+#: layers/models.py:135
 msgid ""
 "constraints applied to assure the protection of privacy or intellectual "
 "property, and any special restrictions or limitations or warnings on using "
 "the resource or metadata"
 msgstr ""
 
-#: layers/models.py:186
+#: layers/models.py:136
 msgid "constraints other"
 msgstr "batasan lainnya"
 
-#: layers/models.py:186
+#: layers/models.py:136
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr ""
 
-#: layers/models.py:187
+#: layers/models.py:137
 msgid "spatial representation type"
 msgstr "tipe representasi spasial"
 
-#: layers/models.py:187
+#: layers/models.py:137
 msgid "method used to represent geographic information in the dataset"
 msgstr ""
 
-#: layers/models.py:190
+#: layers/models.py:140
 msgid "language"
 msgstr "bahasa"
 
-#: layers/models.py:190
+#: layers/models.py:140
 msgid "language used within the dataset"
 msgstr ""
 
-#: layers/models.py:191
+#: layers/models.py:141
 msgid "topic_category"
 msgstr "kategori_topik"
 
-#: layers/models.py:192
+#: layers/models.py:142
 msgid ""
-"high-level geographic data thematic classification to assist in the grouping"
-" and search of available geographic data sets."
+"high-level geographic data thematic classification to assist in the grouping "
+"and search of available geographic data sets."
 msgstr ""
 
-#: layers/models.py:195
+#: layers/models.py:145
 msgid "temporal extent start"
 msgstr "periode waktu mulai"
 
-#: layers/models.py:195
+#: layers/models.py:145
 msgid "time period covered by the content of the dataset (start)"
 msgstr ""
 
-#: layers/models.py:196
+#: layers/models.py:146
 msgid "temporal extent end"
 msgstr "periode waktu selesai"
 
-#: layers/models.py:196
+#: layers/models.py:146
 msgid "time period covered by the content of the dataset (end)"
 msgstr ""
 
-#: layers/models.py:198
+#: layers/models.py:148
 msgid "supplemental information"
 msgstr "informasi tambahan"
 
-#: layers/models.py:198
+#: layers/models.py:148
 msgid "any other descriptive information about the dataset"
 msgstr ""
 
-#: layers/models.py:201
+#: layers/models.py:151
 msgid "distribution URL"
 msgstr "URL distribusi"
 
-#: layers/models.py:201
+#: layers/models.py:151
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
 msgstr ""
 
-#: layers/models.py:202
+#: layers/models.py:152
 msgid "distribution description"
 msgstr "deskripsi distribusi"
 
-#: layers/models.py:202
+#: layers/models.py:152
 msgid "detailed text description of what the online resource is/does"
 msgstr ""
 
-#: layers/models.py:205
+#: layers/models.py:155
 msgid "data quality statement"
 msgstr "pernyataan kualitas data"
 
-#: layers/models.py:205
+#: layers/models.py:155
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr ""
 
-#: layers/models.py:219
+#: layers/models.py:169
 msgid "CSW typename"
 msgstr ""
 
-#: layers/models.py:220
+#: layers/models.py:170
 msgid "CSW schema"
 msgstr ""
 
-#: layers/models.py:221
+#: layers/models.py:171
 msgid "CSW source"
 msgstr ""
 
-#: layers/models.py:222
+#: layers/models.py:172
 msgid "CSW insert date"
 msgstr ""
 
-#: layers/models.py:223
+#: layers/models.py:173
 msgid "CSW type"
 msgstr ""
 
-#: layers/models.py:224
+#: layers/models.py:174
 msgid "CSW anytext"
 msgstr ""
 
-#: layers/models.py:225
+#: layers/models.py:175
 msgid "CSW WKT geometry"
 msgstr ""
 
-#: layers/models.py:508
+#: layers/models.py:417
 msgid "attribute name"
 msgstr ""
 
-#: layers/models.py:508
+#: layers/models.py:417
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr ""
 
-#: layers/models.py:509
+#: layers/models.py:418
 msgid "attribute label"
 msgstr ""
 
-#: layers/models.py:509
+#: layers/models.py:418
 msgid "title of attribute as displayed in GeoNode"
 msgstr ""
 
-#: layers/models.py:510
+#: layers/models.py:419
 msgid "attribute type"
 msgstr ""
 
-#: layers/models.py:510
+#: layers/models.py:419
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr ""
 
-#: layers/models.py:511
+#: layers/models.py:420
 msgid "visible?"
 msgstr ""
 
-#: layers/models.py:511
+#: layers/models.py:420
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr ""
 
-#: layers/models.py:512
+#: layers/models.py:421
 msgid "display order"
 msgstr ""
 
-#: layers/models.py:512
+#: layers/models.py:421
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr ""
 
-#: layers/models.py:583
+#: layers/models.py:492
 msgid "For example \"kml\""
 msgstr ""
 
-#: layers/models.py:585
+#: layers/models.py:494
 msgid "For example \"View in Google Earth\""
 msgstr ""
 
-#: layers/models.py:586
+#: layers/models.py:495
 msgid "For example \"text/xml\""
 msgstr ""
 
-#: layers/models.py:782
+#: layers/models.py:700
 msgid "KML"
 msgstr "KML"
 
-#: layers/models.py:796 layers/templates/layers/layer_detail.html:254
+#: layers/models.py:714 layers/templates/layers/layer_detail.html:216
 msgid "View in Google Earth"
 msgstr "Tampilkan di Google Earth"
+
+#: layers/models.py:729
+#, fuzzy
+msgid "Tiles"
+msgstr "Judul"
 
 #: layers/ows.py:85
 msgid "Zipped Shapefile"
@@ -1503,119 +1791,94 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: layers/views.py:67
+#: layers/views.py:68
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
-msgstr "Terdapat kesalahan saat melakukan unggah data anda. Silakan coba lagi atau hubungi administrator jika permasalahan masih berlanjut"
+msgstr ""
+"Terdapat kesalahan saat melakukan unggah data anda. Silakan coba lagi atau "
+"hubungi administrator jika permasalahan masih berlanjut"
 
-#: layers/views.py:71 maps/views.py:62
-msgid "No Permissions"
-msgstr "tidak diijinkan"
-
-#: layers/views.py:72 maps/views.py:63
-msgid "Read Only"
-msgstr "Hanya baca"
-
-#: layers/views.py:73 maps/views.py:64
-msgid "Read/Write"
-msgstr "Baca/Tulis"
-
-#: layers/views.py:74 maps/views.py:65
-msgid "Administrative"
-msgstr "Administratif"
-
-#: layers/views.py:77
+#: layers/views.py:78
 msgid "You are not permitted to delete this layer"
 msgstr "Anda tidak diijinkan untuk menghapus peta ini"
 
-#: layers/views.py:78
+#: layers/views.py:79
 msgid "You do not have permissions for this layer."
 msgstr ""
 
-#: layers/views.py:79
+#: layers/views.py:80
 msgid "You are not permitted to modify this layer"
 msgstr "Anda tidak diijinkan untuk mengubah layer peta ini"
 
-#: layers/views.py:80
+#: layers/views.py:81
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "Anda tidak diizinkan untuk memodifikasi metadata layer ini"
 
-#: layers/views.py:81
+#: layers/views.py:82
 msgid "You are not permitted to view this layer"
 msgstr "Anda tidak diijinkan untuk melihat layer peta ini"
 
-#: layers/views.py:621
+#: layers/views.py:659
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Autorisasi HTTP salah"
 
-#: layers/templates/layers/_actions.html:3 templates/_actions.html:3
+#: layers/management/__init__.py:30
+#, fuzzy
+msgid "Layer Uploaded"
+msgstr "Unggah"
+
+#: layers/management/__init__.py:30
+msgid "A layer was uploaded"
+msgstr ""
+
+#: layers/management/__init__.py:31
+msgid "Comment on Layer"
+msgstr ""
+
+#: layers/management/__init__.py:31
+msgid "A layer was commented on"
+msgstr ""
+
+#: layers/management/__init__.py:32
+msgid "Rating for Layer"
+msgstr ""
+
+#: layers/management/__init__.py:32
+msgid "A rating was given to a layer"
+msgstr ""
+
+#: layers/templates/layers/_actions.html:3
+#: maps/templates/maps/map_detail.html:49 templates/_actions.html:3
 msgid "Info"
 msgstr ""
 
 #: layers/templates/layers/_actions.html:4
-#: layers/templates/layers/layer_detail.html:143
 #: layers/templates/layers/layer_metadata.html:30
 msgid "Attributes"
 msgstr "Atribut"
 
-#: layers/templates/layers/_actions.html:5 templates/_actions.html:5
+#: layers/templates/layers/_actions.html:5
+#: maps/templates/maps/map_detail.html:52 templates/_actions.html:5
 msgid "Share"
 msgstr ""
 
 #: layers/templates/layers/_actions.html:6
+#: maps/templates/maps/map_detail.html:53
+#: maps/templates/maps/map_detail.html:88
 msgid "Flag"
 msgstr ""
 
-#: layers/templates/layers/_layer_filters.html:5
-msgid "Most recent"
-msgstr ""
+#: layers/templates/layers/_actions.html:7
+#: maps/templates/maps/map_detail.html:51
+#, fuzzy
+msgid "Ratings"
+msgstr "Konfigurasi"
 
-#: layers/templates/layers/_layer_filters.html:6
-#: maps/templates/maps/_map_filters.html:6
-msgid "Most popular"
-msgstr ""
-
-#: layers/templates/layers/_layer_filters.html:7
-#: maps/templates/maps/_map_filters.html:7
-msgid "Most shared"
-msgstr ""
-
-#: layers/templates/layers/_layer_grid_item.html:5
-#: layers/templates/layers/_layer_list_item.html:13
-#: layers/templates/layers/_layer_widget_item.html:9
-#: maps/templates/maps/_map_grid_item.html:10
-msgid "from"
-msgstr ""
-
-#: layers/templates/layers/_layer_list_item.html:8
-#: layers/templates/layers/_layer_widget_item.html:5
-#: templates/_widget_about_author.html:4 templates/search.html:207
-#: templates/search.html.py:220 templates/search.html:234
-#: templates/search.html.py:247
-msgid "No Image Available"
-msgstr ""
-
-#: layers/templates/layers/_layer_list_item.html:11
-#: maps/templates/maps/map_download.html:65
-msgid "Download"
-msgstr "Unduh"
-
-#: layers/templates/layers/_layer_list_item.html:13
-#: layers/templates/layers/_layer_widget_item.html:9
-#: maps/templates/maps/_map_grid_item.html:10
-msgid "ago"
-msgstr ""
-
-#: layers/templates/layers/_layer_list_item.html:15
-msgid "view"
-msgstr ""
-
-#: layers/templates/layers/_layer_list_item.html:15
-#: layers/templates/layers/_layer_widget_item.html:11
-#: maps/templates/maps/_map_grid_item.html:12
-#: maps/templates/maps/map_detail.html:40
-msgid "Average rating"
+#: layers/templates/layers/_actions.html:8
+#: maps/templates/maps/map_detail.html:50
+#: maps/templates/maps/map_detail.html:61 templates/_comments.html:8
+msgid "Comments"
 msgstr ""
 
 #: layers/templates/layers/_layer_widget_item.html:11
@@ -1623,27 +1886,23 @@ msgstr ""
 msgid "view%(layer.popular_count|pluralize)s"
 msgstr ""
 
-#: layers/templates/layers/layer_base.html:5
-msgid "Browse Data"
-msgstr "Browse Data"
-
 #: layers/templates/layers/layer_base.html:13
 #: layers/templates/layers/layer_list.html:9
-#: layers/templates/layers/layer_list.html:15 templates/index.html:25
+#: layers/templates/layers/layer_list.html:15 templates/index.html:28
 msgid "Explore Layers"
 msgstr ""
 
 #: layers/templates/layers/layer_base.html:14
-#: layers/templates/layers/layer_search.html:6
+#: layers/templates/layers/layer_search.html:4
 msgid "Search Layers"
 msgstr ""
 
 #: layers/templates/layers/layer_base.html:15
-#: layers/templates/layers/layer_upload.html:25 templates/index.html:55
+#: layers/templates/layers/layer_upload.html:32 templates/index.html:59
 msgid "Upload Layers"
 msgstr ""
 
-#: layers/templates/layers/layer_change_poc.html:5 templates/base.html:119
+#: layers/templates/layers/layer_change_poc.html:5 templates/base.html:110
 msgid "Home"
 msgstr "Beranda"
 
@@ -1657,193 +1916,123 @@ msgid "Assign a new point of contact to the layers below:"
 msgstr ""
 
 #: layers/templates/layers/layer_change_poc.html:17
-#: people/templates/people/forgot_username_form.html:18
+#: people/templates/people/forgot_username_form.html:17
 msgid "Submit"
 msgstr "Proses"
 
-#: layers/templates/layers/layer_detail.html:32
-#: layers/templates/layers/layer_detail.html:232
-#: layers/templates/layers/layer_detail_static.html:16
-#: layers/templates/layers/layer_detail_static.html:104
-#: maps/templates/maps/map_detail.html:99 templates/search.html:265
+#: layers/templates/layers/layer_detail.html:28
+#: layers/templates/layers/layer_detail.html:194
+#: search/templates/search/search.html:183
 msgid "Download Layer"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:43
+#: layers/templates/layers/layer_detail.html:39
 msgid "Download Metadata"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:57
+#: layers/templates/layers/layer_detail.html:53
 msgid "Edit Layer"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:62
+#: layers/templates/layers/layer_detail.html:58
 msgid "Edit Metadata"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:63
+#: layers/templates/layers/layer_detail.html:59
 msgid "Edit Styles"
 msgstr "Ubah Tampilan"
 
-#: layers/templates/layers/layer_detail.html:64
+#: layers/templates/layers/layer_detail.html:60
 msgid "Edit Permissions"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:65
+#: layers/templates/layers/layer_detail.html:61
+#, fuzzy
+msgid "Replace this Layer"
+msgstr "Ubah Layer"
+
+#: layers/templates/layers/layer_detail.html:62
 msgid "Remove this Layer"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:81
-#: layers/templates/layers/layer_detail_static.html:36
-msgid "Layer Information"
-msgstr ""
-
 #: layers/templates/layers/layer_detail.html:85
-#: people/templates/idios/profile.html:9
-#: templates/profiles/profile_detail.html:9
-msgid "Type"
-msgstr "Tipe"
-
-#: layers/templates/layers/layer_detail.html:92
-msgid "Topic Category"
-msgstr "Kategori dari Topik"
-
-#: layers/templates/layers/layer_detail.html:99
-msgid "Citation"
-msgstr "Sitasi"
-
-#: layers/templates/layers/layer_detail.html:106
-msgid "Owner"
-msgstr "Pemilik"
-
-#: layers/templates/layers/layer_detail.html:113
-#: layers/templates/layers/layer_metadata.html:40
-msgid "Point of Contact"
-msgstr "Kontak"
-
-#: layers/templates/layers/layer_detail.html:121
-msgid "Supplemental Information"
-msgstr "Informasi tambahan"
-
-#: layers/templates/layers/layer_detail.html:128
-msgid "Bounding Box"
-msgstr "Batas"
-
-#: layers/templates/layers/layer_detail.html:135
-msgid "Native SRS"
-msgstr "SRS Asli"
-
-#: layers/templates/layers/layer_detail.html:136
-msgid "No SRS specified."
-msgstr "Tidak ada SRS ditentukan"
-
-#: layers/templates/layers/layer_detail.html:148
 msgid "Attribute Name"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:149
+#: layers/templates/layers/layer_detail.html:86
 msgid "Range"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:150
+#: layers/templates/layers/layer_detail.html:87
 msgid "Mean"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:151
+#: layers/templates/layers/layer_detail.html:88
 msgid "Median"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:152
+#: layers/templates/layers/layer_detail.html:89
 msgid "Std. Dev."
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:179
-#: layers/templates/layers/layer_detail_static.html:70
+#: layers/templates/layers/layer_detail.html:109
+msgid "Share This Layer"
+msgstr ""
+
+#: layers/templates/layers/layer_detail.html:126
+msgid "Rate this layer"
+msgstr ""
+
+#: layers/templates/layers/layer_detail.html:130
+#: maps/templates/maps/map_detail.html:73
+#, fuzzy
+msgid "Average Rating"
+msgstr "Argentina"
+
+#: layers/templates/layers/layer_detail.html:139
 msgid "Maps using this layer"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:181
-#: layers/templates/layers/layer_detail_static.html:71
+#: layers/templates/layers/layer_detail.html:141
 msgid "List of maps using this layer:"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:187
+#: layers/templates/layers/layer_detail.html:147
 msgid "This layer is not currently used in any maps."
 msgstr "Layer ini tidak digunakan pada peta manapun"
 
-#: layers/templates/layers/layer_detail.html:192
-#: layers/templates/layers/layer_detail_static.html:79
+#: layers/templates/layers/layer_detail.html:152
 msgid "Create a map using this layer"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:193
-#: layers/templates/layers/layer_detail.html:200
-#: maps/templates/maps/map_detail.html:76
-#: maps/templates/maps/map_detail.html:85
-msgid "Placeholder"
+#: layers/templates/layers/layer_detail.html:153
+msgid "Click the button below to generate a new map based on this layer."
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:194
-#: layers/templates/layers/layer_detail_static.html:81 templates/index.html:59
+#: layers/templates/layers/layer_detail.html:154 templates/index.html:63
 msgid "Create a Map"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:199
-#: layers/templates/layers/layer_detail_static.html:84
-#: layers/templates/layers/layer_upload.html:259
-#: maps/templates/maps/map_detail.html:80 templates/_permissions_form.html:7
-#: templates/upload/upload_permissions.html:7
-msgid "Permissions"
-msgstr "Izin"
+#: layers/templates/layers/layer_detail.html:160
+msgid "Click the button below to change the permissions of this layer."
+msgstr ""
 
-#: layers/templates/layers/layer_detail.html:201
+#: layers/templates/layers/layer_detail.html:161
 msgid "Change Layer Permissions"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:205
-#: layers/templates/layers/layer_detail_static.html:88
+#: layers/templates/layers/layer_detail.html:166
 msgid "Styles"
 msgstr "Penampilan"
 
-#: layers/templates/layers/layer_detail.html:206
+#: layers/templates/layers/layer_detail.html:167
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:219
+#: layers/templates/layers/layer_detail.html:180
 msgid "No styles associated with this layer"
-msgstr ""
-
-#: layers/templates/layers/layer_detail_static.html:80
-msgid "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed"
-msgstr ""
-
-#: layers/templates/layers/layer_detail_static.html:85
-msgid "Change Permissions of this layer"
-msgstr ""
-
-#: layers/templates/layers/layer_detail_static.html:89
-msgid ""
-"The following styles are associated with this data set. Choose a style to "
-"view it in the preview to the left. Click on a style name to view or edit "
-"the style."
-msgstr ""
-
-#: layers/templates/layers/layer_list.html:31
-msgid "Categories"
-msgstr ""
-
-#: layers/templates/layers/layer_list.html:34
-msgid "All Categories"
-msgstr ""
-
-#: layers/templates/layers/layer_list.html:41
-msgid "Keywords"
-msgstr "Kata Kunci"
-
-#: layers/templates/layers/layer_list.html:59
-msgid "No data found"
 msgstr ""
 
 #: layers/templates/layers/layer_metadata.html:17
@@ -1856,8 +2045,10 @@ msgstr ""
 
 #: layers/templates/layers/layer_metadata.html:22
 msgid ""
-"Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
+"Note: this layer's orginal metadata was populated by importing a metadata "
+"XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
 
@@ -1876,14 +2067,6 @@ msgstr ""
 #: layers/templates/layers/layer_metadata.html:32
 msgid "Visible?"
 msgstr ""
-
-#: layers/templates/layers/layer_metadata.html:44
-msgid "Metadata Provider"
-msgstr ""
-
-#: layers/templates/layers/layer_metadata.html:48
-msgid "Update"
-msgstr "Ubah"
 
 #: layers/templates/layers/layer_remove.html:11
 #, python-format
@@ -1904,7 +2087,7 @@ msgid "No, don't remove it"
 msgstr "Tidak jangan dihapus"
 
 #: layers/templates/layers/layer_remove.html:25
-#: layers/templates/layers/layer_replace.html:167
+#: layers/templates/layers/layer_replace.html:170
 msgid "This action affects the following maps:"
 msgstr "Proses ini mempengaruhi peta berikut:"
 
@@ -1913,280 +2096,247 @@ msgid "No maps are using this layer"
 msgstr ""
 
 #: layers/templates/layers/layer_replace.html:4
-#: layers/templates/layers/layer_replace.html:155
+#: layers/templates/layers/layer_replace.html:158
 msgid "Update Layer"
 msgstr "Ubah Layer"
 
-#: layers/templates/layers/layer_replace.html:156
+#: layers/templates/layers/layer_replace.html:15
+#, fuzzy
+msgid "Replace Layer"
+msgstr "Ubah Layer"
+
+#: layers/templates/layers/layer_replace.html:159
 msgid "This form allows you to update the data for this layer."
 msgstr "Form ini mengijinkan anda untuk mengubah data dari layer."
 
-#: layers/templates/layers/layer_replace.html:157
+#: layers/templates/layers/layer_replace.html:160
 msgid ""
 "\n"
-"If the new dataset omits attributes that were included in the previous version,\n"
+"If the new dataset omits attributes that were included in the previous "
+"version,\n"
 "or changes their types, then existing styles for the layer may not work.\n"
-"Please check your maps if the new data includes such changes.  Additionally,\n"
+"Please check your maps if the new data includes such changes.  "
+"Additionally,\n"
 "updated data must be the same format as the data already in place, e.g.\n"
-msgstr "\nJika dataset baru menghilangkan atribut yang disertakan pada versi sebelumnya,\natau mengubah tipe, maka tampilan yang sudah ada pada layer tidak akan berfungsi.\nSilahkan periksa peta anda jika data baru berbeda. Selain itu, \nData terbaru harus sama dengan format data yang tersedia sebelumnya, misalnya.\n"
+msgstr ""
+"\n"
+"Jika dataset baru menghilangkan atribut yang disertakan pada versi "
+"sebelumnya,\n"
+"atau mengubah tipe, maka tampilan yang sudah ada pada layer tidak akan "
+"berfungsi.\n"
+"Silahkan periksa peta anda jika data baru berbeda. Selain itu, \n"
+"Data terbaru harus sama dengan format data yang tersedia sebelumnya, "
+"misalnya.\n"
 
-#: layers/templates/layers/layer_replace.html:165
+#: layers/templates/layers/layer_replace.html:168
 msgid "Select a layer data file and submit the form to begin the transfer."
-msgstr "Pilih sebuah file layer dan tekan tombol untuk memulai melakukan transfer."
+msgstr ""
+"Pilih sebuah file layer dan tekan tombol untuk memulai melakukan transfer."
 
-#: layers/templates/layers/layer_replace.html:173
+#: layers/templates/layers/layer_replace.html:176
 msgid "No maps are using this layer."
 msgstr "Tidak ada peta yang menggunakan layer ini."
 
-#: layers/templates/layers/layer_replace.html:179
+#: layers/templates/layers/layer_replace.html:182
 msgid "Supported Formats"
 msgstr "Format yang didukung"
-
-#: layers/templates/layers/layer_search.html:14
-msgid "Search for Layers"
-msgstr ""
-
-#: layers/templates/layers/layer_search.html:19 templates/base.html:40
-#: templates/base.html.py:131
-msgid "Search"
-msgstr "Cari"
-
-#: layers/templates/layers/layer_search.html:26 maps/models.py:58
-#: maps/templates/maps/map_search.html:24
-#: people/templates/idios/profile.html:10
-#: templates/profiles/profile_detail.html:10
-msgid "Title"
-msgstr "Judul"
-
-#: layers/templates/layers/layer_search.html:27
-#: maps/templates/maps/map_search.html:25
-msgid "Contact"
-msgstr "Kontak"
-
-#: layers/templates/layers/layer_search.html:28
-#: maps/templates/maps/map_search.html:26
-msgid "Last Modified"
-msgstr "Modifikasi Terakhir"
-
-#: layers/templates/layers/layer_search.html:41
-msgid "Export as ZIP "
-msgstr ""
-
-#: layers/templates/layers/layer_search.html:44
-msgid "Create Map"
-msgstr "Buat Peta"
-
-#: layers/templates/layers/layer_search.html:52
-msgid "Refine Search"
-msgstr "Afinar la búsqueda"
-
-#: layers/templates/layers/layer_search.html:54
-msgid "By area"
-msgstr "Berdasarkan area"
-
-#: layers/templates/layers/layer_search.html:55
-msgid "Limit the search to data that includes features in the displayed area."
-msgstr "Batasi pencarian pada data yang memiliki feature di dalam area yang ditampilkan."
-
-#: layers/templates/layers/layer_search.html:62
-msgid "Selected Data"
-msgstr ""
-
-#: layers/templates/layers/layer_search.html:63
-msgid ""
-"Use the checkboxes in the search results to add data to your selection."
-msgstr "Gunakan checkbox pada hasil pencarian untuk menambah data "
-
-#: layers/templates/layers/layer_search.html:69
-#: maps/templates/maps/map_detail.html:84
-#: people/templates/idios/profile.html:72
-#: templates/profiles/profile_detail.html:72
-msgid "Create a new map"
-msgstr "Buat peta baru"
-
-#: layers/templates/layers/layer_search.html:70
-msgid "Export selected"
-msgstr "Export pada data terpilih"
-
-#: layers/templates/layers/layer_search.html:94
-#: maps/templates/maps/map_search.html:52
-msgid "Your search did not match any items."
-msgstr "Pencarian anda tidak ditemukan"
 
 #: layers/templates/layers/layer_upload.html:6
 msgid "Upload Layer"
 msgstr "Unggah Layer"
 
-#: layers/templates/layers/layer_upload.html:34
+#: layers/templates/layers/layer_upload.html:41
 msgid ""
 "GeoNode can import GeoTIFF and Shapefile data. To import a shapefile, first "
-"pick its file with the .shp extension. You will then be prompted to pick the"
-" other component files."
+"pick its file with the .shp extension. You will then be prompted to pick the "
+"other component files."
 msgstr ""
 
 #: maps/models.py:61
-msgid "Abstract"
-msgstr "Abstrak"
-
-#: maps/models.py:65
 msgid "zoom"
 msgstr "zoom"
 
-#: maps/models.py:69
+#: maps/models.py:65
 msgid "projection"
 msgstr "proyeksi"
 
-#: maps/models.py:73
+#: maps/models.py:69
 msgid "center X"
 msgstr "titik pusat X"
 
-#: maps/models.py:77
+#: maps/models.py:73
 msgid "center Y"
 msgstr "titik pusat Y"
 
-#: maps/models.py:81
-msgid "owner"
-msgstr "pemilik"
-
-#: maps/models.py:87
-msgid "A space or comma-separated list of keywords"
-msgstr ""
-
-#: maps/models.py:289
+#: maps/models.py:321
 msgid "stack order"
 msgstr "urutan penempatan"
 
-#: maps/models.py:293
+#: maps/models.py:325
 msgid "format"
 msgstr "format"
 
-#: maps/models.py:297
+#: maps/models.py:329
 msgid "name"
 msgstr "nama"
 
-#: maps/models.py:304
+#: maps/models.py:336
 msgid "opacity"
 msgstr "opcacity"
 
-#: maps/models.py:307
+#: maps/models.py:339
 msgid "styles"
 msgstr "style"
 
-#: maps/models.py:310
+#: maps/models.py:342
 msgid "transparent"
 msgstr "transparan"
 
-#: maps/models.py:313
+#: maps/models.py:345
 msgid "fixed"
 msgstr "tetap"
 
-#: maps/models.py:317
+#: maps/models.py:349
 msgid "group"
 msgstr "grup"
 
-#: maps/models.py:321
+#: maps/models.py:353
 msgid "visibility"
 msgstr "visibilitas"
 
-#: maps/models.py:324
+#: maps/models.py:356
 msgid "ows URL"
 msgstr "URL ows"
 
-#: maps/models.py:327
+#: maps/models.py:359
 msgid "layer params"
 msgstr "parameter layer"
 
-#: maps/models.py:334
+#: maps/models.py:366
 msgid "source params"
 msgstr "parameter sumber"
 
-#: maps/views.py:68
+#: maps/views.py:69
 msgid "You are not permitted to delete this map."
 msgstr "Anda tidak diijinkan untuk menghapus peta ini"
 
-#: maps/views.py:69
+#: maps/views.py:70
 msgid "You do not have permissions for this map."
 msgstr ""
 
-#: maps/views.py:70
+#: maps/views.py:71
 msgid "You must be logged in to save this map"
 msgstr "Anda harus login untuk menyimpan peta ini"
 
-#: maps/views.py:71
+#: maps/views.py:72
 msgid "You are not allowed to modify this map's metadata."
 msgstr "Anda tidak diijinkan untuk mengubah metadata peta ini"
 
-#: maps/views.py:72
+#: maps/views.py:73
 msgid "You are not allowed to view this map."
 msgstr "Anda tidak diijinkan untuk melihat peta ini"
 
-#: maps/templates/maps/_map_filters.html:4
-msgid "All"
-msgstr "Seluruhnya"
-
-#: maps/templates/maps/_map_filters.html:5
-msgid "Most viewed"
+#: maps/management/__init__.py:30
+msgid "Map Created"
 msgstr ""
 
-#: maps/templates/maps/_map_filters.html:10
-msgid "sort by"
+#: maps/management/__init__.py:30
+msgid "A Map was created"
 msgstr ""
 
-#: maps/templates/maps/_map_filters.html:12
-msgid "Newest"
+#: maps/management/__init__.py:31
+msgid "Comment on Map"
 msgstr ""
 
-#: maps/templates/maps/_map_filters.html:13
-msgid "Popular"
+#: maps/management/__init__.py:31
+msgid "A map was commented on"
 msgstr ""
 
-#: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:13
-#: maps/templates/maps/map_list.html:12 templates/index.html:28
+#: maps/management/__init__.py:32
+msgid "Rating for Map"
+msgstr ""
+
+#: maps/management/__init__.py:32
+msgid "A rating was given to a map"
+msgstr ""
+
+#: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
+#: maps/templates/maps/map_list.html:13 templates/index.html:31
 msgid "Explore Maps"
 msgstr "Telusuri Peta"
 
-#: maps/templates/maps/map_base.html:14 maps/templates/maps/map_search.html:5
-#: maps/templates/maps/map_search.html:12
+#: maps/templates/maps/map_base.html:13 maps/templates/maps/map_search.html:5
 msgid "Search Maps"
 msgstr "Cari Peta"
 
 #: maps/templates/maps/map_detail.html:27
-msgid "Download Data"
+#, fuzzy
+msgid "Download Map"
+msgstr "Unduh"
+
+#: maps/templates/maps/map_detail.html:31
+#, fuzzy
+msgid "Download Data Layers"
+msgstr "Unggah Layer"
+
+#: maps/templates/maps/map_detail.html:32
+msgid "Download Web Map Context"
 msgstr ""
 
-#: maps/templates/maps/map_detail.html:28
+#: maps/templates/maps/map_detail.html:36
 msgid "Print Map"
 msgstr "Cetak Peta"
 
-#: maps/templates/maps/map_detail.html:48
-msgid "Abstract:"
-msgstr "Abstrak"
-
-#: maps/templates/maps/map_detail.html:58
-msgid "Uploaded by"
-msgstr ""
-
-#: maps/templates/maps/map_detail.html:66 templates/base.html:122
-msgid "Layers"
-msgstr "Layer"
-
-#: maps/templates/maps/map_detail.html:67
-msgid "This map uses the following layers:"
-msgstr ""
-
-#: maps/templates/maps/map_detail.html:75
-msgid "Edit map"
-msgstr ""
-
-#: maps/templates/maps/map_detail.html:77
-msgid "Edit Map"
+#: maps/templates/maps/map_detail.html:69 templates/_actions.html:6
+msgid "Rate this Map"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:81
+#, fuzzy
+msgid "Share This Map"
+msgstr "Cari Peta"
+
+#: maps/templates/maps/map_detail.html:94
+#, fuzzy
+msgid "Map Layers"
+msgstr "Layer"
+
+#: maps/templates/maps/map_detail.html:95
+msgid "This map uses the following layers:"
+msgstr ""
+
+#: maps/templates/maps/map_detail.html:109
+#, fuzzy
+msgid "View map"
+msgstr "Vietnam"
+
+#: maps/templates/maps/map_detail.html:110
+msgid "View this map in the GeoExplorer GIS Client"
+msgstr ""
+
+#: maps/templates/maps/map_detail.html:111
+#, fuzzy
+msgid "View Map"
+msgstr "Vietnam"
+
+#: maps/templates/maps/map_detail.html:117
+msgid "Specify which users can view or modify this map"
+msgstr ""
+
+#: maps/templates/maps/map_detail.html:118
 msgid "Change Permissions of this Map"
 msgstr ""
 
-#: maps/templates/maps/map_detail.html:86 maps/templates/maps/map_list.html:16
+#: maps/templates/maps/map_detail.html:122
+msgid "Copy this map"
+msgstr ""
+
+#: maps/templates/maps/map_detail.html:123
+msgid "Duplicate this map and modify it for your own purposes"
+msgstr ""
+
+#: maps/templates/maps/map_detail.html:124
+#: maps/templates/maps/map_list.html:16
 msgid "Create a New Map"
 msgstr ""
 
@@ -2202,7 +2352,8 @@ msgstr ""
 #: maps/templates/maps/map_download.html:85
 msgid ""
 "\n"
-"        Additionally, the map contains these layers which will not be downloaded\n"
+"        Additionally, the map contains these layers which will not be "
+"downloaded\n"
 "        due to security restrictions:\n"
 "      "
 msgstr ""
@@ -2218,10 +2369,6 @@ msgstr ""
 #: maps/templates/maps/map_download.html:115
 msgid "Start downloading this map"
 msgstr ""
-
-#: maps/templates/maps/map_embed.html:5 maps/templates/maps/map_view.html:5
-msgid "Map Viewer"
-msgstr "Penampil Peta"
 
 #: maps/templates/maps/map_metadata.html:17
 #, python-format
@@ -2247,13 +2394,10 @@ msgid ""
 "    "
 msgstr ""
 
-#: maps/templates/maps/map_view.html:84
-msgid "View info"
-msgstr "Informasi Tampilan"
-
-#: maps/templates/maps/map_view.html:85 templates/base.html:125
-msgid "Maps"
-msgstr "Peta"
+#: maps/templates/maps/map_view.html:5
+#, fuzzy
+msgid "GeoExplorer"
+msgstr "Telusuri Peta"
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
@@ -2261,8 +2405,8 @@ msgstr ""
 
 #: people/enumerations.py:40
 msgid ""
-"party who has processed the data in a manner such that the resource has been"
-" modified"
+"party who has processed the data in a manner such that the resource has been "
+"modified"
 msgstr ""
 
 #: people/enumerations.py:41
@@ -2302,255 +2446,353 @@ msgid "party that owns the resource"
 msgstr ""
 
 #: people/enumerations.py:49
-msgid ""
-"key party responsible for gathering information and conducting research"
+msgid "key party responsible for gathering information and conducting research"
 msgstr ""
 
-#: people/forms.py:32
+#: people/forms.py:33
 msgid "Email Address"
 msgstr ""
 
-#: people/models.py:35
+#: people/management.py:30
+msgid "User following you"
+msgstr ""
+
+#: people/management.py:30
+msgid "another user has started following you"
+msgstr ""
+
+#: people/models.py:37
 msgid "Individual Name"
 msgstr "Nama"
 
-#: people/models.py:35
+#: people/models.py:37
 msgid ""
 "name of the responsible personsurname, given name, title separated by a "
 "delimiter"
 msgstr ""
 
-#: people/models.py:36
+#: people/models.py:38
 msgid "Organization Name"
 msgstr "Nama Organisasi"
 
-#: people/models.py:36
+#: people/models.py:38
 msgid "name of the responsible organization"
 msgstr ""
 
-#: people/models.py:37 templates/base.html:59
+#: people/models.py:39 templates/base.html:47
 msgid "Profile"
 msgstr ""
 
-#: people/models.py:38
+#: people/models.py:40
 msgid "Position Name"
 msgstr "Posisi/Jabatan"
 
-#: people/models.py:38
+#: people/models.py:40
 msgid "role or position of the responsible person"
 msgstr ""
 
-#: people/models.py:39
+#: people/models.py:41
 msgid "Voice"
 msgstr "Telepon"
 
-#: people/models.py:39
+#: people/models.py:41
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
 msgstr ""
 
-#: people/models.py:40
+#: people/models.py:42
 msgid "Facsimile"
 msgstr "Faksimili"
 
-#: people/models.py:40
+#: people/models.py:42
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
 msgstr ""
 
-#: people/models.py:41
+#: people/models.py:43
 msgid "Delivery Point"
 msgstr "Alamat Pengiriman"
 
-#: people/models.py:41
+#: people/models.py:43
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
 msgstr ""
 
-#: people/models.py:42
+#: people/models.py:44
 msgid "City"
 msgstr "Kota"
 
-#: people/models.py:42
+#: people/models.py:44
 msgid "city of the location"
 msgstr ""
 
-#: people/models.py:43
+#: people/models.py:45
 msgid "Administrative Area"
 msgstr "Provinsi"
 
-#: people/models.py:43
+#: people/models.py:45
 msgid "state, province of the location"
 msgstr ""
 
-#: people/models.py:44
+#: people/models.py:46
 msgid "Postal Code"
 msgstr "Kode Pos"
 
-#: people/models.py:44
+#: people/models.py:46
 msgid "ZIP or other postal code"
 msgstr ""
 
-#: people/models.py:45
+#: people/models.py:47
 msgid "country of the physical address"
 msgstr ""
 
-#: people/models.py:46
+#: people/models.py:48
 msgid ""
 "address of the electronic mailbox of the responsible organization or "
 "individual"
 msgstr ""
 
-#: people/models.py:67
+#: people/models.py:68
 msgid "function performed by the responsible party"
 msgstr ""
 
-#: people/models.py:68 security/models.py:56
+#: people/models.py:69 security/models.py:55
 msgid "permissions"
 msgstr "ijin"
 
-#: people/views.py:37
+#: people/views.py:86
 msgid "Your username for "
 msgstr ""
 
-#: people/views.py:52
+#: people/views.py:101
 msgid "Your username has been emailed to you."
 msgstr ""
 
-#: people/views.py:54
+#: people/views.py:103
 msgid "No user could be found with that email address."
 msgstr ""
 
-#: people/templates/idios/profile.html:11
-#: templates/profiles/profile_detail.html:11
+#: people/templates/people/_profile_about_item.html:6
+msgid "About the Layer Owner"
+msgstr ""
+
+#: people/templates/people/_profile_about_item.html:11
+msgid "Read more about the owner"
+msgstr ""
+
+#: people/templates/people/forgot_username_form.html:5
+msgid "Forgot Username"
+msgstr ""
+
+#: people/templates/people/forgot_username_form.html:9
+msgid ""
+"Enter your email address and click the submit button.  Your username will be "
+"sent to you."
+msgstr ""
+
+#: people/templates/people/profile_create.html:8
+#: people/templates/people/profile_create.html:14
+msgid "Create Profile"
+msgstr ""
+
+#: people/templates/people/profile_detail.html:10
+#: templates/geonode/resourcebase_info_panel.html:28
+msgid "Type"
+msgstr "Tipe"
+
+#: people/templates/people/profile_detail.html:12
+#: templates/geonode/resourcebase_info_panel.html:21
 msgid "Date"
 msgstr ""
 
-#: people/templates/idios/profile.html:18
-#: templates/profiles/profile_detail.html:18
+#: people/templates/people/profile_detail.html:19
 msgid "Layer"
 msgstr ""
 
-#: people/templates/idios/profile.html:27
-#: templates/profiles/profile_detail.html:27
+#: people/templates/people/profile_detail.html:28
 msgid "Map"
 msgstr "Peta"
 
-#: people/templates/idios/profile.html:36
-#: templates/profiles/profile_detail.html:36
-msgid "Change permissions on selected"
+#: people/templates/people/profile_detail.html:37
+msgid "Document"
 msgstr ""
 
-#: people/templates/idios/profile.html:37
-#: templates/profiles/profile_detail.html:37
-msgid "Remove selected"
-msgstr ""
-
-#: people/templates/idios/profile.html:44
-#: templates/profiles/profile_detail.html:44
+#: people/templates/people/profile_detail.html:59
 msgid "Delete Layers"
 msgstr ""
 
-#: people/templates/idios/profile.html:47
-#: templates/profiles/profile_detail.html:47
+#: people/templates/people/profile_detail.html:62
 msgid ""
 "You're about to delete multiple layers and maps.  Is that really what you "
 "want to do?"
 msgstr ""
 
-#: people/templates/idios/profile.html:50 templates/_permissions_form.html:51
-#: templates/profiles/profile_detail.html:50
+#: people/templates/people/profile_detail.html:65
+#: templates/_permissions_form.html:51
 msgid "Cancel"
 msgstr "Batal"
 
-#: people/templates/idios/profile.html:51
-#: templates/profiles/profile_detail.html:51
+#: people/templates/people/profile_detail.html:66
+#: templates/user_messages/inbox.html:44
 msgid "Delete"
 msgstr ""
 
-#: people/templates/idios/profile.html:66
-#: templates/profiles/profile_detail.html:66
+#: people/templates/people/profile_detail.html:83
 msgid "Actions"
 msgstr "Aksi"
 
-#: people/templates/idios/profile.html:68
-#: people/templates/idios/profile.html:74
-#: templates/profiles/profile_detail.html:68
-#: templates/profiles/profile_detail.html:74
+#: people/templates/people/profile_detail.html:85
 msgid "Edit profile information"
 msgstr "Ubah informasi profil"
 
-#: people/templates/idios/profile.html:69
-#: templates/profiles/profile_detail.html:69
-#: templates/registration/password_change_form.html:13
+#: people/templates/people/profile_detail.html:86
+#, fuzzy
+msgid "Account Settings"
+msgstr "Konfigurasi"
+
+#: people/templates/people/profile_detail.html:87
 msgid "Change password"
 msgstr "Ganti password"
 
-#: people/templates/idios/profile.html:71
-#: templates/profiles/profile_detail.html:71
-msgid "Upload new data"
-msgstr "Unggah data baru"
+#: people/templates/people/profile_detail.html:88
+#, fuzzy
+msgid "Upload new layers"
+msgstr "Unggah Layer"
 
-#: people/templates/idios/profile.html:73
-#: templates/profiles/profile_detail.html:73
-msgid "Settings"
-msgstr "Konfigurasi"
-
-#: people/templates/idios/profile_create.html:8
-#: people/templates/idios/profile_create.html:14
-msgid "Create Profile"
-msgstr ""
-
-#: people/templates/idios/profile_edit.html:8 templates/avatar/add.html:9
+#: people/templates/people/profile_edit.html:8 templates/avatar/add.html:9
 msgid "You haven't uploaded an avatar yet. Please upload one now."
 msgstr "Anda belum mengunggah avatar. Silahkan unggah sebuah avatar sekarang."
 
-#: people/templates/idios/profile_edit.html:11
+#: people/templates/people/profile_edit.html:11
 msgid "Change Your Avatar"
 msgstr ""
 
-#: people/templates/idios/profile_edit.html:17
+#: people/templates/people/profile_edit.html:17
 msgid "Choose new avatar"
 msgstr ""
 
-#: people/templates/idios/profile_edit.html:23
+#: people/templates/people/profile_edit.html:23
 msgid "Upload a New Avatar"
 msgstr ""
 
-#: people/templates/idios/profile_edit.html:29
+#: people/templates/people/profile_edit.html:29
 msgid "Upload new avatar"
 msgstr ""
 
-#: people/templates/idios/profile_edit.html:34
+#: people/templates/people/profile_edit.html:34
 msgid "Edit Your Profile"
 msgstr ""
 
-#: people/templates/idios/profile_edit.html:40
+#: people/templates/people/profile_edit.html:40
 msgid "Update profile"
 msgstr ""
 
-#: people/templates/people/forgot_username_form.html:6
-msgid "Forgot Username"
+#: search/templates/search/advanced_search.html:19
+msgid "Search for: "
 msgstr ""
 
-#: people/templates/people/forgot_username_form.html:10
-msgid ""
-"Enter your email address and click the submit button.  Your username will be"
-" sent to you."
+#: search/templates/search/advanced_search.html:25
+msgid "All of the words"
 msgstr ""
 
-#: security/models.py:37
+#: search/templates/search/advanced_search.html:31
+#: search/templates/search/advanced_search.html:110
+#: search/templates/search/search.html:6
+msgid "Search "
+msgstr ""
+
+#: search/templates/search/advanced_search.html:34
+msgid "Exclude words from your search"
+msgstr ""
+
+#: search/templates/search/advanced_search.html:40
+msgid "All categories"
+msgstr ""
+
+#: search/templates/search/advanced_search.html:43
+msgid "Maps only"
+msgstr ""
+
+#: search/templates/search/advanced_search.html:46
+msgid "Layers only"
+msgstr ""
+
+#: search/templates/search/advanced_search.html:49
+msgid "Groups only"
+msgstr ""
+
+#: search/templates/search/advanced_search.html:56
+msgid "Type: "
+msgstr ""
+
+#: search/templates/search/advanced_search.html:61
+msgid "From this site/portal"
+msgstr ""
+
+#: search/templates/search/advanced_search.html:67
+msgid "From this group"
+msgstr ""
+
+#: search/templates/search/advanced_search.html:73
+msgid "From this organization"
+msgstr ""
+
+#: search/templates/search/advanced_search.html:79
+msgid "From this geographic region"
+msgstr ""
+
+#: search/templates/search/advanced_search.html:89
+msgid "Metadata: "
+msgstr ""
+
+#: search/templates/search/advanced_search.html:94
+msgid "Since this date"
+msgstr ""
+
+#: search/templates/search/advanced_search.html:100
+msgid "Until this date"
+msgstr ""
+
+#: search/templates/search/advanced_search.html:111
+msgid "Clear Options "
+msgstr ""
+
+#: search/templates/search/search.html:19
+msgid "Refine your search"
+msgstr ""
+
+#: search/templates/search/search.html:23
+msgid "Your selections"
+msgstr ""
+
+#: search/templates/search/search.html:143
+msgid "Search Results"
+msgstr ""
+
+#: search/templates/search/search_base.html:3
+msgid "for geospatial data"
+msgstr ""
+
+#: search/templates/search/search_base.html:27
+msgid "Export as ZIP "
+msgstr ""
+
+#: search/templates/search/search_base.html:30
+msgid "Create Map"
+msgstr "Buat Peta"
+
+#: security/models.py:36
 msgid "Invalid permission level."
 msgstr "Ijin level tidak benar"
 
-#: security/models.py:57
+#: security/models.py:56
 msgid "codename"
 msgstr "nama kode"
 
-#: security/models.py:59
+#: security/models.py:58
 msgid "Determines the order that roles are presented in the user interface."
 msgstr "Menentukan urutan peran yang disajikan dalam antarmuka pengguna. "
 
@@ -2567,7 +2809,10 @@ msgid ""
 "\n"
 "          You are not allowed to perform this operation.  \n"
 "      "
-msgstr "\n          Anda tidak diijinkan untuk melakukan operasi ini.  \n      "
+msgstr ""
+"\n"
+"          Anda tidak diijinkan untuk melakukan operasi ini.  \n"
+"      "
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
@@ -2584,7 +2829,8 @@ msgstr "Halaman tidak ditemukan"
 #: templates/404.html:6
 msgid ""
 "\n"
-"      The page you requested does not exist.  Perhaps you are using an outdated bookmark?\n"
+"      The page you requested does not exist.  Perhaps you are using an "
+"outdated bookmark?\n"
 "  "
 msgstr ""
 
@@ -2595,7 +2841,8 @@ msgstr "Internal Server Error"
 #: templates/500.html:6
 msgid ""
 "\n"
-"      An internal error occurred. Please try again, and if the problem continues, contact your site administrator.\n"
+"      An internal error occurred. Please try again, and if the problem "
+"continues, contact your site administrator.\n"
 "  "
 msgstr ""
 
@@ -2603,24 +2850,16 @@ msgstr ""
 msgid "Add to Favorites"
 msgstr ""
 
-#: templates/_actions.html:6
-msgid "Rate this Map"
+#: templates/_comments.html:10
+msgid "Add Comment"
 msgstr ""
 
-#: templates/_comments.html:8
-msgid "Comments"
+#: templates/_comments.html:31
+msgid "Add a Comment"
 msgstr ""
 
-#: templates/_comments.html:13 templates/pagination/pagination.html:7
-msgid "Previous"
-msgstr ""
-
-#: templates/_comments.html:17 templates/pagination/pagination.html:16
-msgid "Next"
-msgstr "Selanjutnya"
-
-#: templates/_comments.html:21
-msgid "add comment"
+#: templates/_comments.html:41
+msgid "Submit Comments"
 msgstr ""
 
 #: templates/_permissions_form.html:11
@@ -2659,6 +2898,10 @@ msgstr ""
 msgid "Apply Changes"
 msgstr ""
 
+#: templates/_permissions_form_js.html:5
+msgid "Add User..."
+msgstr ""
+
 #: templates/_viewby.html:3
 msgid "View by"
 msgstr ""
@@ -2671,173 +2914,102 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-#: templates/_widget_about_author.html:3
-msgid "About the Layer Owner"
-msgstr ""
-
-#: templates/_widget_about_author.html:8
-msgid "Read more about the layer owner"
-msgstr ""
-
-#: templates/advanced_search_static.html:4 templates/search.html:4
-msgid "Search Data"
-msgstr "Cari Data"
-
-#: templates/advanced_search_static.html:18 templates/base.html:42
-msgid "Advanced Search"
-msgstr "Pencarian lanjutan"
-
-#: templates/advanced_search_static.html:22
-msgid "Search for: "
-msgstr ""
-
-#: templates/advanced_search_static.html:28
-msgid "All of the words"
-msgstr ""
-
-#: templates/advanced_search_static.html:34
-#: templates/advanced_search_static.html:113
-msgid "Search "
-msgstr ""
-
-#: templates/advanced_search_static.html:37
-msgid "Exclude words from your search"
-msgstr ""
-
-#: templates/advanced_search_static.html:43
-msgid "All categories"
-msgstr ""
-
-#: templates/advanced_search_static.html:46
-msgid "Maps only"
-msgstr ""
-
-#: templates/advanced_search_static.html:49
-msgid "Layers only"
-msgstr ""
-
-#: templates/advanced_search_static.html:52
-msgid "Groups only"
-msgstr ""
-
-#: templates/advanced_search_static.html:59
-msgid "Type: "
-msgstr ""
-
-#: templates/advanced_search_static.html:64
-msgid "From this site/portal"
-msgstr ""
-
-#: templates/advanced_search_static.html:70
-msgid "From this group"
-msgstr ""
-
-#: templates/advanced_search_static.html:76
-msgid "From this organization"
-msgstr ""
-
-#: templates/advanced_search_static.html:82
-msgid "From this geographic region"
-msgstr ""
-
-#: templates/advanced_search_static.html:92
-msgid "Metadata: "
-msgstr ""
-
-#: templates/advanced_search_static.html:97
-msgid "Since this date"
-msgstr ""
-
-#: templates/advanced_search_static.html:103
-msgid "Until this date"
-msgstr ""
-
-#: templates/advanced_search_static.html:114
-msgid "Clear Options "
-msgstr ""
-
-#: templates/base.html:61
+#: templates/base.html:49
 msgid "Admin"
 msgstr ""
 
-#: templates/base.html:64
+#: templates/base.html:52
+msgid "GeoServer"
+msgstr ""
+
+#: templates/base.html:55
 msgid "Log out"
 msgstr "Keluar"
 
-#: templates/base.html:69 templates/base.html.py:166
-msgid "Help"
-msgstr "Bantuan"
-
-#: templates/base.html:70
+#: templates/base.html:60
 msgid "Notifications"
 msgstr ""
 
-#: templates/base.html:71
+#: templates/base.html:61
 msgid "Messages"
 msgstr ""
 
-#: templates/base.html:72
+#: templates/base.html:62
 msgid "Upload"
 msgstr "Unggah"
 
-#: templates/base.html:80 templates/base.html.py:93
+#: templates/base.html:63
+msgid "Help"
+msgstr "Bantuan"
+
+#: templates/base.html:67 templates/base.html.py:80
 msgid "Sign in"
 msgstr ""
 
-#: templates/base.html:85
+#: templates/base.html:72
 msgid "Username"
 msgstr ""
 
-#: templates/base.html:87
+#: templates/base.html:74
 msgid "Password"
 msgstr ""
 
-#: templates/base.html:91
+#: templates/base.html:78
 msgid "Remember Me"
 msgstr ""
 
-#: templates/base.html:94
+#: templates/base.html:81
 msgid "Don't have an account yet?"
 msgstr ""
 
-#: templates/base.html:94
+#: templates/base.html:81
 msgid "Register now"
 msgstr ""
 
-#: templates/base.html:100
+#: templates/base.html:87
 msgid "or"
 msgstr ""
 
-#: templates/base.html:101
+#: templates/base.html:88
 msgid "Register"
 msgstr "Daftar"
 
-#: templates/base.html:128
-msgid "Profiles"
+#: templates/base.html:100
+#, fuzzy
+msgid "Search ..."
+msgstr "Cari"
+
+#: templates/base.html:113
+msgid "Layers"
+msgstr "Layer"
+
+#: templates/base.html:116
+msgid "Maps"
+msgstr "Peta"
+
+#: templates/base.html:121
+msgid "Documents"
 msgstr ""
 
-#: templates/base.html:164
+#: templates/base.html:125
+msgid "People"
+msgstr ""
+
+#: templates/base.html:177
 msgid "Powered by"
 msgstr ""
 
-#: templates/base.html:164
+#: templates/base.html:177
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/base.html:165
-msgid "Need Help?"
-msgstr "Butuh Bantuan?"
+#: templates/base.html:177
+#, fuzzy
+msgid "version"
+msgstr "Izin"
 
-#: templates/base.html:167
-msgid "For Developers"
-msgstr "Untuk Pengembang"
-
-#: templates/base.html:174
+#: templates/base.html:184 templates/geonode/resourcebase_info_panel.html:96
 msgid "Language"
-msgstr ""
-
-#: templates/base.html:243 templates/base.html.py:282
-msgid "Add User..."
 msgstr ""
 
 #: templates/developer.html:4 templates/developer.html.py:8
@@ -2882,49 +3054,84 @@ msgstr "Bantuan Geonode"
 
 #: templates/help.html:9
 msgid ""
-"This page provides helpful information about how to use the GeoNode. You can"
-" use the sidebar links to navigate to what you want to know."
+"This page provides helpful information about how to use the GeoNode. You can "
+"use the sidebar links to navigate to what you want to know."
 msgstr ""
 
 #: templates/help.html:12
+#, fuzzy
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application allows users to browse existing maps and contribute their own.</p>\n"
+"  <p>The GeoNode provides access to data sets and a map editing application "
+"allows users to browse existing maps and contribute their own.</p>\n"
 "\n"
-"  <h4 id=\"browsing-data\">Browsing Data</h4>\n"
-"  <p>The <a href=\"data\">Data</a> tab allows you to browse data uploaded to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other applications.</p>\n"
+"  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
+"  <p>The <a href=\"/data\">Layers</a> tab allows you to browse data uploaded "
+"to this GeoNode.</p>\n"
+"  <p>All data can be downloaded in a variety of formats, for use in other "
+"applications.</p>\n"
 "\n"
 "  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"developer\"> Developer</a> page is the place for developers to get started building applications against the GeoNode. It includes instructions on using the web services, links to the source code of the GeoNode, and information about the open source projects used to create it.</p>\n"
+"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"developers to get started building applications against the GeoNode. It "
+"includes instructions on using the web services, links to the source code of "
+"the GeoNode, and information about the open source projects used to create "
+"it.</p>\n"
 "\n"
 "  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</p>\n"
-"  <p>The <a href=\"maps\">Maps</a> tab is a gateway to map exploration on GeoNode.  From here you can <strong>search for a map</strong> or <strong>create a map</strong>, which will open the <a href=\"maps/new\">Map Composer</a>.</p>\n"
+"  <p>The GeoNode allows users to create and share maps with one another.</"
+"p>\n"
+"  <p>The <a href=\"maps\">Maps</a> tab is a gateway to map exploration on "
+"GeoNode.  From here you can <strong>search for a map</strong> or "
+"<strong>create a map</strong>, which will open the <a href=\"maps/new\">Map "
+"Composer</a>.</p>\n"
 "  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode with the Google Earth plugin. To switch to 3D mode select the Google Earth globe logo, the rightmost button on top toolbar. If you do not have the Google Earth plugin installed you will be prompted to install it.</p>\n"
+"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"with the Google Earth plugin. To switch to 3D mode select the Google Earth "
+"globe logo, the rightmost button on top toolbar. If you do not have the "
+"Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"maps\">Contributed Maps</a> tab and click the <a href=\"maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"maps/new\">Map Composer</a> with a base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button located below the Data tab on the left hand side of the screen. This will open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</strong> button. When finished you may hit <strong>Done</strong> to close the dialog and go back to the map.</p>\n"
+"  <p>To create a new map go to the <a href=\"maps\">Contributed Maps</a> tab "
+"and click the <a href=\"maps/new\">create your own map</a> link.</p>\n"
+"  <p>This will take you to the <a href=\"maps/new\">Map Composer</a> with a "
+"base layer loaded.</p>\n"
+"  <p>To add data layers from the GeoNode click on the green plus button "
+"located below the layers tab on the left hand side of the screen. This will "
+"open a dialog listing all the layers available on the GeoNode.</p>\n"
+"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"strong> button. When finished you may hit <strong>Done</strong> to close the "
+"dialog and go back to the map.</p>\n"
 "\n"
 "  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply dragging and dropping their names. The order in the map will be updated to reflect that. To turn a layer's visibility off simply uncheck it, and to remove it entirely select it and hit the red minus button.</p>\n"
+"  <p>Change the display order of the layers listed in the data tab by simply "
+"dragging and dropping their names. The order in the map will be updated to "
+"reflect that. To turn a layer's visibility off simply uncheck it, and to "
+"remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
 "  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time to save it so others can see it.  Click the Save button--the left most icon on the top toolbar, an image of a map with a disk--on the top menu and fill out the title and abstract of the map.</p>\n"
+"  <p>Once a suitable set of layers and zoom level has been found it's time "
+"to save it so others can see it.  Click the Save button--the left most icon "
+"on the top toolbar, an image of a map with a disk--on the top menu and fill "
+"out the title and abstract of the map.</p>\n"
 "\n"
 "  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or blog. To export a map:</p>\n"
+"  <p>Any map from the GeoNode can be embedded for use in another site or "
+"blog. To export a map:</p>\n"
 "  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li>\n"
+"    <li>Select the from the list of maps on the community or map page and "
+"then hit the 'export map' button.</li> \n"
+"    <li>Choose your desired height and width for the widget in the wizard.</"
+"li> \n"
+"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"iFrame-supporting blog post.</li>\n"
 "  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or blog post.</p>\n"
-"  <p>Note that the <a href=\"maps/new\">Map Composer</a> also has a button to export the map. Just be sure to save the map before exporting if there are changes that you want others to see. It exports the last saved version, not the last viewed version.</p>\n"
+"  <p>This will put an interactive widget showing you map in your web page or "
+"blog post.</p>\n"
+"  <p>Note that the <a href=\"maps/new\">Map Composer</a> also has a button "
+"to export the map. Just be sure to save the map before exporting if there "
+"are changes that you want others to see. It exports the last saved version, "
+"not the last viewed version.</p>\n"
 "\n"
 "  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
 "  <p>Any map available can serve as a starting point for a new map.</p>\n"
@@ -2932,19 +3139,107 @@ msgid ""
 "    <li>Open the map in the Map Composer.</li>\n"
 "    <li>Add and remove layers as you like.</li>\n"
 "    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info and tags to reflect the new map.</li>\n"
+"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
+"and tags to reflect the new map.</li>\n"
 "    <li>Save the map.</li>\n"
 "  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a href=\"maps\">Maps</a> tab.</p> \n"
+"  <p>You will be able to see your new map when you search for it from the <a "
+"href=\"maps\">Maps</a> tab.</p> \n"
 "  "
-msgstr "\n  <p>GeoNode merupakan aplikasi untuk melakukan akses dan kontribusi terhadap data set dan peta. Hal ini memungkinan pengguna dapat melihat dan eksplorasi peta dan data set.</p>\n\n  <h4 id=\"browsing-data\">Eksplorasi Data</h4>\n  <p>Menu <a href=\"data\">Data</a> untuk melihat data yang telah diunggah di GeoNode.</p>\n  <p>Seluruh data dapat diunduh dalam berbagai format untuk dapat digunakan pada aplikasi lainnya.</p>\n\n  <h4 id=\"developer-access\">Akses Developer</h4>\n  <p>Halaman <a href=\"developer\"> Developer</a> merupakan tempat untuk para developer dapat memulai membuat aplikasi di GeoNode. Halaman ini memuat instruksi bagaimana menggunakan layanan web (web services), tautan ke kode sumber GeoNode dan informasi mengenai proyek-proyek open source yag digunakan untuk membangun geoNode.</p>\n\n  <h4 id=\"browsing-maps\">Eksplorasi Peta</h4>\n  <p>GeoNode mengizinkan pengguna untuk membuat dan membagi petanya dengan sesama pengguna.</p>\n  <p>Menu <a href=\"maps\">Peta</a> merupakan halam untuk melakukan eksplorasi petad di GeoNode. Anda dapat melakukan <strong>pencarian peta</strong> atau <strong>membuat peta</strong>, yang akan menggunkan <a href=\"maps/new\">Map Composer</a>.</p>\n  <h5>Mode Google Earth</h5>\n  <p>Seluruh peta yang ditampilkan pada editor peta interaktif dapat dilihat dalam mode 3 dimensi (3D) dengan menggunakan Google Earth plugin. Untuk memindahkan ke mode 3D, klik logo Google Earth globe yang terdapat pada bagian paling kanan di toolbar atas. Jika belum memiliki Google Earth plugin, Anda akan diminta untuk melakukan instalasi.</p>\n\n  <h4 id=\"creating-a-map\">Membuat Peta</h4>\n  <p>Untuk membuat peta, navigasi ke halaman <a href=\"maps\">Contributed Maps</a> dan pilih <a href=\"maps/new\">buat peta</a>.</p>\n  <p>Hal ini akan menuju ke halaman <a href=\"maps/new\">Map Composer</a> dengan base layer yang dimuat secara otomatis.</p>\n  <p>Untuk menambah layer dari GeoNode tekan tombol + yang berwarna hijau. hal ini akan menampilkan daftar layer yang tersedia di GeoNode.</p>\n  <p>Untuk menambahkan layer, tekan tombol <strong>Tambah Layer</strong>. Jika telah selesai tekan tombol <strong>Selesai</strong>.</p>\n\n  <h5>Mengurutkan dan menghapus layer</h5>\n  <p>Untuk mengatur urutan layer dapat dilakukan dengan tekan dan geser ke urutan yang diinginkan. Tampilan peta akan disesuaikan sesuai urutan yang telah diatur. Untuk mengatur peta yang ditampilkan, gunakan checkbox pada bagian kiri dari nama layer. Dan untuk menghapus layer tersebut, gunakan tombol - yang berwarna merah.</p>\n\n  <h5>Menyimpan peta</h5>\n  <p>Setelah layer diset, sekarang anda dapat menyimpannya sehingga pengguna yang lain dapat melihat peta tersebut. Klik tombol Simpan pada bagian kiri pada toolbar diatas (bergambar peta dan disket), kemudian isi judul dan anstrak peta.</p>\n\n  <h4 id=\"exporting-a-map\">Ekspor Peta</h4>\n  <p>Peta dari GeoNode dapat disertakan untuk penggunaan lainnya seperti situs web atau blog. Untuk mengekspor peta: </p>\n  <ol>\n    <li>Pilih dari daftar peta pada halaman komunitas atau halaman peta dan klik tombol 'ekspor peta'.</li> \n    <li>Pilih tinggi dan lebar widget.</li> \n    <li>Sunting kode HTML yang disediakan ke halaman HTML atau blog yang mendukung iFrame.</li>\n  </ol>\n  <p>Hal ini akan menyimpan widget interaktif yang menampilkan peta di situs web atau blog yang diinginkan.</p>\n  <p>Ingat bahwa <a href=\"maps/new\">Map Composer</a> juga memiliki tombol untuk mengeskpor peta. Jangan lupa untuk menyimpan peta sebelum diekspor, karena yang disimpan adalah versi yang tersimpan dan bukan versi yang terakhir ditayangkan.</p>\n\n  <h4 id=\"remixing-a-map\">Mengkomposisikan Ulang Peta</h4>\n  <p>Setiap peta dapat dijadikan awal untuk membuat peta baru.</p>\n  <ol>\n    <li>Buka peta pada Map Composer</li>\n    <li>Tambahkan dan Hapus layer sesuai yang anda inginkan.</li>\n    <li>Geser dan perbesar/perkecil untuk memilih area yang diinginkan.</li>\n    <li><strong>PENTING:</strong> Perbaharui judul abstrakm info kontak dan tag yang merefleksikan peta tersebut.</li>\n    <li>Menyimpa peta.</li>\n  </ol>\n  <p>Anda akan dapat melihat peta baru anda melalui menu pencarian di tab <a href=\"maps\">Peta</a>.</p> \n  "
+msgstr ""
+"\n"
+"  <p>GeoNode merupakan aplikasi untuk melakukan akses dan kontribusi "
+"terhadap data set dan peta. Hal ini memungkinan pengguna dapat melihat dan "
+"eksplorasi peta dan data set.</p>\n"
+"\n"
+"  <h4 id=\"browsing-data\">Eksplorasi Data</h4>\n"
+"  <p>Menu <a href=\"data\">Data</a> untuk melihat data yang telah diunggah "
+"di GeoNode.</p>\n"
+"  <p>Seluruh data dapat diunduh dalam berbagai format untuk dapat digunakan "
+"pada aplikasi lainnya.</p>\n"
+"\n"
+"  <h4 id=\"developer-access\">Akses Developer</h4>\n"
+"  <p>Halaman <a href=\"developer\"> Developer</a> merupakan tempat untuk "
+"para developer dapat memulai membuat aplikasi di GeoNode. Halaman ini memuat "
+"instruksi bagaimana menggunakan layanan web (web services), tautan ke kode "
+"sumber GeoNode dan informasi mengenai proyek-proyek open source yag "
+"digunakan untuk membangun geoNode.</p>\n"
+"\n"
+"  <h4 id=\"browsing-maps\">Eksplorasi Peta</h4>\n"
+"  <p>GeoNode mengizinkan pengguna untuk membuat dan membagi petanya dengan "
+"sesama pengguna.</p>\n"
+"  <p>Menu <a href=\"maps\">Peta</a> merupakan halam untuk melakukan "
+"eksplorasi petad di GeoNode. Anda dapat melakukan <strong>pencarian peta</"
+"strong> atau <strong>membuat peta</strong>, yang akan menggunkan <a href="
+"\"maps/new\">Map Composer</a>.</p>\n"
+"  <h5>Mode Google Earth</h5>\n"
+"  <p>Seluruh peta yang ditampilkan pada editor peta interaktif dapat dilihat "
+"dalam mode 3 dimensi (3D) dengan menggunakan Google Earth plugin. Untuk "
+"memindahkan ke mode 3D, klik logo Google Earth globe yang terdapat pada "
+"bagian paling kanan di toolbar atas. Jika belum memiliki Google Earth "
+"plugin, Anda akan diminta untuk melakukan instalasi.</p>\n"
+"\n"
+"  <h4 id=\"creating-a-map\">Membuat Peta</h4>\n"
+"  <p>Untuk membuat peta, navigasi ke halaman <a href=\"maps\">Contributed "
+"Maps</a> dan pilih <a href=\"maps/new\">buat peta</a>.</p>\n"
+"  <p>Hal ini akan menuju ke halaman <a href=\"maps/new\">Map Composer</a> "
+"dengan base layer yang dimuat secara otomatis.</p>\n"
+"  <p>Untuk menambah layer dari GeoNode tekan tombol + yang berwarna hijau. "
+"hal ini akan menampilkan daftar layer yang tersedia di GeoNode.</p>\n"
+"  <p>Untuk menambahkan layer, tekan tombol <strong>Tambah Layer</strong>. "
+"Jika telah selesai tekan tombol <strong>Selesai</strong>.</p>\n"
+"\n"
+"  <h5>Mengurutkan dan menghapus layer</h5>\n"
+"  <p>Untuk mengatur urutan layer dapat dilakukan dengan tekan dan geser ke "
+"urutan yang diinginkan. Tampilan peta akan disesuaikan sesuai urutan yang "
+"telah diatur. Untuk mengatur peta yang ditampilkan, gunakan checkbox pada "
+"bagian kiri dari nama layer. Dan untuk menghapus layer tersebut, gunakan "
+"tombol - yang berwarna merah.</p>\n"
+"\n"
+"  <h5>Menyimpan peta</h5>\n"
+"  <p>Setelah layer diset, sekarang anda dapat menyimpannya sehingga pengguna "
+"yang lain dapat melihat peta tersebut. Klik tombol Simpan pada bagian kiri "
+"pada toolbar diatas (bergambar peta dan disket), kemudian isi judul dan "
+"anstrak peta.</p>\n"
+"\n"
+"  <h4 id=\"exporting-a-map\">Ekspor Peta</h4>\n"
+"  <p>Peta dari GeoNode dapat disertakan untuk penggunaan lainnya seperti "
+"situs web atau blog. Untuk mengekspor peta: </p>\n"
+"  <ol>\n"
+"    <li>Pilih dari daftar peta pada halaman komunitas atau halaman peta dan "
+"klik tombol 'ekspor peta'.</li> \n"
+"    <li>Pilih tinggi dan lebar widget.</li> \n"
+"    <li>Sunting kode HTML yang disediakan ke halaman HTML atau blog yang "
+"mendukung iFrame.</li>\n"
+"  </ol>\n"
+"  <p>Hal ini akan menyimpan widget interaktif yang menampilkan peta di situs "
+"web atau blog yang diinginkan.</p>\n"
+"  <p>Ingat bahwa <a href=\"maps/new\">Map Composer</a> juga memiliki tombol "
+"untuk mengeskpor peta. Jangan lupa untuk menyimpan peta sebelum diekspor, "
+"karena yang disimpan adalah versi yang tersimpan dan bukan versi yang "
+"terakhir ditayangkan.</p>\n"
+"\n"
+"  <h4 id=\"remixing-a-map\">Mengkomposisikan Ulang Peta</h4>\n"
+"  <p>Setiap peta dapat dijadikan awal untuk membuat peta baru.</p>\n"
+"  <ol>\n"
+"    <li>Buka peta pada Map Composer</li>\n"
+"    <li>Tambahkan dan Hapus layer sesuai yang anda inginkan.</li>\n"
+"    <li>Geser dan perbesar/perkecil untuk memilih area yang diinginkan.</"
+"li>\n"
+"    <li><strong>PENTING:</strong> Perbaharui judul abstrakm info kontak dan "
+"tag yang merefleksikan peta tersebut.</li>\n"
+"    <li>Menyimpa peta.</li>\n"
+"  </ol>\n"
+"  <p>Anda akan dapat melihat peta baru anda melalui menu pencarian di tab <a "
+"href=\"maps\">Peta</a>.</p> \n"
+"  "
 
 #: templates/help.html:65
 msgid "Sections"
 msgstr ""
 
 #: templates/help.html:66
-msgid "Browsing Data"
+msgid "Browsing Layers"
 msgstr ""
 
 #: templates/help.html:67
@@ -2975,57 +3270,72 @@ msgstr "Selamat Datang!"
 msgid "Welcome"
 msgstr "Selamat Datang"
 
-#: templates/index.html:18
+#: templates/index.html:20
 msgid ""
 "\n"
-"        GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>.\n"
-"      "
+"            GeoNode is an open source platform for sharing geospatial data "
+"and maps.  If you have any questions about the software or service, join our "
+"<a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</"
+"a>.\n"
+"          "
 msgstr ""
 
-#: templates/index.html:23
+#: templates/index.html:24
 msgid "Need help"
 msgstr ""
 
-#: templates/index.html:23
+#: templates/index.html:24
 msgid "Getting Started?"
 msgstr ""
 
-#: templates/index.html:35
+#: templates/index.html:39
 msgid "Latest Layers"
 msgstr ""
 
-#: templates/index.html:50
+#: templates/index.html:54
 msgid "Contribute"
-msgstr ""
-
-#: templates/index.html:52
-msgid ""
-"\n"
-"              GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. \n"
-"            "
 msgstr ""
 
 #: templates/index.html:56
 msgid ""
 "\n"
-"              GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. \n"
+"              GeoNode enables you to upload, manage, and browse data layers. "
+"Search for data that is valuable to you, or upload your own data. \n"
 "            "
 msgstr ""
 
-#: templates/index.html:65
+#: templates/index.html:60
+msgid ""
+"\n"
+"              GeoNode enables you to compose and share maps. Create a map "
+"with our cartography tool, or explore maps shared by others. \n"
+"            "
+msgstr ""
+
+#: templates/index.html:69
 msgid "Latest Maps"
 msgstr ""
 
-#: templates/search.html:20
-msgid "Refine your search"
+#: templates/activity/actor.html:31
+msgid "No actions yet"
 msgstr ""
 
-#: templates/search.html:24
-msgid "Your selections"
+#: templates/announcements/announcement_detail.html:3
+#, python-format
+msgid "Announcements : %(object)s"
 msgstr ""
 
-#: templates/search.html:169
-msgid "Search Results"
+#: templates/announcements/announcement_list.html:3
+#: templates/announcements/announcement_list.html:6
+msgid "Announcements"
+msgstr ""
+
+#: templates/announcements/announcement_list.html:13
+msgid "Hide announcement"
+msgstr ""
+
+#: templates/announcements/announcement_list.html:18
+msgid "There are no announcements for you."
 msgstr ""
 
 #: templates/avatar/add.html:6
@@ -3040,123 +3350,307 @@ msgstr ""
 msgid "Upload avatar"
 msgstr ""
 
-#: templates/pagination/pagination.html:9
+#: templates/geonode/resourcebase_info_panel.html:14
+msgid "Abstract"
+msgstr "Abstrak"
+
+#: templates/geonode/resourcebase_info_panel.html:42
+msgid "Topic Category"
+msgstr "Kategori dari Topik"
+
+#: templates/geonode/resourcebase_info_panel.html:49
+msgid "Owner"
+msgstr "Pemilik"
+
+#: templates/geonode/resourcebase_info_panel.html:68
+#, fuzzy
+msgid "Maintenance Frequency"
+msgstr "frekuensi pemeliharaan"
+
+#: templates/geonode/resourcebase_info_panel.html:75
+msgid "Citation"
+msgstr "Sitasi"
+
+#: templates/geonode/resourcebase_info_panel.html:82
+#, fuzzy
+msgid "Edition"
+msgstr "Edisi"
+
+#: templates/geonode/resourcebase_info_panel.html:89
+#, fuzzy
+msgid "Purpose"
+msgstr "tujuan"
+
+#: templates/geonode/resourcebase_info_panel.html:103
+#, fuzzy
+msgid "Temporal Extent"
+msgstr "periode waktu selesai"
+
+#: templates/geonode/resourcebase_info_panel.html:110
+msgid "Data Quality"
+msgstr ""
+
+#: templates/geonode/resourcebase_info_panel.html:117
+msgid "Supplemental Information"
+msgstr "Informasi tambahan"
+
+#: templates/geonode/resourcebase_info_panel.html:124
+#, fuzzy
+msgid "Spatial Representation Type"
+msgstr "tipe representasi spasial"
+
+#: templates/notification/base.html:15 templates/notification/notices.html:7
+#: templates/notification/notices.html:11
+#, fuzzy
+msgid "Notices"
+msgstr "Telepon"
+
+#: templates/notification/base.html:16
+#, fuzzy
+msgid "Notice settings"
+msgstr "Konfigurasi"
+
+#: templates/notification/base.html:17
+msgid "Observed objects"
+msgstr ""
+
+#: templates/notification/notice_settings.html:5
+#: templates/notification/notice_settings.html:10
+msgid "Notification Settings"
+msgstr ""
+
+#: templates/notification/notice_settings.html:15
+msgid "Primary email"
+msgstr ""
+
+#: templates/notification/notice_settings.html:17
+#, python-format
+msgid "change under <a href=\"%(email_url)s\">Account</a>"
+msgstr ""
+
+#: templates/notification/notice_settings.html:21
+msgid "Note"
+msgstr ""
+
+#: templates/notification/notice_settings.html:22
+#, python-format
+msgid ""
+"You do not have a verified email address to which notices can be sent. You "
+"can add one by going to <a href=\"%(email_url)s\">Account</a>."
+msgstr ""
+
+#: templates/notification/notice_settings.html:30
+msgid "Notification Type"
+msgstr ""
+
+#: templates/notification/notice_settings.html:48
+#, fuzzy
+msgid "Change"
+msgstr "Batal"
+
+#: templates/notification/notices.html:16
+msgid "Mark all unseen notices seen"
+msgstr ""
+
+#: templates/notification/notices.html:22
+msgid "MONTH_DAY_FORMAT"
+msgstr ""
+
+#: templates/notification/notices.html:33
+#, fuzzy
+msgid "View Notice"
+msgstr "Telepon"
+
+#: templates/notification/notices.html:41
+msgid "No notices."
+msgstr ""
+
+#: templates/notification/single.html:6 templates/notification/single.html:9
+#, fuzzy
+msgid "Notice"
+msgstr "Telepon"
+
+#: templates/pagination/pagination.html:8
+msgid "Previous"
+msgstr ""
+
+#: templates/pagination/pagination.html:10
 msgid "previous"
 msgstr ""
 
-#: templates/pagination/pagination.html:18
+#: templates/pagination/pagination.html:17
+msgid "Next"
+msgstr "Selanjutnya"
+
+#: templates/pagination/pagination.html:19
 msgid "next"
 msgstr ""
 
-#: templates/registration/activate.html:6
-msgid "Account successfully activated"
-msgstr "Akun telah berhasil diaktivasi"
-
-#: templates/registration/activate.html:7 templates/registration/login.html:6
-#: templates/registration/login.html:10
-#: templates/registration/password_reset_complete.html:7
-msgid "Log in"
-msgstr "Masuk"
-
-#: templates/registration/activate.html:9
-msgid "Account activation failed"
-msgstr "Aktivasi dari akun gagal"
-
-#: templates/registration/activation_email.txt:2
-msgid "Activate account at"
+#: templates/relationships/_manage_connections.html:4
+msgid "Manage Connections"
 msgstr ""
 
-#: templates/registration/activation_email.txt:6
+#: templates/relationships/_manage_connections.html:6
+msgid "Following"
+msgstr ""
+
+#: templates/relationships/_manage_connections.html:7
+msgid "Blocking"
+msgstr ""
+
+#: templates/relationships/confirm.html:4
+#: templates/relationships/confirm.html:7
+msgid "No longer"
+msgstr ""
+
+#: templates/relationships/confirm.html:12
+msgid "Confirm"
+msgstr ""
+
+#: templates/relationships/relationship_list.html:16
+msgid "Unfollow"
+msgstr ""
+
+#: templates/relationships/relationship_list.html:20
+msgid "Unblock"
+msgstr ""
+
+#: templates/relationships/success.html:5
+msgid "Success"
+msgstr ""
+
+#: templates/relationships/success.html:6
+msgid "You are "
+msgstr ""
+
+#: templates/relationships/success.html:6
+msgid "now"
+msgstr ""
+
+#: templates/relationships/success.html:6
+msgid "no longer"
+msgstr ""
+
+#: templates/relationships/success.html:7
 #, python-format
-msgid "Link is valid for %(expiration_days)s days."
+msgid "%(to_user_username)s's profile"
 msgstr ""
 
-#: templates/registration/activation_email_subject.txt:1
-msgid "Account activation on"
+#: templates/user_messages/inbox.html:6
+msgid "Message Inbox"
 msgstr ""
 
-#: templates/registration/logged_out.html:5
-msgid "Thanks for spending some quality time with the GeoNode today."
-msgstr "Terima kasih untuk meluangkan waktu menggunakan GeoNode."
-
-#: templates/registration/logged_out.html:7
-msgid "Log in again"
-msgstr "Masuk lagi"
-
-#: templates/registration/login.html:20
-msgid "Forgot password?"
+#: templates/user_messages/inbox.html:12
+msgid "With"
 msgstr ""
 
-#: templates/registration/login.html:21
-msgid "Forgot username?"
+#: templates/user_messages/inbox.html:13
+#, fuzzy
+msgid "Subject"
+msgstr "Proses"
+
+#: templates/user_messages/inbox.html:14
+msgid "Last Sender"
 msgstr ""
 
-#: templates/registration/logout.html:6
-msgid "Logged out"
-msgstr "Keluar"
-
-#: templates/registration/logout.html:7
-msgid "You have been logged out of GeoNode."
+#: templates/user_messages/inbox.html:15
+msgid "Preview"
 msgstr ""
 
-#: templates/registration/password_change_done.html:5
-msgid "Password changed"
-msgstr "Password berubah"
-
-#: templates/registration/password_reset_complete.html:5
-msgid "Password reset successfully"
-msgstr "Password berhasil di reset"
-
-#: templates/registration/password_reset_confirm.html:13
-#: templates/registration/password_reset_form.html:12
-msgid "Reset my password"
+#: templates/user_messages/inbox.html:16
+msgid "Delete?"
 msgstr ""
 
-#: templates/registration/password_reset_confirm.html:17
-msgid "Password reset failed"
-msgstr "Password gagal di reset"
-
-#: templates/registration/password_reset_done.html:5
-msgid "Email with password reset instructions has been sent."
-msgstr "Email berisi instruksi melakukan reset password sudah dikirim."
-
-#: templates/registration/password_reset_email.html:2
-#, python-format
-msgid "Reset password at %(site_name)s"
-msgstr "Reset password di %(site_name)s"
-
-#: templates/registration/registration_complete.html:5
-msgid "You are now registered. Activation email sent."
-msgstr "Anda sudah terdaftar. Petunjuk aktivasi sudah dikirim ke email."
-
-#: templates/registration/registration_form.html:12
-msgid "Create account"
+#: templates/user_messages/inbox.html:33
+#: templates/user_messages/thread_detail.html:14
+msgid "you"
 msgstr ""
 
-#: templates/upload/base.html:4 templates/upload/base.html.py:10
-msgid "Upload Data"
+#: templates/user_messages/inbox.html:55
+#: templates/user_messages/message_create.html:5
+#: templates/user_messages/message_create.html:8
+#, fuzzy
+msgid "Create Message"
+msgstr "Buat Peta"
+
+#: templates/user_messages/message_create.html:14
+msgid "Send message"
 msgstr ""
 
-#: templates/upload/base.html:12
-msgid "1. File Upload"
+#: templates/user_messages/message_create.html:19
+#: templates/user_messages/thread_detail.html:32
+msgid "Back to Inbox"
 msgstr ""
 
-#: templates/upload/base.html:13
-msgid "2. Enter Info"
+#: templates/user_messages/thread_detail.html:25
+msgid "Send Reply"
 msgstr ""
 
-#: templates/upload/base.html:14
-msgid "3. Permissions"
-msgstr ""
+#~ msgid "Browse Data"
+#~ msgstr "Browse Data"
 
-#: templates/upload/upload_info.html:7
-msgid "Enter Info"
-msgstr ""
+#~ msgid "Bounding Box"
+#~ msgstr "Batas"
 
-#: templates/upload/upload_info.html:38
-msgid "Next &gt;"
-msgstr ""
+#~ msgid "Native SRS"
+#~ msgstr "SRS Asli"
 
-#: templates/upload/upload_permissions.html:58
-msgid "Save Upload"
-msgstr ""
+#~ msgid "No SRS specified."
+#~ msgstr "Tidak ada SRS ditentukan"
+
+#~ msgid "owner"
+#~ msgstr "pemilik"
+
+#~ msgid "All"
+#~ msgstr "Seluruhnya"
+
+#~ msgid "Abstract:"
+#~ msgstr "Abstrak"
+
+#~ msgid "Map Viewer"
+#~ msgstr "Penampil Peta"
+
+#~ msgid "View info"
+#~ msgstr "Informasi Tampilan"
+
+#~ msgid "Advanced Search"
+#~ msgstr "Pencarian lanjutan"
+
+#~ msgid "Need Help?"
+#~ msgstr "Butuh Bantuan?"
+
+#~ msgid "For Developers"
+#~ msgstr "Untuk Pengembang"
+
+#~ msgid "Account successfully activated"
+#~ msgstr "Akun telah berhasil diaktivasi"
+
+#~ msgid "Account activation failed"
+#~ msgstr "Aktivasi dari akun gagal"
+
+#~ msgid "Thanks for spending some quality time with the GeoNode today."
+#~ msgstr "Terima kasih untuk meluangkan waktu menggunakan GeoNode."
+
+#~ msgid "Log in again"
+#~ msgstr "Masuk lagi"
+
+#~ msgid "Logged out"
+#~ msgstr "Keluar"
+
+#~ msgid "Password changed"
+#~ msgstr "Password berubah"
+
+#~ msgid "Password reset successfully"
+#~ msgstr "Password berhasil di reset"
+
+#~ msgid "Password reset failed"
+#~ msgstr "Password gagal di reset"
+
+#~ msgid "Email with password reset instructions has been sent."
+#~ msgstr "Email berisi instruksi melakukan reset password sudah dikirim."
+
+#~ msgid "Reset password at %(site_name)s"
+#~ msgstr "Reset password di %(site_name)s"
+
+#~ msgid "You are now registered. Activation email sent."
+#~ msgstr "Anda sudah terdaftar. Petunjuk aktivasi sudah dikirim ke email."

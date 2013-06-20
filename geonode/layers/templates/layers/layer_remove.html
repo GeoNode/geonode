@@ -6,7 +6,7 @@
 {% block body %}
 <div class="row">
   <div class="span8">
-    <form action="{% url layer_remove layer.typename %}" method="POST">
+    <form action="{% url "layer_remove" layer.typename %}" method="POST">
       <h2>
         {% blocktrans with layer.typename as layer_title %}
           Are you sure you want to remove {{ layer_title }}?

@@ -8,7 +8,7 @@ virtualenv:
 
 branches:
   only:
-    - dev
+    - master 
 
 install:
   - sudo apt-get update
@@ -18,15 +18,14 @@ install:
   - pip install -e . --use-mirrors
 
 before_script:
-  - cd geoserver-geonode-ext
-  - mvn -s travis-settings.xml install
-  - cd ..
-  - paver setup -f
+  - paver setup
 
 script:
+  - python manage.py test geonode.tests.smoke
   - paver test
   - paver test_integration
   - paver test_integration -n geonode.tests.csw
+  - paver test_javascript
 
 after_script:
   - paver reset_hard
@@ -37,4 +36,4 @@ notifications:
       - "irc.freenode.org#geonode"
     use_notice: true
   email:
-    - geonode-dev@opengeo.org
+#    - geonode-dev@opengeo.org

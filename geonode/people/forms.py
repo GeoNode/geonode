@@ -18,13 +18,14 @@
 #
 #########################################################################
 
-from geonode.people.models import Contact
-from geonode.layers.models import ContactRole
+from geonode.people.models import Profile
+from geonode.base.models import ContactRole
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from registration.forms import attrs_dict
 import taggit
 
+# Ported in from django-registration
+attrs_dict = { 'class': 'required' }
 
 class ForgotUsernameForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
@@ -40,12 +41,12 @@ class RoleForm(forms.ModelForm):
 
 class PocForm(forms.Form):
     contact = forms.ModelChoiceField(label = "New point of contact",
-                                     queryset = Contact.objects.exclude(user=None))
+                                     queryset = Profile.objects.exclude(user=None))
 
 
-class ContactForm(forms.ModelForm):
+class ProfileForm(forms.ModelForm):
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
     class Meta:
-        model = Contact
+        model = Profile
         exclude = ('user',)

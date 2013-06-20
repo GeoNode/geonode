@@ -26,6 +26,15 @@ class MapLayerInline(admin.TabularInline):
 
 class MapAdmin(admin.ModelAdmin):
     inlines = [MapLayerInline,]
+    list_display_links = ('title',)
+    list_display = ('id','title', 'owner')
+    list_filter = ('owner', 'category',)
+    search_fields = ('title', 'abstract', 'purpose', 'owner__profile__name',)
+    
+class MapLayerAdmin(admin.ModelAdmin):
+    list_display = ('id','map', 'name')
+    list_filter = ('map',)
+    search_fields = ('map__title', 'name',)
 
 admin.site.register(Map, MapAdmin)
-admin.site.register(MapLayer)
+admin.site.register(MapLayer, MapLayerAdmin)

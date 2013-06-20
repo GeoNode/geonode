@@ -28,7 +28,7 @@ from geonode.utils import forward_mercator, inverse_mercator
 
 class GeoNodeSmokeTests(TestCase):
 
-    fixtures = ['test_data.json']
+    fixtures = ['people_data.json']
     GEOSERVER = False
 
     def setUp(self):
@@ -62,21 +62,15 @@ class GeoNodeSmokeTests(TestCase):
         response = c.get(reverse('help'))
         self.failUnlessEqual(response.status_code, 200)
 
-    #### Data/Layer Pages ####
+    #### Layer Pages ####
 
-    def test_data_page(self):
+    def test_layer_page(self):
         'Test if the data home page renders.'
         c = Client()
         response = c.get(reverse('layer_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
-    def test_data_search(self):
-        'Test if the data search page renders.'
-        c = Client()
-        response = c.get(reverse('layer_search_page'))
-        self.failUnlessEqual(response.status_code, 200)
-
-    def test_data_acls(self):
+    def test_layer_acls(self):
         'Test if the data/acls endpoint renders.'
         c = Client()
         response = c.get(reverse('layer_acls'))
@@ -89,20 +83,6 @@ class GeoNodeSmokeTests(TestCase):
 
         c = Client()
         response = c.get(reverse('maps_browse'))
-        self.failUnlessEqual(response.status_code, 200)
-
-    def test_maps_search_page(self):
-        '''Test Maps Search page renders.'''
-
-        c = Client()
-        response = c.get(reverse('maps_search'))
-        self.failUnlessEqual(response.status_code, 200)
-
-    def test_maps_search_api(self):
-        '''Test Maps Search API page renders.'''
-
-        c = Client()
-        response = c.get(reverse('maps_search_api'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_new_map_page(self):
@@ -118,16 +98,17 @@ class GeoNodeSmokeTests(TestCase):
         '''Test the profiles page renders.'''
 
         c = Client()
-        response = c.get(reverse('profile_list')
+        response = c.get(reverse('profile_list'))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_profiles(self):
         '''Test that user profile pages render.'''
         c = Client()
-        response = c.get(reverse('profile_detail', args=['admin'])
+        response = c.get(reverse('profile_detail', args=['admin']))
         self.failUnlessEqual(response.status_code, 200)
-        response = c.get(reverse('profile_detail', args=['norman'])
-        
+        response = c.get(reverse('profile_detail', args=['norman']))
+        self.failUnlessEqual(response.status_code, 200)
+
 
 class GeoNodeUtilsTests(TestCase):
 
@@ -175,6 +156,13 @@ class GeoNodeUtilsTests(TestCase):
         phillipines = forward_mercator((180, 0))
         ne = forward_mercator((180, 90))
         sw = forward_mercator((-180, -90))
+
+        inf_test = forward_mercator(
+            (-8.988465674311579e+307, -8.988465674311579e+307)
+        )
+
+        self.assertEqual(inf_test[0], float('-inf'))
+        self.assertEqual(inf_test[1], float('-inf'))
 
         self.assertEqual(round(arctic[0]), 0, "Arctic longitude is correct")
         self.assertEqual(round(arctic[1]), 19971869, "Arctic latitude is correct")
@@ -226,7 +214,7 @@ class GeoNodeUtilsTests(TestCase):
 
     def test_split_query(self):
         query = 'alpha "beta gamma"   delta  '
-        from geonode.maps.views import _split_query
+        from geonode.utils import _split_query 
         keywords = _split_query(query)
         self.assertEqual(keywords[0], "alpha")
         self.assertEqual(keywords[1], "beta gamma")

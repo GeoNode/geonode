@@ -1,8 +1,8 @@
-{% extends "base.html" %}
+{% extends "site_base.html" %}
 {% load i18n %}
 {% block title %} {% blocktrans %}Announcements : {{ object }}{% endblocktrans %} {{ block.super }} {% endblock %}
 
-{% block main %}
+{% block body %}
     <h1>{{ object }}</h1>
     <p>{{ object.content }}</p>
 {% endblock %}

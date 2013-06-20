@@ -60,6 +60,7 @@ Administrators are expected to have some experience with Linux systems but they 
  * :doc:`Backup configuration & data <deploy/backup>`
  * :doc:`Management commands for GeoNode <deploy/commands>`
  * :doc:`Configuring Alternate CSW Backends <deploy/csw>`
+ * :doc:`GeoSites: GeoNode Multi-Tenancy <deploy/multi-tenancy>`
 
 .. toctree::
     :hidden:
@@ -74,6 +75,7 @@ Administrators are expected to have some experience with Linux systems but they 
     deploy/backup
     deploy/commands
     deploy/csw
+    deploy/multi-tenancy
 
 For Developers
 ==============

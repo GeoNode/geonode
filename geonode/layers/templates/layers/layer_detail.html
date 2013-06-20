@@ -5,6 +5,7 @@
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load url from future %}
+{% load base_tags %}
 
 {% block title %}{{ layer.title|default:layer.typename }} — {{ block.super }}{% endblock %}
 
@@ -56,8 +57,10 @@
       <ul class="dropdown-menu">
         <!--li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li-->
         <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
-        <li><a href="#">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_style_manage" layer.typename %}">{% trans "Manage Styles" %} <i class="icon-chevron-right"></i></a></li>
+        <li><a class="style-edit" href="#">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_replace" layer.typename %}">{% trans "Replace this Layer" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %} <i class="icon-chevron-right"></i></a></li>
       </ul>
     </div>
@@ -73,99 +76,39 @@
       {% include "layers/_actions.html" %}
     </div>
     <div class="tab-content">
-      <article class="description tab-pane active" id="info">
-        <header>
-            <h3>{% trans "Layer Information" %}</h3>
-        </header>
-        <ul class="unstyled wide">
-          {% if layer.abstract %}
-            <li>
-              <strong>{% trans "Abstract" %}:</strong>
-              {{ layer.abstract }}
-            </li>
-          {% endif %}
-          {% if layer.display_type %}
-            <li>
-              <strong>{% trans "Type" %}:</strong>
-              {{ layer.display_type }}
-            </li>
-          {% endif %}
-          
-          {% if layer.topic_category %}
-            <li>
-              <strong>{% trans "Topic Category" %}:</strong>
-              {{ layer.topic_category }}
-            </li>
-          {% endif %}
-          
-          {% if layer.constraints_use or layer.constraints_other %}
-            <li>
-              <strong>{% trans "Citation" %}:</strong> 
-              {{ layer.constraints_use}} {{ layer.contraints_other}}
-            </li>
-          {% endif %}
-          
-          {% if layer.owner %}
-            <li>
-              <strong>{% trans "Owner" %}:</strong>
-              <a href="{{ layer.owner.get_profile.get_absolute_url }}">{{ layer.owner.username }}</a>
-            </li>
-          {% endif %}
 
-          {% if layer.poc.user %}
-            <li>
-              <strong>{% trans "Point of Contact" %}:</strong>
-              <a href="{{ layer.poc.user.get_profile.get_absolute_url }}"> {{ layer.poc.user.username }} </a>
-            <li>
-          {% endif %}
-          
+    {% include "geonode/resourcebase_info_panel.html" with resourcebase=layer %}
 
-          {% if layer.supplemental_information %}
-            <li>
-              <strong>{% trans "Supplemental Information" %}:</strong> 
-              {{ layer.supplemental_information }}
-            </li>
-          {% endif %}
-
-          {% if layer.geographic_bounding_box %}
-            <li>
-              <strong>{% trans "Bounding Box" %}:</strong>
-              {{ layer.geographic_bounding_box }}
-            </li>
-          {% endif %}
-          
-          {% if layer.srid %}
-            <li>
-              <strong>{% trans "Native SRS" %}:</strong>
-              {{ layer.srid|default:_("No SRS specified.") }}
-            </li>
-          {% endif %}
-        </ul>
-          
-      </article>
       <article id="attributes" class="tab-pane">
-        <header>
-            <h3>{% trans "Attributes" %}</h3>
-        </header>
         {% if layer.attribute_set.all %}
             <table class="table table-striped table-bordered table-condensed">
               <thead>
                 <tr>
                   <th>{% trans "Attribute Name" %}</th>
                   <th>{% trans "Range" %}</th>
-                  <th>{% trans "Mean" %}</th>
+                  <th>{% trans "Average" %}</th>
                   <th>{% trans "Median" %}</th>
-                  <th>{% trans "Std. Dev." %}</th>
+                  <th>{% trans "Standard Deviation" %}</th>
                 </tr>
               </thead>
               <tbody>
                 {% for attribute in layer.attribute_set.all %}
                   <tr>
                     <td>{{ attribute }}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    {% if attribute.unique_values == "NA" %}
+                    <td>{{ attribute.unique_values }}</td>
+                    {% else %}
+                    <td>
+                      <select name="unique_values">
+                      {% for value in attribute.unique_values_as_list %}
+                        <option value="{{ value }}">{{ value }}</option>
+                      {% endfor %}
+                      </select>
+                    </td>
+                    {% endif %}
+                    <td>{{ attribute.average|floatformat:"2" }}</td>
+                    <td>{{ attribute.median|floatformat:"2" }}</td>
+                    <td>{{ attribute.stddev|floatformat:"2" }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -198,7 +141,9 @@
         {% endif %}
         <h3>{% trans 'Average Rating' %}</h3>
         {% overall_rating layer "layer" as layer_rating %}
-        <div class="overall_rating" data-rating="{{ layer_rating }}"></div>
+        {% num_ratings layer as num_votes %}
+        <div class="overall_rating" style="float:left" data-rating="{{ layer_rating }}"></div> ({{num_votes}})
+        
         <!-- TODO: Add display of who gave what rating based -->
       </article>
     </div>
@@ -210,13 +155,24 @@
         <p>{% trans "List of maps using this layer:" %}</p>
         {% endif %}
         <ul class="unstyled space">
-          {% for map in layer.maps %} 
-            <li><a href="{{ map.get_absolute_url }}">{{ map.title }}</a></li>
+          {% for maplayer in layer.maps %} 
+            <li><a href="{{ maplayer.map.get_absolute_url }}">{{ maplayer.map.title }}</a></li>
           {% empty %}
             <li>{% trans "This layer is not currently used in any maps." %}</li>
           {% endfor %}
         </ul>
     </div>
+    {% if documents.count > 0 %}
+    <div class="well">
+        <h2>{% trans "Documents related to this layer" %}</h2>
+        <p>{% trans "List of documents related to this layer:" %}</p>
+        <ul class="unstyled space">
+          {% for document in documents %} 
+            <li><a href="{{ document.get_absolute_url }}">{{ document.title }}</a></li>
+          {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
     <div class="well">
         <h2>{% trans "Create a map using this layer" %}</h2>
         <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>
@@ -237,14 +193,14 @@
         <ul class="unstyled space">
           {% for style in layer.styles.all %}
             <li>
-              <a href="#">
-                {% if style.sld_title %}
-                  {{ style.sld_title }}
+                {% if layer.default_style == style %}
+                    <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+                    (default style)
                 {% else %}
-                  {{ style.name|title }}
+                    <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
                 {% endif %}
-              </a>
-            <li>
+                <a href="{{ GEOSERVER_BASE_URL }}styles/{{ style.name }}.sld" >{{ style.sld_title }}</a>
+            </li>
           {% empty %}
             <li>{% trans "No styles associated with this layer" %}</li>
           {% endfor %}
@@ -252,41 +208,21 @@
     </div>
     {% endif %}
     <div class="well">
-      {% with layer.owner as owner %}
-          {% include "_widget_about_author.html" %}
+      <h2>{% trans "About" %}</h2>
+      {% trans "Layer Owner" %}
+      {% with layer.owner.profile as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
+      {% trans "Point of Contact" %}
+      {% with layer.poc as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
+      {% trans "Metadata Author" %}
+      {% with layer.metadata_author as profile %}
+        {% include "people/_profile_about_item.html" %}
       {% endwith %}
     </div>
   </aside>
-<div class="modal custom hide" id="download-layer">
-    <div class="modal-header">
-      <button class="close" data-dismiss="modal">×</button>
-      <h2><i class="icon-download-alt"></i> {% trans "Download Layer" %}</h2>
-    </div>
-    <div class="modal-body">
-      <p></p>
-    </div>
-    <div class="modal-footer">
-      <div class="span2 offset1">
-        <ul class="unstyled">
-          <li><a href="#">Zipped Shapefile</a></li>
-          <li><a href="#">JPEG</a></li>
-          <li><a href="#">GML 2.0</a></li>
-          <li><a href="#">PDF</a></li>
-          <li><a href="#">GML 3.1.1</a></li>
-          <li><a href="#">PNG</a></li>
-        </ul>
-      </div>
-      <div class="span2">
-        <ul class="unstyled">
-          <li><a href="#">CSV</a></li>
-          <li><a href="#">KML</a></li>
-          <li><a href="#">Excel</a></li>
-          <li><a href="#">GeoJSON</a></li>
-          <li><a href="#">{% trans "View in Google Earth" %}</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
   {% include "_permissions_form.html" %}
 {% endblock %}
 {% block extra_script %}
@@ -302,7 +238,7 @@
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user layer "layer" %}
     {% else %}
-        <script src="{{ STATIC_URL }}agon_ratings/js/jquery.raty.js"></script>
+        <script src="{{ STATIC_URL }}libs/js/jquery.raty.js"></script>
     {% endif %}
     <script type="text/javascript">
     $(function() {
@@ -314,7 +250,6 @@
         });
     });
     </script>
-    <script src="{{ STATIC_URL }}geonode/js/paginate.js"></script>
     <script>
         $(function () {
             var activeTab = $('[href=' + location.hash + ']');
@@ -326,6 +261,19 @@
             po.src = 'https://apis.google.com/js/plusone.js';
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
         })();
+        $("#comment_submit_btn").click(function(event) {
+            $.ajax({
+              type: "POST",
+              url: $("#form_post_comment").attr('action'),
+              data: $("#form_post_comment").serialize(),
+              success: function() {
+                $('#form_post_comment_div').modal('hide');
+                $('#comments_section').load(window.location.pathname + ' #comments_section', 
+                		function(){$(this).children().unwrap()})
+              }
+            });
+            return false;
+          });        
     </script>
     {% include "_permissions_form_js.html" %}
 {% endblock extra_script %}

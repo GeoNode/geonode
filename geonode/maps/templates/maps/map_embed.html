@@ -1,15 +1,9 @@
-{% extends "maps/map_base.html" %}
-
 {% load i18n %}
-
-{% block title %} {% trans "Map Viewer" %} — {{ block.super }} {% endblock %}
 
 {% block head %}
     {% include "geonode/ext_header.html" %}
     {% include "geonode/app_header.html" %}
     {% include "geonode/geo_header.html" %}
-    {{ block.super }} 
-    <script src="http://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
     <script type="text/javascript">
         google.load("earth", "1");
     </script>
@@ -22,7 +16,7 @@
             useCapabilities: false,
             useToolbar: false,
             proxy: "/proxy/?url=",
-
+            printService: "{{GEOSERVER_BASE_URL}}pdf/",
             /* The URL to a REST map configuration service.  This service 
              * provides listing and, with an authenticated user, saving of 
              * maps on the server for sharing and editing.
@@ -32,6 +26,7 @@
 
         Ext.apply(config, {{ config }});
         app = new GeoExplorer.Viewer(config);
+
     {% endautoescape %}
     });
     </script>

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "site_base.html" %}
 {% load i18n %}
 {% load maps_tags %}
 {% load layers_tags %}
@@ -12,35 +12,37 @@
 
 {% block body_outer %}
 <div class="span12">
+  {% block hero %}
   <div class="hero-unit">
     <h1>{% trans "Welcome" %}</h1>
-    <p>
-      {% blocktrans %}
-        GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.
-      {% endblocktrans %}
-    </p>
-    <p class="btns">
-      <span>{% trans 'Need help' %} <a href="#">{% trans 'Getting Started?' %}</a></span>
-      <a class="btn btn-large" href="{% url "layer_browse" %}">
-        {% trans "Explore Layers" %}
-      </a>
-      <a class="btn btn-large" href="{% url "maps_browse" %}">
-        {% trans "Explore Maps" %}
-      </a>
-    </p>
+    <div class="hero-unit-content">
+      <div class="intro">
+        <p>
+          {% blocktrans %}
+            GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.
+          {% endblocktrans %}
+        </p>
+        <span>{% trans 'Need help' %} <a href="http://geonode.github.com/workshops/user">{% trans 'Getting Started?' %}</a></span>
+      </div>
+      <div class="btns">
+        <a class="btn btn-large" href="{% url "layer_browse" %}">
+          {% trans "Explore Layers" %}
+        </a>
+        <a class="btn btn-large" href="{% url "maps_browse" %}">
+          {% trans "Explore Maps" %}
+        </a>
+      </div>
+    </div>
   </div>
+  {% endblock %}
+  {% block mainbody %}
   <div class="row">
-    <div class="span8 paginate paginate-auto">
+    <div class="span8">
       <section class="widget list paginate-contents">
         <h2>{% trans "Latest Layers" %}</h2>
-        {% featured_layers 100 as featured_layers %}
-        {% if featured_layers.count %}
-        {% autopaginate featured_layers 4 %}
-        {% for layer in featured_layers %}
-          {% include "layers/_layer_list_item.html" %}
-        {% endfor %}
-        {% paginate %}
-        {% endif %}
+        <div class="paginate paginate-auto" id="search-content">
+          {% include 'search/search_content.html' %}
+        </div>
       </section>
     </div>
     <aside class="span4">
@@ -52,7 +54,7 @@
             {% blocktrans %}
               GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. 
             {% endblocktrans %}
-              <a href="{% url "layer_upload" %}" class="btn btn-large">{% trans 'Upload Layers' %}</a>
+              <a href="{% url "data_upload" %}" class="btn btn-large">{% trans 'Upload Layers' %}</a>
             {% blocktrans %}
               GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. 
             {% endblocktrans %}
@@ -63,7 +65,7 @@
       {% endif %}
       <div class="well">
         <h2>{% trans "Latest Maps" %}</h2>
-        <section class="article-list">
+        <section class="article-list latest-maps">
           {% featured_maps as featured_maps %}
           {% for map in featured_maps %}
             {% include "maps/_map_list_item.html" %}
@@ -71,33 +73,10 @@
       </div>
     </aside>
   </div>
+  {% endblock %}
 </div>
 {% endblock %}
 
 {% block extra_script %}  
-  <script src="{% static "geonode/js/waypoints.js" %}"></script>
-  <script src="{% static "geonode/js/paginate.js" %}"></script>
-  <script src="{% static "agon_ratings/js/jquery.raty.js" %}"></script>
-  <script type="text/javascript">
-     $(function() {
-       $('.overall_rating').each(function() {
-        var rating = $(this).parents(".avg_rating").data('rating');
-        star(this, rating);
-      });
-       $(".loadmore").on("load.loadmore", function(e, o) {          
-        o.find(".overall_rating").each(function() {
-          var rating = $(this).parents(".avg_rating").data('rating');
-          star(this, rating);
-        });
-       });
-     });
-      function star(elem, rating) {
-          $(elem).raty({
-            half: true,
-           readOnly: true,
-           score: rating,
-           path: "{% static "agon_ratings/img/" %}"
-          });        
-      }
-  </script>
+  {% include 'search_scripts.html' %}
 {% endblock extra_script %}

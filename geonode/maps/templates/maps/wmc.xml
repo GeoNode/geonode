@@ -65,7 +65,9 @@
                 <Format current="1">image/png</Format>
                 {% endif %}
                 {% for f in lc.capability.formats %}
-                <Format current="1">{{ f }}</Format>
+                {% if f != layer.format %}
+                <Format>{{ f }}</Format>
+                {% endif %}
                 {% endfor %}
             </FormatList>
             <StyleList>

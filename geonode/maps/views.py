@@ -19,10 +19,7 @@
 #########################################################################
 
 import math
-import unicodedata
 import logging
-
-from urllib import urlencode
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -30,17 +27,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
-from django.views.generic.list import ListView
-from django.db.models import Q
 from django.views.decorators.http import require_POST
 
-from geonode.utils import _split_query, http_client
-from geonode.layers.models import Layer, TopicCategory
+from geonode.utils import http_client
+from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import forward_mercator
 from geonode.utils import DEFAULT_TITLE
@@ -48,9 +43,10 @@ from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
 from geonode.utils import resolve_object
 from geonode.maps.forms import MapForm
-from geonode.people.models import Contact
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
+from geonode.documents.models import get_related_documents
+
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -88,33 +84,12 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 
 #### BASIC MAP VIEWS ####
 
-class MapListView(ListView):
-
-    map_filter = "last_modified"
-    queryset = Map.objects.all()
-
-    def __init__(self, *args, **kwargs):
-        self.map_filter = kwargs.pop("map_filter", "last_modified")
-        self.queryset = self.queryset.order_by("-{0}".format(self.map_filter))
-        super(MapListView, self).__init__(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        kwargs.update({"map_filter": self.map_filter})
-        return kwargs
-
-
-def maps_category(request, slug, template='maps/map_list.html'):
-    category = get_object_or_404(TopicCategory, slug=slug)
-    map_list = category.map_set.all()
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "object_list": map_list,
-            "layer_category": category
-            }
-        )
-    )
-
+def map_list(request, template='maps/map_list.html'):
+    from geonode.search.views import search_page
+    post = request.POST.copy()
+    post.update({'type': 'map'})
+    request.POST = post
+    return search_page(request, template=template)
 
 def maps_tag(request, slug, template='maps/map_list.html'):
     map_list = Map.objects.filter(keywords__slug__in=[slug])
@@ -134,6 +109,9 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
     '''
     map_obj = _resolve_map(request, mapid, 'maps.view_map', _PERMISSION_MSG_VIEW)
 
+    map_obj.popular_count += 1
+    map_obj.save()
+
     config = map_obj.viewer_json()
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
@@ -142,6 +120,7 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         'map': map_obj,
         'layers': layers,
         'permissions_json': json.dumps(_perms_info(map_obj, MAP_LEV_NAMES)),
+        "documents": get_related_documents(map_obj),
     }))
 
 
@@ -225,9 +204,8 @@ def map_view(request, mapid, template='maps/map_view.html'):
 
 def map_view_js(request, mapid):
     map_obj = _resolve_map(request, mapid, 'maps.view_map')
-    config = map.viewer_json()
+    config = map_obj.viewer_json()
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
-
 
 def map_json(request, mapid):
     if request.method == 'GET':
@@ -243,12 +221,7 @@ def map_json(request, mapid):
         map_obj = _resolve_map(request, mapid, 'maps.change_map')
         try:
             map_obj.update_from_viewer(request.raw_post_data)
-
-            return HttpResponse(
-                "Map successfully updated.",
-                mimetype="text/plain",
-                status=204
-            )
+            return HttpResponse(json.dumps(map_obj.viewer_json()))
         except ValueError, e:
             return HttpResponse(
                 "The server could not understand the request." + str(e),
@@ -294,9 +267,11 @@ def new_map_json(request):
         except ValueError, e:
             return HttpResponse(str(e), status=400)
         else:
-            response = HttpResponse('', status=201)
-            response['Location'] = map_obj.id
-            return response
+            return HttpResponse(
+                json.dumps({'id':map_obj.id }),
+                status=200,
+                mimetype='application/json'
+            )
     else:
         return HttpResponse(status=405)
 
@@ -339,7 +314,7 @@ def new_map_config(request):
                     # bad layer, skip
                     continue
 
-                if not request.user.has_perm('maps.view_layer', obj=layer):
+                if not request.user.has_perm('layers.view_layer', obj=layer):
                     # invisible layer, skip inclusion
                     continue
 
@@ -362,7 +337,7 @@ def new_map_config(request):
                 ))
 
             if bbox is not None:
-                minx, maxx, miny, maxy = [float(c) for c in bbox]
+                minx, miny, maxx, maxy = [float(c) for c in bbox]
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
 
@@ -393,7 +368,6 @@ def new_map_config(request):
 
 #### MAPS DOWNLOAD ####
 
-@login_required
 def map_download(request, mapid, template='maps/map_download.html'):
     """
     Download all the layers of a map as a batch
@@ -407,9 +381,17 @@ def map_download(request, mapid, template='maps/map_download.html'):
         url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
 
         def perm_filter(layer):
-            return request.user.has_perm('maps.view_layer', obj=layer)
+            return request.user.has_perm('layers.view_layer', obj=layer)
 
         mapJson = mapObject.json(perm_filter)
+
+        # we need to remove duplicate layers
+        j_map = json.loads(mapJson)
+        j_layers = j_map["layers"]
+        for j_layer in j_layers:
+            if(len([l for l in j_layers if l == j_layer]))>1:
+                j_layers.remove(j_layer)
+        mapJson = json.dumps(j_map)
 
         resp, content = http_client.request(url, 'POST', body=mapJson)
 
@@ -429,10 +411,12 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 remote_layers.append(lyr)
             else:
                 ownable_layer = Layer.objects.get(typename=lyr.name)
-                if not request.user.has_perm('maps.view_layer', obj=ownable_layer):
+                if not request.user.has_perm('layers.view_layer', obj=ownable_layer):
                     locked_layers.append(lyr)
                 else:
-                    downloadable_layers.append(lyr)
+                    # we need to add the layer only once
+                    if len([l for l in downloadable_layers if l.name == lyr.name]) == 0:
+                        downloadable_layers.append(lyr)
 
     return render_to_response(template, RequestContext(request, {
          "map_status" : map_status,
@@ -477,20 +461,19 @@ def map_wmc(request, mapid, template="maps/wmc.xml"):
 
 #### MAPS PERMISSIONS ####
 
-
 def map_set_permissions(m, perm_spec):
     if "authenticated" in perm_spec:
         m.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
     if "anonymous" in perm_spec:
         m.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
     users = [n[0] for n in perm_spec['users']]
-    m.get_user_levels().exclude(user__username__in = users + [m.owner]).delete()
+    excluded = users + [m.owner]
+    existing = m.get_user_levels().exclude(user__username__in=excluded)
+    existing.delete()
     for username, level in perm_spec['users']:
         user = User.objects.get(username=username)
         m.set_user_level(user, level)
 
-
-@require_POST
 def map_permissions(request, mapid):
     try:
         map_obj = _resolve_map(request, mapid, 'maps.change_map_permissions')
@@ -502,34 +485,28 @@ def map_permissions(request, mapid):
             mimetype='text/plain'
         )
 
+    if request.method == 'POST':
+        permission_spec = json.loads(request.raw_post_data)
+        map_set_permissions(map_obj, permission_spec)
 
-    spec = json.loads(request.raw_post_data)
-    map_set_permissions(map_obj, spec)
+        return HttpResponse(
+            json.dumps({'success': True}),
+            status=200,
+            mimetype='text/plain'
+        )
 
-    _perms = {
-        Layer.LEVEL_READ: Map.LEVEL_READ,
-        Layer.LEVEL_WRITE: Map.LEVEL_WRITE,
-        Layer.LEVEL_ADMIN: Map.LEVEL_ADMIN,
-    }
-
-    def perms(x):
-        return _perms.get(x, Map.LEVEL_NONE)
-
-    if "anonymous" in spec:
-        map_obj.set_gen_level(ANONYMOUS_USERS, perms(spec['anonymous']))
-    if "authenticated" in spec:
-        map_obj.set_gen_level(AUTHENTICATED_USERS, perms(spec['authenticated']))
-    users = [n for (n, p) in spec["users"]]
-    map_obj.get_user_levels().exclude(user__username__in = users + [map_obj.owner]).delete()
-    for username, level in spec['users']:
-        user = User.objects.get(username = username)
-        map_obj.set_user_level(user, perms(level))
-
-    return HttpResponse(
-        json.dumps({'success': True}),
-        status=200,
-        mimetype='text/plain'
-    )
+    elif request.method == 'GET':
+        permission_spec = json.dumps(map_obj.get_all_level_info())
+        return HttpResponse(
+            json.dumps({'success': True, 'permissions': permission_spec}),
+            status=200,
+            mimetype='text/plain'
+        )
+    else:
+        return HttpResponse(
+            'No methods other than get and post are allowed',
+            status=401,
+            mimetype='text/plain')
 
 
 def _map_fix_perms_for_editor(info):
@@ -546,146 +523,6 @@ def _map_fix_perms_for_editor(info):
     info['users'] = [(u, fix(level)) for u, level in info['users']]
 
     return info
-
-
-#### MAPS SEARCHING ####
-
-
-def maps_search_page(request, template='maps/map_search.html'):
-    # for non-ajax requests, render a generic search page
-
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    return render_to_response(template, RequestContext(request, {
-        'init_search': json.dumps(params or {}),
-         "site" : settings.SITEURL
-    }))
-
-
-def maps_search(request):
-    """
-    handles a basic search for maps using the Catalogue.
-
-    the search accepts:
-    q - general query for keywords across all fields
-    start - skip to this point in the results
-    limit - max records to return
-    sort - field to sort results on
-    dir - ASC or DESC, for ascending or descending order
-
-    for ajax requests, the search returns a json structure
-    like this:
-
-    {
-    'total': <total result count>,
-    'next': <url for next batch if exists>,
-    'prev': <url for previous batch if exists>,
-    'query_info': {
-        'start': <integer indicating where this batch starts>,
-        'limit': <integer indicating the batch size used>,
-        'q': <keywords used to query>,
-    },
-    'rows': [
-      {
-        'title': <map title,
-        'abstract': '...',
-        'detail' : <url geonode detail page>,
-        'owner': <name of the map's owner>,
-        'owner_detail': <url of owner's profile page>,
-        'last_modified': <date and time of last modification>
-      },
-      ...
-    ]}
-    """
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    # grab params directly to implement defaults as
-    # opposed to panicy django forms behavior.
-    query = params.get('q', '')
-    try:
-        start = int(params.get('start', '0'))
-    except Exception:
-        start = 0
-
-    try:
-        limit = min(int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE)),
-                    MAX_MAPS_SEARCH_BATCH_SIZE)
-    except Exception:
-        limit = DEFAULT_MAPS_SEARCH_BATCH_SIZE
-
-
-    sort_field = params.get('sort', u'')
-    sort_field = unicodedata.normalize('NFKD', sort_field).encode('ascii','ignore')
-    sort_dir = params.get('dir', 'ASC')
-    result = _maps_search(query, start, limit, sort_field, sort_dir)
-
-    result['success'] = True
-    return HttpResponse(json.dumps(result), mimetype="application/json")
-
-
-def _maps_search(query, start, limit, sort_field, sort_dir):
-
-    keywords = _split_query(query)
-
-    map_query = Map.objects
-    for keyword in keywords:
-        map_query = map_query.filter(
-              Q(title__icontains=keyword)
-            | Q(abstract__icontains=keyword))
-
-    if sort_field:
-        order_by = ("" if sort_dir == "ASC" else "-") + sort_field
-        map_query = map_query.order_by(order_by)
-
-    maps_list = []
-
-    for m in map_query.all()[start:start+limit]:
-        try:
-            owner_name = Contact.objects.get(user=m.owner).name
-        except Exception:
-            owner_name = m.owner.first_name + " " + m.owner.last_name
-
-        mapdict = {
-            'id' : m.id,
-            'title' : m.title,
-            'abstract' : m.abstract,
-            'detail' : reverse('map_detail', args=(m.id,)),
-            'owner' : owner_name,
-            'owner_detail' : reverse('profile_detail', args=(m.owner.username,)),
-            'last_modified' : m.last_modified.isoformat()
-            }
-        maps_list.append(mapdict)
-
-    result = {'rows': maps_list,
-              'total': map_query.count()}
-
-    result['query_info'] = {
-        'start': start,
-        'limit': limit,
-        'q': query
-    }
-    if start > 0:
-        prev = max(start - limit, 0)
-        params = urlencode({'q': query, 'start': prev, 'limit': limit})
-        result['prev'] = reverse('maps_search') + '?' + params
-
-    next_page = start + limit + 1
-    if next_page < map_query.count():
-        params = urlencode({'q': query, 'start': next - 1, 'limit': limit})
-        result['next'] = reverse('maps_search') + '?' + params
-
-    return result
-
 
 def maplayer_attributes(request, layername):
     #Return custom layer attribute labels/order in JSON format

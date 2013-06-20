@@ -21,10 +21,8 @@ import glob
 import os
 from unittest import TestCase
 from lxml import etree
-from django.core.management import call_command
 import gisdata
 from geonode.catalogue import get_catalogue
-from geonode.layers.utils import file_upload
 
 class GeoNodeCSWTest(TestCase):
     """Tests geonode.catalogue app/module"""
@@ -44,7 +42,7 @@ class GeoNodeCSWTest(TestCase):
         # test that OGC:CSW URLs are identifical to what's defined in GeoNode
         for op in csw.catalogue.operations:
             self.assertEqual(csw.catalogue.url, op.methods['Get']['url'],
-                        'Expected GeoNode URL to be equal to all CSW URLs') 
+                        'Expected GeoNode URL to be equal to all CSW URLs')
 
         # test that OGC:CSW 2.0.2 is supported
         self.assertEqual(csw.catalogue.version, '2.0.2',
@@ -98,7 +96,7 @@ class GeoNodeCSWTest(TestCase):
         record = csw.catalogue.records.values()[0]
 
         # test that the ISO title maps correctly in Dublin Core
-        self.assertEqual(record.title, 'san_andres_y_providencia_location',
+        self.assertEqual(record.title, 'San Andres Y Providencia Location',
             'Expected a specific title in Dublin Core model')
 
         # test that the ISO abstract maps correctly in Dublin Core
@@ -117,7 +115,7 @@ class GeoNodeCSWTest(TestCase):
         record = csw.catalogue.records.values()[0]
 
         # test that the ISO title maps correctly in Dublin Core
-        self.assertEqual(record.identification.title, 'san_andres_y_providencia_location',
+        self.assertEqual(record.identification.title, 'San Andres Y Providencia Location',
             'Expected a specific title in ISO model')
 
         # test that the ISO abstract maps correctly in Dublin Core
@@ -179,7 +177,7 @@ class GeoNodeCSWTest(TestCase):
 
             # test that the ISO title maps correctly in FGDC
             self.assertEqual(record.idinfo.citation.citeinfo['title'],
-                'san_andres_y_providencia_location', 'Expected a specific title in FGDC model')
+                'San Andres Y Providencia Location', 'Expected a specific title in FGDC model')
 
             # test that the ISO abstract maps correctly in FGDC
             self.assertEqual(record.idinfo.descript.abstract,
@@ -196,44 +194,44 @@ class GeoNodeCSWTest(TestCase):
             # upload a native FGDC metadata document
             md_doc = etree.tostring(etree.fromstring(open(os.path.join(gisdata.GOOD_METADATA, 'sangis.org', 'Census', 'Census_Blockgroup_Pop_Housing.shp.xml')).read()))
             csw.catalogue.transaction(ttype='insert', typename='fgdc:metadata', record=md_doc)
-    
-            # test that FGDC document was successfully inserted 
+
+            # test that FGDC document was successfully inserted
             self.assertEqual(csw.catalogue.results['inserted'], 1, 'Expected 1 inserted record in FGDC model')
-    
+
             # query against FGDC typename, output FGDC
             csw.catalogue.getrecords(typenames='fgdc:metadata')
             self.assertEqual(csw.catalogue.results['matches'], 1, 'Expected 1 record in FGDC model')
-    
-            record = csw.catalogue.records.values()[0] 
-    
+
+            record = csw.catalogue.records.values()[0]
+
             # test that the FGDC title maps correctly in DC
             self.assertEqual(record.title, 'Census_Blockgroup_Pop_Housing', 'Expected a specific title in DC model')
-    
+
             # test that the FGDC type maps correctly in DC
             self.assertEqual(record.type, 'vector digital data', 'Expected a specific type in DC model')
-    
+
             # test CRS constructs in Dublin Core
             self.assertEqual(record.bbox.crs.code, 4326, 'Expected a specific CRS code value in Dublin Core model')
-    
+
             # test BBOX properties in Dublin Core
             self.assertEqual(record.bbox.minx, '-117.6', 'Expected a specific minx coordinate value in Dublin Core model')
             self.assertEqual(record.bbox.miny, '32.53', 'Expected a specific minx coordinate value in Dublin Core model')
             self.assertEqual(record.bbox.maxx, '-116.08', 'Expected a specific maxx coordinate value in Dublin Core model')
             self.assertEqual(record.bbox.maxy, '33.51', 'Expected a specific maxy coordinate value in Dublin Core model')
-    
+
             # query against FGDC typename, return in ISO
             csw.catalogue.getrecords(typenames='fgdc:metadata', esn='brief', outputschema='http://www.isotc211.org/2005/gmd')
             self.assertEqual(csw.catalogue.results['matches'], 1, 'Expected 1 record in ISO model')
-    
-            record = csw.catalogue.records.values()[0] 
-    
+
+            record = csw.catalogue.records.values()[0]
+
             # test that the FGDC title maps correctly in ISO
             self.assertEqual(record.identification.title, 'Census_Blockgroup_Pop_Housing', 'Expected a specific title in ISO model')
-            
+
             # cleanup and delete inserted FGDC metadata document
             csw.catalogue.transaction(ttype='delete', typename='fgdc:metadata', cql='fgdc:Title like "Census_Blockgroup_Pop_Housing"')
             self.assertEqual(csw.catalogue.results['deleted'], 1, 'Expected 1 deleted record in FGDC model')
-    
+
     def test_csw_bulk_upload(self):
         """Verify that GeoNode can handle bulk upload of ISO and FGDC metadata"""
 
@@ -242,9 +240,9 @@ class GeoNodeCSWTest(TestCase):
 
         csw = get_catalogue()
         if csw.catalogue.type == 'pycsw_http':
-    
+
             identifiers = []
-    
+
             # upload all metadata
             for root, dirs, files in os.walk(os.path.join(gisdata.GOOD_METADATA, 'sangis.org')):
                 for mfile in files:
@@ -252,24 +250,24 @@ class GeoNodeCSWTest(TestCase):
                         md_doc = etree.tostring(etree.fromstring(open(os.path.join(root, mfile)).read()))
                         csw.catalogue.transaction(ttype='insert', typename='fgdc:metadata', record=md_doc)
                         identifiers.append(csw.catalogue.results['insertresults'][0])
-    
+
             for md in glob.glob(os.path.join(gisdata.GOOD_METADATA, 'wustl.edu', '*.xml')):
                 md_doc = etree.tostring(etree.fromstring(open(md).read()))
                 csw.catalogue.transaction(ttype='insert', typename='gmd:MD_Metadata', record=md_doc)
                 identifiers.append(csw.catalogue.results['insertresults'][0])
-    
+
             # query against FGDC typename
             csw.catalogue.getrecords(typenames='fgdc:metadata')
             self.assertEqual(csw.catalogue.results['matches'], 72, 'Expected 187 records in FGDC model')
-    
+
             # query against ISO typename
-            csw.catalogue.getrecords(typenames='gmd:MD_Metadata') 
+            csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
             self.assertEqual(csw.catalogue.results['matches'], 115, 'Expected 194 records in ISO model')
-    
+
             # query against FGDC and ISO typename
             csw.catalogue.getrecords(typenames='gmd:MD_Metadata fgdc:metadata')
             self.assertEqual(csw.catalogue.results['matches'], 187, 'Expected 381 records total in FGDC and ISO model')
-    
+
             # clean up
             for i in identifiers:
                 csw.catalogue.transaction(ttype='delete', identifier=i)

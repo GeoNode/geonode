@@ -1,6 +1,7 @@
 from django import template
 
-from geonode.layers.models import Layer, TopicCategory
+from geonode.layers.models import Layer
+from geonode.base.models import TopicCategory
 
 
 register = template.Library()
@@ -8,7 +9,6 @@ register = template.Library()
 
 @register.assignment_tag(takes_context=True)
 def featured_layers(context, count=7):
-    request = context["request"]
     layers = Layer.objects.order_by("-date")[:count]
     return layers
 

@@ -1,12 +1,32 @@
-<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/openlayers/theme/default/style.css" />
-<script src="{{ GEONODE_CLIENT_LOCATION }}script/OpenLayers.js"></script>
-<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}externals/geoext/resources/css/geoext-all.css" />
-<script src="{{ GEONODE_CLIENT_LOCATION }}script/GeoExt.js"></script> 
-<link rel="stylesheet" href="{{ GEONODE_CLIENT_LOCATION }}externals/gxp/theme/all.css" />
-<script src="{{ GEONODE_CLIENT_LOCATION }}script/gxp.js"></script>
-<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/app/geoexplorer.css" />
-<!--[if IE]><link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/app/ie.css"/><![endif]-->
-<script src="{{ GEONODE_CLIENT_LOCATION }}script/GeoExplorer.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/geoext/resources/css/geoext-all.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/geoext/resources/css/gxtheme-gray.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/ux/colorpicker/color-picker.ux.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/printpreview/resources/css/printpreview.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/style.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/gxp/src/theme/all.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/geoexplorer.css " />
+<!--[if IE]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/ie.css"/><![endif]-->
+<script src="{{STATIC_URL}}geoexplorer/script/GeoExplorer.js" type="text/javascript"></script>
 <script type="text/javascript">
-OpenLayers.ImgPath = "{{ GEONODE_CLIENT_LOCATION }}externals/openlayers/img/";
+OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
+OpenLayers.Request.DEFAULT_CONFIG.headers = {
+    'X-CSRFToken': '{{ csrf_token|escapejs }}'
+};
+
+/**
+ *  Add GetFeedFeatureInfo tool to GeoExplorer.Viewer
+ */
+GeoExplorer.Viewer.prototype.loadConfig = function(config) {
+        config.viewerTools.push( {
+            ptype: "gxp_getfeedfeatureinfo",
+            checked: true
+        });
+        config.viewerTools.splice(5, 0, {
+            id: "styler",
+            ptype: "gxp_styler",
+            checked: true
+        });
+    GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
+};
+
 </script>

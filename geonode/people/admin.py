@@ -19,14 +19,16 @@
 #########################################################################
 
 from django.contrib import admin
-from geonode.people.models import Contact, Role
-from geonode.layers.models import ContactRole
+from geonode.people.models import Profile, Role
+from geonode.base.models import ContactRole
 
 class ContactRoleInline(admin.TabularInline):
     model = ContactRole
 
-class ContactAdmin(admin.ModelAdmin):
+class ProfileAdmin(admin.ModelAdmin):
     inlines = [ContactRoleInline]
+    list_display = ('id','user', 'name', 'organization',)
+    search_fields = ('name','organization', 'profile', )
 
-admin.site.register(Contact, ContactAdmin)
+admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Role)

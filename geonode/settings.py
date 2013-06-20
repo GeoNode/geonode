@@ -64,7 +64,7 @@ LANGUAGES = (
     ('de', 'Deutsch'),
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
-    ('zh', '中文'),
+#    ('zh', '中文'),
     ('ja', '日本人'),
 )
 
@@ -94,6 +94,14 @@ STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, "static"),
 ]
 
+# List of finder classes that know how to find static files in
+# various locations.
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+)
+
 # Note that Django automatically includes the "templates" dir in all the
 # INSTALLED_APPS, se there is no need to add maps/templates or admin/templates
 TEMPLATE_DIRS = (
@@ -114,6 +122,17 @@ ROOT_URLCONF = 'geonode.urls'
 # Site id in the Django sites framework
 SITE_ID = 1
 
+# Login and logout urls override
+LOGIN_URL = '/account/login/'
+LOGOUT_URL = '/account/logout/'
+
+# Activate the Documents application
+DOCUMENTS_APP = True
+ALLOWED_DOCUMENT_TYPES = [
+    'doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt'
+]
+MAX_DOCUMENT_SIZE = 2 # MB
+
 
 INSTALLED_APPS = (
 
@@ -132,33 +151,41 @@ INSTALLED_APPS = (
 
     # Utility
     'pagination',
-    'django_forms_bootstrap',
     'taggit',
     'taggit_templatetags',
     'south',
     'friendlytagloader',
-    'leaflet',
+    'geoexplorer',
+    'django_extensions',
+
+    # Theme
+    "pinax_theme_bootstrap_account",
+    "pinax_theme_bootstrap",
+    'django_forms_bootstrap',
 
     # Social
-    'registration',
-    'profiles',
+    'account',
     'avatar',
     'dialogos',
     'agon_ratings',
-    #'notification',
-    #'announcements',
-    #'actstream',
-    #'relationships',
+    'notification',
+    'announcements',
+    'actstream',
+    'user_messages',
 
     # GeoNode internal apps
-    'geonode.maps',
-    'geonode.layers',
     'geonode.people',
+    'geonode.base',
+    'geonode.layers',
+    'geonode.upload',
+    'geonode.maps',
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
     'geonode.catalogue',
+    'geonode.documents',
 )
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -169,31 +196,37 @@ LOGGING = {
         'simple': {
             'format': '%(message)s',        },
     },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+     }
+    },
     'handlers': {
         'null': {
-            'level':'DEBUG',
+            'level':'ERROR',
             'class':'django.utils.log.NullHandler',
         },
         'console':{
-            'level':'DEBUG',
+            'level':'ERROR',
             'class':'logging.StreamHandler',
             'formatter': 'simple'
         },
         'mail_admins': {
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
-    'loggers': {
-        'django': {
-            'handlers':['null'],
-            'propagate': True,
-            'level':'INFO',
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "ERROR",
         },
         "geonode": {
             "handlers": ["console"],
             "level": "ERROR",
         },
+
         "gsconfig.catalog": {
             "handlers": ["console"],
             "level": "ERROR",
@@ -203,6 +236,10 @@ LOGGING = {
             "level": "ERROR",
         },
         "pycsw": {
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
+        'south': {
             "handlers": ["console"],
             "level": "ERROR",
         },
@@ -216,13 +253,15 @@ LOGGING = {
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
-    'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
+    "django.core.context_processors.tz",
     'django.core.context_processors.media',
+    "django.core.context_processors.static",
     'django.core.context_processors.request',
-    #'announcements.context_processors.site_wide_announcements',
-    # The context processor belows add things like SITEURL
+    'django.contrib.messages.context_processors.messages',
+    'account.context_processors.account',
+    # The context processor below adds things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
     'geonode.context_processors.resource_urls',
 )
@@ -237,6 +276,11 @@ MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # This middleware allows to print private layers for the users that have 
+    # the permissions to view them.
+    # It sets temporary the involved layers as public before restoring the permissions.
+    # Beware that for few seconds the involved layers are public there could be risks.
+    #'geonode.middleware.PrintProxyMiddleware',
 )
 
 
@@ -245,9 +289,7 @@ MIDDLEWARE_CLASSES = (
 AUTHENTICATION_BACKENDS = ('geonode.security.auth.GranularBackend',)
 
 def get_user_url(u):
-    from django.contrib.sites.models import Site
-    s = Site.objects.get_current()
-    return "http://" + s.domain + "/profiles/" + u.username
+    return u.profile.get_absolute_url()
 
 
 ABSOLUTE_URL_OVERRIDES = {
@@ -258,6 +300,11 @@ ABSOLUTE_URL_OVERRIDES = {
 # FIXME(Ariel): I do not know why this setting is needed,
 # it would be best to use the ?next= parameter
 LOGIN_REDIRECT_URL = "/"
+
+#
+# Settings for default search size
+#
+DEFAULT_SEARCH_SIZE = 10
 
 
 #
@@ -272,6 +319,9 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     "layers.Layer": {
         "layer": "How good is this layer?"
     },
+    "documents.Document": {
+        "document": "How good is this document?"
+    }
 }
 
 # Activity Stream
@@ -285,14 +335,12 @@ ACTSTREAM_SETTINGS = {
 
 # For South migrations
 SOUTH_MIGRATION_MODULES = {
-    'registration': 'geonode.migrations.registration',
     'avatar': 'geonode.migrations.avatar',
 }
+SOUTH_TESTS_MIGRATE=False
 
-# For django-profiles
-AUTH_PROFILE_MODULE = 'people.Contact'
-
-# For django-registration
+# Settings for Social Apps
+AUTH_PROFILE_MODULE = 'people.Profile'
 REGISTRATION_OPEN = False
 
 #
@@ -312,8 +360,6 @@ NOSE_ARGS = [
 #
 # GeoNode specific settings
 #
-
-SITENAME = "GeoNode"
 
 SITEURL = "http://localhost:8000/"
 
@@ -355,9 +401,9 @@ PYCSW = {
     # pycsw configuration
     'CONFIGURATION': {
         'metadata:main': {
-            'identification_title': '%s Catalogue' % SITENAME,
+            'identification_title': 'GeoNode Catalogue',
             'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, and collaborative use of geospatial data',
-            'identification_keywords': '%s,sdi,catalogue,discovery,metadata,GeoNode' % SITENAME,
+            'identification_keywords': 'sdi,catalogue,discovery,metadata,GeoNode',
             'identification_keywords_type': 'theme',
             'identification_fees': 'None',
             'identification_accessconstraints': 'None',
@@ -394,9 +440,6 @@ PYCSW = {
 
 # GeoNode javascript client configuration
 
-# Google Api Key needed for 3D maps / Google Earth plugin
-GOOGLE_API_KEY = "ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw"
-
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)
 
@@ -412,14 +455,14 @@ MAP_BASELAYERS = [{
         "restUrl": "/gs/rest"
      }
   },{
-    "source": {"ptype": "gx_olsource"},
+    "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
     "visibility": False,
     "fixed": True,
     "group":"background"
   }, {
-    "source": {"ptype": "gx_olsource"},
+    "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer.OSM",
     "args":["OpenStreetMap"],
     "visibility": False,
@@ -444,7 +487,7 @@ MAP_BASELAYERS = [{
   },{
     "source": {"ptype": "gxp_mapboxsource"},
   }, {
-    "source": {"ptype": "gx_olsource"},
+    "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer.WMS",
     "group":"background",
     "visibility": False,
@@ -463,9 +506,11 @@ MAP_BASELAYERS = [{
 
 }]
 
-GEONODE_CLIENT_LOCATION = "/static/geonode/"
-
 # GeoNode vector data backend configuration.
+
+# Uploader backend (rest or importer)
+
+UPLOADER_BACKEND_URL = 'rest'
 
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE = False
@@ -479,6 +524,17 @@ DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE = ''
 #The name of the store in Geoserver
 DB_DATASTORE_NAME = ''
+
+LEAFLET_CONFIG = {
+    'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
+}
+
+# Default TopicCategory to be used for resources. Use the slug field here
+DEFAULT_TOPICCATEGORY = 'location'
+
+MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
+
+CACHE_TIME=0
 
 # Load more settings from a file called local_settings.py if it exists
 try:

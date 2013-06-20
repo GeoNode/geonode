@@ -20,7 +20,6 @@
 
 from lxml import etree
 
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
@@ -30,25 +29,25 @@ from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
 
 import geonode.maps.models
-import geonode.maps.views
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.utils import default_map_config
-
+from geonode.search.populate_search_test_data import create_models
+from geonode.maps.populate_maplayers import create_maplayers
 
 
 class MapsTest(TestCase):
     """Tests geonode.maps app/module
     """
 
+    fixtures = ['initial_data.json']
+
     def setUp(self):
         self.user = 'admin'
         self.passwd = 'admin'
-
-    def tearDown(self):
-        pass
-
-    fixtures = ['map_data.json', 'initial_data.json']
+        create_models(type='map')
+        create_models(type='layer')
+        create_maplayers()
 
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
@@ -122,14 +121,13 @@ community."
 
     def test_map_json(self):
         c = Client()
-
         # Test that saving a map when not logged in gives 401
         response = c.put(reverse('map_json', args=('1',)),data=self.viewer_config,content_type="text/json")
         self.assertEqual(response.status_code, 401)
 
         c.login(username=self.user, password=self.passwd)
         response = c.put(reverse('map_json', args=('1',)),data=self.viewer_config_alternative,content_type="text/json")
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
 
         map_obj = Map.objects.get(id=1)
         self.assertEquals(map_obj.title, "Title2")
@@ -148,16 +146,17 @@ community."
         # Test successful new map creation
         c.login(username=self.user, password=self.passwd)
         response = c.post(new_map,data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
         c.logout()
 
-        self.assertEquals(map_id,2)
+        # We have now 9 maps and 8 layers so the next pk will be 18
+        self.assertEquals(map_id,18)
         map_obj = Map.objects.get(id=map_id)
         self.assertEquals(map_obj.title, "Title")
         self.assertEquals(map_obj.abstract, "Abstract")
         self.assertEquals(map_obj.layer_set.all().count(), 1)
-        self.assertEquals(map_obj.keyword_list(), ["keywords", "saving"])
+        self.assertEquals(map_obj.keyword_list(), [u"keywords", u"saving"])
 
         # Test an invalid map creation request
         c.login(username=self.user, password=self.passwd)
@@ -168,12 +167,13 @@ community."
     def test_map_fetch(self):
         """/maps/[id]/data -> Test fetching a map in JSON"""
         map_obj = Map.objects.get(id=1)
+        map_obj.set_default_permissions()
         c = Client()
         response = c.get(reverse('map_json', args=(map_obj.id,)))
         self.assertEquals(response.status_code, 200)
         cfg = json.loads(response.content)
-        self.assertEquals(cfg["about"]["abstract"], self.default_abstract)
-        self.assertEquals(cfg["about"]["title"], self.default_title)
+        self.assertEquals(cfg["about"]["abstract"], 'GeoNode default map abstract')
+        self.assertEquals(cfg["about"]["title"], 'GeoNode Default Map')
         self.assertEquals(len(cfg["map"]["layers"]), 5)
 
     def test_map_to_json(self):
@@ -181,8 +181,8 @@ community."
             to a JSON map configuration"""
         map_obj = Map.objects.get(id=1)
         cfg = map_obj.viewer_json()
-        self.assertEquals(cfg['about']['abstract'], self.default_abstract)
-        self.assertEquals(cfg['about']['title'], self.default_title)
+        self.assertEquals(cfg['about']['abstract'], 'GeoNode default map abstract')
+        self.assertEquals(cfg['about']['title'], 'GeoNode Default Map')
         def is_wms_layer(x):
             return cfg['sources'][x['source']]['ptype'] == 'gxp_wmscsource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
@@ -195,7 +195,7 @@ community."
         """
 
         map_obj = Map.objects.get(id=1)
-
+        map_obj.set_default_permissions()
         c = Client()
         response = c.get(reverse('map_wmc', args=(map_obj.id,)))
         self.assertEquals(response.status_code, 200)
@@ -209,10 +209,7 @@ community."
 
         self.assertEquals(wmc.attrib.get('id'), '1')
         self.assertEquals(wmc.find(title).text, 'GeoNode Default Map')
-        self.assertEquals(wmc.find(abstract).text, 'This is a demonstration '\
-            'of GeoNode, an application for assembling and publishing web '\
-            'based maps.  After adding layers to the map, use the Save Map '\
-            'button above to contribute your map to the GeoNode community.')
+        self.assertEquals(wmc.find(abstract).text, 'GeoNode default map abstract')
 
     def test_newmap_to_json(self):
         """ Make some assertions about the data structure produced for serialization
@@ -224,6 +221,7 @@ community."
     def test_map_details(self):
         """/maps/1 -> Test accessing the map browse view function"""
         map_obj = Map.objects.get(id=1)
+        map_obj.set_default_permissions()
         c = Client()
         response = c.get(reverse('map_detail', args=(map_obj.id,)))
         self.assertEquals(response.status_code,200)
@@ -261,9 +259,9 @@ community."
                           content_type="application/json")
         self.assertEquals(response.status_code, 404)
 
-        # Test that POST is required
+        # Test that GET retunrs permissions
         response = c.get(url(mapid))
-        self.assertEquals(response.status_code, 405)
+        assert('permissions' in response.content)
 
         # Test that a user is required to have permissions
 
@@ -305,8 +303,8 @@ community."
         c.login(username=self.user, password=self.passwd)
         new_map = reverse('new_map_json')
         response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
         c.logout()
 
         url = reverse('map_metadata', args=(map_id,))
@@ -344,8 +342,8 @@ community."
         c.login(username=self.user, password=self.passwd)
         new_map = reverse('new_map_json')
         response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
         c.logout()
 
         url = reverse('map_remove', args=(map_id,))
@@ -393,8 +391,8 @@ community."
 
         new_map = reverse('new_map_json')
         response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
         c.logout()
 
         url = reverse('map_embed', args=(map_id,))
@@ -432,8 +430,8 @@ community."
 
         new_map = reverse('new_map_json')
         response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
         c.logout()
 
         url = reverse('map_view', args=(map_id,))
@@ -515,72 +513,13 @@ community."
 
         # Test POST method with map data in json format
         response = c.post(url, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
+        self.assertEquals(response.status_code,200)
+        map_id = int(json.loads(response.content)['id'])
 
         # Test methods other than GET or POST and no layer in params
         response = c.put(url)
         self.assertEquals(response.status_code,405)
 
-
-    def test_maps_search_page(self):
-        """Test maps search page can be properly rendered
-        """
-        c = Client()
-
-        url = reverse('maps_search') + '?'
-
-        # Test GET method
-        response = c.get(url,{'keyword':'keyword'})
-        self.assertEquals(response.status_code,200)
-        response_dict = json.loads(response.context['init_search'])
-        self.assertEquals(response_dict['keyword'],'keyword')
-        self.assertEquals(response.context['site'],settings.SITEURL)
-
-        # Test POST method
-        response = c.post(url)
-        self.assertEquals(response.status_code,200)
-
-        # Test methods other than GET or POST
-        response = c.put(url)
-        self.assertEquals(response.status_code,405)
-
-
-    def test_maps_search(self):
-        """Test maps search can function properly
-        """
-        # first create two maps
-        c = Client()
-
-        # Test successful new map creation
-        c.login(username=self.user, password=self.passwd)
-
-        new_map = reverse('new_map_json')
-        response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id = int(response['Location'].split('/')[-1])
-        response = c.post(new_map, data=self.viewer_config_alternative,content_type="text/json")
-        self.assertEquals(response.status_code,201)
-        map_id_2 = int(response['Location'].split('/')[-1])
-        c.logout()
-
-        url = reverse('maps_search_api') + '?'
-
-        # Test GET method
-        response = c.get(url, {'q': '', 'start': 1}, content_type="text/json")
-        self.assertEquals(response.status_code,200)
-        response_dict = json.loads(response.content)
-        self.assertEquals(response_dict['success'], True)
-
-        # Test POST method
-        response = c.post(url, {'q': '', 'start': 1}, content_type="text/json")
-        self.assertEquals(response.status_code,200)
-        response_dict = json.loads(response.content)
-        self.assertEquals(response_dict['success'], True)
-
-        # Test methods other than GET or POST
-        response = c.put(url)
-        self.assertEquals(response.status_code,405)
 
     def test_rating_map_remove(self):
         """Test map rating is removed on map remove
@@ -592,7 +531,7 @@ community."
 
         #Create the map
         response = c.post(new_map, data=self.viewer_config,content_type="text/json")
-        map_id = int(response['Location'].split('/')[-1])
+        map_id = int(json.loads(response.content)['id'])
 
         #Create the rating with the correct content type
         ctype = ContentType.objects.get(model='map')

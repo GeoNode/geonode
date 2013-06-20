@@ -1,0 +1,56 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load avatar_tags %}
+
+{% block title %}{% trans "Message Inbox" %} — {{ block.super }}{% endblock %}
+
+{% block body %}
+<table class="table table-striped table-bordered table-condensed">
+    <thead>
+        <tr>
+            <td><strong>{% trans "With" %}</strong></td>
+            <td><strong>{% trans "Subject" %}</strong></td>
+            <td><strong>{% trans "Last Sender" %}</strong></td>
+            <td><strong>{% trans "Preview" %}</strong></td>
+            <td><strong>{% trans "Delete?" %}</strong></td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for thread in threads %}
+        <tr>
+            <td>
+                {% for user in thread.users.all %}
+                    {% ifnotequal request.user user %}
+                        <p>{% avatar user 30 %}</p>
+                        <a href="{{ user.get_absolute_url }}">{{ user }}</a>
+                    {% endifnotequal %}
+                {% endfor %}
+            </td>
+            <td><a href="{{ thread.get_absolute_url }}">{{ thread.subject }}</a></td>
+            <td>
+                {% ifequal request.user thread.latest_message.sender %}
+                {% trans "you" %}
+                {% else %}
+                <a href="{{ thread.latest_message.sender.get_absolute_url }}">{{ thread.latest_message.sender }}</a>
+                {% endifequal %}
+            </td>
+            <td>
+                {{ thread.latest_message.content|slice:"50" }}<a href="{{ thread.get_absolute_url }}">...</a>
+            </td>
+            <td>
+                <form id="thread_delete_{{ thread.pk }}" method="post" action="{% url "messages_thread_delete" thread.pk %}">
+                    {% csrf_token %}
+                    <input type="submit" value="{% trans "Delete" %}" class="btn btn-danger" type="button"/>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+</table>
+
+{% endblock %}
+
+{% block sidebar %}
+<a href="{% url "message_create" %}" class="btn btn-primary" type="button">{% trans "Create Message" %}</a>
+{% endblock %}

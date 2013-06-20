@@ -1,0 +1,56 @@
+{% extends "documents/document_base.html" %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load staticfiles %}
+{% load url from future %}
+
+{% block title %} {% trans "Explore Documents" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}documents documents-list explore{% endblock %}
+
+{% block head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}libs/css/datepicker.css" type="text/css" media="screen" />
+{% endblock %}
+
+{% block body %}
+    <div class="span12">
+      <h2 class="page-title">{% trans "Explore Documents" %}</h2>
+    </div>
+    <div class="span8 filter">      
+      {% include "search/_sort_filters.html" %}
+    </div>
+    <div class="span4">
+      <div class="pull-right" data-viewby="list">
+        {% include "_viewby.html" %}
+      </div>
+    </div>
+    <div class="span12">
+      <div class="row" id="contain-slider">
+        <div class="span4">
+          <div class="selections">
+            <h4>
+              {% trans "Your selections" %}
+              <a href="." id="clear-search" class="pull-right">Clear all</a>
+            </h4>
+          </div>
+          <div id="slide-pane">
+            <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
+            {% with type='document' %} 
+            {% include "search/_general_filters.html" %}
+            {% endwith %}
+          </div>
+        </div>
+        <div class="tab-content span8 paginate paginate-auto" id="search-content">
+          {% include 'search/search_content.html' %}
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block extra_script %}
+  <script type="text/javascript">
+  var default_type = 'document';
+  </script>
+  {% include 'search_scripts.html' %}
+{% endblock extra_script %}

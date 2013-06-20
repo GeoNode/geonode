@@ -22,37 +22,31 @@ from urlparse import urlparse
 import httplib2
 import urllib
 import logging
-import sys
-import uuid
-import errno
 
 from datetime import datetime
 from lxml import etree
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import signals
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
-from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
-from geonode.utils import _wms, _user, _password, get_wms, bbox_to_wkt
-from geonode.gs_helpers import cascading_delete
-from geonode.people.models import Contact, Role
-from geonode.security.models import PermissionLevelMixin
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.layers.ows import wcs_links, wfs_links, wms_links
-from geonode.layers.enumerations import COUNTRIES, ALL_LANGUAGES, \
-    HIERARCHY_LEVELS, UPDATE_FREQUENCIES, CONSTRAINT_OPTIONS, \
-    SPATIAL_REPRESENTATION_TYPES,  TOPIC_CATEGORIES, \
-    DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
+from geonode.base.models import ResourceBase, ResourceBaseManager, Link, \
+    resourcebase_post_save, resourcebase_post_delete, resourcebase_pre_save
+from geonode.utils import  _user, _password, get_wms
+from geonode.utils import http_client
+from geonode.geoserver.helpers import cascading_delete
+from geonode.people.models import Profile
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.layers.ows import wcs_links, wfs_links, wms_links, \
+    wps_execute_layer_attribute_statistics
+from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 
 from geoserver.catalog import Catalog, FailedRequestError
-from taggit.managers import TaggableManager
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
@@ -70,222 +64,12 @@ class Style(models.Model):
     def __str__(self):
         return "%s" % self.name
 
-
-class LayerManager(models.Manager):
+class LayerManager(ResourceBaseManager):
 
     def __init__(self):
         models.Manager.__init__(self)
         url = "%srest" % settings.GEOSERVER_BASE_URL
         self.gs_catalog = Catalog(url, _user, _password)
-
-
-    def admin_contact(self):
-        # this assumes there is at least one superuser
-        superusers = User.objects.filter(is_superuser=True).order_by('id')
-        if superusers.count() == 0:
-            raise RuntimeError('GeoNode needs at least one admin/superuser set')
-
-        contact = Contact.objects.get_or_create(user=superusers[0],
-                                                defaults={"name": "Geonode Admin"})[0]
-        return contact
-
-    def slurp(self, ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None):
-        """Configure the layers available in GeoServer in GeoNode.
-
-           It returns a list of dictionaries with the name of the layer,
-           the result of the operation and the errors and traceback if it failed.
-        """
-        if console is None:
-            console = open(os.devnull, 'w')
-
-        if verbosity > 1:
-            print >> console, "Inspecting the available layers in GeoServer ..."
-        cat = self.gs_catalog
-        if workspace is not None:
-            workspace = cat.get_workspace(workspace)
-        resources = cat.get_resources(workspace=workspace)
-        number = len(resources)
-        if verbosity > 1:
-            msg =  "Found %d layers, starting processing" % number
-            print >> console, msg
-        output = []
-        for i, resource in enumerate(resources):
-            name = resource.name
-            store = resource.store
-            workspace = store.workspace
-            try:
-                layer, created = Layer.objects.get_or_create(name=name, defaults = {
-                    "workspace": workspace.name,
-                    "store": store.name,
-                    "storeType": store.resource_type,
-                    "typename": "%s:%s" % (workspace.name, resource.name),
-                    "title": resource.title or 'No title provided',
-                    "abstract": resource.abstract or 'No abstract provided',
-                    "owner": owner,
-                    "uuid": str(uuid.uuid4())
-                })
-
-                layer.save()
-            except Exception, e:
-                if ignore_errors:
-                    status = 'failed'
-                    exception_type, error, traceback = sys.exc_info()
-                else:
-                    if verbosity > 0:
-                        msg = "Stopping process because --ignore-errors was not set and an error was found."
-                        print >> sys.stderr, msg
-                    raise Exception('Failed to process %s' % resource.name, e), None, sys.exc_info()[2]
-            else:
-                if created:
-                    layer.set_default_permissions()
-                    status = 'created'
-                else:
-                    status = 'updated'
-
-            msg = "[%s] Layer %s (%d/%d)" % (status, name, i+1, number)
-            info = {'name': name, 'status': status}
-            if status == 'failed':
-                info['traceback'] = traceback
-                info['exception_type'] = exception_type
-                info['error'] = error
-            output.append(info)
-            if verbosity > 0:
-                print >> console, msg
-        return output
-
-
-class TopicCategory(models.Model):
-
-    name = models.CharField(max_length=50)
-    slug = models.SlugField()
-    description = models.TextField(blank=True)
-
-    def __unicode__(self):
-        return u"{0}".format(self.name)
-
-    class Meta:
-        ordering = ("name",)
-
-
-class ResourceBase(models.Model, PermissionLevelMixin):
-    """
-    Base Resource Object loosely based on ISO 19115:2003
-    """
-
-    VALID_DATE_TYPES = [(x.lower(), _(x)) for x in ['Creation', 'Publication', 'Revision']]
-
-    # internal fields
-    uuid = models.CharField(max_length=36)
-    owner = models.ForeignKey(User, blank=True, null=True)
-
-    # section 1
-    title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
-    date = models.DateTimeField(_('date'), default = datetime.now, help_text=_('reference date for the cited resource')) # passing the method itself, not the result
-
-    date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication', help_text=_('identification of when a given event occurred'))
-
-    edition = models.CharField(_('edition'), max_length=255, blank=True, null=True, help_text=_('version of the cited resource'))
-    abstract = models.TextField(_('abstract'), blank=True, help_text=_('brief narrative summary of the content of the resource(s)'))
-    purpose = models.TextField(_('purpose'), null=True, blank=True, help_text=_('summary of the intentions with which the resource(s) was developed'))
-
-    maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices=UPDATE_FREQUENCIES, blank=True, null=True, help_text=_('frequency with which modifications and deletions are made to the data after it is first produced'))
-
-    # section 2
-    # see poc property definition below
-
-    # section 3
-    keywords = TaggableManager(_('keywords'), blank=True, help_text=_('commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject (space or comma-separated'))
-    keywords_region = models.CharField(_('keywords region'), max_length=3, choices=COUNTRIES, default='USA', help_text=_('keyword identifies a location'))
-    constraints_use = models.CharField(_('constraints use'), max_length=255, choices=[(x, x) for x in CONSTRAINT_OPTIONS], default='copyright', help_text=_('constraints applied to assure the protection of privacy or intellectual property, and any special restrictions or limitations or warnings on using the resource or metadata'))
-    constraints_other = models.TextField(_('constraints other'), blank=True, null=True, help_text=_('other restrictions and legal prerequisites for accessing and using the resource or metadata'))
-    spatial_representation_type = models.CharField(_('spatial representation type'), max_length=255, choices=SPATIAL_REPRESENTATION_TYPES, blank=True, null=True, help_text=_('method used to represent geographic information in the dataset'))
-
-    # Section 4
-    language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng', help_text=_('language used within the dataset'))
-    topic_category = models.CharField(_('topic_category'), editable=False, max_length=255, choices=TOPIC_CATEGORIES, default='location')
-    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True, blank=True)
-
-    # Section 5
-    temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True, help_text=_('time period covered by the content of the dataset (start)'))
-    temporal_extent_end = models.DateField(_('temporal extent end'), blank=True, null=True, help_text=_('time period covered by the content of the dataset (end)'))
-
-    supplemental_information = models.TextField(_('supplemental information'), default=DEFAULT_SUPPLEMENTAL_INFORMATION, help_text=_('any other descriptive information about the dataset'))
-
-    # Section 6
-    distribution_url = models.TextField(_('distribution URL'), blank=True, null=True, help_text=_('information about on-line sources from which the dataset, specification, or community profile name and extended metadata elements can be obtained'))
-    distribution_description = models.TextField(_('distribution description'), blank=True, null=True, help_text=_('detailed text description of what the online resource is/does'))
-
-    # Section 8
-    data_quality_statement = models.TextField(_('data quality statement'), blank=True, null=True, help_text=_('general explanation of the data producer\'s knowledge about the lineage of a dataset'))
-
-    # Section 9
-    # see metadata_author property definition below
-
-    # Save bbox values in the database.
-    # This is useful for spatial searches and for generating thumbnail images and metadata records.
-    bbox_x0 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
-    bbox_x1 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
-    bbox_y0 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
-    bbox_y1 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
-    srid = models.CharField(max_length=255, default='EPSG:4326')
-
-    # CSW specific fields
-    csw_typename = models.CharField(_('CSW typename'), max_length=32, default='gmd:MD_Metadata', null=False)
-    csw_schema = models.CharField(_('CSW schema'), max_length=64, default='http://www.isotc211.org/2005/gmd', null=False)
-    csw_mdsource = models.CharField(_('CSW source'), max_length=256, default='local', null=False)
-    csw_insert_date = models.DateTimeField(_('CSW insert date'), auto_now_add=True, null=True)
-    csw_type = models.CharField(_('CSW type'), max_length=32, default='dataset', null=False, choices=HIERARCHY_LEVELS)
-    csw_anytext = models.TextField(_('CSW anytext'), null=True)
-    csw_wkt_geometry = models.TextField(_('CSW WKT geometry'), null=False, default='SRID=4326;POLYGON((-180 180,-180 90,-90 90,-90 180,-180 180))')
-
-    # metadata XML specific fields
-    metadata_uploaded = models.BooleanField(default=False)
-    metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
-
-    @property
-    def bbox(self):
-        return [self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, self.srid]
-
-    @property
-    def bbox_string(self):
-        return ",".join([str(self.bbox_x0), str(self.bbox_x1), str(self.bbox_y0), str(self.bbox_y1)])
-
-    @property
-    def geographic_bounding_box(self):
-        return bbox_to_wkt(self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, srid=self.srid )
-
-    def eval_keywords_region(self):
-        """Returns expanded keywords_region tuple'd value"""
-        index = next((i for i,(k,v) in enumerate(COUNTRIES) if k==self.keywords_region),None)
-        if index is not None:
-            return COUNTRIES[index][1]
-        else:
-            return self.keywords_region
-
-    @property
-    def poc_role(self):
-        role = Role.objects.get(value='pointOfContact')
-        return role
-
-    @property
-    def metadata_author_role(self):
-        role = Role.objects.get(value='author')
-        return role
-
-    def keyword_list(self):
-        return [kw.name for kw in self.keywords.all()]
-
-    @property
-    def keyword_csv(self):
-        keywords_qs = self.keywords.all()
-        if keywords_qs:
-            return ','.join([kw.name for kw in keywords_qs])
-        else:
-            return ''
-
-    class Meta:
-        abstract = True
-
 
 def add_bbox_query(q, bbox):
     '''modify the queryset q to limit to the provided bbox
@@ -316,8 +100,6 @@ class Layer(ResourceBase):
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
-    contacts = models.ManyToManyField(Contact, through='ContactRole')
-
     default_style = models.ForeignKey(Style, related_name='layer_default_style', null=True, blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')
 
@@ -330,7 +112,20 @@ class Layer(ResourceBase):
         links.append((self.title, self.title, 'WWW:LINK-1.0-http--link', abs_url))
         return links
 
-    def thumbnail(self, width=20, height=None):
+
+    def update_thumbnail(self, save=True):
+        self.save_thumbnail(self._thumbnail_url(width=80, height=80), save)
+
+
+    def _render_thumbnail(self, spec):
+        resp, content = http_client.request(spec)
+        if resp.status < 200 or resp.status > 299:
+            logger.warning('Unable to obtain thumbnail: %s', content)
+            return
+        return content
+
+
+    def _thumbnail_url(self, width=20, height=None):
         """ Generate a URL representing thumbnail of the layer """
 
         params = {
@@ -370,6 +165,13 @@ class Layer(ResourceBase):
         }).get(self.storeType, "Data")
 
     @property
+    def store_type(self):
+        cat = Layer.objects.gs_catalog
+        res = cat.get_resource(self.name)
+        res.store.fetch()
+        return res.store.dom.find('type').text
+
+    @property
     def service_type(self):
         if self.storeType == 'coverageStore':
             return "WCS"
@@ -377,7 +179,7 @@ class Layer(ResourceBase):
             return "WFS"
 
     def get_absolute_url(self):
-        return reverse('layer_detail', args=(self.typename))
+        return reverse('layer_detail', args=(self.typename,))
 
     def attribute_config(self):
         #Get custom attribute sort order and labels if any
@@ -419,50 +221,24 @@ class Layer(ResourceBase):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
-    def _set_poc(self, poc):
-        # reset any poc asignation to this layer
-        ContactRole.objects.filter(role=self.poc_role, layer=self).delete()
-        #create the new assignation
-        ContactRole.objects.create(role=self.poc_role, layer=self, contact=poc)
-
-    def _get_poc(self):
-        try:
-            the_poc = ContactRole.objects.get(role=self.poc_role, layer=self).contact
-        except ContactRole.DoesNotExist:
-            the_poc = None
-        return the_poc
-
-    poc = property(_get_poc, _set_poc)
-
-    def _set_metadata_author(self, metadata_author):
-        # reset any metadata_author asignation to this layer
-        ContactRole.objects.filter(role=self.metadata_author_role, layer=self).delete()
-        #create the new assignation
-        ContactRole.objects.create(role=self.metadata_author_role,
-                                                  layer=self, contact=metadata_author)
-
-    def _get_metadata_author(self):
-        try:
-            the_ma = ContactRole.objects.get(role=self.metadata_author_role, layer=self).contact
-        except ContactRole.DoesNotExist:
-            the_ma = None
-        return the_ma
-
-    metadata_author = property(_get_metadata_author, _set_metadata_author)
-
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
-
-    def get_absolute_url(self):
-        return reverse('geonode.layers.views.layer_detail', None, [str(self.typename)])
 
     def tiles_url(self):
         return self.link_set.get(name='Tiles').url
 
-    def __str__(self):
-        return "%s Layer" % self.typename
+    def maps(self):
+        from geonode.maps.models import MapLayer
+        return  MapLayer.objects.filter(name=self.typename)
 
+    @property
+    def class_name(self):
+        return self.__class__.__name__
 
+class Layer_Styles(models.Model):
+    layer = models.ForeignKey(Layer)
+    style = models.ForeignKey(Style)
+    
 class AttributeManager(models.Manager):
     """Helper class to access filtered attributes
     """
@@ -485,84 +261,25 @@ class Attribute(models.Model):
     attribute_type = models.CharField(_('attribute type'), help_text=_('the data type of the attribute (integer, string, geometry, etc)'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
     visible = models.BooleanField(_('visible?'), help_text=_('specifies if the attribute should be displayed in identify results'), default=True)
     display_order = models.IntegerField(_('display order'), help_text=_('specifies the order in which attribute should be displayed in identify results'), default=1)
+
+    # statistical derivations
+    count = models.IntegerField(_('count'), help_text=_('count value for this field'), default=1)
+    min = models.CharField(_('min'), help_text=_('minimum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    max = models.CharField(_('max'), help_text=_('maximum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    average = models.CharField(_('average'), help_text=_('average value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    median = models.CharField(_('median'), help_text=_('median value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    stddev = models.CharField(_('standard deviation'), help_text=_('standard deviation for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    sum = models.CharField(_('sum'), help_text=_('sum value for this field'), max_length=255, blank=False, null=True, unique=False, default='NA')
+    unique_values = models.TextField(_('unique values for this field'), null=True, blank=True, default='NA')
+    last_stats_updated = models.DateTimeField(_('last modified'), default=datetime.now, help_text=_('date when attribute statistics were last updated')) # passing the method itself, not
+
     objects = AttributeManager()
 
     def __str__(self):
         return "%s" % self.attribute_label if self.attribute_label else self.attribute
 
-class ContactRole(models.Model):
-    """
-    ContactRole is an intermediate model to bind Contacts and Layers and apply roles.
-    """
-    contact = models.ForeignKey(Contact)
-    layer = models.ForeignKey(Layer, null=True)
-    role = models.ForeignKey(Role)
-
-    def clean(self):
-        """
-        Make sure there is only one poc and author per layer
-        """
-        if (self.role == self.layer.poc_role) or (self.role == self.layer.metadata_author_role):
-            contacts = self.layer.contacts.filter(contactrole__role=self.role)
-            if contacts.count() == 1:
-                # only allow this if we are updating the same contact
-                if self.contact != contacts.get():
-                    raise ValidationError('There can be only one %s for a given layer' % self.role)
-        if self.contact.user is None:
-            # verify that any unbound contact is only associated to one layer
-            bounds = ContactRole.objects.filter(contact=self.contact).count()
-            if bounds > 1:
-                raise ValidationError('There can be one and only one layer linked to an unbound contact' % self.role)
-            elif bounds == 1:
-                # verify that if there was one already, it corresponds to this instace
-                if ContactRole.objects.filter(contact=self.contact).get().id != self.id:
-                    raise ValidationError('There can be one and only one layer linked to an unbound contact' % self.role)
-
-    class Meta:
-        unique_together = (("contact", "layer", "role"),)
-
-class LinkManager(models.Manager):
-    """Helper class to access links grouped by type
-    """
-
-    def data(self):
-        return self.get_query_set().filter(link_type='data')
-
-    def image(self):
-        return self.get_query_set().filter(link_type='image')
-
-    def download(self):
-        return self.get_query_set().filter(link_type__in=['image', 'data'])
-
-    def metadata(self):
-        return self.get_query_set().filter(link_type='metadata')
-
-    def original(self):
-        return self.get_query_set().filter(link_type='original')
-
-
-
-class Link(models.Model):
-    """Auxiliary model for storying links for layers.
-
-       This helps avoiding the need for runtime lookups
-       to the OWS server or the CSW Catalogue.
-
-       There are four types of links:
-        * original: For uploaded files (Shapefiles or GeoTIFFs)
-        * data: For WFS and WCS links that allow access to raw data
-        * image: For WMS and TMS links
-        * metadata: For CSW links
-    """
-    layer = models.ForeignKey(Layer)
-    extension = models.CharField(max_length=255, help_text=_('For example "kml"'))
-    link_type = models.CharField(max_length=255, choices = [(x, x) for x in LINK_TYPES])
-    name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
-    mime = models.CharField(max_length=255, help_text=_('For example "text/xml"'))
-    url = models.TextField(unique=True, max_length=1000)
-
-    objects = LinkManager()
-
+    def unique_values_as_list(self):
+        return self.unique_values.split(',')
 
 def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer
@@ -573,22 +290,41 @@ def geoserver_pre_delete(instance, sender, **kwargs):
 
 
 def pre_save_layer(instance, sender, **kwargs):
+    if kwargs.get('raw', False):
+        instance.owner = instance.resourcebase_ptr.owner
+        instance.uuid = instance.resourcebase_ptr.uuid
+        instance.bbox_x0 = instance.resourcebase_ptr.bbox_x0
+        instance.bbox_x1 = instance.resourcebase_ptr.bbox_x1
+        instance.bbox_y0 = instance.resourcebase_ptr.bbox_y0
+        instance.bbox_y1 = instance.resourcebase_ptr.bbox_y1
+
     if instance.abstract == '' or instance.abstract is None:
         instance.abstract = 'No abstract provided'
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 
-    # Stay away from setting poc or metadata author in the usual way,
-    # it requires the layer to be saved to the database.
-    # By using contact_role_set we bypass that restriction.
-    if instance.poc is None:
-        instance.contactrole_set.create(role=instance.poc_role,
-                                         contact=Layer.objects.admin_contact())
-
-    if instance.metadata_author is None:
-        instance.contactrole_set.create(role=instance.metadata_author_role,
-                                         contact=Layer.objects.admin_contact())
-
+def pre_delete_layer(instance, sender, **kwargs):
+    """
+    Remove any associated style to the layer, if it is not used by other layers.
+    Default style will be deleted in post_delete_layer
+    """
+    logger.debug("Going to delete the styles associated for [%s]", instance.typename)
+    default_style = instance.default_style
+    for style in instance.styles.all():
+        if style.layer_styles.all().count()==1:
+            if style != default_style:
+                style.delete()
+    
+def post_delete_layer(instance, sender, **kwargs):
+    """
+    Removed the layer from any associated map, if any.
+    Remove the layer default style.
+    """
+    from geonode.maps.models import MapLayer
+    logger.debug("Going to delete associated maplayers for [%s]", instance.typename)
+    MapLayer.objects.filter(name=instance.typename).delete()
+    logger.debug("Going to delete the default style for [%s]", instance.typename)
+    instance.default_style.delete()
 
 def geoserver_pre_save(instance, sender, **kwargs):
     """Send information to geoserver.
@@ -641,7 +377,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
 
     if instance.poc and instance.poc.user:
         gs_layer.attribution = str(instance.poc.user)
-        profile = Contact.objects.get(user=instance.poc.user)
+        profile = Profile.objects.get(user=instance.poc.user)
         gs_layer.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
         gs_catalog.save(gs_layer)
 
@@ -667,6 +403,9 @@ def geoserver_pre_save(instance, sender, **kwargs):
     instance.bbox_x1 = bbox[1]
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
+
+    instance.update_thumbnail(save=False)
+
 
 def geoserver_post_save(instance, sender, **kwargs):
     """Save keywords to GeoServer
@@ -716,72 +455,77 @@ def geoserver_post_save(instance, sender, **kwargs):
                     instance.srid, height, width)
 
     for ext, name, mime, wms_url in links:
-        instance.link_set.get_or_create(url=wms_url,
-                          defaults=dict(
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=wms_url,
+                        defaults=dict(
                             extension=ext,
                             name=name,
                             mime=mime,
                             link_type='image',
                            )
-        )
-
+                        )
 
     if instance.storeType == "dataStore":
         links = wfs_links(settings.GEOSERVER_BASE_URL + 'wfs?', instance.typename)
         for ext, name, mime, wfs_url in links:
-            instance.link_set.get_or_create(url=wfs_url,
-                           defaults=dict(
-                            extension=ext,
-                            name=name,
-                            mime=mime,
+            Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                             url=wfs_url,
-                            link_type='data',
+                            defaults=dict(
+                                extension=ext,
+                                name=name,
+                                mime=mime,
+                                url=wfs_url,
+                                link_type='data',
                             )
-            )
+                        )
 
 
     elif instance.storeType == 'coverageStore':
         #FIXME(Ariel): This works for public layers, does it work for restricted too?
         # would those end up with no geotiff links, like, forever?
-        links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename)
-        for ext, name, mime, wcs_url in links:
-            instance.link_set.get_or_create(url=wcs_url,
-                              defaults=dict(
-                                extension=ext,
-                                name=name,
-                                mime=mime,
-                                link_type='data',
-                                )
-                               )
 
+        links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename, 
+            bbox=instance.bbox[:-1], crs=instance.bbox[-1], height=height, width=width)
+        for ext, name, mime, wcs_url in links:
+            Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                                url=wcs_url,
+                                defaults=dict(
+                                    extension=ext,
+                                    name=name,
+                                    mime=mime,
+                                    link_type='data',
+                                )
+                            )
 
     kml_reflector_link_download = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
         'layers': instance.typename,
         'mode': "download"
     })
 
-    instance.link_set.get_or_create(url=kml_reflector_link_download,
-                       defaults=dict(
-                        extension='kml',
-                        name=_("KML"),
-                        mime='text/xml',
-                        link_type='data',
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=kml_reflector_link_download,
+                        defaults=dict(
+                            extension='kml',
+                            name=_("KML"),
+                            mime='text/xml',
+                            link_type='data',
                         )
-                       )
+                    )
 
     kml_reflector_link_view = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
         'layers': instance.typename,
         'mode': "refresh"
     })
 
-    instance.link_set.get_or_create(url=kml_reflector_link_view,
-                       defaults=dict(
-                        extension='kml',
-                        name=_("View in Google Earth"),
-                        mime='text/xml',
-                        link_type='data',
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=kml_reflector_link_view,
+                        defaults=dict(
+                            extension='kml',
+                            name=_("View in Google Earth"),
+                            mime='text/xml',
+                            link_type='data',
                         )
-                       )
+                    )
 
     tile_url = ('%sgwc/service/gmaps?' % settings.GEOSERVER_BASE_URL +
                 'layers=%s' % instance.typename +
@@ -789,20 +533,30 @@ def geoserver_post_save(instance, sender, **kwargs):
                 '&format=image/png8'
                 )
 
-    instance.link_set.get_or_create(url=tile_url,
-                       defaults=dict(
-                        extension='tiles',
-                        name=_("Tiles"),
-                        mime='text/png',
-                        link_type='image',
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr, 
+                        url=tile_url,
+                        defaults=dict(
+                            extension='tiles',
+                            name=_("Tiles"),
+                            mime='text/png',
+                            link_type='image',
+                            )
                         )
-                       )
+
+    #remove links that belong to and old address
+
+    for link in instance.link_set.all():
+        if not urlparse(settings.SITEURL).hostname == urlparse(link.url).hostname and not \
+                    urlparse(settings.GEOSERVER_BASE_URL).hostname == urlparse(link.url).hostname:
+
+            link.delete()
 
     #Save layer attributes
     set_attributes(instance)
 
     #Save layer styles
     set_styles(instance, gs_catalog)
+
 
 def set_styles(layer, gs_catalog):
     style_set = []
@@ -825,6 +579,39 @@ def save_style(gs_style):
     style.sld_url = gs_style.body_href()
     style.save()
     return style
+
+
+def is_layer_attribute_aggregable(store_type, field_name, field_type):
+    """
+    Dechiper whether layer attribute is suitable for statistical derivation
+    """
+
+    # must be vector layer
+    if store_type != 'dataStore':
+        return False
+    # must be a numeric data type
+    if field_type not in LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES:
+        return False
+    # must not be an identifier type field
+    if field_name.lower() in ['id', 'identifier']:
+        return False
+
+    return True
+
+
+def get_attribute_statistics(layer_name, field):
+    """
+    Generate statistics (range, mean, median, standard deviation, unique values)
+    for layer attribute
+    """
+
+    logger.debug('Deriving aggregate statistics for attribute %s', field)
+
+    try:
+        return wps_execute_layer_attribute_statistics(layer_name, field)
+    except Exception:
+        logger.exception('Error generating layer aggregate statistics')
+
 
 def set_attributes(layer):
     """
@@ -896,6 +683,19 @@ def set_attributes(layer):
             if field is not None:
                 la, created = Attribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
                 if created:
+                    if is_layer_attribute_aggregable(layer.storeType, field, ftype):
+                        logger.debug("Generating layer attribute statistics")
+                        result = get_attribute_statistics(layer.name, field)
+                        if result is not None:
+                            la.count = result['Count']
+                            la.min = result['Min']
+                            la.max = result['Max']
+                            la.average = result['Average']
+                            la.median = result['Median']
+                            la.stddev = result['StandardDeviation']
+                            la.sum = result['Sum']
+                            la.unique_values = result['unique_values']
+                            la.last_stats_updated = datetime.now()
                     la.attribute_label = field.title()
                     la.visible = ftype.find("gml:") != 0
                     la.display_order = iter
@@ -909,3 +709,8 @@ signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.pre_save.connect(geoserver_pre_save, sender=Layer)
 signals.pre_delete.connect(geoserver_pre_delete, sender=Layer)
 signals.post_save.connect(geoserver_post_save, sender=Layer)
+signals.pre_delete.connect(pre_delete_layer, sender=Layer)
+signals.post_delete.connect(post_delete_layer, sender=Layer)
+signals.post_delete.connect(resourcebase_post_delete, sender=Layer)
+signals.post_save.connect(resourcebase_post_save, sender=Layer)
+signals.pre_save.connect(resourcebase_pre_save, sender=Layer)

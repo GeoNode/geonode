@@ -1,0 +1,8 @@
+{% load friendly_loader %}
+{% load i18n %}
+{% friendly_load relationship_tags %}
+<h3>{% trans "Manage Connections" %}</h3>
+<ul class="nav nav-list">
+    <li><a href="{% url "relationship_list" user "following" %}">{% trans "Following" %}</a></li>
+    <li><a href="{% url "relationship_list" user "blocking" %}">{% trans "Blocking" %}</a></li>
+</ul>
