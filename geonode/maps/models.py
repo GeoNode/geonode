@@ -203,6 +203,7 @@ class Map(ResourceBase, GXPMapBase):
             return
         if self.thumbnail == None:
             self.save_thumbnail(self._thumbnail_url(width=159, height=63), save)
+                
 
     def _render_thumbnail(self, spec):
         http = httplib2.Http()
@@ -235,14 +236,19 @@ class Map(ResourceBase, GXPMapBase):
             # though unicode accepts them (as seen below)
             data = data.encode('ASCII','ignore')
         data = unicode(data, errors='ignore').encode('UTF-8')
-        resp, content = http.request(url,"POST",data,{
-            'Content-type':'text/html'
-        })
+        try:
+            resp, content = http.request(url,"POST",data,{
+                'Content-type':'text/html'
+            })
+        except Exception:
+            logging.warning('Error generating thumbnail')
+            return 
         if resp.status < 200 or resp.status > 299:
             logging.warning('Error generating thumbnail %s',content)
-            raise Exception('Error generating thumbnail')
+            return 
         if len(content) == 0:
-           raise Exception('Empty thumb content')
+            logging.warning('Empty thumb content %s',content)
+            return
         return content
 
     def _thumbnail_url(self, width=20, height=None):

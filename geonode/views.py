@@ -101,9 +101,16 @@ def _handleThumbNail(req, obj):
     if req.method == 'GET':
         return HttpResponseRedirect(obj.get_thumbnail_url())
     elif req.method == 'POST':
-        spec = _fixup_ows_url(req.raw_post_data)
-        obj.save_thumbnail(spec)
-        return HttpResponseRedirect(obj.get_thumbnail_url())
+        try:
+            spec = _fixup_ows_url(req.raw_post_data)
+            obj.save_thumbnail(spec)
+            return HttpResponseRedirect(obj.get_thumbnail_url())
+        except:
+            return HttpResponse(
+                content='error saving thumbnail',
+                status=500,
+                mimetype='text/plain'
+            )
 
 def _fixup_ows_url(thumb_spec):
     #@HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
