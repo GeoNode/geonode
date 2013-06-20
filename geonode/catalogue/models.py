@@ -117,6 +117,11 @@ def catalogue_pre_save(instance, sender, **kwargs):
             res = onlineresources[0]
             instance.distribution_url = res.url
             instance.distribution_description = res.description
+    else:
+            durl = '%s%s' % (settings.SITEURL, instance.get_absolute_url())
+            instance.distribution_url = durl
+            instance.distribution_description = \
+            'Online link to the \'%s\' description on GeoNode ' % instance.title
 
 if 'geonode.catalogue' in settings.INSTALLED_APPS:
     signals.pre_save.connect(catalogue_pre_save, sender=Layer)
