@@ -118,7 +118,11 @@ def catalogue_pre_save(instance, sender, **kwargs):
             instance.distribution_url = res.url
             instance.distribution_description = res.description
     else:
-            durl = '%s%s' % (settings.SITEURL, instance.get_absolute_url())
+            durl = settings.SITEURL 
+            if durl[-1] == '/':  # strip trailing slash
+                durl = durl[:-1]
+
+            durl = '%s%s' % (durl, instance.get_absolute_url())
             instance.distribution_url = durl
             instance.distribution_description = \
             'Online link to the \'%s\' description on GeoNode ' % instance.title
