@@ -101,8 +101,8 @@ WSGIDaemonProcess geonode user=www-data threads=15 processes=2
     </Proxy>
 
     ProxyPreserveHost On
-    ProxyPass /geoserver http://localhost:8080/geoserver
-    ProxyPassReverse /geoserver http://localhost:8080/geoserver
+    ProxyPass /geoserver http://localhost:8082/geoserver
+    ProxyPassReverse /geoserver http://localhost:8082/geoserver
 </VirtualHost>
 
 
