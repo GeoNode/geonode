@@ -45,7 +45,7 @@ if process_results is None:
 
 owner_query = resolve_extension('owner_query')
 if not owner_query:
-    owner_query = lambda q: Profile.objects.filter()
+    owner_query = lambda q: Profile.objects.filter(user__isnull=False)
 
 owner_query_fields = resolve_extension('owner_query_fields') or []
 

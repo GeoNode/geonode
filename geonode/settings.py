@@ -64,8 +64,14 @@ LANGUAGES = (
     ('de', 'Deutsch'),
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
-#    ('zh', '中文'),
+    ('zh-cn', '中文'),
     ('ja', '日本人'),
+    ('fa', 'Persian'),
+    ('pt', 'Portuguese'),
+    ('ru', 'Russian'),
+    ('vi', 'Vietnamese'),
+    #('fil', 'Filipino'),
+    
 )
 
 # If you set this to False, Django will make some optimizations so as not
