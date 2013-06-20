@@ -38,5 +38,6 @@ def resource_urls(request):
         DOCUMENTS_APP = settings.DOCUMENTS_APP,
         UPLOADER_URL = reverse('data_upload') if (settings.UPLOADER_BACKEND_URL and settings.UPLOADER_BACKEND_URL == 'importer') else reverse('layer_upload'),
         GEOGIT_ENABLED = getattr(settings, "GEOGIT_DATASTORE", False),
-        TIME_ENABLED = getattr(settings, "UPLOADER_SHOW_TIME_STEP", False)
+        TIME_ENABLED = getattr(settings, "UPLOADER_SHOW_TIME_STEP", False),
+        PRINTNG_ENABLED = getattr(settings, "PRINTNG_ENABLED", False)
     )
