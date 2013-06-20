@@ -401,6 +401,8 @@ class Link(models.Model):
 
 def update_counts(instance, type, increment = 0):
         category = instance.category
+        if category is None:
+            return
         if type == 'Layer':
             category.layers_count += increment
         elif type == 'Map':
