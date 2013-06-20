@@ -273,7 +273,7 @@ def newmap_config(request):
         map_obj.abstract = DEFAULT_ABSTRACT
         map_obj.title = DEFAULT_TITLE
         map_obj.urlsuffix = DEFAULT_URL
-        if request.user.is_authenticated(): map.owner = request.user
+        if request.user.is_authenticated(): map_obj.owner = request.user
         config = map_obj.viewer_json(request.user)
         config['edit_map'] = True
         if 'id' in config:
