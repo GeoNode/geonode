@@ -67,7 +67,8 @@
         ".components/jquery-waypoints/waypoints.min.js"
       ],
       "multi-select" : [
-        ".components/multi-select/js/jquery.multi-select.js" 
+        ".components/multi-select/js/jquery.multi-select.js", 
+        ".components/multi-select/css/multi-select.css"
       ],
       "json2" : [
         ".components/json2/json2.js"
