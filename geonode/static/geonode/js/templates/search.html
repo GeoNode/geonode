@@ -1,0 +1,18 @@
+<script type="text/html" id="searchResultsRowTemplate">
+  <tr>
+    <td><a href="<%= detail %>"><%= title %></a></td>
+    <td></td><td></td>
+    <td><input class="asset-selector pull-right" data-name="<%= name %>" data-type="layer" type="checkbox"></td>
+  </tr>
+</script>
+<script type="text/html" id="searchNoResultsTemplate">
+  <tr>
+    <td colspan="3">
+      <!-- TODO i18n this text -->
+      "Your search did not match any items."
+    </td>
+  </tr>
+</script>
+
+  <!-- <td><a href="<%= owner_detail %>"><%= owner %></a></td>
+  <td><abbr class="timeago" title="<%= last_modified %>"><%= last_modified %></abbr></td> -->

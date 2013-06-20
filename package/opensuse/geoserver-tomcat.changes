@@ -1,0 +1,9 @@
+-------------------------------------------------------------------
+Fri Mar 29 20:14:20 UTC 2013 - Angelos Tzotsos <tzotsos@opensuse.org>
+
+- Updated to version 2.3.0
+
+-------------------------------------------------------------------
+Sat Jan  5 17:01:37 UTC 2013 - Angelos Tzotsos <tzotsos@opensuse.org>
+
+- Initial spec file to install GeoServer 2.2.3 under default tomcat

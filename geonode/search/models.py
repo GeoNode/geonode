@@ -19,7 +19,7 @@
 
 from django.conf import settings
 
-from geonode.layers.models import Layer
+from geonode.base.models import ResourceBase
 from geonode.layers.models import add_bbox_query
 from geonode.search.util import iso_fmt
 
@@ -29,12 +29,13 @@ def filter_by_period(model, q, start, end, user=None):
     '''modify the query to filter the given model for dates between start and end
     start, end - iso str ('-5000-01-01T12:00:00Z')
     '''
-    parse = lambda v: datetime.strptime(v, iso_fmt)
-    if model == Layer and not user:
+
+    parse = lambda v: datetime.strptime(v, iso_fmt)  
+    if issubclass(model, ResourceBase) and not user:
         if start:
-            q = q.filter(temporal_extent_start__gte = parse(start))
-        if end:
-            q = q.filter(temporal_extent_end__lte = parse(end))
+            q = q.filter(date__gte = parse(start))
+        if end:    
+            q = q.filter(date__lte = parse(end))
     else:
         # @todo handle map and/or users - either directly if implemented or ...
         # this will effectively short-circuit the query at this point
@@ -45,7 +46,7 @@ def filter_by_extent(model, q, extent, user=None):
     '''modify the query to filter the given model for the provided extent and optional user
     extent: tuple of float coordinates representing x0,x1,y0,y1
     '''
-    if model == Layer and not user:
+    if issubclass(model, ResourceBase) and not user:
         q = add_bbox_query(q, extent)
     else:
         # @todo handle map and/or users - either directly if implemented or ...

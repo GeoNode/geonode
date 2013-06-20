@@ -19,8 +19,8 @@
 
 from django.core.management.base import BaseCommand
 from optparse import make_option
-from geonode.layers.models import Layer
 from geonode.people.utils import get_valid_user
+from geonode.geoserver.helpers import gs_slurp
 import traceback
 import datetime
 import sys
@@ -36,6 +36,10 @@ class Command(BaseCommand):
             help='Stop after any errors are encountered.'),
         make_option('-u', '--user', dest="user", default=None,
             help="Name of the user account which should own the imported layers"),
+        make_option('-f', '--filter', dest="filter", default=None,
+            help="Only update data the layers that match the given filter"),
+        make_option('-s', '--store', dest="store", default=None,
+            help="Only update data the layers for the given geoserver store name"),
         make_option('-w', '--workspace', dest="workspace", default=None,
             help="Only update data on specified workspace")
         )
@@ -46,6 +50,8 @@ class Command(BaseCommand):
         user = options.get('user')
         owner = get_valid_user(user)
         workspace = options.get('workspace')
+        filter = options.get('filter')
+        store = options.get('store')
 
         if verbosity > 0:
             console = sys.stdout
@@ -53,8 +59,8 @@ class Command(BaseCommand):
             console = None
 
         start = datetime.datetime.now()
-        output = Layer.objects.slurp(ignore_errors, verbosity=verbosity,
-                owner=owner, console=console, workspace=workspace)
+        output = gs_slurp(ignore_errors, verbosity=verbosity,
+                owner=owner, console=console, workspace=workspace, store=store, filter=filter)
         updated = [dict_['name'] for dict_ in output if dict_['status']=='updated']
         created = [dict_['name'] for dict_ in output if dict_['status']=='created']
         failed = [dict_['name'] for dict_ in output if dict_['status']=='failed']

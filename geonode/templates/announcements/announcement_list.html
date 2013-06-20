@@ -1,8 +1,8 @@
-{% extends "base.html" %}
+{% extends "site_base.html" %}
 {% load i18n %}
 {% block title %} {% trans "Announcements" %} - {{ block.super }} {% endblock %}
 
-{% block main %}
+{% block body %}
     <h1>{% trans "Announcements" %}</h1>
     
     {% if object_list %}
@@ -10,7 +10,7 @@
         {% for announcement in object_list %}
         <li>
             <a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a> -
-            <a href="{% url announcement_hide announcement.pk %}?next={{ request.path }}">{% trans "Hide announcement" %}</a>
+            <a href="{% url "announcement_hide" announcement.pk %}?next={{ request.path }}">{% trans "Hide announcement" %}</a>
         </li>
         {% endfor %}
     </ul>

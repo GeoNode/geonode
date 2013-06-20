@@ -27,7 +27,7 @@ from django.utils import simplejson as json
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.layers.models import Layer, Attribute
-from geonode.people.models import Contact
+from geonode.people.models import Profile 
 
 
 class JSONField(forms.CharField):
@@ -48,11 +48,11 @@ class LayerForm(forms.ModelForm):
 
     poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                  label = "Point Of Contact", required=False,
-                                 queryset = Contact.objects.exclude(user=None))
+                                 queryset = Profile.objects.exclude(user=None))
 
     metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                              label = "Metadata Author", required=False,
-                                             queryset = Contact.objects.exclude(user=None))
+                                             queryset = Profile.objects.exclude(user=None))
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
     class Meta:
@@ -61,7 +61,7 @@ class LayerForm(forms.ModelForm):
                    'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid',
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext',
-                   'popular_count', 'share_count')
+                   'popular_count', 'share_count', 'thumbnail', 'default_style', 'styles')
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
@@ -75,7 +75,10 @@ class LayerUploadForm(forms.Form):
     def clean(self):
         cleaned = super(LayerUploadForm, self).clean()
         base_name, base_ext = os.path.splitext(cleaned["base_file"].name)
-        if base_ext.lower() not in (".shp", ".tif", ".tiff", ".geotif", ".geotiff"):
+        if base_ext.lower() == '.zip':
+            # for now, no verification, but this could be unified
+            pass
+        elif base_ext.lower() not in (".shp", ".tif", ".tiff", ".geotif", ".geotiff"):
             raise forms.ValidationError("Only Shapefiles and GeoTiffs are supported. You uploaded a %s file" % base_ext)
         if base_ext.lower() == ".shp":
             dbf_file = cleaned["dbf_file"]
@@ -136,10 +139,15 @@ class LayerDescriptionForm(forms.Form):
 class LayerAttributeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(LayerAttributeForm, self).__init__(*args, **kwargs)
-        instance = getattr(self, 'instance', None)
         self.fields['attribute'].widget.attrs['readonly'] = True
         self.fields['display_order'].widget.attrs['size'] = 3
 
     class Meta:
         model = Attribute
         exclude = ('attribute_type',)
+
+class LayerStyleUploadForm(forms.Form):
+    layerid = forms.IntegerField()
+    name = forms.CharField(required=False)
+    update = forms.BooleanField(required=False)
+    sld = forms.FileField()

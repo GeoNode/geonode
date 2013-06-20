@@ -1,0 +1,35 @@
+-------------------------------------------------------------------
+Tue May  7 17:13:18 UTC 2013 - Angelos Tzotsos <tzotsos@opensuse.org>
+
+- Added more needed packages:
+ * python-django-pagination
+ * python-django-jsonfield
+ * python-django-friendly-tag-loader
+ * python-django-taggit
+ * python-django-taggit-templatetags
+ * python-django-geoexplorer
+ * python-django-relationships
+ * python-django-notification
+ * python-django-announcements
+ * python-django-activity-stream
+ * python-django-request
+ * python-user-messages
+ * python-geonode-avatar
+ * python-dialogos
+ * python-agon-ratings
+ * python-South
+
+-------------------------------------------------------------------
+Tue May  7 11:57:16 UTC 2013 - Angelos Tzotsos <tzotsos@opensuse.org>
+
+- Updated to 2.0beta1
+- Added more needed packages:
+ * python-pinax-theme-bootstrap
+ * python-pinax-theme-bootstrap-account
+ * python-django-user-accounts
+
+-------------------------------------------------------------------
+Mon Apr  1 19:12:41 UTC 2013 - Angelos Tzotsos <tzotsos@opensuse.org>
+
+- Initial spec file
+

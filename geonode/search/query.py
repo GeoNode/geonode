@@ -26,7 +26,10 @@ from datetime import date
 from datetime import timedelta
 import operator
 
-DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
+try:
+    DEFAULT_SEARCH_SIZE = settings.DEFAULT_SEARCH_SIZE
+except ValueError:
+    DEFAULT_SEARCH_SIZE = 10
 
 _SEARCH_PARAMS = [
     'type',
@@ -35,10 +38,12 @@ _SEARCH_PARAMS = [
     'extent',
     'added',
     'period',
+    'start_date',
+    'end_date',
     'start',
-    'end',
     'exclude',
-    'cache']
+    'cache',
+    'category']
 
 # settings API
 _search_config = getattr(settings,'SIMPLE_SEARCH_SETTINGS', {})
@@ -82,7 +87,7 @@ class Query(object):
     start = None
     limit = None
 
-    def __init__(self, query, start=0, limit=DEFAULT_MAPS_SEARCH_BATCH_SIZE,
+    def __init__(self, query, start=0, limit=DEFAULT_SEARCH_SIZE,
                  sort_field='last_modified', sort_asc=False, filters=None,
                  user=None, cache=True):
         self.query = query
@@ -95,21 +100,30 @@ class Query(object):
         self.user = user
         self.cache = cache
 
-        self.type = filters.get('type')
+        self.type = tuple(filters.get('type').split(',')) if filters.get('type') else (None,)
         self.owner = filters.get('owner')
         self.kw = filters.get('kw')
+        self.exclude = filters.get('exclude')
+        self.categories = tuple(filters.get('category').split(',')) if filters.get('category') else None
         if self.kw:
             self.kw = tuple(self.kw.split(','))
+        if self.exclude:
+            self.exclude = tuple(self.exclude.split(','))
 
         val = filters['period']
         self.period = tuple(val.split(',')) if val else None
 
-        start = filters['start']
-        end = filters['end']
-        if start or end:
+        start_date = filters['start_date']
+        end_date = filters['end_date']
+        if start_date or end_date:
             if self.period:
                 raise BadQuery('period and start/end both provided')
-            self.period = (start, end)
+            #if the date is in the format 'yyyy-mm-dd' make it iso format
+            if start_date and len(start_date) == 10:   
+                start_date += 'T00:00:00Z'
+            if end_date and len(end_date) == 10:
+                end_date += 'T00:00:00Z'
+            self.period = (start_date, end_date)
 
         val = filters['extent']
         if val:
@@ -158,11 +172,17 @@ def query_from_request(request, extra):
 
     query = params.get('q', '')
     try:
-        start = int(params.get('startIndex', 0))
+        start = int(params.get('start', 0))
     except ValueError:
         raise BadQuery('startIndex must be valid number')
     try:
-        limit = int(params.get('limit', DEFAULT_MAPS_SEARCH_BATCH_SIZE))
+        limit = params.get('limit', DEFAULT_SEARCH_SIZE)
+
+        if str(limit).lower() == 'none':
+            limit = None
+
+        if limit is not None:
+            limit = int(limit)
     except ValueError:
         raise BadQuery('limit must be valid number')
 
@@ -177,13 +197,15 @@ def query_from_request(request, extra):
             'alphaaz' : ('title',True),
             'alphaza' : ('title',False),
             'popularity' : ('rank',False),
-            'rel' : ('relevance',False)
+            'rel' : ('relevance',False),
+            'none' : (None,False)
         }
         try:
             sort_field, sort_asc = sorts[params.get('sort','newest')]
         except KeyError:
             raise BadQuery('valid sorting values are: %s' % sorts.keys())
 
+    params['category'] = None if 'all' in params.get('category', '') else params.get('category', '')
     filters = dict([(k,params.get(k,None) or None) for k in _SEARCH_PARAMS])
 
     aliases = dict(bbox='extent')

@@ -18,21 +18,42 @@
 #########################################################################
 
 import os
+import re
+import shutil
 import sys
 import time
 import urllib
+import zipfile
+import glob
+import fileinput
 
 from paver.easy import task, options, cmdopts, needs
-from paver.easy import path, sh, pushd, info, call_task
+from paver.easy import path, sh, info, call_task
 from paver.easy import BuildFailure
 
-assert sys.version_info >= (2, 6, 2), \
-    SystemError("GeoNode Build requires python 2.6.2 or better")
+try:
+    from paver.path import pushd
+except ImportError:
+    from paver.easy import pushd
+
+assert sys.version_info >= (2, 7), \
+    SystemError("GeoNode Build requires python 2.7 or better")
 
 
-def grab(src, dest):
-    urllib.urlretrieve(str(src), str(dest))
+def grab(src, dest, name):
+    download = True
+    if not dest.exists():
+        print 'Downloading %s' % name
+    elif not zipfile.is_zipfile(dest):
+        print 'Downloading %s (corrupt file)' % name
+    else:
+        download = False
+    if download:
+        urllib.urlretrieve(str(src), str(dest))
 
+GEOSERVER_URL="http://build.geonode.org/geoserver/latest/geoserver.war"
+DATA_DIR_URL="http://build.geonode.org/geoserver/latest/data.zip"
+JETTY_RUNNER_URL="http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar"
 
 @task
 @cmdopts([
@@ -41,76 +62,61 @@ def grab(src, dest):
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     fast = options.get('fast', False)
+    download_dir = path('downloaded')
+    if not download_dir.exists():
+        download_dir.makedirs()
 
-    with pushd('geoserver-geonode-ext'):
-        if fast:
-            sh('mvn install -DskipTests')
-        else:
-            sh("mvn clean install jetty:stop")
+    geoserver_dir = path('geoserver')
+
+    geoserver_bin = download_dir / os.path.basename(GEOSERVER_URL)
+    jetty_runner = download_dir / os.path.basename(JETTY_RUNNER_URL)
+    data_dir = download_dir / os.path.basename(DATA_DIR_URL)
+
+    grab(GEOSERVER_URL, geoserver_bin, "geoserver binary")
+    grab(JETTY_RUNNER_URL, jetty_runner, "jetty runner")
+    grab(DATA_DIR_URL, data_dir, "data dir")
+
+    if not geoserver_dir.exists():
+        geoserver_dir.makedirs()
+
+        webapp_dir = geoserver_dir / 'geoserver'
+        if not webapp_dir:
+            webapp_dir.makedirs()
+
+        print 'extracting geoserver'
+        with zipfile.ZipFile(geoserver_bin, "r") as z:
+            z.extractall(webapp_dir)
+
+        _install_data_dir()
 
 
-@task
-def setup_client(options):
-    """
-    Fetch geonode-client
-    """
-    sh('git submodule update --init')
-    here = os.path.abspath('.')
-    static = path(here) / 'geonode' / 'static' / 'geonode'
-    scripts_path = path(static) / 'script'
+def _install_data_dir():
+    data_dir = path('geoserver/data')
+    if data_dir.exists():
+        data_dir.rmtree()
 
-    if not scripts_path.exists():
-        scripts_path.makedirs()
+    geoserver_dir = path('geoserver')
+    download_dir = path('downloaded')
+    data_dir_zip = download_dir / os.path.basename(DATA_DIR_URL)
 
-    with pushd("geonode-client/"):
-        sh("jsbuild buildjs.cfg -o %s" % scripts_path)
+    if os.path.exists(data_dir_zip):
+        print 'extracting datadir'
+        with zipfile.ZipFile(data_dir_zip, "r") as z:
+            z.extractall(geoserver_dir)
 
-    resources = (
-        # Ext resources
-        ('externals/ext',
-         'app/static/externals/ext'),
-        ('externals/gxp/theme',
-         'app/static/externals/gxp/src/theme'),
-        ('externals/PrintPreview/resources',
-         'app/static/externals/PrintPreview/resources'),
-        ('externals/geoext/resources',
-         'app/static/externals/geoext/resources'),
-        # OpenLayers resources
-        ('externals/openlayers/theme',
-         'app/static/externals/openlayers/theme'),
-        ('externals/openlayers/img',
-         'app/static/externals/openlayers/img'),
-        ('theme/ux/colorpicker',
-         'app/static/script/ux/colorpicker/color-picker.ux.css'),
-        ('script/ux/colorpicker',
-         'script/ux/colorpicker/picker.gif'),
-        ('script/ux/colorpicker',
-         'app/static/script/ux/colorpicker/side_slider.jpg'),
-        ('script/ux/colorpicker',
-         'app/static/script/ux/colorpicker/mask.png'),
-        # GeoExt Resources
-        ('externals/geoext/resource',
-         'app/static/externals/geoext/resources'),
-        ('theme/ux/fileuploadfield',
-         'app/static/script/ux/fileuploadfield/css'),
-        # gxp resources
-        ('externals/gxp/src/theme',
-         'app/static/externals/gxp/src/theme'),
-        # GeoExplorer resources
-        ('theme/app',
-         'app/static/theme/app')
-    )
-
-    for t, o in resources:
-        origin = path('geonode-client') / o
-        target = path(static) / t
-        justcopy(origin, target)
+        config = geoserver_dir / 'data/security/auth/geonodeAuthProvider/config.xml'
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('baseUrl>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
+        with open(config, 'w') as f: f.write(xml)
+    else:
+        print 'data_dir_zip not found, unable to extract and configure'
 
 
 @task
 @needs([
     'setup_geoserver',
-    'setup_client',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
@@ -133,7 +139,6 @@ def upgradedb(options):
     if version in ['1.1', '1.2']:
         sh("python manage.py migrate maps 0001 --fake")
         sh("python manage.py migrate avatar 0001 --fake")
-        sh("python manage.py migrate registration 0001 --fake")
     elif version is None:
         print "Please specify your GeoNode version"
     else:
@@ -168,9 +173,18 @@ def package(options):
     out_pkg_tar = path("%s.tar.gz" % pkgname)
 
     # Create a distribution in zip format for the geonode python package.
+    dist_dir = path('dist')
+    dist_dir.rmtree()
     sh('python setup.py sdist --format=zip')
 
     with pushd('package'):
+
+        #Delete old tar files in that directory
+        for f in glob.glob('GeoNode*.tar.gz'):
+            old_package = path(f)
+            if old_package != out_pkg_tar:
+                old_package.remove()
+
         if out_pkg_tar.exists():
             info('There is already a package for version %s' % version)
             return
@@ -185,12 +199,6 @@ def package(options):
         # And copy the default files from the package folder.
         justcopy(support_folder, out_pkg / 'support')
         justcopy(install_file, out_pkg)
-
-        # Package Geoserver's war.
-        geoserver_path = ('../geoserver-geonode-ext/target/'
-                          'geonode-geoserver-ext-0.3.jar')
-        geoserver_target = path(geoserver_path)
-        geoserver_target.copy(out_pkg)
 
         geonode_dist = path('..') / 'dist' / 'GeoNode-%s.zip' % version
         justcopy(geonode_dist, out_pkg)
@@ -208,7 +216,7 @@ def package(options):
         out_pkg.rmtree()
 
     # Report the info about the new package.
-    info("%s.tar.gz created" % out_pkg.abspath())
+    info("%s created" % out_pkg_tar.abspath())
 
 
 @task
@@ -224,7 +232,7 @@ def start():
     """
     info("GeoNode is now available.")
 
-
+@task
 def stop_django():
     """
     Stop the GeoNode Django application
@@ -232,11 +240,12 @@ def stop_django():
     kill('python', 'runserver')
 
 
+@task
 def stop_geoserver():
     """
     Stop GeoServer
     """
-    kill('jetty', 'java')
+    kill('java', 'geoserver')
 
 
 @task
@@ -269,19 +278,41 @@ def start_geoserver(options):
 
     from geonode.settings import GEOSERVER_BASE_URL
 
-    with pushd('geoserver-geonode-ext'):
-        sh(('MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=256m"'
-           ' mvn jetty:run > /dev/null &'))
+    url = "http://localhost:8080/geoserver/"
+    if GEOSERVER_BASE_URL != url:
+        print 'your GEOSERVER_BASE_URL does not match %s' % url
+        sys.exit(1)
 
-    info('Starting GeoServer on %s' % GEOSERVER_BASE_URL)
+    download_dir = path('downloaded').abspath()
+    jetty_runner = download_dir / os.path.basename(JETTY_RUNNER_URL)
+    data_dir = path('geoserver/data').abspath()
+    web_app = path('geoserver/geoserver').abspath()
+    log_file = path('geoserver/jetty.log').abspath()
+
+    # @todo - we should not have set workdir to the datadir but a bug in geoserver
+    # prevents geonode security from initializing correctly otherwise
+    with pushd(data_dir):
+        sh(('java -Xmx512m -XX:MaxPermSize=256m'
+            ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
+            # workaround for JAI sealed jar issue and jetty classloader
+            ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
+            ' -jar %(jetty_runner)s'
+            ' --log %(log_file)s'
+            ' --path /geoserver %(web_app)s'
+            ' > /dev/null &' % locals()
+          ))
+
+    info('Starting GeoServer on %s' % url)
+
     # wait for GeoServer to start
-    started = waitfor(GEOSERVER_BASE_URL)
+    started = waitfor(url)
+    info('The logs are available at %s' % log_file)
+
     if not started:
         # If applications did not start in time we will give the user a chance
         # to inspect them and stop them manually.
         info(('GeoServer never started properly or timed out.'
               'It may still be running in the background.'))
-        info('The logs are available at geoserver-geonode-ext/jetty.log')
         sys.exit(1)
 
 
@@ -291,6 +322,12 @@ def test(options):
     Run GeoNode's Unit Test Suite
     """
     sh("python manage.py test geonode --noinput")
+
+
+@task
+def test_javascript(options):
+    with pushd('geonode/static/geonode'):
+        sh('./run-tests.sh')
 
 
 @task
@@ -340,9 +377,7 @@ def reset():
 
 def _reset():
     sh("rm -rf geonode/development.db")
-    # Reset data dir
-    sh('git clean -xdfq geoserver-geonode-ext/src/main/webapp/data')
-    sh('git checkout -q geoserver-geonode-ext/src/main/webapp/data')
+    _install_data_dir()
 
 
 @needs(['reset'])
@@ -390,26 +425,7 @@ def deb(options):
     key = options.get('key', None)
     ppa = options.get('ppa', None)
 
-    import geonode
-    from geonode.version import get_git_changeset
-    raw_version = geonode.__version__
-    version = geonode.get_version()
-    timestamp = get_git_changeset()
-
-    major, minor, revision, stage, edition = raw_version
-
-    # create a temporary file with the name of the branch
-    sh('echo `git rev-parse --abbrev-ref HEAD` > .git_branch')
-    branch = open('.git_branch', 'r').read().strip()
-    # remove the temporary file
-    sh('rm .git_branch')
-
-    if stage == 'alpha' and edition == 0:
-        tail = '%s%s' % (branch, timestamp)
-    else:
-        tail = '%s%s' % (stage, edition)
-
-    simple_version = '%s.%s.%s+%s' % (major, minor, revision, tail)
+    version, simple_version = versions()
 
     info('Creating package for GeoNode version %s' % version)
 
@@ -418,27 +434,80 @@ def deb(options):
         info('Getting rid of any uncommitted changes in debian/changelog')
         sh('git checkout debian/changelog')
 
-        # Workaround for git-dhc bug
+        # Workaround for git-dch bug
         # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
         path('.git').makedirs()
 
-        sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
+        # Install requirements
+        #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
-        sh(('git-dch --git-author --new-version=%s'
-            ' --id-length=6 --debian-branch=%s' % (
-            simple_version, branch)))
+        sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
+            ' --id-length=6 --ignore-branch --release' % (
+            simple_version)))
 
-        # Revert workaround for git-dhc bug
+        deb_changelog = path('debian') / 'changelog'
+        for line in fileinput.input([deb_changelog], inplace = True):
+            print line.replace("urgency=low", "urgency=high"),
+
+        ## Revert workaround for git-dhc bug
         path('.git').rmtree()
 
-        if key is None:
+        if key is None and ppa is None:
+            # A local installable package
             sh('debuild -uc -us -A')
-        else:
-            if ppa is None:
-                sh('debuild -k%s -A' % key)
-            else:
-                sh('debuild -k%s -S' % key)
-                sh('dput ppa:%s geonode_*.sources' % ppa)
+	elif key is None and ppa is not None:
+            # A sources package, signed by daemon
+            sh('debuild -S')
+	elif key is not None and ppa is None:
+            # A signed installable package
+            sh('debuild -k%s -A' % key)
+	elif key is not None and ppa is not None:
+            # A signed, source package
+            sh('debuild -k%s -S' % key)
+
+    if ppa is not None:
+        sh('dput ppa:%s geonode_%s_source.changes' % (ppa, simple_version))
+
+
+@task
+def publish():
+    if 'GPG_KEY_GEONODE' in os.environ:
+        key = os.environ['GPG_KEY_GEONODE']
+    else:
+        print "You need to set the GPG_KEY_GEONODE environment variable"
+        return
+
+    call_task('deb', options={
+     'key': key,
+     'ppa': 'geonode/testing',
+    })
+
+    version, simple_version = versions()
+    sh('git tag %s' % version)
+    sh('git push origin %s' % version)
+    sh('git tag debian/%s' % simple_version)
+    sh('git push origin debian/%s' % simple_version)
+    sh('python setup.py sdist upload')
+
+
+def versions():
+    import geonode
+    from geonode.version import get_git_changeset
+    raw_version = geonode.__version__
+    version = geonode.get_version()
+    timestamp = get_git_changeset()
+
+    major, minor, revision, stage, edition = raw_version
+
+    branch = 'dev'
+
+    if stage == 'alpha' and edition == 0:
+        tail = '%s%s' % (branch, timestamp)
+    else:
+        tail = '%s%s' % (stage, edition)
+
+    simple_version = '%s.%s.%s+%s' % (major, minor, revision, tail)
+    return version, simple_version
 
 
 def kill(arg1, arg2):

@@ -17,9 +17,6 @@
 #
 #########################################################################
 
-import datetime
-import os
-import subprocess
 import httplib2
 import base64
 import re
@@ -34,13 +31,9 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from owslib.wms import WebMapService
-from owslib.csw import CatalogueServiceWeb
+from django.http import HttpResponse
 
-from geonode import GeoNodeException
-#from geonode.layers.models import Layer
-#from geonode.maps.models import Map
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.security.models import INVALID_PERMISSION_MESSAGE
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS, INVALID_PERMISSION_MESSAGE
 
 _wms = None
 _csw = None
@@ -67,26 +60,15 @@ DEFAULT_ABSTRACT=""
 
 
 def check_geonode_is_up():
-    """Verifies all of geonetwork, geoserver and the django server are running,
+    """Verifies all geoserver is running,
        this is needed to be able to upload.
     """
-
-    # try:
-    #     Layer.objects.gs_catalog.get_workspaces()
-    # except:
-    #     msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-    #            'have started GeoNode.' % settings.GEOSERVER_BASE_URL)
-    #     raise GeoNodeException(msg)
-
-    # try:
-    #     Layer.objects.gn_catalog.login()
-    # except:
-    #     msg = ('Cannot connect to the GeoNetwork at %s\n'
-    #            'Please make sure you have started '
-    #            'GeoNetwork.' % settings.CATALOGUE['default']['URL'])
-    #     raise GeoNodeException(msg)
-    pass
-
+    url = "%sweb/" % settings.GEOSERVER_BASE_URL
+    resp, content = http_client.request(url, "GET")
+    msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
+           'have started it.' % settings.GEOSERVER_BASE_URL)
+    assert resp['status'] == '200', msg
+       
 
 def get_wms():
     global _wms
@@ -124,13 +106,13 @@ def _get_basic_auth_info(request):
 def batch_permissions(request):
     """
     if not request.user.is_authenticated:
-        return HttpResponse("You must log in to change permissions", status=401) 
+        return HttpResponse("You must log in to change permissions", status=401)
 
     if request.method != "POST":
         return HttpResponse("Permissions API requires POST requests", status=405)
 
     spec = json.loads(request.raw_post_data)
-    
+
     if "layers" in spec:
         lyrs = Layer.objects.filter(pk__in = spec['layers'])
         for lyr in lyrs:
@@ -189,7 +171,7 @@ def batch_permissions(request):
 def batch_delete(request):
     """
     if not request.user.is_authenticated:
-        return HttpResponse("You must log in to delete layers", status=401) 
+        return HttpResponse("You must log in to delete layers", status=401)
 
     if request.method != "POST":
         return HttpResponse("Delete API requires POST requests", status=405)
@@ -259,7 +241,7 @@ def _handle_perms_edit(request, obj):
 
 def _split_query(query):
     """
-    split and strip keywords, preserve space 
+    split and strip keywords, preserve space
     separated quoted blocks.
     """
 
@@ -290,11 +272,17 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 def forward_mercator(lonlat):
     """
         Given geographic coordinates, return a x,y tuple in spherical mercator.
-        
+
         If the lat value is out of range, -inf will be returned as the y value
     """
     x = lonlat[0] * 20037508.34 / 180
-    n = math.tan((90 + lonlat[1]) * math.pi / 360)
+    try:
+        # With data sets that only have one point the value of this
+        # expression becomes negative infinity. In order to continue,
+        # we wrap this in a try catch block.
+        n = math.tan((90 + lonlat[1]) * math.pi / 360)
+    except ValueError:
+        n = 0
     if n <= 0:
         y = float("-inf")
     else:
@@ -348,7 +336,7 @@ def layer_from_viewer_config(model, layer, source, ordering):
 
 
 class GXPMapBase(object):
-    
+
     def viewer_json(self, *added_layers):
         """
         Convert this map to a nested dictionary structure matching the JSON
@@ -359,17 +347,17 @@ class GXPMapBase(object):
         configuration. These are not persisted; if you want to add layers you
         should use ``.layer_set.create()``.
         """
-        
+
         layers = list(self.layers)
         layers.extend(added_layers)
-        
+
         server_lookup = {}
         sources = { }
 
         def uniqify(seq):
             """
             get a list of unique items from the input sequence.
-            
+
             This relies only on equality tests, so you can use it on most
             things.  If you have a sequence of hashables, list(set(seq)) is
             better.
@@ -384,7 +372,7 @@ class GXPMapBase(object):
         i = 0
         for source in uniqify(configs):
             while str(i) in sources: i = i + 1
-            sources[str(i)] = source 
+            sources[str(i)] = source
             server_lookup[json.dumps(source)] = str(i)
 
         def source_lookup(source):
@@ -398,7 +386,14 @@ class GXPMapBase(object):
             source = source_lookup(src_cfg)
             if source: cfg["source"] = source
             return cfg
-        
+
+        source_urls = [source['url'] for source in sources.values() if source.has_key('url')]
+        if not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
+            keys = sources.keys()
+            keys.sort()
+            settings.MAP_BASELAYERS[0]['source']['title'] = 'Local Geoserver'
+            sources[str(int(keys[-1])+1)] = settings.MAP_BASELAYERS[0]['source']
+
         config = {
             'id': self.id,
             'about': {
@@ -419,13 +414,12 @@ class GXPMapBase(object):
         config["map"]["layers"][len(layers)-1]["selected"] = True
 
         config["map"].update(_get_viewer_projection_info(self.projection))
-
         return config
-    
-    
+
+
 class GXPMap(GXPMapBase):
-    
-    def __init__(self, projection=None, title=None, abstract=None, 
+
+    def __init__(self, projection=None, title=None, abstract=None,
                  center_x = None, center_y = None, zoom = None):
         self.id = 0
         self.projection = projection
@@ -439,7 +433,7 @@ class GXPMap(GXPMapBase):
 
 
 class GXPLayerBase(object):
-    
+
     def source_config(self):
         """
         Generate a dict that can be serialized to a GXP layer source
@@ -466,7 +460,7 @@ class GXPLayerBase(object):
         """
         try:
             cfg = json.loads(self.layer_params)
-        except Exception: 
+        except Exception:
             cfg = dict()
 
         if self.format: cfg['format'] = self.format
@@ -480,7 +474,7 @@ class GXPLayerBase(object):
         cfg["visibility"] = self.visibility
 
         return cfg
-    
+
 
 class GXPLayer(GXPLayerBase):
     '''GXPLayer represents an object to be included in a GXP map.
@@ -498,14 +492,14 @@ class GXPLayer(GXPLayerBase):
         self.layer_params = ""
         self.source_params = ""
         for k in kw:
-            setattr(self,k,kw[k])        
+            setattr(self,k,kw[k])
 
 
 def default_map_config():
     _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
 
     _default_map = GXPMap(
-        title=DEFAULT_TITLE, 
+        title=DEFAULT_TITLE,
         abstract=DEFAULT_ABSTRACT,
         projection="EPSG:900913",
         center_x=_DEFAULT_MAP_CENTER[0],
@@ -545,17 +539,17 @@ def _get_viewer_projection_info(srid):
     return _viewer_projection_lookup.get(srid, {})
 
 
-def resolve_object(request, model, query, permission=None, 
-                   permission_required=False, permission_msg=None):
+def resolve_object(request, model, query, permission=None,
+                   permission_required=True, permission_msg=None):
     '''Resolve an object using the provided query and check the optional
     permission. Model views should wrap this function as a shortcut.
-    
+
     query - a dict to use for querying the model
     permission - an optional permission to check
-    permission_required - if True, allow get methods to proceed
+    permission_required - if False, allow get methods to proceed
     permission_msg - optional message to use in 403
     '''
-    
+
     obj = get_object_or_404(model, **query)
     allowed = True
     if permission:
@@ -565,3 +559,48 @@ def resolve_object(request, model, query, permission=None,
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)
     return obj
+
+
+def json_response(body=None, errors=None, redirect_to=None, exception=None,
+                  content_type=None, status=None):
+   """Create a proper JSON response. If body is provided, this is the response.
+   If errors is not None, the response is a success/errors json object.
+   If redirect_to is not None, the response is a success=True, redirect_to object
+   If the exception is provided, it will be logged. If body is a string, the
+   exception message will be used as a format option to that string and the
+   result will be a success=False, errors = body % exception
+   """
+   if content_type is None:
+       content_type = "application/json"
+   if errors:
+       if isinstance(errors, basestring):
+           errors = [errors]
+       body = {
+           'success' : False,
+           'errors' : errors
+       }
+   elif redirect_to:
+       body = {
+           'success' : True,
+           'redirect_to' : redirect_to
+       }
+   elif exception:
+       if body is None:
+           body = "Unexpected exception %s" % exception
+       else:
+           body = body % exception
+       body = {
+           'success' : False,
+           'errors' : [ body ]
+       }
+   elif body:
+       pass
+   else:
+       raise Exception("must call with body, errors or redirect_to")
+   
+   if status==None:
+      status = 200
+
+   if not isinstance(body, basestring):
+       body = json.dumps(body)
+   return HttpResponse(body, content_type=content_type, status=status)

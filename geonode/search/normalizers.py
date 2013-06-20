@@ -23,8 +23,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template import defaultfilters
 
-from geonode.maps.models import Layer
+from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.documents.models import Document
 from geonode.search import extension
 
 from agon_ratings.categories import RATING_CATEGORY_LOOKUP
@@ -45,7 +46,7 @@ def _bbox(obj):
     except AttributeError:
         pass
     # unknown extent, just give something that works
-    extent = idx.extent.extent if idx else (-180,-90,180,90)
+    extent = idx.extent.extent if idx else map(str,(obj.bbox_x0, obj.bbox_y0, obj.bbox_x1, obj.bbox_y1))
     return dict(minx=extent[0], miny=extent[1], maxx=extent[2], maxy=extent[3])
 
 
@@ -87,7 +88,8 @@ def apply_normalizers(results):
     mapping = [
         ('maps', MapNormalizer),
         ('layers', LayerNormalizer),
-        ('owners', OwnerNormalizer),
+        ('documents', DocumentNormalizer),
+        ('users', OwnerNormalizer),
     ]
     for k,n in mapping:
         r = results.get(k, None)
@@ -144,10 +146,9 @@ class MapNormalizer(Normalizer):
         doc['id'] = mapobj.id
         doc['title'] = mapobj.title
         doc['abstract'] = defaultfilters.linebreaks(mapobj.abstract)
-        doc['category'] = mapobj.category,
+        doc['category'] = mapobj.category.slug if mapobj.category else 'location'
         doc['detail'] = reverse('map_detail', args=(mapobj.id,))
         doc['owner'] = mapobj.owner.username
-#        doc['owner_detail'] = reverse('about_storyteller', args=(map.owner.username,))
         doc['owner_detail'] = mapobj.owner.get_absolute_url()
         doc['last_modified'] = extension.date_fmt(mapobj.last_modified)
         doc['_type'] = 'map'
@@ -170,7 +171,7 @@ class LayerNormalizer(Normalizer):
         doc['id'] = layer.id
         doc['_type'] = 'layer'
 #        doc['owsUrl'] = layer.get_virtual_wms_url()
-        doc['category'] = layer.topic_category
+        doc['category'] = layer.category.slug if layer.category else 'location'
         doc['name'] = layer.typename
         doc['abstract'] = defaultfilters.linebreaks(layer.abstract)
         doc['storeType'] = layer.storeType
@@ -180,17 +181,49 @@ class LayerNormalizer(Normalizer):
         doc['keywords'] = layer.keyword_list()
         doc['title'] = layer.title
         doc['detail'] = layer.get_absolute_url()
-        #if 'download_links' not in exclude:
-        #    links = layer.download_links()
-        #    for i,e in enumerate(links):
-        #        links[i] = [ unicode(l) for l in e]
-        #    doc['download_links'] = links
+        if 'download_links' not in exclude:
+            links = {}
+            for l in layer.link_set.all():
+                link = {}
+                link['name'] = l.name
+                link['extension'] = l.extension
+                link['url'] = l.url
+                link['mime'] = l.mime
+                link['type'] = l.link_type
+                links[l.extension] = link
+            for s in layer.styles.all():
+                link = {}
+                link['name'] = s.name
+                link['url'] = s.sld_url
+                link['type'] = 'style'
+                links['sld'] = link
+            doc['links'] = links
+
         owner = layer.owner
         if owner:
             doc['owner_detail'] = layer.owner.get_absolute_url()
-#            doc['owner_detail'] = reverse('about_storyteller', args=(layer.owner.username,))
         return doc
 
+class DocumentNormalizer(Normalizer):
+    def last_modified(self):
+        return self.o.date
+    def populate(self, doc, exclude):
+        document = self.o
+        doc['id'] = document.id
+        doc['title'] = document.title
+        doc['abstract'] = defaultfilters.linebreaks(document.abstract)
+        doc['category'] = document.category.slug if document.category else 'location'
+        doc['detail'] = reverse('document_detail', args=(document.id,))
+        doc['owner'] = document.owner.username
+        doc['owner_detail'] = document.owner.get_absolute_url()
+        doc['last_modified'] = extension.date_fmt(document.date)
+        doc['_type'] = 'document'
+        doc['_display_type'] = extension.DOCUMENT_DISPLAY
+#        doc['thumb'] = map.get_thumbnail_url()
+        doc['keywords'] = document.keyword_list()
+        if 'bbox' not in exclude:
+            doc['bbox'] = _bbox(document)
+        return doc
 
 class OwnerNormalizer(Normalizer):
     def title(self):
@@ -216,6 +249,7 @@ class OwnerNormalizer(Normalizer):
         doc['detail'] = contact.get_absolute_url()
         doc['layer_cnt'] = Layer.objects.filter(owner = user).count()
         doc['map_cnt'] = Map.objects.filter(owner = user).count()
+        doc['doc_cnt'] = Document.objects.filter(owner = user).count()
         doc['_type'] = 'owner'
         doc['_display_type'] = extension.USER_DISPLAY
         return doc

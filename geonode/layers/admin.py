@@ -21,7 +21,8 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from geonode.layers.models import Layer, ContactRole, Attribute, TopicCategory, Link, Style
+from geonode.layers.models import Layer, Attribute, Style
+from geonode.base.models import ContactRole
 
 class ContactRoleInline(admin.TabularInline):
     model = ContactRole
@@ -34,6 +35,7 @@ class LayerAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     list_editable = ('title', 'category')
     list_filter  = ('date', 'date_type', 'constraints_use', 'category')
+    search_fields = ('typename', 'title', 'abstract', 'purpose',)
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')
@@ -46,38 +48,20 @@ class LayerAdmin(admin.ModelAdmin):
         return HttpResponseRedirect(reverse('change_poc', kwargs={"ids": "_".join(selected)}))
     change_poc.short_description = "Change the point of contact for the selected layers"
 
-class ContactRoleAdmin(admin.ModelAdmin):
-    model = ContactRole
-    list_display_links = ('id',)
-    list_display = ('id','contact', 'layer', 'role')
-    list_editable = ('contact', 'layer', 'role')
-
-class TopicCategoryAdmin(admin.ModelAdmin):
-    model = TopicCategory
-    list_display_links = ('name',)
-    list_display = ('id', 'name', 'slug', 'description')
-
-class LinkAdmin(admin.ModelAdmin):
-    model = Link
-    list_display_links = ('id',)
-    list_display = ('id', 'layer', 'extension', 'link_type', 'name', 'mime')
-    list_filter = ('layer', 'extension', 'link_type', 'mime')  
-
 class AttributeAdmin(admin.ModelAdmin):
     model = Attribute
     list_display_links = ('id',)
     list_display = ('id', 'layer', 'attribute', 'attribute_label', 'attribute_type', 'display_order')
     list_filter = ('layer', 'attribute_type')
+    search_fields = ('attribute', 'attribute_label',)
 
 class StyleAdmin(admin.ModelAdmin):
     model = Style
-    list_display_links = ('name',)
-    list_display = ('id', 'name', 'workspace', 'sld_url')
+    list_display_links = ('sld_title',)
+    list_display = ('id', 'name', 'sld_title', 'workspace', 'sld_url')
     list_filter = ('workspace',)
+    search_fields = ('name', 'workspace',)
 
 admin.site.register(Layer, LayerAdmin)
-admin.site.register(ContactRole, ContactRoleAdmin)
-admin.site.register(TopicCategory, TopicCategoryAdmin)
-admin.site.register(Link, LinkAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Style, StyleAdmin)

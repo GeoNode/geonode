@@ -1,12 +1,12 @@
 .. image:: https://secure.travis-ci.org/GeoNode/geonode.png
     :alt: Build Status
-    :target: http://travis-ci.org/#!/GeoNode/geonode
+    :target: http://travis-ci.org/GeoNode/geonode
 
 =========
  GeoNode
 =========
 
-If you just want to try GeoNode, it is recommended to use Ubuntu 10.04 and install the latest stable release::
+If you just want to try GeoNode, it is recommended to use Ubuntu 12.04 and install the latest stable release::
 
     sudo add-apt-repository ppa:geonode/release
     sudo apt-get update
@@ -14,9 +14,11 @@ If you just want to try GeoNode, it is recommended to use Ubuntu 10.04 and insta
 
 If instead, you are interested in doing development on the source code, here are the instructions for Ubuntu 12.04::
 
+    # Essential build tools and libraries
+    sudo apt-get install build-essential libxml2-dev libxslt-dev
 
     # Python native dependencies
-    sudo apt-get install python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2
+    sudo apt-get install python-dev python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2
      
     # Java dependencies
     sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
@@ -24,23 +26,35 @@ If instead, you are interested in doing development on the source code, here are
     # Supporting tools
     sudo apt-get install -y  git gettext
     
-    # Create virtualenv and activate it
-    virtualenv venv --system-site-packages
-    source venv/bin/activate
-    
-    # Clone GeoNode and switch to dev branch
-    git clone https://github.com/GeoNode/geonode.git -b dev
+    # Setup virtualenv tools
+    sudo pip install virtualenvwrapper
+
+    # Add virtualenvwrapper to your environment
+    export VIRTUALENVWRAPPER_PYTHON=/usr//bin/python
+    export WORKON_HOME=~/.venvs
+    source /usr/local/bin/virtualenvwrapper.sh
+    export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
+
+    # Setup a virtualenv for geonode 
+    mkvirtualenv geonode
+    workon geonode
+       
+    # Clone GeoNode
+    git clone https://github.com/GeoNode/geonode.git
     
     # Install GeoNode in the local virtualenv
     pip install -e geonode --use-mirrors
-
     cd geonode
 
     # Compile GeoServer
     paver setup
     
-    # Start the servers
+    # Start the development servers
     paver start
+
+    # Visit the development geonode site
+    http://localhost:8000
+
 
 openSUSE Development Build Instructions::
 
@@ -66,8 +80,8 @@ openSUSE Development Build Instructions::
     source venv/bin/activate
     cd venv
 
-    # Clone GeoNode and switch to dev branch
-    git clone https://github.com/GeoNode/geonode.git -b dev
+    # Clone GeoNode
+    git clone https://github.com/GeoNode/geonode.git
 
     # Install GeoNode in the local virtualenv
     pip install -e geonode --use-mirrors
@@ -104,8 +118,8 @@ Windows Development Build Instructions::
     easy_install PIL lxml==2.3
     # this command will look for and install binary distributions (pip install will attempt to build and fail)
 
-    # Clone GeoNode and switch to dev branch
-    git clone https://github.com/GeoNode/geonode.git -b dev
+    # Clone GeoNode
+    git clone https://github.com/GeoNode/geonode.git
     
     # Install GeoNode in the local virtualenv
     pip install -e geonode --use-mirrors
@@ -118,6 +132,26 @@ Windows Development Build Instructions::
     # Start the servers
     # This WON'T work on windows without changes to pavement.py 
     # and a windows batch script for starting jetty    
+    paver start
+
+Mac OSX Development Build Instructions::
+    
+    # you may need brew install various dependencies 
+
+    mkdir -p ~/pyenv
+    virtualenv ~/pyenv/geonode    
+    source ~/pyenv/geonode/bin/activate
+    git clone https://github.com/GeoNode/geonode
+    cd geonode
+    pip install lxml
+    pip install pyproj
+    pip install nose
+    pip install httplib2
+    pip install shapely
+    pip install imaging
+    pip install PIL
+    pip install paver
+    paver setup
     paver start
 
 

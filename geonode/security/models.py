@@ -24,17 +24,9 @@ from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
-from registration.signals import user_activated
 from django.contrib.auth import login
 
-# implicitly defined 'generic' groups of users 
-ANONYMOUS_USERS = 'anonymous'
-AUTHENTICATED_USERS = 'authenticated'
-GENERIC_GROUP_NAMES = {
-    ANONYMOUS_USERS: _('Anonymous Users'),
-    AUTHENTICATED_USERS: _('Registered Users')
-}
-INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
+from geonode.security.enumerations import GENERIC_GROUP_NAMES
 
 class ObjectRoleManager(models.Manager):
     def get_by_natural_key(self, codename, app_label, model):
@@ -43,16 +35,15 @@ class ObjectRoleManager(models.Manager):
             content_type=ContentType.objects.get_by_natural_key(app_label, model)
         )
 
-
 class ObjectRole(models.Model):
     """
-    A bundle of object permissions representing 
-    the rights associated with having a 
+    A bundle of object permissions representing
+    the rights associated with having a
     particular role with respect to an object.
     """
     objects = ObjectRoleManager()
 
-    title = models.CharField(_('title'), max_length=255) 
+    title = models.CharField(_('title'), max_length=255)
     permissions = models.ManyToManyField(Permission, verbose_name=_('permissions'))
     codename = models.CharField(_('codename'), max_length=100, unique=True)
     content_type = models.ForeignKey(ContentType)
@@ -67,15 +58,14 @@ class ObjectRole(models.Model):
     def natural_key(self):
         return (self.codename,) + self.content_type.natural_key()
 
-
 class UserObjectRoleMapping(models.Model):
     """
-    represents assignment of a role to a particular user 
+    represents assignment of a role to a particular user
     in the context of a specific object.
     """
 
     user = models.ForeignKey(User, related_name="role_mappings")
-    
+
     object_ct = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     object = GenericForeignKey('object_ct', 'object_id')
@@ -85,21 +75,21 @@ class UserObjectRoleMapping(models.Model):
     def __unicode__(self):
         return u"%s | %s -> %s" % (
             unicode(self.object),
-            unicode(self.user), 
+            unicode(self.user),
             unicode(self.role))
 
     class Meta:
-        unique_together = (('user', 'object_ct', 'object_id', 'role'), ) 
+        unique_together = (('user', 'object_ct', 'object_id', 'role'), )
 
 
 class GenericObjectRoleMapping(models.Model):
     """
-    represents assignment of a role to an arbitrary implicitly 
-    defined group of users (groups without explicit database representation) 
-    in the context of a specific object. eg 'all authenticated users' 
+    represents assignment of a role to an arbitrary implicitly
+    defined group of users (groups without explicit database representation)
+    in the context of a specific object. eg 'all authenticated users'
     'anonymous users', 'users <as defined by some other service>'
     """
-    
+
     subject = models.CharField(max_length=100, choices=sorted(GENERIC_GROUP_NAMES.items()))
 
     object_ct = models.ForeignKey(ContentType)
@@ -111,7 +101,7 @@ class GenericObjectRoleMapping(models.Model):
     def __unicode__(self):
         return u"%s | %s -> %s" % (
             unicode(self.object),
-            unicode(GENERIC_GROUP_NAMES[self.subject]), 
+            unicode(GENERIC_GROUP_NAMES[self.subject]),
             unicode(self.role))
 
     class Meta:
@@ -124,9 +114,9 @@ class PermissionLevelError(Exception):
 
 class PermissionLevelMixin(object):
     """
-    Mixin for adding "Permission Level" methods 
-    to a model class -- eg role systems where a 
-    user has exactly one assigned role with respect to 
+    Mixin for adding "Permission Level" methods
+    to a model class -- eg role systems where a
+    user has exactly one assigned role with respect to
     an object representing an "access level"
     """
 
@@ -142,7 +132,7 @@ class PermissionLevelMixin(object):
         for role in ObjectRole.objects.filter(content_type=content_type).order_by('list_order'):
             levels.append(role.codename)
         return levels
-        
+
     def get_user_level(self, user):
         """
         get the permission level (if any) specifically assigned to the given user.
@@ -157,10 +147,10 @@ class PermissionLevelMixin(object):
 
     def set_user_level(self, user, level):
         """
-        set the user's permission level to the level specified. if 
+        set the user's permission level to the level specified. if
         level is LEVEL_NONE, any existing level assignment is removed.
         """
-        
+
         my_ct = ContentType.objects.get_for_model(self)
         if level == self.LEVEL_NONE:
             UserObjectRoleMapping.objects.filter(user=user, object_id=self.id, object_ct=my_ct).delete()
@@ -168,9 +158,9 @@ class PermissionLevelMixin(object):
             # lookup new role...
             try:
                 role = ObjectRole.objects.get(codename=level, content_type=my_ct)
-            except ObjectDoesNotExist: 
+            except ObjectDoesNotExist:
                 raise PermissionLevelError("Invalid Permission Level (%s)" % level)
-            # remove any existing mapping              
+            # remove any existing mapping
             UserObjectRoleMapping.objects.filter(user=user, object_id=self.id, object_ct=my_ct).delete()
             # grant new level
             UserObjectRoleMapping.objects.create(user=user, object=self, role=role)
@@ -190,20 +180,20 @@ class PermissionLevelMixin(object):
 
     def set_gen_level(self, gen_role, level):
         """
-        grant the permission level specified to the generic group of 
-        users specified.  if level is LEVEL_NONE, any existing assignment is 
+        grant the permission level specified to the generic group of
+        users specified.  if level is LEVEL_NONE, any existing assignment is
         removed.
         """
-        
+
         my_ct = ContentType.objects.get_for_model(self)
         if level == self.LEVEL_NONE:
             GenericObjectRoleMapping.objects.filter(subject=gen_role, object_id=self.id, object_ct=my_ct).delete()
         else:
             try:
                 role = ObjectRole.objects.get(codename=level, content_type=my_ct)
-            except ObjectRole.DoesNotExist: 
+            except ObjectRole.DoesNotExist:
                 raise PermissionLevelError("Invalid Permission Level (%s)" % level)
-            # remove any existing mapping              
+            # remove any existing mapping
             GenericObjectRoleMapping.objects.filter(subject=gen_role, object_id=self.id, object_ct=my_ct).delete()
             # grant new level
             GenericObjectRoleMapping.objects.create(subject=gen_role, object=self, role=role)
@@ -223,11 +213,11 @@ class PermissionLevelMixin(object):
         have specific permissions assigned to them.
 
         if a key is not present it indicates that no level
-        has been assigned. 
-        
-        the mapping looks like: 
+        has been assigned.
+
+        the mapping looks like:
         {
-            'anonymous': 'readonly', 
+            'anonymous': 'readonly',
             'authenticated': 'readwrite',
             'users': {
                 <username>: 'admin'
@@ -260,4 +250,5 @@ def autologin(sender, **kwargs):
     # This login function does not need password.
     login(request, user)
 
-user_activated.connect(autologin)
+#FIXME(Ariel): Replace this signal with the one from django-user-accounts
+#user_activated.connect(autologin)

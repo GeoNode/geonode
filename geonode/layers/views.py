@@ -18,17 +18,13 @@
 #
 #########################################################################
 
-import re
 import os
 import logging
 import shutil
-
-from urllib import urlencode
-from urlparse import urlparse
+from lxml import etree
 
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseRedirect
@@ -39,24 +35,27 @@ from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import escape
 from django.views.decorators.http import require_POST
-from django.views.generic.list import ListView
 from django.template.defaultfilters import slugify
-from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.forms.models import inlineformset_factory
+from django.utils.datastructures import MultiValueDictKeyError 
 
-from geonode.utils import http_client, _split_query, _get_basic_auth_info
-from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
-from geonode.layers.models import Layer, ContactRole, Attribute, TopicCategory
+from geoserver.catalog import FailedRequestError
+
+from geonode.utils import http_client, _get_basic_auth_info, json_response
+from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm, LayerStyleUploadForm
+from geonode.layers.models import Layer, Attribute, set_styles
+from geonode.base.models import ContactRole
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.layers.utils import save
 from geonode.layers.utils import layer_set_permissions
 from geonode.utils import resolve_object
-from geonode.people.forms import ContactForm, PocForm
+from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
-from geonode.security.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from django.forms.models import inlineformset_factory
+from geonode.documents.models import get_related_documents
+
 from geoserver.resource import FeatureType
 
 logger = logging.getLogger("geonode.layers.views")
@@ -93,34 +92,12 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 
 #### Basic Layer Views ####
 
-
-class LayerListView(ListView):
-
-    layer_filter = "date"
-    queryset = Layer.objects.all()
-
-    def __init__(self, *args, **kwargs):
-        self.layer_filter = kwargs.pop("layer_filter", "date")
-        self.queryset = self.queryset.order_by("-{0}".format(self.layer_filter))
-        super(LayerListView, self).__init__(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        kwargs.update({"layer_filter": self.layer_filter})
-        return kwargs
-
-
-def layer_category(request, slug, template='layers/layer_list.html'):
-    category = get_object_or_404(TopicCategory, slug=slug)
-    layer_list = category.layer_set.all()
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "object_list": layer_list,
-            "layer_category": category
-            }
-        )
-    )
-
+def layer_list(request, template='layers/layer_list.html'):
+    from geonode.search.views import search_page
+    post = request.POST.copy()
+    post.update({'type': 'layer'})
+    request.POST = post
+    return search_page(request, template=template)
 
 def layer_tag(request, slug, template='layers/layer_list.html'):
     layer_list = Layer.objects.filter(keywords__slug__in=[slug])
@@ -133,58 +110,67 @@ def layer_tag(request, slug, template='layers/layer_list.html'):
         )
     )
 
-
 @login_required
-def layer_upload(request, template='layers/layer_upload.html'):
+def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
         return render_to_response(template,
                                   RequestContext(request, {}))
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
+        errormsgs = []
+        out = {'success': False}
+
         if form.is_valid():
+            tempdir, base_file = form.write_files()
+            title = form.cleaned_data["layer_title"]
+
+            # Replace dots in filename - GeoServer REST API upload bug
+            # and avoid any other invalid characters.
+            # Use the title if possible, otherwise default to the filename
+            if title is not None and len(title) > 0:
+                name_base = title
+            else:
+                name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
+
+            name = slugify(name_base.replace(".","_"))
+
             try:
-                tempdir, base_file = form.write_files()
-                title = form.cleaned_data["layer_title"]
-
-                # Replace dots in filename - GeoServer REST API upload bug
-                # and avoid any other invalid characters.
-                # Use the title if possible, otherwise default to the filename
-                if title is not None and len(title) > 0:
-                    name_base = title
-                else:
-                    name_base, __ = os.path.splitext(form.cleaned_data["base_file"].name)
-
-                name = slugify(name_base.replace(".","_"))
-
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
                         permissions = form.cleaned_data["permissions"]
                         )
-                return HttpResponse(json.dumps({
-                    "success": True,
-                    "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
             except Exception, e:
-                logger.exception("Unexpected error during upload.")
-                return HttpResponse(json.dumps({
-                    "success": False,
-                    "errormsgs": ["Unexpected error during upload: " + escape(str(e))]}))
+                out['success'] = False
+                out['errors'] = str(e)
+            else:
+                out['success'] = True
+                out['url'] = reverse('layer_detail', args=[saved_layer.typename])
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
-            errormsgs = []
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
-            return HttpResponse(json.dumps({ "success": False, "errors": form.errors, "errormsgs": errormsgs}))
+
+            out['errors'] = form.errors
+            out['errormsgs'] = errormsgs
+
+        if out['success']:
+            status_code = 200
+        else:
+            status_code = 500
+        return HttpResponse(json.dumps(out), mimetype='application/json', status=status_code)
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
     maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms", layer_params=json.dumps( layer.attribute_config()))
+
+    layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
 
     #layer.popular_count += 1
     #layer.save()
@@ -197,6 +183,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "layer": layer,
         "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
+        "documents": get_related_documents(layer),
     }))
 
 
@@ -208,8 +195,9 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
 
     poc = layer.poc
     metadata_author = layer.metadata_author
-    ContactRole.objects.get(layer=layer, role=layer.poc_role)
-    ContactRole.objects.get(layer=layer, role=layer.metadata_author_role)
+
+    ContactRole.objects.get(resource=layer, role=layer.poc_role)
+    ContactRole.objects.get(resource=layer, role=layer.metadata_author_role)
 
     if request.method == "POST":
         layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
@@ -224,12 +212,12 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         new_keywords = layer_form.cleaned_data['keywords']
 
         if new_poc is None:
-            poc_form = ContactForm(request.POST, prefix="poc")
+            poc_form = ProfileForm(request.POST, prefix="poc")
             if poc_form.has_changed and poc_form.is_valid():
                 new_poc = poc_form.save()
 
         if new_author is None:
-            author_form = ContactForm(request.POST, prefix="author")
+            author_form = ProfileForm(request.POST, prefix="author")
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
@@ -242,26 +230,25 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                 la.save()
 
         if new_poc is not None and new_author is not None:
-            the_layer = layer_form.save(commit=False)
+            the_layer = layer_form.save()
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
             the_layer.keywords.clear()
             the_layer.keywords.add(*new_keywords)
-            the_layer.save()
             return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
 
     if poc.user is None:
-        poc_form = ContactForm(instance=poc, prefix="poc")
+        poc_form = ProfileForm(instance=poc, prefix="poc")
     else:
         layer_form.fields['poc'].initial = poc.id
-        poc_form = ContactForm(prefix="poc")
+        poc_form = ProfileForm(prefix="poc")
         poc_form.hidden=True
 
     if metadata_author.user is None:
-        author_form = ContactForm(instance=metadata_author, prefix="author")
+        author_form = ProfileForm(instance=metadata_author, prefix="author")
     else:
         layer_form.fields['metadata_author'].initial = metadata_author.id
-        author_form = ContactForm(prefix="author")
+        author_form = ProfileForm(prefix="author")
         author_form.hidden=True
 
     return render_to_response(template, RequestContext(request, {
@@ -294,12 +281,131 @@ def layer_style(request, layername):
 
     new_style = (style for style in layer.styles if style.name == style_name).next()
 
+    # Does this change this in geoserver??
     layer.default_style = new_style
     layer.styles = [s for s in layer.styles if s.name != style_name] + [old_default]
     layer.save()
 
     return HttpResponse("Default style for %s changed to %s" % (layer.name, style_name),status=200)
 
+
+@login_required
+def layer_style_upload(req, layername):
+    def respond(*args,**kw):
+        kw['content_type'] = 'text/html'
+        return json_response(*args,**kw)
+    form = LayerStyleUploadForm(req.POST,req.FILES)
+    if not form.is_valid():
+        return respond(errors="Please provide an SLD file.")
+    
+    data = form.cleaned_data
+    layer = _resolve_layer(req, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
+    
+    sld = req.FILES['sld'].read()
+
+    try:
+        dom = etree.XML(sld)
+    except Exception,ex:
+        return respond(errors="The uploaded SLD file is not valid XML")
+    
+    el = dom.findall("{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
+    if len(el) == 0 and not data.get('name'):
+        return respond(errors="Please provide a name, unable to extract one from the SLD.")
+    name = data.get('name') or el[0].text
+    if data['update']:
+        match = None
+        styles = list(layer.styles) + [layer.default_style]
+        for style in styles:
+            if style.sld_name == name:
+                match = style; break
+        if match is None:
+            return respond(errors="Cannot locate style : " + name)
+        match.update_body(sld)
+    else:
+        try:
+            cat = Layer.objects.gs_catalog
+            cat.create_style(name, sld)
+            layer.styles = layer.styles + [ type('style',(object,),{'name' : name}) ]
+            cat.save(layer.publishing)
+        except ConflictingDataError,e:
+            return respond(errors="""A layer with this name exists. Select
+                                     the update option if you want to update.""")
+    return respond(body={'success':True,'style':name,'updated':data['update']})
+
+@login_required
+def layer_style_manage(req, layername):
+    layer = _resolve_layer(req, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
+    if req.method == 'GET':
+        try:
+            cat = Layer.objects.gs_catalog
+            # First update the layer style info from GS to GeoNode's DB
+            set_styles(layer, cat)
+
+            all_available_gs_styles = cat.get_styles()
+            gs_styles = []
+            for style in all_available_gs_styles:
+                gs_styles.append(style.name)
+
+            current_layer_styles = layer.styles.all()
+            layer_styles = []
+            for style in current_layer_styles:
+                layer_styles.append(style.name)
+
+            # Render the form
+            return render_to_response(
+                'layers/layer_style_manage.html',
+                RequestContext(req, {
+                    "layer": layer,
+                    "gs_styles": gs_styles,
+                    "layer_styles": layer_styles,
+                    "default_style": layer.default_style.name
+                    }
+                )
+            )
+        except (FailedRequestError, EnvironmentError) as e:
+            msg = ('Could not connect to geoserver at "%s"'
+               'to manage style information for layer "%s"' % (
+                settings.GEOSERVER_BASE_URL, layer.name)
+            )
+            logger.warn(msg, e)
+            # If geoserver is not online, return an error
+            return render_to_response(
+                'layers/layer_style_manage.html',
+                RequestContext(req, {
+                    "layer": layer,
+                    "error": msg
+                    }
+                )
+            )
+    elif req.method == 'POST':
+        try:
+            selected_styles = req.POST.getlist('style-select')
+            default_style = req.POST['default_style']
+            # Save to GeoServer
+            cat = Layer.objects.gs_catalog
+            gs_layer = cat.get_layer(layer.name)
+            gs_layer.default_style = default_style
+            styles = []
+            for style in selected_styles:
+                styles.append(type('style',(object,),{'name' : style}))
+            gs_layer.styles = styles 
+            cat.save(gs_layer)
+
+            # Save to Django
+            set_styles(layer, cat)
+            return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
+        except (FailedRequestError, EnvironmentError, MultiValueDictKeyError) as e:
+            msg = ('Error Saving Styles for Layer "%s"'  % (layer.name)
+            )
+            logger.warn(msg, e)
+            return render_to_response(
+                'layers/layer_style_manage.html',
+                RequestContext(req, {
+                    "layer": layer,
+                    "error": msg
+                    }
+                )
+            )
 
 @login_required
 def layer_change_poc(request, ids, template = 'layers/layer_change_poc.html'):
@@ -339,7 +445,8 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                saved_layer = save(layer, base_file, request.user, overwrite=True)
+                saved_layer = save(layer, base_file, request.user, overwrite=True, 
+                    permissions=layer.get_all_level_info())
                 return HttpResponse(json.dumps({
                     "success": True,
                     "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
@@ -425,157 +532,6 @@ def layer_batch_download(request):
         resp,content = http_client.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 
-
-#### Layers Search ####
-
-
-def layer_search_page(request, template='layers/layer_search.html'):
-    DEFAULT_BASE_LAYERS = default_map_config()[1]
-    # for non-ajax requests, render a generic search page
-
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    map_obj = GXPMap(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
-
-    return render_to_response(template, RequestContext(request, {
-        'init_search': json.dumps(params or {}),
-        'viewer_config': json.dumps(map_obj.viewer_json(*DEFAULT_BASE_LAYERS)),
-        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-        "site" : settings.SITEURL
-    }))
-
-
-def layer_search(request):
-    """
-    handles a basic search for data
-
-    the search accepts:
-    q - general query for keywords across all fields
-    start - skip to this point in the results
-    limit - max records to return
-
-    for ajax requests, the search returns a json structure
-    like this:
-    {
-    'total': <total result count>,
-    'next': <url for next batch if exists>,
-    'prev': <url for previous batch if exists>,
-    'query_info': {
-    'start': <integer indicating where this batch starts>,
-    'limit': <integer indicating the batch size used>,
-    'q': <keywords used to query>,
-    },
-    'rows': [
-    {
-    'name': <typename>,
-    'abstract': '...',
-    'keywords': ['foo', ...],
-    'detail' = <link to geonode detail page>,
-    'attribution': {
-    'title': <language neutral attribution>,
-    'href': <url>
-    },
-    'download_links': [
-    ['pdf', 'PDF', <url>],
-    ['kml', 'KML', <url>],
-    [<format>, <name>, <url>]
-    ...
-    ],
-    'metadata_links': [
-    ['text/xml', 'TC211', <url>],
-    [<mime>, <name>, <url>],
-    ...
-    ]
-    },
-    ...
-    ]}
-    """
-    query_string = ''
-    found_entries = Layer.objects.all()
-    result = {}
-
-    if ('q' in request.GET) and request.GET['q'].strip():
-        query_string = request.GET['q']
-
-        entry_query = get_query(query_string, ['title', 'abstract',])
-
-        found_entries = Layer.objects.filter(entry_query)
-
-    result['total'] = len(found_entries)
-
-    rows = []
-
-    for layer in found_entries:
-        doc = {}
-        doc['uuid'] = layer.uuid
-        doc['name'] = layer.name
-        doc['title'] = layer.title
-        doc['abstract'] = layer.abstract
-        doc['detail'] = layer.get_absolute_url()
-        doc['_local'] = True
-        doc['_permissions'] = {
-            'view': request.user.has_perm('layers.view_layer', obj=layer),
-            'change': request.user.has_perm('layers.change_layer', obj=layer),
-            'delete': request.user.has_perm('layers.delete_layer', obj=layer),
-            'change_permissions': request.user.has_perm('layers.change_layer_permissions', obj=layer),
-        }
-        download_links = []
-        for link in layer.link_set.download():
-            download_links.append((link.extension, link.name, link.url))
-        doc['download_links'] = download_links
-
-        metadata_links = []
-        for link in layer.link_set.metadata():
-            metadata_links.append((link.mime, link.extension, link.url))
-
-        doc['metadata_links'] = metadata_links
-
-        if doc['_permissions']['view']:
-            rows.append(doc)
-
-    result['rows'] = rows
-    result['success'] = True
-    return HttpResponse(json.dumps(result), mimetype="application/json")
-
-
-def normalize_query(query_string,
-                    findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
-                    normspace=re.compile(r'\s{2,}').sub):
-    ''' Splits the query string in invidual keywords, getting rid of unecessary spaces
-        and grouping quoted words together.
-        Example:
-        >>> normalize_query(' some random words "with quotes " and spaces')
-        ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
-    '''
-    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
-
-def get_query(query_string, search_fields):
-    ''' Returns a query, that is a combination of Q objects. That combination
-        aims to search keywords within a model by testing the given search fields.
-    '''
-    query = None # Query to search for every search term
-    terms = normalize_query(query_string)
-    for term in terms:
-        or_query = None # Query to search for a given term in each field
-        for field_name in search_fields:
-            q = Q(**{"%s__icontains" % field_name: term})
-            if or_query is None:
-                or_query = q
-            else:
-                or_query = or_query | q
-        if query is None:
-            query = or_query
-        else:
-            query = query & or_query
-    return query
-
-
-@require_POST
 def layer_permissions(request, layername):
     try:
         layer = _resolve_layer(request, layername, 'layers.change_layer_permissions')
@@ -586,14 +542,28 @@ def layer_permissions(request, layername):
             status=401,
             mimetype='text/plain')
 
-    permission_spec = json.loads(request.raw_post_data)
-    layer_set_permissions(layer, permission_spec)
+    if request.method == 'POST':
+        permission_spec = json.loads(request.raw_post_data)
+        layer_set_permissions(layer, permission_spec)
 
-    return HttpResponse(
-        json.dumps({'success': True}),
-        status=200,
-        mimetype='text/plain'
-    )
+        return HttpResponse(
+            json.dumps({'success': True}),
+            status=200,
+            mimetype='text/plain'
+        )
+
+    elif request.method == 'GET':
+        permission_spec = json.dumps(layer.get_all_level_info())
+        return HttpResponse(
+            json.dumps({'success': True, 'permissions': permission_spec}),
+            status=200,
+            mimetype='text/plain'
+        )
+    else:
+        return HttpResponse(
+            'No methods other than get and post are allowed',
+            status=401,
+            mimetype='text/plain')
 
 
 def resolve_user(request):
@@ -605,11 +575,11 @@ def resolve_user(request):
         acl_user = authenticate(username=username, password=password)
         if acl_user:
             user = acl_user.username
-            superuser = user.is_superuser
+            superuser = acl_user.is_superuser
         elif _get_basic_auth_info(request) == settings.GEOSERVER_CREDENTIALS:
             geoserver = True
             superuser = True
-    elif not request.user.is_anonymous():
+    if not any([user, geoserver, superuser]) and not request.user.is_anonymous():
         user = request.user.username
         superuser = request.user.is_superuser
     return HttpResponse(json.dumps({
@@ -688,7 +658,9 @@ def feature_edit_check(request, layername):
     If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
     Otherwise, return a status of 401 (unauthorized).
     """
-    layer = get_object_or_404(Layer, typename=layername);
-    return HttpResponse(
-        status=200 if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' else 401
-    )
+    layer = get_object_or_404(Layer, typename=layername)
+    feature_edit = any((getattr(settings, a, None) for a in ("GEOGIT_DATASTORE", "DB_DATASTORE"))) 
+    if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
+        return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
+    else:
+        return HttpResponse(json.dumps({'authorized': False}), mimetype="application/json")
