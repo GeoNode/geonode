@@ -45,9 +45,9 @@ imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\
 f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
 
 def create_fixtures():
-    biota = TopicCategory.objects.get(slug='biota')
-    location = TopicCategory.objects.get(slug='location')
-    elevation = TopicCategory.objects.get(slug='elevation')
+    biota = TopicCategory.objects.get(identifier='biota')
+    location = TopicCategory.objects.get(identifier='location')
+    elevation = TopicCategory.objects.get(identifier='elevation')
 
 
     map_data = [
