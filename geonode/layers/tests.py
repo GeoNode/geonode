@@ -32,6 +32,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
+from django.db.models import Count
 from agon_ratings.models import OverallRating
 
 import geonode.layers.utils
@@ -788,27 +789,31 @@ class LayersTest(TestCase):
         self.assertEquals(Style.objects.count(), 0)
 
     def test_category_counts(self):
-        location = TopicCategory.objects.get(slug='location')
+        topics = TopicCategory.objects.all()
+        topics = topics.annotate(**{ 'layer_count': Count('resourcebase__layer__category')})
+        location = topics.get(slug='location')
         # there are three layers with location category
-        self.assertEquals(location.layers_count,3)
+        self.assertEquals(location.layer_count,3)
 
         # change the category of one layers_count
         layer = Layer.objects.filter(category=location)[0]
-        elevation = TopicCategory.objects.get(slug='elevation')
+        elevation = topics.get(slug='elevation')
         layer.category = elevation
         layer.save()
         
         #reload the categories since it's caching the old count
-        location = TopicCategory.objects.get(slug='location')
-        elevation = TopicCategory.objects.get(slug='elevation')
-        self.assertEquals(location.layers_count,2)
-        self.assertEquals(elevation.layers_count,4)
+        topics = topics.annotate(**{ 'layer_count': Count('resourcebase__layer__category')})
+        location = topics.get(slug='location')
+        elevation = topics.get(slug='elevation')
+        self.assertEquals(location.layer_count,2)
+        self.assertEquals(elevation.layer_count,4)
 
         # delete a layer and check the count update
         # use the first since it's the only one which has styles
         layer =  Layer.objects.get(pk=1)
-        elevation = TopicCategory.objects.get(slug='elevation')
-        self.assertEquals(elevation.layers_count,4)
+        elevation = topics.get(slug='elevation')
+        self.assertEquals(elevation.layer_count,4)
         layer.delete()
-        elevation = TopicCategory.objects.get(slug='elevation')
-        self.assertEquals(elevation.layers_count,3)
+        topics = topics.annotate(**{ 'layer_count': Count('resourcebase__layer__category')})
+        elevation = topics.get(slug='elevation')
+        self.assertEquals(elevation.layer_count,3)
