@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from geonode.base.models import TopicCategory, ContactRole, ResourceBase, Link
+from geonode.base.models import TopicCategory, ContactRole, ResourceBase, Link, Thumbnail
 
 class ResourceBaseAdmin(admin.ModelAdmin):
     list_display = ('id','title', 'date', 'category')
@@ -28,3 +28,4 @@ admin.site.register(TopicCategory, TopicCategoryAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
 admin.site.register(ResourceBase, ResourceBaseAdmin)
 admin.site.register(Link, LinkAdmin)
+admin.site.register(Thumbnail, admin.ModelAdmin)

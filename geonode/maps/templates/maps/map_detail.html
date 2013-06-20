@@ -31,10 +31,11 @@
           <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-          <!--li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li-->
-          <li><a href="{% url "map_metadata" map.id %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
-          <!--li><a href="{% url "layer_style" layer.typename %}">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li-->
-          <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+          <li><a href="{% url "map_metadata" map.id %}">{% trans "Edit Map Metadata" %} <i class="icon-chevron-right"></i></a></li>
+          {% if PRINTNG_ENABLED %}
+          <li><a href="#" id="set_thumbnail">{% trans "Set Map Thumbnail" %} <i class="icon-chevron-right"></i></a></li>
+          {% endif %}
+          <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Map Permissions" %} <i class="icon-chevron-right"></i></a></li>
           <li><a href="{% url "map_remove" map.id %}">{% trans "Remove this Map" %} <i class="icon-chevron-right"></i></a></li>
         </ul>
       </div>
@@ -194,11 +195,6 @@
    po.src = 'https://apis.google.com/js/plusone.js';
    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
  })();
-        (function() {
-            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-            po.src = 'https://apis.google.com/js/plusone.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-        })();      
 
   $("#comment_submit_btn").click(function(event) {
     $.ajax({
@@ -213,6 +209,35 @@
     });
     return false;
   });
+
+{% if PRINTNG_ENABLED %}
+  $('#set_thumbnail').click(function(){
+    var xmap = $('.olMapViewport');
+    height = xmap.height();
+    width = xmap.width();
+    var map = xmap.clone(); 
+    map.find('*').each(function(i) {
+        e = $(this);
+        if(e.css('display') === 'none' || (e.attr("class") !== undefined && (e.attr("class").indexOf('olControl') >= 0 || e.attr("class").indexOf('x-') >= 0))) {
+            e.remove(); 
+        } else if (e.attr('src') === '/static/geoexplorer/externals/ext/resources/images/default/s.gif') {
+            e.remove();
+        } else {
+            e.removeAttr("id")
+        }
+    });
+    var url = location.pathname + '/thumbnail';
+    $.ajax({
+     type: "POST",
+      url: url, 
+      data: ("<div style='height:" + height + "px; width: " + width + "px;'>" + map.html() + "</div>"), 
+     success: function(data, status, jqXHR) {
+        return true;
+      }
+    });
+    return true;
+  });
+{% endif %}
  
 </script>
 {% include "_permissions_form_js.html" %}
