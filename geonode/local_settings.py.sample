@@ -19,6 +19,9 @@ GEOGIT_DATASTORE_NAME = 'geogit-repo'
 
 UPLOADER_SHOW_TIME_STEP=False
 
+# this must be set to False if metadata download links should be not displayed
+METADATA_DOWNLOAD_ALLOWS = False
+
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE = False
 
