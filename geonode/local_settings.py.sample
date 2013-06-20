@@ -30,3 +30,6 @@ DB_DATASTORE_HOST = 'localhost'
 DB_DATASTORE_PORT = '5432'
 DB_DATASTORE_TYPE = 'postgis'
 DB_DATASTORE_NAME = 'geonode_imports'
+
+# Use the printNG geoserver lib
+PRINTNG_ENABLED=True
