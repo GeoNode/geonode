@@ -1,13 +1,14 @@
 /*globals define: true, requirejs: true */
 
 requirejs.config({
-    baseUrl: '/static/libs/js',
+    baseUrl: '/static/',
     shim: {
         'underscore': { exports: '_'}
     },
     paths: {
-        'upload': '../../geonode/js/upload',
-        'templates': '../../geonode/js/templates'
+        'jquery': 'lib/js/jquery',
+        'upload': 'geonode/js/upload',
+        'templates': 'geonode/js/templates'
     }
 });
 

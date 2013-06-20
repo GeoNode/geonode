@@ -30,7 +30,8 @@
   "install" : {
     "path" : {
       "css": "lib/css",
-      "js": "lib/js"
+      "js": "lib/js",
+      "img": "lib/img"
     },
     "sources" : {
       "requirejs" : ".components/requirejs/require.js",
@@ -42,7 +43,9 @@
         ".components/raty/lib/jquery.raty.min.js"
       ],
       "select2" : [
-        ".components/select2/select2.min.js"
+        ".components/select2/select2.min.js",
+        ".components/select2/select2.css",
+        ".components/select2/select2.png"
       ],
       "fontselect-jquery-plugin" : [
         ".components/fontselect-jquery-plugin/jquery.fontselect.min.js",
