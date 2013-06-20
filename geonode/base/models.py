@@ -3,7 +3,6 @@ import os
 import hashlib
 
 from django.db import models
-from django.db.models import Count
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -66,9 +65,6 @@ class TopicCategory(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField()
     description = models.TextField(blank=True)
-    layers_count = models.IntegerField(default=0)
-    maps_count = models.IntegerField(default=0)
-    documents_count = models.IntegerField(default=0)
 
     def __unicode__(self):
         return u"{0}".format(self.name)
@@ -362,19 +358,6 @@ class Link(models.Model):
 
     objects = LinkManager()
 
-def update_category_counts():
-    counts = ('map','layer','document')
-    topics = TopicCategory.objects.all()
-    for c in counts: 
-        topics = topics.annotate(**{ '%s_count' % c : Count('resourcebase__%s__category' % c)})
-    for t in topics: 
-        t.layers_count = t.layer_count
-        t.maps_count = t.map_count
-        t.documents_count = t.document_count
-        t.save()
-    return topics
-
-
 def resourcebase_post_save(instance, sender, **kwargs):
     """
     Since django signals are not propagated from child to parent classes we need to call this 
@@ -393,9 +376,6 @@ def resourcebase_post_save(instance, sender, **kwargs):
                                            )
     resourcebase.poc = pc
     resourcebase.metadata_author = ac
-    update_category_counts()
 
 def resourcebase_post_delete(instance, sender, **kwargs):
     resourcebase = instance.resourcebase_ptr
-    update_category_counts()
-
