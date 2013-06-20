@@ -46,6 +46,10 @@
 {% block sidebar %}
 <div class="twocol">
     <h2> {% trans "Maps & Data" %} </h2>
+    <!-- Uncomment this to expose map-specific GetCapabilities document
+    <p>{% trans "WMS GetCapabilities" %}:
+	<a href="{% url capabilities_user profile.user.username %}">{{ SITE_URL }}{% url capabilities_user profile.user.username %}</a><p>
+     -->
     <div id="assets"></div>
 </div>
 <script type="text/javascript">

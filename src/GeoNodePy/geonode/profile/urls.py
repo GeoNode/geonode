@@ -26,6 +26,7 @@ from django.conf.urls.defaults import *
 
 from geonode.profile import views
 
+
 urlpatterns = patterns('',
                        url(r'^edit/$',
                            views.edit_profile,

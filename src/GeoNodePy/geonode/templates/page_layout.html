@@ -8,7 +8,7 @@
   <title>{% block title %} {{ SITENAME }} {% endblock %}</title>
   <link rel="shortcut icon" href="{{ STATIC_URL }}theme/img/favicon.ico"/>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js" type="text/javascript"></script>
-  <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/ext/adapter/ext-jquery-adapter.js"></script>
+  <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/ext/adapter/jquery/ext-jquery-adapter.js"></script>
   {% include 'autocomplete_light/static.html' %}    
   {% block head_extra_meta %}{% endblock %}
   {% block head %}
@@ -43,12 +43,14 @@
 		function showHelp(event) {
 			showModal(event.target.innerHTML);
 		}
-        Ext.onReady(function() {
-        	{% autoescape off %}
-            	Ext.select(".helptext").on('mouseover',showHelp);
-        		Ext.select(".helptext").on('mouseout',hideModal);
-            {% endautoescape %}
-    	});
+		if (Ext.onReady) {
+        	Ext.onReady(function() {
+        		{% autoescape off %}
+            		Ext.select(".helptext").on('mouseover',showHelp);
+        			Ext.select(".helptext").on('mouseout',hideModal);
+            	{% endautoescape %}
+    		});
+		}
    </script>        
 </head>
 <body>
@@ -74,7 +76,7 @@
           >{% trans "Sign in" %}</a>
       {% endif %}
           | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
-          | <a class="" id="viewLink" href="{% url maps_search %}">{% trans "View Map" %}</a>
+          | <a class="" id="viewLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
           | <a class="" id="helpLink" href="{{ STATIC_URL }}docs/WorldMap_Help.pdf" target="_blank">Help</a>
       </div>
     </div><!-- /.wrap -->

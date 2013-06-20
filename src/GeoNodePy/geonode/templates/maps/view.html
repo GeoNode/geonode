@@ -26,13 +26,6 @@ var isMobile = {
         return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
     }
 };    
-
-if (isMobile.any()) {
-	redirect=confirm("Would you like to view the alpha mobile version of this map?");
-	if (redirect===true){
-		window.location = document.URL.replace(/\/$/g,"") + "/mobile/";
-	}
-}
 </script>
 
 
@@ -173,7 +166,12 @@ var init = function() {
         authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
     }, {{ config }});
 
-
+    if (isMobile.any() && config.id) {
+    	redirect=confirm("Would you like to view the alpha mobile version of this map?");
+    	if (redirect===true){
+    		window.location = document.URL.replace(/\/$/g,"") + "/mobile/";
+    	}
+    }
 
     app = new GeoExplorer(config, true);
 

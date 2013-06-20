@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'geonode.profile',
     'geonode.register',
     'geonode.mapnotes',
+    'geonode.capabilities',
     #'geonode.gazetteer',
     #'geonode.queue',
     #'djcelery',

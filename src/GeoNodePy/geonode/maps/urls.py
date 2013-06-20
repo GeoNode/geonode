@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, url
 
 js_info_dict = {
-    'packages': ('geonode.maps',),
+    'packages': ('geonode.maps','geonode.capabilities'),
     }
 
 urlpatterns = patterns('geonode.maps.views',

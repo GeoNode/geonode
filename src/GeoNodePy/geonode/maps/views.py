@@ -1900,8 +1900,8 @@ def _maps_search(query, start, limit, sort_field, sort_dir):
             | Q(keywords__name__icontains=keyword)
             | Q(abstract__icontains=keyword)).distinct()
 
-    officialMaps = map_query.filter(Q(officialurl__isnull=False))
-    map_query = map_query.filter(Q(officialurl__isnull=True))
+    officialMaps = map_query.filter(~Q(officialurl=''))
+    map_query = map_query.filter(Q(officialurl='') | Q(officialurl__isnull=True))
 
     if sort_field:
         order_by = ("" if sort_dir == "ASC" else "-") + sort_field

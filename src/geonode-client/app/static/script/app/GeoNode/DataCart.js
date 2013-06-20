@@ -124,8 +124,12 @@ GeoNode.DataCart = Ext.extend(Ext.util.Observable, {
                      right: 0
                   }
              }),
-             items: [this.addToMapButtonFunction ? addToMapButton : "", this.addToMapButtonFunction ? spacer : "", clearSelectedButton, clearAllButton]
+             items: [clearSelectedButton, clearAllButton]
          });
+        
+        if (this.addToMapButtonFunction) {
+        	controlsForm.items.insert(0, addToMapButton);
+        }
 
 
          controlsForm.render(controls_el);

@@ -69,8 +69,13 @@ def annotations(request, mapid, id=None):
                 obj = applyGeometry(obj, feature)
                 created_features.append(obj)
                 features = created_features
-    return HttpResponse(serialize(features, ['title','content', 'owner_id']))
+    data = serialize(features, ['title','content', 'owner_id'])                
+    if 'callback' in request.REQUEST:
+        data = '%s(%s);' % (request.REQUEST['callback'], data)
+        return HttpResponse(data, "text/javascript")
+    return HttpResponse(data, "application/json")
 
+@csrf_exempt
 def annotation_details(request, id):
     annotation = MapNote.objects.get(pk=id)
     can_edit = request.user.id == annotation.owner.id

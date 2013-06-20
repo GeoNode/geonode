@@ -954,6 +954,12 @@ class Layer(models.Model, PermissionLevelMixin):
         except:
             return [-180.0,-90.0,180.0,90.0]
 
+    def bbox_coords(self):
+        try:
+            return [float(n) for n in re.findall('[0-9\.\-]+', self.bbox)]
+        except:
+            return self.llbbox_coords
+
     def download_links(self):
         """Returns a list of (mimetype, URL) tuples for downloads of this data
         in various formats."""

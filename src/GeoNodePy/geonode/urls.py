@@ -7,6 +7,7 @@ import geonode.proxy.urls
 import geonode.maps.urls
 import geonode.gazetteer.urls
 import geonode.mapnotes.urls
+import geonode.capabilities.urls
 
 
 # Uncomment the next two lines to enable the admin:
@@ -42,7 +43,7 @@ urlpatterns = patterns('',
     (r'^annotations/', include(geonode.mapnotes.urls.urlpatterns)),
     (r'^comments/', include('dialogos.urls')),
     (r'^ratings/', include('agon_ratings.urls')),
-
+    (r'^capabilities/', include('geonode.capabilities.urls')),
     # Accounts
     url(r'^accounts/ajax_login$', 'geonode.views.ajax_login',
         name='auth_ajax_login'),
