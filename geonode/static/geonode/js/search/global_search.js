@@ -1,7 +1,7 @@
 requirejs.config({
-    baseUrl: '/static/components',
+    baseUrl: '/static/lib/',
     paths: {
-        'waypoints': 'jquery-waypoints/waypoints'
+        'waypoints': 'js/waypoints.min'
     }
 });
 
