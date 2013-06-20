@@ -118,7 +118,9 @@ def _install_data_dir():
 def setup_static(options):
     with pushd('geonode/static'):
         sh('bower install')
-        sh('bower-installer') 
+        sh('bower-installer')
+        # HACK Remove this recursive symlink manually
+        sh('rm -rf geonode/static/.components/jquery-timeago/public')
     with pushd('geonode/static/geonode'):
         sh('make')
 
