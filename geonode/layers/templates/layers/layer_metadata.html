@@ -1,7 +1,6 @@
 {% extends "layers/layer_base.html" %}
 {% load i18n %}
 {% load bootstrap_tags %}
-{% load staticfiles %}
 
 {% block title %}{{ layer.typename }} — {{ block.super }}{% endblock %}
 
@@ -32,13 +31,15 @@
           {% endif %}
           {% endfor %}
       </table>
-    <fieldset class="form-controls modal hide fade" id="poc_form" >
+    <fieldset class="form-controls modal-forms modal hide fade" id="poc_form" >
       <h2>{% trans "Point of Contact" %}</h2>
       {{ poc_form|as_bootstrap }}
+      <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
     </fieldset>
-    <fieldset class="form-controls modal hide fade" id="metadata_form">
+    <fieldset class="form-controls modal-forms modal hide fade" id="metadata_form">
       <h2>{% trans "Metadata Provider" %}</h2>
         {{ author_form|as_bootstrap }}
+      <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
     </fieldset>
     <div class="form-actions">
       <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
@@ -47,29 +48,5 @@
 
 {% endblock %}
 {% block extra_script %}
-  <script src="{% static "libs/js/bootstrap-datepicker.js" %}" type="text/javascript"></script>
-  <script type="text/javascript">
-  {% autoescape off %}
-      $(function() {
-        $(".datepicker").datepicker();
-      });
-
-      $('#id_layer-poc').change(function(){
-        if($(this).val() === ''){
-          $('#poc_form').css('max-height', '500px');
-          $('#poc_form').css('overflow-y', 'scroll');
-          $('#poc_form').css('margin-top', '-200px');
-          $('#poc_form').modal();
-        }
-      });
-      $('#id_layer-metadata_author').change(function(){
-        if($(this).val() === ''){
-          $('#metadata_form').css('max-height', '500px');
-          $('#metadata_form').css('overflow-y', 'scroll');
-          $('#metadata_form').css('margin-top', '-200px');
-          $('#metadata_form').modal();
-        }
-      });
-  {% endautoescape %}
-  </script> 
-  {% endblock %}
+ {% include 'metadata_form_js.html' %} 
+{% endblock %}
