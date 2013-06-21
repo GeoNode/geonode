@@ -34,7 +34,7 @@ class LayerAdmin(admin.ModelAdmin):
     list_display = ('id', 'typename','service_type','title', 'date', 'category')
     list_display_links = ('id',)
     list_editable = ('title', 'category')
-    list_filter  = ('date', 'date_type', 'constraints_use', 'category')
+    list_filter  = ('date', 'date_type', 'restriction_code_type', 'category')
     search_fields = ('typename', 'title', 'abstract', 'purpose',)
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
@@ -51,7 +51,7 @@ class LayerAdmin(admin.ModelAdmin):
 class AttributeAdmin(admin.ModelAdmin):
     model = Attribute
     list_display_links = ('id',)
-    list_display = ('id', 'layer', 'attribute', 'attribute_label', 'attribute_type', 'display_order')
+    list_display = ('id', 'layer', 'attribute', 'description', 'attribute_label', 'attribute_type', 'display_order')
     list_filter = ('layer', 'attribute_type')
     search_fields = ('attribute', 'attribute_label',)
 
