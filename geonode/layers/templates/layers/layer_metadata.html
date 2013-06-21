@@ -4,11 +4,6 @@
 
 {% block title %}{{ layer.typename }} — {{ block.super }}{% endblock %}
 
-{% block head %}
-  {% include "geonode/ext_header.html" %}
-  {{ block.super }}
-{% endblock %}
-
 {% block body_class %}data{% endblock %}
 
 {% block body_outer %}  
@@ -29,56 +24,29 @@
     </div>
       <legend>{% trans "Attributes" %}</legend>
       {{ attribute_form.management_form }}
-      <table cellpadding="5" cellspacing="5" width="100%"><tr><th>{% trans "Attribute" %}</th><th>{% trans "Display Title" %}</th><th>{% trans "Display Order" %}</th><th>{% trans "Visible?" %}</th>
+      <table cellpadding="5" cellspacing="5" width="100%"><tr><th>{% trans "Attribute" %}</th><th>{% trans "Description" %}</th></tr>
           {% for form in attribute_form.forms %}
           {% if form.attribute %}
-          <tr><td>{{form.attribute}}</td><td><div style="display:none">{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.display_order}}</td><td align="center"> {{form.visible}}</td></tr>
+          <tr><td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td><td> {{form.description}}</td></tr>
           {% endif %}
           {% endfor %}
       </table>
-    <fieldset class="form-controls" id="poc_form" {% if poc_form.hidden %}style="display:none"{% endif %}>
-      <legend>{% trans "Point of Contact" %}</legend>
+    <fieldset class="form-controls modal-forms modal hide fade" id="poc_form" >
+      <h2>{% trans "Point of Contact" %}</h2>
       {{ poc_form|as_bootstrap }}
+      <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
     </fieldset>
-    <fieldset class="form-controls" id="metadata_form" {% if author_form.hidden %}style="display:none"{% endif %}>
-      <legend>{% trans "Metadata Provider" %}</legend>
+    <fieldset class="form-controls modal-forms modal hide fade" id="metadata_form">
+      <h2>{% trans "Metadata Provider" %}</h2>
         {{ author_form|as_bootstrap }}
+      <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
     </fieldset>
     <div class="form-actions">
       <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
     </div>
   </form>
 
-  <script type="text/javascript">
-    {% autoescape off %}
-        // Extify form fields
-        Ext.select("input[type='text']").each(function(el) {
-            if (el.hasClass("date")) {
-                new Ext.form.DateField({applyTo: el.id, format: "Y-m-d"});
-            } else if (el.hasClass("time")) {
-                new Ext.form.TimeField({applyTo: el.id, format: "H:i:s"})
-            }
-        });
-        // get #poc_form and #metadata_form, and add a `onchange` handler
-        // that shows the form if the blank option is selected.
-        Ext.get('id_layer-poc').on('change', function() {
-            if (this.getValue()===""){
-                Ext.get("poc_form").show();
-                Ext.get("poc_form").setStyle('display', 'block');
-            }else{
-                Ext.get("poc_form").hide();
-                Ext.get("poc_form").setStyle('display','none');
-            }
-        });
-        Ext.get('id_layer-metadata_author').on('change', function() {
-            if (this.getValue()===""){
-                Ext.get("metadata_form").show();
-                Ext.get("metadata_form").setStyle('display','block');
-            }else{
-                Ext.get("metadata_form").hide();
-                Ext.get("metadata_form").setStyle('display','none');
-            }
-        });
-    {% endautoescape %} 
-  </script>
+{% endblock %}
+{% block extra_script %}
+ {% include 'metadata_form_js.html' %} 
 {% endblock %}

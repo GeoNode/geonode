@@ -73,8 +73,6 @@ def iso2dict(exml):
     keywords = []
 
     mdata = MD_Metadata(exml)
-    vals['csw_typename'] = 'gmd:MD_Metadata'
-    vals['csw_schema'] = 'http://www.isotc211.org/2005/gmd'
     vals['language'] = mdata.language
     vals['spatial_representation_type'] = mdata.hierarchy
     vals['date'] = sniff_date(mdata.datestamp)
@@ -122,8 +120,6 @@ def fgdc2dict(exml):
     keywords = []
 
     mdata = Metadata(exml)
-    vals['csw_typename'] = 'fgdc:metadata'
-    vals['csw_schema'] = 'http://www.opengis.net/cat/csw/csdgm'
 
     if hasattr(mdata.idinfo, 'citation'):
         if hasattr(mdata.idinfo.citation, 'citeinfo'):
@@ -163,8 +159,6 @@ def dc2dict(exml):
     keywords = []
 
     mdata = CswRecord(exml)
-    vals['csw_typename'] = 'csw:Record'
-    vals['csw_schema'] = 'http://www.opengis.net/cat/csw/2.0.2'
     vals['language'] = mdata.language
     vals['spatial_representation_type'] = mdata.type
     keywords = mdata.subjects

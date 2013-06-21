@@ -24,6 +24,7 @@
   </div>
   <div class="span6 action-group">
     <div class="pull-right">
+      <!-- download layer -->
       <div class="btn-group">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
           {% trans "Download Layer" %}
@@ -35,6 +36,8 @@
           {% endfor %}
         </ul>
       </div>
+      {% if METADATA_DOWNLOAD_ALLOWS %}
+      <!-- download metadata -->
       <div class="btn-group">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
           {% trans "Download Metadata" %}
@@ -46,6 +49,7 @@
           {% endfor %}
         </ul>
       </div>
+      {% endif %}
     </div>
     {% has_obj_perm user layer "layer.change_layer" as can_edit_layer %}
     {% if can_edit_layer %}
@@ -238,7 +242,7 @@
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user layer "layer" %}
     {% else %}
-        <script src="{{ STATIC_URL }}libs/js/jquery.raty.js"></script>
+        <script src="{{ STATIC_URL }}lib/js/jquery.raty.min.js"></script>
     {% endif %}
     <script type="text/javascript">
     $(function() {
