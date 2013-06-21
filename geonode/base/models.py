@@ -20,6 +20,15 @@ from geonode.security.models import PermissionLevelMixin
 
 from taggit.managers import TaggableManager
 
+def get_default_category():
+    if settings.DEFAULT_TOPICCATEGORY:
+        try:
+            return TopicCategory.objects.get(identifier=settings.DEFAULT_TOPICCATEGORY)
+        except TopicCategory.DoesNotExist:
+            raise TopicCategory.DoesNotExist('The default TopicCategory indicated in settings is not found.')
+    else:
+        return TopicCategory.objects.all()[0]
+
 class ContactRole(models.Model):
     """
     ContactRole is an intermediate abstract model to bind Profiles as Contacts to Layers and apply roles.
@@ -233,7 +242,8 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
 
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng', help_text=_('language used within the dataset'))
-    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), null=True, blank=True, limit_choices_to=Q(is_choice=True))
+    category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), 
+        null=True, blank=True, limit_choices_to=Q(is_choice=True), default=get_default_category)
     spatial_representation_type = models.ForeignKey(SpatialRepresentationType, help_text=_('method used to represent geographic information in the dataset.'), null=True, blank=True, limit_choices_to=Q(is_choice=True))
 
     # Section 5
@@ -326,8 +336,11 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
         self.bbox_y1 = box[3]
 
     def download_links(self):
+        """assemble download links for pycsw"""
         links = []
         for url in self.link_set.all():
+            if url.link_type == 'metadata':  # avoid recursion
+                continue
             if url.link_type == 'html':
                 links.append((self.title, 'Web address (URL)', 'WWW:LINK-1.0-http--link', url.url))
             else:
