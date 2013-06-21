@@ -10,8 +10,7 @@ from django.contrib.contenttypes import generic
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save, \
-     resourcebase_post_delete
+from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 from geonode.people.models import Profile
@@ -30,6 +29,9 @@ class Document(ResourceBase):
 
     doc_file = models.FileField(upload_to='documents')
     extension = models.CharField(max_length=128,blank=True,null=True)
+
+    popular_count = models.IntegerField(default=0)
+    share_count = models.IntegerField(default=0)
 
     def __unicode__(self):  
         return self.title
@@ -100,5 +102,4 @@ def update_documents_extent(sender, **kwargs):
 
 signals.pre_save.connect(pre_save_document, sender=Document)
 signals.post_save.connect(resourcebase_post_save, sender=Document)
-signals.post_delete.connect(resourcebase_post_delete, sender=Document)
 map_changed_signal.connect(update_documents_extent)
