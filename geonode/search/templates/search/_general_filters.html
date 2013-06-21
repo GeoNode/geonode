@@ -7,7 +7,7 @@
     <li><a data-class="all" class="active trigger-query">{% trans "All Categories" %}</a></li>
     {% categories as category_list %}
     {% for category in category_list %}
-    <li><a data-class="{{category.slug}}" class="trigger-query">{{ category }}
+    <li><a data-class="{{category.identifier}}" class="trigger-query">{{ category.gn_description }}
     {% if type == 'layer' %}
     ({{ category.layer_count }})
     {% elif type == 'map' %}
@@ -15,7 +15,7 @@
     {% elif type == 'document' %}
     ({{ category.document_count }})
     {% else %}
-    ({{ category.layers_count|add:category.maps_count|add:category.documents_count }})
+    ({{ category.layer_count|add:category.map_count|add:category.document_count }})
     {% endif %}
     </a></li>
     {% endfor %}

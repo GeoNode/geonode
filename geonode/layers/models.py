@@ -36,7 +36,7 @@ from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
 from geonode.base.models import ResourceBase, ResourceBaseManager, Link, \
-    resourcebase_post_save, resourcebase_post_delete
+    resourcebase_post_save
 from geonode.utils import  _user, _password, get_wms
 from geonode.utils import http_client
 from geonode.geoserver.helpers import cascading_delete
@@ -257,6 +257,7 @@ class Attribute(models.Model):
     """
     layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')
     attribute = models.CharField(_('attribute name'), help_text=_('name of attribute as stored in shapefile/spatial database'), max_length=255, blank=False, null=True, unique=False)
+    description = models.CharField(_('attribute description'), help_text=_('description of attribute to be used in metadata'), max_length=255, blank=False, null=True)
     attribute_label = models.CharField(_('attribute label'), help_text=_('title of attribute as displayed in GeoNode'), max_length=255, blank=False, null=True, unique=False)
     attribute_type = models.CharField(_('attribute type'), help_text=_('the data type of the attribute (integer, string, geometry, etc)'), max_length=50, blank=False, null=False, default='xsd:string', unique=False)
     visible = models.BooleanField(_('visible?'), help_text=_('specifies if the attribute should be displayed in identify results'), default=True)
@@ -711,5 +712,4 @@ signals.pre_delete.connect(geoserver_pre_delete, sender=Layer)
 signals.post_save.connect(geoserver_post_save, sender=Layer)
 signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)
-signals.post_delete.connect(resourcebase_post_delete, sender=Layer)
 signals.post_save.connect(resourcebase_post_save, sender=Layer)
