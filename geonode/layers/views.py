@@ -38,13 +38,14 @@ from django.views.decorators.http import require_POST
 from django.template.defaultfilters import slugify
 from django.shortcuts import get_object_or_404
 from django.forms.models import inlineformset_factory
-from django.utils.datastructures import MultiValueDictKeyError 
+from django.utils.datastructures import MultiValueDictKeyError
+from django.db.models import signals
 
 from geoserver.catalog import FailedRequestError
 
 from geonode.utils import http_client, _get_basic_auth_info, json_response
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm, LayerStyleUploadForm
-from geonode.layers.models import Layer, Attribute, set_styles
+from geonode.layers.models import Layer, Attribute, set_styles, geoserver_post_save, geoserver_pre_save
 from geonode.base.models import ContactRole
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
@@ -172,8 +173,12 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
 
-    #layer.popular_count += 1
-    #layer.save()
+    signals.pre_save.disconnect(geoserver_pre_save, sender=Layer)
+    signals.post_save.disconnect(geoserver_post_save, sender=Layer)
+    layer.popular_count += 1
+    layer.save()
+    signals.pre_save.connect(geoserver_pre_save, sender=Layer)
+    signals.post_save.connect(geoserver_post_save, sender=Layer)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
