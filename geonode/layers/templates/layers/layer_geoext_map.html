@@ -6,6 +6,7 @@
 {% autoescape off %}
         var app;
         Ext.onReady(function() {
+            GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
             var config = {
                 tools: [{
                     ptype: "gxp_wmsgetfeatureinfo",

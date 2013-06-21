@@ -15,6 +15,10 @@ install:
   - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2
   - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
   - sudo apt-get install -y gettext
+  - sudo apt-get install nodejs
+  - npm install -g bower
+  - npm install -g less
+  - npm install -g bower-installer 
   - pip install -e . --use-mirrors
 
 before_script:
@@ -25,7 +29,7 @@ script:
   - paver test
   - paver test_integration
   - paver test_integration -n geonode.tests.csw
-  - paver test_javascript
+#  - paver test_javascript
 
 after_script:
   - paver reset_hard
