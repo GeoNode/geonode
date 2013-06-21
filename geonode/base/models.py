@@ -326,8 +326,11 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
         self.bbox_y1 = box[3]
 
     def download_links(self):
+        """assemble download links for pycsw"""
         links = []
         for url in self.link_set.all():
+            if url.link_type == 'metadata':  # avoid recursion
+                continue
             if url.link_type == 'html':
                 links.append((self.title, 'Web address (URL)', 'WWW:LINK-1.0-http--link', url.url))
             else:
