@@ -24,10 +24,10 @@
     </div>
       <legend>{% trans "Attributes" %}</legend>
       {{ attribute_form.management_form }}
-      <table cellpadding="5" cellspacing="5" width="100%"><tr><th>{% trans "Attribute" %}</th><th>{% trans "Display Title" %}</th><th>{% trans "Display Order" %}</th><th>{% trans "Visible?" %}</th>
+      <table cellpadding="5" cellspacing="5" width="100%"><tr><th>{% trans "Attribute" %}</th><th>{% trans "Description" %}</th></tr>
           {% for form in attribute_form.forms %}
           {% if form.attribute %}
-          <tr><td>{{form.attribute}}</td><td><div style="display:none">{{form.id}}</div>{{form.attribute_label}}</td><td> {{form.display_order}}</td><td align="center"> {{form.visible}}</td></tr>
+          <tr><td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td><td> {{form.description}}</td></tr>
           {% endif %}
           {% endfor %}
       </table>

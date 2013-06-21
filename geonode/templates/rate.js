@@ -1,13 +1,9 @@
 {% load staticfiles %}
 <script type="text/javascript">
   requirejs.config({
-    baseUrl: '/static/libs/js',
-    shim: {
-        'underscore': { exports: '_'}
-    },
-    paths: {
-        'templates': '../js/templates'
-    }
+    paths:{
+      'jquery.raty': '/static/lib/js/jquery.raty.min'
+    } 
   });
   require(['jquery.raty'], function(raty){
     
