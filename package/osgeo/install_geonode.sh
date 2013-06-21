@@ -31,6 +31,7 @@ echo "Starting GeoNode installation"
 if [ -z "$USER_NAME" ] ; then
     USER_NAME="user"
 fi
+
 USER_HOME="/home/$USER_NAME"
 DATA_DIR="/usr/local/share/geonode"
 DOC_DIR="$DATA_DIR/doc"
@@ -42,7 +43,7 @@ POSTGRES_USER="$USER_NAME"
 apt-get -q update
 apt-get --assume-yes install gcc libgdal1-dev python-gdal libxml2 python-lxml \
     python-libxml2 python-pip libproj0 libproj-dev libgeos-dev libgeos++-dev \
-    libapache2-mod-wsgi python-shapely python-pycsw python-owslib python-django
+    libapache2-mod-wsgi python-shapely python-pycsw python-owslib libxml2-dev libxslt-dev python-dev
 
 if [ $? -ne 0 ] ; then
     echo 'ERROR: Package install failed! Aborting.'
@@ -51,7 +52,7 @@ fi
 
 
 # Install geonode
-pip install --upgrade --no-deps geonode==2.0b10
+pip install --upgrade geonode==2.0b10
 
 
 # Create database for demonstration instance
@@ -73,7 +74,7 @@ sudo -u "$POSTGRES_USER" psql geonode -c 'VACUUM ANALYZE;'
 echo "Deploying geonode demonstration instance"
 cat << EOF > "$APACHE_CONF"
 WSGIDaemonProcess geonode user=www-data threads=15 processes=2
-<VirtualHost *:80>
+<VirtualHost geonode:80>
     Servername geonode
     ServerAdmin webmaster@localhost
 
@@ -104,11 +105,6 @@ WSGIDaemonProcess geonode user=www-data threads=15 processes=2
     ProxyPass /geoserver http://localhost:8082/geoserver
     ProxyPassReverse /geoserver http://localhost:8082/geoserver
 </VirtualHost>
-
-
-Alias /static "/usr/local/lib/python2.7/disk-packages/geonode/static"
-Alias / "/usr/local/lib/python2.7/disk-packages/geonode/wsgi.py"
-
 EOF
 echo "Done"
 
@@ -178,11 +174,12 @@ cp -a /usr/share/applications/geonode-docs.desktop "$USER_HOME/Desktop/"
 chown -R $USER_NAME:$USER_NAME "$USER_HOME/Desktop/geonode-docs.desktop"
 
 #Enable GeoNode and reload apache
-sudo a2ensite geonode
+a2ensite geonode
 
 # Reload Apache
 /etc/init.d/apache2 force-reload
 
+echo "geonode 127.0.0.1" >> /etc/hosts
 
 # Uninstall dev packages
 apt-get --assume-yes remove libgdal1-dev libproj-dev libgeos-dev libgeos++-dev
