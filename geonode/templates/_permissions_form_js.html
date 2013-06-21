@@ -3,7 +3,9 @@
 
   function permissionsString(form, type) {
     var anonymousPermissions, authenticatedPermissions, levels;
-
+    if (typeof form === 'string'){
+      form = $(form);
+    }
     var data = form.serializeObject();
 
     if (type == "maps") {

@@ -2,22 +2,12 @@
 /*global define:true, $:true, FormData: true, alert: true, window:true */
 'use strict';
 
-requirejs.config({
-    baseUrl: '/static/',
-    paths: {
-        'jquery': 'lib/js/jquery',
-        'underscore': 'lib/js/underscore',
-        'text': 'lib/js/text',
-    }
-});
-
 define(function (require, exports) {
 
-    var $        = require('jquery'),
-        _        = require('underscore'),
-        fileTypes = require('geonode/js/upload/FileTypes'),
-        path     = require('geonode/js/upload/path'),
-        common     = require('geonode/js/upload/common'),
+    var _        = require('underscore'),
+        fileTypes = require('upload/FileTypes'),
+        path     = require('upload/path'),
+        common     = require('upload/common'),
         LayerInfo;
 
     /** Creates an instance of a LayerInfo
@@ -162,7 +152,7 @@ define(function (require, exports) {
             perm = {}
         }
         else {
-            perm = permissionsString($('#permission_form'),'layers');
+            perm = permissionsString('#permission_form','layers');
         }
 
         if (geogit_enabled) {

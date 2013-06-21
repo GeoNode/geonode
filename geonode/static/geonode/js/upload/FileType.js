@@ -1,16 +1,8 @@
 /*global define: true, $:true */
 'use strict';
 
-requirejs.config({
-    baseUrl: '/static/',
-    paths: {
-        'jquery': 'lib/js/jquery'
-    }
-});
-
 define(function (require, exports) {
-    var $        = require('jquery'),
-        getExt = require('geonode/js/upload/path').getExt,
+    var getExt = require('upload/path').getExt,
         FileType;
 
     /** Create an instance of a FileType object
