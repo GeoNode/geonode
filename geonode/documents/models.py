@@ -31,6 +31,9 @@ class Document(ResourceBase):
     doc_file = models.FileField(upload_to='documents')
     extension = models.CharField(max_length=128,blank=True,null=True)
 
+    popular_count = models.IntegerField(default=0)
+    share_count = models.IntegerField(default=0)
+
     def __unicode__(self):  
         return self.title
         
