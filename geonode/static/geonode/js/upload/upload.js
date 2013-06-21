@@ -5,22 +5,12 @@
 
 var layers = {};
 
-requirejs.config({
-    baseUrl: '/static/',
-    paths: {
-        'jquery': 'lib/js/jquery',
-        'underscore': 'lib/js/underscore',
-        'text': 'lib/js/text',
-    }
-});
-
-define(['jquery',
-        'underscore',
-        'geonode/js/upload/LayerInfo',
-        'geonode/js/upload/FileTypes',
-        'geonode/js/upload/path',
-        'geonode/js/upload/common',
-        'text!templates/upload.html'], function ($, _, LayerInfo, fileTypes, path, common, upload) {
+define(['underscore',
+        'upload/LayerInfo',
+        'upload/FileTypes',
+        'upload/path',
+        'upload/common',
+        'text!templates/upload.html'], function (_, LayerInfo, fileTypes, path, common, upload) {
 
     var templates = {},
         findFileType,
@@ -38,7 +28,7 @@ define(['jquery',
         doSuccessfulUpload,
         attach_events,
         checkFiles,
-        fileTypes = require('geonode/js/upload/FileTypes');
+        fileTypes = fileTypes;
 
     $('body').append(upload);
 
