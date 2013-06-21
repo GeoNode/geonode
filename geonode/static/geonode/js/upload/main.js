@@ -1,18 +1,17 @@
 /*globals define: true, requirejs: true */
 
 requirejs.config({
-    baseUrl: '/static/',
+    baseUrl: '/static/lib/js',
     shim: {
         'underscore': { exports: '_'}
     },
     paths: {
-        'jquery': 'lib/js/jquery',
-        'upload': 'geonode/js/upload',
-        'templates': 'geonode/js/templates'
+        'upload': '../../geonode/js/upload',
+        'templates': '../../geonode/js/templates',
     }
 });
 
-define(['jquery', 'upload/upload'], function ($, upload) {
+define(['upload/upload'], function (upload) {
     'use strict';
 
     $(function () {
@@ -24,5 +23,4 @@ define(['jquery', 'upload/upload'], function ($, upload) {
             upload_button: '#upload-button'
         });
     });
-
 });
