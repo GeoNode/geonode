@@ -79,6 +79,9 @@ def document_detail(request, docid):
     except:
         related = ''
 
+    document.popular_count += 1
+    document.save()
+
     return render_to_response("documents/document_detail.html", RequestContext(request, {
         'permissions_json': json.dumps(_perms_info(document, DOCUMENT_LEV_NAMES)),
         'document': document,
