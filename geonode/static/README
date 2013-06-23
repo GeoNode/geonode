@@ -1,0 +1,54 @@
+GeoNode's Static Client
+=======================
+
+Installing tools required for static development
+    npm install -g lessc
+    npm install -g bower
+    npm install -g bower-installer
+
+Installing Dependencies
+    bower install 
+    paver setup_static
+
+css & less (bootstrap)
+    bootswatch
+
+javascript
+    extjs
+        geonode
+        print
+        upload
+    maps
+    search
+    status
+    templates
+    upload
+    utils
+
+images
+
+fonts
+
+i18n/l10n
+
+require.js
+
+rhino
+
+grunt
+
+Building with Makefile 
+    lessc dependency
+    build base.css
+    build geonode.js
+    build GeoNode.js
+
+Testing
+    qunit
+    rhino
+    require
+   
+TODO:
+    Finish Bower
+    Integrate Remnant geonode-client components into geoexplorer
+    Custom Client documentation (use salamati)

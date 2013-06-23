@@ -4,8 +4,7 @@
 
 define(function (require, exports) {
 
-    var $        = require('jquery'),
-        _        = require('underscore'),
+    var _        = require('underscore'),
         fileTypes = require('upload/FileTypes'),
         path     = require('upload/path'),
         common     = require('upload/common'),
@@ -153,7 +152,7 @@ define(function (require, exports) {
             perm = {}
         }
         else {
-            perm = permissionsString($('#permission_form'),'layers');
+            perm = permissionsString('#permission_form','layers');
         }
 
         if (geogit_enabled) {
