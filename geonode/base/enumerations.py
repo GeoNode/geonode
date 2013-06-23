@@ -20,7 +20,7 @@
 
 from django.utils.translation import ugettext_lazy as _
 
-LINK_TYPES = ['original', 'data', 'image', 'metadata']
+LINK_TYPES = ['original', 'data', 'image', 'metadata', 'html']
 
 HIERARCHY_LEVELS = (
     ('series', _('series')),

@@ -290,6 +290,16 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
         self.bbox_y0 = box[2]
         self.bbox_y1 = box[3]
 
+    def download_links(self):
+        links = []
+        for url in self.link_set.all():
+            if url.link_type == 'html':
+                links.append((self.title, 'Web address (URL)', 'WWW:LINK-1.0-http--link', url.url))
+            else:
+                description = '%s (%s Format)' % (self.title, url.name)
+                links.append((self.title, description, 'WWW:DOWNLOAD-1.0-http--download', url.url))
+        return links
+
     def _set_poc(self, poc):
         # reset any poc asignation to this resource
         ContactRole.objects.filter(role=self.poc_role, resource=self).delete()
