@@ -103,16 +103,6 @@ class Layer(ResourceBase):
     default_style = models.ForeignKey(Style, related_name='layer_default_style', null=True, blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')
 
-    def download_links(self):
-        links = []
-        for url in self.link_set.all():
-            description = '%s (%s Format)' % (self.title, url.name)
-            links.append((self.title, description, 'WWW:DOWNLOAD-1.0-http--download', url.url))
-        abs_url = '%s%s' % (settings.SITEURL[:-1], self.get_absolute_url())
-        links.append((self.title, self.title, 'WWW:LINK-1.0-http--link', abs_url))
-        return links
-
-
     def update_thumbnail(self, save=True):
         self.save_thumbnail(self._thumbnail_url(width=80, height=80), save)
 
@@ -220,9 +210,6 @@ class Layer(ResourceBase):
         # assign owner admin privs
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
-
-    def keyword_list(self):
-        return [kw.name for kw in self.keywords.all()]
 
     def tiles_url(self):
         return self.link_set.get(name='Tiles').url
@@ -538,8 +525,21 @@ def geoserver_post_save(instance, sender, **kwargs):
                         defaults=dict(
                             extension='tiles',
                             name=_("Tiles"),
-                            mime='text/png',
+                            mime='image/png',
                             link_type='image',
+                            )
+                        )
+
+
+    html_link_url = '%s%s' % (settings.SITEURL[:-1], instance.get_absolute_url())
+
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=html_link_url,
+                        defaults=dict(
+                            extension='html',
+                            name=instance.typename,
+                            mime='text/html',
+                            link_type='html',
                             )
                         )
 
@@ -548,7 +548,6 @@ def geoserver_post_save(instance, sender, **kwargs):
     for link in instance.link_set.all():
         if not urlparse(settings.SITEURL).hostname == urlparse(link.url).hostname and not \
                     urlparse(settings.GEOSERVER_BASE_URL).hostname == urlparse(link.url).hostname:
-
             link.delete()
 
     #Save layer attributes
