@@ -32,7 +32,8 @@ define(function (require, exports) {
 
         // need to find a way converting this name to a safe selector
         this.selector = '#' + LayerInfo.safeSelector(this.name) + '-element';
-
+        this.selector = this.selector.replace(' ','_');
+        this.name = this.name.replace(' ','_');
         this.errors = this.collectErrors();
     };
 
