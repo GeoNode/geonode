@@ -89,20 +89,6 @@
               <a href="#" id="upload-button" class="btn">Upload files</a>
             </section>
 
-            <script data-main="{{STATIC_URL}}/geonode/js/upload/main"
-                    src="{{ STATIC_URL }}geonode/libs/require.js">
-            </script>
-
-            <script type="text/javascript">
-            {% autoescape off %}
-            
-            csrf_token =  "{{ csrf_token }}",
-            form_target = "{{ UPLOADER_URL }}",
-            userLookup = "{% url "geonode.views.ajax_lookup" %}"
-
-            {% endautoescape %}
-
-            </script>
         </div>
     </div>
 {% endblock %}
@@ -118,6 +104,22 @@
 {% endblock %}
 
 {% block extra_script %}
+<script data-main="{{STATIC_URL}}/geonode/js/upload/main"
+        src="{{ STATIC_URL }}lib/js/require.js">
+</script>
+
+<script type="text/javascript">
+{% autoescape off %}
+
+  csrf_token =  "{{ csrf_token }}",
+  form_target = "{{ UPLOADER_URL }}",
+  geogit_enabled = {{ GEOGIT_ENABLED|lower  }},
+  time_enabled = {{ TIME_ENABLED|lower  }},
+  userLookup = "{% url "geonode.views.ajax_lookup" %}"
+
+{% endautoescape %}
+
+</script>
 {% with "none" as layer %}
 {% include "_permissions_form_js.html" %}
 {% endwith %}

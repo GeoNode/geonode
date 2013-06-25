@@ -24,6 +24,7 @@
   </div>
   <div class="span6 action-group">
     <div class="pull-right">
+      <!-- download layer -->
       <div class="btn-group">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
           {% trans "Download Layer" %}
@@ -35,6 +36,8 @@
           {% endfor %}
         </ul>
       </div>
+      {% if METADATA_DOWNLOAD_ALLOWS %}
+      <!-- download metadata -->
       <div class="btn-group">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
           {% trans "Download Metadata" %}
@@ -46,6 +49,7 @@
           {% endfor %}
         </ul>
       </div>
+      {% endif %}
     </div>
     {% has_obj_perm user layer "layer.change_layer" as can_edit_layer %}
     {% if can_edit_layer %}
@@ -57,8 +61,8 @@
       <ul class="dropdown-menu">
         <!--li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li-->
         <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
-        <!--li><a href="{% url "layer_style" layer.typename %}">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li-->
         <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+        <li><a href="{% url "layer_style_manage" layer.typename %}">{% trans "Manage Styles" %} <i class="icon-chevron-right"></i></a></li>
         <li><a class="style-edit" href="#">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="{% url "layer_replace" layer.typename %}">{% trans "Replace this Layer" %} <i class="icon-chevron-right"></i></a></li>
         <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %} <i class="icon-chevron-right"></i></a></li>
@@ -238,7 +242,7 @@
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user layer "layer" %}
     {% else %}
-        <script src="{{ STATIC_URL }}libs/js/jquery.raty.js"></script>
+        <script src="{{ STATIC_URL }}lib/js/jquery.raty.min.js"></script>
     {% endif %}
     <script type="text/javascript">
     $(function() {

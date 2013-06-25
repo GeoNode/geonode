@@ -99,21 +99,35 @@ def _install_data_dir():
     download_dir = path('downloaded')
     data_dir_zip = download_dir / os.path.basename(DATA_DIR_URL)
 
-    print 'extracting datadir'
-    with zipfile.ZipFile(data_dir_zip, "r") as z:
-        z.extractall(geoserver_dir)
+    if os.path.exists(data_dir_zip):
+        print 'extracting datadir'
+        with zipfile.ZipFile(data_dir_zip, "r") as z:
+            z.extractall(geoserver_dir)
 
-    config = geoserver_dir / 'data/security/auth/geonodeAuthProvider/config.xml'
-    with open(config) as f:
-        xml = f.read()
-        m = re.search('baseUrl>([^<]+)', xml)
-        xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
-    with open(config, 'w') as f: f.write(xml)
+        config = geoserver_dir / 'data/security/auth/geonodeAuthProvider/config.xml'
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('baseUrl>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
+        with open(config, 'w') as f: f.write(xml)
+    else:
+        print 'data_dir_zip not found, unable to extract and configure'
 
+
+@task
+def setup_static(options):
+    with pushd('geonode/static'):
+        sh('bower install')
+        sh('bower-installer')
+    with pushd('geonode/static/geonode'):
+        sh('make')
+    # HACK Remove this recursive symlink manually
+    sh('rm geonode/static/.components/jquery-timeago/public')
 
 @task
 @needs([
     'setup_geoserver',
+    'setup_static',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
@@ -484,6 +498,7 @@ def publish():
     sh('git push origin %s' % version)
     sh('git tag debian/%s' % simple_version)
     sh('git push origin debian/%s' % simple_version)
+    sh('python setup.py sdist upload')
 
 
 def versions():

@@ -5,13 +5,12 @@
 
 var layers = {};
 
-define(['jquery',
-        'underscore',
+define(['underscore',
         'upload/LayerInfo',
         'upload/FileTypes',
         'upload/path',
         'upload/common',
-        'text!templates/upload.html'], function ($, _, LayerInfo, fileTypes, path, common, upload) {
+        'text!templates/upload.html'], function (_, LayerInfo, fileTypes, path, common, upload) {
 
     var templates = {},
         findFileType,
@@ -29,7 +28,7 @@ define(['jquery',
         doSuccessfulUpload,
         attach_events,
         checkFiles,
-        fileTypes = require('upload/FileTypes');
+        fileTypes = fileTypes;
 
     $('body').append(upload);
 

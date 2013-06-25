@@ -125,18 +125,18 @@ def rename_and_prepare(base_file):
     )
         
 
-def create_geoserver_db_featurestore():
+def create_geoserver_db_featurestore(store_type=None):
     cat = Layer.objects.gs_catalog
     # get or create datastore
     try:
-        if hasattr(settings, 'GEOGIT_DATASTORE_NAME') and settings.GEOGIT_DATASTORE_NAME:
+        if store_type == 'geogit' and hasattr(settings, 'GEOGIT_DATASTORE_NAME') and settings.GEOGIT_DATASTORE_NAME:
             ds = cat.get_store(settings.GEOGIT_DATASTORE_NAME)
         elif settings.DB_DATASTORE_NAME:
             ds = cat.get_store(settings.DB_DATASTORE_NAME)
         else:
             return None
     except FailedRequestError:
-        if hasattr(settings, 'GEOGIT_DATASTORE_NAME') and settings.GEOGIT_DATASTORE_NAME:
+        if store_type == 'geogit' and hasattr(settings, 'GEOGIT_DATASTORE_NAME') and settings.GEOGIT_DATASTORE_NAME:
             logging.info(
                 'Creating target datastore %s' % settings.GEOGIT_DATASTORE_NAME)
             ds = cat.create_datastore(settings.GEOGIT_DATASTORE_NAME)

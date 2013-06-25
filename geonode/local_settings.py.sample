@@ -9,8 +9,21 @@ DATABASES = {
 
 # GeoNode vector data backend configuration.
 
+# Uploader backend (rest or importer)
+
+UPLOADER_BACKEND_URL = 'rest'
+
+# Import uploaded shapefiles into a GeoGit repository
+GEOGIT_DATASTORE = False
+GEOGIT_DATASTORE_NAME = 'geogit-repo'
+
+UPLOADER_SHOW_TIME_STEP=False
+
+# this must be set to False if metadata download links should be not displayed
+METADATA_DOWNLOAD_ALLOWS = False
+
 #Import uploaded shapefiles into a database such as PostGIS?
-DB_DATASTORE = True
+DB_DATASTORE = False
 
 #Database datastore connection settings
 DB_DATASTORE_DATABASE = 'geonode_imports'
@@ -20,3 +33,6 @@ DB_DATASTORE_HOST = 'localhost'
 DB_DATASTORE_PORT = '5432'
 DB_DATASTORE_TYPE = 'postgis'
 DB_DATASTORE_NAME = 'geonode_imports'
+
+# Use the printNG geoserver lib
+PRINTNG_ENABLED=True

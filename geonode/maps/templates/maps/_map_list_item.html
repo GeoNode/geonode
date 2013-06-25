@@ -6,7 +6,7 @@
 {% overall_rating map "map" as map_rating %} {% num_ratings map as num_votes %}
 <article>
   <a href="{% url "map_detail" map.id %}">
-    <div class="img-placeholder pl-153-113">{% trans "No Image Available" %}</div>
+    <img src="{{ map.get_thumbnail_url }}" />
   </a>
   <div class="pull-left">
     <h3><i class="icon-globe"></i> <a href="{% url "map_detail" map.id %}">{{ map.title }}</a></h3>
