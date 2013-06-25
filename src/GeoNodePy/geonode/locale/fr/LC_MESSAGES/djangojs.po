@@ -21,53 +21,53 @@ msgstr ""
 #: media/static/script/GeoNode.js:33 media/static/script/GeoNode.js.c:76
 #: static/geonode/script/GeoNode.js:33 static/geonode/script/GeoNode.js.c:76
 msgid "Add user..."
-msgstr "FR"
+msgstr ""
 
 #: media/static/script/GeoNode.js:37 media/static/script/GeoNode.js.c:64
 #: static/geonode/script/GeoNode.js:37 static/geonode/script/GeoNode.js.c:64
 msgid "Anyone"
-msgstr "FR"
+msgstr ""
 
 #: media/static/script/GeoNode.js:37 media/static/script/GeoNode.js.c:39
 #: media/static/script/GeoNode.js:64 media/static/script/GeoNode.js.c:66
 #: static/geonode/script/GeoNode.js:37 static/geonode/script/GeoNode.js.c:39
 #: static/geonode/script/GeoNode.js:64 static/geonode/script/GeoNode.js.c:66
 msgid "Any registered user"
-msgstr "FR"
+msgstr ""
 
 #: media/static/script/GeoNode.js:37 media/static/script/GeoNode.js.c:39
 #: media/static/script/GeoNode.js:64 static/geonode/script/GeoNode.js:37
 #: static/geonode/script/GeoNode.js.c:39 static/geonode/script/GeoNode.js:64
 msgid "Only users who can edit"
-msgstr "FR"
+msgstr ""
 
 #: media/static/script/GeoNode.js:38 static/geonode/script/GeoNode.js:38
 msgid "Who can view or download this?"
-msgstr "FR"
+msgstr ""
 
 #: media/static/script/GeoNode.js:39 static/geonode/script/GeoNode.js:39
 msgid "Who can edit this?"
-msgstr "FR"
+msgstr ""
 
 #: media/static/script/GeoNode.js:41 static/geonode/script/GeoNode.js:41
 msgid "Who can manage and edit this?"
-msgstr "FR"
+msgstr ""
 
 #: media/static/script/GeoNode.js:64 static/geonode/script/GeoNode.js:64
 msgid "Who can view and download this data?"
-msgstr "FR"
+msgstr ""
 
 #: media/static/script/GeoNode.js:65 static/geonode/script/GeoNode.js:65
 msgid "Who can edit this data?"
-msgstr "FR"
+msgstr ""
 
 #: media/static/script/GeoNode.js:66 static/geonode/script/GeoNode.js:66
 msgid "Only the following users or groups:"
-msgstr "FR"
+msgstr ""
 
 #: media/static/script/GeoNode.js:67 static/geonode/script/GeoNode.js:67
 msgid "Who can manage and edit this data?"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:9 templates/lang.js.c:13
 msgid "Add Layers"
@@ -75,7 +75,7 @@ msgstr "Ajouter une couche"
 
 #: templates/lang.js:10
 msgid "Add ArcGIS REST Server"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:11
 msgid "Area"
@@ -107,7 +107,7 @@ msgstr "Détails..."
 
 #: templates/lang.js:22
 msgid "Google Earth"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:23 templates/lang.js.c:140
 msgid "Height"
@@ -115,11 +115,11 @@ msgstr "Hauteur"
 
 #: templates/lang.js:24
 msgid "Help"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:25
 msgid "About"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:26 templates/lang.js.c:141
 msgid "Large"
@@ -140,7 +140,7 @@ msgstr "Visualiser les données disponibles de :"
 
 #: templates/lang.js:30
 msgid "Upload your own data"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:32
 msgid "Data"
@@ -168,7 +168,7 @@ msgstr "Dimensions de la carte"
 
 #: templates/lang.js:38
 msgid "Warning"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:39
 #, fuzzy, c-format
@@ -176,7 +176,7 @@ msgid ""
 "You now have %n layers in your map.  With more than %max layers you may "
 "experience problems with layer ordering, info balloon display, and general "
 "performance."
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:40
 msgid "Measure"
@@ -189,15 +189,15 @@ msgstr "A propos de cette carte"
 
 #: templates/lang.js:42
 msgid "Abstract (brief description)"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:43
 msgid "Keywords (for Picasa and YouTube overlays)"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:44
 msgid "Introduction (tell visitors more about your map view)"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:45 templates/lang.js.c:116 templates/lang.js.c:182
 msgid "Contact"
@@ -226,7 +226,7 @@ msgstr "Titre"
 
 #: templates/lang.js:51
 msgid "URL:"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:52 templates/lang.js.c:143
 msgid "Mini"
@@ -234,7 +234,7 @@ msgstr "Mini"
 
 #: templates/lang.js:53
 msgid "Pan Map"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:54
 msgid "Zoom to Next Extent"
@@ -275,7 +275,7 @@ msgstr "Imprimer la carte"
 
 #: templates/lang.js:64
 msgid "Link"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:65 templates/lang.js.c:66
 msgid "Remove Layer"
@@ -283,7 +283,7 @@ msgstr "Supprimer la couche"
 
 #: templates/lang.js:67
 msgid "Revisions"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:68
 msgid "Sorry, your map could not be saved."
@@ -304,11 +304,11 @@ msgstr "Vous devez être connecté pour enregistrer cette carte."
 #: templates/lang.js:73
 #, fuzzy
 msgid "Share Layer"
-msgstr "*"
+msgstr ""
 
 #: templates/lang.js:74
 msgid "Share Map"
-msgstr "*"
+msgstr ""
 
 #: templates/lang.js:75 templates/lang.js.c:147
 msgid "Small"
@@ -320,28 +320,28 @@ msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
 msgstr ""
-"FRErreur à la connexion au serveur.\n"
+"Erreur à la connexion au serveur.\n"
 " Merci de vérifier l'url et réessayer."
 
 #: templates/lang.js:77
 msgid "Street View"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:78
 msgid "Add New Category"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:79
 msgid "Add a new layer category"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:80
 msgid "Rename Category"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:81
 msgid "Rename this category"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:82
 #, fuzzy
@@ -350,7 +350,7 @@ msgstr "Supprimer la couche"
 
 #: templates/lang.js:83
 msgid "Remove this category and layers"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:84
 msgid "Layer Properties"
@@ -378,7 +378,7 @@ msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
 msgstr ""
-"FRCette carte que vous essayez de charger n'existe pas. Créez une nouvelle "
+"Cette carte que vous essayez de charger n'existe pas. Créez une nouvelle "
 "carte à la place."
 
 #: templates/lang.js:90
@@ -464,7 +464,7 @@ msgstr "Nom"
 
 #: templates/lang.js:127
 msgid "Queryable"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:134
 msgid "No background"
@@ -485,7 +485,7 @@ msgstr ""
 
 #: templates/lang.js:154
 msgid "Category:"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:155 templates/lang.js.c:223
 msgid "Abstract:"
@@ -613,7 +613,7 @@ msgstr "Ces données sont stockées sur un serveur distant"
 
 #: templates/lang.js:221
 msgid "Category"
-msgstr "FR"
+msgstr ""
 
 #: templates/lang.js:222
 #, fuzzy
