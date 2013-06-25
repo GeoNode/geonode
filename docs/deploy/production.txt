@@ -216,6 +216,37 @@ The "total" column lists the available physical memory and swap space in megabyt
 
 In this example, there is no Swap space so that field is 0 and the available RAM on the system is 6096MB (6 GB). 
 
+Security Integration Optimization
+---------------------------------
+
+GeoServer delegates authentication and authorization to GeoNode. The default configuration uses an HTTP endpoint in GeoNode to discover the current user and the layers that are accessible. For production, it is advisable to use a database-level connection.
+
+Installing the Stored Procedure
++++++++++++++++++++++++++++++++
+
+The SQL for the stored procedure is distributed with the GeoServer web application archive and can be found at :file:`WEB-INF/classes/org/geonode/security/geonode_authorize_layer.sql` in the webapps directory. It can be loaded using the `psql` command by following these steps (if not using tomcat6 or Ubuntu, locate the webapps directory for your configuration)::
+
+    $ cd /var/lib/tomcat6/webapps
+    $ sudo su - postgres
+    $ psql -d YOUR_DATABASE < geoserver/WEB-INF/classes/org/geonode/security/geonode_authorize_layer.sql
+
+Configuring GeoServer to Use the Database Security Client
+++++++++++++++++++++++++++++++++++++++++++++++++
+
+If a context configuration XML file does not already exist, create one for GeoServer. If using Tomcat6 on Ubuntu, this file resides at :file:`/etc/tomcat6/Catalina/localhost/geoserver.xml`. If creating a new file, the following XML should be added (replace ALLCAPS with your specific values)::
+
+    <Context path="/geoserver"
+        antiResourceLocking="false" >
+      <Parameter name="org.geonode.security.databaseSecurityClient.url"
+        value="jdbc:postgresql://localhost:5432/DATABASE?user=USER&amp;password=PASSWORD"/>
+    </Context>
+
+If the file exists already, just add the `Parameter` element from above.
+
+Verification of Database Security Client
+++++++++++++++++++++++++++++++++++++++++
+
+To verify the settings change, look in the GeoServer logs for a line that notes: "using geonode database security client". If any issues arise, check your connection configuration as specified in the context file above.
 
 Configuring the Servlet Container
 ---------------------------------
