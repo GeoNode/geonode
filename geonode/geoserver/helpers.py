@@ -210,8 +210,12 @@ def cascading_delete(cat, layer_name):
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
             delete_from_postgis(resource_name)
         else:
-            cat.delete(store)
-
+            try:
+                cat.delete(store)
+            except FailedRequestError as e:
+                # Trying to delete a shared store will fail 
+                # We'll catch the exception and log it.
+                logger.debug(e) 
 
 
 def delete_from_postgis(resource_name):
@@ -230,7 +234,7 @@ def delete_from_postgis(resource_name):
     finally:
         conn.close()
 
-def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None):
+def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None, store=None, filter=None):
     """Configure the layers available in GeoServer in GeoNode.
 
        It returns a list of dictionaries with the name of the layer,
@@ -245,7 +249,22 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
     cat = Catalog(url, _user, _password)
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
-    resources = cat.get_resources(workspace=workspace)
+        resources = cat.get_resources(workspace=workspace)
+    elif store is not None:
+        store = cat.get_store(store)
+        resources = cat.get_resources(store=store)
+    else:
+        resources = cat.get_resources(workspace=workspace)
+    if filter:
+        resources = [k for k in resources if filter in k.name]
+
+    # filter out layers explicitly disabled by geoserver
+    resources = [k for k in resources if k.enabled == "true"]
+   
+    # TODO: Should we do something with these?
+    # i.e. look for matching layers in GeoNode and also disable? 
+    disabled_resources = [k for k in resources if k.enabled == "false"]
+    
     number = len(resources)
     if verbosity > 1:
         msg =  "Found %d layers, starting processing" % number
@@ -268,7 +287,6 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
                 "owner": owner,
                 "uuid": str(uuid.uuid4())
             })
-
             layer.save()
 
         except Exception, e:

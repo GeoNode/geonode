@@ -64,8 +64,14 @@ LANGUAGES = (
     ('de', 'Deutsch'),
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
-#    ('zh', '中文'),
+    ('zh-cn', '中文'),
     ('ja', '日本人'),
+    ('fa', 'Persian'),
+    ('pt', 'Portuguese'),
+    ('ru', 'Russian'),
+    ('vi', 'Vietnamese'),
+    #('fil', 'Filipino'),
+    
 )
 
 # If you set this to False, Django will make some optimizations so as not
@@ -261,6 +267,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
     'account.context_processors.account',
+    'pinax_theme_bootstrap_account.context_processors.theme',
     # The context processor below adds things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
     'geonode.context_processors.resource_urls',
@@ -362,6 +369,9 @@ NOSE_ARGS = [
 #
 
 SITEURL = "http://localhost:8000/"
+
+# Email for users to contact admins.
+THEME_ACCOUNT_CONTACT_EMAIL = 'admin@example.com'
 
 # GeoServer information
 
@@ -522,9 +532,8 @@ DB_DATASTORE_PASSWORD = ''
 DB_DATASTORE_HOST = ''
 DB_DATASTORE_PORT = ''
 DB_DATASTORE_TYPE = ''
-DB_DATASTORE_NAME = ''
-
 #The name of the store in Geoserver
+DB_DATASTORE_NAME = ''
 
 LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
@@ -534,6 +543,10 @@ LEAFLET_CONFIG = {
 DEFAULT_TOPICCATEGORY = 'location'
 
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
+
+METADATA_DOWNLOAD_ALLOWS=True
+
+CACHE_TIME=0
 
 # Load more settings from a file called local_settings.py if it exists
 try:

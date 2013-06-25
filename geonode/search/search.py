@@ -80,7 +80,7 @@ def _filter_category(q, categories):
     _categories = []
     for category in categories:
         try:
-            _categories.append(TopicCategory.objects.get(slug=category))
+            _categories.append(TopicCategory.objects.get(identifier=category))
         except TopicCategory.DoesNotExist:
             # FIXME Do something here
             pass

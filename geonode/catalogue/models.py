@@ -76,11 +76,9 @@ def catalogue_post_save(instance, sender, **kwargs):
     signals.post_save.disconnect(catalogue_post_save, sender=Layer)
 
     # generate an XML document (GeoNode's default is ISO)
-    if not instance.metadata_uploaded:
-        md_doc = catalogue.catalogue.csw_gen_xml(instance,
-                 'catalogue/full_metadata.xml')
-        instance.metadata_xml = md_doc
-
+    md_doc = catalogue.catalogue.csw_gen_xml(instance,
+             'catalogue/full_metadata.xml')
+    instance.metadata_xml = md_doc
     instance.csw_anytext = \
         catalogue.catalogue.csw_gen_anytext(instance.metadata_xml)
 
@@ -117,6 +115,15 @@ def catalogue_pre_save(instance, sender, **kwargs):
             res = onlineresources[0]
             instance.distribution_url = res.url
             instance.distribution_description = res.description
+    else:
+            durl = settings.SITEURL 
+            if durl[-1] == '/':  # strip trailing slash
+                durl = durl[:-1]
+
+            durl = '%s%s' % (durl, instance.get_absolute_url())
+            instance.distribution_url = durl
+            instance.distribution_description = \
+            'Online link to the \'%s\' description on GeoNode ' % instance.title
 
 if 'geonode.catalogue' in settings.INSTALLED_APPS:
     signals.pre_save.connect(catalogue_pre_save, sender=Layer)

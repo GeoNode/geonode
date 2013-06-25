@@ -1,4 +1,4 @@
-@import "../../libs/bootstrap/less/bootstrap";
+@import "../../.components/bootstrap/less/bootstrap";
 
 @grayLight: rgb(239, 240, 239);
 @grayDark: rgb(72, 71, 72);
@@ -48,6 +48,7 @@
 // Universal styles
 body {
   padding-top: 80px;
+  padding-bottom: 40px;
   background:@white;
   font-family:@customFont;
 }
@@ -279,6 +280,11 @@ footer.footer {
   color:@white;
   font-size:@baseFontSize - 2;
   padding-top:10px;
+  position:fixed;
+  left:0px;
+  bottom:0px;
+  height:35px;
+  width:100%;
 
   a {
     color:@white;

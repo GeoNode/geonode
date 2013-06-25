@@ -44,6 +44,8 @@ from geonode.people.models import Profile
 from geonode.geoserver.helpers import cascading_delete, get_sld_for, delete_from_postgis
 from geonode.layers.metadata import set_metadata
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.base.models import SpatialRepresentationType
+
 # Geoserver functionality
 import geoserver
 from geoserver.catalog import FailedRequestError, UploadError
@@ -478,19 +480,17 @@ def save(layer, base_file, user, overwrite=True, title=None,
     # parse the XML metadata and update uuid and URLs as per the content model
 
     if 'xml' in files:
-        md_xml = open(files['xml']).read()
-
-        saved_layer.metadata_xml = md_xml
         saved_layer.metadata_uploaded = True
-
         # get model properties from XML
-        vals, keywords = set_metadata(md_xml)
+        vals, keywords = set_metadata(open(files['xml']).read())
 
         # set taggit keywords
         saved_layer.keywords.add(*keywords)
 
         # set model properties
         for (key, value) in vals.items():
+            if key == 'spatial_representation_type':
+                value = SpatialRepresentationType(identifier=value)
             setattr(saved_layer, key, value)
 
         saved_layer.save()

@@ -106,7 +106,7 @@ def _get_search_context():
     }
     if _extra_context:
         _extra_context(context)
-    cache.set(cache_key, context, 60)
+    cache.set(cache_key, context, settings.CACHE_TIME)
 
     return context
 
@@ -190,7 +190,7 @@ def cache_key(query,filters):
 def _search(query):
     # to support super fast paging results, cache the intermediates
     results = None
-    cache_time = 60
+    cache_time = settings.CACHE_TIME 
     if query.cache:
         key = query.cache_key()
         results = cache.get(key)

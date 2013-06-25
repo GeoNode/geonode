@@ -22,6 +22,9 @@ import logging
 import math
 import errno
 import uuid
+import httplib2
+from urlparse import urlparse
+import urllib
 
 from django.conf import settings
 from django.db import models
@@ -34,8 +37,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save, \
-        resourcebase_post_delete, resourcebase_pre_save
+from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
@@ -43,12 +45,15 @@ from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
 from geonode.utils import forward_mercator
+from geonode.utils import http_client
 
 from geoserver.catalog import Catalog
 from geoserver.layer import Layer as GsLayer
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
+
+_user, _password = settings.GEOSERVER_CREDENTIALS
 
 class Map(ResourceBase, GXPMapBase):
     """
@@ -191,6 +196,82 @@ class Map(ResourceBase, GXPMapBase):
 
     def get_absolute_url(self):
         return reverse('geonode.maps.views.map_detail', None, [str(self.id)])
+
+    def update_thumbnail(self, save=True):
+        if len(self.layers) == 0:
+            return
+        if self.thumbnail == None:
+            self.save_thumbnail(self._thumbnail_url(width=159, height=63), save)
+                
+
+    def _render_thumbnail(self, spec):
+        http = httplib2.Http()
+        url = "%srest/printng/render.png" % settings.GEOSERVER_BASE_URL
+        hostname = urlparse(settings.SITEURL).hostname
+        user, passwd = settings.GEOSERVER_CREDENTIALS
+        params = dict(width=159, height=63, auth="%s,%s,%s" % (hostname, user, passwd))
+        url = url + "?" + urllib.urlencode(params)
+        http.add_credentials(_user, _password)
+        netloc = urlparse(url).netloc
+        http.authorizations.append(
+        httplib2.BasicAuthentication(
+            (_user,_password),
+            netloc,
+            url,
+            {},
+            None,
+            None,
+            http
+        ))
+        # @todo annoying but not critical
+        # openlayers controls posted back contain a bad character. this seems
+        # to come from a &minus; entity in the html, but it gets converted
+        # to a unicode en-dash but is not uncoded properly during transmission
+        # 'ignore' the error for now as controls are not being rendered...
+        data = spec 
+        if type(data) == unicode:
+            # make sure any stored bad values are wiped out
+            # don't use keyword for errors - 2.6 compat
+            # though unicode accepts them (as seen below)
+            data = data.encode('ASCII','ignore')
+        data = unicode(data, errors='ignore').encode('UTF-8')
+        try:
+            resp, content = http.request(url,"POST",data,{
+                'Content-type':'text/html'
+            })
+        except Exception:
+            logging.warning('Error generating thumbnail')
+            return 
+        if resp.status < 200 or resp.status > 299:
+            logging.warning('Error generating thumbnail %s',content)
+            return 
+        if len(content) == 0:
+            logging.warning('Empty thumb content %s',content)
+            return
+        return content
+
+    def _thumbnail_url(self, width=20, height=None):
+        """ Generate a URL representing thumbnail of the layer """
+
+        local_layers = []
+        for layer in self.layers:
+            if layer.local:
+                local_layers.append(Layer.objects.get(typename=layer.name).typename)
+
+        params = {
+            'layers': ",".join(local_layers),
+            'format': 'image/png8',
+            'width': width,
+        }
+        if height is not None:
+            params['height'] = height
+
+        # Avoid usring urllib.urlencode here because it breaks the url.
+        # commas and slashes in values get encoded and then cause trouble
+        # with the WMS parser.
+        p = "&".join("%s=%s"%item for item in params.items())
+
+        return '<img src="%s"/>' % (settings.GEOSERVER_BASE_URL + "wms/reflect?" + p)
 
     class Meta:
         # custom permissions,
@@ -439,8 +520,10 @@ def pre_delete_map(instance, sender, **kwrargs):
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
 
+def pre_save_map(instance, sender, **kwargs):
+    instance.update_thumbnail(save=False)
+
 signals.pre_save.connect(pre_save_maplayer, sender=MapLayer)
 signals.pre_delete.connect(pre_delete_map, sender=Map)
+signals.pre_save.connect(pre_save_map, sender=Map)
 signals.post_save.connect(resourcebase_post_save, sender=Map)
-signals.post_delete.connect(resourcebase_post_delete, sender=Map)
-signals.pre_save.connect(resourcebase_pre_save, sender=Map)
