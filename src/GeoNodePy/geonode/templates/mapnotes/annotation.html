@@ -34,8 +34,8 @@ function addComment() {
 <h3>{{ annotation.title }}</h3>
 <p>{{ annotation.content|linebreaks }}</p>
 <hr/>
-<p>Author: <a href="/profiles/{{ annotation.owner.username }}">{{ annotation.owner.username }}</a></p>
-<p>Date: {{ annotation.modified_dttm }}</p>
+<p>{% trans "Author" %} : <a href="/profiles/{{ annotation.owner.username }}">{{ annotation.owner.username }}</a></p>
+<p>{% trans "Date" %}: {{ annotation.modified_dttm }}</p>
 
 <h3>{% trans "Comments" %}</h3>
 <div class="comments_container">

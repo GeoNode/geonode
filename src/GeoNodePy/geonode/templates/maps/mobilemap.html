@@ -176,19 +176,23 @@ var featureEditor = new gxp.plugins.TouchFeatureEditor({
 });
 </script>
 <div style="display:none" id="mobile_intro">
+{% blocktrans %}
 <h1>Mobile Map Tips</h1>
 <ul>
 <li>Click the <strong>Layers</strong> sidebar on the left to see a list of all the map's layers and legends</li>
 <li>Use the <strong>Identify</strong>  <img style="vertical-align:middle" src="{{ GEONODE_CLIENT_LOCATION }}theme/app/img/silk/information.png" />  tool to retrieve information on active layers at any point where you click on the map</li>
 <li>Use the <strong>Geolocate</strong>  <img style="vertical-align:middle" src="{{ GEONODE_CLIENT_LOCATION }}externals/gxp/theme/img/geolocate.png" />  tool to zoom to and display your location on the map</li>
 </ul>
+{% endblocktrans %}
 {% if user.is_authenticated   %}
+{% blocktrans %}
 <h1>Feature Creation/Editing</h1>
 <ul>
 <li>Click on a layer in the layer panel to select it for feature creation/editing.  You must have edit permission for the layer.</li>
 <li>The highlighted layer in the list is the target of edits when using the Edit feature   <img style="vertical-align:middle" src="{{ GEONODE_CLIENT_LOCATION }}theme/app/img/silk/map_edit.png" />    tool or the New Feature    <img style="vertical-align:middle" src="{{ GEONODE_CLIENT_LOCATION }}externals/gxp/theme/img/silk/pencil_add.png" />   tool.</li>
 <li>Map panning will be disabled when the 'Edit feature'  <img style="vertical-align:middle" src="{{ GEONODE_CLIENT_LOCATION }}theme/app/img/silk/map_edit.png" />   tool is enabled or when drawing a new feature   <img style="vertical-align:middle" src="{{ GEONODE_CLIENT_LOCATION }}externals/gxp/theme/img/silk/pencil_add.png" />  .  Deactivate the tool to re-enable panning.
 </ul>
+{% endblocktrans %}
 {% endif  %}
 </div>
 

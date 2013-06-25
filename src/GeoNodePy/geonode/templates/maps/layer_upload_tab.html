@@ -7,7 +7,7 @@
 
 <div style="position:relative;float:left;width:500px;">
 
-<h3>{%trans "Instructions"  %}</h3>
+<h3>{% trans "Instructions"  %}</h3>
 
 <p>{% trans "Select a layer data file and submit the form to begin the transfer."  %}</p>
 
@@ -28,15 +28,15 @@
 
 <div style="position:relative;float:left;padding-left:20px;">
     <h3>{% trans "Supported Formats"  %}</h3>
-
+{% blocktrans %}
     <ul>
       <li>Shapefile</li>
       <li>Zipped Shapefile</li>
       <li>GeoTIFF</li>
     </ul>
+{% endblocktrans %}
 
-
-<h3>{%trans "Permissions"  %}</h3>
+<h3>{% trans "Permissions"  %}</h3>
  <div id="permissions_form"></div>
 
 </div>
@@ -55,7 +55,7 @@
 
     var layer_title = new Ext.form.TextField({
       id: 'layer_title',
-      fieldLabel: gettext('Title'),
+      fieldLabel: "{% trans 'Title' %}",
       name: 'layer_title',
       allowBlank: false
     });
@@ -77,8 +77,8 @@
 
      var base_file = new Ext.ux.form.FileUploadField({
         id: 'base_file',
-        emptyText: gettext('Select a layer data file'),
-        fieldLabel: gettext('Data'),
+        emptyText: "{% trans 'Select a layer data file' %}",
+        fieldLabel: "{% trans 'Data' %}",
         name: 'base_file',
         allowBlank: false,
         listeners: listeners
@@ -86,8 +86,8 @@
 
     var dbf_file = new Ext.ux.form.FileUploadField({
         id: 'dbf_file',
-        emptyText: gettext('Select a .dbf data file'),
-        fieldLabel: gettext('DBF'),
+        emptyText: "{% trans 'Select a .dbf data file' %}",
+        fieldLabel: "{% trans 'DBF' %}",
         name: 'dbf_file',
         allowBlank: false,
         listeners: listeners
@@ -95,8 +95,8 @@
 
     var shx_file = new Ext.ux.form.FileUploadField({
         id: 'shx_file',
-        emptyText: gettext('Select a .shx data file'),
-        fieldLabel: gettext('SHX'),
+        emptyText: "{% trans 'Select a .shx data file' %}",
+        fieldLabel: "{% trans 'SHX' %}",
         name: 'shx_file',
         allowBlank: false,
         listeners: listeners
@@ -104,8 +104,8 @@
 
     var prj_file = new Ext.ux.form.FileUploadField({
         id: 'prj_file',
-        emptyText: gettext('Select a .prj data file'),
-        fieldLabel: gettext('PRJ'),
+        emptyText: "{% trans 'Select a .prj data file' %}",
+        fieldLabel: "{% trans 'PRJ' %}",
         name: 'prj_file',
         allowBlank: false,
         listeners: listeners
@@ -115,7 +115,7 @@
     var encoding = new Ext.form.ComboBox({
         id: 'charset_cb',
         name: ' charset_cb',
-        fieldLabel: gettext('Encoding'),
+        fieldLabel: "{% trans 'Encoding' %}",
         hiddenName: 'charset',
         displayField:'description',
         valueField: 'charset',
@@ -132,8 +132,8 @@
 
     var sld_file = new Ext.ux.form.FileUploadField({
         id: 'sld_file',
-        emptyText: gettext('Select a .sld style file (optional)'),
-        fieldLabel: gettext('SLD'),
+        emptyText: "{% trans 'Select a .sld style file (optional)' %}",
+        fieldLabel: "{% trans 'SLD' %}",
         name: 'sld_file',
         allowBlank: true,
         listeners: listeners
@@ -141,7 +141,7 @@
 
     var layer_abstract = new Ext.form.TextArea({
         id: 'layer_abstract',
-        fieldLabel: gettext('Abstract'),
+        fieldLabel: "{% trans 'Abstract' %}",
         name: 'layer_abstract',
         allowBlank: false
     });
@@ -149,7 +149,7 @@
 
     var layer_keywords = new Ext.form.TextField({
       id: 'layer_keywords',
-      fieldLabel: gettext('Keywords'),
+      fieldLabel: "{% trans 'Keywords' %}",
       name: 'layer_keywords',
       allowBlank: false
     });
@@ -161,7 +161,7 @@
 
     var termsAgreeCheck = new Ext.form.Checkbox({
         id: 'agreeCheck',
-        fieldLabel: 'I agree to the <a href="" onclick="javascript:showTOC();return false;">Terms and Conditions</a>',
+        fieldLabel: '{% trans "I agree to the " %}<a href="" onclick="javascript:showTOC();return false;">{% trans "Terms and Conditions" %}</a>',
         handler: function(){
                 if (this.checked) {
                         Ext.getCmp('uploadButton').enable();
@@ -179,7 +179,7 @@
         fileUpload: true,
         width: 500,
         frame: true,
-        title: gettext('Upload Layer Data'),
+        title: "{% trans 'Upload Layer Data' %}",
         autoHeight: true,
         bodyStyle: 'padding: 10px 10px 0 10px;',
         labelWidth: 50,
@@ -200,7 +200,7 @@
                 if (fp.getForm().isValid()) {
                     fp.getForm().submit({
                         url: form_target,
-                        waitMsg: gettext('Uploading your data...'),
+                        waitMsg: "{% trans 'Uploading your data...' %}",
                         success: function(fp, o) {
                             var uPanel = Ext.getCmp("worldmap_update_panel");
                             uPanel.load({url:o.result.redirect_to});
@@ -215,7 +215,7 @@
 
 
                             Ext.Msg.show({
-                                title: gettext("Error"),
+                                title: "{% trans 'Error' %}",
                                 msg: error_message,
                                 minWidth: 200,
                                 modal: true,
@@ -303,14 +303,14 @@
     var showTOC = function() {
         var TOCPanel = new Ext.Panel({
             id: 'worldmap_mapshare_panel',
-            title: 'Share Map',
+            title: "{% trans 'Share Map' %}",
             header: false,
             autoLoad: {url: '/upload_terms'},
             autoScroll: true
         });
 
         var TOCWindow = new Ext.Window({
-            title: "WorldMap Terms and Conditions",
+            title: "{% trans 'WorldMap Terms and Conditions' %}",
             closeAction: 'destroy',
             layout: 'fit',
             width: 400,
@@ -321,7 +321,7 @@
             bodyStyle: 'background-color:#FFF',
             buttons: [
                 {
-                    text: 'Close',
+                    text: "{% trans 'Close' %}",
                     handler: function() {TOCWindow.close();}
                 }
             ]
@@ -337,8 +337,8 @@ if (options.form) {
     if (!response.status || response.status >= 400)
     {
                             Ext.Msg.show({
-                                title: gettext("Error"),
-                                msg: response.responseText.indexOf("413") > -1 ? gettext("Upload is too large") : response.responseText,
+                                title: "{% trans 'Error' %}",
+                                msg: response.responseText.indexOf("413") > -1 ? "{% trans 'Upload is too large' %}" : response.responseText,
                                 minWidth: 200,
                                 modal: true,
                                 icon: Ext.Msg.ERROR,

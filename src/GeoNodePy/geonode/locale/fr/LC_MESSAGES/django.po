@@ -6,9 +6,8 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-06 13:28-0400\n"
+"POT-Creation-Date: 2013-06-25 16:19-0400\n"
 "PO-Revision-Date: 2011-06-06 14:42\n"
 "Last-Translator: Matthew Ford <mford@worldbank.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,1250 +15,1304 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"*Project-Id-Version: PACKAGE VERSION\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "X-Translated-Using: django-rosetta 0.6.0\n"
 
 #: views.py:16
 msgid "Explore, Visualize, and Publish Geographic Information"
-msgstr ""
+msgstr "*"
 
 #: views.py:21
 msgid "About WorldMap"
-msgstr ""
+msgstr "*"
 
 #: core/models.py:28 maps/models.py:881
 msgid "title"
-msgstr "titre"
+msgstr "*titre"
 
-#: core/models.py:29 maps/models.py:2231
+#: core/models.py:29 maps/models.py:2237
 msgid "permissions"
-msgstr "autorisations"
+msgstr "*autorisations"
 
 #: core/models.py:30
 msgid "codename"
-msgstr "nom de code"
+msgstr "*nom de code"
 
 #: core/models.py:32
 msgid "Determines the order that roles are presented in the user interface."
 msgstr ""
-"Détermine l'ordre dans lequel les rôles sont présentés dans l'interface-"
+"*Détermine l'ordre dans lequel les rôles sont présentés dans l'interface-"
 "utilisateur."
 
 #: core/models.py:72 maps/views.py:1340
 #: templates/maps/layer_permissions.html:18
 msgid "Anonymous Users"
-msgstr "Utilisateurs anonymes"
+msgstr "*Utilisateurs anonymes"
 
 #: core/models.py:73 maps/views.py:1344
 #: templates/maps/layer_permissions.html:19
 msgid "Registered Users"
-msgstr "Utilisateurs enregistrés"
+msgstr "*Utilisateurs enregistrés"
 
 #: gazetteer/handlers.py:58
 msgid "Authentication needed"
-msgstr ""
+msgstr "*"
 
 #: gazetteer/models.py:13
 #, fuzzy
 msgid "Layer Name"
-msgstr "paramètres couche"
+msgstr "*paramètres couche"
 
 #: gazetteer/models.py:14
 #, fuzzy
 msgid "Layer Attribute"
-msgstr "Attributs"
+msgstr "*Attributs"
 
 #: gazetteer/models.py:15
 msgid "Feature Type"
-msgstr ""
+msgstr "*"
 
 #: gazetteer/models.py:16
 msgid "Feature FID"
-msgstr ""
+msgstr "*"
 
 #: gazetteer/models.py:17
 msgid "Latitude"
-msgstr ""
+msgstr "*"
 
 #: gazetteer/models.py:18
 msgid "Longitude"
-msgstr ""
+msgstr "*"
 
 #: gazetteer/models.py:19
 #, fuzzy
 msgid "Place name"
-msgstr "nom de code"
+msgstr "*nom de code"
 
 #: gazetteer/models.py:20
 #, fuzzy
 msgid "Start Date"
-msgstr "Recherche de Données"
+msgstr "*Recherche de Données"
 
 #: gazetteer/models.py:21
 msgid "End Date"
-msgstr ""
+msgstr "*"
 
 #: gazetteer/models.py:22
 msgid "Julian Date Start"
-msgstr ""
+msgstr "*"
 
 #: gazetteer/models.py:23
 msgid "Julian Date End"
-msgstr ""
+msgstr "*"
 
 #: gazetteer/models.py:24 maps/views.py:95
 #, fuzzy
 msgid "Project"
-msgstr "projection"
+msgstr "*projection"
 
 #: gazetteer/models.py:25
 msgid "Geometry"
-msgstr ""
+msgstr "*"
 
 #: mapnotes/models.py:12
 #, fuzzy
 msgid "Content"
-msgstr "Contact :"
+msgstr "*Contact :"
 
-#: mapnotes/models.py:13 maps/models.py:1623 maps/views.py:151
+#: mapnotes/models.py:13 maps/models.py:1629 maps/views.py:151
+#: templates/maps/layer_create.html:54 templates/maps/layer_create_tab.html:58
+#: templates/maps/layer_replace.html:48
+#: templates/maps/layer_upload_tab.html:58
 msgid "Title"
-msgstr "Titre"
+msgstr "*Titre"
 
 #: maps/models.py:56
 msgid "Afghanistan"
-msgstr "Afghanistan"
+msgstr "*Afghanistan"
 
 #: maps/models.py:57
 msgid "Aland Islands"
-msgstr "Iles Aland"
+msgstr "*Iles Aland"
 
 #: maps/models.py:58
 msgid "Albania"
-msgstr "L'Albanie"
+msgstr "*L'Albanie"
 
 #: maps/models.py:59
 msgid "Algeria"
-msgstr "Algérie"
+msgstr "*Algérie"
 
 #: maps/models.py:60
 msgid "American Samoa"
-msgstr "Samoa américaines"
+msgstr "*Samoa américaines"
 
 #: maps/models.py:61
 msgid "Andorra"
-msgstr "Andorre"
+msgstr "*Andorre"
 
 #: maps/models.py:62
 msgid "Angola"
-msgstr "Angola"
+msgstr "*Angola"
 
 #: maps/models.py:63
 msgid "Anguilla"
-msgstr "Anguilla"
+msgstr "*Anguilla"
 
 #: maps/models.py:64
 msgid "Antigua and Barbuda"
-msgstr "Antigua-et-Barbuda"
+msgstr "*Antigua-et-Barbuda"
 
 #: maps/models.py:65
 msgid "Argentina"
-msgstr "L'Argentine"
+msgstr "*L'Argentine"
 
 #: maps/models.py:66
 msgid "Armenia"
-msgstr "L'Arménie"
+msgstr "*L'Arménie"
 
 #: maps/models.py:67
 msgid "Aruba"
-msgstr "Aruba"
+msgstr "*Aruba"
 
 #: maps/models.py:68
 msgid "Australia"
-msgstr "L'Australie"
+msgstr "*L'Australie"
 
 #: maps/models.py:69
 msgid "Austria"
-msgstr "L'Autriche"
+msgstr "*L'Autriche"
 
 #: maps/models.py:70
 msgid "Azerbaijan"
-msgstr "L'Azerbaïdjan"
+msgstr "*L'Azerbaïdjan"
 
 #: maps/models.py:71
 msgid "Bahamas"
-msgstr "Bahamas"
+msgstr "*Bahamas"
 
 #: maps/models.py:72
 msgid "Bahrain"
-msgstr "Bahreïn"
+msgstr "*Bahreïn"
 
 #: maps/models.py:73
 msgid "Bangladesh"
-msgstr "Bangladesh"
+msgstr "*Bangladesh"
 
 #: maps/models.py:74
 msgid "Barbados"
-msgstr "La Barbade"
+msgstr "*La Barbade"
 
 #: maps/models.py:75
 msgid "Belarus"
-msgstr "Belarus"
+msgstr "*Belarus"
 
 #: maps/models.py:76
 msgid "Belgium"
-msgstr "Belgique"
+msgstr "*Belgique"
 
 #: maps/models.py:77
 msgid "Belize"
-msgstr "Belize"
+msgstr "*Belize"
 
 #: maps/models.py:78
 msgid "Benin"
-msgstr "Bénin"
+msgstr "*Bénin"
 
 #: maps/models.py:79
 msgid "Bermuda"
-msgstr "Bermudes"
+msgstr "*Bermudes"
 
 #: maps/models.py:80
 msgid "Bhutan"
-msgstr "Bhoutan"
+msgstr "*Bhoutan"
 
 #: maps/models.py:81
 msgid "Bolivia"
-msgstr "Bolivie"
+msgstr "*Bolivie"
 
 #: maps/models.py:82
 msgid "Bosnia and Herzegovina"
-msgstr "Bosnie-Herzégovine"
+msgstr "*Bosnie-Herzégovine"
 
 #: maps/models.py:83
 msgid "Botswana"
-msgstr "Botswana"
+msgstr "*Botswana"
 
 #: maps/models.py:84
 msgid "Brazil"
-msgstr "Brésil"
+msgstr "*Brésil"
 
 #: maps/models.py:85
 msgid "British Virgin Islands"
-msgstr "Iles Vierges Britanniques"
+msgstr "*Iles Vierges Britanniques"
 
 #: maps/models.py:86
 msgid "Brunei Darussalam"
-msgstr "Brunei Darussalam"
+msgstr "*Brunei Darussalam"
 
 #: maps/models.py:87
 msgid "Bulgaria"
-msgstr "Bulgarie"
+msgstr "*Bulgarie"
 
 #: maps/models.py:88
 msgid "Burkina Faso"
-msgstr "Burkina Faso"
+msgstr "*Burkina Faso"
 
 #: maps/models.py:89
 msgid "Burundi"
-msgstr "Burundi"
+msgstr "*Burundi"
 
 #: maps/models.py:90
 msgid "Cambodia"
-msgstr "Cambodge"
+msgstr "*Cambodge"
 
 #: maps/models.py:91
 msgid "Cameroon"
-msgstr "Cameroun"
+msgstr "*Cameroun"
 
 #: maps/models.py:92
 msgid "Canada"
-msgstr "Canada"
+msgstr "*Canada"
 
 #: maps/models.py:93
 msgid "Cape Verde"
-msgstr "Cap-Vert"
+msgstr "*Cap-Vert"
 
 #: maps/models.py:94
 msgid "Cayman Islands"
-msgstr "Iles Caïmans"
+msgstr "*Iles Caïmans"
 
 #: maps/models.py:95
 msgid "Central African Republic"
-msgstr "République centrafricaine"
+msgstr "*République centrafricaine"
 
 #: maps/models.py:96
 msgid "Chad"
-msgstr "Tchad"
+msgstr "*Tchad"
 
 #: maps/models.py:97
 msgid "Channel Islands"
-msgstr "Iles Anglo-Normandes"
+msgstr "*Iles Anglo-Normandes"
 
 #: maps/models.py:98
 msgid "Chile"
-msgstr "Chili"
+msgstr "*Chili"
 
 #: maps/models.py:99
 msgid "China"
-msgstr "La Chine"
+msgstr "*La Chine"
 
 #: maps/models.py:100
 msgid "China - Hong Kong"
-msgstr "Chine - Hong Kong"
+msgstr "*Chine - Hong Kong"
 
 #: maps/models.py:101
 msgid "China - Macao"
-msgstr "Chine - Macao"
+msgstr "*Chine - Macao"
 
 #: maps/models.py:102
 msgid "Colombia"
-msgstr "Colombie"
+msgstr "*Colombie"
 
 #: maps/models.py:103
 msgid "Comoros"
-msgstr "Comores"
+msgstr "*Comores"
 
 #: maps/models.py:104
 msgid "Congo"
-msgstr "Congo"
+msgstr "*Congo"
 
 #: maps/models.py:105
 msgid "Cook Islands"
-msgstr "Îles Cook"
+msgstr "*Îles Cook"
 
 #: maps/models.py:106
 msgid "Costa Rica"
-msgstr "Costa Rica"
+msgstr "*Costa Rica"
 
 #: maps/models.py:107
 msgid "Cote d'Ivoire"
-msgstr "Côte d'Ivoire"
+msgstr "*Côte d'Ivoire"
 
 #: maps/models.py:108
 msgid "Croatia"
-msgstr "Croatie"
+msgstr "*Croatie"
 
 #: maps/models.py:109
 msgid "Cuba"
-msgstr "Cuba"
+msgstr "*Cuba"
 
 #: maps/models.py:110
 msgid "Cyprus"
-msgstr "Chypre"
+msgstr "*Chypre"
 
 #: maps/models.py:111
 msgid "Czech Republic"
-msgstr "République tchèque"
+msgstr "*République tchèque"
 
 #: maps/models.py:112
 msgid "Democratic People's Republic of Korea"
-msgstr "République populaire démocratique de Corée"
+msgstr "*République populaire démocratique de Corée"
 
 #: maps/models.py:113
 msgid "Democratic Republic of the Congo"
-msgstr "République démocratique du Congo"
+msgstr "*République démocratique du Congo"
 
 #: maps/models.py:114
 msgid "Denmark"
-msgstr "Danemark"
+msgstr "*Danemark"
 
 #: maps/models.py:115
 msgid "Djibouti"
-msgstr "Djibouti"
+msgstr "*Djibouti"
 
 #: maps/models.py:116
 msgid "Dominica"
-msgstr "Dominique"
+msgstr "*Dominique"
 
 #: maps/models.py:117
 msgid "Dominican Republic"
-msgstr "République Dominicaine"
+msgstr "*République Dominicaine"
 
 #: maps/models.py:118
 msgid "Ecuador"
-msgstr "Equateur"
+msgstr "*Equateur"
 
 #: maps/models.py:119
 msgid "Egypt"
-msgstr "Egypte"
+msgstr "*Egypte"
 
 #: maps/models.py:120
 msgid "El Salvador"
-msgstr "El Salvador"
+msgstr "*El Salvador"
 
 #: maps/models.py:121
 msgid "Equatorial Guinea"
-msgstr "La Guinée équatoriale"
+msgstr "*La Guinée équatoriale"
 
 #: maps/models.py:122
 msgid "Eritrea"
-msgstr "L'Érythrée"
+msgstr "*L'Érythrée"
 
 #: maps/models.py:123
 msgid "Estonia"
-msgstr "L'Estonie"
+msgstr "*L'Estonie"
 
 #: maps/models.py:124
 msgid "Ethiopia"
-msgstr "Ethiopie"
+msgstr "*Ethiopie"
 
 #: maps/models.py:125
 msgid "Faeroe Islands"
-msgstr "Iles Féroé"
+msgstr "*Iles Féroé"
 
 #: maps/models.py:126
 msgid "Falkland Islands (Malvinas)"
-msgstr "Îles Falkland (Malvinas)"
+msgstr "*Îles Falkland (Malvinas)"
 
 #: maps/models.py:127
 msgid "Fiji"
-msgstr "Fidji"
+msgstr "*Fidji"
 
 #: maps/models.py:128
 msgid "Finland"
-msgstr "Finlande"
+msgstr "*Finlande"
 
 #: maps/models.py:129
 msgid "France"
-msgstr "France"
+msgstr "*France"
 
 #: maps/models.py:130
 msgid "French Guiana"
-msgstr "Guyane française"
+msgstr "*Guyane française"
 
 #: maps/models.py:131
 msgid "French Polynesia"
-msgstr "Polynésie française"
+msgstr "*Polynésie française"
 
 #: maps/models.py:132
 msgid "Gabon"
-msgstr "Gabon"
+msgstr "*Gabon"
 
 #: maps/models.py:133
 msgid "Gambia"
-msgstr "Gambie"
+msgstr "*Gambie"
 
 #: maps/models.py:134
 msgid "Georgia"
-msgstr "Géorgie"
+msgstr "*Géorgie"
 
 #: maps/models.py:135
 msgid "Germany"
-msgstr "Allemagne"
+msgstr "*Allemagne"
 
 #: maps/models.py:136
 msgid "Ghana"
-msgstr "Ghana"
+msgstr "*Ghana"
 
 #: maps/models.py:137
 msgid "Gibraltar"
-msgstr "Gibraltar"
+msgstr "*Gibraltar"
 
 #: maps/models.py:138
 msgid "Greece"
-msgstr "Grèce"
+msgstr "*Grèce"
 
 #: maps/models.py:139
 msgid "Greenland"
-msgstr "Groenland"
+msgstr "*Groenland"
 
 #: maps/models.py:140
 msgid "Grenada"
-msgstr "Grenade"
+msgstr "*Grenade"
 
 #: maps/models.py:141
 msgid "Guadeloupe"
-msgstr "Guadeloupe"
+msgstr "*Guadeloupe"
 
 #: maps/models.py:142
 msgid "Guam"
-msgstr "Guam"
+msgstr "*Guam"
 
 #: maps/models.py:143
 msgid "Guatemala"
-msgstr "Guatemala"
+msgstr "*Guatemala"
 
 #: maps/models.py:144
 msgid "Guernsey"
-msgstr "Guernesey"
+msgstr "*Guernesey"
 
 #: maps/models.py:145
 msgid "Guinea"
-msgstr "Guinée"
+msgstr "*Guinée"
 
 #: maps/models.py:146
 msgid "Guinea-Bissau"
-msgstr "Guinée-Bissau"
+msgstr "*Guinée-Bissau"
 
 #: maps/models.py:147
 msgid "Guyana"
-msgstr "Guyana"
+msgstr "*Guyana"
 
 #: maps/models.py:148
 msgid "Haiti"
-msgstr "Haïti"
+msgstr "*Haïti"
 
 #: maps/models.py:149
 msgid "Holy See (Vatican City)"
-msgstr "Saint-Siège (Cité du Vatican)"
+msgstr "*Saint-Siège (Cité du Vatican)"
 
 #: maps/models.py:150
 msgid "Honduras"
-msgstr "Honduras"
+msgstr "*Honduras"
 
 #: maps/models.py:151
 msgid "Hungary"
-msgstr "Hongrie"
+msgstr "*Hongrie"
 
 #: maps/models.py:152
 msgid "Iceland"
-msgstr "L'Islande"
+msgstr "*L'Islande"
 
 #: maps/models.py:153
 msgid "India"
-msgstr "L'Inde"
+msgstr "*L'Inde"
 
 #: maps/models.py:154
 msgid "Indonesia"
-msgstr "Indonésie"
+msgstr "*Indonésie"
 
 #: maps/models.py:155
 msgid "Iran"
-msgstr "Iran"
+msgstr "*Iran"
 
 #: maps/models.py:156
 msgid "Iraq"
-msgstr "Irak"
+msgstr "*Irak"
 
 #: maps/models.py:157
 msgid "Ireland"
-msgstr "L'Irlande"
+msgstr "*L'Irlande"
 
 #: maps/models.py:158
 msgid "Isle of Man"
-msgstr "Île de Man"
+msgstr "*Île de Man"
 
 #: maps/models.py:159
 msgid "Israel"
-msgstr "Israël"
+msgstr "*Israël"
 
 #: maps/models.py:160
 msgid "Italy"
-msgstr "Italie"
+msgstr "*Italie"
 
 #: maps/models.py:161
 msgid "Jamaica"
-msgstr "La Jamaïque"
+msgstr "*La Jamaïque"
 
 #: maps/models.py:162
 msgid "Japan"
-msgstr "Le Japon"
+msgstr "*Le Japon"
 
 #: maps/models.py:163
 msgid "Jersey"
-msgstr "Jersey"
+msgstr "*Jersey"
 
 #: maps/models.py:164
 msgid "Jordan"
-msgstr "Jordan"
+msgstr "*Jordan"
 
 #: maps/models.py:165
 msgid "Kazakhstan"
-msgstr "Kazakhstan"
+msgstr "*Kazakhstan"
 
 #: maps/models.py:166
 msgid "Kenya"
-msgstr "Kenya"
+msgstr "*Kenya"
 
 #: maps/models.py:167
 msgid "Kiribati"
-msgstr "Kiribati"
+msgstr "*Kiribati"
 
 #: maps/models.py:168
 msgid "Kuwait"
-msgstr "Koweït"
+msgstr "*Koweït"
 
 #: maps/models.py:169
 msgid "Kyrgyzstan"
-msgstr "Kirghizistan"
+msgstr "*Kirghizistan"
 
 #: maps/models.py:170
 msgid "Lao People's Democratic Republic"
-msgstr "Populaire lao République démocratique"
+msgstr "*Populaire lao République démocratique"
 
 #: maps/models.py:171
 msgid "Latvia"
-msgstr "La Lettonie"
+msgstr "*La Lettonie"
 
 #: maps/models.py:172
 msgid "Lebanon"
-msgstr "Liban"
+msgstr "*Liban"
 
 #: maps/models.py:173
 msgid "Lesotho"
-msgstr "Lesotho"
+msgstr "*Lesotho"
 
 #: maps/models.py:174
 msgid "Liberia"
-msgstr "Liberia"
+msgstr "*Liberia"
 
 #: maps/models.py:175
 msgid "Libyan Arab Jamahiriya"
-msgstr "Jamahiriya arabe libyenne"
+msgstr "*Jamahiriya arabe libyenne"
 
 #: maps/models.py:176
 msgid "Liechtenstein"
-msgstr "Liechtenstein"
+msgstr "*Liechtenstein"
 
 #: maps/models.py:177
 msgid "Lithuania"
-msgstr "Lituanie"
+msgstr "*Lituanie"
 
 #: maps/models.py:178
 msgid "Luxembourg"
-msgstr "Luxembourg"
+msgstr "*Luxembourg"
 
 #: maps/models.py:179
 msgid "Macedonia"
-msgstr "Macédoine"
+msgstr "*Macédoine"
 
 #: maps/models.py:180
 msgid "Madagascar"
-msgstr "Madagascar"
+msgstr "*Madagascar"
 
 #: maps/models.py:181
 msgid "Malawi"
-msgstr "Malawi"
+msgstr "*Malawi"
 
 #: maps/models.py:182
 msgid "Malaysia"
-msgstr "Malaisie"
+msgstr "*Malaisie"
 
 #: maps/models.py:183
 msgid "Maldives"
-msgstr "Maldives"
+msgstr "*Maldives"
 
 #: maps/models.py:184
 msgid "Mali"
-msgstr "Mali"
+msgstr "*Mali"
 
 #: maps/models.py:185
 msgid "Malta"
-msgstr "Malte"
+msgstr "*Malte"
 
 #: maps/models.py:186
 msgid "Marshall Islands"
-msgstr "Îles Marshall"
+msgstr "*Îles Marshall"
 
 #: maps/models.py:187
 msgid "Martinique"
-msgstr "Martinique"
+msgstr "*Martinique"
 
 #: maps/models.py:188
 msgid "Mauritania"
-msgstr "Mauritanie"
+msgstr "*Mauritanie"
 
 #: maps/models.py:189
 msgid "Mauritius"
-msgstr "Ile Maurice"
+msgstr "*Ile Maurice"
 
 #: maps/models.py:190
 msgid "Mayotte"
-msgstr "Mayotte"
+msgstr "*Mayotte"
 
 #: maps/models.py:191
 msgid "Mexico"
-msgstr "Mexique"
+msgstr "*Mexique"
 
 #: maps/models.py:192
 msgid "Micronesia, Federated States of"
-msgstr "Micronésie, États fédérés de"
+msgstr "*Micronésie, États fédérés de"
 
 #: maps/models.py:193
 msgid "Monaco"
-msgstr "Monaco"
+msgstr "*Monaco"
 
 #: maps/models.py:194
 msgid "Mongolia"
-msgstr "Mongolie"
+msgstr "*Mongolie"
 
 #: maps/models.py:195
 msgid "Montenegro"
-msgstr "Monténégro"
+msgstr "*Monténégro"
 
 #: maps/models.py:196
 msgid "Montserrat"
-msgstr "Montserrat"
+msgstr "*Montserrat"
 
 #: maps/models.py:197
 msgid "Morocco"
-msgstr "Maroc"
+msgstr "*Maroc"
 
 #: maps/models.py:198
 msgid "Mozambique"
-msgstr "Mozambique"
+msgstr "*Mozambique"
 
 #: maps/models.py:199
 msgid "Myanmar"
-msgstr "Myanmar"
+msgstr "*Myanmar"
 
 #: maps/models.py:200
 msgid "Namibia"
-msgstr "Namibie"
+msgstr "*Namibie"
 
 #: maps/models.py:201
 msgid "Nauru"
-msgstr "Nauru"
+msgstr "*Nauru"
 
 #: maps/models.py:202
 msgid "Nepal"
-msgstr "Népal"
+msgstr "*Népal"
 
 #: maps/models.py:203
 msgid "Netherlands"
-msgstr "Pays-Bas"
+msgstr "*Pays-Bas"
 
 #: maps/models.py:204
 msgid "Netherlands Antilles"
-msgstr "Antilles néerlandaises"
+msgstr "*Antilles néerlandaises"
 
 #: maps/models.py:205
 msgid "New Caledonia"
-msgstr "Nouvelle-Calédonie"
+msgstr "*Nouvelle-Calédonie"
 
 #: maps/models.py:206
 msgid "New Zealand"
-msgstr "Nouvelle-Zélande"
+msgstr "*Nouvelle-Zélande"
 
 #: maps/models.py:207
 msgid "Nicaragua"
-msgstr "Nicaragua"
+msgstr "*Nicaragua"
 
 #: maps/models.py:208
 msgid "Niger"
-msgstr "Niger"
+msgstr "*Niger"
 
 #: maps/models.py:209
 msgid "Nigeria"
-msgstr "Nigeria"
+msgstr "*Nigeria"
 
 #: maps/models.py:210
 msgid "Niue"
-msgstr "Niue"
+msgstr "*Niue"
 
 #: maps/models.py:211
 msgid "Norfolk Island"
-msgstr "Norfolk Island"
+msgstr "*Norfolk Island"
 
 #: maps/models.py:212
 msgid "Northern Mariana Islands"
-msgstr "Îles Mariannes du Nord"
+msgstr "*Îles Mariannes du Nord"
 
 #: maps/models.py:213
 msgid "Norway"
-msgstr "La Norvège"
+msgstr "*La Norvège"
 
 #: maps/models.py:214
 msgid "Occupied Palestinian Territory"
-msgstr "Territoire palestinien occupé"
+msgstr "*Territoire palestinien occupé"
 
 #: maps/models.py:215
 msgid "Oman"
-msgstr "Oman"
+msgstr "*Oman"
 
 #: maps/models.py:216
 msgid "Pakistan"
-msgstr "Pakistan"
+msgstr "*Pakistan"
 
 #: maps/models.py:217
 msgid "Palau"
-msgstr "Palau"
+msgstr "*Palau"
 
 #: maps/models.py:218
 msgid "Panama"
-msgstr "Panama"
+msgstr "*Panama"
 
 #: maps/models.py:219
 msgid "Papua New Guinea"
-msgstr "Papouasie-Nouvelle-Guinée"
+msgstr "*Papouasie-Nouvelle-Guinée"
 
 #: maps/models.py:220
 msgid "Paraguay"
-msgstr "Paraguay"
+msgstr "*Paraguay"
 
 #: maps/models.py:221
 msgid "Peru"
-msgstr "Pérou"
+msgstr "*Pérou"
 
 #: maps/models.py:222
 msgid "Philippines"
-msgstr "Philippines"
+msgstr "*Philippines"
 
 #: maps/models.py:223
 msgid "Pitcairn"
-msgstr "Pitcairn"
+msgstr "*Pitcairn"
 
 #: maps/models.py:224
 msgid "Poland"
-msgstr "La Pologne"
+msgstr "*La Pologne"
 
 #: maps/models.py:225
 msgid "Portugal"
-msgstr "Portugal"
+msgstr "*Portugal"
 
 #: maps/models.py:226
 msgid "Puerto Rico"
-msgstr "Puerto Rico"
+msgstr "*Puerto Rico"
 
 #: maps/models.py:227
 msgid "Qatar"
-msgstr "Qatar"
+msgstr "*Qatar"
 
 #: maps/models.py:228
 msgid "Republic of Korea"
-msgstr "République de Corée"
+msgstr "*République de Corée"
 
 #: maps/models.py:229
 msgid "Republic of Moldova"
-msgstr "République de Moldova"
+msgstr "*République de Moldova"
 
 #: maps/models.py:230
 msgid "Reunion"
-msgstr "Réunion"
+msgstr "*Réunion"
 
 #: maps/models.py:231
 msgid "Romania"
-msgstr "La Roumanie"
+msgstr "*La Roumanie"
 
 #: maps/models.py:232
 msgid "Russian Federation"
-msgstr "Fédération de Russie"
+msgstr "*Fédération de Russie"
 
 #: maps/models.py:233
 msgid "Rwanda"
-msgstr "Rwanda"
+msgstr "*Rwanda"
 
 #: maps/models.py:234
 msgid "Saint-Barthelemy"
-msgstr "Saint-Barthélemy"
+msgstr "*Saint-Barthélemy"
 
 #: maps/models.py:235
 msgid "Saint Helena"
-msgstr "Sainte-Hélène"
+msgstr "*Sainte-Hélène"
 
 #: maps/models.py:236
 msgid "Saint Kitts and Nevis"
-msgstr "Saint-Kitts-et-Nevis"
+msgstr "*Saint-Kitts-et-Nevis"
 
 #: maps/models.py:237
 msgid "Saint Lucia"
-msgstr "Sainte-Lucie"
+msgstr "*Sainte-Lucie"
 
 #: maps/models.py:238
 msgid "Saint-Martin (French part)"
-msgstr "Saint-Martin (partie française)"
+msgstr "*Saint-Martin (partie française)"
 
 #: maps/models.py:239
 msgid "Saint Pierre and Miquelon"
-msgstr "Saint-Pierre-et-Miquelon"
+msgstr "*Saint-Pierre-et-Miquelon"
 
 #: maps/models.py:240
 msgid "Saint Vincent and the Grenadines"
-msgstr "Saint-Vincent-et-les Grenadines"
+msgstr "*Saint-Vincent-et-les Grenadines"
 
 #: maps/models.py:241
 msgid "Samoa"
-msgstr "Samoa"
+msgstr "*Samoa"
 
 #: maps/models.py:242
 msgid "San Marino"
-msgstr "Saint-Marin"
+msgstr "*Saint-Marin"
 
 #: maps/models.py:243
 msgid "Sao Tome and Principe"
-msgstr "Sao Tomé et Principe"
+msgstr "*Sao Tomé et Principe"
 
 #: maps/models.py:244
 msgid "Saudi Arabia"
-msgstr "Arabie saoudite"
+msgstr "*Arabie saoudite"
 
 #: maps/models.py:245
 msgid "Senegal"
-msgstr "Sénégal"
+msgstr "*Sénégal"
 
 #: maps/models.py:246
 msgid "Serbia"
-msgstr "La Serbie"
+msgstr "*La Serbie"
 
 #: maps/models.py:247
 msgid "Seychelles"
-msgstr "Seychelles"
+msgstr "*Seychelles"
 
 #: maps/models.py:248
 msgid "Sierra Leone"
-msgstr "Sierra Leone"
+msgstr "*Sierra Leone"
 
 #: maps/models.py:249
 msgid "Singapore"
-msgstr "Singapour"
+msgstr "*Singapour"
 
 #: maps/models.py:250
 msgid "Slovakia"
-msgstr "La Slovaquie"
+msgstr "*La Slovaquie"
 
 #: maps/models.py:251
 msgid "Slovenia"
-msgstr "La Slovénie"
+msgstr "*La Slovénie"
 
 #: maps/models.py:252
 msgid "Solomon Islands"
-msgstr "Iles Salomon"
+msgstr "*Iles Salomon"
 
 #: maps/models.py:253
 msgid "Somalia"
-msgstr "Somalie"
+msgstr "*Somalie"
 
 #: maps/models.py:254 maps/models.py:310
 msgid "South Africa"
-msgstr "Afrique du Sud"
+msgstr "*Afrique du Sud"
 
 #: maps/models.py:255
 msgid "Spain"
-msgstr "Espagne"
+msgstr "*Espagne"
 
 #: maps/models.py:256
 msgid "Sri Lanka"
-msgstr "Sri Lanka"
+msgstr "*Sri Lanka"
 
 #: maps/models.py:257
 msgid "Sudan"
-msgstr "Soudan"
+msgstr "*Soudan"
 
 #: maps/models.py:258
 msgid "Suriname"
-msgstr "Suriname"
+msgstr "*Suriname"
 
 #: maps/models.py:259
 msgid "Svalbard and Jan Mayen Islands"
-msgstr "Les îles Svalbard et Jan Mayen"
+msgstr "*Les îles Svalbard et Jan Mayen"
 
 #: maps/models.py:260
 msgid "Swaziland"
-msgstr "Swaziland"
+msgstr "*Swaziland"
 
 #: maps/models.py:261
 msgid "Sweden"
-msgstr "La Suède"
+msgstr "*La Suède"
 
 #: maps/models.py:262
 msgid "Switzerland"
-msgstr "Suisse"
+msgstr "*Suisse"
 
 #: maps/models.py:263
 msgid "Syrian Arab Republic"
-msgstr "République arabe syrienne"
+msgstr "*République arabe syrienne"
 
 #: maps/models.py:264
 msgid "Tajikistan"
-msgstr "Tadjikistan"
+msgstr "*Tadjikistan"
 
 #: maps/models.py:265
 msgid "Thailand"
-msgstr "Thaïlande"
+msgstr "*Thaïlande"
 
 #: maps/models.py:266
 msgid "Timor-Leste"
-msgstr "Timor-Leste"
+msgstr "*Timor-Leste"
 
 #: maps/models.py:267
 msgid "Togo"
-msgstr "Togo"
+msgstr "*Togo"
 
 #: maps/models.py:268
 msgid "Tokelau"
-msgstr "Tokélaou"
+msgstr "*Tokélaou"
 
 #: maps/models.py:269
 msgid "Tonga"
-msgstr "Tonga"
+msgstr "*Tonga"
 
 #: maps/models.py:270
 msgid "Trinidad and Tobago"
-msgstr "Trinité-et-Tobago"
+msgstr "*Trinité-et-Tobago"
 
 #: maps/models.py:271
 msgid "Tunisia"
-msgstr "Tunisie"
+msgstr "*Tunisie"
 
 #: maps/models.py:272
 msgid "Turkey"
-msgstr "Turquie"
+msgstr "*Turquie"
 
 #: maps/models.py:273
 msgid "Turkmenistan"
-msgstr "Le Turkménistan"
+msgstr "*Le Turkménistan"
 
 #: maps/models.py:274
 msgid "Turks and Caicos Islands"
-msgstr "Les îles Turks et Caicos"
+msgstr "*Les îles Turks et Caicos"
 
 #: maps/models.py:275
 msgid "Tuvalu"
-msgstr "Tuvalu"
+msgstr "*Tuvalu"
 
 #: maps/models.py:276
 msgid "Uganda"
-msgstr "Ouganda"
+msgstr "*Ouganda"
 
 #: maps/models.py:277
 msgid "Ukraine"
-msgstr "Ukraine"
+msgstr "*Ukraine"
 
 #: maps/models.py:278
 msgid "United Arab Emirates"
-msgstr "Émirats arabes unis"
+msgstr "*Émirats arabes unis"
 
 #: maps/models.py:279
 msgid "United Kingdom"
-msgstr "Royaume-Uni"
+msgstr "*Royaume-Uni"
 
 #: maps/models.py:280
 msgid "United Republic of Tanzania"
-msgstr "République-Unie de Tanzanie"
+msgstr "*République-Unie de Tanzanie"
 
 #: maps/models.py:281
 msgid "United States of America"
-msgstr "États-Unis d'Amérique"
+msgstr "*États-Unis d'Amérique"
 
 #: maps/models.py:282
 msgid "United States Virgin Islands"
-msgstr "Îles Vierges américaines"
+msgstr "*Îles Vierges américaines"
 
 #: maps/models.py:283
 msgid "Uruguay"
-msgstr "Uruguay"
+msgstr "*Uruguay"
 
 #: maps/models.py:284
 msgid "Uzbekistan"
-msgstr "Ouzbékistan"
+msgstr "*Ouzbékistan"
 
 #: maps/models.py:285
 msgid "Vanuatu"
-msgstr "Vanuatu"
+msgstr "*Vanuatu"
 
 #: maps/models.py:286
 msgid "Venezuela (Bolivarian Republic of)"
-msgstr "Venezuela (République bolivarienne du)"
+msgstr "*Venezuela (République bolivarienne du)"
 
 #: maps/models.py:287
 msgid "Viet Nam"
-msgstr "Viet Nam"
+msgstr "*Viet Nam"
 
 #: maps/models.py:288
 msgid "Wallis and Futuna Islands"
-msgstr "Wallis et Futuna"
+msgstr "*Wallis et Futuna"
 
 #: maps/models.py:289
 msgid "Western Sahara"
-msgstr "Sahara occidental"
+msgstr "*Sahara occidental"
 
 #: maps/models.py:290
 msgid "Yemen"
-msgstr "Yémen"
+msgstr "*Yémen"
 
 #: maps/models.py:291
 msgid "Zambia"
-msgstr "Zambie"
+msgstr "*Zambie"
 
 #: maps/models.py:292
 msgid "Zimbabwe"
-msgstr "Zimbabwe"
+msgstr "*Zimbabwe"
 
 #: maps/models.py:297
 msgid "Global"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:298
 #, fuzzy
 msgid "North America"
-msgstr "Afrique du Sud"
+msgstr "*Afrique du Sud"
 
 #: maps/models.py:299
 #, fuzzy
 msgid "Central America"
-msgstr "République centrafricaine"
+msgstr "*République centrafricaine"
 
 #: maps/models.py:300
 #, fuzzy
 msgid "South America"
-msgstr "Afrique du Sud"
+msgstr "*Afrique du Sud"
 
 #: maps/models.py:301
 msgid "Europe"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:302
 msgid "Asia"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:303
 #, fuzzy
 msgid "Southeast Asia"
-msgstr "Afrique du Sud"
+msgstr "*Afrique du Sud"
 
 #: maps/models.py:304
 #, fuzzy
 msgid "Central Asia"
-msgstr "République centrafricaine"
+msgstr "*République centrafricaine"
 
 #: maps/models.py:305
 #, fuzzy
 msgid "South Asia"
-msgstr "Afrique du Sud"
+msgstr "*Afrique du Sud"
 
 #: maps/models.py:306
 #, fuzzy
 msgid "Africa"
-msgstr "Afrique du Sud"
+msgstr "*Afrique du Sud"
 
 #: maps/models.py:307
 #, fuzzy
 msgid "North Africa"
-msgstr "Afrique du Sud"
+msgstr "*Afrique du Sud"
 
 #: maps/models.py:308
 #, fuzzy
 msgid "East Africa"
-msgstr "Afrique du Sud"
+msgstr "*Afrique du Sud"
 
 #: maps/models.py:309
 #, fuzzy
 msgid "West Africa"
-msgstr "Afrique du Sud"
+msgstr "*Afrique du Sud"
 
 #: maps/models.py:311
 msgid "Middle East"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:312
 msgid "Antarctica"
+msgstr "*"
+
+#: maps/models.py:471
+msgid "Annually"
+msgstr ""
+
+#: maps/models.py:472
+msgid "As Needed"
+msgstr ""
+
+#: maps/models.py:473
+msgid "Biannually"
+msgstr ""
+
+#: maps/models.py:474
+#, fuzzy
+msgid "Continual"
+msgstr "*contraintes d'utilisation"
+
+#: maps/models.py:475
+msgid "Daily"
+msgstr ""
+
+#: maps/models.py:476
+#, fuzzy
+msgid "Fortnightly"
+msgstr "*"
+
+#: maps/models.py:477
+msgid "Irregular"
+msgstr ""
+
+#: maps/models.py:478
+msgid "Monthly"
+msgstr ""
+
+#: maps/models.py:479
+msgid "Not Planned"
+msgstr ""
+
+#: maps/models.py:480
+msgid "Quarterly"
+msgstr ""
+
+#: maps/models.py:481
+msgid "Unknown"
+msgstr ""
+
+#: maps/models.py:482
+msgid "Weekly"
 msgstr ""
 
 #: maps/models.py:487
 msgid "Public Domain Dedication and License (PDDL)"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:488
 msgid "Attribution License (ODC-By)"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:489
 msgid "Open Database License (ODC-ODbL)"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:490
 msgid "CC-BY-SA"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:493
 msgid "Copyright"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:494
 msgid "Intellectual Porperty Rights"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:495
 msgid "License"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:496
 #, fuzzy
 msgid "Other Restrictions"
-msgstr "Actions"
+msgstr "*Actions"
 
 #: maps/models.py:497
 #, fuzzy
 msgid "patent"
-msgstr "Contact :"
+msgstr "*Contact :"
 
 #: maps/models.py:498
 msgid "Patent Pending"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:499
 msgid "Restricted"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:500
 #, fuzzy
 msgid "Trademark"
-msgstr "Danemark"
+msgstr "*Danemark"
 
 #: maps/models.py:501
 msgid "Public"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:502
 #, fuzzy
 msgid "No Restrictions"
-msgstr "aucune autorisation"
+msgstr "*aucune autorisation"
 
-#: maps/models.py:511 maps/models.py:2046
+#: maps/models.py:511 maps/models.py:2052
 msgid "name"
-msgstr "nom"
+msgstr "*nom"
 
 #: maps/models.py:512
 #, fuzzy
 msgid "organization"
-msgstr "Organisation"
+msgstr "*Organisation"
 
 #: maps/models.py:513
 #, fuzzy
 msgid "position"
-msgstr "Position"
+msgstr "*Position"
 
 #: maps/models.py:514
 #, fuzzy
 msgid "voice"
-msgstr "Téléphone"
+msgstr "*Téléphone"
 
 #: maps/models.py:515
 #, fuzzy
 msgid "facsimile"
-msgstr "Télécopieur"
+msgstr "*Télécopieur"
 
 #: maps/models.py:516
 #, fuzzy
 msgid "delivery_point"
-msgstr "Point de livraison"
+msgstr "*Point de livraison"
 
 #: maps/models.py:517
 #, fuzzy
 msgid "city"
-msgstr "opacité"
+msgstr "*opacité"
 
 #: maps/models.py:518
 #, fuzzy
 msgid "administrative_area"
-msgstr "Zone administrative"
+msgstr "*Zone administrative"
 
 #: maps/models.py:519
 #, fuzzy
 msgid "postal_code"
-msgstr "Code postal"
+msgstr "*Code postal"
 
 #: maps/models.py:520
 #, fuzzy
 msgid "country"
-msgstr "Pays"
+msgstr "*Pays"
 
 #: maps/models.py:521
 #, fuzzy
 msgid "email"
-msgstr "Email"
+msgstr "*Email"
 
 #: maps/models.py:522
 msgid "role"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:528
 msgid ""
@@ -1301,764 +1354,848 @@ msgid ""
 "<br>  All WorldMap source code will be made available as <a target=\"_blank"
 "\" href=\"http://www.opensource.org/\">Open Source</a> for others to use  "
 "and improve upon.</p>"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:581
 msgid "Individual Name"
-msgstr "Nom de la personne"
+msgstr "*Nom de la personne"
 
 #: maps/models.py:582
 msgid "Organization Name"
-msgstr "Nom de l'organisation"
+msgstr "*Nom de l'organisation"
 
 #: maps/models.py:583
 msgid "Position Name"
-msgstr "Poste"
+msgstr "*Poste"
 
 #: maps/models.py:584
 msgid "Phone"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:585 templates/maps/layer.html:209
 #: templates/maps/layer.html.py:230 templates/profiles/profile_detail.html:30
 msgid "Fax"
-msgstr "Fax"
+msgstr "*Fax"
 
 #: maps/models.py:586 templates/profiles/profile_detail.html:31
 msgid "Address"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:587
 msgid "City"
-msgstr "Ville"
+msgstr "*Ville"
 
 #: maps/models.py:588
 msgid "State/Province"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:589
 msgid "Postal Code"
-msgstr "Code postal"
+msgstr "*Code postal"
 
 #: maps/models.py:592
 msgid "Display my email address on my profile"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:593
 msgid "Affiliated with Harvard"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:594
 msgid "Harvard affiliation expires on: "
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:595 maps/models.py:895 maps/models.py:1654
+#: maps/models.py:595 maps/models.py:895 maps/models.py:1660
 msgid "keywords"
-msgstr "mots-clés"
+msgstr "*mots-clés"
 
-#: maps/models.py:595 maps/models.py:895 maps/models.py:1654
+#: maps/models.py:595 maps/models.py:895 maps/models.py:1660
 msgid "A space or comma-separated list of keywords"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:614
 msgid "Either name or organization should be provided"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:616
 msgid "The email address is already registered."
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:844
 msgid "Category Name"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:845
 msgid "Category Title"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:846
 msgid "Category Description"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:882
 msgid "date"
-msgstr "date"
+msgstr "*date"
 
 #: maps/models.py:884
 msgid "date type"
-msgstr "catégorie de date"
+msgstr "*catégorie de date"
 
 #: maps/models.py:886
 msgid "edition"
-msgstr "édition"
+msgstr "*édition"
 
 #: maps/models.py:887
 msgid "abstract"
-msgstr "résumé"
+msgstr "*résumé"
 
 #: maps/models.py:888
 msgid "purpose"
-msgstr "but"
+msgstr "*but"
 
 #: maps/models.py:889
 msgid "maintenance frequency"
-msgstr "fréquence d'entretien"
+msgstr "*fréquence d'entretien"
 
 #: maps/models.py:896
 msgid "keywords region"
-msgstr "mots-clés région"
+msgstr "*mots-clés région"
 
 #: maps/models.py:897
 msgid "constraints use"
-msgstr "contraintes d'utilisation"
+msgstr "*contraintes d'utilisation"
 
 #: maps/models.py:898
 msgid "constraints other"
-msgstr "autres contraintes"
+msgstr "*autres contraintes"
 
 #: maps/models.py:899
 msgid "spatial representation type"
-msgstr "type de représentation spatiale"
+msgstr "*type de représentation spatiale"
 
 #: maps/models.py:902
 msgid "language"
-msgstr "langue"
+msgstr "*langue"
 
 #: maps/models.py:906
 msgid "temporal extent start"
-msgstr "début temporelle mesure"
+msgstr "*début temporelle mesure"
 
 #: maps/models.py:907
 msgid "temporal extent end"
-msgstr "fin temporelle mesure"
+msgstr "*fin temporelle mesure"
 
 #: maps/models.py:908
 msgid "geographic bounding box"
-msgstr "aire de délimitation géographique"
+msgstr "*aire de délimitation géographique"
 
 #: maps/models.py:909
 msgid "supplemental information"
-msgstr "informations supplémentaires"
+msgstr "*informations supplémentaires"
 
 #: maps/models.py:912
 msgid "distribution URL"
-msgstr "URL de distribution"
+msgstr "*URL de distribution"
 
 #: maps/models.py:913
 msgid "distribution description"
-msgstr "description de la distribution"
+msgstr "*description de la distribution"
 
 #: maps/models.py:916
 msgid "SRS"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:917
 msgid "bbox"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:918
 msgid "llbbox"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:930
 #, fuzzy
 msgid "Downloadable?"
-msgstr "Télécharger"
+msgstr "*Télécharger"
 
-#: maps/models.py:935 maps/models.py:1598
+#: maps/models.py:935 maps/models.py:1604
 msgid "In Gazetteer?"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:940
 msgid "Gazetteer Project"
-msgstr ""
+msgstr "*"
 
 #: maps/models.py:946
 msgid "data quality statement"
-msgstr "énoncé sur la qualité des données"
+msgstr "*énoncé sur la qualité des données"
 
-#: maps/models.py:993
+#: maps/models.py:999
 msgid "Zipped Shapefile"
-msgstr "Fichier de formes compactée (.zip)"
+msgstr "*Fichier de formes compactée (.zip)"
 
-#: maps/models.py:994
+#: maps/models.py:1000
 msgid "GML 2.0"
-msgstr "GML 2.0"
+msgstr "*GML 2.0"
 
-#: maps/models.py:995
+#: maps/models.py:1001
 msgid "GML 3.1.1"
-msgstr "GML 3.1.1"
+msgstr "*GML 3.1.1"
 
-#: maps/models.py:996
+#: maps/models.py:1002
 msgid "CSV"
-msgstr "CSV"
+msgstr "*CSV"
 
-#: maps/models.py:997
+#: maps/models.py:1003
 msgid "Excel"
-msgstr "Excel"
+msgstr "*Excel"
 
-#: maps/models.py:998
+#: maps/models.py:1004
 msgid "GeoJSON"
-msgstr "GeoJSON"
+msgstr "*GeoJSON"
 
-#: maps/models.py:1052
+#: maps/models.py:1058
 msgid "GeoTIFF"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:1053
+#: maps/models.py:1059
 msgid "JPEG"
-msgstr "JPEG"
+msgstr "*JPEG"
 
-#: maps/models.py:1054
+#: maps/models.py:1060
 msgid "PDF"
-msgstr "PDF"
+msgstr "*PDF"
 
-#: maps/models.py:1055
+#: maps/models.py:1061
 msgid "PNG"
-msgstr "PNG"
+msgstr "*PNG"
 
-#: maps/models.py:1070
+#: maps/models.py:1076
 msgid "KML"
-msgstr "KML"
+msgstr "*KML"
 
-#: maps/models.py:1071
+#: maps/models.py:1077
 msgid "View in Google Earth"
-msgstr "Afficher dans Google Earth"
+msgstr "*Afficher dans Google Earth"
 
-#: maps/models.py:1592
+#: maps/models.py:1598
 #, fuzzy
 msgid "Attribute Name"
-msgstr "Attributs"
-
-#: maps/models.py:1593
-#, fuzzy
-msgid "Attribute Label"
-msgstr "Attributs"
-
-#: maps/models.py:1594
-#, fuzzy
-msgid "Attribute Type"
-msgstr "Attributs"
-
-#: maps/models.py:1595
-#, fuzzy
-msgid "Searchable?"
-msgstr "Rechercher"
-
-#: maps/models.py:1596
-msgid "Visible?"
-msgstr ""
-
-#: maps/models.py:1597
-msgid "Display Order"
-msgstr ""
+msgstr "*Attributs"
 
 #: maps/models.py:1599
-msgid "Gazetteer Start Date"
-msgstr ""
+#, fuzzy
+msgid "Attribute Label"
+msgstr "*Attributs"
 
 #: maps/models.py:1600
-msgid "Gazetteer End Date"
-msgstr ""
+#, fuzzy
+msgid "Attribute Type"
+msgstr "*Attributs"
 
-#: maps/models.py:1601
+#: maps/models.py:1601 templates/maps/layer_describe.html:131
+#: templates/maps/layer_describe_tab.html:125
+#, fuzzy
+msgid "Searchable?"
+msgstr "*Rechercher"
+
+#: maps/models.py:1602 templates/maps/layer_describe.html:131
+#: templates/maps/layer_describe_tab.html:125
+msgid "Visible?"
+msgstr "*"
+
+#: maps/models.py:1603 templates/maps/layer_describe.html:131
+#: templates/maps/layer_describe_tab.html:125
+msgid "Display Order"
+msgstr "*"
+
+#: maps/models.py:1605
+msgid "Gazetteer Start Date"
+msgstr "*"
+
+#: maps/models.py:1606
+msgid "Gazetteer End Date"
+msgstr "*"
+
+#: maps/models.py:1607
 #, fuzzy
 msgid "Date Format"
-msgstr "Formats pris en charge"
+msgstr "*Formats pris en charge"
 
-#: maps/models.py:1626 maps/views.py:152 templates/maps/layer.html:175
+#: maps/models.py:1632 maps/views.py:152 templates/maps/layer.html:175
+#: templates/maps/layer_create.html:87 templates/maps/layer_create_tab.html:91
+#: templates/maps/layer_upload_tab.html:144
 msgid "Abstract"
-msgstr "Résumé"
+msgstr "*Résumé"
 
-#: maps/models.py:1630
+#: maps/models.py:1636
 msgid "zoom"
-msgstr "zoom"
+msgstr "*zoom"
 
-#: maps/models.py:1634
+#: maps/models.py:1640
 msgid "projection"
-msgstr "projection"
+msgstr "*projection"
 
-#: maps/models.py:1638
+#: maps/models.py:1644
 msgid "center X"
-msgstr "centre X"
+msgstr "*centre X"
 
-#: maps/models.py:1642
+#: maps/models.py:1648
 msgid "center Y"
-msgstr "centre Y"
+msgstr "*centre Y"
 
-#: maps/models.py:1646
+#: maps/models.py:1652
 msgid "owner"
-msgstr "propriétaire"
+msgstr "*propriétaire"
 
-#: maps/models.py:1649
+#: maps/models.py:1655
 msgid "Date Created"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:1656
+#: maps/models.py:1662
 msgid "Date Last Modified"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:1661
+#: maps/models.py:1667
 msgid "Site URL"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:1666
+#: maps/models.py:1672
 msgid "Official Harvard Site URL"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:1671
+#: maps/models.py:1677
 msgid "Site Content"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:1676
+#: maps/models.py:1682
 msgid "Use a custom template"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:1681
+#: maps/models.py:1687
 msgid "Layer Category Parameters"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:1951
+#: maps/models.py:1957
 msgid "JSON Configuration"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:1979
+#: maps/models.py:1985
 msgid "Jump URL"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:1980
+#: maps/models.py:1986
 msgid "Jump Site"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:2038
+#: maps/models.py:2044
 msgid "stack order"
-msgstr "pile pour"
+msgstr "*pile pour"
 
-#: maps/models.py:2042
+#: maps/models.py:2048
 msgid "format"
-msgstr "format"
-
-#: maps/models.py:2053
-msgid "opacity"
-msgstr "opacité"
-
-#: maps/models.py:2056
-msgid "styles"
-msgstr "styles"
+msgstr "*format"
 
 #: maps/models.py:2059
-msgid "transparent"
-msgstr "transparent"
+msgid "opacity"
+msgstr "*opacité"
 
 #: maps/models.py:2062
+msgid "styles"
+msgstr "*styles"
+
+#: maps/models.py:2065
+msgid "transparent"
+msgstr "*transparent"
+
+#: maps/models.py:2068
 msgid "fixed"
-msgstr "fixe"
+msgstr "*fixe"
 
-#: maps/models.py:2066
+#: maps/models.py:2072
 msgid "group"
-msgstr "groupe"
-
-#: maps/models.py:2070
-msgid "visibility"
-msgstr "visibilité"
-
-#: maps/models.py:2073
-msgid "ows URL"
-msgstr "URL ows"
+msgstr "*groupe"
 
 #: maps/models.py:2076
+msgid "visibility"
+msgstr "*visibilité"
+
+#: maps/models.py:2079
+msgid "ows URL"
+msgstr "*URL ows"
+
+#: maps/models.py:2082
 msgid "layer params"
-msgstr "paramètres couche"
+msgstr "*paramètres couche"
 
-#: maps/models.py:2083
+#: maps/models.py:2089
 msgid "source params"
-msgstr "paramètres source"
+msgstr "*paramètres source"
 
-#: maps/models.py:2318 maps/models.py:2324
+#: maps/models.py:2324 maps/models.py:2330
 msgid "Visits"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:2319 maps/models.py:2325
+#: maps/models.py:2325 maps/models.py:2331
 msgid "Unique Visitors"
-msgstr ""
+msgstr "*"
 
-#: maps/models.py:2326
+#: maps/models.py:2332
 #, fuzzy
 msgid "Downloads"
-msgstr "Télécharger"
+msgstr "*Télécharger"
 
 #: maps/utils.py:61
 msgid "Saving is not implemented for extension "
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:106
+#: maps/utils.py:80 maps/utils.py:105
 msgid "Expected helper file does not exist: "
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:107
+#: maps/utils.py:81 maps/utils.py:106
 msgid "; a Shapefile requires helper files with the following extensions: "
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:147
+#: maps/utils.py:146
 msgid "You must pass either a filename or a GeoNode layer object"
+msgstr "*"
+
+#: maps/utils.py:175
+msgid "exists in the Django db, so not doing any cleanup."
 msgstr ""
 
-#: maps/utils.py:196
+#: maps/utils.py:194
 msgid "Couldn't connect to GeoServer while cleaning up layer "
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:204
+#: maps/utils.py:202
 msgid "Couldn't delete GeoServer layer during cleanup()"
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:209
+#: maps/utils.py:207
 msgid "Couldn't delete GeoServer resource during cleanup()"
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:215
+#: maps/utils.py:213
 msgid "Couldn't delete GeoServer store during cleanup()"
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:220
+#: maps/utils.py:218
 msgid "Deleting dangling GeoNetwork record (no Django record to match) for "
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:249
+#: maps/utils.py:247
 msgid "Could not open "
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:249
+#: maps/utils.py:247
 msgid ". Make sure you are using a valid file"
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:288
+#: maps/utils.py:286
 msgid "The layer exists and the overwrite parameter is "
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:296
+#: maps/utils.py:294
 msgid "Name already in use and overwrite is False"
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:300
+#: maps/utils.py:298
 msgid "Type of uploaded file"
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:301
+#: maps/utils.py:299
 msgid "does not match type of existing resource type "
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:328
+#: maps/utils.py:326
 msgid "The layer type is"
-msgstr ""
+msgstr "*"
 
-#: maps/utils.py:328
+#: maps/utils.py:326
 msgid "but should be"
-msgstr ""
+msgstr "*"
+
+#: maps/utils.py:352
+msgid "Could not save the layer"
+msgstr "*"
+
+#: maps/utils.py:353
+msgid ", there was an upload error:"
+msgstr "*"
 
 #: maps/utils.py:354
-msgid "Could not save the layer"
-msgstr ""
-
-#: maps/utils.py:355
-msgid ", there was an upload error:"
-msgstr ""
+msgid "Invalid/missing projection information in image"
+msgstr "*"
 
 #: maps/utils.py:356
-msgid "Invalid/missing projection information in image"
+msgid ""
+"Your shapefile may contain reserved column names such as minx or maxy; try "
+"renaming them"
 msgstr ""
 
 #: maps/utils.py:363
 msgid "GeoServer reported a conflict creating a store with name "
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:365
 msgid ""
 ". This should never happen because a brand new name should have been "
 "generated. But since it happened, try renaming the file or deleting the "
 "store in GeoServer."
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:385
 msgid "GeoNode encountered problems when creating layer"
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:386
 msgid ""
 "It cannot find the Layer that matches this Workspace.This is likely a bug in "
 "Geoserver,try renaming your files."
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:409
 msgid "Your SLD file contains invalid XML"
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:419
 msgid "There is already a style in GeoServer named "
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:516
 #, fuzzy
 msgid "There was a problem saving the layer "
-msgstr "Aucune carte n'utilise cette couche"
+msgstr "*Aucune carte n'utilise cette couche"
 
 #: maps/utils.py:517
 msgid "Error is: "
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:535
 msgid "The layer was not correctly saved to GeoNetwork/GeoServer. Error is: "
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:585
 msgid "Cannot connect to the GeoServer at "
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:586
 msgid "Please make sure you have started GeoNode."
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:592
 msgid "Cannot connect to the GeoNetwork at "
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:593
 msgid "Please make sure you have started GeoNetwork."
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:649
 msgid ""
 "Please pass a filename or a directory name as the \"incoming\" parameter, "
 "instead of "
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:667
 msgid "potential layers found, importing now ..."
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:707
 msgid ""
 "Stopping process because --ignore-errors was not set and an error was found."
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:711
 #, fuzzy
 msgid "Layer for "
-msgstr "Renseignements supplémentaires"
+msgstr "*Renseignements supplémentaires"
 
 #: maps/utils.py:799
 msgid "GeoServer failed to detect the projection for layer "
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:801
 msgid "It doesn't look like EPSG:4326, so backing out the layer."
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:806
 msgid "GeoServer failed to read the layer projection for"
-msgstr ""
+msgstr "*"
 
 #: maps/utils.py:807
 #, fuzzy
 msgid "so backing out the layer."
-msgstr "Aucun résumé disponible pour cette couche."
+msgstr "*Aucun résumé disponible pour cette couche."
 
 #: maps/views.py:96
 msgid "Start Date attribute"
-msgstr ""
+msgstr "*"
 
 #: maps/views.py:100 maps/views.py:106
 #, fuzzy
 msgid "Date format"
-msgstr "format"
+msgstr "*format"
 
 #: maps/views.py:102
 msgid "End Date attribute"
-msgstr ""
+msgstr "*"
 
 #: maps/views.py:110 maps/views.py:115
 msgid "Person outside WorldMap (fill form)"
-msgstr ""
+msgstr "*"
 
 #: maps/views.py:111
 #, fuzzy
 msgid "Point Of Contact"
-msgstr "Point de Contact"
+msgstr "*Point de Contact"
 
 #: maps/views.py:116 templates/maps/layer.html:220
 #, fuzzy
 msgid "Metadata Author"
-msgstr "Métadonnées"
+msgstr "*Métadonnées"
+
+#: maps/views.py:126
+msgid ""
+"<p>Please choose the appropriate type of restriction (if any) for the use of "
+"your data. \n"
+"    Then use the \"Constraints Other\" form below to provide any necessary "
+"details.</p>\n"
+"    <p>\n"
+"    Public Domain Dedication and License<br />\n"
+"    http://opendatacommons.org/licenses/pddl/\n"
+"    </p>\n"
+"    <p>\n"
+"    Attribution License (ODC-By)<br />\n"
+"    http://opendatacommons.org/licenses/by/\n"
+"    </p>\n"
+"    <p>\n"
+"    Open Database License (ODC-ODbL)<br />\n"
+"    http://opendatacommons.org/licenses/odbl/\n"
+"    </p>\n"
+"    <p>\n"
+"    CC-BY-SA<br />\n"
+"    http://creativecommons.org/licenses/by-sa/2.0/\n"
+"    "
+msgstr ""
+
+#: maps/views.py:146 templates/mapnotes/annotation.html:38
+#, fuzzy
+msgid "Date"
+msgstr "*"
 
 #: maps/views.py:149
 #, fuzzy
 msgid "Temporal Extent Start Date"
-msgstr "début temporelle mesure"
+msgstr "*début temporelle mesure"
 
 #: maps/views.py:150
 #, fuzzy
 msgid "Temporal Extent End Date"
-msgstr "fin temporelle mesure"
+msgstr "*fin temporelle mesure"
 
 #: maps/views.py:153
 #, fuzzy
 msgid "Contraints"
-msgstr "contraintes d'utilisation"
+msgstr "*contraintes d'utilisation"
+
+#: maps/views.py:166
+#, fuzzy
+msgid "New point of contact"
+msgstr "*Changez votre point de contact"
 
 #: maps/views.py:183 maps/views.py:189
 msgid "No Permissions"
-msgstr "aucune autorisation"
+msgstr "*aucune autorisation"
 
 #: maps/views.py:184 maps/views.py:190
 msgid "Read Only"
-msgstr "Lecture seule"
+msgstr "*Lecture seule"
 
 #: maps/views.py:185 maps/views.py:191
 msgid "Read/Write"
-msgstr "Lecture / écriture"
+msgstr "*Lecture / écriture"
 
 #: maps/views.py:186 maps/views.py:192
 msgid "Administrative"
-msgstr "Administratif"
+msgstr "*Administratif"
 
 #: maps/views.py:231
 msgid "You must be logged in to save this map"
-msgstr "Vous devez être connecté pour enregistrer cette carte."
+msgstr "*Vous devez être connecté pour enregistrer cette carte."
+
+#: maps/views.py:237
+#, fuzzy
+msgid "You are not allowed to modify this map."
+msgstr "*Vous n'êtes pas autorisé à visualiser cette carte."
+
+#: maps/views.py:242
+#, fuzzy
+msgid "Map successfully updated."
+msgstr "*Compte activé avec succès."
+
+#: maps/views.py:248
+msgid "The server could not understand the request."
+msgstr ""
 
 #: maps/views.py:271
 msgid "You are not permitted to view or copy this map."
-msgstr "Vous n'êtes pas autorisé à visualiser ou copier cette carte."
+msgstr "*Vous n'êtes pas autorisé à visualiser ou copier cette carte."
 
 #: maps/views.py:403 maps/views.py:825 maps/views.py:849 maps/views.py:2746
 #: templates/401.html:10
 msgid "Not Permitted"
-msgstr "Non Autorisé"
+msgstr "*Non Autorisé"
+
+#: maps/views.py:576
+#, fuzzy
+msgid "You must use POST for editing layer permissions"
+msgstr ""
+"*Vous n'êtes pas autorisé à afficher les autorisations de cette couche."
+
+#: maps/views.py:583
+#, fuzzy
+msgid "You are not allowed to change permissions for this layer"
+msgstr "*Vous n'êtes pas autorisé à visualiser cette carte."
+
+#: maps/views.py:602
+#, fuzzy
+msgid "You are not allowed to change permissions for this map"
+msgstr "*Vous n'êtes pas autorisé à visualiser cette carte."
 
 #: maps/views.py:650 maps/views.py:2520
 msgid "You are not permitted to delete this map."
-msgstr "Vous n'êtes pas autorisé à supprimer cette carte."
+msgstr "*Vous n'êtes pas autorisé à supprimer cette carte."
 
 #: maps/views.py:673 maps/views.py:754 maps/views.py:2545
 msgid "You are not allowed to view this map."
-msgstr "Vous n'êtes pas autorisé à visualiser cette carte."
+msgstr "*Vous n'êtes pas autorisé à visualiser cette carte."
 
 #: maps/views.py:699
 msgid "You are not allowed to modify this map's metadata."
-msgstr "Vous n'êtes pas autorisé à modifier les métadonnées de cette carte."
+msgstr "*Vous n'êtes pas autorisé à modifier les métadonnées de cette carte."
 
 #: maps/views.py:866 maps/views.py:2657
 msgid "You are not permitted to modify this layer's metadata"
-msgstr "Vous n'êtes pas autorisé à modifier les métadonnées de cette couche."
+msgstr "*Vous n'êtes pas autorisé à modifier les métadonnées de cette couche."
 
 #: maps/views.py:896
 msgid "No date fields available"
-msgstr ""
+msgstr "*"
 
 #: maps/views.py:1039
 msgid "You are not permitted to delete this layer"
-msgstr "Vous n'êtes pas autorisé à supprimer cette couche."
+msgstr "*Vous n'êtes pas autorisé à supprimer cette couche."
 
 #: maps/views.py:1061 maps/views.py:1195
 msgid "You are not permitted to modify this layer"
-msgstr "Vous n'êtes pas autorisé à modifier cette couche."
+msgstr "*Vous n'êtes pas autorisé à modifier cette couche."
 
 #: maps/views.py:1094
 msgid "You are not permitted to view this layer"
-msgstr "Vous n'êtes pas autorisé à modifier cette couche."
+msgstr "*Vous n'êtes pas autorisé à modifier cette couche."
 
 #: maps/views.py:1119
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
 msgstr ""
-"Une erreur est survenue lors du téléchargement de vos données. S'il vous "
+"*Une erreur est survenue lors du téléchargement de vos données. S'il vous "
 "plaît essayer de nouveau, ou communiquez avec l'administrateur si le "
 "problème persiste."
 
+#: maps/views.py:1179 maps/views.py:1268
+msgid "Unexpected error during upload: "
+msgstr ""
+
 #: maps/views.py:1289
 msgid "???"
-msgstr "???"
+msgstr "*???"
 
 #: maps/views.py:1331
 msgid "Invalid permission level."
-msgstr "Niveau d'autorisation non valide."
+msgstr "*Niveau d'autorisation non valide."
 
 #: maps/views.py:1348
 #, fuzzy
 msgid "Custom Group Users"
-msgstr "Utilisateurs anonymes"
+msgstr "*Utilisateurs anonymes"
 
 #: maps/views.py:1357 templates/maps/layer_permissions.html:15
 msgid "User"
-msgstr "Utilisateur"
+msgstr "*Utilisateur"
 
 #: maps/views.py:1445
 msgid "Bad HTTP Authorization Credentials."
-msgstr "Mauvais authentifiant d'autorisation HTTP."
+msgstr "*Mauvais authentifiant d'autorisation HTTP."
 
 #: maps/views.py:2135 templates/maps/layer.html:182
 #: templates/maps/layer_describe.html:88
 #: templates/maps/layer_describe_tab.html:72
 #, fuzzy
 msgid "Category"
-msgstr "Sujet Catégorie"
+msgstr "*Sujet Catégorie"
 
 #: maps/views.py:2177
 msgid "You are not permitted to view this map's permissions"
 msgstr ""
-"Vous n'êtes pas autorisé à afficher les autorisations liées à cette carte."
+"*Vous n'êtes pas autorisé à afficher les autorisations liées à cette carte."
 
 #: maps/views.py:2190
 msgid "You are not permitted to view this layer's permissions"
-msgstr "Vous n'êtes pas autorisé à afficher les autorisations de cette couche."
+msgstr ""
+"*Vous n'êtes pas autorisé à afficher les autorisations de cette couche."
 
 #: register/forms.py:16
 msgid "Email Address"
-msgstr ""
+msgstr "*"
 
 #: register/forms.py:22
 msgid "Yes"
-msgstr ""
+msgstr "*"
 
 #: register/forms.py:22
 msgid "No"
-msgstr ""
+msgstr "*"
 
 #: register/forms.py:30
 #, fuzzy
 msgid "username"
-msgstr "Suriname"
+msgstr "*Suriname"
 
 #: register/forms.py:32
 msgid ""
 "Username must contain only letters, numbers, and underscores, and start with "
 "a letter"
-msgstr ""
+msgstr "*"
 
 #: register/forms.py:37
 msgid "email address"
-msgstr ""
+msgstr "*"
 
 #: register/forms.py:39
 #, fuzzy
 msgid "password"
-msgstr "Changer mot de passe"
+msgstr "*Changer mot de passe"
 
 #: register/forms.py:41
 #, fuzzy
 msgid "password (again)"
-msgstr "Mot de passe modifié"
+msgstr "*Mot de passe modifié"
 
 #: register/views.py:21
 msgid "Your username for "
-msgstr ""
+msgstr "*"
 
 #: register/views.py:34
 msgid "Your username has been emailed to you."
-msgstr ""
+msgstr "*"
 
 #: register/views.py:36
 msgid "No user could be found with that email address."
-msgstr ""
+msgstr "*"
 
 #: templates/401.html:18
 #, fuzzy
@@ -2067,22 +2204,22 @@ msgid ""
 "    You are not allowed to perform this operation.\n"
 "    "
 msgstr ""
-"\n"
+"*\n"
 "Vous n'êtes pas autorisé à effectuer cette opération."
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
 msgstr ""
-"S'il vous plaît, vérifiez que vous êtes correctement connecté en tant "
+"*S'il vous plaît, vérifiez que vous êtes correctement connecté en tant "
 "qu'utilisateur."
 
 #: templates/401.html:27
 msgid "Please login or register and retry."
-msgstr "S'il vous plaît, vous connectez ou, vous enregistrez et réessayez."
+msgstr "*S'il vous plaît, vous connectez ou, vous enregistrez et réessayez."
 
 #: templates/404.html:6
 msgid "Page Not Found"
-msgstr "Page non trouvée"
+msgstr "*Page non trouvée"
 
 #: templates/404.html:7
 msgid ""
@@ -2092,11 +2229,11 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"La page demandée n'existe pas. Peut-être utilisez-vous un signet périmé? "
+"*La page demandée n'existe pas. Peut-être utilisez-vous un signet périmé? "
 
 #: templates/500.html:6
 msgid "Internal Server Error"
-msgstr "Erreur interne liée au serveur"
+msgstr "*Erreur interne liée au serveur"
 
 #: templates/500.html:7
 msgid ""
@@ -2106,202 +2243,170 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Une erreur interne s'est produite. S'il vous plaît essayez de nouveau, et si "
-"le problème persiste, contactez l'administrateur du site."
-
-#: templates/addlayers.html:3 templates/search_base.html:4
-msgid "Search Data"
-msgstr "Recherche de Données"
-
-#: templates/addlayers.html:54 templates/data_base.html:16
-#: templates/data_base.html.py:28 templates/maps.html:17
-#: templates/maps.html.py:34 templates/maps_search_base.html:36
-#: templates/search_base.html:60 templates/maps/view.html:221
-msgid "Search"
-msgstr "Rechercher"
-
-#: templates/addlayers.html:54 templates/data_base.html:28
-#: templates/search_base.html:60 templates/maps/view.html:221
-msgid "for geospatial data"
-msgstr "pour les données géospatiales"
-
-#: templates/addlayers.html:57 templates/search_base.html:63
-msgid ""
-"Click the <b>+</b> on any row to show layer metadata or download in PDF, "
-"KML, GeoTIFF, or SHP."
-msgstr ""
-"Cliquez sur le <strong> + </strong> sur n'importe quelle ligne pour voir les "
-"métadonnées couche ou télécharger en PDF, KML, GeoTIFF, ou SHP."
-
-#: templates/addlayers.html:58 templates/maps_search_base.html:41
-#: templates/search_base.html:64
-msgid "To bookmark your current search use this"
-msgstr "Pour marquer d'un signet votre recherche actuelle, utilisez ceci."
-
-#: templates/addlayers.html:58 templates/maps_search_base.html:41
-#: templates/search_base.html:64
-msgid "permalink"
-msgstr "Permalink"
-
-#: templates/addlayers.html:67 templates/search_base.html:73
-#: templates/maps/view.html:243
-msgid "Refine Search"
-msgstr "Raffiner la Recherche"
-
-#: templates/addlayers.html:69 templates/search_base.html:75
-#: templates/maps/view.html:245
-msgid "By area"
-msgstr "Par zone"
-
-#: templates/addlayers.html:70 templates/search_base.html:76
-#: templates/maps/view.html:246
-msgid "Limit the search to data that includes features in the displayed area."
-msgstr ""
-"Limiter la recherche aux données qui incluent des fonctionnalités dans la "
-"zone affichée."
-
-#: templates/addlayers.html:78 templates/search_base.html:84
-msgid "Use the checkboxes in the search results to add data to your selection."
-msgstr ""
-"Utiliser les cases à cocher dans les résultats de la recherche pour ajouter "
-"des données à votre sélection."
-
-#: templates/addlayers.html:84 templates/search_base.html:90
-msgid "Create a new map"
-msgstr "Créer une nouvelle carte"
-
-#: templates/addlayers.html:85 templates/addlayers.html.py:88
-#: templates/search_base.html:91
-msgid "Export selected"
-msgstr "Exporter la sélection"
+"*Une erreur interne s'est produite. S'il vous plaît essayez de nouveau, et "
+"si le problème persiste, contactez l'administrateur du site."
 
 #: templates/data_base.html:4
 msgid "Browse Data"
-msgstr "Parcourir les données"
+msgstr "*Parcourir les données"
+
+#: templates/data_base.html:16 templates/data_base.html.py:28
+#: templates/maps.html:17 templates/maps.html.py:34
+#: templates/maps_search_base.html:36 templates/search_base.html:60
+#: templates/maps/view.html:227
+msgid "Search"
+msgstr "*Rechercher"
+
+#: templates/data_base.html:28 templates/search_base.html:60
+#: templates/maps/view.html:227
+msgid "for geospatial data"
+msgstr "*pour les données géospatiales"
 
 #: templates/data_base.html:43
 msgid "Advanced Search"
-msgstr "Recherche avancée"
-
-#: templates/developer.html:3
-msgid "OGC Services"
-msgstr "Services OGC"
-
-#: templates/developer.html:48
-msgid "GeoNode's Web Services"
-msgstr "Services Web de GeoNode"
-
-#: templates/developer.html:49
-msgid "GeoNode's Web Services are available from the following URLs:"
-msgstr "Services GeoNode Web sont disponibles depuis les liens suivants:"
-
-#: templates/developer.html:51
-msgid "Dynamic tiles via WMS:"
-msgstr "Tuiles dynamique via WMS"
-
-#: templates/developer.html:52
-msgid "Vector data via WFS:"
-msgstr "Données vectorielles via WFS"
-
-#: templates/developer.html:53
-msgid "Metadata search via CSW:"
-msgstr "Recherche de métadonnées via CSW:"
-
-#: templates/developer.html:54
-msgid "Cached tiles via WMTS:"
-msgstr "Carreaux en cache via WMTS:"
+msgstr "*Recherche avancée"
 
 #: templates/error_layout.html:41 templates/fullscreen.html:48
 #, fuzzy
 msgid "Sign out"
-msgstr "Se connecter"
+msgstr "*Se connecter"
 
 #: templates/error_layout.html:43 templates/fullscreen.html:50
-#: templates/mobile.html:40 templates/page_layout.html:74
+#: templates/mobile.html:40 templates/page_layout.html:94
 #: templates/registration/username_form.html:24
 msgid "Sign in"
-msgstr "Se connecter"
+msgstr "*Se connecter"
 
 #: templates/error_layout.html:45 templates/fullscreen.html:52
-#: templates/page_layout.html:76
+#: templates/page_layout.html:96
 msgid "Create Map"
 msgstr "Créer une carte"
 
 #: templates/error_layout.html:46 templates/fullscreen.html:53
-#: templates/page_layout.html:77
-#, fuzzy
+#: templates/page_layout.html:97
 msgid "View Map"
-msgstr "Nouvelles cartes"
+msgstr "*"
 
-#: templates/error_layout.html:63 templates/page_layout.html:94
+#: templates/error_layout.html:63 templates/page_layout.html:114
 msgid "Need Help?"
-msgstr "Besoin d'Aide?"
+msgstr "*Besoin d'Aide?"
 
-#: templates/error_layout.html:64 templates/page_layout.html:95
+#: templates/error_layout.html:64 templates/page_layout.html:115
 #, fuzzy
 msgid "Contact Us"
-msgstr "Contact :"
+msgstr "*Contact :"
 
-#: templates/error_layout.html:65 templates/page_layout.html:96
+#: templates/error_layout.html:65 templates/page_layout.html:116
 msgid "Blog"
-msgstr ""
+msgstr "*"
 
-#: templates/error_layout.html:66 templates/page_layout.html:97
+#: templates/error_layout.html:66 templates/page_layout.html:117
 msgid "Source Code"
+msgstr "*"
+
+#: templates/fullscreen.html:5 templates/mobile.html:26
+#, fuzzy
+msgid "WorldMap"
+msgstr "*"
+
+#: templates/fullscreen.html:28
+msgid "Powered by <a target='_blank' href='/'>WorldMap</a>"
 msgstr ""
 
-#: templates/help.html:3
+#: templates/fullscreen.html:47
+msgid "Welcome"
+msgstr "*Bienvenue"
+
+#: templates/fullscreen.html:54 templates/page_layout.html:98
 msgid "Help"
-msgstr "Aide"
-
-#: templates/help.html:21 templates/maphelp.html:18
-msgid "Documents"
-msgstr ""
-
-#: templates/help.html:22
-msgid ""
-"\n"
-"    <p>Use the links below to\n"
-"        navigate to a document.</p>\n"
-"\n"
-"    <ul>\n"
-"        <li><a href=\"#help\">WorldMap Help</a>\n"
-"        <li><a href=\"#tutorial\">Tutorial</a>\n"
-"        <li><a href=\"#faq\">Frequently Asked Questions (FAQ)</a>\n"
-"    </ul>\n"
-"\n"
-"    "
-msgstr ""
+msgstr "*Aide"
 
 #: templates/index.html:3
 msgid "Welcome!"
-msgstr "Bienvenue!"
+msgstr "*Bienvenue!"
+
+#: templates/index.html:91
+msgid "Create a Map"
+msgstr "*Créer carte"
+
+#: templates/index.html:92
+msgid "View a Map"
+msgstr "*"
+
+#: templates/index.html:93
+msgid "About"
+msgstr "*"
+
+#: templates/index.html:105
+#, fuzzy
+msgid "AfricaMap"
+msgstr "*"
+
+#: templates/index.html:106
+#, fuzzy
+msgid "ChinaMap"
+msgstr "*"
+
+#: templates/index.html:107
+#, fuzzy
+msgid "Boston Research Map"
+msgstr "*"
+
+#: templates/index.html:108
+#, fuzzy
+msgid "Giza Map"
+msgstr "*"
+
+#: templates/index.html:109
+msgid "Japan's 2011 Disasters"
+msgstr "*"
+
+#: templates/index.html:113
+msgid ""
+"Build your own mapping portal and publish it to the world or to just a few "
+"collaborators. WorldMap is open source software."
+msgstr "*"
+
+#: templates/index.html:117
+msgid "Watch the WorldMap Quick Start video"
+msgstr "*"
+
+#: templates/index.html:121
+msgid ""
+"WorldMap is being developed by the <a href='http://gis.harvard.edu/'>Center "
+"for Geographic Analysis</a> at <a href='http://www.harvard.edu'>Harvard "
+"University</a>."
+msgstr "*"
 
 #: templates/login.html:9 templates/registration/activate.html:8
 #: templates/registration/password_reset_complete.html:15
 msgid "Log in"
-msgstr "Connectez"
+msgstr "*Connectez"
 
 #: templates/login.html:13 templates/registration/login.html:24
 msgid "Forgot password"
-msgstr "Mot de passe oublié"
+msgstr "*Mot de passe oublié"
 
 #: templates/login.html:13
 msgid "Reset it"
-msgstr "Réinitialiser celui-ci"
+msgstr "*Réinitialiser celui-ci"
 
 #: templates/login.html:14
 msgid "Not member"
-msgstr "Non membre"
+msgstr "*Non membre"
 
 #: templates/login.html:14 templates/registration/login.html:16
 msgid "Register"
-msgstr "S'inscrire"
+msgstr "*S'inscrire"
 
 #: templates/maphelp.html:14
 #, fuzzy
 msgid "Map User Guide"
-msgstr "Guide de l'utilisateur"
+msgstr "*Guide de l'utilisateur"
+
+#: templates/maphelp.html:18
+msgid "Documents"
+msgstr "*"
 
 #: templates/maphelp.html:19
 msgid ""
@@ -2317,26 +2422,28 @@ msgid ""
 "\n"
 "  "
 msgstr ""
+"\n"
+"*"
 
 #: templates/maps.html:4
 msgid "Browse Maps"
-msgstr "Parcourir les cartes"
+msgstr "*Parcourir les cartes"
 
 #: templates/maps.html:34 templates/maps_search_base.html:36
 msgid "for maps"
-msgstr "pour cartes"
+msgstr "*pour cartes"
 
 #: templates/maps.html:49
 msgid "All Maps"
-msgstr "Toutes les Cartes"
+msgstr "*Toutes les Cartes"
 
 #: templates/maps.html:50
 msgid "New Maps"
-msgstr "Nouvelles cartes"
+msgstr "*Nouvelles cartes"
 
 #: templates/maps.html:56
 msgid "Create Maps"
-msgstr "Créer des Cartes"
+msgstr "*Créer des Cartes"
 
 #: templates/maps.html:57
 #, fuzzy
@@ -2344,51 +2451,108 @@ msgid ""
 "Use WorldMap to create your own maps.  Add layers from WorldMap or remote "
 "services, and style them."
 msgstr ""
-"Utilisez l'application de création de cartes dans GeoNode pour créer vos "
+"*Utilisez l'application de création de cartes dans GeoNode pour créer vos "
 "propres cartes. Ajoutez des couches de ce GeoNode ou de services à distance, "
 "et stylisez-les."
 
 #: templates/maps.html:60
 msgid "Create your own map"
-msgstr "Créez votre propre carte."
+msgstr "*Créez votre propre carte."
 
 #: templates/maps_search_base.html:4
 msgid "Search Maps"
-msgstr "Recherche de cartes"
+msgstr "*Recherche de cartes"
 
 #: templates/maps_search_base.html:40
 msgid "Click the <b>+</b> on any row to show map abstract."
 msgstr ""
-"Cliquez sur le <b> + </b> sur n'importe quelle ligne pour afficher le résumé "
-"de la carte."
+"*Cliquez sur le <b> + </b> sur n'importe quelle ligne pour afficher le "
+"résumé de la carte."
 
-#: templates/page_layout.html:70
+#: templates/maps_search_base.html:41 templates/search_base.html:64
+msgid "To bookmark your current search use this"
+msgstr "*Pour marquer d'un signet votre recherche actuelle, utilisez ceci."
+
+#: templates/maps_search_base.html:41 templates/search_base.html:64
+msgid "permalink"
+msgstr "*Permalink"
+
+#: templates/mobile.html:26
+#, fuzzy
+msgid "Powered by"
+msgstr "*Fourni par :"
+
+#: templates/page_layout.html:90
 msgid "Log out"
-msgstr "Déconnectez"
+msgstr "*Déconnectez"
 
-#: templates/search_base.html:83
+#: templates/search_base.html:4
+msgid "Search Data"
+msgstr "*Recherche de Données"
+
+#: templates/search_base.html:63
+msgid ""
+"Click the <b>+</b> on any row to show layer metadata or download in PDF, "
+"KML, GeoTIFF, or SHP."
+msgstr ""
+"*Cliquez sur le <strong> + </strong> sur n'importe quelle ligne pour voir "
+"les métadonnées couche ou télécharger en PDF, KML, GeoTIFF, ou SHP."
+
+#: templates/search_base.html:73 templates/maps/view.html:249
+msgid "Refine Search"
+msgstr "*Raffiner la Recherche"
+
+#: templates/search_base.html:75 templates/maps/view.html:251
+msgid "By area"
+msgstr "*Par zone"
+
+#: templates/search_base.html:76 templates/maps/view.html:252
+msgid "Limit the search to data that includes features in the displayed area."
+msgstr ""
+"*Limiter la recherche aux données qui incluent des fonctionnalités dans la "
+"zone affichée."
+
+#: templates/search_base.html:83 templates/maps/view.html:234
 #, fuzzy
 msgid "Selected Data"
-msgstr "Données Sélectionnées"
+msgstr "*Données Sélectionnées"
+
+#: templates/search_base.html:84
+msgid "Use the checkboxes in the search results to add data to your selection."
+msgstr ""
+"*Utiliser les cases à cocher dans les résultats de la recherche pour ajouter "
+"des données à votre sélection."
+
+#: templates/search_base.html:90
+msgid "Create a new map"
+msgstr "*Créer une nouvelle carte"
+
+#: templates/search_base.html:91
+msgid "Export selected"
+msgstr "*Exporter la sélection"
 
 #: templates/avatar/add.html:5 templates/profiles/edit_profile.html:12
 msgid "Your current avatar: "
-msgstr "Votre avatar actuel:"
+msgstr "*Votre avatar actuel:"
 
 #: templates/avatar/add.html:8 templates/profiles/edit_profile.html:15
 msgid "You haven't uploaded an avatar yet. Please upload one now."
 msgstr ""
-"Vous n'avez pas encore téléchargé un avatar. S'il vous plaît télécharger une "
-"maintenant."
+"*Vous n'avez pas encore téléchargé un avatar. S'il vous plaît télécharger "
+"une maintenant."
 
 #: templates/avatar/add.html:12 templates/profiles/edit_profile.html:27
 msgid "Upload New Image"
-msgstr "Télécharger une nouvelle image vers le serveur"
+msgstr "*Télécharger une nouvelle image vers le serveur"
+
+#: templates/mapnotes/annotation.html:37
+msgid "Author"
+msgstr ""
 
 #: templates/mapnotes/annotation.html:40 templates/maps/layer.html:263
 #: templates/maps/mapinfo.html:99
 msgid "Comments"
-msgstr ""
+msgstr "*"
 
 #: templates/mapnotes/annotation.html:50 templates/maps/layer.html:273
 #: templates/maps/mapinfo.html:110
@@ -2398,35 +2562,41 @@ msgid ""
 "                %(age)s ago\n"
 "                "
 msgstr ""
+"\n"
+"*%(age)s ago"
 
 #: templates/mapnotes/annotation.html:59 templates/maps/layer.html:282
 #: templates/maps/mapinfo.html:120
 #, fuzzy
 msgid "Post a comment"
-msgstr "Code postal"
+msgstr "*Code postal"
 
-#: templates/mapnotes/annotation.html:67 templates/maps/layer.html:290
-#: templates/maps/mapinfo.html:128
+#: templates/mapnotes/annotation.html:67 templates/maps/change_poc.html:17
+#: templates/maps/layer.html:290 templates/maps/mapinfo.html:128
 #: templates/registration/password_change_form.html:15
 #: templates/registration/password_reset_confirm.html:17
 #: templates/registration/password_reset_form.html:18
 #: templates/registration/registration_form.html:15
 #: templates/registration/username_form.html:17
 msgid "Submit"
-msgstr "Soumettre"
+msgstr "*Soumettre"
 
 #: templates/mapnotes/annotation.html:72 templates/maps/layer.html:295
 #: templates/maps/mapinfo.html:133
 msgid "Login to add a comment"
-msgstr ""
+msgstr "*"
 
 #: templates/maps/change_poc.html:5 templates/registration/logged_out.html:4
 msgid "Home"
-msgstr "Accueil"
+msgstr "*Accueil"
 
 #: templates/maps/change_poc.html:5 templates/maps/change_poc.html.py:7
 msgid "Change point of contact"
-msgstr "Changez votre point de contact"
+msgstr "*Changez votre point de contact"
+
+#: templates/maps/change_poc.html:10
+msgid "Assign a new point of contact to the layers below:"
+msgstr ""
 
 #: templates/maps/download.html:67
 msgid ""
@@ -2437,7 +2607,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Ici, vous pouvez télécharger toutes les couches de cette carte qui sont "
+"*Ici, vous pouvez télécharger toutes les couches de cette carte qui sont "
 "hébergées sur ce GeoNode. Les couches suivantes peuvent être téléchargées: "
 
 #: templates/maps/download.html:82
@@ -2449,7 +2619,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"De plus, la carte contient des couches qui ne seront pas téléchargées en "
+"*De plus, la carte contient des couches qui ne seront pas téléchargées en "
 "raison de restrictions liées à la sécurité:"
 
 #: templates/maps/download.html:93
@@ -2460,301 +2630,419 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Finalement, la carte contient des couches qui ne seront pas téléchargées "
+"*Finalement, la carte contient des couches qui ne seront pas téléchargées "
 "parce qu'elles ne sont pas disponibles directement à partir de ce GeoNode:"
 
 #: templates/maps/embed.html:3 templates/maps/map_print.html:3
 #: templates/maps/mobilemap.html:3 templates/sites/index.html:4
 msgid "Map Viewer"
-msgstr "Visualisation des cartes"
+msgstr "*Visualisation des cartes"
 
 #: templates/maps/layer.html:175
 msgid "No abstract for this layer."
-msgstr "Aucun résumé disponible pour cette couche."
+msgstr "*Aucun résumé disponible pour cette couche."
 
 #: templates/maps/layer.html:179
 msgid "Type"
-msgstr "Type"
+msgstr "*Type"
 
-#: templates/maps/layer.html:180
+#: templates/maps/layer.html:180 templates/maps/layer_create.html:94
+#: templates/maps/layer_create_tab.html:98
+#: templates/maps/layer_upload_tab.html:152
 msgid "Keywords"
-msgstr "Mots-clés"
+msgstr "*Mots-clés"
 
 #: templates/maps/layer.html:181
 msgid "Edition"
-msgstr "Edition"
+msgstr "*Edition"
 
 #: templates/maps/layer.html:185
 msgid "Citation"
-msgstr "Citation"
+msgstr "*Citation"
 
 #: templates/maps/layer.html:193
 msgid "Owner"
-msgstr "Propriétaire"
+msgstr "*Propriétaire"
 
 #: templates/maps/layer.html:199
 msgid "Point of Contact"
-msgstr "Point de Contact"
+msgstr "*Point de Contact"
 
 #: templates/maps/layer.html:204 templates/maps/layer.html.py:225
+#: templates/maps/layer_create.html:42 templates/maps/layer_create_tab.html:40
 #: templates/profiles/profile_detail.html:17
 msgid "Name"
-msgstr "Nom"
+msgstr "*Nom"
 
 #: templates/maps/layer.html:205 templates/maps/layer.html.py:226
 #: templates/profiles/profile_detail.html:19
 msgid "Email"
-msgstr "Email"
+msgstr "*Email"
 
 #: templates/maps/layer.html:206 templates/maps/layer.html.py:227
 #: templates/profiles/profile_detail.html:27
 msgid "Organization"
-msgstr "Organisation"
+msgstr "*Organisation"
 
 #: templates/maps/layer.html:207 templates/maps/layer.html.py:228
 #: templates/profiles/profile_detail.html:28
 msgid "Position"
-msgstr "Position"
+msgstr "*Position"
 
 #: templates/maps/layer.html:208 templates/maps/layer.html.py:229
 #: templates/profiles/profile_detail.html:29
 msgid "Voice"
-msgstr "Téléphone"
+msgstr "*Téléphone"
 
 #: templates/maps/layer.html:210 templates/maps/layer.html.py:231
 msgid "Delivery"
-msgstr "Livraison"
+msgstr "*Livraison"
 
 #: templates/maps/layer.html:211 templates/maps/layer.html.py:232
 msgid "Area"
-msgstr "Lieu"
+msgstr "*Lieu"
 
 #: templates/maps/layer.html:212 templates/maps/layer.html.py:233
 #: templates/profiles/profile_detail.html:33
 msgid "Zip Code"
-msgstr "Code postal"
+msgstr "*Code postal"
 
 #: templates/maps/layer.html:213 templates/maps/layer.html.py:234
 #: templates/profiles/profile_detail.html:34
 msgid "Country"
-msgstr "Pays"
+msgstr "*Pays"
 
 #: templates/maps/layer.html:241
 msgid "Attributes"
-msgstr "Attributs"
+msgstr "*Attributs"
 
 #: templates/maps/layer.html:249
 msgid "Supplemental Information"
-msgstr "Renseignements supplémentaires"
+msgstr "*Renseignements supplémentaires"
 
 #: templates/maps/layer.html:255
 msgid "Data Quality Statement"
-msgstr "Énoncé sur la qualité des données"
+msgstr "*Énoncé sur la qualité des données"
 
 #: templates/maps/layer.html:260
 msgid "Bounding Box"
-msgstr "Zone de délimitation"
+msgstr "*Zone de délimitation"
 
 #: templates/maps/layer.html:261
 msgid "Native SRS"
-msgstr "SRS d'origine"
+msgstr "*SRS d'origine"
 
 #: templates/maps/layer.html:261
 msgid "No SRS specified."
-msgstr "Aucun SRS spécifié."
+msgstr "*Aucun SRS spécifié."
 
 #: templates/maps/layer.html:300
 #, fuzzy
 msgid "Rate this layer"
-msgstr "Aucun résumé disponible pour cette couche."
+msgstr "*Aucun résumé disponible pour cette couche."
 
-#: templates/maps/layer.html:309 templates/maps/mapinfo.html:147
+#: templates/maps/layer.html:310 templates/maps/mapinfo.html:147
 msgid "Download"
-msgstr "Télécharger"
+msgstr "*Télécharger"
 
-#: templates/maps/layer.html:312
+#: templates/maps/layer.html:311 templates/maps/layer_upload_tab.html:81
 msgid "Data"
-msgstr "Données"
+msgstr "*Données"
 
-#: templates/maps/layer.html:319
+#: templates/maps/layer.html:317
+#, fuzzy
+msgid "Metadata"
+msgstr "*Métadonnées"
+
+#: templates/maps/layer.html:321
+msgid "No metadata links provided for this data."
+msgstr "*Aucun lien métadonnées fourni pour ces données"
+
+#: templates/maps/layer.html:328
 msgid "Legend"
-msgstr ""
+msgstr "*"
 
-#: templates/maps/layer.html:329
+#: templates/maps/layer.html:340
 msgid "Maps Which Use This Layer"
-msgstr ""
+msgstr "*"
 
-#: templates/maps/layer.html:337
+#: templates/maps/layer.html:348
 msgid "This layer is not currently used in any maps."
-msgstr "Cette couche n'est actuellement utilisée par aucune carte."
+msgstr "*Cette couche n'est actuellement utilisée par aucune carte."
 
-#: templates/maps/layer.html:342
+#: templates/maps/layer.html:353
 #, fuzzy
 msgid "Layer Views"
-msgstr "Couches"
+msgstr "*Couches"
 
-#: templates/maps/layer.html:343
+#: templates/maps/layer.html:354
 msgid "This layer has been viewed "
-msgstr ""
+msgstr "*"
 
-#: templates/maps/layer.html:343 templates/maps/mapinfo.html:161
+#: templates/maps/layer.html:354 templates/maps/mapinfo.html:164
 #: templates/maps/mapinfopanel.html:17
 msgid "time(s) "
-msgstr ""
+msgstr "*"
 
-#: templates/maps/layer.html:343 templates/maps/mapinfo.html:161
+#: templates/maps/layer.html:354 templates/maps/mapinfo.html:164
 #: templates/maps/mapinfopanel.html:17
 msgid "by "
-msgstr ""
+msgstr "*"
 
-#: templates/maps/layer.html:343 templates/maps/mapinfo.html:161
+#: templates/maps/layer.html:354 templates/maps/mapinfo.html:164
 #: templates/maps/mapinfopanel.html:17
 msgid "user(s)"
-msgstr ""
+msgstr "*"
 
-#: templates/maps/layer.html:350
+#: templates/maps/layer.html:361
 #, fuzzy
 msgid "Layer Styles"
-msgstr "Styles"
+msgstr "*Styles"
 
-#: templates/maps/layer.html:351
+#: templates/maps/layer.html:362
 msgid ""
 "The following styles are associated with this data set.  Choose a style to "
 "view it in the preview to the left.  Click on a style name to view or edit "
 "the style."
 msgstr ""
-"Les styles suivants sont associés à cet ensemble de données. Choisissez un "
+"*Les styles suivants sont associés à cet ensemble de données. Choisissez un "
 "style pour le prévisualiser à gauche. Cliquez sur un nom de style pour "
 "afficher ou modifier le style."
 
-#: templates/maps/layer.html:380
-msgid "Default style:"
-msgstr "Style par défaut:"
-
 #: templates/maps/layer.html:391
+msgid "Default style:"
+msgstr "*Style par défaut:"
+
+#: templates/maps/layer.html:402
 #, fuzzy
 msgid "Create new style"
-msgstr "Créer une nouvelle carte"
-
-#: templates/maps/layer.html:401
-#, fuzzy
-msgid "Manage Layer"
-msgstr "Mise à jour de la couche"
-
-#: templates/maps/layer.html:406
-msgid "Update the description of this data"
-msgstr "Mise à jour de la description de ces données"
-
-#: templates/maps/layer.html:409
-#, fuzzy
-msgid "Update the contacts for this data"
-msgstr "Mise à jour de la description de ces données"
+msgstr "*Créer une nouvelle carte"
 
 #: templates/maps/layer.html:412
-msgid "Upload a new version of this data"
-msgstr "Envoyer une nouvelle version de ces données"
+#, fuzzy
+msgid "Manage Layer"
+msgstr "*Mise à jour de la couche"
 
 #: templates/maps/layer.html:417
+msgid "Update the description of this data"
+msgstr "*Mise à jour de la description de ces données"
+
+#: templates/maps/layer.html:420
+#, fuzzy
+msgid "Update the contacts for this data"
+msgstr "*Mise à jour de la description de ces données"
+
+#: templates/maps/layer.html:423
+msgid "Upload a new version of this data"
+msgstr "*Envoyer une nouvelle version de ces données"
+
+#: templates/maps/layer.html:428
 msgid "Remove"
-msgstr "Supprimer"
+msgstr "*Supprimer"
 
-#: templates/maps/layer.html:421
+#: templates/maps/layer.html:432
 msgid "Please authenticate to update or remove layers"
-msgstr ""
+msgstr "*"
 
-#: templates/maps/layer.html:427 templates/maps/layer_create.html:241
+#: templates/maps/layer.html:438 templates/maps/layer_create.html:241
 #: templates/maps/layer_create_tab.html:21
 #: templates/maps/layer_upload.html:380
 #: templates/maps/layer_upload_tab.html:39
 msgid "Permissions"
-msgstr "Autorisations"
+msgstr "*Autorisations"
 
 #: templates/maps/layer_contacts.html:52
 #, fuzzy
 msgid "Editing contacts for "
-msgstr "Modification des détails pour"
+msgstr "*Modification des détails pour"
 
 #: templates/maps/layer_contacts.html:65
 #: templates/maps/layer_describe.html:140
 #: templates/maps/layer_describe_tab.html:135
-#: templates/maps/map_describe.html:34
+#: templates/maps/layer_replace.html:251 templates/maps/map_describe.html:34
 msgid "Update"
-msgstr "Mise à jour"
+msgstr "*Mise à jour"
 
 #: templates/maps/layer_create.html:4 templates/maps/layer_upload.html:5
 msgid "Upload Layer"
-msgstr "Téléchargez couche"
+msgstr "*Téléchargez couche"
 
 #: templates/maps/layer_create.html:19
 #, fuzzy
 msgid "Create new layer"
-msgstr "Créer une nouvelle carte"
+msgstr "*Créer une nouvelle carte"
+
+#: templates/maps/layer_create.html:44 templates/maps/layer_create_tab.html:42
+msgid "Letters & numbers only, no spaces"
+msgstr ""
+
+#: templates/maps/layer_create.html:47 templates/maps/layer_create_tab.html:45
+msgid "Only letters and numbers are allowed"
+msgstr ""
+
+#: templates/maps/layer_create.html:62 templates/maps/layer_create_tab.html:66
+#, fuzzy
+msgid "Data Type"
+msgstr "*"
+
+#: templates/maps/layer_create.html:78 templates/maps/layer_create_tab.html:82
+#, fuzzy
+msgid "Projection"
+msgstr "*projection"
+
+#: templates/maps/layer_create.html:81 templates/maps/layer_create_tab.html:85
+msgid "Example: EPSG:4326"
+msgstr ""
+
+#: templates/maps/layer_create.html:96
+#: templates/maps/layer_create_tab.html:100
+#, fuzzy
+msgid "Use spaces to separate keywords"
+msgstr "*"
+
+#: templates/maps/layer_create.html:107
+#: templates/maps/layer_create_tab.html:113
+#: templates/maps/layer_upload_tab.html:164
+msgid "I agree to the "
+msgstr ""
+
+#: templates/maps/layer_create.html:107
+#: templates/maps/layer_create_tab.html:113
+#: templates/maps/layer_upload_tab.html:164
+msgid "Terms and Conditions"
+msgstr ""
+
+#: templates/maps/layer_create.html:137
+#, fuzzy
+msgid "Create"
+msgstr "Créer une carte"
+
+#: templates/maps/layer_create.html:143
+#: templates/maps/layer_create_tab.html:154
+#, fuzzy
+msgid "Creating your layer..."
+msgstr "*Créer une nouvelle carte"
+
+#: templates/maps/layer_create.html:192
+#: templates/maps/layer_create_tab.html:204
+#: templates/maps/layer_upload_tab.html:306 templates/maps/view.html:116
+msgid "Share Map"
+msgstr "Recherche de cartes"
+
+#: templates/maps/layer_create.html:199
+#: templates/maps/layer_create_tab.html:211
+#: templates/maps/layer_upload_tab.html:313
+msgid "WorldMap Terms and Conditions"
+msgstr ""
+
+#: templates/maps/layer_create.html:210
+#: templates/maps/layer_upload_tab.html:324
+msgid "Close"
+msgstr ""
+
+#: templates/maps/layer_create.html:224
+#: templates/maps/layer_create_tab.html:236
+msgid "You must enter a keyword"
+msgstr ""
+
+#: templates/maps/layer_create.html:229
+#: templates/maps/layer_create_tab.html:241
+msgid "You must enter at least one keyword"
+msgstr ""
 
 #: templates/maps/layer_create_tab.html:10
 #, fuzzy
 msgid "Create a new layer"
-msgstr "Créer une nouvelle carte"
+msgstr "*Créer une nouvelle carte"
+
+#: templates/maps/layer_create_tab.html:133
+#, fuzzy
+msgid "Create Layer Data"
+msgstr "*Créer carte"
 
 #: templates/maps/layer_describe.html:80 templates/maps/map_describe.html:29
 msgid "Editing details for "
-msgstr "Modification des détails pour"
+msgstr "*Modification des détails pour"
 
 #: templates/maps/layer_describe.html:119
 #: templates/maps/layer_describe.html:124
 msgid "Examples: 'YYYY', 'MM/DD/YYYY', 'YYYY/MM/DD'"
-msgstr ""
+msgstr "*"
+
+#: templates/maps/layer_describe.html:131
+#: templates/maps/layer_describe_tab.html:125
+#, fuzzy
+msgid "Attribute"
+msgstr "*Attributs"
+
+#: templates/maps/layer_describe.html:131
+#: templates/maps/layer_describe_tab.html:125
+#, fuzzy
+msgid "Display Title"
+msgstr "*"
+
+#: templates/maps/layer_describe.html:131
+#: templates/maps/layer_describe_tab.html:125
+#, fuzzy
+msgid "Add to Gazetteer?"
+msgstr "*"
 
 #: templates/maps/layer_describe_tab.html:57
 msgid "Upload Layer, Step 2: Edit details for "
-msgstr ""
+msgstr "*"
 
 #: templates/maps/layer_describe_tab.html:59
 msgid ""
 "Please complete and submit this form, after which your layer will be added "
 "to the map."
-msgstr ""
+msgstr "*"
 
 #: templates/maps/layer_describe_tab.html:61
 msgid "Fields marked with an asterisk(*) are required."
-msgstr ""
+msgstr "*"
 
 #: templates/maps/layer_describe_tab.html:108
 #: templates/maps/layer_describe_tab.html:117
 msgid "Examples: 'YYYY', 'MM/DD/YYYY'"
-msgstr ""
+msgstr "*"
+
+#: templates/maps/layer_permissions.html:12
+#, fuzzy
+msgid "Permissions for"
+msgstr "*Autorisations"
 
 #: templates/maps/layer_permissions.html:15
 msgid "Permission Level"
-msgstr "Niveau d'autorisation"
+msgstr "*Niveau d'autorisation"
 
 #: templates/maps/layer_remove.html:31
 msgid "Are you sure you want to remove"
-msgstr "Etes-vous certain de vouloir supprimer"
+msgstr "*Etes-vous certain de vouloir supprimer"
 
 #: templates/maps/layer_remove.html:35 templates/maps/map_remove.html:34
 msgid "Yes, delete"
-msgstr ""
+msgstr "*"
 
 #: templates/maps/layer_remove.html:38 templates/maps/map_remove.html:37
 msgid "No, cancel"
-msgstr ""
+msgstr "*"
 
 #: templates/maps/layer_remove.html:44 templates/maps/layer_replace.html:264
 msgid "This action affects the following maps:"
-msgstr "Cette action affecte les cartes suivantes:"
+msgstr "*Cette action affecte les cartes suivantes:"
 
 #: templates/maps/layer_remove.html:49 templates/maps/layer_replace.html:270
 msgid "No maps are using this layer."
-msgstr "Aucune carte n'utilise cette couche"
+msgstr "*Aucune carte n'utilise cette couche"
 
 #: templates/maps/layer_replace.html:4 templates/maps/layer_replace.html:22
 msgid "Update Layer"
-msgstr "Mise à jour de la couche"
+msgstr "*Mise à jour de la couche"
 
 #: templates/maps/layer_replace.html:23
 msgid "This form allows you to update the data for this layer."
 msgstr ""
-"Ce formulaire vous permet de mettre à jour les données de cette couche."
+"*Ce formulaire vous permet de mettre à jour les données de cette couche."
 
 #: templates/maps/layer_replace.html:24
 #, fuzzy
@@ -2769,7 +3057,7 @@ msgid ""
 "    updated data must be the same format as the data already in place, e.g.\n"
 "    "
 msgstr ""
-"\n"
+"*\n"
 "Si le nouvel ensemble de données omet les attributs qui ont été inclus dans "
 "la version précédente,  ou des changements leurs types, les styles existants "
 "pour la couche peuvent ne pas fonctionner. S'il vous plaît, vérifiez si les "
@@ -2780,17 +3068,92 @@ msgstr ""
 #: templates/maps/layer_upload_tab.html:12
 msgid "Select a layer data file and submit the form to begin the transfer."
 msgstr ""
-"Sélectionnez un fichier de données de couche et soumettre le formulaire pour "
-"débuter le transfert."
+"*Sélectionnez un fichier de données de couche et soumettre le formulaire "
+"pour débuter le transfert."
+
+#: templates/maps/layer_replace.html:71
+#: templates/maps/layer_upload_tab.html:80
+msgid "Select a layer data file"
+msgstr ""
+
+#: templates/maps/layer_replace.html:72
+msgid "File"
+msgstr ""
+
+#: templates/maps/layer_replace.html:82
+#: templates/maps/layer_upload_tab.html:89
+#, fuzzy
+msgid "Select a .dbf data file"
+msgstr "*Données Sélectionnées"
+
+#: templates/maps/layer_replace.html:83
+#: templates/maps/layer_upload_tab.html:90
+#, fuzzy
+msgid "DBF"
+msgstr "*PDF"
+
+#: templates/maps/layer_replace.html:91
+#: templates/maps/layer_upload_tab.html:98
+msgid "Select a .shx data file"
+msgstr ""
+
+#: templates/maps/layer_replace.html:92
+#: templates/maps/layer_upload_tab.html:99
+msgid "SHX"
+msgstr ""
+
+#: templates/maps/layer_replace.html:100
+#: templates/maps/layer_upload_tab.html:107
+msgid "Select a .prj data file"
+msgstr ""
+
+#: templates/maps/layer_replace.html:101
+#: templates/maps/layer_upload_tab.html:108
+msgid "PRJ"
+msgstr ""
+
+#: templates/maps/layer_replace.html:116
+#: templates/maps/layer_upload_tab.html:118
+msgid "Encoding"
+msgstr ""
+
+#: templates/maps/layer_replace.html:117
+msgid "UTF-8"
+msgstr ""
+
+#: templates/maps/layer_replace.html:125
+#: templates/maps/layer_upload_tab.html:135
+msgid "Select a .sld style file (optional)"
+msgstr ""
+
+#: templates/maps/layer_replace.html:126
+#: templates/maps/layer_upload_tab.html:136
+msgid "SLD"
+msgstr ""
+
+#: templates/maps/layer_replace.html:141
+#, fuzzy
+msgid "Update Layer Data"
+msgstr "*Mise à jour de la couche"
+
+#: templates/maps/layer_replace.html:151
+msgid "Upload"
+msgstr "*Télécharger vers le serveur"
+
+#: templates/maps/layer_replace.html:156
+#: templates/maps/layer_upload_tab.html:203
+#, fuzzy
+msgid "Uploading your data..."
+msgstr "*Téléchargez les données"
 
 #: templates/maps/layer_replace.html:276 templates/maps/layer_upload.html:385
 #: templates/maps/layer_upload_tab.html:30
 msgid "Supported Formats"
-msgstr "Formats pris en charge"
+msgstr "*Formats pris en charge"
 
 #: templates/maps/layer_upload.html:21
 msgid "Add data"
-msgstr "Ajouter des données"
+msgstr "*Ajouter des données"
 
 #: templates/maps/layer_upload.html:392
 msgid ""
@@ -2803,11 +3166,13 @@ msgid ""
 "file.  You will be prompted to locate the remaining component files.\n"
 "        "
 msgstr ""
+"\n"
+"*"
 
 #: templates/maps/layer_upload_tab.html:10
 #, fuzzy
 msgid "Instructions"
-msgstr "Actions"
+msgstr "*Actions"
 
 #: templates/maps/layer_upload_tab.html:15
 msgid ""
@@ -2823,298 +3188,593 @@ msgid ""
 "if you need to upload larger layers.\n"
 "\n"
 msgstr ""
+"\n"
+"*\n"
+
+#: templates/maps/layer_upload_tab.html:31
+msgid ""
+"\n"
+"    <ul>\n"
+"      <li>Shapefile</li>\n"
+"      <li>Zipped Shapefile</li>\n"
+"      <li>GeoTIFF</li>\n"
+"    </ul>\n"
+msgstr ""
+
+#: templates/maps/layer_upload_tab.html:182
+#, fuzzy
+msgid "Upload Layer Data"
+msgstr "*Téléchargez couche"
+
+#: templates/maps/layer_upload_tab.html:218
+#: templates/maps/layer_upload_tab.html:340
+#, fuzzy
+msgid "Error"
+msgstr "*"
+
+#: templates/maps/layer_upload_tab.html:341
+#, fuzzy
+msgid "Upload is too large"
+msgstr "*Télécharger vers le serveur une nouvelle couche"
+
+#: templates/maps/map_describe.html:22 templates/maps/map_remove.html:22
+#, fuzzy
+msgid "Share"
+msgstr "Recherche de cartes"
+
+#: templates/maps/map_describe.html:22
+#, fuzzy
+msgid "Edit Details"
+msgstr "*Modification des détails pour"
+
+#: templates/maps/map_print.html:90
+msgid "LEGEND"
+msgstr ""
+
+#: templates/maps/map_remove.html:22
+#, fuzzy
+msgid "Delete Map"
+msgstr "*Supprimer la carte"
 
 #: templates/maps/map_remove.html:28
 #, fuzzy
 msgid "Are you sure you want to delete"
-msgstr "Etes-vous certain de vouloir supprimer"
+msgstr "*Etes-vous certain de vouloir supprimer"
+
+#: templates/maps/mapinfo.html:8
+msgid "Advanced Map Options"
+msgstr ""
 
 #: templates/maps/mapinfo.html:89 templates/maps/search_result_snippet.html:12
 msgid "Abstract:"
-msgstr "Résumé :"
+msgstr "*Résumé :"
 
 #: templates/maps/mapinfo.html:90 templates/maps/search_result_snippet.html:41
 msgid "Keywords:"
-msgstr "Mots-clés :"
+msgstr "*Mots-clés :"
 
 #: templates/maps/mapinfo.html:97
 msgid "Contact:"
-msgstr "Contact :"
+msgstr "*Contact :"
 
 #: templates/maps/mapinfo.html:138
 msgid "Rate this map"
-msgstr ""
+msgstr "*"
 
 #: templates/maps/mapinfo.html:148
 msgid "Download all layers included in this map"
-msgstr "Télécharger toutes les couches incluses dans cette carte."
+msgstr "*Télécharger toutes les couches incluses dans cette carte."
 
 #: templates/maps/mapinfo.html:150
 #, fuzzy
 msgid "Map Layers"
-msgstr "Couches"
+msgstr "*Couches"
 
 #: templates/maps/mapinfo.html:151
 msgid "This map uses the following layers"
-msgstr "Cette carte utilise les couches suivantes"
+msgstr "*Cette carte utilise les couches suivantes"
 
-#: templates/maps/mapinfo.html:160 templates/maps/mapinfopanel.html:16
+#: templates/maps/mapinfo.html:160 templates/profiles/profile_detail.html:50
+msgid "WMS GetCapabilities"
+msgstr ""
+
+#: templates/maps/mapinfo.html:163 templates/maps/mapinfopanel.html:16
 #, fuzzy
 msgid "Map Views"
-msgstr "Visualisation des cartes"
+msgstr "*Visualisation des cartes"
 
-#: templates/maps/mapinfo.html:161 templates/maps/mapinfopanel.html:17
+#: templates/maps/mapinfo.html:164 templates/maps/mapinfopanel.html:17
 msgid "This map has been viewed "
-msgstr ""
+msgstr "*"
 
-#: templates/maps/mapinfo.html:164 templates/maps/mapinfopanel.html:32
+#: templates/maps/mapinfo.html:167 templates/maps/mapinfopanel.html:32
 #, fuzzy
 msgid "Manage Map"
-msgstr "Gérer"
-
-#: templates/maps/mapinfo.html:179
-msgid "View map"
-msgstr ""
+msgstr "*Gérer"
 
 #: templates/maps/mapinfo.html:182
-#, fuzzy
-msgid "Edit map information"
-msgstr "Modifier les informations de profil"
+msgid "View map"
+msgstr "*"
 
 #: templates/maps/mapinfo.html:185
 #, fuzzy
+msgid "Edit map information"
+msgstr "*Modifier les informations de profil"
+
+#: templates/maps/mapinfo.html:188
+#, fuzzy
 msgid "Edit map permissions"
-msgstr "Modifier les autorisations"
+msgstr "*Modifier les autorisations"
 
-#: templates/maps/mapinfo.html:188 templates/maps/mapinfopanel.html:34
+#: templates/maps/mapinfo.html:191 templates/maps/mapinfopanel.html:34
 msgid "Delete map"
-msgstr "Supprimer la carte"
+msgstr "*Supprimer la carte"
 
-#: templates/maps/mapinfo.html:190
+#: templates/maps/mapinfo.html:193
 msgid "Duplicate map"
-msgstr "Carte duplicata"
+msgstr "*Carte duplicata"
 
-#: templates/maps/mapinfo.html:194 templates/maps/mapinfopanel.html:22
+#: templates/maps/mapinfo.html:197 templates/maps/mapinfopanel.html:22
 #, fuzzy
 msgid "Map Permissions"
-msgstr "Autorisations"
+msgstr "*Autorisations"
 
-#: templates/maps/mapinfo.html:195 templates/maps/mapinfopanel.html:23
+#: templates/maps/mapinfo.html:198 templates/maps/mapinfopanel.html:23
 msgid "Select what kind of privileges to allow."
-msgstr "Sélectionner le type de privilèges pour permettre."
+msgstr "*Sélectionner le type de privilèges pour permettre."
 
 #: templates/maps/mapinfopanel.html:34
 #, fuzzy
 msgid "Are you sure you want to delete this map?"
-msgstr "Etes-vous certain de vouloir supprimer"
+msgstr "*Etes-vous certain de vouloir supprimer"
+
+#: templates/maps/mobilemap.html:179
+#, python-format
+msgid ""
+"\n"
+"<h1>Mobile Map Tips</h1>\n"
+"<ul>\n"
+"<li>Click the <strong>Layers</strong> sidebar on the left to see a list of "
+"all the map's layers and legends</li>\n"
+"<li>Use the <strong>Identify</strong>  <img style=\"vertical-align:middle\" "
+"src=\"%(GEONODE_CLIENT_LOCATION)stheme/app/img/silk/information.png\" />  "
+"tool to retrieve information on active layers at any point where you click "
+"on the map</li>\n"
+"<li>Use the <strong>Geolocate</strong>  <img style=\"vertical-align:middle\" "
+"src=\"%(GEONODE_CLIENT_LOCATION)sexternals/gxp/theme/img/geolocate.png\" />  "
+"tool to zoom to and display your location on the map</li>\n"
+"</ul>\n"
+msgstr ""
+
+#: templates/maps/mobilemap.html:188
+#, python-format
+msgid ""
+"\n"
+"<h1>Feature Creation/Editing</h1>\n"
+"<ul>\n"
+"<li>Click on a layer in the layer panel to select it for feature creation/"
+"editing.  You must have edit permission for the layer.</li>\n"
+"<li>The highlighted layer in the list is the target of edits when using the "
+"Edit feature   <img style=\"vertical-align:middle\" src="
+"\"%(GEONODE_CLIENT_LOCATION)stheme/app/img/silk/map_edit.png\" />    tool or "
+"the New Feature    <img style=\"vertical-align:middle\" src="
+"\"%(GEONODE_CLIENT_LOCATION)sexternals/gxp/theme/img/silk/pencil_add.png\" /"
+">   tool.</li>\n"
+"<li>Map panning will be disabled when the 'Edit feature'  <img style="
+"\"vertical-align:middle\" src=\"%(GEONODE_CLIENT_LOCATION)stheme/app/img/"
+"silk/map_edit.png\" />   tool is enabled or when drawing a new feature   "
+"<img style=\"vertical-align:middle\" src="
+"\"%(GEONODE_CLIENT_LOCATION)sexternals/gxp/theme/img/silk/pencil_add.png\" /"
+">  .  Deactivate the tool to re-enable panning.\n"
+"</ul>\n"
+msgstr ""
 
 #: templates/maps/search_result_snippet.html:4
 #, fuzzy
 msgid "Category:"
-msgstr "Sujet Catégorie"
+msgstr "*Sujet Catégorie"
 
 #: templates/maps/search_result_snippet.html:8
 #, fuzzy
 msgid "No category is provided for this layer."
-msgstr "Aucun résumé n'est fourni pour cette couche."
+msgstr "*Aucun résumé n'est fourni pour cette couche."
 
 #: templates/maps/search_result_snippet.html:16
 msgid "No abstract is provided for this layer."
-msgstr "Aucun résumé n'est fourni pour cette couche."
+msgstr "*Aucun résumé n'est fourni pour cette couche."
 
 #: templates/maps/search_result_snippet.html:20
 msgid "Provided by:"
-msgstr "Fourni par :"
+msgstr "*Fourni par :"
 
 #: templates/maps/search_result_snippet.html:28
 msgid "No attribution information is provided for this layer."
-msgstr "Aucune information d'attribution n'est fournie pour cette couche. "
+msgstr "*Aucune information d'attribution n'est fournie pour cette couche. "
 
 #: templates/maps/search_result_snippet.html:33
 msgid "Metadata Links:"
-msgstr "Liens pour les métadonnées :"
+msgstr "*Liens pour les métadonnées :"
 
 #: templates/maps/search_result_snippet.html:37
 msgid "No metadata URLs are defined for this layer."
-msgstr "Aucun URL métadonnées n'est défini pour cette couche."
+msgstr "*Aucun URL métadonnées n'est défini pour cette couche."
 
 #: templates/maps/search_result_snippet.html:59
 #: templates/maps/search_result_snippet.html:63
 msgid "No keywords are listed for this layer."
-msgstr "Aucun mot-clé n'est répertorié pour cette couche."
+msgstr "*Aucun mot-clé n'est répertorié pour cette couche."
 
 #: templates/maps/search_result_snippet.html:69
 #: templates/maps/search_result_snippet.html:86
 msgid "Download:"
-msgstr "Télécharger :"
+msgstr "*Télécharger :"
 
 #: templates/maps/search_result_snippet.html:73
 #: templates/maps/search_result_snippet.html:90
 msgid "No download URLs are defined for this layer."
-msgstr "Aucun URL de téléchargement n'est défini pour cette couche."
+msgstr "*Aucun URL de téléchargement n'est défini pour cette couche."
 
 #: templates/maps/search_result_snippet.html:79
 msgid "Visit originating site for more information about this layer."
-msgstr "Visitez le site d'origine pour plus d'informations sur cette couche."
+msgstr "*Visitez le site d'origine pour plus d'informations sur cette couche."
 
 #: templates/maps/search_result_snippet.html:96
 msgid "Click here for more information about this layer."
-msgstr "Cliquez ici pour plus d'informations sur cette couche."
+msgstr "*Cliquez ici pour plus d'informations sur cette couche."
 
 #: templates/maps/search_result_snippet.html:100
 msgid "You do not have permission to view or download this layer"
 msgstr ""
-"Vous n'avez pas les droits pour visualiser ou télécharger cette couche."
+"*Vous n'avez pas les droits pour visualiser ou télécharger cette couche."
 
-#: templates/maps/view.html:268
+#: templates/maps/upload_terms.html:8
+msgid ""
+"\n"
+"<h1>WorldMap Terms and Conditions</h1>\n"
+"<br/>\n"
+"<p>\n"
+"    The following terms and conditions govern all use of the CGA (Center for "
+"Geographic Analysis) WorldMap website http://worldmap.harvard.edu, the Site "
+"and the services available on or at the Site, taken together, the Service. "
+"The Site is owned and operated by CGA of Harvard University.\n"
+"</p>\n"
+"<p>\n"
+"    The Service provides you with the ability to post User Submissions (the "
+"\"Materials\") to WorldMap (this “CGA WorldMap Instance”) subject to the "
+"permissions and terms of use stated in this document.\n"
+"</p>\n"
+"<p>\n"
+"    By electronically signing these Terms and Conditions and clicking the "
+"\"I AGREE\" button below, you agree that these Terms and Conditions apply to "
+"all Materials that you post to the WorldMap Service:\n"
+"</p>\n"
+"<p>\n"
+"    You represent and warrant to CGA that you are lawfully entitled and have "
+"full authority to license CGA and WorldMap to use the Materials in the ways "
+"described in these Terms and Conditions and that you are not under any "
+"obligation or restriction created by law, contract or otherwise that would "
+"prevent you from entering into and fully performing these Terms and "
+"Conditions;\n"
+"</p>\n"
+"<p>\n"
+"    You give permission and any required licenses to CGA and WorldMap to "
+"store and backup the materials;\n"
+"</p>\n"
+"<p>\n"
+"    The Materials do not violate any laws, including but not limited to laws "
+"related to defamation or obscenity;\n"
+"</p>\n"
+"<p>\n"
+"    The Materials do not infringe upon the copyrights or other intellectual "
+"property rights, including, but not limited to patent, trademark, trade "
+"secret, copyright, right of publicity or other right of any other of any "
+"third party.\n"
+"</p>\n"
+"<p>\n"
+"    The Materials do not contain software viruses or any other computer "
+"codes, files, or programs that are designed or intended to disrupt, damage, "
+"limit or interfere with the proper function of any software, hardware, or "
+"telecommunications equipment or to damage or obtain unauthorized access to "
+"any system, data or other information of CGA or any third party.\n"
+"</p>\n"
+"<p>\n"
+"    If human subjects were studied in the collection of the Materials, you "
+"collected the Materials with IRB approval;\n"
+"</p>\n"
+"<p>\n"
+"    The Materials do not contain high-risk confidential information such as "
+"social security numbers; credit card numbers; medical record numbers; health "
+"plan numbers; other account numbers; certificate/license numbers; or "
+"biometric identifiers (fingerprints, retina, voice print, DNA etc.).\n"
+"</p>\n"
+"<p>\n"
+"    You acknowledge that CGA will not be liable for any loss of or damage to "
+"the Materials, either in whole or in part.\n"
+"</p>\n"
+"<p>\n"
+"    The Service gives the WorldMap Administrators the ability to restrict "
+"access to Materials to specified user accounts (\"Restricted User Submissions"
+"\"). By posting Unrestricted User Submissions on or at the Site, or "
+"otherwise through the Service, to your WorldMap instance or other WorldMap "
+"instances, or by allowing others to do so, you make the following "
+"representations and warranties to CGA and to the administrator of that "
+"WorldMap instance:\n"
+"</p>\n"
+"<p>\n"
+"    The User Submissions do not contain information that could, directly or "
+"indirectly, identify subject except where the release of such identifying "
+"information has no potential for constituting an unwarranted invasion of "
+"privacy and/or breach of confidentiality. And for all personally-"
+"identifiable information in the data at least one of following conditions "
+"applies:\n"
+"</p>\n"
+"<p>\n"
+"    This information has been previously released to the public;\n"
+"    this information describes public figures, where the data relates to "
+"their public roles or other non-sensitive subjects;\n"
+"    a sufficient length of time has passed since the collection of the "
+"information so that the data can be considered \"historic\";\n"
+"    all identified subjects have given explicit informed consent allowing "
+"the public release of the information in the dataset;\n"
+"    all information was collected with an explicit statement concerning the "
+"public nature of the data, such as information collected for governmental "
+"regulatory purposes;\n"
+"    or, for federal records (data created by a U.S. federal government "
+"agency or under a federal contract) only, all identified subjects are "
+"deceased and no federal statute explicitly restricts the release of the "
+"data.\n"
+"</p>\n"
+"<p>\n"
+"    You shall not provide CGA with any confidential or proprietary "
+"information that you desire or are required to keep secret. You are solely "
+"responsible for the User Submissions you post on or through the Service. CGA "
+"does not endorse and has no control over any User Submission.\n"
+"</p>\n"
+"<p>\n"
+"    While WorldMap makes it possible to control access to your materials, "
+"ACCESS CONTROL IS NOT ABSOLUTE.  It may still be possible for someone to "
+"access your materials and download them even though you set permission "
+"controls to be accessible only by yourself.  Because WorldMap is a web-based "
+"system, security CANNOT be guaranteed.\n"
+"</p>\n"
+"<p>\n"
+"    You will indemnify and hold CGA from and against any and all loss, cost, "
+"expense, liability, or damage, including, without limitation, all reasonable "
+"attorneys' fees and court costs, arising from the (i) use or misuse of the "
+"Service; (ii) your access to the Site, use of the Services, violation of the "
+"Terms of Use by you; or, (iii) the infringement by you, or any third party "
+"using your account, of any intellectual property or other right of any "
+"person or entity. Such losses, costs, expenses, damages, or liabilities "
+"shall include, without limitation, all actual, general, special, and "
+"consequential damages.\n"
+"</p>\n"
+"<p>\n"
+"    You may not use the name \"Harvard\" (alone or as part of another name) "
+"in advertising or promotional materials without CGA's prior written "
+"approval.\n"
+"</p>\n"
+"<p>\n"
+"    These Terms and Conditions shall be governed by and interpreted in "
+"accordance with the laws of the Commonwealth of Massachusetts (excluding the "
+"conflict of laws rules thereof).  All disputes under these Terms and "
+"Conditions will be resolved in the applicable state or federal courts of "
+"Massachusetts.  You consent to the jurisdiction of such courts and waive any "
+"jurisdictional or venue defenses otherwise available.\n"
+"</p>\n"
+msgstr ""
+
+#: templates/maps/view.html:76
+msgid "Identify"
+msgstr "FR"
+
+#: templates/maps/view.html:85
+msgid "Map Coordinates - longitude, latitude"
+msgstr "FR"
+
+#: templates/maps/view.html:92
+msgid "Print"
+msgstr "FR"
+
+#: templates/maps/view.html:104
+msgid "Google Earth"
+msgstr "*Afficher dans Google Earth"
+
+#: templates/maps/view.html:123
+msgid "Gazetteer"
+msgstr "*"
+
+#: templates/maps/view.html:150
+msgid "Create Feature"
+msgstr "Créer une feature"
+
+#: templates/maps/view.html:151
+msgid "Edit Feature"
+msgstr "*Modifier une feature "
+
+#: templates/maps/view.html:274
 msgid "Rectify Images"
+msgstr "*"
+
+#: templates/maps/view.html:276
+msgid ""
+"Use <a target='_blank' href='http://warp.worldmap.harvard.edu'>WorldMap "
+"WARP</a> to upload and rectify scanned maps for use in WorldMap."
+msgstr ""
+
+#: templates/maps/view.html:276
+msgid ""
+"Maps rectified using this tool can be brought into WorldMap by following the "
+"instructions under Section 4.5 in <a href='{{ STATIC_URL }}docs/"
+"WorldMap_Help.pdf'>WorldMap Help</a>."
 msgstr ""
 
 #: templates/profiles/edit_profile.html:21
 msgid "Choose new Default"
-msgstr "Choisissez un nouveau profil par défaut"
+msgstr "*Choisissez un nouveau profil par défaut"
 
 #: templates/profiles/edit_profile.html:33
 msgid "Are you affiliated with  "
-msgstr ""
+msgstr "*"
 
 #: templates/profiles/edit_profile.html:34
 msgid "Click here to confirm"
-msgstr ""
+msgstr "*"
 
 #: templates/profiles/edit_profile.html:39
 #: templates/profiles/edit_profile.html:41
 msgid "Your affiliation with "
-msgstr ""
+msgstr "*"
 
 #: templates/profiles/edit_profile.html:39
 msgid " expires on "
-msgstr ""
+msgstr "*"
 
 #: templates/profiles/edit_profile.html:41
 msgid " expired on "
-msgstr ""
+msgstr "*"
 
 #: templates/profiles/edit_profile.html:43
 msgid "Click here to renew"
-msgstr ""
+msgstr "*"
 
 #: templates/profiles/profile_detail.html:32
 msgid "State"
-msgstr ""
+msgstr "*"
 
 #: templates/profiles/profile_detail.html:38
 msgid "Settings"
-msgstr "Paramètres"
+msgstr "*Paramètres"
 
 #: templates/profiles/profile_detail.html:40
 msgid "Change password"
-msgstr "Changer mot de passe"
+msgstr "*Changer mot de passe"
 
 #: templates/profiles/profile_detail.html:41
 msgid "Edit profile information"
-msgstr "Modifier les informations de profil"
+msgstr "*Modifier les informations de profil"
 
 #: templates/profiles/profile_detail.html:48
 msgid "Maps & Data"
-msgstr "Cartes & Données"
+msgstr "*Cartes & Données"
 
 #: templates/registration/activate.html:7
 msgid "Account successfully activated"
-msgstr "Compte activé avec succès."
+msgstr "*Compte activé avec succès."
 
 #: templates/registration/activate.html:10
 msgid "Account activation failed"
-msgstr "L'activation du compte a échoué."
+msgstr "*L'activation du compte a échoué."
 
 #: templates/registration/activation_email.txt:2
 msgid "Activate account at"
-msgstr ""
+msgstr "*"
 
 #: templates/registration/activation_email.txt:6
 #: templates/registration/new_user_email.txt:14
 #, python-format
 msgid "Link is valid for %(expiration_days)s days."
-msgstr ""
+msgstr "*Link is valid for %(expiration_days)s days."
 
 #: templates/registration/activation_email_subject.txt:1
 #, fuzzy
 msgid "Account activation on"
-msgstr "L'activation du compte a échoué."
+msgstr "*L'activation du compte a échoué."
 
 #: templates/registration/logged_out.html:9
 msgid ""
 "Thanks for using WorldMap.  </p><p>If you have ideas for improvement, please "
 "send them to "
-msgstr ""
+msgstr "*"
 
 #: templates/registration/logged_out.html:11
 msgid "Log in again"
-msgstr "Connectez-vous à nouveau"
+msgstr "*Connectez-vous à nouveau"
+
+#: templates/registration/login.html:4 templates/registration/login.html:11
+#, fuzzy
+msgid "WorldMap Login"
+msgstr "*"
+
+#: templates/registration/login.html:7
+#, fuzzy
+msgid "Sign In"
+msgstr "*Se connecter"
+
+#: templates/registration/login.html:13
+msgid "Your username and password didn't match. Please try again."
+msgstr ""
+
+#: templates/registration/login.html:16
+msgid "Don't have an account yet?"
+msgstr ""
+
+#: templates/registration/login.html:23
+msgid "Login"
+msgstr ""
 
 #: templates/registration/login.html:25
 #, fuzzy
 msgid "Forgot username"
-msgstr "Mot de passe oublié"
+msgstr "*Mot de passe oublié"
 
 #: templates/registration/logout.html:6
 msgid "Logged out"
-msgstr "Déconnecté"
+msgstr "*Déconnecté"
 
 #: templates/registration/new_user_email.txt:3
 msgid " has shared '"
-msgstr ""
+msgstr "*"
 
 #: templates/registration/new_user_email.txt:3
 msgid "' with you on Harvard University WorldMap:"
-msgstr ""
+msgstr "*"
 
 #: templates/registration/new_user_email.txt:7
 msgid "Activate your new WorldMap account at"
-msgstr ""
+msgstr "*"
 
 #: templates/registration/new_user_email.txt:11
 #, fuzzy
 msgid "Username"
-msgstr "nom"
+msgstr "*nom"
 
 #: templates/registration/new_user_email.txt:12
 #, fuzzy
 msgid "Password"
-msgstr "Mot de passe modifié"
+msgstr "*Mot de passe modifié"
 
 #: templates/registration/new_user_email_subject.txt:1
 msgid " has invited you to "
-msgstr ""
+msgstr "*"
 
 #: templates/registration/password_change_done.html:12
 msgid "Password changed"
-msgstr "Mot de passe modifié"
+msgstr "*Mot de passe modifié"
 
 #: templates/registration/password_reset_complete.html:13
 msgid "Password reset successfully"
-msgstr "Mot de passe réinitialisé avec succès. "
+msgstr "*Mot de passe réinitialisé avec succès. "
 
 #: templates/registration/password_reset_confirm.html:22
 msgid "Password reset failed"
-msgstr "La réinitialisation du mot de passe a échoué."
+msgstr "*La réinitialisation du mot de passe a échoué."
 
 #: templates/registration/password_reset_done.html:10
 msgid "Email with password reset instructions has been sent."
 msgstr ""
-"Un email avec les instructions de réinitialisation de mot de passe a été "
+"*Un email avec les instructions de réinitialisation de mot de passe a été "
 "envoyé."
 
 #: templates/registration/password_reset_email.html:2
 #, python-format
 msgid "Reset password at %(site_name)s"
-msgstr "Réinitialiser mot de passe à%(site_name)s"
+msgstr "*Réinitialiser mot de passe à%(site_name)s"
 
 #: templates/registration/password_reset_form.html:10
 msgid ""
 "Enter your email address and click the submit button.  You will be sent a "
 "link to reset your password."
-msgstr ""
+msgstr "*"
 
 #: templates/registration/registration_complete.html:6
 msgid ""
@@ -3122,18 +3782,55 @@ msgid ""
 "open the email and click on the validation link.\n"
 "Then login to WorldMap and log in with the user name and password you "
 "provided.\""
-msgstr ""
+msgstr "*"
 
 #: templates/registration/username_form.html:6
 #, fuzzy
 msgid "Forgot Username"
-msgstr "Mot de passe oublié"
+msgstr "*Mot de passe oublié"
 
 #: templates/registration/username_form.html:10
 msgid ""
 "Enter your email address and click the submit button.  Your username will be "
 "sent to you."
-msgstr ""
+msgstr "*"
+
+#~ msgid "OGC Services"
+#~ msgstr "*Services OGC"
+
+#~ msgid "GeoNode's Web Services"
+#~ msgstr "*Services Web de GeoNode"
+
+#~ msgid "GeoNode's Web Services are available from the following URLs:"
+#~ msgstr "*Services GeoNode Web sont disponibles depuis les liens suivants:"
+
+#~ msgid "Dynamic tiles via WMS:"
+#~ msgstr "*Tuiles dynamique via WMS"
+
+#~ msgid "Vector data via WFS:"
+#~ msgstr "*Données vectorielles via WFS"
+
+#~ msgid "Metadata search via CSW:"
+#~ msgstr "*Recherche de métadonnées via CSW:"
+
+#~ msgid "Cached tiles via WMTS:"
+#~ msgstr "*Carreaux en cache via WMTS:"
+
+#~ msgid ""
+#~ "\n"
+#~ "    <p>Use the links below to\n"
+#~ "        navigate to a document.</p>\n"
+#~ "\n"
+#~ "    <ul>\n"
+#~ "        <li><a href=\"#help\">WorldMap Help</a>\n"
+#~ "        <li><a href=\"#tutorial\">Tutorial</a>\n"
+#~ "        <li><a href=\"#faq\">Frequently Asked Questions (FAQ)</a>\n"
+#~ "    </ul>\n"
+#~ "\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "*"
 
 #~ msgid ""
 #~ "You can customize the template to suit your needs. You can add and remove "
@@ -3143,7 +3840,7 @@ msgstr ""
 #~ "editor to create custom structures, but they have to be validated by the "
 #~ "system, so know what you do :-)"
 #~ msgstr ""
-#~ "Vous pouvez personnaliser le modèle en fonction de vos besoins. Vous "
+#~ "*Vous pouvez personnaliser le modèle en fonction de vos besoins. Vous "
 #~ "pouvez ajouter et supprimer des champs et remplir les informations par "
 #~ "défaut (coordonnées par exemple). Les champs que vous ne pouvez pas "
 #~ "modifier dans la vue par défaut peuvent être accessibles dans la vue plus "
@@ -3152,27 +3849,21 @@ msgstr ""
 #~ "système, alors mieux vaut s'y connaître. "
 
 #~ msgid "topic_category"
-#~ msgstr "topic_category"
+#~ msgstr "*topic_category"
 
 #~ msgid "Browse"
-#~ msgstr "Parcourir"
+#~ msgstr "*Parcourir"
 
 #~ msgid "by keyword"
-#~ msgstr "par mot-clé"
-
-#~ msgid "Upload"
-#~ msgstr "Télécharger vers le serveur"
+#~ msgstr "*par mot-clé"
 
 #~ msgid "We support Shapefile and GeoTIFF uploads."
 #~ msgstr ""
-#~ "Nous gérons les téléchargements vers le serveur de fichiers de formes et "
+#~ "*Nous gérons les téléchargements vers le serveur de fichiers de formes et "
 #~ "GeoTIFF."
 
-#~ msgid "Upload a new layer"
-#~ msgstr "Télécharger vers le serveur une nouvelle couche"
-
 #~ msgid "For Developers"
-#~ msgstr "Pour les développeurs"
+#~ msgstr "*Pour les développeurs"
 
 #~ msgid ""
 #~ " \n"
@@ -3180,17 +3871,17 @@ msgstr ""
 #~ "through OGC services, please visit our\n"
 #~ "    "
 #~ msgstr ""
-#~ "Si vous êtes intéressé à accéder à cette information à travers les "
+#~ "*Si vous êtes intéressé à accéder à cette information à travers les "
 #~ "services de l'OGC, s'il vous plaît visitez notre website."
 
 #~ msgid "developer page"
-#~ msgstr "page développeur"
+#~ msgstr "*page développeur"
 
 #~ msgid "or"
-#~ msgstr "ou"
+#~ msgstr "*ou"
 
 #~ msgid "for extra features"
-#~ msgstr "pour des fonctionnalités supplémentaires"
+#~ msgstr "*pour des fonctionnalités supplémentaires"
 
 #~ msgid ""
 #~ "\n"
@@ -3282,7 +3973,7 @@ msgstr ""
 #~ "<a href=\"maps\">Maps</a> tab.</p> \n"
 #~ "  "
 #~ msgstr ""
-#~ "\n"
+#~ "*\n"
 #~ "<p> Le GeoNode donne accès à des ensembles de données et une application "
 #~ "d'édition de cartes permet aux utilisateurs de parcourir les cartes "
 #~ "existantes et d'apporter leurs propres contributions </p> \n"
@@ -3379,7 +4070,7 @@ msgstr ""
 #~ "  "
 
 #~ msgid "GeoNode Help"
-#~ msgstr "GeoNode Aide"
+#~ msgstr "*GeoNode Aide"
 
 #~ msgid ""
 #~ " \n"
@@ -3395,7 +4086,7 @@ msgstr ""
 #~ "  </ul>\n"
 #~ "  "
 #~ msgstr ""
-#~ "<p> Cette page fournit des renseignements utiles sur la façon d'utiliser "
+#~ "*<p> Cette page fournit des renseignements utiles sur la façon d'utiliser "
 #~ "le GeoNode. Vous pouvez utiliser les liens ci-dessous pour accéder à ce "
 #~ "que vous voulez savoir. </p>\n"
 #~ "<ul>\n"
@@ -3410,10 +4101,7 @@ msgstr ""
 #~ "  "
 
 #~ msgid "Explore Maps"
-#~ msgstr "Découvrez les artes"
-
-#~ msgid "Welcome"
-#~ msgstr "Bienvenue"
+#~ msgstr "*Découvrez les artes"
 
 #~ msgid ""
 #~ "\n"
@@ -3422,14 +4110,14 @@ msgstr ""
 #~ "mailing list by emailing <em>geonode@librelist.com</em>.\n"
 #~ "    "
 #~ msgstr ""
-#~ "\n"
+#~ "*\n"
 #~ "GeoNode est une plateforme source ouverte de partage de données "
 #~ "géospatiales et de cartes. Si vous avez des questions concernant le "
 #~ "logiciel ou le service, abonnez-vous à notre liste de diffusion par "
 #~ "courriel à <em> geonode@librelist.com </em>. "
 
 #~ msgid "Maps"
-#~ msgstr "Cartes"
+#~ msgstr "*Cartes"
 
 #~ msgid ""
 #~ " \n"
@@ -3438,7 +4126,7 @@ msgstr ""
 #~ "      shared by others.\n"
 #~ "    "
 #~ msgstr ""
-#~ "GeoNode vous permet de créer et de partager des cartes. <strong> Créer </"
+#~ "*GeoNode vous permet de créer et de partager des cartes. <strong> Créer </"
 #~ "strong>une carte avec notre outil de cartographie, ou <strong> explorer </"
 #~ "strong> des cartes partagées par d'autres utilisateurs."
 
@@ -3449,68 +4137,55 @@ msgstr ""
 #~ "      <strong>upload</strong> your own data.\n"
 #~ "    "
 #~ msgstr ""
-#~ "GeoNode vous permet de télécharger vers le serveur, de gérer et de "
+#~ "*GeoNode vous permet de télécharger vers le serveur, de gérer et de "
 #~ "consulter les données. <strong> Recherchez </strong> les données qui vous "
 #~ "seront utiles, ou <strong> télécharger </strong> vos propres données. "
 
-#~ msgid "Upload data"
-#~ msgstr "Téléchargez les données"
-
 #~ msgid "Profile"
-#~ msgstr "Profil"
+#~ msgstr "*Profil"
 
 #~ msgid "Admin"
-#~ msgstr "Administration"
-
-#, fuzzy
-#~ msgid "Powered by"
-#~ msgstr "Fourni par :"
+#~ msgstr "*Administration"
 
 #~ msgid "GeoNode"
-#~ msgstr "GeoNode"
-
-#~ msgid "No metadata links provided for this data."
-#~ msgstr "Aucun lien métadonnées fourni pour ces données"
+#~ msgstr "*GeoNode"
 
 #~ msgid "The following maps use this data set"
-#~ msgstr "Les cartes suivantes utilisent cet ensemble de données"
+#~ msgstr "*Les cartes suivantes utilisent cet ensemble de données"
 
 #, fuzzy
 #~ msgid "Create new map"
-#~ msgstr "Créer une nouvelle carte"
+#~ msgstr "*Créer une nouvelle carte"
 
 #~ msgid "Yes I am sure"
-#~ msgstr "Oui, je suis certain que"
+#~ msgstr "*Oui, je suis certain que"
 
 #~ msgid "No, don't remove it"
-#~ msgstr "Non, ne pas supprimer"
+#~ msgstr "*Non, ne pas supprimer"
 
 #~ msgid "Yes, I am sure"
-#~ msgstr "Oui, je suis certain que"
+#~ msgstr "*Oui, je suis certain que"
 
 #~ msgid "View or edit this map"
-#~ msgstr "Afficher ou modifier cette carte"
-
-#~ msgid "Edit metadata"
-#~ msgstr "Modifier les métadonnées "
+#~ msgstr "*Afficher ou modifier cette carte"
 
 #~ msgid "View info"
-#~ msgstr "Afficher les info"
+#~ msgstr "*Afficher les info"
 
 #~ msgid "Upload new data"
-#~ msgstr "Téléchargez de nouvelles données"
+#~ msgstr "*Téléchargez de nouvelles données"
 
 #~ msgid "Thanks for spending some quality time with the GeoNode today."
-#~ msgstr "Merci d'avoir utilisé GeoNode."
+#~ msgstr "*Merci d'avoir utilisé GeoNode."
 
 #~ msgid "You are now registered. Activation email sent."
-#~ msgstr "Vous êtes maintenant inscrit. Un email d'activation a été envoyé."
+#~ msgstr "*Vous êtes maintenant inscrit. Un email d'activation a été envoyé."
 
 #~ msgid "Edit Permissions"
-#~ msgstr "Modifier les autorisations"
+#~ msgstr "*Modifier les autorisations"
 
 #~ msgid "English"
-#~ msgstr "Anglais"
+#~ msgstr "*Anglais"
 
 #~ msgid "Spanish"
-#~ msgstr "Espagnol"
+#~ msgstr "*Espagnol"

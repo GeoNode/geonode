@@ -57,6 +57,24 @@
 {% block start_body_js %}{% endblock %}
   <div id="header">
     <div class="wrap selfclear">
+   <!-- Only show the language form if the csrf_token is present -->
+   {% if csrf_token != "NOTPROVIDED" %}       
+   {% get_current_language as LANGUAGE %}
+    <form class="langbar" id="target" action="/i18n/setlang/" method="post">
+      {% csrf_token %}
+       <div style="display: inline;">
+         <select id="langval" name="language" onchange="javascript:form.submit()">
+           {% for lang in LANGUAGES %}
+            <option value="{{ lang.0 }}"
+                {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                {{ lang.1 }}
+            </option>
+           {% endfor %}
+         </select>
+       </div>
+     </form>
+   {% endif %}    
+    
         	{% block logos %}
         	    {% block breadcrumb %}
         	    	{% if urlsuffix %}
@@ -77,7 +95,7 @@
       {% endif %}
           | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
           | <a class="" id="viewLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
-          | <a class="" id="helpLink" href="{{ STATIC_URL }}docs/WorldMap_Help.pdf" target="_blank">Help</a>
+          | <a class="" id="helpLink" href="{{ STATIC_URL }}docs/WorldMap_Help.pdf" target="_blank">{% trans "Help" %}</a>
       </div>
     </div><!-- /.wrap -->
   </div><!-- /#header -->

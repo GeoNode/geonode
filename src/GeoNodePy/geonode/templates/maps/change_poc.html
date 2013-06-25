@@ -7,14 +7,14 @@
 {% block title %}{% trans 'Change point of contact' %}{% endblock %}
 
 {% block content %}
-<h3>Assign a new point of contact to the layers below:</h3>
+<h3>{% trans "Assign a new point of contact to the layers below:" %}</h3>
 {% for layer in layers %}
 <li>{{ layer }}</li>
 {% endfor %}
 <form method="POST">
 {% csrf_token %}	
 {{ form.as_p }}
- <p><input type="submit" value="Submit" /></p>
+ <p><input type="submit" value="{% trans 'Submit' %}" /></p>
 </form>
 <ul>
 

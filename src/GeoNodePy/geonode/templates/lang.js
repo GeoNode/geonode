@@ -94,7 +94,11 @@ if (window.GeoExplorer) {
         zoomSelectorText: gettext("Zoom level"),
         zoomSliderTipText: gettext("Zoom Level"),
         zoomToLayerExtentText: gettext("Zoom to Layer Extent"),
-        zoomVisibleButtonText: gettext("Zoom to Original Map Extent")
+        zoomVisibleButtonText: gettext("Zoom to Original Map Extent"),
+        picasaText: gettext("Picasa"),
+        youTubeText: gettext("YouTube"),
+        hglText: gettext("Harvard Geospatial Library"),
+        moreText: gettext("More..."),
     });
 }
 
@@ -144,7 +148,6 @@ if (window.gxp && gxp.EmbedMapDialog) {
         widthLabel: gettext("Width")
     });
 }
-
 
 if (window.GeoExplorer && GeoExplorer.CapabilitiesRowExpander) {
     Ext.apply(GeoExplorer.CapabilitiesRowExpander.prototype, {
@@ -255,6 +258,15 @@ if (window.GeoNode && GeoNode.BatchDownloadWidget) {
         cancelText: gettext('Cancel'),
         windowMessageText: gettext('Please wait')
     });
+}
+
+if (window.GeoExplorer && GeoExplorer.ViewerPrint) {
+	Ext.apply(GeoExplorer.ViewerPrint.prototype, {
+		printMsg: gettext("Press OK to print this page as is.  \
+			 If you would like to adjust the map extent, press Cancel, \
+			 then use your browser's print button when you are ready"),
+		printTitle: gettext("Print"),
+	});
 }
 
 {% block extra_lang %}

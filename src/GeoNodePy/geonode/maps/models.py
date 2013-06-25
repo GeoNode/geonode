@@ -468,18 +468,18 @@ CHARSETS = [
 
 
 UPDATE_FREQUENCIES = [
-    'annually',
-    'asNeeded',
-    'biannually',
-    'continual',
-    'daily',
-    'fortnightly',
-    'irregular',
-    'monthly',
-    'notPlanned',
-    'quarterly',
-    'unknown',
-    'weekly'
+    ['annually', _('Annually')],
+    ['asNeeded', _('As Needed')],
+    ['biannually', _('Biannually')],
+    ['continual', _('Continual')],
+    ['daily', _('Daily')],
+    ['fortnightly', _('Fortnightly')],
+    ['irregular', _('Irregular')],
+    ['monthly', _('Monthly')],
+    ['notPlanned', _('Not Planned')],
+    ['quarterly', _('Quarterly')],
+    ['unknown', _('Unknown')],
+    ['weekly', _('Weekly')]
 ]
 
 CONSTRAINT_OPTIONS = [

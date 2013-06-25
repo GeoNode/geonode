@@ -74,9 +74,9 @@ class XssCleaner(HTMLParser):
         # of "background" and "style."
         self.allowed_attributes =\
             {'a':['href','title','target','style'],
-             'img':['src','alt','border','style'],
-             'blockquote':['type','style'],
-             'font':['size','face'],
+             'img':['src','alt','border','style','align'],
+             'blockquote':['type','style','align'],
+             'font':['size','face','align'],
              'h5':['style'],'h4':['style'],'h3':['style'],'h2':['style'],'h1':['style'],
              'table': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
              'tbody': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
