@@ -236,7 +236,7 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
 
     # section 3
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_('commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject (space or comma-separated'))
-    regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), help_text=_('keyword identifies a location'))
+    regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), help_text=_('keyword identifies a location'), blank=True)
     restriction_code_type = models.ForeignKey(RestrictionCodeType, verbose_name=_('restrictions'), help_text=_('limitation(s) placed upon the access or use of the data.'), null=True, blank=True, limit_choices_to=Q(is_choice=True))
     constraints_other = models.TextField(_('restrictions other'), blank=True, null=True, help_text=_('other restrictions and legal prerequisites for accessing and using the resource or metadata'))
 
