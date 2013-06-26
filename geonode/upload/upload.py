@@ -294,7 +294,7 @@ def run_import(upload_session, async):
     if (hasattr(settings, 'GEOGIT_DATASTORE') and settings.GEOGIT_DATASTORE and
         upload_session.geogit == True and
         import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
-        target = create_geoserver_db_featurestore(type='geogit')
+        target = create_geoserver_db_featurestore(store_type='geogit')
         _log('setting target datastore %s %s',
              target.name, target.workspace.name
             )
@@ -302,7 +302,7 @@ def run_import(upload_session, async):
             target.name, target.workspace.name)
     elif (settings.DB_DATASTORE and
         import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
-        target = create_geoserver_db_featurestore(type='postgis')
+        target = create_geoserver_db_featurestore(store_type='postgis')
         _log('setting target datastore %s %s',
              target.name, target.workspace.name
             )
