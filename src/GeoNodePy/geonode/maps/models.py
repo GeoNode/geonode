@@ -499,27 +499,31 @@ CONSTRAINT_OPTIONS = [
     ['restricted', _('Restricted')],
     ['trademark', _('Trademark')],
     ['public', _('Public')],
-    ['no restrictions', _('No Restrictions')],
+    ['no restrictions', _('No Restrictions')]
 ]
 
 SPATIAL_REPRESENTATION_TYPES = [
-    'grid', 'steroModel', 'textTable', 'tin', 'vector'
+    ['grid', _('Grid')],
+    ['steroModel', _('Stereo Model')],
+    ['textTable', _('Text Table')],
+    ['tin', 'TIN'],
+    ['vector', 'Vector']
 ]
 
 
 CONTACT_FIELDS = [
-    _("name"),
-    _("organization"),
-    _("position"),
-    _("voice"),
-    _("facsimile"),
-    _("delivery_point"),
-    _("city"),
-    _("administrative_area"),
-    _("postal_code"),
-    _("country"),
-    _("email"),
-    _("role")
+    ["name", _("Name")],
+    ["organization", _("Organization")],
+    ["position", _("Position")],
+    ["voice", _("Voice")],
+    ["facsimile", _("Fax")],
+    ["delivery_point", _("Delivery Point")],
+    ["city", _("City")],
+    ["administrative_area", _("Administrative Area")],
+    ["postal_code", _("Postal Code")],
+    ["country", _("Country")],
+    ["email", _("Email")],
+    ["role", _("Role")]
 ]
 
 DEFAULT_SUPPLEMENTAL_INFORMATION=''
@@ -886,7 +890,7 @@ class Layer(models.Model, PermissionLevelMixin):
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True)
     abstract = models.TextField(_('abstract'), blank=False)
     purpose = models.TextField(_('purpose'), null=True, blank=True)
-    maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices = [(x, x) for x in UPDATE_FREQUENCIES], blank=True, null=True)
+    maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices=UPDATE_FREQUENCIES, blank=True, null=True)
 
     # section 2
     # see poc property definition below
@@ -894,9 +898,9 @@ class Layer(models.Model, PermissionLevelMixin):
     # section 3
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
     keywords_region = models.CharField(_('keywords region'), max_length=3, choices=KEYWORD_REGIONS + COUNTRIES, default = 'GLO')
-    constraints_use = models.CharField(_('constraints use'), max_length=255, choices = [(x, x) for x in CONSTRAINT_OPTIONS], default='copyright')
+    constraints_use = models.CharField(_('constraints use'), max_length=255, choices=CONSTRAINT_OPTIONS, default='copyright')
     constraints_other = models.TextField(_('constraints other'), blank=True, null=True)
-    spatial_representation_type = models.CharField(_('spatial representation type'), max_length=255, choices=[(x,x) for x in SPATIAL_REPRESENTATION_TYPES], blank=True, null=True)
+    spatial_representation_type = models.CharField(_('spatial representation type'), max_length=255, choices=SPATIAL_REPRESENTATION_TYPES, blank=True, null=True)
 
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng')
