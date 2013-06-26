@@ -456,6 +456,16 @@ cga-logo-overlay {
 .more-overlay-element .x-btn-small td {background-image: none; text-decoration:none;}
 .more-overlay-element .x-btn-small td button {text-decoration:none;}
 
+.language-overlay-element {
+    float: left;
+    z-index: 4000;
+    position: absolute;
+    right: 10px;
+    bottom: 70px;
+    height:25px;
+    text-decoration: none;
+}
+
 div.cga-link {
     margin:3px;
     font-size:8pt;

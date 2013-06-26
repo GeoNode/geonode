@@ -39,19 +39,16 @@
         {% endif %}
         {% endblock %}
         {% endblock logos %}
-
-
-
         <div id="login-area">
             {% if user.is_authenticated %}
-            {% trans "Welcome" %} <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}"><span style="font-weight:bold">{{user.username}}</span></a>
+            <a href="{% if user.get_profile %}{{ user.get_profile.get_absolute_url }}{% else %}{% url profiles_create_profile %}{% endif %}"><span style="font-weight:bold">{{user.username}}</span></a>
             | <a href="{% url auth_logout %}">{% trans "Sign out" %}</a>
             {% else %}
             <!-- this should be updated to a url var --><a href="/accounts/login?next={{request.path}}">{% trans "Sign in" %}</a>
             {% endif %}
             | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
             | <a class="" id="mapLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
-            | <a class="" id="dataLink" href="{{site}}{{ STATIC_URL }}docs/WorldMap_Help.pdf" target="_blank">{% trans "Help" %}</a>
+            | <a class="" id="dataLink" href="{{site}}{{ STATIC_URL }}docs/WorldMap_Help.pdf" target="_blank">{% trans "Help" %}</a>                        
         </div>
     </div><!-- /.wrap -->
 </div><!-- /#header -->
