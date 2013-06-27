@@ -18,10 +18,10 @@
         {% endif %}
       </p> -->
         <ul class="nav stats">
-          <li><a href="#"><strong>{{ profile.user.layer_set.all|length }}</strong> Layers</a></li>
-          <li><a href="#"><strong>{{ profile.user.map_set.all|length }}</strong> Maps</a></li>
+          <li><a href="#"><strong>{{ profile.layer_count }}</strong> Layers</a></li>
+          <li><a href="#"><strong>{{ profile.map_count }}</strong> Maps</a></li>
           {% if DOCUMENTS_APP %}
-          <li><a href="#"><strong>{{ profile.user.document_set.all|length }}</strong> Documents</a></li>
+          <li><a href="#"><strong>{{ profile.document_count }}</strong> Documents</a></li>
           {% endif %}
         </ul>
     </div> <!-- /meta -->
