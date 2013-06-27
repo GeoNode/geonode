@@ -18,7 +18,7 @@
       {% include "documents/_document_list_item.html" %}
     {% endwith %}
   {% elif object.o.class_name == 'Profile' %}
-    {% with object.o as profile %}
+    {% with object as profile %}
       {% include "people/_profile_list_item.html" %}
     {% endwith %}
   {% endif %}

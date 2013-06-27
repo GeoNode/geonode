@@ -5,13 +5,13 @@
 {% load i18n %}
 
 <article>
-  <a class="avatar" href="{% url "profile_detail" profile.user.username %}">{% avatar profile.user 80 %}</a>
+  <a class="avatar" href="{% url "profile_detail" profile.o.user.username %}">{% avatar profile.o.user 80 %}</a>
   <div class="pull-left">
-    <h3><i class="icon-user"></i> <a href="{% url "profile_detail" profile.user.username %}">{{ profile.name }}</a>
-    {% if  profile.user.email %}<a href="mailto:{{ profile.user.email }}"><i class="icon-envelope icon-large"></i></a>{% endif %}</h3>
+    <h3><i class="icon-user"></i> <a href="{% url "profile_detail" profile.o.user.username %}">{{ profile.title }}</a>
+    {% if  profile.o.user.email %}<a href="mailto:{{ profile.o.user.email }}"><i class="icon-envelope icon-large"></i></a>{% endif %}</h3>
     <div class="details">
     <div class="meta">
-      <p>{% if profile.organization %}{{ profile.organization }}{% endif %}</p>
+      <p>{% if profile.o.organization %}{{ profile.o.organization }}{% endif %}</p>
       <!-- <p class="abstract">
          {% if profile.profile %}{{ profile.profile }}
         {% else %}No description
@@ -27,14 +27,14 @@
     </div> <!-- /meta -->
   </div> <!-- /details -->
 
-    {% if request.user != profile.user %}
+    {% if request.user != profile.o.user %}
         {% if_has_tag if_relationship %}
             {% include "relationships/_profile_follow.html" %}
         {% endif_has_tag %}
     {% endif %}
 
     {% if_has_tag actor_url %}
-        <p><a href="{% actor_url profile.user %}" class="btn btn-mini" type="button">{% trans "My Activities" %}</a></p>
+        <p><a href="{% actor_url profile.o.user %}" class="btn btn-mini" type="button">{% trans "My Activities" %}</a></p>
     {% endif_has_tag %}
 
 
