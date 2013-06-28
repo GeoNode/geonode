@@ -55,7 +55,7 @@
         </div>
       </div>
       <div class="span3">
-        <div class="pull-right">{% avatar profile.user 65 %}</div>
+        <div class="pull-right">{% avatar profile.user %}</div>
         <h3>{{ profile.name }}</h3>
         {% if_has_tag actor_url %}
             <p><a href="{% actor_url profile.user %}" class="btn btn-primary" type="button">{% trans "My Activities" %}</a></p>
