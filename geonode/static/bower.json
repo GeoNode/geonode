@@ -44,8 +44,7 @@
       ],
       "select2" : [
         ".components/select2/select2.min.js",
-        ".components/select2/select2.css",
-        ".components/select2/select2.png"
+        ".components/select2/select2.css"
       ],
       "fontselect-jquery-plugin" : [
         ".components/fontselect-jquery-plugin/jquery.fontselect.min.js",

@@ -50,9 +50,11 @@
             <li><a href="{% url "map_wmc" map.pk %}" target="_new">{% trans "Download Web Map Context" %} <i class="icon-chevron-right"></i></a></li>
         </ul>
       </div>
+      {% comment %}
       <div class="btn-group">
         <a href="#" class="btn btn-large btn-info strong"><i class="icon-print icon-white"></i> {% trans "Print Map" %}</a>
       </div>
+      {% endcomment %}
     </div>
   </div>
   <div class="span12">
@@ -116,9 +118,9 @@
           {% for layer in map.layer_set.all %}
 	    {% ifnotequal layer.group 'background' %}
 		{% if layer.local %}
-        	    <li><a href="{% url "layer_detail" layer.name %}">{{ layer.name }}</a></li>
+        	    <li><a href="{% url "layer_detail" layer.name %}">{{ layer.layer_title }}</a></li>
 		{% else %}
-        	    <li>{{ layer.name }}</li>
+        	    <li>{{ layer.layer_title }}</li>
 		{% endif %}
 	    {% endifnotequal %}
           {% endfor %}

@@ -233,6 +233,15 @@ class OwnerNormalizer(Normalizer):
             return self.o.user.date_joined
         except ObjectDoesNotExist:
             return None
+    def layer_count(self):
+        return Layer.objects.filter(owner = self.o.user).count()
+
+    def map_count(self):
+        return Map.objects.filter(owner = self.o.user).count()
+
+    def document_count(self):
+        return Document.objects.filter(owner = self.o.user).count()
+
     def populate(self, doc, exclude):
         contact = self.o
         user = contact.user
