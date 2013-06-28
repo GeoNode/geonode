@@ -1,64 +1,10 @@
 {% extends "maps/map_base.html" %}
 {% load i18n %}
 
-{% block head %} 
-{% include "geonode/ext_header.html" %}
-{% include "geonode/app_header.html" %}
+{% block head %}
 {{ block.super }}
-<script type="text/javascript">
-{% autoescape off %}
-        {% if map_status %} 
-        var checkStatus, progress, pb, process;
-
-        function update() { 
-            Ext.Ajax.request({ 
-                url : "{% url "map_download_check" %}",
-                method: "GET",              
-                success: function(result) { 
-                    process = Ext.util.JSON.decode(result.responseText);
-                    if (process["process"]["status"] === "FINISHED"){ 
-                        location.href = "{{geoserver}}rest/process/batchDownload/download/" +  process["process"]["id"] ; ; 
-                        clearInterval(checkStatus); 
-                        pb.updateProgress(1,"Done....",true);
-                    } 
-                    else { 
-                        pb.updateProgress(process["process"]["progress"]/100,"Downloading...",true); 
-                    } 
-                }});                 
-        };
-
-        Ext.onReady(function() {         
-            checkStatus = setInterval("update()",1000);
-            pb = new Ext.ProgressBar({
-                text:'Downloading...',
-                id:'pbar',
-                cls:'left-align',
-                renderTo:'pb'
-            });
-            cancel = new Ext.Button({ 
-                text: 'Cancel',
-                id: 'cancel',
-                renderTo: 'cancel',
-                handler: function() { 
-                    Ext.Ajax.request({ 
-                        url : "{{geoserver}}rest/process/batchDownload/kill/" + process["process"]["id"],
-                        method: "GET",
-                        success: function(result) { 
-                            alert("You successfuly canceled the download"); 
-                            location.href = "{{site}}maps/{{map.id}}"; 
-                            clearInterval(checkStatus);
-                        },
-                        failure: function(result) { 
-                            console.log(result); 
-                            clearInterval(checkStatus); // break if something fails
-                        } 
-                    }) } }); 
-            
-        });
-        {% endif %} 
-{% endautoescape %}
-</script>
-{% endblock %} 
+<link href="{{ STATIC_URL }}lib/css/jquery-ui.css" rel="stylesheet" />
+{% endblock %}
 
 {% block body %}
 <div class="twocol">
@@ -106,8 +52,9 @@
     {% endif %}
 
     {% if map_status %} 
-      <div id="cancel"> </div>
+      <button type="button" id="cancel">Cancel</button>
       <div id="pb"></div>
+      <div id="pb-status">Downloading.....</div>
     {% elif downloadable_layers|length > 0 %} 
       <form action="{{site}}maps/{{map.id}}/download" method="POST"> 
         {% csrf_token %}
@@ -118,3 +65,56 @@
     {% endif %} 
 </div>
 {% endblock %}
+{% block extra_script %}
+<script src="{{ STATIC_URL }}lib/js/jquery-ui.js"></script>
+<script type="text/javascript">
+'use strict'
+  {% autoescape off %}
+      {% if map_status %} 
+      var checkStatus, progress, pb, process;
+
+      function update(){
+        $.get(
+          '{% url "map_download_check" %}'
+        ).
+        done(function(result){
+          process = $.parseJSON(result);
+          if (process["process"]["status"] === "FINISHED"){ 
+            location.href = "{{geoserver}}rest/process/batchDownload/download/" +  process["process"]["id"];
+            clearInterval(checkStatus); 
+            pb.progressbar("option","value",100);
+            $('#pb-status').html("Done");
+          } 
+          else { 
+            pb.progressbar("option","value",process["process"]["progress"]/100); 
+          } 
+        });
+      };
+
+      $(function(){
+        checkStatus = setInterval("update()",1000);
+        pb = $( "#pb" ).progressbar({
+          value: 10
+        });
+
+        $("#cancel").click(function(){
+          $.get(
+            "{{geoserver}}rest/process/batchDownload/kill/" + process["process"]["id"]
+            ).
+            done(function(){
+              alert("You successfuly canceled the download"); 
+              location.href = "{{site}}maps/{{map.id}}"; 
+              clearInterval(checkStatus);
+            }).
+            fail(function(result){
+              console.log(result); 
+              clearInterval(checkStatus); // break if something fails
+            });
+        });
+      });
+
+      {% endif %}
+  {% endautoescape %}
+
+</script>
+{% endblock extra_script %}
