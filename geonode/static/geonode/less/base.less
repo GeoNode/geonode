@@ -1,25 +1,86 @@
 @import "../../.components/bootstrap/less/bootstrap";
 @import "font-awesome.less";
 
-@grayLight: rgb(239, 240, 239);
+// Grays
+// -------------------------
 @grayDark: rgb(72, 71, 72);
-@graySp: #777;
+@grayLight: rgb(239, 240, 239);
 @grayNeutral: #ccc;
-@brown: #464646;
-@blueBright: #4bcfe3;
-@blueLight: #3cb3c5;
-@blueDark: #379ea9;
-@orange: #f05a24;
-@orangeLight: #f6921e;
-@orangeAlt: #f7931e;
+@graySp: #777;
 
-@textColor: @black;
+// Accent colors
+// -------------------------
+@blueBright: #4bcfe3;
+@blueDark: #379ea9;
+@blueLight: #3cb3c5;
+@brown: #464646;
+@orange: #f05a24;
+@orangeAlt: #f7931e;
+@orangeLight: #f6921e;
+
+// Scaffolding
+// -------------------------
+@bodyBackground: #fefefe;
+
+
+// Links
+// -------------------------
 @linkColor: #41aaba;
-@navBkgd:#a7e4ee;
-@bdrColor: #ccc;
+
+// Typography
+// -------------------------
+@baseFontSize:          13px;
+@baseLineHeight:        18px;
+@customFont: 'Lato', sans-serif;
+@textColor: @black;
+
+// Buttons
+// -------------------------
+@btnPrimaryBackground: #008CB3;
+@btnPrimaryBackgroundHighlight: darken(@btnPrimaryBackground, 10%);
+@btnInverseBackground: @gray;
+@btnInverseBackgroundHighlight: @grayDarker;
+
+// Forms
+// -------------------------
+@inputBorderRadius: 3px;
+
+// Dropdowns
+// -------------------------
+@dropdownLinkBackgroundHover:   @btnPrimaryBackground;
+@dropdownDividerTop:            #e5e5e5;
+@dropdownDividerBottom:         @white;
+
+// Input placeholder text color
+// -------------------------
 @placeholderText: #aaa;
 
-@customFont: 'Lato', sans-serif;
+// Navbar
+// -------------------------
+@navbarHeight:                    25px;
+@navbarBackgroundHighlight:       @btnPrimaryBackground;
+@navbarBackground:                darken(@btnPrimaryBackground, 15%);
+
+@navbarText:                      #fefefe;
+@navbarLinkColor:                 #fefefe;
+@navbarLinkColorHover:            @white;
+@navbarLinkColorActive:           @navbarLinkColorHover;
+@navbarLinkBackgroundActive:      @navbarBackground;
+
+@navbarSearchBackground:          lighten(@navbarBackground, 25%);
+@navbarSearchBackgroundFocus:     @white;
+@navbarSearchBorder:              darken(@navbarSearchBackground, 30%);
+@navbarSearchPlaceholderColor:    #ccc;
+
+// Fluid grid
+// -------------------------
+@fluidGridColumnWidth:    6.382978723%;
+@fluidGridGutterWidth:    2.127659574%;
+
+
+@navBkgd:#a7e4ee;
+@bdrColor: #ccc;
+
 
 .lines (@p: 10px, @m: 10px, @bdr-width: 1px, @bdr-style: solid, @bdr-color: @grayNeutral) {
   padding-bottom:@p;
