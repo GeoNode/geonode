@@ -8,9 +8,7 @@
   <a class="avatar" href="{% url "profile_detail" profile.o.user.username %}">{% avatar profile.o.user 80 %}</a>
   <div class="pull-left">
     <h3><i class="icon-user"></i> <a href="{% url "profile_detail" profile.o.user.username %}">{{ profile.title }}</a>
-    {% if user.is_authenticated %}
     {% if  profile.o.user.email %}<a href="mailto:{{ profile.o.user.email }}"><i class="icon-envelope icon-large"></i></a>{% endif %}</h3>
-    {% endif %}
     <div class="details">
     <div class="meta">
       <p>{% if profile.o.organization %}{{ profile.o.organization }}{% endif %}</p>
