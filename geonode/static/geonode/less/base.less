@@ -1,6 +1,7 @@
 @import "../../.components/bootstrap/less/bootstrap";
 @import "font-awesome.less";
 
+
 // Grays
 // -------------------------
 @grayDark: rgb(72, 71, 72);
@@ -29,8 +30,8 @@
 
 // Typography
 // -------------------------
-@baseFontSize:          13px;
-@baseLineHeight:        18px;
+@baseFontSize: 13px;
+@baseLineHeight: 18px;
 @customFont: 'Lato', sans-serif;
 @textColor: @black;
 
@@ -47,9 +48,9 @@
 
 // Dropdowns
 // -------------------------
-@dropdownLinkBackgroundHover:   @btnPrimaryBackground;
-@dropdownDividerTop:            #e5e5e5;
-@dropdownDividerBottom:         @white;
+@dropdownLinkBackgroundHover: @btnPrimaryBackground;
+@dropdownDividerTop: #e5e5e5;
+@dropdownDividerBottom: @white;
 
 // Input placeholder text color
 // -------------------------
@@ -122,6 +123,8 @@ h2 {
 }
 
 h3 {
+  line-height: 27px;
+  font-size: 18px;
   font-weight: normal;
   margin-bottom: 0 !important;
 }
@@ -148,6 +151,16 @@ img.olTileImage {
   text-indent: -9999em;
 }
 
+li [class^="icon-"], li [class*=" icon-"] {
+  display: inline-block;
+  width: 1.25em;
+  text-align: center;
+}
+
+.navbar .nav li.dropdown.open>.dropdown-toggle, .navbar .nav li.dropdown.active>.dropdown-toggle, .navbar .nav li.dropdown.open.active>.dropdown-toggle {
+background-color: transparent;
+}
+
 .navbar .nav.account-bar {
   margin-top: 7px;
 
@@ -156,7 +169,7 @@ img.olTileImage {
   }
 
   i {
-    font-size:14px;
+    font-size:16px;
   }
 
   li.actions {
@@ -188,9 +201,13 @@ img.olTileImage {
 
 .navbar {
   .navbar-inner {
-    background:@brown;
+    /*background:@brown;*/
+    border: 0;
     .box-shadow(20px);
     padding-top: 7px;
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.25),inset 0 -1px 0 rgba(0,0,0,.1);
+       -moz-box-shadow: 0 1px 3px rgba(0,0,0,.25),inset 0 -1px 0 rgba(0,0,0,.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,.25),inset 0 -1px 0 rgba(0,0,0,.1);
   }
 
   p {
@@ -336,6 +353,10 @@ ul.social {
     }
   }
 }
+.navbar .nav.pull-right {
+  margin-left: 10px;
+  margin-right: 0;
+}
 
 footer.footer {
   background:@gray;
@@ -449,7 +470,11 @@ footer.footer {
     background:@blueDark;
     color:@white;
   }
-
+  &.btn-mini {
+    font-size: 11px;
+    line-height: 14px;
+    padding: 2px 6px;
+  }
   &.btn-primary {
     background:@orange;
 
@@ -576,7 +601,6 @@ section.widget-mini {
   border-bottom:1px solid @bdrColor;
   overflow:hidden;
   position: relative;
-  width: 284px;
 
   .download {
     right: 20px;
@@ -1214,7 +1238,7 @@ body.data-list nav.back {
 }
 body.data #subnav-tabs,
 body.maps #subnav-tabs,
-body.profiles #subnav-tabs,
+body.people #subnav-tabs,
 body.documents #subnav-tabs {
   background-color: @grayLight;
   color: @graySp;
@@ -1369,7 +1393,6 @@ body.search-results {
   .content-wrap .container {
     width: 960px;
   }
-
   article {
     overflow:hidden;
     background:@grayLighter;
@@ -1518,6 +1541,7 @@ ul.list {
 }
 
 .navbar-fixed-top {
+  color: #fefefe;
   z-index: 1019;
 }
 
