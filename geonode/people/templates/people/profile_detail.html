@@ -13,46 +13,24 @@
     <h2 class="page-title">{% trans "Profile of " %}{{ profile.user.username }}</h2>
     <div class="row">
       <div class="span8">
-        {% include "people/_profile_filters.html" %}
-      </div>
-      <div class="span4">
-        <div class="pull-right" data-viewby="list">
-          {% include "_viewby.html" %}
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="span9">
-        <div class="tab-content span7 paginate paginate-auto">
-        <div class="tab-pane active list paginate-contents" id="all">
-          {% if object_list|length > 0 %}
-            {% autopaginate object_list 5 %}
-              {% for obj in object_list %}
-              <article>
-                <div class="details">
-                  {% if obj.class_name = 'Map' %}
-                    <img src="{% static 'people/img/map.png' %}" alt="{% trans 'Map' %}"></img>
-                  {% endif %}
-                  {% if obj.class_name = 'Layer' %}
-                    <img src="{% static 'people/img/layers.png' %}" alt="{% trans 'Layer' %}"></img>
-                  {% endif %}
-                  {% if obj.class_name = 'Document' %}
-                    <img src="{% static 'people/img/page_white.png' %}" alt="{% trans 'Document' %}"></img>
-                  {% endif %}
-                  <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
-                  <div class="meta">{{ obj.date|date:"Y-m-d" }}</div>
-                  <p class="abstract">{{ obj.abstract }}</p>
-                </div>
-              </article>
-              {% endfor %}
-          {% else %}
-            <p>{% trans "No data found" %}</p>
-          {% endif %}
-        </div>
-        {% if object_list|length > 0 %}
-          {% paginate %}
-        {% endif %}
-        </div>
+        <ul>
+            <li>{% trans "Name" %}: {{ profile.name|default_if_none:"not available" }}</li>
+            <li>{% trans "Organization" %}: {{ profile.organization|default_if_none:"not available" }}</li>
+            <li>{% trans "Position" %}: {{ profile.position|default_if_none:"not available" }}</li>
+            <li>{% trans "Profile" %}: {{ profile.profile|default_if_none:"not available" }}</li>
+            <li>{% trans "Voice" %}: {{ profile.voice|default_if_none:"not available" }}</li>
+            <li>{% trans "Fax" %}: {{ profile.fax|default_if_none:"not available" }}</li>
+            <li>{% trans "Delivery Point" %}: {{ profile.delivery|default_if_none:"not available" }}</li>
+            <li>{% trans "City" %}: {{ profile.city|default_if_none:"not available" }}</li>
+            <li>{% trans "Administrative Area" %}: {{ profile.area|default_if_none:"not available" }}</li>
+            <li>{% trans "Postal Code" %}: {{ profile.zipcode|default_if_none:"not available" }}</li>
+            <li>{% trans "Country" %}: {{ profile.country|default_if_none:"not available" }}</li>
+            <li>{% trans "Keywords" %}:
+                {% for tag in profile.keywords.all %}
+                    {{ tag.name }}
+                {% endfor %}
+            </li>
+        </ul>
       </div>
       <div class="span3">
         <div class="pull-right">{% avatar profile.user 65 %}</div>
@@ -81,6 +59,53 @@
           {% include "relationships/_list_connections.html" %}
         {% endif_has_tag %}
       </div>
+    </div>
+    {% if object_list|length > 0 %}
+    <div class="row">
+      <div class="span8">
+        {% include "people/_profile_filters.html" %}
+      </div>
+      <div class="span4">
+        <div class="pull-right" data-viewby="list">
+          {% include "_viewby.html" %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    <div class="row">
+      <div class="span9">
+        <div class="tab-content span7 paginate paginate-auto">
+        <div class="tab-pane active list paginate-contents" id="all">
+          {% if object_list|length > 0 %}
+            {% autopaginate object_list 5 %}
+              {% for obj in object_list %}
+              <article>
+                <div class="details">
+                  {% if obj.class_name = 'Map' %}
+                    <img src="{% static 'people/img/map.png' %}" alt="{% trans 'Map' %}"></img>
+                  {% endif %}
+                  {% if obj.class_name = 'Layer' %}
+                    <img src="{% static 'people/img/layers.png' %}" alt="{% trans 'Layer' %}"></img>
+                  {% endif %}
+                  {% if obj.class_name = 'Document' %}
+                    <img src="{% static 'people/img/page_white.png' %}" alt="{% trans 'Document' %}"></img>
+                  {% endif %}
+                  <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
+                  <div class="meta">{{ obj.date|date:"Y-m-d" }}</div>
+                  <p class="abstract">{{ obj.abstract }}</p>
+                </div>
+              </article>
+              {% endfor %}
+          {% else %}
+            <p>{% trans "This user still hasn't uploaded or created new contents." %}</p>
+          {% endif %}
+        </div>
+        {% if object_list|length > 0 %}
+          {% paginate %}
+        {% endif %}
+        </div>
+      </div>
+      
     </div>
   </div>
 </div>
