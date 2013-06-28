@@ -1,11 +1,10 @@
 {% extends "maps/map_base.html" %}
 {% load i18n %}
 
-{% block head %} 
-{% include "geonode/ext_header.html" %}
-{% include "geonode/app_header.html" %}
+{% block head %}
 {{ block.super }}
-{% endblock %} 
+<link href="{{ STATIC_URL }}lib/css/jquery-ui.css" rel="stylesheet" />
+{% endblock %}
 
 {% block body %}
 <div class="twocol">
@@ -55,6 +54,7 @@
     {% if map_status %} 
       <button type="button" id="cancel">Cancel</button>
       <div id="pb"></div>
+      <div id="pb-status">Downloading.....</div>
     {% elif downloadable_layers|length > 0 %} 
       <form action="{{site}}maps/{{map.id}}/download" method="POST"> 
         {% csrf_token %}
@@ -78,22 +78,23 @@
           '{% url "map_download_check" %}'
         ).
         done(function(result){
-          process = $.parseJSON(result.responseText);
+          process = $.parseJSON(result);
           if (process["process"]["status"] === "FINISHED"){ 
             location.href = "{{geoserver}}rest/process/batchDownload/download/" +  process["process"]["id"];
             clearInterval(checkStatus); 
-            pb.updateProgress(1,"Done....",true);
+            pb.progressbar("option","value",100);
+            $('#pb-status').html("Done");
           } 
           else { 
-            pb.updateProgress(process["process"]["progress"]/100,"Downloading...",true); 
+            pb.progressbar("option","value",process["process"]["progress"]/100); 
           } 
         });
       };
 
       $(function(){
         checkStatus = setInterval("update()",1000);
-        $( "#pb" ).progressbar({
-          value: 37
+        pb = $( "#pb" ).progressbar({
+          value: 10
         });
 
         $("#cancel").click(function(){
