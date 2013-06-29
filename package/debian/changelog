@@ -1,3 +1,331 @@
+geonode (2.0.0+beta11) precise; urgency=high
+
+  [ Jeffrey Johnson ]
+  * [a41ded] Initial (rough) add of docs/developers/api.txt and reference in docs/index.txt
+  * [f2f9b7] Remove static lib dependencies from GeoNode's source tree
+  * [0f7649] Add component.json and README to geonode/static
+
+  [ capooti ]
+  * [38e228] Moved the SPATIAL_REPRESENTATION_TYPES base/enumerator to the SpatialRepresentationType model.
+  * [f3d301] Moved the CONSTRAINT_OPTIONS base/enumerator to the RestrictionCodeType model. Need to figure out if it is correctly exposed in full_metadata.xml.
+  * [e5758f] Moved the COUNTRIES base/enumerator to the Region model
+
+  [ Paolo Pasquali ]
+  * [124c80] Many templates changes
+  * [874184] Removed bold from form label
+  * [d1121a] base css sync
+  * [455a04] Profile list redone
+  * [6e37cf] Fixed Document list img placeholder
+  * [438a26] Back to layer list
+  * [017411] Page title reduced
+  * [53d3d9] slide-pane text reduced
+  * [c26d37] Awesome icon color and size in item title
+  * [fd4930] Bold and size removed from form label text
+  * [83ed6a] Removed bold from h2, h3 and set @customFont to Body
+  * [75d8b9] Profile list layout fix
+  * [a38759] Explore people, profiles template fixed (but explore people still missing)
+  * [c5c977] navbar icons resized
+  * [6d4639] people evelope icon hover
+  * [bf2d8a] Fixed link to explore profile
+
+  [ capooti ]
+  * [a45564] Added the METADATA_DOWNLOAD_ALLOWS setting
+  * [3f21a4] Added the gn_description and is_choice field, renamed slug to identifier and name to description (to have homogeneity with the other metadata models) in the TopicCategory model
+  * [596cbc] Removed the default value from resourcebase.category, as it is a nullable field
+  * [9929e2] Removing the get_default_category() method, as it is not needed anymore
+
+  [ Paolo Pasquali ]
+  * [b9d14a] Grid view fixing in profile list page
+
+  [ capooti ]
+  * [4edd9d] Using identifier for the layer.category metadata
+  * [ec8b6f] Now the metadata for resourceConstraints is correctly set to restriction_code_type.identifier
+
+  [ Jeffrey Johnson ]
+  * [fc0abc] Add LayerStyleUploadForm
+  * [33950d] Add layer_style_upload view
+  * [26a2a0] Wire up layer_style_upload in layers/urls.py
+  * [cfd57c] Initial work on Layer Style Manager
+  * [226866] Hook the Style Manager Page up
+  * [e77a89] Remove yet another copy of jquery
+
+  [ Paolo Pasquali ]
+  * [faa93f] Add Profile Base
+  * [23ed93] Added latest-maps class option in home page
+  * [f94593] Resizing the layer thumb
+  * [9f318e] layer list item template
+  * [c5fb48] map list item template
+  * [39a114] profile list item template
+  * [8410de] CSS update
+  * [d0ba3f] Index latest-maps class
+  * [cb6e02] profile follow html
+  * [de217b] Adding the profile list page
+
+  [ Ariel Nunez ]
+  * [663799] Updated classifier
+
+  [ Jeffrey Johnson ]
+  * [043c3d] Adding yet another jquery for now til we get bower sorted out
+  * [07d52d] Initial work to make geogit and time optional
+  * [99f98f] handle for GEOGIT_DATASTORE in feature_edit_check
+  * [9a8534] Skip time step if not selected
+  * [10789c] Add GEOGIT_DATASTORE and UPLOADER_SHOW_TIME_STEP to local_settings.py sample
+  * [4b80fb] Some cleanup
+
+  [ Travis L Pinney ]
+  * [d94c6e] Added Mac OSX build instructions
+
+  [ Simone Dalmasso ]
+  * [72b4d7] add update categories command
+
+  [ Paolo Pasquali ]
+  * [ed6869] Reverting stars to orange
+  * [916596] Fixed double quotes in profile list item
+  * [956fd7] Back to no double quotes in _profile_list_item
+  * [4f533f] Adding padding between items
+
+  [ Jeffrey Johnson ]
+  * [966245] Fix typo in geonode/layers/views.py (tests pass)
+  * [38451d] Reduce number of copies of jquery lib we have floating around
+  * [80fd19] Changes to feature_edit_check logic per @ischneider
+  * [36d771] Use store_type vs type
+  * [c928df] Set all optional settings to False in local_settings.py and add UPLOADER_BACKEND setting
+  * [ffd20d] Work to make the time and geogit boxes only show if those options are enabled
+  * [0abb99] Fix up syntax in template and rename passed vars
+  * [71fcc8] dont show the entire vector options div if the format is raster
+  * [e04c32] use !== when checking for raster type
+  * [805b7c] remove extraneous trailing comma
+  * [1e953b] Error handling for layer_style_manage
+  * [0c2d65] Add a Manage Styles option/button upon successful upload
+  * [db4399] Remove testing framework, LICENSE and README from lou-multi-select
+  * [e72395] remove jquery.multi-select.jquery.json
+
+  [ Ariel Nunez ]
+  * [82496d] Added upload to pypi
+
+  [ Jeffrey Johnson ]
+  * [8dbab7] Remove more libs
+  * [32a654] Remove even more libs
+  * [13c50b] add multi-select and qunit to component.json
+  * [016d75] add qunit and env-js to component.json
+
+  [ Simone Dalmasso ]
+  * [ef856a] Move to the categories count method suggested by ischneider. Thanks @ischneider
+
+  [ Jeffrey Johnson ]
+  * [81ef45] Initial pass of changing static url paths
+  * [ae4b2c] More replacements of libs with path to components
+  * [790465] some further fixups
+
+  [ capooti ]
+  * [67e0e7] category.gn_description may be null (needed in migration). Updated the search page to use topiccategory.identifier instead than slug
+
+  [ Paolo Pasquali ]
+  * [2b8c66] Layout minor bug fixes
+
+  [ capooti ]
+  * [48e40b] Updated the gn_description of topiccategories to a shorter version in fixtures.
+
+  [ Simone Dalmasso ]
+  * [30af60] fix some require paths for search
+
+  [ capooti ]
+  * [6ca3e1] Now search for categories is using the identifier field (slug was replaced by identifier).
+
+  [ Simone Dalmasso ]
+  * [d3650a] call again the utils on require load
+  * [a444e7] just use the global jquery
+
+  [ Jeffrey Johnson ]
+  * [e2c1f6] rearrange dependencies in component.json for easier reading
+
+  [ capooti ]
+  * [1f13b0] Added the attribute description field, to be used in metadata. Removed from now, until they will be implemented in gxp, the visible and display_order form fields in layer metadata page.
+
+  [ Jeffrey Johnson ]
+  * [26eea9] more mods in component.json
+  * [abe462] Move to bower.json, use bower-installer and add resulting lib dir to .gitignore
+  * [d202c1] Put dependency main files in the right place in lib
+  * [7427e3] Move some static media around while we are in the process of updating paths.
+  * [7e858a] Add setup_static task to pavement.py
+  * [2c9b28] Some small updates to geonode/static/README
+  * [3c59bf] Some small updates to geonode/static/README
+  * [aab937] Move all extjs under the right dir
+  * [83a9aa] Update bootstrap path in base.less and rebuild base.css
+  * [19829f] Reenable use of geonode/static/geonode/Makefile
+  * [65d823] Handle for data_dir_zip not being found
+  * [77f3f3] Ass filter option and pass to gs_slurp
+  * [7fcc66] Set cache time to 0 from settings
+  * [feb0ce] Add options for filtering by store or by a filter string in updatelayers
+
+  [ Tom Kralidis ]
+  * [b5be33] set distribution url if not set (#891)
+  * [6850c4] avoid double slashed urls
+  * [2e2316] emphasize XML upload possible lossiness (#138)
+
+  [ Jeffrey Johnson ]
+  * [842673] Handle for data_dir_zip not being found
+  * [4cac40] Set cache time to 0 from settings
+
+  [ Ariel Nunez ]
+  * [b1f757] Added freenode.txt for channel verification, will be removed soon
+  * [5e930c] Now our channel in Freenode is registered
+
+  [ Jeffrey Johnson ]
+  * [b6e15b] Filter out layers explicitly disabled by geoserver in gs_slurp
+  * [678f59] Fail gracefully and log if the store cannot be deleted in cascading_delete
+
+  [ Matthew Hanson ]
+  * [ed5441] removed initial bobby user
+
+  [ Ariel Nunez ]
+  * [a32b19] Revert removal of bobby, it breaks unit tests
+
+  [ Jeffrey Johnson ]
+  * [4103d2] Work from ROGUE on map thumbnails
+  * [bd63a5] Control show/hide of printNG based functionality
+  * [50436a] Add PRINTNG_ENABLED to geonode/local_settings.py.sample
+  * [bf48df] fixed footer
+  * [5ec3b8] Update i18n from transifex
+  * [81bdeb] makemessages/compilemessages
+  * [fd0314] another pull from transifex after pushing
+  * [eec142] add new langs
+  * [ce22d4] One more update
+
+  [ Simone Dalmasso ]
+  * [e4a1dc] move counts to base tag
+  * [a0f1b6] fix tests
+
+  [ capooti ]
+  * [fa7b17] Updated tests, as now we have a topiccategory.identifier field and not topiccategory.slug
+  * [a7f488] Merging code from the PR of @jj0hns0n. Thanks Jeff!
+
+  [ Simone Dalmasso ]
+  * [712dee] remove ext in the form management and use modal forms
+  * [15838f] fix for maps and documents as well
+
+  [ Jeffrey Johnson ]
+  * [5d4967] Better error handling for thumbnails
+  * [cfb602] Filter out profiles without a user attached (Person outside GeoNode)
+  * [65c3b1] rebuild base.css
+  * [737def] Fix up static paths to match geonode/static/lib
+  * [75b68b] Use .components dir
+  * [bef943] More work to get .components ignored
+  * [68d568] Fix path in base.less
+  * [e7ced1] Move the delete to the end of paver setup_static
+
+  [ Ariel Nunez ]
+  * [8b1937] Testing script to install geonode on osgeo livedvd
+  * [f57378] Fixed geoservers port
+
+  [ Jeffrey Johnson ]
+  * [96df38] More work to update paths for bower based install
+  * [bd4910] Fix bower config
+  * [162c11] Install dependencies for the travis build
+  * [1d755a] just less vs lessc
+  * [666a06] Install bower-installer
+  * [8ab1f9] Bump bootstrap version
+  * [ffed69] Disable running javascript tests temporarily
+
+  [ Tyler Garner ]
+  * [c1e7d2] Fix for issue #638 and changed account page headers to be consistant with the rest of the application.
+  * [d29365] Fix for issue #638 and changed account page headers to be consistant with the rest of the application.
+
+  [ Simone Dalmasso ]
+  * [02c132] fix less import path
+  * [1dbd8b] move scripts to the right block
+  * [f907a2] use the global jquery
+  * [9721ad] activate view count for layers and documents
+
+  [ Jeffrey Johnson ]
+  * [f20c37] Add METADATA_DOWNLOAD_ALLOWS back to settings.py
+  * [0f5ad7] Fix footer
+
+  [ Ariel Nunez ]
+  * [30d80d] Updates to install_geonode, refs #938
+
+  [ Tom Kralidis ]
+  * [5619da] Revert "store originally uploaded XML instead of marshalling to ISO for uploaded metadata"
+  * [f870e7] default is always ISO
+  * [f36515] move download_links to ResourceBase, extend LINK_TYPES
+  * [853bc8] do not utf8 encode metadata string
+  * [385473] do not advertise CSW metadata links within a metadata document itself
+
+  [ Simone Dalmasso ]
+  * [1c8b35] remove the update categories command, no longer needed.
+  * [731bff] put back the default category
+
+  [ Jeffrey Johnson ]
+  * [22bcb9] Set language for GeoExt
+
+  [ Tom Kralidis ]
+  * [9e6fc4] how which field failed validation on metadata form (#138)
+  * [3cb936] show which field failed validation on metadata form (#138)
+
+  [ Simone Dalmasso ]
+  * [2a19ac] use map layer title in map detail
+  * [ae7c5f] handle the special case .shp.xml metadata naming convention
+
+  [ Ian Schneider ]
+  * [141b40] docs for geoserver dbclient configuration
+
+  [ Paolo Pasquali ]
+  * [aea7d1] Layout fixes
+
+  [ Simone Dalmasso ]
+  * [140243] replace spaces with underscore in the file name and selector
+  * [aa0480] put back keyword region as optional field
+
+  [ Jeffrey Johnson ]
+  * [eef7d5] Remove select2.png from bower install paths
+  * [e738b8] Use store_type in call to create_geoserver_db_featurestore
+  * [8778e8] Fix syntax error in bower.json
+
+  [ Simone Dalmasso ]
+  * [e16530] resources counts in profile list item
+  * [31c142] adjust counts in profile list item
+
+  [ Matt Bertrand ]
+  * [d49cbb] Retain layer title sent in map json from viewer
+
+  [ capooti ]
+  * [aa1e15] This fix several issues related to avatars (refs #637), but will need some design love
+
+  [ Simone Dalmasso ]
+  * [79eacb] initial migration to jquery based
+  * [af70fd] move map download to jquery
+
+  [ capooti ]
+  * [1ada1e] Updated instructions for Ubuntu to setup Node and tools required for static development
+
+  [ Paolo Pasquali ]
+  * [0dedec] Adding Font-Awesome 3.2.1 support
+  * [e7bc00] Adding former variables.less changes into base.less
+
+  [ capooti ]
+  * [ab08e9] Displaying other profile information in profile detail page (refs #621). Will need some more design love.
+
+  [ Paolo Pasquali ]
+  * [9c932d] Only registered users can see people email
+  * [2760d4] Initial css fixing since bower
+  * [0ac2c7] Deleting wrong css path in initial css fixing since bower
+  * [65184b] Revert "Initial css fixing since bower"
+  * [28b3ec] Initial css fixing since bower
+  * [ef7476] Revert to @brown header
+  * [79af2c] Only registered users can see email in profiles page
+  * [386d46] A little CSS change
+
+  [ Jeffrey Johnson ]
+  * [6c3445] Some layout cleanup in layer_detail.html
+  * [5dcdc9] Remove duplicate block in profile_detail.html
+  * [939b3f] Comment out print button in map_detail.html (until its hooked up with printNG)
+
+  [ Ariel Nunez ]
+  * [7c493c] Fixes permissions on uploads.
+  * [8a6da0] Updated changelog for beta10
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sat, 29 Jun 2013 14:27:52 +0000
+
 geonode (2.0.0+beta10) precise; urgency=high
 
   * [026d87] Updated changelog
