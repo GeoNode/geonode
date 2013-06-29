@@ -1,3 +1,11 @@
+geonode (2.0.0+beta10) precise; urgency=high
+
+  * [026d87] Updated changelog
+  * [b5bf06] Updated publish task to also tag releases
+  * [152924] Do not depend on ALLOWED_HOSTS being present before
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sun, 16 Jun 2013 01:16:45 +0000
+
 geonode (2.0.0+beta9) precise; urgency=high
 
   * [73deda] Added publish task
