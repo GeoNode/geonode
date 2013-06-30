@@ -182,7 +182,7 @@ a2ensite geonode
 echo "geonode 127.0.0.1" >> /etc/hosts
 
 # Uninstall dev packages
-apt-get --assume-yes remove libgdal1-dev libproj-dev libgeos-dev libgeos++-dev
+apt-get --assume-yes remove libgdal1-dev libproj-dev libgeos-dev libgeos++-dev libxml2-dev libxslt-dev python-dev
 apt-get --assume-yes autoremove
 
 echo "==============================================================="
