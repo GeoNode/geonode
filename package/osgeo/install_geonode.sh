@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2012 Open Source Geospatial Foundation (OSGeo)
+# Copyright (c) 2013 Open Source Geospatial Foundation (OSGeo)
 #
 # Licensed under the GNU LGPL.
 # 
@@ -119,13 +119,13 @@ fi
 
 
 # Add Launch icon to desktop
-if [ ! -e /usr/share/applications/geonode.desktop ] ; then
-    cat << EOF > /usr/share/applications/geonode.desktop
+if [ ! -e /usr/local/share/applications/geonode.desktop ] ; then
+    cat << EOF > /usr/local/share/applications/geonode.desktop
 [Desktop Entry]
 Type=Application
 Encoding=UTF-8
-Name=geonode
-Comment=geonode
+Name=GeoNode
+Comment=Starts GeoNode
 Categories=Application;Geography;Geoscience;Education;
 Exec=firefox http://localhost/geonode/
 Icon=/usr/share/icons/geonode_60x60.logo.png
@@ -134,7 +134,7 @@ StartupNotify=false
 EOF
 fi
 
-cp /usr/share/applications/geonode.desktop "$USER_HOME/Desktop/"
+cp /usr/local/share/applications/geonode.desktop "$USER_HOME/Desktop/"
 chown -R $USER_NAME.$USER_NAME "$USER_HOME/Desktop/geonode.desktop"
 
 
@@ -156,13 +156,13 @@ chgrp users -R geonode_documentation*
 ln -sTf "$DOC_DIR" /var/www/geonode-docs
 
 # Add Documentation Launch icon to desktop
-if [ ! -e /usr/share/applications/geonode-docs.desktop ] ; then
-    cat << EOF > /usr/share/applications/geonode-docs.desktop
+if [ ! -e /usr/local/share/applications/geonode-docs.desktop ] ; then
+    cat << EOF > /usr/local/share/applications/geonode-docs.desktop
 [Desktop Entry]
 Type=Application
 Encoding=UTF-8
-Name=geonode Documentation
-Comment=geonode Documentation
+Name=GeoNode Documentation
+Comment=GeoNode Documentation
 Categories=Application;Geography;Geoscience;Education;
 Exec=evince "$DOC_DIR/geonode_documentation.pdf"
 Icon=/usr/share/icons/geonode_60x60.logo.png
@@ -170,7 +170,7 @@ Terminal=false
 StartupNotify=false
 EOF
 fi
-cp -a /usr/share/applications/geonode-docs.desktop "$USER_HOME/Desktop/"
+cp -a /usr/local/share/applications/geonode-docs.desktop "$USER_HOME/Desktop/"
 chown -R $USER_NAME:$USER_NAME "$USER_HOME/Desktop/geonode-docs.desktop"
 
 #Enable GeoNode and reload apache
