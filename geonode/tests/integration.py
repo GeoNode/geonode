@@ -479,7 +479,7 @@ class GeoNodeMapTest(TestCase):
         #test replace a vector with a raster
         response = c.post(vector_replace_url, {'base_file': open(raster_file) })
         # TODO: This should really return a 400 series error with the json dict
-        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.status_code, 500)
         response_dict = json.loads(response.content)
         self.assertEquals(response_dict['success'], False)
 
