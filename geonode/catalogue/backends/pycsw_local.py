@@ -40,7 +40,7 @@ CONFIGURATION = {
         #'pretty_print': 'true',
         #'domainquerytype': 'range',
         #'domaincounts': 'true',
-        'profiles': 'apiso,atom,dif,ebrim,fgdc',
+        'profiles': 'apiso,ebrim',
     },
     'repository': {
         'source': 'geonode',
