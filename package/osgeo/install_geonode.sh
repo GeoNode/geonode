@@ -41,9 +41,10 @@ POSTGRES_USER="$USER_NAME"
 
 #Install packages
 apt-get -q update
-apt-get --assume-yes install gcc libgdal1-dev python-gdal libxml2 python-lxml \
-    python-libxml2 python-pip libproj0 libproj-dev libgeos-dev libgeos++-dev \
-    libapache2-mod-wsgi python-shapely python-pycsw python-owslib libxml2-dev libxslt-dev python-dev
+apt-get --assume-yes install gcc python-gdal libxml2 python-lxml python-libxml2 python-pip \
+    libproj0 libapache2-mod-wsgi python-shapely python-pycsw python-owslib python-imaging \
+    python-pyproj python-nose python-httplib2 gettext \
+    libgdal1-dev libxml2-dev libxslt-dev python-dev libproj-dev libgeos-dev libgeos++-dev
 
 if [ $? -ne 0 ] ; then
     echo 'ERROR: Package install failed! Aborting.'
@@ -52,8 +53,7 @@ fi
 
 
 # Install geonode
-pip install --upgrade geonode==2.0b10
-
+pip install --upgrade geonode
 
 # Create database for demonstration instance
 sudo -u $POSTGRES_USER createdb geonode
