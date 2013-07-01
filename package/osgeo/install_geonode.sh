@@ -111,12 +111,8 @@ echo "Done"
 
 # Install desktop icon
 echo "Installing geonode icon"
-if [ ! -e "/usr/share/icons/geonode_60x60.logo.png" ] ; then
-    wget -c --progress=dot:mega \
-        "http://geonode.org/logo-geonode-livedvd.png" \
-        -O /usr/share/icons/geonode_60x60.logo.png
-fi
-
+cp -f "$USER_HOME/gisvm/app-conf/geonode/geonode.png" \
+       /usr/share/icons/
 
 # Add Launch icon to desktop
 if [ ! -e /usr/local/share/applications/geonode.desktop ] ; then
@@ -128,7 +124,7 @@ Name=GeoNode
 Comment=Starts GeoNode
 Categories=Application;Geography;Geoscience;Education;
 Exec=firefox http://localhost/geonode/
-Icon=/usr/share/icons/geonode_60x60.logo.png
+Icon=/usr/share/icons/geonode.png
 Terminal=false
 StartupNotify=false
 EOF
@@ -147,7 +143,7 @@ chmod g+w .
 chgrp users .
 
 wget -c --progress=dot:mega \
-    "http://https://media.readthedocs.org/pdf/geonode/latest/geonode.pdf" \
+    "https://media.readthedocs.org/pdf/geonode/latest/geonode.pdf" \
     -O geonode_documentation-latest.pdf
 
 ln -sf geonode_documentation-latest.pdf geonode_documentation.pdf
@@ -165,7 +161,7 @@ Name=GeoNode Documentation
 Comment=GeoNode Documentation
 Categories=Application;Geography;Geoscience;Education;
 Exec=evince "$DOC_DIR/geonode_documentation.pdf"
-Icon=/usr/share/icons/geonode_60x60.logo.png
+Icon=/usr/share/icons/geonode.png
 Terminal=false
 StartupNotify=false
 EOF
@@ -187,6 +183,6 @@ apt-get --assume-yes autoremove
 
 echo "==============================================================="
 echo "Finished $SCRIPT"
-echo Disk Usage1:, $SCRIPT, `df -B 1M | grep "Filesystem" | sed -e "s/  */,/g"`, date
-echo Disk Usage2:, $SCRIPT, `df -B 1M | grep " /$" | sed -e "s/  */,/g"`, `date`
+echo Disk Usage1:, $SCRIPT, `df . -B 1M | grep "Filesystem" | sed -e "s/  */,/g"`, date
+echo Disk Usage2:, $SCRIPT, `df . -B 1M | grep " /$" | sed -e "s/  */,/g"`, `date`
 echo "==============================================================="
