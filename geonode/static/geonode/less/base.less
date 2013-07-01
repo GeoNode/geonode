@@ -593,6 +593,9 @@ section.widget-mini {
   }
   .overall_rating {
     color: @orange;
+    img {
+      margin: 1px;
+    }
   }
 }
 
@@ -705,6 +708,18 @@ aside .well {
       }
     }
   }
+}
+
+/* FOnt-awesome icon rotation */
+.icon-rotate-45:before {
+  margin-left: -3px;
+  margin-right: 2px;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
 }
 
 img.thumb {
@@ -1082,7 +1097,7 @@ article a [class^="icon-star"], [class*=" icon-star"] {
 }
 article a:hover [class^="icon-"], [class*=" icon-"] {
   color: orange;
-  margin-left:0;
+  margin-left:5px;
   }
 article.abstract {
   border-top:1px solid @bdrColor;
