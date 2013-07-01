@@ -114,6 +114,11 @@ function setup_django_every_time() {
     django-admin.py collectstatic --noinput
     django-admin.py loaddata $GEONODE_SHARE/admin.json
 
+    # Create an empty uploads dir
+    mkdir -p $GEONODE_WWW/uploaded
+
+    # Apply the permissions to the newly created folders.
+    chown www-data -R $GEONODE_WWW
     popd
 }
 
