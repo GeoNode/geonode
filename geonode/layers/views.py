@@ -447,29 +447,34 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 
         form = LayerUploadForm(request.POST, request.FILES)
         tempdir = None
+        out = {}
 
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
                 saved_layer = save(layer, base_file, request.user, overwrite=True, 
                     permissions=layer.get_all_level_info())
-                return HttpResponse(json.dumps({
-                    "success": True,
-                    "redirect_to": reverse('layer_metadata', args=[saved_layer.typename])}))
             except Exception, e:
-                logger.info("Unexpected error during upload.")
-                return HttpResponse(json.dumps({
-                    "success": False,
-                    "errors": ["Unexpected error during upload: " + escape(str(e))]}))
+                out['success'] = False
+                out['errors'] = str(e)
+            else:
+                out['success'] = True
+                out['url'] = reverse('layer_detail', args=[saved_layer.typename])
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
-
         else:
-            errors = []
             for e in form.errors.values():
-                errors.extend([escape(v) for v in e])
-            return HttpResponse(json.dumps({ "success": False, "errors": errors}))
+                errormsgs.extend([escape(v) for v in e])
+
+            out['errors'] = form.errors
+            out['errormsgs'] = errormsgs
+
+        if out['success']:
+            status_code = 200
+        else:
+            status_code = 500
+        return HttpResponse(json.dumps(out), mimetype='application/json', status=status_code)
 
 @login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
