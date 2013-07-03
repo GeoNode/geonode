@@ -1,3 +1,17 @@
+geonode (2.0.0+beta12) precise; urgency=high
+
+  [ Ariel Nunez ]
+  * [621fad] Updated changelog for beta11
+
+  [ Angelos Tzotsos ]
+  * [69f79c] minor fixes to OSGeoLive installation script
+  * [f1f38c] update year
+  * [8ff1c9] removed all dev packages during cleanup
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Mon, 01 Jul 2013 16:14:48 +0000
+
 geonode (2.0.0+beta11) precise; urgency=high
 
   [ Jeffrey Johnson ]
