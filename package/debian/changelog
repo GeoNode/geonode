@@ -1,3 +1,25 @@
+geonode (2.0.0+beta19) precise; urgency=high
+
+  [ Paolo Pasquali ]
+  * [bdcd3a] Minor CSS fixes
+
+  [ Simone Dalmasso ]
+  * [889213] add map view button in list item
+  * [ddfca6] hide pagination numbers
+
+  [ Paolo Pasquali ]
+  * [9efdd9] Added some CSS to Layer Style Manage
+  * [5e2b52] No minify option in less
+
+  [ Simone Dalmasso ]
+  * [acce07] show again the page numbers as it breaks pagination
+
+  [ Ariel Nunez ]
+  * [0daaa1] Added python-dev to the list of installed packages. This is needed because of updates to the shapely version that end up requiring to compile pyproj and others
+  * [3ac295] Added python requirements to debian control file too
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 04 Jul 2013 14:55:34 +0000
+
 geonode (2.0.0+beta18) precise; urgency=high
 
   * UNRELEASED
