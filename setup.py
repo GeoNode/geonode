@@ -59,7 +59,7 @@ for dirpath, dirnames, filenames in os.walk(geonode_dir):
         data_files.append([dirpath, [os.path.join(dirpath, f) for f in filenames]])
 
 
-setup(name='GeoNode',
+setup(name='python-geonode',
       version=__import__('geonode').get_version(),
       description="Application for serving and sharing geospatial data",
       long_description=open('README').read(),
