@@ -190,7 +190,7 @@ def package(options):
 
     with pushd('package'):
 
-        #Delete old tar files in that directory
+        # Delete old tar files in that directory
         for f in glob.glob('GeoNode*.tar.gz'):
             old_package = path(f)
             if old_package != out_pkg_tar:
@@ -200,7 +200,7 @@ def package(options):
             info('There is already a package for version %s' % version)
             return
 
-        # Clean anything that is in the oupout package tree.
+        # Clean anything that is in the output package tree.
         out_pkg.rmtree()
         out_pkg.makedirs()
 
@@ -522,7 +522,8 @@ def versions():
 
 
 def kill(arg1, arg2):
-    """Stops a proces that contains arg1 and is filtered by arg2
+    """
+    Stops a process that contains arg1 and is filtered by arg2
     """
     from subprocess import Popen, PIPE
 
