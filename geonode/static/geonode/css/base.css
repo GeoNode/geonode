@@ -7216,6 +7216,13 @@ section.widget-mini h2 a.btn {
   overflow: hidden;
   position: relative;
 }
+.list article h3 {
+  font-weight: normal;
+  overflow: hidden;
+  text-overflow: ellipses;
+  white-space: nowrap;
+  width: 420px;
+}
 .list article .download {
   right: 20px;
   position: absolute;
@@ -7228,12 +7235,6 @@ section.widget-mini h2 a.btn {
   float: left;
   width: 420px;
   overflow: hidden;
-}
-.list article .details h3 {
-  font-weight: normal;
-  overflow: hidden;
-  text-overflow: ellipses;
-  width: 320px;
 }
 .list article .abstract {
   margin: 1em 0;
@@ -7378,12 +7379,15 @@ section.article-list article footer .views {
   background-color: #f6921e;
 }
 h2.page-title {
-  text-transform: uppercase;
-  font-size: 36px;
-  letter-spacing: 0.1em;
-  font-family: 'Lato', sans-serif;
-  font-weight: 300;
   color: #000000;
+  font-family: 'Lato', sans-serif;
+  font-size: 36px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .strong {
   font-weight: bold;
@@ -8159,6 +8163,16 @@ ul.stats a:hover {
 .stats a strong {
   display: block;
   font-size: 14px;
+}
+/* Select2 */
+.ms-container ul {
+  border: 1px solid #cccccc;
+  margin-left: 0;
+  list-style-type: none;
+  padding: 10px;
+}
+.select-style {
+  margin-bottom: 20px;
 }
 #pb .ui-progressbar-value {
   background: #7dc4f3;

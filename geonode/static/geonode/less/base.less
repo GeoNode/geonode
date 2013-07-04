@@ -618,6 +618,14 @@ section.widget-mini {
   overflow:hidden;
   position: relative;
 
+  h3 {
+      font-weight: normal;
+      overflow: hidden;
+      text-overflow: ellipses;
+      white-space: nowrap;
+      width: 420px;
+  }
+
   .download {
     right: 20px;
     position: absolute;
@@ -632,13 +640,6 @@ section.widget-mini {
     float:left;
     width:420px;
     overflow: hidden;
-
-    h3 {
-      font-weight: normal;
-      overflow: hidden;
-      text-overflow: ellipses;
-      width: 320px;
-    }
   }
 
   .abstract {
@@ -812,12 +813,15 @@ section.article-list {
 }
 
 h2.page-title {
-  text-transform:uppercase;
-  font-size:36px;
-  letter-spacing: 0.1em;
-  font-family:@customFont;
-  font-weight: 300;
   color:@black;
+  font-family:@customFont;
+  font-size:36px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform:uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .strong {
@@ -1622,6 +1626,19 @@ ul.stats {
 .stats a strong {
   display: block;
   font-size: 14px;
+}
+
+/* Select2 */
+
+.ms-container ul {
+  border: 1px solid @grayNeutral;
+  margin-left: 0;
+  list-style-type: none;
+  padding: 10px;
+}
+
+.select-style {
+  margin-bottom: 20px;
 }
 
 #pb .ui-progressbar-value {
