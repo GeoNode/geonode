@@ -7106,7 +7106,6 @@ footer.footer form label {
   text-decoration: underline;
 }
 .action-group .btn-group {
-  float: left;
   margin-right: 10px;
 }
 .action-group .btn-group:last-child {
