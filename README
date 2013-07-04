@@ -159,6 +159,13 @@ Mac OSX Development Build Instructions::
     pip install imaging
     pip install PIL
     pip install paver
+
+    # Node and tools required for static development
+    brew install node
+    npm install -g less
+    npm install -g bower
+    npm install -g bower-installer
+
     paver setup
     paver start
 
