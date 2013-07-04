@@ -186,7 +186,7 @@ def package(options):
     # Create a distribution in zip format for the geonode python package.
     dist_dir = path('dist')
     dist_dir.rmtree()
-    sh('python setup.py sdist --format=zip')
+    sh('python setup.py sdist')
 
     with pushd('package'):
 
@@ -211,7 +211,7 @@ def package(options):
         justcopy(support_folder, out_pkg / 'support')
         justcopy(install_file, out_pkg)
 
-        geonode_dist = path('..') / 'dist' / 'GeoNode-%s.zip' % version
+        geonode_dist = path('..') / 'dist' / 'geonode-%s.tar.gz' % version
         justcopy(geonode_dist, out_pkg)
 
         # Create a tar file with all files in the output package folder.
