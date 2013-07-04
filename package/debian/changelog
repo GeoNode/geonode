@@ -1,3 +1,9 @@
+geonode (2.0.0+beta18) precise; urgency=high
+
+  * UNRELEASED
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 04 Jul 2013 06:09:05 +0000
+
 geonode (2.0.0+beta17) precise; urgency=high
 
   * [3e9b38] Fixed name in setup.py that should not have been changed
