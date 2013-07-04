@@ -19,7 +19,8 @@
         </ul>
       </div>
     </div>
-    <p><a href="{% url "map_download" map.id %}" class="btn btn-mini pull-left clearfix">{% trans "Download" %}</a></p>      
+    <p><a href="{% url "map_download" map.id %}" class="btn btn-mini">{% trans "Download" %}</a>
+    <a href="{% url "map_view" map.id %}" class="btn btn-mini">{% trans "View" %}</a></p>   
   </div>
     <!-- <p class="abstract">{{ map.abstract }}</p> -->
 </article>

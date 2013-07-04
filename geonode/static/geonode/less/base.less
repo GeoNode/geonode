@@ -107,6 +107,10 @@
   font-weight: 400;
 }
 
+.input-append, .input-prepend {
+  font-size: 13px;
+}
+
 // Universal styles
 body {
   padding-top: 80px;
@@ -122,7 +126,7 @@ h2 {
 }
 
 h3 {
-  line-height: 27px;
+  line-height: 18px;
   font-size: 18px;
   font-weight: normal;
   margin-bottom: 0 !important;
@@ -196,6 +200,16 @@ background-color: transparent;
     margin-left: 5px;
     border-radius: 3px;
   }
+}
+.people .profile-info {
+  color: @grayDarker;
+  margin-top: -10px
+}
+.people .dl-horizontal dd {
+  margin-left: 30px;
+}
+.people .dl-horizontal dt {
+  width: 15px;
 }
 
 .navbar {
@@ -565,17 +579,17 @@ section.widget-mini {
 }
 
 .img-placeholder {
+  background:#dddeda;
+  border-radius: 4px;
+  color:@graySp;
+   display:table-cell;
   float:left;
   margin:0 15px 15px 0;
-  background:#dddeda;
   text-align:center;
-  color:@graySp;
-  display:table-cell;
   vertical-align: middle;
 
   &.pl-153-113 {
     .size(60px, 80px);
-    border-radius: 4px;
     padding-top:20px;
   }
 
@@ -604,6 +618,14 @@ section.widget-mini {
   overflow:hidden;
   position: relative;
 
+  h3 {
+      font-weight: normal;
+      overflow: hidden;
+      text-overflow: ellipses;
+      white-space: nowrap;
+      width: 420px;
+  }
+
   .download {
     right: 20px;
     position: absolute;
@@ -618,13 +640,6 @@ section.widget-mini {
     float:left;
     width:420px;
     overflow: hidden;
-
-    h3 {
-      font-weight: normal;
-      overflow: hidden;
-      text-overflow: ellipses;
-      width: 320px;
-    }
   }
 
   .abstract {
@@ -713,7 +728,6 @@ aside .well {
 /* FOnt-awesome icon rotation */
 .icon-rotate-45:before {
   margin-left: -3px;
-  margin-right: 2px;
   -webkit-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
@@ -799,12 +813,15 @@ section.article-list {
 }
 
 h2.page-title {
-  text-transform:uppercase;
-  font-size:36px;
-  letter-spacing: 0.1em;
-  font-family:@customFont;
-  font-weight: 300;
   color:@black;
+  font-family:@customFont;
+  font-size:36px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform:uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .strong {
@@ -1569,8 +1586,10 @@ ul.list {
 }
 
 // people
-.avatar {
-  width: 80px;
+
+.people .avatar {
+  margin-left: 0;
+  margin-right: 20px;
 }
 
 .avatar img {
@@ -1586,7 +1605,7 @@ ul.stats {
     border-left: 1px solid @grayNeutral;
 
     float:left;
-    line-height: 14px;
+    /*line-height: 14px;*/
     padding:4px 10px;
     font-size: @baseFontSize - 2;
     .border-radius(0);
@@ -1607,6 +1626,20 @@ ul.stats {
   display: block;
   font-size: 14px;
 }
+
+/* Select2 */
+
+.ms-container ul {
+  border: 1px solid @grayNeutral;
+  margin-left: 0;
+  list-style-type: none;
+  padding: 10px;
+}
+
+.select-style {
+  margin-bottom: 20px;
+}
+
 #pb .ui-progressbar-value {
   background: rgb(125, 196, 243);
 }

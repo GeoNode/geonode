@@ -1,3 +1,101 @@
+geonode (2.0.0+beta19) precise; urgency=high
+
+  [ Paolo Pasquali ]
+  * [bdcd3a] Minor CSS fixes
+
+  [ Simone Dalmasso ]
+  * [889213] add map view button in list item
+  * [ddfca6] hide pagination numbers
+
+  [ Paolo Pasquali ]
+  * [9efdd9] Added some CSS to Layer Style Manage
+  * [5e2b52] No minify option in less
+
+  [ Simone Dalmasso ]
+  * [acce07] show again the page numbers as it breaks pagination
+
+  [ Ariel Nunez ]
+  * [0daaa1] Added python-dev to the list of installed packages. This is needed because of updates to the shapely version that end up requiring to compile pyproj and others
+  * [3ac295] Added python requirements to debian control file too
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 04 Jul 2013 14:55:34 +0000
+
+geonode (2.0.0+beta18) precise; urgency=high
+
+  * UNRELEASED
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 04 Jul 2013 06:09:05 +0000
+
+geonode (2.0.0+beta17) precise; urgency=high
+
+  * [3e9b38] Fixed name in setup.py that should not have been changed
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 04 Jul 2013 04:42:15 +0000
+
+geonode (2.0.0+beta16) precise; urgency=high
+
+  * [b3bcae] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 04 Jul 2013 04:36:28 +0000
+
+geonode (2.0.0+beta15) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [8f5c24] add missing migration for categories
+
+  [ Jeffrey Johnson ]
+  * [7d2dc4] Bump pinax-theme-bootstrap to 3.0all
+
+  [ Ariel Nunez ]
+  * [3c144f] Upgraded dependencies for django third party apps
+  * [db3967] Changed name of distribution to python-geonode
+  * [9f8742] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 04 Jul 2013 03:59:07 +0000
+
+geonode (2.0.0+beta13) precise; urgency=high
+
+  [ capooti ]
+  * [8d9dcb] Removed the METADATA_DOWNLOAD_ALLOWS stuff
+
+  [ Paolo Pasquali ]
+  * [d28f71] CSS rating fix
+
+  [ Simone Dalmasso ]
+  * [ac0604] initial work on query replace
+  * [768e87] adjust the server response to the new uploader in layer-replace
+  * [f707ab] update the integration test to reflect the new error code
+
+  [ Tom Kralidis ]
+  * [1adfc7] bump pycsw to 1.6.0, atom/dif/fgdc are now default profiles so remove from config
+
+  [ Angelos Tzotsos ]
+  * [40f1a0] icon fix for osgeolive
+
+  [ Paolo Pasquali ]
+  * [572657] Added some css to Profile Detail
+  * [c0224a] More CSS in Profile detail
+
+  [ Ariel Nunez ]
+  * [899afb] Added utf8 encoding to local_settings, refs #974
+  * [55b1b3] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 02 Jul 2013 15:06:34 +0000
+
+geonode (2.0.0+beta12) precise; urgency=high
+
+  [ Ariel Nunez ]
+  * [621fad] Updated changelog for beta11
+
+  [ Angelos Tzotsos ]
+  * [69f79c] minor fixes to OSGeoLive installation script
+  * [f1f38c] update year
+  * [8ff1c9] removed all dev packages during cleanup
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Mon, 01 Jul 2013 16:14:48 +0000
+
 geonode (2.0.0+beta11) precise; urgency=high
 
   [ Jeffrey Johnson ]
