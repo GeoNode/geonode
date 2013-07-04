@@ -211,7 +211,7 @@ def package(options):
         justcopy(support_folder, out_pkg / 'support')
         justcopy(install_file, out_pkg)
 
-        geonode_dist = path('..') / 'dist' / 'geonode-%s.tar.gz' % version
+        geonode_dist = path('..') / 'dist' / 'GeoNode-%s.tar.gz' % version
         justcopy(geonode_dist, out_pkg)
 
         # Create a tar file with all files in the output package folder.

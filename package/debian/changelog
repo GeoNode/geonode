@@ -1,3 +1,9 @@
+geonode (2.0.0+beta16) precise; urgency=high
+
+  * [b3bcae] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 04 Jul 2013 04:36:28 +0000
+
 geonode (2.0.0+beta15) precise; urgency=high
 
   [ Simone Dalmasso ]
