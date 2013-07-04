@@ -28,7 +28,6 @@ function setup_directories() {
 	mkdir -p $GEONODE_WWW/uploaded
 	mkdir -p $GEONODE_WWW/wsgi
 	mkdir -p $APACHE_SITES
-	mkdir -p $GEONODE_LIB
 	mkdir -p $GEONODE_BIN
 	mkdir -p $GEONODE_ETC
 	mkdir -p $GEONODE_ETC/media
@@ -40,7 +39,7 @@ function reorganize_configuration() {
 	cp -rp $INSTALL_DIR/support/geonode.apache $APACHE_SITES/geonode
 	cp -rp $INSTALL_DIR/support/geonode.wsgi $GEONODE_WWW/wsgi/
 	cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
-	cp -rp $INSTALL_DIR/GeoNode*.zip $GEONODE_LIB
+	cp -rp $INSTALL_DIR/GeoNode*.zip $GEONODE_SHARE
 	cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
 	cp -rp $INSTALL_DIR/support/geonode.updateip $GEONODE_BIN/geonode-updateip
 	cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
@@ -63,7 +62,7 @@ function randpass() {
 
 function setup_postgres_once() {
     su - postgres <<EOF
-createdb -E UTF8 geonode
+createdb -E UTF8 --locale=en_US.utf8 geonode
 createlang -d geonode plpgsql
 psql -d geonode -f $POSTGIS_SQL_PATH/$POSTGIS_SQL
 psql -d geonode -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
@@ -89,30 +88,19 @@ function setup_django_once() {
 }
 
 function setup_django_every_time() {
-    pushd $GEONODE_LIB
-    virtualenv . --system-site-packages --never-download
+    pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies
 
-    if [ ! -f bin/activate ]
-    then
-        echo "Creation of virtualenv failed; aborting installation"
-        exit -1
-    fi
-
-    source bin/activate
-    pip install GeoNode-*.zip
-
-    sitedir=`$GEONODE_LIB/bin/python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
+    sitedir=`python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
 
     ln -sf $GEONODE_ETC/local_settings.py $sitedir/geonode/local_settings.py
     # Set up logging symlink
     ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
 
-    export PYTHONPATH=/var/lib/geonode/lib/python2.7/site-packages
     export DJANGO_SETTINGS_MODULE=geonode.settings
-    django-admin.py syncdb --all --noinput
+    django-admin syncdb --all --noinput
     #django-admin migrate --noinput
-    django-admin.py collectstatic --noinput
-    django-admin.py loaddata $GEONODE_SHARE/admin.json
+    django-admin collectstatic --noinput
+    django-admin loaddata $GEONODE_SHARE/admin.json
 
     # Create an empty uploads dir
     mkdir -p $GEONODE_WWW/uploaded
@@ -125,10 +113,9 @@ function setup_django_every_time() {
 function setup_apache_once() {
 	chown www-data -R $GEONODE_WWW
 	a2enmod proxy_http
-	sitedir=`$GEONODE_LIB/bin/python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
         
 	sed -i '1d' $APACHE_SITES/geonode
-	sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2 python-path=$sitedir" $APACHE_SITES/geonode
+	sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2" $APACHE_SITES/geonode
 
 	#FIXME: This could be removed if setup_apache_every_time is called after setup_apache_once
 	$APACHE_SERVICE restart
