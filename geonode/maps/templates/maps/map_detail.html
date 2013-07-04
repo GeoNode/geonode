@@ -18,14 +18,25 @@
 
 {% block body_outer %}
   {% overall_rating map "map" as map_rating %}
-  <div class="span6">
+  <div class="span5">
     <h2 class="page-title">{{ map.title }}</h2>
   </div>
-  <div class="span12  action-group">
-    <div class="hd-actions pull-right">
+  <div class="span7 action-group pull-right">
+    <div class="btn-group pull-right">
+      <div class="btn-group">
+        <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+          {% trans "Download Map" %}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="{% url "map_download" map.pk %}">{% trans "Download Data Layers" %} <i class="icon-chevron-right"></i></a></li>
+            <li><a href="{% url "map_wmc" map.pk %}" target="_new">{% trans "Download Web Map Context" %} <i class="icon-chevron-right"></i></a></li>
+        </ul>
+      </div>
+
       {% has_obj_perm user map "map.change_map" as can_edit_map %}
       {% if can_edit_map %}
-      <div class="btn-group pull-right">
+      <div class="btn-group">
         <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
           {% trans "Edit Map" %}
           <span class="caret"></span>
@@ -40,16 +51,6 @@
         </ul>
       </div>
       {% endif %}
-      <div class="btn-group">
-        <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
-          {% trans "Download Map" %}
-          <span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a href="{% url "map_download" map.pk %}">{% trans "Download Data Layers" %} <i class="icon-chevron-right"></i></a></li>
-            <li><a href="{% url "map_wmc" map.pk %}" target="_new">{% trans "Download Web Map Context" %} <i class="icon-chevron-right"></i></a></li>
-        </ul>
-      </div>
       {% comment %}
       <div class="btn-group">
         <a href="#" class="btn btn-large btn-info strong"><i class="icon-print icon-white"></i> {% trans "Print Map" %}</a>
@@ -67,9 +68,9 @@
     <div class="map-actions">
       <ul class="nav nav-tabs">
         <li class="active"><a href="#info" data-toggle="tab"><i class="icon-info-sign"></i>{% trans "Info" %}</a></li>
-        <li><a href="#comments" data-toggle="tab"><i class="icon-comment"></i> {% trans "Comments" %}</a></li>
-        <li><a href="#rate" data-toggle="tab"><i class="icon-star"></i>{% trans "Ratings" %}</a></li>
         <li><a href="#share" data-toggle="tab"><i class="icon-share"></i>{% trans "Share" %}</a></li>
+        <li><a href="#rate" data-toggle="tab"><i class="icon-star"></i>{% trans "Ratings" %}</a></li>
+        <li><a href="#comments" data-toggle="tab"><i class="icon-comment"></i> {% trans "Comments" %}</a></li>
         <!-- li><a href="#flag" data-toggle="tab"><i class="icon-flag"></i>{% trans "Flag" %}</a></li -->
       </ul>
     </div>
@@ -78,7 +79,6 @@
       {% include "geonode/resourcebase_info_panel.html" with resourcebase=map %}
 
       <article class="tab-pane" id="comments">
-        <h2>{% trans "Comments" %}</h2>
     	{% with map as obj %}
       	{% include "_comments.html" %}
     	{% endwith %}
