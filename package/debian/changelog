@@ -1,3 +1,18 @@
+geonode (2.0.0+beta15) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [8f5c24] add missing migration for categories
+
+  [ Jeffrey Johnson ]
+  * [7d2dc4] Bump pinax-theme-bootstrap to 3.0all
+
+  [ Ariel Nunez ]
+  * [3c144f] Upgraded dependencies for django third party apps
+  * [db3967] Changed name of distribution to python-geonode
+  * [9f8742] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 04 Jul 2013 03:59:07 +0000
+
 geonode (2.0.0+beta13) precise; urgency=high
 
   [ capooti ]
