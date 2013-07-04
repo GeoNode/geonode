@@ -17,36 +17,51 @@
 <div class="alert alert-error">{{ error }}</div>
 {% endif %}
 
-<div class="row">
-  <div class="span8">
-    <form action="{% url "layer_style_manage" layer.typename %}" method="POST">
-      <h2>
-        {% blocktrans with layer.typename as layer_title %}
-          Manage Available Styles for {{ layer_title }}
-        {% endblocktrans %}
-      </h2>
-      <h3>Default Style</h3>
+<div class="span12 select-style">
+  <h2 class="page-title">{% trans "Manage Styles" %}</h2>
+  <h3>
+    {% blocktrans with layer.typename as layer_title %}
+      Manage Available Styles for <a href="/layers/{{ layer_title }}">{{ layer_title }}</a>
+    {% endblocktrans %}
+  </h3>
+</div>
+<form action="{% url "layer_style_manage" layer.typename %}" method="POST">
+  <fieldset>
+    <div class="span3">
+      <h3>Layer Default Style</h3>
+    </div>
+    <div class="span9">
       <select id='default_style' name='default_style'>
       {% for style in layer_styles %}
         <option value="{{ style }}">{{ style }}</option> 
       {% endfor %}
-        </select>
-      <h3>Available Styles</h3>
+      </select>
+    </div>
+  </fieldset>
+  <fieldset>
+    <div class="span3">
+      <h3>Available styles</h3>
+      <p>Click on an available style in the upper box to assign it to this layer. Selected styles appear in the lower box.</p>
+    </div>
+    <div class="span9">
       <select multiple="multiple" id="style-select" name="style-select">
-      {% for style in gs_styles %}
-        {% if style in layer_styles %}
-        <option value='{{ style }}' selected>{{ style }}</option>
-        {% else %}
-        <option value='{{ style }}'>{{ style }}</option>
-        {% endif %}
-      {% endfor %}
-      {% csrf_token %}
-      <input type="hidden" value="{{ layer.typename }}" /> 
+        {% for style in gs_styles %}
+          {% if style in layer_styles %}
+          <option value='{{ style }}' selected>{{ style }}</option>
+          {% else %}
+          <option value='{{ style }}'>{{ style }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+        {% csrf_token %}
+        <input type="hidden" value="{{ layer.typename }}" />
+    </div>
+  </fieldset>
       <div class="form-actions">
         <input type="submit" value="{% trans "Update Available Styles" %}" class="btn btn-danger" />
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
 </div>
 {% endblock %}
 {% block extra_script %}
