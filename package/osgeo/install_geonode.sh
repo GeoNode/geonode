@@ -53,7 +53,7 @@ fi
 
 
 # Install geonode
-pip install --upgrade geonode
+pip install --upgrade --use-mirrors geonode
 
 # Create database for demonstration instance
 sudo -u $POSTGRES_USER createdb geonode
