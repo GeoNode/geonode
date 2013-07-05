@@ -27,6 +27,14 @@
       height: 100px;
       margin-bottom: 10px;
       padding: 5px;
+      border: 4px dashed gray;
+    }
+    #drop-zone h2 {
+      vertical-align:middle;
+      text-align: center;
+      margin-top: 30px;
+      color: gray;
+      font-size: 36px;
     }
 </style>
 {{ block.super }}
@@ -70,8 +78,10 @@
         {% endif %}
 
             <section id="drop-zone">
-              <h2>Drag and Drop files here</h2>
+              <h2>{% trans "Drop files here" %}</h2>
             </section>
+
+            or select them one by one:
 
             <form id="file-uploader" method="post" enctype="multipart/form-data">
               <input class="btn" id="file-input" type="file" multiple>
