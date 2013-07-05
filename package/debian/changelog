@@ -1,3 +1,11 @@
+geonode (2.0.0+beta27) precise; urgency=high
+
+  * [e69be0] Added dateutil and updated changelog
+  * [f8f666] Fixed typo in geonodedir location in installer.sh
+  * [7656d3] Added back --all to syncdb
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 05 Jul 2013 07:47:47 +0000
+
 geonode (2.0.0+beta25) precise; urgency=high
 
   * [c77243] Added pinax-theme-boostrap to the debian/control file
