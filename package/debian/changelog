@@ -1,3 +1,21 @@
+geonode (2.0.0+beta22) precise; urgency=high
+
+  [ Angelos Tzotsos ]
+  * [c78c0e] sync osgeolive script to osgeo svn
+  * [a3b458] sync with osgeolive svn
+
+  [ Tyler Garner ]
+  * [aaaf87] Let align attributes headers.
+  * [56f047] Added bower installation instructions to Mac OSX section.
+  * [11c544] Cleaned up the comment header in the layer detail view.
+  * [e37e11] Made map_detail page consistent with layer_detail page.
+
+  [ Ariel Nunez ]
+  * [bb7d7c] Updated changelog
+  * [41fc3f] Troubleshooted postgres database creation under vagrant. Specified locale and template to make it work.
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 05 Jul 2013 04:05:51 +0000
+
 geonode (2.0.0+beta21) precise; urgency=high
 
   * [9ebf02] Added locale option to postgis database creation
