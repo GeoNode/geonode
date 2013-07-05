@@ -92,7 +92,7 @@ function setup_django_every_time() {
 
     geonodedir=`python -c "import geonode;import os;print os.path.dirname(geonode.__file__)"`
     
-    ln -sf $GEONODE_ETC/local_settings.py $sitedir/local_settings.py
+    ln -sf $GEONODE_ETC/local_settings.py $geonodedir/local_settings.py
     # Set up logging symlink
     mkdir -p $GEONODE_LOG
     ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
