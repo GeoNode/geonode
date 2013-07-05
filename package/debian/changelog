@@ -1,3 +1,12 @@
+geonode (2.0.0+beta25) precise; urgency=high
+
+  * [c77243] Added pinax-theme-boostrap to the debian/control file
+  * [650612] Updated changelog
+  * [658c4e] Added another missing pinax package
+  * [571d64] Added missing dependencies to control file
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 05 Jul 2013 05:41:27 +0000
+
 geonode (2.0.0+beta24) precise; urgency=high
 
   * [62cc15] Fixed path for local_settings.py symlink
