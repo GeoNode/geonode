@@ -4,8 +4,9 @@
 // Grays
 // -------------------------
 @grayDark: rgb(72, 71, 72);
-@grayLight: rgb(239, 240, 239);
-@grayNeutral: #ccc;
+@grayLight: #bbb;
+@grayLighter: #eff0ef;
+@grayNeutral: #999;
 @graySp: #777;
 
 // Accent colors
@@ -725,7 +726,14 @@ aside .well {
   }
 }
 
-/* FOnt-awesome icon rotation */
+.badge {
+  background: @grayNeutral;
+}
+.sub-type {
+  background: @grayLight;
+  }
+
+/* Font-awesome icon rotation */
 .icon-rotate-45:before {
   margin-left: -3px;
   -webkit-transform: rotate(45deg);
@@ -947,7 +955,7 @@ ul.space li {
   }
 }
 #slide-pane {
-  border-right: 1px solid @grayNeutral;
+  border-right: 1px solid @grayLight;
   padding-right: 10px;
   position: relative;
   margin-left: 0;
@@ -962,7 +970,7 @@ ul.space li {
     #title;
   }
   .nav li {
-    border-bottom: 1px solid @grayNeutral;
+    border-bottom: 1px solid @grayLight;
     line-height: 1.3;
   }
   .nav a {
@@ -987,12 +995,12 @@ ul.space li {
     margin-right: -30px;
     width: 20px;
     padding: 8px 4px 6px;
-    border: 1px solid @grayNeutral;
+    border: 1px solid @grayLight;
     .border-radius(0 3px 3px 0);
   }
   a.toggle-nav {
     display: block;
-    color: @grayLight;
+    color: @grayLighter;
     i {
       padding-right: 8px;
     }
@@ -1104,7 +1112,7 @@ article h3 [class^="icon-"], [class*=" icon-"] {
       margin-right: 5px;
     }
 article a [class^="icon-"], [class*=" icon-"] {
-      color: @grayNeutral;
+      color: @grayLight;
       font-size: 14px;
       margin-left: 5px;
 }
@@ -1271,7 +1279,7 @@ body.data #subnav-tabs,
 body.maps #subnav-tabs,
 body.people #subnav-tabs,
 body.documents #subnav-tabs {
-  background-color: @grayLight;
+  background-color: @grayLighter;
   color: @graySp;
   .border-radius(3px 3px 0 0);
   .box-shadow(0 1px 2px #CCC);
@@ -1512,7 +1520,7 @@ body.upload-prms .main-content {
 .steps {
   text-align:right;
   text-transform:uppercase;
-  border-bottom:1px solid @grayNeutral;
+  border-bottom:1px solid @grayLight;
   margin-bottom:10px;
 
   .step {
@@ -1602,7 +1610,7 @@ ul.stats {
   margin-top: 0;
 
   a {
-    border-left: 1px solid @grayNeutral;
+    border-left: 1px solid @grayLight;
 
     float:left;
     /*line-height: 14px;*/
@@ -1630,7 +1638,7 @@ ul.stats {
 /* Select2 */
 
 .ms-container ul {
-  border: 1px solid @grayNeutral;
+  border: 1px solid @grayLight;
   margin-left: 0;
   list-style-type: none;
   padding: 10px;
