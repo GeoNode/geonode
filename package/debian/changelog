@@ -1,3 +1,11 @@
+geonode (2.0.0+beta21) precise; urgency=high
+
+  * [9ebf02] Added locale option to postgis database creation
+  * [9bb881] Updated changelog
+  * [bb863f] Simplified installation now that we have native debian packages
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 04 Jul 2013 17:33:49 +0000
+
 geonode (2.0.0+beta19) precise; urgency=high
 
   [ Paolo Pasquali ]
