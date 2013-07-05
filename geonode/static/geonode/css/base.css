@@ -7106,7 +7106,6 @@ footer.footer form label {
   text-decoration: underline;
 }
 .action-group .btn-group {
-  float: left;
   margin-right: 10px;
 }
 .action-group .btn-group:last-child {
@@ -8162,6 +8161,16 @@ ul.stats a:hover {
 .stats a strong {
   display: block;
   font-size: 14px;
+}
+/* Select2 */
+.ms-container ul {
+  border: 1px solid #cccccc;
+  margin-left: 0;
+  list-style-type: none;
+  padding: 10px;
+}
+.select-style {
+  margin-bottom: 20px;
 }
 #pb .ui-progressbar-value {
   background: #7dc4f3;

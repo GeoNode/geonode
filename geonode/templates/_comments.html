@@ -8,11 +8,15 @@
 {% load i18n %}
 <div id="comments_section" class="comments paginate paginate-manual">
     <header>
-        <h3>{% trans 'Comments' %} <span class="total">({% comment_count obj %} total)</span></h3>
-        {% if user.is_authenticated %}
-            <a href="#form_post_comment_div" role="button" class="btn" data-toggle="modal">{% trans 'Add Comment' %}</a>
-        {% endif %}
+        <h3 style="padding: 0px 0px 8px;">{% trans 'Comments' %} <span class="total">({% comment_count obj %} total)</span></h3>
     </header>
+
+    {% if user.is_authenticated %}
+        <div>
+            &nbsp<a href="#form_post_comment_div" role="button" class="btn pull-right" data-toggle="modal">{% trans 'Add Comment' %}</a>
+        </div>
+        {% endif %}
+
     <div class="paginate-contents">
     {% comments obj as comment_list %}
     {% autopaginate comment_list 5 %}

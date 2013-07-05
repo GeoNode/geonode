@@ -186,7 +186,7 @@ def package(options):
     # Create a distribution in zip format for the geonode python package.
     dist_dir = path('dist')
     dist_dir.rmtree()
-    sh('python setup.py sdist --format=zip')
+    sh('python setup.py sdist --formats=zip')
 
     with pushd('package'):
 
