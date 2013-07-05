@@ -90,14 +90,15 @@ function setup_django_once() {
 function setup_django_every_time() {
     pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies
 
-    sitedir=`python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
-
-    ln -sf $GEONODE_ETC/local_settings.py $sitedir/geonode/local_settings.py
+    geonodedir=`python -c "import geonode;import os;print os.path.dirname(geonode.__file__)"`
+    
+    ln -sf $GEONODE_ETC/local_settings.py $sitedir/local_settings.py
     # Set up logging symlink
+    mkdir -p $GEONODE_LOG
     ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
 
     export DJANGO_SETTINGS_MODULE=geonode.settings
-    django-admin syncdb --all --noinput
+    django-admin syncdb --noinput
     #django-admin migrate --noinput
     django-admin collectstatic --noinput
     django-admin loaddata $GEONODE_SHARE/admin.json
