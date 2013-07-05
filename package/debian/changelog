@@ -1,3 +1,11 @@
+geonode (2.0.0+beta24) precise; urgency=high
+
+  * [62cc15] Fixed path for local_settings.py symlink
+  * [ea051a] Updated changelog
+  * [0a14d9] Added python-django-announcements to the debian/control file
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 05 Jul 2013 04:44:39 +0000
+
 geonode (2.0.0+beta22) precise; urgency=high
 
   [ Angelos Tzotsos ]
