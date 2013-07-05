@@ -35,9 +35,9 @@
     <div class="form-controls">
       {{ layer_form|as_bootstrap }}
     </div>
-      <legend>{% trans "Attributes" %}</legend>
+      <header>{% trans "Attributes" %}</header>
       {{ attribute_form.management_form }}
-      <table cellpadding="5" cellspacing="5" width="100%"><tr><th>{% trans "Attribute" %}</th><th>{% trans "Description" %}</th></tr>
+      <table cellpadding="5" cellspacing="5" width="100%"><tr><th style="text-align: left;">{% trans "Attribute" %}</th><th style="text-align: left;">{% trans "Description" %}</th></tr>
           {% for form in attribute_form.forms %}
           {% if form.attribute %}
           <tr><td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td><td> {{form.description}}</td></tr>

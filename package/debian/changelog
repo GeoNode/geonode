@@ -1,3 +1,68 @@
+geonode (2.0.0+beta25) precise; urgency=high
+
+  * [c77243] Added pinax-theme-boostrap to the debian/control file
+  * [650612] Updated changelog
+  * [658c4e] Added another missing pinax package
+  * [571d64] Added missing dependencies to control file
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 05 Jul 2013 05:41:27 +0000
+
+geonode (2.0.0+beta24) precise; urgency=high
+
+  * [62cc15] Fixed path for local_settings.py symlink
+  * [ea051a] Updated changelog
+  * [0a14d9] Added python-django-announcements to the debian/control file
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 05 Jul 2013 04:44:39 +0000
+
+geonode (2.0.0+beta22) precise; urgency=high
+
+  [ Angelos Tzotsos ]
+  * [c78c0e] sync osgeolive script to osgeo svn
+  * [a3b458] sync with osgeolive svn
+
+  [ Tyler Garner ]
+  * [aaaf87] Let align attributes headers.
+  * [56f047] Added bower installation instructions to Mac OSX section.
+  * [11c544] Cleaned up the comment header in the layer detail view.
+  * [e37e11] Made map_detail page consistent with layer_detail page.
+
+  [ Ariel Nunez ]
+  * [bb7d7c] Updated changelog
+  * [41fc3f] Troubleshooted postgres database creation under vagrant. Specified locale and template to make it work.
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 05 Jul 2013 04:05:51 +0000
+
+geonode (2.0.0+beta21) precise; urgency=high
+
+  * [9ebf02] Added locale option to postgis database creation
+  * [9bb881] Updated changelog
+  * [bb863f] Simplified installation now that we have native debian packages
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 04 Jul 2013 17:33:49 +0000
+
+geonode (2.0.0+beta19) precise; urgency=high
+
+  [ Paolo Pasquali ]
+  * [bdcd3a] Minor CSS fixes
+
+  [ Simone Dalmasso ]
+  * [889213] add map view button in list item
+  * [ddfca6] hide pagination numbers
+
+  [ Paolo Pasquali ]
+  * [9efdd9] Added some CSS to Layer Style Manage
+  * [5e2b52] No minify option in less
+
+  [ Simone Dalmasso ]
+  * [acce07] show again the page numbers as it breaks pagination
+
+  [ Ariel Nunez ]
+  * [0daaa1] Added python-dev to the list of installed packages. This is needed because of updates to the shapely version that end up requiring to compile pyproj and others
+  * [3ac295] Added python requirements to debian control file too
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 04 Jul 2013 14:55:34 +0000
+
 geonode (2.0.0+beta18) precise; urgency=high
 
   * UNRELEASED
