@@ -62,7 +62,7 @@ function randpass() {
 
 function setup_postgres_once() {
     su - postgres <<EOF
-createdb -E UTF8 --locale=en_US.utf8 geonode
+createdb -E UTF8 -l en_US.UTF8 -T template0 geonode
 createlang -d geonode plpgsql
 psql -d geonode -f $POSTGIS_SQL_PATH/$POSTGIS_SQL
 psql -d geonode -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
