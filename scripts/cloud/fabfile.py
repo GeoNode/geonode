@@ -261,5 +261,5 @@ def build_geonode_ami():
     print "AMI %s Ready for Use" % (ami_id)
 
 def install_sample_data():
-    run('geonode importlayers `import gisdata; print gisdata.GOOD_DATA`')
+    run('geonode importlayers `python -c "import gisdata; print gisdata.GOOD_DATA"`')
     run('geonode loaddata sample_admin.json')
