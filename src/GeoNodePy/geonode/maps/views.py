@@ -46,6 +46,7 @@ from geonode.maps.gs_helpers import get_sld_for, get_postgis_bbox
 from geonode.maps.encode import num_encode, num_decode
 from django.db import transaction
 import autocomplete_light
+from geonode.maps.encode import despam, XssCleaner
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -149,7 +150,7 @@ class LayerForm(forms.ModelForm):
     temporal_extent_start = forms.DateField(required=False,label= _('Temporal Extent Start Date'), widget=forms.DateInput(attrs={"class":"date"}))
     temporal_extent_end = forms.DateField(required=False,label= _('Temporal Extent End Date'), widget=forms.DateInput(attrs={"class":"date"}))
     title = forms.CharField(label = '*' + _('Title'), max_length=255)
-    abstract = forms.CharField(label = '*' + _('Abstract'), widget=forms.Textarea)
+    abstract = forms.CharField(label = '*' + _('Abstract'), widget=forms.Textarea(attrs={'cols': 60}))
     constraints_use = forms.ChoiceField(label= _('Contraints'), choices=CONSTRAINT_OPTIONS, 
                                         help_text=CONSTRAINT_HELP)
     keywords = taggit.forms.TagField(required=False)
@@ -949,6 +950,8 @@ def layer_metadata(request, layername):
                 new_keywords = layer_form.cleaned_data['keywords']
 
                 the_layer = layer_form.save(commit=False)
+                x = XssCleaner()
+                the_layer.abstract = despam(x.strip(layer_form.cleaned_data["abstract"]))
                 the_layer.topic_category = new_category
                 the_layer.keywords.add(*new_keywords)
                 if request.user.is_superuser and gazetteer_form.is_valid():
