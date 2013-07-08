@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-06-19 20:40-0500\n"
-"PO-Revision-Date: 2013-07-08 12:25+0100\n"
+"PO-Revision-Date: 2013-07-08 13:16+0100\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/geonode/language/"
 "de/)\n"
@@ -1484,23 +1484,24 @@ msgstr "Verwaltung"
 
 #: documents/views.py:36
 msgid "You are not permitted to delete this document"
-msgstr ""
+msgstr "Es ist dir nicht erlaubt dieses Dokument zu löschen"
 
 #: documents/views.py:37
 msgid "You do not have permissions for this document."
-msgstr ""
+msgstr "Du hast nicht die Berechtigung für dieses Dokument"
 
 #: documents/views.py:38
 msgid "You are not permitted to modify this document"
-msgstr ""
+msgstr "Es ist dir nicht erlaubt diese Dokument zu verändern"
 
 #: documents/views.py:39
 msgid "You are not permitted to modify this document's metadata"
 msgstr ""
+"Es ist dir nicht erlaubt die Metadaten von diesem Dokument zu bearbeiten"
 
 #: documents/views.py:40
 msgid "You are not permitted to view this document"
-msgstr ""
+msgstr "Es ist dir nicht erlaubt dieses Dokument zu betrachten"
 
 #: documents/views.py:76
 msgid "You are not allowed to view this document."
@@ -1575,7 +1576,7 @@ msgstr "Dokumente hochladen"
 
 #: documents/templates/documents/document_detail.html:35
 msgid "Edit Document"
-msgstr ""
+msgstr "Dokument editieren"
 
 #: documents/templates/documents/document_detail.html:39
 #: layers/templates/layers/layer_detail.html:59
@@ -1591,11 +1592,11 @@ msgstr "Berechtigungen ändern"
 
 #: documents/templates/documents/document_detail.html:41
 msgid "Replace this Document"
-msgstr ""
+msgstr "Ersetze dieses Dokument"
 
 #: documents/templates/documents/document_detail.html:42
 msgid "Remove this Document"
-msgstr ""
+msgstr "Lösche dieses Dokument"
 
 #: documents/templates/documents/document_detail.html:59
 #: layers/templates/layers/_actions.html:3
@@ -1631,11 +1632,11 @@ msgstr ""
 
 #: documents/templates/documents/document_detail.html:72
 msgid "Share This Document"
-msgstr ""
+msgstr "Teile dieses Dokument"
 
 #: documents/templates/documents/document_detail.html:92
 msgid "Rate this document"
-msgstr ""
+msgstr "Bewerte dieses Dokument"
 
 #: documents/templates/documents/document_detail.html:96
 #: layers/templates/layers/layer_detail.html:142
@@ -1645,11 +1646,11 @@ msgstr "durchschnittliche Bewertung"
 
 #: documents/templates/documents/document_detail.html:106
 msgid "Resource using this document"
-msgstr ""
+msgstr "Resource die das Dokument verwendet"
 
 #: documents/templates/documents/document_detail.html:108
 msgid "List of resources using this document:"
-msgstr ""
+msgstr "Liste der Resourcen, welche das Dokument verwenden"
 
 #: documents/templates/documents/document_detail.html:112
 msgid "This document is related to a "
@@ -1670,20 +1671,22 @@ msgstr "Berechtigungen"
 #: documents/templates/documents/document_detail.html:123
 msgid "Click the button below to change the permissions of this document."
 msgstr ""
+"Klicke den Button unterhalb um die Berechtigungen für diese Dokument zu "
+"bearbeiten"
 
 #: documents/templates/documents/document_detail.html:124
 msgid "Change Document Permissions"
-msgstr ""
+msgstr "Bearbeite die Dokument-Berechtigungen"
 
 #: documents/templates/documents/document_detail.html:128
 #: layers/templates/layers/layer_detail.html:211
 #: maps/templates/maps/map_detail.html:156 templates/base.html:180
 msgid "About"
-msgstr ""
+msgstr "Über"
 
 #: documents/templates/documents/document_detail.html:129
 msgid "Document Owner"
-msgstr ""
+msgstr "Dokument Besitzer"
 
 #: documents/templates/documents/document_detail.html:133
 #: documents/templates/documents/document_metadata.html:26
@@ -1696,7 +1699,7 @@ msgstr "Kontaktpunkt"
 #: documents/templates/documents/document_detail.html:137
 #: layers/templates/layers/layer_detail.html:220
 msgid "Metadata Author"
-msgstr ""
+msgstr "Metadaten Author"
 
 #: documents/templates/documents/document_list.html:33
 #: layers/templates/layers/layer_list.html:35
@@ -1711,6 +1714,9 @@ msgid ""
 "        Editing details for %(document_title)s\n"
 "      "
 msgstr ""
+"\n"
+"        Editiere Details für %(document_title)s\n"
+"      "
 
 #: documents/templates/documents/document_metadata.html:30
 #: layers/templates/layers/layer_metadata.html:44
@@ -1729,6 +1735,10 @@ msgid ""
 "          Are you sure you want to remove %(document_title)s?\n"
 "        "
 msgstr ""
+"\n"
+"          Bist du sicher, dass du das Dokument: %(document_title)s löschen "
+"willst?\n"
+"        "
 
 #: documents/templates/documents/document_remove.html:18
 #: layers/templates/layers/layer_remove.html:18
@@ -1744,11 +1754,11 @@ msgstr "Nein, nicht löschen"
 
 #: documents/templates/documents/document_replace.html:4
 msgid "Replace Document"
-msgstr ""
+msgstr "Ersetze das Dokument"
 
 #: documents/templates/documents/document_replace.html:16
 msgid "Replace "
-msgstr ""
+msgstr "Ersete"
 
 #: documents/templates/documents/document_upload.html:4
 msgid "Upload Document"
@@ -1756,19 +1766,19 @@ msgstr "Dokument hochladen"
 
 #: layers/models.py:57
 msgid "style name"
-msgstr ""
+msgstr "Style Name"
 
 #: layers/models.py:59
 msgid "sld text"
-msgstr ""
+msgstr "sld Text"
 
 #: layers/models.py:60
 msgid "sld version"
-msgstr ""
+msgstr "sld Version"
 
 #: layers/models.py:61
 msgid "sld url"
-msgstr ""
+msgstr "sld Url"
 
 #: layers/models.py:259
 msgid "attribute name"
@@ -2379,11 +2389,11 @@ msgstr "Karten erforschen"
 
 #: maps/templates/maps/map_detail.html:30
 msgid "Edit Map"
-msgstr ""
+msgstr "Karte bearbeiten"
 
 #: maps/templates/maps/map_detail.html:38
 msgid "Remove this Map"
-msgstr ""
+msgstr "Lösche diese Karte"
 
 #: maps/templates/maps/map_detail.html:44
 msgid "Download Map"
@@ -2395,7 +2405,7 @@ msgstr "Datenlayer herunterladen"
 
 #: maps/templates/maps/map_detail.html:49
 msgid "Download Web Map Context"
-msgstr ""
+msgstr "Download Web Karten Inhalt"
 
 #: maps/templates/maps/map_detail.html:53
 msgid "Print Map"
@@ -2419,11 +2429,11 @@ msgstr "Diese Karte verwendet die folgenden Ebenen:"
 
 #: maps/templates/maps/map_detail.html:128
 msgid "Documents related to this map"
-msgstr ""
+msgstr "Dokumente verwandt zu dieser Karte"
 
 #: maps/templates/maps/map_detail.html:129
 msgid "List of documents related to this map:"
-msgstr ""
+msgstr "Liste verwandter Dokumente"
 
 #: maps/templates/maps/map_detail.html:138
 msgid "View map"
@@ -2460,7 +2470,7 @@ msgstr "Neue Karte anlegen"
 
 #: maps/templates/maps/map_detail.html:157
 msgid "Map Owner"
-msgstr ""
+msgstr "Karten Besitzr"
 
 #: maps/templates/maps/map_download.html:67
 msgid ""
@@ -2535,53 +2545,57 @@ msgstr "GeoExplorer"
 
 #: people/enumerations.py:39
 msgid "party who authored the resource"
-msgstr ""
+msgstr "Author der Resource"
 
 #: people/enumerations.py:40
 msgid ""
 "party who has processed the data in a manner such that the resource has been "
 "modified"
-msgstr ""
+msgstr "Bearbeiter der Resource"
 
 #: people/enumerations.py:41
 msgid "party who published the resource"
-msgstr ""
+msgstr "Veröffentlicher der Resource"
 
 #: people/enumerations.py:42
 msgid ""
 "party that accepts accountability and responsability for the data and "
 "ensures appropriate care and maintenance of the resource"
 msgstr ""
+"Beteiligter, welcher die Verantwortung, sowie die Wartung für die Resource "
+"übernimmt"
 
 #: people/enumerations.py:43
 msgid ""
 "party who can be contacted for acquiring knowledge about or acquisition of "
 "the resource"
-msgstr ""
+msgstr "Kontaktperson zu Informationsgewinnung oder Übernahme der Resource"
 
 #: people/enumerations.py:44
 msgid "party who distributes the resource"
-msgstr ""
+msgstr "Verteiler der Resource"
 
 #: people/enumerations.py:45
 msgid "party who uses the resource"
-msgstr ""
+msgstr "Nutzer der Resource"
 
 #: people/enumerations.py:46
 msgid "party that supplies the resource"
-msgstr ""
+msgstr "Bereitsteller der Resource"
 
 #: people/enumerations.py:47
 msgid "party who created the resource"
-msgstr ""
+msgstr "Ersteller der Resource"
 
 #: people/enumerations.py:48
 msgid "party that owns the resource"
-msgstr ""
+msgstr "Besitzer der Resource"
 
 #: people/enumerations.py:49
 msgid "key party responsible for gathering information and conducting research"
 msgstr ""
+"Hauptverantwortlicher zur Informationsbeschaffung und Durchführung der "
+"Forschung"
 
 #: people/forms.py:33
 msgid "Email Address"
@@ -2597,7 +2611,7 @@ msgstr "Ein anderer Nutzer folgt die nun"
 
 #: people/models.py:39
 msgid "function performed by the responsible party"
-msgstr ""
+msgstr "Ausgeübte Funktion des Beteiligten"
 
 #: people/models.py:40 security/models.py:47
 msgid "permissions"
@@ -2612,6 +2626,7 @@ msgid ""
 "name of the responsible personsurname, given name, title separated by a "
 "delimiter"
 msgstr ""
+"Name der verantwortlichne Person, Nachname, Titel durch Trennzeichen getrennt"
 
 #: people/models.py:48
 msgid "Organization Name"
@@ -2619,7 +2634,7 @@ msgstr "Name der Organisation"
 
 #: people/models.py:48
 msgid "name of the responsible organization"
-msgstr ""
+msgstr "Name der verantwortlichen Organisation"
 
 #: people/models.py:49 templates/base.html:49
 msgid "Profile"
@@ -2631,7 +2646,7 @@ msgstr "Name der Position"
 
 #: people/models.py:50
 msgid "role or position of the responsible person"
-msgstr ""
+msgstr "Rolle oder Position der verantwortlichen Person"
 
 #: people/models.py:51
 msgid "Voice"
@@ -2642,6 +2657,8 @@ msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
 msgstr ""
+"Telefonnummer unter welcher die verantwortliche Organisation oder "
+"Einzelperson erreicht werden kann"
 
 #: people/models.py:52
 msgid "Facsimile"
@@ -2651,7 +2668,7 @@ msgstr "Fax"
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
-msgstr ""
+msgstr "Taxnummer der verantwortlichen Organisation oder Einzelperson"
 
 #: people/models.py:53
 msgid "Delivery Point"
@@ -2662,6 +2679,8 @@ msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
 msgstr ""
+"Physikalische und Email Adresse unter welcher die Organisation oder "
+"Einzelperson kontaktiert werden kann"
 
 #: people/models.py:54
 msgid "City"
@@ -2669,7 +2688,7 @@ msgstr "Stadt"
 
 #: people/models.py:54
 msgid "city of the location"
-msgstr ""
+msgstr "Stadt des Standortes"
 
 #: people/models.py:55
 msgid "Administrative Area"
@@ -2677,7 +2696,7 @@ msgstr "Verwaltungsbereich"
 
 #: people/models.py:55
 msgid "state, province of the location"
-msgstr ""
+msgstr "Land, Gebiet des Standortes"
 
 #: people/models.py:56
 msgid "Postal Code"
@@ -2689,13 +2708,15 @@ msgstr "ZIP oder anderen postalischen Code"
 
 #: people/models.py:57
 msgid "country of the physical address"
-msgstr ""
+msgstr "Land der physikalischen Adresse"
 
 #: people/models.py:58
 msgid ""
 "address of the electronic mailbox of the responsible organization or "
 "individual"
 msgstr ""
+"Adresse der elektronischen Mailbox der verantwortlichen Organisation oder "
+"Einzelperson"
 
 #: people/views.py:141
 msgid "Your username for "
@@ -2711,11 +2732,11 @@ msgstr "Kein Benutzer mit einer solchen E-Mail Adresse bekannt."
 
 #: people/templates/people/_profile_about_item.html:10
 msgid "Read more about "
-msgstr ""
+msgstr "Lese mehr über"
 
 #: people/templates/people/_profile_filters.html:5
 msgid "All contents"
-msgstr ""
+msgstr "Alle Inhalte"
 
 #: people/templates/people/_profile_filters.html:6 templates/base.html:113
 msgid "Layers"
@@ -2731,16 +2752,16 @@ msgstr "Dokumente"
 
 #: people/templates/people/_profile_filters.html:12
 msgid "Sort by date"
-msgstr ""
+msgstr "Sortiere nach Datum"
 
 #: people/templates/people/_profile_filters.html:13
 msgid "Sort by title"
-msgstr ""
+msgstr "Sortiere nach Titel"
 
 #: people/templates/people/_profile_list_item.html:37
 #: people/templates/people/profile_detail.html:61
 msgid "My Activities"
-msgstr ""
+msgstr "Meine Aktivitäten"
 
 #: people/templates/people/forgot_username_form.html:5
 msgid "Forgot Username"
@@ -2757,7 +2778,7 @@ msgstr ""
 #: people/templates/people/profile_base.html:12
 #: people/templates/people/profile_list.html:11
 msgid "Explore People"
-msgstr ""
+msgstr "Personen durchforsten"
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2767,7 +2788,7 @@ msgstr "Profil anlegen"
 #: people/templates/people/profile_detail.html:7
 #: people/templates/people/profile_detail.html:13
 msgid "Profile of "
-msgstr ""
+msgstr "Profil von"
 
 #: people/templates/people/profile_detail.html:34
 msgid "Map"
@@ -2788,7 +2809,7 @@ msgstr "Keine Daten gefunden"
 
 #: people/templates/people/profile_detail.html:64
 msgid "Actions"
-msgstr ""
+msgstr "Aktionen"
 
 #: people/templates/people/profile_detail.html:66
 msgid "Edit profile information"
@@ -2860,19 +2881,19 @@ msgstr "Schlülsselwörter"
 
 #: search/templates/search/_sort_filters.html:5
 msgid "Less recent"
-msgstr ""
+msgstr "Weniger neu"
 
 #: search/templates/search/_sort_filters.html:6
 msgid "A - Z"
-msgstr ""
+msgstr "A - Z"
 
 #: search/templates/search/_sort_filters.html:7
 msgid "Z - A"
-msgstr ""
+msgstr "Z - A"
 
 #: search/templates/search/_sort_filters.html:9
 msgid "Relevance"
-msgstr ""
+msgstr "Relevanz"
 
 #: search/templates/search/_type_filters.html:3
 #: templates/geonode/resourcebase_info_panel.html:28
@@ -2917,7 +2938,7 @@ msgstr "nur Layer"
 
 #: search/templates/search/advanced_search.html:49
 msgid "Users only"
-msgstr ""
+msgstr "Nur Benutzr"
 
 #: search/templates/search/advanced_search.html:57
 msgid "Type: "
@@ -2925,7 +2946,7 @@ msgstr "Typ:"
 
 #: search/templates/search/advanced_search.html:62
 msgid "From this site/portal"
-msgstr ""
+msgstr "Von dieser Seite/Portal"
 
 #: search/templates/search/advanced_search.html:68
 msgid "From this group"
@@ -2953,7 +2974,7 @@ msgstr "Bis zu diesem Datum"
 
 #: search/templates/search/advanced_search.html:118
 msgid "Clear Options "
-msgstr ""
+msgstr "Optionen löschen"
 
 #: security/enumerations.py:31
 msgid "Invalid permission level."
@@ -3005,6 +3026,10 @@ msgid ""
 "outdated bookmark?\n"
 "  "
 msgstr ""
+"\n"
+"      Die gewünschte Seite existiert nicht. Vielleicht verwendest du ein "
+"veraltetes Lesezeichen?\n"
+"  "
 
 #: templates/500.html:5
 msgid "Internal Server Error"
@@ -3017,6 +3042,10 @@ msgid ""
 "continues, contact your site administrator.\n"
 "  "
 msgstr ""
+"\n"
+"      Ein interner Fehler ist aufgetreten. Bitte versuche es erneut. Falls "
+"das Problem weiterhin besteht, kontaktiere den Seitenadministrator.\n"
+"  "
 
 #: templates/_actions.html:4
 msgid "Add to Favorites"
@@ -3072,7 +3101,7 @@ msgstr "Änderungen anwenden"
 
 #: templates/_permissions_form_js.html:124
 msgid "Choose one or more users..."
-msgstr ""
+msgstr "Wähle einen oder mehrere Benutzer..."
 
 #: templates/_viewby.html:3
 msgid "View by"
@@ -3080,7 +3109,7 @@ msgstr "Angesehen von"
 
 #: templates/_viewby.html:4
 msgid "Grid"
-msgstr ""
+msgstr "Gitter"
 
 #: templates/_viewby.html:5
 msgid "List"
@@ -3088,11 +3117,11 @@ msgstr "Liste"
 
 #: templates/about.html:4 templates/about.html.py:8
 msgid "About GeoNode"
-msgstr ""
+msgstr "Über GeoNode"
 
 #: templates/about.html:9
 msgid "About GeoNode."
-msgstr ""
+msgstr "Über GeoNode."
 
 #: templates/base.html:51
 msgid "Admin"
@@ -3148,11 +3177,11 @@ msgstr "Registrieren"
 
 #: templates/base.html:125
 msgid "People"
-msgstr ""
+msgstr "Personen"
 
 #: templates/base.html:178
 msgid "Powered by"
-msgstr ""
+msgstr "Betrieben durch"
 
 #: templates/base.html:178
 msgid "GeoNode"
@@ -3164,7 +3193,7 @@ msgstr "Version"
 
 #: templates/base.html:179
 msgid "Developers"
-msgstr ""
+msgstr "Entwickler"
 
 #: templates/base.html:187 templates/geonode/resourcebase_info_panel.html:96
 msgid "Language"
@@ -3216,6 +3245,8 @@ msgid ""
 "This page provides helpful information about how to use the GeoNode. You can "
 "use the sidebar links to navigate to what you want to know."
 msgstr ""
+"Diese Seite beinhaltet hilfreiche Informationen über die Verwendung von "
+"GeoNode. Verwende die Links in der Sidebar zur Navigation."
 
 #: templates/help.html:12
 msgid ""
