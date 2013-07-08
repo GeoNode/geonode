@@ -5,22 +5,22 @@
 
 {% overall_rating map "map" as map_rating %} {% num_ratings map as num_votes %}
 <article>
-  <a href="{% url "map_detail" map.id %}">
-    <img src="{{ map.get_thumbnail_url }}" />
-  </a>
+  <a href="{% url "map_detail" map.id %}"><img src="{{ map.get_thumbnail_url }}" /></a>
   <div class="pull-left">
     <h3><i class="icon-map-marker"></i> <a href="{% url "map_detail" map.id %}">{{ map.title }}</a></h3>
     <div class="details">
       <div class="meta">
         <p>Map {% trans "from" %} <a href="{% url "profile_detail" map.owner.username %}" rel="author">{{ map.owner }}</a>, {{ map.last_modified|timesince }} {% trans 'ago' %}</p>
+        <p class="abstract">{{ map.abstract }}</p>
         <ul class="nav stats">
           <li><a href="#"><strong>{{ map.popular_count }}</strong> {% trans "view" %}{{ map.popular_count|pluralize }}</a></li>
           <li><a href="#"><strong><span class="avg_rating" data-rating="{{ map_rating }}"> <span class="overall_rating"></span></span></strong>{% trans "Average rating" %} ({{num_votes}} {% trans "votes" %})</a></li>
         </ul>
       </div>
-    </div>
-    <p><a href="{% url "map_download" map.id %}" class="btn btn-mini">{% trans "Download" %}</a>
-    <a href="{% url "map_view" map.id %}" class="btn btn-mini">{% trans "View" %}</a></p>   
+      <p>
+        <a href="{% url "map_download" map.id %}" class="btn btn-mini">{% trans "Download" %}</a>
+        <a href="{% url "map_view" map.id %}" class="btn btn-mini">{% trans "View" %}</a>
+      </p>
+    </div>   
   </div>
-    <!-- <p class="abstract">{{ map.abstract }}</p> -->
 </article>
