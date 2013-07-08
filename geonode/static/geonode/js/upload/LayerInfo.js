@@ -272,9 +272,9 @@ define(function (require, exports) {
                 },
             });
         } else if (resp.status === "incomplete") {
-            var a = '<a id="next_step">Layer Upload</a>';
+            var a = '<a id="next_step" class="btn">Continue</a>';
             self.logStatus({
-                msg:'<p>You need to specify more information in order to complete your upload. You can continue your ' + a + '.</p>',
+                msg:'<p>You need to specify more information in order to complete your upload.</p><p>You can continue configuring your layer.</p><p>' + a + '</p>',
                 level: 'alert-success'
             });
             $("#next_step").on('click', resp, self.doResume);
