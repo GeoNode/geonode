@@ -615,78 +615,99 @@ section.widget-mini {
 }
 
 .list article {
-  border-bottom:1px solid @bdrColor;
+  max-width: 600px;
   overflow:hidden;
-  position: relative;
 
   h3 {
-      font-weight: normal;
-      overflow: hidden;
-      text-overflow: ellipses;
-      white-space: nowrap;
-      width: 420px;
+    font-size: 14px;
+    font-weight: normal;
+    min-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipses;
+    white-space: nowrap;
   }
 
-  .download {
-    right: 20px;
-    position: absolute;
+  p {
+    font-size: 12px;
   }
-
-  img {
-    float:left;
-    margin: 1px 15px 15px 0;
-  }
+  .stats {display: none}
+  img {display: none;}
 
   .details {
     float:left;
-    width:420px;
     overflow: hidden;
   }
 
-  .abstract {
-    margin: 1em 0;
+  .abstract-placeholder {
+    display: none;
   }
 }
 
 .grid article {
-  border-right: 1px solid @grayNeutral;
-  float: left;
-  height: 120px;
-  margin-right: 10px;
+  width: 200px;
+  margin: 0 20px 20px 0;
   overflow: hidden;
-  padding-right: 10px;
+  padding: 0;
+  float: left;
+  border-radius: 4px;
+  border: 1px solid @grayLight;
+  /*   -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.2); */
   
 
   h3 {
       color: @blueLight;
+      font-size: 14px;
+      margin-left: 5px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      width: 185px;
+      width: 190px;
     }
+
+  p {
+    padding-bottom: 10px;
+    margin-left: 0;
+  }
+
+  .abstract {display: none}
+  .abstract-placeholder {
+    color: @grayNeutral;
+    font-size: 10px;
+    height: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 5px;
+  }
 
   img {
     float:left;
-    margin: 1px 10px 15px 0;
+    margin: 0;
   }
 
   .details {
     clear: left;
-    width: 185px;
+    margin-left: 5px;
+    width: 190px;
 
     p {
+      font-size: 11px;
       margin-bottom: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      width: 125px;
+      width: 190px;
     }
-    .stats {margin-top: 0px;}
+    .stats {
+      margin-left: -5px;
+      margin-top: -10px;
+    }
   }
 }
 
-.grid article:last-child {
-  border-right: 0;
+.grid article:first-child {
+  margin-left: 0;
 }
 
 aside .well {
@@ -827,9 +848,10 @@ h2.page-title {
   font-weight: 300;
   letter-spacing: 0.1em;
   text-transform:uppercase;
-  overflow: hidden;
+  /*overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: nowrap;*/
+  word-wrap:break-word;
 }
 
 .strong {
@@ -925,6 +947,7 @@ ul.nav-pills.filter {
 
 ul.space li {
   margin-bottom:5px;
+  word-wrap:break-word;
 }
 
 /** view by **/
@@ -1073,8 +1096,8 @@ ul.space li {
 
 
 .tab-pane article {
-  padding-bottom: 10px;
-  padding-top: 10px;
+  padding-bottom: 0;
+  padding-top: 0;
 
   img {
     margin-bottom:10px;

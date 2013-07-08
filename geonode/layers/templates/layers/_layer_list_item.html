@@ -14,15 +14,17 @@
     <div class="details">
       <div class="meta">
         <p>Layer {% trans 'from' %} <a href="{% url "profile_detail" layer.owner.username %}">{{ layer.owner }}</a>, {{ layer.date|timesince }} {% trans 'ago' %}</p>
-        <!-- <p class="abstract">{{ layer.abstract }}</p> -->
+        <p class="abstract">{{ layer.abstract }}</p>
         <ul class="nav stats">
           <li><a href="#"><strong>{{ layer.popular_count }}</strong> {% trans "view" %}{{ layer.popular_count|pluralize }}</a></li>
           <li><a href="#"><strong><span class="avg_rating" data-rating="{{ layer_rating }}"> <span class="overall_rating"></span></span></strong> {% trans "Average rating" %} ({{num_votes}} {% trans "votes" %})</a></li>
         </ul>
       </div> <!-- /.meta -->
+      <p>
+        <a href="#download-{{layer.id}}" data-toggle="modal" class="btn btn-mini">{% trans "Download" %}</a>
+        <a href="{% url "new_map" %}?layer={{ layer.typename }}" class="btn btn-mini">  {% trans "Create a map" %}</a>
+      </p>
     </div> <!-- /.details -->
-    <p><a href="#download-{{layer.id}}" data-toggle="modal" class="btn btn-mini">{% trans "Download" %}</a>
-  <a href="{% url "new_map" %}?layer={{ layer.typename }}" class="btn btn-mini">  {% trans "Create a map" %}</a></p>
     
   </div> <!-- /.pull-left -->
 
