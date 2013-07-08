@@ -11,7 +11,7 @@ requirejs.config({
     }
 });
 
-define(['jquery', 'upload/upload'], function ($, upload) {
+define(['upload/upload'], function (upload) {
     'use strict';
 
     $(function () {
