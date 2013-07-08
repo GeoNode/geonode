@@ -10,7 +10,7 @@
 <article>
   <a href="{% url "layer_detail" layer.typename %}"><img src="{{ layer.get_thumbnail_url }}" /></a>
   <div class="pull-left">
-    <h3><i class="icon-sign-blank icon-rotate-45"></i> <a href="{% url "layer_detail" layer.typename %}">{{ layer.title }}</a></h3>
+    <h3><i class="icon-unchecked icon-rotate-45"></i> <a href="{% url "layer_detail" layer.typename %}">{{ layer.title }}</a></h3>
     <div class="details">
       <div class="meta">
         <p>Layer {% trans 'from' %} <a href="{% url "profile_detail" layer.owner.username %}">{{ layer.owner }}</a>, {{ layer.date|timesince }} {% trans 'ago' %}</p>
