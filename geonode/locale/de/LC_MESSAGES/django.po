@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-06-19 20:40-0500\n"
-"PO-Revision-Date: 2013-07-08 13:16+0100\n"
+"PO-Revision-Date: 2013-07-08 13:43+0100\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/geonode/language/"
 "de/)\n"
@@ -1824,71 +1824,71 @@ msgstr ""
 
 #: layers/models.py:266
 msgid "count"
-msgstr ""
+msgstr "Anzahl"
 
 #: layers/models.py:266
 msgid "count value for this field"
-msgstr ""
+msgstr "Anzahl für diese Feld"
 
 #: layers/models.py:267
 msgid "min"
-msgstr ""
+msgstr "Minimum"
 
 #: layers/models.py:267
 msgid "minimum value for this field"
-msgstr ""
+msgstr "Minimum für dieses Feld"
 
 #: layers/models.py:268
 msgid "max"
-msgstr ""
+msgstr "Maximum"
 
 #: layers/models.py:268
 msgid "maximum value for this field"
-msgstr ""
+msgstr "Maximum für dieses Feld"
 
 #: layers/models.py:269
 msgid "average"
-msgstr ""
+msgstr "Durchschnitt"
 
 #: layers/models.py:269
 msgid "average value for this field"
-msgstr ""
+msgstr "Durschnitt für diese Feld"
 
 #: layers/models.py:270
 msgid "median"
-msgstr ""
+msgstr "Median"
 
 #: layers/models.py:270
 msgid "median value for this field"
-msgstr ""
+msgstr "Mediam für dieses Feld"
 
 #: layers/models.py:271
 msgid "standard deviation"
-msgstr ""
+msgstr "Standard Abweichung"
 
 #: layers/models.py:271
 msgid "standard deviation for this field"
-msgstr ""
+msgstr "Standard Abweichung für diese Feld"
 
 #: layers/models.py:272
 msgid "sum"
-msgstr ""
+msgstr "Summe"
 
 #: layers/models.py:272
 msgid "sum value for this field"
-msgstr ""
+msgstr "Summe für dieses Feld"
 
 #: layers/models.py:273
 msgid "unique values for this field"
-msgstr ""
+msgstr "Eindeutige Werte für diese Feld"
 
 #: layers/models.py:274
 msgid "last modified"
-msgstr ""
+msgstr "zuletzt bearbeitet"
 
 #: layers/models.py:274
 msgid "date when attribute statistics were last updated"
-msgstr ""
+msgstr "Datum der letzten Attribut Statistik Aktualisierungen"
 
 #: layers/models.py:509
 msgid "KML"
@@ -1900,7 +1900,7 @@ msgstr "Ansicht in Google Earth"
 
 #: layers/models.py:540
 msgid "Tiles"
-msgstr ""
+msgstr "Kacheln"
 
 #: layers/ows.py:90
 msgid "Zipped Shapefile"
@@ -2002,7 +2002,7 @@ msgstr "Attribute"
 
 #: layers/templates/layers/_layer_list_item.html:25
 msgid "Create a map"
-msgstr ""
+msgstr "Erstelle eine Karte"
 
 #: layers/templates/layers/layer_base.html:13
 #: layers/templates/layers/layer_list.html:9
@@ -2049,7 +2049,7 @@ msgstr "Ebene bearbeiten"
 
 #: layers/templates/layers/layer_detail.html:61
 msgid "Manage Styles"
-msgstr ""
+msgstr "Verwalte Styles"
 
 #: layers/templates/layers/layer_detail.html:62
 #: maps/templates/maps/map_detail.html:36
@@ -2074,7 +2074,7 @@ msgstr "Wertebereich"
 
 #: layers/templates/layers/layer_detail.html:89
 msgid "Average"
-msgstr ""
+msgstr "Durchschnitt"
 
 #: layers/templates/layers/layer_detail.html:90
 msgid "Median"
@@ -2082,7 +2082,7 @@ msgstr "Median"
 
 #: layers/templates/layers/layer_detail.html:91
 msgid "Standard Deviation"
-msgstr ""
+msgstr "Standard Abweichung"
 
 #: layers/templates/layers/layer_detail.html:121
 msgid "Share This Layer"
@@ -2106,11 +2106,11 @@ msgstr "Diese Ebene wird in keiner Karte verwendet."
 
 #: layers/templates/layers/layer_detail.html:167
 msgid "Documents related to this layer"
-msgstr ""
+msgstr "Dokumente verwandt zu dieser Ebene"
 
 #: layers/templates/layers/layer_detail.html:168
 msgid "List of documents related to this layer:"
-msgstr ""
+msgstr "Liste der Dokumente verwandt zu dieser Ebene:"
 
 #: layers/templates/layers/layer_detail.html:177
 msgid "Create a map using this layer"
@@ -2154,7 +2154,7 @@ msgstr "Keine Stile mit der Ebene verknüpft"
 
 #: layers/templates/layers/layer_detail.html:212
 msgid "Layer Owner"
-msgstr ""
+msgstr "Ebenen Besitzer"
 
 #: layers/templates/layers/layer_metadata.html:17
 #, python-format
@@ -2269,10 +2269,13 @@ msgid ""
 "          Manage Available Styles for %(layer_title)s\n"
 "        "
 msgstr ""
+"\n"
+"          Verwalte die verfügbaren Styles für %(layer_title)s\n"
+"        "
 
 #: layers/templates/layers/layer_style_manage.html:46
 msgid "Update Available Styles"
-msgstr ""
+msgstr "Aktualisiere die verfügbaren Styles"
 
 #: maps/models.py:60
 msgid "zoom"
