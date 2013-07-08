@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-06-19 20:40-0500\n"
-"PO-Revision-Date: 2013-06-20 01:21+0000\n"
+"PO-Revision-Date: 2013-07-08 12:25+0100\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/geonode/language/"
 "de/)\n"
@@ -20,6 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.5.7\n"
 
 #: utils.py:214 security/enumerations.py:28
 msgid "Anonymous Users"
@@ -39,11 +40,11 @@ msgstr "Zugriff verweigert"
 
 #: base/enumerations.py:26
 msgid "series"
-msgstr ""
+msgstr "Serien"
 
 #: base/enumerations.py:27
 msgid "computer program or routine"
-msgstr ""
+msgstr "Computer Programm oder Routine"
 
 #: base/enumerations.py:28
 msgid "feature type"
@@ -51,23 +52,23 @@ msgstr "Featuretyp"
 
 #: base/enumerations.py:29
 msgid "copy or imitation of an existing or hypothetical object"
-msgstr ""
+msgstr "kopiere oder imitiere ein existierenden oder hypothetisches Objekt"
 
 #: base/enumerations.py:30
 msgid "collection hardware"
-msgstr ""
+msgstr "Hardwaresammlung"
 
 #: base/enumerations.py:31
 msgid "collection session"
-msgstr ""
+msgstr "Sessionsammlung"
 
 #: base/enumerations.py:32
 msgid "non-geographic data"
-msgstr ""
+msgstr "nicht-geographische Daten"
 
 #: base/enumerations.py:33
 msgid "property type"
-msgstr ""
+msgstr "Eigenschaftstyp"
 
 #: base/enumerations.py:34
 msgid "field session"
@@ -83,7 +84,7 @@ msgstr "Serviceschnittstelle"
 
 #: base/enumerations.py:37
 msgid "attribute class"
-msgstr ""
+msgstr "Attributklasse"
 
 #: base/enumerations.py:38
 msgid "characteristic of a feature"
@@ -99,7 +100,7 @@ msgstr "Feature"
 
 #: base/enumerations.py:41
 msgid "dimension group"
-msgstr ""
+msgstr "Dimensionsgruppe"
 
 #: base/enumerations.py:45
 msgid "frequency of maintenance for the data is not known"
@@ -165,11 +166,11 @@ msgstr ""
 
 #: base/enumerations.py:63
 msgid "formal permission to do something"
-msgstr ""
+msgstr "Formale Erlaubnis etwas zu erledigen"
 
 #: base/enumerations.py:64
 msgid "limitation not listed"
-msgstr ""
+msgstr "Beschränkungen nicht aufgelistet"
 
 #: base/enumerations.py:65
 msgid ""
@@ -3304,6 +3305,97 @@ msgid ""
 "href=\"maps\">Maps</a> tab.</p> \n"
 "  "
 msgstr ""
+"\n"
+"  <p>GeoNode bietet Zugriff zu Datensätzen und einer Karteneditier-"
+"Applikaton, welche Nutzern erlaubt bestehende Karten zu betrachten oder "
+"eigene Arbeiten beizusteuern.</p>\n"
+"\n"
+"  <h4 id=\"browsing-data\">Ebenen durchsehen</h4>\n"
+"  <p>The <a href=\"/data\">Ebenen</a> Tab erlaubt es dir, zu diesem GeNode "
+"hochgeladene Daten anzusehen.</p>\n"
+"  <p>Alle Datensätze können zur Verwendung in andere Anwendungen in einer "
+"Vielzahl von Formaten heruntergeladen werden</p>\n"
+"\n"
+"  <h4 id=\"developer-access\">Entwickler Zugriff</h4>\n"
+"  <p>Die <a href=\"/developer\"> Entwickler</a> Seite ist der Ort für "
+"Entwickler, welche anfangen wollen eigene GeoNode Anwendungen zu entwickeln. "
+"Die Seite beinhaltet Anleitungen zu den Web-Services, Links zu dem Quellcode "
+"von GeoNode und Informationen über Open-Source Projekte , welche zur "
+"Erstellung verwendet wurden.</p>\n"
+"\n"
+"  <h4 id=\"browsing-maps\">Karten ansehen</h4>\n"
+"  <p>GeoNode erlaubt es dir Karten zu erstellen und mit anderen "
+"auszutauschen.</p>\n"
+"  <p>Der <a href=\"maps\">Karten</a> Tab ist ein Tor zur Kartenerforschung "
+"auf GeoNode.  Von hier aus kannst du <strong>nach Karten suchen</strong> "
+"oder <strong>Karten erstellen</strong>,  welche den <a href=\"maps/new\">Map "
+"Composer</a> öffnen.</p>\n"
+"  <h5>Google Earth Modus</h5>\n"
+"  <p>Jede Karte, welche in dem interaktiven Karteneditor angesehen werden "
+"kann, kann auch im 3D Modus mit dem Google Earth Plugin betrachtet werden. "
+"Um zu dem 3D Modus zu wechseln, wähle das Google Earth Globus Logo in der "
+"oberen rechten Toolbar. Falls du das Plugin nicht installiert hast, wirst du "
+"zur Installation aufgefordet.</p>\n"
+"\n"
+"  <h4 id=\"creating-a-map\">Eine Karte ersellen</h4>\n"
+"  <p>Um eine neue Karte zu erstellen, gehe zu dem <a href=\"maps\">Geteilte "
+"Karten</a> Tab und wähle den <a href=\"maps/new\">erstelle deine eigene "
+"Karte</a> Link.</p>\n"
+"  <p>Dies bringt dich zum <a href=\"maps/new\">Map Composer</a> mit einer "
+"gelanden Grundkarte.</p>\n"
+"  <p>Um Daten zu der Ebene hinzuzufügen, klicke auf das grüne Plus unterhalb "
+"des Ebenen-Tabs auf der linken Seite. Dies wird einen Dialog öffnen, welcher "
+"alle verfügbaren Ebenen von GeoNode auflistet.</p>\n"
+"  <p>Ebenen werden zur Karte durch klicken des <strong>Ebene hinzufügen</"
+"strong> Button hinzugefügt. Wähle <strong>Fertig</strong> um den Dialog zu "
+"schließen und zur Karte zurückzukehren.</p>\n"
+"\n"
+"  <h5>Ebenen neu ordnen oder löschen</h5>\n"
+"  <p> Ändere die Reihenfolge der Ebenen, welche im Datentab angezeigt werden "
+"durch Drag and Drop der Namen. Die Reihenfolge in der Karte wird automatisch "
+"aktualisiert. Um die Sichtbarkeit einer Ebene zu bearbeiten, verwende die "
+"Checkboxen. Zum löschen wähle eine Ebene und bestätige mit dem roten Minus "
+"Buttton.</p>\n"
+"\n"
+"  <h5>Speichere deine Karte</h5>\n"
+"  <p>Sobald eine geeignete Auswahl von Ebenen und der passende Zoom-Level "
+"gefunden wurde, ist es Zeit die Karte zu speichern, sodass andere Personen "
+"diese sehen können. Klicke auf den Speichern Button--das linke Icon in der "
+"oberen Toolbar (ein Bild einer Karte mit einer Diskette)--und wähle den "
+"Titel sowie eine Zusammenfassung der Karte.</p>\n"
+"\n"
+"  <h4 id=\"exporting-a-map\">Exportiere eine Karte</h4>\n"
+"  <p>Jede Karte von GeoNode kann in anderen Seiten oder Blogs eingebunden "
+"werden. Um eine Karte zu exportieren:</p>\n"
+"  <ol>\n"
+"    <li>Wähle die Karte von der Liste der Community- oder Karten-Seite und "
+"klicke den Export Button.</li> \n"
+"    <li> Wähle die gewünschte Höhe und Breite für das Widget</li> \n"
+"    <li>Kopiere den HTML Code in eine beliebige Seite oder in einen iFrame "
+"unterstützten Blog Beitrag</li>\n"
+"  </ol>\n"
+"  <p>Dies wird ein interaktives Widget mit der Karte in deiner Website "
+"anzeigen.</p>\n"
+"  <p>Der <a href=\"maps/new\">Map Composer</a> hat ebenfalls einen Button "
+"zum exportieren von Karten hat. Beachte, dass du die Karte vor dem Export "
+"speicherst. Es wird jeweils die zuletzt gespeicherte Version exportiert.</"
+"p>\n"
+"\n"
+"  <h4 id=\"remixing-a-map\">Karte mischen</h4>\n"
+"  <p>Jede verfügbare Karte kann als Startpunkt für eine neue Karte dienen</"
+"p>\n"
+"  <ol>\n"
+"    <li>Öffne die Karte im Map Composer.</li>\n"
+"    <li>Füge Ebenen nach belieben hinzu oder lösche diese.</li>\n"
+"    <li>Navigiere zu dem gewünschten Kartenausschnitt.</li>\n"
+"    <li><strong>WICHTIG:</strong> Aktualisiere den Titel, die "
+"Zusammenfassung, deine Kontaktinformationen und Tags um auf die neue Karte "
+"hinzuweisen.</li>\n"
+"    <li>Speichere die Karte.</li>\n"
+"  </ol>\n"
+"  <p>Die neue Karte kann nun unter dem <a href=\"maps\">Karten</a> Tab "
+"gefunden werden.</p> \n"
+"  "
 
 #: templates/help.html:65
 msgid "Sections"
@@ -3331,7 +3423,7 @@ msgstr "Karte exportieren"
 
 #: templates/help.html:71
 msgid "Remixing a Map"
-msgstr ""
+msgstr "Karte neu mischen"
 
 #: templates/index.html:9
 msgid "Welcome!"
@@ -3350,6 +3442,12 @@ msgid ""
 "a>.\n"
 "          "
 msgstr ""
+"\n"
+"            GeoNode ist eine open source Plattform zum Teilen von "
+"geographischen Daten und Karten. Fall du Fragen über die Software oder den "
+"Service hast, trete unser <a href=\"https://groups.google.com/d/forum/"
+"geonode-users\">Mailingliste</a> bei.\n"
+"          "
 
 #: templates/index.html:25
 msgid "Need help"
@@ -3365,7 +3463,7 @@ msgstr "neueste Layer"
 
 #: templates/index.html:52
 msgid "Contribute"
-msgstr ""
+msgstr "Beitragen"
 
 #: templates/index.html:54
 msgid ""
@@ -3374,6 +3472,11 @@ msgid ""
 "Search for data that is valuable to you, or upload your own data. \n"
 "            "
 msgstr ""
+"\n"
+"              GeoNode erlaubt es dir, Ebenen hochzuladen, zu verwalten und "
+"zu durchforsten. Suche für Daten welche für dich wertvoll sind oder lade "
+"deine eigenen Datensätzte hoch. \n"
+"            "
 
 #: templates/index.html:58
 msgid ""
@@ -3382,6 +3485,11 @@ msgid ""
 "with our cartography tool, or explore maps shared by others. \n"
 "            "
 msgstr ""
+"\n"
+"              GeoNode erlaubt es dir, Karten zu erstellen und zu teilen. "
+"Erstelle eine Karte mit unseren Kartographie-Tools, oder erforsche von "
+"anderen geteilte Karten. \n"
+"            "
 
 #: templates/index.html:67
 msgid "Latest Maps"
@@ -3389,7 +3497,7 @@ msgstr "Neueste Karten"
 
 #: templates/activity/actor.html:31
 msgid "No actions yet"
-msgstr ""
+msgstr "Noch keine Aktionen"
 
 #: templates/announcements/announcement_detail.html:3
 #, python-format
@@ -3447,15 +3555,15 @@ msgstr "Zitierung"
 
 #: templates/geonode/resourcebase_info_panel.html:82
 msgid "Edition"
-msgstr ""
+msgstr "Edition"
 
 #: templates/geonode/resourcebase_info_panel.html:89
 msgid "Purpose"
-msgstr ""
+msgstr "Zweck"
 
 #: templates/geonode/resourcebase_info_panel.html:103
 msgid "Temporal Extent"
-msgstr ""
+msgstr "Zeitliche Ausdehnung"
 
 #: templates/geonode/resourcebase_info_panel.html:110
 msgid "Data Quality"
@@ -3472,15 +3580,15 @@ msgstr "Räumlicher Repräsentationstyp"
 #: templates/notification/base.html:15 templates/notification/notices.html:7
 #: templates/notification/notices.html:11
 msgid "Notices"
-msgstr ""
+msgstr "Mitteilungen"
 
 #: templates/notification/base.html:16
 msgid "Notice settings"
-msgstr ""
+msgstr "Mitteilungseinstellungen"
 
 #: templates/notification/base.html:17
 msgid "Observed objects"
-msgstr ""
+msgstr "Beobachtete Objekte"
 
 #: templates/notification/notice_settings.html:5
 #: templates/notification/notice_settings.html:10
@@ -3498,7 +3606,7 @@ msgstr "im <a href=\"%(email_url)s\">Konto</a>"
 
 #: templates/notification/notice_settings.html:21
 msgid "Note"
-msgstr ""
+msgstr "Notiz"
 
 #: templates/notification/notice_settings.html:22
 #, python-format
@@ -3512,7 +3620,7 @@ msgstr ""
 
 #: templates/notification/notice_settings.html:30
 msgid "Notification Type"
-msgstr ""
+msgstr "Benachrichtigungs Typ"
 
 #: templates/notification/notice_settings.html:48
 msgid "Change"
@@ -3528,15 +3636,15 @@ msgstr ""
 
 #: templates/notification/notices.html:33
 msgid "View Notice"
-msgstr ""
+msgstr "Mitteilung ansehen"
 
 #: templates/notification/notices.html:41
 msgid "No notices."
-msgstr ""
+msgstr "Keine Mitteilungen."
 
 #: templates/notification/single.html:6 templates/notification/single.html:9
 msgid "Notice"
-msgstr ""
+msgstr "Mitteilung"
 
 #: templates/pagination/pagination.html:8
 msgid "Previous"
@@ -3571,7 +3679,7 @@ msgstr "Blockieren"
 #: templates/relationships/confirm.html:4
 #: templates/relationships/confirm.html:7
 msgid "No longer"
-msgstr ""
+msgstr "Nicht länger"
 
 #: templates/relationships/confirm.html:12
 msgid "Confirm"
@@ -3604,7 +3712,7 @@ msgstr "nicht länger"
 #: templates/relationships/success.html:7
 #, python-format
 msgid "%(to_user_username)s's profile"
-msgstr ""
+msgstr "%(to_user_username)s's Profil"
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
@@ -3620,7 +3728,7 @@ msgstr "Betreff"
 
 #: templates/user_messages/inbox.html:14
 msgid "Last Sender"
-msgstr ""
+msgstr "Letzter Absender"
 
 #: templates/user_messages/inbox.html:15
 msgid "Preview"
@@ -3666,40 +3774,40 @@ msgstr "Layer hinaufladen"
 
 #: upload/templates/upload/layer_upload.html:82
 msgid "Files to be uploaded"
-msgstr ""
+msgstr "Daten zum hochladen"
 
 #: upload/templates/upload/layer_upload_crs.html:9
 msgid "Provide CRS for "
-msgstr ""
+msgstr "Stelle CRS bereit für"
 
 #: upload/templates/upload/layer_upload_time.html:7
 msgid "Upload Layer Step 2"
-msgstr ""
+msgstr "Lade Ebene Schritt 2 hoch"
 
 #: upload/templates/upload/layer_upload_time.html:60
 msgid "Editing details for "
-msgstr ""
+msgstr "Editiere Details für"
 
 #: upload/templates/upload/layer_upload_time.html:70
 msgid "This data does not have a time attribute"
-msgstr ""
+msgstr "Dieser Datensatz hat kein Zeitattribut"
 
 #: upload/templates/upload/layer_upload_time.html:75
 #: upload/templates/upload/layer_upload_time.html:103
 msgid "Existing Time Attribute"
-msgstr ""
+msgstr "Existierendes Zeitattribut"
 
 #: upload/templates/upload/layer_upload_time.html:81
 #: upload/templates/upload/layer_upload_time.html:109
 msgid "Convert Text Attribute"
-msgstr ""
+msgstr "Konvertiere Textattribut"
 
 #: upload/templates/upload/layer_upload_time.html:82
 #: upload/templates/upload/layer_upload_time.html:110
 msgid "Date Format"
-msgstr ""
+msgstr "Datumsformat"
 
 #: upload/templates/upload/layer_upload_time.html:95
 #: upload/templates/upload/layer_upload_time.html:123
 msgid "Convert Number (As Year)"
-msgstr ""
+msgstr "Konvertiere Nummer (als Jahr)"
