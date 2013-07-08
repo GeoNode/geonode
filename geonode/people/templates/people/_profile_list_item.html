@@ -9,36 +9,34 @@
   <div class="pull-left">
     <h3><i class="icon-user"></i> <a href="{% url "profile_detail" profile.o.user.username %}">{{ profile.title }}</a>
     {% if user.is_authenticated %}
-      {% if  profile.o.user.email %}<a href="mailto:{{ profile.o.user.email }}"><i class="icon-envelope icon-large"></i></a>{% endif %}</h3>
+      {% if  profile.o.user.email %}<a href="mailto:{{ profile.o.user.email }}"><i class="icon-envelope-alt icon-large"></i></a>{% endif %}</h3>
     {% endif %}
     <div class="details">
-    <div class="meta">
-      <p>{% if profile.o.organization %}{{ profile.o.organization }}{% endif %}</p>
-      <!-- <p class="abstract">
-         {% if profile.profile %}{{ profile.profile }}
-        {% else %}No description
-        {% endif %}
-      </p> -->
-        <ul class="nav stats">
-          <li><a href="#"><strong>{{ profile.layer_count }}</strong> Layers</a></li>
-          <li><a href="#"><strong>{{ profile.map_count }}</strong> Maps</a></li>
-          {% if DOCUMENTS_APP %}
-          <li><a href="#"><strong>{{ profile.document_count }}</strong> Documents</a></li>
-          {% endif %}
-        </ul>
-    </div> <!-- /meta -->
-  </div> <!-- /details -->
-
-    {% if request.user != profile.o.user %}
+      <div class="meta">
+        <p>
+          {% if profile.o.organization %}{{ profile.o.organization }}
+            {% else %}No Group
+          {% endif %}</p>
+        <p class="abstract">
+          {% if profile.o.profile %}{{ profile.o.profile }}{% endif %}
+        </p>
+          <ul class="nav stats">
+            <li><a href="#"><strong>{{ profile.layer_count }}</strong> Layers</a></li>
+            <li><a href="#"><strong>{{ profile.map_count }}</strong> Maps</a></li>
+            {% if DOCUMENTS_APP %}
+            <li><a href="#"><strong>{{ profile.document_count }}</strong> Documents</a></li>
+            {% endif %}
+          </ul>
+      </div>
+      {% if request.user != profile.o.user %}
         {% if_has_tag if_relationship %}
             {% include "relationships/_profile_follow.html" %}
         {% endif_has_tag %}
-    {% endif %}
+      {% endif %}
 
-    {% if_has_tag actor_url %}
+      {% if_has_tag actor_url %}
         <p><a href="{% actor_url profile.o.user %}" class="btn btn-mini" type="button">{% trans "My Activities" %}</a></p>
-    {% endif_has_tag %}
-
-
+      {% endif_has_tag %}
+    </div>
   </div>
 </article>

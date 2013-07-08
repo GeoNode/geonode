@@ -7280,6 +7280,11 @@ section.widget-mini h2 a.btn {
   float: left;
   margin: 0;
 }
+.grid article .avatar img {
+  margin-bottom: 0;
+  margin-left: 60px;
+  margin-top: 10px;
+}
 .grid article .details {
   clear: left;
   margin-left: 5px;

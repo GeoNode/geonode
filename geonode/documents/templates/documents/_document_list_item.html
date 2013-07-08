@@ -7,10 +7,9 @@
 {% overall_rating document "document" as document_rating %}
 {% num_ratings document as num_votes %}
 <article>
-  <!-- <a href="{% url "document_detail" document.id %}"><div class="img-placeholder pl-153-113">{% trans "No Image Available" %}</div></a> -->
   <div class="abstract-placeholder">{{ document.abstract }}</div>
   <div class="pull-left">
-    <h3><i class="icon-file"></i> <a href="{% url "document_detail" document.id %}">{{ document.title }}</a></h3>
+    <h3><i class="icon-file-text-alt"></i> <a href="{% url "document_detail" document.id %}">{{ document.title }}</a></h3>
       <div class="details">
         <div class="meta">
           <p>Doc {% trans 'from' %} <a href="{% url "profile_detail" document.owner.username %}">{{ document.owner }}</a>, {{ document.date|timesince }} {% trans 'ago' %}</p>
