@@ -181,6 +181,8 @@
     Ext.Ajax.timeout = 120000;
     var ajaxSubmit = function() {
         Ext.MessageBox.wait('Saving ...');
+        var htmlAbstract = myNicEditor.instanceById("id_layer-abstract").getContent();
+        document.getElementById("id_layer-abstract").value = htmlAbstract;
         Ext.Ajax.request({
             url: "/data/{{layer.typename}}/metadata",
             method: 'POST',
@@ -228,6 +230,9 @@
     }
     {% endautoescape %}
 </script>
+ <script type="text/javascript">
+     var myNicEditor = new nicEditor({fullPanel : true,  maxHeight: 190, iconsPath: nicEditIconsPath}).panelInstance("id_layer-abstract");
+ </script>
 <div id="modalhelp" class="modal_help"></div>
 </body>
 </html>
