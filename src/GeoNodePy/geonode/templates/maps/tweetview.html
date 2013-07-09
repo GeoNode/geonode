@@ -1,0 +1,907 @@
+{% extends "fullscreen.html" %}
+{% load i18n %}
+
+{% block title %} {{maptitle}}{% endblock %}
+
+{% block head %}
+
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/jquery-1.8.0.js"></script>
+<link rel="stylesheet" href="{{ GEONODE_CLIENT_LOCATION }}externals/misc/flot/jquery-ui-1.8.22.custom.css"
+      type="text/css">
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/flot/jquery-ui-vertbutton.js"></script>
+<script type="text/javascript"
+        src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/flot/jquery-ui-1.8.22.custom.min.js"></script>
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/flot/jquery.flot.js"></script>
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/flot/jquery.flot.time.js"></script>
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/flot/jquery.flot.resize.js"></script>
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/flot/jquery.flot.navigate.js"></script>
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/flot/grapher.js"></script>
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/flot/FastGraph.js"></script>
+
+
+
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+<script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/misc/nicEdit.js"></script>
+
+<script src="http://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
+
+<script type="text/javascript">
+    google.load("earth", "1");
+
+
+</script>
+
+
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css"/>
+<style type="text/css">
+    #templates {
+        display: none;
+    }
+</style>
+
+{{ block.super }}
+
+<script type="text/javascript">
+{% autoescape off %}
+host = "http://{{GEOPS_IP}}";
+
+Ext.sequence(Ext.form.SliderField.prototype, 'initComponent', function () {
+    this.slider.on('change', this.fireEvent.createDelegate(this, 'change', 0));
+    this.slider.on('changecomplete', this.fireEvent.createDelegate(this, 'changecomplete', 0));
+
+});
+
+Ext.override(Ext.form.SliderField, {
+    onDrag:function (e) {
+        var pos = this.innerEl.translatePoints(this.tracker.getXY());
+        this.setValue(Ext.util.Format.round(this.reverseValue(pos.left), this.decimalPrecision), false);
+        this.fireEvent('drag', this, e);
+    }
+});
+
+function get_cookie(c_name) {
+    if (document.cookie.length <= 0)
+        return "";
+
+    c_start = document.cookie.indexOf(c_name + "=");
+    if (c_start == -1)
+        return "";
+
+    c_start = c_start + c_name.length + 1;
+    c_end = document.cookie.indexOf(";", c_start);
+    if (c_end == -1)
+        c_end = document.cookie.length;
+    return unescape(document.cookie.substring(c_start, c_end));
+}
+
+function delete_cookie(name) {
+    document.cookie = name + '=; Domain=.harvard.edu; Path=/; expires=Monday, 19-Aug-1996 05:00:00 GMT';
+}
+
+
+/* Override Layer.Grid method for twitter heatmap */
+
+OpenLayers.Layer.Grid.newRatio = 1.5;
+
+
+gxp.plugins.LayerManager.prototype.configureLayerNode = function (loader, attr) {
+
+    var legendXType;
+    // add a WMS legend to each node created
+    if (attr.layer.url && attr.layer.url.indexOf("{{GEOPS_IP}}") > -1) {
+        if (attr.layer.params.LAYERS == "heatmap") {
+            legendXType = "gx_geopslegend";
+        } else
+            return;
+    } else if (OpenLayers.Layer.WMS && attr.layer instanceof OpenLayers.Layer.WMS) {
+        legendXType = "gx_wmslegend";
+    }
+    gxp.plugins.LayerManager.superclass.configureLayerNode.apply(this, arguments);
+    if (legendXType) {
+        Ext.apply(attr, {
+            component:{
+                xtype:legendXType,
+                // TODO these baseParams were only tested with GeoServer,
+                // so maybe they should be configurable - and they are
+                // only relevant for gx_wmslegend.
+                baseParams:{
+                    transparent:true,
+                    format:"image/png",
+                    legend_options:"fontAntiAliasing:true;fontSize:11;fontName:Arial"
+                },
+                layerRecord:this.target.mapPanel.layers.getByLayer(attr.layer),
+                showTitle:false,
+                // custom class for css positioning
+                // see tree-legend.html
+                cls:"legend"
+            }
+        });
+    }
+
+
+};
+
+
+OpenLayers.Layer.Grid.prototype.setTileSize = function (size) {
+    if (this.singleTile) {
+        size = this.map.getSize();
+        //console.log("Grid Size: " + size.toString() + " and ratio: " + this.ratio);
+        var curWidth = parseInt(size.w * this.ratio);
+        var targetWidth = curWidth + (16 - (curWidth % 16));
+        this.newRatio = this.ratio * (targetWidth / size.w);
+        size.h = parseInt(Math.round(size.h * this.newRatio));
+        size.w = parseInt(Math.round(size.w * this.newRatio));
+        //console.log("In setTileSize: " + this.newRatio + ":" + size.toString());
+
+    }
+    OpenLayers.Layer.HTTPRequest.prototype.setTileSize.apply(this, [size]);
+};
+
+OpenLayers.Layer.Grid.prototype.initSingleTile = function (bounds) {
+
+    //determine new tile bounds
+    var center = bounds.getCenterLonLat();
+    var tileWidth = (bounds.getWidth() * this.newRatio);
+    var tileHeight = bounds.getHeight() * this.newRatio;
+
+    var tileBounds =
+            new OpenLayers.Bounds(center.lon - (tileWidth / 2),
+                    center.lat - (tileHeight / 2),
+                    center.lon + (tileWidth / 2),
+                    center.lat + (tileHeight / 2));
+
+    //console.log("Grid tileBounds:" + tileBounds.toString());
+
+    var px = this.map.getLayerPxFromLonLat({
+        lon:tileBounds.left,
+        lat:tileBounds.top
+    });
+
+    if (!this.grid.length) {
+        this.grid[0] = [];
+    }
+
+    var tile = this.grid[0][0];
+    if (!tile) {
+        tile = this.addTile(tileBounds, px);
+
+        this.addTileMonitoringHooks(tile);
+        tile.draw();
+        this.grid[0][0] = tile;
+    } else {
+        tile.moveTo(tileBounds, px);
+    }
+
+    //remove all but our single tile
+    this.removeExcessTiles(1, 1);
+
+    // store the resolution of the grid
+    this.gridResolution = this.getServerResolution();
+};
+
+
+var app;
+var geopsip = "{{GEOPS_IP}}"
+var init = function () {
+
+    var config = Ext.apply({
+        tools:[
+            {
+                ptype:"gxp_geonodequerytool",
+                id:"worldmap_query_tool",
+                actionTarget:{target:"paneltbar", index:5},
+                toolText:'<span class="x-btn-text">Identify</span>',
+                iconCls:null,
+                geopsUrl:"{{GEOPS_IP}}",
+                outputConfig:{width:400, height:200, panIn:false},
+                featurePanel:'queryPanel',
+                attributePanel:'gridWinPanel',
+                toggleGroup:'featureGroup'
+            },
+            {
+                ptype:"gxp_coordinatetool",
+                actionTarget:{target:"paneltbar", index:7},
+                toolText:'<span class="x-btn-text">Position</span>',
+                iconCls:null,
+                toggleGroup:'featureGroup',
+                pressed:false
+            }
+        ],
+        proxy:"/proxy/?url=",
+
+        /* The URL to a REST map configuration service.  This service
+         * provides listing and, with an authenticated user, saving of
+         * maps on the server for sharing and editing.
+         */
+        rest:"/maps/",
+        homeUrl:"{% url home %}",
+        siteUrl:"{{ SITE_URL }}",
+        localGeoServerBaseUrl:"{{ GEOSERVER_BASE_URL }}",
+        csrfToken:"{{ csrf_token }}",
+        authorizedRoles:"{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR, ROLE_ANONYMOUS" }}"
+    }, {{config }}
+);
+
+
+app = new GeoExplorer(config, true);
+
+var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
+var permalink = function (id) {
+    return permalinkTemplate.apply({
+        protocol:window.location.protocol,
+        host:window.location.host,
+        id:id
+    })
+};
+
+
+var titleTemplate = new Ext.Template("<span>{title}</span>");
+Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title:(config.about.officialurl ? '' : 'Current Map: ') + (config.about.title ? config.about.title : 'New Map')}));
+
+app.on("saved", function (id) {
+    //reset title header
+    Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title:(config.about.officialurl ? '' : 'Current Map: ') + (config.about.title ? config.about.title : 'New Map')}));
+
+
+}, this);
+
+
+var tweetFilterField = new Ext.form.TextField({
+    id:'tweetFilter',
+    name:'tweetFilter',
+    fieldLabel:'{% trans "Filter Term" %}',
+    labelAlign:'right',
+    labelStyle:"text-align:right;",
+    allowBlank:true,
+    value:'',
+    width:96
+});
+
+var tweetDateStartField = new Ext.ux.form.DateTime({
+    id:'tweetStartDate',
+    fieldLabel:'{% trans "From" %}',
+    labelAlign:'right',
+    labelStyle:"font-weight:bold;text-align:right",
+    allowBlank:false, timeFormat:'H:i:s', timeConfig:{
+        altFormats:'H:i:s', allowBlank:true
+    }, dateFormat:'n/d/Y', dateConfig:{
+        altFormats:'Y-m-d|Y-n-d', allowBlank:true,
+        minValue:new Date(2013, 3, 12),
+        maxValue:new Date(Date.now() + 86400000),
+        value:new Date(2013,3,12)
+//        value:new Date(Date.now() - (86400000 * 7))
+    },
+    width:200
+});
+
+var tweetDateEndField = new Ext.ux.form.DateTime({
+    id:'tweetEndDate',
+    //fieldLabel: 'To',
+    //labelAlign: 'top',
+    //labelStyle:"font-weight:bold;text-align:right",
+    allowBlank:false, timeFormat:'H:i:s', timeConfig:{
+        altFormats:'H:i:s', allowBlank:true,
+        value:new Date(Date.now())
+    }, dateFormat:'n/d/Y', dateConfig:{
+        altFormats:'Y-m-d|Y-n-d', allowBlank:true,
+        minValue:new Date(2012, 3, 12),
+        maxValue:new Date(Date.now() + 86400000),
+        value:new Date(2013,4,7)
+//        value:new Date(Date.now())
+    },
+    width:200
+});
+
+
+var firstEndDate = tweetDateEndField.getValue().getTime() - 1000;
+var firstHeatMap = true;
+
+var tweetPointLayer = null;
+var tweetHeatLayer = null;
+
+var is_authorized = "{{tweetdownload}}";
+
+var updateCQL = function (layers) {
+
+	
+	
+
+    /*if (Math.floor(tweetDateEndField.getValue().getTime()) >= Math.floor(firstEndDate)) {
+        var rightNow = new Date();
+        tweetDateEndField.setValue(rightNow);
+    }
+    */
+
+    var randomNum = Math.random();
+    var startFilter = "SELECT goog_x, goog_y";
+
+
+    var keywordFilter = "";
+    var searchFilter = tweetFilterField.getValue().replace(/'/g, "''");
+    var keywords = searchFilter.match(/[^"\s]+|"[^"]+"/g);
+    if (keywords) {
+        for (var k = 0; k < keywords.length; k++) {
+            keywordFilter += (k > 0 ? " AND " : " ") + "tweet_text ilike '" + keywords[k].replace(/["]/g, '') + "'";
+        }
+    }
+
+    var timeFilter =  "time > " + (Math.floor(new Date(tweetDateStartField.getValue()).getTime()/1000)) + " AND time < " + (Math.floor(new Date(tweetDateEndField.getValue()).getTime() /1000)) ;
+    var fromFilter = " from tweets";
+
+    var numLayersVisible = 0;
+    for (var x = 0; x < layers.length; x++) {
+        var layer = layers[x];
+
+        layer.getLayer().params["RND"] = randomNum;
+
+        if (layer.get("name").indexOf("heatmap") > -1) {
+        	layer.getLayer().params["LAYERS"] = Ext.getCmp("lsh_checkbox").checked ? "lsh_heatmap" : "heatmap";
+            layer["cql_filter"] = startFilter + "," + keywordFilter + fromFilter + " WHERE " + timeFilter;
+            layer.getLayer().params["SQL"] = layer["cql_filter"];
+            layer.getLayer().params["BLUR"] = Ext.getCmp("slider_blur").value;
+            layer.getLayer().params["MIN"] = Ext.getCmp("slider_min").value / 100;
+            layer.getLayer().params["MAXVAL"] = Ext.getCmp("auto_max_checkbox").checked ? "auto" : Ext.getCmp("slider_maxval").value;
+            if (keywords && keywords != "") {
+                layer.getLayer().setVisibility(true);
+                numLayersVisible++;
+            }
+
+        } else {
+        	layer.getLayer().params["LAYERS"] = Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point";
+            layer["cql_filter"] = startFilter + ", tweet_text " + fromFilter + " WHERE " + timeFilter + (keywords ? " AND " + keywordFilter : "");
+            layer.getLayer().params["SQL"] = layer["cql_filter"];
+            layer.getLayer().params["RADIUS"] = 1;
+            layer.getLayer().params["R"] = 0;
+            layer.getLayer().params["G"] = 0;
+            layer.getLayer().params["B"] = 255;
+            if (layer.getLayer().getVisibility() === true) {
+                numLayersVisible++;
+            }
+
+        }
+
+    }
+
+    for (var xx = 0; xx < layers.length; xx++) {
+        var layer = layers[xx];
+        layer.getLayer().params["NUM_REQUESTS"] = numLayersVisible;
+    }
+}
+
+function getUrlParams(url) {
+    var params = {};
+    url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (str, key, value) {
+        params[key] = value;
+    });
+
+    return params;
+}
+
+var getDownloadLink = function () {
+    var params = getUrlParams(tweetPointRecord.getLayer().grid[0][0].url);
+    var layerName = Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point";
+    return "/tweetDownload/?LAYERS=POINT&SQL=" + params.SQL.replace(/goog_x%2C(%20)+goog_y%2C(%20)+tweet_text/g, "lat%2C%20lon%2C%20sender_name%2C%20time%2C%20tweet_id%2C%20tweet_text") + "&BBOX=" + params.BBOX;
+}
+
+var setCurrentTime = function () {
+    if (Math.floor(tweetDateEndField.getValue().getTime()) >= Math.floor(firstEndDate)) {
+        var rightNow = new Date();
+        tweetDateEndField.setValue(rightNow);
+        updateLayer();
+    }
+}
+
+
+var updateLayer = function () {
+    if (tweetDateStartField.getValue() != "" && tweetDateEndField.getValue() != "") {
+        if (tweetHeatRecord != null && tweetPointRecord != null) {
+            updateCQL([tweetHeatRecord, tweetPointRecord]);
+            tweetHeatRecord.getLayer().redraw(true);
+            tweetPointRecord.getLayer().redraw(true);
+        }
+    }
+};
+
+tweetDateStartField.on("change", updateLayer);
+tweetDateEndField.on("change", updateLayer);
+tweetDateStartField.on("select", updateLayer);
+tweetDateEndField.on("select", updateLayer);
+
+var rewindDate = new Ext.Button({
+    iconCls:"icon-zoom-previous",
+    style:"display: inline-block;padding-left:5px;",
+    handler:function (button, event) {
+        if (tweetDateStartField.validate() && tweetDateEndField.validate()) {
+            var interval = Ext.getCmp("date_interval").getValue();
+            var yesterdayStart = tweetDateStartField.getValue().add(interval, -1);
+            var yesterdayEnd = tweetDateEndField.getValue().add(interval, -1);
+            if (yesterdayStart >= Ext.getCmp(tweetDateStartField.id + "-date").minValue) {
+                tweetDateStartField.setValue(yesterdayStart);
+                tweetDateEndField.setValue(yesterdayEnd);
+                updateLayer();
+            }
+        }
+    }
+});
+
+
+var forwardDate = new Ext.Button({
+    iconCls:"icon-zoom-next",
+    style:"display: inline-block;padding-right:5px;",
+    handler:function (button, event) {
+        if (tweetDateStartField.validate() && tweetDateEndField.validate()) {
+            var interval = Ext.getCmp("date_interval").getValue();
+            var tomorrowStart = tweetDateStartField.getValue().add(interval, 1);
+            var tomorrowEnd = tweetDateEndField.getValue().add(interval, 1);
+            if (tomorrowEnd <= Ext.getCmp(tweetDateEndField.id + "-date").maxValue) {
+                tweetDateStartField.setValue(tomorrowStart);
+                tweetDateEndField.setValue(tomorrowEnd);
+                updateLayer();
+            }
+        }
+    }
+});
+
+
+var updateLayerBtn = new Ext.Button({
+    text:'{% trans "Filter Tweets" %}',
+    handler:updateLayer
+});
+
+var cqlOverlay = new Ext.FormPanel({
+    frame:true,
+    bodyStyle:'padding: 10px 10px 0 10px;background:transparent;',
+    labelWidth:70,
+    defaults:{
+        anchor:'95%',
+        msgTarget:'side'
+    },
+    width:600,
+    height:160,
+    layout:"fit",
+    items:[
+        {
+            layout:"column",
+
+            items:[
+                {
+                    columnWidth:0.6,
+                    //layout:"form",
+                    //title:"3",
+                    items:[
+                        {
+                            xtype:"compositefield",
+                            labelStyle:"text-align:right;",
+                            items:[
+                                {xtype:"container", width:70, style:"align:right;padding-bottom:10px",
+                                    html:"<span> {% trans 'Filter Term:' %} </span>"},
+                                tweetFilterField,
+                                updateLayerBtn
+                            ]
+                        },
+                        {
+                            xtype:"compositefield",
+                            items:[
+                                // rewindDate,
+                                {xtype:"container", width:70, style:"align:right",
+                                    html:"<span> {% trans 'From:' %}</span>"},
+                                tweetDateStartField
+                                //forwardDate
+                            ]
+                        },
+                        {xtype:"container",
+                            html:"<div style='padding-bottom:5px;'></div>"},
+                        {
+                            xtype:"compositefield",
+                            items:[
+                                // rewindDate,
+                                {xtype:"container", width:70, style:"align:right",
+                                    html:"<span> {% trans 'To:' %} </span>"},
+                                tweetDateEndField
+                                //forwardDate
+                            ]
+                        },
+
+                        {xtype:"container",
+                            html:"<div style='padding-bottom:5px;'></div>"},
+                        {
+                            xtype:"compositefield",
+                            items:[
+                                {xtype:"container", width:70, style:"align:right",
+                                    html:"<span> {% trans 'Increment:'  %}  </span>"},
+                                {
+                                    xtype:"combo",
+                                    width:75,
+                                    id:"date_interval",
+                                    triggerAction:'all',
+                                    mode:'local',
+                                    store:[
+                                        [Date.DAY, '{% trans "Day"  %}'],
+                                        [Date.HOUR, '{% trans "Hour"  %}'],
+                                        [Date.MINUTE, '{% trans "Minute"  %}' ],
+                                        [Date.SECOND, '{% trans "Second" %}']
+                                    ],
+                                    value:Date.DAY,
+                                    valueField:'myId',
+                                    displayField:'displayText'
+                                },
+                                rewindDate,
+                                forwardDate
+                            ]
+                        },
+                        {
+                            xtype:'box',
+                            id:'dl_link_container',
+                            hidden:true,
+                            autoEl:{tag:'a', id:"tweet_download_link", target:"dl", href:'', html:'{% trans "Download Tweets" %}'}
+                        }
+                    ]
+                },
+                {
+                    columnWidth:0.4,
+                    layout:"form",
+                    labelWidth:100,
+                    //title:"3",
+                    items:[
+                        {xtype:"container",
+                            html:"<div style='padding-bottom:10px;'></div>"},
+                            {
+                                xtype:"checkbox",
+                                id:"lsh_checkbox",
+                                boxLabel:"{% trans 'LSH Matching' %}",
+                                style:"display:inline-block;",
+                                checked:false,
+                                hidden: (geopsip !== "geops.csail.mit.edu:8080"),
+                                listeners:{
+                                	"check":updateLayer
+                                }
+                            },
+                        {
+                            xtype:"checkbox",
+                            id:"auto_max_checkbox",
+                            boxLabel:"{% trans 'Auto Max %' %}",
+                            style:"display:inline-block;",
+                            checked:true,
+                            listeners:{
+                                "change":updateLayer
+                            }
+                        },
+                        {
+                            xtype:"sliderfield",
+                            id:"slider_maxval",
+                            width:100,
+                            style:"display:inline-block;",
+                            value:0.02,
+                            fieldLabel:"{% trans 'Max %' %}",
+                            labelStyle:"text-align:right;",
+                            minValue:0.01,
+                            maxValue:20,
+                            increment:0.01,
+                            keyIncrement:0.5,
+                            decimalPrecision:3,
+                            listeners:{
+                                "changecomplete":updateLayer
+                            }
+                        },
+                        {xtype:"sliderfield",
+                            id:"slider_blur",
+                            value:"28",
+                            width:100,
+                            fieldLabel:"{% trans 'Smoothing' %}",
+                            labelStyle:"text-align:right;",
+                            minValue:1,
+                            maxValue:40,
+                            listeners:{
+                                "changecomplete":updateLayer
+                            }},
+                        {xtype:"sliderfield",
+                            id:"slider_min",
+                            width:100,
+                            value:"30",
+                            fieldLabel:"{% trans 'Min Tweets/sq km' %}",
+                            labelStyle:"text-align:right;",
+                            minValue:1,
+                            maxValue:1000,
+                            listeners:{
+                                "changecomplete":updateLayer
+                            }},
+                        {
+
+                        }
+
+                    ]
+                }
+            ]
+        }
+    ],
+    keys:[
+        { key:[Ext.EventObject.ENTER], handler:updateLayer
+        }
+    ]
+});
+
+var cqlWindow = new Ext.Window({
+    id:'cql_window',
+    style:'opacity:0.9',
+    width:600,
+    collapsible:true,
+    draggable:true,
+    closable:false,
+    constrain:true,
+    monitorResize:true,
+    title:gettext('{% trans "Tweet Filter" %}'),
+    items:[cqlOverlay]
+});
+
+var graphPanel = new Ext.Panel({
+    contentEl:"chartDiv"
+});
+
+var graphWindow = new Ext.Window({
+    id:'graph_window',
+    style:'opacity:0.9',
+    width:600,
+    collapsible:true,
+    draggable:true,
+    closable:false,
+    constrain:true,
+    monitorResize:true,
+    collapsed: true,
+    title:gettext('{% trans "Tweet Graph" %}'),
+    items:[graphPanel]
+});
+
+var tweetConfig = {title:"{% trans 'Twitter Trends' %}", source:"local", group:"Twitter", name:"heatmap",
+    url:"http://{{GEOPS_IP}}", srs:"EPSG:900913", format:"image/png", bbox:[-180, -90, 180, 90],
+    singleTile:true, tiled:false, ratio:1, opacity:1, visibility:true, queryable:true
+};
+
+
+var feedSource = Ext.ComponentMgr.createPlugin(
+        tweetConfig, "gx_wmssource"
+);
+var tweetPointRecord = feedSource.createLazyLayerRecord(tweetConfig);
+tweetPointRecord.set("name", "point");
+tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
+        "{% trans 'Tweets' %}",
+        tweetConfig.url, {
+            layers: Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point",
+            transparent:"transparent" in tweetConfig ? tweetConfig.transparent : true,
+            format:tweetConfig.format,
+            tiled:false
+        }, {
+            singleTile:true,
+            ratio:tweetConfig.ratio || 1,
+            visibility:true,
+            opacity:("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
+            buffer:("buffer" in tweetConfig) ? tweetConfig.buffer : 1,
+            //transitionEffect: 'resize',
+            projection:'EPSG:900913'
+        }
+));
+tweetPointRecord.group = tweetConfig.group;
+
+tweetPointRecord.getLayer().events.register("loadend", tweetPointRecord.getLayer(), function () {
+    var tweet_cookie = get_cookie("tweet_count");
+    if (tweet_cookie) {
+        cqlWindow.setTitle(gettext("Tweet Filter:  ") + tweet_cookie + " tweets currently on map");
+        if (tweet_cookie < 1000000 && is_authorized === "True") {
+            Ext.getCmp("dl_link_container").show();
+            Ext.getCmp("dl_link_container").getEl().dom.href = getDownloadLink();
+        } else {
+            Ext.getCmp("dl_link_container").hide();
+        }
+        delete_cookie("tweet_count");
+    }
+
+});
+
+tweetConfig["queryable"] = false;
+var tweetHeatRecord = feedSource.createLazyLayerRecord(tweetConfig);
+tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
+        "{% trans 'Tweet Heatmap' %}",
+        tweetConfig.url, {
+            layers: Ext.getCmp("lsh_checkbox").checked ? "lsh_heatmap" : 'heatmap',
+            transparent:"transparent" in tweetConfig ? tweetConfig.transparent : true,
+            format:tweetConfig.format,
+            tiled:false
+        }, {
+            singleTile:true,
+            removeBackBufferDelay:0,
+            ratio:tweetConfig.ratio || 1,
+            visibility:false,
+            opacity:("opacity" in tweetConfig) ? tweetConfig.opacity : 1,
+            buffer:("buffer" in tweetConfig) ? tweetConfig.buffer : 1,
+            //transitionEffect: 'resize',
+            projection:'EPSG:900913'
+        }
+));
+tweetHeatRecord.group = tweetConfig.group;
+
+tweetHeatRecord.getLayer().events.register("loadend", tweetPointRecord.getLayer(), function () {
+    if (tweetHeatRecord.getLayer().getVisibility() === true && tweetFilterField.getValue() != "") {
+        var layer_bbox = getUrlParams(tweetHeatRecord.getLayer().grid[0][0].url).BBOX.split(",");
+        graphBounds = new OpenLayers.Bounds(
+                parseFloat(layer_bbox[0]), parseFloat(layer_bbox[1]),
+                parseFloat(layer_bbox[2]), parseFloat(layer_bbox[3])).toBBOX().split(",");
+        if (firstHeatMap === true) {
+            firstHeatMap = false;
+            if (!Ext.isIE) {
+                graphWindow.show();
+                graphWindow.alignTo('mapPnlCntr', 't-t?');
+                graphWindow.expand();
+                initGraph();
+            }
+        }
+        if (!Ext.isIE)
+            sendQuery((Math.floor(new Date(tweetDateStartField.getValue()).getTime() / 1000)), (Math.floor(new Date(tweetDateEndField.getValue()).getTime() / 1000)), numBins);
+
+    }
+});
+
+app.mapPanel.add(cqlWindow);
+app.mapPanel.add(graphWindow);
+
+
+app.on("setLayerTree", function () {
+    app.layerTree.addCategoryFolder({"group":tweetHeatRecord.get("group")}, true);
+    app.mapPanel.layers.add([tweetHeatRecord]);
+
+    app.layerTree.addCategoryFolder({"group":tweetPointRecord.get("group")}, true);
+    app.mapPanel.layers.add([tweetPointRecord]);
+
+    app.toolbar.items.each(function (item) {
+        if (item.text != undefined && item.text.indexOf(app.publishBtnText) > -1) {
+            item.disable();
+            item.hide();
+        }
+    });
+});
+
+app.on("ready", function () {
+
+    app.mapPanel.layers.each(function (candidate) {
+        //console.log("NAME:" + candidate.get("name"));
+        if (candidate.get("name") == "heatmap" || candidate.get("name") == "point") {
+            app.mapPanel.layers.remove(candidate, true);
+        }
+
+    });
+
+    tweetHeatRecord.getLayer().events.register("loadend", tweetHeatRecord.getLayer(), function (e) {
+
+        var maxlevel_cookie = get_cookie("max_value");
+        if (maxlevel_cookie) {
+            Ext.getCmp("slider_maxval").setValue(maxlevel_cookie);
+            delete_cookie("max_value");
+        }
+
+
+        if (!tweetPointRecord.getLayer().getVisibility()) {
+            cqlWindow.setTitle(gettext("Tweet Filter:  "))
+        }
+
+    });
+
+    updateLayer();
+
+    cqlWindow.show();
+    cqlWindow.alignTo(document, 'br-br?');
+
+
+    app.mapPanel.map.events.register("moveend", app.mapPanel.map, function (e) {
+
+        // var mapExtent = app.mapPanel.map.getExtent() ? app.mapPanel.map.getExtent() : config["map"]["maxExtent"];
+	/*
+        if (Math.floor(tweetDateEndField.getValue().getTime()) >= Math.floor(firstEndDate)) {
+            var rightNow = new Date();
+            tweetDateEndField.setValue(rightNow);
+            updateLayer();
+        }*/
+    }, this);
+
+
+});
+
+
+
+}
+
+window.onload = init;
+{% endautoescape %}
+</script>
+
+{% endblock %}
+
+{% block body %}
+
+<div id="header-wrapper">
+    {{ block.super }}
+
+    <div id="dataTabs" class="x-hidden">
+
+<div id="searchDiv" style="background-color:#fff;width:800px;">
+<div style="float:left;position:relative;margin:10px;width:580px;">
+  <div class="block">
+    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
+
+    <div id="search_results"></div>
+
+  </div>
+
+
+  <div class="block wrap selfclear">
+  <h3>Selected Data</h3>
+  <div id="selection">
+    <div id="data_cart"></div>
+    </div>
+    <div id="data_ops">
+    </div>
+  </div>
+
+</div>
+
+
+
+<div style="position:relative;float:right;width:200px">
+  <div id="refine" class="block">
+    <h3>{% trans "Refine Search" %}</h3>
+    <div class="bbox-controls">
+      <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
+      <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
+      <div class="bbox-expand">
+      </div>
+    </div>
+    <div class="search-button">Refine</div>
+  </div>
+
+</div>
+</div>
+        <div id="externalDiv"></div>
+        {% if user.is_authenticated %}
+            <div id="uploadDiv"></div>
+            {% if DB_DATASTORE  %}
+                <div id="createDiv"></div>
+            {% endif %}
+        {% endif %}
+        <div id="warpDiv">
+            <div id="tabContainer" style="padding:20px;">
+
+                <div style="position:relative;float:left;">
+
+
+                    <h3>{%trans "Rectify Images"  %}</h3>    
+                    
+                    <p style="font-size: 14px">Use <a target="_blank" href="http://warp.worldmap.harvard.edu">WorldMap WARP</a> to upload and rectify scanned maps for use in WorldMap. <br/><br/> Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 4.5 in <a href="{{ STATIC_URL }}docs/WorldMap_Help.pdf">WorldMap Help</a>.</p>
+                    <br/><br/>
+                    <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{{ STATIC_URL }}theme/img/warper-sample.jpg" border="0" /></a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    
+                <div id="chartDiv">
+                <!--
+                <input type="text" size="16" id="tokenInput" value="lol">
+                <button id="submitQuery" style="width:100px;">Submit</button>
+                -->
+                <div id="controls" style="float:left; margin-left: 10%;margin-top:10px;">
+                    <label for="numBinsSizeSlider"><strong># Bins</strong></label>
+
+                    <div id="numBinsSlider"></div>
+                </div>
+                </br>
+                <div id="chart" style="margin-top: 40px; width: 100%; height: 200px;">
+                </div>
+
+
+            </div>
+
+
+{% endblock %}
+

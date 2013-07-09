@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-25 16:22-0400\n"
+"POT-Creation-Date: 2013-07-08 20:58-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -171,7 +171,7 @@ msgid "Warning"
 msgstr ""
 
 #: templates/lang.js:39
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "You now have %n layers in your map.  With more than %max layers you may "
 "experience problems with layer ordering, info balloon display, and general "
@@ -302,7 +302,6 @@ msgid "You must be logged in to save this map."
 msgstr "Vous devez être connecté pour enregistrer cette carte."
 
 #: templates/lang.js:73
-#, fuzzy
 msgid "Share Layer"
 msgstr ""
 

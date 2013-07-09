@@ -810,6 +810,53 @@ def ajax_start_twitter(request):
             status=500
         )
 
+def tweetview(request):
+    map = get_object_or_404(Map,urlsuffix="tweetmap")
+    config = map.viewer_json(request.user)
+
+    redirectPage = 'maps/tweetview.html'
+
+    first_visit = True
+    if request.session.get('visit' + str(map.id), False):
+        first_visit = False
+    else:
+        request.session['visit' + str(map.id)] = True
+
+    mapstats, created = MapStats.objects.get_or_create(map=map)
+    mapstats.visits += 1
+    if created or first_visit:
+        mapstats.uniques+=1
+    mapstats.save()
+
+
+    #Remember last visited map
+    request.session['lastmap'] = map.id
+    request.session['lastmapTitle'] = map.title
+
+    config['first_visit'] = first_visit
+    config['edit_map'] = request.user.has_perm('maps.change_map', obj=map)
+
+    geops_ip = settings.GEOPS_IP
+    if "geopsip" in request.GET:
+        geops_ip = request.GET["geopsip"]
+
+    try:
+        conn = httplib2.Http(timeout=10)
+        testUrl = "http://" +  settings.GEOPS_IP  + "/?LAYERS=point&TRANSPARENT=TRUE&FORMAT=image%2Fpng&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&RND=0.7935556590091437&SQL=SELECT%20goog_x%2C%20goog_y%2C%20%20tweet_text%20%20from%20tweets%20WHERE%20time%20%3E%201354300501%20AND%20time%20%3C%201354905302&RADIUS=1&R=0&G=0&B=255&NUM_REQUESTS=1&_OLSALT=0.731751827057451&SRS=EPSG%3A900913&BBOX=-16280475.52625,-4924280.9318723,16280475.52625,4924280.9318723&WIDTH=1664&HEIGHT=503"
+        #testUrl = "http://worldmap.harvard.edu"
+        resp, content = conn.request(testUrl, 'GET')
+    except:
+        redirectPage = "maps/tweetstartup.html"
+
+    return render_to_response(redirectPage, RequestContext(request, {
+        'config': json.dumps(config),
+        'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+        'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+        'maptitle': map.title,
+        'GEOPS_IP': geops_ip,
+        'urlsuffix': get_suffix_if_custom(map),
+        'tweetdownload': request.user.is_authenticated() and request.user.get_profile().is_org_member
+        }))
 
 def embed(request, mapid=None, snapshot=None):
     if mapid is None:

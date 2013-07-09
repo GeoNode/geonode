@@ -1,0 +1,29 @@
+
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Twitter Server maintenance"  %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header.html" %}
+<link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/fileuploadfield/fileuploadfield.css"
+      xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"/>
+{{ block.super }}
+
+{% endblock %}
+
+{% block main %}
+<div class="twocol" style="min-height:800px">
+    <h2>{% trans "Tweetmap Maintenance" %}</h2>
+    <div style="font-weight:bold;">
+    <p>The system is now under maintenance.  Please try again later.</p>
+    </div>
+<div align="center" width="600" height="320">
+<iframe width="560" height="315" src="http://www.youtube.com/embed/Foo8pYbSPv4" frameborder="0" allowfullscreen></iframe>
+</div>
+
+
+
+{% endblock %}

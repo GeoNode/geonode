@@ -6,8 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-25 16:19-0400\n"
+"POT-Creation-Date: 2013-07-08 20:57-0400\n"
 "PO-Revision-Date: 2011-06-06 14:42\n"
 "Last-Translator: Matthew Ford <mford@worldbank.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +16,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Project-Id-Version: PACKAGE VERSION\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "X-Translated-Using: django-rosetta 0.6.0\n"
 
@@ -27,11 +27,11 @@ msgstr ""
 msgid "About WorldMap"
 msgstr ""
 
-#: core/models.py:28 maps/models.py:881
+#: core/models.py:28 maps/models.py:885
 msgid "title"
 msgstr "titre"
 
-#: core/models.py:29 maps/models.py:2237
+#: core/models.py:29 maps/models.py:2241
 msgid "permissions"
 msgstr "autorisations"
 
@@ -121,7 +121,7 @@ msgstr ""
 msgid "Content"
 msgstr "Contact :"
 
-#: mapnotes/models.py:13 maps/models.py:1629 maps/views.py:151
+#: mapnotes/models.py:13 maps/models.py:1633 maps/views.py:151
 #: templates/maps/layer_create.html:54 templates/maps/layer_create_tab.html:58
 #: templates/maps/layer_replace.html:48
 #: templates/maps/layer_upload_tab.html:58
@@ -1168,7 +1168,6 @@ msgid "Daily"
 msgstr ""
 
 #: maps/models.py:476
-#, fuzzy
 msgid "Fortnightly"
 msgstr ""
 
@@ -1256,65 +1255,78 @@ msgstr ""
 msgid "No Restrictions"
 msgstr "aucune autorisation"
 
-#: maps/models.py:511 maps/models.py:2052
-msgid "name"
-msgstr "nom"
+#: maps/models.py:506
+msgid "Grid"
+msgstr ""
 
-#: maps/models.py:512
-#, fuzzy
-msgid "organization"
+#: maps/models.py:507
+msgid "Stereo Model"
+msgstr ""
+
+#: maps/models.py:508
+msgid "Text Table"
+msgstr ""
+
+#: maps/models.py:515 templates/maps/layer.html:204
+#: templates/maps/layer.html.py:225 templates/maps/layer_create.html:42
+#: templates/maps/layer_create_tab.html:40
+#: templates/profiles/profile_detail.html:17
+msgid "Name"
+msgstr "Nom"
+
+#: maps/models.py:516 templates/maps/layer.html:206
+#: templates/maps/layer.html.py:227 templates/profiles/profile_detail.html:27
+msgid "Organization"
 msgstr "Organisation"
 
-#: maps/models.py:513
-#, fuzzy
-msgid "position"
+#: maps/models.py:517 templates/maps/layer.html:207
+#: templates/maps/layer.html.py:228 templates/profiles/profile_detail.html:28
+msgid "Position"
 msgstr "Position"
 
-#: maps/models.py:514
-#, fuzzy
-msgid "voice"
+#: maps/models.py:518 templates/maps/layer.html:208
+#: templates/maps/layer.html.py:229 templates/profiles/profile_detail.html:29
+msgid "Voice"
 msgstr "Téléphone"
 
-#: maps/models.py:515
-#, fuzzy
-msgid "facsimile"
-msgstr "Télécopieur"
-
-#: maps/models.py:516
-#, fuzzy
-msgid "delivery_point"
-msgstr "Point de livraison"
-
-#: maps/models.py:517
-#, fuzzy
-msgid "city"
-msgstr "opacité"
-
-#: maps/models.py:518
-#, fuzzy
-msgid "administrative_area"
-msgstr "Zone administrative"
-
-#: maps/models.py:519
-#, fuzzy
-msgid "postal_code"
-msgstr "Code postal"
+#: maps/models.py:519 maps/models.py:589 templates/maps/layer.html:209
+#: templates/maps/layer.html.py:230 templates/profiles/profile_detail.html:30
+msgid "Fax"
+msgstr "Fax"
 
 #: maps/models.py:520
 #, fuzzy
-msgid "country"
-msgstr "Pays"
+msgid "Delivery Point"
+msgstr "Point de livraison"
 
-#: maps/models.py:521
-#, fuzzy
-msgid "email"
-msgstr "Email"
+#: maps/models.py:521 maps/models.py:591
+msgid "City"
+msgstr "Ville"
 
 #: maps/models.py:522
-msgid "role"
+#, fuzzy
+msgid "Administrative Area"
+msgstr "Administratif"
+
+#: maps/models.py:523 maps/models.py:593
+msgid "Postal Code"
+msgstr "Code postal"
+
+#: maps/models.py:524 templates/maps/layer.html:213
+#: templates/maps/layer.html.py:234 templates/profiles/profile_detail.html:34
+msgid "Country"
+msgstr "Pays"
+
+#: maps/models.py:525 templates/maps/layer.html:205
+#: templates/maps/layer.html.py:226 templates/profiles/profile_detail.html:19
+msgid "Email"
+msgstr "Email"
+
+#: maps/models.py:526
+msgid "Role"
 msgstr ""
 
-#: maps/models.py:528
+#: maps/models.py:532
 msgid ""
 "<h3>The Harvard WorldMap Project</h3>  <p>WorldMap is an open source web "
 "mapping system that is currently  under construction. It is built to assist "
@@ -1356,391 +1368,382 @@ msgid ""
 "and improve upon.</p>"
 msgstr ""
 
-#: maps/models.py:581
+#: maps/models.py:585
 msgid "Individual Name"
 msgstr "Nom de la personne"
 
-#: maps/models.py:582
+#: maps/models.py:586
 msgid "Organization Name"
 msgstr "Nom de l'organisation"
 
-#: maps/models.py:583
+#: maps/models.py:587
 msgid "Position Name"
 msgstr "Poste"
 
-#: maps/models.py:584
+#: maps/models.py:588
 msgid "Phone"
 msgstr ""
 
-#: maps/models.py:585 templates/maps/layer.html:209
-#: templates/maps/layer.html.py:230 templates/profiles/profile_detail.html:30
-msgid "Fax"
-msgstr "Fax"
-
-#: maps/models.py:586 templates/profiles/profile_detail.html:31
+#: maps/models.py:590 templates/profiles/profile_detail.html:31
 msgid "Address"
 msgstr ""
 
-#: maps/models.py:587
-msgid "City"
-msgstr "Ville"
-
-#: maps/models.py:588
+#: maps/models.py:592
 msgid "State/Province"
 msgstr ""
 
-#: maps/models.py:589
-msgid "Postal Code"
-msgstr "Code postal"
-
-#: maps/models.py:592
+#: maps/models.py:596
 msgid "Display my email address on my profile"
 msgstr ""
 
-#: maps/models.py:593
+#: maps/models.py:597
 msgid "Affiliated with Harvard"
 msgstr ""
 
-#: maps/models.py:594
+#: maps/models.py:598
 msgid "Harvard affiliation expires on: "
 msgstr ""
 
-#: maps/models.py:595 maps/models.py:895 maps/models.py:1660
+#: maps/models.py:599 maps/models.py:899 maps/models.py:1664
 msgid "keywords"
 msgstr "mots-clés"
 
-#: maps/models.py:595 maps/models.py:895 maps/models.py:1660
+#: maps/models.py:599 maps/models.py:899 maps/models.py:1664
 msgid "A space or comma-separated list of keywords"
 msgstr ""
 
-#: maps/models.py:614
+#: maps/models.py:618
 msgid "Either name or organization should be provided"
 msgstr ""
 
-#: maps/models.py:616
+#: maps/models.py:620
 msgid "The email address is already registered."
 msgstr ""
 
-#: maps/models.py:844
+#: maps/models.py:848
 msgid "Category Name"
 msgstr ""
 
-#: maps/models.py:845
+#: maps/models.py:849
 msgid "Category Title"
 msgstr ""
 
-#: maps/models.py:846
+#: maps/models.py:850
 msgid "Category Description"
 msgstr ""
 
-#: maps/models.py:882
+#: maps/models.py:886
 msgid "date"
 msgstr "date"
 
-#: maps/models.py:884
+#: maps/models.py:888
 msgid "date type"
 msgstr "catégorie de date"
 
-#: maps/models.py:886
+#: maps/models.py:890
 msgid "edition"
 msgstr "édition"
 
-#: maps/models.py:887
+#: maps/models.py:891
 msgid "abstract"
 msgstr "résumé"
 
-#: maps/models.py:888
+#: maps/models.py:892
 msgid "purpose"
 msgstr "but"
 
-#: maps/models.py:889
+#: maps/models.py:893
 msgid "maintenance frequency"
 msgstr "fréquence d'entretien"
 
-#: maps/models.py:896
+#: maps/models.py:900
 msgid "keywords region"
 msgstr "mots-clés région"
 
-#: maps/models.py:897
+#: maps/models.py:901
 msgid "constraints use"
 msgstr "contraintes d'utilisation"
 
-#: maps/models.py:898
+#: maps/models.py:902
 msgid "constraints other"
 msgstr "autres contraintes"
 
-#: maps/models.py:899
+#: maps/models.py:903
 msgid "spatial representation type"
 msgstr "type de représentation spatiale"
 
-#: maps/models.py:902
+#: maps/models.py:906
 msgid "language"
 msgstr "langue"
 
-#: maps/models.py:906
+#: maps/models.py:910
 msgid "temporal extent start"
 msgstr "début temporelle mesure"
 
-#: maps/models.py:907
+#: maps/models.py:911
 msgid "temporal extent end"
 msgstr "fin temporelle mesure"
 
-#: maps/models.py:908
+#: maps/models.py:912
 msgid "geographic bounding box"
 msgstr "aire de délimitation géographique"
 
-#: maps/models.py:909
+#: maps/models.py:913
 msgid "supplemental information"
 msgstr "informations supplémentaires"
 
-#: maps/models.py:912
+#: maps/models.py:916
 msgid "distribution URL"
 msgstr "URL de distribution"
 
-#: maps/models.py:913
+#: maps/models.py:917
 msgid "distribution description"
 msgstr "description de la distribution"
 
-#: maps/models.py:916
+#: maps/models.py:920
 msgid "SRS"
 msgstr ""
 
-#: maps/models.py:917
+#: maps/models.py:921
 msgid "bbox"
 msgstr ""
 
-#: maps/models.py:918
+#: maps/models.py:922
 msgid "llbbox"
 msgstr ""
 
-#: maps/models.py:930
+#: maps/models.py:934
 #, fuzzy
 msgid "Downloadable?"
 msgstr "Télécharger"
 
-#: maps/models.py:935 maps/models.py:1604
+#: maps/models.py:939 maps/models.py:1608
 msgid "In Gazetteer?"
 msgstr ""
 
-#: maps/models.py:940
+#: maps/models.py:944
 msgid "Gazetteer Project"
 msgstr ""
 
-#: maps/models.py:946
+#: maps/models.py:950
 msgid "data quality statement"
 msgstr "énoncé sur la qualité des données"
 
-#: maps/models.py:999
+#: maps/models.py:1003
 msgid "Zipped Shapefile"
 msgstr "Fichier de formes compactée (.zip)"
 
-#: maps/models.py:1000
+#: maps/models.py:1004
 msgid "GML 2.0"
 msgstr "GML 2.0"
 
-#: maps/models.py:1001
+#: maps/models.py:1005
 msgid "GML 3.1.1"
 msgstr "GML 3.1.1"
 
-#: maps/models.py:1002
+#: maps/models.py:1006
 msgid "CSV"
 msgstr "CSV"
 
-#: maps/models.py:1003
+#: maps/models.py:1007
 msgid "Excel"
 msgstr "Excel"
 
-#: maps/models.py:1004
+#: maps/models.py:1008
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: maps/models.py:1058
+#: maps/models.py:1062
 msgid "GeoTIFF"
 msgstr ""
 
-#: maps/models.py:1059
+#: maps/models.py:1063
 msgid "JPEG"
 msgstr "JPEG"
 
-#: maps/models.py:1060
+#: maps/models.py:1064
 msgid "PDF"
 msgstr "PDF"
 
-#: maps/models.py:1061
+#: maps/models.py:1065
 msgid "PNG"
 msgstr "PNG"
 
-#: maps/models.py:1076
+#: maps/models.py:1080
 msgid "KML"
 msgstr "KML"
 
-#: maps/models.py:1077
+#: maps/models.py:1081
 msgid "View in Google Earth"
 msgstr "Afficher dans Google Earth"
 
-#: maps/models.py:1598
+#: maps/models.py:1602
 #, fuzzy
 msgid "Attribute Name"
 msgstr "Attributs"
 
-#: maps/models.py:1599
+#: maps/models.py:1603
 #, fuzzy
 msgid "Attribute Label"
 msgstr "Attributs"
 
-#: maps/models.py:1600
+#: maps/models.py:1604
 #, fuzzy
 msgid "Attribute Type"
 msgstr "Attributs"
 
-#: maps/models.py:1601 templates/maps/layer_describe.html:131
+#: maps/models.py:1605 templates/maps/layer_describe.html:131
 #: templates/maps/layer_describe_tab.html:125
 #, fuzzy
 msgid "Searchable?"
 msgstr "Rechercher"
 
-#: maps/models.py:1602 templates/maps/layer_describe.html:131
+#: maps/models.py:1606 templates/maps/layer_describe.html:131
 #: templates/maps/layer_describe_tab.html:125
 msgid "Visible?"
 msgstr ""
 
-#: maps/models.py:1603 templates/maps/layer_describe.html:131
+#: maps/models.py:1607 templates/maps/layer_describe.html:131
 #: templates/maps/layer_describe_tab.html:125
 msgid "Display Order"
 msgstr ""
 
-#: maps/models.py:1605
+#: maps/models.py:1609
 msgid "Gazetteer Start Date"
 msgstr ""
 
-#: maps/models.py:1606
+#: maps/models.py:1610
 msgid "Gazetteer End Date"
 msgstr ""
 
-#: maps/models.py:1607
+#: maps/models.py:1611
 #, fuzzy
 msgid "Date Format"
 msgstr "Formats pris en charge"
 
-#: maps/models.py:1632 maps/views.py:152 templates/maps/layer.html:175
+#: maps/models.py:1636 maps/views.py:152 templates/maps/layer.html:175
 #: templates/maps/layer_create.html:87 templates/maps/layer_create_tab.html:91
 #: templates/maps/layer_upload_tab.html:144
 msgid "Abstract"
 msgstr "Résumé"
 
-#: maps/models.py:1636
+#: maps/models.py:1640
 msgid "zoom"
 msgstr "zoom"
 
-#: maps/models.py:1640
+#: maps/models.py:1644
 msgid "projection"
 msgstr "projection"
 
-#: maps/models.py:1644
+#: maps/models.py:1648
 msgid "center X"
 msgstr "centre X"
 
-#: maps/models.py:1648
+#: maps/models.py:1652
 msgid "center Y"
 msgstr "centre Y"
 
-#: maps/models.py:1652
+#: maps/models.py:1656
 msgid "owner"
 msgstr "propriétaire"
 
-#: maps/models.py:1655
+#: maps/models.py:1659
 msgid "Date Created"
 msgstr ""
 
-#: maps/models.py:1662
+#: maps/models.py:1666
 msgid "Date Last Modified"
 msgstr ""
 
-#: maps/models.py:1667
+#: maps/models.py:1671
 msgid "Site URL"
 msgstr ""
 
-#: maps/models.py:1672
+#: maps/models.py:1676
 msgid "Official Harvard Site URL"
 msgstr ""
 
-#: maps/models.py:1677
+#: maps/models.py:1681
 msgid "Site Content"
 msgstr ""
 
-#: maps/models.py:1682
+#: maps/models.py:1686
 msgid "Use a custom template"
 msgstr ""
 
-#: maps/models.py:1687
+#: maps/models.py:1691
 msgid "Layer Category Parameters"
 msgstr ""
 
-#: maps/models.py:1957
+#: maps/models.py:1961
 msgid "JSON Configuration"
 msgstr ""
 
-#: maps/models.py:1985
+#: maps/models.py:1989
 msgid "Jump URL"
 msgstr ""
 
-#: maps/models.py:1986
+#: maps/models.py:1990
 msgid "Jump Site"
 msgstr ""
 
-#: maps/models.py:2044
+#: maps/models.py:2048
 msgid "stack order"
 msgstr "pile pour"
 
-#: maps/models.py:2048
+#: maps/models.py:2052
 msgid "format"
 msgstr "format"
 
-#: maps/models.py:2059
+#: maps/models.py:2056
+msgid "name"
+msgstr "nom"
+
+#: maps/models.py:2063
 msgid "opacity"
 msgstr "opacité"
 
-#: maps/models.py:2062
+#: maps/models.py:2066
 msgid "styles"
 msgstr "styles"
 
-#: maps/models.py:2065
+#: maps/models.py:2069
 msgid "transparent"
 msgstr "transparent"
 
-#: maps/models.py:2068
+#: maps/models.py:2072
 msgid "fixed"
 msgstr "fixe"
 
-#: maps/models.py:2072
+#: maps/models.py:2076
 msgid "group"
 msgstr "groupe"
 
-#: maps/models.py:2076
+#: maps/models.py:2080
 msgid "visibility"
 msgstr "visibilité"
 
-#: maps/models.py:2079
+#: maps/models.py:2083
 msgid "ows URL"
 msgstr "URL ows"
 
-#: maps/models.py:2082
+#: maps/models.py:2086
 msgid "layer params"
 msgstr "paramètres couche"
 
-#: maps/models.py:2089
+#: maps/models.py:2093
 msgid "source params"
 msgstr "paramètres source"
 
-#: maps/models.py:2324 maps/models.py:2330
+#: maps/models.py:2328 maps/models.py:2334
 msgid "Visits"
 msgstr ""
 
-#: maps/models.py:2325 maps/models.py:2331
+#: maps/models.py:2329 maps/models.py:2335
 msgid "Unique Visitors"
 msgstr ""
 
-#: maps/models.py:2332
+#: maps/models.py:2336
 #, fuzzy
 msgid "Downloads"
 msgstr "Télécharger"
@@ -1982,7 +1985,6 @@ msgid ""
 msgstr ""
 
 #: maps/views.py:146 templates/mapnotes/annotation.html:38
-#, fuzzy
 msgid "Date"
 msgstr ""
 
@@ -2052,8 +2054,7 @@ msgstr "Non Autorisé"
 #: maps/views.py:576
 #, fuzzy
 msgid "You must use POST for editing layer permissions"
-msgstr ""
-"Vous n'êtes pas autorisé à afficher les autorisations de cette couche."
+msgstr "Vous n'êtes pas autorisé à afficher les autorisations de cette couche."
 
 #: maps/views.py:583
 #, fuzzy
@@ -2145,8 +2146,7 @@ msgstr ""
 
 #: maps/views.py:2190
 msgid "You are not permitted to view this layer's permissions"
-msgstr ""
-"Vous n'êtes pas autorisé à afficher les autorisations de cette couche."
+msgstr "Vous n'êtes pas autorisé à afficher les autorisations de cette couche."
 
 #: register/forms.py:16
 msgid "Email Address"
@@ -2243,8 +2243,8 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Une erreur interne s'est produite. S'il vous plaît essayez de nouveau, et "
-"si le problème persiste, contactez l'administrateur du site."
+"Une erreur interne s'est produite. S'il vous plaît essayez de nouveau, et si "
+"le problème persiste, contactez l'administrateur du site."
 
 #: templates/data_base.html:4
 msgid "Browse Data"
@@ -2253,12 +2253,12 @@ msgstr "Parcourir les données"
 #: templates/data_base.html:16 templates/data_base.html.py:28
 #: templates/maps.html:17 templates/maps.html.py:34
 #: templates/maps_search_base.html:36 templates/search_base.html:60
-#: templates/maps/view.html:227
+#: templates/maps/tweetview.html:828 templates/maps/view.html:227
 msgid "Search"
 msgstr "Rechercher"
 
 #: templates/data_base.html:28 templates/search_base.html:60
-#: templates/maps/view.html:227
+#: templates/maps/tweetview.html:828 templates/maps/view.html:227
 msgid "for geospatial data"
 msgstr "pour les données géospatiales"
 
@@ -2266,46 +2266,43 @@ msgstr "pour les données géospatiales"
 msgid "Advanced Search"
 msgstr "Recherche avancée"
 
-#: templates/error_layout.html:41 templates/fullscreen.html:48
-#, fuzzy
+#: templates/error_layout.html:41 templates/fullscreen.html:45
 msgid "Sign out"
 msgstr "Se connecter"
 
-#: templates/error_layout.html:43 templates/fullscreen.html:50
-#: templates/mobile.html:40 templates/page_layout.html:94
+#: templates/error_layout.html:43 templates/fullscreen.html:47
+#: templates/mobile.html:40 templates/page_layout.html:76
 #: templates/registration/username_form.html:24
 msgid "Sign in"
 msgstr "Se connecter"
 
-#: templates/error_layout.html:45 templates/fullscreen.html:52
-#: templates/page_layout.html:96
+#: templates/error_layout.html:45 templates/fullscreen.html:49
+#: templates/page_layout.html:78
 msgid "Create Map"
 msgstr "Créer une carte"
 
-#: templates/error_layout.html:46 templates/fullscreen.html:53
-#: templates/page_layout.html:97
+#: templates/error_layout.html:46 templates/fullscreen.html:50
+#: templates/page_layout.html:79
 msgid "View Map"
 msgstr ""
 
-#: templates/error_layout.html:63 templates/page_layout.html:114
+#: templates/error_layout.html:63 templates/page_layout.html:115
 msgid "Need Help?"
 msgstr "Besoin d'Aide?"
 
-#: templates/error_layout.html:64 templates/page_layout.html:115
-#, fuzzy
+#: templates/error_layout.html:64 templates/page_layout.html:116
 msgid "Contact Us"
 msgstr "Contact :"
 
-#: templates/error_layout.html:65 templates/page_layout.html:116
+#: templates/error_layout.html:65 templates/page_layout.html:117
 msgid "Blog"
 msgstr ""
 
-#: templates/error_layout.html:66 templates/page_layout.html:117
+#: templates/error_layout.html:66 templates/page_layout.html:118
 msgid "Source Code"
 msgstr ""
 
 #: templates/fullscreen.html:5 templates/mobile.html:26
-#, fuzzy
 msgid "WorldMap"
 msgstr ""
 
@@ -2313,11 +2310,7 @@ msgstr ""
 msgid "Powered by <a target='_blank' href='/'>WorldMap</a>"
 msgstr ""
 
-#: templates/fullscreen.html:47
-msgid "Welcome"
-msgstr "Bienvenue"
-
-#: templates/fullscreen.html:54 templates/page_layout.html:98
+#: templates/fullscreen.html:51 templates/page_layout.html:80
 msgid "Help"
 msgstr "Aide"
 
@@ -2338,22 +2331,18 @@ msgid "About"
 msgstr ""
 
 #: templates/index.html:105
-#, fuzzy
 msgid "AfricaMap"
 msgstr ""
 
 #: templates/index.html:106
-#, fuzzy
 msgid "ChinaMap"
 msgstr ""
 
 #: templates/index.html:107
-#, fuzzy
 msgid "Boston Research Map"
 msgstr ""
 
 #: templates/index.html:108
-#, fuzzy
 msgid "Giza Map"
 msgstr ""
 
@@ -2400,7 +2389,6 @@ msgid "Register"
 msgstr "S'inscrire"
 
 #: templates/maphelp.html:14
-#, fuzzy
 msgid "Map User Guide"
 msgstr "Guide de l'utilisateur"
 
@@ -2410,7 +2398,6 @@ msgstr ""
 
 #: templates/maphelp.html:19
 msgid ""
-"\n"
 "  <p>Use the links below to\n"
 "navigate to a document.</p>\n"
 "\n"
@@ -2419,11 +2406,7 @@ msgid ""
 "    <li><a href=\"#tutorial\">Tutorial</a>\n"
 "\n"
 "    </ul>\n"
-"\n"
-"  "
 msgstr ""
-"\n"
-""
 
 #: templates/maps.html:4
 msgid "Browse Maps"
@@ -2446,7 +2429,6 @@ msgid "Create Maps"
 msgstr "Créer des Cartes"
 
 #: templates/maps.html:57
-#, fuzzy
 msgid ""
 "Use WorldMap to create your own maps.  Add layers from WorldMap or remote "
 "services, and style them."
@@ -2466,8 +2448,8 @@ msgstr "Recherche de cartes"
 #: templates/maps_search_base.html:40
 msgid "Click the <b>+</b> on any row to show map abstract."
 msgstr ""
-"Cliquez sur le <b> + </b> sur n'importe quelle ligne pour afficher le "
-"résumé de la carte."
+"Cliquez sur le <b> + </b> sur n'importe quelle ligne pour afficher le résumé "
+"de la carte."
 
 #: templates/maps_search_base.html:41 templates/search_base.html:64
 msgid "To bookmark your current search use this"
@@ -2478,11 +2460,10 @@ msgid "permalink"
 msgstr "Permalink"
 
 #: templates/mobile.html:26
-#, fuzzy
 msgid "Powered by"
 msgstr "Fourni par :"
 
-#: templates/page_layout.html:90
+#: templates/page_layout.html:72
 msgid "Log out"
 msgstr "Déconnectez"
 
@@ -2495,25 +2476,27 @@ msgid ""
 "Click the <b>+</b> on any row to show layer metadata or download in PDF, "
 "KML, GeoTIFF, or SHP."
 msgstr ""
-"Cliquez sur le <strong> + </strong> sur n'importe quelle ligne pour voir "
-"les métadonnées couche ou télécharger en PDF, KML, GeoTIFF, ou SHP."
+"Cliquez sur le <strong> + </strong> sur n'importe quelle ligne pour voir les "
+"métadonnées couche ou télécharger en PDF, KML, GeoTIFF, ou SHP."
 
-#: templates/search_base.html:73 templates/maps/view.html:249
+#: templates/search_base.html:73 templates/maps/tweetview.html:850
+#: templates/maps/view.html:249
 msgid "Refine Search"
 msgstr "Raffiner la Recherche"
 
-#: templates/search_base.html:75 templates/maps/view.html:251
+#: templates/search_base.html:75 templates/maps/tweetview.html:852
+#: templates/maps/view.html:251
 msgid "By area"
 msgstr "Par zone"
 
-#: templates/search_base.html:76 templates/maps/view.html:252
+#: templates/search_base.html:76 templates/maps/tweetview.html:853
+#: templates/maps/view.html:252
 msgid "Limit the search to data that includes features in the displayed area."
 msgstr ""
 "Limiter la recherche aux données qui incluent des fonctionnalités dans la "
 "zone affichée."
 
 #: templates/search_base.html:83 templates/maps/view.html:234
-#, fuzzy
 msgid "Selected Data"
 msgstr "Données Sélectionnées"
 
@@ -2538,8 +2521,8 @@ msgstr "Votre avatar actuel:"
 #: templates/avatar/add.html:8 templates/profiles/edit_profile.html:15
 msgid "You haven't uploaded an avatar yet. Please upload one now."
 msgstr ""
-"Vous n'avez pas encore téléchargé un avatar. S'il vous plaît télécharger "
-"une maintenant."
+"Vous n'avez pas encore téléchargé un avatar. S'il vous plaît télécharger une "
+"maintenant."
 
 #: templates/avatar/add.html:12 templates/profiles/edit_profile.html:27
 msgid "Upload New Image"
@@ -2668,32 +2651,6 @@ msgstr "Propriétaire"
 msgid "Point of Contact"
 msgstr "Point de Contact"
 
-#: templates/maps/layer.html:204 templates/maps/layer.html.py:225
-#: templates/maps/layer_create.html:42 templates/maps/layer_create_tab.html:40
-#: templates/profiles/profile_detail.html:17
-msgid "Name"
-msgstr "Nom"
-
-#: templates/maps/layer.html:205 templates/maps/layer.html.py:226
-#: templates/profiles/profile_detail.html:19
-msgid "Email"
-msgstr "Email"
-
-#: templates/maps/layer.html:206 templates/maps/layer.html.py:227
-#: templates/profiles/profile_detail.html:27
-msgid "Organization"
-msgstr "Organisation"
-
-#: templates/maps/layer.html:207 templates/maps/layer.html.py:228
-#: templates/profiles/profile_detail.html:28
-msgid "Position"
-msgstr "Position"
-
-#: templates/maps/layer.html:208 templates/maps/layer.html.py:229
-#: templates/profiles/profile_detail.html:29
-msgid "Voice"
-msgstr "Téléphone"
-
 #: templates/maps/layer.html:210 templates/maps/layer.html.py:231
 msgid "Delivery"
 msgstr "Livraison"
@@ -2706,11 +2663,6 @@ msgstr "Lieu"
 #: templates/profiles/profile_detail.html:33
 msgid "Zip Code"
 msgstr "Code postal"
-
-#: templates/maps/layer.html:213 templates/maps/layer.html.py:234
-#: templates/profiles/profile_detail.html:34
-msgid "Country"
-msgstr "Pays"
 
 #: templates/maps/layer.html:241
 msgid "Attributes"
@@ -2881,7 +2833,6 @@ msgid "Only letters and numbers are allowed"
 msgstr ""
 
 #: templates/maps/layer_create.html:62 templates/maps/layer_create_tab.html:66
-#, fuzzy
 msgid "Data Type"
 msgstr ""
 
@@ -2896,7 +2847,6 @@ msgstr ""
 
 #: templates/maps/layer_create.html:96
 #: templates/maps/layer_create_tab.html:100
-#, fuzzy
 msgid "Use spaces to separate keywords"
 msgstr ""
 
@@ -2977,13 +2927,11 @@ msgstr "Attributs"
 
 #: templates/maps/layer_describe.html:131
 #: templates/maps/layer_describe_tab.html:125
-#, fuzzy
 msgid "Display Title"
 msgstr ""
 
 #: templates/maps/layer_describe.html:131
 #: templates/maps/layer_describe_tab.html:125
-#, fuzzy
 msgid "Add to Gazetteer?"
 msgstr ""
 
@@ -3068,8 +3016,8 @@ msgstr ""
 #: templates/maps/layer_upload_tab.html:12
 msgid "Select a layer data file and submit the form to begin the transfer."
 msgstr ""
-"Sélectionnez un fichier de données de couche et soumettre le formulaire "
-"pour débuter le transfert."
+"Sélectionnez un fichier de données de couche et soumettre le formulaire pour "
+"débuter le transfert."
 
 #: templates/maps/layer_replace.html:71
 #: templates/maps/layer_upload_tab.html:80
@@ -3157,17 +3105,13 @@ msgstr "Ajouter des données"
 
 #: templates/maps/layer_upload.html:392
 msgid ""
-"\n"
 "        Note: A zipped shapefile must contain at least four files with the "
 "following extensions:<br/> <span style=\"font-weight:bold\">SHP, DBF, SHX, "
 "PRJ</span>.\n"
 "        <br/><br/>\n"
 "        If you are uploading an unzipped shapefile, first select the .SHP "
 "file.  You will be prompted to locate the remaining component files.\n"
-"        "
 msgstr ""
-"\n"
-""
 
 #: templates/maps/layer_upload_tab.html:10
 #, fuzzy
@@ -3208,7 +3152,6 @@ msgstr "Téléchargez couche"
 
 #: templates/maps/layer_upload_tab.html:218
 #: templates/maps/layer_upload_tab.html:340
-#, fuzzy
 msgid "Error"
 msgstr ""
 
@@ -3427,6 +3370,22 @@ msgid "You do not have permission to view or download this layer"
 msgstr ""
 "Vous n'avez pas les droits pour visualiser ou télécharger cette couche."
 
+#: templates/maps/tweetview.html:254
+msgid "Filter Term"
+msgstr ""
+
+#: templates/maps/tweetview.html:264
+msgid "From"
+msgstr ""
+
+#: templates/maps/tweetview.html:449
+msgid "Filter Tweets"
+msgstr ""
+
+#: templates/maps/tweetview.html:875 templates/maps/view.html:274
+msgid "Rectify Images"
+msgstr ""
+
 #: templates/maps/upload_terms.html:8
 msgid ""
 "\n"
@@ -3591,10 +3550,6 @@ msgstr "Créer une feature"
 msgid "Edit Feature"
 msgstr "Modifier une feature "
 
-#: templates/maps/view.html:274
-msgid "Rectify Images"
-msgstr ""
-
 #: templates/maps/view.html:276
 msgid ""
 "Use <a target='_blank' href='http://warp.worldmap.harvard.edu'>WorldMap "
@@ -3691,7 +3646,6 @@ msgid "Log in again"
 msgstr "Connectez-vous à nouveau"
 
 #: templates/registration/login.html:4 templates/registration/login.html:11
-#, fuzzy
 msgid "WorldMap Login"
 msgstr ""
 
@@ -3795,6 +3749,45 @@ msgid ""
 "sent to you."
 msgstr ""
 
+#, fuzzy
+#~ msgid "organization"
+#~ msgstr "Organisation"
+
+#, fuzzy
+#~ msgid "position"
+#~ msgstr "Position"
+
+#, fuzzy
+#~ msgid "voice"
+#~ msgstr "Téléphone"
+
+#, fuzzy
+#~ msgid "facsimile"
+#~ msgstr "Télécopieur"
+
+#, fuzzy
+#~ msgid "city"
+#~ msgstr "opacité"
+
+#, fuzzy
+#~ msgid "administrative_area"
+#~ msgstr "Zone administrative"
+
+#, fuzzy
+#~ msgid "postal_code"
+#~ msgstr "Code postal"
+
+#, fuzzy
+#~ msgid "country"
+#~ msgstr "Pays"
+
+#, fuzzy
+#~ msgid "email"
+#~ msgstr "Email"
+
+#~ msgid "Welcome"
+#~ msgstr "Bienvenue"
+
 #~ msgid "OGC Services"
 #~ msgstr "Services OGC"
 
@@ -3828,9 +3821,7 @@ msgstr ""
 #~ "    </ul>\n"
 #~ "\n"
 #~ "    "
-#~ msgstr ""
-#~ "\n"
-#~ ""
+#~ msgstr "\n"
 
 #~ msgid ""
 #~ "You can customize the template to suit your needs. You can add and remove "
