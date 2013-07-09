@@ -28,7 +28,7 @@
       <div class="btn-group">
       </div>
     </div>
-    {% has_obj_perm user document "document.change_document" as can_edit_document %}
+    {% has_obj_perm user document "documents.change_document" as can_edit_document %}
     {% if can_edit_document %}
     <div class="btn-group pull-right">
       <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
@@ -116,7 +116,7 @@
           {% endif %}
         </ul>
     </div>
-    {% has_obj_perm user document "document.change_document_permissions" as can_change_permissions %}
+    {% has_obj_perm user document "documents.change_document_permissions" as can_change_permissions %}
     {% if can_change_permissions %}
     <div class="well">
         <h2>{% trans "Permissions" %}</h2>

@@ -34,7 +34,7 @@
         </ul>
       </div>
 
-      {% has_obj_perm user map "map.change_map" as can_edit_map %}
+      {% has_obj_perm user map "maps.change_map" as can_edit_map %}
       {% if can_edit_map %}
       <div class="btn-group">
         <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
@@ -142,7 +142,7 @@
         <p>{% trans "View this map in the GeoExplorer GIS Client" %}</p>
         <a href="{% url "map_view" map.id %}" class="btn btn-large">{% trans "View Map" %}</a>
     </div>
-      {% has_obj_perm user map "map.change_map_permissions" as can_change_permissions %}
+      {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
       {% if can_change_permissions %}
     <div class='well'>
         <h2>{% trans "Permissions" %}</h2>
