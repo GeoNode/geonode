@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-08 22:56-0400\n"
+"POT-Creation-Date: 2013-07-09 08:25-0400\n"
 "PO-Revision-Date: 2011-06-06 14:42\n"
 "Last-Translator: Matthew Ford <mford@worldbank.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2271,34 +2271,34 @@ msgid "Sign out"
 msgstr "Se connecter"
 
 #: templates/error_layout.html:43 templates/fullscreen.html:47
-#: templates/mobile.html:40 templates/page_layout.html:76
+#: templates/mobile.html:40 templates/page_layout.html:81
 #: templates/registration/username_form.html:24
 msgid "Sign in"
 msgstr "Se connecter"
 
 #: templates/error_layout.html:45 templates/fullscreen.html:49
-#: templates/page_layout.html:78
+#: templates/page_layout.html:83
 msgid "Create Map"
 msgstr "Créer une carte"
 
 #: templates/error_layout.html:46 templates/fullscreen.html:50
-#: templates/page_layout.html:79
+#: templates/page_layout.html:84
 msgid "View Map"
 msgstr ""
 
-#: templates/error_layout.html:63 templates/page_layout.html:115
+#: templates/error_layout.html:63 templates/page_layout.html:120
 msgid "Need Help?"
 msgstr "Besoin d'Aide?"
 
-#: templates/error_layout.html:64 templates/page_layout.html:116
+#: templates/error_layout.html:64 templates/page_layout.html:121
 msgid "Contact Us"
 msgstr "Contact :"
 
-#: templates/error_layout.html:65 templates/page_layout.html:117
+#: templates/error_layout.html:65 templates/page_layout.html:122
 msgid "Blog"
 msgstr ""
 
-#: templates/error_layout.html:66 templates/page_layout.html:118
+#: templates/error_layout.html:66 templates/page_layout.html:123
 msgid "Source Code"
 msgstr ""
 
@@ -2310,7 +2310,7 @@ msgstr ""
 msgid "Powered by <a target='_blank' href='/'>WorldMap</a>"
 msgstr ""
 
-#: templates/fullscreen.html:51 templates/page_layout.html:80
+#: templates/fullscreen.html:51 templates/page_layout.html:85
 msgid "Help"
 msgstr "Aide"
 
@@ -2467,7 +2467,7 @@ msgstr "Permalink"
 msgid "Powered by"
 msgstr "Fourni par :"
 
-#: templates/page_layout.html:72
+#: templates/page_layout.html:77
 msgid "Log out"
 msgstr "Déconnectez"
 
@@ -3179,7 +3179,7 @@ msgstr "Recherche de cartes"
 msgid "Edit Details"
 msgstr "Modification des détails pour"
 
-#: templates/maps/map_print.html:90
+#: templates/maps/map_print.html:89
 msgid "LEGEND"
 msgstr ""
 
@@ -3387,94 +3387,94 @@ msgstr ""
 msgid "Tweetmap Maintenance"
 msgstr ""
 
-#: templates/maps/tweetview.html:254
+#: templates/maps/tweetview.html:255
 msgid "Filter Term"
 msgstr ""
 
-#: templates/maps/tweetview.html:264
+#: templates/maps/tweetview.html:265
 msgid "From"
 msgstr ""
 
-#: templates/maps/tweetview.html:449
+#: templates/maps/tweetview.html:450
 msgid "Filter Tweets"
 msgstr ""
 
-#: templates/maps/tweetview.html:479
+#: templates/maps/tweetview.html:480
 msgid "Filter Term:"
 msgstr ""
 
-#: templates/maps/tweetview.html:489
+#: templates/maps/tweetview.html:490
 msgid "From:"
 msgstr ""
 
-#: templates/maps/tweetview.html:501
+#: templates/maps/tweetview.html:502
 msgid "To:"
 msgstr ""
 
-#: templates/maps/tweetview.html:513
+#: templates/maps/tweetview.html:514
 msgid "Increment:"
 msgstr ""
 
-#: templates/maps/tweetview.html:521
+#: templates/maps/tweetview.html:522
 msgid "Day"
 msgstr ""
 
-#: templates/maps/tweetview.html:522
+#: templates/maps/tweetview.html:523
 msgid "Hour"
 msgstr ""
 
-#: templates/maps/tweetview.html:523
+#: templates/maps/tweetview.html:524
 msgid "Minute"
 msgstr ""
 
-#: templates/maps/tweetview.html:524
+#: templates/maps/tweetview.html:525
 msgid "Second"
 msgstr ""
 
-#: templates/maps/tweetview.html:538
+#: templates/maps/tweetview.html:539
 #, fuzzy
 msgid "Download Tweets"
 msgstr "Télécharger"
 
-#: templates/maps/tweetview.html:553
+#: templates/maps/tweetview.html:554
 msgid "LSH Matching"
 msgstr ""
 
-#: templates/maps/tweetview.html:564
+#: templates/maps/tweetview.html:565
 #, python-format
 msgid "Auto Max %%"
 msgstr ""
 
-#: templates/maps/tweetview.html:577
+#: templates/maps/tweetview.html:578
 #, python-format
 msgid "Max %%"
 msgstr ""
 
-#: templates/maps/tweetview.html:592
+#: templates/maps/tweetview.html:593
 msgid "Smoothing"
 msgstr ""
 
-#: templates/maps/tweetview.html:603
+#: templates/maps/tweetview.html:604
 msgid "Min Tweets/sq km"
 msgstr ""
 
-#: templates/maps/tweetview.html:634
+#: templates/maps/tweetview.html:635
 msgid "Tweet Filter"
 msgstr ""
 
-#: templates/maps/tweetview.html:652
+#: templates/maps/tweetview.html:653
 msgid "Tweet Graph"
 msgstr ""
 
-#: templates/maps/tweetview.html:656
+#: templates/maps/tweetview.html:657
 msgid "Twitter Trends"
 msgstr ""
 
-#: templates/maps/tweetview.html:668
+#: templates/maps/tweetview.html:669
 msgid "Tweets"
 msgstr ""
 
-#: templates/maps/tweetview.html:704
+#: templates/maps/tweetview.html:705
 msgid "Tweet Heatmap"
 msgstr ""
 

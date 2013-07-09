@@ -70,7 +70,8 @@ urlpatterns = patterns('',
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/(?P<format>[^/]*)/?$','geonode.proxy.views.download'),
     (r'^gazetteer/', include('geonode.gazetteer.urls')),
-     url(r'^autocomplete/', include('autocomplete_light.urls')),
+    (r'^bostonhoods/?', include('geonode.hoods.urls')),
+    url(r'^autocomplete/', include('autocomplete_light.urls')),
     )
 
 urlpatterns += geonode.proxy.urls.urlpatterns

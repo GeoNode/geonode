@@ -45,6 +45,7 @@
 
 <script type="text/javascript">
 {% autoescape off %}
+
 host = "http://{{GEOPS_IP}}";
 
 Ext.sequence(Ext.form.SliderField.prototype, 'initComponent', function () {
@@ -631,7 +632,7 @@ var cqlWindow = new Ext.Window({
     closable:false,
     constrain:true,
     monitorResize:true,
-    title:gettext('{% trans "Tweet Filter" %}'),
+    title:'{% trans "Tweet Filter" %}',
     items:[cqlOverlay]
 });
 
@@ -649,7 +650,7 @@ var graphWindow = new Ext.Window({
     constrain:true,
     monitorResize:true,
     collapsed: true,
-    title:gettext('{% trans "Tweet Graph" %}'),
+    title:'{% trans "Tweet Graph" %}',
     items:[graphPanel]
 });
 
@@ -804,7 +805,6 @@ app.on("ready", function () {
 
 
 });
-
 
 
 }

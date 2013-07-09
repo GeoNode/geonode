@@ -182,7 +182,7 @@ var init = function() {
     }
 
     app = new GeoExplorer(config, true);
-
+    
     var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
     var permalink = function(id) {
         return permalinkTemplate.apply({

@@ -506,8 +506,12 @@ div.cga-link {
     background-color: #fff !important;
 }
 
+.wtf {
+	padding: 0px 10px 0px 10px;
+	border-right: 1px solid #000;
+}
 
-div.cql-overlay {
+div.cql-overlay { 
     z-index: 10000;
     position: absolute;
     margin: 0 15%;

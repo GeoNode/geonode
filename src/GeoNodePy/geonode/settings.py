@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'geonode.profile',
     'geonode.register',
     'geonode.mapnotes',
+    'geonode.hoods',
     'geonode.capabilities',
     #'geonode.gazetteer',
     #'geonode.queue',
@@ -484,6 +485,17 @@ DEFAULT_WORKSPACE = 'geonode'
 HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation key'
 CACHE_BACKEND = 'dummy://'
 
+
+### Boston neighborhood settings  ###
+### These need to be set to the correct values for the worldmap instance ###
+HOODS_TEMPLATE_LAYER = 'tl_2010_25025_tabblock10_f2j_651' # layer name in geoserver
+HOODS_TEMPLATE_ID = 8  #Map id to be used as template
+HOODS_TEMPLATE_ATTRIBUTE = 'GEOID10'  #Attribute to be used for block id
+HOODS_MASTER_LAYER = 'masterhoodlayer_nuw'
+
+GEOPS_IP =  '128.30.77.57:8083'
+#GEOPS_IP =  '140.247.116.252:8083'
+GEOPS_DOWNLOAD = ''
 
 try:
     from local_settings import *

@@ -1656,6 +1656,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             infoButton,
             "->"
         ];
+        
+        //Only show this for Boston map
+        if (this.urlsuffix == 31) {
+        	tools.splice(13,0,new GeoExplorer.SocialExplorer(this));
+        }        
+
+        
         this.on("saved", function() {
             // enable the "Publish Map" button
             publishAction.enable();
