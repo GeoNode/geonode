@@ -50,7 +50,7 @@
         </ul>
       </div>
       {% endif %}
-      {% has_obj_perm user layer "layer.change_layer" as can_edit_layer %}
+      {% has_obj_perm user layer "layers.change_layer" as can_edit_layer %}
       {% if can_edit_layer %}
       <!-- edit layer dropdown -->
       <div class="btn-group">
@@ -183,7 +183,7 @@
         <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>
         <a href="{% url "new_map" %}?layer={{layer.typename}}" class="btn btn-large">{% trans "Create a Map" %}</a>
     </div>
-    {% has_obj_perm user layer "layer.change_layer_permissions" as can_change_permissions %}
+    {% has_obj_perm user layer "layers.change_layer_permissions" as can_change_permissions %}
     {% if can_change_permissions %}
     <div class="well">
         <h2>{% trans "Permissions" %}</h2>
