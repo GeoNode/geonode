@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-08 20:57-0400\n"
+"POT-Creation-Date: 2013-07-08 22:56-0400\n"
 "PO-Revision-Date: 2011-06-06 14:42\n"
 "Last-Translator: Matthew Ford <mford@worldbank.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,12 +45,12 @@ msgstr ""
 "Détermine l'ordre dans lequel les rôles sont présentés dans l'interface-"
 "utilisateur."
 
-#: core/models.py:72 maps/views.py:1340
+#: core/models.py:72 maps/views.py:1387
 #: templates/maps/layer_permissions.html:18
 msgid "Anonymous Users"
 msgstr "Utilisateurs anonymes"
 
-#: core/models.py:73 maps/views.py:1344
+#: core/models.py:73 maps/views.py:1391
 #: templates/maps/layer_permissions.html:19
 msgid "Registered Users"
 msgstr "Utilisateurs enregistrés"
@@ -2046,7 +2046,7 @@ msgstr ""
 msgid "You are not permitted to view or copy this map."
 msgstr "Vous n'êtes pas autorisé à visualiser ou copier cette carte."
 
-#: maps/views.py:403 maps/views.py:825 maps/views.py:849 maps/views.py:2746
+#: maps/views.py:403 maps/views.py:872 maps/views.py:896 maps/views.py:2793
 #: templates/401.html:10
 msgid "Not Permitted"
 msgstr "Non Autorisé"
@@ -2066,11 +2066,11 @@ msgstr "Vous n'êtes pas autorisé à visualiser cette carte."
 msgid "You are not allowed to change permissions for this map"
 msgstr "Vous n'êtes pas autorisé à visualiser cette carte."
 
-#: maps/views.py:650 maps/views.py:2520
+#: maps/views.py:650 maps/views.py:2567
 msgid "You are not permitted to delete this map."
 msgstr "Vous n'êtes pas autorisé à supprimer cette carte."
 
-#: maps/views.py:673 maps/views.py:754 maps/views.py:2545
+#: maps/views.py:673 maps/views.py:754 maps/views.py:2592
 msgid "You are not allowed to view this map."
 msgstr "Vous n'êtes pas autorisé à visualiser cette carte."
 
@@ -2078,27 +2078,27 @@ msgstr "Vous n'êtes pas autorisé à visualiser cette carte."
 msgid "You are not allowed to modify this map's metadata."
 msgstr "Vous n'êtes pas autorisé à modifier les métadonnées de cette carte."
 
-#: maps/views.py:866 maps/views.py:2657
+#: maps/views.py:913 maps/views.py:2704
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "Vous n'êtes pas autorisé à modifier les métadonnées de cette couche."
 
-#: maps/views.py:896
+#: maps/views.py:943
 msgid "No date fields available"
 msgstr ""
 
-#: maps/views.py:1039
+#: maps/views.py:1086
 msgid "You are not permitted to delete this layer"
 msgstr "Vous n'êtes pas autorisé à supprimer cette couche."
 
-#: maps/views.py:1061 maps/views.py:1195
+#: maps/views.py:1108 maps/views.py:1242
 msgid "You are not permitted to modify this layer"
 msgstr "Vous n'êtes pas autorisé à modifier cette couche."
 
-#: maps/views.py:1094
+#: maps/views.py:1141
 msgid "You are not permitted to view this layer"
 msgstr "Vous n'êtes pas autorisé à modifier cette couche."
 
-#: maps/views.py:1119
+#: maps/views.py:1166
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -2107,44 +2107,44 @@ msgstr ""
 "plaît essayer de nouveau, ou communiquez avec l'administrateur si le "
 "problème persiste."
 
-#: maps/views.py:1179 maps/views.py:1268
+#: maps/views.py:1226 maps/views.py:1315
 msgid "Unexpected error during upload: "
 msgstr ""
 
-#: maps/views.py:1289
+#: maps/views.py:1336
 msgid "???"
 msgstr "???"
 
-#: maps/views.py:1331
+#: maps/views.py:1378
 msgid "Invalid permission level."
 msgstr "Niveau d'autorisation non valide."
 
-#: maps/views.py:1348
+#: maps/views.py:1395
 #, fuzzy
 msgid "Custom Group Users"
 msgstr "Utilisateurs anonymes"
 
-#: maps/views.py:1357 templates/maps/layer_permissions.html:15
+#: maps/views.py:1404 templates/maps/layer_permissions.html:15
 msgid "User"
 msgstr "Utilisateur"
 
-#: maps/views.py:1445
+#: maps/views.py:1492
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Mauvais authentifiant d'autorisation HTTP."
 
-#: maps/views.py:2135 templates/maps/layer.html:182
+#: maps/views.py:2182 templates/maps/layer.html:182
 #: templates/maps/layer_describe.html:88
 #: templates/maps/layer_describe_tab.html:72
 #, fuzzy
 msgid "Category"
 msgstr "Sujet Catégorie"
 
-#: maps/views.py:2177
+#: maps/views.py:2224
 msgid "You are not permitted to view this map's permissions"
 msgstr ""
 "Vous n'êtes pas autorisé à afficher les autorisations liées à cette carte."
 
-#: maps/views.py:2190
+#: maps/views.py:2237
 msgid "You are not permitted to view this layer's permissions"
 msgstr "Vous n'êtes pas autorisé à afficher les autorisations de cette couche."
 
@@ -2397,7 +2397,9 @@ msgid "Documents"
 msgstr ""
 
 #: templates/maphelp.html:19
+#, fuzzy
 msgid ""
+"\n"
 "  <p>Use the links below to\n"
 "navigate to a document.</p>\n"
 "\n"
@@ -2406,7 +2408,9 @@ msgid ""
 "    <li><a href=\"#tutorial\">Tutorial</a>\n"
 "\n"
 "    </ul>\n"
-msgstr ""
+"\n"
+"  "
+msgstr "\n"
 
 #: templates/maps.html:4
 msgid "Browse Maps"
@@ -3104,14 +3108,19 @@ msgid "Add data"
 msgstr "Ajouter des données"
 
 #: templates/maps/layer_upload.html:392
+#, fuzzy
 msgid ""
+"\n"
 "        Note: A zipped shapefile must contain at least four files with the "
 "following extensions:<br/> <span style=\"font-weight:bold\">SHP, DBF, SHX, "
 "PRJ</span>.\n"
 "        <br/><br/>\n"
 "        If you are uploading an unzipped shapefile, first select the .SHP "
 "file.  You will be prompted to locate the remaining component files.\n"
+"        "
 msgstr ""
+"\n"
+"\n"
 
 #: templates/maps/layer_upload_tab.html:10
 #, fuzzy
@@ -3370,6 +3379,14 @@ msgid "You do not have permission to view or download this layer"
 msgstr ""
 "Vous n'avez pas les droits pour visualiser ou télécharger cette couche."
 
+#: templates/maps/tweetstartup.html:5
+msgid "Twitter Server maintenance"
+msgstr ""
+
+#: templates/maps/tweetstartup.html:19
+msgid "Tweetmap Maintenance"
+msgstr ""
+
 #: templates/maps/tweetview.html:254
 msgid "Filter Term"
 msgstr ""
@@ -3380,6 +3397,85 @@ msgstr ""
 
 #: templates/maps/tweetview.html:449
 msgid "Filter Tweets"
+msgstr ""
+
+#: templates/maps/tweetview.html:479
+msgid "Filter Term:"
+msgstr ""
+
+#: templates/maps/tweetview.html:489
+msgid "From:"
+msgstr ""
+
+#: templates/maps/tweetview.html:501
+msgid "To:"
+msgstr ""
+
+#: templates/maps/tweetview.html:513
+msgid "Increment:"
+msgstr ""
+
+#: templates/maps/tweetview.html:521
+msgid "Day"
+msgstr ""
+
+#: templates/maps/tweetview.html:522
+msgid "Hour"
+msgstr ""
+
+#: templates/maps/tweetview.html:523
+msgid "Minute"
+msgstr ""
+
+#: templates/maps/tweetview.html:524
+msgid "Second"
+msgstr ""
+
+#: templates/maps/tweetview.html:538
+#, fuzzy
+msgid "Download Tweets"
+msgstr "Télécharger"
+
+#: templates/maps/tweetview.html:553
+msgid "LSH Matching"
+msgstr ""
+
+#: templates/maps/tweetview.html:564
+#, python-format
+msgid "Auto Max %%"
+msgstr ""
+
+#: templates/maps/tweetview.html:577
+#, python-format
+msgid "Max %%"
+msgstr ""
+
+#: templates/maps/tweetview.html:592
+msgid "Smoothing"
+msgstr ""
+
+#: templates/maps/tweetview.html:603
+msgid "Min Tweets/sq km"
+msgstr ""
+
+#: templates/maps/tweetview.html:634
+msgid "Tweet Filter"
+msgstr ""
+
+#: templates/maps/tweetview.html:652
+msgid "Tweet Graph"
+msgstr ""
+
+#: templates/maps/tweetview.html:656
+msgid "Twitter Trends"
+msgstr ""
+
+#: templates/maps/tweetview.html:668
+msgid "Tweets"
+msgstr ""
+
+#: templates/maps/tweetview.html:704
+msgid "Tweet Heatmap"
 msgstr ""
 
 #: templates/maps/tweetview.html:875 templates/maps/view.html:274
@@ -3808,20 +3904,6 @@ msgstr ""
 
 #~ msgid "Cached tiles via WMTS:"
 #~ msgstr "Carreaux en cache via WMTS:"
-
-#~ msgid ""
-#~ "\n"
-#~ "    <p>Use the links below to\n"
-#~ "        navigate to a document.</p>\n"
-#~ "\n"
-#~ "    <ul>\n"
-#~ "        <li><a href=\"#help\">WorldMap Help</a>\n"
-#~ "        <li><a href=\"#tutorial\">Tutorial</a>\n"
-#~ "        <li><a href=\"#faq\">Frequently Asked Questions (FAQ)</a>\n"
-#~ "    </ul>\n"
-#~ "\n"
-#~ "    "
-#~ msgstr "\n"
 
 #~ msgid ""
 #~ "You can customize the template to suit your needs. You can add and remove "
