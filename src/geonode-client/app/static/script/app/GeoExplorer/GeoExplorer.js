@@ -1631,7 +1631,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var languageSelect = {
         	xtype: 'box',
         	contentEl: 'langselect',
-        	cls: "language-overlay-element",
+        	cls: "language-overlay-element"
         };
 
         this.mapPanel.add(languageSelect);
