@@ -276,7 +276,7 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     csw_mdsource = models.CharField(_('CSW source'), max_length=256, default='local', null=False)
     csw_insert_date = models.DateTimeField(_('CSW insert date'), auto_now_add=True, null=True)
     csw_type = models.CharField(_('CSW type'), max_length=32, default='dataset', null=False, choices=HIERARCHY_LEVELS)
-    csw_anytext = models.TextField(_('CSW anytext'), null=True)
+    csw_anytext = models.TextField(_('CSW anytext'), null=True, blank=True)
     csw_wkt_geometry = models.TextField(_('CSW WKT geometry'), null=False, default='POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))')
 
     # metadata XML specific fields
