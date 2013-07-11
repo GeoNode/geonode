@@ -166,6 +166,9 @@ class ThumbnailMixin(object):
         if render is None:
             raise Exception('Must have _render_thumbnail(spec) function')
         image = render(spec)
+        #Clean any qrphan Thumbnail before
+        Thumbnail.objects.filter(resourcebase__id=None).delete()
+        
         self.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=self.id)
         path = self._thumbnail_path()
         self.thumbnail.thumb_spec = spec
