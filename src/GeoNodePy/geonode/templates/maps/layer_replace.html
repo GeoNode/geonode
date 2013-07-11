@@ -45,7 +45,7 @@ Ext.onReady(function(){
     var layer_title = new Ext.form.TextField({
         id: 'layer_title',
         emptyText: layer_title,
-        fieldLabel: gettext('Title'),
+        fieldLabel: '{% trans "Title" %}',
         name: 'layer_title',
         allowBlank: true,
         disabled: true
@@ -68,8 +68,8 @@ Ext.onReady(function(){
 
     var base_file = new Ext.ux.form.FileUploadField({
         id: 'base_file',
-        emptyText: gettext('Select a layer data file'),
-        fieldLabel: gettext('File'),
+        emptyText: '{% trans "Select a layer data file" %}',
+        fieldLabel: '{% trans "File" %}',
         name: 'base_file',
         allowBlank: false,
         listeners: listeners
@@ -79,8 +79,8 @@ Ext.onReady(function(){
 
     var dbf_file = new Ext.ux.form.FileUploadField({
         id: 'dbf_file',
-        emptyText: gettext('Select a .dbf data file'),
-        fieldLabel: gettext('DBF'),
+        emptyText: '{% trans "Select a .dbf data file" %}',
+        fieldLabel: '{% trans "DBF" %}',
         name: 'dbf_file',
         allowBlank: false,
         listeners: listeners
@@ -88,8 +88,8 @@ Ext.onReady(function(){
 
     var shx_file = new Ext.ux.form.FileUploadField({
         id: 'shx_file',
-        emptyText: gettext('Select a .shx data file'),
-        fieldLabel: gettext('SHX'),
+        emptyText: '{% trans "Select a .shx data file" %}',
+        fieldLabel: '{% trans "SHX" %}',
         name: 'shx_file',
         allowBlank: false,
         listeners: listeners
@@ -97,8 +97,8 @@ Ext.onReady(function(){
 
     var prj_file = new Ext.ux.form.FileUploadField({
         id: 'prj_file',
-        emptyText: gettext('Select a .prj data file'),
-        fieldLabel: gettext('PRJ'),
+        emptyText: '{% trans "Select a .prj data file" %}',
+        fieldLabel: '{% trans "PRJ" %}',
         name: 'prj_file',
         allowBlank: false,
         listeners: listeners
@@ -113,8 +113,8 @@ Ext.onReady(function(){
     var encoding = new Ext.form.TextField({
         id: 'charset',
         name: ' charset',
-        fieldLabel: gettext('Encoding'),
-        value: 'UTF-8',
+        fieldLabel: '{% trans "Encoding" %}'),
+        value: '{% trans "UTF-8" %}',
         width: '50',
         allowBlank: true,
         listeners: listeners
@@ -122,8 +122,8 @@ Ext.onReady(function(){
 
     var sld_file = new Ext.ux.form.FileUploadField({
         id: 'sld_file',
-        emptyText: gettext('Select a .sld style file (optional)'),
-        fieldLabel: gettext('SLD'),
+        emptyText: '{% trans "Select a .sld style file (optional)" %}',
+        fieldLabel: '{% trans "SLD" %}',
         name: 'sld_file',
         allowBlank: true,
         listeners: listeners
@@ -138,7 +138,7 @@ Ext.onReady(function(){
         fileUpload: true,
         width: 500,
         frame: true,
-        title: gettext('Update Layer Data'),
+        title: '{% trans "Update Layer Data" %}',
         autoHeight: true,
         bodyStyle: 'padding: 10px 10px 0 10px;',
         labelWidth: 50,
@@ -148,12 +148,12 @@ Ext.onReady(function(){
         },
         items: form_fields,
         buttons: [{
-            text: gettext('Upload'),
+            text: '{% trans "Upload" %}',
             handler: function(){
                 if(fp.getForm().isValid()) {
                     fp.getForm().submit({
                         url: form_target,
-                        waitMsg: gettext('Uploading your data...'),
+                        waitMsg: '{% trans "Uploading your data..." %}',
                         success: function(fp, o) {
                             document.location = o.result.redirect_to;
                         },
@@ -248,7 +248,7 @@ Ext.onReady(function(){
         mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
     }
 
-    var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}} </a><span>&nbsp;/&nbsp;Update</span>");
+    var titleTemplate = new Ext.Template(mapCrumb + "<a  href=\"/data/{{layer.typename}}\">{{layer.title|default:layer.typename}} </a><span>&nbsp;/&nbsp;{% trans 'Update' %}</span>");
     Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
 });
 {% endautoescape %}

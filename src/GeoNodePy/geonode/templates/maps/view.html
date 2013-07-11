@@ -73,7 +73,7 @@ var init = function() {
             ptype: "gxp_geonodequerytool",
             id: "worldmap_query_tool",
             actionTarget:  {target: "paneltbar", index: 2},
-            toolText: '<span class="x-btn-text">' + gettext('Identify') + '</span>',
+            toolText: '<span class="x-btn-text">{% trans 'Identify' %}</span>',
             iconCls: null,
             outputConfig: {width: 400, height: 200, panIn: false},
             featurePanel: 'queryPanel',
@@ -82,41 +82,45 @@ var init = function() {
         },
             {
                 ptype: "gxp_coordinatetool",
-                title: '<span class="x-btn-text">' + 
-                	gettext('Map Coordinates - longitude, latitude') + '</span>',
+                title: "<span class='x-btn-text'>{% trans 'Map Coordinates - longitude, latitude' %}</span>",
                 actionTarget:  {target: "paneltbar"}
             },
             {
                 ptype: "gxp_printpage",
                 openInNewWindow: true,
                 includeLegend: true,
-                text: '<span class="x-btn-text">' + gettext('Print') + '</span>',
+                text: '<span class="x-btn-text">{% trans 'Print' %}</span>',
                 iconCls: null,
                 actionTarget: {target: "paneltbar", index: 4}
             },
             {
-                ptype: "app_annotation",
+                ptype: "gxp_annotation",
                 user: "{{ user.id }}",
                 toggleGroup: 'featureGroup',
                 actionTarget:  {target: "paneltbar", index: 6}
             },
             {
                 ptype: "gxp_googleearth",
-                text: '<span class="x-btn-text">' + gettext('Google Earth') + '</span>',
+                text: '<span class="x-btn-text">{% trans 'Google Earth' %}</span>',
                 iconCls: null,
                 actionTarget: {target: "paneltbar", index: 7}
             },
             {
+            	ptype: "gxp_streetviewtool",
+            	actionTarget:   {target: "paneltbar", index: 8},
+                toggleGroup: 'featureGroup'
+            },
+            {
             	ptype: 'gxp_mapshare',
             	target: this,
-            	text: '<span class="x-btn-text">' + gettext('Share Map') + '</span>',
+            	text: '<span class="x-btn-text">{% trans 'Share Map' %}</span>',
             	iconCls: null,
                 actionTarget:  {target: "paneltbar", index: 24}
             }{% if USE_GAZETTEER %},
             {
                 ptype: "gxp_gazetteertool",
                 actionTarget:  {target: "paneltbar", index: 5},
-                title: '<span class="x-btn-text">' + gettext('Gazetteer') + '</span>',
+                title: '<span class="x-btn-text">{% trans 'Gazetteer' %}</span>',
                 iconCls: null,
                 toggleGroup: 'featureGroup',
                 pressed: false
@@ -143,11 +147,15 @@ var init = function() {
                 autoLoadFeature: true,
                 iconClsAdd: null,
                 iconClsEdit: null,
-                createFeatureActionText: '<span class="x-btn-text" >' + gettext("Create Feature") + '</span>',
-                editFeatureActionText: '<span class="x-btn-text">' + gettext("Edit Feature") + '</span>',
+                createFeatureActionText: '<span class="x-btn-text" >{% trans 'Create Feature' %}</span>',
+                editFeatureActionText: '<span class="x-btn-text">{% trans 'Edit Feature' %}</span>',
                 actionTarget:  {target: "paneltbar", index: 2},
                 toggleGroup: 'featureGroup'
-            }{% endif %}
+            }{% endif %},
+            {
+            	ptype: "gxp_maprevisiontool",
+            	actionTarget:   {target: "paneltbar", index: 20}
+            }
             ],
             proxy: "/proxy/?url=",
 
@@ -186,11 +194,11 @@ var init = function() {
 
 
     var titleTemplate = new Ext.Template("<span>{title}</span>");
-    Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.officialurl ? '' : 'Current Map: ') + (config.about.title ? config.about.title : 'New Map')}));
+    Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.title ? config.about.title : gettext('New Map'))}));
 
     app.on("saved", function(id) {
         //reset title header
-        Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.officialurl ? '' : 'Current Map: ') + (config.about.title ? config.about.title : 'New Map')}));
+        Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.title ? config.about.title : gettext('New Map'))}));
 
 
 	
@@ -223,7 +231,7 @@ var init = function() {
   </div>
 
   <div class="block wrap selfclear">
-  <h3>Selected Data</h3>
+  <h3>{% trans "Selected Data" %}</h3>
   <div id="selection">
     <div id="data_cart"></div>
     </div>
@@ -265,7 +273,7 @@ var init = function() {
 
                     <h3>{%trans "Rectify Images"  %}</h3>    
                     
-                    <p style="font-size: 14px">Use <a target="_blank" href="http://warp.worldmap.harvard.edu">WorldMap WARP</a> to upload and rectify scanned maps for use in WorldMap. <br/><br/> Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 4.5 in <a href="{{ STATIC_URL }}docs/WorldMap_Help.pdf">WorldMap Help</a>.</p>
+                    <p style="font-size: 14px">{% trans "Use <a target='_blank' href='http://warp.worldmap.harvard.edu'>WorldMap WARP</a> to upload and rectify scanned maps for use in WorldMap." %} <br/><br/> {% trans "Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 4.5 in <a href='{{ STATIC_URL }}docs/WorldMap_Help.pdf'>WorldMap Help</a>." %}</p>
                     <br/><br/>
                     <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{{ STATIC_URL }}theme/img/warper-sample.jpg" border="0" /></a></div>
                 </div>
@@ -274,7 +282,26 @@ var init = function() {
     </div>
 
 </div>
-<div id="featuredetails" style="float:right; width: 300px">
-</div>
+<div id="featuredetails" style="float:right; width: 300px"></div>
+
+       <div id="langselect" style="display:inline">
+   			<!-- Only show the language form if the csrf_token is present -->
+   			{% if csrf_token != "NOTPROVIDED" %}       
+   				{% get_current_language as LANGUAGE %}
+    			<form class="langbar" id="target" action="/i18n/setlang/" method="post">
+      			{% csrf_token %}
+
+         			<select id="langval" name="language" onchange="javascript:form.submit()">
+           			{% for lang in LANGUAGES %}
+            			<option value="{{ lang.0 }}"
+                		{% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                		{{ lang.1 }}
+            			</option>
+           			{% endfor %}
+         			</select>
+     			</form>
+   			{% endif %}
+      </div>
+
 {% endblock %}
 

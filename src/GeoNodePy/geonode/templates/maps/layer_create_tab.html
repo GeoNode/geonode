@@ -37,12 +37,12 @@
 
     var layer_name = new Ext.form.TextField({
       id: 'create_name',
-      fieldLabel: gettext('Name'),
+      fieldLabel:  '{% trans "Name" %}',
       name: 'name',
-      emptyText: 'Letters & numbers only, no spaces',
+      emptyText:  '{% trans "Letters & numbers only, no spaces" %}',
       maskRe: /[A-Za-z0-9]+/,
       regex: /[A-Za-z0-9]+/,
-      regexText: gettext('Only letters and numbers are allowed'),
+      regexText: '{% trans "Only letters and numbers are allowed" %}',
       validateOnBlur: true,
       allowBlank: false
     });
@@ -55,7 +55,7 @@
 
     var layer_title = new Ext.form.TextField({
       id: 'create_title',
-      fieldLabel: gettext('Title'),
+      fieldLabel:  '{% trans "Title" %}',
       name: 'title',
       allowBlank: false
     });
@@ -63,7 +63,7 @@
     var layer_type = new Ext.form.ComboBox({
         id: 'create_type',
         name: 'type',
-        fieldLabel: gettext('Data Type'),
+        fieldLabel:  '{% trans "Data Type" %}',
         hiddenName: 'geom',
         displayField:'description',
         valueField: 'geom',
@@ -79,25 +79,25 @@
 
     var srs = new Ext.form.TextField({
       id: 'create_srs',
-      fieldLabel: gettext('Projection'),
+      fieldLabel: '{% trans "Projection" %}',
       name: 'srs',
       value: 'EPSG:4326',
-      emptyText:'Example: EPSG:4326',
+      emptyText: '{% trans "Example: EPSG:4326" %}',
       allowBlank: false
     });
 
     var abstract_Field = new Ext.form.TextArea({
         id: 'create_abstract',
-        fieldLabel: gettext('Abstract'),
+        fieldLabel: '{% trans "Abstract" %}',
         name: 'abstract',
         allowBlank: false
     });
 
     var keywordsField = new Ext.form.TextArea({
         id: 'create_keywords',
-        fieldLabel: gettext('Keywords'),
+        fieldLabel: '{% trans "Keywords" %}',
         name: 'keywords',
-        emptyText: 'Use spaces to separate keywords',
+        emptyText: '{% trans "Use spaces to separate keywords" %}',
         allowBlank: false,
         vtype: 'keyword'
     });
@@ -110,7 +110,7 @@
     var termsAgreeCheck = new Ext.form.Checkbox({
         id: 'create_agreeCheck',
         name: 'agreeCheck',
-        fieldLabel: 'I agree to the <a href="" onclick="javascript:showTOC();return false;">Terms and Conditions</a>',
+        fieldLabel: '{% trans "I agree to the " %}<a href="" onclick="javascript:showTOC();return false;">{% trans "Terms and Conditions" %}</a>',
         handler: function(){
                 if (this.checked) {
                         Ext.getCmp('createButton').enable();
@@ -130,7 +130,7 @@
         width: 500,
         height:500,
         frame: true,
-        title: gettext('Create Layer Data'),
+        title:  '{% trans "Create Layer Data" %}',
         autoHeight: true,
         bodyStyle: 'padding: 10px 10px 0 10px;',
         labelWidth: 75,
@@ -151,7 +151,7 @@
                 if (fp.getForm().isValid()) {
                     fp.getForm().submit({
                         url: form_target,
-                        waitMsg: gettext('Creating your layer...'),
+                        waitMsg: '{% trans "Creating your layer..." %}',
                         success: function(fp, o) {
                             var uPanel = Ext.getCmp("worldmap_create_panel");
                             uPanel.load({url:o.result.redirect_to});
@@ -201,14 +201,14 @@
     var showTOC = function() {
         var TOCPanel = new Ext.Panel({
             id: 'worldmap_mapshare_panel',
-            title: 'Share Map',
+            title: '{% trans "Share Map" %}',
             header: false,
             autoLoad: {url: '/upload_terms'},
             autoScroll: true
         });
 
         var TOCWindow = new Ext.Window({
-            title: "WorldMap Terms and Conditions",
+            title:  '{% trans "WorldMap Terms and Conditions" %}',
             closeAction: 'destroy',
             layout: 'fit',
             width: 400,
@@ -233,12 +233,12 @@
          'keyword': function(value, field) {
             trimValue = value.trim();
             if (trimValue.length == 0) {
-                field.markInvalid("You must enter a keyword");
+                field.markInvalid('{% trans "You must enter a keyword" %}');
                 return false;
             }
             return true;
         },
-        'keywordText' : 'You must enter at least one keyword'
+        'keywordText' : '{% trans "You must enter at least one keyword" %}'
     });
 
 

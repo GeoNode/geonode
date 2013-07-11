@@ -172,7 +172,11 @@
 		<g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
 		<div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
 	</div>
-    <p> <strong>{% trans "Abstract" %}:</strong> {{ layer.abstract|default:_("No abstract for this layer.") }} </p>
+    <p> <strong>{% trans "Abstract" %}:</strong> 
+    {% autoescape off %}
+    {{ layer.abstract|default:_("No abstract for this layer.") }}
+    {% endautoescape %}
+    </p>
 
     <div id="preview_map"></div>
 
@@ -327,8 +331,10 @@
 
     <h3> {% trans "Legend" %} </h3>
     {% comment %}
+    {% blocktrans %}
     The request below accepts more parameters, like fontName ( fontName=DejaVu ) and scale ( SCALE=17471330.182978604 ).
     A full list of options can be found at: http://docs.geoserver.org/latest/en/user/services/wms/get_legend_graphic/legendgraphic.html
+    {% endblocktrans %}
     {% endcomment %}
     <p>
         <img src="{{ GEOSERVER_BASE_URL }}wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer={{ layer.typename }}&format=image%2Fpng&legend_options=fontAntiAliasing%3Atrue%3BfontSize%3A12%3B" />

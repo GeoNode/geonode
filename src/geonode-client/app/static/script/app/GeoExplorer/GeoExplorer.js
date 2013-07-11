@@ -210,7 +210,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     zoomSliderTipText: "UT: Zoom Level",
     zoomToLayerExtentText: "UT:Zoom to Layer Extent",
     zoomVisibleButtonText: "UT:Zoom to Original Map Extent",
-
+    picasaText: 'Picasa',
+    youTubeText: 'YouTube',
+    hglText: "Harvard Geospatial Library",
+    moreText: 'More...',
 
 
 
@@ -855,7 +858,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
 
 
-        this.gxSearchBar = new GeoExplorer.SearchBar(this);
+        this.gxSearchBar = new gxp.SearchBar({
+        	target: this
+        });
         var searchPanel = new Ext.Panel({
             anchor: "100% 5%",
             items: [this.gxSearchBar]
@@ -1577,7 +1582,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
 
         var picasaMenuItem = {
-            text: 'Picasa',
+            text: this.picasaText,
             iconCls: "icon-picasa",
             scope:this,
             handler: function() {
@@ -1588,7 +1593,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
 
         var youtubeMenuItem = {
-            text: 'YouTube',
+            text: this.youTubeText,
             iconCls: "icon-youtube",
             scope:this,
             handler: function() {
@@ -1598,7 +1603,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         };
 
         var hglMenuItem = {
-            text: 'Harvard Geospatial Library',
+            text: this.hglText,
             iconCls: "icon-harvard",
             scope:this,
             handler: function() {
@@ -1608,7 +1613,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         };
 
         var moreButton = new Ext.Button({
-            text: 'More...',
+            text: this.moreText,
             cls: "more-overlay-element",
             id: 'moreBtn',
             menu: {
@@ -1622,24 +1627,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.mapPanel.add(moreButton);
 
-
-        var svt = new StreetViewPopup({mapPanel: mapPanel, titleHeader: this.streetViewBtnText, popupHeight: 300, popupWidth: 600});
-        mapPanel.map.addControl(svt);
-
-        var streetViewButton = new Ext.Button({
-            text: '<span class="x-btn-text">' + this.streetViewBtnText + '</span>',
-            tooltip: this.switchTo3DActionText,
-            enableToggle: true,
-            toggleHandler: function(button, state) {
-                if (state === true) {
-                    svt.activate();
-                } else {
-                    svt.deactivate();
-                }
-            },
-            scope: this
-        });
-
+        
+//        var languageSelect = {
+//        	xtype: 'box',
+//        	contentEl: 'langselect',
+//        	cls: "language-overlay-element"
+//        };
+//
+//        this.mapPanel.add(languageSelect);
 
         var publishAction = new Ext.Action({
             tooltip: this.publishActionText,
@@ -1648,17 +1643,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             text: '<span class="x-btn-text">' + this.publishBtnText + '</span>',
             disabled: !this.mapID
         });
-
-
-        var historyAction = new Ext.Action({
-            tooltip: 'Map History',
-            handler: this.showHistory,
-            hidden: !this.config["edit_map"],
-            scope: this,
-            text: '<span class="x-btn-text">' + this.revisionBtnText + '</span>',
-            disabled: !this.mapID
-        });
-
 
         var tools = [
             new Ext.Button({
@@ -1670,9 +1654,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }),
             publishAction,
             infoButton,
-            streetViewButton,
-            "->",
-            historyAction
+            "->"
         ];
         
         //Only show this for Boston map
@@ -1740,9 +1722,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
     },
 
-    showHistory: function() {
-        historyWindow = new GeoExplorer.MapSnapshotGrid(this.mapID);
-    },
+
 
     /** private: method[initMetadataForm]
      *

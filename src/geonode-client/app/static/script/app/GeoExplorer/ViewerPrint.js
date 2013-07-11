@@ -27,6 +27,13 @@ GeoExplorer.ViewerPrint = Ext.extend(GeoExplorer.Viewer, {
      */
 
 	
+	printMsg: "Press OK to print this page as is.  \
+	 If you would like to adjust the map extent, press Cancel, \
+	 then use your browser's print button when you are ready",
+	 
+	 
+	printTitle: "Print",
+	
     initMapPanel: function() {
         this.mapItems = [];
 
@@ -96,15 +103,12 @@ GeoExplorer.ViewerPrint = Ext.extend(GeoExplorer.Viewer, {
         		}
         };
         
-        
-        var printMsg = "Press OK to print this page as is.  " +
-		 "If you would like to adjust the map extent, press Cancel," +
-		 " then use your browser's print button when you are ready";
+       
         
         this.on("portalready", function() {
             Ext.Msg.show({
-            	title: 'Print Map',
-            	msg: printMsg,
+            	title: this.printTitle,
+            	msg: this.printMsg,
         		buttons: Ext.Msg.OKCANCEL,
         		fn: processResult
             });

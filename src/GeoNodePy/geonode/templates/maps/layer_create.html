@@ -39,19 +39,19 @@ Ext.onReady(function(){
 
     var layer_name = new Ext.form.TextField({
       id: 'name',
-      fieldLabel: gettext('Name'),
+      fieldLabel: "{% trans 'Name' %}",
       name: 'name',
-      emptyText: 'Letters & numbers only, no spaces',
+      emptyText: "{% trans 'Letters & numbers only, no spaces' %}",
       maskRe: /[A-Za-z0-9]+/,
       regex: /[A-Za-z0-9]+/,
-      regexText: gettext('Only letters and numbers are allowed'),
+      regexText: "{% trans 'Only letters and numbers are allowed' %}",
       validateOnBlur: true
     });
 
 
     var layer_title = new Ext.form.TextField({
       id: 'title',
-      fieldLabel: gettext('Title'),
+      fieldLabel: "{% trans 'Title' %}",
       name: 'title',
       allowBlank: false
     });
@@ -59,7 +59,7 @@ Ext.onReady(function(){
     var layer_type = new Ext.form.ComboBox({
         id: 'type',
         name: ' type',
-        fieldLabel: gettext('Data Type'),
+        fieldLabel: "{% trans 'Data Type' %}",
         hiddenName: 'geom',
         displayField:'description',
         valueField: 'geom',
@@ -75,25 +75,25 @@ Ext.onReady(function(){
 
     var srs = new Ext.form.TextField({
       id: 'srs',
-      fieldLabel: gettext('Projection'),
+      fieldLabel: "{% trans 'Projection' %}",
       name: 'srs',
       value: 'EPSG:4326',
-      emptyText:'Example: EPSG:4326',
+      emptyText: "{% trans 'Example: EPSG:4326' %}",
       allowBlank: false
     });
 
     var abstractField = new Ext.form.TextArea({
         id: 'abstract',
-        fieldLabel: gettext('Abstract'),
+        fieldLabel: "{% trans 'Abstract' %}",
         name: 'abstract',
         allowBlank: false
     });
 
     var keywordsField = new Ext.form.TextArea({
         id: 'keywords',
-        fieldLabel: gettext('Keywords'),
+        fieldLabel: "{% trans 'Keywords' %}",
         name: 'keywords',
-        emptyText: 'Use spaces to separate keywords',
+        emptyText: "{% trans 'Use spaces to separate keywords' %}",
         allowBlank: false,
         vtype: 'keyword'
     });
@@ -104,7 +104,7 @@ Ext.onReady(function(){
 
     var termsAgreeCheck = new Ext.form.Checkbox({
         id: 'agreeCheck',
-        fieldLabel: 'I agree to the <a href="" onclick="javascript:showTOC();return false;">Terms and Conditions</a>',
+        fieldLabel: '{% trans "I agree to the " %}<a href="" onclick="javascript:showTOC();return false;">{% trans "Terms and Conditions" %}</a>',
         handler: function(){
                 if (this.checked) {
                         Ext.getCmp('createButton').enable();
@@ -134,13 +134,13 @@ Ext.onReady(function(){
         }],
         buttons: [{
             id: 'createButton',
-            text: gettext('Create'),
+            text: "{% trans 'Create' %}",
             disabled: true,
             handler: function(){
                 if (fp.getForm().isValid()) {
                     fp.getForm().submit({
                         url: form_target,
-                        waitMsg: gettext('Creating your layer...'),
+                        waitMsg: "{% trans 'Creating your layer...' %}",
                         success: function(fp, o) {
                             document.location = o.result.redirect_to;
                         },
@@ -189,14 +189,14 @@ Ext.onReady(function(){
     var showTOC = function() {
         var TOCPanel = new Ext.Panel({
             id: 'worldmap_mapshare_panel',
-            title: 'Share Map',
+            title: "{% trans 'Share Map' %}",
             header: false,
             autoLoad: {url: '/upload_terms'},
             autoScroll: true
         });
 
         var TOCWindow = new Ext.Window({
-            title: "WorldMap Terms and Conditions",
+            title: "{% trans 'WorldMap Terms and Conditions' %}",
             closeAction: 'destroy',
             layout: 'fit',
             width: 400,
@@ -207,7 +207,7 @@ Ext.onReady(function(){
             bodyStyle: 'background-color:#FFF',
             buttons: [
                 {
-                    text: 'Close',
+                    text: "{% trans 'Close' %}",
                     handler: function() {TOCWindow.close();}
                 }
             ]
@@ -221,12 +221,12 @@ Ext.onReady(function(){
         'keyword': function(value, field) {
             trimValue = value.trim();
             if (trimValue.length == 0) {
-                field.markInvalid("You must enter a keyword");
+                field.markInvalid("{% trans 'You must enter a keyword' %}");
                 return false;
             }
             return true;
         },
-        'keywordText' : 'You must enter at least one keyword'
+        'keywordText' : "{% trans 'You must enter at least one keyword' %}"
     });
 
 {% endautoescape %}

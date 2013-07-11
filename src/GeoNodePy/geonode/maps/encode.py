@@ -72,11 +72,24 @@ class XssCleaner(HTMLParser):
         # If a tag is not listed here, it is allowed no attributes.  Adding
         # "on" tags, like "onhover," would not be smart.  Also be very careful
         # of "background" and "style."
+        
+#         <h5 style="text-align: center;"><b><i><u><font size="5" face="impact">THIS IS A TEST</font></u></i></b></h5>
+#         <blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><p style="text-align: center;">
+#         <font size="5" face="arial" color="#cc3333">of the EBS</font></p><p style="text-align: center;">
+#         <font size="5" face="arial"><br></font></p><p style="text-align: center;"><font size="5" face="arial">
+#         <sup>reddit</sup><sub>2</sub></font></p>
+#         <p style="text-align: center;"><font size="5" face="arial"><sub><br></sub></font></p>
+#         <p style="text-align: center;"><font size="5" face="arial">fiiiiiii<sub>4</sub></font></p>
+#         <p style="text-align: center;"><font size="5" face="arial"><sub><br></sub></font></p>
+#         <p style="text-align: center;"><hr><br></p><p style="text-align: center;">
+#         <strike>strike</strike></p></blockquote>
+        
         self.allowed_attributes =\
             {'a':['href','title','target','style'],
-             'img':['src','alt','border','style'],
-             'blockquote':['type','style'],
-             'font':['size','face'],
+             'p': ['style'],
+             'img':['src','alt','border','style','align'],
+             'blockquote':['type','style','align'],
+             'font':['size','face','align'],
              'h5':['style'],'h4':['style'],'h3':['style'],'h2':['style'],'h1':['style'],
              'table': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
              'tbody': ['border', 'width', 'height', 'style', 'align', 'bgcolor'],
