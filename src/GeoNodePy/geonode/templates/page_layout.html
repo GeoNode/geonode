@@ -82,7 +82,7 @@
       {% endif %}
           | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
           | <a class="" id="viewLink" href="{% url maps_search %}?sort=last_modified&dir=DESC">{% trans "View Map" %}</a>
-          | <a class="" id="helpLink" href="{{ STATIC_URL }}docs/WorldMap_Help.pdf" target="_blank">{% trans "Help" %}</a>
+          | <a class="" id="helpLink" href="{{ STATIC_URL }}docs/WorldMap_Help_{{LANGUAGE_CODE}}.pdf" target="_blank">{% trans "Help" %}</a>
       </div>
     </div><!-- /.wrap -->
   </div><!-- /#header -->
@@ -117,11 +117,11 @@
    {% endif %}        
       
       <div class="onecol" style="text-align:center">
-         <a href="{{site}}{{ STATIC_URL }}docs/WorldMap_Help.pdf">{% trans "Need Help?" %}</a>&nbsp;&nbsp;
+         <a href="{{site}}{{ STATIC_URL }}docs/WorldMap_Help_{{LANGUAGE_CODE}}.pdf">{% trans "Need Help?" %}</a>&nbsp;&nbsp;
          <a href="mailto:worldmap@harvard.edu">{%  trans "Contact Us" %}</a>&nbsp;&nbsp;
           <a href="http://projects.iq.harvard.edu/worldmap/blog">{% trans "Blog" %}</a>&nbsp;&nbsp;
          <a href="https://github.com/cga-harvard/cga-worldmap">{% trans "Source Code" %}</a>&nbsp;&nbsp;
-         Copyright 2011 &copy; The President and Fellows of Harvard College
+         {% trans "Copyright 2011 &copy; The President and Fellows of Harvard College" %}
       </div>
       {% endblock %}
     </div><!-- /.wrap -->

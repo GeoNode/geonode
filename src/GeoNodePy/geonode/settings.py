@@ -2,7 +2,7 @@
 # Django settings for GeoNode project.
 import logging
 import os
-
+from django.utils.translation import ugettext as _
 #
 # General Django development settings
 #
@@ -342,14 +342,14 @@ MAP_BASELAYERS = [
  {
         "source": {"ptype": "gx_olsource"},
         "type": "OpenLayers.Layer",
-        "args": ["No background"],
+        "args": [_("No background")],
         "visibility": False,
         "fixed": True,
         "group": "background"
     }, {
         "source": {"ptype": "gx_olsource"},
         "type": "OpenLayers.Layer.OSM",
-        "args": ["OpenStreetMap"],
+        "args": [_("OpenStreetMap")],
         "visibility": False,
         "fixed": True,
         "group": "background"
