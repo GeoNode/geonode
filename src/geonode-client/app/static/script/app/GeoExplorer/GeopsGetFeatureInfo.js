@@ -132,7 +132,5 @@ GeoExplorer.GeopsGetFeatureInfo = OpenLayers.Class(OpenLayers.Control.WMSGetFeat
             scope: this
         };
     },
-
-
     CLASS_NAME: "GeoExplorer.GeopsGetFeatureInfo"
 });
