@@ -601,6 +601,30 @@ section.widget-mini {
   }
 }
 
+article h3 [class^="icon-"], [class*=" icon-"] {
+      color: @blueLight;
+      margin-right: 5px;
+    }
+article a [class^="icon-"], [class*=" icon-"] {
+      color: @grayLight;
+      font-size: 14px;
+      margin-left: 5px;
+}
+article a [class^="icon-star"], [class*=" icon-star"] {
+  color: orange;
+  margin-left:0;
+}
+article a:hover [class^="icon-"], [class*=" icon-"] {
+  color: orange;
+  margin-left:5px;
+  }
+article.abstract {
+  border-top:1px solid @bdrColor;
+  border-bottom:1px solid @bdrColor;
+  padding:15px 0;
+  margin-bottom:15px;
+}
+
 .list article,
 .grid article {
   .rating, .activity {
@@ -636,7 +660,7 @@ section.widget-mini {
     display: block;
     float:left;
     height: 80px;
-    margin:0 10px 10px 0;
+    margin:5px 10px 10px 0;
     width: 80px;
   }
 
@@ -644,7 +668,7 @@ section.widget-mini {
     display: block;
     float:left;
     height: 80px;
-    margin:0 10px 10px 0;
+    margin:5px 10px 10px 0;
     overflow: hidden;
     padding: 0;
     width: 80px;
@@ -681,17 +705,16 @@ section.widget-mini {
   float:left;
   margin:0 10px 10px 0;
   }
-  
 
   h3 {
-      color: @blueLight;
-      font-size: 14px;
-      margin-left: 5px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      width: 190px;
-    }
+    color: @blueLight;
+    font-size: 14px;
+    margin-left: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 190px;
+  }
 
   p {
     padding-bottom: 10px;
@@ -1158,30 +1181,6 @@ ul.space li {
   }
 }
 
-article h3 [class^="icon-"], [class*=" icon-"] {
-      color: @blueLight;
-      margin-right: 5px;
-    }
-article a [class^="icon-"], [class*=" icon-"] {
-      color: @grayLight;
-      font-size: 14px;
-      margin-left: 5px;
-}
-article a [class^="icon-star"], [class*=" icon-star"] {
-  color: orange;
-  margin-left:0;
-}
-article a:hover [class^="icon-"], [class*=" icon-"] {
-  color: orange;
-  margin-left:5px;
-  }
-article.abstract {
-  border-top:1px solid @bdrColor;
-  border-bottom:1px solid @bdrColor;
-  padding:15px 0;
-  margin-bottom:15px;
-}
-
 /** comments **/
 .comments {
   margin-top:20px;
@@ -1193,9 +1192,10 @@ article.abstract {
     margin-bottom: 1em;
   }
   header h3 {
-    margin-top: 10px;
-    text-transform: uppercase;
     font-weight: normal;
+    margin-top: 10px;
+    padding: 0px 0px 8px;
+    text-transform: uppercase;
   }
   header .total {
     text-transform: lowercase;
