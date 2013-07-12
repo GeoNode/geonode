@@ -8,7 +8,7 @@
 {% load i18n %}
 <div id="comments_section" class="comments paginate paginate-manual">
     <header>
-        <h3 style="padding: 0px 0px 8px;">{% trans 'Comments' %} <span class="total">({% comment_count obj %} total)</span></h3>
+        <h3>{% trans 'Comments' %} <span class="total">({% comment_count obj %} total)</span></h3>
     </header>
 
     {% if user.is_authenticated %}

@@ -7197,6 +7197,33 @@ section.widget-mini h2 a.btn {
   padding-top: 20px;
   font-size: 11px;
 }
+article h3 [class^="icon-"],
+[class*=" icon-"] {
+  color: #3cb3c5;
+  margin-right: 5px;
+}
+article a [class^="icon-"],
+[class*=" icon-"] {
+  color: #bbbbbb;
+  font-size: 14px;
+  margin-left: 5px;
+}
+article a [class^="icon-star"],
+[class*=" icon-star"] {
+  color: orange;
+  margin-left: 0;
+}
+article a:hover [class^="icon-"],
+[class*=" icon-"] {
+  color: orange;
+  margin-left: 5px;
+}
+article.abstract {
+  border-top: 1px solid #cccccc;
+  border-bottom: 1px solid #cccccc;
+  padding: 15px 0;
+  margin-bottom: 15px;
+}
 .list article .rating,
 .grid article .rating,
 .list article .activity,
@@ -7233,14 +7260,14 @@ section.widget-mini h2 a.btn {
   display: block;
   float: left;
   height: 80px;
-  margin: 0 10px 10px 0;
+  margin: 5px 10px 10px 0;
   width: 80px;
 }
 .list article .thumb {
   display: block;
   float: left;
   height: 80px;
-  margin: 0 10px 10px 0;
+  margin: 5px 10px 10px 0;
   overflow: hidden;
   padding: 0;
   width: 80px;
@@ -7750,33 +7777,6 @@ ul.space li {
   padding-left: 6px;
   color: #f05a24;
 }
-article h3 [class^="icon-"],
-[class*=" icon-"] {
-  color: #3cb3c5;
-  margin-right: 5px;
-}
-article a [class^="icon-"],
-[class*=" icon-"] {
-  color: #bbbbbb;
-  font-size: 14px;
-  margin-left: 5px;
-}
-article a [class^="icon-star"],
-[class*=" icon-star"] {
-  color: orange;
-  margin-left: 0;
-}
-article a:hover [class^="icon-"],
-[class*=" icon-"] {
-  color: orange;
-  margin-left: 5px;
-}
-article.abstract {
-  border-top: 1px solid #cccccc;
-  border-bottom: 1px solid #cccccc;
-  padding: 15px 0;
-  margin-bottom: 15px;
-}
 /** comments **/
 .comments {
   margin-top: 20px;
@@ -7788,9 +7788,10 @@ article.abstract {
   margin-bottom: 1em;
 }
 .comments header h3 {
-  margin-top: 10px;
-  text-transform: uppercase;
   font-weight: normal;
+  margin-top: 10px;
+  padding: 0px 0px 8px;
+  text-transform: uppercase;
 }
 .comments header .total {
   text-transform: lowercase;
