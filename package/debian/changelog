@@ -1,3 +1,51 @@
+geonode (2.0.0+beta29) precise; urgency=high
+
+  [ Paolo Pasquali ]
+  * [241654] Disabling Less minify option
+  * [49fd32] Merge branch 'master' of https://github.com/GeoNode/geonode
+  * [c62dfd] Added myself to AUTHORS
+  * [9b111e] Added badges to Type Filters
+  * [2b7649] Removing comment
+
+  [ Ariel Nunez ]
+  * [99ee3a] Made drop target easier to find
+  * [4deb9a] Simplified smaple data installation in fabfile
+  * [7120bc] Updated changelog
+  * [166eba] Added missing command to import data in fabfile
+
+  [ Dennis Wilhelm ]
+  * [ad2090] Extended the german translation
+
+  [ Ariel Núñez ]
+  * [a63e9c] Added tyler, dwilhelm89, angelos, and paolo corti to AUTHORS.
+  * [55a676] Added travis, nolan, dave, and chris to authors
+
+  [ Ariel Nunez ]
+  * [ecab73] Fixed thumbs dir permission problem
+  * [b814f1] Updated django-geoexplorer
+  * [d66849] Test showing usage of layer permissions, this may need to be updated around the codebase
+
+  [ Jeffrey Johnson ]
+  * [b58390] Remove trailing slash in layer_upload_time.html template
+  * [748267] Fix up require config in srs.js and time.js
+  * [a8a9f2] Format Continue button in LayerInfo
+  * [e56130] use global jquery
+  * [630ca9] Handle for multiple time layers more effectively
+
+  [ Simone Dalmasso ]
+  * [817e50] fix permissions name in templates
+
+  [ Matthew Hanson ]
+  * [dbe348] added blank=True so admin fields aren't created as being required
+
+  [ Simone Dalmasso ]
+  * [71b4b7] Clear any orphan thumbnail before saving a new one
+  * [9e44e5] Delete the thumbnail on the resource base delete
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 12 Jul 2013 23:05:00 +0000
+
 geonode (2.0.0+beta27) precise; urgency=high
 
   * [e69be0] Added dateutil and updated changelog
