@@ -1,9 +1,260 @@
-{% extends "site_base.html" %}
-{% load i18n %}
-
-{% block body %}
-  <div id="description"><h3>{% trans "Internal Server Error" %}</h3></div>
+{% load i18n avatar_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+    {% block head %}
+      <link href="/static/lib/css/bootstrap.css" rel="stylesheet"/>
+      {% block css-src %}
+      <link href="/static/geonode/css/base.css" rel="stylesheet" />
+      {% endblock %}
+      <link href='/static/geonode/font/lato_font.css' rel='stylesheet' type='text/css' />
+      <link href="/static/geonode/css/ext-compatibility.css" rel="stylesheet" />
+      <link href="/static/lib/css/jquery.dataTables.css" rel="stylesheet" />
+      <link href="/static/lib/css/select2.css" rel="stylesheet"/>
+      {% block extra_head %}{% endblock %}
+    {% endblock %}
+    <!--[if lt IE 9]>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    {% block header %}
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <div class="row">
+            <div class="span3">
+              <a href="{% url "home" %}">
+                <span class="nav-logo">
+                  <a class="brand">{{ SITE_NAME }}</a>
+                </span>
+              </a>
+            </div>
+            <div class="span9">
+              <div class="nav-collapse pull-right">
+                <div class="pull-right">
+                  <ul class="nav pull-right account-bar">
+                    {% if user.is_authenticated %}
+                      <li class="user-avatar">
+                        {% avatar user 20 %}
+                      </li>
+                      <li class="dropdown user">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                          {{ user.username }}
+                          <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                          <li><a href="{{ user.get_profile.get_absolute_url }}"><i class="icon-user"></i> {% trans "Profile" %}</a></li>
+                          {% if user.is_staff %}
+                            <li><a href="{% url "admin:index" %}"><i class="icon-cog"></i> {% trans "Admin" %}</a></li>
+                          {% endif %}
+                          {% if user.is_superuser %}
+                            <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="icon-globe"></i> {% trans "GeoServer" %}</a></li>
+                          {% endif %}
+                          <li class="divider"></li>
+                          <li><a href="{% url "account_logout" %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
+                        </ul>
+                      </li>
+                      <li class="divider-v">|</li>
+                      <li class="actions">
+                        <!--a href="#" rel="tooltip" title="{% trans 'Notifications' %}"><i class="icon-bullhorn"></i></a>
+                        <a href="#" rel="tooltip" title="{% trans 'Messages' %}"><i class="icon-envelope"></i></a-->
+                        <a href="{% url "data_upload" %}" rel="tooltip" title="{% trans 'Upload' %}"><i class="icon-upload-alt"></i></a>
+                        <a href="{% url "help" %}" rel="tooltip" title="{% trans 'Help' %}"><i class="icon-question-sign"></i></a>
+                      </li>
+                    {% else %}
+                        <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Sign in" %}</a>
+                          <ul class="dropdown-menu">
+                            <li>
+                                <form action="{% url "account_login" %}" method="post" class="sign-in">
+                                    {% csrf_token %}
+                                    <label for="id_username">{% trans "Username" %}:</label>
+                                    <input id="id_username" name="username" type="text" />
+                                    <label for="id_password">{% trans "Password" %}:</label>
+                                    <input id="id_password" name="password" type="password" />
+                                    <label class="checkbox">
+                                        <input type="checkbox" />
+                                        {% trans "Remember Me" %}
+                                    </label>
+                                    <button type="submit" class="btn pull-right">{% trans "Sign in" %}</button>
+                                </form>
+                            </li>
+                          </ul>
+                        </li>
+                        {% if REGISTRATION_OPEN %}
+                          <li class="navbar-text">{% trans "or" %}</li>
+                          <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
+                        {% endif %}
+                        <li class="divider-v">|</li>
+                        <li class="actions">
+                            <a href="{% url "help" %}" rel="tooltip" title="help"><i class="icon-question-sign"></i></a>
+                        </li>
+                    {% endif %}
+                  </ul>
+                </div>
+              </div>
+              <form class="input-append  pull-right" action="{% url "search" %}" method="GET">
+                {# csrf_token #}
+                <input id="search" type="text" name="q"/>
+              </form>
+            </div>
+           </div>
+           <div class="row nav-box">
+            <div class="span10">
+              <nav class="main-nav">
+                <ul>
+                  <li id="nav_home">
+                    <a href="{% url "home" %}">{% trans "Home" %}</a>
+                  </li>
+                  <li id="nav_data">
+                    <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
+                  </li>
+                  <li id="nav_maps">
+                    <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
+                  </li>
+    
+                  {% if DOCUMENTS_APP %}
+                  <li id="nav_documents">
+                    <a href="{% url "documents_browse" %}">{% trans "Documents" %}</a>
+                  </li>
+                  {% endif %}
+                  <li id="nav_people">
+                    <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
+                  </li>
+                  <li id="nav_search">
+                    <a href="{% url "advanced_search" %}">{% trans "Search" %}</a>
+                  </li>
+                  {% block extra-nav %}{% endblock %}
+                </ul>
+              </nav>
+            </div>
+            <div class="span2">
+              <ul class="social">
+                  <li><a href="http://www.facebook.com/sharer.php?u=http://{{ request.get_host }}{{ request.get_full_path }}" class="fb">facebook</a></li>
+                  <li><a href="https://twitter.com/share?url=http://{{   request.get_host }}{{ request.get_full_path }}" class="tw">twitter</a></li>
+                  <li><a href="https://plusone.google.com/_/ 1/confirm?hl=en&url=http://{{ request.get_host }}{{ request.get_full_path }}" class="gp">google+</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+       </section>
+      </div>
+    </div>
+    {% endblock header %}
+    {% block middle %}
+    <div class="content-wrap">
+        {% if site_wide_announcements %}
+            <div id="site_wide_announcements">
+                {% for announcement in site_wide_announcements %}
+                <div class="alert alert-block">
+                    <a type="button" class="close" data-dismiss="alert" href="{% url "announcement_hide" announcement.pk %}?next={{ request.path }}">×</button>
+                    <h4><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a> -</h4>
+                    <div>{{ announcement.content }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="container">
+          <div class="row">
+            {% block body_outer %}
+              <div class="span8">
+                {% block body %}
+  <div id="description"><h3>{% trans "There was a problem loading this page" %}</h3></div>
   {% blocktrans %}
-      An internal error occurred. Please try again, and if the problem continues, contact your site administrator.
+      Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).
+      If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href="http://github.com/GeoNode/geonode/issues">GeoNode's issue tracker</a>
   {% endblocktrans %}
-{% endblock %}
+                {% endblock %}
+              </div>
+              <div class="span4">
+                {% block sidebar %}{% endblock %}
+              </div>
+            {% endblock %}
+          </div>
+        </div>
+    </div>
+    {% endblock middle %}
+    {% block footer %}
+    <footer class="footer">
+      <div class="container">
+          <div class="pull-left">
+              {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
+              <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
+              <a href="{% url "about" %}">{% trans "About" %}</a>
+          </div>
+          <div class="pull-right">
+            {% if csrf_token != "NOTPROVIDED" %}
+              {% get_current_language as LANGUAGE %}
+              <form class="form-inline" action="/i18n/setlang/" method="post">
+                {% csrf_token %}
+                <label>{% trans "Language" %}</label>
+                <select class="input span2" name="language" onchange="javascript:form.submit()">
+                  {% for lang in LANGUAGES %}
+                    <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                      {{ lang.1 }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </form>
+            {% endif %}
+          </div>
+      </div>
+    </footer>
+    {% endblock footer %}
+    <script src="/static/lib/js/jquery.js"></script>
+    <script src="/static/lib/js/bootstrap.js"></script>
+    <script src="/static/lib/js/jquery.dataTables.js"></script>
+    <script src="/static/lib/js/jquery.timeago.js"></script>
+    <script src="/static/lib/js/json2.js"></script>
+    <script src="/static/lib/js/select2.min.js"></script>
+    <script src="/static/geonode/js/utils/utils.js"></script>
+    <script>
+      $("#search").select2({
+        minimumInputLength: 1,
+        placeholder: 'Search...',
+        width: 'element',     
+        ajax: {
+          url: '{% url "search_api" %}',
+          data: function(term,page){
+            page = (page - 1) * 10;
+            return {
+              type: 'all',
+              limit: 10,
+              sort: 'none',
+              start: page,
+              q: term
+            }
+          },
+          results: function(data, page) {
+            var more = (page * 10) < data.total;
+            return {
+              results: $.map(data.results,function(object){
+                return {id: object.id, text: object.title};
+              }),
+              more: more
+            }
+          }          
+        },
+        createSearchChoice:function(term, data) { if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} 
+        },
+        formatSelection: function(item){
+          $('#search').val(item.text);
+          $('#search').parent().submit();
+        }
+      });
+    </script>
+
+    {% block extra_script %}{% endblock extra_script %}
+
+    <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
+    <script type="text/javascript" src="{% url "lang" %}"></script>
+    <style type="text/css">
+      .select2-drop{
+        color: black;
+      }
+    </style>
+  </body>
+</html>
