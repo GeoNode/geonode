@@ -20,17 +20,17 @@
   {% comments obj as comment_list %}
   {% autopaginate comment_list 5 %}
   {% for comment in comment_list %}      
-  <article>
-    <div class="avatar span1"><a href="{{ comment.author.get_profile.get_absolute_url }}">{% avatar comment.author 40 %}</a></div>
-    <div class="pull-left span7">
-      <p>{{ comment.comment }}</p>
-      <footer>
-        <div class="author clearfix span7">
-          <p><a href="{{ comment.author.get_profile.get_absolute_url }}" rel="author">By {{ comment.author }}</a> on <time>{{ comment.submit_date|date:"M j, Y" }}</time></p>
-        </div>
-      </footer>
-    </div>
-  </article>
+    <article>
+      <div class="avatar span1"><a href="{{ comment.author.get_profile.get_absolute_url }}">{% avatar comment.author 40 %}</a></div>
+      <div class="pull-left span7">
+        <p>{{ comment.comment }}</p>
+        <footer>
+          <div class="author clearfix span7">
+            <p><a href="{{ comment.author.get_profile.get_absolute_url }}" rel="author">By {{ comment.author }}</a> on <time>{{ comment.submit_date|date:"M j, Y" }}</time></p>
+          </div>
+        </footer>
+      </div>
+    </article>
   {% endfor %}
   </div>
   {% paginate %}
