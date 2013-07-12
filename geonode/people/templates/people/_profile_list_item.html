@@ -5,7 +5,7 @@
 {% load i18n %}
 
 <article>
-  <a class="avatar" href="{% url "profile_detail" profile.o.user.username %}">{% avatar profile.o.user 80 %}</a>
+  <div class="avatar"><a href="{% url "profile_detail" profile.o.user.username %}">{% avatar profile.o.user 80 %}</a></div>
   <div class="pull-left">
     <h3><i class="icon-user"></i> <a href="{% url "profile_detail" profile.o.user.username %}">{{ profile.title }}</a>
     {% if user.is_authenticated %}

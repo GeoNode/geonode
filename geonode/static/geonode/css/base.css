@@ -7229,8 +7229,27 @@ section.widget-mini h2 a.btn {
 .list article .stats {
   display: none;
 }
-.list article img {
-  display: none;
+.list article .avatar {
+  display: block;
+  float: left;
+  height: 80px;
+  margin: 0 10px 10px 0;
+  width: 80px;
+}
+.list article .thumb {
+  display: block;
+  float: left;
+  height: 80px;
+  margin: 0 10px 10px 0;
+  overflow: hidden;
+  padding: 0;
+  width: 80px;
+}
+.list article .thumb img {
+  left: -50px;
+  position: relative;
+  margin: 0;
+  padding: 0;
 }
 .list article .details {
   float: left;
@@ -7251,6 +7270,10 @@ section.widget-mini h2 a.btn {
   -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.2);
           box-shadow: 0 1px 3px rgba(0,0,0,0.2); */
 
+}
+.grid article img.thumb {
+  float: left;
+  margin: 0 10px 10px 0;
 }
 .grid article h3 {
   color: #3cb3c5;
@@ -7351,10 +7374,6 @@ aside .well ul.sidenav a:hover {
   -o-transform: rotate(45deg);
   transform: rotate(45deg);
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
-}
-img.thumb {
-  float: left;
-  margin: 0 10px 10px 0;
 }
 section.article-list article {
   overflow: hidden;

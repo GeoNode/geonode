@@ -631,13 +631,35 @@ section.widget-mini {
     font-size: 12px;
   }
   .stats {display: none}
-  img {display: none;}
 
+  .avatar {
+    display: block;
+    float:left;
+    height: 80px;
+    margin:0 10px 10px 0;
+    width: 80px;
+  }
+
+  .thumb {
+    display: block;
+    float:left;
+    height: 80px;
+    margin:0 10px 10px 0;
+    overflow: hidden;
+    padding: 0;
+    width: 80px;
+
+    img {
+      left: -50px;
+      position: relative;
+      margin: 0;
+      padding: 0;
+    }
+  }
   .details {
     float:left;
     overflow: hidden;
   }
-
   .abstract-placeholder {
     display: none;
   }
@@ -654,6 +676,11 @@ section.widget-mini {
   /*   -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.2);
           box-shadow: 0 1px 3px rgba(0,0,0,0.2); */
+
+  img.thumb {
+  float:left;
+  margin:0 10px 10px 0;
+  }
   
 
   h3 {
@@ -769,11 +796,6 @@ aside .well {
   -o-transform: rotate(45deg);
   transform: rotate(45deg);
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
-}
-
-img.thumb {
-  float:left;
-  margin:0 10px 10px 0;
 }
 
 section.article-list {

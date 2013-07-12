@@ -8,7 +8,7 @@
 {% num_ratings layer as num_votes %}
 
 <article>
-  <a href="{% url "layer_detail" layer.typename %}"><img src="{{ layer.get_thumbnail_url }}" /></a>
+  <div class="thumb"<a href="{% url "layer_detail" layer.typename %}"><img src="{{ layer.get_thumbnail_url }}" /></a></div>
   <div class="pull-left">
     <h3><i class="icon-unchecked icon-rotate-45"></i> <a href="{% url "layer_detail" layer.typename %}">{{ layer.title }}</a></h3>
     <div class="details">
