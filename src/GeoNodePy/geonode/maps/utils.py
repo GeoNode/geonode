@@ -798,12 +798,12 @@ def check_projection(name, resource):
             else:
                 msg = ((_('GeoServer failed to detect the projection for layer ') + 
                        '[%s].' + 
-                       _('It doesn\'t look like EPSG:4326, so backing out the layer.')) % name)
+                       _('It doesn\'t look like EPSG:4326, so backing out the layer.')))
                 logger.warn(msg, name)
                 cascading_delete(cat, resource)
                 raise GeoNodeException(msg % name)
     except:
         msg = ((_('GeoServer failed to read the layer projection for') + ' [%s] ' + 
-               _('so backing out the layer.')) % name)
+               _('so backing out the layer.')))
         cascading_delete(cat, resource)
         raise GeoNodeException(msg % name)
