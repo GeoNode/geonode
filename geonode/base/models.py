@@ -166,6 +166,9 @@ class ThumbnailMixin(object):
         if render is None:
             raise Exception('Must have _render_thumbnail(spec) function')
         image = render(spec)
+        #Clean any orphan Thumbnail before
+        Thumbnail.objects.filter(resourcebase__id=None).delete()
+        
         self.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=self.id)
         path = self._thumbnail_path()
         self.thumbnail.thumb_spec = spec
@@ -187,7 +190,7 @@ class ThumbnailMixin(object):
     def has_thumbnail(self):
         '''Determine if the thumbnail object exists and an image exists'''
         thumb = self.thumbnail
-        return os.path.exists(thumb.get_thumbnail_path()) if thumb else False
+        return os.path.exists(self._thumbnail_path()) if thumb else False
 
 
 class ResourceBaseManager(models.Manager):
@@ -437,3 +440,12 @@ def resourcebase_post_save(instance, sender, **kwargs):
                                            )
     resourcebase.poc = pc
     resourcebase.metadata_author = ac
+
+def resourcebase_post_delete(instance, sender, **kwargs):
+    """
+    Since django signals are not propagated from child to parent classes we need to call this 
+    from the children.
+    TODO: once the django will support signal propagation we need to attach a single signal here
+    """
+    if instance.thumbnail:
+        instance.thumbnail.delete()
