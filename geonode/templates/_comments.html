@@ -7,28 +7,33 @@
 
 {% load i18n %}
 <div id="comments_section" class="comments paginate paginate-manual">
-    <header>
-        <h3>{% trans 'Comments' %} <span class="total">({% comment_count obj %} total)</span></h3>
-    </header>
+  <header>
+    <h3>{% trans 'Comments' %} <span class="total">({% comment_count obj %} total)</span></h3>
+  </header>
 
-    {% if user.is_authenticated %}
-        <div>
-            &nbsp<a href="#form_post_comment_div" role="button" class="btn pull-right" data-toggle="modal">{% trans 'Add Comment' %}</a>
-        </div>
-        {% endif %}
-
-    <div class="paginate-contents">
-    {% comments obj as comment_list %}
-    {% autopaginate comment_list 5 %}
-    {% for comment in comment_list %}      
-    <article>
-        <p><a href="{{ comment.author.get_profile.get_absolute_url }}">{% avatar comment.author 80 %}</a></p>
-        <p>{{ comment.comment }}</p>
-        <footer><a href="{{ comment.author.get_profile.get_absolute_url }}" rel="author">{{ comment.author }}</a> on <time>{{ comment.submit_date|date:"M j, Y" }}</time></footer>
-      </article>
-    {% endfor %}
+  {% if user.is_authenticated %}
+  <div class="clearfix">
+    <a href="#form_post_comment_div" role="button" class="btn pull-right" data-toggle="modal">{% trans 'Add Comment' %}</a>
   </div>
-    {% paginate %}
+  {% endif %}
+  <div class="paginate-contents">
+  {% comments obj as comment_list %}
+  {% autopaginate comment_list 5 %}
+  {% for comment in comment_list %}      
+  <article>
+    <div class="avatar span1"><a href="{{ comment.author.get_profile.get_absolute_url }}">{% avatar comment.author 40 %}</a></div>
+    <div class="pull-left span7">
+      <p>{{ comment.comment }}</p>
+      <footer>
+        <div class="author clearfix span7">
+          <p><a href="{{ comment.author.get_profile.get_absolute_url }}" rel="author">By {{ comment.author }}</a> on <time>{{ comment.submit_date|date:"M j, Y" }}</time></p>
+        </div>
+      </footer>
+    </div>
+  </article>
+  {% endfor %}
+  </div>
+  {% paginate %}
 </div>
 
 <!-- Modal -->
