@@ -194,7 +194,7 @@ def get_postgis_bbox(resource_name):
         rows = cur.fetchall()
         return rows
     except Exception, e:
-        logger.error("Error retrieving bbox for PostGIS table %s:%s", resource_name, str(e))
+        logger.info("Error retrieving bbox for PostGIS table %s:%s", resource_name, str(e))
     finally:
         conn.close()
 
