@@ -37,7 +37,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save
+from geonode.base.models import ResourceBase, resourcebase_post_save, resourcebase_post_delete
 from geonode.maps.signals import map_changed_signal
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
@@ -406,7 +406,7 @@ class MapLayer(models.Model, GXPLayerBase):
     # The z-index of this layer in the map; layers with a higher stack_order will
     # be drawn on top of others.
 
-    format = models.CharField(_('format'), null=True, max_length=200)
+    format = models.CharField(_('format'), null=True, max_length=200, blank=True)
     # The mimetype of the image format to use for tiles (image/png, image/jpeg,
     # image/gif...)
 
@@ -420,7 +420,7 @@ class MapLayer(models.Model, GXPLayerBase):
     opacity = models.FloatField(_('opacity'), default=1.0)
     # The opacity with which to render this layer, on a scale from 0 to 1.
 
-    styles = models.CharField(_('styles'), null=True,max_length=200)
+    styles = models.CharField(_('styles'), null=True,max_length=200, blank=True)
     # The name of the style to use for this layer (only useful for WMS layers.)
 
     transparent = models.BooleanField(_('transparent'))
@@ -430,14 +430,14 @@ class MapLayer(models.Model, GXPLayerBase):
     # A boolean value, true if we should prevent the user from dragging and
     # dropping this layer in the layer chooser.
 
-    group = models.CharField(_('group'), null=True,max_length=200)
+    group = models.CharField(_('group'), null=True,max_length=200, blank=True)
     # A group label to apply to this layer.  This affects the hierarchy displayed
     # in the map viewer's layer tree.
 
     visibility = models.BooleanField(_('visibility'), default=True)
     # A boolean value, true if this layer should be visible when the map loads.
 
-    ows_url = models.URLField(_('ows URL'), null=True)
+    ows_url = models.URLField(_('ows URL'), null=True, blank=True)
     # The URL of the OWS service providing this layer, if any exists.
 
     layer_params = models.TextField(_('layer params'))
@@ -527,3 +527,4 @@ signals.pre_save.connect(pre_save_maplayer, sender=MapLayer)
 signals.pre_delete.connect(pre_delete_map, sender=Map)
 signals.pre_save.connect(pre_save_map, sender=Map)
 signals.post_save.connect(resourcebase_post_save, sender=Map)
+signals.post_delete.connect(resourcebase_post_delete, sender=Map)
