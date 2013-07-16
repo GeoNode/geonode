@@ -3,14 +3,21 @@
 {% load i18n %}
 
 <section class="last">
-    {% if profile.user %}
-    <a href="{% url "profile_detail" profile.user.username %}">{% avatar profile.user 65 %}</a>
-    <h4><a href="{{ profile.get_absolute_url }}">{{ profile.name }}</a></h4>
-    <a href="{% url "profile_detail" profile.user.username %}" class="read-more">
-      {% trans "Read more about " %}{{ profile.name }}
-    </a>
-    {% else %}
-      <p>{{ profile.name }}</p>
-      <p>{{ profile.organization }}</p>
-    {% endif %}
+  {% if profile.user %}
+  <div class="avatar span1"><a href="{% url "profile_detail" profile.user.username %}">{% avatar profile.user 40 %}</a></div>
+  <div class="pull-left">
+    <h3><a href="{{ profile.get_absolute_url }}">{{ profile.name }}</a></h3>
+    <div class="details">
+      <div class="meta">
+        <p>
+          {% if profile.organization %}{{ profile.organization }}
+            {% else %}No Group
+          {% endif %}</p>
+      </div>
+    </div>
+  {% else %}
+    <p>{{ profile.name }}</p>
+    <p>{{ profile.organization }}</p>
+  {% endif %}
+  </div>
 </section>

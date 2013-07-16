@@ -30,7 +30,7 @@
         <p>{{ comment.comment }}</p>
         <footer>
           <div class="author clearfix span7">
-            <p><a href="{{ comment.author.get_profile.get_absolute_url }}" rel="author">By {{ comment.author }}</a> on <time>{{ comment.submit_date|date:"M j, Y" }}</time></p>
+            <p>{% trans 'By' %} <a href="{{ comment.author.get_profile.get_absolute_url }}" rel="author">{{ comment.author }}</a> on <time>{{ comment.submit_date|date:"M j, Y" }}</time></p>
           </div>
         </footer>
       </div>

@@ -214,15 +214,15 @@
     {% endif %}
     <div class="well">
       <h2>{% trans "About" %}</h2>
-      {% trans "Layer Owner" %}
+      <p>{% trans "Layer Owner" %}</p>
       {% with layer.owner.profile as profile %}
         {% include "people/_profile_about_item.html" %}
       {% endwith %}
-      {% trans "Point of Contact" %}
+      <p>{% trans "Point of Contact" %}</p>
       {% with layer.poc as profile %}
         {% include "people/_profile_about_item.html" %}
       {% endwith %}
-      {% trans "Metadata Author" %}
+      <p>{% trans "Metadata Author" %}</p>
       {% with layer.metadata_author as profile %}
         {% include "people/_profile_about_item.html" %}
       {% endwith %}
