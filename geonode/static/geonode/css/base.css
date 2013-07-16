@@ -7252,6 +7252,7 @@ article.abstract {
 }
 .list article p {
   font-size: 12px;
+  width: 480px;
 }
 .list article .stats {
   display: none;
