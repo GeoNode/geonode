@@ -843,9 +843,11 @@ def tweetview(request):
 
     try:
         conn = httplib2.Http(timeout=10)
-        testUrl = "http://" +  settings.GEOPS_IP  + "/?LAYERS=point&TRANSPARENT=TRUE&FORMAT=image%2Fpng&TILED=false&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&RND=0.7935556590091437&SQL=SELECT%20goog_x%2C%20goog_y%2C%20%20tweet_text%20%20from%20tweets%20WHERE%20time%20%3E%201354300501%20AND%20time%20%3C%201354905302&RADIUS=1&R=0&G=0&B=255&NUM_REQUESTS=1&_OLSALT=0.731751827057451&SRS=EPSG%3A900913&BBOX=-16280475.52625,-4924280.9318723,16280475.52625,4924280.9318723&WIDTH=1664&HEIGHT=503"
+        testUrl = "http://" +  settings.GEOPS_IP  + "?REQUEST%3DGetFeatureInfo%26SQL%3Dselect%20min(time)%2Cmax(time)%20from%20tweets"
         #testUrl = "http://worldmap.harvard.edu"
         resp, content = conn.request(testUrl, 'GET')
+        timerange = json.loads(content)
+        
     except:
         redirectPage = "maps/tweetstartup.html"
 
@@ -856,7 +858,9 @@ def tweetview(request):
         'maptitle': map.title,
         'GEOPS_IP': geops_ip,
         'urlsuffix': get_suffix_if_custom(map),
-        'tweetdownload': request.user.is_authenticated() and request.user.get_profile().is_org_member
+        'tweetdownload': request.user.is_authenticated() and request.user.get_profile().is_org_member,
+        'min_date': timerange["results"][0]["min"]*1000,
+        'max_date': timerange["results"][0]["max"]*1000
         }))
 
 def embed(request, mapid=None, snapshot=None):

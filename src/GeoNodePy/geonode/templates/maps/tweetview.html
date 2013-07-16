@@ -268,9 +268,9 @@ var tweetDateStartField = new Ext.ux.form.DateTime({
         altFormats:'H:i:s', allowBlank:true
     }, dateFormat:'n/d/Y', dateConfig:{
         altFormats:'Y-m-d|Y-n-d', allowBlank:true,
-        minValue:new Date(2013, 3, 12),
-        maxValue:new Date(Date.now() + 86400000),
-        value:new Date(2013,3,12)
+        minValue:new Date({{min_date}}),
+        maxValue:new Date({{max_date}}),
+        value:new Date({{min_date}})
 //        value:new Date(Date.now() - (86400000 * 7))
     },
     width:200
@@ -286,13 +286,20 @@ var tweetDateEndField = new Ext.ux.form.DateTime({
         value:new Date(Date.now())
     }, dateFormat:'n/d/Y', dateConfig:{
         altFormats:'Y-m-d|Y-n-d', allowBlank:true,
-        minValue:new Date(2012, 3, 12),
-        maxValue:new Date(Date.now() + 86400000),
-        value:new Date(2013,4,7)
+        minValue:new Date({{min_date}}),
+        maxValue:new Date({{max_date}}),
+        value:new Date({{max_date}})
 //        value:new Date(Date.now())
     },
     width:200
 });
+
+/* Ext.Ajax.request({
+	url:"http://{{GEOPS_IP}}?REQUEST%3DGetFeatureInfo%26SQL%3Dselect%20min(time)%2Cmax(time)%20from%20tweets",
+	success: function (response,opts){
+		response.results.max
+	}
+}) */
 
 
 var firstEndDate = tweetDateEndField.getValue().getTime() - 1000;
