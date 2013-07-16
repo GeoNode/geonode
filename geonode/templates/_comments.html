@@ -15,6 +15,10 @@
   <div class="clearfix">
     <a href="#form_post_comment_div" role="button" class="btn pull-right" data-toggle="modal">{% trans 'Add Comment' %}</a>
   </div>
+  {% else %}
+  <div class="clearfix">
+    <p class="pull-right">{% trans 'Log in to add a comment' %}</p>
+  </div>
   {% endif %}
   <div class="paginate-contents">
   {% comments obj as comment_list %}
