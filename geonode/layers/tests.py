@@ -817,3 +817,25 @@ class LayersTest(TestCase):
         topics = topics.annotate(**{ 'layer_count': Count('resourcebase__layer__category')})
         elevation = topics.get(identifier='elevation')
         self.assertEquals(elevation.layer_count,3)
+
+    def test_not_superuser_permissions(self):
+        #grab bobby
+        bob = User.objects.get(username='bobby')
+
+        #grab a layer
+        layer = Layer.objects.all()[0]
+
+        #set layer permissions to registered read/write
+        layer.set_gen_level(AUTHENTICATED_USERS,'layer_readwrite')
+
+        #verify bobby has view/change permissions on it
+        self.assertTrue(bob.has_perm('layers.view_layer',layer))
+        self.assertTrue(bob.has_perm('layers.change_layer',layer))
+
+        #verify that bobby can access the layer data page
+        c = Client()
+        self.assertTrue(c.login(username='bobby',password='bob'))
+
+        response = c.get(reverse('layer_detail', args=(layer.typename,)))
+        self.assertEquals(response.status_code, 200)
+
