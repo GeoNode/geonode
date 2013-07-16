@@ -92,14 +92,17 @@
                   <i class="icon-map-marker"></i>
                 {% endif %}
                 {% if obj.class_name = 'Layer' %}
-                  <i class="icon-sign-blank icon-rotate-45"></i>
+                  <i class="icon-unchecked icon-rotate-45"></i>
                 {% endif %}
                 {% if obj.class_name = 'Document' %}
-                  <i class="icon-file-alt"></i>
+                  <i class="icon-file-text-alt"></i>
                 {% endif %}
                 <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a></h3>
                 <div class="details">
-                  <div class="meta"><p>{{ obj.abstract }} | {{ obj.date|date:"d b Y" }}</p></div>
+                  <div class="meta">
+                    <p>{{ obj.abstract }}</p>
+                    <p>{% trans "Shared on" %} {{ obj.date|date:"d b Y" }}</p>
+                  </div>
               </div>
             </article>
             {% endfor %}
