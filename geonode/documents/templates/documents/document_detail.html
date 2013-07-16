@@ -126,15 +126,15 @@
     {% endif %}
     <div class="well">
       <h2>{% trans "About" %}</h2>
-      {% trans "Document Owner" %}
+      <p>{% trans "Document Owner" %}</p>
       {% with document.owner.profile as profile %}
         {% include "people/_profile_about_item.html" %}
       {% endwith %}
-      {% trans "Point of Contact" %}
+      <p>{% trans "Point of Contact" %}</p>
       {% with document.poc as profile %}
         {% include "people/_profile_about_item.html" %}
       {% endwith %}
-      {% trans "Metadata Author" %}
+      <p>{% trans "Metadata Author" %}</p>
       {% with document.metadata_author as profile %}
         {% include "people/_profile_about_item.html" %}
       {% endwith %}

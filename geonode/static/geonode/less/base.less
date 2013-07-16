@@ -690,6 +690,7 @@ article.abstract {
 }
 
 .grid article {
+  height: 225px;
   width: 200px;
   margin: 0 20px 20px 0;
   overflow: hidden;
@@ -702,8 +703,8 @@ article.abstract {
           box-shadow: 0 1px 3px rgba(0,0,0,0.2); */
 
   img.thumb {
-  float:left;
-  margin:0 10px 10px 0;
+    float:left;
+    margin:0 10px 10px 0;
   }
 
   h3 {
@@ -726,9 +727,10 @@ article.abstract {
     color: @grayNeutral;
     font-size: 10px;
     height: 80px;
+    margin-bottom: 10px;
     overflow: hidden;
+    padding: 10px;
     text-overflow: ellipsis;
-    padding: 5px;
   }
 
   img {
@@ -737,9 +739,9 @@ article.abstract {
   }
 
   .avatar img {
-    margin-bottom: 0;
+    margin-bottom: 15px;
     margin-left: 60px;
-    margin-top: 10px;
+    margin-top: 15px;
   }
 
   .details {
@@ -772,10 +774,27 @@ aside .well {
     padding-bottom:20px;
     margin-bottom:20px;
   }
+  p {
+    clear: both;
+  }
 
   section.last {
     border-bottom:0;
-    margin-bottom:0;
+    margin-bottom: 20px;
+    h3 {
+      font-size: 14px;
+      margin-left: -10px;
+      margin-top: 0;
+    }
+    .avatar {
+      margin-left: 0;
+      margin-right: 0;
+      margin-bottom: 20px;
+    }
+    .details {
+      margin-left: -10px;
+      margin-top: 0;
+    }
   }
 
   h2 {
@@ -1151,7 +1170,7 @@ ul.space li {
   padding-top: 0;
 
   img {
-    margin-bottom:10px;
+    margin-bottom:12px;
   }
 }
 

@@ -7286,6 +7286,7 @@ article.abstract {
   display: none;
 }
 .grid article {
+  height: 225px;
   width: 200px;
   margin: 0 20px 20px 0;
   overflow: hidden;
@@ -7322,18 +7323,19 @@ article.abstract {
   color: #999999;
   font-size: 10px;
   height: 80px;
+  margin-bottom: 10px;
   overflow: hidden;
+  padding: 10px;
   text-overflow: ellipsis;
-  padding: 5px;
 }
 .grid article img {
   float: left;
   margin: 0;
 }
 .grid article .avatar img {
-  margin-bottom: 0;
+  margin-bottom: 15px;
   margin-left: 60px;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 .grid article .details {
   clear: left;
@@ -7360,9 +7362,26 @@ aside .well section {
   padding-bottom: 20px;
   margin-bottom: 20px;
 }
+aside .well p {
+  clear: both;
+}
 aside .well section.last {
   border-bottom: 0;
-  margin-bottom: 0;
+  margin-bottom: 20px;
+}
+aside .well section.last h3 {
+  font-size: 14px;
+  margin-left: -10px;
+  margin-top: 0;
+}
+aside .well section.last .avatar {
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 20px;
+}
+aside .well section.last .details {
+  margin-left: -10px;
+  margin-top: 0;
 }
 aside .well h2 {
   border-bottom: 1px solid #ccc;
@@ -7746,7 +7765,7 @@ ul.space li {
   padding-top: 0;
 }
 .tab-pane article img {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 /** map & layer actions **/
 .map-actions,

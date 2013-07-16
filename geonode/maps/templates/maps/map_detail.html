@@ -157,7 +157,7 @@
     </div>
     <div class="well last">
     <h2>{% trans "About" %}</h2>
-    {% trans "Map Owner" %}
+    <p>{% trans "Map Owner" %}</p>
       {% with map.owner.profile as profile %}
         {% include "people/_profile_about_item.html" %} 
       {% endwith %}
