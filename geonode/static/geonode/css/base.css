@@ -7856,8 +7856,14 @@ body.home aside .well section {
 body.home aside .well section.article-list article h6 a {
   color: #41aaba;
 }
-body.home aside .well section.latest-maps .pl-153-113 {
-  display: none;
+body.home aside .well section.latest-maps .thumb {
+  border: 1px solid #cccccc;
+}
+body.home aside .well section.latest-maps h3 {
+  font-size: 14px;
+}
+body.home aside .well section.latest-maps p {
+  font-size: 12px;
 }
 .hero-unit {
   background: none;
