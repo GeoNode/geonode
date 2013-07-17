@@ -51,6 +51,9 @@
         </ul>
       </div>
       {% endif %}
+      <div class="btn-group">
+        <a href="{% url "map_view" map.id %}" class="btn btn-large">{% trans "View Map" %}</a>
+      </div>
       {% comment %}
       <div class="btn-group">
         <a href="#" class="btn btn-large btn-info strong"><i class="icon-print icon-white"></i> {% trans "Print Map" %}</a>
@@ -137,11 +140,6 @@
         </ul>
     </div>
     {% endif %}
-    <div class='well'>
-        <h2>{% trans "View map" %}</h2>
-        <p>{% trans "View this map in the GeoExplorer GIS Client" %}</p>
-        <a href="{% url "map_view" map.id %}" class="btn btn-large">{% trans "View Map" %}</a>
-    </div>
       {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
       {% if can_change_permissions %}
     <div class='well'>
