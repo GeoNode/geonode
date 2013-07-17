@@ -17,6 +17,7 @@ button.login {
     margin-right: 10px;
 }
 </style>
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/thumbnail/map_thumbnail.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-mixin.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-GeoExplorer.js"></script>
 <script type="text/javascript">
@@ -27,6 +28,13 @@ Ext.onReady(function() {
     var config = Ext.apply({
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
         proxy: "/proxy/?url=",
+        {% if PRINTNG_ENABLED %}
+        listeners: {
+            'save': function() {
+                createMapThumbnail();
+            }
+        },
+        {% endif %}
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
         /* The URL to a REST map configuration service.  This service 
          * provides listing and, with an authenticated user, saving of 
