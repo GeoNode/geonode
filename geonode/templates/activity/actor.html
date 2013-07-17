@@ -23,12 +23,15 @@ $(function () {
 {% endcomment %}
 
 {% block body %}
-<h3>Activity Feed for {{ actor }}</h3>
-<ul>
-{% for action in action_list %}
+<div class="span12">
+  <h2 class="page-title span12">Activity Feed</h2>
+  <h3 class="span12">{{ actor }}</h3>
+  <ul class="span12">
+	{% for action in action_list %}
     <li>{% include 'activity/action.html' %}</li>
-{% empty %}
-{% trans "No actions yet" %}
-{% endfor %}
-</ul>
+    {% empty %}
+      {% trans "No actions yet" %}
+    {% endfor %}
+  </ul>
+</div>
 {% endblock %}
