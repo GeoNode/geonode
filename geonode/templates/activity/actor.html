@@ -25,7 +25,8 @@ $(function () {
 {% block body %}
 <div class="span12">
   <h2 class="page-title span12">Activity Feed</h2>
-  <h3 class="span12">{{ actor }}</h3>
+  <div class="span8">
+  <p>{{ actor }}</p>
   <ul class="span12">
 	{% for action in action_list %}
     <li>{% include 'activity/action.html' %}</li>
@@ -33,5 +34,6 @@ $(function () {
       {% trans "No actions yet" %}
     {% endfor %}
   </ul>
+  </div>
 </div>
 {% endblock %}
