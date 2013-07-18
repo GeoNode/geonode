@@ -13,8 +13,8 @@
         <p>Map {% trans "from" %} <a href="{% url "profile_detail" map.owner.username %}" rel="author">{{ map.owner }}</a>, {{ map.last_modified|timesince }} {% trans 'ago' %}</p>
         <p class="abstract">{{ map.abstract }}</p>
         <ul class="nav stats">
-          <li><a href="#"><strong>{{ map.popular_count }}</strong> {% trans "view" %}{{ map.popular_count|pluralize }}</a></li>
-          <li><a href="#"><strong><span class="avg_rating" data-rating="{{ map_rating }}"> <span class="overall_rating"></span></span></strong>{% trans "Average rating" %} ({{num_votes}} {% trans "votes" %})</a></li>
+          <li><a href="{% url "map_detail" map.id %}"><strong>{{ map.popular_count }}</strong> {% trans "view" %}{{ map.popular_count|pluralize }}</a></li>
+          <li><a href="{% url "map_detail" map.id %}#rate"><strong><span class="avg_rating" data-rating="{{ map_rating }}"> <span class="overall_rating"></span></span></strong>{% trans "Average rating" %} ({{num_votes}} {% trans "votes" %})</a></li>
         </ul>
       </div>
       <p>
