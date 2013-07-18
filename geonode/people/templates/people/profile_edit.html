@@ -2,20 +2,27 @@
 {% load i18n avatar_tags %}
 {% load bootstrap_tags %}
 
+{% block body_class %}explore people{% endblock %}
+
 {% block body %}
   
-  {% avatar user %}
-  <a href="{% url 'avatar_change' %}">Change your avatar</a>
-
-  <form action="" method="post" class="form-horizontal">
-    <legend>{% trans "Edit Your Profile" %}</legend>
-    {% csrf_token %}
-    <div class="form-controls">
-     {{ form|as_bootstrap }}
-    </div>
-    <div class="form-actions">
-      <input type="submit" class="btn btn-primary" value="{% trans "Update profile" %}" />
-    </div>
-  </form>
-</div>
+  <div class="span12">
+    <h2 class="page-title">{% trans "Edit Your Profile" %}</h2>
+  </div>
+  <div class="span2">
+    <div class="avatar">{% avatar user 140 %}</div>
+    <p><a class="btn btn-primary btn-block" href="{% url 'avatar_change' %}">Change your avatar</a></p>
+  </div>
+  <div class="span10">
+    <form action="" method="post" class="form-horizontal">
+      <!-- <legend>{% trans "Edit Your Profile" %}</legend> -->
+      {% csrf_token %}
+      <div class="form-controls">
+        {{ form|as_bootstrap }}
+      </div>
+      <div class="form-actions">
+        <input type="submit" class="btn btn-primary" value="{% trans "Update profile" %}" />
+      </div>
+    </form>
+  </div>
 {% endblock %}

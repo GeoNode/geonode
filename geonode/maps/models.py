@@ -37,7 +37,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save
+from geonode.base.models import ResourceBase, resourcebase_post_save, resourcebase_post_delete
 from geonode.maps.signals import map_changed_signal
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
@@ -209,7 +209,7 @@ class Map(ResourceBase, GXPMapBase):
         url = "%srest/printng/render.png" % settings.GEOSERVER_BASE_URL
         hostname = urlparse(settings.SITEURL).hostname
         user, passwd = settings.GEOSERVER_CREDENTIALS
-        params = dict(width=159, height=63, auth="%s,%s,%s" % (hostname, user, passwd))
+        params = dict(width=198, height=98, auth="%s,%s,%s" % (hostname, user, passwd))
         url = url + "?" + urllib.urlencode(params)
         http.add_credentials(_user, _password)
         netloc = urlparse(url).netloc
@@ -527,3 +527,4 @@ signals.pre_save.connect(pre_save_maplayer, sender=MapLayer)
 signals.pre_delete.connect(pre_delete_map, sender=Map)
 signals.pre_save.connect(pre_save_map, sender=Map)
 signals.post_save.connect(resourcebase_post_save, sender=Map)
+signals.post_delete.connect(resourcebase_post_delete, sender=Map)

@@ -145,7 +145,6 @@ define(['waypoints'],function(){
             };
 
             if (hasMore && !$("html.ie8").size()) {
-                $pages.children().hide();
                 if (auto) {
                     $pages.waypoint(function(event, direction) {
                         $pages.waypoint('remove');

@@ -36,7 +36,7 @@ from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
 from geonode.base.models import ResourceBase, ResourceBaseManager, Link, \
-    resourcebase_post_save
+    resourcebase_post_save, resourcebase_post_delete
 from geonode.utils import  _user, _password, get_wms
 from geonode.utils import http_client
 from geonode.geoserver.helpers import cascading_delete
@@ -104,7 +104,7 @@ class Layer(ResourceBase):
     styles = models.ManyToManyField(Style, related_name='layer_styles')
 
     def update_thumbnail(self, save=True):
-        self.save_thumbnail(self._thumbnail_url(width=80, height=80), save)
+        self.save_thumbnail(self._thumbnail_url(width=198, height=98), save)
 
 
     def _render_thumbnail(self, spec):
@@ -471,6 +471,10 @@ def geoserver_post_save(instance, sender, **kwargs):
     elif instance.storeType == 'coverageStore':
         #FIXME(Ariel): This works for public layers, does it work for restricted too?
         # would those end up with no geotiff links, like, forever?
+        permissions = {}
+        permissions['anonymous'] = instance.get_gen_level(ANONYMOUS_USERS)
+        permissions['authenticated'] = instance.get_gen_level(AUTHENTICATED_USERS)
+        instance.set_gen_level(ANONYMOUS_USERS,'layer_readonly')
 
         links = wcs_links(settings.GEOSERVER_BASE_URL + 'wcs?', instance.typename, 
             bbox=instance.bbox[:-1], crs=instance.bbox[-1], height=height, width=width)
@@ -484,6 +488,9 @@ def geoserver_post_save(instance, sender, **kwargs):
                                     link_type='data',
                                 )
                             )
+            
+        instance.set_gen_level(ANONYMOUS_USERS,permissions['anonymous'])
+        instance.set_gen_level(AUTHENTICATED_USERS,permissions['authenticated'])
 
     kml_reflector_link_download = settings.GEOSERVER_BASE_URL + "wms/kml?" + urllib.urlencode({
         'layers': instance.typename,
@@ -712,3 +719,4 @@ signals.post_save.connect(geoserver_post_save, sender=Layer)
 signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)
 signals.post_save.connect(resourcebase_post_save, sender=Layer)
+signals.post_delete.connect(resourcebase_post_delete, sender=Layer)

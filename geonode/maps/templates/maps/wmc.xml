@@ -15,7 +15,7 @@
         {% endif %}
         <Abstract>{{ map.abstract }}</Abstract>
         <LogoURL width="307" height="168" format="image/png">
-            <OnlineResource xlink:type="simple" xlink:href="http://geonode.org/wp-content/uploads/2010/01/GeoNode-fancy.png"/>
+            <OnlineResource xlink:type="simple" xlink:href="http://geonode.org/static/img/GeoNode-logo.png"/>
         </LogoURL>
         <DescriptionURL format="text/html">
             <OnlineResource xlink:type="simple" xlink:href="{{ siteurl }}{{ map.get_absolute_url }}"/>

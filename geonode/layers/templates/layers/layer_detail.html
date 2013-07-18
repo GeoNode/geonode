@@ -19,10 +19,10 @@
 {% block body_class %}data{% endblock %}
 
 {% block body_outer %}
-  <div class="span5">
+  <div class="span7">
     <h2 class="page-title">{{ layer.title|default:layer.typename }}</h2>
   </div>
-  <div class="span7 action-group pull-right">
+  <div class="span5 action-group">
     <div class="btn-group pull-right">
       <!-- download layer -->
       <div class="btn-group">
@@ -123,10 +123,10 @@
       <article id="share" class="tab-pane">
         <!-- TODO: Move this to a reusable template snippet -->
         <header>
-            <h3>{% trans "Share This Layer" %}</h3>
+          <h3>{% trans "Share This Layer" %}</h3>
         </header>
-        <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
-        <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
+          <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
+          <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
         <!-- TODO: Add more sharing options -->
       </article>
       <!--article id="flag" class="tab-pane">
@@ -214,15 +214,15 @@
     {% endif %}
     <div class="well">
       <h2>{% trans "About" %}</h2>
-      {% trans "Layer Owner" %}
+      <p>{% trans "Layer Owner" %}</p>
       {% with layer.owner.profile as profile %}
         {% include "people/_profile_about_item.html" %}
       {% endwith %}
-      {% trans "Point of Contact" %}
+      <p>{% trans "Point of Contact" %}</p>
       {% with layer.poc as profile %}
         {% include "people/_profile_about_item.html" %}
       {% endwith %}
-      {% trans "Metadata Author" %}
+      <p>{% trans "Metadata Author" %}</p>
       {% with layer.metadata_author as profile %}
         {% include "people/_profile_about_item.html" %}
       {% endwith %}
