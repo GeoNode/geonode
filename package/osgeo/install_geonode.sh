@@ -37,45 +37,28 @@ DATA_DIR="/usr/local/share/geonode"
 DOC_DIR="$DATA_DIR/doc"
 APACHE_CONF="/etc/apache2/sites-available/geonode"
 POSTGRES_USER="$USER_NAME"
-
+GEONODE_CONF="/etc/geonode/local_settings.py"
 
 #Install packages
+add-apt-repository -y ppa:geonode/unstable
 apt-get -q update
-apt-get --assume-yes install gcc python-gdal libxml2 python-lxml python-libxml2 python-pip \
-    libproj0 libapache2-mod-wsgi python-shapely python-pycsw python-owslib python-imaging \
-    python-pyproj python-nose python-httplib2 gettext \
-    libgdal1-dev libxml2-dev libxslt-dev python-dev libproj-dev libgeos-dev libgeos++-dev
+apt-get --assume-yes install python-geonode libapache2-mod-wsgi
 
 if [ $? -ne 0 ] ; then
     echo 'ERROR: Package install failed! Aborting.'
     exit 1
 fi
 
-
-# Install geonode
-pip install --upgrade --use-mirrors geonode
-
-# Create database for demonstration instance
-sudo -u $POSTGRES_USER createdb geonode
-sudo -u $POSTGRES_USER psql geonode -c 'create extension postgis;'
-
-# Initialize database
-django-admin.py syncdb --noinput --settings=geonode.settings
-
-# Collect static files
-django-admin.py collectstatic --noinput --settings=geonode.settings
-
-
-#### final tidy up
-sudo -u "$POSTGRES_USER" psql geonode -c 'VACUUM ANALYZE;'
+# Add an entry in /etc/hosts for geonode, to enable http://geonode/
+echo '127.0.0.1 geonode' | sudo tee -a /etc/hosts
 
 
 # Deploy demonstration instance in Apache
 echo "Deploying geonode demonstration instance"
 cat << EOF > "$APACHE_CONF"
 WSGIDaemonProcess geonode user=www-data threads=15 processes=2
-<VirtualHost geonode:80>
-    Servername geonode
+<VirtualHost *:80>
+    ServerName geonode
     ServerAdmin webmaster@localhost
 
     ErrorLog /var/log/apache2/error.log
@@ -84,17 +67,17 @@ WSGIDaemonProcess geonode user=www-data threads=15 processes=2
 
     WSGIProcessGroup geonode
     WSGIPassAuthorization On
-    WSGIScriptAlias / /usr/local/lib/python2.7/disk-packages/geonode/wsgi.py
+    WSGIScriptAlias / /usr/lib/python2.7/dist-packages/geonode/wsgi.py
 
-    <Directory "/usr/local/lib/python2.7/disk-packages/geonode/">
+    <Directory "/usr/lib/python2.7/disk-packages/geonode/">
        Order allow,deny
         Options Indexes FollowSymLinks
         Allow from all
         IndexOptions FancyIndexing
     </Directory>
 
-    Alias /static/ /usr/local/lib/python2.7/disk-packages/geonode/static/
-    Alias /uploaded/ /usr/local/lib/python2.7/disk-packages/geonode/uploaded/
+    Alias /static/ /usr/lib/python2.7/dist-packages/geonode/static/
+    Alias /uploaded/ /usr/lib/python2.7/dist-packages/geonode/uploaded/
 
     <Proxy *>
       Order allow,deny
@@ -107,6 +90,39 @@ WSGIDaemonProcess geonode user=www-data threads=15 processes=2
 </VirtualHost>
 EOF
 echo "Done"
+
+
+#FIXME: The default configuration in apache does not have a ServerName for localhost
+# and takes over requests for GeoNode's virtualhost, the following patch is a workaround:
+cat << EOF > "$TMP_DIR/servername.patch"
+--- /etc/apache2/sites-available/default.ORIG	2013-07-17 19:29:32.559707270 +0000
++++ /etc/apache2/sites-available/default	2013-07-17 19:30:50.703705186 +0000
+@@ -1,5 +1,7 @@
+ <VirtualHost *:80>
+ 	ServerAdmin webmaster@localhost
++        ServerName localhost
++        ServerAlias osgeolive
+ 
+ 	DocumentRoot /var/www
+ 	<Directory />
+EOF
+
+if [ `grep -c 'ServerName' /etc/apache2/sites-available/default` -eq 0 ] ; then
+  patch -p0 < "$TMP_DIR/servername.patch"
+fi
+
+# Create tables in the database
+django-admin syncdb --all --noinput --settings=geonode.settings
+# Install sample admin. Username:admin password:admin
+django-admin loaddata sample_admin
+# Collect static files
+django-admin collectstatic --noinput --settings=geonode.settings
+
+
+# Make the apache user the owner of the required dirs.
+chown www-data /usr/lib/python2.7/dist-packages/geonode/development.db
+chown www-data /usr/lib/python2.7/dist-packages/geonode/static/
+chown www-data /usr/lib/python2.7/dist-packages/geonode/uploaded/
 
 
 # Install desktop icon
@@ -175,10 +191,7 @@ a2ensite geonode
 # Reload Apache
 /etc/init.d/apache2 force-reload
 
-echo "geonode 127.0.0.1" >> /etc/hosts
-
 # Uninstall dev packages
-apt-get --assume-yes remove libgdal1-dev libproj-dev libgeos-dev libgeos++-dev libxml2-dev libxslt-dev python-dev
 apt-get --assume-yes autoremove
 
 echo "==============================================================="
