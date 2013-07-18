@@ -15,8 +15,8 @@
           <p>Doc {% trans 'from' %} <a href="{% url "profile_detail" document.owner.username %}">{{ document.owner }}</a>, {{ document.date|timesince }} {% trans 'ago' %}</p>
           <p class="abstract">{{ document.abstract }}</p>
           <ul class="nav stats">
-            <li><a href="#"><strong>{{ document.popular_count }}</strong> {% trans "view" %}{{ document.popular_count|pluralize }}</a></li>
-            <li><a href="#"><strong><span class="overall_rating"></span></strong><span class="avg_rating" data-rating="{{ document_rating }}">{% trans "Average rating" %} ({{num_votes}} {% trans "votes" %})</span></a></li>
+            <li><a href="{% url "document_detail" document.id %}"><strong>{{ document.popular_count }}</strong> {% trans "view" %}{{ document.popular_count|pluralize }}</a></li>
+            <li><a href="{% url "document_detail" document.id %}#rate"><strong><span class="overall_rating"></span></strong><span class="avg_rating" data-rating="{{ document_rating }}">{% trans "Average rating" %} ({{num_votes}} {% trans "votes" %})</span></a></li>
           </ul>
         </div>
         <p><a href="{% if document.doc_file %}{{ document.doc_file.url }}{% endif %}" class="btn btn-mini">{% trans "Download" %}</a></p>

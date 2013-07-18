@@ -22,10 +22,10 @@
           {% if profile.o.profile %}{{ profile.o.profile }}{% endif %}
         </p>
           <ul class="nav stats">
-            <li><a href="#"><strong>{{ profile.layer_count }}</strong> Layers</a></li>
-            <li><a href="#"><strong>{{ profile.map_count }}</strong> Maps</a></li>
+            <li><a href="/people/profile/{{ profile.o.user.username }}/?content=layers"><strong>{{ profile.layer_count }}</strong> Layers</a></li>
+            <li><a href="/people/profile/{{ profile.o.user.username }}/?content=maps"><strong>{{ profile.map_count }}</strong> Maps</a></li>
             {% if DOCUMENTS_APP %}
-            <li><a href="#"><strong>{{ profile.document_count }}</strong> Documents</a></li>
+            <li><a href="/people/profile/{{ profile.o.user.username }}/?content=documents"><strong>{{ profile.document_count }}</strong> Documents</a></li>
             {% endif %}
           </ul>
       </div>
