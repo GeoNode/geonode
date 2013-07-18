@@ -164,8 +164,8 @@ class searchTest(TestCase):
         # @todo since maps and users are excluded at the moment, this will have
         # to be revisited
         self.search_assert(self.request(extent='-180,180,-90,90', limit=None), n_results=26, n_total=26)
-        self.search_assert(self.request(extent='0,10,0,10', limit=None), n_results=11)
-        self.search_assert(self.request(extent='0,1,0,1', limit=None), n_results=3)
+        self.search_assert(self.request(extent='0,10,0,10', limit=None), n_results=7)
+        self.search_assert(self.request(extent='0,1,0,1', limit=None), n_results=2)
         
     def test_bbox_result(self):
         # grab one and set the bounds
