@@ -23,6 +23,7 @@ import logging
 from django.conf import settings
 from django.db.models import signals
 from geonode.layers.models import Layer
+from geonode.documents.models import Document
 from geonode.catalogue import get_catalogue
 from geonode.base.models import Link
 
@@ -54,10 +55,10 @@ def catalogue_post_save(instance, sender, **kwargs):
             raise err
 
     msg = ('Metadata record for %s does not exist,'
-           ' check the catalogue signals.' % instance.name)
+           ' check the catalogue signals.' % instance.title)
     assert record is not None, msg
 
-    msg = ('Metadata record for %s should contain links.' % instance.name)
+    msg = ('Metadata record for %s should contain links.' % instance.title)
     assert hasattr(record, 'links'), msg
 
     # Create the different metadata links with the available formats
@@ -74,7 +75,7 @@ def catalogue_post_save(instance, sender, **kwargs):
 
     # generate and save CSW specific fields
     signals.post_save.disconnect(catalogue_post_save, sender=Layer)
-
+    signals.post_save.disconnect(catalogue_post_save, sender=Document)
     # generate an XML document (GeoNode's default is ISO)
     md_doc = catalogue.catalogue.csw_gen_xml(instance,
              'catalogue/full_metadata.xml')
@@ -87,6 +88,7 @@ def catalogue_post_save(instance, sender, **kwargs):
     instance.save()
 
     signals.post_save.connect(catalogue_post_save, sender=Layer)
+    signals.post_save.connect(catalogue_post_save, sender=Document)
 
 
 def catalogue_pre_save(instance, sender, **kwargs):
@@ -129,3 +131,6 @@ if 'geonode.catalogue' in settings.INSTALLED_APPS:
     signals.pre_save.connect(catalogue_pre_save, sender=Layer)
     signals.post_save.connect(catalogue_post_save, sender=Layer)
     signals.pre_delete.connect(catalogue_pre_delete, sender=Layer)
+    signals.pre_save.connect(catalogue_pre_save, sender=Document)
+    signals.post_save.connect(catalogue_post_save, sender=Document)
+    signals.pre_delete.connect(catalogue_pre_delete, sender=Document)
