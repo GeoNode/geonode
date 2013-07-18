@@ -35,7 +35,6 @@
           {% endfor %}
         </ul>
       </div>
-      {% if METADATA_DOWNLOAD_ALLOWS %}
       <!-- download metadata -->
       <div class="btn-group">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
@@ -48,7 +47,6 @@
           {% endfor %}
         </ul>
       </div>
-      {% endif %}
       {% has_obj_perm user document "documents.change_document" as can_edit_document %}
       {% if can_edit_document %}
       <!-- edit document dropdown -->
