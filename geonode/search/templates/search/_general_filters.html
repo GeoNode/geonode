@@ -36,7 +36,7 @@
   <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i> {% trans "Keywords" %}</a></h2>
   <ul class="nav" id="keywords">
     {% for tag in tags.values %}
-      <li><a data-class="{{ tag.slug }}" class="trigger-query">{{ tag.name }} <span>(<span class="count">{{ tag.count }}</span>)</span></a></li>
+      <li><a data-class="{{ tag.slug }}" class="trigger-query">{{ tag.name }} <span class="badge pull-right">{{ tag.count }}</span></a></li>
     {% endfor %}
   </ul>
 </nav>

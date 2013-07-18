@@ -209,7 +209,7 @@ class Map(ResourceBase, GXPMapBase):
         url = "%srest/printng/render.png" % settings.GEOSERVER_BASE_URL
         hostname = urlparse(settings.SITEURL).hostname
         user, passwd = settings.GEOSERVER_CREDENTIALS
-        params = dict(width=159, height=63, auth="%s,%s,%s" % (hostname, user, passwd))
+        params = dict(width=198, height=98, auth="%s,%s,%s" % (hostname, user, passwd))
         url = url + "?" + urllib.urlencode(params)
         http.add_credentials(_user, _password)
         netloc = urlparse(url).netloc

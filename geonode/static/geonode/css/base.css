@@ -7197,6 +7197,33 @@ section.widget-mini h2 a.btn {
   padding-top: 20px;
   font-size: 11px;
 }
+article h3 [class^="icon-"],
+[class*=" icon-"] {
+  color: #3cb3c5;
+  margin-right: 5px;
+}
+article a [class^="icon-"],
+[class*=" icon-"] {
+  color: #bbbbbb;
+  font-size: 14px;
+  margin-left: 5px;
+}
+article a [class^="icon-star"],
+[class*=" icon-star"] {
+  color: orange;
+  margin-left: 0;
+}
+article a:hover [class^="icon-"],
+[class*=" icon-"] {
+  color: orange;
+  margin-left: 5px;
+}
+article.abstract {
+  border-top: 1px solid #cccccc;
+  border-bottom: 1px solid #cccccc;
+  padding: 15px 0;
+  margin-bottom: 15px;
+}
 .list article .rating,
 .grid article .rating,
 .list article .activity,
@@ -7212,77 +7239,150 @@ section.widget-mini h2 a.btn {
   margin: 1px;
 }
 .list article {
-  border-bottom: 1px solid #cccccc;
+  max-width: 600px;
   overflow: hidden;
-  position: relative;
 }
 .list article h3 {
+  font-size: 14px;
   font-weight: normal;
+  min-width: 400px;
   overflow: hidden;
   text-overflow: ellipses;
   white-space: nowrap;
-  width: 420px;
 }
-.list article .download {
-  right: 20px;
-  position: absolute;
+.list article p {
+  font-size: 12px;
+  width: 480px;
 }
-.list article img {
+.list article .stats {
+  display: none;
+}
+.list article .avatar {
+  display: block;
   float: left;
-  margin: 1px 15px 15px 0;
+  height: 80px;
+  margin: 5px 10px 10px 0;
+  width: 80px;
+}
+.list article .thumb {
+  display: block;
+  float: left;
+  height: 80px;
+  margin: 5px 10px 10px 0;
+  overflow: hidden;
+  padding: 0;
+  width: 80px;
+}
+.list article .thumb img {
+  left: -50px;
+  position: relative;
+  margin: 0;
+  padding: 0;
 }
 .list article .details {
   float: left;
-  width: 420px;
   overflow: hidden;
 }
-.list article .abstract {
-  margin: 1em 0;
+.list article .abstract-placeholder {
+  display: none;
 }
 .grid article {
-  border-right: 1px solid #999999;
-  float: left;
-  height: 120px;
-  margin-right: 10px;
+  height: 225px;
+  width: 200px;
+  margin: 0 20px 20px 0;
   overflow: hidden;
-  padding-right: 10px;
+  padding: 0;
+  float: left;
+  border-radius: 4px;
+  border: 1px solid #bbbbbb;
+  /*   -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.2); */
+
+}
+.grid article img.thumb {
+  float: left;
+  margin: 0 10px 10px 0;
 }
 .grid article h3 {
   color: #3cb3c5;
+  font-size: 14px;
+  margin-left: 5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 185px;
+  width: 190px;
+}
+.grid article p {
+  padding-bottom: 10px;
+  margin-left: 0;
+}
+.grid article .abstract {
+  display: none;
+}
+.grid article .abstract-placeholder {
+  color: #999999;
+  font-size: 10px;
+  height: 80px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  padding: 10px;
+  text-overflow: ellipsis;
 }
 .grid article img {
   float: left;
-  margin: 1px 10px 15px 0;
+  margin: 0;
+}
+.grid article .avatar img {
+  margin-bottom: 15px;
+  margin-left: 60px;
+  margin-top: 15px;
 }
 .grid article .details {
   clear: left;
-  width: 185px;
+  margin-left: 5px;
+  width: 190px;
 }
 .grid article .details p {
+  font-size: 11px;
   margin-bottom: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 125px;
+  width: 190px;
 }
 .grid article .details .stats {
-  margin-top: 0px;
+  margin-left: -5px;
+  margin-top: -10px;
 }
-.grid article:last-child {
-  border-right: 0;
+.grid article:first-child {
+  margin-left: 0;
 }
 aside .well section {
   border-bottom: 1px solid #cccccc;
   padding-bottom: 20px;
   margin-bottom: 20px;
 }
+aside .well p {
+  clear: both;
+}
 aside .well section.last {
   border-bottom: 0;
-  margin-bottom: 0;
+  margin-bottom: 20px;
+}
+aside .well section.last h3 {
+  font-size: 14px;
+  margin-left: -10px;
+  margin-top: 0;
+}
+aside .well section.last .avatar {
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 20px;
+}
+aside .well section.last .details {
+  margin-left: -10px;
+  margin-top: 0;
 }
 aside .well h2 {
   border-bottom: 1px solid #ccc;
@@ -7321,10 +7421,6 @@ aside .well ul.sidenav a:hover {
   -o-transform: rotate(45deg);
   transform: rotate(45deg);
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
-}
-img.thumb {
-  float: left;
-  margin: 0 10px 10px 0;
 }
 section.article-list article {
   overflow: hidden;
@@ -7391,9 +7487,11 @@ h2.page-title {
   font-weight: 300;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  overflow: hidden;
+  /*overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: nowrap;*/
+
+  word-wrap: break-word;
 }
 .strong {
   font-weight: bold;
@@ -7485,6 +7583,7 @@ ul.nav-pills.filter form select {
 }
 ul.space li {
   margin-bottom: 5px;
+  word-wrap: break-word;
 }
 /** view by **/
 .viewby {
@@ -7663,11 +7762,11 @@ ul.space li {
   color: #222222;
 }
 .tab-pane article {
-  padding-bottom: 10px;
-  padding-top: 10px;
+  padding-bottom: 0;
+  padding-top: 0;
 }
 .tab-pane article img {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 /** map & layer actions **/
 .map-actions,
@@ -7698,33 +7797,6 @@ ul.space li {
   padding-left: 6px;
   color: #f05a24;
 }
-article h3 [class^="icon-"],
-[class*=" icon-"] {
-  color: #3cb3c5;
-  margin-right: 5px;
-}
-article a [class^="icon-"],
-[class*=" icon-"] {
-  color: #bbbbbb;
-  font-size: 14px;
-  margin-left: 5px;
-}
-article a [class^="icon-star"],
-[class*=" icon-star"] {
-  color: orange;
-  margin-left: 0;
-}
-article a:hover [class^="icon-"],
-[class*=" icon-"] {
-  color: orange;
-  margin-left: 5px;
-}
-article.abstract {
-  border-top: 1px solid #cccccc;
-  border-bottom: 1px solid #cccccc;
-  padding: 15px 0;
-  margin-bottom: 15px;
-}
 /** comments **/
 .comments {
   margin-top: 20px;
@@ -7736,23 +7808,35 @@ article.abstract {
   margin-bottom: 1em;
 }
 .comments header h3 {
-  margin-top: 10px;
-  text-transform: uppercase;
   font-weight: normal;
+  margin-top: 10px;
+  padding: 0px 0px 8px;
+  text-transform: uppercase;
 }
 .comments header .total {
   text-transform: lowercase;
 }
 .comments article {
-  margin-bottom: 15px;
+  clear: both;
+  margin-top: 20px;
+  padding-top: 20px;
 }
 .comments article p {
-  margin-bottom: 3px;
+  margin: 0;
+}
+.comments article .avatar {
+  display: block;
+  height: 28px;
+  margin: 5px 0 10px;
+  width: 28px;
 }
 .comments article footer {
   font-size: 11px;
   font-weight: bold;
   color: #777777;
+}
+.comments article footer .author {
+  margin-left: 0;
 }
 .clear {
   clear: both;
@@ -7792,8 +7876,14 @@ body.home aside .well section {
 body.home aside .well section.article-list article h6 a {
   color: #41aaba;
 }
-body.home aside .well section.latest-maps .pl-153-113 {
-  display: none;
+body.home aside .well section.latest-maps .thumb {
+  border: 1px solid #cccccc;
+}
+body.home aside .well section.latest-maps h3 {
+  font-size: 14px;
+}
+body.home aside .well section.latest-maps p {
+  font-size: 12px;
 }
 .hero-unit {
   background: none;
