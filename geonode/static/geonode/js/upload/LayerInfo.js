@@ -35,6 +35,7 @@ define(function (require, exports) {
         this.selector = this.selector.replace(' ','_');
         this.name = this.name.replace(' ','_');
         this.errors = this.collectErrors();
+        this.polling = false;
     };
 
     /** Function to safely select a filename 
@@ -190,7 +191,6 @@ define(function (require, exports) {
         if (empty) {
             status.empty();
         }
-
         status.append(this.progressTemplate({
             message: options.msg,
             alertLevel: options.level
@@ -216,15 +216,16 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.markStart = function () {
         this.logStatus({
-            msg: 'Your upload has started',
-            level: 'alert-success'
+            msg: 'Your upload has started<div id="prog"></div><div id="loading"></div>',
+            level: 'alert-success',
+            empty: 'true'
         });
     };
    
     LayerInfo.prototype.doResume = function (event) {
         common.make_request({
             url: event.data.url,
-            async: false,
+            async: true,
             failure: function (resp, status) {
                 self.markError(resp.errors, status);
             },
@@ -242,10 +243,20 @@ define(function (require, exports) {
         var c = '<a href="' + resp.url + '/style/manage" class="btn">Manage Styles</a>';
         self.logStatus({
             msg: '<p> Your layer was successfully uploaded<br/><br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '</p>',
-            level: 'alert-success'
+            level: 'alert-success',
+            empty: 'true'
         });
     };
- 
+
+    LayerInfo.prototype.startPolling = function() {
+        var self = this;
+        if (self.polling) {
+            $.ajax({ url: "/upload/progress", type: 'GET', success: function(data){
+                console.log('polling'); 
+            }, dataType: "json", complete: setTimeout(function() {self.startPolling()}, 1500), timeout: 30000 });
+        }
+    };
+
     /** Function to deal with the final step in the upload process 
      *
      *  @params {options}
@@ -256,15 +267,27 @@ define(function (require, exports) {
         if (resp.redirect_to === '/upload/final') {
             common.make_request({
                 url: resp.redirect_to,
-                async: false,
+                async: true,
+                beforeSend: function() {
+                    self.logStatus({
+                        msg: '<p>Performing Final GeoServer Config Step <img src="/static/geonode/img/loading.gif"></p>',
+                        level: 'alert-success',
+                        empty: 'true'
+                    });
+                    self.polling = true;
+                    self.startPolling();
+                },
                 failure: function (resp, status) {
+                    self.polling = false;
                     self.markError(resp.errors, status); 
                 },
                 success: function (resp, status) {
+                    self.polling = false;
                     if (resp.status === "other") {
                         self.logStatus({
                             msg:'<p>You need to specify more information in order to complete your upload</p>',
-                            level: 'alert-success'
+                            level: 'alert-success',
+                            empty: 'true'
                         });
                     } else {
                         self.displayUploadedLayerLinks(resp);
@@ -277,21 +300,26 @@ define(function (require, exports) {
             var a = '<a id="' + element + '" class="btn">Continue</a>';
             self.logStatus({
                 msg:'<p>You need to specify more information in order to complete your upload.</p><p>You can continue configuring your layer.</p><p>' + a + '</p>',
-                level: 'alert-success'
+                level: 'alert-success',
+                empty: 'true'
             });
             $("#" + element).on('click', resp, self.doResume);
             return;
         } else if (resp.status === "other") {
             self.logStatus({
                 msg:'<p>You need to specify more information in order to complete your upload</p>',
-                level: 'alert-success'
+                level: 'alert-success',
+                empty: 'true'
             });
         } else if (resp.success === true) {
+            self.polling = false;
             self.displayUploadedLayerLinks(resp);
         } else {
+            self.polling = false;
             self.logStatus({
                 msg:'<p>Unexpected Error</p>',
-                level: 'alert-error'
+                level: 'alert-error',
+                empty: 'true'
             });
         }
 
@@ -304,10 +332,15 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.doStep = function (resp) {
         var self = this;
+        self.logStatus({
+            msg: '<p>Performing GeoServer Config Step</p>',
+            level: 'alert-success',
+            empty: 'true'
+        });
         if (resp.success === true && resp.status === 'incomplete') {
             common.make_request({
                 url: resp.redirect_to + '?force_ajax=true',
-                async: false,
+                async: true,
                 failure: function (resp, status) {
                     self.markError(resp.errors, status);
                 },
@@ -338,14 +371,18 @@ define(function (require, exports) {
     LayerInfo.prototype.uploadFiles = function () {
         var form_data = this.prepareFormData(),
             self = this;
+        var prog = "";
         $.ajax({
             url: form_target,
-            async: false,
+            async: true,
             type: "POST",
             data: form_data,
             processData: false,
             contentType: false,
-            beforeSend: function () { self.markStart(); },
+            beforeSend: function () {
+                self.markStart(); 
+                this.prog = $('#prog').progressbar({ value: 0 });
+            },
             error: function (jqXHR) {
                 if (jqXHR === null) {
                     self.markError("Unexpected Error");
@@ -354,7 +391,24 @@ define(function (require, exports) {
                 }
             },
             success: function (resp, status) {
-                self.doStep(resp); 
+                self.logStatus({
+                    msg: '<p> Layer files uploaded, configuring in GeoServer</p>',
+                    level: 'alert-success',
+                    empty: 'true',
+                });
+                self.doStep(resp);
+            },
+            progress: function(e) {
+                if(e.lengthComputable) {
+                    var pct = (e.loaded / e.total) * 100;
+                    $('#prog')
+                        .progressbar('option', 'value', pct)
+                        .children('.ui-progressbar-value')
+                        .html(pct.toPrecision(3) + '%')
+                        .css('display', 'block');
+                }
+                else {
+                }
             }
         });
     };
