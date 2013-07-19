@@ -246,10 +246,13 @@ def save_step_view(req, session):
 def data_upload_progress(req):
     """This would not be needed if geoserver REST did not require admin role
     and is an inefficient way of getting this information"""
-    upload_session = req.session[_SESSION_KEY]
-    import_session = upload_session.import_session
-    progress = import_session.tasks[0].items[0].get_progress()
-    return json_response(progress)
+    if _SESSION_KEY in req.session:
+        upload_session = req.session[_SESSION_KEY]
+        import_session = upload_session.import_session
+        progress = import_session.tasks[0].items[0].get_progress()
+        return json_response(progress)
+    else:
+        return json_response({'state': 'NONE'})
 
 
 def srs_step_view(req, upload_session):
