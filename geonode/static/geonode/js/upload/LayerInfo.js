@@ -216,7 +216,7 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.markStart = function () {
         this.logStatus({
-            msg: 'Your upload has started<div id="prog"></div><div id="loading"></div>',
+            msg: 'Your upload has started<div id="prog"></div><div id="loading"></div><img src="/static/geonode/img/loading.gif">',
             level: 'alert-success',
             empty: 'true'
         });
@@ -253,7 +253,7 @@ define(function (require, exports) {
         if (self.polling) {
             $.ajax({ url: "/upload/progress", type: 'GET', success: function(data){
                 console.log('polling'); 
-            }, dataType: "json", complete: setTimeout(function() {self.startPolling()}, 1500), timeout: 30000 });
+            }, dataType: "json", complete: setTimeout(function() {self.startPolling()}, 3000), timeout: 30000 });
         }
     };
 
@@ -382,6 +382,8 @@ define(function (require, exports) {
             beforeSend: function () {
                 self.markStart(); 
                 this.prog = $('#prog').progressbar({ value: 0 });
+                self.polling = true;
+                self.startPolling();
             },
             error: function (jqXHR) {
                 if (jqXHR === null) {
