@@ -7,6 +7,7 @@ Installation
 The Installation of Postgresql-9.2 on Ubuntu 12.04 includes two main steps (Generelly, this installation should work for each version of Postgresql!). 
 
 
+
 *Step 1*
 
 Create an empty file called *pgdg.list* (you may have to do this as a root user). This file should be placed in the following path:
@@ -20,6 +21,7 @@ Now include the following line into the *pgdg.list* file.
 Instead of codename write the name of your system. If you do not know this, type
 
 	 lsb_release -c
+
 
 
 *Step 2*
@@ -40,7 +42,7 @@ and then you can install postgresql-9.2 and pgadmin3 (if needed)
 Configuration
 -------------
 
-**general**
+**General**
 
 *Step 1 – Change password*
 
@@ -59,16 +61,19 @@ To change your password, type
 and type your new password when asked for it.
 
 
+
 *Step 2 – Create a database* (for testing)
 
 If you want to create a db, posgresql has to know, which user you are. Therefore you have to type `-u username` in front of the command `createdb`. If you type the following, it means that you as the user *postgres* want to create a database wich is called *mydb*.
 
 	sudo -u postgres createdb mydb
 
-**for geonode**
+
+**For geonode**
 
 *Remark*: If you want to use the *postgis extension* for *postgresql* then you may follow the instructions from this site .... .
 If you do not need that (from the beginning) you can follow this instruction. You can even add the *posgis extension* after going through the following steps (see ... *Alternative*), but it is recommended to do the common version. 
+
 
 *Step 1 – Create a new user (geonode)*
 
@@ -77,6 +82,7 @@ In order to use postgresql in geonode, you have to create a new user *geonode*, 
 	sudo -u postgres createuser -P geonode
 
 This means, that you as the user *postgres* create a new user called *geonode*. `-P` indicates, that this user will have a password. 
+
 
 
 *Step 2 - Create new database*
