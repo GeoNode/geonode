@@ -11,7 +11,7 @@ In order to install Geonode 2.0 on Ubuntu 12.04 the following steps are required
  * clone geonode from github and install it in the virtual environment
  * compile geoserver and start the development servers 
 
-*Remark*: The following steps have to be executed in your terminal. The Steps 1 – 4a have to be done as a root user, therefore don´t forget to type sudo in front (as shown in the steps)!
+*Remark*: The following steps have to be executed in your terminal. The *Steps 1 – 4a* have to be done as a root user, therefore don´t forget to type sudo in front (as shown in the steps)!
 
 **Step 1**
 
@@ -48,27 +48,27 @@ Your third step is to add a new PPA repository, which is required for the static
 
 **Step 4** 
 
-Now a virtual environment has to be set up, in which Geonode will later be running. Virtualenv has already been installed during Step 2 (Python dependencies). Now you need to download and install a virutalenvwrapper (Step 4a), which has to be added to your environment (Step 4b). Before you can download and install Geonode, you have to set up the local virtual environment for Geonode (Step 4c).
+Now a virtual environment has to be set up, in which Geonode will later be running. Virtualenv has already been installed during *Step 2 (Python dependencies)*. Now you need to download and install a virutalenvwrapper (*Step 4a*), which has to be added to your environment (*Step 4b*). Before you can download and install Geonode, you have to set up the local virtual environment for Geonode (*Step 4c*).
 
-  Step 4a
+  *Step 4a*
 
         sudo pip install virtualenvwrapper
 
-  Step 4b
+  *Step 4b*
 
         export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
         export WORKON_HOME=~/.venvs
         source /usr/local/bin/virtualenvwrapper.sh
         export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
 
-  Step 4c
+  *Step 4c*
 
         mkvirtualenv geonode
         workon geonode
 
 **Step 5**
 
-To download the latest geonode version from github, the command clone is used.
+To download the latest geonode version from github, the command *clone* is used.
 
     git clone https://github.com/GeoNode/geonode.git
 
@@ -118,7 +118,7 @@ With every restart of your machine, you have to restart geonode as well! That me
 
   **Step b - Start the server**
   
-  In order to run the command paver start you now have to go back out from the *.venvs* folder and into the geonode folder, which is placed outside the virtualenv!
+  In order to run the command paver start you now have to go back out from the *.venvs* folder and into the *geonode* folder, which is placed outside the virtualenv!
 
     Therefore type
 
@@ -140,18 +140,7 @@ With every restart of your machine, you have to restart geonode as well! That me
 
     paver start
 
-Now you will be able to access ​http://localhost8000 again. Remember that you have to do these steps each time you restart your machine!!
+Now you are able to access ​http://localhost8000 again.
 
-Configuration Geonode 2.0
--------------------------
+*Remark*: Remember that you have to do these steps each time you restart your machine!!
 
-**Step 1 - Create a superuser**
-
-After succesfully installing Geonode 2.0 it is recommended to create a superuser. This one you will need to login into Geonode, upload data and create maps.
-For the creation of a superuser your virtual environment of geonode has to be active. How to do this is explained above in Step a - Activate geonode virtualenv.
-
-Now you have activated the virtual environment you can type the following into your terminal:
-
-    django-admin.py createsuperuser –settings=geonode.settings
-
-and you will be asked for a username, an email-adress and a password. 
