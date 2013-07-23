@@ -3863,7 +3863,7 @@ msgstr "Imprimer"
 
 #: templates/maps/view.html:104
 msgid "Google Earth"
-msgstr "Afficher dans Google Earth"
+msgstr "Google Earth"
 
 #: templates/maps/view.html:123
 msgid "Gazetteer"

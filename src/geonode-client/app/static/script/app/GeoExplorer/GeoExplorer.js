@@ -1628,13 +1628,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.mapPanel.add(moreButton);
 
         
-//        var languageSelect = {
-//        	xtype: 'box',
-//        	contentEl: 'langselect',
-//        	cls: "language-overlay-element"
-//        };
-//
-//        this.mapPanel.add(languageSelect);
+        var languageSelect = {
+        	xtype: 'box',
+        	contentEl: 'langselect',
+        	cls: "language-overlay-element"
+        };
+
+        this.mapPanel.add(languageSelect);
 
 
         var publishAction = new Ext.Action({
