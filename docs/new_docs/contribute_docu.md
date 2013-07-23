@@ -63,7 +63,7 @@ doesn't exist until now, one will be created.
 
   >> picture
 
-To create a new file in this folder just type *filename.md* into the box and hit enter. Now the same black box will appear where you can put your contents in. To save it, hit the green *Commit Changes* button at the bottom.
+To create a new file in this folder just type *filename.md* into the box and hit enter. Now a black box will appear where you can add your comments. To save it, hit the green *Commit New File* button at the bottom.
 
 A short example on how to manage this is given here http://i.stack.imgur.com/n3Wg3.gif.
 
