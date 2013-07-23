@@ -151,11 +151,12 @@ var init = function() {
                 editFeatureActionText: '<span class="x-btn-text">{% trans 'Edit Feature' %}</span>',
                 actionTarget:  {target: "paneltbar", index: 2},
                 toggleGroup: 'featureGroup'
-            }{% endif %},
+            }{% endif %}
+            {% if editmap %},
             {
             	ptype: "gxp_maprevisiontool",
             	actionTarget:   {target: "paneltbar", index: 20}
-            }
+            }{% endif %}
             ],
             proxy: "/proxy/?url=",
 

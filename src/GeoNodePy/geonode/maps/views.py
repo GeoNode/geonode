@@ -787,6 +787,7 @@ def view(request, mapid, snapshot=None):
         'DB_DATASTORE' : settings.DB_DATASTORE,
         'maptitle': map_obj.title,
         'urlsuffix': get_suffix_if_custom(map_obj),
+        'editmap': config['edit_map']
     }))
 
 
