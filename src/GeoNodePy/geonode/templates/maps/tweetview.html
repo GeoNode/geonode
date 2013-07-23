@@ -44,6 +44,7 @@
 {{ block.super }}
 
 <script type="text/javascript">
+{% autoescape off %}
 
 host = "http://{{GEOPS_IP}}";
 
@@ -185,7 +186,7 @@ OpenLayers.Layer.Grid.prototype.initSingleTile = function (bounds) {
 var app;
 var geopsip = "{{GEOPS_IP}}"
 var init = function () {
-    {% autoescape off %}
+
     var config = Ext.apply({
         tools:[
             {
@@ -251,7 +252,7 @@ app.on("saved", function (id) {
 var tweetFilterField = new Ext.form.TextField({
     id:'tweetFilter',
     name:'tweetFilter',
-    fieldLabel:"Filter Term",
+    fieldLabel:'{% trans "Filter Term" %}',
     labelAlign:'right',
     labelStyle:"text-align:right;",
     allowBlank:true,
@@ -261,7 +262,7 @@ var tweetFilterField = new Ext.form.TextField({
 
 var tweetDateStartField = new Ext.ux.form.DateTime({
     id:'tweetStartDate',
-    fieldLabel:'From',
+    fieldLabel:'{% trans "From" %}',
     labelAlign:'right',
     labelStyle:"font-weight:bold;text-align:right",
     allowBlank:false, timeFormat:'H:i:s', timeConfig:{
@@ -453,7 +454,7 @@ var forwardDate = new Ext.Button({
 
 
 var updateLayerBtn = new Ext.Button({
-    text:"Filter Tweets",
+    text:'{% trans "Filter Tweets" %}',
     handler:updateLayer
 });
 
@@ -483,7 +484,7 @@ var cqlOverlay = new Ext.FormPanel({
                             labelStyle:"text-align:right;",
                             items:[
                                 {xtype:"container", width:70, style:"align:right;padding-bottom:10px",
-                                    html:"<span> Filter Term:</span>"},
+                                    html:"<span> {% trans 'Filter Term:' %} </span>"},
                                 tweetFilterField,
                                 updateLayerBtn
                             ]
@@ -493,7 +494,7 @@ var cqlOverlay = new Ext.FormPanel({
                             items:[
                                 // rewindDate,
                                 {xtype:"container", width:70, style:"align:right",
-                                    html:"<span> From:</span>"},
+                                    html:"<span> {% trans 'From:' %}</span>"},
                                 tweetDateStartField
                                 //forwardDate
                             ]
@@ -505,7 +506,7 @@ var cqlOverlay = new Ext.FormPanel({
                             items:[
                                 // rewindDate,
                                 {xtype:"container", width:70, style:"align:right",
-                                    html:"<span> To: </span>"},
+                                    html:"<span> {% trans 'To:' %} </span>"},
                                 tweetDateEndField
                                 //forwardDate
                             ]
@@ -517,7 +518,7 @@ var cqlOverlay = new Ext.FormPanel({
                             xtype:"compositefield",
                             items:[
                                 {xtype:"container", width:70, style:"align:right",
-                                    html:"<span> Increment:  </span>"},
+                                    html:"<span> {% trans 'Increment:'  %}  </span>"},
                                 {
                                     xtype:"combo",
                                     width:75,
@@ -525,10 +526,10 @@ var cqlOverlay = new Ext.FormPanel({
                                     triggerAction:'all',
                                     mode:'local',
                                     store:[
-                                        [Date.DAY, 'Day'],
-                                        [Date.HOUR, 'Hour'],
-                                        [Date.MINUTE, 'Minute' ],
-                                        [Date.SECOND, 'Second']
+                                        [Date.DAY, '{% trans "Day"  %}'],
+                                        [Date.HOUR, '{% trans "Hour"  %}'],
+                                        [Date.MINUTE, '{% trans "Minute"  %}' ],
+                                        [Date.SECOND, '{% trans "Second" %}']
                                     ],
                                     value:Date.DAY,
                                     valueField:'myId',
@@ -542,7 +543,7 @@ var cqlOverlay = new Ext.FormPanel({
                             xtype:'box',
                             id:'dl_link_container',
                             hidden:true,
-                            autoEl:{tag:'a', id:"tweet_download_link", target:"dl", href:'', html:'Download Tweets'}
+                            autoEl:{tag:'a', id:"tweet_download_link", target:"dl", href:'', html:'{% trans "Download Tweets" %}'}
                         }
                     ]
                 },
@@ -557,7 +558,7 @@ var cqlOverlay = new Ext.FormPanel({
                             {
                                 xtype:"checkbox",
                                 id:"lsh_checkbox",
-                                boxLabel:"LSH Matching",
+                                boxLabel:"{% trans 'LSH Matching' %}",
                                 style:"display:inline-block;",
                                 checked:false,
                                 hidden: (geopsip !== "geops.csail.mit.edu:8080"),
@@ -568,7 +569,7 @@ var cqlOverlay = new Ext.FormPanel({
                         {
                             xtype:"checkbox",
                             id:"auto_max_checkbox",
-                            boxLabel:"Auto Max %",
+                            boxLabel:"{% trans 'Auto Max %' %}",
                             style:"display:inline-block;",
                             checked:true,
                             listeners:{
@@ -581,7 +582,7 @@ var cqlOverlay = new Ext.FormPanel({
                             width:100,
                             style:"display:inline-block;",
                             value:0.02,
-                            fieldLabel:"Max %",
+                            fieldLabel:"{% trans 'Max %' %}",
                             labelStyle:"text-align:right;",
                             minValue:0.01,
                             maxValue:20,
@@ -596,7 +597,7 @@ var cqlOverlay = new Ext.FormPanel({
                             id:"slider_blur",
                             value:"28",
                             width:100,
-                            fieldLabel:"Smoothing",
+                            fieldLabel:"{% trans 'Smoothing' %}",
                             labelStyle:"text-align:right;",
                             minValue:1,
                             maxValue:40,
@@ -607,7 +608,7 @@ var cqlOverlay = new Ext.FormPanel({
                             id:"slider_min",
                             width:100,
                             value:"30",
-                            fieldLabel:"Min Tweets/sq km",
+                            fieldLabel:"{% trans 'Min Tweets/sq km' %}",
                             labelStyle:"text-align:right;",
                             minValue:1,
                             maxValue:1000,
@@ -638,7 +639,7 @@ var cqlWindow = new Ext.Window({
     closable:false,
     constrain:true,
     monitorResize:true,
-    title:gettext('Tweet Filter'),
+    title:'{% trans "Tweet Filter" %}',
     items:[cqlOverlay]
 });
 
@@ -656,11 +657,11 @@ var graphWindow = new Ext.Window({
     constrain:true,
     monitorResize:true,
     collapsed: true,
-    title:gettext('Tweet Graph'),
+    title:'{% trans "Tweet Graph" %}',
     items:[graphPanel]
 });
 
-var tweetConfig = {title:"Twitter Trends", source:"local", group:"Twitter", name:"heatmap",
+var tweetConfig = {title:"{% trans 'Twitter Trends' %}", source:"local", group:"Twitter", name:"heatmap",
     url:"http://{{GEOPS_IP}}", srs:"EPSG:900913", format:"image/png", bbox:[-180, -90, 180, 90],
     singleTile:true, tiled:false, ratio:1, opacity:1, visibility:true, queryable:true
 };
@@ -672,7 +673,7 @@ var feedSource = Ext.ComponentMgr.createPlugin(
 var tweetPointRecord = feedSource.createLazyLayerRecord(tweetConfig);
 tweetPointRecord.set("name", "point");
 tweetPointRecord.setLayer(new OpenLayers.Layer.WMS(
-        "Tweets",
+        "{% trans 'Tweets' %}",
         tweetConfig.url, {
             layers: Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point",
             transparent:"transparent" in tweetConfig ? tweetConfig.transparent : true,
@@ -708,7 +709,7 @@ tweetPointRecord.getLayer().events.register("loadend", tweetPointRecord.getLayer
 tweetConfig["queryable"] = false;
 var tweetHeatRecord = feedSource.createLazyLayerRecord(tweetConfig);
 tweetHeatRecord.setLayer(new OpenLayers.Layer.WMS(
-        "Tweet Heatmap",
+        "{% trans 'Tweet Heatmap' %}",
         tweetConfig.url, {
             layers: Ext.getCmp("lsh_checkbox").checked ? "lsh_heatmap" : 'heatmap',
             transparent:"transparent" in tweetConfig ? tweetConfig.transparent : true,
@@ -795,7 +796,7 @@ app.on("ready", function () {
     updateLayer();
 
     cqlWindow.show();
-    cqlWindow.alignTo(document, 'br-br?');
+    cqlWindow.alignTo(document, 'b-b?');
 
 
     app.mapPanel.map.events.register("moveend", app.mapPanel.map, function (e) {
@@ -813,11 +814,10 @@ app.on("ready", function () {
 });
 
 
-{% endautoescape %}
 }
 
 window.onload = init;
-
+{% endautoescape %}
 </script>
 
 {% endblock %}

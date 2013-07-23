@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-25 16:22-0400\n"
+"POT-Creation-Date: 2013-07-08 20:58-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,61 +21,61 @@ msgstr ""
 #: media/static/script/GeoNode.js:33 media/static/script/GeoNode.js.c:76
 #: static/geonode/script/GeoNode.js:33 static/geonode/script/GeoNode.js.c:76
 msgid "Add user..."
-msgstr ""
+msgstr "Ajouter un utilisateur"
 
 #: media/static/script/GeoNode.js:37 media/static/script/GeoNode.js.c:64
 #: static/geonode/script/GeoNode.js:37 static/geonode/script/GeoNode.js.c:64
 msgid "Anyone"
-msgstr ""
+msgstr "Tout le monde"
 
 #: media/static/script/GeoNode.js:37 media/static/script/GeoNode.js.c:39
 #: media/static/script/GeoNode.js:64 media/static/script/GeoNode.js.c:66
 #: static/geonode/script/GeoNode.js:37 static/geonode/script/GeoNode.js.c:39
 #: static/geonode/script/GeoNode.js:64 static/geonode/script/GeoNode.js.c:66
 msgid "Any registered user"
-msgstr ""
+msgstr "Tout utilisateur enregistré"
 
 #: media/static/script/GeoNode.js:37 media/static/script/GeoNode.js.c:39
 #: media/static/script/GeoNode.js:64 static/geonode/script/GeoNode.js:37
 #: static/geonode/script/GeoNode.js.c:39 static/geonode/script/GeoNode.js:64
 msgid "Only users who can edit"
-msgstr ""
+msgstr "Seulement les utilisateurs autorisés à rediger"
 
 #: media/static/script/GeoNode.js:38 static/geonode/script/GeoNode.js:38
 msgid "Who can view or download this?"
-msgstr ""
+msgstr "Qui peut le visualiser ou le télécharger?"
 
 #: media/static/script/GeoNode.js:39 static/geonode/script/GeoNode.js:39
 msgid "Who can edit this?"
-msgstr ""
+msgstr "Qui peut le rediger?"
 
 #: media/static/script/GeoNode.js:41 static/geonode/script/GeoNode.js:41
 msgid "Who can manage and edit this?"
-msgstr ""
+msgstr "Qui peut le gérer et rediger?"
 
 #: media/static/script/GeoNode.js:64 static/geonode/script/GeoNode.js:64
 msgid "Who can view and download this data?"
-msgstr ""
+msgstr "Qui peut visualiser et télécharger ces données?"
 
 #: media/static/script/GeoNode.js:65 static/geonode/script/GeoNode.js:65
 msgid "Who can edit this data?"
-msgstr ""
+msgstr "Qui peut rediger ces données?"
 
 #: media/static/script/GeoNode.js:66 static/geonode/script/GeoNode.js:66
 msgid "Only the following users or groups:"
-msgstr ""
+msgstr "Que les utilisateurs/groupes suivants:"
 
 #: media/static/script/GeoNode.js:67 static/geonode/script/GeoNode.js:67
 msgid "Who can manage and edit this data?"
-msgstr ""
+msgstr "Qui peut gérer et rediger ces données?"
 
 #: templates/lang.js:9 templates/lang.js.c:13
 msgid "Add Layers"
-msgstr "Ajouter une couche"
+msgstr "Ajouter des couches"
 
 #: templates/lang.js:10
 msgid "Add ArcGIS REST Server"
-msgstr ""
+msgstr "Ajouter un serveur ArcGIS REST"
 
 #: templates/lang.js:11
 msgid "Area"
@@ -107,7 +107,7 @@ msgstr "Détails..."
 
 #: templates/lang.js:22
 msgid "Google Earth"
-msgstr ""
+msgstr "Google Earth"
 
 #: templates/lang.js:23 templates/lang.js.c:140
 msgid "Height"
@@ -115,11 +115,11 @@ msgstr "Hauteur"
 
 #: templates/lang.js:24
 msgid "Help"
-msgstr ""
+msgstr "Aide"
 
 #: templates/lang.js:25
 msgid "About"
-msgstr ""
+msgstr "A propos de"
 
 #: templates/lang.js:26 templates/lang.js.c:141
 msgid "Large"
@@ -128,7 +128,7 @@ msgstr "Large"
 #: templates/lang.js:27
 #, fuzzy
 msgid "Add another server"
-msgstr "ou ajouter un nouveau serveur."
+msgstr "Ajouter un autre serveur."
 
 #: templates/lang.js:28
 msgid "Map Layers"
@@ -140,7 +140,7 @@ msgstr "Visualiser les données disponibles de :"
 
 #: templates/lang.js:30
 msgid "Upload your own data"
-msgstr ""
+msgstr "Télécharger vos données"
 
 #: templates/lang.js:32
 msgid "Data"
@@ -168,15 +168,17 @@ msgstr "Dimensions de la carte"
 
 #: templates/lang.js:38
 msgid "Warning"
-msgstr ""
+msgstr "Avertissement"
 
 #: templates/lang.js:39
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "You now have %n layers in your map.  With more than %max layers you may "
 "experience problems with layer ordering, info balloon display, and general "
 "performance."
 msgstr ""
+"Vous avez maintenant %n couches dans votre carte. Avec plus de %max vous auriez "
+"peut-être des problèmes de performance (ordre des couches, affichage des informations, etc.)."
 
 #: templates/lang.js:40
 msgid "Measure"
@@ -189,15 +191,15 @@ msgstr "A propos de cette carte"
 
 #: templates/lang.js:42
 msgid "Abstract (brief description)"
-msgstr ""
+msgstr "Résumé"
 
 #: templates/lang.js:43
 msgid "Keywords (for Picasa and YouTube overlays)"
-msgstr ""
+msgstr "Mots-clés (pour Picasa et Youtube)"
 
 #: templates/lang.js:44
 msgid "Introduction (tell visitors more about your map view)"
-msgstr ""
+msgstr "Introduction (donnez aux lecteurs plus d'informations à propos de votre carte)"
 
 #: templates/lang.js:45 templates/lang.js.c:116 templates/lang.js.c:182
 msgid "Contact"
@@ -226,7 +228,7 @@ msgstr "Titre"
 
 #: templates/lang.js:51
 msgid "URL:"
-msgstr ""
+msgstr "URL"
 
 #: templates/lang.js:52 templates/lang.js.c:143
 msgid "Mini"
@@ -234,7 +236,7 @@ msgstr "Mini"
 
 #: templates/lang.js:53
 msgid "Pan Map"
-msgstr ""
+msgstr "Panoramique de la carte"
 
 #: templates/lang.js:54
 msgid "Zoom to Next Extent"
@@ -271,11 +273,11 @@ msgstr "Propriétés"
 #: templates/lang.js:63
 #, fuzzy
 msgid "Link to Map"
-msgstr "Imprimer la carte"
+msgstr "Créer un lien à la carte"
 
 #: templates/lang.js:64
 msgid "Link"
-msgstr ""
+msgstr "Lien"
 
 #: templates/lang.js:65 templates/lang.js.c:66
 msgid "Remove Layer"
@@ -283,11 +285,11 @@ msgstr "Supprimer la couche"
 
 #: templates/lang.js:67
 msgid "Revisions"
-msgstr ""
+msgstr "Révisions"
 
 #: templates/lang.js:68
 msgid "Sorry, your map could not be saved."
-msgstr "Désolé, votre carte ne peut être enregistrée."
+msgstr "Désolé, votre carte ne peut pas être enregistrée."
 
 #: templates/lang.js:69
 msgid "Error While Saving"
@@ -302,13 +304,12 @@ msgid "You must be logged in to save this map."
 msgstr "Vous devez être connecté pour enregistrer cette carte."
 
 #: templates/lang.js:73
-#, fuzzy
 msgid "Share Layer"
-msgstr ""
+msgstr "Partager cette couche"
 
 #: templates/lang.js:74
 msgid "Share Map"
-msgstr ""
+msgstr "Partager cette carte"
 
 #: templates/lang.js:75 templates/lang.js.c:147
 msgid "Small"
@@ -318,39 +319,39 @@ msgstr "Petit"
 #, fuzzy
 msgid ""
 "Error contacting server.\n"
-" Please check the url and try again."
+" Please check the URL and try again."
 msgstr ""
 "Erreur à la connexion au serveur.\n"
-" Merci de vérifier l'url et réessayer."
+" Merci de vérifier l'URL et réessayer."
 
 #: templates/lang.js:77
 msgid "Street View"
-msgstr ""
+msgstr "Street View"
 
 #: templates/lang.js:78
 msgid "Add New Category"
-msgstr ""
+msgstr "Ajouuter une nouvelle catégorie"
 
 #: templates/lang.js:79
 msgid "Add a new layer category"
-msgstr ""
+msgstr "Ajouter une nouvelle catégorie des couches"
 
 #: templates/lang.js:80
 msgid "Rename Category"
-msgstr ""
+msgstr "Modifier le nom d'une catégorie"
 
 #: templates/lang.js:81
 msgid "Rename this category"
-msgstr ""
+msgstr "Modifier le nom de cette catégorie"
 
 #: templates/lang.js:82
 #, fuzzy
 msgid "Remove Category"
-msgstr "Supprimer la couche"
+msgstr "Supprimer la catégorie"
 
 #: templates/lang.js:83
 msgid "Remove this category and layers"
-msgstr ""
+msgstr "Supprimer cette catégorie et les couches"
 
 #: templates/lang.js:84
 msgid "Layer Properties"
@@ -362,11 +363,11 @@ msgstr "Modifier le format et le style de la couche"
 
 #: templates/lang.js:86
 msgid "Edit Styles"
-msgstr "Éditer les styles"
+msgstr "Modifier les styles"
 
 #: templates/lang.js:87
 msgid "Edit layer styles"
-msgstr "Éditer les styles de la couche"
+msgstr "Modifier les styles de la couche"
 
 #: templates/lang.js:88
 msgid "Switch to Google Earth 3D Viewer"
@@ -378,7 +379,7 @@ msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
 msgstr ""
-"Cette carte que vous essayez de charger n'existe pas. Créez une nouvelle "
+"La carte que vous essayez de charger n'existe pas. Créez une nouvelle "
 "carte à la place."
 
 #: templates/lang.js:90
@@ -403,32 +404,32 @@ msgstr "Niveau de zoom"
 
 #: templates/lang.js:95
 msgid "Zoom Level"
-msgstr "Niveau de Soom"
+msgstr "Niveau de zoom"
 
 #: templates/lang.js:96
 msgid "Zoom to Layer Extent"
-msgstr "Zoomer sur la Couche"
+msgstr "Zoomer sur la zone de la couche"
 
 #: templates/lang.js:97
 #, fuzzy
 msgid "Zoom to Original Map Extent"
-msgstr "Zoomer sur la Zone Visible"
+msgstr "Zoomer sur la zone originale de la couche"
 
 #: templates/lang.js:98
 msgid "Picasa"
-msgstr ""
+msgstr "Picasa"
 
 #: templates/lang.js:99
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #: templates/lang.js:100
 msgid "Harvard Geospatial Library"
-msgstr ""
+msgstr "Bibliothèque Géospatiale d'Harvard"
 
 #: templates/lang.js:101
 msgid "More..."
-msgstr ""
+msgstr "Plus..."
 
 #: templates/lang.js:107
 msgid "Zoom Level {zoom}"
@@ -464,7 +465,7 @@ msgstr "Nom"
 
 #: templates/lang.js:127
 msgid "Queryable"
-msgstr ""
+msgstr "Cherchable (fenêtre d'interrogation)"
 
 #: templates/lang.js:134
 msgid "No background"
@@ -485,7 +486,7 @@ msgstr ""
 
 #: templates/lang.js:154
 msgid "Category:"
-msgstr ""
+msgstr "Catégorie"
 
 #: templates/lang.js:155 templates/lang.js.c:223
 msgid "Abstract:"
@@ -497,7 +498,7 @@ msgstr "Aucune information n'est disponible pour cette couche."
 
 #: templates/lang.js:157 templates/lang.js.c:226
 msgid "Provided by:"
-msgstr "Généré par :"
+msgstr "Fourni par :"
 
 #: templates/lang.js:158 templates/lang.js.c:227
 msgid "Download:"
@@ -537,7 +538,7 @@ msgstr "Inclure la légende ?"
 
 #: templates/lang.js:173
 msgid "Enter comments here."
-msgstr "Entrez ici vos commentaires."
+msgstr "Entrez vos commentaires ici."
 
 #: templates/lang.js:174
 msgid "Creating PDF..."
@@ -545,7 +546,7 @@ msgstr "PDF en cours de création..."
 
 #: templates/lang.js:183
 msgid "Last Modified"
-msgstr "Date de Modification"
+msgstr "Dernière Modification"
 
 #: templates/lang.js:186 templates/lang.js.c:207
 msgid "Prev"
@@ -605,20 +606,20 @@ msgstr "Chargement..."
 
 #: templates/lang.js:215
 msgid "You do not have permission to view this data"
-msgstr "Vous n'avez pas les droits pour visualiser ces données"
+msgstr "Vous n'avez pas d'autorisation pour visualiser ces données"
 
 #: templates/lang.js:216
 msgid "This data is stored on a remote server"
-msgstr "Ces données sont stockées sur un serveur distant"
+msgstr "Ces données sont stockées sur un serveur à distance"
 
 #: templates/lang.js:221
 msgid "Category"
-msgstr ""
+msgstr "Catégorie"
 
 #: templates/lang.js:222
 #, fuzzy
 msgid "No category is provided for this layer."
-msgstr "Aucun résumé n'est disponible pour cette couche."
+msgstr "Aucun catégorie n'est disponible pour cette couche."
 
 #: templates/lang.js:224
 msgid "No abstract is provided for this layer."
@@ -626,11 +627,12 @@ msgstr "Aucun résumé n'est disponible pour cette couche."
 
 #: templates/lang.js:228
 msgid "No download URLs are definied for this layer."
-msgstr "Aucune URLs de téléchargement n'est définie pour cette couche."
+msgstr "Aucune URL de téléchargement n'est définie pour cette couche."
 
 #: templates/lang.js:238
 msgid "Selected Layers"
 msgstr "Couches Sélectionnées"
+
 
 #: templates/lang.js:239
 msgid "No Layers Selected"
@@ -647,7 +649,7 @@ msgstr "Tout Réinitialiser"
 #: templates/lang.js:243
 #, fuzzy
 msgid "Add Selected Layers"
-msgstr "Couches Sélectionnées"
+msgstr "Ajouter les couches sélectionnées"
 
 #: templates/lang.js:249
 msgid "Operation Failed"
@@ -671,6 +673,9 @@ msgid ""
 "map extent, press Cancel, \t\t\t then use your browser's print button when "
 "you are ready"
 msgstr ""
+"Cliquez sur OK si vous souhaitez imprimer cette page telle qu'elle est."
+"\t\t\t Si vous souhaitez changer la zone de la carte, cliquez sur Annuler"
+"\t\t\t et utiliser le bouton Imprimer de votre navigateur quand vous êtes prêt. "
 
 #~ msgid "Get Feature Info"
 #~ msgstr "Obtenir les informations"

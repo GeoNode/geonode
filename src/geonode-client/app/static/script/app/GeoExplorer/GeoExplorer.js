@@ -1636,6 +1636,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 //
 //        this.mapPanel.add(languageSelect);
 
+
         var publishAction = new Ext.Action({
             tooltip: this.publishActionText,
             handler: this.makeExportDialog,
