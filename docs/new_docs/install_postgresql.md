@@ -18,10 +18,11 @@ Now include the following line into the *pgdg.list* file.
 
 	deb http://apt.postgresql.org/pub/repos/apt/codename-pgdg main
 	
-Instead of codename write the name of your system. If you do not know this, type
+Instead of *codename* write the name of your system. If you do not know this, type
 
 	 lsb_release -c
 
+This will return you the name of your system.
 
 
 *Step 2*
@@ -72,7 +73,7 @@ If you want to create a db, posgresql has to know, which user you are. Therefore
 **For geonode**
 
 *Remark*: If you want to use the *postgis extension* for *postgresql* then you may follow the instructions from this site .... .
-If you do not need that (from the beginning) you can follow this instruction. You can even add the *posgis extension* after going through the following steps (see ... *Alternative*), but it is recommended to do the common version. 
+If you do not need that (from the beginning) you can follow this instruction. You can even add the *posgis extension* later following the steps from the section *Alternative*. Anyway it is recommended to do the common version. 
 
 
 *Step 1 – Create a new user (geonode)*
