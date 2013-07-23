@@ -50,6 +50,18 @@ By hitting the *preview* button you will be able to see how your text it is goin
 In order to tell them that you have made some changes you have to send a *pull request* (as descriped below).
 
 
+**Create a new branch**
+
+If you are planning bigger changes on the structure of the documentation it is recommended to create a new branch and make your edits here. 
+A new branch can be created by clicking on the button *branch: master* as you can see in the following picture. 
+
+>> picture
+
+Just type the name of your new branch, hit enter and your branch will be created.
+
+*Remark*: Before you start editing make sure that you are in the right branch!
+
+
 **Create a new folder/file**
 
 If you want to add a completely new issue to the documentation, you have to create a new file (and maybe even folder).
@@ -66,17 +78,6 @@ doesn't exist until now, one will be created.
 To create a new file in this folder just type *filename.md* into the box and hit enter. Now a black box will appear where you can add your comments. To save it, hit the green *Commit New File* button at the bottom.
 
 A short example on how to manage this is given here http://i.stack.imgur.com/n3Wg3.gif.
-
-**Create a new branch**
-
-If you are planning bigger changes on the structure of the documentation it is recommended to create a new branch and make your edits here. 
-A new branch can be created by clicking on the button *branch: master* as you can see in the following picture. 
-
->> picture
-
-Just type the name of your new branch, hit enter and your branch will be created.
-
-*Remark*: Before you start editing make sure that you are in the right branch!
 
 
 
