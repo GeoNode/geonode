@@ -126,9 +126,10 @@ changes not present in your local repository will be pulled in without modifying
 
 **Add folder with images**
 
-.. note:: If you've already made some changes and commits to your repository on the web (during cloning the repository and now), you have to run the following command, in order to get the repository on your local machine updated::
+*Remark*:If you've already made some changes and commits to your repository on the web (during cloning the repository and now), you have to run the following command, in order to get the repository on your local machine updated::
 
       git fetch origin
+      
       git merge
       
 Or instead you could use::
