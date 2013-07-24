@@ -11,11 +11,11 @@ In order to be able to contribute to GeoNode documentation the following steps h
 * Edit the files in the */docs* directory
 * Make pull requests
 
-All these things can generally be done on the web you won't need to download something! But if you want to add images to your documentation you will have to do some more inital steps, because this can't
-be done on the web. To learn about how images can be added to your documentaion and which additional steps have to be done, read this _link.
+All these things can generally be done on the web, you won't need to download anything. But if you want to add images to your documentation you will have to do some more inital steps, because this can't
+be done on the web. To learn about how images can be added to your documentaion and which additional steps have to be done, read the section *Add images*.
 
 
-In the following part the steps will be explained more detailed.
+In the following part the general steps will be explained more detailed.
 
 Create an account on GitHub
 ---------------------------
@@ -87,7 +87,7 @@ Now a black box will appear where you can add your comments. To save the file, h
 Add images
 ----------
 
-This section is about about adding images to your documentation. Providing that you've read and done the steps described above
+This section is about adding images to your documentation. Providing that you've read and done the steps described above
 you can now follow those further steps.
 
 **Install and set up Git**
@@ -126,7 +126,9 @@ changes not present in your local repository will be pulled in without modifying
 
 **Add folder with images**
 
-*Remark*:If you've already made some changes and commits to your repository on the web (during cloning the repository and now), you have to run the following command, in order to get the repository on your local machine updated::
+.. warning:: If you've already made some changes and commits to your repository on the web (during cloning the repository and now), you have to update your repository on the local machine!
+
+Therefore you have to run the following commands::
 
       git fetch origin
       
