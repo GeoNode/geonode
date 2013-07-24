@@ -12,8 +12,7 @@ In order to be able to contribute to GeoNode documentation the following steps h
 * Make pull requests
 
 All these things can generally be done on the web you won't need to download something! But if you want to add images to your documentation you will have to do some more inital steps, because this can't
-be done on the web. So when you are sure you just want to add some pieces of information and won't need images, just go ahead with this documentation.
-To learn about how images can be added to your documentaion and what steps have to be done first, read this _link.
+be done on the web. To learn about how images can be added to your documentaion and which additional steps have to be done, read this _link.
 
 
 In the following part the steps will be explained more detailed.
@@ -84,13 +83,12 @@ A short example on how to manage this is given here http://i.stack.imgur.com/n3W
 
 Now a black box will appear where you can add your comments. To save the file, hit the green *Commit New File* button at the bottom.
 
-**Add images**
-
-If you want to add some images to your documentation, you have to do some more initial steps. 
-
 
 Add images
 ----------
+
+This section is about about adding images to your documentation. Providing that you've read and done the steps described above
+you can now follow those further steps.
 
 **Install and set up Git**
 
@@ -103,9 +101,11 @@ To be able to work on your local machine as well, you have to install *git*. To 
 
 Before you go further you should do some setup steps (can be found here: https://help.github.com/articles/set-up-git).
 
-**Fork and clone repository**
-The next step is to fork the geonode repository. To do so, follow the instructions from _link. and return back if ready.
-Now you should have successfully forked the geonode repository. But until now, it only exists on the web! To get your forked repository on to your machine, you have to *clone* it.
+**Clone repository**
+
+We assume you have already forked the geonode repository. If not, please do so following _link and return back if ready.
+
+Until now your repository only exists on the web! To get your forked repository on to your machine, you have to *clone* it.
 To do so, open a terminal, go to the folder where you want the projet to be and type::
 
       git clone https://github.com/GeoNode/geonode.git my_geonode
@@ -126,7 +126,7 @@ changes not present in your local repository will be pulled in without modifying
 
 **Add folder with images**
 
-.. note:: If you've already made some changes and commits to your repository on the web (during forking the repository and now), you have to run the following command, in order to get the repository on your local machine updated::
+.. note:: If you've already made some changes and commits to your repository on the web (during cloning the repository and now), you have to run the following command, in order to get the repository on your local machine updated::
 
       git fetch origin
       git merge
@@ -138,6 +138,15 @@ Or instead you could use::
 Your repository should now be up to date!
 For more information on those commands go to http://git-scm.com/docs.
 
+*Remark*: If you've created a new branch, and you want to add the new folder to this branch, make sure you are working on this branch!
+Typing::
+      
+      git status
+      
+will show you the current branch. To change this you have to run this command (*your_branch* is the name of the branch you want to change in)::
+
+      git checkout your_branch
+      
 Now you can easily add a new folder containing images to your repository. Go to the repository on your local machine and decide where you want your new folder containing the images to be (e.g in *docs_example*).
 There create a new folder (e.g. *images*) and add the images manually. Once you've done this, open a terminal and direct to to the folder *docs_example*. 
 To add the folder *images* including all content to the repository, type::
