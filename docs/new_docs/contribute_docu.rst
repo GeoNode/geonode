@@ -26,7 +26,7 @@ Fork a repository
 
 In order to make changes to these files, you first have to fork this repository. On the top of the website you can see the following buttons:
 
-   >> picture
+.. image:: img/fork_repo.PNG
 
 Click on the button *Fork* at the top right and the *geonode* repository will be forked. You should now be able to see your repository *your_name/geonode*.
 If you want to read more about how to fork a repository go to https://help.github.com/articles/fork-a-repo.
@@ -37,15 +37,17 @@ Edit files
 
 To make some changes to already exiting files or to create new files, go to your GitHub account. Under *repositories* you will find the geonode repository that you have forked. Click on it and you will again see all the folders and files GeoNode needs. 
 
-  >> picture
+.. image:: img/repository_geonode.PNG
 
 Click on the folder *docs* and search for the file that you want to edit. If you found it, click on it and you will be able to see the content of this file.
 
-	>> picture
+.. image:: img/index_txt.PNG
 
 To make changes to this file, hit the button *edit* on the right top. You can now make your changes or add something to the existing content. 
 
-The documentation is written in *reStructeredText*, a lightweight markup language. To learn how to use it you should read the documentation that can be found here http://docutils.sourceforge.net/docs/user/rst/quickref.html.
+.. image:: img/index_edit.PNG
+
+As you can see now, the documentation is written in *reStructeredText*, a lightweight markup language. To learn how to use it you should read the documentation that can be found here http://docutils.sourceforge.net/docs/user/rst/quickref.html.
 By hitting the *preview* button you will be able to see how your text it is going to look like on the web. To save your changes, click on *Commit Changes* at the bottom of the site. Now you've saved the changes in your repository, but the original geonode repository still doesn't know anything about that!
 In order to tell them that you have made some changes you have to send a *pull request* (as descriped below).
 
@@ -53,11 +55,11 @@ In order to tell them that you have made some changes you have to send a *pull r
 **Create a new branch**
 
 If you are planning bigger changes on the structure of the documentation it is recommended to create a new branch and make your edits here. 
-A new branch can be created by clicking on the button *branch: master* as you can see in the following picture. 
+A new branch can be created by clicking on the button *branch: master* as shown here. 
 
->> picture
+.. image:: img/create_branch_example.PNG
 
-Just type the name of your new branch, hit enter and your branch will be created.
+Just type the name of your new branch, hit enter and your branch will be created. To learn more about branches it is recommended to take a look here http://git-scm.com/book/en/Git-Branching-What-a-Branch-Is.
 
 *Remark*: Before you start editing make sure that you are in the right branch!
 
