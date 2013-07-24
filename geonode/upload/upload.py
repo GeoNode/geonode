@@ -461,8 +461,19 @@ def final_step(upload_session, user):
     # @todo see above in save_step, regarding computed unique name
     name = import_session.tasks[0].items[0].layer.name
 
+    # keep checking to see if geoserver has the layer. 
+    # it can take significantly longer than a few of seconds 
+    # to upload data to geoserver in some cases: slower/busy server, larger 
+    # data, etc
     import time
-    time.sleep(4)
+    wait_counter = 0
+    while wait_counter < 30:
+        wait_counter += 1
+        time.sleep(2)
+        publishing = cat.get_layer(name)
+        if publishing is not None:
+            break
+
     _log('Creating style for [%s]', name)
     publishing = cat.get_layer(name)
     if publishing is None:
