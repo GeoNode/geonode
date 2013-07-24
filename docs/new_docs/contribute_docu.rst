@@ -70,16 +70,16 @@ If you want to add a completely new issue to the documentation, you have to crea
 As you will see there is no possibility to create an empty folder. You always have to create a new file as well! This can be 
 done here
 
-  >> picture
+.. image:: img/create_file.png
 
-If you click on *create file* you can first subdirect to another folder by typing the name followed by '/'. If this folder
-doesn't exist until now, one will be created.
-
-  >> picture
-
-To create a new file in this folder just type *filename.md* into the box and hit enter. Now a black box will appear where you can add your comments. To save it, hit the green *Commit New File* button at the bottom.
-
+If you click on *create new file here* you can first subdirect to another folder by typing the *foldername* followed by /. If this folder
+doesn't exist until now, one will be created. To create a new file in this folder just type *filename.rst* into the box and hit enter.
 A short example on how to manage this is given here http://i.stack.imgur.com/n3Wg3.gif.
+
+.. image:: img/create_file_test.PNG
+
+Now a black box will appear where you can add your comments. To save the file, hit the green *Commit New File* button at the bottom.
+
 
 
 
@@ -87,3 +87,5 @@ Pull Request
 ------------
 
 If you are done with your changes, you can send a pull request. This means, that you let the core developers know that you have done some changes and you would like them to review. They can hit accept and your changes will go in to the main line.
+
+.. image:: img/pull_request.PNG
