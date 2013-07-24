@@ -15,7 +15,7 @@
     "jquery-waypoints": "1.1.7",
     "wysihtml5": "0.3.0",
     "qunit": "1.11.0",
-    "jquery-ui": "latest",
+    "jquery-ui": "1.8.23",
     "bootstrap-datepicker": "2edb8c5cc4d1aacf8a5d8a6fbe5bf8775f9e9824",
     "hogan": "d7ab5575bbf657b18ee80557a102769c9e2225c7",
     "raty": "8e7798a1d4c550309ebb772e28abd9d47426736c",
@@ -36,7 +36,7 @@
     "sources": {
       "requirejs": ".components/requirejs/require.js",
       "jquery-ui": [
-        ".components/jquery-ui/ui/jquery-ui.js",
+        ".components/jquery-ui/jquery-ui.js",
         ".components/jquery-ui/themes/cupertino/jquery-ui.css"
       ],
       "raty": [
