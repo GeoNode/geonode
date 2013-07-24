@@ -121,8 +121,6 @@ def setup_static(options):
         sh('bower-installer')
     with pushd('geonode/static/geonode'):
         sh('make')
-    # HACK Remove this recursive symlink manually
-    sh('rm geonode/static/.components/jquery-timeago/public')
 
 @task
 @needs([
