@@ -91,6 +91,9 @@ If you want to add some images to your documentation, you have to do some more i
 
 Add images
 ----------
+
+**Install and set up Git**
+
 To add images to your documentation you have to get your repository onto your local machine. So far you only had your repository on the web.
 To be able to work on your local machine as well, you have to install *git*. To do so, type::
 
@@ -100,6 +103,7 @@ To be able to work on your local machine as well, you have to install *git*. To 
 
 Before you go further you should do some setup steps (can be found here: https://help.github.com/articles/set-up-git).
 
+**Fork and clone repository**
 The next step is to fork the geonode repository. To do so, follow the instructions from _link. and return back if ready.
 Now you should have successfully forked the geonode repository. But until now, it only exists on the web! To get your forked repository on to your machine, you have to *clone* it.
 To do so, open a terminal, go to the folder where you want the projet to be and type::
@@ -120,10 +124,49 @@ By typing::
        
 changes not present in your local repository will be pulled in without modifying your files.
 
+**Add folder with images**
+
+.. note:: If you've already made some changes and commits to your repository on the web (during forking the repository and now), you have to run the following command, in order to get the repository on your local machine updated::
+
+      git fetch origin
+      git merge
+      
+Or instead you could use::
+
+      git pull
+
+Your repository should now be up to date!
+For more information on those commands go to http://git-scm.com/docs.
+
+Now you can easily add a new folder containing images to your repository. Go to the repository on your local machine and decide where you want your new folder containing the images to be (e.g in *docs_example*).
+There create a new folder (e.g. *images*) and add the images manually. Once you've done this, open a terminal and direct to to the folder *docs_example*. 
+To add the folder *images* including all content to the repository, type::
+
+      git add images
+
+If this command doesn't work, check your path, maybe it is incorrect!
+
+*Remark*: In order to commit and push the folder, it must not be emtpy!
+
+The next step is to commit the folder/files::
+
+      git commit -m 'Message'
+      
+Instead of 'Message' write something like 'add images'.
+To push the files to the repository type::
+
+      git push
+
+Now you are able to see the folder on the web as well!
+
+**Include images**
+
+To include the images in to your documentation, you have to add the following lines to your file::
+
+      .. image:: images/test_img.png
 
 
-
-
+.. note:: Be aware that everytime you commit something on the web, you have to make *git pull* on your machine, to keep it up to date!
 
 Pull Request
 ------------
