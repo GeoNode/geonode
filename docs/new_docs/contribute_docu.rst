@@ -11,6 +11,10 @@ In order to be able to contribute to GeoNode documentation the following steps h
 * Edit the files in the */docs* directory
 * Make pull requests
 
+All these things can generally be done on the web you won't need to download something! But if you want to add images to your documentation you will have to do some more inital steps, because this can't
+be done on the web. So when you are sure you just want to add some pieces of information and won't need images, just go ahead with this documentation.
+To learn about how images can be added to your documentaion and what steps have to be done first, read this _link.
+
 
 In the following part the steps will be explained more detailed.
 
@@ -80,6 +84,44 @@ A short example on how to manage this is given here http://i.stack.imgur.com/n3W
 
 Now a black box will appear where you can add your comments. To save the file, hit the green *Commit New File* button at the bottom.
 
+**Add images**
+
+If you want to add some images to your documentation, you have to do some more initial steps. 
+
+
+Add images
+----------
+To add images to your documentation you have to get your repository onto your local machine. So far you only had your repository on the web.
+To be able to work on your local machine as well, you have to install *git*. To do so, type::
+
+      sudo apt-get install git
+      
+(Usually git has already been installed during geonode installation)
+
+Before you go further you should do some setup steps (can be found here: https://help.github.com/articles/set-up-git).
+
+The next step is to fork the geonode repository. To do so, follow the instructions from _link. and return back if ready.
+Now you should have successfully forked the geonode repository. But until now, it only exists on the web! To get your forked repository on to your machine, you have to *clone* it.
+To do so, open a terminal, go to the folder where you want the projet to be and type::
+
+      git clone https://github.com/GeoNode/geonode.git my_geonode
+
+Now change the active directory to the newly cloned geonode directory using::
+
+      cd my_geonode
+       
+To keep track of the original repository (the geonode repository where you forked from), you need to add a remote named *upstream*. Therefore type::
+
+      git remote add upstream https://github.com/GeoNode/geonode.git
+       
+By typing::
+
+      git fetch upstream
+       
+changes not present in your local repository will be pulled in without modifying your files.
+
+
+
 
 
 
@@ -87,5 +129,7 @@ Pull Request
 ------------
 
 If you are done with your changes, you can send a pull request. This means, that you let the core developers know that you have done some changes and you would like them to review. They can hit accept and your changes will go in to the main line.
+The *pull request* can be found here.
 
 .. image:: img/pull_request.PNG
+
