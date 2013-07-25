@@ -77,10 +77,11 @@
       ],
       "wysihtml5": [
         ".components/wysihtml5/dist/wysihtml5-0.3.0.min.js"
+      ],
+      "bootstrap-datepicker": [
+        ".components/bootstrap-datepicker/js/bootstrap-datepicker.js",
+        ".components/bootstrap-datepicker/css/datepicker.css"
       ]
     }
-  },
-  "resolutions": {
-    "jquery": "1.8.3"
   }
 }
