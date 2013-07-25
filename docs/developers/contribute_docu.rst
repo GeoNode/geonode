@@ -29,7 +29,7 @@ Fork a repository
 
 In order to make changes to these files, you first have to fork this repository. On the top of the website you can see the following buttons:
 
-.. image:: img/fork_repo.PNG
+.. image:: images/fork_repo.PNG
 
 Click on the button *Fork* at the top right and the *geonode* repository will be forked. You should now be able to see your repository *your_name/geonode*.
 If you want to read more about how to fork a repository go to https://help.github.com/articles/fork-a-repo.
@@ -40,15 +40,15 @@ Edit files
 
 To make some changes to already exiting files or to create new files, go to your GitHub account. Under *repositories* you will find the geonode repository that you have forked. Click on it and you will again see all the folders and files GeoNode needs. 
 
-.. image:: img/repository_geonode.PNG
+.. image:: images/repository_geonode.PNG
 
 Click on the folder *docs* and search for the file that you want to edit. If you found it, click on it and you will be able to see the content of this file.
 
-.. image:: img/index_txt.PNG
+.. image:: images/index_txt.PNG
 
 To make changes to this file, hit the button *edit* on the right top. You can now make your changes or add something to the existing content. 
 
-.. image:: img/index_edit.PNG
+.. image:: images/index_edit.PNG
 
 As you can see now, the documentation is written in *reStructeredText*, a lightweight markup language. To learn how to use it you should read the documentation that can be found here http://docutils.sourceforge.net/docs/user/rst/quickref.html.
 By hitting the *preview* button you will be able to see how your text it is going to look like on the web. To save your changes, click on *Commit Changes* at the bottom of the site. Now you've saved the changes in your repository, but the original geonode repository still doesn't know anything about that!
@@ -60,7 +60,7 @@ In order to tell them that you have made some changes you have to send a *pull r
 If you are planning bigger changes on the structure of the documentation it is recommended to create a new branch and make your edits here. 
 A new branch can be created by clicking on the button *branch: master* as shown here. 
 
-.. image:: img/create_branch_example.PNG
+.. image:: images/create_branch_example.PNG
 
 Just type the name of your new branch, hit enter and your branch will be created. To learn more about branches it is recommended to take a look here http://git-scm.com/book/en/Git-Branching-What-a-Branch-Is.
 
@@ -73,13 +73,13 @@ If you want to add a completely new issue to the documentation, you have to crea
 As you will see there is no possibility to create an empty folder. You always have to create a new file as well! This can be 
 done here
 
-.. image:: img/create_file.png
+.. image:: images/create_file.png
 
 If you click on *create new file here* you can first subdirect to another folder by typing the *foldername* followed by /. If this folder
 doesn't exist until now, one will be created. To create a new file in this folder just type *filename.rst* into the box and hit enter.
 A short example on how to manage this is given here http://i.stack.imgur.com/n3Wg3.gif.
 
-.. image:: img/create_file_test.PNG
+.. image:: images/create_file_test.PNG
 
 Now a black box will appear where you can add your comments. To save the file, hit the green *Commit New File* button at the bottom.
 
@@ -186,5 +186,5 @@ Pull Request
 If you are done with your changes, you can send a pull request. This means, that you let the core developers know that you have done some changes and you would like them to review. They can hit accept and your changes will go in to the main line.
 The *pull request* can be found here.
 
-.. image:: img/pull_request.PNG
+.. image:: images/pull_request.PNG
 
