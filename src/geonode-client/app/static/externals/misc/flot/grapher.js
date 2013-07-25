@@ -1,7 +1,8 @@
 var dataObject;
 var data;
 var options;
-var offset = -3600 * 10 * 1000.0;
+var minuteOffset = new Date().getTimezoneOffset();
+var offset = -60 * minuteOffset * 1000.0; 
 
 function SentData() { 
 

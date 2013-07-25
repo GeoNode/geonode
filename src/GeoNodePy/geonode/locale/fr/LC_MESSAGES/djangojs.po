@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -126,7 +126,7 @@ msgid "Large"
 msgstr "Large"
 
 #: templates/lang.js:27
-#, fuzzy
+#
 msgid "Add another server"
 msgstr "Ajouter un autre serveur."
 
@@ -185,7 +185,7 @@ msgid "Measure"
 msgstr "Mesurer"
 
 #: templates/lang.js:41
-#, fuzzy
+#
 msgid "About this Map View"
 msgstr "A propos de cette carte"
 
@@ -271,7 +271,7 @@ msgid "Properties"
 msgstr "Propriétés"
 
 #: templates/lang.js:63
-#, fuzzy
+#
 msgid "Link to Map"
 msgstr "Créer un lien à la carte"
 
@@ -316,7 +316,7 @@ msgid "Small"
 msgstr "Petit"
 
 #: templates/lang.js:76
-#, fuzzy
+#
 msgid ""
 "Error contacting server.\n"
 " Please check the URL and try again."
@@ -345,7 +345,7 @@ msgid "Rename this category"
 msgstr "Modifier le nom de cette catégorie"
 
 #: templates/lang.js:82
-#, fuzzy
+#
 msgid "Remove Category"
 msgstr "Supprimer la catégorie"
 
@@ -374,7 +374,7 @@ msgid "Switch to Google Earth 3D Viewer"
 msgstr "Basculer sur la vue Google Earth 3D"
 
 #: templates/lang.js:89
-#, fuzzy
+#
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
@@ -411,7 +411,7 @@ msgid "Zoom to Layer Extent"
 msgstr "Zoomer sur la zone de la couche"
 
 #: templates/lang.js:97
-#, fuzzy
+#
 msgid "Zoom to Original Map Extent"
 msgstr "Zoomer sur la zone originale de la couche"
 
@@ -476,7 +476,7 @@ msgid "Publish Map"
 msgstr "Publier la carte"
 
 #: templates/lang.js:146
-#, fuzzy
+#
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
@@ -617,7 +617,7 @@ msgid "Category"
 msgstr "Catégorie"
 
 #: templates/lang.js:222
-#, fuzzy
+#
 msgid "No category is provided for this layer."
 msgstr "Aucun catégorie n'est disponible pour cette couche."
 
@@ -647,7 +647,7 @@ msgid "Clear All"
 msgstr "Tout Réinitialiser"
 
 #: templates/lang.js:243
-#, fuzzy
+#
 msgid "Add Selected Layers"
 msgstr "Ajouter les couches sélectionnées"
 

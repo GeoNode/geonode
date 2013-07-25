@@ -1709,7 +1709,7 @@ class Map(models.Model, PermissionLevelMixin):
         layers = cache.get('maplayerset_' + str(self.id))
         if layers is None:
             logger.debug('maplayerset cache was None')
-            layers = MapLayer.objects.filter(map=self.id)
+            layers = MapLayer.objects.filter(map=self.id).order_by('stack_order')
             cache.add('maplayerset_' + str(self.id), layers)
         return  [layer for layer in layers]
 

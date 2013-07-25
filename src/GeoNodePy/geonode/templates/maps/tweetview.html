@@ -266,7 +266,9 @@ var tweetDateStartField = new Ext.ux.form.DateTime({
     labelAlign:'right',
     labelStyle:"font-weight:bold;text-align:right",
     allowBlank:false, timeFormat:'H:i:s', timeConfig:{
-        altFormats:'H:i:s', allowBlank:true
+        altFormats:'H:i:s', 
+        allowBlank:true,
+        value: new Date({{min_date}})
     }, dateFormat:'n/d/Y', dateConfig:{
         altFormats:'Y-m-d|Y-n-d', allowBlank:true,
         minValue:new Date({{min_date}}),
@@ -284,7 +286,7 @@ var tweetDateEndField = new Ext.ux.form.DateTime({
     //labelStyle:"font-weight:bold;text-align:right",
     allowBlank:false, timeFormat:'H:i:s', timeConfig:{
         altFormats:'H:i:s', allowBlank:true,
-        value:new Date(Date.now())
+        value: new Date({{max_date}})
     }, dateFormat:'n/d/Y', dateConfig:{
         altFormats:'Y-m-d|Y-n-d', allowBlank:true,
         minValue:new Date({{min_date}}),

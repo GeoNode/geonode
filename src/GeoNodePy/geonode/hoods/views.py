@@ -4,11 +4,12 @@ by the Boston Resource Authority.  It is not necessary for standard WorldMap fun
 """
 
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse
 import httplib2
-import simplejson
 from django.conf import settings
+from django.template import RequestContext, loader
 from django.contrib.auth.decorators import login_required
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
@@ -16,9 +17,9 @@ import logging
 from urlparse import urlparse
 import psycopg2
 from geonode.maps.models import Map, LayerStats, Layer
-from geonode.maps.views import *
 import re
-
+from django.utils import simplejson as json
+from django.core.cache import cache
 logger = logging.getLogger("geonode.hoods.views")
 
 
@@ -40,6 +41,9 @@ def get_hood_center(resource_name, block_ids):
         logger.error("Error retrieving bbox for PostGIS table %s:%s", resource_name, str(e))
     finally:
         conn.close()
+
+                
+                
 
 def create_hood(request):
     """
@@ -99,3 +103,36 @@ def create_hood(request):
         }))
 
 
+def update_hood_map():
+    """
+    Update the neighborhood template map to be the same as the Boston Research Map
+    """
+    hood_map = Map.objects.get(id=settings.HOODS_TEMPLATE_ID)
+    boston_map = Map.objects.get(officialurl='boston')
+    cache.delete('maplayerset_' + str(hood_map.id))
+    
+    if hood_map is not None:
+        hood_layerset = hood_map.layer_set
+        boston_layerset = boston_map.layer_set
+        boston_count = boston_layerset.count()
+        
+        groups = json.loads(boston_map.group_params)
+        groups.insert(0, {"expanded": "true", "group": "My Neighborhood"})
+        hood_map.group_params = json.dumps(groups)
+        
+        
+        for layer in hood_layerset.all():
+            if layer.group != 'My Neighborhood':
+                layer.delete()
+            else:
+                layer.stack_order = boston_count
+                layer.save()
+                boston_count +=1 
+                
+        for layer in boston_layerset.all():
+            layer.id = None
+            layer.pk = None
+            layer.map = hood_map
+            layer.save()
+            
+        hood_map.save()

@@ -14,7 +14,9 @@ var graphBounds= [ -124.76,  24.52, -66.93,49.38];
 var dataObject;
 var data;
 var options;
-var offset = -3600 * 10 * 1000.0;
+var minuteOffset = new Date().getTimezoneOffset();
+var offset = -60 * minuteOffset * 1000.0; 
+
 /*
 var operatorMap = {
 "bool": ["="],
