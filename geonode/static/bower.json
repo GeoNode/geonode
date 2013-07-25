@@ -81,6 +81,9 @@
       "bootstrap-datepicker": [
         ".components/bootstrap-datepicker/js/bootstrap-datepicker.js",
         ".components/bootstrap-datepicker/css/datepicker.css"
+      ],
+      "qunit": [
+        ".components/qunit/qunit/qunit.js"
       ]
     }
   }
