@@ -10,11 +10,13 @@ The Installation of Postgresql-9.2 on Ubuntu 12.04 includes two main steps (Gene
 
 *Step 1*
 
-Create an empty file called *pgdg.list* (you may have to do this as a root user). This file should be placed in the following path:
+Create an empty file called *pgdg.list* placed in /etc/apt/sources.list.d/, using these commands::
 
-	/etc/apt/sources.list.d/
+	cd /etc/apt/sources.list.d/
+	
+	sudo touch pgdg.list
   
-Now include the following line into the *pgdg.list* file.
+Now the following line has to be included the *pgdg.list* file.
 
 	deb http://apt.postgresql.org/pub/repos/apt/codename-pgdg main
 	
@@ -23,6 +25,15 @@ Instead of *codename* write the name of your system. If you do not know this, ty
 	 lsb_release -c
 
 This will return you the name of your system.
+
+.. warning::
+Make sure that you have changed *codename* to the name of your system before you copy the link in the next step!
+
+Now open the *pgdg.list* file using e.g.::
+
+	gksu gedit pdgd.list
+	
+and copy deb `http://apt.postgresql.org/pub/repos/apt/codename-pgdg main` into it.
 
 
 *Step 2*
