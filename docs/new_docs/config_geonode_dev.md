@@ -8,6 +8,6 @@ For the creation of a superuser your virtual environment of geonode has to be ac
 
 Now you have activated the virtual environment you can type the following into your terminal:
 
-    django-admin.py createsuperuser –settings=geonode.settings
+    django-admin.py createsuperuser –-settings=geonode.settings
 
 and you will be asked for a username, an email-adress and a password. 
