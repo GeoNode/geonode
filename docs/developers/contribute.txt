@@ -39,13 +39,8 @@ The documentation is generated from source files in the `docs/` directory within
 See http://sphinx.pocoo.org/ for more information on the documentation system we use.
 
 
-:doc:`How to contribute to documentation <new_docs/contribute_docu>`
+:doc:`How to contribute to documentation </contribute_docu>`
 
-.. toctree::
-    :hidden:
-    :maxdepth: 3
-
-    new_docs/contribute_docu
 
 
 Provide Translations
