@@ -93,7 +93,7 @@ In order to use postgresql in geonode, you have to create a new user *geonode*, 
 
 	sudo -u postgres createuser -P geonode
 
-This means, that you as the user *postgres* create a new user called *geonode*. `-P` indicates, that this user will have a password. 
+This means, that you as the user *postgres* create a new user called *geonode*. `-P` indicates, that this user will have a password (*geonode*). 
 
 
 
