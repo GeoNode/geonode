@@ -33,7 +33,7 @@ Now open the *pgdg.list* file using e.g.::
 
 	gksu gedit pdgd.list
 	
-and copy deb `http://apt.postgresql.org/pub/repos/apt/codename-pgdg main` into it.
+and copy deb `http://apt.postgresql.org/pub/repos/apt/ codename-pgdg main` into it.
 
 
 *Step 2*
