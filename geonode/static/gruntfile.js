@@ -3,6 +3,7 @@ module.exports = function(grunt) {
   'use strict';
 
   grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
 
     jshint: {
       // files to lint
@@ -27,7 +28,7 @@ module.exports = function(grunt) {
         },
         files: [
           {
-            'lib/css/bootstrap.css': ['.components/bootstrap/less/bootstrap.less', '.components/bootstrap/less/responsive.less'],
+            'lib/css/bootstrap.css': ['.components/bootstrap/less/bootstrap.less'],
             'geonode/css/base.css': 'geonode/less/base.less'
 
           }
@@ -40,7 +41,7 @@ module.exports = function(grunt) {
         },
         files: [
           {
-            'lib/css/bootstrap.css': ['.components/bootstrap/less/bootstrap.less', '.components/bootstrap/less/responsive.less'],
+            'lib/css/bootstrap.css': ['.components/bootstrap/less/bootstrap.less'],
             'geonode/css/base.css': 'geonode/less/base.less'
           }
         ]
@@ -48,20 +49,12 @@ module.exports = function(grunt) {
     },
 
     concat: {
-      options: {
-        // define a string to put between each file in the concatenated output
-        separator: ';'
-      },
-      development: {
+      bootstrap_js: {
         files: {
+          // TODO: order of concatenated bootstrap scripts seems important
+          // TODO: does GeoNode require all of them?
           'lib/js/bootstrap.js': '.components/bootstrap/js/*.js'
         }
-      },
-      production: {
-        files: [
-          { 'lib/js/bootstrap.js': ['.components/bootstrap/js/*.js']},
-          { 'lib/css/assets.css': ['lib/css/*.css'] }
-        ]
       }
     },
 
@@ -74,6 +67,14 @@ module.exports = function(grunt) {
           dest: 'lib/css',
           src: [
             'datatables/media/css/jquery.dataTables.css'
+          ]
+        }, {
+          expand: true,
+          flatten: true,
+          cwd: '.components',
+          dest: 'lib/img',
+          src: [
+            'bootstrap/img/*.png'
           ]
         }, {
           expand: true,
@@ -109,14 +110,38 @@ module.exports = function(grunt) {
       }
     },
 
+    cssmin: {
+      production: {
+        options: {
+          // the banner is inserted at the top of the output
+          banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+        },
+        files: {
+          'lib/css/assets.min.css': [
+            'lib/css/bootstrap.css', 
+            'lib/css/jquery.dataTables.css', 
+            'lib/css/select2.css'
+          ]
+        }
+      }
+    },
+
     uglify: {
       options: {
         // the banner is inserted at the top of the output
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
       },
-      dist: {
+      production: {
         files: {
-          'lib/js/assets.min.js': ['lib/js/*.js']
+          'lib/js/assets.min.js': [
+            'lib/js/jquery.js',
+            'lib/js/jquery.timeago.js',
+            'lib/js/jquery.dataTables.js',
+            'lib/js/json2.js',
+            'lib/js/select2.js'
+            // TODO: see note in concat command
+            // 'lib/js/bootstrap.js',
+          ]
         }
       }
     }
@@ -128,14 +153,15 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
 
   // test
   grunt.registerTask('test', ['jshint']);
 
   // build development
-  grunt.registerTask('default', ['jshint', 'less:development', 'concat:development', 'copy']);
+  grunt.registerTask('default', ['jshint', 'less:development', 'concat:bootstrap_js', 'copy']);
 
   // build production
-  grunt.registerTask('production', ['jshint', 'less:production', 'concat:production', 'copy', 'uglify']);
+  grunt.registerTask('production', ['jshint', 'less:production', 'concat:bootstrap_js', 'copy', 'cssmin', 'uglify', ]);
 
 };
