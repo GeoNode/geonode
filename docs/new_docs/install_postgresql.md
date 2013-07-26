@@ -18,7 +18,7 @@ Create an empty file called *pgdg.list* placed in /etc/apt/sources.list.d/, usin
   
 Now the following line has to be included the *pgdg.list* file.
 
-	deb http://apt.postgresql.org/pub/repos/apt/codename-pgdg main
+	deb http://apt.postgresql.org/pub/repos/apt/ codename-pgdg main
 	
 Instead of *codename* write the name of your system. If you do not know this, type
 
