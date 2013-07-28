@@ -32,8 +32,8 @@ USER_HOME="/home/$USER_NAME"
 DATA_DIR="/usr/local/share/geonode"
 DOC_DIR="$DATA_DIR/doc"
 APACHE_CONF="/etc/apache2/sites-available/geonode"
-POSTGRES_USER="$USER_NAME"
 GEONODE_CONF="/etc/geonode/local_settings.py"
+GEONODE_DB="geonode"
 
 #Install packages
 add-apt-repository -y ppa:geonode/unstable
@@ -47,7 +47,6 @@ fi
 
 # Add an entry in /etc/hosts for geonode, to enable http://geonode/
 echo '127.0.0.1 geonode' | sudo tee -a /etc/hosts
-
 
 # Deploy demonstration instance in Apache
 echo "Deploying geonode demonstration instance"
@@ -107,19 +106,39 @@ if [ `grep -c 'ServerName' /etc/apache2/sites-available/default` -eq 0 ] ; then
   patch -p0 < "$TMP_DIR/servername.patch"
 fi
 
+#Create database
+echo "create $GEONODE_DB database with PostGIS"
+sudo -u "$USER_NAME" createdb -E UTF8 "$GEONODE_DB"
+sudo -u "$USER_NAME" psql "$GEONODE_DB" -c 'CREATE EXTENSION postgis;'
+
+#Replace local_settings.py
+sudo cp -f "$USER_HOME/gisvm/app-conf/geonode/local_settings.py.sample" \
+    /usr/lib/python2.7/dist-packages/geonode/local_settings.py
+
+#Change GeoServer port in settings.py
+sed -i -e 's|http://localhost:8080/geoserver/|http://localhost:8082/geoserver/|' \
+    /usr/lib/python2.7/dist-packages/geonode/settings.py
+
+# make the uploaded dir
+mkdir -p /usr/lib/python2.7/dist-packages/geonode/uploaded
+chown -R www-data:www-data /usr/lib/python2.7/dist-packages/geonode/uploaded
+
 # Create tables in the database
 django-admin syncdb --all --noinput --settings=geonode.settings
+# create a superuser (one from fixtures doesnt seem to work)
+django-admin createsuperuser --settings=geonode.settings
 # Install sample admin. Username:admin password:admin
 django-admin loaddata sample_admin
 # Collect static files
 django-admin collectstatic --noinput --settings=geonode.settings
+# run updatelayers
+django-admin updatelayers --settings=geonode.settings
 
 
 # Make the apache user the owner of the required dirs.
 chown www-data /usr/lib/python2.7/dist-packages/geonode/development.db
 chown www-data /usr/lib/python2.7/dist-packages/geonode/static/
 chown www-data /usr/lib/python2.7/dist-packages/geonode/uploaded/
-
 
 # Install desktop icon
 echo "Installing geonode icon"
@@ -183,6 +202,10 @@ chown -R $USER_NAME:$USER_NAME "$USER_HOME/Desktop/geonode-docs.desktop"
 
 #Enable GeoNode and reload apache
 a2ensite geonode
+
+# change apache entry to static_root
+sed -i -e 's|Alias /static/ /usr/lib/python2.7/dist-packages/geonode/static|Alias /static/ /usr/lib/python2.7/dist-packages/geonode/static_root|' \
+    /etc/apache2/sites-available/geonode
 
 # Reload Apache
 /etc/init.d/apache2 force-reload
