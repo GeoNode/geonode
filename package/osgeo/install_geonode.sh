@@ -21,7 +21,6 @@
 BUILD_DIR=`pwd`
 ####
 
-
 echo "Starting GeoNode installation"
 
 if [ -z "$USER_NAME" ] ; then
@@ -110,7 +109,9 @@ fi
 echo "create $GEONODE_DB database with PostGIS"
 sudo -u "$USER_NAME" createdb -E UTF8 "$GEONODE_DB"
 sudo -u "$USER_NAME" psql "$GEONODE_DB" -c 'CREATE EXTENSION postgis;'
+echo "Done"
 
+echo "patching settings files"
 #Replace local_settings.py
 sudo cp -f "$USER_HOME/gisvm/app-conf/geonode/local_settings.py.sample" \
     /usr/lib/python2.7/dist-packages/geonode/local_settings.py
@@ -118,22 +119,29 @@ sudo cp -f "$USER_HOME/gisvm/app-conf/geonode/local_settings.py.sample" \
 #Change GeoServer port in settings.py
 sed -i -e 's|http://localhost:8080/geoserver/|http://localhost:8082/geoserver/|' \
     /usr/lib/python2.7/dist-packages/geonode/settings.py
+echo "Done"
 
 # make the uploaded dir
 mkdir -p /usr/lib/python2.7/dist-packages/geonode/uploaded
 chown -R www-data:www-data /usr/lib/python2.7/dist-packages/geonode/uploaded
 
+echo "Configuring GeoNode"
 # Create tables in the database
-django-admin syncdb --all --noinput --settings=geonode.settings
+sudo -u "$USER_NAME" django-admin syncdb --all --noinput --settings=geonode.settings
+
 # create a superuser (one from fixtures doesnt seem to work)
-django-admin createsuperuser --settings=geonode.settings
+sudo -u "$USER_NAME" django-admin createsuperuser --username="$USER_NAME" \
+    --email=user@osgeo.org --noinput --settings=geonode.settings
+
 # Install sample admin. Username:admin password:admin
-django-admin loaddata sample_admin
+sudo -u "$USER_NAME" django-admin loaddata sample_admin --settings=geonode.settings
+
 # Collect static files
 django-admin collectstatic --noinput --settings=geonode.settings
-# run updatelayers
-django-admin updatelayers --settings=geonode.settings
 
+# run updatelayers
+sudo -u "$USER_NAME" django-admin updatelayers --settings=geonode.settings
+echo "Done"
 
 # Make the apache user the owner of the required dirs.
 chown www-data /usr/lib/python2.7/dist-packages/geonode/development.db
