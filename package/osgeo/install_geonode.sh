@@ -33,6 +33,8 @@ DOC_DIR="$DATA_DIR/doc"
 APACHE_CONF="/etc/apache2/sites-available/geonode"
 GEONODE_CONF="/etc/geonode/local_settings.py"
 GEONODE_DB="geonode"
+GEOSERVER_VERSION="2.3.4"
+GEOSERVER_PATH="/usr/local/lib/geoserver-$GEOSERVER_VERSION"
 
 #Install packages
 add-apt-repository -y ppa:geonode/unstable
@@ -138,13 +140,25 @@ sudo -u "$USER_NAME" django-admin loaddata sample_admin --settings=geonode.setti
 
 # Collect static files
 django-admin collectstatic --noinput --settings=geonode.settings
-
-# run updatelayers
-sudo -u "$USER_NAME" django-admin updatelayers --settings=geonode.settings
 echo "Done"
 
+echo "Starting GeoServer to update layers in the geonode db"
+"$GEOSERVER_PATH"/bin/shutdown.sh &
+sleep 60;
+"$GEOSERVER_PATH"/bin/startup.sh &
+sleep 60;
+
+# run updatelayers
+echo "Updating GeoNode layers..."
+django-admin updatelayers --settings=geonode.settings --ignore-errors
+echo "Done"
+
+echo "Stopping GeoServer"
+"$GEOSERVER_PATH"/bin/shutdown.sh &
+sleep 60;
+
 # Make the apache user the owner of the required dirs.
-chown www-data /usr/lib/python2.7/dist-packages/geonode/development.db
+#chown www-data /usr/lib/python2.7/dist-packages/geonode/development.db
 chown www-data /usr/lib/python2.7/dist-packages/geonode/static/
 chown www-data /usr/lib/python2.7/dist-packages/geonode/uploaded/
 
