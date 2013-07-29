@@ -35,11 +35,12 @@ GEONODE_CONF="/etc/geonode/local_settings.py"
 GEONODE_DB="geonode"
 GEOSERVER_VERSION="2.3.4"
 GEOSERVER_PATH="/usr/local/lib/geoserver-$GEOSERVER_VERSION"
+GEONODE_BIN_FOLDER="/usr/local/share/geonode"
 
 #Install packages
 add-apt-repository -y ppa:geonode/unstable
 apt-get -q update
-apt-get --assume-yes install python-geonode libapache2-mod-wsgi
+apt-get --assume-yes install python-geonode libapache2-mod-wsgi curl
 
 if [ $? -ne 0 ] ; then
     echo 'ERROR: Package install failed! Aborting.'
@@ -167,14 +168,41 @@ echo "Installing geonode icon"
 cp -f "$USER_HOME/gisvm/app-conf/geonode/geonode.png" \
        /usr/share/icons/
 
+# Startup/Stop scripts set-up
+mkdir -p "$GEONODE_BIN_FOLDER"
+chgrp users "$GEONODE_BIN_FOLDER"
+
+if [ ! -e $GEONODE_BIN_FOLDER/geonode-start.sh ] ; then
+   cat << EOF > $GEONODE_BIN_FOLDER/geonode-start.sh
+#!/bin/bash
+STAT=\`curl -s "http://localhost:8082/geoserver/ows" | grep 8082\`
+if [ "\$STAT" = "" ]; then
+    $GEOSERVER_PATH/bin/startup.sh &
+    (sleep 2; echo "25"; sleep 2; echo "50"; sleep 2; echo "75"; sleep 2; echo "100") | zenity --progress --auto-close --text "GeoNode is starting GeoServer"
+fi
+firefox http://geonode/
+EOF
+fi
+
+if [ ! -e $GEONODE_BIN_FOLDER/geonode-stop.sh ] ; then
+   cat << EOF > $GEONODE_BIN_FOLDER/geonode-stop.sh
+#!/bin/bash
+$GEOSERVER_PATH/bin/shutdown.sh &
+zenity --info --text "GeoNode and GeoServer stopped"
+EOF
+fi
+
+chmod 755 $GEONODE_BIN_FOLDER/geonode-start.sh
+chmod 755 $GEONODE_BIN_FOLDER/geonode-stop.sh
+
 # Add Launch icon to desktop
-if [ ! -e /usr/local/share/applications/geonode.desktop ] ; then
-    cat << EOF > /usr/local/share/applications/geonode.desktop
+if [ ! -e /usr/local/share/applications/geonode-admin.desktop ] ; then
+    cat << EOF > /usr/local/share/applications/geonode-admin.desktop
 [Desktop Entry]
 Type=Application
 Encoding=UTF-8
-Name=GeoNode
-Comment=Starts GeoNode
+Name=Admin GeoNode
+Comment=GeoNode Home
 Categories=Application;Geography;Geoscience;Education;
 Exec=firefox http://geonode/
 Icon=/usr/share/icons/geonode.png
@@ -183,9 +211,46 @@ StartupNotify=false
 EOF
 fi
 
-cp /usr/local/share/applications/geonode.desktop "$USER_HOME/Desktop/"
-chown -R $USER_NAME.$USER_NAME "$USER_HOME/Desktop/geonode.desktop"
+cp /usr/local/share/applications/geonode-admin.desktop "$USER_HOME/Desktop/"
+chown -R $USER_NAME.$USER_NAME "$USER_HOME/Desktop/geonode-admin.desktop"
 
+# Add Launch icon to desktop
+if [ ! -e /usr/local/share/applications/geonode-start.desktop ] ; then
+    cat << EOF > /usr/local/share/applications/geonode-start.desktop
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=GeoNode
+Comment=Starts GeoNode
+Categories=Application;Geography;Geoscience;Education;
+Exec=$GEONODE_BIN_FOLDER/geonode-start.sh
+Icon=/usr/share/icons/geonode.png
+Terminal=false
+StartupNotify=false
+EOF
+fi
+
+cp /usr/local/share/applications/geonode-start.desktop "$USER_HOME/Desktop/"
+chown -R $USER_NAME.$USER_NAME "$USER_HOME/Desktop/geonode-start.desktop"
+
+# Add Launch icon to desktop
+if [ ! -e /usr/local/share/applications/geonode-stop.desktop ] ; then
+    cat << EOF > /usr/local/share/applications/geonode-stop.desktop
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=GeoNode
+Comment=Starts GeoNode
+Categories=Application;Geography;Geoscience;Education;
+Exec=$GEONODE_BIN_FOLDER/geonode-stop.sh
+Icon=/usr/share/icons/geonode.png
+Terminal=false
+StartupNotify=false
+EOF
+fi
+
+cp /usr/local/share/applications/geonode-stop.desktop "$USER_HOME/Desktop/"
+chown -R $USER_NAME.$USER_NAME "$USER_HOME/Desktop/geonode-stop.desktop"
 
 # geonode Documentation
 echo "Getting geonode documentation"
