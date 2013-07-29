@@ -112,11 +112,14 @@ module.exports = function(grunt) {
             'datatables/media/js/jquery.dataTables.js',
             'jquery-timeago/jquery.timeago.js',
             'tinysort/src/jquery.tinysort.js',
-            'raty/js/jquery.raty.min.js',
             'json2/json2.js',
             'select2/select2.js',
             'bootstrap-datepicker/js/bootstrap-datepicker.js',
-            'requirejs/require.js'
+            'requirejs/require.js',
+            // copy dist-minified libs
+            // TODO: references to those require more attention (pun intended)
+            'raty/js/jquery.raty.min.js',
+            'jquery-waypoints/waypoints.min.js',
           ]
         }]
       }
