@@ -21,7 +21,6 @@
 BUILD_DIR=`pwd`
 ####
 
-
 echo "Starting GeoNode installation"
 
 if [ -z "$USER_NAME" ] ; then
@@ -32,13 +31,16 @@ USER_HOME="/home/$USER_NAME"
 DATA_DIR="/usr/local/share/geonode"
 DOC_DIR="$DATA_DIR/doc"
 APACHE_CONF="/etc/apache2/sites-available/geonode"
-POSTGRES_USER="$USER_NAME"
 GEONODE_CONF="/etc/geonode/local_settings.py"
+GEONODE_DB="geonode"
+GEOSERVER_VERSION="2.3.4"
+GEOSERVER_PATH="/usr/local/lib/geoserver-$GEOSERVER_VERSION"
+GEONODE_BIN_FOLDER="/usr/local/share/geonode"
 
 #Install packages
 add-apt-repository -y ppa:geonode/unstable
 apt-get -q update
-apt-get --assume-yes install python-geonode libapache2-mod-wsgi
+apt-get --assume-yes install python-geonode libapache2-mod-wsgi curl
 
 if [ $? -ne 0 ] ; then
     echo 'ERROR: Package install failed! Aborting.'
@@ -47,7 +49,6 @@ fi
 
 # Add an entry in /etc/hosts for geonode, to enable http://geonode/
 echo '127.0.0.1 geonode' | sudo tee -a /etc/hosts
-
 
 # Deploy demonstration instance in Apache
 echo "Deploying geonode demonstration instance"
@@ -107,33 +108,101 @@ if [ `grep -c 'ServerName' /etc/apache2/sites-available/default` -eq 0 ] ; then
   patch -p0 < "$TMP_DIR/servername.patch"
 fi
 
+#Create database
+echo "create $GEONODE_DB database with PostGIS"
+sudo -u "$USER_NAME" createdb -E UTF8 "$GEONODE_DB"
+sudo -u "$USER_NAME" psql "$GEONODE_DB" -c 'CREATE EXTENSION postgis;'
+echo "Done"
+
+echo "patching settings files"
+#Replace local_settings.py
+sudo cp -f "$USER_HOME/gisvm/app-conf/geonode/local_settings.py.sample" \
+    /usr/lib/python2.7/dist-packages/geonode/local_settings.py
+
+#Change GeoServer port in settings.py
+sed -i -e 's|http://localhost:8080/geoserver/|http://localhost:8082/geoserver/|' \
+    /usr/lib/python2.7/dist-packages/geonode/settings.py
+echo "Done"
+
+# make the uploaded dir
+mkdir -p /usr/lib/python2.7/dist-packages/geonode/uploaded
+chown -R www-data:www-data /usr/lib/python2.7/dist-packages/geonode/uploaded
+
+echo "Configuring GeoNode"
 # Create tables in the database
-django-admin syncdb --all --noinput --settings=geonode.settings
+sudo -u "$USER_NAME" django-admin syncdb --all --noinput --settings=geonode.settings
+
+# create a superuser (one from fixtures doesnt seem to work)
+sudo -u "$USER_NAME" django-admin createsuperuser --username="$USER_NAME" \
+    --email=user@osgeo.org --noinput --settings=geonode.settings
+
 # Install sample admin. Username:admin password:admin
-django-admin loaddata sample_admin
+sudo -u "$USER_NAME" django-admin loaddata sample_admin --settings=geonode.settings
+
 # Collect static files
 django-admin collectstatic --noinput --settings=geonode.settings
+echo "Done"
 
+echo "Starting GeoServer to update layers in the geonode db"
+"$GEOSERVER_PATH"/bin/shutdown.sh &
+sleep 60;
+"$GEOSERVER_PATH"/bin/startup.sh &
+sleep 60;
+
+# run updatelayers
+echo "Updating GeoNode layers..."
+django-admin updatelayers --settings=geonode.settings --ignore-errors
+echo "Done"
+
+echo "Stopping GeoServer"
+"$GEOSERVER_PATH"/bin/shutdown.sh &
+sleep 60;
 
 # Make the apache user the owner of the required dirs.
-chown www-data /usr/lib/python2.7/dist-packages/geonode/development.db
+#chown www-data /usr/lib/python2.7/dist-packages/geonode/development.db
 chown www-data /usr/lib/python2.7/dist-packages/geonode/static/
 chown www-data /usr/lib/python2.7/dist-packages/geonode/uploaded/
-
 
 # Install desktop icon
 echo "Installing geonode icon"
 cp -f "$USER_HOME/gisvm/app-conf/geonode/geonode.png" \
        /usr/share/icons/
 
+# Startup/Stop scripts set-up
+mkdir -p "$GEONODE_BIN_FOLDER"
+chgrp users "$GEONODE_BIN_FOLDER"
+
+if [ ! -e $GEONODE_BIN_FOLDER/geonode-start.sh ] ; then
+   cat << EOF > $GEONODE_BIN_FOLDER/geonode-start.sh
+#!/bin/bash
+STAT=\`curl -s "http://localhost:8082/geoserver/ows" | grep 8082\`
+if [ "\$STAT" = "" ]; then
+    $GEOSERVER_PATH/bin/startup.sh &
+    (sleep 2; echo "25"; sleep 2; echo "50"; sleep 2; echo "75"; sleep 2; echo "100") | zenity --progress --auto-close --text "GeoNode is starting GeoServer"
+fi
+firefox http://geonode/
+EOF
+fi
+
+if [ ! -e $GEONODE_BIN_FOLDER/geonode-stop.sh ] ; then
+   cat << EOF > $GEONODE_BIN_FOLDER/geonode-stop.sh
+#!/bin/bash
+$GEOSERVER_PATH/bin/shutdown.sh &
+zenity --info --text "GeoNode and GeoServer stopped"
+EOF
+fi
+
+chmod 755 $GEONODE_BIN_FOLDER/geonode-start.sh
+chmod 755 $GEONODE_BIN_FOLDER/geonode-stop.sh
+
 # Add Launch icon to desktop
-if [ ! -e /usr/local/share/applications/geonode.desktop ] ; then
-    cat << EOF > /usr/local/share/applications/geonode.desktop
+if [ ! -e /usr/local/share/applications/geonode-admin.desktop ] ; then
+    cat << EOF > /usr/local/share/applications/geonode-admin.desktop
 [Desktop Entry]
 Type=Application
 Encoding=UTF-8
-Name=GeoNode
-Comment=Starts GeoNode
+Name=Admin GeoNode
+Comment=GeoNode Home
 Categories=Application;Geography;Geoscience;Education;
 Exec=firefox http://geonode/
 Icon=/usr/share/icons/geonode.png
@@ -142,9 +211,46 @@ StartupNotify=false
 EOF
 fi
 
-cp /usr/local/share/applications/geonode.desktop "$USER_HOME/Desktop/"
-chown -R $USER_NAME.$USER_NAME "$USER_HOME/Desktop/geonode.desktop"
+cp /usr/local/share/applications/geonode-admin.desktop "$USER_HOME/Desktop/"
+chown -R $USER_NAME.$USER_NAME "$USER_HOME/Desktop/geonode-admin.desktop"
 
+# Add Launch icon to desktop
+if [ ! -e /usr/local/share/applications/geonode-start.desktop ] ; then
+    cat << EOF > /usr/local/share/applications/geonode-start.desktop
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=Start GeoNode
+Comment=Starts GeoNode
+Categories=Application;Geography;Geoscience;Education;
+Exec=$GEONODE_BIN_FOLDER/geonode-start.sh
+Icon=/usr/share/icons/geonode.png
+Terminal=false
+StartupNotify=false
+EOF
+fi
+
+cp /usr/local/share/applications/geonode-start.desktop "$USER_HOME/Desktop/"
+chown -R $USER_NAME.$USER_NAME "$USER_HOME/Desktop/geonode-start.desktop"
+
+# Add Launch icon to desktop
+if [ ! -e /usr/local/share/applications/geonode-stop.desktop ] ; then
+    cat << EOF > /usr/local/share/applications/geonode-stop.desktop
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=Stop GeoNode
+Comment=Stops GeoNode
+Categories=Application;Geography;Geoscience;Education;
+Exec=$GEONODE_BIN_FOLDER/geonode-stop.sh
+Icon=/usr/share/icons/geonode.png
+Terminal=false
+StartupNotify=false
+EOF
+fi
+
+cp /usr/local/share/applications/geonode-stop.desktop "$USER_HOME/Desktop/"
+chown -R $USER_NAME.$USER_NAME "$USER_HOME/Desktop/geonode-stop.desktop"
 
 # geonode Documentation
 echo "Getting geonode documentation"
@@ -183,6 +289,10 @@ chown -R $USER_NAME:$USER_NAME "$USER_HOME/Desktop/geonode-docs.desktop"
 
 #Enable GeoNode and reload apache
 a2ensite geonode
+
+# change apache entry to static_root
+sed -i -e 's|Alias /static/ /usr/lib/python2.7/dist-packages/geonode/static|Alias /static/ /usr/lib/python2.7/dist-packages/geonode/static_root|' \
+    /etc/apache2/sites-available/geonode
 
 # Reload Apache
 /etc/init.d/apache2 force-reload
