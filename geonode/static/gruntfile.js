@@ -112,7 +112,8 @@ module.exports = function(grunt) {
             'jquery-timeago/jquery.timeago.js',
             'json2/json2.js',
             'select2/select2.js',
-            'bootstrap-datepicker/js/bootstrap-datepicker.js'
+            'bootstrap-datepicker/js/bootstrap-datepicker.js',
+            'requirejs/require.js'
           ]
         }]
       }
@@ -126,7 +127,7 @@ module.exports = function(grunt) {
         },
         files: {
           'lib/css/assets.min.css': [
-            'lib/css/jquery.dataTables.css', 
+            'lib/css/jquery.dataTables.css',
             'lib/css/select2.css'
           ]
         }
@@ -148,7 +149,8 @@ module.exports = function(grunt) {
             'lib/js/bootstrap.js',
             'lib/js/select2.js',
             'lib/js/bootstrap-datepicker.js'
-          ]
+          ],
+          'lib/js/require.min.js': ['lib/js/require.js']
         }
       }
     }
