@@ -20,13 +20,12 @@ module.exports = function(grunt) {
       development: {
         options: {
           paths: [
-            '.components/bootstrap/less',
             'geonode/less'
           ]
         },
         files: [
           {
-            'lib/css/bootstrap.css': ['.components/bootstrap/less/bootstrap.less'],
+            // includes bootstrap.css
             'geonode/css/base.css': 'geonode/less/base.less'
 
           }
@@ -39,7 +38,7 @@ module.exports = function(grunt) {
         },
         files: [
           {
-            'lib/css/bootstrap.css': ['.components/bootstrap/less/bootstrap.less'],
+            // includes bootstrap.css
             'geonode/css/base.css': 'geonode/less/base.less'
           }
         ]
@@ -127,7 +126,6 @@ module.exports = function(grunt) {
         },
         files: {
           'lib/css/assets.min.css': [
-            'lib/css/bootstrap.css', 
             'lib/css/jquery.dataTables.css', 
             'lib/css/select2.css'
           ]
