@@ -27,7 +27,6 @@ module.exports = function(grunt) {
           {
             // includes bootstrap.css
             'geonode/css/base.css': 'geonode/less/base.less'
-
           }
         ]
       },
@@ -112,7 +111,8 @@ module.exports = function(grunt) {
             'datatables/media/js/jquery.dataTables.js',
             'jquery-timeago/jquery.timeago.js',
             'json2/json2.js',
-            'select2/select2.js'
+            'select2/select2.js',
+            'bootstrap-datepicker/js/bootstrap-datepicker.js'
           ]
         }]
       }
@@ -141,12 +141,13 @@ module.exports = function(grunt) {
       production: {
         files: {
           'lib/js/assets.min.js': [
+            'lib/js/json2.js',
             'lib/js/jquery.js',
             'lib/js/jquery.timeago.js',
             'lib/js/jquery.dataTables.js',
             'lib/js/bootstrap.js',
-            'lib/js/json2.js',
-            'lib/js/select2.js'
+            'lib/js/select2.js',
+            'lib/js/bootstrap-datepicker.js'
           ]
         }
       }
