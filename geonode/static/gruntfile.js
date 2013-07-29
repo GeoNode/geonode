@@ -1,7 +1,5 @@
 module.exports = function(grunt) {
 
-  'use strict';
-
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
@@ -24,7 +22,7 @@ module.exports = function(grunt) {
           paths: [
             '.components/bootstrap/less',
             'geonode/less'
-          ],
+          ]
         },
         files: [
           {
@@ -49,12 +47,23 @@ module.exports = function(grunt) {
     },
 
     concat: {
-      bootstrap_js: {
-        files: {
-          // TODO: order of concatenated bootstrap scripts seems important
-          // TODO: does GeoNode require all of them?
-          'lib/js/bootstrap.js': '.components/bootstrap/js/*.js'
-        }
+      bootstrap: {
+        src: [
+          '.components/bootstrap/js/bootstrap-affix.js',
+          '.components/bootstrap/js/bootstrap-dropdown.js',
+          '.components/bootstrap/js/bootstrap-tooltip.js',
+          '.components/bootstrap/js/bootstrap-alert.js',
+          '.components/bootstrap/js/bootstrap-modal.js',
+          '.components/bootstrap/js/bootstrap-transition.js',
+          '.components/bootstrap/js/bootstrap-button.js',
+          '.components/bootstrap/js/bootstrap-popover.js',
+          '.components/bootstrap/js/bootstrap-typeahead.js',
+          '.components/bootstrap/js/bootstrap-carousel.js',
+          '.components/bootstrap/js/bootstrap-scrollspy.js',
+          '.components/bootstrap/js/bootstrap-collapse.js',
+          '.components/bootstrap/js/bootstrap-tab.js'
+        ],
+        dest: 'lib/js/bootstrap.js'
       }
     },
 
@@ -137,10 +146,9 @@ module.exports = function(grunt) {
             'lib/js/jquery.js',
             'lib/js/jquery.timeago.js',
             'lib/js/jquery.dataTables.js',
+            'lib/js/bootstrap.js',
             'lib/js/json2.js',
             'lib/js/select2.js'
-            // TODO: see note in concat command
-            // 'lib/js/bootstrap.js',
           ]
         }
       }
@@ -159,9 +167,9 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['jshint']);
 
   // build development
-  grunt.registerTask('default', ['jshint', 'less:development', 'concat:bootstrap_js', 'copy']);
+  grunt.registerTask('default', ['jshint', 'less:development', 'concat:bootstrap', 'copy']);
 
   // build production
-  grunt.registerTask('production', ['jshint', 'less:production', 'concat:bootstrap_js', 'copy', 'cssmin', 'uglify', ]);
+  grunt.registerTask('production', ['jshint', 'less:production', 'concat:bootstrap', 'copy', 'cssmin', 'uglify' ]);
 
 };
