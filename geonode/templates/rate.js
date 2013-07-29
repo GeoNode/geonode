@@ -2,7 +2,7 @@
 <script type="text/javascript">
   requirejs.config({
     paths:{
-      'jquery.raty': '/static/lib/js/jquery.raty.min'
+      "jquery.raty": "{% static 'lib/js/jquery.raty.min' %}"
     } 
   });
   require(['jquery.raty'], function(raty){
@@ -24,7 +24,7 @@
         half: true,
         readOnly: true,
         score: rating,
-        path: "{% static "agon_ratings/img/" %}"
+        path: "{% static "lib/img/" %}"
       });        
     }
     $(rateMore());

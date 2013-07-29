@@ -81,7 +81,8 @@ module.exports = function(grunt) {
           cwd: '.components',
           dest: 'lib/img',
           src: [
-            'bootstrap/img/*.png'
+            'bootstrap/img/*.png',
+            'raty/img/*.png'
           ]
         }, {
           expand: true,
@@ -111,6 +112,7 @@ module.exports = function(grunt) {
             'datatables/media/js/jquery.dataTables.js',
             'jquery-timeago/jquery.timeago.js',
             'tinysort/src/jquery.tinysort.js',
+            'raty/js/jquery.raty.min.js',
             'json2/json2.js',
             'select2/select2.js',
             'bootstrap-datepicker/js/bootstrap-datepicker.js',
