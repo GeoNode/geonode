@@ -73,7 +73,13 @@ module.exports = function(grunt) {
           cwd: '.components',
           dest: 'lib/css',
           src: [
-            'datatables/media/css/jquery.dataTables.css'
+            'datatables/media/css/jquery.dataTables.css',
+            'select2/select2.css', 'select2/*.png',
+            'jquery-ui/themes/cupertino/jquery-ui.css',
+            'fontselect-jquery-plugin/fontselect.css', 'fontselect-jquery-plugin/*.png',
+            'jquery-miniColors/jquery.minicolors.css', 'jquery-miniColors/jquery.minicolors.png',
+            'multi-select/css/multi-select.css',
+            'qunit/qunit/qunit.css'
           ]
         }, {
           expand: true,
@@ -82,7 +88,8 @@ module.exports = function(grunt) {
           dest: 'lib/img',
           src: [
             'bootstrap/img/*.png',
-            'raty/img/*.png'
+            'raty/img/*.png',
+            'multi-select/img/switch.png'
           ]
         }, {
           expand: true,
@@ -96,12 +103,12 @@ module.exports = function(grunt) {
           expand: true,
           flatten: true,
           cwd: '.components',
-          dest: 'lib/css',
+          dest: 'lib/css/images',
           src: [
-            'select2/*.png', 'select2/select2.css'
+            'jquery-ui/themes/cupertino/images/*.png'
           ]
         }, {
-          'lib/js/jquery.js': ['.components/jquery/jquery.js']
+          'lib/js/hogan.js': ['.components/hogan/web/builds/2.0.0/hogan-2.0.0.js']
         }, {
           expand: true,
           flatten: true,
@@ -116,10 +123,21 @@ module.exports = function(grunt) {
             'select2/select2.js',
             'bootstrap-datepicker/js/bootstrap-datepicker.js',
             'requirejs/require.js',
-            // copy dist-minified libs
+            // Copy dist-minified libs
             // TODO: references to those require more attention (pun intended)
             'raty/js/jquery.raty.min.js',
             'jquery-waypoints/waypoints.min.js',
+            // Others, with unclear reference
+            // migrated from bower-installer configuration
+            'jquery-ui/jquery-ui.js',
+            'fontselect-jquery-plugin/jquery.fontselect.min.js',
+            'jquery-loadmore/loadmore.js',
+            'jquery-miniColors/jquery.minicolors.js',
+            'multi-select/js/jquery.multi-select.js',
+            'wysihtml5/dist/wysihtml5-0.3.0.min.js',
+            'requirejs-text/text.js',
+            'underscore/underscore.js',
+            'qunit/qunit/qunit.js'
           ]
         }]
       }
