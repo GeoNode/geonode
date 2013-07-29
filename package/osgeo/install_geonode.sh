@@ -220,7 +220,7 @@ if [ ! -e /usr/local/share/applications/geonode-start.desktop ] ; then
 [Desktop Entry]
 Type=Application
 Encoding=UTF-8
-Name=GeoNode
+Name=Start GeoNode
 Comment=Starts GeoNode
 Categories=Application;Geography;Geoscience;Education;
 Exec=$GEONODE_BIN_FOLDER/geonode-start.sh
@@ -239,8 +239,8 @@ if [ ! -e /usr/local/share/applications/geonode-stop.desktop ] ; then
 [Desktop Entry]
 Type=Application
 Encoding=UTF-8
-Name=GeoNode
-Comment=Starts GeoNode
+Name=Stop GeoNode
+Comment=Stops GeoNode
 Categories=Application;Geography;Geoscience;Education;
 Exec=$GEONODE_BIN_FOLDER/geonode-stop.sh
 Icon=/usr/share/icons/geonode.png
