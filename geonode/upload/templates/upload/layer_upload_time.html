@@ -195,7 +195,7 @@
     </p>
 </div>
 <script data-main="{{STATIC_URL}}geonode/js/upload/time"
-    src="{{ STATIC_URL }}lib/js/require.js">
+    src="{{ STATIC_URL }}lib/js/{% if DEBUG_STATIC %}require.js{% else %}require.min.js{% endif %}">
 </script>
 <script type="text/javascript">
 {% autoescape off %}

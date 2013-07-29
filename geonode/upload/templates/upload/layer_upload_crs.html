@@ -33,6 +33,6 @@
     {% endif %}
   </form>
 <script data-main="{{STATIC_URL}}/geonode/js/upload/srs"
-    src="{{ STATIC_URL }}lib/js/require.js">
+    src="{{ STATIC_URL }}lib/js/{% if DEBUG_STATIC %}require.js{% else %}require.min.js{% endif %}">
 </script>
 {% endblock %}
