@@ -178,7 +178,7 @@ if [ ! -e $GEONODE_BIN_FOLDER/geonode-start.sh ] ; then
 STAT=\`curl -s "http://localhost:8082/geoserver/ows" | grep 8082\`
 if [ "\$STAT" = "" ]; then
     $GEOSERVER_PATH/bin/startup.sh &
-    (sleep 2; echo "25"; sleep 2; echo "50"; sleep 2; echo "75"; sleep 2; echo "100") | zenity --progress --auto-close --text "GeoNode is starting GeoServer"
+    (sleep 4; echo "25"; sleep 4; echo "50"; sleep 4; echo "75"; sleep 4; echo "100") | zenity --progress --auto-close --text "GeoNode is starting GeoServer"
 fi
 firefox http://geonode/
 EOF
