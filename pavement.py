@@ -119,8 +119,7 @@ def setup_static(options):
     with pushd('geonode/static'):
         sh('npm install')
         sh('bower install')
-        # TODO: needs development and production flag for grunt build process
-        sh('grunt')
+        
 
 @task
 @needs([
