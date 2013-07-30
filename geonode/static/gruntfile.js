@@ -66,6 +66,7 @@ module.exports = function(grunt) {
     },
 
     copy: {
+      // TODO: add production version without copying non-min libs
       development: {
         files: [{
           expand: true,
