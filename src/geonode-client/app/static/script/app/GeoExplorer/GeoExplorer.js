@@ -214,9 +214,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     youTubeText: 'YouTube',
     hglText: "Harvard Geospatial Library",
     moreText: 'More...',
-
-
-
+    uploadLayerText: 'Upload Layer',
+    createLayerText: 'Create Layer',
+    rectifyLayerText: 'Rectify Layer',
+    worldmapDataText: 'WorldMap Data',
+    externalDataText: 'External Data',
+    leavePageWarningText: 'If you leave this page, unsaved changes will be lost.',
+    
     constructor: function(config) {
         this.config = config;
         this.popupCache = {};
@@ -311,7 +315,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         // global beforeunload handler
         window.onbeforeunload = (function() {
             if (this.fireEvent("beforeunload") === false) {
-                return "If you leave this page, unsaved changes will be lost.";
+                return this.leavePageWarningText;
             }
         }).createDelegate(this);
 
@@ -1427,7 +1431,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.capGrid = new Ext.Panel({
             autoScroll: true,
-            title: 'External Data',
+            title: this.externalDataText,
             header: false,
             layout: 'border',
             border: false,
@@ -2015,7 +2019,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     initUploadPanel: function() {
         this.uploadPanel = new Ext.Panel({
             id: 'worldmap_update_panel',
-            title: 'Upload Layer',
+            title: this.uploadLayerText,
             header: false,
             autoLoad: {url: '/data/upload/?tab=true', scripts: true},
             listeners:{
@@ -2032,7 +2036,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     initCreatePanel: function() {
         this.createPanel = new Ext.Panel({
             id: 'worldmap_create_panel',
-            title: 'Create Layer',
+            title: this.createLayerText,
             header: false,
             autoLoad: {url: '/data/create_pg_layer/?tab=true', scripts: true},
             listeners:{
@@ -2049,7 +2053,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     initWarperPanel: function() {
         this.warperPanel = new Ext.Panel({
             id: 'worldmap_warper_panel',
-            title: 'Rectify Layer',
+            title: this.rectifyLayerText,
             header: false,
             contentEl: 'warpDiv',
             autoScroll: true
@@ -2071,7 +2075,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             activeTab: 0,
             region:'center',
             items: [
-                {contentEl: 'searchDiv', title: 'WorldMap Data', autoScroll: true},
+                {contentEl: 'searchDiv', title: this.worldmapDataText, autoScroll: true},
                 this.capGrid
             ]
         });

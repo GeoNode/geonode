@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-08 20:58-0400\n"
+"POT-Creation-Date: 2013-07-30 16:20-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -109,7 +109,7 @@ msgstr "Détails..."
 msgid "Google Earth"
 msgstr "Google Earth"
 
-#: templates/lang.js:23 templates/lang.js.c:140
+#: templates/lang.js:23 templates/lang.js.c:146
 msgid "Height"
 msgstr "Hauteur"
 
@@ -121,12 +121,12 @@ msgstr "Aide"
 msgid "About"
 msgstr "A propos de"
 
-#: templates/lang.js:26 templates/lang.js.c:141
+#: templates/lang.js:26 templates/lang.js.c:147
 msgid "Large"
 msgstr "Large"
 
-#: templates/lang.js:27
 #
+#: templates/lang.js:27
 msgid "Add another server"
 msgstr "Ajouter un autre serveur."
 
@@ -162,7 +162,7 @@ msgstr "Longueur"
 msgid "Loading Map..."
 msgstr "Chargement de la carte..."
 
-#: templates/lang.js:37 templates/lang.js.c:142
+#: templates/lang.js:37 templates/lang.js.c:148
 msgid "Map Size"
 msgstr "Dimensions de la carte"
 
@@ -177,15 +177,16 @@ msgid ""
 "experience problems with layer ordering, info balloon display, and general "
 "performance."
 msgstr ""
-"Vous avez maintenant %n couches dans votre carte. Avec plus de %max vous auriez "
-"peut-être des problèmes de performance (ordre des couches, affichage des informations, etc.)."
+"Vous avez maintenant %n couches dans votre carte. Avec plus de %max vous "
+"auriez peut-être des problèmes de performance (ordre des couches, affichage "
+"des informations, etc.)."
 
 #: templates/lang.js:40
 msgid "Measure"
 msgstr "Mesurer"
 
-#: templates/lang.js:41
 #
+#: templates/lang.js:41
 msgid "About this Map View"
 msgstr "A propos de cette carte"
 
@@ -199,9 +200,11 @@ msgstr "Mots-clés (pour Picasa et Youtube)"
 
 #: templates/lang.js:44
 msgid "Introduction (tell visitors more about your map view)"
-msgstr "Introduction (donnez aux lecteurs plus d'informations à propos de votre carte)"
+msgstr ""
+"Introduction (donnez aux lecteurs plus d'informations à propos de votre "
+"carte)"
 
-#: templates/lang.js:45 templates/lang.js.c:116 templates/lang.js.c:182
+#: templates/lang.js:45 templates/lang.js.c:122 templates/lang.js.c:188
 msgid "Contact"
 msgstr "Contact"
 
@@ -209,7 +212,7 @@ msgstr "Contact"
 msgid "Permalink"
 msgstr "Lien permanent"
 
-#: templates/lang.js:47 templates/lang.js.c:258
+#: templates/lang.js:47 templates/lang.js.c:264
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -221,8 +224,8 @@ msgstr "Enregistrer en tant que copie"
 msgid "Save"
 msgstr "Enregistrer"
 
-#: templates/lang.js:50 templates/lang.js.c:119 templates/lang.js.c:128
-#: templates/lang.js:181 templates/lang.js.c:203 templates/lang.js.c:240
+#: templates/lang.js:50 templates/lang.js.c:125 templates/lang.js.c:134
+#: templates/lang.js:187 templates/lang.js.c:209 templates/lang.js.c:246
 msgid "Title"
 msgstr "Titre"
 
@@ -230,7 +233,7 @@ msgstr "Titre"
 msgid "URL:"
 msgstr "URL"
 
-#: templates/lang.js:52 templates/lang.js.c:143
+#: templates/lang.js:52 templates/lang.js.c:149
 msgid "Mini"
 msgstr "Mini"
 
@@ -250,7 +253,7 @@ msgstr "Zoom Précédent"
 msgid "This map has not yet been saved."
 msgstr "Cette carte n'a pas encore été enregistrée."
 
-#: templates/lang.js:58 templates/lang.js.c:144
+#: templates/lang.js:58 templates/lang.js.c:150
 msgid "Premium"
 msgstr "Taille d'origine"
 
@@ -258,7 +261,7 @@ msgstr "Taille d'origine"
 msgid "Print Map"
 msgstr "Imprimer la carte"
 
-#: templates/lang.js:60 templates/lang.js.c:170 templates/lang.js.c:268
+#: templates/lang.js:60 templates/lang.js.c:176 templates/lang.js.c:274
 msgid "Print"
 msgstr "Imprimer"
 
@@ -270,8 +273,8 @@ msgstr "Afficher l'aperçu d'impression"
 msgid "Properties"
 msgstr "Propriétés"
 
-#: templates/lang.js:63
 #
+#: templates/lang.js:63
 msgid "Link to Map"
 msgstr "Créer un lien à la carte"
 
@@ -311,15 +314,15 @@ msgstr "Partager cette couche"
 msgid "Share Map"
 msgstr "Partager cette carte"
 
-#: templates/lang.js:75 templates/lang.js.c:147
+#: templates/lang.js:75 templates/lang.js.c:153
 msgid "Small"
 msgstr "Petit"
 
-#: templates/lang.js:76
 #
+#: templates/lang.js:76
 msgid ""
 "Error contacting server.\n"
-" Please check the URL and try again."
+" Please check the url and try again."
 msgstr ""
 "Erreur à la connexion au serveur.\n"
 " Merci de vérifier l'URL et réessayer."
@@ -344,8 +347,8 @@ msgstr "Modifier le nom d'une catégorie"
 msgid "Rename this category"
 msgstr "Modifier le nom de cette catégorie"
 
-#: templates/lang.js:82
 #
+#: templates/lang.js:82
 msgid "Remove Category"
 msgstr "Supprimer la catégorie"
 
@@ -373,20 +376,20 @@ msgstr "Modifier les styles de la couche"
 msgid "Switch to Google Earth 3D Viewer"
 msgstr "Basculer sur la vue Google Earth 3D"
 
-#: templates/lang.js:89
 #
+#: templates/lang.js:89
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
 msgstr ""
-"La carte que vous essayez de charger n'existe pas. Créez une nouvelle "
-"carte à la place."
+"La carte que vous essayez de charger n'existe pas. Créez une nouvelle carte "
+"à la place."
 
 #: templates/lang.js:90
 msgid "Unknown Map"
 msgstr "Carte Inconnue"
 
-#: templates/lang.js:91 templates/lang.js.c:148
+#: templates/lang.js:91 templates/lang.js.c:154
 msgid "Width"
 msgstr "Largeur"
 
@@ -410,8 +413,8 @@ msgstr "Niveau de zoom"
 msgid "Zoom to Layer Extent"
 msgstr "Zoomer sur la zone de la couche"
 
-#: templates/lang.js:97
 #
+#: templates/lang.js:97
 msgid "Zoom to Original Map Extent"
 msgstr "Zoomer sur la zone originale de la couche"
 
@@ -431,52 +434,76 @@ msgstr "Bibliothèque Géospatiale d'Harvard"
 msgid "More..."
 msgstr "Plus..."
 
+#: templates/lang.js:102
+msgid "Upload Layer"
+msgstr "Ajouter des couches"
+
+#: templates/lang.js:103
+msgid "Create Layer"
+msgstr "Créer une couche"
+
+#: templates/lang.js:104
+msgid "Rectify Layer"
+msgstr "Rectifier une couche"
+
+#: templates/lang.js:105
+msgid "WorldMap Data"
+msgstr "Les couches de WorldMap"
+
+#: templates/lang.js:106
+msgid "External Data"
+msgstr "Les données externes"
+
 #: templates/lang.js:107
+msgid "If you leave this page, unsaved changes will be lost."
+msgstr "Si vous quittez cette page, les modifications non enregistrées seront perdues."
+
+#: templates/lang.js:113
 msgid "Zoom Level {zoom}"
 msgstr "Niveau de Zoom {zoom}"
 
-#: templates/lang.js:113
+#: templates/lang.js:119
 msgid "Create Map"
 msgstr "Créer une Carte"
 
-#: templates/lang.js:114
+#: templates/lang.js:120
 msgid "Export Map"
 msgstr "Exporter la Carte"
 
-#: templates/lang.js:115 templates/lang.js.c:184
+#: templates/lang.js:121 templates/lang.js.c:190
 msgid "Abstract"
 msgstr "Résumé"
 
-#: templates/lang.js:117
+#: templates/lang.js:123
 msgid "Map"
 msgstr "Carte"
 
-#: templates/lang.js:118 templates/lang.js.c:185
+#: templates/lang.js:124 templates/lang.js.c:191
 msgid "View this Map"
 msgstr "Voir cette Carte"
 
-#: templates/lang.js:120
+#: templates/lang.js:126
 msgid "Open Map"
 msgstr "Ouvrir une Carte"
 
-#: templates/lang.js:126 templates/lang.js.c:202
+#: templates/lang.js:132 templates/lang.js.c:208
 msgid "Name"
 msgstr "Nom"
 
-#: templates/lang.js:127
+#: templates/lang.js:133
 msgid "Queryable"
 msgstr "Cherchable (fenêtre d'interrogation)"
 
-#: templates/lang.js:134
+#: templates/lang.js:140
 msgid "No background"
 msgstr "Pas de fond"
 
-#: templates/lang.js:145
+#: templates/lang.js:151
 msgid "Publish Map"
 msgstr "Publier la carte"
 
-#: templates/lang.js:146
 #
+#: templates/lang.js:152
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
@@ -484,198 +511,197 @@ msgstr ""
 "Votre carte est prête à être publiée sur internet ! Copiez simplement le "
 "code HTML suivant pour afficher la carte sur votre site :"
 
-#: templates/lang.js:154
+#: templates/lang.js:160
 msgid "Category:"
 msgstr "Catégorie"
 
-#: templates/lang.js:155 templates/lang.js.c:223
+#: templates/lang.js:161 templates/lang.js.c:229
 msgid "Abstract:"
 msgstr "Résumé :"
 
-#: templates/lang.js:156 templates/lang.js.c:225
+#: templates/lang.js:162 templates/lang.js.c:231
 msgid "No attribution information is provided for this layer."
 msgstr "Aucune information n'est disponible pour cette couche."
 
-#: templates/lang.js:157 templates/lang.js.c:226
+#: templates/lang.js:163 templates/lang.js.c:232
 msgid "Provided by:"
 msgstr "Fourni par :"
 
-#: templates/lang.js:158 templates/lang.js.c:227
+#: templates/lang.js:164 templates/lang.js.c:233
 msgid "Download:"
 msgstr "Télécharger :"
 
-#: templates/lang.js:159 templates/lang.js.c:229
+#: templates/lang.js:165 templates/lang.js.c:235
 msgid "No keywords are listed for this layer."
 msgstr "Aucun mot-clé n'est disponible pour cette couche."
 
-#: templates/lang.js:160 templates/lang.js.c:230
+#: templates/lang.js:166 templates/lang.js.c:236
 msgid "Keywords:"
 msgstr "Mots-clés :"
 
-#: templates/lang.js:161 templates/lang.js.c:231
+#: templates/lang.js:167 templates/lang.js.c:237
 msgid "No metadata URLs are defined for this layer."
 msgstr "Aucune métadonnées n'est définie pour cette couche."
 
-#: templates/lang.js:162 templates/lang.js.c:232
+#: templates/lang.js:168 templates/lang.js.c:238
 msgid "Metadata Links:"
 msgstr "Liens de métadonnées :"
 
-#: templates/lang.js:168
+#: templates/lang.js:174
 msgid "Paper size:"
 msgstr "Taille du papier :"
 
-#: templates/lang.js:169
+#: templates/lang.js:175
 msgid "Resolution:"
 msgstr "Résolution :"
 
-#: templates/lang.js:171
+#: templates/lang.js:177
 msgid "Enter map title here."
 msgstr "Entrez ici le titre de la carte."
 
-#: templates/lang.js:172
+#: templates/lang.js:178
 msgid "Include legend?"
 msgstr "Inclure la légende ?"
 
-#: templates/lang.js:173
+#: templates/lang.js:179
 msgid "Enter comments here."
 msgstr "Entrez vos commentaires ici."
 
-#: templates/lang.js:174
+#: templates/lang.js:180
 msgid "Creating PDF..."
 msgstr "PDF en cours de création..."
 
-#: templates/lang.js:183
+#: templates/lang.js:189
 msgid "Last Modified"
 msgstr "Dernière Modification"
 
-#: templates/lang.js:186 templates/lang.js.c:207
+#: templates/lang.js:192 templates/lang.js.c:213
 msgid "Prev"
 msgstr "Précédent"
 
-#: templates/lang.js:187 templates/lang.js.c:208
+#: templates/lang.js:193 templates/lang.js.c:214
 msgid "Next"
 msgstr "Suivant"
 
-#: templates/lang.js:188 templates/lang.js.c:209
+#: templates/lang.js:194 templates/lang.js.c:215
 msgid "of"
 msgstr "de"
 
-#: templates/lang.js:189 templates/lang.js.c:210
+#: templates/lang.js:195 templates/lang.js.c:216
 msgid "Your search did not match any items."
 msgstr "Il n'y a pas de résultats à votre recherche"
 
-#: templates/lang.js:190
+#: templates/lang.js:196
 msgid "Search Maps"
 msgstr "Rechercher des Cartes"
 
-#: templates/lang.js:191 templates/lang.js.c:211
+#: templates/lang.js:197 templates/lang.js.c:217
 msgid "Search"
 msgstr "Rechercher"
 
-#: templates/lang.js:192 templates/lang.js.c:212
+#: templates/lang.js:198 templates/lang.js.c:218
 msgid "Showing"
 msgstr "Montrer"
 
-#: templates/lang.js:193
+#: templates/lang.js:199
 msgid "Loading"
 msgstr "Charger"
 
-#: templates/lang.js:194 templates/lang.js.c:214
+#: templates/lang.js:200 templates/lang.js.c:220
 msgid "permalink"
 msgstr "lien permanent"
 
-#: templates/lang.js:201
+#: templates/lang.js:207
 msgid "Select"
 msgstr "Sélectionner"
 
-#: templates/lang.js:204
+#: templates/lang.js:210
 msgid "Select:"
 msgstr "Sélectionner :"
 
-#: templates/lang.js:205
+#: templates/lang.js:211
 msgid "All"
 msgstr "Tout"
 
-#: templates/lang.js:206
+#: templates/lang.js:212
 msgid "None"
 msgstr "Aucun"
 
-#: templates/lang.js:213
+#: templates/lang.js:219
 msgid "Loading..."
 msgstr "Chargement..."
 
-#: templates/lang.js:215
+#: templates/lang.js:221
 msgid "You do not have permission to view this data"
 msgstr "Vous n'avez pas d'autorisation pour visualiser ces données"
 
-#: templates/lang.js:216
+#: templates/lang.js:222
 msgid "This data is stored on a remote server"
 msgstr "Ces données sont stockées sur un serveur à distance"
 
-#: templates/lang.js:221
+#: templates/lang.js:227
 msgid "Category"
 msgstr "Catégorie"
 
-#: templates/lang.js:222
 #
+#: templates/lang.js:228
 msgid "No category is provided for this layer."
 msgstr "Aucun catégorie n'est disponible pour cette couche."
 
-#: templates/lang.js:224
+#: templates/lang.js:230
 msgid "No abstract is provided for this layer."
 msgstr "Aucun résumé n'est disponible pour cette couche."
 
-#: templates/lang.js:228
+#: templates/lang.js:234
 msgid "No download URLs are definied for this layer."
 msgstr "Aucune URL de téléchargement n'est définie pour cette couche."
 
-#: templates/lang.js:238
+#: templates/lang.js:244
 msgid "Selected Layers"
 msgstr "Couches Sélectionnées"
 
-
-#: templates/lang.js:239
+#: templates/lang.js:245
 msgid "No Layers Selected"
 msgstr "Aucune Couche Sélectionnée"
 
-#: templates/lang.js:241
+#: templates/lang.js:247
 msgid "Clear Selected"
 msgstr "Vider la Sélection"
 
-#: templates/lang.js:242
+#: templates/lang.js:248
 msgid "Clear All"
 msgstr "Tout Réinitialiser"
 
-#: templates/lang.js:243
 #
+#: templates/lang.js:249
 msgid "Add Selected Layers"
 msgstr "Ajouter les couches sélectionnées"
 
-#: templates/lang.js:249
+#: templates/lang.js:255
 msgid "Operation Failed"
 msgstr "Échec de l'Opération"
 
-#: templates/lang.js:250
+#: templates/lang.js:256
 msgid "No layers are currently selected."
 msgstr "Aucune couche n'est actuellement sélectionnée."
 
-#: templates/lang.js:257
+#: templates/lang.js:263
 msgid "Downloading..."
 msgstr "En cours de téléchargement..."
 
-#: templates/lang.js:259
+#: templates/lang.js:265
 msgid "Please wait"
 msgstr "Patientez s'il vous plaît"
 
-#: templates/lang.js:265
+#: templates/lang.js:271
 msgid ""
 "Press OK to print this page as is.  \t\t\t If you would like to adjust the "
 "map extent, press Cancel, \t\t\t then use your browser's print button when "
 "you are ready"
 msgstr ""
-"Cliquez sur OK si vous souhaitez imprimer cette page telle qu'elle est."
-"\t\t\t Si vous souhaitez changer la zone de la carte, cliquez sur Annuler"
-"\t\t\t et utiliser le bouton Imprimer de votre navigateur quand vous êtes prêt. "
+"Cliquez sur OK si vous souhaitez imprimer cette page telle qu'elle est.\t\t"
+"\t Si vous souhaitez changer la zone de la carte, cliquez sur Annuler\t\t\t "
+"et utiliser le bouton Imprimer de votre navigateur quand vous êtes prêt. "
 
 #~ msgid "Get Feature Info"
 #~ msgstr "Obtenir les informations"
