@@ -39,7 +39,7 @@ The documentation is generated from source files in the `docs/` directory within
 See http://sphinx.pocoo.org/ for more information on the documentation system we use.
 
 
-:doc:`How to contribute to documentation </contribute_docu>`
+If you want to learn more about contributing to the documentation, please go ahead to the :doc:`/contribute_docu` section.
 
 
 
