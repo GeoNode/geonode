@@ -64,7 +64,7 @@ A new branch can be created by clicking on the button *branch: master* as shown 
 
 Just type the name of your new branch, hit enter and your branch will be created. To learn more about branches it is recommended to take a look here http://git-scm.com/book/en/Git-Branching-What-a-Branch-Is.
 
-*Remark*: Before you start editing make sure that you are in the right branch!
+.. note:: Before you start editing make sure that you are in the right branch!
 
 
 **Create a new folder/file**
@@ -141,7 +141,8 @@ Or instead you could use::
 Your repository should now be up to date!
 For more information on those commands go to http://git-scm.com/docs.
 
-*Remark*: If you've created a new branch, and you want to add the new folder to this branch, make sure you are working on this branch!
+.. note:: If you've created a new branch, and you want to add the new folder to this branch, make sure you are working on this branch!
+
 Typing::
       
       git status
