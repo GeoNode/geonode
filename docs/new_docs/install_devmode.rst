@@ -94,7 +94,7 @@ Now you should be able to visit the geonode site by typing ​http://localhost:8
 
 ***Important notice***
 
-With every restart of your machine, you have to restart geonode as well! That means, you will not be able to open ​http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to do the command *paver start* each time you want to use geonode! 
+With every restart of your machine, you have to restart geonode as well! That means, you will not be able to open ​http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to do the command *paver start_geoserver* and *paver start_django* each time you want to use geonode! 
 
 .. note:: *your_name* is the name of your machine and personal folder!
 
@@ -140,7 +140,9 @@ and you will land here::
 
 and be able to run::
 
-   paver start
+   paver start_geoserver
+   
+   paver start_django
 
 Now you are able to access ​http://localhost8000 again.
 
