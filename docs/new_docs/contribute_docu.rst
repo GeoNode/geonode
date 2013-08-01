@@ -109,7 +109,7 @@ We assume you have already forked the geonode repository. If not, please do so f
 Until now your repository only exists on the web! To get your forked repository on to your machine, you have to *clone* it.
 To do so, open a terminal, go to the folder where you want the projet to be and type::
 
-      git clone https://github.com/GeoNode/geonode.git my_geonode
+      git clone https://github.com/your_username/geonode.git my_geonode
 
 Now change the active directory to the newly cloned geonode directory using::
 
