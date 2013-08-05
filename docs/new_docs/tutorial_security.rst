@@ -32,17 +32,17 @@ check LINK. For now it will be enough to just follow the steps. To attend the *D
 on the right top of the geonode website (when you've already logged in with your superuser account). Then the following menu
 will show up:
 
-  .. figure:: img/menu_admin.PNG
+.. figure:: temp_img/menu_admin.PNG
 
 Click on to *Admin* and the interface will show up.
 
-  .. figure:: img/admin_interface.PNG
+.. figure:: temp_img/admin_interface.PNG
   
 Go to *Auth* -> *Users* and you will see all the users that exist at the moment. In your case it will only be the superuser you've
 just created. Click on it, and you will see a section on *Personal Info*, one on *Permissions* and one on *Important dates*. For
 us, the section on *Permissions* is the most important.
 
-  .. figure:: img/permissions_django_admin.PNG
+.. figure:: temp_img/permissions_django_admin.PNG
 
 As you can see, there are three boxes that can be checked and unchecked. Because you created a superuser, all three boxes
 are checked as default. If only the box *active* would have been checked, the user would not be a superuser and would not be able to
@@ -58,11 +58,11 @@ Until now we've only created a superuser. But how to create a normal user? You c
 
    Go to *Auth* -> *Users* and you should find a button on the right that says *Add user*. 
 
-   .. figure:: img/add_user.PNG
+   .. figure:: temp_img/add_user.PNG
  
    Click on it and a form to fill out will appear.
 
-   .. figure:: img/add_test_user.PNG
+   .. figure:: temp_img/add_test_user.PNG
   
    Fill out the form, and then click *save* at the right bottom of the site. Now you should be directed to the site where you can
    change the permissions on the user *test_user*. As default only *active* is checked. If you want this user also to be able to attend the *Django Admin Interface*
@@ -77,11 +77,11 @@ Until now we've only created a superuser. But how to create a normal user? You c
    To create an ordinary user you could also just use the geonode website. If you installed geonode using a release, you should
    be able to see a *Register* button on the top, beside the *Sign in* button. 
    
-   .. figure:: img/register.PNG
+   .. figure:: temp_img/register.PNG
    
    Hit the button and a form will appear for you to fill out.
   
-   .. figure:: img/sign_up_test_user.PNG
+   .. figure:: temp_img/sign_up_test_user.PNG
 
    By hitting *Sign up* the user will be signed up, as default only with the status *active*.
    To change or add a status to a certain user you have to attend the *Django Admin Interface* and go to *Auth* -> *Users* again.
@@ -105,7 +105,7 @@ That means you cannot ban a superuser from viewing or editing a layer.
 The permissions on your layers can already be set when uploading your files. When the upload form appears you will see the permission
 section on the right side:
 
-  .. figure:: img/upload_layer.PNG
+.. figure:: temp_img/upload_layer.PNG
   
 You access on your layer is split up into three groups:
 
@@ -129,14 +129,14 @@ In the section *Who can edit this data* you write down the names of the users yo
 When adding a layer using *importlayers* or when you upload new layers on geoserver and make them available on geonode using *updatelayers* (see section ...) you can edit the permissions on these layers later on as well. 
 If you are the owner of the layers, resp. the one who uploaded them, you can change the permissions of a specific layer by hitting the *Edit Layer* button.
 
-  .. figure:: img/edit_and_download_layer.PNG
+.. figure:: temp_img/edit_and_download_layer.PNG
 
-  .. figure:: img/edit_and_manage.PNG
+.. figure:: temp_img/edit_and_manage.PNG
   
 Choose *edit permissions* and a window with the permission settings will appear. This window can also be opened by scrolling down the website. On the right handside of
 the page you should be able to see a button like this.
 
-  .. figure:: img/change_layer_permissions.PNG
+.. figure:: temp_img/change_layer_permissions.PNG
   
 Click it and you will see the same window.
 
@@ -158,11 +158,11 @@ Maps
 
 basically the same
 
-.. figure:: img/change_map_permissions.PNG
+.. figure:: temp_img/change_map_permissions.PNG
 
-.. figure:: img/menu_map.PNG
+.. figure:: temp_img/menu_map.PNG
 
-.. figure:: img/edit_map.PNG
+.. figure:: temp_img/edit_map.PNG
 
 Documents
 ---------
