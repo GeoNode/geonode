@@ -68,6 +68,8 @@ def default_map_config():
         zoom=settings.DEFAULT_MAP_ZOOM
     )
     def _baselayer(lyr, order):
+        if "args" in lyr:
+            lyr["args"][0] = _(lyr["args"][0])
         return MapLayer.objects.from_viewer_config(
             map_model = _default_map,
             layer = lyr,

@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-25 16:19-0400\n"
+"POT-Creation-Date: 2013-08-05 13:30-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +15,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: settings.py:341
+msgid "No background"
+msgstr ""
+
+#: settings.py:348
+msgid "OpenStreetMap"
+msgstr ""
 
 #: views.py:16
 msgid "Explore, Visualize, and Publish Geographic Information"
@@ -25,11 +32,11 @@ msgstr ""
 msgid "About WorldMap"
 msgstr ""
 
-#: core/models.py:28 maps/models.py:881
+#: core/models.py:28 maps/models.py:885
 msgid "title"
 msgstr ""
 
-#: core/models.py:29 maps/models.py:2237
+#: core/models.py:29 maps/models.py:2246
 msgid "permissions"
 msgstr ""
 
@@ -41,12 +48,12 @@ msgstr ""
 msgid "Determines the order that roles are presented in the user interface."
 msgstr ""
 
-#: core/models.py:72 maps/views.py:1340
+#: core/models.py:72 maps/views.py:1443
 #: templates/maps/layer_permissions.html:18
 msgid "Anonymous Users"
 msgstr ""
 
-#: core/models.py:73 maps/views.py:1344
+#: core/models.py:73 maps/views.py:1447
 #: templates/maps/layer_permissions.html:19
 msgid "Registered Users"
 msgstr ""
@@ -99,7 +106,7 @@ msgstr ""
 msgid "Julian Date End"
 msgstr ""
 
-#: gazetteer/models.py:24 maps/views.py:95
+#: gazetteer/models.py:24 maps/views.py:98
 msgid "Project"
 msgstr ""
 
@@ -111,9 +118,8 @@ msgstr ""
 msgid "Content"
 msgstr ""
 
-#: mapnotes/models.py:13 maps/models.py:1629 maps/views.py:151
+#: mapnotes/models.py:13 maps/models.py:1633 maps/views.py:154
 #: templates/maps/layer_create.html:54 templates/maps/layer_create_tab.html:58
-#: templates/maps/layer_replace.html:48
 #: templates/maps/layer_upload_tab.html:58
 msgid "Title"
 msgstr ""
@@ -1230,55 +1236,76 @@ msgstr ""
 msgid "No Restrictions"
 msgstr ""
 
-#: maps/models.py:511 maps/models.py:2052
-msgid "name"
+#: maps/models.py:506
+msgid "Grid"
 msgstr ""
 
-#: maps/models.py:512
-msgid "organization"
+#: maps/models.py:507
+msgid "Stereo Model"
 msgstr ""
 
-#: maps/models.py:513
-msgid "position"
+#: maps/models.py:508
+msgid "Text Table"
 msgstr ""
 
-#: maps/models.py:514
-msgid "voice"
+#: maps/models.py:515 templates/maps/layer.html:208
+#: templates/maps/layer.html.py:229 templates/maps/layer_create.html:42
+#: templates/maps/layer_create_tab.html:40
+#: templates/profiles/profile_detail.html:17
+msgid "Name"
 msgstr ""
 
-#: maps/models.py:515
-msgid "facsimile"
+#: maps/models.py:516 templates/maps/layer.html:210
+#: templates/maps/layer.html.py:231 templates/profiles/profile_detail.html:27
+msgid "Organization"
 msgstr ""
 
-#: maps/models.py:516
-msgid "delivery_point"
+#: maps/models.py:517 templates/maps/layer.html:211
+#: templates/maps/layer.html.py:232 templates/profiles/profile_detail.html:28
+msgid "Position"
 msgstr ""
 
-#: maps/models.py:517
-msgid "city"
+#: maps/models.py:518 templates/maps/layer.html:212
+#: templates/maps/layer.html.py:233 templates/profiles/profile_detail.html:29
+msgid "Voice"
 msgstr ""
 
-#: maps/models.py:518
-msgid "administrative_area"
-msgstr ""
-
-#: maps/models.py:519
-msgid "postal_code"
+#: maps/models.py:519 maps/models.py:589 templates/maps/layer.html:213
+#: templates/maps/layer.html.py:234 templates/profiles/profile_detail.html:30
+msgid "Fax"
 msgstr ""
 
 #: maps/models.py:520
-msgid "country"
+msgid "Delivery Point"
 msgstr ""
 
-#: maps/models.py:521
-msgid "email"
+#: maps/models.py:521 maps/models.py:591
+msgid "City"
 msgstr ""
 
 #: maps/models.py:522
-msgid "role"
+msgid "Administrative Area"
 msgstr ""
 
-#: maps/models.py:528
+#: maps/models.py:523 maps/models.py:593
+msgid "Postal Code"
+msgstr ""
+
+#: maps/models.py:524 templates/maps/layer.html:217
+#: templates/maps/layer.html.py:238 templates/profiles/profile_detail.html:34
+msgid "Country"
+msgstr ""
+
+#: maps/models.py:525 templates/maps/layer.html:209
+#: templates/maps/layer.html.py:230 templates/profiles/profile_detail.html:19
+msgid "Email"
+msgstr ""
+
+#: maps/models.py:526
+msgid "Role"
+msgstr ""
+
+#: maps/models.py:532
 msgid ""
 "<h3>The Harvard WorldMap Project</h3>  <p>WorldMap is an open source web "
 "mapping system that is currently  under construction. It is built to assist "
@@ -1320,385 +1347,376 @@ msgid ""
 "and improve upon.</p>"
 msgstr ""
 
-#: maps/models.py:581
+#: maps/models.py:585
 msgid "Individual Name"
 msgstr ""
 
-#: maps/models.py:582
+#: maps/models.py:586
 msgid "Organization Name"
 msgstr ""
 
-#: maps/models.py:583
+#: maps/models.py:587
 msgid "Position Name"
 msgstr ""
 
-#: maps/models.py:584
+#: maps/models.py:588
 msgid "Phone"
 msgstr ""
 
-#: maps/models.py:585 templates/maps/layer.html:209
-#: templates/maps/layer.html.py:230 templates/profiles/profile_detail.html:30
-msgid "Fax"
-msgstr ""
-
-#: maps/models.py:586 templates/profiles/profile_detail.html:31
+#: maps/models.py:590 templates/profiles/profile_detail.html:31
 msgid "Address"
 msgstr ""
 
-#: maps/models.py:587
-msgid "City"
-msgstr ""
-
-#: maps/models.py:588
+#: maps/models.py:592
 msgid "State/Province"
 msgstr ""
 
-#: maps/models.py:589
-msgid "Postal Code"
-msgstr ""
-
-#: maps/models.py:592
+#: maps/models.py:596
 msgid "Display my email address on my profile"
 msgstr ""
 
-#: maps/models.py:593
+#: maps/models.py:597
 msgid "Affiliated with Harvard"
 msgstr ""
 
-#: maps/models.py:594
+#: maps/models.py:598
 msgid "Harvard affiliation expires on: "
 msgstr ""
 
-#: maps/models.py:595 maps/models.py:895 maps/models.py:1660
+#: maps/models.py:599 maps/models.py:899 maps/models.py:1664
 msgid "keywords"
 msgstr ""
 
-#: maps/models.py:595 maps/models.py:895 maps/models.py:1660
+#: maps/models.py:599 maps/models.py:899 maps/models.py:1664
 msgid "A space or comma-separated list of keywords"
 msgstr ""
 
-#: maps/models.py:614
+#: maps/models.py:618
 msgid "Either name or organization should be provided"
 msgstr ""
 
-#: maps/models.py:616
+#: maps/models.py:620
 msgid "The email address is already registered."
 msgstr ""
 
-#: maps/models.py:844
+#: maps/models.py:848
 msgid "Category Name"
 msgstr ""
 
-#: maps/models.py:845
+#: maps/models.py:849
 msgid "Category Title"
 msgstr ""
 
-#: maps/models.py:846
+#: maps/models.py:850
 msgid "Category Description"
 msgstr ""
 
-#: maps/models.py:882
+#: maps/models.py:886
 msgid "date"
 msgstr ""
 
-#: maps/models.py:884
+#: maps/models.py:888
 msgid "date type"
 msgstr ""
 
-#: maps/models.py:886
+#: maps/models.py:890
 msgid "edition"
 msgstr ""
 
-#: maps/models.py:887
+#: maps/models.py:891
 msgid "abstract"
 msgstr ""
 
-#: maps/models.py:888
+#: maps/models.py:892
 msgid "purpose"
 msgstr ""
 
-#: maps/models.py:889
+#: maps/models.py:893
 msgid "maintenance frequency"
 msgstr ""
 
-#: maps/models.py:896
+#: maps/models.py:900
 msgid "keywords region"
 msgstr ""
 
-#: maps/models.py:897
+#: maps/models.py:901
 msgid "constraints use"
 msgstr ""
 
-#: maps/models.py:898
+#: maps/models.py:902
 msgid "constraints other"
 msgstr ""
 
-#: maps/models.py:899
+#: maps/models.py:903
 msgid "spatial representation type"
 msgstr ""
 
-#: maps/models.py:902
+#: maps/models.py:906
 msgid "language"
 msgstr ""
 
-#: maps/models.py:906
+#: maps/models.py:910
 msgid "temporal extent start"
 msgstr ""
 
-#: maps/models.py:907
+#: maps/models.py:911
 msgid "temporal extent end"
 msgstr ""
 
-#: maps/models.py:908
+#: maps/models.py:912
 msgid "geographic bounding box"
 msgstr ""
 
-#: maps/models.py:909
+#: maps/models.py:913
 msgid "supplemental information"
 msgstr ""
 
-#: maps/models.py:912
+#: maps/models.py:916
 msgid "distribution URL"
 msgstr ""
 
-#: maps/models.py:913
+#: maps/models.py:917
 msgid "distribution description"
 msgstr ""
 
-#: maps/models.py:916
+#: maps/models.py:920
 msgid "SRS"
 msgstr ""
 
-#: maps/models.py:917
+#: maps/models.py:921
 msgid "bbox"
 msgstr ""
 
-#: maps/models.py:918
+#: maps/models.py:922
 msgid "llbbox"
 msgstr ""
 
-#: maps/models.py:930
+#: maps/models.py:934
 msgid "Downloadable?"
 msgstr ""
 
-#: maps/models.py:935 maps/models.py:1604
+#: maps/models.py:939 maps/models.py:1608
 msgid "In Gazetteer?"
 msgstr ""
 
-#: maps/models.py:940
+#: maps/models.py:944
 msgid "Gazetteer Project"
 msgstr ""
 
-#: maps/models.py:946
+#: maps/models.py:950
 msgid "data quality statement"
 msgstr ""
 
-#: maps/models.py:999
+#: maps/models.py:1003
 msgid "Zipped Shapefile"
 msgstr ""
 
-#: maps/models.py:1000
+#: maps/models.py:1004
 msgid "GML 2.0"
 msgstr ""
 
-#: maps/models.py:1001
+#: maps/models.py:1005
 msgid "GML 3.1.1"
 msgstr ""
 
-#: maps/models.py:1002
+#: maps/models.py:1006
 msgid "CSV"
 msgstr ""
 
-#: maps/models.py:1003
+#: maps/models.py:1007
 msgid "Excel"
 msgstr ""
 
-#: maps/models.py:1004
+#: maps/models.py:1008
 msgid "GeoJSON"
 msgstr ""
 
-#: maps/models.py:1058
+#: maps/models.py:1062
 msgid "GeoTIFF"
 msgstr ""
 
-#: maps/models.py:1059
+#: maps/models.py:1063
 msgid "JPEG"
 msgstr ""
 
-#: maps/models.py:1060
+#: maps/models.py:1064
 msgid "PDF"
 msgstr ""
 
-#: maps/models.py:1061
+#: maps/models.py:1065
 msgid "PNG"
 msgstr ""
 
-#: maps/models.py:1076
+#: maps/models.py:1080
 msgid "KML"
 msgstr ""
 
-#: maps/models.py:1077
+#: maps/models.py:1081
 msgid "View in Google Earth"
 msgstr ""
 
-#: maps/models.py:1598
+#: maps/models.py:1602
 msgid "Attribute Name"
 msgstr ""
 
-#: maps/models.py:1599
+#: maps/models.py:1603
 msgid "Attribute Label"
 msgstr ""
 
-#: maps/models.py:1600
+#: maps/models.py:1604
 msgid "Attribute Type"
 msgstr ""
 
-#: maps/models.py:1601 templates/maps/layer_describe.html:131
+#: maps/models.py:1605 templates/maps/layer_describe.html:132
 #: templates/maps/layer_describe_tab.html:125
 msgid "Searchable?"
 msgstr ""
 
-#: maps/models.py:1602 templates/maps/layer_describe.html:131
+#: maps/models.py:1606 templates/maps/layer_describe.html:132
 #: templates/maps/layer_describe_tab.html:125
 msgid "Visible?"
 msgstr ""
 
-#: maps/models.py:1603 templates/maps/layer_describe.html:131
+#: maps/models.py:1607 templates/maps/layer_describe.html:132
 #: templates/maps/layer_describe_tab.html:125
 msgid "Display Order"
 msgstr ""
 
-#: maps/models.py:1605
+#: maps/models.py:1609
 msgid "Gazetteer Start Date"
 msgstr ""
 
-#: maps/models.py:1606
+#: maps/models.py:1610
 msgid "Gazetteer End Date"
 msgstr ""
 
-#: maps/models.py:1607
+#: maps/models.py:1611
 msgid "Date Format"
 msgstr ""
 
-#: maps/models.py:1632 maps/views.py:152 templates/maps/layer.html:175
+#: maps/models.py:1636 maps/views.py:155 templates/maps/layer.html:175
 #: templates/maps/layer_create.html:87 templates/maps/layer_create_tab.html:91
 #: templates/maps/layer_upload_tab.html:144
 msgid "Abstract"
 msgstr ""
 
-#: maps/models.py:1636
+#: maps/models.py:1640
 msgid "zoom"
 msgstr ""
 
-#: maps/models.py:1640
+#: maps/models.py:1644
 msgid "projection"
 msgstr ""
 
-#: maps/models.py:1644
+#: maps/models.py:1648
 msgid "center X"
 msgstr ""
 
-#: maps/models.py:1648
+#: maps/models.py:1652
 msgid "center Y"
 msgstr ""
 
-#: maps/models.py:1652
+#: maps/models.py:1656
 msgid "owner"
 msgstr ""
 
-#: maps/models.py:1655
+#: maps/models.py:1659
 msgid "Date Created"
 msgstr ""
 
-#: maps/models.py:1662
+#: maps/models.py:1666
 msgid "Date Last Modified"
 msgstr ""
 
-#: maps/models.py:1667
+#: maps/models.py:1671
 msgid "Site URL"
 msgstr ""
 
-#: maps/models.py:1672
+#: maps/models.py:1676
 msgid "Official Harvard Site URL"
 msgstr ""
 
-#: maps/models.py:1677
+#: maps/models.py:1681
 msgid "Site Content"
 msgstr ""
 
-#: maps/models.py:1682
+#: maps/models.py:1686
 msgid "Use a custom template"
 msgstr ""
 
-#: maps/models.py:1687
+#: maps/models.py:1691
 msgid "Layer Category Parameters"
 msgstr ""
 
-#: maps/models.py:1957
+#: maps/models.py:1966
 msgid "JSON Configuration"
 msgstr ""
 
-#: maps/models.py:1985
+#: maps/models.py:1994
 msgid "Jump URL"
 msgstr ""
 
-#: maps/models.py:1986
+#: maps/models.py:1995
 msgid "Jump Site"
 msgstr ""
 
-#: maps/models.py:2044
+#: maps/models.py:2053
 msgid "stack order"
 msgstr ""
 
-#: maps/models.py:2048
+#: maps/models.py:2057
 msgid "format"
 msgstr ""
 
-#: maps/models.py:2059
-msgid "opacity"
-msgstr ""
-
-#: maps/models.py:2062
-msgid "styles"
-msgstr ""
-
-#: maps/models.py:2065
-msgid "transparent"
+#: maps/models.py:2061
+msgid "name"
 msgstr ""
 
 #: maps/models.py:2068
+msgid "opacity"
+msgstr ""
+
+#: maps/models.py:2071
+msgid "styles"
+msgstr ""
+
+#: maps/models.py:2074
+msgid "transparent"
+msgstr ""
+
+#: maps/models.py:2077
 msgid "fixed"
 msgstr ""
 
-#: maps/models.py:2072
+#: maps/models.py:2081
 msgid "group"
 msgstr ""
 
-#: maps/models.py:2076
+#: maps/models.py:2085
 msgid "visibility"
 msgstr ""
 
-#: maps/models.py:2079
+#: maps/models.py:2088
 msgid "ows URL"
 msgstr ""
 
-#: maps/models.py:2082
+#: maps/models.py:2091
 msgid "layer params"
 msgstr ""
 
-#: maps/models.py:2089
+#: maps/models.py:2098
 msgid "source params"
 msgstr ""
 
-#: maps/models.py:2324 maps/models.py:2330
+#: maps/models.py:2333 maps/models.py:2339
 msgid "Visits"
 msgstr ""
 
-#: maps/models.py:2325 maps/models.py:2331
+#: maps/models.py:2334 maps/models.py:2340
 msgid "Unique Visitors"
 msgstr ""
 
-#: maps/models.py:2332
+#: maps/models.py:2341
 msgid "Downloads"
 msgstr ""
 
@@ -1884,31 +1902,31 @@ msgstr ""
 msgid "so backing out the layer."
 msgstr ""
 
-#: maps/views.py:96
+#: maps/views.py:99
 msgid "Start Date attribute"
 msgstr ""
 
-#: maps/views.py:100 maps/views.py:106
+#: maps/views.py:103 maps/views.py:109
 msgid "Date format"
 msgstr ""
 
-#: maps/views.py:102
+#: maps/views.py:105
 msgid "End Date attribute"
 msgstr ""
 
-#: maps/views.py:110 maps/views.py:115
+#: maps/views.py:113 maps/views.py:118
 msgid "Person outside WorldMap (fill form)"
 msgstr ""
 
-#: maps/views.py:111
+#: maps/views.py:114
 msgid "Point Of Contact"
 msgstr ""
 
-#: maps/views.py:116 templates/maps/layer.html:220
+#: maps/views.py:119 templates/maps/layer.html:224
 msgid "Metadata Author"
 msgstr ""
 
-#: maps/views.py:126
+#: maps/views.py:129
 msgid ""
 "<p>Please choose the appropriate type of restriction (if any) for the use of "
 "your data. \n"
@@ -1932,152 +1950,152 @@ msgid ""
 "    "
 msgstr ""
 
-#: maps/views.py:146 templates/mapnotes/annotation.html:38
+#: maps/views.py:149 templates/mapnotes/annotation.html:38
 msgid "Date"
 msgstr ""
 
-#: maps/views.py:149
+#: maps/views.py:152
 msgid "Temporal Extent Start Date"
 msgstr ""
 
-#: maps/views.py:150
+#: maps/views.py:153
 msgid "Temporal Extent End Date"
 msgstr ""
 
-#: maps/views.py:153
+#: maps/views.py:156
 msgid "Contraints"
 msgstr ""
 
-#: maps/views.py:166
+#: maps/views.py:169
 msgid "New point of contact"
 msgstr ""
 
-#: maps/views.py:183 maps/views.py:189
+#: maps/views.py:186 maps/views.py:192
 msgid "No Permissions"
 msgstr ""
 
-#: maps/views.py:184 maps/views.py:190
+#: maps/views.py:187 maps/views.py:193
 msgid "Read Only"
 msgstr ""
 
-#: maps/views.py:185 maps/views.py:191
+#: maps/views.py:188 maps/views.py:194
 msgid "Read/Write"
 msgstr ""
 
-#: maps/views.py:186 maps/views.py:192
+#: maps/views.py:189 maps/views.py:195
 msgid "Administrative"
 msgstr ""
 
-#: maps/views.py:231
+#: maps/views.py:234
 msgid "You must be logged in to save this map"
 msgstr ""
 
-#: maps/views.py:237
+#: maps/views.py:240
 msgid "You are not allowed to modify this map."
 msgstr ""
 
-#: maps/views.py:242
+#: maps/views.py:245
 msgid "Map successfully updated."
 msgstr ""
 
-#: maps/views.py:248
+#: maps/views.py:251
 msgid "The server could not understand the request."
 msgstr ""
 
-#: maps/views.py:271
+#: maps/views.py:274
 msgid "You are not permitted to view or copy this map."
 msgstr ""
 
-#: maps/views.py:403 maps/views.py:825 maps/views.py:849 maps/views.py:2746
+#: maps/views.py:406 maps/views.py:926 maps/views.py:950 maps/views.py:2849
 #: templates/401.html:10
 msgid "Not Permitted"
 msgstr ""
 
-#: maps/views.py:576
+#: maps/views.py:579
 msgid "You must use POST for editing layer permissions"
 msgstr ""
 
-#: maps/views.py:583
+#: maps/views.py:586
 msgid "You are not allowed to change permissions for this layer"
 msgstr ""
 
-#: maps/views.py:602
+#: maps/views.py:605
 msgid "You are not allowed to change permissions for this map"
 msgstr ""
 
-#: maps/views.py:650 maps/views.py:2520
+#: maps/views.py:653 maps/views.py:2623
 msgid "You are not permitted to delete this map."
 msgstr ""
 
-#: maps/views.py:673 maps/views.py:754 maps/views.py:2545
+#: maps/views.py:676 maps/views.py:757 maps/views.py:2648
 msgid "You are not allowed to view this map."
 msgstr ""
 
-#: maps/views.py:699
+#: maps/views.py:702
 msgid "You are not allowed to modify this map's metadata."
 msgstr ""
 
-#: maps/views.py:866 maps/views.py:2657
+#: maps/views.py:967 maps/views.py:2760
 msgid "You are not permitted to modify this layer's metadata"
 msgstr ""
 
-#: maps/views.py:896
+#: maps/views.py:997
 msgid "No date fields available"
 msgstr ""
 
-#: maps/views.py:1039
+#: maps/views.py:1142
 msgid "You are not permitted to delete this layer"
 msgstr ""
 
-#: maps/views.py:1061 maps/views.py:1195
+#: maps/views.py:1164 maps/views.py:1298
 msgid "You are not permitted to modify this layer"
 msgstr ""
 
-#: maps/views.py:1094
+#: maps/views.py:1197
 msgid "You are not permitted to view this layer"
 msgstr ""
 
-#: maps/views.py:1119
+#: maps/views.py:1222
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
 msgstr ""
 
-#: maps/views.py:1179 maps/views.py:1268
+#: maps/views.py:1282 maps/views.py:1371
 msgid "Unexpected error during upload: "
 msgstr ""
 
-#: maps/views.py:1289
+#: maps/views.py:1392
 msgid "???"
 msgstr ""
 
-#: maps/views.py:1331
+#: maps/views.py:1434
 msgid "Invalid permission level."
 msgstr ""
 
-#: maps/views.py:1348
+#: maps/views.py:1451
 msgid "Custom Group Users"
 msgstr ""
 
-#: maps/views.py:1357 templates/maps/layer_permissions.html:15
+#: maps/views.py:1460 templates/maps/layer_permissions.html:15
 msgid "User"
 msgstr ""
 
-#: maps/views.py:1445
+#: maps/views.py:1548
 msgid "Bad HTTP Authorization Credentials."
 msgstr ""
 
-#: maps/views.py:2135 templates/maps/layer.html:182
-#: templates/maps/layer_describe.html:88
+#: maps/views.py:2238 templates/maps/layer.html:186
+#: templates/maps/layer_describe.html:89
 #: templates/maps/layer_describe_tab.html:72
 msgid "Category"
 msgstr ""
 
-#: maps/views.py:2177
+#: maps/views.py:2280
 msgid "You are not permitted to view this map's permissions"
 msgstr ""
 
-#: maps/views.py:2190
+#: maps/views.py:2293
 msgid "You are not permitted to view this layer's permissions"
 msgstr ""
 
@@ -2173,12 +2191,14 @@ msgstr ""
 #: templates/data_base.html:16 templates/data_base.html.py:28
 #: templates/maps.html:17 templates/maps.html.py:34
 #: templates/maps_search_base.html:36 templates/search_base.html:60
-#: templates/maps/view.html:227
+#: templates/maps/CHAwellness.html:165 templates/maps/tweetview.html:837
+#: templates/maps/view.html:228
 msgid "Search"
 msgstr ""
 
 #: templates/data_base.html:28 templates/search_base.html:60
-#: templates/maps/view.html:227
+#: templates/maps/CHAwellness.html:165 templates/maps/tweetview.html:837
+#: templates/maps/view.html:228
 msgid "for geospatial data"
 msgstr ""
 
@@ -2186,39 +2206,39 @@ msgstr ""
 msgid "Advanced Search"
 msgstr ""
 
-#: templates/error_layout.html:41 templates/fullscreen.html:48
+#: templates/error_layout.html:41 templates/fullscreen.html:45
 msgid "Sign out"
 msgstr ""
 
-#: templates/error_layout.html:43 templates/fullscreen.html:50
-#: templates/mobile.html:40 templates/page_layout.html:94
+#: templates/error_layout.html:43 templates/fullscreen.html:47
+#: templates/mobile.html:40 templates/page_layout.html:81
 #: templates/registration/username_form.html:24
 msgid "Sign in"
 msgstr ""
 
-#: templates/error_layout.html:45 templates/fullscreen.html:52
-#: templates/page_layout.html:96
+#: templates/error_layout.html:45 templates/fullscreen.html:49
+#: templates/page_layout.html:83
 msgid "Create Map"
 msgstr ""
 
-#: templates/error_layout.html:46 templates/fullscreen.html:53
-#: templates/page_layout.html:97
+#: templates/error_layout.html:46 templates/fullscreen.html:50
+#: templates/page_layout.html:84
 msgid "View Map"
 msgstr ""
 
-#: templates/error_layout.html:63 templates/page_layout.html:114
+#: templates/error_layout.html:63 templates/page_layout.html:120
 msgid "Need Help?"
 msgstr ""
 
-#: templates/error_layout.html:64 templates/page_layout.html:115
+#: templates/error_layout.html:64 templates/page_layout.html:121
 msgid "Contact Us"
 msgstr ""
 
-#: templates/error_layout.html:65 templates/page_layout.html:116
+#: templates/error_layout.html:65 templates/page_layout.html:122
 msgid "Blog"
 msgstr ""
 
-#: templates/error_layout.html:66 templates/page_layout.html:117
+#: templates/error_layout.html:66 templates/page_layout.html:123
 msgid "Source Code"
 msgstr ""
 
@@ -2230,11 +2250,7 @@ msgstr ""
 msgid "Powered by <a target='_blank' href='/'>WorldMap</a>"
 msgstr ""
 
-#: templates/fullscreen.html:47
-msgid "Welcome"
-msgstr ""
-
-#: templates/fullscreen.html:54 templates/page_layout.html:98
+#: templates/fullscreen.html:51 templates/page_layout.html:85
 msgid "Help"
 msgstr ""
 
@@ -2242,49 +2258,49 @@ msgstr ""
 msgid "Welcome!"
 msgstr ""
 
-#: templates/index.html:91
+#: templates/index.html:89
 msgid "Create a Map"
 msgstr ""
 
-#: templates/index.html:92
+#: templates/index.html:90
 msgid "View a Map"
 msgstr ""
 
-#: templates/index.html:93
+#: templates/index.html:91
 msgid "About"
 msgstr ""
 
-#: templates/index.html:105
+#: templates/index.html:103
 msgid "AfricaMap"
 msgstr ""
 
-#: templates/index.html:106
+#: templates/index.html:104
 msgid "ChinaMap"
 msgstr ""
 
-#: templates/index.html:107
+#: templates/index.html:105
 msgid "Boston Research Map"
 msgstr ""
 
-#: templates/index.html:108
+#: templates/index.html:106
 msgid "Giza Map"
 msgstr ""
 
-#: templates/index.html:109
+#: templates/index.html:107
 msgid "Japan's 2011 Disasters"
 msgstr ""
 
-#: templates/index.html:113
+#: templates/index.html:111
 msgid ""
 "Build your own mapping portal and publish it to the world or to just a few "
 "collaborators. WorldMap is open source software."
 msgstr ""
 
-#: templates/index.html:117
+#: templates/index.html:115
 msgid "Watch the WorldMap Quick Start video"
 msgstr ""
 
-#: templates/index.html:121
+#: templates/index.html:119
 msgid ""
 "WorldMap is being developed by the <a href='http://gis.harvard.edu/'>Center "
 "for Geographic Analysis</a> at <a href='http://www.harvard.edu'>Harvard "
@@ -2385,8 +2401,12 @@ msgstr ""
 msgid "Powered by"
 msgstr ""
 
-#: templates/page_layout.html:90
+#: templates/page_layout.html:77
 msgid "Log out"
+msgstr ""
+
+#: templates/page_layout.html:124
+msgid "Copyright 2011 &copy; The President and Fellows of Harvard College"
 msgstr ""
 
 #: templates/search_base.html:4
@@ -2399,19 +2419,23 @@ msgid ""
 "KML, GeoTIFF, or SHP."
 msgstr ""
 
-#: templates/search_base.html:73 templates/maps/view.html:249
+#: templates/search_base.html:73 templates/maps/CHAwellness.html:187
+#: templates/maps/tweetview.html:859 templates/maps/view.html:250
 msgid "Refine Search"
 msgstr ""
 
-#: templates/search_base.html:75 templates/maps/view.html:251
+#: templates/search_base.html:75 templates/maps/CHAwellness.html:189
+#: templates/maps/tweetview.html:861 templates/maps/view.html:252
 msgid "By area"
 msgstr ""
 
-#: templates/search_base.html:76 templates/maps/view.html:252
+#: templates/search_base.html:76 templates/maps/CHAwellness.html:190
+#: templates/maps/tweetview.html:862 templates/maps/view.html:253
 msgid "Limit the search to data that includes features in the displayed area."
 msgstr ""
 
-#: templates/search_base.html:83 templates/maps/view.html:234
+#: templates/search_base.html:83 templates/maps/CHAwellness.html:172
+#: templates/maps/view.html:235
 msgid "Selected Data"
 msgstr ""
 
@@ -2443,12 +2467,12 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
-#: templates/mapnotes/annotation.html:40 templates/maps/layer.html:263
+#: templates/mapnotes/annotation.html:40 templates/maps/layer.html:267
 #: templates/maps/mapinfo.html:99
 msgid "Comments"
 msgstr ""
 
-#: templates/mapnotes/annotation.html:50 templates/maps/layer.html:273
+#: templates/mapnotes/annotation.html:50 templates/maps/layer.html:277
 #: templates/maps/mapinfo.html:110
 #, python-format
 msgid ""
@@ -2457,13 +2481,13 @@ msgid ""
 "                "
 msgstr ""
 
-#: templates/mapnotes/annotation.html:59 templates/maps/layer.html:282
+#: templates/mapnotes/annotation.html:59 templates/maps/layer.html:286
 #: templates/maps/mapinfo.html:120
 msgid "Post a comment"
 msgstr ""
 
 #: templates/mapnotes/annotation.html:67 templates/maps/change_poc.html:17
-#: templates/maps/layer.html:290 templates/maps/mapinfo.html:128
+#: templates/maps/layer.html:294 templates/maps/mapinfo.html:128
 #: templates/registration/password_change_form.html:15
 #: templates/registration/password_reset_confirm.html:17
 #: templates/registration/password_reset_form.html:18
@@ -2472,9 +2496,39 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
-#: templates/mapnotes/annotation.html:72 templates/maps/layer.html:295
+#: templates/mapnotes/annotation.html:72 templates/maps/layer.html:299
 #: templates/maps/mapinfo.html:133
 msgid "Login to add a comment"
+msgstr ""
+
+#: templates/maps/CHAwellness.html:76 templates/maps/view.html:76
+msgid "Identify"
+msgstr ""
+
+#: templates/maps/CHAwellness.html:85 templates/maps/view.html:85
+msgid "Map Coordinates - longitude, latitude"
+msgstr ""
+
+#: templates/maps/CHAwellness.html:92 templates/maps/view.html:92
+msgid "Print"
+msgstr ""
+
+#: templates/maps/CHAwellness.html:212 templates/maps/tweetview.html:884
+#: templates/maps/view.html:275
+msgid "Rectify Images"
+msgstr ""
+
+#: templates/maps/CHAwellness.html:214 templates/maps/view.html:277
+msgid ""
+"Use <a target='_blank' href='http://warp.worldmap.harvard.edu'>WorldMap "
+"WARP</a> to upload and rectify scanned maps for use in WorldMap."
+msgstr ""
+
+#: templates/maps/CHAwellness.html:214 templates/maps/view.html:277
+msgid ""
+"Maps rectified using this tool can be brought into WorldMap by following the "
+"instructions under Section 4.5 in <a href='{{ STATIC_URL }}docs/"
+"WorldMap_Help.pdf'>WorldMap Help</a>."
 msgstr ""
 
 #: templates/maps/change_poc.html:5 templates/registration/logged_out.html:4
@@ -2520,203 +2574,172 @@ msgstr ""
 msgid "Map Viewer"
 msgstr ""
 
-#: templates/maps/layer.html:175
+#: templates/maps/layer.html:177
 msgid "No abstract for this layer."
 msgstr ""
 
-#: templates/maps/layer.html:179
+#: templates/maps/layer.html:183
 msgid "Type"
 msgstr ""
 
-#: templates/maps/layer.html:180 templates/maps/layer_create.html:94
+#: templates/maps/layer.html:184 templates/maps/layer_create.html:94
 #: templates/maps/layer_create_tab.html:98
 #: templates/maps/layer_upload_tab.html:152
 msgid "Keywords"
 msgstr ""
 
-#: templates/maps/layer.html:181
+#: templates/maps/layer.html:185
 msgid "Edition"
 msgstr ""
 
-#: templates/maps/layer.html:185
+#: templates/maps/layer.html:189
 msgid "Citation"
 msgstr ""
 
-#: templates/maps/layer.html:193
+#: templates/maps/layer.html:197
 msgid "Owner"
 msgstr ""
 
-#: templates/maps/layer.html:199
+#: templates/maps/layer.html:203
 msgid "Point of Contact"
 msgstr ""
 
-#: templates/maps/layer.html:204 templates/maps/layer.html.py:225
-#: templates/maps/layer_create.html:42 templates/maps/layer_create_tab.html:40
-#: templates/profiles/profile_detail.html:17
-msgid "Name"
-msgstr ""
-
-#: templates/maps/layer.html:205 templates/maps/layer.html.py:226
-#: templates/profiles/profile_detail.html:19
-msgid "Email"
-msgstr ""
-
-#: templates/maps/layer.html:206 templates/maps/layer.html.py:227
-#: templates/profiles/profile_detail.html:27
-msgid "Organization"
-msgstr ""
-
-#: templates/maps/layer.html:207 templates/maps/layer.html.py:228
-#: templates/profiles/profile_detail.html:28
-msgid "Position"
-msgstr ""
-
-#: templates/maps/layer.html:208 templates/maps/layer.html.py:229
-#: templates/profiles/profile_detail.html:29
-msgid "Voice"
-msgstr ""
-
-#: templates/maps/layer.html:210 templates/maps/layer.html.py:231
+#: templates/maps/layer.html:214 templates/maps/layer.html.py:235
 msgid "Delivery"
 msgstr ""
 
-#: templates/maps/layer.html:211 templates/maps/layer.html.py:232
+#: templates/maps/layer.html:215 templates/maps/layer.html.py:236
 msgid "Area"
 msgstr ""
 
-#: templates/maps/layer.html:212 templates/maps/layer.html.py:233
+#: templates/maps/layer.html:216 templates/maps/layer.html.py:237
 #: templates/profiles/profile_detail.html:33
 msgid "Zip Code"
 msgstr ""
 
-#: templates/maps/layer.html:213 templates/maps/layer.html.py:234
-#: templates/profiles/profile_detail.html:34
-msgid "Country"
-msgstr ""
-
-#: templates/maps/layer.html:241
+#: templates/maps/layer.html:245
 msgid "Attributes"
 msgstr ""
 
-#: templates/maps/layer.html:249
+#: templates/maps/layer.html:253
 msgid "Supplemental Information"
 msgstr ""
 
-#: templates/maps/layer.html:255
+#: templates/maps/layer.html:259
 msgid "Data Quality Statement"
 msgstr ""
 
-#: templates/maps/layer.html:260
+#: templates/maps/layer.html:264
 msgid "Bounding Box"
 msgstr ""
 
-#: templates/maps/layer.html:261
+#: templates/maps/layer.html:265
 msgid "Native SRS"
 msgstr ""
 
-#: templates/maps/layer.html:261
+#: templates/maps/layer.html:265
 msgid "No SRS specified."
 msgstr ""
 
-#: templates/maps/layer.html:300
+#: templates/maps/layer.html:304
 msgid "Rate this layer"
 msgstr ""
 
-#: templates/maps/layer.html:310 templates/maps/mapinfo.html:147
+#: templates/maps/layer.html:314 templates/maps/mapinfo.html:147
 msgid "Download"
 msgstr ""
 
-#: templates/maps/layer.html:311 templates/maps/layer_upload_tab.html:81
+#: templates/maps/layer.html:315 templates/maps/layer_upload_tab.html:81
 msgid "Data"
 msgstr ""
 
-#: templates/maps/layer.html:317
+#: templates/maps/layer.html:321
 msgid "Metadata"
 msgstr ""
 
-#: templates/maps/layer.html:321
+#: templates/maps/layer.html:325
 msgid "No metadata links provided for this data."
 msgstr ""
 
-#: templates/maps/layer.html:328
+#: templates/maps/layer.html:332
 msgid "Legend"
 msgstr ""
 
-#: templates/maps/layer.html:340
+#: templates/maps/layer.html:344
 msgid "Maps Which Use This Layer"
 msgstr ""
 
-#: templates/maps/layer.html:348
+#: templates/maps/layer.html:352
 msgid "This layer is not currently used in any maps."
 msgstr ""
 
-#: templates/maps/layer.html:353
+#: templates/maps/layer.html:357
 msgid "Layer Views"
 msgstr ""
 
-#: templates/maps/layer.html:354
+#: templates/maps/layer.html:358
 msgid "This layer has been viewed "
 msgstr ""
 
-#: templates/maps/layer.html:354 templates/maps/mapinfo.html:164
+#: templates/maps/layer.html:358 templates/maps/mapinfo.html:164
 #: templates/maps/mapinfopanel.html:17
 msgid "time(s) "
 msgstr ""
 
-#: templates/maps/layer.html:354 templates/maps/mapinfo.html:164
+#: templates/maps/layer.html:358 templates/maps/mapinfo.html:164
 #: templates/maps/mapinfopanel.html:17
 msgid "by "
 msgstr ""
 
-#: templates/maps/layer.html:354 templates/maps/mapinfo.html:164
+#: templates/maps/layer.html:358 templates/maps/mapinfo.html:164
 #: templates/maps/mapinfopanel.html:17
 msgid "user(s)"
 msgstr ""
 
-#: templates/maps/layer.html:361
+#: templates/maps/layer.html:365
 msgid "Layer Styles"
 msgstr ""
 
-#: templates/maps/layer.html:362
+#: templates/maps/layer.html:366
 msgid ""
 "The following styles are associated with this data set.  Choose a style to "
 "view it in the preview to the left.  Click on a style name to view or edit "
 "the style."
 msgstr ""
 
-#: templates/maps/layer.html:391
+#: templates/maps/layer.html:395
 msgid "Default style:"
 msgstr ""
 
-#: templates/maps/layer.html:402
+#: templates/maps/layer.html:406
 msgid "Create new style"
 msgstr ""
 
-#: templates/maps/layer.html:412
+#: templates/maps/layer.html:416
 msgid "Manage Layer"
 msgstr ""
 
-#: templates/maps/layer.html:417
+#: templates/maps/layer.html:421
 msgid "Update the description of this data"
 msgstr ""
 
-#: templates/maps/layer.html:420
+#: templates/maps/layer.html:424
 msgid "Update the contacts for this data"
 msgstr ""
 
-#: templates/maps/layer.html:423
+#: templates/maps/layer.html:427
 msgid "Upload a new version of this data"
 msgstr ""
 
-#: templates/maps/layer.html:428
+#: templates/maps/layer.html:432
 msgid "Remove"
 msgstr ""
 
-#: templates/maps/layer.html:432
+#: templates/maps/layer.html:436
 msgid "Please authenticate to update or remove layers"
 msgstr ""
 
-#: templates/maps/layer.html:438 templates/maps/layer_create.html:241
+#: templates/maps/layer.html:442 templates/maps/layer_create.html:241
 #: templates/maps/layer_create_tab.html:21
 #: templates/maps/layer_upload.html:380
 #: templates/maps/layer_upload_tab.html:39
@@ -2728,9 +2751,9 @@ msgid "Editing contacts for "
 msgstr ""
 
 #: templates/maps/layer_contacts.html:65
-#: templates/maps/layer_describe.html:140
+#: templates/maps/layer_describe.html:141
 #: templates/maps/layer_describe_tab.html:135
-#: templates/maps/layer_replace.html:251 templates/maps/map_describe.html:34
+#: templates/maps/layer_replace.html:242 templates/maps/map_describe.html:34
 msgid "Update"
 msgstr ""
 
@@ -2823,26 +2846,26 @@ msgstr ""
 msgid "Create Layer Data"
 msgstr ""
 
-#: templates/maps/layer_describe.html:80 templates/maps/map_describe.html:29
+#: templates/maps/layer_describe.html:81 templates/maps/map_describe.html:29
 msgid "Editing details for "
 msgstr ""
 
-#: templates/maps/layer_describe.html:119
-#: templates/maps/layer_describe.html:124
+#: templates/maps/layer_describe.html:120
+#: templates/maps/layer_describe.html:125
 msgid "Examples: 'YYYY', 'MM/DD/YYYY', 'YYYY/MM/DD'"
 msgstr ""
 
-#: templates/maps/layer_describe.html:131
+#: templates/maps/layer_describe.html:132
 #: templates/maps/layer_describe_tab.html:125
 msgid "Attribute"
 msgstr ""
 
-#: templates/maps/layer_describe.html:131
+#: templates/maps/layer_describe.html:132
 #: templates/maps/layer_describe_tab.html:125
 msgid "Display Title"
 msgstr ""
 
-#: templates/maps/layer_describe.html:131
+#: templates/maps/layer_describe.html:132
 #: templates/maps/layer_describe_tab.html:125
 msgid "Add to Gazetteer?"
 msgstr ""
@@ -2886,11 +2909,11 @@ msgstr ""
 msgid "No, cancel"
 msgstr ""
 
-#: templates/maps/layer_remove.html:44 templates/maps/layer_replace.html:264
+#: templates/maps/layer_remove.html:44 templates/maps/layer_replace.html:255
 msgid "This action affects the following maps:"
 msgstr ""
 
-#: templates/maps/layer_remove.html:49 templates/maps/layer_replace.html:270
+#: templates/maps/layer_remove.html:49 templates/maps/layer_replace.html:261
 msgid "No maps are using this layer."
 msgstr ""
 
@@ -2920,78 +2943,78 @@ msgstr ""
 msgid "Select a layer data file and submit the form to begin the transfer."
 msgstr ""
 
-#: templates/maps/layer_replace.html:71
+#: templates/maps/layer_replace.html:62
 #: templates/maps/layer_upload_tab.html:80
 msgid "Select a layer data file"
 msgstr ""
 
-#: templates/maps/layer_replace.html:72
+#: templates/maps/layer_replace.html:63
 msgid "File"
 msgstr ""
 
-#: templates/maps/layer_replace.html:82
+#: templates/maps/layer_replace.html:73
 #: templates/maps/layer_upload_tab.html:89
 msgid "Select a .dbf data file"
 msgstr ""
 
-#: templates/maps/layer_replace.html:83
+#: templates/maps/layer_replace.html:74
 #: templates/maps/layer_upload_tab.html:90
 msgid "DBF"
 msgstr ""
 
-#: templates/maps/layer_replace.html:91
+#: templates/maps/layer_replace.html:82
 #: templates/maps/layer_upload_tab.html:98
 msgid "Select a .shx data file"
 msgstr ""
 
-#: templates/maps/layer_replace.html:92
+#: templates/maps/layer_replace.html:83
 #: templates/maps/layer_upload_tab.html:99
 msgid "SHX"
 msgstr ""
 
-#: templates/maps/layer_replace.html:100
+#: templates/maps/layer_replace.html:91
 #: templates/maps/layer_upload_tab.html:107
 msgid "Select a .prj data file"
 msgstr ""
 
-#: templates/maps/layer_replace.html:101
+#: templates/maps/layer_replace.html:92
 #: templates/maps/layer_upload_tab.html:108
 msgid "PRJ"
 msgstr ""
 
-#: templates/maps/layer_replace.html:116
+#: templates/maps/layer_replace.html:107
 #: templates/maps/layer_upload_tab.html:118
 msgid "Encoding"
 msgstr ""
 
-#: templates/maps/layer_replace.html:117
+#: templates/maps/layer_replace.html:108
 msgid "UTF-8"
 msgstr ""
 
-#: templates/maps/layer_replace.html:125
+#: templates/maps/layer_replace.html:116
 #: templates/maps/layer_upload_tab.html:135
 msgid "Select a .sld style file (optional)"
 msgstr ""
 
-#: templates/maps/layer_replace.html:126
+#: templates/maps/layer_replace.html:117
 #: templates/maps/layer_upload_tab.html:136
 msgid "SLD"
 msgstr ""
 
-#: templates/maps/layer_replace.html:141
+#: templates/maps/layer_replace.html:132
 msgid "Update Layer Data"
 msgstr ""
 
-#: templates/maps/layer_replace.html:151
+#: templates/maps/layer_replace.html:142
 msgid "Upload"
 msgstr ""
 
-#: templates/maps/layer_replace.html:156
+#: templates/maps/layer_replace.html:147
 #: templates/maps/layer_upload_tab.html:203
 msgid "Uploading your data..."
 msgstr ""
 
-#: templates/maps/layer_replace.html:276 templates/maps/layer_upload.html:385
+#: templates/maps/layer_replace.html:267 templates/maps/layer_upload.html:385
 #: templates/maps/layer_upload_tab.html:30
 msgid "Supported Formats"
 msgstr ""
@@ -3062,7 +3085,7 @@ msgstr ""
 msgid "Edit Details"
 msgstr ""
 
-#: templates/maps/map_print.html:90
+#: templates/maps/map_print.html:89
 msgid "LEGEND"
 msgstr ""
 
@@ -3250,6 +3273,104 @@ msgstr ""
 msgid "You do not have permission to view or download this layer"
 msgstr ""
 
+#: templates/maps/tweetstartup.html:5
+msgid "Twitter Server maintenance"
+msgstr ""
+
+#: templates/maps/tweetstartup.html:19
+msgid "Tweetmap Maintenance"
+msgstr ""
+
+#: templates/maps/tweetview.html:255
+msgid "Filter Term"
+msgstr ""
+
+#: templates/maps/tweetview.html:265
+msgid "From"
+msgstr ""
+
+#: templates/maps/tweetview.html:459
+msgid "Filter Tweets"
+msgstr ""
+
+#: templates/maps/tweetview.html:489
+msgid "Filter Term:"
+msgstr ""
+
+#: templates/maps/tweetview.html:499
+msgid "From:"
+msgstr ""
+
+#: templates/maps/tweetview.html:511
+msgid "To:"
+msgstr ""
+
+#: templates/maps/tweetview.html:523
+msgid "Increment:"
+msgstr ""
+
+#: templates/maps/tweetview.html:531
+msgid "Day"
+msgstr ""
+
+#: templates/maps/tweetview.html:532
+msgid "Hour"
+msgstr ""
+
+#: templates/maps/tweetview.html:533
+msgid "Minute"
+msgstr ""
+
+#: templates/maps/tweetview.html:534
+msgid "Second"
+msgstr ""
+
+#: templates/maps/tweetview.html:548
+msgid "Download Tweets"
+msgstr ""
+
+#: templates/maps/tweetview.html:563
+msgid "LSH Matching"
+msgstr ""
+
+#: templates/maps/tweetview.html:574
+#, python-format
+msgid "Auto Max %%"
+msgstr ""
+
+#: templates/maps/tweetview.html:587
+#, python-format
+msgid "Max %%"
+msgstr ""
+
+#: templates/maps/tweetview.html:602
+msgid "Smoothing"
+msgstr ""
+
+#: templates/maps/tweetview.html:613
+msgid "Min Tweets/sq km"
+msgstr ""
+
+#: templates/maps/tweetview.html:644
+msgid "Tweet Filter"
+msgstr ""
+
+#: templates/maps/tweetview.html:662
+msgid "Tweet Graph"
+msgstr ""
+
+#: templates/maps/tweetview.html:666
+msgid "Twitter Trends"
+msgstr ""
+
+#: templates/maps/tweetview.html:678
+msgid "Tweets"
+msgstr ""
+
+#: templates/maps/tweetview.html:714
+msgid "Tweet Heatmap"
+msgstr ""
+
 #: templates/maps/upload_terms.html:8
 msgid ""
 "\n"
@@ -3386,18 +3507,6 @@ msgid ""
 "</p>\n"
 msgstr ""
 
-#: templates/maps/view.html:76
-msgid "Identify"
-msgstr ""
-
-#: templates/maps/view.html:85
-msgid "Map Coordinates - longitude, latitude"
-msgstr ""
-
-#: templates/maps/view.html:92
-msgid "Print"
-msgstr ""
-
 #: templates/maps/view.html:104
 msgid "Google Earth"
 msgstr ""
@@ -3412,23 +3521,6 @@ msgstr ""
 
 #: templates/maps/view.html:151
 msgid "Edit Feature"
-msgstr ""
-
-#: templates/maps/view.html:274
-msgid "Rectify Images"
-msgstr ""
-
-#: templates/maps/view.html:276
-msgid ""
-"Use <a target='_blank' href='http://warp.worldmap.harvard.edu'>WorldMap "
-"WARP</a> to upload and rectify scanned maps for use in WorldMap."
-msgstr ""
-
-#: templates/maps/view.html:276
-msgid ""
-"Maps rectified using this tool can be brought into WorldMap by following the "
-"instructions under Section 4.5 in <a href='{{ STATIC_URL }}docs/"
-"WorldMap_Help.pdf'>WorldMap Help</a>."
 msgstr ""
 
 #: templates/profiles/edit_profile.html:21
