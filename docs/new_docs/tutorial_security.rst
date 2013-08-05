@@ -75,7 +75,11 @@ Until now we've only created a superuser. But how to create a normal user? You c
 #. Geonode website
 
    To create an ordinary user you could also just use the geonode website. If you installed geonode using a release, you should
-   be able to see a *Register* button on the top, beside the *Sign in* button. Hit the button and a form will appear for you to fill out.
+   be able to see a *Register* button on the top, beside the *Sign in* button. 
+   
+   .. figure:: img/register.PNG
+   
+   Hit the button and a form will appear for you to fill out.
   
    .. figure:: img/sign_up_test_user.PNG
 
@@ -152,6 +156,17 @@ To learn how you can edit metadata or change the styles go to this section LINK.
 Maps
 ----
 
+basically the same
 
+.. figure:: img/change_map_permissions.PNG
+
+.. figure:: img/menu_map.PNG
+
+.. figure:: img/edit_map.PNG
+
+Documents
+---------
+
+basically the same
   
 
