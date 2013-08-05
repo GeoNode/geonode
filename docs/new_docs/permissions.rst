@@ -48,7 +48,7 @@ Layers
 As mentioned above, a superuser has access on all the uploaded data. In order to restrict other users from certain data, use
 the superuser to change those permissions. Generally you have the following possibilies of permissions:
 
-  .. figure:: img/map_permissions.PNG
+.. figure:: temp_img/map_permissions.PNG
 
 So there are permissions on:
 
@@ -75,7 +75,7 @@ If you allow a user to edit your layer, this user has the right to do the follow
 
 This can also be seen here (instead of list, but image is wrong):
 
-  .. figure:: img/edit_and_manage.PNG
+.. figure:: temp_img/edit_and_manage.PNG
   
   .. todo:: EDIT PERMISSIONS HAS TO BE REMOVED!!
   
