@@ -65,8 +65,8 @@ Until now we've only created a superuser. But how to create a normal user? You c
    .. figure:: img/add_test_user.PNG
   
    Fill out the form, and then click *save* at the right bottom of the site. Now you should be directed to the site where you can
-   change the permissions on the user. As default only *active* is checked. If you want this user also to be able to attend the *Django Admin Interface*
-   you can also check *staff status*.
+   change the permissions on the user *test_user*. As default only *active* is checked. If you want this user also to be able to attend the *Django Admin Interface*
+   you can also check *staff status*. For now we leave the settings as they are!
 
    .. todo:: groups and permissions!
    
@@ -86,7 +86,72 @@ Until now we've only created a superuser. But how to create a normal user? You c
    .. note:: If you've installed geonode in developing mode, the *Register* button won't be seen from the beginning. To add this button to the website, you have
    to change the `REGISTRATION_OPEN = False` in the settings.py to `REGISTRATION_OPEN = True`. Then reload geonode and you should also be able to see the *Register* button.
    
-You you should know about the different kinds of users and how to create or them. You've also learned about the permissions a certain user has and how to change them using the *Django Amdin Interface*.
+You you should know about the different kinds of users and how to create them. You've also learned about the permissions a certain user has and how to change them using the *Django Amdin Interface*.
 
 
+Layers
+------
+
+Now we take a closer look on the security of layers, how you can protect your data not to be viewed or edited by unwanted users.
+As already mentioned before it is important to know that a superuser does have unrestricted access to all your uploaeded data.
+That means you cannot ban a superuser from viewing or editing a layer.
+
+.. todo:: maybe you could do that, using the django admin interface
+
+The permissions on your layers can already be set when uploading your files. When the upload form appears you will see the permission
+section on the right side:
+
+  .. figure:: img/upload_layer.PNG
+  
+You access on your layer is split up into three groups:
+
+* view and download data
+* edit data
+* manage and edit data
+
+The difference between *manage and edit layer* and simply *edit layer* is only, that a user assigned to *edit layer* is not able to change
+the permissions on the layer (as a user assigned to *manage and edit layer* is!).
+You can now coose whether you want your layer to be viewed and downloaded by
+
+* anyone
+* any registered user
+* a certain user (or group)
+
+If you want your layer only be viewed by certain users or a group, you have to choose *Only users who can edit* in the part *Who can view and download this data*.
+In the section *Who can edit this data* you write down the names of the users you want to have admission on this data.0
+
+.. todo:: BUG about view => only users who can edit => not working; have to set it to any registered users!
+
+When adding a layer using *importlayers* or when you upload new layers on geoserver and make them available on geonode using *updatelayers* (see section ...) you can edit the permissions on these layers later on as well. 
+If you are the owner of the layers, resp. the one who uploaded them, you can change the permissions of a specific layer by hitting the *Edit Layer* button.
+
+  .. figure:: img/edit_and_download_layer.PNG
+
+  .. figure:: img/edit_and_manage.PNG
+  
+Choose *edit permissions* and a window with the permission settings will appear. This window can also be opened by scrolling down the website. On the right handside of
+the page you should be able to see a button like this.
+
+  .. figure:: img/change_layer_permissions.PNG
+  
+Click it and you will see the same window.
+
+If you allow a certain user only to view and download data, the button *edit layer* will vanish. But when you assign a user to be able
+to edit your data, this user is allowed to execute all of the following actions:
+
+* edit metadata
+* edit styles
+* manage styles
+* replace layer
+* remove layer
+
+To learn how you can edit metadata or change the styles go to this section LINK. 
+
+.. todo:: write a short tutorial on how to edit layers
+
+Maps
+----
+
+
+  
 
