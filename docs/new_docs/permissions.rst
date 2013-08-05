@@ -110,7 +110,7 @@ Now take a closer look on to the section *Edit Metadata*. All the following thin
   
 The sections about editing and managing styles only include the possibility to change the existing styles of the layer and create new ones.
 
- .. note:: At the moment it is possible for any user, registered or unregistered, who is permitted to view and download a layer, to *Edit Styles*!
+.. note:: At the moment it is possible for any user, registered or unregistered, who is permitted to view and download a layer, to *Edit Styles*!
 
 Any user who is permitted to edit your layer is also able to replace or even remove it!
 
