@@ -1692,6 +1692,11 @@ class Map(models.Model, PermissionLevelMixin):
     """
     Layer categories (names, expanded)
     """
+    
+    template_page = models.CharField('Map template page',  max_length=255, blank=True)
+    """
+    The map view template page to use, if different from default
+    """
 
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))

@@ -2,7 +2,9 @@
 # Django settings for GeoNode project.
 import logging
 import os
-from django.utils.translation import ugettext as _
+
+gettext = lambda s: s
+
 #
 # General Django development settings
 #
@@ -48,13 +50,7 @@ LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
     ('en', 'English'),
-    ('es', 'Español'),
-    ('it', 'Italiano'),
     ('fr', 'Français'),
-    ('de', 'Deutsch'),
-    ('el', 'Ελληνικά'),
-    ('id', 'Bahasa Indonesia'),
-    ('zh', '中國的'),
 )
 
 # If you set this to False, Django will make some optimizations so as not
@@ -342,14 +338,14 @@ MAP_BASELAYERS = [
  {
         "source": {"ptype": "gx_olsource"},
         "type": "OpenLayers.Layer",
-        "args": [_("No background")],
+        "args": [gettext("No background")],
         "visibility": False,
         "fixed": True,
         "group": "background"
     }, {
         "source": {"ptype": "gx_olsource"},
         "type": "OpenLayers.Layer.OSM",
-        "args": [_("OpenStreetMap")],
+        "args": [gettext("OpenStreetMap")],
         "visibility": False,
         "fixed": True,
         "group": "background"

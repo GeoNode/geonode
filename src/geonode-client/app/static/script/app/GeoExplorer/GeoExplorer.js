@@ -796,6 +796,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.busyMask.show();
 
         var addLayerButton = new Ext.Button({
+        	id: "worldmap_addlayers_button",
             tooltip : this.addLayersButtonText,
             disabled: false,
             text: '<span class="x-btn-text">' + this.addLayersButtonText + '</span>',
@@ -869,7 +870,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             anchor: "100% 5%",
             items: [this.gxSearchBar]
         });
-
 
 
         //needed for Safari
@@ -1642,6 +1642,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
 
         var publishAction = new Ext.Action({
+        	id: 'worldmap_publish_tool',
             tooltip: this.publishActionText,
             handler: this.makeExportDialog,
             scope: this,

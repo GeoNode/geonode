@@ -779,7 +779,12 @@ def view(request, mapid, snapshot=None):
     config['uid'] = request.user.id
     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map_obj)
     config['topic_categories'] = category_list()
-    return render_to_response('maps/view.html', RequestContext(request, {
+    
+    template_page = 'maps/view.html'
+    if map_obj.template_page:
+        template_page = map_obj.template_page
+    
+    return render_to_response(template_page, RequestContext(request, {
         'config': json.dumps(config),
         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
         'GEONETWORK_BASE_URL' : settings.GEONETWORK_BASE_URL,
@@ -811,6 +816,47 @@ def ajax_start_twitter(request):
         return HttpResponse(
             status=500
         )
+
+# def chawellness(request, snapshot=None):
+#     '''
+#         Custom view for a particular map
+#     '''
+#     map_obj = get_object_or_404(Map,urlsuffix="CHAwellness")
+#     config = map_obj.viewer_json(request.user)  
+#     
+#     if snapshot is None:
+#         config = map_obj.viewer_json(request.user)
+#     else:
+#         config = snapshot_config(snapshot, map_obj, request.user)
+# 
+#     first_visit = True
+#     if request.session.get('visit' + str(map_obj.id), False):
+#         first_visit = False
+#     else:
+#         request.session['visit' + str(map_obj.id)] = True
+# 
+#     mapstats, created = MapStats.objects.get_or_create(map=map_obj)
+#     mapstats.visits += 1
+#     if created or first_visit:
+#             mapstats.uniques+=1
+#     mapstats.save()
+# 
+#     #Remember last visited map
+#     request.session['lastmap'] = map_obj.id
+#     request.session['lastmapTitle'] = map_obj.title
+# 
+#     config['first_visit'] = first_visit
+#     config['uid'] = request.user.id
+#     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map_obj)
+#     config['topic_categories'] = category_list()    
+#     
+#     return render_to_response("maps/CHAwellness.html", RequestContext(request, {
+#         'config': json.dumps(config),
+#         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
+#         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
+#         'maptitle': map_obj.title,
+#         'urlsuffix': get_suffix_if_custom(map_obj)
+#         }))      
 
 def tweetview(request):
     map = get_object_or_404(Map,urlsuffix="tweetmap")
