@@ -12,102 +12,118 @@ data.
 Users
 -----
 
-Your first step will be to create a user. To do so you are having more than only one possibility. Depending on which kind of user you want to create you may
-choose a different option. We will start with creating a superuser, because this user will be your *administrator*. A superuser
+Your first step will be to create a user. There are three options to do so, depending on which kind of user you want to create you may
+choose a different option. We will start with creating a *superuser*, because this user is the most important. A superuser
 has all the permissions without explicity assigning them.
 
 The easiest way to create a superuser (in linux) is to open your terminal and type::
 
-  source .venvs/geonode/bin activate
-  django-admin.py createsuperuser --settings=geonode.settings
+  $ geonode createsuperuser
+
+If you installed geonode by source you have to take the following commands::
+
+  $ source .venvs/geonode/bin activate
+  $ django-admin.py createsuperuser --settings=geonode.settings
   
-This can only be done when you've installed geonode by source. If you did another kind of installation you should be able to
-use this command::
+You will be asked a username (in this tutorial we will call the superuser you now create *your_superuser*), an email adress and a password.
   
-  geonode createsuperuser
-  
-Now you've created a superuser you should become familiar with the *Django Admin Interface* As a superuser you are having
+Now you've created a superuser you should become familiar with the *Django Admin Interface*. As a superuser you are having
 access to this interface, where you can manage users, layers, permission and more. To learn more detailed about this interface
-check LINK. For now it will be enough to just follow the steps. To attend the *Django Admin Interface*, click onto your name
-on the right top of the geonode website (when you've already logged in with your superuser account). Then the following menu
+check this LINK. For now it will be enough to just follow the steps. To attend the *Django Admin Interface*, go to your geonode website and *sign in* with *your_superuser*. Once you've logged in, the name of your user will appear on the top right. Click on it and the following menu
 will show up:
 
 .. figure:: temp_img/menu_admin.PNG
 
-Click on to *Admin* and the interface will show up.
+Clicking on *Admin* causes the interface to show up.
 
 .. figure:: temp_img/admin_interface.PNG
   
-Go to *Auth* -> *Users* and you will see all the users that exist at the moment. In your case it will only be the superuser you've
-just created. Click on it, and you will see a section on *Personal Info*, one on *Permissions* and one on *Important dates*. For
-us, the section on *Permissions* is the most important.
+Go to *Auth* -> *Users* and you will see all the users that exist at the moment. In your case it will only be *your_superuser*. Click on it, and you will see a section on *Personal Info*, one on *Permissions* and one on *Important dates*. For the moment, the section on *Permissions* is the most important.
 
 .. figure:: temp_img/permissions_django_admin.PNG
 
-As you can see, there are three boxes that can be checked and unchecked. Because you created a superuser, all three boxes
+As you can see, there are three boxes that can be checked and unchecked. Because you've created a superuser, all three boxes
 are checked as default. If only the box *active* would have been checked, the user would not be a superuser and would not be able to
 attend the *Django Admin Interface* (which is only available for users with the *staff* status). Therefore keep the following
 two things in mind:
 
 * a superuser is able to attend the *Django Admin Interface* and he has all permissions on the data uploaded to geonode.
-* a normal user (created from geonode interface) does only have to status *active* as default. This user does not have the ability to attend the *Django Admin Interface* and certain permissions have to be added for him.
+* an ordinary user (created from geonode interface) does only have to status *active* as default. This user does not have the ability to attend the *Django Admin Interface* and certain permissions have to be added for him.
 
-Until now we've only created a superuser. But how to create a normal user? You could use the *Django Admin Interface* to do so or do it directly on the geonode website. 
+Until now we've only created a superuser. But how to create an ordinary user? You basically have two options to do so.
 
 #. Django Admin Interface
 
-   Go to *Auth* -> *Users* and you should find a button on the right that says *Add user*. 
+   First we will create a user via the *Django Admin Interface* because we've still got it open. Therefore go back to *Auth* -> *Users* and    		you should find a button on the right that says *Add user*.    
 
    .. figure:: temp_img/add_user.PNG
  
-   Click on it and a form to fill out will appear.
+   Click on it and a form to fill out will appear. Name the new user test_user, choose a password and click *save* at the right bottom of the  site.
 
    .. figure:: temp_img/add_test_user.PNG
-  
-   Fill out the form, and then click *save* at the right bottom of the site. Now you should be directed to the site where you can
-   change the permissions on the user *test_user*. As default only *active* is checked. If you want this user also to be able to attend the *Django Admin Interface*
-   you can also check *staff status*. For now we leave the settings as they are!
+
+   Now you should be directed to the site where you could
+   change the permissions on the user *test_user*. As default only *active* is checked. If you want this user also to be able to attend this admin interface
+   you could also check *staff status*. But for now we leave the settings as they are!
 
    .. todo:: groups and permissions!
    
-   Now a new user has been created and could be logged in from the geonode website as well.
+   To test whether the new user was successfully created, go back to the geonode webpage and try to sign in. 
 
 #. Geonode website
 
    To create an ordinary user you could also just use the geonode website. If you installed geonode using a release, you should
-   be able to see a *Register* button on the top, beside the *Sign in* button. 
+   be able to see a *Register* button on the top, beside the *Sign in* button (you might have to log out before). 
    
    .. figure:: temp_img/register.PNG
    
-   Hit the button and a form will appear for you to fill out.
+   Hit the button and again a form will appear for you to fill out. This user will be named *geonode_user*
   
    .. figure:: temp_img/sign_up_test_user.PNG
+   .. todo:: NEW IMAGE WITH GEONODE USER!
 
-   By hitting *Sign up* the user will be signed up, as default only with the status *active*.
-   To change or add a status to a certain user you have to attend the *Django Admin Interface* and go to *Auth* -> *Users* again.
-   Click on the user you want to change and you will be able to change personal information as well as permissions.
+   By hitting *Sign up* the user will be signed up, as default only with the status *active*. 
    
-   .. note:: If you've installed geonode in developing mode, the *Register* button won't be seen from the beginning. To add this button to the website, you have
-   to change the `REGISTRATION_OPEN = False` in the settings.py to `REGISTRATION_OPEN = True`. Then reload geonode and you should also be able to see the *Register* button.
-   
-You you should know about the different kinds of users and how to create them. You've also learned about the permissions a certain user has and how to change them using the *Django Amdin Interface*.
+As mentioned before, this status can be changed as well. To do so, sign in with *your_superuser* again and attend the admin interface. Go again to *Auth* -> *Users*, where now three users
+should appear:
 
+   .. figure:: temp_img/users_admin_interface.PNG
+   .. todo:: CREATE THIS IMAGE!
+
+We now want to change the permission of the *geonode_user* so that he will be able to attend the admin interface as well. 
+Click on to *geonode_user* and you will automatically be moved to the site where you can change the permissions. Check the box *staff status* and hit *save* to store the changes.
+  
+To sum it up, we have now created three users with different kind of permissions.
+
+* **your_superuser**: This user is allowed to attend the admin interface and has all available permissions on layers, maps etc.
+* **geonode_user**: This user is permitted to attend the admin interface, but permissions on layers, maps etc. have to be assigned.
+* **test_user**: This user is not able to attend the admin interface, permissions on layers, maps etc. have also to be assigned.
+
+.. todo:: is this user permitted to change permission of contact roles, eg.? check this out! or could you assign him these permissions.
+
+   
+You should know have an overview over the different kinds of users and how to create and edit them. You've also learned about the permissions a certain user has and how to change them using the *Django Amdin Interface*.
+
+.. note:: If you've installed geonode in developing mode, the *Register* button won't be seen from the beginning. To add this button to the website, you have
+to change the `REGISTRATION_OPEN = False` in the settings.py to `REGISTRATION_OPEN = True`. Then reload geonode and you should also be able to see the *Register* button.
+
+.. todo:: generally more about the django interface, about the generic roles etc.!
 
 Layers
 ------
 
-Now we take a closer look on the security of layers, how you can protect your data not to be viewed or edited by unwanted users.
-As already mentioned before it is important to know that a superuser does have unrestricted access to all your uploaeded data.
-That means you cannot ban a superuser from viewing or editing a layer.
+Now that we've already created some users, we will take a closer look on the security of layers, how you can protect your data not to be viewed or edited by unwanted users.
+
+.. hint:: As already mentioned before it is important to know that a superuser does have unrestricted access to all your uploaeded data.
+That means you cannot ban a superuser from viewing, downloading or editing a layer!
 
 .. todo:: maybe you could do that, using the django admin interface
 
-The permissions on your layers can already be set when uploading your files. When the upload form appears you will see the permission
-section on the right side:
+The permissions on a certain layer can already be set when uploading your files. When the upload form appears (*Layers* -> *Upload Layer*) you will see the permission section on the right side:
 
 .. figure:: temp_img/upload_layer.PNG
   
-You access on your layer is split up into three groups:
+As it can be seen here, the access on your layer is split up into three groups:
 
 * view and download data
 * edit data
@@ -121,27 +137,46 @@ You can now coose whether you want your layer to be viewed and downloaded by
 * any registered user
 * a certain user (or group)
 
-If you want your layer only be viewed by certain users or a group, you have to choose *Only users who can edit* in the part *Who can view and download this data*.
-In the section *Who can edit this data* you write down the names of the users you want to have admission on this data.0
+We will now upload our **test layer** like shown HERE. If you want your layer only be viewed by certain users or a group, you have to choose *Only users who can edit* in the part *Who can view and download this data*.
+In the section *Who can edit this data* you write down the names of the users you want to have admission on this data. For this first layer we will choose the settings like shown in the following image:
+
+.. figure:: temp_img/layer_test_permission.PNG
+.. todo:: CREATE THIS IMAGE! settings: view and download = everybody
+					edit = geonode_user
+					manage = your_superuser (you could leave this empty as well)
 
 .. todo:: BUG about view => only users who can edit => not working; have to set it to any registered users!
 
-When adding a layer using *importlayers* or when you upload new layers on geoserver and make them available on geonode using *updatelayers* (see section ...) you can edit the permissions on these layers later on as well. 
-If you are the owner of the layers, resp. the one who uploaded them, you can change the permissions of a specific layer by hitting the *Edit Layer* button.
+If you now log out, your layer can still be seen, but the unregistered users won't be able to edit your layer. Now sign in as *geonode_user* and click on the **test layer**. Above the layer you can see this:
 
 .. figure:: temp_img/edit_and_download_layer.PNG
+.. todo:: CHANGE IMAGE TO TEST LAYER!
+
+The *geonode_user* is able to edit the **test_layer**. But before going deeper into this, we have to first take a look on another case. As an administrator you might also upload your layers to geoserver and then make them available on geonode using *updatelayers*. Or you even add the layers via the terminal using *importlayers* (LINK TUTORIAL). To set the permissions on this layer, click on the **test layer** (you've uploaded via *updatelayers*) and you will see the same menu as shown in the image above. Click *Edit layer* and the menu will appear.
+
 
 .. figure:: temp_img/edit_and_manage.PNG
+
+.. todo:: as an owner you are always able to see and edit your layers? CHECK THIS!
+
+.. todo:: maybe tutorial about adding layers for admins?
   
-Choose *edit permissions* and a window with the permission settings will appear. This window can also be opened by scrolling down the website. On the right handside of
-the page you should be able to see a button like this.
+Choose *edit permissions* and a window with the permission settings will appear. This window can also be opened by scrolling down the website. On the right handside of the page you should be able to see a button like this.
 
 .. figure:: temp_img/change_layer_permissions.PNG
   
-Click it and you will see the same window.
+Click on it and you will see the same window as before.
 
-If you allow a certain user only to view and download data, the button *edit layer* will vanish. But when you assign a user to be able
-to edit your data, this user is allowed to execute all of the following actions:
+Now set the permissions of this layer using the following settings:
+
+.. figure:: temp_img/permission_test_layer_2.PNG
+.. todo:: CREATE THIS IMG!! view and download = only who can edit
+	 			edit = test_user
+				manage = owner (or empty)
+
+.. todo:: Faden verloren!
+
+When you assign a user to be able to edit your data, this user is allowed to execute all of the following actions:
 
 * edit metadata
 * edit styles
@@ -149,24 +184,62 @@ to edit your data, this user is allowed to execute all of the following actions:
 * replace layer
 * remove layer
 
+So be aware that each user assigned to edit this layer can even remove it! In our case, only the user *test_user* and *your_superuser* do have the rights to do so. *Geonode_user* is neither able to view nor to download or edit this layer.
+
+.. todo:: There's a bug (?) => dev group! This is NOT working at the moment, but should work!
+
+Now you are logged in as the user *test_user*. Below the **test_layer** you can see the following:
+
+.. figure:: temp_img/info.PNG
+.. todo:: CREATE/CHANGE THIS IMAGE!!
+
+By clicking *Edit Layer* and *Edit Metadata* on top of the layer, you can change this information. The *test_user* is able to change all the metadata of this layer. We now want to change to *point of contact*, therfore scroll down until you see this:
+
+.. figure:: temp_img/point_of_contact.PNG
+.. todo:: CHANGE THIS IMAGE!
+
+Change the *point of contact* from *_who_ever_created_this* to *test_user*. *Save* your changes and you will now be able to see the following:
+
+.. figure:: temp_img/point_of_contact_changed.PNG
+
+.. todo:: more detailed!
+.. todo:: did i miss anything? => find a übergang
+
+.. warning:: If you allow a user to view and download a layer, this user will also be able to edit the styles, even if he is not assigned to edit the layer! Keep this in mind!
+
+.. todo:: there is an issue about that! don't know whether it is going to be changed!
+
 To learn how you can edit metadata or change the styles go to this section LINK. 
 
-.. todo:: write a short tutorial on how to edit layers
+.. todo:: write a short tutorial on how to edit layers?
+.. todo:: login logout as who?
+.. todo:: DJANGO ADMIN INTERFACE!
 
 Maps
 ----
 
-basically the same
+The permission on maps are basically the same as on layers, just that there are fewer options on how to edit the map. Let's create a map (or already TUTORIAL?). Click on **test_map** and scroll down till you see this:
 
 .. figure:: temp_img/change_map_permissions.PNG
 
-.. figure:: temp_img/menu_map.PNG
+Here you can set the same permissions as known from the layer permissions! Set the permissions of this map as seen here:
+
+.. figure:: temp_img/test_map_permissions.PNG
+.. todo:: CREATE THIS IMAGE:: view = anybody
+				edit = *geonode_user* and *test_user*
+				manage = *geonode_user*
+
+Save your changes and then log out and log in as *test_user*. You should now be able to view the *test_map* and click on to *Edit map*.
 
 .. figure:: temp_img/edit_map.PNG
+
+.. todo:: this IMAGE should be without add permissions!! but not possible at the moment!
+
+As you may recognize, this user is not able to change the permissios on this map. If you log in as the user *geonode_user* you should be able to see the button *change map permissions* when you scroll down the page.
 
 Documents
 ---------
 
-basically the same
-  
+All the same is also valid for your uploaded documents. 
 
+.. todo:: add more
