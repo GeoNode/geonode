@@ -79,7 +79,9 @@ def pre_save_document(instance, sender, **kwargs):
     base_name, extension = os.path.splitext(instance.doc_file.name)
     instance.extension=extension[1:]
     
-    instance.uuid = str(uuid.uuid1())
+    if not instance.uuid:
+        instance.uuid = str(uuid.uuid1())
+    instance.csw_type = 'document'
     
     if instance.abstract == '' or instance.abstract is None:
         instance.abstract = 'No abstract provided'
@@ -93,6 +95,11 @@ def pre_save_document(instance, sender, **kwargs):
         instance.bbox_x1 = instance.resource.bbox_x1
         instance.bbox_y0 = instance.resource.bbox_y0
         instance.bbox_y1 = instance.resource.bbox_y1
+    else:
+        instance.bbox_x0 = -180
+        instance.bbox_x1 = 180
+        instance.bbox_y0 = -90
+        instance.bbox_y1 = 90
 
 def update_documents_extent(sender, **kwargs):
     model = 'map' if isinstance(sender, Map) else 'layer'
