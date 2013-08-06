@@ -16,7 +16,7 @@ def get_layer_capabilities(workspace, layer):
     """
     Retrieve a layer-specific GetCapabilities document
     """
-    wms_url = settings.GEOSERVER_BASE_URL + "%s/%s/wms?request=GetCapabilities&version=1.1.0" % (workspace, layer)
+    wms_url = "http://localhost:8080/geoserver/%s/%s/wms?request=GetCapabilities&version=1.1.0" % (workspace, layer)
     http = httplib2.Http()
     response, getcap = http.request(wms_url)
     return getcap
@@ -62,10 +62,13 @@ def get_capabilities(request, user=None, mapid=None, category=None):
         try:
             workspace, layername = layer.typename.split(":")
             if rootdoc is None:  # 1st one, seed with real GetCapabilities doc
+                try:
                     layercap = etree.fromstring(get_layer_capabilities(workspace, layername))
                     rootdoc = etree.ElementTree(layercap)
                     rootlayerelem = rootdoc.find('.//Capability/Layer')
                     format_online_resource(workspace, layername, rootdoc)
+                except Exception, e:
+                    logger.error("Error occurred creating GetCapabilities for %s:%s" % (layer.typename, str(e)))
             else:  
                     # Get the required info from layer model
                     tpl = get_template("capabilities/layer.xml")
@@ -79,7 +82,7 @@ def get_capabilities(request, user=None, mapid=None, category=None):
                     layerelem = etree.XML(gc_str)            
                     rootlayerelem.append(layerelem)
         except Exception, e:
-                logger.error("Error occurred creating GetCapabilities for %s:%s") % (layer.typename, str(e))
+                logger.error("Error occurred creating GetCapabilities for %s:%s" % (layer.typename, str(e)))
                 pass
     if rootdoc is not None:
         capabilities = etree.tostring(rootdoc, xml_declaration=True, encoding='UTF-8', pretty_print=True)

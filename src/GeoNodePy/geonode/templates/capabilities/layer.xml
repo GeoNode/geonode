@@ -1,0 +1,41 @@
+<Layer queryable="{% if layer.storeType == 'dataStore' %}1{% else %}0{% endif %}">
+<Name>{{layer.typename}}</Name>
+<Title>{{layer.title}}</Title>
+<Abstract>{{layer.abstract}}</Abstract>
+<KeywordList>
+<Keyword>Hydrants</Keyword>
+    {% for kw in layer.keyword_list %}
+    <Keyword>{{kw}}</Keyword>
+    {% endfor %}
+</KeywordList>
+<SRS>{{layer.srs}}</SRS>
+<LatLonBoundingBox minx="{{layer.llbbox_coords.0}}" miny="{{layer.llbbox_coords.1}}" maxx="{{layer.llbbox_coords.2}}" maxy="{{layer.llbbox_coords.3}}"/>
+<BoundingBox SRS="{{ layer.srs }}" minx="{{ layer.bbox_coords.0 }}" miny="{{ layer.bbox_coords.1 }}" maxx="{{ layer.bbox_coords.2 }}" maxy="{{ layer.bbox_coords.3 }}"/>
+<Attribution>
+<Title>{{ layer.owner.username }}</Title>
+</Attribution>
+<MetadataURL type="TC211">
+<Format>text/xml</Format>
+<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="{{GEONETWORK_BASE_URL}}srv/en/csw?outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id={{layer.uuid}}"/>
+</MetadataURL>
+<Style>
+<Name>{{publishing.default_style.name}}</Name>
+<Title>{{publishing.default_style.title}}</Title>
+<Abstract>{{publishing.default_style.title}}</Abstract>
+<LegendURL width="20" height="20">
+<Format>image/png</Format>
+<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="{{settings.GEOSERVER_BASE_URL}}wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer={{layer.typename}}"/>
+</LegendURL>
+</Style>
+{% for style in publishing.styles %}
+<Style>
+<Name>{{style.name}}</Name>
+<Title>{{style.title}}</Title>
+<Abstract>{{style.title}}</Abstract>
+<LegendURL width="20" height="20">
+<Format>image/png</Format>
+<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="{{settings.GEOSERVER_BASE_URL}}wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer={{layer.typename}}&amp;style={{style.name}}"/>
+</LegendURL>
+</Style>
+{% endfor %}
+</Layer>

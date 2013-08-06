@@ -257,7 +257,7 @@ function makeRequest(requestInfo) {
 
 
 function getSent (histStart, histEnd, histBins) {
-    var token = encodeURIComponent($("#tweetFilter")[0].value);
+    var token = encodeURIComponent($("#tweetFilter")[0].value.replace("&",""));
     var sqlRequest = "select time, sent from eg_sent where tweet ilike '" + token + "'"
     var request = host +  "/?Request=Graph&SQL="+sqlRequest + "&histStart=" + histStart + "&histEnd=" + histEnd + "&histBins=" + histBins;
 
@@ -271,7 +271,7 @@ function processSent(data) {
 }
 
 function getPercent (histStart, histEnd, histBins) {
-    var preToken =  $("#tweetFilter")[0].value.replace("'", "''")
+    var preToken =  $("#tweetFilter")[0].value.replace("'", "''").replace("&","")
     var token = encodeURIComponent(preToken);
     
     var sqlRequest = "select time, tweet_text ilike '" + token + "' from tweets where time > " + histStart + " and time < " + histEnd + " and goog_x > " + graphBounds[0] + " and goog_x < " + graphBounds[2]  + " and goog_y > " + 

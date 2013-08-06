@@ -1655,7 +1655,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 tooltip: this.saveMapText,
                 handler: this.showMetadataForm,
                 scope: this,
-                disabled: !this.config["edit_map"],
+                disabled: !this.config["edit_map"] && this.about["urlsuffix"] !== "boston",
                 text: '<span class="x-btn-text">' + this.saveMapBtnText + '</span>'
             }),
             publishAction,
@@ -1742,14 +1742,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var titleField = new Ext.form.TextField({
             width: '95%',
             fieldLabel: this.metaDataMapTitle,
-            value: this.about.title,
+            value: this.config["edit_map"] ? this.about.title : "",
             allowBlank: false,
             enableKeyEvents: true,
             listeners: {
                 "valid": function() {
                     if (urlField.isValid()) {
-                        //saveAsButton.enable();
-                        saveButton.enable();
+                        if (this.config["edit_map"])
+                        	saveButton.enable();
                         if (!saveAsButton.hidden)
                         	saveAsButton.enable();
                     }
@@ -1759,7 +1759,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     saveButton.disable();
                     if (!saveAsButton.hidden)
                     	saveAsButton.disable();
-                }
+                },
+                scope: this
             }
         });
 
@@ -1817,12 +1818,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             vtype: 'UniqueUrl',
             itemCls:'x-form-field-inline',
             ctCls:'x-form-field-inline',
-            value: this.about["urlsuffix"],
+            value: this.config["edit_map"] ? this.about["urlsuffix"] : "",
             listeners: {
                 "valid": function() {
                     if (titleField.isValid()) {
-                        //saveAsButton.enable();
-                        saveButton.enable();
+                    	if (this.config["edit_map"])
+                    		saveButton.enable();
                         if (!saveAsButton.hidden)
                         	saveAsButton.enable();
                     }
@@ -1832,7 +1833,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     saveButton.disable();
                     if (!saveAsButton.hidden)
                     	saveAsButton.disable();
-                }
+                },
+                scope: this
             }
         });
 
@@ -1921,7 +1923,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             id: 'gx_saveButton',
             text: this.metadataFormSaveText,
             cls:'x-btn-text',
-            disabled: !this.about.title,
+            disabled: !this.about.title || !this.config["edit_map"],
             handler: function(e) {
                 checkUrlBeforeSave(false);
             },

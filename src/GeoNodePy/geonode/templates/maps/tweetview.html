@@ -329,7 +329,7 @@ var updateCQL = function (layers) {
 
 
     var keywordFilter = "";
-    var searchFilter = tweetFilterField.getValue().replace(/'/g, "''");
+    var searchFilter = tweetFilterField.getValue().replace(/'/g, "''").replace("&","");
     var keywords = searchFilter.match(/[^"\s]+|"[^"]+"/g);
     if (keywords) {
         for (var k = 0; k < keywords.length; k++) {
