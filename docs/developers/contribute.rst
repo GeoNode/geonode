@@ -38,7 +38,7 @@ For managing contributions to the manual, GeoNode uses a process similar to that
 The documentation is generated from source files in the `docs/` directory within the GeoNode source repository.
 See http://sphinx.pocoo.org/ for more information on the documentation system we use.
 
-If you want to learn more about contributing to the documentation, please go ahead to the :doc:`/contribute_docu` section.
+If you want to learn more about contributing to the documentation, please go ahead to the :doc:`Contribute to documentation </developers/contribute_docu>` section.
 
 
 
