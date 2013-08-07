@@ -119,7 +119,6 @@ module.exports = function(grunt) {
             'fontselect-jquery-plugin/jquery.fontselect.min.js',
             'jquery-loadmore/loadmore.js',
             'multi-select/js/jquery.multi-select.js',
-            'wysihtml5/dist/wysihtml5-0.3.0.min.js',
             'requirejs-text/text.js',
             'underscore/underscore.js',
             'qunit/qunit/qunit.js'
