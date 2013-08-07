@@ -137,7 +137,8 @@ module.exports = function(grunt) {
         files: {
           'lib/css/assets.min.css': [
             'lib/css/jquery.dataTables.css',
-            'lib/css/select2.css'
+            'lib/css/select2.css',
+            'lib/css/multi-select.css'
           ]
         }
       }
@@ -157,6 +158,7 @@ module.exports = function(grunt) {
             'lib/js/jquery.dataTables.js',
             'lib/js/jquery.tinysort.js',
             'lib/js/jquery.raty.js',
+            'lib/js/jquery.multi-select.js',
             'lib/js/waypoints.js',
             'lib/js/bootstrap.js',
             'lib/js/select2.js',
