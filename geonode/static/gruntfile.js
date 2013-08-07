@@ -124,9 +124,6 @@ module.exports = function(grunt) {
             'select2/select2.js',
             'bootstrap-datepicker/js/bootstrap-datepicker.js',
             'requirejs/require.js',
-            // Copy dist-minified libs
-            // TODO: references to those require more attention (pun intended)
-            'jquery-waypoints/waypoints.min.js',
             // Others, with unclear reference
             // migrated from bower-installer configuration
             'jquery-ui/jquery-ui.js',
