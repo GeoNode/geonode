@@ -76,7 +76,6 @@ module.exports = function(grunt) {
           src: [
             'datatables/media/css/jquery.dataTables.css',
             'select2/select2.css', 'select2/*.png',
-            'jquery-ui/themes/cupertino/jquery-ui.css',
             'fontselect-jquery-plugin/fontselect.css', 'fontselect-jquery-plugin/*.png',
             'jquery-miniColors/jquery.minicolors.css', 'jquery-miniColors/jquery.minicolors.png',
             'multi-select/css/multi-select.css',
@@ -104,14 +103,6 @@ module.exports = function(grunt) {
           expand: true,
           flatten: true,
           cwd: '.components',
-          dest: 'lib/css/images',
-          src: [
-            'jquery-ui/themes/cupertino/images/*.png'
-          ]
-        }, {
-          expand: true,
-          flatten: true,
-          cwd: '.components',
           dest: 'lib/js',
           src: [
             'jquery/jquery.js',
@@ -126,7 +117,6 @@ module.exports = function(grunt) {
             'requirejs/require.js',
             // Others, with unclear reference
             // migrated from bower-installer configuration
-            'jquery-ui/jquery-ui.js',
             'fontselect-jquery-plugin/jquery.fontselect.min.js',
             'jquery-loadmore/loadmore.js',
             'jquery-miniColors/jquery.minicolors.js',
