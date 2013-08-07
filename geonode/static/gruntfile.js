@@ -77,7 +77,6 @@ module.exports = function(grunt) {
             'datatables/media/css/jquery.dataTables.css',
             'select2/select2.css', 'select2/*.png',
             'fontselect-jquery-plugin/fontselect.css', 'fontselect-jquery-plugin/*.png',
-            'jquery-miniColors/jquery.minicolors.css', 'jquery-miniColors/jquery.minicolors.png',
             'multi-select/css/multi-select.css',
             'qunit/qunit/qunit.css'
           ]
@@ -119,7 +118,6 @@ module.exports = function(grunt) {
             // migrated from bower-installer configuration
             'fontselect-jquery-plugin/jquery.fontselect.min.js',
             'jquery-loadmore/loadmore.js',
-            'jquery-miniColors/jquery.minicolors.js',
             'multi-select/js/jquery.multi-select.js',
             'wysihtml5/dist/wysihtml5-0.3.0.min.js',
             'requirejs-text/text.js',
