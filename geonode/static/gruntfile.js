@@ -120,13 +120,13 @@ module.exports = function(grunt) {
             'datatables/media/js/jquery.dataTables.js',
             'jquery-timeago/jquery.timeago.js',
             'tinysort/src/jquery.tinysort.js',
+            'raty/js/jquery.raty.js',
             'json2/json2.js',
             'select2/select2.js',
             'bootstrap-datepicker/js/bootstrap-datepicker.js',
             'requirejs/require.js',
             // Copy dist-minified libs
             // TODO: references to those require more attention (pun intended)
-            'raty/js/jquery.raty.min.js',
             'jquery-waypoints/waypoints.min.js',
             // Others, with unclear reference
             // migrated from bower-installer configuration
@@ -172,6 +172,7 @@ module.exports = function(grunt) {
             'lib/js/jquery.timeago.js',
             'lib/js/jquery.dataTables.js',
             'lib/js/jquery.tinysort.js',
+            'lib/js/jquery.raty.js',
             'lib/js/bootstrap.js',
             'lib/js/select2.js',
             'lib/js/bootstrap-datepicker.js'
