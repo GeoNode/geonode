@@ -1,6 +1,6 @@
 {% extends "upload/layer_upload_base.html" %}
 {% load i18n %}
-{% load static from staticfiles %}
+{% load staticfiles %}
 
 {% block title %} {% trans "Replace Layer"  %} - {{ block.super }}  {% endblock %}
 
@@ -105,8 +105,8 @@
 
 {% block extra_script %}
 {% if DEBUG_STATIC %}
-<script data-main="{{STATIC_URL}}geonode/js/upload/main"
-        src="{{ STATIC_URL }}lib/js/{% if DEBUG_STATIC %}require.js{% else %}require.min.js{% endif %}">
+<script data-main="{% static 'geonode/js/upload/main' %}"
+  src="{% static 'lib/js/require.js' %}">
 </script>
 {% endif %}
 
