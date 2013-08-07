@@ -165,8 +165,6 @@
 
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user document "document" %}
-    {% else %}
-        <script src="{{ STATIC_URL }}lib/js/jquery.raty.min.js"></script>
     {% endif %}
     <script type="text/javascript">
     $(function() {
