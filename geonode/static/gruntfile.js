@@ -110,15 +110,15 @@ module.exports = function(grunt) {
             'tinysort/src/jquery.tinysort.js',
             'raty/js/jquery.raty.js',
             'jquery-waypoints/waypoints.js',
+            'multi-select/js/jquery.multi-select.js',
+            'bootstrap-datepicker/js/bootstrap-datepicker.js',
             'json2/json2.js',
             'select2/select2.js',
-            'bootstrap-datepicker/js/bootstrap-datepicker.js',
             'requirejs/require.js',
             // Others, with unclear reference
             // migrated from bower-installer configuration
             'fontselect-jquery-plugin/jquery.fontselect.min.js',
             'jquery-loadmore/loadmore.js',
-            'multi-select/js/jquery.multi-select.js',
             'requirejs-text/text.js',
             'underscore/underscore.js',
             'qunit/qunit/qunit.js'
