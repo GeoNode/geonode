@@ -1,11 +1,4 @@
-requirejs.config({
-    baseUrl: '/static/lib/',
-    paths: {
-        'waypoints': 'js/waypoints.min'
-    }
-});
-
-define(['waypoints'],function(){
+$(function(){
     
     function build_query(){
         /*
