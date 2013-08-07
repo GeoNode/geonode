@@ -76,7 +76,6 @@ module.exports = function(grunt) {
           src: [
             'datatables/media/css/jquery.dataTables.css',
             'select2/select2.css', 'select2/*.png',
-            'fontselect-jquery-plugin/fontselect.css', 'fontselect-jquery-plugin/*.png',
             'multi-select/css/multi-select.css',
             'qunit/qunit/qunit.css'
           ]
@@ -115,9 +114,6 @@ module.exports = function(grunt) {
             'json2/json2.js',
             'select2/select2.js',
             'requirejs/require.js',
-            // Others, with unclear reference, just copied, not minified
-            // migrated from bower-installer configuration
-            'fontselect-jquery-plugin/jquery.fontselect.min.js',
             'requirejs-text/text.js',
             'underscore/underscore.js',
             'qunit/qunit/qunit.js'
@@ -157,12 +153,14 @@ module.exports = function(grunt) {
             'lib/js/jquery.tinysort.js',
             'lib/js/jquery.raty.js',
             'lib/js/jquery.multi-select.js',
+            'lib/js/select2.js',
             'lib/js/waypoints.js',
             'lib/js/bootstrap.js',
-            'lib/js/select2.js',
             'lib/js/bootstrap-datepicker.js'
           ],
-          'lib/js/require.min.js': ['lib/js/require.js']
+          'lib/js/require.js': ['lib/js/require.js'],
+          'lib/js/text.js': ['lib/js/text.js'],
+          'lib/js/underscore.js': ['lib/js/underscore.js']
         }
       }
     }
