@@ -109,8 +109,6 @@ module.exports = function(grunt) {
             'jquery-ui/themes/cupertino/images/*.png'
           ]
         }, {
-          'lib/js/hogan.js': ['.components/hogan/web/builds/2.0.0/hogan-2.0.0.js']
-        }, {
           expand: true,
           flatten: true,
           cwd: '.components',
