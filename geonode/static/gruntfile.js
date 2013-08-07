@@ -115,10 +115,9 @@ module.exports = function(grunt) {
             'json2/json2.js',
             'select2/select2.js',
             'requirejs/require.js',
-            // Others, with unclear reference
+            // Others, with unclear reference, just copied, not minified
             // migrated from bower-installer configuration
             'fontselect-jquery-plugin/jquery.fontselect.min.js',
-            'jquery-loadmore/loadmore.js',
             'requirejs-text/text.js',
             'underscore/underscore.js',
             'qunit/qunit/qunit.js'
