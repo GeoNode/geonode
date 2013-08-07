@@ -121,6 +121,7 @@ module.exports = function(grunt) {
             'jquery-timeago/jquery.timeago.js',
             'tinysort/src/jquery.tinysort.js',
             'raty/js/jquery.raty.js',
+            'jquery-waypoints/waypoints.js',
             'json2/json2.js',
             'select2/select2.js',
             'bootstrap-datepicker/js/bootstrap-datepicker.js',
@@ -173,6 +174,7 @@ module.exports = function(grunt) {
             'lib/js/jquery.dataTables.js',
             'lib/js/jquery.tinysort.js',
             'lib/js/jquery.raty.js',
+            'lib/js/waypoints.js',
             'lib/js/bootstrap.js',
             'lib/js/select2.js',
             'lib/js/bootstrap-datepicker.js'
