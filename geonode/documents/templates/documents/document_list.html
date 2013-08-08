@@ -8,11 +8,6 @@
 
 {% block body_class %}documents documents-list explore{% endblock %}
 
-{% block head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}lib/css/datepicker.css" type="text/css" media="screen" />
-{% endblock %}
-
 {% block body %}
     <div class="span12">
       <h2 class="page-title">{% trans "Explore Documents" %}</h2>

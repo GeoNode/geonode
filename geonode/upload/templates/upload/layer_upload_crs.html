@@ -1,5 +1,6 @@
 {% extends "upload/layer_upload_base.html" %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block body_class %}data data-list upload{% endblock %}
 
@@ -32,7 +33,7 @@
     </p>
     {% endif %}
   </form>
-<script data-main="{{STATIC_URL}}/geonode/js/upload/srs"
-    src="{{ STATIC_URL }}lib/js/require.js">
+<script data-main="{% static '/geonode/js/upload/srs' %}"
+  src="{% static 'lib/js/require.js' %}">
 </script>
 {% endblock %}
