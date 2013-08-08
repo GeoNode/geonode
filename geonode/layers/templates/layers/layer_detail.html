@@ -240,8 +240,6 @@
 
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user layer "layer" %}
-    {% else %}
-        <script src="{{ STATIC_URL }}lib/js/jquery.raty.min.js"></script>
     {% endif %}
     <script type="text/javascript">
     $(function() {
@@ -249,7 +247,7 @@
             half: true,
             readOnly: true,
             start: $('div.overall_rating').data('rating'),
-            path: "{{ STATIC_URL }}agon_ratings/img/"
+            path: "{{ STATIC_URL }}lib/img/"
         });
     });
     </script>

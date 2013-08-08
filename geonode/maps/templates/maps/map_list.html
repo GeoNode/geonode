@@ -8,11 +8,6 @@
 
 {% block body_class %}maps explore{% endblock %}
 
-{% block head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}lib/css/datepicker.css" type="text/css" media="screen" />
-{% endblock %}
-
 {% block body %}
     <div class="span12">
       <a href="{% url "new_map" %}" class="btn btn-large btn-primary pull-right strong">{% trans "Create a New Map" %}</a>
