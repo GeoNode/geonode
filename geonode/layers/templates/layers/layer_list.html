@@ -10,11 +10,6 @@
 
 {% block body_class %}data data-list explore{% endblock %}
 
-{% block head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}lib/css/datepicker.css" type="text/css" media="screen" />
-{% endblock %}
-
 {% block body %}
     <div class="span12">
       <h2 class="page-title">{% trans "Explore Layers" %}</h2>

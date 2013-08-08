@@ -7,11 +7,6 @@
 
 {% block body_class %}search{% endblock %}
 
-{% block head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}lib/css/datepicker.css" type="text/css" media="screen" />
-{% endblock %}
-
 {% block body_outer %}
     <div class="span12">
       <h2 class="page-title">{% trans "Search" %}</h2>

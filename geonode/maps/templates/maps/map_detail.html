@@ -1,7 +1,6 @@
 {% extends "maps/map_base.html" %}
 {% load geonode_auth %}
 {% load i18n %}
-{% load geonode_auth %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
 {% load url from future %}
@@ -176,8 +175,6 @@
 
 {% if request.user.is_authenticated %}
  {% user_rating_js request.user map "map" %}
-{% else %}
- <script src="{{ STATIC_URL }}lib/js/jquery.raty.min.js"></script>
 {% endif %}
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/thumbnail/map_thumbnail.js"></script>
 <script type="text/javascript">
@@ -186,7 +183,7 @@
      half: true,
      readOnly: true,
      start: $('div.overall_rating').data('rating'),
-     path: "{{ STATIC_URL }}agon_ratings/img/"
+     path: "{{ STATIC_URL }}lib/img/"
    });
    $("#rate-map").raty();
  });
