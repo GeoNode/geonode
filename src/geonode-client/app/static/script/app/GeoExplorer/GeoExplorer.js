@@ -1651,13 +1651,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             disabled: !this.mapID
         });
 
+        var saveText = (this.config["edit_map"] || this.about["urlsuffix"] !== "boston") ? this.saveMapBtnText : this.saveMapAsText;
         var tools = [
             new Ext.Button({
-                tooltip: this.config["edit_map"] ? this.saveMapBtnText : this.saveMapAsText,
+                tooltip: saveText,
                 handler: this.showMetadataForm,
                 scope: this,
                 disabled: !this.config["edit_map"] && this.about["urlsuffix"] !== "boston",
-                text: '<span class="x-btn-text">' + (this.config["edit_map"] ? this.saveMapBtnText : this.saveMapAsText) + '</span>'
+                text: '<span class="x-btn-text">' + saveText + '</span>'
             }),
             publishAction,
             infoButton,

@@ -105,7 +105,7 @@ if (window.GeoExplorer) {
         rectifyLayerText: gettext('Rectify Layer'),
         worldmapDataText:  gettext('WorldMap Data'),
         externalDataText: gettext('External Data'),
-        leavePageWarningText: gettext('If you leave this page, unsaved changes will be lost.'),
+        leavePageWarningText: gettext('If you leave this page, unsaved changes will be lost.')
     });
 }
 
@@ -272,7 +272,7 @@ if (window.GeoExplorer && GeoExplorer.ViewerPrint) {
 		printMsg: gettext("Press OK to print this page as is.  \
 			 If you would like to adjust the map extent, press Cancel, \
 			 then use your browser's print button when you are ready"),
-		printTitle: gettext("Print"),
+		printTitle: gettext("Print")
 	});
 }
 
