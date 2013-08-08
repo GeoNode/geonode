@@ -86,7 +86,7 @@ module.exports = function(grunt) {
           dest: 'lib/img',
           src: [
             'bootstrap/img/*.png',
-            'select2/*.png',
+            'select2/*.png', 'select2/spinner.gif',
             'raty/img/*.png',
             'multi-select/img/switch.png',
             'datatables/media/images/*.png'
