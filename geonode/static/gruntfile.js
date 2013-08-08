@@ -75,7 +75,7 @@ module.exports = function(grunt) {
           dest: 'lib/css',
           src: [
             'datatables/media/css/jquery.dataTables.css',
-            'select2/select2.css', 'select2/*.png',
+            'select2/select2.css', 
             'multi-select/css/multi-select.css',
             'qunit/qunit/qunit.css'
           ]
@@ -86,15 +86,9 @@ module.exports = function(grunt) {
           dest: 'lib/img',
           src: [
             'bootstrap/img/*.png',
+            'select2/*.png',
             'raty/img/*.png',
-            'multi-select/img/switch.png'
-          ]
-        }, {
-          expand: true,
-          flatten: true,
-          cwd: '.components',
-          dest: 'lib/images',
-          src: [
+            'multi-select/img/switch.png',
             'datatables/media/images/*.png'
           ]
         }, {
@@ -118,6 +112,27 @@ module.exports = function(grunt) {
             'underscore/underscore.js',
             'qunit/qunit/qunit.js'
           ]
+        }]
+      }
+    },
+
+    // replace image paths in CSS to match lib/img/
+    replace: {
+      development: {
+        src: ['lib/css/*.css'],
+        overwrite: true,
+        replacements: [{ 
+          from: /url\('(?!\.)/g,
+          to: 'url(\'../img/'
+        }, {
+          from: /url\((?!\')/g, 
+          to: 'url(\'../img/'
+        }, { 
+          from: /..\/images\//g,
+          to: '../img/'
+        }, {
+          from: /(png|gif|jpg)(?=\))/g, 
+          to: '$1\''
         }]
       }
     },
@@ -173,14 +188,15 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-text-replace');
 
   // test
   grunt.registerTask('test', ['jshint']);
 
   // build development
-  grunt.registerTask('default', ['jshint', 'less:development', 'concat:bootstrap', 'copy']);
+  grunt.registerTask('default', ['jshint', 'less:development', 'concat:bootstrap', 'copy', 'replace']);
 
   // build production
-  grunt.registerTask('production', ['jshint', 'less:production', 'concat:bootstrap', 'copy', 'cssmin', 'uglify' ]);
+  grunt.registerTask('production', ['jshint', 'less:production', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify' ]);
 
 };
