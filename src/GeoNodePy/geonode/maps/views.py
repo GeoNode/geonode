@@ -892,12 +892,12 @@ def tweetview(request):
 
     try:
         conn = httplib2.Http(timeout=10)
-        testUrl = "http://" +  settings.GEOPS_IP  + "?REQUEST%3DGetFeatureInfo%26SQL%3Dselect%20min(time)%2Cmax(time)%20from%20tweets"
+        testUrl = "http://" +  geops_ip  + "?REQUEST%3DGetFeatureInfo%26SQL%3Dselect%20min(time)%2Cmax(time)%20from%20tweets"
         #testUrl = "http://worldmap.harvard.edu"
         resp, content = conn.request(testUrl, 'GET')
-        timerange = json.loads(content)
-        
+        timerange = json.loads(content)  
     except:
+        timerange = None
         redirectPage = "maps/tweetstartup.html"
 
     return render_to_response(redirectPage, RequestContext(request, {
@@ -908,8 +908,8 @@ def tweetview(request):
         'GEOPS_IP': geops_ip,
         'urlsuffix': get_suffix_if_custom(map),
         'tweetdownload': request.user.is_authenticated() and request.user.get_profile().is_org_member,
-        'min_date': timerange["results"][0]["min"]*1000,
-        'max_date': timerange["results"][0]["max"]*1000
+        'min_date': timerange["results"][0]["min"]*1000 if timerange is not None else 0,
+        'max_date': timerange["results"][0]["max"]*1000 if timerange is not None else 0
         }))
 
 def embed(request, mapid=None, snapshot=None):

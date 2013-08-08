@@ -69,6 +69,7 @@ if (window.GeoExplorer) {
         saveFailTitle: gettext("Error While Saving"),
         saveMapText: gettext("Save Map"),
         saveMapBtnText: gettext("Save"),
+        saveMapAsText: gettext("Copy"),
         saveNotAuthorizedMessage: gettext("You must be logged in to save this map."),
         shareLayerText: gettext("Share Layer"),
         shareMapText: gettext("Share Map"),

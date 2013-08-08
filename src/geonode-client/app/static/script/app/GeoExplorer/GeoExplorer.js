@@ -163,6 +163,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     metadataFormCancelText : "UT:Cancel",
     metadataFormSaveAsCopyText : "UT:Save as Copy",
     metadataFormSaveText : "UT:Save",
+    metadataFormCopyText : "UT:Copy",
     metaDataHeader: 'UT:About this Map View',
     metaDataMapAbstract: 'UT:Abstract (brief description)',
     metaDataMapIntroText: 'UT:Introduction (tell visitors more about your map view)',
@@ -192,7 +193,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     saveFailTitle: "UT: Error While Saving",
     saveMapText: "UT: Save Map",
     saveMapBtnText: "UT: Save",
-    saveMapAsText: "UT: Save Map As",
+    saveMapAsText: "UT: Copy",
     saveNotAuthorizedMessage: "UT: You Must be logged in to save this map.",
     shareLayerText: 'UT: Share Layer',
     smallSizeLabel: 'UT: Small',
@@ -1638,7 +1639,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         	cls: "language-overlay-element"
         };
 
-        this.mapPanel.add(languageSelect);
+        //this.mapPanel.add(languageSelect);
 
 
         var publishAction = new Ext.Action({
@@ -1652,11 +1653,11 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var tools = [
             new Ext.Button({
-                tooltip: this.saveMapText,
+                tooltip: this.config["edit_map"] ? this.saveMapBtnText : this.saveMapAsText,
                 handler: this.showMetadataForm,
                 scope: this,
                 disabled: !this.config["edit_map"] && this.about["urlsuffix"] !== "boston",
-                text: '<span class="x-btn-text">' + this.saveMapBtnText + '</span>'
+                text: '<span class="x-btn-text">' + (this.config["edit_map"] ? this.saveMapBtnText : this.saveMapAsText) + '</span>'
             }),
             publishAction,
             infoButton,

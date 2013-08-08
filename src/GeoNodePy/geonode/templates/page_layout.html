@@ -99,7 +99,7 @@
       {% block footer %}
       
    <!-- Only show the language form if the csrf_token is present -->
-   {% if csrf_token != "NOTPROVIDED" %}       
+   {% if csrf_token != "NOTPROVIDED" and False %}       
    {% get_current_language as LANGUAGE %}
     <form class="langbar" id="target" action="/i18n/setlang/" method="post">
       {% csrf_token %}
