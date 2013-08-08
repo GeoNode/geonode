@@ -75,7 +75,7 @@ module.exports = function(grunt) {
           dest: 'lib/css',
           src: [
             'datatables/media/css/jquery.dataTables.css',
-            'select2/select2.css', 'select2/*.png',
+            'select2/select2.css', 'select2/*.png', 'select2/spinner.gif',
             'multi-select/css/multi-select.css',
             'qunit/qunit/qunit.css'
           ]
