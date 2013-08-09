@@ -208,7 +208,7 @@ class Map(ResourceBase, GXPMapBase):
         http = httplib2.Http()
         url = "%srest/printng/render.png" % settings.OGC_SERVER['default']['LOCATION']
         hostname = urlparse(settings.SITEURL).hostname
-        params = dict(width=198, height=98, auth="%s,%s,%s" % (hostname, _user, _passwd))
+        params = dict(width=198, height=98, auth="%s,%s,%s" % (hostname, _user, _password))
         url = url + "?" + urllib.urlencode(params)
         http.add_credentials(_user, _password)
         netloc = urlparse(url).netloc
