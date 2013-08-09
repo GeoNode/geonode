@@ -312,7 +312,9 @@ def post_delete_layer(instance, sender, **kwargs):
     logger.debug("Going to delete associated maplayers for [%s]", instance.typename)
     MapLayer.objects.filter(name=instance.typename).delete()
     logger.debug("Going to delete the default style for [%s]", instance.typename)
-    instance.default_style.delete()
+
+    if instance.default_style.layer_styles.all().count() == 1:
+        instance.default_style.delete()
 
 def geoserver_pre_save(instance, sender, **kwargs):
     """Send information to geoserver.
