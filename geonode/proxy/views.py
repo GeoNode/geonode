@@ -71,7 +71,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
     url = "".join([settings.OGC_SERVER['default']['LOCATION'], downstream_path, path])
 
     http = httplib2.Http()
-    http.add_credentials(*settings.GEOSERVER_CREDENTIALS)
+    http.add_credentials(*(settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']))
     headers = dict()
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:

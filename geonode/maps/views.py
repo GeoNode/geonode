@@ -51,7 +51,7 @@ from geonode.documents.models import get_related_documents
 
 logger = logging.getLogger("geonode.maps.views")
 
-_user, _password = settings.GEOSERVER_CREDENTIALS
+_user, _password = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']
 
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25

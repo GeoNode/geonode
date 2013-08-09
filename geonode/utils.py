@@ -37,7 +37,7 @@ from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS, 
 
 _wms = None
 _csw = None
-_user, _password = settings.GEOSERVER_CREDENTIALS
+_user, _password = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']
 
 http_client = httplib2.Http()
 http_client.add_credentials(_user, _password)

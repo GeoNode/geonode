@@ -61,7 +61,7 @@ from geoserver.resource import FeatureType
 
 logger = logging.getLogger("geonode.layers.views")
 
-_user, _password = settings.GEOSERVER_CREDENTIALS
+_user, _password = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
@@ -587,7 +587,7 @@ def resolve_user(request):
         if acl_user:
             user = acl_user.username
             superuser = acl_user.is_superuser
-        elif _get_basic_auth_info(request) == settings.GEOSERVER_CREDENTIALS:
+        elif _get_basic_auth_info(request) == (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']) 
             geoserver = True
             superuser = True
     if not any([user, geoserver, superuser]) and not request.user.is_anonymous():
@@ -618,8 +618,8 @@ def layer_acls(request):
 
             # Nope, is it the special geoserver user?
             if (acl_user is None and
-                username == settings.GEOSERVER_CREDENTIALS[0] and
-                password == settings.GEOSERVER_CREDENTIALS[1]):
+                username == settings.OGC_SERVER['default']['USER'] and
+                password == settings.OGC_SERVER['default']['PASSWORD']):
                 # great, tell geoserver it's an admin.
                 result = {
                    'rw': [],

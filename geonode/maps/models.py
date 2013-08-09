@@ -53,7 +53,7 @@ from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
 
-_user, _password = settings.GEOSERVER_CREDENTIALS
+_user, _password = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']
 
 class Map(ResourceBase, GXPMapBase):
     """
@@ -208,8 +208,7 @@ class Map(ResourceBase, GXPMapBase):
         http = httplib2.Http()
         url = "%srest/printng/render.png" % settings.OGC_SERVER['default']['LOCATION']
         hostname = urlparse(settings.SITEURL).hostname
-        user, passwd = settings.GEOSERVER_CREDENTIALS
-        params = dict(width=198, height=98, auth="%s,%s,%s" % (hostname, user, passwd))
+        params = dict(width=198, height=98, auth="%s,%s,%s" % (hostname, _user, _passwd))
         url = url + "?" + urllib.urlencode(params)
         http.add_credentials(_user, _password)
         netloc = urlparse(url).netloc
@@ -504,7 +503,6 @@ def pre_save_maplayer(instance, sender, **kwargs):
     if kwargs.get('raw', False):
         return
 
-    _user, _password = settings.GEOSERVER_CREDENTIALS
     url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
     try:
         c = Catalog(url, _user, _password)

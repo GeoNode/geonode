@@ -185,7 +185,7 @@ class GeoNodeMapTest(TestCase):
 
             # Check that layer is in geoserver
             found = False
-            gs_username, gs_password = settings.GEOSERVER_CREDENTIALS
+            gs_username, gs_password = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'] 
             page = get_web_page(os.path.join(settings.OGC_SERVER['default']['LOCATION'],
                                              'rest/layers'),
                                              username=gs_username,
