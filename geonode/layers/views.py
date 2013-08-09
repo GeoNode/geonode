@@ -587,7 +587,7 @@ def resolve_user(request):
         if acl_user:
             user = acl_user.username
             superuser = acl_user.is_superuser
-        elif _get_basic_auth_info(request) == (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']) 
+        elif _get_basic_auth_info(request) == (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']):
             geoserver = True
             superuser = True
     if not any([user, geoserver, superuser]) and not request.user.is_anonymous():
