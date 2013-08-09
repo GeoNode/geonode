@@ -101,12 +101,14 @@
 
 {% block sidebar %}
 
+{% if GS_SECURITY_ENABLED %}
 <h3>{% trans "Permissions"  %}</h3>
 <div>
   <form id="permission_form">
         {% include "_permissions.html" %}
   </form>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block extra_script %}
@@ -126,7 +128,9 @@
 {% endautoescape %}
 
 </script>
+{% if GS_SECURITY_ENABLED %}
 {% with "none" as layer %}
 {% include "_permissions_form_js.html" %}
 {% endwith %}
+{% endif %}
 {% endblock extra_script %}
