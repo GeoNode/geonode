@@ -48,7 +48,7 @@ from zipfile import ZipFile
 GEONODE_USER     = 'admin'
 GEONODE_PASSWD   = 'admin'
 GEONODE_URL      = settings.SITEURL.rstrip('/')
-GEOSERVER_URL    = settings.GEOSERVER_BASE_URL
+GEOSERVER_URL    = settings.OGC_SERVER['default']['LOCATION']
 GEOSERVER_USER, GEOSERVER_PASSWD = settings.GEOSERVER_CREDENTIALS
 
 import logging

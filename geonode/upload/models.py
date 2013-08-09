@@ -96,7 +96,7 @@ class Upload(models.Model):
         return reverse('data_upload_delete', args=[self.import_id])
         
     def get_import_url(self):
-        return "%srest/imports/%s" % (settings.GEOSERVER_BASE_URL, self.import_id)
+        return "%srest/imports/%s" % (settings.OGC_SERVER['default']['LOCATION'], self.import_id)
     
     def delete(self, cascade=True):
         models.Model.delete(self)
