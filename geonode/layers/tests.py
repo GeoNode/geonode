@@ -788,6 +788,39 @@ class LayersTest(TestCase):
         #test that all styles associated to the layer are removed
         self.assertEquals(Style.objects.count(), 0)
 
+    def test_non_cascading(self):
+        """
+        Tests that deleting a layer with a shared default style will not cascade and
+        delete multiple layers.
+        """
+        layer1 = Layer.objects.get(pk=1)
+        layer2 = Layer.objects.get(pk=2)
+        url = reverse('layer_remove', args=(layer1.typename,))
+
+        layer1.default_style = Style.objects.get(pk=layer1.pk)
+        layer1.save()
+        layer2.default_style = Style.objects.get(pk=layer1.pk)
+        layer2.save()
+
+        self.assertEquals(layer1.default_style, layer2.default_style)
+
+        # Now test with a valid user
+        c = Client()
+        c.login(username='admin', password='admin')
+
+        #test the post method that actually removes the layer and redirects
+        response = c.post(url)
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response['Location'], 'http://testserver/layers/')
+
+        #test that the layer is actually removed
+
+        self.assertEquals(Layer.objects.filter(pk=layer1.pk).count(), 0)
+        self.assertEquals(Layer.objects.filter(pk=2).count(), 1)
+
+        #test that all styles associated to the layer are removed
+        self.assertEquals(Style.objects.count(), 1)
+
     def test_category_counts(self):
         topics = TopicCategory.objects.all()
         topics = topics.annotate(**{ 'layer_count': Count('resourcebase__layer__category')})
