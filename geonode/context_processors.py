@@ -40,5 +40,5 @@ def resource_urls(request):
         GEOGIT_ENABLED = getattr(settings, "GEOGIT_DATASTORE", False),
         TIME_ENABLED = getattr(settings, "UPLOADER_SHOW_TIME_STEP", False),
         PRINTNG_ENABLED = getattr(settings, "PRINTNG_ENABLED", False),
-        DEBUG_STATIC = settings.DEBUG_STATIC
+        DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False)
     )
