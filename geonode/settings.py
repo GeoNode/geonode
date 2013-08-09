@@ -395,8 +395,6 @@ OGC_SERVER = {
             'MAPFISH_PRINT_ENABLED' : True,
             'PRINTNG_ENABLED' : True,
             'GEONODE_SECURITY_ENABLED' : True,
-            'DB_DATASTORE_NAME' : '',
-            'DB_DATASTORE' : False,
             'GEOGIT_ENABLED' : False,
             'WMST_ENABLED' : False
         }
@@ -406,13 +404,15 @@ OGC_SERVER = {
 # Vector Database Settings 
 # TODO: Migrate to DATABASES?
 DB_DATASTORE = {
+    'ENABLED' : False,
     'default' : {
         'DATABASE' : '',
         'USER' : '',
         'PASSWORD' : '',
         'HOST' : '',
         'PORT' : '',
-        'TYPE' : ''
+        'TYPE' : '',
+        'NAME' : ''
     }
 }
 
