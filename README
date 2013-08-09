@@ -155,7 +155,6 @@ Mac OSX Development Build Instructions::
     pip install nose
     pip install httplib2
     pip install shapely
-    pip install imaging
     pip install PIL
     pip install paver
 
