@@ -131,8 +131,8 @@ def create_geoserver_db_featurestore(store_type=None):
     try:
         if store_type == 'geogit' and hasattr(settings, 'GEOGIT_DATASTORE_NAME') and settings.GEOGIT_DATASTORE_NAME:
             ds = cat.get_store(settings.GEOGIT_DATASTORE_NAME)
-        elif settings.DB_DATASTORE_NAME:
-            ds = cat.get_store(settings.DB_DATASTORE_NAME)
+        elif settings.DB_DATASTORE['default']['NAME']:
+            ds = cat.get_store(settings.DB_DATASTORE['default']['NAME'])
         else:
             return None
     except FailedRequestError:
@@ -148,16 +148,16 @@ def create_geoserver_db_featurestore(store_type=None):
             ds = cat.get_store(settings.GEOGIT_DATASTORE_NAME)
         else:
             logging.info(
-                'Creating target datastore %s' % settings.DB_DATASTORE_NAME)
-            ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
+                'Creating target datastore %s' % settings.DB_DATASTORE['default']['NAME'])
+            ds = cat.create_datastore(settings.DB_DATASTORE['default']['NAME'])
             ds.connection_parameters.update(
-                host=settings.DB_DATASTORE_HOST,
-                port=settings.DB_DATASTORE_PORT,
-                database=settings.DB_DATASTORE_DATABASE,
-                user=settings.DB_DATASTORE_USER,
-                passwd=settings.DB_DATASTORE_PASSWORD,
-                dbtype=settings.DB_DATASTORE_TYPE)
+                host=settings.DB_DATASTORE['default']['HOST'],
+                port=settings.DB_DATASTORE['default']['PORT'],
+                database=settings.DB_DATASTORE['default']['DATABASE'],
+                user=settings.DB_DATASTORE['default']['USER'],
+                passwd=settings.DB_DATASTORE['default']['PASSWORD'],
+                dbtype=settings.DB_DATASTORE['default']['TYPE'])
             cat.save(ds)
-            ds = cat.get_store(settings.DB_DATASTORE_NAME)
+            ds = cat.get_store(settings.DB_DATASTORE['default']['NAME'])
 
     return ds
