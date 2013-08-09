@@ -31,7 +31,7 @@ from geoserver.catalog import FailedRequestError
 
 
 def gs_uploader():
-    url = "%srest" % settings.GEOSERVER_BASE_URL
+    url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
     return Uploader(url, _user, _password)
 
 

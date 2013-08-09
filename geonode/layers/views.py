@@ -169,7 +169,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms", layer_params=json.dumps( layer.attribute_config()))
+    maplayer = GXPLayer(name = layer.typename, ows_url = settings.OGC_SERVER['default']['LOCATION'] + "wms", layer_params=json.dumps( layer.attribute_config()))
 
     layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
 
@@ -371,7 +371,7 @@ def layer_style_manage(req, layername):
         except (FailedRequestError, EnvironmentError) as e:
             msg = ('Could not connect to geoserver at "%s"'
                'to manage style information for layer "%s"' % (
-                settings.GEOSERVER_BASE_URL, layer.name)
+                settings.OGC_SERVER['default']['LOCATION'], layer.name)
             )
             logger.warn(msg, e)
             # If geoserver is not online, return an error
@@ -528,7 +528,7 @@ def layer_batch_download(request):
             "layers" : [layer_son(lyr) for lyr in layers]
         }
 
-        url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
+        url = "%srest/process/batchDownload/launch/" % settings.OGC_SERVER['default']['LOCATION']
         resp, content = http_client.request(url,'POST',body=json.dumps(fake_map))
         return HttpResponse(content, status=resp.status)
 
@@ -539,7 +539,7 @@ def layer_batch_download(request):
         if download_id is None:
             return HttpResponse(status=404)
 
-        url = "%srest/process/batchDownload/status/%s" % (settings.GEOSERVER_BASE_URL, download_id)
+        url = "%srest/process/batchDownload/status/%s" % (settings.OGC_SERVER['default']['LOCATION'], download_id)
         resp,content = http_client.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 

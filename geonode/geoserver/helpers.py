@@ -178,7 +178,7 @@ def cascading_delete(cat, layer_name):
       if e.errno == errno.ECONNREFUSED:
         msg = ('Could not connect to geoserver at "%s"'
                'to save information for layer "%s"' % (
-               settings.GEOSERVER_BASE_URL, layer_name)
+               settings.OGC_SERVER['default']['LOCATION'], layer_name)
               )
         logger.warn(msg, e)
         return None
@@ -245,7 +245,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
 
     if verbosity > 1:
         print >> console, "Inspecting the available layers in GeoServer ..."
-    url = "%srest" % settings.GEOSERVER_BASE_URL
+    url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
     cat = Catalog(url, _user, _password)
     if workspace is not None:
         workspace = cat.get_workspace(workspace)

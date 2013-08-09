@@ -68,7 +68,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
         return path[len(prefix):]
 
     path = strip_prefix(request.get_full_path(), proxy_path)
-    url = "".join([settings.GEOSERVER_BASE_URL, downstream_path, path])
+    url = "".join([settings.OGC_SERVER['default']['LOCATION'], downstream_path, path])
 
     http = httplib2.Http()
     http.add_credentials(*settings.GEOSERVER_CREDENTIALS)
