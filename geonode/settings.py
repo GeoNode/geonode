@@ -503,7 +503,7 @@ DEFAULT_MAP_ZOOM = 0
 MAP_BASELAYERS = [{
     "source": {
         "ptype": "gxp_wmscsource",
-        "url": GEOSERVER['default']['BASE_URL'] + "wms",
+        "url": OGC_SERVER['default']['LOCATION'] + "wms",
         "restUrl": "/gs/rest"
      }
   },{
