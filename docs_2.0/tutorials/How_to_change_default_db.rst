@@ -221,7 +221,7 @@ To install the posgis extension type
 
 Now you should have successfully installed the postgis extension in your geonode database.
 
-========================================
+
 How to change the default db to postgres
 ========================================
 
