@@ -1,93 +1,130 @@
-Tomcat Installation and Configuration
-=====================================
+Servlet Container Installation
+==============================
 
+If you installed geonode in developing mode following this guide (LINK), then geonode will be using *jetty* as servlet container. This is a default setting and you can also use tomcat as servlet container. This tutorial will teach you how to change jetty with tomcat. 
 
-Install Tomcat
---------------
-Go to http://tomcat.apache.org and get the latest version of tomcat (tar.gz package). To install tomcat go to your folder *Downloads* and unpack the *tar* file.
+Tomcat Installation
+-------------------
 
-  $ cd /Downloads
+#. Download and unpack Tomcat
+
+   Go to http://tomcat.apache.org and get the latest version of tomcat (tar.gz package). To install tomcat go to your folder *Downloads* and unpack the *tar* file.
+
+   .. code-block:: console
+
+	$ cd /Downloads
 	$ tar xzvf apache-tomcat-7.0.xx.tar.gz
 
-Copy the unpacked folder to another directory, where you want tomcat to be, e.g /myproject/ or /usr/local or even /opt/ (you might have to have root permissions on that)
+   Copy the unpacked folder to another directory, whereever you want tomcat to be, e.g /myproject/ or /usr/local or even /opt/ (you might have to have root permissions on that)
+
+   .. code-block:: console
 
 	$ sudo cp -r apache-tomcat-7.0.42/ /opt/
 
-Setup Environment Variable JAVA_HOME
-------------------------------------
+#. Setup Environment Variable JAVA_HOME
 
-type::
-	$ echo $JAVA_HOME
-nothing happend, therefore edit /etc/profile
+   In a next step we have to set the environment variable JAVA_HOME, containing the JDK installed directory. To proove whether it is already set, type
+   
+   .. code-block:: console
+   
+   	$ echo $JAVA_HOME
+   
+   If nothing happens, it means that your variable is unset at the moment! Therefore you have to edit the file called *profile.
+  
+   .. code-block:: console
+   
 	$ cd /etc
 	$ sudo gedit profile
-and add the following line to the end of the file!
-	export JAVA_HOME=/etc/java-6-openjdk
+	
+   The JAVA_HOME variable is basically the path to your JDK. If your variable is not set, you should now where Java has been installed in your directory and copy the path.
+   
+   Add the following line to the very end of the file::
+
+	export JAVA_HOME=/path/to/your/JDK
+	
+	e.g
+	
+	export JAVA_HOME=/usr/lib/jvm/java-6-openjdk
+	
+   Now rerun the script
+   
+   .. code-block:: console
+   
 	$ source /etc/profile
 
-Configure Tomcat
-----------------
+#. Configure Tomcat Server
 
-.# edit the "conf\server.xml" - Set the TCP Port Number
-   I won't do this for now! Port=8080 at the moment!
-.# edit the "conf\web.xml" - Enabling Directory Listing
-   won't do that either (would set listening to true)
-.# edit the "conf\context.xml" - Enabling Automatic Reload
-   won't do that either (would set reloadable=true)
-.# edit the "conf\tomcat-user.xmls"
-   to enable the tomcat's manager, paste those lines into the file
-<tomcat-users>
-  <role rolename="manager-gui"/>
-  <user username="manager" password="xxxx" roles="manager-gui"/>
-</tomcat-users>
+Tomcat 7 will be running on the port 8080 as default. This can be changed in the server.xml file which can be found in the folder *conf*. Leave the settings as they are at the moment. For more information on the configuration of tomcat visit http:ladida.
 
-Start Tomcat Server
--------------------
+.. todo:: Is this really necessary?
+          .# edit the "conf\tomcat-user.xmls"
+          to enable the tomcat's manager, paste those lines into the file
+         <tomcat-users>
+           <role rolename="manager-gui"/>
+           <user username="manager" password="xxxx" roles="manager-gui"/>
+         </tomcat-users>
 
-the executable programs and scripts are in the 'bin' directory
+#. Start Tomcat Server
+
+The executable programs and scripts are in the 'bin' directory of Tomcat. So go to your bin folder and run the *catalina.sh* script.
+
+.. code-block::
 
 	$ cd /opt/apache-tomcat-7.0.42/bin
 	$ ./catalina.sh run
-if that doesn't work, try
+	
+If that doesn't work for now, try 
+
+.. code-block::
+
 	$ sudo chmod uga+x *.sh
-at first and then
-	$ ./catalina.sh run (sudo!)
+	
+at first and then again
+
+.. code-block::
+
+	$ sudo ./catalina.sh run
 again!
 
-=> didn't worked because java/bin wasn't found
-so i changed the directory of $JAVA_HOME in profile again to
-	/usr/lib/jvm/java-6-openjdk
-and did again	
-	$ source /etc/profile
-and then tried again
-	$ cd /opt/apache-tomcat-7.0.42/bin
-	$ sudo ./catalina.sh run
-If tomcat is in directory /opt ``sudo`` has to be used! (root user is needed!!!)
-check http://localhost:8080
-and   http://localhost:8080/examples	(this might cause problems with geoserver?)
-=> wuhu tomcat is running!
+.. hint:: You might get an error that ``java/bin`` wasn´t found. If that´s the case, please check again your path to the JDK and again change it in the *profile* file. Don´t forget to rerun the script afterwards!
 
-to shut down tomcat:
+Now type http://localhost:8080 and http://localhost:8080/examples and you should see the starting page of Tomcat.
+
+.. image:: img/startpage_tomcat.PNG
+.. todo:: CREATE THIS IMAGE!
+
+To shut down tomcat:
+
+.. code-blocks::
+
 	$ cd /opt/apache-tomcat-7.0.42/bin
 	$ ./shutdown.sh
 
-Geoserver
----------
+Deploying Geoserver
+-------------------
 
-download *geoserver.war*; i've already got it on the machine (because of geonode)
-	/home/barbara/geonode/downloaded/geoserver.war
-	sudo su
-to be root user and then copy this to
-	/opt/apache-tomcat-7.0.42/webapps
-using
-	$ cp geoserver.war /opt/apache-tomcat-7.0.42/webapps
-and then start tomcat
+When installing geonode in developing mode, you´ve also got a *geoserver.war* file included. You will find this in your geonode directory::
+
+	geonode/downloaded/geoserver.war
+
+Now copy this file into the *webapps* folder of tomcat
+
+.. code-block::
+
+	$ sudo cp geoserver.war /opt/apache-tomcat-7.0.42/webapps
+	
+By starting tomcat it will unpack the geoserver.war and create a new directory ``tomcat/webapps/geoserver``. 
+
+.. code-block::
+
 	$ cd /opt/apache-tomcat-7.0.42/bin
 	$ sudo ./catalina.sh run
-this takes a while.
-Then try to attend
-	http://localhost:8080/geoserver
-and it is running!!!!!
+	
+Let´s try to attend http://localhost:8080/geoserver. You will now see the geoserver homepage.
+
+.. figure:: img/geoserver_homepage.PNG
+.. todo:: CREATE THIS IMAGE!
+
 
 for testing:
 ------------
