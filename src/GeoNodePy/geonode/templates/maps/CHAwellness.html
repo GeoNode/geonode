@@ -92,6 +92,14 @@ var init = function() {
                 text: '<span class="x-btn-text">{% trans 'Print' %}</span>',
                 iconCls: null,
                 actionTarget: {target: "paneltbar", index: 4}
+            },
+            {
+                ptype: "gxp_gazetteertool",
+                actionTarget:  {target: "paneltbar", index: 5},
+                toolText: '<span class="x-btn-text">Find nearby</span>',
+                iconCls: null,
+                toggleGroup: 'featureGroup',
+                pressed: false
             }
             ],
             proxy: "/proxy/?url=",
@@ -121,7 +129,7 @@ var init = function() {
     app = new GeoExplorer(config, true);
     app.on("ready", function() {
         Ext.getCmp("worldmap_publish_tool").hide();
-        Ext.getCmp("worldmap_addlayers_button").hide();    	
+        //Ext.getCmp("worldmap_addlayers_button").hide();    	
     });
 
     
