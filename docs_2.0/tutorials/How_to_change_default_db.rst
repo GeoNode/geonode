@@ -220,4 +220,109 @@ To install the posgis extension type
     create extension postgis;
 
 Now you should have successfully installed the postgis extension in your geonode database.
+
+========================================
+How to change the default db to postgres
+========================================
+
+If you have installed Geonode 2.0 in developing mode, then Geonode will use *sqlite3* as default database (set in *settings.py*). This section will show you how to exchange the default database with a postgresql database. 
+
+If you haven't installed postgresql so far, you can use this installation guide: --inlcude link!
+
+.. note:: If you followed the installation guide from our website, you should already have created a geonode user and database!
+
+Create geonode user and database
+--------------------------------
+
+In order to use a postgresql database for geonode, you have to create a user called *geonode* (with password *geonode*), as well as a database called *geonode*.
+
+Open a terminal and type::
+
+	sudo -u postgres createuser -P geonode
+
+Now you will be asked to enter a password. This must be *geonode*.
+
+To create the db::
+
+	sudo -u postgres createdb -O geonode geonode
+
+This creates a db called *geonode* with its owner *geonode*.
+
+Change authentication method
+----------------------------
+
+In the postgres config path, */etc/postgresql/9.2/main*, you should find the file *pg_hba.conf*.  
+This file has to be edited in order to allow the geonode user to have access to the database (?). 
+Therfore change the directory to this file and open it::  
+
+	cd /etc/postgresql/9.2/main
+	sudo vi pg_hba.conf
+
+The file should contain the following default settings until now:
+
+.. image:: img/pg_hba_conf.png
+
+
+First, add this entry::
 	
+	#Type	DATABASE	USER	ADDRESS		METHOD
+	host	geonode		geonode	127.0.0.1/32	md5
+
+(Do I really have to add this????)
+and then set the authentication method of the following entry from *peer* to *trust*::
+
+.. image:: img/pg_hba_detail.png
+
+::
+	#TYPE   DATABASE	USER	METHOD
+	local	all		all	trust
+
+(Should this method be used???)
+
+After changing this file, the postgres service has to be restarted. This is essential, because otherwise the changed configurations won't
+be considered!
+
+To restart the postgresql server type::
+
+	sudo service postgresql restart
+
+or::
+	
+	sudo /etc/init.d/postgresql restart
+
+Both methods should work!
+
+(I used:
+	sudo service postgresql stop
+	sudo service postgresql start
+)
+
+Setup local settings
+--------------------
+
+The next step is to set the local settings. In the directory ../geonode/geonode a file called *local_settings.py.sample* exists. It includes all the settings to change the default db from *sqlite3* to *postgresql*. Rename the file to *local_settings.py*::
+
+	sudo mv local_settings.py.sample local_settings.py
+
+Install psycopg2
+----------------
+
+If you do not already have it on your machine, it is neccessary to install psycopg2, the postgresql adapter for Python programming language. 
+But, be sure that you are working in your virtualenv, otherwise you will create a permission problem!! Thus activate your virtualenv first::
+
+	cd /.venvs/geonode/bin
+
+	source activate
+
+	cd
+
+	pip install psycopg2
+
+Start developing servers
+------------------------
+
+Now you should be able to start the servers using::
+
+	paver start
+
+
