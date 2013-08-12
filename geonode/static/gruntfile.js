@@ -139,10 +139,6 @@ module.exports = function(grunt) {
 
     cssmin: {
       production: {
-        options: {
-          // the banner is inserted at the top of the output
-          banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
-        },
         files: {
           'lib/css/assets.min.css': [
             'lib/css/jquery.dataTables.css',
@@ -154,10 +150,6 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-      options: {
-        // the banner is inserted at the top of the output
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
-      },
       production: {
         files: {
           'lib/js/assets.min.js': [
