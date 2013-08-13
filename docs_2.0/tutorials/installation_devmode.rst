@@ -93,7 +93,7 @@ Now you should be able to visit the geonode site by typing ​http://localhost:8
 
 ***Important notice***
 
-With every restart of your machine, you have to restart geonode as well! That means, you will not be able to open ​http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the developing servers. 
+With every restart of your machine, you have to restart geonode as well! That means, you will not be able to open ​http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
 
 .. note:: *your_name* is the name of your machine and personal folder!
 
