@@ -91,15 +91,24 @@ some steps missing here!
 .. code-block:: console
 
    $ django-admin.py syncdb --noinput --all
-   $ django-admin.py collectstatic --noinput
-   $ django-admin.py loaddata /share/admin.json
+   $ django-admin.py collectstatic --settings=geonode.settings --noinput
 
-Now you will have to create an empty upload dir and apply the permissions on this folder to www-data.
+The collectstatic command will create a new folder *static_root*. The syncdb command will create all needed tables.
+
+Our next step is to create a superuser
 
 .. code-block:: console
 
-   $ sudo mkdir -p /home/user/geonode/uploaded
-   $ sudo chown www-data -R /home/user/geonode/uploaded
+   $ django-admin.py createsuperuser --settings=geonode.settings
+
+You will be asked to enter a username, an email adress and a password.
+
+Now we need to create an empty upload dir and apply the permissions on this folder to apache.
+
+.. code-block:: console
+
+   $ sudo mkdir -p /home/user/geonode/geonode/uploaded
+   $ sudo chown www-data -R /home/user/geonode/geonode/uploaded
    
 Replace local server with apache
 --------------------------------
@@ -116,7 +125,7 @@ Beside this module you also have to enable the proxy module. This can be done ve
 
 .. code-block:: console
 
-	$ a2enmod proxy_http
+	$ sudo a2enmod proxy_http
 
 We have to create one more configuration file for geonode. Go to the folder *sites-available* and create a file called *geonode*
 
@@ -171,7 +180,7 @@ Enable the new site
 
 .. code-block:: console
 
-	$sudo a2ensite geonode
+	$ sudo a2ensite geonode
 
 This command will create a file *geonode* in the folder *sites-enabled*.
 
@@ -179,13 +188,36 @@ Now reload apache
 
 .. code-block:: console
 
-	$sudo service apache2 reload
+	$ sudo service apache2 reload
 
-If you now type localhost into your webbrowser, the geonode webpage will appear.
+If you now type localhost into your webbrowser, the geonode webpage will appear. You can now login with your newly created superuser account. But if you try to attend the django admin interface, you will only see the content of this webpage but without any design. To change this, you have to change the following entry in our geonode configuration file
+
+.. code-block:: console
+
+	$ sudo gedit /etc/apache2/sites-available/geonode
+
+Change this entry::
+
+	Alias /static/ /home/barbara/geonode/geonode/static/
+	
+to::
+
+	Alias /static/ /home/barbara/geonode/geonode/static_root/
+
+Now reload apache2 again using ``sudo service apache2 reload`` again and visit localhost/admin. Now you should be able to see this
+
+.. figure:: img/django_admin_interface.PNG
 
 Replace default jetty server with tomcat - deploy geoserver
 -----------------------------------------------------------
 
+Until now you won't be able to attend the geoserver webpage (without using ``paver start_geoserver``). So we now want to deploy our own geoserver. To do so we need Tomcat installed and not running. So if you've got Tomcat running at the moment, stop it using
+
+.. code-block::
+
+	$ cd /opt/apache-tomcat-X.Y.Z/bin
+	$ sudo ./shutdown.sh
+	
 When installing geonode in developing mode, you´ve also got a *geoserver.war* file included. You will find this in your geonode directory::
 
 	geonode/downloaded/geoserver.war
@@ -200,7 +232,7 @@ By starting tomcat it will unpack the geoserver.war and create a new directory `
 
 .. code-block::
 
-	$ cd /opt/apache-tomcat-7.0.42/bin
+	$ cd /opt/apache-tomcat-X.Y.Z/bin
 	$ sudo ./catalina.sh run
 	
 Let´s try to attend http://localhost:8080/geoserver. You will now see the geoserver homepage.
