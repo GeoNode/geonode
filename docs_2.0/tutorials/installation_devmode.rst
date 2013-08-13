@@ -42,9 +42,8 @@ Your third step is to add a new PPA repository, which is required for the static
     sudo add-apt-repository ppa:chris-lea/node.js
     sudo apt-get update
     sudo apt-get install nodejs
-    sudo npm install -g less
     sudo npm install -g bower
-    sudo npm install -g bower-installer
+    sudo npm install -g grunt-cli
 
 **Step 4** 
 
@@ -94,57 +93,31 @@ Now you should be able to visit the geonode site by typing ​http://localhost:8
 
 ***Important notice***
 
-With every restart of your machine, you have to restart geonode as well! That means, you will not be able to open ​http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to do the command *paver start_geoserver* and *paver start_django* each time you want to use geonode! 
+With every restart of your machine, you have to restart geonode as well! That means, you will not be able to open ​http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the developing servers. 
 
 .. note:: *your_name* is the name of your machine and personal folder!
 
-**Step a - Activate geonode virtualenv**
+#. Activate virtualenv
  
-To do so you have to first activate your virtual environment for geonode. Therefore go to the folder where your virtualenv for geonode has been installed (this is usually .venvs) and direct to /geonode/bin, like this::
-
-   cd /home/your_name/.venvs/geonode/bin
-
-(but be careful with this, it really depends on where you have installed the virtualenv!)
-
-Now type::
-
-  source activate
-
-and your virtualenv will be activated.
-
-The recent path in your terminal should now look something like this::
-
-  (geonode)your_name@your_name-VirtualBox:~/.venvs/geonode/bin
-
-
-
-**Step b - Start the server**
-  
-In order to run the command paver start you now have to go back out from the *.venvs* folder and into the *geonode* folder, which is placed outside the virtualenv!
-
-Therefore type::
-
-  cd ..
-
-until you are here::
-
-  (geonode)your_name@your_name-VirtualBox:~
-
-then use::
-
-  cd geonode
-
-and you will land here::
-
-  (geonode)your_name@your_name-VirtualBox:~/geonode
-
-and be able to run::
-
-   paver start_geoserver
+   To activate your virtualenv you just need to type::
    
-   paver start_django
+       source /home/your_name/.venvs/geonode/bin/activate
 
-Now you are able to access ​http://localhost8000 again.
+   .. note:: Be careful with this, you might have another path, so check first where your virtualenv has been installed!
+
+
+#. Start the server
+  
+   To start the server go to your geonode folder::
+   
+       cd geonode
+   
+   and then run::
+   
+       paver start_geoserver
+       paver start_django
+
+   Now you are able to access http://localhost:8000 again.
 
 .. note:: Remember that you have to do these steps each time you restart your machine!!
 
