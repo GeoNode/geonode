@@ -4,11 +4,220 @@ Configurations
 Change default database
 -----------------------
 
+If you have installed geonode in developing mode, it will be running with the sqlite3 db as default. But this can be changed! In order to make geonode to use postgresql just follow the steps from this section.
 
+Create geonode user and database
+********************************
+
+First you have to create a user called *geonode* (with password *geonode*), as well as a database called *geonode*.
+
+Open a terminal and type:
+
+.. code-block:: console
+
+	$ sudo -u postgres createuser -P geonode
+
+Now you will be asked to enter a password. This must be *geonode*.
+
+To create the db:
+
+.. code-block:: console
+
+   	$ sudo -u postgres createdb -T template_postgis203 -O geonode geonode
+   	
+This creates a db called *geonode* (which automatically has the postgis extension as well!) with its owner *geonode*.
+
+Change authentication method
+****************************
+
+In the postgres config path, */etc/postgresql/9.2/main*, you should find the file *pg_hba.conf*. This file has to be edited in order to allow the geonode user to have access to the database (?). Therfore change the directory to this file and open it  
+
+.. code-block:: console
+
+	$ cd /etc/postgresql/9.2/main
+	$ sudo vi pg_hba.conf
+
+The file should contain the following default settings until now:
+
+.. image:: img/pg_hba_conf.png
+
+First, add this entry::
+	
+	#Type	DATABASE	USER	ADDRESS		METHOD
+	host	geonode		geonode	127.0.0.1/32	md5
+
+.. todo:: Do I really have to add this????
+
+and then set the authentication method of the following entry from *peer* to *trust*::
+
+	#TYPE   DATABASE	USER	METHOD
+	local	all		all	trust
+
+(Should this method be used???)
+
+After changing this file, the postgres service has to be restarted. This is essential, because otherwise the changed configurations won't be considered!
+
+To restart the postgresql server type
+
+.. code-block:: console
+
+	$ sudo service postgresql restart
+
+Setup local settings
+********************
+
+The next step is to set the local settings. In the directory ../geonode/geonode a file called *local_settings.py.sample* exists. It includes all the settings to change the default db from *sqlite3* to *postgresql*. Rename the file to *local_settings.py*.
+
+.. code-block:: console
+
+	$ sudo mv local_settings.py.sample local_settings.py
+
+Install psycopg2
+****************
+
+If you do not already have it on your machine, it is neccessary to install *psycopg2*, the postgresql adapter for Python programming language. But, be sure that you are working in your virtualenv, otherwise you will create a permission problem!! Thus activate your virtualenv first
+
+.. code-block:: console
+
+	$ source home/user/.venvs/geonode/bin/activate
+	$ cd
+	$ pip install psycopg2
+
+.. todo:: a word or two more on this
+
+some steps missing here!
+------------------------
+
+.. code-block:: console
+
+   $ django-admin.py syncdb --noinput --all
+   $ django-admin.py collectstatic --noinput
+   $ django-admin.py loaddata /share/admin.json
+
+Now you will have to create an empty upload dir and apply the permissions on this folder to www-data.
+
+.. code-block:: console
+
+   $ sudo mkdir -p /home/user/geonode/uploaded
+   $ sudo chown www-data -R /home/user/geonode/uploaded
+   
 Replace local server with apache
 --------------------------------
 
+To replace the local server with apache2, you have to first make apache to load the mod_wsgi module. If you've done the installation from above, you should already have a *httpd.conf* file that includes one line
 
-Replace default jetty server with tomcat
-----------------------------------------
+.. code-block:: python
 
+  LoadModule wsgi_module /path/to/modules/mod_wsgi.so
+
+If you do not have this, then please add this line to *httpd.conf* now!
+
+Beside this module you also have to enable the proxy module. This can be done very easily using
+
+.. code-block:: console
+
+	$ a2enmod proxy_http
+
+We have to create one more configuration file for geonode. Go to the folder *sites-available* and create a file called *geonode*
+
+.. code-block:: console
+
+	$ cd /etc/apache2/sites-available
+	$ sudo gedit geonode
+
+This file should inlcude the following, but don´t forget to adjust the paths!
+
+.. code-block:: python
+
+  WSGIDaemonProcess geonode python-path=/home/barbara/geonode:/home/barbara/.venvs/geonode/lib/python2.7/site-packages user=www-data threads=15 processes=2
+
+  <VirtualHost *:80>
+	ServerName http://localhost:8000
+	ServerAdmin webmaster@localhost
+	DocumentRoot /home/barbara/geonode/geonode
+
+	ErrorLog /var/log/apache2/error.log
+	LogLevel warn
+	CustomLog /var/log/apache2/access.log combined
+
+	WSGIProcessGroup geonode
+	WSGIPassAuthorization On
+	WSGIScriptAlias / /home/barbara/geonode/geonode/wsgi.py
+
+	<Directory "/home/barbara/geonode/geonode/">
+		Order allow,deny
+		Options Indexes FollowSymLinks
+		Allow from all
+		IndexOptions FancyIndexing
+	</Directory>
+
+	Alias /static/ /home/barbara/geonode/geonode/static/
+	Alias /uploaded/ /home/barbara/geonode/geonode/geonode/uploaded/
+
+	<Proxy *>
+  		Order allow,deny
+  		Allow from all
+	</Proxy>
+
+	ProxyPreserveHost On
+	ProxyPass /geoserver http://localhost:8080/geoserver
+	ProxyPassReverse /geoserver http://localhost:8080/geoserver
+	ProxyPass /geonetwork http://localhost:8080/geonetwork
+	ProxyPassReverse /geonetwork http://localhost:8080/geonetwork
+
+  </VirtualHost>
+
+Enable the new site
+
+.. code-block:: console
+
+	$sudo a2ensite geonode
+
+This command will create a file *geonode* in the folder *sites-enabled*.
+
+Now reload apache
+
+.. code-block:: console
+
+	$sudo service apache2 reload
+
+If you now type localhost into your webbrowser, the geonode webpage will appear.
+
+Replace default jetty server with tomcat - deploy geoserver
+-----------------------------------------------------------
+
+When installing geonode in developing mode, you´ve also got a *geoserver.war* file included. You will find this in your geonode directory::
+
+	geonode/downloaded/geoserver.war
+
+Now copy this file into the *webapps* folder of tomcat
+
+.. code-block::
+
+	$ sudo cp geoserver.war /opt/apache-tomcat-7.0.42/webapps
+	
+By starting tomcat it will unpack the geoserver.war and create a new directory ``tomcat/webapps/geoserver``. 
+
+.. code-block::
+
+	$ cd /opt/apache-tomcat-7.0.42/bin
+	$ sudo ./catalina.sh run
+	
+Let´s try to attend http://localhost:8080/geoserver. You will now see the geoserver homepage.
+
+.. figure:: img/geoserver_homepage.PNG
+.. todo:: CREATE THIS IMAGE!
+
+
+Change permissions of folders
+-----------------------------
+
+.. code-block::
+
+   $ sudo chown www-data:www-data /home/user/geonode/geonode/static/
+   $ sudo chown www-data:www-data /home/user/geonode/geonode/uploaded/
+   $ sudo chown www-data:www-data /home/barbara/geonode/geonode/static_root/
+   
+   $ sudo service apache2 restart
+   
+   
