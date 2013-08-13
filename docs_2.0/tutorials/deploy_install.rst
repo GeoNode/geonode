@@ -185,10 +185,11 @@ First of all Apache2 has to be installed. This is very easy using the apt-get co
 	
 Furthermore the Apache module *mod_wsgi* has to be installed. To do so go to http://code.google.com/p/modwsgi/downloads/list and download a source code tar ball.
 
-Next, unpack it:
+Next, copy the unpacked file into the directory where you want mod_wsgi to be and unpack it:
 
 .. code-block:: console
 
+	$ sudo cp /Downloads/mod_wsgi-X.Y.tar.gz /home/user/
 	$ tar xvfz mod_wsgi-X.Y.tar.gz
 
 (replace X.Y with the actual version number!)
@@ -246,7 +247,7 @@ Install Tomcat
 
    .. code-block:: console
 
-	$ cd /Downloads
+	$ cd Downloads
 	$ tar xzvf apache-tomcat-7.0.xx.tar.gz
 
    Copy the unpacked folder to another directory, whereever you want tomcat to be, e.g /myproject/ or /usr/local or even /opt/ (you might have to have root permissions on that)
@@ -280,12 +281,13 @@ Install Tomcat
 	
 	export JAVA_HOME=/usr/lib/jvm/java-6-openjdk
 	
-   Now rerun the script
+   Now rerun the script and then proove again whether the variable is set or not
    
    .. code-block:: console
    
 	$ source /etc/profile
-
+	$ echo $JAVA_HOME
+	
 #. Configure Tomcat Server
 
    Tomcat 7 will be running on the port 8080 as default. This can be changed in the server.xml file which can be found in the folder *conf*. Leave the settings as they are at the moment. For more information on the configuration of tomcat visit http:ladida.
