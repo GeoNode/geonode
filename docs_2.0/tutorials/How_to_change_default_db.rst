@@ -2,16 +2,31 @@
 How to change the default db
 ============================
 
+some more text here...
+
 .. todo:: install postgres, install postgis, how to change! toctree machen mit drei unterpunkten
+
+	  sollte so aussehen:
+	  	- installation
+	  		- postgres
+	  		- postgis
+	  		- apache2
+	  		- tomcat
+	  	- configuration
+	  		- create extension
+	  		- create user and db => db settings
+	  		- apache config
+	  		- tomcat and geoserver
 
 If you´ve installed geonode in developing mode, geonode uses the *sqlite3* database as default. This tutorial will guide you through the steps that have be done in order to use *postgresql* instaed of *sqlite3*.
 
-
+Installation
+============
 
 Installation of Postgresql-9.2 on Ubuntu 12.04 
-==============================================
+----------------------------------------------
 
-First of all postgresql has to be installed. If you already have it running on to your machine, you might skip this part and go further to LINK.
+First of all postgresql has to be installed. If you already have it running on your machine, you might skip this part and go further to LINK.
 
 Installation
 ------------
