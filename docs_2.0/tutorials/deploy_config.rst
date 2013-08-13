@@ -85,8 +85,8 @@ If you do not already have it on your machine, it is neccessary to install *psyc
 
 .. todo:: a word or two more on this
 
-some steps missing here!
-------------------------
+Additional steps
+----------------
 
 .. code-block:: console
 
@@ -234,15 +234,16 @@ By starting tomcat it will unpack the geoserver.war and create a new directory `
 
 	$ cd /opt/apache-tomcat-X.Y.Z/bin
 	$ sudo ./catalina.sh run
+	$ sudo service apache2 reload
 	
-Let´s try to attend http://localhost:8080/geoserver. You will now see the geoserver homepage.
+Let´s try to attend http://localhost:8080/geoserver or localhost/geoserver. You will now see the geoserver homepage.
 
-.. figure:: img/geoserver_homepage.PNG
-.. todo:: CREATE THIS IMAGE!
-
+.. figure:: img/geoserver_webpage.PNG
 
 Change permissions of folders
 -----------------------------
+
+didn't do that now! and it works as well..
 
 .. code-block::
 
@@ -250,6 +251,6 @@ Change permissions of folders
    $ sudo chown www-data:www-data /home/user/geonode/geonode/uploaded/
    $ sudo chown www-data:www-data /home/barbara/geonode/geonode/static_root/
    
-   $ sudo service apache2 restart
+   $ sudo service apache2 reload
    
    
