@@ -160,14 +160,15 @@ Now we´ve installed postgres and postgis we want to create the postgis extensio
 Before installing the extension you have to log in to the database
 
 .. code-block:: console
-   
-	$ psql template_postgis203
+	
+	$ sudo su postgres
+   	$ psql template_postgis203
 
 and now you can create the extension
 
 .. code-block:: console
 
-	$ create extension postigs;
+	$ CREATE EXTENSION postigs;
 
 .. note:: Do not forget the semicolon at the end, otherwise this statement will have no effect!
 
