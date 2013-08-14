@@ -144,6 +144,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         permissions = form.cleaned_data["permissions"]
                         )
             except Exception, e:
+                logger.exception(e)
                 out['success'] = False
                 out['errors'] = str(e)
             else:
