@@ -37,10 +37,10 @@
     </div>
       <header>{% trans "Attributes" %}</header>
       {{ attribute_form.management_form }}
-      <table cellpadding="5" cellspacing="5" width="100%"><tr><th style="text-align: left;">{% trans "Attribute" %}</th><th style="text-align: left;">{% trans "Description" %}</th></tr>
+      <table cellpadding="5" cellspacing="5" width="100%"><tr><th style="text-align: left;">{% trans "Attribute" %}</th><th style="text-align: left;">{% trans "Label" %}</th><th style="text-align: left;">{% trans "Description" %}</th><th style="text-align: left;">{% trans "Display Order" %}</th></tr>
           {% for form in attribute_form.forms %}
           {% if form.attribute %}
-          <tr><td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td><td> {{form.description}}</td></tr>
+          <tr><td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td><td> {{form.attribute_label}}</td><td> {{form.description}}</td><td> {{form.display_order}}</td></tr>
           {% endif %}
           {% endfor %}
       </table>
