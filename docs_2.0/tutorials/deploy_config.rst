@@ -204,7 +204,7 @@ to::
 
 	Alias /static/ /home/barbara/geonode/geonode/static_root/
 
-Now reload apache2 again using ``sudo service apache2 reload`` again and visit localhost/admin. Now you should be able to see this
+Now reload apache2 again using ``sudo service apache2 reload`` and visit localhost/admin. Now you should be able to see this
 
 .. figure:: img/django_admin_interface.PNG
 
