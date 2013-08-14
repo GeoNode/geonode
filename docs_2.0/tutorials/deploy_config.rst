@@ -1,6 +1,10 @@
 Configurations
 ==============
 
+some text here
+
+.. note:: Please note that all the paths are user specific, so they might not coincide with the paths you will have to use!
+
 Change default database
 -----------------------
 
@@ -9,23 +13,23 @@ If you have installed geonode in developing mode, it will be running with the sq
 Create geonode user and database
 ********************************
 
-First you have to create a user called *geonode* (with password *geonode*), as well as a database called *geonode*.
+First of all a user called *geonode* (with password *geonode*), as well as a database called *geonode* has to be created.
 
-Open a terminal and type:
+To create the user:
 
 .. code-block:: console
 
 	$ sudo -u postgres createuser -P geonode
 
-Now you will be asked to enter a password. This must be *geonode*.
+Now you will be asked to enter a password. This must be *geonode* (you can change it if you want to, but be aware that you have to edit the local_settings.py if you do so!)
 
-To create the db:
+To create the database:
 
 .. code-block:: console
 
    	$ sudo -u postgres createdb -T template_postgis203 -O geonode geonode
    	
-This creates a db called *geonode* (which automatically has the postgis extension as well!) with its owner *geonode*.
+This creates a db called *geonode* (which automatically has the postgis extension as well!) with its owner *geonode*. If you do not have a template with the postgis extension, create one using this guide (LINK).
 
 Change authentication method
 ****************************
@@ -53,8 +57,6 @@ and then set the authentication method of the following entry from *peer* to *tr
 	#TYPE   DATABASE	USER	METHOD
 	local	all		all	trust
 
-(Should this method be used???)
-
 After changing this file, the postgres service has to be restarted. This is essential, because otherwise the changed configurations won't be considered!
 
 To restart the postgresql server type
@@ -71,19 +73,10 @@ The next step is to set the local settings. In the directory ../geonode/geonode 
 .. code-block:: console
 
 	$ sudo mv local_settings.py.sample local_settings.py
+	
+.. note:: If you do not user *geonode* as password for your database, then you have to edit the local_settings.py and change your password in this part of the file
 
-Install psycopg2
-****************
-
-If you do not already have it on your machine, it is neccessary to install *psycopg2*, the postgresql adapter for Python programming language. But, be sure that you are working in your virtualenv, otherwise you will create a permission problem!! Thus activate your virtualenv first
-
-.. code-block:: console
-
-	$ source home/user/.venvs/geonode/bin/activate
-	$ cd
-	$ pip install psycopg2
-
-.. todo:: a word or two more on this
+.. figure:: img/local_settings_changes.PNG
 
 Additional steps
 ----------------
@@ -95,7 +88,7 @@ Additional steps
 
 The collectstatic command will create a new folder *static_root*. The syncdb command will create all needed tables.
 
-Our next step is to create a superuser
+Our next step is to create a superuser. The following command will create a django superuser, which is simultaneously a geonode superuser as well.
 
 .. code-block:: console
 
