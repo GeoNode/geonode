@@ -58,7 +58,7 @@ The Installation of Postgresql-9.2 on Ubuntu 12.04 includes two main steps (Gene
 	   $ sudo apt-get install postgresql-9.2 pgadmin3
 
 Basic configurations
---------------------
+********************
 
 Before we start configuring postgres to work with geonode, we´ll do two initial configuration steps.
 
@@ -174,7 +174,17 @@ and now you can create the extension
 
 We can now use this template to easily create a new database wich automatically has the postgis extension as well!
 
+Install psycopg2
+----------------
 
+If you do not already have it on your machine, it is neccessary to install *psycopg2*, the postgresql adapter for Python programming language. But, be sure that you are working in your virtualenv, otherwise you will create a permission problem!! Thus activate your virtualenv first
+
+.. code-block:: console
+
+	$ source home/user/.venvs/geonode/bin/activate
+	$ cd
+	$ pip install psycopg2
+	
 Install Apache2 and mod_wsgi
 ----------------------------
 
