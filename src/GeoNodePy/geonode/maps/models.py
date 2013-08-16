@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+# -*- coding: UTF-8 -*-
+import threading
 from django.conf import settings
 from django.db import models
 from geonode.maps.owslib_csw import CatalogueServiceWeb
@@ -27,6 +28,8 @@ from django.core.cache import cache
 import sys
 import re
 from geonode.maps.encode import despam, XssCleaner
+
+
 
 logger = logging.getLogger("geonode.maps.models")
 
@@ -2214,7 +2217,7 @@ class MapLayer(models.Model):
         elif self.source_params.find( "gxp_hglsource") > -1:
             # call HGL ServiceStarter asynchronously to load the layer into HGL geoserver
             from geonode.queue.tasks import loadHGL
-            loadHGL(self.name)
+            #loadHGL.delay(self.name)
 
 
         #Create cache of maplayer config that will last for 60 seconds (in case permissions or maplayer properties are changed)

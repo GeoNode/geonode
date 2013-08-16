@@ -122,6 +122,8 @@ INSTALLED_APPS = (
     'taggit',
     'south',
     'autocomplete_light',
+    'djcelery',
+    'djkombu',
 
     # GeoNode internal apps
     'geonode.core',
@@ -131,11 +133,9 @@ INSTALLED_APPS = (
     'geonode.register',
     'geonode.mapnotes',
     'geonode.capabilities',
+    'geonode.queue',
     #'geonode.hoods',
     #'geonode.gazetteer',
-    #'geonode.queue',
-    #'djcelery',
-    #'djkombu',
     #'debug_toolbar',
 
 )

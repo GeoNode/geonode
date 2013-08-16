@@ -1,8 +1,8 @@
 #from huey.djhuey.decorators import queue_command, periodic_command, crontab
-from celery.task.schedules import crontab
-from celery.decorators import periodic_task, task
+from celery.schedules import crontab
+from celery.task import periodic_task, task
 from geonode import settings
-from models import *
+from geonode.queue.models import GazetteerUpdateJob, LayerBoundsUpdateJob
 
 __author__ = 'mbertrand'
 
@@ -36,7 +36,6 @@ def updateBounds():
 @task
 def loadHGL(layername):
     from geonode.proxy.views import hglServiceStarter
-    try:
-        hglServiceStarter(None,layername)
-    except Exception, e:
-            print e
+    hglServiceStarter(None,layername)
+
+
