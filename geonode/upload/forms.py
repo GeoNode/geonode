@@ -38,6 +38,7 @@ class LayerUploadForm(forms.Form):
     xml_file = forms.FileField(required=False)
 
     geogit = forms.BooleanField(required=False)
+    geogit_store = forms.CharField(required=False)
     time = forms.BooleanField(required=False)
 
     abstract = forms.CharField(required=False)
