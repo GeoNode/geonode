@@ -212,7 +212,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         layer_form = LayerForm(instance=layer, prefix="layer")
         attribute_form = layer_attribute_set(instance=layer, prefix="layer_attribute_set", queryset=Attribute.objects.order_by('display_order'))
 
-    if request.method == "POST" and layer_form.is_valid():
+    if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']
         new_author = layer_form.cleaned_data['metadata_author']
         new_keywords = layer_form.cleaned_data['keywords']
@@ -227,14 +227,13 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
-        if attribute_form.is_valid():
-            for form in attribute_form.cleaned_data:
-                la = Attribute.objects.get(id=int(form['id'].id))
-                la.description = form["description"]
-                la.attribute_label = form["attribute_label"]
-                la.visible = form["visible"]
-                la.display_order = form["display_order"]
-                la.save()
+        for form in attribute_form.cleaned_data:
+            la = Attribute.objects.get(id=int(form['id'].id))
+            la.description = form["description"]
+            la.attribute_label = form["attribute_label"]
+            la.visible = form["visible"]
+            la.display_order = form["display_order"]
+            la.save()
 
         if new_poc is not None and new_author is not None:
             the_layer = layer_form.save()

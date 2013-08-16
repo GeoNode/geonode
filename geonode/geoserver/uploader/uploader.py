@@ -8,8 +8,8 @@ import mimetypes
 from urlparse import urlparse
 from urllib import urlencode
 
+from geonode.layers.utils import get_files
 from geonode.geoserver.uploader.api import parse_response
-from geonode.geoserver.uploader.utils import shp_files 
 
 _logger = logging.getLogger(__name__)
 
@@ -55,8 +55,8 @@ class Uploader(object):
         """
         files = [ fpath ]
         if fpath.lower().endswith(".shp"):
-            files = shp_files(fpath)
-            
+            files = list(set(get_files(fpath).values()))
+
         session = self.start_import(import_id)
         session.upload_task(files, use_url)
         return session

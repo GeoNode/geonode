@@ -19,7 +19,7 @@
         Some of your original metadata may have been lost.{% endblocktrans %}</div>
     {% endif %}
 
-    {% if layer_form.errors %}
+    {% if layer_form.errors or attribute_form.errors %}
 	<div style="background-color: pink">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}
             <ul>
         {% for field in layer_form %}
@@ -27,6 +27,15 @@
                 <li>{{ field.label }}</li>
             {% endif %}
         {% endfor %}
+
+        {% if attribute_form.errors %}
+        <li>{% trans "Attributes" %}</li>
+        	{% for field in attribute_form %}
+            	{% if field.errors %}
+                	<li>{{ field.errors }}</li>
+            	{% endif %}
+        	{% endfor %}
+        {% endif %}
             </ul>
         </div>
     {% endif %}
@@ -37,10 +46,10 @@
     </div>
       <header>{% trans "Attributes" %}</header>
       {{ attribute_form.management_form }}
-      <table cellpadding="5" cellspacing="5" width="100%"><tr><th style="text-align: left;">{% trans "Attribute" %}</th><th style="text-align: left;">{% trans "Description" %}</th></tr>
+      <table cellpadding="5" cellspacing="5" width="100%"><tr><th style="text-align: left;">{% trans "Attribute" %}</th><th style="text-align: left;">{% trans "Label" %}</th><th style="text-align: left;">{% trans "Description" %}</th><th style="text-align: left;">{% trans "Display Order" %}</th></tr>
           {% for form in attribute_form.forms %}
           {% if form.attribute %}
-          <tr><td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td><td> {{form.description}}</td></tr>
+          <tr><td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td><td> {{form.attribute_label}}</td><td> {{form.description}}</td><td> {{form.display_order}}</td></tr>
           {% endif %}
           {% endfor %}
       </table>
