@@ -144,7 +144,8 @@ class LayerAttributeForm(forms.ModelForm):
 
     class Meta:
         model = Attribute
-        exclude = ('attribute_type',)
+        exclude = ('attribute_type','count','min','max','average','median','stddev',
+                   'sum','unique_values','last_stats_updated','objects')
 
 class LayerStyleUploadForm(forms.Form):
     layerid = forms.IntegerField()

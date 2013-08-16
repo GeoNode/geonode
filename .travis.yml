@@ -18,7 +18,7 @@ install:
   - sudo apt-get install nodejs
   - npm install -g bower
   - npm install -g less
-  - npm install -g bower-installer 
+  - npm install -g grunt-cli 
   - pip install -e . --use-mirrors
 
 before_script:
