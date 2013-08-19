@@ -277,8 +277,15 @@ def save(layer, base_file, user, overwrite=True, title=None,
        is created.
     """
     logger.info(_separator)
-    logger.info('Uploading layer: [%s], base filename: [%s]', layer, base_file)
 
+    # Step -1. Verify if the filename is in ascii format.
+    try:
+        base_file.decode('ascii')
+    except UnicodeDecodeError:
+        msg = "Please use only characters from the english alphabet for the filename."
+        raise GeoNodeException(msg)
+
+    logger.info('Uploading layer: [%s], base filename: [%s]', layer, base_file)
     # Step 0. Verify the file exists
     logger.info('>>> Step 0. Verify if the file %s exists so we can create '
                 'the layer [%s]' % (base_file, layer))

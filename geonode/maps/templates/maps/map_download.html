@@ -1,13 +1,8 @@
 {% extends "maps/map_base.html" %}
 {% load i18n %}
 
-{% block head %}
-{{ block.super }}
-<link href="{{ STATIC_URL }}lib/css/jquery-ui.css" rel="stylesheet" />
-{% endblock %}
-
 {% block body %}
-<div class="twocol">
+<div class="span12">
   <h3>{% trans "Download" %} {{map.title}}</h3>
   <p>
     {% blocktrans %}
@@ -53,7 +48,10 @@
 
     {% if map_status %} 
       <button type="button" id="cancel">Cancel</button>
-      <div id="pb"></div>
+      <!-- div id="pb"></div -->
+      <div class="progress">
+        <div id="pb" class="bar" style="width: 10%"></div>
+      </div>
       <div id="pb-status">Downloading.....</div>
     {% elif downloadable_layers|length > 0 %} 
       <form action="{{site}}maps/{{map.id}}/download" method="POST"> 
@@ -66,54 +64,56 @@
 </div>
 {% endblock %}
 {% block extra_script %}
-<script src="{{ STATIC_URL }}lib/js/jquery-ui.js"></script>
 <script type="text/javascript">
-'use strict'
+
   {% autoescape off %}
-      {% if map_status %} 
-      var checkStatus, progress, pb, process;
 
-      function update(){
-        $.get(
-          '{% url "map_download_check" %}'
-        ).
-        done(function(result){
-          process = $.parseJSON(result);
-          if (process["process"]["status"] === "FINISHED"){ 
-            location.href = "{{geoserver}}rest/process/batchDownload/download/" +  process["process"]["id"];
-            clearInterval(checkStatus); 
-            pb.progressbar("option","value",100);
-            $('#pb-status').html("Done");
-          } 
-          else { 
-            pb.progressbar("option","value",process["process"]["progress"]/100); 
-          } 
-        });
-      };
+  {% if map_status %} 
+      
+  $(function(){
 
-      $(function(){
-        checkStatus = setInterval("update()",1000);
-        pb = $( "#pb" ).progressbar({
-          value: 10
-        });
+    "use strict";
 
-        $("#cancel").click(function(){
-          $.get(
-            "{{geoserver}}rest/process/batchDownload/kill/" + process["process"]["id"]
-            ).
-            done(function(){
-              alert("You successfuly canceled the download"); 
-              location.href = "{{site}}maps/{{map.id}}"; 
-              clearInterval(checkStatus);
-            }).
-            fail(function(result){
-              console.log(result); 
-              clearInterval(checkStatus); // break if something fails
-            });
-        });
+    // var checkStatus, progress, pb, process;        
+
+    var checkStatus = setInterval(function (){
+
+      $.get(
+        "{% url 'map_download_check' %}"
+      )
+      .done(function(result){
+        
+        var process = $.parseJSON(result);
+
+        if (process.process.status === "FINISHED") { 
+          location.href = "{{geoserver}}rest/process/batchDownload/download/" +  process.process.id;
+          clearInterval(checkStatus); 
+          $("#pd").css("width", "100%");
+          $("#pb-status").html("Done");
+        }    
+        else { 
+          $("#pd").css("width", process.process.progress + "%");   
+        } 
       });
+    }, 1000);
 
-      {% endif %}
+    $("#cancel").click(function(){
+      $.get(
+        "{{geoserver}}rest/process/batchDownload/kill/" + process.process.id
+      )
+      .done(function(){
+        window.alert("You successfuly canceled the download"); 
+        location.href = "{{site}}maps/{{map.id}}"; 
+        clearInterval(checkStatus);
+      })
+      .fail(function(){
+        clearInterval(checkStatus); // break if something fails
+      });
+    });
+  });
+
+  {% endif %}
+  
   {% endautoescape %}
 
 </script>

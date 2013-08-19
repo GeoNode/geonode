@@ -14,10 +14,12 @@ geoserver
 downloaded
 
 # Static media handling
+*.jshintrc
 geonode/static/.components/
 geonode/static/lib/
 geonode/static/geoexplorer/
 geonode/static_root/
+geonode/static/node_modules/
 
 # Uploaded files
 geonode/uploaded

@@ -239,7 +239,7 @@ def install_ec2_tools():
     sudo('apt-get install -y ec2-api-tools')
 
 def build_geonode_ami():
-    deploy_geonode_dev_package()
+    deploy_geonode_dev_deb()
     change_admin_password()
     cleanup_temp()
     copy_keys()

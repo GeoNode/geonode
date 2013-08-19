@@ -5,11 +5,6 @@
 
 {% block body_class %}adv-search search{% endblock %}
 
-{% block head %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{{ STATIC_URL }}lib/css/datepicker.css" type="text/css" media="screen" />
-{% endblock %}
-
 {% block body_outer %}
   <div class="span12">
     <h2 class="page-title">{% trans "Search" %}</h2>
@@ -125,7 +120,9 @@
 {% endblock %}
 
 {% block extra_script %}
+    {% if DEBUG_STATIC %}
     <script src="{{ STATIC_URL }}lib/js/bootstrap-datepicker.js" type="text/javascript"></script>
+    {% endif %}
     <script type="text/javascript">
         $(function() {
           $(".date").datepicker();
