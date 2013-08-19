@@ -89,6 +89,14 @@ def document_detail(request, docid):
         'related': related
     }))
 
+from django_downloadview.response import DownloadResponse
+def document_download(request, docid):
+    document = get_object_or_404(Document, pk=docid)
+    if not request.user.has_perm('documents.view_document', obj=document):
+        return HttpResponse(loader.render_to_string('401.html',
+            RequestContext(request, {'error_message':
+                _("You are not allowed to view this document.")})), status=401)
+    return DownloadResponse(document.doc_file)
 
 @login_required
 def document_upload(request):
