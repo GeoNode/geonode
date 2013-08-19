@@ -103,6 +103,9 @@ class UploaderSession(object):
     # Import to GeoGit repository
     geogit = None
 
+    # GeoGit Repository to import to 
+    geogit_store = None
+
     # Configure Time for this Layer
     time = None
 
@@ -295,7 +298,7 @@ def run_import(upload_session, async):
     if (hasattr(settings, 'GEOGIT_DATASTORE') and settings.GEOGIT_DATASTORE and
         upload_session.geogit == True and
         import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
-        target = create_geoserver_db_featurestore(store_type='geogit')
+        target = create_geoserver_db_featurestore(store_type='geogit', store_name = upload_session.geogit_store)
         _log('setting target datastore %s %s',
              target.name, target.workspace.name
             )
@@ -303,7 +306,7 @@ def run_import(upload_session, async):
             target.name, target.workspace.name)
     elif (settings.DB_DATASTORE and
         import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
-        target = create_geoserver_db_featurestore(store_type='postgis')
+        target = create_geoserver_db_featurestore(store_type='postgis', store_name = upload_session.geogit_store)
         _log('setting target datastore %s %s',
              target.name, target.workspace.name
             )
@@ -462,8 +465,19 @@ def final_step(upload_session, user):
     # @todo see above in save_step, regarding computed unique name
     name = import_session.tasks[0].items[0].layer.name
 
+    # keep checking to see if geoserver has the layer. 
+    # it can take significantly longer than a few of seconds 
+    # to upload data to geoserver in some cases: slower/busy server, larger 
+    # data, etc
     import time
-    time.sleep(4)
+    wait_counter = 0
+    while wait_counter < 30:
+        wait_counter += 1
+        time.sleep(2)
+        publishing = cat.get_layer(name)
+        if publishing is not None:
+            break
+
     _log('Creating style for [%s]', name)
     publishing = cat.get_layer(name)
     if publishing is None:

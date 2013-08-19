@@ -233,6 +233,7 @@ def save_step_view(req, session):
             import_sld_file = sld,
             upload_type = upload_type,
             geogit=form.cleaned_data['geogit'],
+            geogit_store=form.cleaned_data['geogit_store'],
             time=form.cleaned_data['time']
         )
         return _next_step_response(req, upload_session, force_ajax=True)
