@@ -433,13 +433,16 @@ def resourcebase_post_save(instance, sender, **kwargs):
         user = resourcebase.owner
     else:
         user = ResourceBase.objects.admin_contact()
-    pc, __ = Profile.objects.get_or_create(user=user,
+        
+    if resourcebase.poc is None:
+        pc, __ = Profile.objects.get_or_create(user=user,
                                            defaults={"name": resourcebase.owner.username})
-    ac, __ = Profile.objects.get_or_create(user=user,
+        resourcebase.poc = pc
+    if resourcebase.metadata_author is None:  
+        ac, __ = Profile.objects.get_or_create(user=user,
                                            defaults={"name": resourcebase.owner.username}
                                            )
-    resourcebase.poc = pc
-    resourcebase.metadata_author = ac
+        resourcebase.metadata_author = ac
 
 def resourcebase_post_delete(instance, sender, **kwargs):
     """
