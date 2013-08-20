@@ -33,6 +33,8 @@ Write Documentation
 -------------------
 `Text of the link <http://example.com>`_
 
+:file:`how_to_contribute_to_docs.rst`
+
 Here is how to :doc:'How to write documentation <how_to_contribute_to_docs>'
 GeoNode's documentation can always use improvement - there are always more questions to be answered.
 For managing contributions to the manual, GeoNode uses a process similar to that used for managing the code itself.
