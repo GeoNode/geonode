@@ -63,7 +63,6 @@ Now a virtual environment has to be set up, in which Geonode will later be runni
 *Step 4c*::
 
         mkvirtualenv geonode
-        workon geonode
 
 **Step 5**
 
@@ -71,17 +70,11 @@ To download the latest geonode version from github, the command *clone* is used:
 
     git clone https://github.com/GeoNode/geonode.git
 
-**Step 6**
-
-You can now install Geonode in your local virtual environment. This process may take some time::
-
-    pip install -e geonode --use-mirrors
-
 In order to go on and complete the installation you have to direct to your now exisiting geonode folder::
 
     cd geonode
 
-**Step 7**
+**Step 6**
 
 The last step is to compile GeoServer and start the development servers::
 
@@ -90,7 +83,11 @@ The last step is to compile GeoServer and start the development servers::
 
 Now you should be able to visit the geonode site by typing ​http://localhost:8000 into your browser window.
 
+To stop the server::
 
+    Ctrl c
+    paver stop
+    
 **Important notice**
 
 With every restart of your machine, you have to restart geonode as well! That means, you will not be able to open ​http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
