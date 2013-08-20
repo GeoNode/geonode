@@ -12,6 +12,8 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_POST
 from django.core.exceptions import PermissionDenied
 
+from django_downloadview.response import DownloadResponse
+
 from geonode.utils import resolve_object
 from geonode.maps.views import _perms_info
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -89,7 +91,6 @@ def document_detail(request, docid):
         'related': related
     }))
 
-from django_downloadview.response import DownloadResponse
 def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)
     if not request.user.has_perm('documents.view_document', obj=document):
