@@ -73,6 +73,12 @@ The next step is to set the local settings. In the directory ../geonode/geonode 
 
 	$ sudo mv local_settings.py.sample local_settings.py
 	
+Add::
+
+	'PORT': '5432',
+	
+to your db settings in local_settings.py.
+
 .. note:: If you do not use *geonode* as password for your database, then you have to edit the local_settings.py and change your password in this part of the file
 
 .. figure:: img/local_settings_changes.PNG
