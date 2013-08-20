@@ -28,7 +28,7 @@ class DocumentForm(forms.ModelForm):
                    'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid',
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext', 
-                   'content_type', 'object_id', 'doc_file', 'extension')
+                   'content_type', 'object_id', 'doc_file', 'extension', 'popular_count', 'share_count', 'thumbnail')
 
 class DocumentDescriptionForm(forms.Form):
     title = forms.CharField(300)
