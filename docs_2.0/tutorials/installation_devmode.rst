@@ -118,3 +118,10 @@ With every restart of your machine, you have to restart geonode as well! That me
 
 .. note:: Remember that you have to do these steps each time you restart your machine!!
 
+Next step::
+
+Create a superuser so you can log on to your local geonode installation at http://localhost:8000
+
+    django-admin.py createsuperuser –-settings=geonode.settings
+
+
