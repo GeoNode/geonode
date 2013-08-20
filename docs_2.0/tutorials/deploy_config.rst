@@ -116,21 +116,31 @@ Furthermore a new django superuser has to be created
 You will be asked to enter a username, an email adress and a password.
 
 
+Other steps
+-----------
 
-Additional steps
-----------------
+Create local static files
+*************************
+
+The collectstatic command will create a new folder *static_root*.
 
 .. code-block:: console
 
    $ django-admin.py collectstatic --settings=geonode.settings --noinput
 
-The collectstatic command will create a new folder *static_root*.
+Enable geonode upload function
+******************************
 
-An empty upload directory has to be created and the permissions on this folder have to be applied to apache.
+An empty folder called *uploaded* must be created
 
 .. code-block:: console
 
    $ sudo mkdir -p /home/user/geonode/geonode/uploaded
+   
+When using apache webserver change owner to www-data
+
+.. code-block:: console
+   
    $ sudo chown www-data -R /home/user/geonode/geonode/uploaded
    
 Replace local server with apache
@@ -184,7 +194,7 @@ This file should inlcude the following, but don´t forget to adjust the paths!
 	</Directory>
 
 	Alias /static/ /home/barbara/geonode/geonode/static/
-	Alias /uploaded/ /home/barbara/geonode/geonode/geonode/uploaded/
+	Alias /uploaded/ /home/barbara/geonode/geonode/uploaded/
 
 	<Proxy *>
   		Order allow,deny
