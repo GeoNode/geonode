@@ -78,6 +78,16 @@ The next step is to set the local settings. In the directory ../geonode/geonode 
 
 .. figure:: img/local_settings_changes.PNG
 
+Install psycopg2
+****************
+
+If you do not already have it on your machine, it is neccessary to install *psycopg2*, the postgresql adapter for Python programming language. But, be sure that you are working in your virtualenv, otherwise you will create a permission problem!! Thus activate your virtualenv first
+
+.. code-block:: console
+
+	$ source home/user/.venvs/geonode/bin/activate
+	$ cd
+	$ pip install psycopg2
 
 Synchronise db
 **************
