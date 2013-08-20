@@ -2,7 +2,7 @@
 How to contribute to GeoNode Documentation
 ==========================================
 back to main
-:ref:`how_to_contribut`
+:ref:`how_to_contribute`
 
 If you feel like adding or changing something in the GeoNode documentation you are very welcome to do so. The documentation always needs improvement as the development of the software is going quite fast.
 
