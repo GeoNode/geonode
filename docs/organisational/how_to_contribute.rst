@@ -1,3 +1,4 @@
+..  _how_to_contribute:
 Contributing to GeoNode
 =======================
 
