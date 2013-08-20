@@ -367,7 +367,7 @@ def save(layer, base_file, user, overwrite=True, title=None,
         main_file = files['base']
         data = main_file
     # ------------------
-    
+
     try:
         store, gs_resource = create_store_and_resource(name,
                                                        data,
@@ -498,8 +498,8 @@ def save(layer, base_file, user, overwrite=True, title=None,
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook
     logger.info('>>> Step 10. Setting default permissions for [%s]', name)
-    if permissions is not None:
 
+    if permissions is not None and len(permissions.keys()) > 0:
         layer_set_permissions(saved_layer, permissions)
     else:
         saved_layer.set_default_permissions()
