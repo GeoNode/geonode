@@ -238,19 +238,10 @@ The file should contain the following default settings until now:
 
 .. image:: img/pg_hba_conf.png
 
-First, add this entry::
-	
-	#Type	DATABASE	USER	ADDRESS		METHOD
-	host	geonode		geonode	127.0.0.1/32	md5
-
-.. todo:: Do I really have to add this????
-
-and then set the authentication method of the following entry from *peer* to *trust*::
+and then set the authentication method of the following entry from *peer* to *md5*::
 
 	#TYPE   DATABASE	USER	METHOD
-	local	all		all	trust
-
-(Should this method be used???)
+	local	all		all	md5
 
 After changing this file, the postgres service has to be restarted. This is essential, because otherwise the changed configurations won't be considered!
 
