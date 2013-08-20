@@ -74,21 +74,25 @@ The next step is to set the local settings. In the directory ../geonode/geonode 
 
 	$ sudo mv local_settings.py.sample local_settings.py
 	
-.. note:: If you do not user *geonode* as password for your database, then you have to edit the local_settings.py and change your password in this part of the file
+.. note:: If you do not use *geonode* as password for your database, then you have to edit the local_settings.py and change your password in this part of the file
 
 .. figure:: img/local_settings_changes.PNG
 
-Additional steps
-----------------
+
+Synchronise db
+**************
+
+To synchronise the database call the django command *syncdb*
 
 .. code-block:: console
 
    $ django-admin.py syncdb --noinput --all
-   $ django-admin.py collectstatic --settings=geonode.settings --noinput
+   
 
-The collectstatic command will create a new folder *static_root*. The syncdb command will create all needed tables.
+Create new superuser
+********************
 
-Our next step is to create a superuser. The following command will create a django superuser, which is simultaneously a geonode superuser as well.
+Furthermore a new django superuser has to be created
 
 .. code-block:: console
 
@@ -96,7 +100,19 @@ Our next step is to create a superuser. The following command will create a djan
 
 You will be asked to enter a username, an email adress and a password.
 
-Now we need to create an empty upload dir and apply the permissions on this folder to apache.
+
+
+Additional steps
+----------------
+
+.. code-block:: console
+
+   $ django-admin.py collectstatic --settings=geonode.settings --noinput
+
+The collectstatic command will create a new folder *static_root*. The syncdb command will create all needed tables.
+
+
+An empty upload directory has to be created and the permissions on this folder have to be applied to apache.
 
 .. code-block:: console
 
