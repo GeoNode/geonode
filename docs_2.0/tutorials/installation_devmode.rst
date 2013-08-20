@@ -11,7 +11,7 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 * clone geonode from github and install it in the virtual environment
 * compile geoserver and start the development servers 
 
-*Remark*: The following steps have to be executed in your terminal. The *Steps 1 – 4a* have to be done as a root user, therefore don´t forget to type sudo in front (as shown in the steps)!
+.. note:: The following steps have to be executed in your terminal. The *Steps 1 – 4a* have to be done as a root user, therefore don´t forget to type sudo in front (as shown in the steps)!
 
 **Step 1**
 
@@ -91,7 +91,7 @@ The last step is to compile GeoServer and start the development servers::
 Now you should be able to visit the geonode site by typing ​http://localhost:8000 into your browser window.
 
 
-***Important notice***
+**Important notice**
 
 With every restart of your machine, you have to restart geonode as well! That means, you will not be able to open ​http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
 
