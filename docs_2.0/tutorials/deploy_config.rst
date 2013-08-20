@@ -124,8 +124,7 @@ Additional steps
 
    $ django-admin.py collectstatic --settings=geonode.settings --noinput
 
-The collectstatic command will create a new folder *static_root*. The syncdb command will create all needed tables.
-
+The collectstatic command will create a new folder *static_root*.
 
 An empty upload directory has to be created and the permissions on this folder have to be applied to apache.
 
