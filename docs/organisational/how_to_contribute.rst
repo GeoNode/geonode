@@ -31,6 +31,7 @@ Useful information for bug reports includes:
 
 Write Documentation
 -------------------
+`Text of the link <http://example.com>`_
 
 Here is how to :doc:'How to write documentation <how_to_contribute_to_docs>'
 GeoNode's documentation can always use improvement - there are always more questions to be answered.
