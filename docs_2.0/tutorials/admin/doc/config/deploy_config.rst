@@ -45,7 +45,7 @@ In the postgres config path, */etc/postgresql/9.2/main*, you should find the fil
 
 The file should contain the following default settings until now:
 
-.. figure:: img/pg_hba_conf.png
+.. figure:: img/pg_hba_detail.PNG
 
 and then set the authentication method of the following entry from *peer* to *trust*::
 
@@ -241,7 +241,7 @@ to::
 
 Now reload apache2 again using ``sudo service apache2 reload`` and visit localhost/admin. Now you should be able to see this
 
-.. figure:: img/django_admin_interface.PNG
+.. figure:: img/admin_interface.PNG
 
 Replace default jetty server with tomcat - deploy geoserver
 -----------------------------------------------------------

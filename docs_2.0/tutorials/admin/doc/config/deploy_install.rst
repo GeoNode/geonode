@@ -90,6 +90,8 @@ Before we start configuring postgres to work with geonode, we´ll do two initial
    
 	$ sudo -u postgres createdb mydb
 
+For more informations on the installation and configuration of postgresql visit the `Postgresql Documentation <http://www.postgresql.org/docs/9.1/static/index.html>`_.
+
 Install Postgis
 ---------------
 
@@ -149,6 +151,8 @@ Install Postgis
            $ sudo make comments-install
 
    .. note:: PostGIS 2.0.3 can be configured to disable topology or raster components using the configure flags ``--without-raster`` and/or ``--without-topology``. The default is to build both. Note that the raster component is required for the extension installation method for postgresql!
+
+For more information on postgis you may visit the `Postgis Homepage <http://www.postgis.net>`_.
 
 Create the postgis extension for postgresql
 -------------------------------------------
@@ -250,6 +254,8 @@ To check whether you´ve successfully installed and added mod_wgsi go to ``var/l
 
 	mod_wsgi/3.4 Python/2.7.3 configured -- resuming normal operations
 
+More informations on the installation and configuration of apache and mod_wsgi can be found on the `mod_wsgi homepage <http://code.google.com/p/modwsgi/wiki/InstallationInstructions>`_.
+
 Install Tomcat
 --------------
 
@@ -303,7 +309,7 @@ Install Tomcat
 	
 #. Configure Tomcat Server
 
-   Tomcat 7 will be running on the port 8080 as default. This can be changed in the server.xml file which can be found in the folder *conf*. Leave the settings as they are at the moment. For more information on the configuration of tomcat visit http:ladida.
+   Tomcat 7 will be running on the port 8080 as default. This can be changed in the server.xml file which can be found in the folder *conf*. Leave the settings as they are at the moment. For more information on the configuration of tomcat visit the `Tomcat Homepage <http://tomcat.apache.org/tomcat-7.0-doc/setup.html>`_.
 
     .. todo:: Is this really necessary?
           .# edit the "conf\tomcat-user.xmls"
