@@ -34,7 +34,7 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 DEBUG = TEMPLATE_DEBUG = True
 
 # Set to True to load non-minified versions of (static) client dependencies
-DEBUG_STATIC = False
+DEBUG_STATIC = True 
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
@@ -523,7 +523,7 @@ MAP_BASELAYERS = [{
 
 # Uploader backend (rest or importer)
 
-UPLOADER_BACKEND_URL = 'rest'
+UPLOADER_BACKEND_URL = 'importer'
 
 #Import uploaded shapefiles into a database such as PostGIS?
 DB_DATASTORE = False
