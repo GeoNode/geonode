@@ -5,7 +5,7 @@ Configuring GeoNode
 
 .. todo:: Notes say: "Basic GeoNode configuration", "Server URL configuration"
    
-.. toctree:
+.. toctree::
    :maxdepth: 2
 
    deploy_install

@@ -248,7 +248,7 @@ Replace default jetty server with tomcat - deploy geoserver
 
 Until now you won't be able to attend the geoserver webpage (without using ``paver start_geoserver``). So we now want to deploy our own geoserver. To do so we need Tomcat installed and not running. So if you've got Tomcat running at the moment, stop it using
 
-.. code-block::
+.. code-block:: console
 
 	$ cd /opt/apache-tomcat-X.Y.Z/bin
 	$ sudo ./shutdown.sh
@@ -259,13 +259,13 @@ When installing geonode in developing mode, you´ve also got a *geoserver.war* f
 
 Now copy this file into the *webapps* folder of tomcat
 
-.. code-block::
+.. code-block:: console
 
 	$ sudo cp geoserver.war /opt/apache-tomcat-7.0.42/webapps
 	
 By starting tomcat it will unpack the geoserver.war and create a new directory ``tomcat/webapps/geoserver``. 
 
-.. code-block::
+.. code-block:: console
 
 	$ cd /opt/apache-tomcat-X.Y.Z/bin
 	$ sudo ./catalina.sh run
@@ -278,9 +278,7 @@ Let´s try to attend http://localhost:8080/geoserver or localhost/geoserver. You
 Change permissions of folders
 -----------------------------
 
-didn't do that now! and it works as well..
-
-.. code-block::
+.. code-block:: console
 
    $ sudo chown www-data:www-data /home/user/geonode/geonode/static/
    $ sudo chown www-data:www-data /home/user/geonode/geonode/uploaded/
