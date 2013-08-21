@@ -317,20 +317,20 @@ Install Tomcat
 
    The executable programs and scripts are in the 'bin' directory of Tomcat. So go to your bin folder and run the *catalina.sh* script.
 
-   .. code-block::
+   .. code-block:: console
 
 	   $ cd /opt/apache-tomcat-7.0.42/bin
 	   $ ./catalina.sh run
 	
    If that doesn't work for now, try 
 
-   .. code-block::
+   .. code-block:: console
 
 	   $ sudo chmod uga+x *.sh
 	
    at first and then again
 
-   .. code-block::
+   .. code-block:: console
 
 	   $ sudo ./catalina.sh run
    again!
@@ -344,7 +344,7 @@ Now type http://localhost:8080 and http://localhost:8080/examples and you should
 
     To shut down tomcat:
 
-    .. code-blocks::
+    .. code-block:: console
 
 	   $ cd /opt/apache-tomcat-7.0.42/bin
 	   $ ./shutdown.sh
