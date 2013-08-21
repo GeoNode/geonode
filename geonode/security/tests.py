@@ -3,8 +3,6 @@ from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from django.test import TestCase
 from django.test.client import Client
-from middleware import LoginRequiredMiddleware
-
 
 class SecurityTest(TestCase):
     """
@@ -19,7 +17,7 @@ class SecurityTest(TestCase):
         """
         Tests the Geonode login required authentication middleware.
         """
-
+        from geonode.security.middleware import LoginRequiredMiddleware
         middleware = LoginRequiredMiddleware()
 
         white_list = [
