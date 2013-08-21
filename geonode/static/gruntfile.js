@@ -103,6 +103,8 @@ module.exports = function(grunt) {
             'tinysort/src/jquery.tinysort.js',
             'raty/js/jquery.raty.js',
             'jquery-waypoints/waypoints.js',
+            'jquery-ui/ui/jquery-ui.custom.js',
+            'jquery-ajaxprogress/jquery.ajaxprogress.js',
             'multi-select/js/jquery.multi-select.js',
             'bootstrap-datepicker/js/bootstrap-datepicker.js',
             'json2/json2.js',
