@@ -385,6 +385,22 @@ define(function (require, exports) {
             data: form_data,
             processData: false,
             contentType: false,
+            xhr: function() {
+                var req = $.ajaxSettings.xhr();
+                if (req) {
+                    req.upload.addEventListener('progress', function(evt) {
+                        if(evt.lengthComputable) {
+                            var pct = (evt.loaded / evt.total) * 100;
+                            $('#prog')
+                                .progressbar('option', 'value', pct)
+                                .children('.ui-progressbar-value')
+                                .html(pct.toPrecision(3) + '%')
+                                .css('display', 'block');
+                        }
+                    }, false);
+                }
+                return req;
+            },
             beforeSend: function () {
                 self.markStart(); 
                 this.prog = $('#prog').progressbar({ value: 0 });
@@ -405,18 +421,6 @@ define(function (require, exports) {
                     empty: 'true',
                 });
                 self.doStep(resp);
-            },
-            progress: function(e) {
-                if(e.lengthComputable) {
-                    var pct = (e.loaded / e.total) * 100;
-                    $('#prog')
-                        .progressbar('option', 'value', pct)
-                        .children('.ui-progressbar-value')
-                        .html(pct.toPrecision(3) + '%')
-                        .css('display', 'block');
-                }
-                else {
-                }
             }
         });
     };
