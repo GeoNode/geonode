@@ -5,6 +5,8 @@
 
 var layers = {};
 
+var geogit_stores = {};
+
 define(['underscore',
         'upload/LayerInfo',
         'upload/FileTypes',
@@ -20,6 +22,7 @@ define(['underscore',
         types,
         buildFileInfo,
         displayFiles,
+        init_geogit_stores,
         doUploads,
         doTime,
         doSrs,
@@ -273,6 +276,18 @@ define(['underscore',
         }
     };
 
+    init_geogit_stores = function() {
+        $.ajax({
+            url: '/gs/rest/stores/geogit/',
+            async: true,
+            contentType: false,
+        }).done(function (resp) {
+            geogit_stores = JSON.parse(resp);
+        }).fail(function (resp) {
+            //
+        });        
+    };
+
 
     /** Initialization function. Called from main.js 
      *
@@ -319,6 +334,7 @@ define(['underscore',
         $(options.upload_button).on('click', doUploads);
         $("[id^=delete]").on('click', doDelete);
         $("[id^=resume]").on('click', doResume);
+        init_geogit_stores();
     };
 
     // public api

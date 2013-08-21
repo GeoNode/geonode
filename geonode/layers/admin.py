@@ -22,10 +22,6 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from geonode.layers.models import Layer, Attribute, Style
-from geonode.base.models import ContactRole
-
-class ContactRoleInline(admin.TabularInline):
-    model = ContactRole
 
 class AttributeInline(admin.TabularInline):
     model = Attribute
@@ -39,14 +35,7 @@ class LayerAdmin(admin.ModelAdmin):
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')
-    inlines = [ContactRoleInline, AttributeInline]
-
-    actions = ['change_poc']
-
-    def change_poc(self, request, queryset):
-        selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
-        return HttpResponseRedirect(reverse('change_poc', kwargs={"ids": "_".join(selected)}))
-    change_poc.short_description = "Change the point of contact for the selected layers"
+    inlines = [AttributeInline]
 
 class AttributeAdmin(admin.ModelAdmin):
     model = Attribute
