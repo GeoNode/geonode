@@ -22,6 +22,7 @@
     "bootstrap-wysiwyghtml5": "https://github.com/jhollingworth/bootstrap-wysihtml5.git",
     "fontselect-jquery-plugin": "https://github.com/tommoor/fontselect-jquery-plugin.git",
     "multi-select": "https://github.com/lou/multi-select.git",
-    "jquery-ajaxprogress": "https://github.com/kpozin/jquery-ajaxprogress.git"
+    "jquery-ajaxprogress": "https://github.com/kpozin/jquery-ajaxprogress.git",
+    "jquery.ajaxQueue": "https://github.com/gnarf/jquery-ajaxQueue.git"
   }
 }

@@ -105,6 +105,7 @@ module.exports = function(grunt) {
             'jquery-waypoints/waypoints.js',
             'jquery-ui/ui/jquery-ui.custom.js',
             'jquery-ajaxprogress/jquery.ajaxprogress.js',
+            'jquery.ajaxQueue/dist/jquery.ajaxQueue.min.js',
             'multi-select/js/jquery.multi-select.js',
             'bootstrap-datepicker/js/bootstrap-datepicker.js',
             'json2/json2.js',
