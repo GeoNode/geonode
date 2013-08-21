@@ -257,7 +257,7 @@ define(function (require, exports) {
     LayerInfo.prototype.startPolling = function() {
         var self = this;
         if (self.polling) {
-            $.ajaxQueue({ url: "/upload/progress", type: 'GET', success: function(data){
+            $.ajax({ url: "/upload/progress", type: 'GET', success: function(data){
                 console.log('polling'); 
             }, dataType: "json", complete: setTimeout(function() {self.startPolling()}, 3000), timeout: 30000 });
         }
@@ -348,6 +348,7 @@ define(function (require, exports) {
                 url: resp.redirect_to + '?force_ajax=true',
                 async: true,
                 failure: function (resp, status) {
+                    self.polling = false;
                     self.markError(resp.errors, status);
                 },
                 success: function (resp, status) {
@@ -408,6 +409,7 @@ define(function (require, exports) {
                 self.startPolling();
             },
             error: function (jqXHR) {
+                self.polling = false;
                 if (jqXHR === null) {
                     self.markError("Unexpected Error");
                 } else {
