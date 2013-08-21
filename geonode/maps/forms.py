@@ -36,7 +36,8 @@ class MapForm(forms.ModelForm):
         model = Map
         exclude = ('contact', 'zoom', 'projection', 'center_x', 'center_y', 'owner', 'uuid',
                    'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid','popular_count', 'share_count',
-                   'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type', 'csw_wkt_geometry', 'csw_anytext')
+                   'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type', 'csw_wkt_geometry', 
+                   'csw_anytext', 'thumbnail')
         widgets = {
             'abstract': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
         }

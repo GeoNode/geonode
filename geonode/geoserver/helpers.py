@@ -315,3 +315,17 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
         if verbosity > 0:
             print >> console, msg
     return output
+
+def get_stores(store_type = None):
+    url = "%srest" % settings.GEOSERVER_BASE_URL
+    cat = Catalog(url, _user, _password) 
+    stores = cat.get_stores()
+    store_list = []
+    for store in stores:
+        store.fetch()
+        stype = store.dom.find('type').text.lower()
+        if store_type and store_type.lower() == stype:
+            store_list.append({'name':store.name, 'type': stype})
+        elif store_type is None:
+            store_list.append({'name':store.name, 'type': stype})
+    return store_list
