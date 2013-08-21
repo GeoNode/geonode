@@ -344,7 +344,7 @@ def save(layer, base_file, user, overwrite=True, title=None,
                 'gathering extra files', name)
     if the_layer_type == FeatureType.resource_type:
         logger.debug('Uploading vector layer: [%s]', base_file)
-        if settings.DB_DATASTORE['ENABLED']:
+        if settings.DB_DATASTORE:
             create_store_and_resource = _create_db_featurestore
         else:
             create_store_and_resource = _create_featurestore
@@ -505,8 +505,8 @@ def save(layer, base_file, user, overwrite=True, title=None,
     # Step 11. Set default permissions on the newly created layer
     # FIXME: Do this as part of the post_save hook
     logger.info('>>> Step 10. Setting default permissions for [%s]', name)
-    if permissions is not None:
 
+    if permissions is not None and len(permissions.keys()) > 0:
         layer_set_permissions(saved_layer, permissions)
     else:
         saved_layer.set_default_permissions()
@@ -723,18 +723,18 @@ def _create_db_featurestore(name, data, overwrite=False, charset=None):
     """
     cat = Layer.objects.gs_catalog
     try:
-        ds = cat.get_store(settings.DB_DATASTORE['default']['NAME'])
+        ds = cat.get_store(settings.DB_DATASTORE_NAME)
     except FailedRequestError:
-        ds = cat.create_datastore(settings.DB_DATASTORE['default']['NAME'])
+        ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
         ds.connection_parameters.update(
-            host=settings.DB_DATASTORE['default']['HOST'],
-            port=settings.DB_DATASTORE['default']['PORT'],
-            database=settings.DB_DATASTORE['default']['DATABASE'],
-            user=settings.DB_DATASTORE['default']['USER'],
-            passwd=settings.DB_DATASTORE['default']['PASSWORD'],
-            dbtype=settings.DB_DATASTORE['default']['TYPE'])
+            host=settings.DB_DATASTORE_HOST,
+            port=settings.DB_DATASTORE_PORT,
+            database=settings.DB_DATASTORE_DATABASE,
+            user=settings.DB_DATASTORE_USER,
+            passwd=settings.DB_DATASTORE_PASSWORD,
+            dbtype=settings.DB_DATASTORE_TYPE)
         cat.save(ds)
-        ds = cat.get_store(settings.DB_DATASTORE['default']['NAME'])
+        ds = cat.get_store(settings.DB_DATASTORE_NAME)
 
     try:
         cat.add_data_to_store(ds, name, data,
