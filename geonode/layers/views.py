@@ -593,11 +593,15 @@ def resolve_user(request):
     if not any([user, geoserver, superuser]) and not request.user.is_anonymous():
         user = request.user.username
         superuser = request.user.is_superuser
-    return HttpResponse(json.dumps({
+    resp = {
         'user' : user,
         'geoserver' : geoserver,
-        'superuser' : superuser
-    }))
+        'superuser' : superuser,
+    }
+    if acl_user.is_authenticated():
+        resp['fullname'] = acl_user.get_full_name()
+        resp['email'] = acl_user.email
+    return HttpResponse(json.dumps(resp))
 
 
 def layer_acls(request):
@@ -659,8 +663,11 @@ def layer_acls(request):
         'ro': read_only,
         'name': acl_user.username,
         'is_superuser':  acl_user.is_superuser,
-        'is_anonymous': acl_user.is_anonymous()
+        'is_anonymous': acl_user.is_anonymous(),
     }
+    if acl_user.is_authenticated():
+        result['fullname'] = acl_user.get_full_name()
+        result['email'] = acl_user.email
 
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
