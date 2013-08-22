@@ -549,6 +549,15 @@ MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 
 CACHE_TIME=0
 
+# Require users to authenticate before using Geonode
+LOCKDOWN_GEONODE = False
+
+# Add additional paths (as regular expressions) that don't require authentication.
+AUTH_EXEMPT_URLS = ()
+
+if LOCKDOWN_GEONODE:
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('geonode.security.middleware.LoginRequiredMiddleware',)
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *
