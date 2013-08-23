@@ -22,6 +22,11 @@ WSGIDaemonProcess geonode user=www-data threads=15 processes=2
     Alias /uploaded/ /var/www/geonode/uploaded/
     Alias /robots.txt /var/www/geonode/robots.txt
 
+    <Directory "/var/www/geonode/uploaded/documents/">
+       Order allow,deny
+       Deny from all
+    </Directory>
+
     <Proxy *>
       Order allow,deny
       Allow from all
