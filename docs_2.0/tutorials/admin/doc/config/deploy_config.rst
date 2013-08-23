@@ -45,7 +45,7 @@ In the postgres config path, */etc/postgresql/9.2/main*, you should find the fil
 
 The file should contain the following default settings until now:
 
-.. figure:: img/pg_hba_detail.PNG
+.. figure:: img/pg_hba_detail.png
 
 and then set the authentication method of the following entry from *peer* to *trust*::
 
