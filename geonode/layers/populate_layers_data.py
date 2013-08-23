@@ -21,6 +21,13 @@ styles = [
 
 attributes = [
     {
+        "attribute": u'N\xfamero_De_M\xe9dicos',
+        "attribute_label": u'N\xfamero_De_M\xe9dicos',
+        "attribute_type": "xsd:string",
+        "visible": True,
+        "display_order": 4
+    },
+     {
         "attribute": "the_geom",
         "attribute_label": "Shape",
         "attribute_type": "gml:Geometry",
