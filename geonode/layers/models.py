@@ -264,7 +264,7 @@ class Attribute(models.Model):
     objects = AttributeManager()
 
     def __str__(self):
-        return "%s" % self.attribute_label if self.attribute_label else self.attribute
+        return "%s" % self.attribute_label.encode("utf-8") if self.attribute_label else self.attribute.encode("utf-8")
 
     def unique_values_as_list(self):
         return self.unique_values.split(',')
