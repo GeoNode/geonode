@@ -1,10 +1,14 @@
-.. _ressources:
+.. _community:
 
-=====================================
-This is the organizational index page
-=====================================
+Welcome to GeoNode organisational's documentation!
+==================================================
+
+Contents:
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   community
+   bylaws
+   comm
+
+   
