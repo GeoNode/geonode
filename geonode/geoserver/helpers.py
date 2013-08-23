@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2012 OpenPlans
@@ -281,7 +282,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
                 "workspace": workspace.name,
                 "store": store.name,
                 "storeType": store.resource_type,
-                "typename": "%s:%s" % (workspace.name, resource.name),
+                "typename": "%s:%s" % (workspace.name.encode('utf-8'), resource.name.encode('utf-8')),
                 "title": resource.title or 'No title provided',
                 "abstract": resource.abstract or 'No abstract provided',
                 "owner": owner,
@@ -297,7 +298,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
                 if verbosity > 0:
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
                     print >> sys.stderr, msg
-                raise Exception('Failed to process %s' % resource.name, e), None, sys.exc_info()[2]
+                raise Exception('Failed to process %s' % resource.name.encode('utf-8'), e), None, sys.exc_info()[2]
         else:
             if created:
                 layer.set_default_permissions()
