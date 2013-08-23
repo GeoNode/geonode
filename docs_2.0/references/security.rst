@@ -1,11 +1,12 @@
+.. _security:
+
 ========================
 Security and Permissions
 ========================
 
-.. note:: This is mainly ment for administrators? (so far)
+.. note:: This is mainly ment for administrators!
 
-Geonode has the ability to restrict the access on your layers and maps, including the metadata and your uploaded documents.
-This section will help you to understand which restrictions are possible and what to take care of while using them.
+Geonode has the ability to restrict the access on your layers and maps, including the metadata and your uploaded documents. This section will help you to understand which restrictions are possible and what to take care of while using them.
 Generally permissions can be set on all your uploaded data, but here´s an overview:
 
 .# Users
@@ -28,11 +29,7 @@ Generally permissions can be set on all your uploaded data, but here´s an overv
 .# Groups
    * not yet implemented
 
-
-
-To understand how this permissions can be set, you have to know about the different kinds of users.
-
-Für devs => link to geonode workshop about core models. (deeper into the materia => comes later!)
+To understand how this permissions can be set, you first have to know about the different kinds of users.
 
 Users
 -----
@@ -49,14 +46,10 @@ already done that. But there are even more kinds of registered users! A register
 * active
  
 A superuser is usually generated directly after the installation of geonode via the terminal. When creating a *superuser* through 
-the terminal it always has the status *active* and the status *staff* as well. It is also important to know 
-that a superuser is a user that has all permissions without explicitly assigning them! That means that he is able to 
-upload and edit layers, create maps etc. and can not be restricted from that! (**as far as I understood that!**) So the
-superuser is basically the adminstrator, who knows and has access on everything.
+the terminal it always has the status *active* and the status *staff* as well. It is also important to know that a superuser is a user that has all permissions without explicitly assigning them! That means that he is able to 
+upload and edit layers, create maps etc. and can not be restricted from that! So the superuser is basically the adminstrator, who knows and has access on everything.
 
-The status *staff* only implies that a user with this status is able to attend the *Django Admin Interface* (maybe LINK!).
-*Active* has no special meaning, it only says that there is a user. Instead of deleting this user, you could just delete
-the status *active*, your user will still be remaining, but it won´t show up. This is the basic meaning of this status.
+The status *staff* only implies that a user with this status is able to attend the *Django Admin Interface*. *Active* has no special meaning, it only says that there is a user and it is available. Instead of deleting this user, you could just unset the status *active*, your user will still be remaining, but it won´t show up.
 
 Basically there are three options to creat a user:
 
@@ -64,14 +57,14 @@ Basically there are three options to creat a user:
 * geonode interface: A *normal* user will be created by signing up to geonode. It only has the status *active* so far! 
 * django admin interface: A new user can be created as well as the status of an already existing user can be changed, e.g make a generic user a superuser.
  
-Check out this (TUTORIAL) in order to go through this step by step.
+Check out the tutorial `Permissions and security </tutorials/admin/doc/data/permissions_and_security>_` in order to go through this step by step.
 
 Layers
 ------
 As mentioned above, a superuser has access on all the uploaded data. In order to restrict other users from certain data, use
 the superuser to change those permissions. Generally you have the following possibilies of permissions:
 
-.. figure:: temp_img/map_permissions.PNG
+.. figure:: img/map_permissions.PNG
 
 So there are permissions on:
 
@@ -79,8 +72,7 @@ So there are permissions on:
 * who can edit
 * who can edit and manage
  
-The difference between *who can edit* and *who can edit and manage* is the fact, that only a user who is allowed to *edit and manage*
-is able to change the permissions on this layer/map. (It should be that way but ther is still a problem => melden!!) 
+The difference between *who can edit* and *who can edit and manage* is the fact, that only a user who is allowed to *edit and manage* is able to change the permissions on this layer/map. (It should be that way but there is a bug so far!) 
 
 Basically you can choose between
 
@@ -96,9 +88,9 @@ If you allow a user to edit your layer, this user has the right to do the follow
 * Replace the layer
 * Remove the layer
 
-This can also be seen here (instead of list, but image is wrong):
+This can also be seen here:
 
-.. figure:: temp_img/edit_and_manage.PNG
+.. figure:: img/edit_and_manage.PNG
   
   .. todo:: EDIT PERMISSIONS HAS TO BE REMOVED!!
   
@@ -140,7 +132,7 @@ Any user who is permitted to edit your layer is also able to replace or even rem
 Maps
 ----
 
-Generally the same ... applies to maps, but here the opportunities of editing the map are fewer:
+Generally all the same applies to maps, but here the opportunities of editing the map are fewer:
 
 * Edit map metadata
 * Set map thumbnail
@@ -162,8 +154,7 @@ or *remove* the document.
 
 Groups
 ------
-Groups are a generic way to apply permissions to more than one layer. 
-Can this only be done in *Django Admin Interface*? => not working at the moment! (ref google groups jeff)
 
-  .. todo:: not possible at the moment!
+Until now it is not possible to set permissions to groups! This action may come in a further GeoNode release!
+
 
