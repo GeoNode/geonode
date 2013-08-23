@@ -9,6 +9,7 @@ The following documents give an overview to GeoNode, the overview document is ta
 
  * :doc:`About GeoNode <intro/overview>`
  * :doc:`Quick Installation Guide <intro/install>`
+ * :doc:`Detailed Installation Guide <intro/install_detail>`
 
 .. _the GeoNode demo site: http://demo.geonode.org
 
@@ -19,10 +20,11 @@ The following documents give an overview to GeoNode, the overview document is ta
     intro/overview
     intro/install
 
-
-For users
+Tutorials
 =========
 
+For Users
+---------
 Users are not required to have experience with GIS systems but most power GeoNode users have existing knowledge of tools like ESRI's ArcGIS or QGIS.
 
 The end user documentation is formatted in form of tutorials, this material has mostly been developed for workshops during FOSS4G and similar conferences.
@@ -47,8 +49,7 @@ The end user documentation is formatted in form of tutorials, this material has 
     users/share
 
 For Administrators
-==================
-
+------------------
 Administrators are expected to have some experience with Linux systems but they are not required to be software developers.
 
  * :doc:`Complete Installation Guide <deploy/install>`
@@ -78,7 +79,7 @@ Administrators are expected to have some experience with Linux systems but they 
     deploy/multi-tenancy
 
 For Developers
-==============
+--------------
 
 Would you like to Contribute to GeoNode's continued development? These pages will guide you through the process of setting up your development environment through to submitting patches for inclusion in GeoNode.
 
@@ -111,8 +112,22 @@ Would you like to Contribute to GeoNode's continued development? These pages wil
     developers/reference/django-apps
     developers/reference/javascript
 
+
+Organisational
+==============
+
+ * :doc:`How to Contribute <organisational/how_to_contribute>`
+ * :doc:`How to Contribute to Documentation <organisational/how_to_contribute_to_docs>`
+
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+    developers/setup
+
+
 Getting help
-============
+------------
 
 Having trouble? We'd like to help!
 
@@ -129,3 +144,8 @@ Having trouble? We'd like to help!
 .. _#geonode IRC channel: irc://irc.freenode.net/geonode
 .. _Freenode's web based client: http://webchat.freenode.net
 .. _ticket tracker: http://github.com/GeoNode/geonode/issues
+
+
+Reference
+=========
+

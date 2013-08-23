@@ -4,6 +4,7 @@ DATABASES = {
          'NAME': 'geonode',
          'USER': 'geonode',
          'PASSWORD': 'geonode',
+         'PORT': '5433',
      }
 }
 

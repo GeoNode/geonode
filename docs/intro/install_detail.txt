@@ -9,7 +9,7 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 * add PPA repository (for static development)
 * set up a virtual environment (virtualenv)
 * clone geonode from github and install it in the virtual environment
-* compile geoserver and start the development servers 
+* compile geoserver and start the development servers
 
 .. note:: The following steps have to be executed in your terminal. The *Steps 1 – 4a* have to be done as a root user, therefore don´t forget to type sudo in front (as shown in the steps)!
 
@@ -45,7 +45,7 @@ Your third step is to add a new PPA repository, which is required for the static
     $ sudo npm install -g bower
     $ sudo npm install -g grunt-cli
 
-**Step 4** 
+**Step 4**
 
 Now a virtual environment has to be set up, in which Geonode will later be running. Virtualenv has already been installed during *Step 2 (Python dependencies)*. Now you need to download and install a virutalenvwrapper (*Step 4a*), which has to be added to your environment (*Step 4b*). Before you can download and install Geonode, you have to set up the local virtual environment for Geonode (*Step 4c*).
 
@@ -90,29 +90,29 @@ To stop the server::
 
     $ Ctrl c
     $ paver stop
-    
+
 **Restart server**
 
-With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open ​http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
+With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open ​http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers.
 
 .. note:: *your_name* is the name of your machine and personal folder!
 
 #. Activate virtualenv
- 
+
    To activate your virtualenv you just need to type::
-   
+
        $ source /home/your_name/.venvs/geonode/bin/activate
 
    .. note:: Be careful with this, you might have another path, so check first where your virtualenv has been installed!
 
 #. Start the server
-  
+
    To start the server go to your geonode folder::
-   
+
        $ cd geonode
-   
+
    and then run::
-   
+
        $ paver start_geoserver
        $ paver start_django
 
