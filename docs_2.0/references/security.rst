@@ -10,27 +10,38 @@ Geonode has the ability to restrict the access on your layers and maps, includin
 Generally permissions can be set on all your uploaded data, but here´s an overview:
 
 #. Users
+
    * superuser permissions
+   
    * django admin interface permissions
 
 #. Layers
+
    * view and download a layer
+   
    * edit a layer
+   
    * edit and manage a layer
 
 #. Maps
+
    * view and download a map
+   
    * edit a map
+   
    * edit and manage a map
 
 #. Documents
+
    * view and download a document
+   
    * edit a document
+   
    * edit and manage a document
 
 .. todo::
-.# Groups
-   * not yet implemented
+   #. Groups
+      * not yet implemented
 
 To understand how this permissions can be set, you first have to know about the different kinds of users.
 
