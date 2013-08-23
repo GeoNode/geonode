@@ -1,8 +1,8 @@
 .. _data.permission_and_security
 
-===================================
-Security and Permissions (Tutorial)
-===================================
+========================
+Security and Permissions
+========================
 
 This tutorial will guide you through the steps that can be done in order to restrict the access on your data uploaded to geonode.
 
@@ -81,7 +81,7 @@ Until now we've only created a superuser. But how to create an ordinary user? Yo
    
    Hit the button and again a form will appear for you to fill out. This user will be named *geonode_user*
   
-   .. figure:: temp_img/sign_up_test_user.PNG
+   .. figure:: img/sign_up_test_user.PNG
    .. todo:: NEW IMAGE WITH GEONODE USER!
 
    By hitting *Sign up* the user will be signed up, as default only with the status *active*. 
@@ -142,7 +142,7 @@ You can now coose whether you want your layer to be viewed and downloaded by
 We will now upload our **test layer** like shown HERE. If you want your layer only be viewed by certain users or a group, you have to choose *Only users who can edit* in the part *Who can view and download this data*.
 In the section *Who can edit this data* you write down the names of the users you want to have admission on this data. For this first layer we will choose the settings like shown in the following image:
 
-.. figure:: temp_img/layer_test_permission.PNG
+.. figure:: img/layer_test_permission.PNG
 .. todo:: CREATE THIS IMAGE! settings: view and download = everybody
 					edit = geonode_user
 					manage = your_superuser (you could leave this empty as well)
@@ -176,7 +176,7 @@ Now set the permissions of this layer using the following settings:
 	 			edit = test_user
 				manage = owner (or empty)
 
-.. todo:: Faden verloren!
+.. todo:: add more details?!
 
 When you assign a user to be able to edit your data, this user is allowed to execute all of the following actions:
 
@@ -188,7 +188,7 @@ When you assign a user to be able to edit your data, this user is allowed to exe
 
 So be aware that each user assigned to edit this layer can even remove it! In our case, only the user *test_user* and *your_superuser* do have the rights to do so. *Geonode_user* is neither able to view nor to download or edit this layer.
 
-.. todo:: There's a bug (?) => dev group! This is NOT working at the moment, but should work!
+.. todo:: There's a bug at the moment!
 
 Now you are logged in as the user *test_user*. Below the **test_layer** you can see the following:
 
@@ -197,15 +197,15 @@ Now you are logged in as the user *test_user*. Below the **test_layer** you can 
 
 By clicking *Edit Layer* and *Edit Metadata* on top of the layer, you can change this information. The *test_user* is able to change all the metadata of this layer. We now want to change to *point of contact*, therfore scroll down until you see this:
 
-.. figure:: temp_img/point_of_contact.PNG
-.. todo:: CHANGE THIS IMAGE!
+.. figure:: img/point_of_contact.PNG
+
 
 Change the *point of contact* from *_who_ever_created_this* to *test_user*. *Save* your changes and you will now be able to see the following:
 
 .. figure:: img/point_of_contact_changed.PNG
-
+.. todo:: CHANGE THIS IMAGE!
 .. todo:: more detailed!
-.. todo:: did i miss anything? => find a übergang
+.. todo:: did i miss anything?
 
 .. warning:: If you allow a user to view and download a layer, this user will also be able to edit the styles, even if he is not assigned to edit the layer! Keep this in mind!
 
