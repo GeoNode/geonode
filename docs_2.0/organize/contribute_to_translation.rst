@@ -4,7 +4,7 @@
 How to contribute to translate geonode
 ======================================
 
-GeoNode uses `Transifex <https://www.transifex.com>`_ to translate the webpage and code from english to any other language. To be able to contribute to the translation, you first need to get an account on transifex.
+GeoNode uses `Transifex <https://www.transifex.com>`_ to translate the webpage and code from english to any other language. To be able to contribute to the translation, you need to get an account on transifex.
 
 #. Create account
 
@@ -18,14 +18,19 @@ GeoNode uses `Transifex <https://www.transifex.com>`_ to translate the webpage a
 
    .. figure:: img/transifex_join_project.PNG
 
-   Click *join an existing project* and type *geonode* into the search bar. You will be directed to the geonode project site on transifex. To join the team, click on the language you want to add a translation in. Then a button *Join the team* will appaer. Click it, and you will become a part of the team.
+   Click *join an existing project* and type *geonode* into the search bar. You will be directed to the geonode project site on transifex. To join the team, click on the language you want to add a translation in. Then a button *Join the team* will appaer. Hit it, and you will become a part of the team.
 
 #. Add translation
 
-   Click on the language where you want to add a translation. You'll see two bars, *javascript* and *master*. Click on one, and hit *Translate now*.
+   Click on the language where you want to add a translation. You'll see two bars, *javascript* and *master*. To start translating, click on one, and hit *Translate now*. You'll see an interface like this
 
+   .. figure:: img/transifex_interface.PNG
 
-..add a bit!
+   Click *untranslated* and add your translation like shown below
+
+   .. figure:: img/transifex_add_translation.PNG
+
+   When you stop translating, do not forget to hit the green *save* button at the top right!
 
 #. Add new language
 
