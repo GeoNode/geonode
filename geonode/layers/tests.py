@@ -315,13 +315,14 @@ class LayersTest(TestCase):
     def test_layer_attributes(self):
         lyr = Layer.objects.get(pk=1)
         #There should be a total of 3 attributes
-        self.assertEqual(len(lyr.attribute_set.all()), 3)
+        self.assertEqual(len(lyr.attribute_set.all()), 4)
         #2 out of 3 attributes should be visible
         custom_attributes = lyr.attribute_set.visible()
-        self.assertEqual(len(custom_attributes), 2)
+        self.assertEqual(len(custom_attributes), 3)
         #place_ name should come before description
         self.assertEqual(custom_attributes[0].attribute_label, "Place Name")
         self.assertEqual(custom_attributes[1].attribute_label, "Description")
+        self.assertEqual(custom_attributes[2].attribute, u'N\xfamero_De_M\xe9dicos')
         # TODO: do test against layer with actual attribute statistics
         self.assertEqual(custom_attributes[1].count, 1)
         self.assertEqual(custom_attributes[1].min, "NA")
@@ -335,7 +336,7 @@ class LayersTest(TestCase):
     def test_layer_attribute_config(self):
         lyr = Layer.objects.get(pk=1)
         custom_attributes = (lyr.attribute_config())["getFeatureInfo"]
-        self.assertEqual(custom_attributes["fields"],["place_name","description"])
+        self.assertEqual(custom_attributes["fields"],["place_name","description", u'N\xfamero_De_M\xe9dicos'])
         self.assertEqual(custom_attributes["propertyNames"]["description"], "Description")
         self.assertEqual(custom_attributes["propertyNames"]["place_name"], "Place Name")
 
