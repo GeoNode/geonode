@@ -199,7 +199,7 @@ class LayersTest(TestCase):
         """
 
         # Test that HTTP_AUTHORIZATION in request.META is working properly
-        valid_uname_pw = "%s:%s" % (settings.GEOSERVER_CREDENTIALS[0],settings.GEOSERVER_CREDENTIALS[1])
+        valid_uname_pw = "%s:%s" % (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
         invalid_uname_pw = "%s:%s" % ("n0t", "v@l1d")
 
         valid_auth_headers = {
@@ -210,12 +210,12 @@ class LayersTest(TestCase):
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
         }
 
-        # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json
+        # Test that requesting when supplying the geoserver credentials returns the expected json
 
         expected_result = {
             u'rw': [],
             u'ro': [],
-            u'name': unicode(settings.GEOSERVER_CREDENTIALS[0]),
+            u'name': unicode(settings.OGC_SERVER['default']['USER']),
             u'is_superuser': True,
             u'is_anonymous': False
         }
@@ -315,13 +315,14 @@ class LayersTest(TestCase):
     def test_layer_attributes(self):
         lyr = Layer.objects.get(pk=1)
         #There should be a total of 3 attributes
-        self.assertEqual(len(lyr.attribute_set.all()), 3)
+        self.assertEqual(len(lyr.attribute_set.all()), 4)
         #2 out of 3 attributes should be visible
         custom_attributes = lyr.attribute_set.visible()
-        self.assertEqual(len(custom_attributes), 2)
+        self.assertEqual(len(custom_attributes), 3)
         #place_ name should come before description
         self.assertEqual(custom_attributes[0].attribute_label, "Place Name")
         self.assertEqual(custom_attributes[1].attribute_label, "Description")
+        self.assertEqual(custom_attributes[2].attribute, u'N\xfamero_De_M\xe9dicos')
         # TODO: do test against layer with actual attribute statistics
         self.assertEqual(custom_attributes[1].count, 1)
         self.assertEqual(custom_attributes[1].min, "NA")
@@ -335,7 +336,7 @@ class LayersTest(TestCase):
     def test_layer_attribute_config(self):
         lyr = Layer.objects.get(pk=1)
         custom_attributes = (lyr.attribute_config())["getFeatureInfo"]
-        self.assertEqual(custom_attributes["fields"],["place_name","description"])
+        self.assertEqual(custom_attributes["fields"],["place_name","description", u'N\xfamero_De_M\xe9dicos'])
         self.assertEqual(custom_attributes["propertyNames"]["description"], "Description")
         self.assertEqual(custom_attributes["propertyNames"]["place_name"], "Place Name")
 

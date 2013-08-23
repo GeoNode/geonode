@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2012 OpenPlans
@@ -178,7 +179,7 @@ def cascading_delete(cat, layer_name):
       if e.errno == errno.ECONNREFUSED:
         msg = ('Could not connect to geoserver at "%s"'
                'to save information for layer "%s"' % (
-               settings.GEOSERVER_BASE_URL, layer_name)
+               settings.OGC_SERVER['default']['LOCATION'], layer_name)
               )
         logger.warn(msg, e)
         return None
@@ -245,7 +246,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
 
     if verbosity > 1:
         print >> console, "Inspecting the available layers in GeoServer ..."
-    url = "%srest" % settings.GEOSERVER_BASE_URL
+    url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
     cat = Catalog(url, _user, _password)
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
@@ -281,7 +282,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
                 "workspace": workspace.name,
                 "store": store.name,
                 "storeType": store.resource_type,
-                "typename": "%s:%s" % (workspace.name, resource.name),
+                "typename": "%s:%s" % (workspace.name.encode('utf-8'), resource.name.encode('utf-8')),
                 "title": resource.title or 'No title provided',
                 "abstract": resource.abstract or 'No abstract provided',
                 "owner": owner,
@@ -297,7 +298,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
                 if verbosity > 0:
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
                     print >> sys.stderr, msg
-                raise Exception('Failed to process %s' % resource.name, e), None, sys.exc_info()[2]
+                raise Exception('Failed to process %s' % resource.name.encode('utf-8'), e), None, sys.exc_info()[2]
         else:
             if created:
                 layer.set_default_permissions()
