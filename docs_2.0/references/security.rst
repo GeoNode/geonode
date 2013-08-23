@@ -9,18 +9,21 @@ Security and Permissions
 Geonode has the ability to restrict the access on your layers and maps, including the metadata and your uploaded documents. This section will help you to understand which restrictions are possible and what to take care of while using them.
 Generally permissions can be set on all your uploaded data, but here´s an overview:
 
-.# Users
+#. Users
    * superuser permissions
    * django admin interface permissions
-.# Layers
+
+#. Layers
    * view and download a layer
    * edit a layer
    * edit and manage a layer
-.# Maps
+
+#. Maps
    * view and download a map
    * edit a map
    * edit and manage a map
-.# Documents
+
+#. Documents
    * view and download a document
    * edit a document
    * edit and manage a document
@@ -56,8 +59,6 @@ Basically there are three options to creat a user:
 * terminal: Here you can only create a superuser
 * geonode interface: A *normal* user will be created by signing up to geonode. It only has the status *active* so far! 
 * django admin interface: A new user can be created as well as the status of an already existing user can be changed, e.g make a generic user a superuser.
- 
-Check out the tutorial `Permissions and security </tutorials/admin/doc/data/permissions_and_security>_` in order to go through this step by step.
 
 Layers
 ------
