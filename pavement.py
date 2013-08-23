@@ -284,7 +284,8 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
 
-    from geonode.settings import GEOSERVER_BASE_URL
+    from geonode.settings import OGC_SERVER 
+    GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
 
     url = "http://localhost:8080/geoserver/"
     if GEOSERVER_BASE_URL != url:

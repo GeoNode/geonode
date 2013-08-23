@@ -29,16 +29,18 @@ def resource_urls(request):
 
     return dict(
         STATIC_URL=settings.STATIC_URL,
-        GEOSERVER_BASE_URL=settings.GEOSERVER_BASE_URL,
+        GEOSERVER_BASE_URL=settings.OGC_SERVER['default']['LOCATION'],
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
         REGISTRATION_OPEN=settings.REGISTRATION_OPEN,
         VERSION=get_version(),
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
         DOCUMENTS_APP = settings.DOCUMENTS_APP,
-        UPLOADER_URL = reverse('data_upload') if (settings.UPLOADER_BACKEND_URL and settings.UPLOADER_BACKEND_URL == 'importer') else reverse('layer_upload'),
+        UPLOADER_URL = reverse('layer_upload'),
         GEOGIT_ENABLED = getattr(settings, "GEOGIT_DATASTORE", False),
         TIME_ENABLED = getattr(settings, "UPLOADER_SHOW_TIME_STEP", False),
+        MF_PRINT_ENABLED = getattr(settings.OGC_SERVER['default']['OPTIONS'], "MAPFISH_PRINT_ENABLED", False),
         PRINTNG_ENABLED = getattr(settings, "PRINTNG_ENABLED", False),
+        GS_SECURITY_ENABLED = getattr(settings.OGC_SERVER['default']['OPTIONS'], "GEONODE_SECURITY_ENABLED", False), 
         DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False)
     )

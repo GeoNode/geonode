@@ -35,7 +35,11 @@ Ext.onReady(function() {
             }
         },
         {% endif %}
+        {% if MF_PRINT_ENABLED %}
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
+        {% else %}
+        printService: "",
+        {% endif %} 
         /* The URL to a REST map configuration service.  This service 
          * provides listing and, with an authenticated user, saving of 
          * maps on the server for sharing and editing.
