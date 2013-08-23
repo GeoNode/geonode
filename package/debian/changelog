@@ -1,3 +1,283 @@
+geonode (2.0.0+beta31) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [fee8f2] first draft on wcs link creation
+
+  [ Paolo Pasquali ]
+  * [8c445b] New list/grid doc, layer and map layout (to be fixed). Add page-title and space word-wrap
+  * [3affea] Profile grid/list new layout
+  * [5e7073] Search list with thumbnail redesigned
+  * [a1adb6] Moved comments h3 inline style to base.less
+  * [ad91ad] Comments CSS fixes
+  * [7bc15f] Fix for multiple comments
+
+  [ Ariel Nunez ]
+  * [0f9cd0] Better 500 error
+  * [603d5b] Committed changelog
+
+  [ Paolo Pasquali ]
+  * [b16a4e] Add simple text if user is not logged in
+  * [f34a08] Remove Paolo Corti duplication and correct username
+  * [1674e1] Fix closing tag
+  * [a3b4b7] Home page latest maps css fix
+  * [ef3b34] Fix the about section css and grid search page css. Minor fix in comments.
+  * [4ef97c] Fix list layout (must be improved)
+
+  [ Simone Dalmasso ]
+  * [5e7f74] prepare document detail for metadata links
+
+  [ Paolo Pasquali ]
+  * [63a2c8] Minor fix in page title
+
+  [ Simone Dalmasso ]
+  * [6c756c] don't hide page numbers, can break pagination
+
+  [ Paolo Pasquali ]
+  * [3ea30f] Minor fix in Activity feed
+
+  [ Bart van den Eijnden ]
+  * [0a8a14] automatically create a thumbnail when people save their map in the composer
+
+  [ Paolo Pasquali ]
+  * [54a7a8] Add badge to keyword search
+
+  [ Simone Dalmasso ]
+  * [b89c05] move map view to the top in map detail
+
+  [ Paolo Pasquali ]
+  * [fb12f6] Minor fixes in map and profile layout
+
+  [ Micah Wengren ]
+  * [267357] Remove block 'extra_head' from template layer_upload.html
+  * [0f262d] reverted pavement.py
+
+  [ Paolo Pasquali ]
+  * [3409d5] Fix to Login page Template
+  * [891d13] Fixing Profile Edit page template
+  * [680f39] Restore profile edit title
+  * [38efb7] Add links to data list details
+
+  [ Tom Kralidis ]
+  * [89e911] fix LogoURL href [ci skip]
+
+  [ Simone Dalmasso ]
+  * [25f16d] connect the catalogue to the document save
+  * [0e9d88] remove the unwanted tag
+  * [f59615] fix documents models
+  * [2fc827] update search tests to reflect the new documents global bbox
+
+  [ Ariel Nunez ]
+  * [0932aa] Updated install script from svn
+
+  [ b-angerer ]
+  * [ebd9ac] Create contribute_docu.md
+  * [320c24] Update contribute_docu.md
+  * [231988] Update contribute_docu.md
+  * [bd2b0f] Create contribute_to_docu
+  * [cb9b5e] Delete contribute_to_docu
+  * [bb027a] Create index.txt
+  * [f04793] Create contribute_docu.md
+  * [f15603] Update contribute_docu.md
+  * [662e81] Create install_postgresql.md
+  * [333b22] Update install_postgresql.md
+  * [0049f8] Update install_postgresql.md
+  * [9c7e54] Create install_postgis.md
+  * [7f0a38] Create install_geonode_in_devmode.md
+  * [52ad35] Update install_geonode_in_devmode.md
+
+  [ Angelos Tzotsos ]
+  * [421ce3] sync install script with OSGeoLive 7.0beta1
+
+  [ b-angerer ]
+  * [c9eafe] Update contribute_docu.md
+  * [1af2bb] Update install_geonode_in_devmode.md
+  * [a7cf1a] Create config_geonode_dev.md
+  * [3d82e2] Update install_postgresql.md
+  * [a7b3e5] Update install_postgis.md
+  * [1082a5] Update install_postgis.md
+  * [2888e1] Update index.txt
+  * [ad63cd] Create test.rst
+  * [8e21e8] Create testmd.md
+  * [020435] Update contribute_docu.md
+  * [285413] Update contribute_docu.md
+
+  [ Syrus ]
+  * [902046] when uploading a layer, it might take longer than 4 seconds in which case the previous code would add the layer to geoserver but all steps that followed in geocode would fail. this code checks every 2 seconds and waits as long as 1 min for upload to complete. needed for slower server, busy server, or larger data.
+
+  [ b-angerer ]
+  * [5f7a86] Added images
+  * [bf99d1] Create contribute_docu.rst
+  * [823ea3] Update contribute_docu.rst
+  * [0da9b9] new images for contrib_docu
+  * [c54cd1] add image
+  * [bf23d9] add images
+  * [ff9a09] add images
+  * [22a864] Update contribute_docu.rst
+  * [d4b3d7] Update contribute_docu.rst
+  * [857ea7] Update contribute_docu.rst
+  * [50ce04] Update contribute_docu.rst
+  * [981349] Update contribute_docu.rst
+  * [1b1e7d] Update contribute_docu.rst
+  * [7c56bf] Create contribute.rst
+  * [8a601c] Update contribute.txt
+
+  [ Jeffrey Johnson ]
+  * [2ed8ea] Changes made by new bower version (also fix new raty path)
+  * [9bf049] Update bower.json to peg jquery-ui version
+  * [f49011] Update base.css
+  * [4d49af] remove hack to remove jquery-timago recursive symlink (no longer needed)
+
+  [ b-angerer ]
+  * [a110d6] Delete contribute_docu.md
+  * [a325e0] Delete index.txt
+  * [3f6e18] Delete test.rst
+  * [c62c19] Delete testmd.md
+  * [ede27c] Delete contribute_docu.md
+  * [9bd181] Create install_devmode.rst
+  * [662ada] Create contribute_docu.rst
+  * [74484c] new images
+  * [f6f646] Update contribute_docu.rst
+  * [5bc392] new image
+  * [b23091] Update install_devmode.rst
+
+  [ Jeffrey Johnson ]
+  * [c443b9] Add bower-installer config for bootstrap-datepicker
+  * [2c67bc] Fix qunit path in bower.json
+
+  [ Christian Spanring ]
+  * [1182ba] starting grunt integration
+  * [5973e7] updates readme with grunt-cli install instructions
+  * [475773] removes orphaned CSS blocks from base and 500 templates
+  * [9f645f] removes bower and grunt dependency from package.json
+  * [1bab4e] updates grunt configuration
+  * [6f7918] adds DEBUG_STATIC condition for assets in base template
+  * [594c1c] adds production-ready assets to repository
+
+  [ b-angerer ]
+  * [20f405] Update config_geonode_dev.md
+  * [a59ca7] Update install_postgresql.md
+  * [95cef0] Update install_postgresql.md
+  * [bc4c2a] Update install_postgresql.md
+  * [71245e] Update install_postgresql.md
+  * [409dcb] Update contribute.txt
+
+  [ Angelos Tzotsos ]
+  * [b78182] fix for postgres issue and permissions #938
+  * [e06eca] second try: fix for postgres issue and permissions #938
+  * [66c54b] third try: fix user permissionfor postgres #938
+  * [473b23] added host to local_settings.py #938
+
+  [ Christian Spanring ]
+  * [74ea14] updates gruntfile with improved bootstrap build rules
+
+  [ Angelos Tzotsos ]
+  * [d5aa4d] starting GeoServer during build to update layers #938
+  * [e5ff54] added start/stop scripts #938
+  * [c6453a] minor fixes #938
+  * [93dc88] give more time to GeoServer to start-up (#938)
+
+  [ b-angerer ]
+  * [05020d] Update contribute.rst
+  * [f26056] Update contribute_docu.rst
+  * [285010] Update contribute.rst
+  * [e4c054] Update contribute.txt
+  * [ea2a18] Create contribute_docu.txt
+  * [e35997] Update contribute_docu.rst
+  * [c05981] Update contribute_docu.rst
+  * [f56e27] Update install_devmode.rst
+  * [995ab6] Update contribute_docu.rst
+
+  [ Christian Spanring ]
+  * [672dd3] bootstrap re-organization
+  * [0b59ee] .gitignore
+  * [ae3ec6] adds bootstrap-datepicker to grunt build process
+  * [5f154f] adds require.js to grunt build process
+  * [aeb71a] adds jquery-tinysort to grunt build process
+  * [568fe9] adds jquery-raty to grunt build process
+  * [a51491] adds jquery-waypoints to grunt build process
+  * [d4b2e7] adds all "other" assets from bower-installer to gruntfile
+  * [931406] updates qunit testrunner with new lib location
+  * [5fa89b] updates production-ready static js and css assets
+  * [d28822] removes grunt dependency from paver setup_static task
+  * [385f43] removes setup_static paver tastk from setup_task
+  * [de2ec3] adds bower and grunt dependency to static files node package
+
+  [ Ariel Nunez ]
+  * [886a3e] Moved gisdata to Recommends, refs #1015
+
+  [ b-angerer ]
+  * [39daad] Update contribute_docu.rst
+  * [c5ef60] Update install_devmode.rst
+  * [5d0736] Create permissions.rst
+
+  [ capooti ]
+  * [4df326] Removed the reference to the unneeded METADATA_DOWNLOAD_ALLOWS in the layer info template.
+
+  [ b-angerer ]
+  * [d7bc2b] Update permissions.rst
+  * [cc8165] Create tutorial_security.rst
+  * [aeb7e6] Update tutorial_security.rst
+  * [078f55] Update tutorial_security.rst
+  * [37b555] Update tutorial_security.rst
+
+  [ Tyler Garner ]
+  * [2d2bc2] Add the map object to the map_view response.
+  * [a00dfb] Fixes typo in cloud deployment script.
+
+  [ Jeffrey Johnson ]
+  * [2c28ad] Rebuild base.css
+  * [d11b54] Remove committed libs
+  * [5e6789] Adding minified assets
+  * [d4443a] update base.css again
+  * [0c4f54] add images from dependencies
+
+  [ Christian Spanring ]
+  * [3438d1] integrates rate.js with global_search.js
+  * [643ab8] adds jquery.raty to assets.min.js
+  * [44ea52] adds waypoints.js to assets.min.js
+  * [0622b7] removes require.js dependency from global_search.js
+  * [1c7838] removes hogan.js
+  * [1a098d] removes minified waypoints.js from grunt
+  * [d1e993] replaces jQuery UI with Bootstrap progressbar
+  * [ce8648] removes jQuery UI from bower/grunt
+  * [17606d] removes jQuery minicolors from bower/grunt
+  * [45b58a] fixes duplicate geonode_auth template tags loader
+  * [e0fafb] adds multi-select to assets.min.js and fixes some inline javascript on layer_style_manage template.
+  * [6265d9] removes wysihtml5 from bower/grunt
+  * [0e74cf] minor gruntfile re-organization
+  * [712f38] removes loadmore from bower/grunt
+  * [4512d2] adds client-dependencies for uploader to repository
+  * [2e0c2d] adds missing select2 images to repo. closes #1023
+  * [0a6d7c] adds regex to grunt and fixes CSS image urls
+  * [59ad45] remove obsolete css/*.png|gif
+  * [4d6ece] adds lib/img/spinner.gif to repository
+  * [48e551] add spinner.gif to gruntfile
+  * [95917c] cleanup: removes obsolete bower-installer config
+
+  [ Tyler Garner ]
+  * [f0281a] Safely check settings for DEBUG_SETTINGS.
+
+  [ Ariel Nunez ]
+  * [880685] Running paver update_static changed the files in my local checkout. I am committing them assuming they are newer
+
+  [ Tyler Garner ]
+  * [94154a] The post_delete signal should only delete the default_style if the style is not linked to any other layers.
+
+  [ Ariel Nunez ]
+  * [a9183a] Ask user to use ascii characters in the upload.,refs #989
+
+  [ Tyler Garner ]
+  * [4b73f6] Fixed test failure and improved post_delete_layer logic.
+
+  [ Jeffrey Johnson ]
+  * [f27cd6] Update base.css and assets.min.js after paver update_static
+
+  [ Ariel Nunez ]
+  * [3212c4] Log uploader exceptions aside from passing them back to the user
+  * [7bcae3] Removed pip instal imaging from OSX setup instructions
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 09 Aug 2013 22:10:31 +0000
+
 geonode (2.0.0+beta29) precise; urgency=high
 
   [ Paolo Pasquali ]
