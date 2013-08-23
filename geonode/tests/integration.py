@@ -185,8 +185,8 @@ class GeoNodeMapTest(TestCase):
 
             # Check that layer is in geoserver
             found = False
-            gs_username, gs_password = settings.GEOSERVER_CREDENTIALS
-            page = get_web_page(os.path.join(settings.GEOSERVER_BASE_URL,
+            gs_username, gs_password = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'] 
+            page = get_web_page(os.path.join(settings.OGC_SERVER['default']['LOCATION'],
                                              'rest/layers'),
                                              username=gs_username,
                                              password=gs_password)
@@ -196,10 +196,10 @@ class GeoNodeMapTest(TestCase):
                 msg = ('Upload could not be verified, the layer %s is not '
                    'in geoserver %s, but GeoNode did not raise any errors, '
                    'this should never happen.' %
-                   (layer_name, settings.GEOSERVER_BASE_URL))
+                   (layer_name, settings.OGC_SERVER['default']['LOCATION']))
                 raise GeoNodeException(msg)
 
-        server_url = settings.GEOSERVER_BASE_URL + 'ows?'
+        server_url = settings.OGC_SERVER['default']['LOCATION'] + 'ows?'
         # Verify that the GeoServer GetCapabilities record is accesible:
         #metadata = get_layers_metadata(server_url, '1.0.0')
         #msg = ('The metadata list should not be empty in server %s'
@@ -576,13 +576,13 @@ class GeoNodeMapPrintTest(TestCase):
 
             # STEP 3: Print the map
 
-            print_url = settings.GEOSERVER_BASE_URL + 'pdf/create.json'
+            print_url = settings.OGC_SERVER['default']['LOCATION'] + 'pdf/create.json'
 
             post_payload = {
                 'dpi': 75,
                 'layers': [
                     {
-                        'baseURL': settings.GEOSERVER_BASE_URL + 'wms?SERVICE=WMS&',
+                        'baseURL': settings.OGC_SERVER['default']['LOCATION'] + 'wms?SERVICE=WMS&',
                         'format': "image/png",
                         'customParams': {
                             'TILED': True,

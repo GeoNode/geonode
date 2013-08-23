@@ -199,7 +199,7 @@ class LayersTest(TestCase):
         """
 
         # Test that HTTP_AUTHORIZATION in request.META is working properly
-        valid_uname_pw = "%s:%s" % (settings.GEOSERVER_CREDENTIALS[0],settings.GEOSERVER_CREDENTIALS[1])
+        valid_uname_pw = "%s:%s" % (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
         invalid_uname_pw = "%s:%s" % ("n0t", "v@l1d")
 
         valid_auth_headers = {
@@ -210,12 +210,12 @@ class LayersTest(TestCase):
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
         }
 
-        # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json
+        # Test that requesting when supplying the geoserver credentials returns the expected json
 
         expected_result = {
             u'rw': [],
             u'ro': [],
-            u'name': unicode(settings.GEOSERVER_CREDENTIALS[0]),
+            u'name': unicode(settings.OGC_SERVER['default']['USER']),
             u'is_superuser': True,
             u'is_anonymous': False
         }

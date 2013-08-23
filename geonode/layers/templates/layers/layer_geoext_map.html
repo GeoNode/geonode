@@ -23,7 +23,11 @@
                  * maps on the server for sharing and editing.
                  */
                 rest: "/maps/",
+                {% if MF_PRINT_ENABLED %}
                 printService: "{{GEOSERVER_BASE_URL}}pdf/",
+                {% else %}
+                printService: "",
+                {% endif %}
                 
                 portalConfig: {
                     renderTo: "preview_map",

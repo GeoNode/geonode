@@ -31,7 +31,7 @@ from geoserver.catalog import FailedRequestError
 
 
 def gs_uploader():
-    url = "%srest" % settings.GEOSERVER_BASE_URL
+    url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
     return Uploader(url, _user, _password)
 
 
@@ -153,16 +153,16 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
             ds = cat.get_store(store_name)
         else:
             logging.info(
-                'Creating target datastore %s' % settings.DB_DATASTORE_NAME)
-            ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
+                'Creating target datastore %s' % settings.DB_DATASTORE['default']['NAME'])
+            ds = cat.create_datastore(settings.DB_DATASTORE['default']['NAME'])
             ds.connection_parameters.update(
-                host=settings.DB_DATASTORE_HOST,
-                port=settings.DB_DATASTORE_PORT,
-                database=settings.DB_DATASTORE_DATABASE,
-                user=settings.DB_DATASTORE_USER,
-                passwd=settings.DB_DATASTORE_PASSWORD,
-                dbtype=settings.DB_DATASTORE_TYPE)
+                host=settings.DB_DATASTORE['default']['HOST'],
+                port=settings.DB_DATASTORE['default']['PORT'],
+                database=settings.DB_DATASTORE['default']['DATABASE'],
+                user=settings.DB_DATASTORE['default']['USER'],
+                passwd=settings.DB_DATASTORE['default']['PASSWORD'],
+                dbtype=settings.DB_DATASTORE['default']['TYPE'])
             cat.save(ds)
-            ds = cat.get_store(settings.DB_DATASTORE_NAME)
+            ds = cat.get_store(settings.DB_DATASTORE['default']['NAME'])
 
     return ds
