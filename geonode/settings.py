@@ -353,6 +353,9 @@ SOUTH_TESTS_MIGRATE=False
 AUTH_PROFILE_MODULE = 'people.Profile'
 REGISTRATION_OPEN = False
 
+# Email for users to contact admins.
+THEME_ACCOUNT_CONTACT_EMAIL = 'admin@example.com'
+
 #
 # Test Settings
 #
@@ -373,17 +376,53 @@ NOSE_ARGS = [
 
 SITEURL = "http://localhost:8000/"
 
-# Email for users to contact admins.
-THEME_ACCOUNT_CONTACT_EMAIL = 'admin@example.com'
+# Default TopicCategory to be used for resources. Use the slug field here
+DEFAULT_TOPICCATEGORY = 'location'
 
-# GeoServer information
+MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 
-# The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://localhost:8080/geoserver/"
+# Search Snippet Cache Time in Seconds
+CACHE_TIME=0
 
-# The username and password for a user that can add and
-# edit layer details on GeoServer
-GEOSERVER_CREDENTIALS = "admin", "geoserver"
+# OGC (WMS/WFS/WCS) Server Settings
+OGC_SERVER = {
+    'default' : {
+        'BACKEND' : 'geonode.geoserver',
+        'LOCATION' : 'http://localhost:8080/geoserver/',
+        'USER' : 'admin',
+        'PASSWORD' : 'geoserver',
+        'OPTIONS' : {
+            'MAPFISH_PRINT_ENABLED' : True,
+            'PRINTNG_ENABLED' : True,
+            'GEONODE_SECURITY_ENABLED' : True,
+            'GEOGIT_ENABLED' : False,
+            'WMST_ENABLED' : False
+        }
+    }
+}
+
+# Vector Database Settings 
+# TODO: Migrate to DATABASES?
+DB_DATASTORE = {
+    'ENABLED' : False,
+    'default' : {
+        'DATABASE' : '',
+        'USER' : '',
+        'PASSWORD' : '',
+        'HOST' : '',
+        'PORT' : '',
+        'TYPE' : '',
+        'NAME' : ''
+    }
+}
+
+# Uploader Settings
+UPLOADER = {
+    'OPTIONS' : {
+        'TIME_ENABLED' : False,
+        'GEOGIT_ENABLED' : False,
+    }
+}
 
 # CSW settings
 CATALOGUE = {
@@ -464,7 +503,7 @@ DEFAULT_MAP_ZOOM = 0
 MAP_BASELAYERS = [{
     "source": {
         "ptype": "gxp_wmscsource",
-        "url": GEOSERVER_BASE_URL + "wms",
+        "url": OGC_SERVER['default']['LOCATION'] + "wms",
         "restUrl": "/gs/rest"
      }
   },{
@@ -519,35 +558,10 @@ MAP_BASELAYERS = [{
 
 }]
 
-# GeoNode vector data backend configuration.
-
-# Uploader backend (rest or importer)
-
-UPLOADER_BACKEND_URL = 'rest'
-
-#Import uploaded shapefiles into a database such as PostGIS?
-DB_DATASTORE = False
-
-#Database datastore connection settings
-DB_DATASTORE_DATABASE = ''
-DB_DATASTORE_USER = ''
-DB_DATASTORE_PASSWORD = ''
-DB_DATASTORE_HOST = ''
-DB_DATASTORE_PORT = ''
-DB_DATASTORE_TYPE = ''
-#The name of the store in Geoserver
-DB_DATASTORE_NAME = ''
-
 LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
 }
 
-# Default TopicCategory to be used for resources. Use the slug field here
-DEFAULT_TOPICCATEGORY = 'location'
-
-MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
-
-CACHE_TIME=0
 
 # Require users to authenticate before using Geonode
 LOCKDOWN_GEONODE = False
