@@ -8,7 +8,7 @@ GeoNode uses `Transifex <https://www.transifex.com>`_ to translate the webpage a
 
 #. Create account
 
-   Go to `<https://www.transifex.com>`_ and, click *Sign up for free* and enter the needed information to create your account.
+   Go to `<https://www.transifex.com>`_ and, click *Try it for free* and enter the needed information to create your account.
 
    .. figure:: img/transifex_homepage.PNG
 
