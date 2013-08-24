@@ -15,6 +15,7 @@ class LoginRequiredMiddleware(object):
         reverse('jscat'),
         reverse('lang'),
         reverse('layer_acls'),
+        reverse('layer_resolve_user'),
         '/account/(?!.*(?:signup))', # block unauthenticated users from creating new accounts.
         '/static/*',
     )
