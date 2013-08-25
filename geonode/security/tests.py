@@ -26,7 +26,8 @@ class SecurityTest(TestCase):
                       reverse('account_login'),
                       reverse('account_password_reset'),
                       reverse('forgot_username'),
-                      reverse('layer_acls')
+                      reverse('layer_acls'),
+                      reverse('layer_resolve_user'),
                      ]
 
         black_list = [
