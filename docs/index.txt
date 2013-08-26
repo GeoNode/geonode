@@ -5,11 +5,11 @@ GeoNode's documentation
 First Steps
 ===========
 
-The following documents give an overview to GeoNode, the overview document is targeted at non-technical audiences and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation.
+The following documents give an overview to GeoNode, they are targeted at a non-technical audience and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation.
 
  * :doc:`About GeoNode <intro/overview>`
  * :doc:`Quick Installation Guide <intro/install>`
- * :doc:`Detailed Installation Guide <intro/install_detail>`
+ * :doc:`Detail Installation Guide <intro/install_detail>`
 
 .. _the GeoNode demo site: http://demo.geonode.org
 
@@ -19,12 +19,52 @@ The following documents give an overview to GeoNode, the overview document is ta
 
     intro/overview
     intro/install
+    intro/install_detail
+
+How the Documentation is Organized
+==================================
+We have three sections. Each are described in detail below.
+ #. **Organisational**  how to contribute, about, other info.
+ #. **Tutorials**  are based on performing tasks.
+ #. **Reference**  code reference, api, all components in detail.
+
+We also have three users types. So pick which one you are and start surfing.
+ #. **Users**  you are a person who logs into Geonode and starts just using it.
+ #. **Administrators**  you are wanting to install, play, setup, test out geonode but are not going to do any coding
+ #. **Developers**  you are a coder, you want to add functionality, integrate in some other system, fix bugs and well help code a beter Geonode.
 
 Tutorials
 =========
+Tutorials are based around performing tasks, like adding data or publishing maps.  The tutorials are written in a workshop like format.  Once again the tutorials are broken into three groups Users, Administrators and Developers.
 
 For Users
 ---------
+ * :doc:`Users Tutorials Workshop <tutorials/users/doc/index>`
+ * :doc:`Quickstart <tutorials/users/doc/quickstart>`
+ * :doc:`Introduction <tutorials/users/doc/intro>`
+ * :doc:`Adding Layers <tutorials/users/doc/layers>`
+ * :doc:`Creating Maps <tutorials/users/doc/maps>`
+ * :doc:`Accounts <tutorials/users/doc/accounts>`
+ * :doc:`Creating Maps <tutorials/users/doc/moreinfo>`
+
+
+For Administrators
+------------------
+ * :doc:`Administrator Workshop Tutorials <tutorials/admin/doc/index>`
+
+For Developers
+--------------
+ * :doc:`Developer Workshopo Tutorials <tutorials/devel/doc/index>`
+
+Organisational
+==============
+
+ * :doc:`How to Contribute <organisational/how_to_contribute>` 
+
+
+For users
+=========
+
 Users are not required to have experience with GIS systems but most power GeoNode users have existing knowledge of tools like ESRI's ArcGIS or QGIS.
 
 The end user documentation is formatted in form of tutorials, this material has mostly been developed for workshops during FOSS4G and similar conferences.
@@ -49,7 +89,8 @@ The end user documentation is formatted in form of tutorials, this material has 
     users/share
 
 For Administrators
-------------------
+==================
+
 Administrators are expected to have some experience with Linux systems but they are not required to be software developers.
 
  * :doc:`Complete Installation Guide <deploy/install>`
@@ -79,7 +120,7 @@ Administrators are expected to have some experience with Linux systems but they 
     deploy/multi-tenancy
 
 For Developers
---------------
+==============
 
 Would you like to Contribute to GeoNode's continued development? These pages will guide you through the process of setting up your development environment through to submitting patches for inclusion in GeoNode.
 
@@ -112,22 +153,8 @@ Would you like to Contribute to GeoNode's continued development? These pages wil
     developers/reference/django-apps
     developers/reference/javascript
 
-
-Organisational
-==============
-
- * :doc:`How to Contribute <organisational/how_to_contribute>`
- * :doc:`How to Contribute to Documentation <organisational/how_to_contribute_to_docs>`
-
-.. toctree::
-    :hidden:
-    :maxdepth: 3
-
-    developers/setup
-
-
 Getting help
-------------
+============
 
 Having trouble? We'd like to help!
 
@@ -148,4 +175,14 @@ Having trouble? We'd like to help!
 
 Reference
 =========
+ * :doc:`About GeoNode <intro/overview>`
+ * :doc:`Quick Installation Guide <intro/install>`
 
+.. _the GeoNode demo site: http://demo.geonode.org
+
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+    reference/overview
+    reference/security
