@@ -9,3 +9,5 @@ Installing GeoNode
    :maxdepth: 1
 
    installation_devmode
+   install_postgis
+   install_postgresql
