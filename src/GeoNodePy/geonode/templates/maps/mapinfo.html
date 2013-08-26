@@ -3,7 +3,7 @@
 {% load geonode_auth %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
-
+{% load certified %}
 
 {% block title %} {{map.title}} - {% trans "Advanced Map Options" %} {% endblock %}
 {% block head %}
@@ -163,6 +163,31 @@
     <h3>{% trans "Map Views" %}</h3>
     <p>{% trans "This map has been viewed " %} {{ mapstats.visits }} {% trans "time(s) " %}  {% trans "by " %} {{ mapstats.uniques }} {% trans "user(s)" %}  </p>
 
+
+    {% is_certified user map as certified %}
+    {% object_certifications map as certifications %}
+
+	<h3>Certifications</h3>
+	<ul>
+	{% for certification in certifications %}
+		<li><a href="/profiles/{{certification.certifier.username}}">{{ certification.certifier.get_profile.username }}</a>
+	{% endfor %}
+	</ul>
+	
+	{% if user.is_authenticated %}
+	<ul>
+	{% if certified %}
+	<li><a href="{% url uncertify 'maps.Map' map.id %}">
+            {% trans "Uncertify this layer" %}
+        </a></li>	
+	{% else %}
+	<li><a href="{% url certify 'maps.Map' map.id %}">
+            {% trans "Certify this layer" %}
+        </a></li>	
+	{% endif %}
+	</ul>
+
+	{% endif %}
 
     <h3>{% trans "Manage Map" %}</h3>
     <ul>

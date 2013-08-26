@@ -1,0 +1,55 @@
+from django.db import models
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.generic import GenericForeignKey
+
+
+# Create your models here.
+    
+class CertificationManager(models.Manager):
+
+    def certify(self, user, model):
+        """
+        Create a certification for a particular map/layer and user
+        """
+        
+        my_ct = ContentType.objects.get_for_model(model)
+        certification, created = Certification.objects.get_or_create(certifier=user, object_ct = my_ct, object_id = model.id)
+        if created:
+            certification.save()
+        return certification
+
+    def uncertify(self,user,model):
+        """
+        Delete a certification for a particular map/layer and user
+        """  
+        my_ct = ContentType.objects.get_for_model(model)
+        try:      
+            Certification.objects.get(certifier=user, object_ct = my_ct, object_id = model.id).delete()
+        except:
+            pass
+        
+    def is_certified(self,user,model_obj):
+        """
+        Return a boolean indicating whether a model object has been certified by a user
+        """
+        my_ct = ContentType.objects.get_for_model(model_obj)
+        return bool(Certification.objects.filter(certifier=user, object_ct = my_ct, object_id = model_obj.id))
+    
+    
+    def certifications_user (self, user):
+        return Certification.objects.filter(certifier=user)
+    
+    def certifications_object (self, model_obj):
+        my_ct = ContentType.objects.get_for_model(model_obj)
+        return Certification.objects.filter(object_ct = my_ct, object_id= model_obj.id)    
+        
+        
+        
+class Certification (models.Model):
+    certifier = models.ForeignKey(User)
+    object_ct = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    object = GenericForeignKey('object_ct', 'object_id')
+    
+    objects = CertificationManager()        
