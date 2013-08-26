@@ -56,7 +56,12 @@ The development community is very supportive of new projects and contributes ide
 Convinced! Where do I sign?
 ===========================
 
-The next obvious steps are to :doc:`install GeoNode </intro/install>`, :doc:`read the tutorials </users/index>` and email geonode-users+subscribe@googlegroups.com to join the community. Thanks for your interest!
+The next obvious steps are to do
+ #. a :doc:`quick install of GeoNode </intro/install>`,
+ #. or a detailed installation :doc:`detail install of GeoNode </admin/doc/install/installation_devmode>`,
+ #. or do some Tutorials :doc:`read the tutorials </old_docs/users/index>`
+
+ email geonode-users+subscribe@googlegroups.com to join the community. Thanks for your interest!
 
 .. note::
 

@@ -7,7 +7,7 @@ First Steps
 
 The following documents give an overview to GeoNode, they are targeted at a non-technical audience and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation.
 
- * :doc:`About GeoNode <intro/overview>`
+ * :doc:`About GeoNode <organizational/overview>`
  * :doc:`Quick Installation Guide <intro/install>`
  * :doc:`Detail Installation Guide <intro/install_detail>`
 
