@@ -344,7 +344,7 @@ def save(layer, base_file, user, overwrite=True, title=None,
                 'gathering extra files', name)
     if the_layer_type == FeatureType.resource_type:
         logger.debug('Uploading vector layer: [%s]', base_file)
-        if settings.DB_DATASTORE['ENABLED']:
+        if settings.OGC_SERVER['default']['OPTIONS']['DATASTORE'] != '':
             create_store_and_resource = _create_db_featurestore
         else:
             create_store_and_resource = _create_featurestore
@@ -722,19 +722,21 @@ def _create_db_featurestore(name, data, overwrite=False, charset=None):
     (and delete the PostGIS table for it).
     """
     cat = Layer.objects.gs_catalog
+    dsname = OGC_SERVER['default']['OPTIONS']['DATASTORE']
     try:
-        ds = cat.get_store(settings.DB_DATASTORE['default']['NAME'])
+        ds = cat.get_store(dsname)
     except FailedRequestError:
-        ds = cat.create_datastore(settings.DB_DATASTORE['default']['NAME'])
+        ds = cat.create_datastore(dsname)
+        db = settings.DATABASES[dsname]
         ds.connection_parameters.update(
-            host=settings.DB_DATASTORE['default']['HOST'],
-            port=settings.DB_DATASTORE['default']['PORT'],
-            database=settings.DB_DATASTORE['default']['DATABASE'],
-            user=settings.DB_DATASTORE['default']['USER'],
-            passwd=settings.DB_DATASTORE['default']['PASSWORD'],
-            dbtype=settings.DB_DATASTORE['default']['TYPE'])
+            host = db['HOST'],
+            port = db['PORT'],
+            database = db['NAME'],
+            user = db['USER'],
+            passwd = db['PASSWORD'],
+            dbtype = db['ENGINE'])
         cat.save(ds)
-        ds = cat.get_store(settings.DB_DATASTORE['default']['NAME'])
+        ds = cat.get_store(dsname)
 
     try:
         cat.add_data_to_store(ds, name, data,

@@ -45,7 +45,16 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
-    }
+    },
+    # vector datastore for uploads
+    #'datastore' : {
+    #    'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    #    'NAME': '',
+    #    'USER' : '',
+    #    'PASSWORD' : '',
+    #    'HOST' : '',
+    #    'PORT' : '',
+    #}
 }
 
 # Local time zone for this installation. Choices can be found here:
@@ -396,23 +405,10 @@ OGC_SERVER = {
             'PRINTNG_ENABLED' : True,
             'GEONODE_SECURITY_ENABLED' : True,
             'GEOGIT_ENABLED' : False,
-            'WMST_ENABLED' : False
+            'WMST_ENABLED' : False,
+            # Set to name of database in DATABASES dictionary to enable
+            'DATASTORE': '', #'datastore',
         }
-    }
-}
-
-# Vector Database Settings 
-# TODO: Migrate to DATABASES?
-DB_DATASTORE = {
-    'ENABLED' : False,
-    'default' : {
-        'DATABASE' : '',
-        'USER' : '',
-        'PASSWORD' : '',
-        'HOST' : '',
-        'PORT' : '',
-        'TYPE' : '',
-        'NAME' : ''
     }
 }
 
