@@ -138,7 +138,6 @@ Reference
     reference/developers/index
     reference/developers/javascript
 
-
 Old Docs
 ========
 Here are the old docs that still need to move
