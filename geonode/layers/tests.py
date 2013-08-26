@@ -716,9 +716,8 @@ class LayersTest(TestCase):
         layer.storeType = "dataStore"
         layer.save()
 
-
         # Test that the method returns authorized=True if it's a datastore
-        with self.settings(DB_DATASTORE=True):
+        if settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']:
             # The check was moved from the template into the view
             response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
             response_json = json.loads(response.content)
