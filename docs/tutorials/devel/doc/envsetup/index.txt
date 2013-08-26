@@ -1,0 +1,15 @@
+.. _envsetup:
+
+Setting up a GeoNode development environment
+==========================================
+
+This module will lead you through the steps necessary to install a GeoNode development environment.
+
+.. toctree::
+   :maxdepth: 2
+
+   tools
+   git
+   install 
+   paver 
+   deploy 
