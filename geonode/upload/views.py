@@ -63,11 +63,11 @@ logger = logging.getLogger(__name__)
 
 _SESSION_KEY = 'geonode_upload_session'
 _ALLOW_TIME_STEP = getattr(settings, "UPLOADER_SHOW_TIME_STEP", False)
-_ASYNC_UPLOAD = settings.DB_DATASTORE == True
+_ASYNC_UPLOAD = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE'] == True
 
 # at the moment, the various time support transformations require the database
 if _ALLOW_TIME_STEP and not _ASYNC_UPLOAD:
-    raise Exception("To support the time step, you must enable DB_DATASTORE")
+    raise Exception("To support the time step, you must enable the OGC_SERVER DATASTORE option")
 
 
 def _is_async_step(upload_session):
