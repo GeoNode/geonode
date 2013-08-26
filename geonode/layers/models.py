@@ -62,7 +62,7 @@ class Style(models.Model):
     workspace = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return "%s" % self.name
+        return "%s" % self.name.encode('utf-8')
 
 class LayerManager(ResourceBaseManager):
 

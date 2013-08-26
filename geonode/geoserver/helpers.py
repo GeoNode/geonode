@@ -225,7 +225,9 @@ def delete_from_postgis(resource_name):
     to be used after deleting a layer from the system.
     """
     import psycopg2
-    conn=psycopg2.connect("dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+    dsname = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
+    db = settings.DATABASES[dsname]
+    conn=psycopg2.connect("dbname='" + db['NAME'] + "' user='" + db['user'] + "'  password='" + db['password'] + "' port=" + db['PORT'] + " host='" + db['HOST'] + "'")
     try:
         cur = conn.cursor()
         cur.execute("SELECT DropGeometryTable ('%s')" %  resource_name)
