@@ -1,0 +1,4 @@
+=======================
+Reference Documentation
+=======================
+Here you will find information about each and every component, for example geoserver, geonode settings, security, etc.
