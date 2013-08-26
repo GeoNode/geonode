@@ -320,7 +320,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
     return output
 
 def get_stores(store_type = None):
-    url = "%srest" % settings.GEOSERVER_BASE_URL
+    url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
     cat = Catalog(url, _user, _password) 
     stores = cat.get_stores()
     store_list = []
