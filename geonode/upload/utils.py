@@ -127,6 +127,7 @@ def rename_and_prepare(base_file):
 
 def create_geoserver_db_featurestore(store_type=None, store_name=None):
     cat = Layer.objects.gs_catalog
+    dsname = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
     # get or create datastore
     try:
         if store_type == 'geogit' and hasattr(settings, 'GEOGIT_DATASTORE_NAME') and settings.GEOGIT_DATASTORE_NAME:
@@ -134,8 +135,8 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
                 ds = cat.get_store(store_name)
             else:
                 ds = cat.get_store(settings.GEOGIT_DATASTORE_NAME)
-        elif settings.DB_DATASTORE_NAME:
-            ds = cat.get_store(settings.DB_DATASTORE_NAME)
+        elif dsname != '':
+            ds = cat.get_store(dsname)
         else:
             return None
     except FailedRequestError:
@@ -153,16 +154,17 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
             ds = cat.get_store(store_name)
         else:
             logging.info(
-                'Creating target datastore %s' % settings.DB_DATASTORE['default']['NAME'])
-            ds = cat.create_datastore(settings.DB_DATASTORE['default']['NAME'])
+                'Creating target datastore ' % dsname)
+            ds = cat.create_datastore(dsname)
+            db = settings.DATABASES[dsname]
             ds.connection_parameters.update(
-                host=settings.DB_DATASTORE['default']['HOST'],
-                port=settings.DB_DATASTORE['default']['PORT'],
-                database=settings.DB_DATASTORE['default']['DATABASE'],
-                user=settings.DB_DATASTORE['default']['USER'],
-                passwd=settings.DB_DATASTORE['default']['PASSWORD'],
-                dbtype=settings.DB_DATASTORE['default']['TYPE'])
+                host = db['HOST'],
+                port = db['PORT'],
+                database = db['NAME'],
+                user = db['USER'],
+                passwd = db['PASSWORD'],
+                dbtype = db['ENGINE'])
             cat.save(ds)
-            ds = cat.get_store(settings.DB_DATASTORE['default']['NAME'])
+            ds = cat.get_store(dsname)
 
     return ds
