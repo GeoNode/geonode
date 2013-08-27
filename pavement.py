@@ -464,15 +464,15 @@ def deb(options):
         if key is None and ppa is None:
             # A local installable package
             sh('debuild -uc -us -A')
-    elif key is None and ppa is not None:
-            # A sources package, signed by daemon
-            sh('debuild -S')
-    elif key is not None and ppa is None:
-            # A signed installable package
-            sh('debuild -k%s -A' % key)
-    elif key is not None and ppa is not None:
-            # A signed, source package
-            sh('debuild -k%s -S' % key)
+        elif key is None and ppa is not None:
+                # A sources package, signed by daemon
+                sh('debuild -S')
+        elif key is not None and ppa is None:
+                # A signed installable package
+                sh('debuild -k%s -A' % key)
+        elif key is not None and ppa is not None:
+                # A signed, source package
+                sh('debuild -k%s -S' % key)
 
     if ppa is not None:
         sh('dput ppa:%s geonode_%s_source.changes' % (ppa, simple_version))
