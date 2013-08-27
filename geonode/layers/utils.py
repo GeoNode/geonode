@@ -722,7 +722,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset=None):
     (and delete the PostGIS table for it).
     """
     cat = Layer.objects.gs_catalog
-    dsname = OGC_SERVER['default']['OPTIONS']['DATASTORE']
+    dsname = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
     try:
         ds = cat.get_store(dsname)
     except FailedRequestError:
