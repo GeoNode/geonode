@@ -1,3 +1,10 @@
+geonode (2.0.0+beta35) precise; urgency=high
+
+  * [a2d5fb] Added thumbnail creation fix to install.sh
+  * [e1cb72] updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 27 Aug 2013 03:14:33 +0000
+
 geonode (2.0.0+beta34) precise; urgency=high
 
   * [03b3ac] Added missing comma to local_settings in packages
