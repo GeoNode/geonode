@@ -1,3 +1,10 @@
+geonode (2.0.0+beta34) precise; urgency=high
+
+  * [03b3ac] Added missing comma to local_settings in packages
+  * [740ecf] Released 2.0b33
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 27 Aug 2013 02:37:29 +0000
+
 geonode (2.0.0+beta33) precise; urgency=high
 
   [ Ian Schneider ]
