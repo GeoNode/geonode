@@ -436,7 +436,7 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     gs_resource.keywords = instance.keyword_list()
     #gs_resource should only be saved if settings.OGC_SERVER['default']['OPTIONS'], "CATALOG_WRITE_ENABLED" == True
-    if getattr(settings.OGC_SERVER['default']['OPTIONS'], "CATALOG_WRITE_ENABLED", True) == True:
+    if settings.OGC_SERVER['default']['OPTIONS'].get("CATALOG_WRITE_ENABLED", True):
         gs_catalog.save(gs_resource)
 
     bbox = gs_resource.latlon_bbox
