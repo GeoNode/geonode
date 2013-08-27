@@ -421,7 +421,6 @@ OGC_SERVER = {
             'GEONODE_SECURITY_ENABLED' : True,
             'GEOGIT_ENABLED' : False,
             'WMST_ENABLED' : False,
-            'WMST_ENABLED' : False,
             'PUBLIC_PROXY_ENDPOINT_ENABLED' : True,
             'CATALOG_WRITE_ENABLED': False
         }
