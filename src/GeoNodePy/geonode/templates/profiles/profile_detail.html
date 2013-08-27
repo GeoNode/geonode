@@ -55,8 +55,10 @@
     <div id="assets"></div>
     <p>&nbsp;</p>
     {% user_certifications profile.user as certifications %}
+    {% if certifications %}
     <h2> {% trans "Maps & Layers certified by " %} {{profile.username}} </h2>
     <div id="certifiedAssets"></div>    
+    {% endif %}
     
 </div>
 <script type="text/javascript">

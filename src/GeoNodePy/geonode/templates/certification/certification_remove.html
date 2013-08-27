@@ -29,7 +29,7 @@
 {% block main %}
 
 <h3>{% trans "Are you sure you want to uncertify"  %} <strong>{{title}}</strong>?</h3>
-<form action="{% url uncertify 'maps.Layer' modelid %}" method="POST" class="inline">
+<form action="{% url uncertify modeltype modelid %}" method="POST" class="inline">
     {% csrf_token %}
     <input type="submit" value="{% trans "Yes, uncertify"  %}" class="submit_btn"/>
 </form>

@@ -174,7 +174,7 @@
 	{% endfor %}
 	</ul>
 	
-	{% if user.is_authenticated %}
+	{% if user.is_authenticated and user != map.owner%}
 	<ul>
 	{% if certified %}
 	<li><a href="{% url uncertify 'maps.Map' map.id %}">
