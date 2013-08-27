@@ -17,7 +17,7 @@ import sys, os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 DOC_PATH = os.path.dirname(__file__)
-PROJ_PATH = os.path.join(DOC_PATH, '..')
+PROJ_PATH = os.path.join(DOC_PATH, '../')
 sys.path.extend([DOC_PATH, PROJ_PATH])
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 
