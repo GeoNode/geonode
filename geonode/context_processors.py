@@ -36,7 +36,7 @@ def resource_urls(request):
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
         DOCUMENTS_APP = settings.DOCUMENTS_APP,
-        UPLOADER_URL = reverse('layer_upload'),
+        UPLOADER_URL = reverse('data_upload') if getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest') == 'geonode.importer' else reverse('layer_upload'),
         GEOGIT_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('GEOGIT_ENABLED', False),
         TIME_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', False),
         DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False),

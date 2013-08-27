@@ -136,6 +136,7 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
             else:
                 ds = cat.get_store(settings.GEOGIT_DATASTORE_NAME)
         elif dsname != '':
+            dsname = settings.DATABASES[dsname].get('NAME')
             ds = cat.get_store(dsname)
         else:
             return None
