@@ -590,6 +590,10 @@ def resolve_user(request):
         elif _get_basic_auth_info(request) == (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']):
             geoserver = True
             superuser = True
+        else:
+            return HttpResponse(_("Bad HTTP Authorization Credentials."),
+                                status=401,
+                                mimetype="text/plain")
     if not any([user, geoserver, superuser]) and not request.user.is_anonymous():
         user = request.user.username
         superuser = request.user.is_superuser
@@ -677,7 +681,7 @@ def feature_edit_check(request, layername):
     Otherwise, return a status of 401 (unauthorized).
     """
     layer = get_object_or_404(Layer, typename=layername)
-    feature_edit = any((getattr(settings, a, None) for a in ("GEOGIT_DATASTORE", "DB_DATASTORE"))) 
+    feature_edit = any((getattr(settings, a, None) for a in ("GEOGIT_DATASTORE", "OGC_SERVER['default']['OPTIONS']['DATASTORE']"))) 
     if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
     else:

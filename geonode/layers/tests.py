@@ -343,9 +343,14 @@ class LayersTest(TestCase):
     def test_layer_styles(self):
         lyr = Layer.objects.get(pk=1)
         #There should be a total of 3 styles
-        self.assertEqual(len(lyr.styles.all()), 3)
+        self.assertEqual(len(lyr.styles.all()), 4)
         #One of the style is the default one
         self.assertEqual(lyr.default_style, Style.objects.get(id=lyr.default_style.id))
+
+        try:
+            styles = [str(style) for style in lyr.styles.all()]
+        except UnicodeEncodeError:
+            self.fail("str of the Style model throws a UnicodeEncodeError with special characters.")
 
     def test_layer_save(self):
         lyr = Layer.objects.get(pk=1)
@@ -716,9 +721,8 @@ class LayersTest(TestCase):
         layer.storeType = "dataStore"
         layer.save()
 
-
         # Test that the method returns authorized=True if it's a datastore
-        with self.settings(DB_DATASTORE=True):
+        if settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']:
             # The check was moved from the template into the view
             response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
             response_json = json.loads(response.content)

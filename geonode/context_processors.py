@@ -39,8 +39,8 @@ def resource_urls(request):
         UPLOADER_URL = reverse('layer_upload'),
         GEOGIT_ENABLED = getattr(settings, "GEOGIT_DATASTORE", False),
         TIME_ENABLED = getattr(settings, "UPLOADER_SHOW_TIME_STEP", False),
-        MF_PRINT_ENABLED = getattr(settings.OGC_SERVER['default']['OPTIONS'], "MAPFISH_PRINT_ENABLED", False),
-        PRINTNG_ENABLED = getattr(settings, "PRINTNG_ENABLED", False),
-        GS_SECURITY_ENABLED = getattr(settings.OGC_SERVER['default']['OPTIONS'], "GEONODE_SECURITY_ENABLED", False), 
-        DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False)
+        DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False),
+        MF_PRINT_ENABLED = settings.OGC_SERVER['default']['OPTIONS'].get("MAPFISH_PRINT_ENABLED", False),
+        PRINTNG_ENABLED = settings.OGC_SERVER['default']['OPTIONS'].get("PRINTNG_ENABLED", False),
+        GS_SECURITY_ENABLED = settings.OGC_SERVER['default']['OPTIONS'].get("GEONODE_SECURITY_ENABLED", False)
     )

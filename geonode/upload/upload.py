@@ -303,7 +303,7 @@ def run_import(upload_session, async):
             )
         import_session.tasks[0].set_target(
             target.name, target.workspace.name)
-    elif (settings.DB_DATASTORE and
+    elif (settings.OGC_SERVER['default']['OPTIONS']['DATASTORE'] != '' and
         import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
         target = create_geoserver_db_featurestore(store_type='postgis', store_name = upload_session.geogit_store)
         _log('setting target datastore %s %s',
