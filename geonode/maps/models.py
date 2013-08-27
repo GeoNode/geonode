@@ -270,6 +270,8 @@ class Map(ResourceBase, GXPMapBase):
         # with the WMS parser.
         p = "&".join("%s=%s"%item for item in params.items())
 
+        for key in settings.OGC_SERVER:
+            if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']:  return '<img src="%s"/>' % (settings.OGC_SERVER[key]['LOCATION'] + "wms/reflect?" + p) 
         return '<img src="%s"/>' % (settings.OGC_SERVER['default']['LOCATION'] + "wms/reflect?" + p)
 
     class Meta:
@@ -354,13 +356,23 @@ class Map(ResourceBase, GXPMapBase):
 
             layer_objects.append(layer)
 
-            map_layers.append(MapLayer(
-                map = self,
-                name = layer.typename,
-                ows_url = settings.OGC_SERVER['default']['LOCATION'] + "wms",
-                stack_order = index,
-                visibility = True
-            ))
+            for key in settings.OGC_SERVER:
+                if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']: 
+                    map_layers.append(MapLayer(
+                        map = self,
+                        name = layer.typename,
+                        ows_url = settings.OGC_SERVER[key]['LOCATION'] + "wms",
+                        stack_order = index,
+                        visibility = True
+                    ))
+                    break
+                else: map_layers.append(MapLayer(
+                        map = self,
+                        name = layer.typename,
+                        ows_url = settings.OGC_SERVER['default']['LOCATION'] + "wms",
+                        stack_order = index,
+                        visibility = True
+                    ))
 
             bbox = self.set_bounds_from_layers(layer_objects)
 

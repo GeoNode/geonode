@@ -72,7 +72,11 @@ def check_geonode_is_up():
 
 def get_wms():
     global _wms
-    wms_url = settings.OGC_SERVER['default']['LOCATION'] + "wms?request=GetCapabilities&version=1.1.0"
+    for key in settings.OGC_SERVER:
+        if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']: 
+            wms_url = settings.OGC_SERVER[key]['LOCATION'] + "wms?request=GetCapabilities&version=1.1.0"
+            break
+        else: wms_url = settings.OGC_SERVER['default']['LOCATION'] + "wms?request=GetCapabilities&version=1.1.0"
     netloc = urlparse(wms_url).netloc
     http = httplib2.Http()
     http.add_credentials(_user, _password)
