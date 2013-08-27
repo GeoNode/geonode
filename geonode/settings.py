@@ -414,9 +414,10 @@ OGC_SERVER = {
 
 # Uploader Settings
 UPLOADER = {
+    'BACKEND' : 'geonode.rest',
     'OPTIONS' : {
-        'TIME_ENABLED' : False,
-        'GEOGIT_ENABLED' : False,
+        'TIME_ENABLED': False,
+        'GEOGIT_ENABLED': False,
     }
 }
 
