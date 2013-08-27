@@ -131,6 +131,8 @@ class Layer(ResourceBase):
         # with the WMS parser.
         p = "&".join("%s=%s"%item for item in params.items())
 
+        for key in settings.OGC_SERVER:
+            if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']: return settings.OGC_SERVER[key]['LOCATION'] + "wms/reflect?" + p 
         return settings.OGC_SERVER['default']['LOCATION'] + "wms/reflect?" + p
 
 
@@ -274,7 +276,9 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     """
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
-    cascading_delete(Layer.objects.gs_catalog, instance.typename)
+    #cascading_delete should only be called if settings.OGC_SERVER['default']['OPTIONS']['CATALOG_WRITE_ENABLED'] == True
+    if settings.OGC_SERVER['default']['OPTIONS'].get("CATALOG_WRITE_ENABLED", True):
+        cascading_delete(Layer.objects.gs_catalog, instance.typename)
 
 
 def pre_save_layer(instance, sender, **kwargs):
@@ -361,7 +365,9 @@ def geoserver_pre_save(instance, sender, **kwargs):
         metadata_links.append((link.name, link.mime, link.url))
 
     gs_resource.metadata_links = metadata_links
-    gs_catalog.save(gs_resource)
+    #gs_resource should only be saved if settings.OGC_SERVER['default']['OPTIONS']['CATALOG_WRITE_ENABLED'] == True
+    if settings.OGC_SERVER['default']['OPTIONS'].get("CATALOG_WRITE_ENABLED", True):
+        gs_catalog.save(gs_resource)
 
     gs_layer = gs_catalog.get_layer(instance.name)
 
@@ -369,7 +375,9 @@ def geoserver_pre_save(instance, sender, **kwargs):
         gs_layer.attribution = str(instance.poc.user)
         profile = Profile.objects.get(user=instance.poc.user)
         gs_layer.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
-        gs_catalog.save(gs_layer)
+        #gs_layer should only be saved if settings.OGC_SERVER['default']['OPTIONS']['CATALOG_WRITE_ENABLED'] == True
+        if settings.OGC_SERVER['default']['OPTIONS'].get("CATALOG_WRITE_ENABLED", True):
+            gs_catalog.save(gs_layer)
 
     """Get information from geoserver.
 
@@ -427,7 +435,9 @@ def geoserver_post_save(instance, sender, **kwargs):
         return
 
     gs_resource.keywords = instance.keyword_list()
-    gs_catalog.save(gs_resource)
+    #gs_resource should only be saved if settings.OGC_SERVER['default']['OPTIONS'], "CATALOG_WRITE_ENABLED" == True
+    if getattr(settings.OGC_SERVER['default']['OPTIONS'], "CATALOG_WRITE_ENABLED", True) == True:
+        gs_catalog.save(gs_resource)
 
     bbox = gs_resource.latlon_bbox
     dx = float(bbox[1]) - float(bbox[0])
@@ -440,7 +450,13 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     # Set download links for WMS, WCS or WFS and KML
 
-    links = wms_links(settings.OGC_SERVER['default']['LOCATION'] + 'wms?',
+    for key in settings.OGC_SERVER:
+        if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']:
+            links = wms_links(settings.OGC_SERVER[key]['LOCATION'] + 'wms?',
+                    instance.typename, instance.bbox_string,
+                    instance.srid, height, width)
+            break
+        else: links = wms_links(settings.OGC_SERVER['default']['LOCATION'] + 'wms?',
                     instance.typename, instance.bbox_string,
                     instance.srid, height, width)
 
@@ -456,7 +472,11 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
 
     if instance.storeType == "dataStore":
-        links = wfs_links(settings.OGC_SERVER['default']['LOCATION'] + 'wfs?', instance.typename)
+        for key in settings.OGC_SERVER:
+            if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']:
+                links = wfs_links(settings.OGC_SERVER[key]['LOCATION'] + 'wfs?', instance.typename)
+                break
+            else: links = wfs_links(settings.OGC_SERVER['default']['LOCATION'] + 'wfs?', instance.typename)
         for ext, name, mime, wfs_url in links:
             Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                             url=wfs_url,
@@ -478,8 +498,13 @@ def geoserver_post_save(instance, sender, **kwargs):
         permissions['authenticated'] = instance.get_gen_level(AUTHENTICATED_USERS)
         instance.set_gen_level(ANONYMOUS_USERS,'layer_readonly')
 
-        links = wcs_links(settings.OGC_SERVER['default']['LOCATION'] + 'wcs?', instance.typename, 
-            bbox=instance.bbox[:-1], crs=instance.bbox[-1], height=height, width=width)
+        for key in settings.OGC_SERVER:
+            if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']: 
+                links = wcs_links(settings.OGC_SERVER[key]['LOCATION'] + 'wcs?', instance.typename,
+                    bbox=instance.bbox[:-1], crs=instance.bbox[-1], height=height, width=width)
+                break
+            else: links = wfs_links(settings.OGC_SERVER['default']['LOCATION'] + 'wcs?', instance.typename,
+                    bbox=instance.bbox[:-1], crs=instance.bbox[-1], height=height, width=width)
         for ext, name, mime, wcs_url in links:
             Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                                 url=wcs_url,
@@ -494,10 +519,17 @@ def geoserver_post_save(instance, sender, **kwargs):
         instance.set_gen_level(ANONYMOUS_USERS,permissions['anonymous'])
         instance.set_gen_level(AUTHENTICATED_USERS,permissions['authenticated'])
 
-    kml_reflector_link_download = settings.OGC_SERVER['default']['LOCATION'] + "wms/kml?" + urllib.urlencode({
-        'layers': instance.typename,
-        'mode': "download"
-    })
+    for key in settings.OGC_SERVER:
+        if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']: 
+            kml_reflector_link_download = settings.OGC_SERVER[key]['LOCATION'] + "wms/kml?" + urllib.urlencode({
+                'layers': instance.typename,
+                'mode': "download"
+            })
+            break
+        else: kml_reflector_link_download = settings.OGC_SERVER['default']['LOCATION'] + "wms/kml?" + urllib.urlencode({
+                'layers': instance.typename,
+                'mode': "download"
+            })
 
     Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                         url=kml_reflector_link_download,
@@ -509,10 +541,17 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
                     )
 
-    kml_reflector_link_view = settings.OGC_SERVER['default']['LOCATION'] + "wms/kml?" + urllib.urlencode({
-        'layers': instance.typename,
-        'mode': "refresh"
-    })
+    for key in settings.OGC_SERVER:
+        if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']: 
+            kml_reflector_link_view = settings.OGC_SERVER[key]['LOCATION'] + "wms/kml?" + urllib.urlencode({
+                'layers': instance.typename,
+                'mode': "refresh"
+            })
+            break
+        else: kml_reflector_link_view = settings.OGC_SERVER['default']['LOCATION'] + "wms/kml?" + urllib.urlencode({
+                'layers': instance.typename,
+                'mode': "refresh"
+            })
 
     Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                         url=kml_reflector_link_view,
@@ -524,7 +563,15 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
                     )
 
-    tile_url = ('%sgwc/service/gmaps?' % settings.OGC_SERVER['default']['LOCATION'] +
+    for key in settings.OGC_SERVER:
+        if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']: 
+            tile_url = ('%sgwc/service/gmaps?' % settings.OGC_SERVER[key]['LOCATION'] +
+                'layers=%s' % instance.typename +
+                '&zoom={z}&x={x}&y={y}' +
+                '&format=image/png8'
+                )
+            break
+        else: tile_url = ('%sgwc/service/gmaps?' % settings.OGC_SERVER['default']['LOCATION'] +
                 'layers=%s' % instance.typename +
                 '&zoom={z}&x={x}&y={y}' +
                 '&format=image/png8'
@@ -646,12 +693,22 @@ def set_attributes(layer):
 
     attribute_map = []
     if layer.storeType == "dataStore":
-        dft_url = settings.OGC_SERVER['default']['LOCATION'] + "wfs?" + urllib.urlencode({
-            "service": "wfs",
-            "version": "1.0.0",
-            "request": "DescribeFeatureType",
-            "typename": layer.typename,
-            })
+        for key in settings.OGC_SERVER:
+            if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']:
+                dft_url = settings.OGC_SERVER[key]['LOCATION'] + "wfs?" + urllib.urlencode({
+                    "service": "wfs",
+                    "version": "1.0.0",
+                    "request": "DescribeFeatureType",
+                    "typename": layer.typename,
+                    })
+                break
+            else:
+                dft_url = settings.OGC_SERVER['default']['LOCATION'] + "wfs?" + urllib.urlencode({
+                    "service": "wfs",
+                    "version": "1.0.0",
+                    "request": "DescribeFeatureType",
+                    "typename": layer.typename,
+                    })
         try:
             body = http.request(dft_url)[1]
             doc = etree.fromstring(body)
@@ -660,12 +717,22 @@ def set_attributes(layer):
         except Exception:
             attribute_map = []
     elif layer.storeType == "coverageStore":
-        dc_url = settings.OGC_SERVER['default']['LOCATION'] + "wcs?" + urllib.urlencode({
-            "service": "wcs",
-            "version": "1.1.0",
-            "request": "DescribeCoverage",
-            "identifiers": layer.typename
-        })
+        for key in settings.OGC_SERVER:
+            if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']:
+                dc_url = settings.OGC_SERVER[key]['LOCATION'] + "wcs?" + urllib.urlencode({
+                    "service": "wcs",
+                    "version": "1.1.0",
+                    "request": "DescribeCoverage",
+                    "identifiers": layer.typename
+                    })
+                break
+            else:
+                dc_url = settings.OGC_SERVER['default']['LOCATION'] + "wcs?" + urllib.urlencode({
+                    "service": "wcs",
+                    "version": "1.1.0",
+                    "request": "DescribeCoverage",
+                    "identifiers": layer.typename
+                    })
         try:
             response, body = http.request(dc_url)
             doc = etree.fromstring(body)

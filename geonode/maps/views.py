@@ -328,13 +328,24 @@ def new_map_config(request):
                     bbox[2] = min(bbox[2], layer_bbox[2])
                     bbox[3] = max(bbox[3], layer_bbox[3])
 
-                layers.append(MapLayer(
-                    map = map_obj,
-                    name = layer.typename,
-                    ows_url = settings.OGC_SERVER['default']['LOCATION'] + "wms",
-                    layer_params=json.dumps( layer.attribute_config()),
-                    visibility = True
-                ))
+                for key in settings.OGC_SERVER:
+                    if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']: 
+                        layers.append(MapLayer(
+                            map = map_obj,
+                            name = layer.typename,
+                            ows_url = settings.OGC_SERVER[key]['LOCATION'] + "wms",
+                            layer_params=json.dumps( layer.attribute_config()),
+                            visibility = True
+                        )) 
+                        break
+                    else: 
+                        layers.append(MapLayer(
+                            map = map_obj,
+                            name = layer.typename,
+                            ows_url = settings.OGC_SERVER['default']['LOCATION'] + "wms",
+                            layer_params=json.dumps( layer.attribute_config()),
+                            visibility = True
+                        ))
 
             if bbox is not None:
                 minx, miny, maxx, maxy = [float(c) for c in bbox]

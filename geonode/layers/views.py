@@ -170,7 +170,11 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    maplayer = GXPLayer(name = layer.typename, ows_url = settings.OGC_SERVER['default']['LOCATION'] + "wms", layer_params=json.dumps( layer.attribute_config()))
+    for key in settings.OGC_SERVER:
+        if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']: 
+            maplayer = GXPLayer(name = layer.typename, ows_url = settings.OGC_SERVER[key]['LOCATION'] + "wms", layer_params=json.dumps( layer.attribute_config()))
+            break
+        else:  maplayer = GXPLayer(name = layer.typename, ows_url = settings.OGC_SERVER['default']['LOCATION'] + "wms", layer_params=json.dumps( layer.attribute_config()))
 
     layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
 
