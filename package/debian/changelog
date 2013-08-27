@@ -1,3 +1,11 @@
+geonode (2.0.0+beta38) precise; urgency=high
+
+  * [6bf2f6] Fixed references to user and password in geoserver helpers
+  * [d0f3c4] Comment out delete_from_postgis because it was part of a try/except block that was too general
+  * [7553c4] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 27 Aug 2013 16:00:08 +0000
+
 geonode (2.0.0+beta37) precise; urgency=high
 
   [ Simone Dalmasso ]
