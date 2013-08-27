@@ -104,7 +104,7 @@ function setup_django_every_time() {
 
     # Create an empty uploads dir
     mkdir -p $GEONODE_WWW/uploaded
-
+    mkdir -p $GEONODE_WWW/uploaded/thumbs/
     # Apply the permissions to the newly created folders.
     chown www-data -R $GEONODE_WWW
     popd
