@@ -1,3 +1,78 @@
+geonode (2.0.0+beta32) precise; urgency=high
+
+  [ Jeffrey Johnson ]
+  * [0ab954] Fix alignment of action buttons on layer detail
+  * [99fd1a] Refactoring of GeoServer into OGC_SERVER settings and other touchup in settings.py
+  * [3392e3] Change settings.GEOSERVER_BASE_URL to settings.OGC_SERVER['default']['LOCATION']
+  * [edf958] Change ref to GEOSERVER_BASE_URL in pavement.py
+  * [1825c4] Switch GEOSERVER_CREDENTIALS to use new OGC_SERVER dict from settings.py
+  * [efb114] Fix OGC_SERVER reference in MAP_BASELAYERS
+  * [0ff494] Fix missing : in geonode/layers/views.py
+  * [dfc218] Fix typo in geonode/maps/models.py
+  * [3f58bc] Temp fix in geonode/context_processors.py until @ingenieroariel fixes this for realz
+  * [db86c6] Adjust to changes in DB_DATASTORE in settings.py
+  * [1ce752] More temp fixes in context_processors.py
+  * [4dd097] Fix DB_DATASTORE references
+  * [1e1969] Hide perms widgets if GS_SECURITY_ENABLED = False
+  * [500d36] set printService to empty string if MapFish is not enabled
+
+  [ Tyler Garner ]
+  * [ca93ab] Changed the upload function to use the case insensitive get_files function vs shp_files.
+
+  [ Matt Bertrand ]
+  * [d896c7] Fix layer attribute form on metadata page
+  * [9317c3] Handle invalid attribute form
+
+  [ Jeffrey Johnson ]
+  * [7083c6] Switch bower to grunt-cli for travis
+  * [1c4f4f] Switch bower to grunt-cli for travis
+
+  [ Ariel Nunez ]
+  * [f3af7e] API design document moved to GNIP as with number #1042
+
+  [ Tyler Garner ]
+  * [b81208] Allow user to select destination GeoGit repository.
+
+  [ Simone Dalmasso ]
+  * [85c323] initial work on documents respecting permissions
+
+  [ Tyler Garner ]
+  * [cc78cb] Provides new middleware that allows administrators to require users to be authenticated before accessing a majority of the application.
+
+  [ Simone Dalmasso ]
+  * [069363] adjust the db_datastore lookup
+  * [e62f13] enforce the check on the permissions structure
+  * [bf74fc] remove the inline contactrole from layer admin and the custom action
+  * [034d5f] don't assign the owner as poc and metadata_author if they already exist
+  * [91061d] move import to the top of the page
+  * [c85f03] hide counts and thumbs in maps and docs metadata
+
+  [ Tyler Garner ]
+  * [2a5d1a] Ugly fix to make the LoginRequiredMiddleware test case work correctly.
+  * [a98f82] Added documentation for the new LoginRequiredMiddleware settings.
+
+  [ Ian Schneider ]
+  * [9d7940] user w/ specific perm unable to see in search
+
+  [ Simone Dalmasso ]
+  * [409e0d] fix error in dependency
+  * [b06de8] use 403 to benefit from redirect
+
+  [ Ian Schneider ]
+  * [c4dd8d] add fullname and email to acls
+
+  [ Jeffrey Johnson ]
+  * [2f00b3] Use DB_DATASTORE dict
+
+  [ Tyler Garner ]
+  * [51a329] Forced UTF-8 encoding on strings that may receive  unicode input.  Fixes character encoding problems in updatelayers and in the attributes model.
+
+  [ Ariel Nunez ]
+  * [a2affc] Added dependency on python-django-downloadview for debian package
+  * [7a65f7] Added changelog'
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 23 Aug 2013 21:25:23 +0000
+
 geonode (2.0.0+beta31) precise; urgency=high
 
   [ Simone Dalmasso ]
