@@ -392,7 +392,7 @@ function getUrlParams(url) {
 var getDownloadLink = function () {
     var params = getUrlParams(tweetPointRecord.getLayer().grid[0][0].url);
     var layerName = Ext.getCmp("lsh_checkbox").checked ? "lsh_point" : "point";
-    return "/tweetDownload/?LAYERS=POINT&SQL=" + params.SQL.replace(/goog_x%2C(%20)+goog_y%2C(%20)+tweet_text/g, "lat%2C%20lon%2C%20sender_name%2C%20time%2C%20tweet_id%2C%20tweet_text") + "&BBOX=" + params.BBOX;
+    return "/tweetDownload/?LAYERS=POINT&SQL=" + params.SQL.replace(/goog_x%2C(%20)+goog_y%2C(%20)+tweet_text/g, "goog_x%2C%20goog_y%2C%20sender_name%2C%20time%2C%20tweet_id%2C%20tweet_text") + "&BBOX=" + params.BBOX;
 }
 
 var setCurrentTime = function () {
