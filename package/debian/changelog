@@ -1,3 +1,13 @@
+geonode (2.0.0+beta40) precise; urgency=high
+
+  [ Tyler Garner ]
+  * [8fe926] Fixes to make both the rest and importers work again.
+
+  [ Ariel Nunez ]
+  * [433dd6] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 27 Aug 2013 21:56:20 +0000
+
 geonode (2.0.0+beta39) precise; urgency=high
 
   [ Ian Schneider ]
