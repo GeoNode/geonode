@@ -291,7 +291,7 @@ def newmap_config(request):
 
         if 'layer' in params:
             map_obj = Map(projection="EPSG:900913")
-            layers, groups, bbox = additional_layers(request,map_obj)
+            layers, groups, bbox = additional_layers(request,map_obj, params.getlist('layer'))
 
 
             if bbox is not None:
@@ -317,10 +317,10 @@ def newmap_config(request):
                 map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
 
             config = map_obj.viewer_json(request.user, *(DEFAULT_BASE_LAYERS + layers))
-            config['maps']['groups'] = []
+            config['map']['groups'] = []
             for group in groups:             
-                if group not in json.dumps(config['maps']['groups']):
-                    config['maps']['groups'].append({"expanded":"true", "group":group})
+                if group not in json.dumps(config['map']['groups']):
+                    config['map']['groups'].append({"expanded":"true", "group":group})
 
             config['fromLayer'] = True
         else:
@@ -716,12 +716,12 @@ def map_controller(request, mapid):
         return mapdetail(request, map_obj.id)
 
 
-def additional_layers(request, map_obj):
+def additional_layers(request, map_obj, layerlist):
 
     groups = set()
     layers = []
     bbox = None
-    for layer_name in request.GET.getlist('layer'):
+    for layer_name in layerlist:
         try:
             layer = Layer.objects.get(typename=layer_name)
         except ObjectDoesNotExist:
@@ -746,7 +746,7 @@ def additional_layers(request, map_obj):
                     source_params = u'{"ptype": "gxp_gnsource"}',
                     layer_params= u'{"tiled":true, "title":" '+ layer.title + '", "format":"image/png","queryable":true}')
                 )    
-        return layers, groups, bbox
+    return layers, groups, bbox
 
 def view(request, mapid, snapshot=None):
     """
@@ -764,7 +764,7 @@ def view(request, mapid, snapshot=None):
 
 
     if 'layer' in request.GET:
-        addedlayers, groups, bbox = additional_layers(request,map_obj)
+        addedlayers, groups, bbox = additional_layers(request,map_obj, request.GET.getlist('layers'))
         config = map_obj.viewer_json(request.user, *addedlayers)
         for group in groups:             
             if group not in json.dumps(config['map']['groups']):

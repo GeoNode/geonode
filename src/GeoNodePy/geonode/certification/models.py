@@ -33,6 +33,8 @@ class CertificationManager(models.Manager):
         """
         Return a boolean indicating whether a model object has been certified by a user
         """
+        if not user.id:
+            return False
         my_ct = ContentType.objects.get_for_model(model_obj)
         return bool(Certification.objects.filter(certifier=user, object_ct = my_ct, object_id = model_obj.id))
     
