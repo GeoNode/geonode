@@ -1,3 +1,22 @@
+geonode (2.0.0+beta37) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [45ee45] indent with spaces in pavement
+  * [13c80d] add missing settings in utils
+  * [70fd79] read the missing indentation
+
+  [ Ariel Nunez ]
+  * [5dc0f1] Updated changelog
+  * [a8ba91] Potential fixes for the missing thumbnails problem
+
+  [ Tyler Garner ]
+  * [ca9bb3] Fixes _ASYNC_UPLOAD function to work with new settings.
+
+  [ Ariel Nunez ]
+  * [2f828a] Enable saving shapefiles to postgis by default in packages, refs #1035
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 27 Aug 2013 14:40:27 +0000
+
 geonode (2.0.0+beta35) precise; urgency=high
 
   * [a2d5fb] Added thumbnail creation fix to install.sh
