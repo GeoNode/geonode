@@ -5,7 +5,7 @@ DATABASES = {
          'USER': 'user',
          'PASSWORD': 'user',
          'HOST': 'localhost',
-     }
+     },
     'datastore': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'geonode_imports',
