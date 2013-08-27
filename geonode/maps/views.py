@@ -199,7 +199,6 @@ def map_view(request, mapid, template='maps/map_view.html'):
     config = map_obj.viewer_json()
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config),
-        'DB_DATASTORE' : settings.DB_DATASTORE,
         'map': map_obj
     }))
 
@@ -240,7 +239,6 @@ def new_map(request, template='maps/map_view.html'):
     else:
         return render_to_response(template, RequestContext(request, {
             'config': config,
-            'DB_DATASTORE' : settings.DB_DATASTORE
         }))
 
 
