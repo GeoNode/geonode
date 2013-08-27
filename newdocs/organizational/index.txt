@@ -1,7 +1,14 @@
+.. _organize:
+
 ==============
 Organizational
 ==============
 
-some text from Michael
 
-some text from barbara
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+    architecture
+    comm_bylaws
+    community
