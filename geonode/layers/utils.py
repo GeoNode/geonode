@@ -744,7 +744,11 @@ def _create_db_featurestore(name, data, overwrite=False, charset=None):
                               charset=charset)
         return ds, cat.get_resource(name, store=ds)
     except Exception:
-        delete_from_postgis(name)
+        # FIXME(Ariel): This is not a good idea, today there was a problem 
+        # accessing postgis that caused add_data_to_store to fail,
+        # for the same reasons the call to delete_from_postgis below failed too
+        # I am commenting it out and filing it as issue #1058
+        #delete_from_postgis(name)
         raise
 
 def style_update(request, url):
