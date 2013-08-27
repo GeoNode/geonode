@@ -1,3 +1,35 @@
+geonode (2.0.0+beta33) precise; urgency=high
+
+  [ Ian Schneider ]
+  * [dd77ae] fix for resolve_user w/ invalid credentials
+
+  [ Tyler Garner ]
+  * [b69282] Added the layer_resolve_user url to the login required whitelist.
+
+  [ Ariel Nunez ]
+  * [f18a19] Added tuple with possible charset encodings to enumerations.py
+  * [5c680a] Tuples are supposed to be tuples, not lists. Thanks @tomkralidis.
+
+  [ Tyler Garner ]
+  * [be8687] Added UTF-8 encoding to the str class on the Style model.
+
+  [ Matthew Hanson ]
+  * [7b7082] moved DB_DATASTORE parameters into DATABASES dictionary; turn on/off through OGC_SERVER DATASTORE option
+
+  [ Jeffrey Johnson ]
+  * [df31a5] Use more verbosity in the install_sample_data fab task
+
+  [ Matthew Hanson ]
+  * [1b3b6e] Fixed OGC_SERVER context variables that were being overwritten by default
+
+  [ Jeffrey Johnson ]
+  * [521d26] Fix one more reference to GEOSERVER_BASE_URL
+
+  [ Ariel Nunez ]
+  * [eeb3fc] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 27 Aug 2013 01:31:44 +0000
+
 geonode (2.0.0+beta32) precise; urgency=high
 
   [ Jeffrey Johnson ]
