@@ -1,3 +1,19 @@
+geonode (2.0.0+beta39) precise; urgency=high
+
+  [ Ian Schneider ]
+  * [a0209e] follow up to c4dd8d9e, fix slop and add test
+
+  [ Tyler Garner ]
+  * [1387ab] Updated the GEOGIT_ENABLED and TIME_ENABLED items in resource_urls to use the UPLOADER setting dict.
+
+  [ Matthew Hanson ]
+  * [a3c732] fixed bug with datastore upload
+
+  [ Ariel Nunez ]
+  * [5d610e] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 27 Aug 2013 19:05:41 +0000
+
 geonode (2.0.0+beta38) precise; urgency=high
 
   * [6bf2f6] Fixed references to user and password in geoserver helpers
