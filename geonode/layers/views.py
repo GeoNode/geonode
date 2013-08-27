@@ -602,9 +602,9 @@ def resolve_user(request):
         'geoserver' : geoserver,
         'superuser' : superuser,
     }
-    if acl_user.is_authenticated():
-        resp['fullname'] = acl_user.get_full_name()
-        resp['email'] = acl_user.email
+    if request.user.is_authenticated():
+        resp['fullname'] = request.user.get_full_name()
+        resp['email'] = request.user.email
     return HttpResponse(json.dumps(resp))
 
 
