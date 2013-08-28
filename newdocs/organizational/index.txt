@@ -1,14 +1,41 @@
-.. _organize:
+============================
+Organizational Documentation
+============================
 
-==============
-Organizational
-==============
+In this documentation information on existing projects, contributing to Geonode (code, documentation, translation, ...) and the community itself can be found.
+
+:ref:`projects`
+
+:ref:`contrib`
+
+:ref:`localization`
+
+.. todo:: is this still needed?
+
+:ref:`community`
+
+:ref:`comm_bylaws`
+
+:ref:`review_criteria`
+
+:ref:`review_process`
+
+:ref:`roadmap`
+
+:ref:`links`
 
 
 .. toctree::
     :hidden:
     :maxdepth: 3
 
-    architecture
-    comm_bylaws
+    projects
+    contrib
+    localization
     community
+    comm_bylaws
+    review_criteria
+    review_process
+    roadmap
+    links
+
