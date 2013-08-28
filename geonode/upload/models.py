@@ -20,6 +20,7 @@ from geonode.maps.models import Layer
 
 from geonode.geoserver.uploader.uploader import NotFound
 from geonode.upload.utils import gs_uploader
+from geonode.utils import ogc_server_settings
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -96,7 +97,7 @@ class Upload(models.Model):
         return reverse('data_upload_delete', args=[self.import_id])
         
     def get_import_url(self):
-        return "%srest/imports/%s" % (settings.OGC_SERVER['default']['LOCATION'], self.import_id)
+        return "%srest/imports/%s" % (ogc_server_settings.LOCATION, self.import_id)
     
     def delete(self, cascade=True):
         models.Model.delete(self)
