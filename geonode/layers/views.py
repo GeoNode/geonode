@@ -56,12 +56,13 @@ from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
-
+from geonode.utils import ogc_server_settings
 from geoserver.resource import FeatureType
 
 logger = logging.getLogger("geonode.layers.views")
 
-_user, _password = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']
+
+_user, _password = ogc_server_settings.credentials
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
@@ -171,7 +172,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    maplayer = GXPLayer(name = layer.typename, ows_url = settings.OGC_SERVER['default']['LOCATION'] + "wms", layer_params=json.dumps( layer.attribute_config()))
+    maplayer = GXPLayer(name = layer.typename, ows_url = ogc_server_settings.LOCATION + "wms", layer_params=json.dumps( layer.attribute_config()))
 
     layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
 
@@ -372,7 +373,7 @@ def layer_style_manage(req, layername):
         except (FailedRequestError, EnvironmentError) as e:
             msg = ('Could not connect to geoserver at "%s"'
                'to manage style information for layer "%s"' % (
-                settings.OGC_SERVER['default']['LOCATION'], layer.name)
+                ogc_server_settings.LOCATION, layer.name)
             )
             logger.warn(msg, e)
             # If geoserver is not online, return an error
@@ -529,7 +530,7 @@ def layer_batch_download(request):
             "layers" : [layer_son(lyr) for lyr in layers]
         }
 
-        url = "%srest/process/batchDownload/launch/" % settings.OGC_SERVER['default']['LOCATION']
+        url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
         resp, content = http_client.request(url,'POST',body=json.dumps(fake_map))
         return HttpResponse(content, status=resp.status)
 
@@ -540,7 +541,7 @@ def layer_batch_download(request):
         if download_id is None:
             return HttpResponse(status=404)
 
-        url = "%srest/process/batchDownload/status/%s" % (settings.OGC_SERVER['default']['LOCATION'], download_id)
+        url = "%srest/process/batchDownload/status/%s" % (ogc_server_settings.LOCATION, download_id)
         resp,content = http_client.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 
@@ -588,7 +589,7 @@ def resolve_user(request):
         if acl_user:
             user = acl_user.username
             superuser = acl_user.is_superuser
-        elif _get_basic_auth_info(request) == (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']):
+        elif _get_basic_auth_info(request) == ogc_server_settings.credentials:
             geoserver = True
             superuser = True
         else:
@@ -627,8 +628,8 @@ def layer_acls(request):
 
             # Nope, is it the special geoserver user?
             if (acl_user is None and
-                username == settings.OGC_SERVER['default']['USER'] and
-                password == settings.OGC_SERVER['default']['PASSWORD']):
+                username == ogc_server_settings.USER and
+                password == ogc_server_settings.PASSWORD):
                 # great, tell geoserver it's an admin.
                 result = {
                    'rw': [],
@@ -682,7 +683,7 @@ def feature_edit_check(request, layername):
     Otherwise, return a status of 401 (unauthorized).
     """
     layer = get_object_or_404(Layer, typename=layername)
-    feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or settings.OGC_SERVER['default']['OPTIONS']['DATASTORE'] 
+    feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or ogc_server_settings.DATASTORE 
     if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
     else:
