@@ -1,19 +1,23 @@
 =======================
 GeoNode's documentation
 =======================
-Welecome to Geonode the Content Management System for geospatial data.  Here you will find all the documentation to geonode 2.0
+
+Welcome to Geonode the Content Management System for geospatial data. Here you will find all the documentation to Geonode 2.0
 
 How the Documentation is Organized
 ==================================
+
 We have three sections. Each are described in detail below.
- #. **Organisational**  how to contribute, about, other info.
- #. **Tutorials**  are based on performing tasks.
- #. **Reference**  code reference, api, all components in detail.
+
+ #. :doc:`Tutorials <tutorials/index>`  are based on performing tasks
+ #. :doc:`Reference <reference/index>`  code reference, api, all components in detail
+ #. :doc:`Organizational <organizational/index>`  how to contribute, about, other info
 
 We also have three users types. So pick which one you are and start surfing.
+
  #. **Users**  you are a person who logs into Geonode and starts just using it.
  #. **Administrators**  you are wanting to install, play, setup, test out geonode but are not going to do any coding
- #. **Developers**  you are a coder, you want to add functionality, integrate in some other system, fix bugs and well help code a beter Geonode.
+ #. **Developers**  you are a coder, you want to add functionality, integrate in some other system, fix bugs and will help code a better Geonode.
 
 First Steps
 ===========
@@ -22,80 +26,22 @@ The following documents give an overview to GeoNode, they are targeted at a non-
 
  * :doc:`About GeoNode <organizational/overview>`
  * :doc:`Quick Installation Guide <intro/install>`
- * :doc:`Detail Installation Guide <intro/install_detail>`
-
-.. _the GeoNode demo site: http://demo.geonode.org
-
-.. toctree::
-    :hidden:
-    :maxdepth: 3
-
-    intro/overview
-    intro/install
-    intro/install_detail
+ * :doc:`Detail Installation Guide <tutorials/admin/doc/install/installation_devmode>`
 
 Tutorials
 =========
-Tutorials are based around performing tasks, like adding data or publishing maps.  The tutorials are written in a workshop like format.  Once again the tutorials are broken into three groups Users, Administrators and Developers.
 
-For Users
----------
+:doc:`Tutorials <tutorials/index>` are based around performing tasks, like adding data or publishing maps. The tutorials are written in a workshop like format and are broken into three groups Users, Administrators and Developers. 
 
- * :doc:`Introduction <tutorials/users/doc/intro/index>`
- * :doc:`Quickstart <tutorials/users/doc/quickstart/quickstart>`
- * :doc:`Users Tutorials Workshop <tutorials/users/doc/index>`
- * :doc:`Adding Layers <tutorials/users/doc/layers/index>`
- * :doc:`Creating Maps <tutorials/users/doc/maps/index>`
- * :doc:`Accounts <tutorials/users/doc/accounts/index>`
- * :doc:`Creating Maps <tutorials/users/doc/moreinfo/index>`
+Reference
+=========
 
+The :doc:`Reference <reference/index>` section is all about background information on Geonode. You can learn about the components of Geonode, security, API and many more. Let's take a look!
 
-For Administrators
-------------------
-
- * :doc:`Administrator Workshop Tutorials <tutorials/admin/doc/index>`
-
-For Developers
---------------
- * :doc:`Developer Workshopo Tutorials <tutorials/devel/doc/index>`
-
-Organisational
+Organizational
 ==============
 
- * :doc:`Architecture Overview <organizational/architecture>`
- * :doc:`Organizational start page2 <organizational/overview>`
- * :doc:`Architecture <organizational/architecture>`
- * :doc:`How to contribute <organizational/contribute>`
- * :doc:`How to contribute to documentation <organizational/contribute_to_documentation>`
- * :doc:`How to contribute to a translation <organizational/contribute_to_translation>`
- * :doc:`Community <organizational/community>`
- * :doc:`Common By Laws <organizational/comm_bylaws>`
- * :doc:`How localization works <organizational/localization>`
- * :doc:`Organizational start page <organizational/organisational_index>`
- * :doc:`Other geonode projects <organizational/projects>`
- * :doc:`Some links <organizational/links>`
- * :doc:`Review criteria <organizational/review_criteria>`
- * :doc:`Review process of code, docs... <organizational/review_process>`
- * :doc:`Roadmap <organizational/roadmap>`
-
-.. toctree::
-    :hidden:
-    :maxdepth: 3
-
-    organizational/contribute
-    organizational/architecture
-    organizational/community
-    organizational/comm_bylaws
-    organizational/contribute_to_documentation
-    organizational/contribute_to_translation
-    organizational/links
-    organizational/localization
-    organizational/organizational_index
-    organizational/overview
-    organizational/projects
-    organizational/review_criteria
-    organizational/review_process
-    organizational/roadmap
+If you want to contribute to Geonode, learn about the community or e.g. the roadmap process, :doc:`Organizational <organizational/index>` is  the section for you to read! 
 
 Having trouble? We'd like to help!
 
@@ -113,27 +59,11 @@ Having trouble? We'd like to help!
 .. _Freenode's web based client: http://webchat.freenode.net
 .. _ticket tracker: http://github.com/GeoNode/geonode/issues
 
-
-Reference
-=========
- * :doc:`Overview <reference/overview>`
- * :doc:`Security <reference/security>`
- * :doc:`API <reference/developers/api>`
- * :doc:`API docs <reference/developers/api_docs>`
- * :doc:`Django Apps <reference/developers/django-apps>`
- * :doc:`Reference Home <reference/developers/index>`
- * :doc:`Javascript <reference/developers/javascript>`
-
-.. _the GeoNode demo site: http://demo.geonode.org
-
 .. toctree::
-    :hidden:
-    :maxdepth: 3
+   :hidden:
+   :maxdepth: 3
 
-    reference/overview
-    reference/security
-    reference/developers/api
-    reference/developers/api_docs
-    reference/developers/django-apps
-    reference/developers/index
-    reference/developers/javascript
+   tutorials/index
+   reference/index
+   organizational/index
+
