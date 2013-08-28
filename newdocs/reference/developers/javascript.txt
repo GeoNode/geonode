@@ -1,3 +1,5 @@
+.. _javascript:
+
 =====================
 JavaScript in GeoNode
 =====================
