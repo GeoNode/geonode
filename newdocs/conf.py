@@ -258,6 +258,6 @@ epub_copyright = u'2013, GeoNode Development Team'
 # Allow duplicate toc entries.
 #epub_tocdup = True
 
-def setup(app):
-    from _ext import django_model_fields
-    app.connect('autodoc-process-docstring', django_model_fields.process_docstring)
+#def setup(app):
+ #   from _ext import django_model_fields
+  #  app.connect('autodoc-process-docstring', django_model_fields.process_docstring)
