@@ -1,3 +1,9 @@
+.. _localization:
+
+============
+Localization
+============
+
 To enable a new language in GeoNode you have to do the following:
 
 #. Install gettext::
