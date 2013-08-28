@@ -1,5 +1,7 @@
-GeoNode Users Workshop
-======================
+.. _users:
+
+Users Workshop
+==============
 
 Welcome to the GeoNode Users Workshop! This workshop will teach how to use the `GeoNode <http://geonode.org>`_ software application.
 
@@ -10,17 +12,11 @@ These workshop materials should be accompanied by a data package containing the 
 
 .. todo:: Create script to generate this bundle.
 
-.. toctree::
-   :hidden:
-
-   intro/index
-   accounts/index
-   layers/index
-   maps/index
-   moreinfo/index
-
 :ref:`intro`
   Learn about GeoNode and tour the interface
+
+:ref:`quickstart`
+  See the GeoNode quickstart
 
 :ref:`accounts`
   Create an account in GeoNode and interact with other users
@@ -33,3 +29,15 @@ These workshop materials should be accompanied by a data package containing the 
 
 :ref:`moreinfo`
   Learn more about the GeoNode project and how to get involved
+
+.. toctree::
+   :hidden:
+   :maxdepth: 3
+
+   intro/index
+   quickstart/index
+   accounts/index
+   layers/index
+   maps/index
+   moreinfo/index
+
