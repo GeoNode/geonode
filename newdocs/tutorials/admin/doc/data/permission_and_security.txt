@@ -1,4 +1,4 @@
-.. _data.permission_and_security
+.. _permission_and_security:
 
 ========================
 Security and Permissions
@@ -106,8 +106,7 @@ To sum it up, we have now created three users with different kind of permissions
    
 You should know have an overview over the different kinds of users and how to create and edit them. You've also learned about the permissions a certain user has and how to change them using the *Django Amdin Interface*.
 
-.. note:: If you've installed geonode in developing mode, the *Register* button won't be seen from the beginning. To add this button to the website, you have
-to change the `REGISTRATION_OPEN = False` in the settings.py to `REGISTRATION_OPEN = True`. Then reload geonode and you should also be able to see the *Register* button.
+.. note:: If you've installed geonode in developing mode, the *Register* button won't be seen from the beginning. To add this button to the website, you have to change the `REGISTRATION_OPEN = False` in the settings.py to `REGISTRATION_OPEN = True`. Then reload geonode and you should also be able to see the *Register* button.
 
 .. todo:: generally more about the django interface, about the generic roles etc.!
 
@@ -116,8 +115,7 @@ Layers
 
 Now that we've already created some users, we will take a closer look on the security of layers, how you can protect your data not to be viewed or edited by unwanted users.
 
-.. hint:: As already mentioned before it is important to know that a superuser does have unrestricted access to all your uploaeded data.
-That means you cannot ban a superuser from viewing, downloading or editing a layer!
+.. hint:: As already mentioned before it is important to know that a superuser does have unrestricted access to all your uploaeded data.  That means you cannot ban a superuser from viewing, downloading or editing a layer!
 
 .. todo:: maybe you could do that, using the django admin interface
 
