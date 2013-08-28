@@ -30,17 +30,28 @@
     </li>
   {% endif %}
 
-  {% if resourcebase.keywords_list %}
+  {% if resourcebase.keyword_list %}
     <li>
       <strong>{% trans "Keywords" %}:</strong>
-      {{ resourcebase.keyword_list }}
+      {% for keyword in resourcebase.keyword_list %}
+        {{ keyword }}
+      {% endfor %}
     </li>
   {% endif %}
           
-  {% if resourcebase.topic_category %}
+  {% if resourcebase.category %}
     <li>
-      <strong>{% trans "Topic Category" %}:</strong>
-      {{ resourcebase.topic_category }}
+      <strong>{% trans "Category" %}:</strong>
+      {{ resourcebase.category }}
+    </li>
+  {% endif %}
+  
+  {% if resourcebase.regions %}
+   <li>
+      <strong>{% trans "Regions" %}:</strong>
+        {% for region in resourcebase.regions.all %}
+          {{ region }}
+        {% endfor %}
     </li>
   {% endif %}
           
@@ -66,14 +77,18 @@
     {% if resourcebase.maintenance_frequency %}
       <li>
         <strong>{% trans "Maintenance Frequency" %}:</strong>
-        {{ resourcebase.maintenance_frequency }}
+        {{ resourcebase.maintenance_frequency_title }}
       </li>
     {% endif %}
-
-    {% if resourcebase.constraints_use or resourcebase.constraints_other %}
+    
+    {% if resourcebase.restriction_code_type or resourcebase.constraints_other %}
       <li>
-        <strong>{% trans "Citation" %}:</strong> 
-        {{ resourcebase.constraints_use}} {{ resourcebase.contraints_other}}
+        <strong>{% trans "Restrictions" %}:</strong>
+        {% if resourcebase.constraints_other %}
+            {{ resourcebase.constraints_other }}
+        {% else %}
+            {{ resourcebase.restriction_code_type }}
+        {% endif %}
       </li>
     {% endif %}
           
@@ -94,7 +109,7 @@
     {% if resourcebase.language %}
       <li>
         <strong>{% trans "Language" %}:</strong>
-        {{ resourcebase.language }}
+        {{ resourcebase.language_title }}
       </li>
     {% endif %}
 
