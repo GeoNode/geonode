@@ -1,3 +1,15 @@
+geonode (2.0.0+beta41) precise; urgency=high
+
+  [ Ariel Nunez ]
+  * [1f303c] Updated changelog
+
+  [ Tyler Garner ]
+  * [805bdb] Reverted previous changes that were unnecessary.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 28 Aug 2013 02:35:20 +0000
+
 geonode (2.0.0+beta40) precise; urgency=high
 
   [ Tyler Garner ]
