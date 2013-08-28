@@ -27,7 +27,7 @@ These workshop materials should be accompanied by a data package containing the 
 :ref:`maps`
   Create and manage a GeoNode map
 
-:ref:`moreinfo`
+:ref:`contrib`
   Learn more about the GeoNode project and how to get involved
 
 .. toctree::
@@ -39,5 +39,4 @@ These workshop materials should be accompanied by a data package containing the 
    accounts/index
    layers/index
    maps/index
-   moreinfo/index
 
