@@ -263,7 +263,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
 
     # filter out layers depending on enabled, advertised status:
     resources = [k for k in resources if k.enabled == "true"]
-    if skip_unadvertised: resources = [k for k in resources if k.advertised == "true"]
+    if skip_unadvertised: resources = [k for k in resources if k.advertised == "true" or k.advertised == None]
     
     # TODO: Should we do something with these?
     # i.e. look for matching layers in GeoNode and also disable? 
