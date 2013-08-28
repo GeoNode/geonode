@@ -1,4 +1,4 @@
-.. _review:
+.. _review_process:
 
 GeoNode Patch Review Process
 ============================
