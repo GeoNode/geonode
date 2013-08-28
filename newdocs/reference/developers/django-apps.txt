@@ -1,3 +1,5 @@
+.. _djangoapps:
+
 ===================
 GeoNode Django Apps
 ===================
