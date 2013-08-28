@@ -1,12 +1,24 @@
-GeoNode Developers Workshop
-===========================
+.. _devel:
 
-Welcome to the GeoNode Developers Workshop! This workshop will teach how to develop with and for the `GeoNode <http://geonode.org>`_ software application.
+Developers Workshop
+===================
+
+Welcome to the Developers Workshop! This workshop will teach how to develop with and for the `GeoNode <http://geonode.org>`_ software application.
 
 .. toctree::
-   :maxdepth: 2
+   :hidden:
 
-:ref:`intro`
+   intro_devel/index
+   core/index
+   projects/index
+   data/index
+   debug/index
+   processing/index
+   api/index
+   envsetup/index
+   devprocess/index
+
+:ref:`intro_devel`
   Learn about GeoNode's core components, its Architecture, the tools it is developed with and the standards it supports.
 
 :ref:`core`
@@ -33,15 +45,4 @@ Welcome to the GeoNode Developers Workshop! This workshop will teach how to deve
 :ref:`devprocess`
   Learn about GeoNode's development process and how to work with the GeoNode community.
 
-.. toctree::
-   :hidden:
 
-   intro/index
-   core/index
-   projects/index
-   data/index
-   debug/index
-   processing/index
-   api/index
-   envsetup/index
-   devprocess/index
