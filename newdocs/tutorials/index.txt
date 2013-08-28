@@ -1,0 +1,24 @@
+.. _tutorials:
+
+===============================
+This is the tutorial index page
+===============================
+
+Some text here!
+
+.. toctree::
+   :hidden:
+
+   users/doc/index
+   admin/doc/index
+   devel/doc/index
+
+:ref:`users`
+  Reference to user workshop
+
+:ref:`admin`
+  Reference to admin workshop
+
+:ref:`devel`
+  Reference to developer workshop
+
