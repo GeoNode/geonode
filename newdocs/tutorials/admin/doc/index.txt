@@ -1,5 +1,7 @@
-GeoNode Administrators Workshop
-===============================
+.. _admin:
+
+Administrators Workshop
+=======================
 
 Welcome to the GeoNode Administrators Workshop! This workshop will teach how to manage a deployment of the `GeoNode <http://geonode.org>`_ software application.
 
@@ -15,7 +17,7 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 .. toctree::
    :hidden:
 
-   intro/index
+   intro_admin/index
    prep/index
    install/index
    config/index
@@ -27,7 +29,7 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
    backup/index
    deploy/index
 
-:ref:`intro`
+:ref:`intro_admin`
   Learn about GeoNode administration
 
 :ref:`prep`
