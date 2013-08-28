@@ -1,4 +1,4 @@
-.. _bylaws:
+.. _comm_bylaws:
 
 ================
 Community Bylaws
