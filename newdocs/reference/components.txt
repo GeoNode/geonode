@@ -3,7 +3,7 @@
 GeoNode Components
 ==================
 
-GeoNode's architecture is based on a set of core tools and libraries that provide the building blocks on which the application is built. Having a basic understanding of each of these components is critical to your success as developer working with GeoNode.
+:ref:`architecture` is based on a set of core tools and libraries that provide the building blocks on which the application is built. Having a basic understanding of each of these components is critical to your success as a developer working with GeoNode.
 
 Lets look at each of these components and discuss how they are used within the GeoNode application.
 
@@ -70,4 +70,6 @@ jQuery_ is a feature-rich javascript library that is used within GeoNode to prov
 Bootstrap
 ---------
 
-Bootstrap is a front-end framework for laying out and styling the pages that make up the GeoNode application. It is designed to ensure that the pages render and look and behave the same across all browsers. GeoNode customizes bootstraps default style and its relatively easy for developers to customize their own GeoNode based site using existing Boostrap themes or by customizing the styles directly.
+Bootstrap_ is a front-end framework for laying out and styling the pages that make up the GeoNode application. It is designed to ensure that the pages render and look and behave the same across all browsers. GeoNode customizes bootstraps default style and its relatively easy for developers to customize their own GeoNode based site using existing Boostrap themes or by customizing the styles directly.
+
+.. _Bootstrap: http://www.getbootstrap.com

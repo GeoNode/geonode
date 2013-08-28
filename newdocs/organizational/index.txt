@@ -4,9 +4,13 @@ Organizational Documentation
 
 In this documentation information on existing projects, contributing to Geonode (code, documentation, translation, ...) and the community itself can be found.
 
+:ref:`about`
+
 :ref:`projects`
 
-:ref:`contrib`
+:ref:`contrib_trans`
+
+:ref:`contrib_docu`
 
 :ref:`localization`
 
@@ -29,8 +33,8 @@ In this documentation information on existing projects, contributing to Geonode 
     :hidden:
     :maxdepth: 3
 
+    about
     projects
-    contrib
     localization
     community
     comm_bylaws
@@ -38,4 +42,7 @@ In this documentation information on existing projects, contributing to Geonode 
     review_process
     roadmap
     links
+    contribute/index
+    contribute/contribute_to_translation
+    contribute/contribute_to_documentation
 
