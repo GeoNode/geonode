@@ -182,6 +182,8 @@ define(function (require, exports) {
                 form_data.append(ext + '_file', file);
             }
         }
+
+        form_data.append('charset', $('#charset').val());
         return form_data;
     };
 
