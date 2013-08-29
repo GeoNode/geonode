@@ -119,7 +119,7 @@ class Layer(ResourceBase):
         """ Generate a URL representing thumbnail of the layer """
 
         params = {
-            'layers': self.typename,
+            'layers': self.typename.encode('utf-8'),
             'format': 'image/png8',
             'width': width,
         }
@@ -144,7 +144,7 @@ class Layer(ResourceBase):
         _local_wms = get_wms()
         record = _local_wms.contents.get(self.typename)
         if record is None:
-            msg = "WMS Record missing for layer [%s]" % self.typename
+            msg = "WMS Record missing for layer [%s]" % self.typename.encode('utf-8')
             raise GeoNodeException(msg)
 
     @property
@@ -183,7 +183,7 @@ class Layer(ResourceBase):
             return cfg
 
     def __str__(self):
-        return "%s Layer" % self.typename
+        return "%s Layer" % self.typename.encode('utf-8')
 
     class Meta:
         # custom permissions,
@@ -225,7 +225,7 @@ class Layer(ResourceBase):
 class Layer_Styles(models.Model):
     layer = models.ForeignKey(Layer)
     style = models.ForeignKey(Style)
-    
+
 class AttributeManager(models.Manager):
     """Helper class to access filtered attributes
     """
@@ -296,22 +296,22 @@ def pre_delete_layer(instance, sender, **kwargs):
     Remove any associated style to the layer, if it is not used by other layers.
     Default style will be deleted in post_delete_layer
     """
-    logger.debug("Going to delete the styles associated for [%s]", instance.typename)
+    logger.debug("Going to delete the styles associated for [%s]", instance.typename.encode('utf-8'))
     default_style = instance.default_style
     for style in instance.styles.all():
         if style.layer_styles.all().count()==1:
             if style != default_style:
                 style.delete()
-    
+
 def post_delete_layer(instance, sender, **kwargs):
     """
     Removed the layer from any associated map, if any.
     Remove the layer default style.
     """
     from geonode.maps.models import MapLayer
-    logger.debug("Going to delete associated maplayers for [%s]", instance.typename)
+    logger.debug("Going to delete associated maplayers for [%s]", instance.typename.encode('utf-8'))
     MapLayer.objects.filter(name=instance.typename).delete()
-    logger.debug("Going to delete the default style for [%s]", instance.typename)
+    logger.debug("Going to delete the default style for [%s]", instance.typename.encode('utf-8'))
 
     if Layer.objects.filter(default_style__id=instance.default_style.id).count() == 0:
         instance.default_style.delete()
@@ -336,7 +336,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
         gs_resource = None
         msg = ('Could not connect to geoserver at "%s"'
                'to save information for layer "%s"' % (
-                settings.OGC_SERVER['default']['LOCATION'], instance.name)
+                settings.OGC_SERVER['default']['LOCATION'], instance.name.encode('utf-8'))
               )
         logger.warn(msg, e)
         # If geoserver is not online, there is no need to continue
@@ -411,7 +411,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     except (FailedRequestError, EnvironmentError) as e:
         msg = ('Could not connect to geoserver at "%s"'
                'to save information for layer "%s"' % (
-                settings.OGC_SERVER['default']['LOCATION'], instance.name)
+                settings.OGC_SERVER['default']['LOCATION'], instance.name.encode('utf-8'))
               )
         logger.warn(msg, e)
         # If geoserver is not online, there is no need to continue
@@ -441,7 +441,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     # Set download links for WMS, WCS or WFS and KML
 
     links = wms_links(settings.OGC_SERVER['default']['LOCATION'] + 'wms?',
-                    instance.typename, instance.bbox_string,
+                    instance.typename.encode('utf-8'), instance.bbox_string,
                     instance.srid, height, width)
 
     for ext, name, mime, wms_url in links:
@@ -456,7 +456,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
 
     if instance.storeType == "dataStore":
-        links = wfs_links(settings.OGC_SERVER['default']['LOCATION'] + 'wfs?', instance.typename)
+        links = wfs_links(settings.OGC_SERVER['default']['LOCATION'] + 'wfs?', instance.typename.encode('utf-8'))
         for ext, name, mime, wfs_url in links:
             Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                             url=wfs_url,
@@ -478,7 +478,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         permissions['authenticated'] = instance.get_gen_level(AUTHENTICATED_USERS)
         instance.set_gen_level(ANONYMOUS_USERS,'layer_readonly')
 
-        links = wcs_links(settings.OGC_SERVER['default']['LOCATION'] + 'wcs?', instance.typename, 
+        links = wcs_links(settings.OGC_SERVER['default']['LOCATION'] + 'wcs?', instance.typename.encode('utf-8'),
             bbox=instance.bbox[:-1], crs=instance.bbox[-1], height=height, width=width)
         for ext, name, mime, wcs_url in links:
             Link.objects.get_or_create(resource= instance.resourcebase_ptr,
@@ -490,12 +490,12 @@ def geoserver_post_save(instance, sender, **kwargs):
                                     link_type='data',
                                 )
                             )
-            
+
         instance.set_gen_level(ANONYMOUS_USERS,permissions['anonymous'])
         instance.set_gen_level(AUTHENTICATED_USERS,permissions['authenticated'])
 
     kml_reflector_link_download = settings.OGC_SERVER['default']['LOCATION'] + "wms/kml?" + urllib.urlencode({
-        'layers': instance.typename,
+        'layers': instance.typename.encode('utf-8'),
         'mode': "download"
     })
 
@@ -510,7 +510,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                     )
 
     kml_reflector_link_view = settings.OGC_SERVER['default']['LOCATION'] + "wms/kml?" + urllib.urlencode({
-        'layers': instance.typename,
+        'layers': instance.typename.encode('utf-8'),
         'mode': "refresh"
     })
 
@@ -525,12 +525,12 @@ def geoserver_post_save(instance, sender, **kwargs):
                     )
 
     tile_url = ('%sgwc/service/gmaps?' % settings.OGC_SERVER['default']['LOCATION'] +
-                'layers=%s' % instance.typename +
+                'layers=%s' % instance.typename.encode('utf-8') +
                 '&zoom={z}&x={x}&y={y}' +
                 '&format=image/png8'
                 )
 
-    Link.objects.get_or_create(resource= instance.resourcebase_ptr, 
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                         url=tile_url,
                         defaults=dict(
                             extension='tiles',
@@ -650,7 +650,7 @@ def set_attributes(layer):
             "service": "wfs",
             "version": "1.0.0",
             "request": "DescribeFeatureType",
-            "typename": layer.typename,
+            "typename": layer.typename.encode('utf-8'),
             })
         try:
             body = http.request(dft_url)[1]
@@ -664,7 +664,7 @@ def set_attributes(layer):
             "service": "wcs",
             "version": "1.1.0",
             "request": "DescribeCoverage",
-            "identifiers": layer.typename
+            "identifiers": layer.typename.encode('utf-8')
         })
         try:
             response, body = http.request(dc_url)
@@ -682,7 +682,7 @@ def set_attributes(layer):
             if field == la.attribute:
                 lafound = True
         if not lafound:
-            logger.debug("Going to delete [%s] for [%s]", la.attribute, layer.name)
+            logger.debug("Going to delete [%s] for [%s]", la.attribute, layer.name.encode('utf-8'))
             la.delete()
 
     # Add new layer attributes if they don't already exist
@@ -710,7 +710,7 @@ def set_attributes(layer):
                     la.display_order = iter
                     la.save()
                     iter += 1
-                    logger.debug("Created [%s] attribute for [%s]", field, layer.name)
+                    logger.debug("Created [%s] attribute for [%s]", field, layer.name.encode('utf-8'))
     else:
         logger.debug("No attributes found")
 
