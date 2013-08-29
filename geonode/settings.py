@@ -406,6 +406,8 @@ OGC_SERVER = {
             'GEONODE_SECURITY_ENABLED' : True,
             'GEOGIT_ENABLED' : False,
             'WMST_ENABLED' : False,
+             # Set to name of database in DATABASES dictionary to enable
+            'DATASTORE': '', #'datastore',
             'PUBLIC_PROXY_ENDPOINT_ENABLED' : False,
             'CATALOG_WRITE_ENABLED': True
         }
@@ -421,6 +423,8 @@ OGC_SERVER = {
             'GEONODE_SECURITY_ENABLED' : True,
             'GEOGIT_ENABLED' : False,
             'WMST_ENABLED' : False,
+            # Set to name of database in DATABASES dictionary to enable
+            'DATASTORE': '', #'datastore',
             'PUBLIC_PROXY_ENDPOINT_ENABLED' : True,
             'CATALOG_WRITE_ENABLED': False
         }
