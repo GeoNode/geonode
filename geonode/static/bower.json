@@ -9,6 +9,7 @@
     "select2": "3.2.0",
     "jquery": "1.8.3",
     "jquery-timeago": "0.11.4",
+    "jquery-ui": "1.10.1",
     "requirejs": "2.1.2",
     "requirejs-text": "2.0.3",
     "underscore": "1.4.2",
@@ -20,6 +21,8 @@
     "tinysort": "https://github.com/Sjeiti/TinySort.git",
     "bootstrap-wysiwyghtml5": "https://github.com/jhollingworth/bootstrap-wysihtml5.git",
     "fontselect-jquery-plugin": "https://github.com/tommoor/fontselect-jquery-plugin.git",
-    "multi-select": "https://github.com/lou/multi-select.git"
+    "multi-select": "https://github.com/lou/multi-select.git",
+    "jquery-ajaxprogress": "https://github.com/kpozin/jquery-ajaxprogress.git",
+    "jquery.ajaxQueue": "https://github.com/gnarf/jquery-ajaxQueue.git"
   }
 }
