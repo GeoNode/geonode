@@ -44,6 +44,17 @@ MEDIA_LOCATIONS
   the default templates, an example, consult the settings.py for the example
   ``geonode`` site included in the source tree.
 
+LOCKDOWN_GEONODE
+  Boolean.  By default, the GeoNode application allows visitors to view most pages without
+  being authenticated.  Set ``LOCKDOWN_GEONODE = True`` to require a user to
+  be authenticated before viewing the application.
+
+AUTH_EXEMPT_URLS
+  A tuple of url patterns that the user can visit without being authenticated.
+  This setting has no effect if LOCKDOWN_GEONODE is not True.  For example,
+  ``AUTH_EXEMPT_URLS = ('/maps',)`` will allow unauthenticated users to
+  browse maps.
+
 Template Tags
 -------------
 geonode_media <media_name>

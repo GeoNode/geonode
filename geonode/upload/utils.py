@@ -31,7 +31,7 @@ from geoserver.catalog import FailedRequestError
 
 
 def gs_uploader():
-    url = "%srest" % settings.GEOSERVER_BASE_URL
+    url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
     return Uploader(url, _user, _password)
 
 
@@ -127,6 +127,7 @@ def rename_and_prepare(base_file):
 
 def create_geoserver_db_featurestore(store_type=None, store_name=None):
     cat = Layer.objects.gs_catalog
+    dsname = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
     # get or create datastore
     try:
         if store_type == 'geogit' and hasattr(settings, 'GEOGIT_DATASTORE_NAME') and settings.GEOGIT_DATASTORE_NAME:
@@ -134,8 +135,8 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
                 ds = cat.get_store(store_name)
             else:
                 ds = cat.get_store(settings.GEOGIT_DATASTORE_NAME)
-        elif settings.DB_DATASTORE_NAME:
-            ds = cat.get_store(settings.DB_DATASTORE_NAME)
+        elif dsname != '':
+            ds = cat.get_store(dsname)
         else:
             return None
     except FailedRequestError:
@@ -153,16 +154,17 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
             ds = cat.get_store(store_name)
         else:
             logging.info(
-                'Creating target datastore %s' % settings.DB_DATASTORE_NAME)
-            ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
+                'Creating target datastore ' % dsname)
+            ds = cat.create_datastore(dsname)
+            db = settings.DATABASES[dsname]
             ds.connection_parameters.update(
-                host=settings.DB_DATASTORE_HOST,
-                port=settings.DB_DATASTORE_PORT,
-                database=settings.DB_DATASTORE_DATABASE,
-                user=settings.DB_DATASTORE_USER,
-                passwd=settings.DB_DATASTORE_PASSWORD,
-                dbtype=settings.DB_DATASTORE_TYPE)
+                host = db['HOST'],
+                port = db['PORT'],
+                database = db['NAME'],
+                user = db['USER'],
+                passwd = db['PASSWORD'],
+                dbtype = store_type)
             cat.save(ds)
-            ds = cat.get_store(settings.DB_DATASTORE_NAME)
+            ds = cat.get_store(dsname)
 
     return ds

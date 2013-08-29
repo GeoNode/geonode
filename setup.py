@@ -101,6 +101,7 @@ setup(name='GeoNode',
         "dialogos==0.2",
         "agon-ratings==0.2",
         "South==0.7.3",
+        "django-downloadview==1.2",
         #catalogue
         "pycsw>=1.6.0",
         # setup

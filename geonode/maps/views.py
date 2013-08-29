@@ -51,7 +51,7 @@ from geonode.documents.models import get_related_documents
 
 logger = logging.getLogger("geonode.maps.views")
 
-_user, _password = settings.GEOSERVER_CREDENTIALS
+_user, _password = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']
 
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
@@ -199,7 +199,6 @@ def map_view(request, mapid, template='maps/map_view.html'):
     config = map_obj.viewer_json()
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config),
-        'DB_DATASTORE' : settings.DB_DATASTORE,
         'map': map_obj
     }))
 
@@ -240,7 +239,6 @@ def new_map(request, template='maps/map_view.html'):
     else:
         return render_to_response(template, RequestContext(request, {
             'config': config,
-            'DB_DATASTORE' : settings.DB_DATASTORE
         }))
 
 
@@ -333,7 +331,7 @@ def new_map_config(request):
                 layers.append(MapLayer(
                     map = map_obj,
                     name = layer.typename,
-                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
+                    ows_url = settings.OGC_SERVER['default']['LOCATION'] + "wms",
                     layer_params=json.dumps( layer.attribute_config()),
                     visibility = True
                 ))
@@ -380,7 +378,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
 
     map_status = dict()
     if request.method == 'POST':
-        url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
+        url = "%srest/process/batchDownload/launch/" % settings.OGC_SERVER['default']['LOCATION']
 
         def perm_filter(layer):
             return request.user.has_perm('layers.view_layer', obj=layer)
@@ -426,7 +424,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
          "locked_layers": locked_layers,
          "remote_layers": remote_layers,
          "downloadable_layers": downloadable_layers,
-         "geoserver" : settings.GEOSERVER_BASE_URL,
+         "geoserver" : settings.OGC_SERVER['default']['LOCATION'],
          "site" : settings.SITEURL
     }))
 
@@ -438,7 +436,7 @@ def map_download_check(request):
     try:
         layer = request.session["map_status"]
         if type(layer) == dict:
-            url = "%srest/process/batchDownload/status/%s" % (settings.GEOSERVER_BASE_URL,layer["id"])
+            url = "%srest/process/batchDownload/status/%s" % (settings.OGC_SERVER['default']['LOCATION'],layer["id"])
             resp,content = http_client.request(url,'GET')
             status= resp.status
             if resp.status == 400:

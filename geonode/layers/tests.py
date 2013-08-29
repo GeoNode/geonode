@@ -199,7 +199,7 @@ class LayersTest(TestCase):
         """
 
         # Test that HTTP_AUTHORIZATION in request.META is working properly
-        valid_uname_pw = "%s:%s" % (settings.GEOSERVER_CREDENTIALS[0],settings.GEOSERVER_CREDENTIALS[1])
+        valid_uname_pw = "%s:%s" % (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
         invalid_uname_pw = "%s:%s" % ("n0t", "v@l1d")
 
         valid_auth_headers = {
@@ -210,12 +210,12 @@ class LayersTest(TestCase):
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
         }
 
-        # Test that requesting when supplying the GEOSERVER_CREDENTIALS returns the expected json
+        # Test that requesting when supplying the geoserver credentials returns the expected json
 
         expected_result = {
             u'rw': [],
             u'ro': [],
-            u'name': unicode(settings.GEOSERVER_CREDENTIALS[0]),
+            u'name': unicode(settings.OGC_SERVER['default']['USER']),
             u'is_superuser': True,
             u'is_anonymous': False
         }
@@ -236,7 +236,45 @@ class LayersTest(TestCase):
         response = c.get(reverse('layer_acls'))
         response_json = json.loads(response.content)
 
+        self.assertEquals('admin', response_json['fullname'])
+        self.assertEquals('', response_json['email'])
+
         # TODO Lots more to do here once jj0hns0n understands the ACL system better
+
+    def test_resolve_user(self):
+        """Verify that the resolve_user view is behaving as expected
+        """
+                # Test that HTTP_AUTHORIZATION in request.META is working properly
+        valid_uname_pw = "%s:%s" % (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
+        invalid_uname_pw = "%s:%s" % ("n0t", "v@l1d")
+
+        valid_auth_headers = {
+            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw),
+        }
+
+        invalid_auth_headers = {
+            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
+        }
+
+        c = Client()
+        response = c.get(reverse('layer_resolve_user'), **valid_auth_headers)
+        response_json = json.loads(response.content)
+        self.assertEquals({'superuser': True, 'user': None, 'geoserver': True}, response_json)
+
+        # Test that requesting when supplying invalid credentials returns the appropriate error code
+        response = c.get(reverse('layer_acls'), **invalid_auth_headers)
+        self.assertEquals(response.status_code, 401)
+
+        # Test logging in using Djangos normal auth system
+        c.login(username='admin', password='admin')
+
+        # Basic check that the returned content is at least valid json
+        response = c.get(reverse('layer_resolve_user'))
+        response_json = json.loads(response.content)
+
+        self.assertEquals('admin', response_json['user'])
+        self.assertEquals('admin', response_json['fullname'])
+        self.assertEquals('', response_json['email'])
 
     def test_perms_info(self):
         """ Verify that the perms_info view is behaving as expected
@@ -312,13 +350,14 @@ class LayersTest(TestCase):
     def test_layer_attributes(self):
         lyr = Layer.objects.get(pk=1)
         #There should be a total of 3 attributes
-        self.assertEqual(len(lyr.attribute_set.all()), 3)
+        self.assertEqual(len(lyr.attribute_set.all()), 4)
         #2 out of 3 attributes should be visible
         custom_attributes = lyr.attribute_set.visible()
-        self.assertEqual(len(custom_attributes), 2)
+        self.assertEqual(len(custom_attributes), 3)
         #place_ name should come before description
         self.assertEqual(custom_attributes[0].attribute_label, "Place Name")
         self.assertEqual(custom_attributes[1].attribute_label, "Description")
+        self.assertEqual(custom_attributes[2].attribute, u'N\xfamero_De_M\xe9dicos')
         # TODO: do test against layer with actual attribute statistics
         self.assertEqual(custom_attributes[1].count, 1)
         self.assertEqual(custom_attributes[1].min, "NA")
@@ -332,16 +371,21 @@ class LayersTest(TestCase):
     def test_layer_attribute_config(self):
         lyr = Layer.objects.get(pk=1)
         custom_attributes = (lyr.attribute_config())["getFeatureInfo"]
-        self.assertEqual(custom_attributes["fields"],["place_name","description"])
+        self.assertEqual(custom_attributes["fields"],["place_name","description", u'N\xfamero_De_M\xe9dicos'])
         self.assertEqual(custom_attributes["propertyNames"]["description"], "Description")
         self.assertEqual(custom_attributes["propertyNames"]["place_name"], "Place Name")
 
     def test_layer_styles(self):
         lyr = Layer.objects.get(pk=1)
         #There should be a total of 3 styles
-        self.assertEqual(len(lyr.styles.all()), 3)
+        self.assertEqual(len(lyr.styles.all()), 4)
         #One of the style is the default one
         self.assertEqual(lyr.default_style, Style.objects.get(id=lyr.default_style.id))
+
+        try:
+            styles = [str(style) for style in lyr.styles.all()]
+        except UnicodeEncodeError:
+            self.fail("str of the Style model throws a UnicodeEncodeError with special characters.")
 
     def test_layer_save(self):
         lyr = Layer.objects.get(pk=1)
@@ -712,9 +756,8 @@ class LayersTest(TestCase):
         layer.storeType = "dataStore"
         layer.save()
 
-
         # Test that the method returns authorized=True if it's a datastore
-        with self.settings(DB_DATASTORE=True):
+        if settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']:
             # The check was moved from the template into the view
             response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
             response_json = json.loads(response.content)

@@ -59,10 +59,10 @@
    
       {% if document.extension|lower in imgtypes %}
       <div id="embedded_map">
-        <img src="{{document.doc_file.url}}" width='100%' />
+        <img src="{% url "document_download" document.id %}" width='100%' />
       </div>
       {% else %}
-        <a href="{{ document.doc_file.url }}" target="_blank">Download the {{ document }} document</a>
+        <a href="{% url "document_download" document.id %}" target="_blank">Download the {{ document }} document</a>
       {%  endif %}
        
       <div class="map-actions">
@@ -75,7 +75,7 @@
         </ul>
       </div>
       <div class="tab-content">
-        {% include "geonode/resourcebase_info_panel.html" with resourcebase=document %}
+        {% include "base/resourcebase_info_panel.html" with resourcebase=document %}
 
         <article id="share" class="tab-pane">
           <!-- TODO: Move this to a reusable template snippet -->
