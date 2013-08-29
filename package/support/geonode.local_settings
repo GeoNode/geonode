@@ -4,6 +4,8 @@ import geonode
 
 DEBUG = TEMPLATE_DEBUG = False
 
+DEBUG_STATIC = False
+
 SITENAME = 'GeoNode'
 SITEURL = 'http://localhost/'
 
