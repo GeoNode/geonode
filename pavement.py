@@ -297,6 +297,7 @@ def start_geoserver(options):
     data_dir = path('geoserver/data').abspath()
     web_app = path('geoserver/geoserver').abspath()
     log_file = path('geoserver/jetty.log').abspath()
+    config = path('geoserver/jetty-runner.xml').abspath()
 
     # @todo - we should not have set workdir to the datadir but a bug in geoserver
     # prevents geonode security from initializing correctly otherwise
@@ -307,7 +308,7 @@ def start_geoserver(options):
             ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
             ' -jar %(jetty_runner)s'
             ' --log %(log_file)s'
-            ' --path /geoserver %(web_app)s'
+            ' %(config)s'
             ' > /dev/null &' % locals()
           ))
 
