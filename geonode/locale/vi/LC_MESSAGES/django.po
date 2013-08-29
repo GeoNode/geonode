@@ -20,7 +20,7 @@ msgstr ""
 
 #: utils.py:214 security/enumerations.py:28
 msgid "Anonymous Users"
-msgstr ""
+msgstr "Anonymous Users"
 
 #: utils.py:218 security/enumerations.py:29
 msgid "Registered Users"
