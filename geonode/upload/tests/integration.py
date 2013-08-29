@@ -48,8 +48,8 @@ from zipfile import ZipFile
 GEONODE_USER     = 'admin'
 GEONODE_PASSWD   = 'admin'
 GEONODE_URL      = settings.SITEURL.rstrip('/')
-GEOSERVER_URL    = settings.GEOSERVER_BASE_URL
-GEOSERVER_USER, GEOSERVER_PASSWD = settings.GEOSERVER_CREDENTIALS
+GEOSERVER_URL    = settings.OGC_SERVER['default']['LOCATION']
+GEOSERVER_USER, GEOSERVER_PASSWD = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'] 
 
 import logging
 logging.getLogger('south').setLevel(logging.WARNING)
@@ -362,7 +362,7 @@ class UploaderBase(TestCase):
 
     def check_upload_model(self, original_name):
         # we can only test this if we're using the same DB as the test instance
-        if not settings.DB_DATASTORE: return
+        if not settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']: return
         try:
             upload = Upload.objects.get(layer__name=original_name)
         except Upload.DoesNotExist:
@@ -447,7 +447,7 @@ class UploaderBase(TestCase):
 
 class TestUpload(UploaderBase):
     settings_overrides = [
-        ('DB_DATASTORE', False)
+        ("OGC_SERVER['default']['OPTIONS']['DATASTORE']", False)
     ]
     
     def test_shp_upload(self):
@@ -526,9 +526,7 @@ class TestUpload(UploaderBase):
 
 class TestUploadDBDataStore(TestUpload):
 
-    settings_overrides = [
-        ('DB_DATASTORE', True)
-    ]
+    settings_overrides = []
 
     def test_csv(self):
         """Override the baseclass test and verify a correct CSV upload"""
@@ -584,8 +582,7 @@ class TestUploadDBDataStore(TestUpload):
         layer_info = wms.items()[0][1]
         self.assertEquals(100, len(layer_info.timepositions))
 
-
-# disable DB_DATASTORE tests if not setup
-if not settings.DB_DATASTORE:
-    print 'skipping DB_DATASTORE tests'
+# disable DATASTORE tests if not setup
+if not settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']:
+    print 'skipping DATASTORE tests'
     del TestUploadDBDataStore

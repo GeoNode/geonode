@@ -305,6 +305,11 @@ class searchTest(TestCase):
             l.set_gen_level(ANONYMOUS_USERS, l.LEVEL_NONE)
             l.set_gen_level(AUTHENTICATED_USERS, l.LEVEL_NONE)
 
+        # give user1 edit permission on these, too
+        user1 = User.objects.get(username='user1')
+        for l in jblaze_layers:
+            l.set_user_level(user1, Layer.LEVEL_WRITE)
+
         # a (anonymous) layer query should exclude the number of hiding layers
         self.search_assert(self.request(type='layer'), n_results=8 - hiding, n_total=8 - hiding)
 
@@ -318,6 +323,13 @@ class searchTest(TestCase):
         jblaze.set_password('passwd')
         jblaze.save()
         self.assertTrue(self.c.login(username='jblaze', password='passwd'))
+        self.search_assert(self.request(type='layer'), n_results=8, n_total=8)
+        self.c.logout()
+
+        # a logged in user1 will these, too
+        user1.set_password('passwd')
+        user1.save()
+        self.assertTrue(self.c.login(username='user1', password='passwd'))
         self.search_assert(self.request(type='layer'), n_results=8, n_total=8)
         self.c.logout()
 

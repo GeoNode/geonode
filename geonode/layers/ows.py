@@ -129,7 +129,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
     """Derive aggregate statistics from WPS endpoint"""
 
     # generate statistics using WPS
-    url = '%s/ows' % (settings.GEOSERVER_BASE_URL)
+    url = '%s/ows' % (settings.OGC_SERVER['default']['LOCATION'])
 
     # TODO: use owslib.wps.WebProcessingService for WPS interaction
     # this requires GeoServer's WPS gs:Aggregate function to
