@@ -3,7 +3,6 @@
 *.egg-info
 build
 target
-*.mo
 pip-log.txt
 MANIFEST
 dist
