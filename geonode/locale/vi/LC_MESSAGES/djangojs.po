@@ -19,7 +19,7 @@ msgstr ""
 
 #: static/geonode/script/GeoExplorer.js:68 static/geonode/script/GeoNode.js:33
 msgid "Add user..."
-msgstr ""
+msgstr "Add user..."
 
 #: static/geonode/script/GeoNode.js:36
 msgid "Who can view and download this data?"
