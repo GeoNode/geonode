@@ -1,3 +1,29 @@
+geonode (2.0.0+beta45) precise; urgency=high
+
+  [ Jeffrey Johnson ]
+  * [64b9b9] Initial work on progress in upload
+  * [8f3637] More work to make upload progress work with rest based uploads
+  * [1aeb6f] Update javascript dependencies
+  * [7788ba] Rework progress function
+  * [209f3d] Adding ajax queue
+  * [b44d3f] Adding ajax queue to base template in debug
+  * [bc21ca] Use ajaxQueue in layer upload
+  * [fd4435] Fix polling setup
+
+  [ Michael Diener ]
+  * [162b3e] added Michael Diener to authors
+
+  [ Tyler Garner ]
+  * [42fac6] Updated acls and resolve_user functions to use the user's profile setting.
+
+  [ Ariel Nunez ]
+  * [b1aba8] Updated changelog
+  * [955c8b] Updated geoserver url in local_settings
+  * [4c6c47] Updated compiled libs
+  * [dcb1b9] Updated settings and local_settings to set DEBUG_STATIC to False
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 29 Aug 2013 12:19:19 +0000
+
 geonode (2.0.0+beta42) precise; urgency=high
 
   [ capooti ]

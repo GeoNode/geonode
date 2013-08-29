@@ -34,7 +34,7 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 DEBUG = TEMPLATE_DEBUG = True
 
 # Set to True to load non-minified versions of (static) client dependencies
-DEBUG_STATIC = True 
+DEBUG_STATIC = False
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
