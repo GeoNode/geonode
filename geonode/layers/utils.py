@@ -270,7 +270,7 @@ def cleanup(name, uuid):
 
 
 def save(layer, base_file, user, overwrite=True, title=None,
-         abstract=None, permissions=None, keywords=()):
+         abstract=None, permissions=None, keywords=(), charset='UTF-8'):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer
@@ -378,7 +378,8 @@ def save(layer, base_file, user, overwrite=True, title=None,
     try:
         store, gs_resource = create_store_and_resource(name,
                                                        data,
-                                                       overwrite=overwrite)
+                                                       overwrite=overwrite, 
+                                                       charset=charset)
     except UploadError, e:
         msg = ('Could not save the layer %s, there was an upload '
                'error: %s' % (name, str(e)))
