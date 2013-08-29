@@ -65,16 +65,16 @@ def _filter_security(q, user, model, permission):
     if user and not user.is_anonymous():
         generic_roles.append(AUTHENTICATED_USERS)
     grm = GenericObjectRoleMapping.objects.filter(object_ct=ct, role__permissions__in=[p], subject__in=generic_roles).values('object_id')
-    q = q.filter(id__in=grm)
+    security = Q(id__in=grm)
 
     # apply specific user filters
     if user and not user.is_anonymous():
         urm = UserObjectRoleMapping.objects.filter(object_ct=ct, role__permissions__in=[p], user=user).values('object_id')
-        q = q | q.filter(id__in=urm)
+        security = security | Q(id__in=urm)
         # if the user is the owner, make sure these are included
-        q = q | getattr(model, 'objects').filter(owner=user)
+        security = security | Q(owner=user)
 
-    return q
+    return q.filter(security)
 
 def _filter_category(q, categories):
     _categories = []
