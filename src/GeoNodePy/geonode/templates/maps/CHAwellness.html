@@ -5,6 +5,7 @@
 
 {% block head %}
 
+
 <script type="text/javascript">
 var isMobile = {
     Android: function() {
@@ -44,8 +45,10 @@ var isMobile = {
 </script>
 
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css" />
+
 <style type="text/css">
     #templates { display: none; }
+    .x-btn-text {font-size: 16px; }
 </style>
 
 
@@ -73,7 +76,7 @@ var init = function() {
             ptype: "gxp_geonodequerytool",
             id: "worldmap_query_tool",
             actionTarget:  {target: "", index: 2},
-            toolText: "<span class='x-btn-text'>{% trans 'Identify' %}</span>",
+            toolText: '<span class="x-btn-text">{% trans 'Identify' %}</span>',
             iconCls: null,
             outputConfig: {width: 400, height: 200, panIn: false},
             featurePanel: 'queryPanel',
@@ -93,10 +96,10 @@ var init = function() {
                 iconCls: null,
                 actionTarget: {target: "paneltbar", index: 4}
             },
-            {
+	    {
                 ptype: "gxp_gazetteertool",
                 actionTarget:  {target: "paneltbar", index: 5},
-                toolText: '<span class="x-btn-text">Find nearby</span>',
+                toolText: '<span class="x-btn-text">Search By Location</span>',
                 iconCls: null,
                 toggleGroup: 'featureGroup',
                 pressed: false
@@ -127,9 +130,11 @@ var init = function() {
     }
 
     app = new GeoExplorer(config, true);
+    app.infoButtonText = "Welcome Page";
     app.on("ready", function() {
         Ext.getCmp("worldmap_publish_tool").hide();
-        //Ext.getCmp("worldmap_addlayers_button").hide();    	
+        if (!config.edit_map)
+        	Ext.getCmp("worldmap_addlayers_button").hide();    	
     });
 
     
