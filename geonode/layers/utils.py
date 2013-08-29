@@ -270,7 +270,7 @@ def cleanup(name, uuid):
 
 
 def save(layer, base_file, user, overwrite=True, title=None,
-         abstract=None, permissions=None, keywords=(), charset="UTF-8"):
+         abstract=None, permissions=None, keywords=(), charset='UTF-8'):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer
