@@ -38,7 +38,7 @@ from geonode.upload.models import Upload, UploadFile
 from geonode.upload import upload
 from geonode.upload.utils import rename_and_prepare, find_sld, get_upload_type
 from geonode.upload.forms import UploadFileForm
-
+from geonode.base.enumerations import CHARSETS
 from geonode.geoserver.uploader import uploader
 
 from django.conf import settings
@@ -207,7 +207,8 @@ def save_step_view(req, session):
         return render_to_response('upload/layer_upload.html',
             RequestContext(req, {
             'async_upload' : _ASYNC_UPLOAD,
-            'incomplete' : Upload.objects.get_incomplete_uploads(req.user)
+            'incomplete' : Upload.objects.get_incomplete_uploads(req.user),
+            'charsets': CHARSETS
         }))
 
     assert session is None
