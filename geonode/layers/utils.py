@@ -703,9 +703,9 @@ def upload(incoming, user=None, overwrite=False,
     return output
 
 
-def _create_featurestore(name, data, overwrite):
+def _create_featurestore(name, data, overwrite, charset="UTF-8"):
     cat = Layer.objects.gs_catalog
-    cat.create_featurestore(name, data, overwrite=overwrite)
+    cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
     return cat.get_store(name), cat.get_resource(name)
 
 
