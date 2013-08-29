@@ -37,17 +37,17 @@ from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS, 
 
 _wms = None
 _csw = None
-_user, _password = settings.GEOSERVER_CREDENTIALS
+_user, _password = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']
 
 http_client = httplib2.Http()
 http_client.add_credentials(_user, _password)
 http_client.add_credentials(_user, _password)
-_netloc = urlparse(settings.GEOSERVER_BASE_URL).netloc
+_netloc = urlparse(settings.OGC_SERVER['default']['LOCATION']).netloc
 http_client.authorizations.append(
     httplib2.BasicAuthentication(
         (_user, _password),
         _netloc,
-        settings.GEOSERVER_BASE_URL,
+        settings.OGC_SERVER['default']['LOCATION'],
         {},
         None,
         None,
@@ -63,16 +63,16 @@ def check_geonode_is_up():
     """Verifies all geoserver is running,
        this is needed to be able to upload.
     """
-    url = "%sweb/" % settings.GEOSERVER_BASE_URL
+    url = "%sweb/" % settings.OGC_SERVER['default']['LOCATION']
     resp, content = http_client.request(url, "GET")
     msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-           'have started it.' % settings.GEOSERVER_BASE_URL)
+           'have started it.' % settings.OGC_SERVER['default']['LOCATION'])
     assert resp['status'] == '200', msg
        
 
 def get_wms():
     global _wms
-    wms_url = settings.GEOSERVER_BASE_URL + "wms?request=GetCapabilities&version=1.1.0"
+    wms_url = settings.OGC_SERVER['default']['LOCATION'] + "wms?request=GetCapabilities&version=1.1.0"
     netloc = urlparse(wms_url).netloc
     http = httplib2.Http()
     http.add_credentials(_user, _password)

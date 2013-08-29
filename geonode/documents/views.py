@@ -12,6 +12,8 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_POST
 from django.core.exceptions import PermissionDenied
 
+from django_downloadview.response import DownloadResponse
+
 from geonode.utils import resolve_object
 from geonode.maps.views import _perms_info
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -73,7 +75,7 @@ def document_detail(request, docid):
     if not request.user.has_perm('documents.view_document', obj=document):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
-                _("You are not allowed to view this document.")})), status=401)
+                _("You are not allowed to view this document.")})), status=403)
     try:
         related = document.content_type.get_object_for_this_type(id=document.object_id)
     except:
@@ -89,6 +91,13 @@ def document_detail(request, docid):
         'related': related
     }))
 
+def document_download(request, docid):
+    document = get_object_or_404(Document, pk=docid)
+    if not request.user.has_perm('documents.view_document', obj=document):
+        return HttpResponse(loader.render_to_string('401.html',
+            RequestContext(request, {'error_message':
+                _("You are not allowed to view this document.")})), status=401)
+    return DownloadResponse(document.doc_file)
 
 @login_required
 def document_upload(request):

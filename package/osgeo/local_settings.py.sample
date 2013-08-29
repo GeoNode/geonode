@@ -5,7 +5,15 @@ DATABASES = {
          'USER': 'user',
          'PASSWORD': 'user',
          'HOST': 'localhost',
-     }
+     },
+    'datastore': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'geonode_imports',
+        'USER': 'user',
+        'PASSWORD': 'user',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
 }
 
 # GeoNode vector data backend configuration.
@@ -19,18 +27,6 @@ GEOGIT_DATASTORE = False
 GEOGIT_DATASTORE_NAME = 'geogit-repo'
 
 UPLOADER_SHOW_TIME_STEP=False
-
-#Import uploaded shapefiles into a database such as PostGIS?
-DB_DATASTORE = False
-
-#Database datastore connection settings
-DB_DATASTORE_DATABASE = 'geonode_imports'
-DB_DATASTORE_USER = 'user'
-DB_DATASTORE_PASSWORD = 'user'
-DB_DATASTORE_HOST = 'localhost'
-DB_DATASTORE_PORT = '5432'
-DB_DATASTORE_TYPE = 'postgis'
-DB_DATASTORE_NAME = 'geonode_imports'
 
 # Use the printNG geoserver lib
 PRINTNG_ENABLED=True

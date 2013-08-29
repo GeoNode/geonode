@@ -61,7 +61,7 @@ from geoserver.resource import FeatureType
 
 logger = logging.getLogger("geonode.layers.views")
 
-_user, _password = settings.GEOSERVER_CREDENTIALS
+_user, _password = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
@@ -170,7 +170,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    maplayer = GXPLayer(name = layer.typename, ows_url = settings.GEOSERVER_BASE_URL + "wms", layer_params=json.dumps( layer.attribute_config()))
+    maplayer = GXPLayer(name = layer.typename, ows_url = settings.OGC_SERVER['default']['LOCATION'] + "wms", layer_params=json.dumps( layer.attribute_config()))
 
     layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
 
@@ -371,7 +371,7 @@ def layer_style_manage(req, layername):
         except (FailedRequestError, EnvironmentError) as e:
             msg = ('Could not connect to geoserver at "%s"'
                'to manage style information for layer "%s"' % (
-                settings.GEOSERVER_BASE_URL, layer.name)
+                settings.OGC_SERVER['default']['LOCATION'], layer.name)
             )
             logger.warn(msg, e)
             # If geoserver is not online, return an error
@@ -528,7 +528,7 @@ def layer_batch_download(request):
             "layers" : [layer_son(lyr) for lyr in layers]
         }
 
-        url = "%srest/process/batchDownload/launch/" % settings.GEOSERVER_BASE_URL
+        url = "%srest/process/batchDownload/launch/" % settings.OGC_SERVER['default']['LOCATION']
         resp, content = http_client.request(url,'POST',body=json.dumps(fake_map))
         return HttpResponse(content, status=resp.status)
 
@@ -539,7 +539,7 @@ def layer_batch_download(request):
         if download_id is None:
             return HttpResponse(status=404)
 
-        url = "%srest/process/batchDownload/status/%s" % (settings.GEOSERVER_BASE_URL, download_id)
+        url = "%srest/process/batchDownload/status/%s" % (settings.OGC_SERVER['default']['LOCATION'], download_id)
         resp,content = http_client.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 
@@ -587,17 +587,25 @@ def resolve_user(request):
         if acl_user:
             user = acl_user.username
             superuser = acl_user.is_superuser
-        elif _get_basic_auth_info(request) == settings.GEOSERVER_CREDENTIALS:
+        elif _get_basic_auth_info(request) == (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']):
             geoserver = True
             superuser = True
+        else:
+            return HttpResponse(_("Bad HTTP Authorization Credentials."),
+                                status=401,
+                                mimetype="text/plain")
     if not any([user, geoserver, superuser]) and not request.user.is_anonymous():
         user = request.user.username
         superuser = request.user.is_superuser
-    return HttpResponse(json.dumps({
+    resp = {
         'user' : user,
         'geoserver' : geoserver,
-        'superuser' : superuser
-    }))
+        'superuser' : superuser,
+    }
+    if request.user.is_authenticated():
+        resp['fullname'] = request.user.profile.name
+        resp['email'] = request.user.profile.email
+    return HttpResponse(json.dumps(resp))
 
 
 def layer_acls(request):
@@ -618,8 +626,8 @@ def layer_acls(request):
 
             # Nope, is it the special geoserver user?
             if (acl_user is None and
-                username == settings.GEOSERVER_CREDENTIALS[0] and
-                password == settings.GEOSERVER_CREDENTIALS[1]):
+                username == settings.OGC_SERVER['default']['USER'] and
+                password == settings.OGC_SERVER['default']['PASSWORD']):
                 # great, tell geoserver it's an admin.
                 result = {
                    'rw': [],
@@ -659,8 +667,11 @@ def layer_acls(request):
         'ro': read_only,
         'name': acl_user.username,
         'is_superuser':  acl_user.is_superuser,
-        'is_anonymous': acl_user.is_anonymous()
+        'is_anonymous': acl_user.is_anonymous(),
     }
+    if acl_user.is_authenticated():
+        result['fullname'] = acl_user.profile.name
+        result['email'] = acl_user.profile.email
 
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
@@ -670,7 +681,7 @@ def feature_edit_check(request, layername):
     Otherwise, return a status of 401 (unauthorized).
     """
     layer = get_object_or_404(Layer, typename=layername)
-    feature_edit = any((getattr(settings, a, None) for a in ("GEOGIT_DATASTORE", "DB_DATASTORE"))) 
+    feature_edit = any((getattr(settings, a, None) for a in ("GEOGIT_DATASTORE", "OGC_SERVER['default']['OPTIONS']['DATASTORE']"))) 
     if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
     else:

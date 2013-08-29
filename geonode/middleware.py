@@ -17,7 +17,7 @@ def print_map(request):
     permissions = {}
     params = json.loads(request.body)
     for layer in params['layers']:
-        if settings.GEOSERVER_BASE_URL in layer['baseURL']:
+        if settings.OGC_SERVER['default']['LOCATION'] in layer['baseURL']:
             for layer_name in layer['layers']:
                 layer_obj = Layer.objects.get(typename=layer_name)
                 permissions[layer_obj] = {}
