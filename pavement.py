@@ -118,7 +118,7 @@ def _install_data_dir():
 def update_static(options):
     with pushd('geonode/static'):
         sh('npm install')
-        sh('bower install')
+        sh('bower install --allow-root')
         sh('grunt production')
         
 
