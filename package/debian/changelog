@@ -1,3 +1,19 @@
+geonode (2.0.0+beta42) precise; urgency=high
+
+  [ capooti ]
+  * [f8dc5e] Moved resourcebase_info_panel.html to its proper path.
+
+  [ Simone Dalmasso ]
+  * [27c527] use just 'postgis' instead of the full engine in _create_db_featurestore
+
+  [ capooti ]
+  * [e3a4a9] Fixes several broken metadata attributes in layer info page.
+
+  [ Ariel Nunez ]
+  * [d9c20e] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 28 Aug 2013 12:37:54 +0000
+
 geonode (2.0.0+beta41) precise; urgency=high
 
   [ Ariel Nunez ]
