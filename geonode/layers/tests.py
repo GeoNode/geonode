@@ -236,7 +236,7 @@ class LayersTest(TestCase):
         response = c.get(reverse('layer_acls'))
         response_json = json.loads(response.content)
 
-        self.assertEquals('', response_json['fullname'])
+        self.assertEquals('admin', response_json['fullname'])
         self.assertEquals('', response_json['email'])
 
         # TODO Lots more to do here once jj0hns0n understands the ACL system better
@@ -273,7 +273,7 @@ class LayersTest(TestCase):
         response_json = json.loads(response.content)
 
         self.assertEquals('admin', response_json['user'])
-        self.assertEquals('', response_json['fullname'])
+        self.assertEquals('admin', response_json['fullname'])
         self.assertEquals('', response_json['email'])
 
     def test_perms_info(self):
