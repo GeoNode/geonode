@@ -38,7 +38,7 @@ class Command(BaseCommand):
             action='store_true',
             dest='skip_unadvertised',
             default=False,
-            help='Process unadvertised layers from GeoSever.'),
+            help='Skip processing unadvertised layers from GeoSever.'),
         make_option('-u', '--user', dest="user", default=None,
             help="Name of the user account which should own the imported layers"),
         make_option('-f', '--filter', dest="filter", default=None,
