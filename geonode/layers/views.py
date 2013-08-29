@@ -141,7 +141,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         overwrite = False,
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
-                        permissions = form.cleaned_data["permissions"]
+                        permissions = form.cleaned_data["permissions"],
+                        charset = form.cleaned_data['charset']
                         )
             except Exception, e:
                 logger.exception(e)
