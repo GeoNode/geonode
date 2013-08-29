@@ -290,37 +290,9 @@ def newmap_config(request):
             return HttpResponse(status=405)
 
         if 'layer' in params:
-            bbox = None
-            groups = set()
             map_obj = Map(projection="EPSG:900913")
-            layers = []
-            for layer_name in params.getlist('layer'):
-                try:
-                    layer = Layer.objects.get(typename=layer_name)
-                except ObjectDoesNotExist:
-                    # bad layer, skip
-                    continue
+            layers, groups, bbox = additional_layers(request,map_obj, params.getlist('layer'))
 
-                if not request.user.has_perm('maps.view_layer', obj=layer):
-                    # invisible layer, skip inclusion
-                    continue
-
-                #layer_bbox = layer.resource.latlon_bbox
-                # assert False, str(layer_bbox)
-                bbox = layer.llbbox_coords()
-
-                layers.append(MapLayer(
-                    map = map_obj,
-                    name = layer.typename,
-                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
-                    visibility = True,
-                    styles='',
-                    group=layer.topic_category.title if layer.topic_category else None,
-                    source_params = u'{"ptype": "gxp_gnsource"}',
-                    layer_params= u'{"tiled":true, "title":" '+ layer.title + '", "format":"image/png","queryable":true}')
-                )
-                if layer.topic_category:
-                    groups.add(layer.topic_category.title)
 
             if bbox is not None:
                 minx, miny, maxx, maxy = [float(c) for c in bbox]
@@ -345,9 +317,10 @@ def newmap_config(request):
                 map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
 
             config = map_obj.viewer_json(request.user, *(DEFAULT_BASE_LAYERS + layers))
-            config['treeconfig'] = []
-            for group in groups:
-                config['treeconfig'].append({"expanded":True, "group":group})
+            config['map']['groups'] = []
+            for group in groups:             
+                if group not in json.dumps(config['map']['groups']):
+                    config['map']['groups'].append({"expanded":"true", "group":group})
 
             config['fromLayer'] = True
         else:
@@ -742,6 +715,39 @@ def map_controller(request, mapid):
     else:
         return mapdetail(request, map_obj.id)
 
+
+def additional_layers(request, map_obj, layerlist):
+
+    groups = set()
+    layers = []
+    bbox = None
+    for layer_name in layerlist:
+        try:
+            layer = Layer.objects.get(typename=layer_name)
+        except ObjectDoesNotExist:
+            # bad layer, skip
+            continue
+
+        #layer_bbox = layer.resource.latlon_bbox
+        # assert False, str(layer_bbox)
+        bbox = layer.llbbox_coords()
+
+        group = layer.topic_category.title if layer.topic_category else "General"
+        if group not in groups:
+            groups.add(group)
+                
+        layers.append(MapLayer(
+                    map = map_obj,
+                    name = layer.typename,
+                    ows_url = settings.GEOSERVER_BASE_URL + "wms",
+                    visibility = request.user.has_perm('maps.view_layer', obj=layer),
+                    styles='',
+                    group=group,
+                    source_params = u'{"ptype": "gxp_gnsource"}',
+                    layer_params= u'{"tiled":true, "title":" '+ layer.title + '", "format":"image/png","queryable":true}')
+                )    
+    return layers, groups, bbox
+
 def view(request, mapid, snapshot=None):
     """
     The view that returns the map composer opened to
@@ -756,10 +762,18 @@ def view(request, mapid, snapshot=None):
             RequestContext(request, {'error_message':
                 _("You are not allowed to view this map.")})), status=401)
 
-    if snapshot is None:
+
+    if 'layer' in request.GET:
+        addedlayers, groups, bbox = additional_layers(request,map_obj, request.GET.getlist('layers'))
+        config = map_obj.viewer_json(request.user, *addedlayers)
+        for group in groups:             
+            if group not in json.dumps(config['map']['groups']):
+                config['map']['groups'].append({"expanded":"true", "group":group})
+    elif snapshot is None:
         config = map_obj.viewer_json(request.user)
     else:
         config = snapshot_config(snapshot, map_obj, request.user)
+
 
     first_visit = True
     if request.session.get('visit' + str(map_obj.id), False):

@@ -69,6 +69,7 @@ urlpatterns = patterns('',
     (r'^download/(?P<service>[^/]*)/(?P<layer>[^/]*)/(?P<format>[^/]*)/?$','geonode.proxy.views.download'),
     (r'^gazetteer/', include('geonode.gazetteer.urls')),
     (r'^bostonhoods/?', include('geonode.hoods.urls')),
+    (r'^certification/', include('geonode.certification.urls')),    
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     )
 
