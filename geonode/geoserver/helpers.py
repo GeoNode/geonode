@@ -227,7 +227,7 @@ def delete_from_postgis(resource_name):
     import psycopg2
     dsname = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
     db = settings.DATABASES[dsname]
-    conn=psycopg2.connect("dbname='" + db['NAME'] + "' user='" + db['user'] + "'  password='" + db['password'] + "' port=" + db['PORT'] + " host='" + db['HOST'] + "'")
+    conn=psycopg2.connect("dbname='" + db['NAME'] + "' user='" + db['USER'] + "'  password='" + db['PASSWORD'] + "' port=" + db['PORT'] + " host='" + db['HOST'] + "'")
     try:
         cur = conn.cursor()
         cur.execute("SELECT DropGeometryTable ('%s')" %  resource_name)

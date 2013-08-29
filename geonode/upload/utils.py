@@ -163,7 +163,7 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
                 database = db['NAME'],
                 user = db['USER'],
                 passwd = db['PASSWORD'],
-                dbtype = db['ENGINE'])
+                dbtype = store_type)
             cat.save(ds)
             ds = cat.get_store(dsname)
 

@@ -606,9 +606,9 @@ def resolve_user(request):
         'geoserver' : geoserver,
         'superuser' : superuser,
     }
-    if acl_user.is_authenticated():
-        resp['fullname'] = acl_user.get_full_name()
-        resp['email'] = acl_user.email
+    if request.user.is_authenticated():
+        resp['fullname'] = request.user.profile.name
+        resp['email'] = request.user.profile.email
     return HttpResponse(json.dumps(resp))
 
 
@@ -674,8 +674,8 @@ def layer_acls(request):
         'is_anonymous': acl_user.is_anonymous(),
     }
     if acl_user.is_authenticated():
-        result['fullname'] = acl_user.get_full_name()
-        result['email'] = acl_user.email
+        result['fullname'] = acl_user.profile.name
+        result['email'] = acl_user.profile.email
 
     return HttpResponse(json.dumps(result), mimetype="application/json")
 

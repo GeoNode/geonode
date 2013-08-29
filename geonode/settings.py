@@ -34,7 +34,7 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 DEBUG = TEMPLATE_DEBUG = True
 
 # Set to True to load non-minified versions of (static) client dependencies
-DEBUG_STATIC = False
+DEBUG_STATIC = True 
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
@@ -429,9 +429,10 @@ OGC_SERVER = {
 
 # Uploader Settings
 UPLOADER = {
+    'BACKEND' : 'geonode.rest',
     'OPTIONS' : {
-        'TIME_ENABLED' : False,
-        'GEOGIT_ENABLED' : False,
+        'TIME_ENABLED': False,
+        'GEOGIT_ENABLED': False,
     }
 }
 

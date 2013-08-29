@@ -723,18 +723,22 @@ def _create_db_featurestore(name, data, overwrite=False, charset=None):
     """
     cat = Layer.objects.gs_catalog
     dsname = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
+
     try:
         ds = cat.get_store(dsname)
     except FailedRequestError:
         ds = cat.create_datastore(dsname)
         db = settings.DATABASES[dsname]
+        db_engine = 'postgis' if \
+            'postgis' in db['ENGINE'] else db['ENGINE']
         ds.connection_parameters.update(
             host = db['HOST'],
             port = db['PORT'],
             database = db['NAME'],
             user = db['USER'],
             passwd = db['PASSWORD'],
-            dbtype = db['ENGINE'])
+            dbtype = db_engine
+            )
         cat.save(ds)
         ds = cat.get_store(dsname)
 
@@ -744,7 +748,11 @@ def _create_db_featurestore(name, data, overwrite=False, charset=None):
                               charset=charset)
         return ds, cat.get_resource(name, store=ds)
     except Exception:
-        delete_from_postgis(name)
+        # FIXME(Ariel): This is not a good idea, today there was a problem 
+        # accessing postgis that caused add_data_to_store to fail,
+        # for the same reasons the call to delete_from_postgis below failed too
+        # I am commenting it out and filing it as issue #1058
+        #delete_from_postgis(name)
         raise
 
 def style_update(request, url):
