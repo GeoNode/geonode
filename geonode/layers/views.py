@@ -124,7 +124,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
         out = {'success': False}
 
         if form.is_valid():
-            tempdir, base_file = form.write_files()
             title = form.cleaned_data["layer_title"]
 
             # Replace dots in filename - GeoServer REST API upload bug
@@ -138,6 +137,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
             name = slugify(name_base.replace(".","_"))
 
             try:
+                # Moved this inside the try/except block because it can raise
+                # exceptions when unicode characters are present.
+                # This should be followed up in upstream Django.
+                tempdir, base_file = form.write_files()
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
                         charset = form.cleaned_data["charset"],
