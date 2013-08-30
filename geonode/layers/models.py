@@ -45,6 +45,7 @@ from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.ows import wcs_links, wfs_links, wms_links, \
     wps_execute_layer_attribute_statistics
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.utils import ogc_server_settings
 
 from geoserver.catalog import Catalog, FailedRequestError
 from agon_ratings.models import OverallRating
@@ -68,7 +69,7 @@ class LayerManager(ResourceBaseManager):
 
     def __init__(self):
         models.Manager.__init__(self)
-        url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
+        url = ogc_server_settings.rest
         self.gs_catalog = Catalog(url, _user, _password)
 
 def add_bbox_query(q, bbox):
@@ -131,7 +132,7 @@ class Layer(ResourceBase):
         # with the WMS parser.
         p = "&".join("%s=%s"%item for item in params.items())
 
-        return settings.OGC_SERVER['default']['LOCATION'] + "wms/reflect?" + p
+        return ogc_server_settings.LOCATION + "wms/reflect?" + p
 
 
     def verify(self):
@@ -302,7 +303,7 @@ def pre_delete_layer(instance, sender, **kwargs):
         if style.layer_styles.all().count()==1:
             if style != default_style:
                 style.delete()
-
+    
 def post_delete_layer(instance, sender, **kwargs):
     """
     Removed the layer from any associated map, if any.
@@ -328,7 +329,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
+    url = ogc_server_settings.rest
     try:
         gs_catalog = Catalog(url, _user, _password)
         gs_resource = gs_catalog.get_resource(instance.name)
@@ -336,7 +337,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
         gs_resource = None
         msg = ('Could not connect to geoserver at "%s"'
                'to save information for layer "%s"' % (
-                settings.OGC_SERVER['default']['LOCATION'], instance.name.encode('utf-8'))
+                ogc_server_settings.LOCATION, instance.name.encode('utf-8'))
               )
         logger.warn(msg, e)
         # If geoserver is not online, there is no need to continue
@@ -411,7 +412,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     except (FailedRequestError, EnvironmentError) as e:
         msg = ('Could not connect to geoserver at "%s"'
                'to save information for layer "%s"' % (
-                settings.OGC_SERVER['default']['LOCATION'], instance.name.encode('utf-8'))
+                ogc_server_settings.LOCATION, instance.name.encode('utf-8'))
               )
         logger.warn(msg, e)
         # If geoserver is not online, there is no need to continue
@@ -440,7 +441,7 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     # Set download links for WMS, WCS or WFS and KML
 
-    links = wms_links(settings.OGC_SERVER['default']['LOCATION'] + 'wms?',
+    links = wms_links(ogc_server_settings.LOCATION + 'wms?',
                     instance.typename.encode('utf-8'), instance.bbox_string,
                     instance.srid, height, width)
 
@@ -456,7 +457,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
 
     if instance.storeType == "dataStore":
-        links = wfs_links(settings.OGC_SERVER['default']['LOCATION'] + 'wfs?', instance.typename.encode('utf-8'))
+        links = wfs_links(ogc_server_settings.LOCATION + 'wfs?', instance.typename.encode('utf-8'))
         for ext, name, mime, wfs_url in links:
             Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                             url=wfs_url,
@@ -478,7 +479,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         permissions['authenticated'] = instance.get_gen_level(AUTHENTICATED_USERS)
         instance.set_gen_level(ANONYMOUS_USERS,'layer_readonly')
 
-        links = wcs_links(settings.OGC_SERVER['default']['LOCATION'] + 'wcs?', instance.typename.encode('utf-8'),
+        links = wcs_links(ogc_server_settings.LOCATION + 'wcs?', instance.typename.encode('utf-8'),
             bbox=instance.bbox[:-1], crs=instance.bbox[-1], height=height, width=width)
         for ext, name, mime, wcs_url in links:
             Link.objects.get_or_create(resource= instance.resourcebase_ptr,
@@ -490,11 +491,11 @@ def geoserver_post_save(instance, sender, **kwargs):
                                     link_type='data',
                                 )
                             )
-
+            
         instance.set_gen_level(ANONYMOUS_USERS,permissions['anonymous'])
         instance.set_gen_level(AUTHENTICATED_USERS,permissions['authenticated'])
 
-    kml_reflector_link_download = settings.OGC_SERVER['default']['LOCATION'] + "wms/kml?" + urllib.urlencode({
+    kml_reflector_link_download = ogc_server_settings.LOCATION + "wms/kml?" + urllib.urlencode({
         'layers': instance.typename.encode('utf-8'),
         'mode': "download"
     })
@@ -509,7 +510,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
                     )
 
-    kml_reflector_link_view = settings.OGC_SERVER['default']['LOCATION'] + "wms/kml?" + urllib.urlencode({
+    kml_reflector_link_view = ogc_server_settings.LOCATION + "wms/kml?" + urllib.urlencode({
         'layers': instance.typename.encode('utf-8'),
         'mode': "refresh"
     })
@@ -524,7 +525,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
                     )
 
-    tile_url = ('%sgwc/service/gmaps?' % settings.OGC_SERVER['default']['LOCATION'] +
+    tile_url = ('%sgwc/service/gmaps?' % ogc_server_settings.LOCATION +
                 'layers=%s' % instance.typename.encode('utf-8') +
                 '&zoom={z}&x={x}&y={y}' +
                 '&format=image/png8'
@@ -557,7 +558,7 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     for link in instance.link_set.all():
         if not urlparse(settings.SITEURL).hostname == urlparse(link.url).hostname and not \
-                    urlparse(settings.OGC_SERVER['default']['LOCATION']).hostname == urlparse(link.url).hostname:
+                    urlparse(ogc_server_settings.LOCATION).hostname == urlparse(link.url).hostname:
             link.delete()
 
     #Save layer attributes
@@ -631,12 +632,12 @@ def set_attributes(layer):
     #Appending authorizations seems necessary to avoid 'layer not found' from GeoServer
     http = httplib2.Http()
     http.add_credentials(_user, _password)
-    _netloc = urlparse(settings.OGC_SERVER['default']['LOCATION']).netloc
+    _netloc = urlparse(ogc_server_settings.LOCATION).netloc
     http.authorizations.append(
         httplib2.BasicAuthentication(
             (_user, _password),
             _netloc,
-            settings.OGC_SERVER['default']['LOCATION'],
+            ogc_server_settings.LOCATION,
                 {},
             None,
             None,
@@ -646,7 +647,7 @@ def set_attributes(layer):
 
     attribute_map = []
     if layer.storeType == "dataStore":
-        dft_url = settings.OGC_SERVER['default']['LOCATION'] + "wfs?" + urllib.urlencode({
+        dft_url = ogc_server_settings.LOCATION + "wfs?" + urllib.urlencode({
             "service": "wfs",
             "version": "1.0.0",
             "request": "DescribeFeatureType",
@@ -660,7 +661,7 @@ def set_attributes(layer):
         except Exception:
             attribute_map = []
     elif layer.storeType == "coverageStore":
-        dc_url = settings.OGC_SERVER['default']['LOCATION'] + "wcs?" + urllib.urlencode({
+        dc_url = ogc_server_settings.LOCATION + "wcs?" + urllib.urlencode({
             "service": "wcs",
             "version": "1.1.0",
             "request": "DescribeCoverage",
