@@ -493,7 +493,7 @@ def publish():
 
     version, simple_version = versions()
     sh('git add package/debian/changelog')
-    sh('git commit -m "Updated changelog for version %s' % version)
+    sh('git commit -m "Updated changelog for version %s"' % version)
     sh('git tag %s' % version)
     sh('git push origin %s' % version)
     sh('git tag debian/%s' % simple_version)
