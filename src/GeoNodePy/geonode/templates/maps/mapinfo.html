@@ -178,11 +178,11 @@
 	<ul>
 	{% if certified %}
 	<li><a href="{% url uncertify 'maps.Map' map.id %}">
-            {% trans "Uncertify this layer" %}
+            {% trans "Uncertify this map" %}
         </a></li>	
 	{% else %}
 	<li><a href="{% url certify 'maps.Map' map.id %}">
-            {% trans "Certify this layer" %}
+            {% trans "Certify this map" %}
         </a></li>	
 	{% endif %}
 	</ul>

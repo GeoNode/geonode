@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
-
+from geonode.maps.models import Layer, Map
+from django.db.models import signals
 
 # Create your models here.
     
@@ -55,3 +56,14 @@ class Certification (models.Model):
     object = GenericForeignKey('object_ct', 'object_id')
     
     objects = CertificationManager()        
+    
+    
+    
+def delete_certification(instance, sender, **kwargs):
+        my_ct = ContentType.objects.get_for_model(instance)
+        certifications = Certification.objects.filter(object_ct = my_ct, object_id= instance.id)    
+        for certification in certifications:
+            certification.delete()
+            
+signals.post_delete.connect(delete_certification, sender=Layer)
+signals.post_delete.connect(delete_certification, sender=Map)
