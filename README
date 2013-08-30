@@ -166,7 +166,6 @@ Mac OSX Development Build Instructions::
     paver setup
     paver start
 
-
 Once fully started, you should see a message indicating the address of your geonode.
 The default username and password are ``admin`` and ``admin``::
   
@@ -174,6 +173,10 @@ The default username and password are ``admin`` and ``admin``::
   The GeoNode is an unstoppable machine
   Press CTRL-C to shut down
 
+Before starting GeoNode (paver start), you could test your installation by running tests::
+
+    paver test
+    paver test_integration
 
 .. note:: 
 

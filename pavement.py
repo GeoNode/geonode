@@ -36,8 +36,8 @@ try:
 except ImportError:
     from paver.easy import pushd
 
-assert sys.version_info >= (2, 7), \
-    SystemError("GeoNode Build requires python 2.7 or better")
+assert sys.version_info >= (2, 6), \
+    SystemError("GeoNode Build requires python 2.6 or better")
 
 
 def grab(src, dest, name):
@@ -84,8 +84,8 @@ def setup_geoserver(options):
             webapp_dir.makedirs()
 
         print 'extracting geoserver'
-        with zipfile.ZipFile(geoserver_bin, "r") as z:
-            z.extractall(webapp_dir)
+        z = zipfile.ZipFile(geoserver_bin, "r")
+        z.extractall(webapp_dir)
 
         _install_data_dir()
 
@@ -101,8 +101,8 @@ def _install_data_dir():
 
     if os.path.exists(data_dir_zip):
         print 'extracting datadir'
-        with zipfile.ZipFile(data_dir_zip, "r") as z:
-            z.extractall(geoserver_dir)
+        z = zipfile.ZipFile(data_dir_zip, "r")
+        z.extractall(geoserver_dir)
 
         config = geoserver_dir / 'data/security/auth/geonodeAuthProvider/config.xml'
         with open(config) as f:
