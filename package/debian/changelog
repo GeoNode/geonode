@@ -1,3 +1,32 @@
+geonode (2.0.0+beta46) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [3b9f2e] add basic charset choice to the upload form
+  * [2d982e] handle charset on layer save
+
+  [ Ariel Nunez ]
+  * [6daa73] Added charset option to create_featurestore
+  * [12d4c0] Added charset encoding to save method
+
+  [ b-angerer ]
+  * [762f09] Update AUTHORS
+
+  [ Ian Schneider ]
+  * [674fd5] remove curly dangling bracket
+
+  [ Tyler Garner ]
+  * [361300] Encode strings that may receive non-ascii characters to utf-8.
+
+  [ Ariel Nunez ]
+  * [6ee099] Get charset from upload form.
+  * [c33428] Fixed merge conflict
+  * [221bee] Added russian .po
+  * [754749] Added missing .mo files
+  * [ee0572] Added DEBUG_STATIC=False to default settings
+  * [b8ff7f] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 29 Aug 2013 22:10:57 +0000
+
 geonode (2.0.0+beta45) precise; urgency=high
 
   [ Jeffrey Johnson ]
