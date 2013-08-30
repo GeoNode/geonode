@@ -1,3 +1,71 @@
+geonode (2.0.0+beta47) precise; urgency=high
+
+  * [3be4ed] Updated German, Spanish and Italian translations
+  * [284eed] Added some portuguese translations
+  * [962acf] Updated translations
+  * [1be776] Removed files that are automatically created and were ignored before
+  * [6bbf9d] Added minified files to the repository
+  * [1a5e6a] Added ajax progress to gruntfile
+  * [8b1830] Updated assets.min.js
+  * [d2d6e6] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 30 Aug 2013 01:05:13 +0000
+
+geonode (2.0.0+beta46) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [3b9f2e] add basic charset choice to the upload form
+  * [2d982e] handle charset on layer save
+
+  [ Ariel Nunez ]
+  * [6daa73] Added charset option to create_featurestore
+  * [12d4c0] Added charset encoding to save method
+
+  [ b-angerer ]
+  * [762f09] Update AUTHORS
+
+  [ Ian Schneider ]
+  * [674fd5] remove curly dangling bracket
+
+  [ Tyler Garner ]
+  * [361300] Encode strings that may receive non-ascii characters to utf-8.
+
+  [ Ariel Nunez ]
+  * [6ee099] Get charset from upload form.
+  * [c33428] Fixed merge conflict
+  * [221bee] Added russian .po
+  * [754749] Added missing .mo files
+  * [ee0572] Added DEBUG_STATIC=False to default settings
+  * [b8ff7f] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 29 Aug 2013 22:10:57 +0000
+
+geonode (2.0.0+beta45) precise; urgency=high
+
+  [ Jeffrey Johnson ]
+  * [64b9b9] Initial work on progress in upload
+  * [8f3637] More work to make upload progress work with rest based uploads
+  * [1aeb6f] Update javascript dependencies
+  * [7788ba] Rework progress function
+  * [209f3d] Adding ajax queue
+  * [b44d3f] Adding ajax queue to base template in debug
+  * [bc21ca] Use ajaxQueue in layer upload
+  * [fd4435] Fix polling setup
+
+  [ Michael Diener ]
+  * [162b3e] added Michael Diener to authors
+
+  [ Tyler Garner ]
+  * [42fac6] Updated acls and resolve_user functions to use the user's profile setting.
+
+  [ Ariel Nunez ]
+  * [b1aba8] Updated changelog
+  * [955c8b] Updated geoserver url in local_settings
+  * [4c6c47] Updated compiled libs
+  * [dcb1b9] Updated settings and local_settings to set DEBUG_STATIC to False
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 29 Aug 2013 12:19:19 +0000
+
 geonode (2.0.0+beta42) precise; urgency=high
 
   [ capooti ]

@@ -32,6 +32,7 @@ State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
 from geonode.geoserver.helpers import get_sld_for
+from geonode.base.models import SpatialRepresentationType
 from geonode.layers.utils import get_valid_layer_name
 from geonode.layers.utils import layer_type
 from geonode.layers.metadata import set_metadata
@@ -576,7 +577,11 @@ def final_step(upload_session, user):
 
         # set model properties
         for (key, value) in vals.items():
-            setattr(saved_layer, key, value)
+            if key == "spatial_representation_type":
+                #value = SpatialRepresentationType.objects.get(identifier=value)
+                pass
+            else:
+                setattr(saved_layer, key, value)
 
         saved_layer.save()
 
