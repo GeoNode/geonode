@@ -1,17 +1,3 @@
-geonode (2.0.0+beta50) precise; urgency=high
-
-  [ Tyler Garner ]
-  * [39f4ea] Updated local_settings.py samples.
-
-  [ Ariel Nunez ]
-  * [021281] Disable GEOGIT by default
-  * [d521f9] Improved handling of unicode files with non ascii characters. refs #1017
-  * [40aa92] Added changelog commit to publish paver task
-  * [8348a8] Updated changelog
-  * [735142] Added better error message for non ascii encoding.\nThis only works in the development server and does not seem to work in apache
-
- -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 30 Aug 2013 21:22:51 +0000
-
 geonode (2.0.0+beta49) precise; urgency=high
 
   [ vdeparday ]
