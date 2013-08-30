@@ -252,7 +252,11 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
     cat = Catalog(url, _user, _password)
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
-        resources = cat.get_resources(workspace=workspace)
+        #assume store exists within workspace:
+        if store is not None:
+            store = cat.get_store(store, workspace=workspace)
+            resources = cat.get_resources(store=store)
+        else: resources = cat.get_resources(workspace=workspace)
     elif store is not None:
         store = cat.get_store(store)
         resources = cat.get_resources(store=store)
