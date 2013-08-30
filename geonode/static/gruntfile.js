@@ -170,6 +170,8 @@ module.exports = function(grunt) {
             'lib/js/jquery.dataTables.js',
             'lib/js/jquery.tinysort.js',
             'lib/js/jquery.raty.js',
+            'lib/js/jquery.ajaxprogress.js',
+            'lib/js/jquery.ajaxQueue.min.js',
             'lib/js/jquery.multi-select.js',
             'lib/js/select2.js',
             'lib/js/waypoints.js',
