@@ -331,8 +331,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
             print >> console, msg
     finish = datetime.datetime.now()
     td = finish - start
-    duration = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
-    output['stats']['duration_sec'] = round(duration, 2)
+    output['stats']['duration_sec'] = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
     return output
 
 def get_stores(store_type = None):
