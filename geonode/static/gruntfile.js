@@ -164,19 +164,20 @@ module.exports = function(grunt) {
       production: {
         files: {
           'lib/js/assets.min.js': [
-            'lib/js/json2.js',
             'lib/js/jquery.js',
-            'lib/js/jquery.timeago.js',
             'lib/js/jquery.dataTables.js',
+            'lib/js/jquery.timeago.js',
             'lib/js/jquery.tinysort.js',
             'lib/js/jquery.raty.js',
+            'lib/js/waypoints.js',
+            'lib/js/jquery-ui.custom.js',
             'lib/js/jquery.ajaxprogress.js',
             'lib/js/jquery.ajaxQueue.min.js',
             'lib/js/jquery.multi-select.js',
+            'lib/js/bootstrap-datepicker.js',
+            'lib/js/json2.js',
             'lib/js/select2.js',
-            'lib/js/waypoints.js',
-            'lib/js/bootstrap.js',
-            'lib/js/bootstrap-datepicker.js'
+            'lib/js/bootstrap.js'
           ],
           'lib/js/require.js': ['lib/js/require.js'],
           'lib/js/text.js': ['lib/js/text.js'],
