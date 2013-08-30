@@ -1,3 +1,11 @@
+geonode (2.0.0+beta48) precise; urgency=high
+
+  * [ce0b6a] Harmonized source and production in gruntfile
+  * [145e11] Updated changelog
+  * [84fe76] Updated minified javascript to include jqueryui
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 30 Aug 2013 02:19:49 +0000
+
 geonode (2.0.0+beta47) precise; urgency=high
 
   * [3be4ed] Updated German, Spanish and Italian translations
