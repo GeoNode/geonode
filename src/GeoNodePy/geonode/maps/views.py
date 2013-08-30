@@ -764,7 +764,7 @@ def view(request, mapid, snapshot=None):
 
 
     if 'layer' in request.GET:
-        addedlayers, groups, bbox = additional_layers(request,map_obj, request.GET.getlist('layers'))
+        addedlayers, groups, bbox = additional_layers(request,map_obj, request.GET.getlist('layer'))
         config = map_obj.viewer_json(request.user, *addedlayers)
         for group in groups:             
             if group not in json.dumps(config['map']['groups']):

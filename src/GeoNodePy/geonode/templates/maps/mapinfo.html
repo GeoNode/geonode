@@ -167,11 +167,15 @@
     {% is_certified user map as certified %}
     {% object_certifications map as certifications %}
 
-	<h3>Certifications</h3>
+	<h3>{% trans "Certifications" %}</h3>
 	<ul>
-	{% for certification in certifications %}
-		<li><a href="/profiles/{{certification.certifier.username}}">{{ certification.certifier.get_profile.username }}</a>
-	{% endfor %}
+	{% if certifications %}
+		{% for certification in certifications %}
+			<li><a href="/profiles/{{certification.certifier.username}}">{{ certification.certifier.get_profile.username }}</a>
+		{% endfor %}
+	{% else %}
+		<li>{% trans "This map has not been certified by any users" %}
+	{% endif %}
 	</ul>
 	
 	{% if user.is_authenticated and user != map.owner%}
