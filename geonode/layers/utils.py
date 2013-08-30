@@ -282,8 +282,8 @@ def save(layer, base_file, user, overwrite=True, title=None,
     # Step -1. Verify if the filename is in ascii format.
     try:
         base_file.decode('ascii')
-    except UnicodeDecodeError:
-        msg = "Please use only characters from the english alphabet for the filename."
+    except UnicodeEncodeError:
+        msg = "Please use only characters from the english alphabet for the filename. '%s' is not yet supported." % os.path.basename(base_file).encode('UTF-8')
         raise GeoNodeException(msg)
 
     logger.info('Uploading layer: [%s], base filename: [%s]', layer, base_file)
