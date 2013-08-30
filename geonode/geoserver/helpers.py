@@ -23,6 +23,7 @@ import logging
 import re
 import errno
 import uuid
+import datetime
 from itertools import cycle, izip
 
 from django.conf import settings
@@ -272,7 +273,15 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
     if verbosity > 1:
         msg =  "Found %d layers, starting processing" % number
         print >> console, msg
-    output = []
+    output = {
+        'stats': {
+            'failed':0,
+            'updated':0,
+            'created':0,
+        },
+        'layers': []
+    }
+    start = datetime.datetime.now()
     for i, resource in enumerate(resources):
         name = resource.name
         store = resource.store
@@ -305,18 +314,24 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
             if created:
                 layer.set_default_permissions()
                 status = 'created'
+                output['stats']['created']+=1
             else:
                 status = 'updated'
+                output['stats']['updated']+=1
 
         msg = "[%s] Layer %s (%d/%d)" % (status, name, i+1, number)
         info = {'name': name, 'status': status}
         if status == 'failed':
+            output['stats']['failed']+=1
             info['traceback'] = traceback
             info['exception_type'] = exception_type
             info['error'] = error
-        output.append(info)
+        output['layers'].append(info)
         if verbosity > 0:
             print >> console, msg
+    finish = datetime.datetime.now()
+    td = finish - start
+    output['stats']['duration_sec'] = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
     return output
 
 def get_stores(store_type = None):
