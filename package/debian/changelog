@@ -1,3 +1,37 @@
+geonode (2.0.0+beta49) precise; urgency=high
+
+  [ vdeparday ]
+  * [e57c92] Create /updatelayers hook, reformat output of gs_slurp to avoid code duplication
+
+  [ Simone Dalmasso ]
+  * [0400c0] use another way to check if the datastore is enabled in layer_edit_check
+
+  [ capooti ]
+  * [e16958] Now paver will install GeoNode with Python 2.6 too.
+  * [e04557] Added the basic instructions to run tests after installing GeoNode.
+
+  [ vdeparday ]
+  * [91a382] Modify updatelayers command version to match the new output of gs_slurp
+  * [d5b17f] Require to be superuser to run updatelayers
+
+  [ Tyler Garner ]
+  * [d850b8] Created a OGC_Servers_Handler and  OGC_Server class to make dealing with OGC Server settings less painful.
+
+  [ Ariel Nunez ]
+  * [50cbce] Updated .gitignore
+  * [af7339] Updated OGC_SERVER settings in local_settings.py
+  * [da1a91] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 30 Aug 2013 20:22:53 +0000
+
+geonode (2.0.0+beta48) precise; urgency=high
+
+  * [ce0b6a] Harmonized source and production in gruntfile
+  * [145e11] Updated changelog
+  * [84fe76] Updated minified javascript to include jqueryui
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 30 Aug 2013 02:19:49 +0000
+
 geonode (2.0.0+beta47) precise; urgency=high
 
   * [3be4ed] Updated German, Spanish and Italian translations
