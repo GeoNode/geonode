@@ -159,7 +159,7 @@ define(['underscore',
     doDelete = function(event) {
         var id = event.srcElement.id.split("-")[1];
         var target = "/upload/delete/" + id;
-        $.ajax({
+        $.ajaxQueue({
             url: target,
             async: false,
             contentType: false,
@@ -174,7 +174,7 @@ define(['underscore',
     doResume = function(event) {
         var id = event.srcElement.id.split("-")[1];
         var target = "/upload/?id=" + id;
-        $.ajax({
+        $.ajaxQueue({
             url: target,
             async: false,
             contentType: false,
@@ -202,7 +202,7 @@ define(['underscore',
 
     doSrs = function (event) {
         var form = $("#srsForm")
-        $.ajax({
+        $.ajaxQueue({
            type: "POST",
            url: '/upload/srs',
            data: form.serialize(), // serializes the form's elements.
@@ -232,7 +232,7 @@ define(['underscore',
 
     doTime = function (event) {
         var form = $("#timeForm")
-        $.ajax({
+        $.ajaxQueue({
            type: "POST",
            url: '/upload/time',
            data: form.serialize(), // serializes the form's elements.

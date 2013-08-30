@@ -3,7 +3,6 @@
 *.egg-info
 build
 target
-*.mo
 pip-log.txt
 MANIFEST
 dist
@@ -16,7 +15,6 @@ downloaded
 # Static media handling
 *.jshintrc
 geonode/static/.components/
-geonode/static/lib/
 geonode/static/geoexplorer/
 geonode/static_root/
 geonode/static/node_modules/

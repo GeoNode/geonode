@@ -18,7 +18,7 @@ define(function (require, exports) {
             delete options.success;
             delete options.failure;
 
-            $.ajax(options).done(function (resp, status, obj) {
+            $.ajaxQueue(options).done(function (resp, status, obj) {
                if (typeof resp === "object" && resp.success === true) {
                     success(resp, status);
                } else if (typeof resp === "string"){

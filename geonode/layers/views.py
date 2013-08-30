@@ -139,9 +139,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
             try:
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
+                        charset = form.cleaned_data["charset"],
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
-                        permissions = form.cleaned_data["permissions"]
+                        permissions = form.cleaned_data["permissions"],
                         )
             except Exception, e:
                 logger.exception(e)
@@ -681,7 +682,7 @@ def feature_edit_check(request, layername):
     Otherwise, return a status of 401 (unauthorized).
     """
     layer = get_object_or_404(Layer, typename=layername)
-    feature_edit = any((getattr(settings, a, None) for a in ("GEOGIT_DATASTORE", "OGC_SERVER['default']['OPTIONS']['DATASTORE']"))) 
+    feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or settings.OGC_SERVER['default']['OPTIONS']['DATASTORE'] 
     if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
     else:
