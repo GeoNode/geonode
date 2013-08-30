@@ -1,3 +1,16 @@
+geonode (2.0.0+beta47) precise; urgency=high
+
+  * [3be4ed] Updated German, Spanish and Italian translations
+  * [284eed] Added some portuguese translations
+  * [962acf] Updated translations
+  * [1be776] Removed files that are automatically created and were ignored before
+  * [6bbf9d] Added minified files to the repository
+  * [1a5e6a] Added ajax progress to gruntfile
+  * [8b1830] Updated assets.min.js
+  * [d2d6e6] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 30 Aug 2013 01:05:13 +0000
+
 geonode (2.0.0+beta46) precise; urgency=high
 
   [ Simone Dalmasso ]
