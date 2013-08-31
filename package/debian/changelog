@@ -1,3 +1,9 @@
+geonode (2.0.0+beta52) precise; urgency=high
+
+  * [9ed9c9] Fixed typo in DATASTORE retrieval
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sat, 31 Aug 2013 01:50:54 +0000
+
 geonode (2.0.0+beta51) precise; urgency=high
 
   * [2a5371] Cosmetic fixes in layer upload page
