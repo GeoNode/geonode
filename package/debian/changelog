@@ -1,3 +1,11 @@
+geonode (2.0.0+beta51) precise; urgency=high
+
+  * [2a5371] Cosmetic fixes in layer upload page
+  * [466e58] Added animaget overlay from jquery ui progress bar
+  * [c099da] Added jquery-ui.css to .gitignore
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 30 Aug 2013 21:52:26 +0000
+
 geonode (2.0.0+beta50) precise; urgency=high
 
   [ Tyler Garner ]
