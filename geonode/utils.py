@@ -66,7 +66,7 @@ class OGC_Server(object):
         """
         Returns the server's datastore dict or None.
         """
-        if self.DATASTORE and settings.DATABASES.get(self.DATSTORE, None):
+        if self.DATASTORE and settings.DATABASES.get(self.DATASTORE, None):
             return settings.DATABASES.get(self.DATASTORE, dict())
         else:
             return dict()
