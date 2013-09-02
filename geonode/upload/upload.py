@@ -32,6 +32,7 @@ State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
 from geonode.geoserver.helpers import get_sld_for
+from geonode.base.models import SpatialRepresentationType
 from geonode.layers.utils import get_valid_layer_name
 from geonode.layers.utils import layer_type
 from geonode.layers.metadata import set_metadata
@@ -45,6 +46,7 @@ from geonode.upload import signals
 from geonode.upload.utils import create_geoserver_db_featurestore
 from geonode.upload.utils import find_file_re
 from geonode.upload.utils import gs_uploader
+from geonode.utils import ogc_server_settings
 
 import geoserver
 from geoserver.resource import Coverage
@@ -101,6 +103,9 @@ class UploaderSession(object):
 
     # Import to GeoGit repository
     geogit = None
+
+    # GeoGit Repository to import to 
+    geogit_store = None
 
     # Configure Time for this Layer
     time = None
@@ -291,18 +296,16 @@ def run_import(upload_session, async):
 
     # if a target datastore is configured, ensure the datastore exists
     # in geoserver and set the uploader target appropriately
-    if (hasattr(settings, 'GEOGIT_DATASTORE') and settings.GEOGIT_DATASTORE and
-        upload_session.geogit == True and
-        import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
-        target = create_geoserver_db_featurestore(store_type='geogit')
+    if (ogc_server_settings.GEOGIT_ENABLED and upload_session.geogit == True and import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
+        target = create_geoserver_db_featurestore(store_type='geogit', store_name = upload_session.geogit_store)
         _log('setting target datastore %s %s',
              target.name, target.workspace.name
             )
         import_session.tasks[0].set_target(
             target.name, target.workspace.name)
-    elif (settings.DB_DATASTORE and
+    elif (ogc_server_settings.DATASTORE and
         import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
-        target = create_geoserver_db_featurestore(store_type='postgis')
+        target = create_geoserver_db_featurestore(store_type='postgis', store_name = upload_session.geogit_store)
         _log('setting target datastore %s %s',
              target.name, target.workspace.name
             )
@@ -461,8 +464,19 @@ def final_step(upload_session, user):
     # @todo see above in save_step, regarding computed unique name
     name = import_session.tasks[0].items[0].layer.name
 
+    # keep checking to see if geoserver has the layer. 
+    # it can take significantly longer than a few of seconds 
+    # to upload data to geoserver in some cases: slower/busy server, larger 
+    # data, etc
     import time
-    time.sleep(4)
+    wait_counter = 0
+    while wait_counter < 30:
+        wait_counter += 1
+        time.sleep(2)
+        publishing = cat.get_layer(name)
+        if publishing is not None:
+            break
+
     _log('Creating style for [%s]', name)
     publishing = cat.get_layer(name)
     if publishing is None:
@@ -562,7 +576,11 @@ def final_step(upload_session, user):
 
         # set model properties
         for (key, value) in vals.items():
-            setattr(saved_layer, key, value)
+            if key == "spatial_representation_type":
+                #value = SpatialRepresentationType.objects.get(identifier=value)
+                pass
+            else:
+                setattr(saved_layer, key, value)
 
         saved_layer.save()
 

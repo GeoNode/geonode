@@ -350,7 +350,13 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
                 description = '%s (%s Format)' % (self.title, url.name)
                 links.append((self.title, description, 'WWW:DOWNLOAD-1.0-http--download', url.url))
         return links
-
+    
+    def maintenance_frequency_title(self):
+        return [v for i, v in enumerate(UPDATE_FREQUENCIES) if v[0] == self.maintenance_frequency][0][1].title()
+        
+    def language_title(self):
+        return [v for i, v in enumerate(ALL_LANGUAGES) if v[0] == self.language][0][1].title()
+    
     def _set_poc(self, poc):
         # reset any poc asignation to this resource
         ContactRole.objects.filter(role=self.poc_role, resource=self).delete()
@@ -433,13 +439,16 @@ def resourcebase_post_save(instance, sender, **kwargs):
         user = resourcebase.owner
     else:
         user = ResourceBase.objects.admin_contact()
-    pc, __ = Profile.objects.get_or_create(user=user,
+        
+    if resourcebase.poc is None:
+        pc, __ = Profile.objects.get_or_create(user=user,
                                            defaults={"name": resourcebase.owner.username})
-    ac, __ = Profile.objects.get_or_create(user=user,
+        resourcebase.poc = pc
+    if resourcebase.metadata_author is None:  
+        ac, __ = Profile.objects.get_or_create(user=user,
                                            defaults={"name": resourcebase.owner.username}
                                            )
-    resourcebase.poc = pc
-    resourcebase.metadata_author = ac
+        resourcebase.metadata_author = ac
 
 def resourcebase_post_delete(instance, sender, **kwargs):
     """

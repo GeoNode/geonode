@@ -10,7 +10,7 @@ class Migration(DataMigration):
         # set local fields from ows_url
         from geonode import settings
         for maplayer in orm.MapLayer.objects.all():
-            if maplayer.ows_url == '%swms' % settings.GEOSERVER_BASE_URL:
+            if maplayer.ows_url == '%swms' % settings.OGC_SERVER['default']['LOCATION']:
                 maplayer.local = True
                 maplayer.save()
 

@@ -1,14 +1,10 @@
 {% extends "upload/layer_upload_base.html" %}
 {% load i18n %}
-{% load static from staticfiles %}
+{% load staticfiles %}
 
 {% block title %} {% trans "Upload Layer"  %} - {{ block.super }}  {% endblock %}
 
 {% block body_class %}data data-list upload{% endblock %}
-
-{% block extra_head %}
-
-{% endblock %}
 
 
 {% block head %}
@@ -53,19 +49,19 @@
                     <div class="clearfix uip" style="" id="incomplete-{{ u.import_id }}">
                         <div class="pull-left">{{ u.name }}, last updated on {{ u.date }}</div>
                         <div class="upload_actions pull-right">
-                            <a class="btn btn-mini" href="#" id="resume-{{ u.import_id }}">Resume</a>
-                            <a class="btn btn-mini icon-trash" href="#" id="delete-{{ u.import_id }}">Delete</a>
+                            <a class="btn btn-mini" href="#" id="resume-{{ u.import_id }}">{% trans "Resume" %}</a>
+                            <a class="btn btn-mini icon-trash" href="#" id="delete-{{ u.import_id }}">{% trans "Delete" %}</a>
                         </div>
                     </div>
             </section>
             {% endfor %}
             <div id="confirm-delete" class="hide alert alert-warn" style="padding:10px; margin: 10px 0;">
-                Are you sure you want to delete this upload?
+                {% trans "Are you sure you want to delete this upload?" %}
                 <div style="margin: 5px 0">
-                <a href="#y" class="btn btn-danger">Delete</a>
-                <a href="#n" class="btn">Cancel</a>
+                <a href="#y" class="btn btn-danger">{% trans "Delete" %}</a>
+                <a href="#n" class="btn">{% trans "Cancel" %}</a>
                 </div>
-                <a href="#yy" style="font-weight:normal">Delete, and don't ask me again.</a>
+                <a href="#yy" style="font-weight:normal">{% trans "Delete, and don't ask me again." %}</a>
             </div>
         {% endif %}
         {% block additional_info %}{% endblock %}
@@ -81,7 +77,7 @@
               <h2>{% trans "Drop files here" %}</h2>
             </section>
 
-            or select them one by one:
+           {% trans " or select them one by one:" %}
 
             <form id="file-uploader" method="post" enctype="multipart/form-data">
               <input class="btn" id="file-input" type="file" multiple>
@@ -95,27 +91,40 @@
             </section>
 
             <section>
-              <a href="#" id="clear-button">Clear</a>
-              <a href="#" id="upload-button" class="btn">Upload files</a>
+              <p>{% trans "Select the charset or leave default" %}</p>
+              <select id="charset">
+                {% for charset in charsets %}
+                {% if charset.0 == 'UTF-8' %} 
+                <option selected='selected' value={{ charset.0 }}>{{ charset.1 }}</option>
+                {% else %}
+                <option value={{ charset.0 }}>{{ charset.1 }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
             </section>
-
+            <section>
+              <a href="#" id="clear-button">{% trans "Clear" %}</a>
+              <a href="#" id="upload-button" class="btn">{% trans "Upload files" %}</a>
+            </section>
         </div>
     </div>
 {% endblock %}
 
 {% block sidebar %}
 
+{% if GS_SECURITY_ENABLED %}
 <h3>{% trans "Permissions"  %}</h3>
 <div>
   <form id="permission_form">
         {% include "_permissions.html" %}
   </form>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block extra_script %}
-<script data-main="{{STATIC_URL}}geonode/js/upload/main"
-        src="{{ STATIC_URL }}lib/js/require.js">
+<script data-main="{% static 'geonode/js/upload/main' %}" 
+  src="{% static 'lib/js/require.js' %}">
 </script>
 
 <script type="text/javascript">
@@ -130,7 +139,9 @@
 {% endautoescape %}
 
 </script>
+{% if GS_SECURITY_ENABLED %}
 {% with "none" as layer %}
 {% include "_permissions_form_js.html" %}
 {% endwith %}
+{% endif %}
 {% endblock extra_script %}

@@ -239,7 +239,7 @@ def install_ec2_tools():
     sudo('apt-get install -y ec2-api-tools')
 
 def build_geonode_ami():
-    deploy_geonode_dev_package()
+    deploy_geonode_dev_deb()
     change_admin_password()
     cleanup_temp()
     copy_keys()
@@ -261,7 +261,7 @@ def build_geonode_ami():
     print "AMI %s Ready for Use" % (ami_id)
 
 def install_sample_data():
-    run('geonode importlayers `python -c "import gisdata; print gisdata.GOOD_DATA"`')
+    run('geonode importlayers `python -c "import gisdata; print gisdata.GOOD_DATA"` -v 3')
     run('geonode loaddata sample_admin.json')
     # Fix permissions issue on the newly created thumbs dir
     sudo('chmod -R 7777 /var/www/geonode/uploaded/thumbs/')

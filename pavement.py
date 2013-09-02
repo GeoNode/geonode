@@ -36,8 +36,8 @@ try:
 except ImportError:
     from paver.easy import pushd
 
-assert sys.version_info >= (2, 7), \
-    SystemError("GeoNode Build requires python 2.7 or better")
+assert sys.version_info >= (2, 6), \
+    SystemError("GeoNode Build requires python 2.6 or better")
 
 
 def grab(src, dest, name):
@@ -84,8 +84,8 @@ def setup_geoserver(options):
             webapp_dir.makedirs()
 
         print 'extracting geoserver'
-        with zipfile.ZipFile(geoserver_bin, "r") as z:
-            z.extractall(webapp_dir)
+        z = zipfile.ZipFile(geoserver_bin, "r")
+        z.extractall(webapp_dir)
 
         _install_data_dir()
 
@@ -101,8 +101,8 @@ def _install_data_dir():
 
     if os.path.exists(data_dir_zip):
         print 'extracting datadir'
-        with zipfile.ZipFile(data_dir_zip, "r") as z:
-            z.extractall(geoserver_dir)
+        z = zipfile.ZipFile(data_dir_zip, "r")
+        z.extractall(geoserver_dir)
 
         config = geoserver_dir / 'data/security/auth/geonodeAuthProvider/config.xml'
         with open(config) as f:
@@ -115,19 +115,16 @@ def _install_data_dir():
 
 
 @task
-def setup_static(options):
+def update_static(options):
     with pushd('geonode/static'):
+        sh('npm install')
         sh('bower install')
-        sh('bower-installer')
-    with pushd('geonode/static/geonode'):
-        sh('make')
-    # HACK Remove this recursive symlink manually
-    sh('rm geonode/static/.components/jquery-timeago/public')
+        sh('grunt production')
+        
 
 @task
 @needs([
     'setup_geoserver',
-    'setup_static',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
@@ -287,7 +284,8 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
 
-    from geonode.settings import GEOSERVER_BASE_URL
+    from geonode.settings import OGC_SERVER 
+    GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
 
     url = "http://localhost:8080/geoserver/"
     if GEOSERVER_BASE_URL != url:
@@ -466,15 +464,15 @@ def deb(options):
         if key is None and ppa is None:
             # A local installable package
             sh('debuild -uc -us -A')
-	elif key is None and ppa is not None:
-            # A sources package, signed by daemon
-            sh('debuild -S')
-	elif key is not None and ppa is None:
-            # A signed installable package
-            sh('debuild -k%s -A' % key)
-	elif key is not None and ppa is not None:
-            # A signed, source package
-            sh('debuild -k%s -S' % key)
+        elif key is None and ppa is not None:
+                # A sources package, signed by daemon
+                sh('debuild -S')
+        elif key is not None and ppa is None:
+                # A signed installable package
+                sh('debuild -k%s -A' % key)
+        elif key is not None and ppa is not None:
+                # A signed, source package
+                sh('debuild -k%s -S' % key)
 
     if ppa is not None:
         sh('dput ppa:%s geonode_%s_source.changes' % (ppa, simple_version))
@@ -494,10 +492,13 @@ def publish():
     })
 
     version, simple_version = versions()
+    sh('git add package/debian/changelog')
+    sh('git commit -m "Updated changelog for version %s"' % version)
     sh('git tag %s' % version)
     sh('git push origin %s' % version)
     sh('git tag debian/%s' % simple_version)
     sh('git push origin debian/%s' % simple_version)
+    sh('git push origin master')
     sh('python setup.py sdist upload')
 
 

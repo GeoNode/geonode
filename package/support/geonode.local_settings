@@ -4,6 +4,8 @@ import geonode
 
 DEBUG = TEMPLATE_DEBUG = False
 
+DEBUG_STATIC = False
+
 SITENAME = 'GeoNode'
 SITEURL = 'http://localhost/'
 
@@ -14,27 +16,44 @@ DATABASE_PASSWORD = 'THE_DATABASE_PASSWORD'
 DATABASE_HOST = 'localhost'
 DATABASE_PORT = '5432'
 
-# Make geonode upload vector layers directly to postgis
-DB_DATASTORE_NAME = 'postgres_imports'
-DB_DATASTORE_DATABASE = DATABASE_NAME
-DB_DATASTORE_USER = DATABASE_USER
-DB_DATASTORE_PASSWORD = DATABASE_PASSWORD
-DB_DATASTORE_HOST = DATABASE_HOST
-DB_DATASTORE_PORT = DATABASE_PORT
-DB_DATASTORE_TYPE='postgis'
-
 DATABASES = {
-      'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': DATABASE_NAME,
-            'USER': DATABASE_USER,
-            'PASSWORD': DATABASE_PASSWORD,
-            'HOST': DATABASE_HOST,
-            'PORT': DATABASE_PORT,
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': DATABASE_NAME,
+        'USER': DATABASE_USER,
+        'PASSWORD': DATABASE_PASSWORD,
+        'HOST': DATABASE_HOST,
+        'PORT': DATABASE_PORT,
+    },
+    'datastore': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': DATABASE_NAME,
+        'USER': DATABASE_USER,
+        'PASSWORD': DATABASE_PASSWORD,
+        'HOST': DATABASE_HOST,
+        'PORT': DATABASE_PORT,
     }
+}
 
-DB_DATASTORE=False
+
+GEOSERVER_BASE_URL = SITEURL + 'geoserver/'
+
+# OGC (WMS/WFS/WCS) Server Settings
+OGC_SERVER = {
+    'default' : {
+        'BACKEND' : 'geonode.geoserver',
+        'LOCATION' : GEOSERVER_BASE_URL,
+        'USER' : 'admin',
+        'PASSWORD' : 'geoserver',
+        'MAPFISH_PRINT_ENABLED' : True,
+        'PRINTNG_ENABLED' : True,
+        'GEONODE_SECURITY_ENABLED' : True,
+        'GEOGIT_ENABLED' : False,
+        'WMST_ENABLED' : False,
+        # Set to name of database in DATABASES dictionary to enable
+        'DATASTORE': 'datastore',
+    }
+}
 
 LANGUAGE_CODE = 'en'
 
@@ -45,8 +64,6 @@ STATIC_ROOT = '/var/www/geonode/static/'
 # site.  See http://docs.djangoproject.com/en/1.2/ref/settings/#secret-key
 SECRET_KEY = 'THE_SECRET_KEY'
 
-# The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = SITEURL + 'geoserver/'
 
 CATALOGUE = {
     'default': {

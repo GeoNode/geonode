@@ -5,6 +5,8 @@
 
 var layers = {};
 
+var geogit_stores = {};
+
 define(['underscore',
         'upload/LayerInfo',
         'upload/FileTypes',
@@ -20,6 +22,7 @@ define(['underscore',
         types,
         buildFileInfo,
         displayFiles,
+        init_geogit_stores,
         doUploads,
         doTime,
         doSrs,
@@ -156,7 +159,7 @@ define(['underscore',
     doDelete = function(event) {
         var id = event.srcElement.id.split("-")[1];
         var target = "/upload/delete/" + id;
-        $.ajax({
+        $.ajaxQueue({
             url: target,
             async: false,
             contentType: false,
@@ -171,7 +174,7 @@ define(['underscore',
     doResume = function(event) {
         var id = event.srcElement.id.split("-")[1];
         var target = "/upload/?id=" + id;
-        $.ajax({
+        $.ajaxQueue({
             url: target,
             async: false,
             contentType: false,
@@ -199,7 +202,7 @@ define(['underscore',
 
     doSrs = function (event) {
         var form = $("#srsForm")
-        $.ajax({
+        $.ajaxQueue({
            type: "POST",
            url: '/upload/srs',
            data: form.serialize(), // serializes the form's elements.
@@ -229,7 +232,7 @@ define(['underscore',
 
     doTime = function (event) {
         var form = $("#timeForm")
-        $.ajax({
+        $.ajaxQueue({
            type: "POST",
            url: '/upload/time',
            data: form.serialize(), // serializes the form's elements.
@@ -271,6 +274,18 @@ define(['underscore',
                 layerinfo.uploadFiles();
             });
         }
+    };
+
+    init_geogit_stores = function() {
+        $.ajax({
+            url: '/gs/rest/stores/geogit/',
+            async: true,
+            contentType: false,
+        }).done(function (resp) {
+            geogit_stores = JSON.parse(resp);
+        }).fail(function (resp) {
+            //
+        });        
     };
 
 
@@ -319,6 +334,7 @@ define(['underscore',
         $(options.upload_button).on('click', doUploads);
         $("[id^=delete]").on('click', doDelete);
         $("[id^=resume]").on('click', doResume);
+        init_geogit_stores();
     };
 
     // public api

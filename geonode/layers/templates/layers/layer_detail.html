@@ -22,7 +22,7 @@
   <div class="span5">
     <h2 class="page-title">{{ layer.title|default:layer.typename }}</h2>
   </div>
-  <div class="span7 action-group pull-right">
+  <div class="span7 action-group">
     <div class="btn-group pull-right">
       <!-- download layer -->
       <div class="btn-group">
@@ -36,7 +36,6 @@
           {% endfor %}
         </ul>
       </div>
-      {% if METADATA_DOWNLOAD_ALLOWS %}
       <!-- download metadata -->
       <div class="btn-group">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
@@ -49,7 +48,6 @@
           {% endfor %}
         </ul>
       </div>
-      {% endif %}
       {% has_obj_perm user layer "layers.change_layer" as can_edit_layer %}
       {% if can_edit_layer %}
       <!-- edit layer dropdown -->
@@ -61,7 +59,9 @@
         <ul class="dropdown-menu">
           <!--li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li-->
           <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
+          {% if GS_SECURITY_ENABLED %}
           <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+          {% endif %}
           <li><a href="{% url "layer_style_manage" layer.typename %}">{% trans "Manage Styles" %} <i class="icon-chevron-right"></i></a></li>
           <li><a class="style-edit" href="#">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
           <li><a href="{% url "layer_replace" layer.typename %}">{% trans "Replace this Layer" %} <i class="icon-chevron-right"></i></a></li>
@@ -82,7 +82,7 @@
     </div>
     <div class="tab-content">
 
-    {% include "geonode/resourcebase_info_panel.html" with resourcebase=layer %}
+    {% include "base/resourcebase_info_panel.html" with resourcebase=layer %}
 
       <article id="attributes" class="tab-pane">
         {% if layer.attribute_set.all %}
@@ -123,10 +123,10 @@
       <article id="share" class="tab-pane">
         <!-- TODO: Move this to a reusable template snippet -->
         <header>
-            <h3>{% trans "Share This Layer" %}</h3>
+          <h3>{% trans "Share This Layer" %}</h3>
         </header>
-        <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
-        <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
+          <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
+          <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
         <!-- TODO: Add more sharing options -->
       </article>
       <!--article id="flag" class="tab-pane">
@@ -183,6 +183,7 @@
         <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>
         <a href="{% url "new_map" %}?layer={{layer.typename}}" class="btn btn-large">{% trans "Create a Map" %}</a>
     </div>
+    {% if GS_SECURITY_ENABLED %}
     {% has_obj_perm user layer "layers.change_layer_permissions" as can_change_permissions %}
     {% if can_change_permissions %}
     <div class="well">
@@ -190,6 +191,7 @@
         <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
         <p><a href="#modal_perms" data-toggle="modal" class="btn btn-large">{% trans "Change Layer Permissions" %}</a></p>
     </div>
+    {% endif %}
     {% endif %}
     {% if user.is_authenticated %}
     <div class="well">
@@ -228,7 +230,9 @@
       {% endwith %}
     </div>
   </aside>
+  {% if GS_SECURITY_ENABLED %}   
   {% include "_permissions_form.html" %}
+  {% endif %}
 {% endblock %}
 {% block extra_script %}
 <div id="fb-root"></div>
@@ -242,8 +246,6 @@
 
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user layer "layer" %}
-    {% else %}
-        <script src="{{ STATIC_URL }}lib/js/jquery.raty.min.js"></script>
     {% endif %}
     <script type="text/javascript">
     $(function() {
@@ -251,7 +253,7 @@
             half: true,
             readOnly: true,
             start: $('div.overall_rating').data('rating'),
-            path: "{{ STATIC_URL }}agon_ratings/img/"
+            path: "{{ STATIC_URL }}lib/img/"
         });
     });
     </script>
@@ -280,5 +282,7 @@
             return false;
           });        
     </script>
+    {% if GS_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
+    {% endif %}
 {% endblock extra_script %}

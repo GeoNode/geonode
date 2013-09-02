@@ -9,75 +9,20 @@
     "select2": "3.2.0",
     "jquery": "1.8.3",
     "jquery-timeago": "0.11.4",
+    "jquery-ui": "1.10.1",
     "requirejs": "2.1.2",
     "requirejs-text": "2.0.3",
     "underscore": "1.4.2",
     "jquery-waypoints": "1.1.7",
-    "wysihtml5": "0.3.0",
     "qunit": "1.11.0",
-    "jquery-ui" : "latest",
     "bootstrap-datepicker": "2edb8c5cc4d1aacf8a5d8a6fbe5bf8775f9e9824",
-    "hogan": "d7ab5575bbf657b18ee80557a102769c9e2225c7",
     "raty": "8e7798a1d4c550309ebb772e28abd9d47426736c",
     "json2": "43d7836c8ec9b31a02a31ae0c400bdae04d3650d",
-    "jquery-loadmore": "https://github.com/voxpelli/jquery-loadmore.git",
     "tinysort": "https://github.com/Sjeiti/TinySort.git",
     "bootstrap-wysiwyghtml5": "https://github.com/jhollingworth/bootstrap-wysihtml5.git",
-    "jquery-miniColors": "https://github.com/claviska/jquery-miniColors.git",
     "fontselect-jquery-plugin": "https://github.com/tommoor/fontselect-jquery-plugin.git",
-    "multi-select": "https://github.com/lou/multi-select.git"
-  },
-  "install" : {
-    "path" : {
-      "css": "lib/css",
-      "js": "lib/js",
-      "img": "lib/img"
-    },
-    "sources" : {
-      "requirejs" : ".components/requirejs/require.js",
-      "jquery-ui" : [
-        ".components/jquery-ui/ui/jquery-ui.js",
-        ".components/jquery-ui/themes/cupertino/jquery-ui.css"
-      ],
-      "raty" : [
-        ".components/raty/lib/jquery.raty.min.js"
-      ],
-      "select2" : [
-        ".components/select2/select2.min.js",
-        ".components/select2/select2.css"
-      ],
-      "fontselect-jquery-plugin" : [
-        ".components/fontselect-jquery-plugin/jquery.fontselect.min.js",
-        ".components/fontselect-jquery-plugin/fontselect.css"
-      ],
-      "hogan" : [
-        ".components/hogan/lib/hogan.js"
-      ],
-      "jquery-loadmore" : [
-        ".components/jquery-loadmore/loadmore.js"
-      ],
-      "jquery-miniColors" : [
-        ".components/jquery-miniColors/jquery.minicolors.js"
-      ],
-      "jquery-timeago" : [
-        ".components/jquery-timeago/jquery.timeago.js"
-      ],
-      "jquery-waypoints" : [
-        ".components/jquery-waypoints/waypoints.min.js"
-      ],
-      "multi-select" : [
-        ".components/multi-select/js/jquery.multi-select.js", 
-        ".components/multi-select/css/multi-select.css"
-      ],
-      "json2" : [
-        ".components/json2/json2.js"
-      ],
-      "tinysort" : [
-        ".components/tinysort/src/jquery.tinysort.min.js"
-      ],
-      "wysihtml5" : [
-        ".components/wysihtml5/dist/wysihtml5-0.3.0.min.js"
-      ]
-    }
+    "multi-select": "https://github.com/lou/multi-select.git",
+    "jquery-ajaxprogress": "https://github.com/kpozin/jquery-ajaxprogress.git",
+    "jquery.ajaxQueue": "https://github.com/gnarf/jquery-ajaxQueue.git"
   }
 }

@@ -4,33 +4,32 @@ DATABASES = {
          'NAME': 'geonode',
          'USER': 'geonode',
          'PASSWORD': 'geonode',
-         'PORT': '5433',
-     }
+     },
+    # vector datastore for uploads
+    'datastore' : {
+        #'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'ENGINE': '', # Empty ENGINE name disables 
+        'NAME': 'geonode',
+        'USER' : 'geonode',
+        'PASSWORD' : 'geonode',
+        'HOST' : 'localhost',
+        'PORT' : '5432',
+    }
 }
 
-# GeoNode vector data backend configuration.
-
-# Uploader backend (rest or importer)
-
-UPLOADER_BACKEND_URL = 'rest'
-
-# Import uploaded shapefiles into a GeoGit repository
-GEOGIT_DATASTORE = False
-GEOGIT_DATASTORE_NAME = 'geogit-repo'
-
-UPLOADER_SHOW_TIME_STEP=False
-
-#Import uploaded shapefiles into a database such as PostGIS?
-DB_DATASTORE = False
-
-#Database datastore connection settings
-DB_DATASTORE_DATABASE = 'geonode_imports'
-DB_DATASTORE_USER = 'geonode'
-DB_DATASTORE_PASSWORD = 'geonode'
-DB_DATASTORE_HOST = 'localhost'
-DB_DATASTORE_PORT = '5432'
-DB_DATASTORE_TYPE = 'postgis'
-DB_DATASTORE_NAME = 'geonode_imports'
-
-# Use the printNG geoserver lib
-PRINTNG_ENABLED=True
+# OGC (WMS/WFS/WCS) Server Settings
+OGC_SERVER = {
+    'default' : {
+        'BACKEND' : 'geonode.geoserver',
+        'LOCATION' : 'http://localhost:8080/geoserver/',
+        'USER' : 'admin',
+        'PASSWORD' : 'geoserver',
+        'MAPFISH_PRINT_ENABLED' : True,
+        'PRINTNG_ENABLED' : True,
+        'GEONODE_SECURITY_ENABLED' : True,
+        'GEOGIT_ENABLED' : False,
+        'WMST_ENABLED' : False,
+        # Set to name of database in DATABASES dictionary to enable
+        'DATASTORE': '', #'datastore',
+    }
+}

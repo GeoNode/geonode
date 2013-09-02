@@ -126,6 +126,7 @@ class NewLayerUploadForm(LayerUploadForm):
     abstract = forms.CharField(required=False)
     layer_title = forms.CharField(required=False)
     permissions = JSONField()
+    charset = forms.CharField(required=False)
 
     spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file", "xml_file")
 
@@ -144,7 +145,8 @@ class LayerAttributeForm(forms.ModelForm):
 
     class Meta:
         model = Attribute
-        exclude = ('attribute_type',)
+        exclude = ('attribute_type','count','min','max','average','median','stddev',
+                   'sum','unique_values','last_stats_updated','objects')
 
 class LayerStyleUploadForm(forms.Form):
     layerid = forms.IntegerField()

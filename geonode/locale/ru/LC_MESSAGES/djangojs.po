@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
@@ -19,487 +19,494 @@ msgstr ""
 
 #: static/geonode/script/GeoExplorer.js:68 static/geonode/script/GeoNode.js:33
 msgid "Add user..."
-msgstr ""
+msgstr "Добавить пользователя…"
 
 #: static/geonode/script/GeoNode.js:36
 msgid "Who can view and download this data?"
-msgstr ""
+msgstr "Для кого есть доступ к просмотру и загрузке этих данных?"
 
 #: static/geonode/script/GeoNode.js:36
 msgid "Anyone"
-msgstr ""
+msgstr "Для всех"
 
 #: static/geonode/script/GeoNode.js:36 static/geonode/script/GeoNode.js.c:38
 msgid "Any registered user"
-msgstr ""
+msgstr "Для каждого зарегистрировавшегося пользователя"
 
 #: static/geonode/script/GeoNode.js:36
 msgid "Only users who can edit"
-msgstr ""
+msgstr "Только для пользователей имеющих доступ к редактированию"
 
 #: static/geonode/script/GeoNode.js:37
 msgid "Who can edit this data?"
-msgstr ""
+msgstr "Кто может редактировать эти данные?"
 
 #: static/geonode/script/GeoNode.js:38
 msgid "Only the following users or groups:"
-msgstr ""
+msgstr "Только следующие перечисленные пользователи или группы:"
 
 #: static/geonode/script/GeoNode.js:39
 msgid "Who can manage and edit this data?"
-msgstr ""
+msgstr "Кто может управлять и редактировать эти данные?"
 
 #: templates/lang.js:9 templates/lang.js.c:12
 msgid "Add Layers"
-msgstr ""
+msgstr "Добавить слои"
 
 #: templates/lang.js:10
 msgid "Area"
-msgstr ""
+msgstr "Регион/область/площадь"
 
 #: templates/lang.js:11
 msgid "Background"
-msgstr ""
+msgstr "Фон"
 
 #: templates/lang.js:13
 msgid "Done"
-msgstr ""
+msgstr "Выполнено"
 
 #: templates/lang.js:14
 msgid "Available Layers"
-msgstr ""
+msgstr "Доступные слои"
 
 #: templates/lang.js:15
 msgid "Connection Error"
-msgstr ""
+msgstr "Ошибка соединения"
 
 #: templates/lang.js:16
 msgid "The server returned an error"
-msgstr ""
+msgstr "Сервер вернул ошибку"
 
 #: templates/lang.js:17
 msgid "Details..."
-msgstr ""
+msgstr "Детали…"
 
 #: templates/lang.js:19 templates/lang.js.c:111
 msgid "Height"
-msgstr ""
+msgstr "Высота"
 
 #: templates/lang.js:20
 msgid "Get Feature Info"
-msgstr ""
+msgstr "Получить информацию по объекту"
 
 #: templates/lang.js:21 templates/lang.js.c:112
 msgid "Large"
-msgstr ""
+msgstr "Большой"
 
 #: templates/lang.js:22
 msgid "or add a new server."
-msgstr ""
+msgstr "или добавить новый сервер."
 
 #: templates/lang.js:23
 msgid "Map Layers"
-msgstr ""
+msgstr "Слои карты"
 
 #: templates/lang.js:24
 msgid "View available data from:"
-msgstr ""
+msgstr "Просмотреть доступные данные из:"
 
 #: templates/lang.js:25
 msgid "Data"
-msgstr ""
+msgstr "Данные"
 
 #: templates/lang.js:26
 msgid "Layers"
-msgstr ""
+msgstr "Слои"
 
 #: templates/lang.js:27
 msgid "Legend"
-msgstr ""
+msgstr "Легенда"
 
 #: templates/lang.js:28
 msgid "Length"
-msgstr ""
+msgstr "Длина"
 
 #: templates/lang.js:29
 msgid "Loading Map..."
-msgstr ""
+msgstr "Загрузка карты…"
 
 #: templates/lang.js:30 templates/lang.js.c:113
 msgid "Map Size"
-msgstr ""
+msgstr "Размер карты"
 
 #: templates/lang.js:31
 msgid "Measure"
-msgstr ""
+msgstr "Единица измерения"
 
 #: templates/lang.js:32
 msgid "About this Map"
-msgstr ""
+msgstr "Об этой карте"
 
 #: templates/lang.js:33 templates/lang.js.c:86 templates/lang.js.c:155
 msgid "Abstract"
-msgstr ""
+msgstr "Абстракт"
 
 #: templates/lang.js:34 templates/lang.js.c:87 templates/lang.js.c:153
 msgid "Contact"
-msgstr ""
+msgstr "Контакт"
 
 #: templates/lang.js:35 templates/lang.js.c:45
 msgid "Permalink"
-msgstr ""
+msgstr "Permalink"
 
 #: templates/lang.js:36 templates/lang.js.c:226
 msgid "Cancel"
-msgstr ""
+msgstr "Отменить"
 
 #: templates/lang.js:37
 msgid "Save as Copy"
-msgstr ""
+msgstr "Сохранить копию"
 
 #: templates/lang.js:38
 msgid "Save"
-msgstr ""
+msgstr "Сохранить"
 
 #: templates/lang.js:39 templates/lang.js.c:90 templates/lang.js.c:99
 #: templates/lang.js:152 templates/lang.js.c:174 templates/lang.js.c:209
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: templates/lang.js:40 templates/lang.js.c:114
 msgid "Mini"
-msgstr ""
+msgstr "Мини"
 
 #: templates/lang.js:41
 msgid "Pan Map"
-msgstr ""
+msgstr "Сместить карту"
 
 #: templates/lang.js:42
 msgid "Zoom to Next Extent"
-msgstr ""
+msgstr "Изменить масштаб до следующего экстента"
 
 #: templates/lang.js:43
 msgid "Zoom to Previous Extent"
-msgstr ""
+msgstr "Вернуть масштаб к предыдущему экстенту"
 
 #: templates/lang.js:44
 msgid "This map has not yet been saved."
-msgstr ""
+msgstr "Эта карта еще не сохранена."
 
 #: templates/lang.js:46 templates/lang.js.c:115
 msgid "Premium"
-msgstr ""
+msgstr "Премиум"
 
 #: templates/lang.js:47
 msgid "Print Map"
-msgstr ""
+msgstr "Печать карты"
 
 #: templates/lang.js:48
 msgid "Print Preview"
-msgstr ""
+msgstr "Печать предварительного просмотра"
 
 #: templates/lang.js:49
 msgid "Properties"
-msgstr ""
+msgstr "Свойства"
 
 #: templates/lang.js:50 templates/lang.js.c:116
 msgid "Publish Map"
-msgstr ""
+msgstr "Опубликовать карту"
 
 #: templates/lang.js:51 templates/lang.js.c:52
 msgid "Remove Layer"
-msgstr ""
+msgstr "Удалить слой"
 
 #: templates/lang.js:53
 msgid "Sorry, your map could not be saved."
-msgstr ""
+msgstr "Извините, ваша карта не может быть сохранена"
 
 #: templates/lang.js:54
 msgid "Error While Saving"
-msgstr ""
+msgstr "Ошибка при сохранении"
 
 #: templates/lang.js:55
 msgid "Save Map"
-msgstr ""
+msgstr "Сохранить карту"
 
 #: templates/lang.js:56
 msgid "You must be logged in to save this map."
-msgstr ""
+msgstr "Вам необходимо войти в систему, чтобы сохранить карту."
 
 #: templates/lang.js:57 templates/lang.js.c:118
 msgid "Small"
-msgstr ""
+msgstr "Маленький"
 
 #: templates/lang.js:58
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
 msgstr ""
+"Ошибка при подключении к серверу.\n"
+"Пожалуйста, проверьте url и повторите снова."
 
 #: templates/lang.js:59
 msgid "Layer Properties"
-msgstr ""
+msgstr "Свойства слоя"
 
 #: templates/lang.js:60
 msgid "Change layer format and style"
-msgstr ""
+msgstr "Изменить формат и стиль слоя"
 
 #: templates/lang.js:61
 msgid "Edit Styles"
-msgstr ""
+msgstr "Редактировать стили"
 
 #: templates/lang.js:62
 msgid "Edit layer styles"
-msgstr ""
+msgstr "Редактировать стиль слоя"
 
 #: templates/lang.js:63
 msgid "Switch to Google Earth 3D Viewer"
-msgstr ""
+msgstr "Переключить на Google Earth 3D просмотр"
 
 #: templates/lang.js:64
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
 msgstr ""
+"Карта, которую вы пытаетесь загрузить не существует. Создать новую карту "
+"вместо."
+
 
 #: templates/lang.js:65
 msgid "Unknown Map"
-msgstr ""
+msgstr "Неизвестная карта"
 
 #: templates/lang.js:66 templates/lang.js.c:119
 msgid "Width"
-msgstr ""
+msgstr "Ширина"
 
 #: templates/lang.js:67
 msgid "Zoom In"
-msgstr ""
+msgstr "Увеличить масштаб"
 
 #: templates/lang.js:68
 msgid "Zoom Out"
-msgstr ""
+msgstr "Уменьшить масштаб"
 
 #: templates/lang.js:69
 msgid "Zoom level"
-msgstr ""
+msgstr "Уровень масштаба"
 
 #: templates/lang.js:70
 msgid "Zoom Level"
-msgstr ""
+msgstr "Уровень масштаба"
 
 #: templates/lang.js:71
 msgid "Zoom to Layer Extent"
-msgstr ""
+msgstr "Изменить масштаб до размера слоя"
 
 #: templates/lang.js:72
 msgid "Zoom to Visible Extent"
-msgstr ""
+msgstr "Изменить масштаб до видимого размера"
 
 #: templates/lang.js:78
 msgid "Zoom Level {zoom}"
-msgstr ""
+msgstr "Уровень масштаба {zoom}"
 
 #: templates/lang.js:84
 msgid "Create Map"
-msgstr ""
+msgstr "Создать карту"
 
 #: templates/lang.js:85
 msgid "Export Map"
-msgstr ""
+msgstr "Экспортировать карту"
 
 #: templates/lang.js:88
 msgid "Map"
-msgstr ""
+msgstr "Карта"
 
 #: templates/lang.js:89 templates/lang.js.c:156
 msgid "View this Map"
-msgstr ""
+msgstr "Просмотр карты"
 
 #: templates/lang.js:91
 msgid "Open Map"
-msgstr ""
+msgstr "Открыть карту"
 
 #: templates/lang.js:97 templates/lang.js.c:173
 msgid "Name"
-msgstr ""
+msgstr "Имя"
 
 #: templates/lang.js:98
 msgid "Queryable"
-msgstr ""
+msgstr "Запрашиваемый"
 
 #: templates/lang.js:105
 msgid "No background"
-msgstr ""
+msgstr "Нет фона"
 
 #: templates/lang.js:117
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
 msgstr ""
+"Ваша карта готова для публикации в сети! Просто скопируйте следующий "
+"HTML для того, чтобы разместить карту на вашем вебсайте:"
 
 #: templates/lang.js:126 templates/lang.js.c:192
 msgid "Abstract:"
-msgstr ""
+msgstr "Абстракт:"
 
 #: templates/lang.js:127 templates/lang.js.c:194
 msgid "No attribution information is provided for this layer."
-msgstr ""
+msgstr "Для этого слоя не представлена атрибутивная информация."
 
 #: templates/lang.js:128 templates/lang.js.c:195
 msgid "Provided by:"
-msgstr ""
+msgstr "Кем представлена:"
 
 #: templates/lang.js:129 templates/lang.js.c:196
 msgid "Download:"
-msgstr ""
+msgstr "Загрузить:"
 
 #: templates/lang.js:130 templates/lang.js.c:198
 msgid "No keywords are listed for this layer."
-msgstr ""
+msgstr "Для этого слоя нет списка ключевых слов."
 
 #: templates/lang.js:131 templates/lang.js.c:199
 msgid "Keywords:"
-msgstr ""
+msgstr "Ключевые слова:"
 
 #: templates/lang.js:132 templates/lang.js.c:200
 msgid "No metadata URLs are defined for this layer."
-msgstr ""
+msgstr " URLs метаданных не определены для этого слоя."
 
 #: templates/lang.js:133 templates/lang.js.c:201
 msgid "Metadata Links:"
-msgstr ""
+msgstr "Ссылки метаданных:"
 
 #: templates/lang.js:139
 msgid "Paper size:"
-msgstr ""
+msgstr "Размер документа:"
 
 #: templates/lang.js:140
 msgid "Resolution:"
-msgstr ""
+msgstr "Разрешение:"
 
 #: templates/lang.js:141
 msgid "Print"
-msgstr ""
+msgstr "Печать"
 
 #: templates/lang.js:142
 msgid "Enter map title here."
-msgstr ""
+msgstr "Вставить название карты здесь."
 
 #: templates/lang.js:143
 msgid "Include legend?"
-msgstr ""
+msgstr "Включить легенду?"
 
 #: templates/lang.js:144
 msgid "Enter comments here."
-msgstr ""
+msgstr "Вставить комментарии здесь."
 
 #: templates/lang.js:145
 msgid "Creating PDF..."
-msgstr ""
+msgstr "Создать PDF…"
 
 #: templates/lang.js:154
 msgid "Last Modified"
-msgstr ""
+msgstr "Последний измененный"
 
 #: templates/lang.js:157 templates/lang.js.c:178
 msgid "Prev"
-msgstr ""
+msgstr "Предыдущий"
 
 #: templates/lang.js:158 templates/lang.js.c:179
 msgid "Next"
-msgstr ""
+msgstr "Следующий"
 
 #: templates/lang.js:159 templates/lang.js.c:180
 msgid "of"
-msgstr ""
+msgstr "of"
 
 #: templates/lang.js:160 templates/lang.js.c:181
 msgid "Your search did not match any items."
-msgstr ""
+msgstr "Поиск не нашел элементов по запросу."
 
 #: templates/lang.js:161
 msgid "Search Maps"
-msgstr ""
+msgstr "Поиск карт"
 
 #: templates/lang.js:162 templates/lang.js.c:182
 msgid "Search"
-msgstr ""
+msgstr "Поиск"
 
 #: templates/lang.js:163 templates/lang.js.c:183
 msgid "Showing"
-msgstr ""
+msgstr "Демонстрация"
 
 #: templates/lang.js:164
 msgid "Loading"
-msgstr ""
+msgstr "Загрузка"
 
 #: templates/lang.js:165 templates/lang.js.c:185
 msgid "permalink"
-msgstr ""
+msgstr "permalink"
 
 #: templates/lang.js:172
 msgid "Select"
-msgstr ""
+msgstr "Выбрать"
 
 #: templates/lang.js:175
 msgid "Select:"
-msgstr ""
+msgstr "Выбрать:"
 
 #: templates/lang.js:176
 msgid "All"
-msgstr ""
+msgstr "Все"
 
 #: templates/lang.js:177
 msgid "None"
-msgstr ""
+msgstr "Ни одного"
 
 #: templates/lang.js:184
 msgid "Loading..."
-msgstr ""
+msgstr "Загрузка…"
 
 #: templates/lang.js:186
 msgid "You do not have permission to view this data"
-msgstr ""
+msgstr "У вас нет доступа к просмотру этих данных"
 
 #: templates/lang.js:187
 msgid "This data is stored on a remote server"
-msgstr ""
+msgstr "Эти данные хранятся на удаленном сервере"
 
 #: templates/lang.js:193
 msgid "No abstract is provided for this layer."
-msgstr ""
+msgstr "Для данного слоя установлен абстракт."
 
 #: templates/lang.js:197
 msgid "No download URLs are definied for this layer."
-msgstr ""
+msgstr "Не указаны загруженные URLs для этого слоя"
 
 #: templates/lang.js:207
 msgid "Selected Layers"
-msgstr ""
+msgstr "Выделенные слои"
 
 #: templates/lang.js:208
 msgid "No Layers Selected"
-msgstr ""
+msgstr "Не выделены слои"
 
 #: templates/lang.js:210
 msgid "Clear Selected"
-msgstr ""
+msgstr "Очистить выделенное"
 
 #: templates/lang.js:211
 msgid "Clear All"
-msgstr ""
+msgstr "Очистить все"
 
 #: templates/lang.js:217
 msgid "Operation Failed"
-msgstr ""
+msgstr "Операция не исполнена"
 
 #: templates/lang.js:218
 msgid "No layers are currently selected."
-msgstr ""
+msgstr "Ни одного слоя не выделено."
 
 #: templates/lang.js:225
 msgid "Downloading..."
-msgstr ""
+msgstr "Скачивание…"
 
 #: templates/lang.js:227
 msgid "Please wait"
-msgstr ""
+msgstr "Пожалуйста, подождите"

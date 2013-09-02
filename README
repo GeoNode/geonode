@@ -30,9 +30,8 @@ If instead, you are interested in doing development on the source code, here are
     sudo add-apt-repository ppa:chris-lea/node.js
     sudo apt-get update
     sudo apt-get install nodejs
-    sudo npm install -g less
     sudo npm install -g bower
-    sudo npm install -g bower-installer
+    sudo npm install -g grunt-cli
     
     # Setup virtualenv tools
     sudo pip install virtualenvwrapper
@@ -156,19 +155,16 @@ Mac OSX Development Build Instructions::
     pip install nose
     pip install httplib2
     pip install shapely
-    pip install imaging
     pip install PIL
     pip install paver
 
     # Node and tools required for static development
     brew install node
-    npm install -g less
     npm install -g bower
-    npm install -g bower-installer
+    npm install -g grunt-cli
 
     paver setup
     paver start
-
 
 Once fully started, you should see a message indicating the address of your geonode.
 The default username and password are ``admin`` and ``admin``::
@@ -177,6 +173,10 @@ The default username and password are ``admin`` and ``admin``::
   The GeoNode is an unstoppable machine
   Press CTRL-C to shut down
 
+Before starting GeoNode (paver start), you could test your installation by running tests::
+
+    paver test
+    paver test_integration
 
 .. note:: 
 

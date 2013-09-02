@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if grep -q geonode /etc/hosts ; then
+   echo "Geonode entry found in /etc/hosts." > /root/geonode_test.txt
+   exit 0
+fi
+
+echo '127.0.0.1 geonode' | sudo tee -a /etc/hosts
+echo "Geonode entry added in /etc/hosts." > /root/geonode_test.txt
+
