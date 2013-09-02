@@ -26,6 +26,8 @@ geonode/static/lib/css/jquery.dataTables.css
 geonode/static/lib/css/multi-select.css
 geonode/static/lib/css/qunit.css
 geonode/static/lib/css/select2.css
+geonode/static/lib/css/assets.min.css
+geonode/static/lib/js/assets.min.js
 geonode/static/lib/js/bootstrap-datepicker.js
 geonode/static/lib/js/bootstrap.js
 geonode/static/lib/js/jquery-ui.custom.js
@@ -38,9 +40,11 @@ geonode/static/lib/js/jquery.timeago.js
 geonode/static/lib/js/jquery.tinysort.js
 geonode/static/lib/js/json2.js
 geonode/static/lib/js/qunit.js
+geonode/static/lib/js/require.js
 geonode/static/lib/js/select2.js
+geonode/static/lib/js/text.js
+geonode/static/lib/js/underscore.js
 geonode/static/lib/js/waypoints.js
-
 
 # Uploaded files
 geonode/uploaded
