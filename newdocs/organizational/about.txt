@@ -4,12 +4,13 @@
 About GeoNode
 =============
 
-GeoNode is an open source platform that facilitates the creation, sharing, and collaborative use of geospatial data.
-The project aims to surpass existing spatial data infrastructure solutions by integrating robust social and cartographic tools.
+.. image:: img/logo.png
 
-At its core, GeoNode is built on a stack based on Django, GeoServer, GeoExplorer, jQuery, Bootstrap, and pycsw.
+**GeoNode is a geospatial content management system**, a platform for the management and publication of geospatial data. It brings together mature and stable open-source software projects under a consistent and easy-to-use interface allowing non-specialized users to share data and create interactive maps.
 
-Atop this stack, the project has built a map composer and viewer, tools for analysis, and reporting tools.
+Data management tools built into GeoNode allow for integrated creation of data, metadata, and map visualizations. Each dataset in the system can be shared publicly or restricted to allow access to only specific users. Social features like user profiles and commenting and rating systems allow for the development of communities around each platform to facilitate the use, management, and quality control of the data the GeoNode instance contains.
+
+It is also designed to be a flexible platform that software developers can extend, modify or integrate against to meet requirements in their own applications.
 
 
 Online demo
@@ -67,18 +68,4 @@ The next obvious steps are to :doc:`install GeoNode </intro/install>`, :doc:`rea
       #. Get a confirmation notice from geonode-users+subconfirm@googlegroups.com and comfirm by replying
       #. Once the above is complete, you are registered and you can start sending emails to the community
 
-.. _Risk in a Box: http://riskinabox.org
-
-    Status
-    API
-    Training
-    Shop
-    Blog
-    About
-
-    © 2013 GitHub, Inc.
-    Terms
-    Privacy
-    Security
-    Contact
 

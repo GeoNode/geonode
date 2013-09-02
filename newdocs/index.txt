@@ -13,11 +13,11 @@ We have three sections. Each are described in detail below.
  #. :doc:`Reference <reference/index>`  code reference, api, all components, architecture in detail
  #. :doc:`Organizational <organizational/index>`  about, how to contribute, links, resources, other info
 
-We also have three users types. So pick which one you are and start surfing.
+We also have three types of users.
 
  #. **Users**  you are a person who logs into a Geonode website and starts using it
- #. **Administrators**  you want to install, play, setup, try your own geonode
- #. **Developers**  you are a coder, want to add functionality, integrate in some other system, fix bugs
+ #. **Administrators**  you want to install, play, setup and try geonode
+ #. **Developers**  you are a coder, want to add functionality, integrate in some other system, fix bugs, setup a server and deploy
 
 First Steps
 ===========
