@@ -9,6 +9,5 @@ GeoNode's development process
    issues
    testing
    patches
-   gnip    
-   roadmap 
-   devresources 
+   gnip
+   devresources

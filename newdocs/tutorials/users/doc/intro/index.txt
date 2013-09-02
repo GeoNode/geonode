@@ -1,4 +1,4 @@
-.. _intro:
+.. _intro_user:
 
 Introduction
 ============

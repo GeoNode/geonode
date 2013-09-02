@@ -9,9 +9,10 @@ How To Use The Documentation
 
 We have three sections. Each are described in detail below.
 
+ #. :doc:`Organizational <organizational/index>`  about, how to contribute, links, resources, other info
  #. :doc:`Tutorials <tutorials/index>`  are based on performing tasks in a workshop like format
  #. :doc:`Reference <reference/index>`  code reference, api, all components, architecture in detail
- #. :doc:`Organizational <organizational/index>`  about, how to contribute, links, resources, other info
+
 
 We also have three types of users.
 
@@ -28,6 +29,11 @@ The following documents give an overview to GeoNode, they are targeted at a non-
  * :doc:`Quick Installation Guide <tutorials/admin/doc/install/quick_install>`
  * :doc:`Detail Installation Guide <tutorials/admin/doc/install/installation_devmode>`
 
+Organizational
+==============
+
+:doc:`Organizational <organizational/index>` is  the section about Geonode, how to contribute, learn about the community, links, review process, roadmap and other administraive stuff.
+
 Tutorials
 =========
 
@@ -38,10 +44,6 @@ Reference
 
 The :doc:`Reference <reference/index>` section is all about Geonode details. You will see the components, security, API and many more.
 
-Organizational
-==============
-
-:doc:`Organizational <organizational/index>` is  the section about Geonode, how to contribute, learn about the community, links, review process, roadmap and other administraive stuff.
 
 Having trouble? We'd like to help!
 

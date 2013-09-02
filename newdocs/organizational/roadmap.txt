@@ -1,11 +1,9 @@
 .. _roadmap:
 
-=======
-Roadmap 
-=======
-
+===============
 Roadmap Process
----------------
+===============
+
 
 The GeoNode Roadmap Process is designed to complement the more technical GeoNode [[Improvement Proposals]] and strives to make it easier for the various organizations invested in GeoNode to collaborate on features of common interest.
 
