@@ -104,6 +104,7 @@ module.exports = function(grunt) {
             'jquery-timeago/jquery.timeago.js',
             'tinysort/src/jquery.tinysort.js',
             'raty/js/jquery.raty.js',
+            'raty/lib/jquery.raty.js',
             'jquery-waypoints/waypoints.js',
             'jquery-ui/ui/jquery-ui.custom.js',
             'jquery-ajaxprogress/jquery.ajaxprogress.js',
