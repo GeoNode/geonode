@@ -12,11 +12,9 @@ These workshop materials should be accompanied by a data package containing the 
 
 .. todo:: Create script to generate this bundle.
 
-:ref:`intro`
-  Learn about GeoNode and tour the interface
 
 :ref:`quickstart`
-  See the GeoNode quickstart
+  Click to get started with the GeoNode quickstart
 
 :ref:`accounts`
   Create an account in GeoNode and interact with other users

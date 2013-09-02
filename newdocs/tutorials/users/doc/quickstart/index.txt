@@ -21,7 +21,7 @@ be opened at http://localhost:8000/ (I assume!). The page will look like shown i
     .. figure:: img/start_page.PNG
 
 1. Register a new account
-----------------------
+-------------------------
 
 From the interface shown above, one can view and modify existing spatial layers and maps, as well as find information on other GeoNode users. But, without being logged in, you are limited to read-only access of public layers. In order to create a map and add layers to it, you have to have create an account first.
 

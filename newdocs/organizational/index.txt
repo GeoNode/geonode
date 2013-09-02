@@ -6,15 +6,11 @@ In this documentation information on existing projects, contributing to Geonode 
 
 :ref:`about`
 
-:ref:`projects`
-
 :ref:`contrib_trans`
 
 :ref:`contrib_docu`
 
-:ref:`localization`
-
-.. todo:: is this still needed?
+:ref:`doc_guidelines`
 
 :ref:`community`
 
@@ -35,7 +31,6 @@ In this documentation information on existing projects, contributing to Geonode 
 
     about
     projects
-    localization
     community
     comm_bylaws
     review_criteria

@@ -8,26 +8,42 @@ Here we will describe how to write the documentation using Restructured Text. Le
 
 Starting with how we notate a title and subtitles
 
-=========================
+==========================
 I am a first 1 level title
-=========================
+==========================
 a first order title has an equals sign (=) above and below the title
+::
+=================
+top level 1 title
+=================
 
 I am a Second 2 level title
 ===========================
 here we use one line of equals signs (=) under the second level title
+::
+top level 2 title
+=================
 
 I am a Third 3 level title
 --------------------------
 these are a minus symbol (-) on your keyboard
+::
+top level 3 title
+-----------------
 
 I am a Fourth 4 level title
 ...........................
 these are a dots using the period (.) on your keyboard
+::
+top level 4 title
+.................
 
 I am a Firth 5 level title
 ++++++++++++++++++++++++++
 here we use a plus (+) on your keyboard
+::
+top level 3 title
++++++++++++++++++
 
 
 =================
@@ -36,8 +52,7 @@ Still in Progress
 
 ..todo  write up how to do linking
 
- #. add image
- #. add comment
- #. add code sample
- #. create a table
- #.
+#. add image
+#. add comment
+#. add code sample
+#. create a table
