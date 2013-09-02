@@ -223,12 +223,19 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         new_keywords = layer_form.cleaned_data['keywords']
 
         if new_poc is None:
-            poc_form = ProfileForm(request.POST, prefix="poc")
+            if poc.user is None:
+                poc_form = ProfileForm(request.POST, prefix="poc", instance=poc)
+            else:
+                poc_form = ProfileForm(request.POST, prefix="poc")
             if poc_form.has_changed and poc_form.is_valid():
                 new_poc = poc_form.save()
 
         if new_author is None:
-            author_form = ProfileForm(request.POST, prefix="author")
+            if metadata_author.user is None:
+                author_form = ProfileForm(request.POST, prefix="author", 
+                    instance=metadata_author)
+            else:
+                author_form = ProfileForm(request.POST, prefix="author")
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
