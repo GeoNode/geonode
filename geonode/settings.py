@@ -33,6 +33,9 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 # present pretty error pages.
 DEBUG = TEMPLATE_DEBUG = True
 
+# Set to True to load non-minified versions of (static) client dependencies
+DEBUG_STATIC = False
+
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
@@ -42,7 +45,16 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
-    }
+    },
+    # vector datastore for uploads
+    #'datastore' : {
+    #    'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    #    'NAME': '',
+    #    'USER' : '',
+    #    'PASSWORD' : '',
+    #    'HOST' : '',
+    #    'PORT' : '',
+    #}
 }
 
 # Local time zone for this installation. Choices can be found here:
@@ -350,6 +362,9 @@ SOUTH_TESTS_MIGRATE=False
 AUTH_PROFILE_MODULE = 'people.Profile'
 REGISTRATION_OPEN = False
 
+# Email for users to contact admins.
+THEME_ACCOUNT_CONTACT_EMAIL = 'admin@example.com'
+
 #
 # Test Settings
 #
@@ -370,17 +385,39 @@ NOSE_ARGS = [
 
 SITEURL = "http://localhost:8000/"
 
-# Email for users to contact admins.
-THEME_ACCOUNT_CONTACT_EMAIL = 'admin@example.com'
+# Default TopicCategory to be used for resources. Use the slug field here
+DEFAULT_TOPICCATEGORY = 'location'
 
-# GeoServer information
+MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 
-# The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = "http://localhost:8080/geoserver/"
+# Search Snippet Cache Time in Seconds
+CACHE_TIME=0
 
-# The username and password for a user that can add and
-# edit layer details on GeoServer
-GEOSERVER_CREDENTIALS = "admin", "geoserver"
+# OGC (WMS/WFS/WCS) Server Settings
+OGC_SERVER = {
+    'default' : {
+        'BACKEND' : 'geonode.geoserver',
+        'LOCATION' : 'http://localhost:8080/geoserver/',
+        'USER' : 'admin',
+        'PASSWORD' : 'geoserver',
+        'MAPFISH_PRINT_ENABLED' : True,
+        'PRINTNG_ENABLED' : True,
+        'GEONODE_SECURITY_ENABLED' : True,
+        'GEOGIT_ENABLED' : False,
+        'WMST_ENABLED' : False,
+        # Set to name of database in DATABASES dictionary to enable
+        'DATASTORE': '', #'datastore',
+    }
+}
+
+# Uploader Settings
+UPLOADER = {
+    'BACKEND' : 'geonode.rest',
+    'OPTIONS' : {
+        'TIME_ENABLED': False,
+        'GEOGIT_ENABLED': False,
+    }
+}
 
 # CSW settings
 CATALOGUE = {
@@ -461,7 +498,7 @@ DEFAULT_MAP_ZOOM = 0
 MAP_BASELAYERS = [{
     "source": {
         "ptype": "gxp_wmscsource",
-        "url": GEOSERVER_BASE_URL + "wms",
+        "url": OGC_SERVER['default']['LOCATION'] + "wms",
         "restUrl": "/gs/rest"
      }
   },{
@@ -516,35 +553,19 @@ MAP_BASELAYERS = [{
 
 }]
 
-# GeoNode vector data backend configuration.
-
-# Uploader backend (rest or importer)
-
-UPLOADER_BACKEND_URL = 'rest'
-
-#Import uploaded shapefiles into a database such as PostGIS?
-DB_DATASTORE = False
-
-#Database datastore connection settings
-DB_DATASTORE_DATABASE = ''
-DB_DATASTORE_USER = ''
-DB_DATASTORE_PASSWORD = ''
-DB_DATASTORE_HOST = ''
-DB_DATASTORE_PORT = ''
-DB_DATASTORE_TYPE = ''
-#The name of the store in Geoserver
-DB_DATASTORE_NAME = ''
-
 LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
 }
 
-# Default TopicCategory to be used for resources. Use the slug field here
-DEFAULT_TOPICCATEGORY = 'location'
 
-MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
+# Require users to authenticate before using Geonode
+LOCKDOWN_GEONODE = False
 
-CACHE_TIME=0
+# Add additional paths (as regular expressions) that don't require authentication.
+AUTH_EXEMPT_URLS = ()
+
+if LOCKDOWN_GEONODE:
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('geonode.security.middleware.LoginRequiredMiddleware',)
 
 # Load more settings from a file called local_settings.py if it exists
 try:

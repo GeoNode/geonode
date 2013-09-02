@@ -1,11 +1,4 @@
-requirejs.config({
-    baseUrl: '/static/lib/',
-    paths: {
-        'waypoints': 'js/waypoints.min'
-    }
-});
-
-define(['waypoints'],function(){
+$(function(){
     
     function build_query(){
         /*
@@ -18,7 +11,7 @@ define(['waypoints'],function(){
             date_start: [],
             date_end: [],
             sort: []
-        }
+        };
         
         // traverse the active filters to build the query parameters
         $('.filter > ul').each(function(){
@@ -28,36 +21,36 @@ define(['waypoints'],function(){
             });
         });
         
-        if(params['date_start'][0] === 'yyyy-mm-dd'){
-            params['date_start'] = ['']
+        if(params.date_start[0] === 'yyyy-mm-dd'){
+            params.date_start = [''];
         }
-        if(params['date_end'][0] === 'yyyy-mm-dd'){
-            params['date_end'] = ['']
+        if(params.date_end[0] === 'yyyy-mm-dd'){
+            params.date_end = [''];
         }
         //from the client we don't use the all key for the categories
-        if(params['categories'][0] === 'all'){
-            params['categories'].shift();
+        if(params.categories[0] === 'all'){
+            params.categories.shift();
         }
 
         var data = {
-            'type': params['types'].join(','),
-            'category': params['categories'].join(','),
-            'kw': params['keywords'].join(','),
-            'start_date': params['date_start'][0],
-            'end_date': params['date_end'][0],
-            'sort': params['sort'][0]
-        }
+            'type': params.types.join(','),
+            'category': params.categories.join(','),
+            'kw': params.keywords.join(','),
+            'start_date': params.date_start[0],
+            'end_date': params.date_end[0],
+            'sort': params.sort[0]
+        };
         if (typeof default_type != 'undefined'){
-            data['type'] = default_type;
+            data.type = default_type;
         }
-        return data
+        return data;
     }
 
     function query(){
         /*
         * Sends the query used for search
         */
-        var data = build_query()
+        var data = build_query();
         $.ajax({
             type: 'POST',
             url: '/search/html',
@@ -67,7 +60,7 @@ define(['waypoints'],function(){
                 //call the pagination
                 paginate();
                 //call the rating update
-                $(document).trigger('rateMore');
+                rateMore();
             }
         });
     }
@@ -105,6 +98,27 @@ define(['waypoints'],function(){
         }
     }
 
+    function rateMore() {
+        $('.overall_rating').each(function() {
+            var rating = $(this).parents(".avg_rating").data('rating');
+            star(this, rating);
+        });
+        $(".loadmore").on("load.loadmore", function(e, o) {          
+            o.find(".overall_rating").each(function() {
+                var rating = $(this).parents(".avg_rating").data('rating');
+            star(this, rating);
+            });
+        });
+    }
+    function star(elem, rating) {
+        $(elem).raty({
+            half: true,
+            readOnly: true,
+            score: rating,
+            path: '/static/lib/img/'
+        });        
+    }
+
     var loading = "<div class='loading'><p>Loading more items&hellip;</p></div>";
     function fetchMore(a) {
         /*
@@ -126,7 +140,7 @@ define(['waypoints'],function(){
                     $(this).find('.more').attr("href", more);
                     if ($(this).hasClass("paginate-auto")) $(this).find(".pagination").waypoint(opts);
                 } else $(this).find('.more').remove();
-                $(document).trigger('rateMore');
+                rateMore();
             }
         });
     }
@@ -145,7 +159,6 @@ define(['waypoints'],function(){
             };
 
             if (hasMore && !$("html.ie8").size()) {
-                $pages.children().hide();
                 if (auto) {
                     $pages.waypoint(function(event, direction) {
                         $pages.waypoint('remove');
@@ -163,6 +176,7 @@ define(['waypoints'],function(){
                     }));
                 }
             }
+            rateMore();
         });
     }
     
@@ -172,7 +186,11 @@ define(['waypoints'],function(){
     $('.trigger-query').click(
         function(){
             // manage the activation deactivation of the filter on click
-            $(this).hasClass('active') ? $(this).removeClass('active') : $(this).addClass('active');
+            if ($(this).hasClass('active') === true) {
+                $(this).removeClass('active');
+            } else {
+                $(this).addClass('active');
+            }   
             manage_element($(this));
             query();
         }

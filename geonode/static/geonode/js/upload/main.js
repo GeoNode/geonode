@@ -8,6 +8,7 @@ requirejs.config({
     paths: {
         'upload': '../../geonode/js/upload',
         'templates': '../../geonode/js/templates',
+        'progress': 'jquery.ajax-progress'
     }
 });
 

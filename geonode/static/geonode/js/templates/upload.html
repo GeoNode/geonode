@@ -17,12 +17,17 @@
     </div>
     <% if (format !== 'raster') { %>
     <div id='<%= name %>-vector-options' class='row span8'>
-        <% if (geogit) { %><input type='checkbox' id='<%= name %>-geogit' name='<%= name %>-geogit'>Import to Geogit<% }%>
-        <% if (time) { %><input type='checkbox' id='<%= name %>-time' name='<%= name %>-time'>Configure Time<% }%>
+        <% if (time) { %><input type='checkbox' id='<%= name %>-time' name='<%= name %>-time'/>&nbsp;Configure Time<% }%>
+        <% if (geogit) { %>
+            <input type='checkbox' id='<%= name %>:geogit_toggle' name='<%= name %>:geogit_toggle'/>&nbsp;Import to Geogit
+            <br/><br/>
+            <div id="<%= name %>:geogit_store" name='<%= name %>:geogit_store' style="width: 225px; visibility:hidden;padding:5px"></div>
+        <% }%>
+
     </div>
     <% } %>
     <hr />
-    <div>
+    <div id="<%= name %>-files" class="row span8">
       <ul class='files'></ul>
       <ul class='errors'></ul>
       <div id='status'></div>

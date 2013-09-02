@@ -45,7 +45,7 @@ from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
 from geonode.utils import forward_mercator
-from geonode.utils import http_client
+from geonode.utils import http_client, ogc_server_settings
 
 from geoserver.catalog import Catalog
 from geoserver.layer import Layer as GsLayer
@@ -53,7 +53,7 @@ from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
 
-_user, _password = settings.GEOSERVER_CREDENTIALS
+_user, _password = ogc_server_settings.credentials
 
 class Map(ResourceBase, GXPMapBase):
     """
@@ -206,10 +206,9 @@ class Map(ResourceBase, GXPMapBase):
 
     def _render_thumbnail(self, spec):
         http = httplib2.Http()
-        url = "%srest/printng/render.png" % settings.GEOSERVER_BASE_URL
+        url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
         hostname = urlparse(settings.SITEURL).hostname
-        user, passwd = settings.GEOSERVER_CREDENTIALS
-        params = dict(width=198, height=98, auth="%s,%s,%s" % (hostname, user, passwd))
+        params = dict(width=198, height=98, auth="%s,%s,%s" % (hostname, _user, _password))
         url = url + "?" + urllib.urlencode(params)
         http.add_credentials(_user, _password)
         netloc = urlparse(url).netloc
@@ -271,7 +270,7 @@ class Map(ResourceBase, GXPMapBase):
         # with the WMS parser.
         p = "&".join("%s=%s"%item for item in params.items())
 
-        return '<img src="%s"/>' % (settings.GEOSERVER_BASE_URL + "wms/reflect?" + p)
+        return '<img src="%s"/>' % (ogc_server_settings.LOCATION + "wms/reflect?" + p)
 
     class Meta:
         # custom permissions,
@@ -358,7 +357,7 @@ class Map(ResourceBase, GXPMapBase):
             map_layers.append(MapLayer(
                 map = self,
                 name = layer.typename,
-                ows_url = settings.GEOSERVER_BASE_URL + "wms",
+                ows_url = ogc_server_settings.LOCATION + "wms",
                 stack_order = index,
                 visibility = True
             ))
@@ -504,10 +503,8 @@ def pre_save_maplayer(instance, sender, **kwargs):
     if kwargs.get('raw', False):
         return
 
-    _user, _password = settings.GEOSERVER_CREDENTIALS
-    url = "%srest" % settings.GEOSERVER_BASE_URL
     try:
-        c = Catalog(url, _user, _password)
+        c = Catalog(ogc_server_settings.rest, _user, _password)
         instance.local = isinstance(c.get_layer(instance.name),GsLayer)
     except EnvironmentError, e:
         if e.errno == errno.ECONNREFUSED:

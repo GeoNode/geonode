@@ -5,13 +5,6 @@
 
 {% block body_class %}data{% endblock %}
 
-
-{% block head %}
-<link href="{{ STATIC_URL }}lib/css/multi-select.css" media="screen" rel="stylesheet" type="text/css">
-
-{{ block.super }}
-{% endblock %}
-
 {% block body_outer %}
 {% if error %}
 <div class="alert alert-error">{{ error }}</div>
@@ -65,26 +58,25 @@
 </div>
 {% endblock %}
 {% block extra_script %}
-<script src="{{ STATIC_URL }}lib/js/jquery.multi-select.js" type="text/javascript"></script>
 <script type="text/javascript">
-    $(function () {
-        $('#style-select').multiSelect();
+  $(function () {
+
+    $('#style-select').multiSelect({
+      afterSelect: function(values){
+        $('#default_style').append($("<option/>", {
+          value: values[0],
+          text: values[0]
+        }));
+      },
+      afterDeselect: function(values){
+        $('#default_style option').each(function() {
+          if ( $(this).val() == values[0] ) {
+            $(this).remove();
+          }
+        });
+      }
     });
 
-        $('#style-select').multiSelect({
-            afterSelect: function(values){
-                $('#default_style').append($("<option/>", {
-                    value: values[0],
-                    text: values[0]
-                }));
-            },
-            afterDeselect: function(values){
-                $('#default_style option').each(function() {
-                    if ( $(this).val() == values[0] ) {
-                        $(this).remove();
-                    }
-                });
-            }
-    });
+  });
 </script>
 {% endblock %}

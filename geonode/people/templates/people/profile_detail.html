@@ -67,9 +67,8 @@
     {% endif_has_tag %}
     </div>
   </div>
-
+  <div class="span12"> <h2>Resources</h2></div>
 <div class="span8 filter">
-  <h2>Resources</h2>
   {% include "people/_profile_filters.html" %}
 </div>
 <div class="span4">
@@ -122,11 +121,7 @@
 </div>
 {% endblock %}
 
-{% block extra_script %}
-  <script src="{% static "lib/js/waypoints.min.js" %}"></script>
-  <script src="{% static "lib/js/loadmore.js" %}"></script>
-  <script src="{% static "lib/js/jquery.raty.min.js" %}"></script>
-  <script src="{% static "geonode/js/search/explore.js" %}"></script>
-  <script src="{% static "geonode/js/paginate.js" %}"></script>
+{% block extra_script %}  
+  {% include 'search_scripts.html' %}
 {% endblock extra_script %}
 

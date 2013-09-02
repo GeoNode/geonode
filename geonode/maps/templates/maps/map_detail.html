@@ -1,7 +1,6 @@
 {% extends "maps/map_base.html" %}
 {% load geonode_auth %}
 {% load i18n %}
-{% load geonode_auth %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
 {% load url from future %}
@@ -18,10 +17,10 @@
 
 {% block body_outer %}
   {% overall_rating map "map" as map_rating %}
-  <div class="span5">
+  <div class="span6">
     <h2 class="page-title">{{ map.title }}</h2>
   </div>
-  <div class="span7 action-group pull-right">
+  <div class="span6 action-group pull-right">
     <div class="btn-group pull-right">
       <div class="btn-group">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
@@ -51,6 +50,9 @@
         </ul>
       </div>
       {% endif %}
+      <div class="btn-group">
+        <a href="{% url "map_view" map.id %}" class="btn btn-large">{% trans "View Map" %}</a>
+      </div>
       {% comment %}
       <div class="btn-group">
         <a href="#" class="btn btn-large btn-info strong"><i class="icon-print icon-white"></i> {% trans "Print Map" %}</a>
@@ -76,7 +78,7 @@
     </div>
     <div class="tab-content">
 
-      {% include "geonode/resourcebase_info_panel.html" with resourcebase=map %}
+      {% include "base/resourcebase_info_panel.html" with resourcebase=map %}
 
       <article class="tab-pane" id="comments">
     	{% with map as obj %}
@@ -137,11 +139,6 @@
         </ul>
     </div>
     {% endif %}
-    <div class='well'>
-        <h2>{% trans "View map" %}</h2>
-        <p>{% trans "View this map in the GeoExplorer GIS Client" %}</p>
-        <a href="{% url "map_view" map.id %}" class="btn btn-large">{% trans "View Map" %}</a>
-    </div>
       {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
       {% if can_change_permissions %}
     <div class='well'>
@@ -178,16 +175,15 @@
 
 {% if request.user.is_authenticated %}
  {% user_rating_js request.user map "map" %}
-{% else %}
- <script src="{{ STATIC_URL }}lib/js/jquery.raty.min.js"></script>
 {% endif %}
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/thumbnail/map_thumbnail.js"></script>
 <script type="text/javascript">
  $(function() {
    $('.overall_rating').raty({
      half: true,
      readOnly: true,
      start: $('div.overall_rating').data('rating'),
-     path: "{{ STATIC_URL }}agon_ratings/img/"
+     path: "{{ STATIC_URL }}lib/img/"
    });
    $("#rate-map").raty();
  });
@@ -214,30 +210,7 @@
 
 {% if PRINTNG_ENABLED %}
   $('#set_thumbnail').click(function(){
-    var xmap = $('.olMapViewport');
-    height = xmap.height();
-    width = xmap.width();
-    var map = xmap.clone(); 
-    map.find('*').each(function(i) {
-        e = $(this);
-        if(e.css('display') === 'none' || (e.attr("class") !== undefined && (e.attr("class").indexOf('olControl') >= 0 || e.attr("class").indexOf('x-') >= 0))) {
-            e.remove(); 
-        } else if (e.attr('src') === '/static/geoexplorer/externals/ext/resources/images/default/s.gif') {
-            e.remove();
-        } else {
-            e.removeAttr("id")
-        }
-    });
-    var url = location.pathname + '/thumbnail';
-    $.ajax({
-     type: "POST",
-      url: url, 
-      data: ("<div style='height:" + height + "px; width: " + width + "px;'>" + map.html() + "</div>"), 
-     success: function(data, status, jqXHR) {
-        return true;
-      }
-    });
-    return true;
+    return createMapThumbnail();
   });
 {% endif %}
  

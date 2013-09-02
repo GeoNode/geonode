@@ -28,11 +28,11 @@ from geonode.geoserver.uploader.uploader import Uploader
 from geonode.layers.models import Layer
 from geonode.utils import _user, _password
 from geoserver.catalog import FailedRequestError
+from geonode.utils import ogc_server_settings
 
 
 def gs_uploader():
-    url = "%srest" % settings.GEOSERVER_BASE_URL
-    return Uploader(url, _user, _password)
+    return Uploader(ogc_server_settings.rest, _user, _password)
 
 
 def get_upload_type(filename):
@@ -125,39 +125,46 @@ def rename_and_prepare(base_file):
     )
         
 
-def create_geoserver_db_featurestore(store_type=None):
+def create_geoserver_db_featurestore(store_type=None, store_name=None):
     cat = Layer.objects.gs_catalog
+    dsname = ogc_server_settings.DATASTORE
     # get or create datastore
     try:
-        if store_type == 'geogit' and hasattr(settings, 'GEOGIT_DATASTORE_NAME') and settings.GEOGIT_DATASTORE_NAME:
-            ds = cat.get_store(settings.GEOGIT_DATASTORE_NAME)
-        elif settings.DB_DATASTORE_NAME:
-            ds = cat.get_store(settings.DB_DATASTORE_NAME)
+        if store_type == 'geogit' and ogc_server_settings.GEOGIT_ENABLED:
+            if store_name is not None:
+                ds = cat.get_store(store_name)
+            else:
+                ds = cat.get_store(settings.GEOGIT_DATASTORE_NAME)
+        elif dsname:
+            ds = cat.get_store(dsname)
         else:
             return None
     except FailedRequestError:
         if store_type == 'geogit' and hasattr(settings, 'GEOGIT_DATASTORE_NAME') and settings.GEOGIT_DATASTORE_NAME:
+            if store_name is None:
+                store_name = settings.GEOGIT_DATASTORE_NAME
             logging.info(
                 'Creating target datastore %s' % settings.GEOGIT_DATASTORE_NAME)
-            ds = cat.create_datastore(settings.GEOGIT_DATASTORE_NAME)
+            ds = cat.create_datastore(store_name)
             ds.type = "GeoGIT"
             ds.connection_parameters.update(
-                geogit_repository=settings.GEOGIT_DATASTORE_NAME,
+                geogit_repository=store_name,
                 create="true")
             cat.save(ds)
-            ds = cat.get_store(settings.GEOGIT_DATASTORE_NAME)
+            ds = cat.get_store(store_name)
         else:
             logging.info(
-                'Creating target datastore %s' % settings.DB_DATASTORE_NAME)
-            ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
+                'Creating target datastore ' % dsname)
+            ds = cat.create_datastore(dsname)
+            db = ogc_server_settings.datastore_db
             ds.connection_parameters.update(
-                host=settings.DB_DATASTORE_HOST,
-                port=settings.DB_DATASTORE_PORT,
-                database=settings.DB_DATASTORE_DATABASE,
-                user=settings.DB_DATASTORE_USER,
-                passwd=settings.DB_DATASTORE_PASSWORD,
-                dbtype=settings.DB_DATASTORE_TYPE)
+                host = db['HOST'],
+                port = db['PORT'],
+                database = db['NAME'],
+                user = db['USER'],
+                passwd = db['PASSWORD'],
+                dbtype = store_type)
             cat.save(ds)
-            ds = cat.get_store(settings.DB_DATASTORE_NAME)
+            ds = cat.get_store(dsname)
 
     return ds

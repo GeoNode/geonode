@@ -24,6 +24,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.conf import settings
+from geonode.utils import ogc_server_settings
 
 def index(request, template='index.html'):
     from geonode.search.views import search_page
@@ -117,7 +118,7 @@ def _fixup_ows_url(thumb_spec):
     # so rendering of thumbnails fails - replace those uri's with full geoserver URL
     import re
     gspath = '"/geoserver/wms' # this should be in img src attributes
-    repl = '"' + settings.GEOSERVER_BASE_URL + "/wms"
+    repl = '"' + ogc_server_settings.LOCATION + "/wms"
     return re.sub(gspath, repl, thumb_spec)
 
 def err403(request):

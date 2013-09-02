@@ -22,12 +22,23 @@
     <h2 class="page-title">{{ document.title }}</h2>
   </div>
   <div class="span6 action-group">
-    <div class="pull-right">
+    <!-- <div class="pull-right">
       <div class="btn-group">
       </div>
       <div class="btn-group">
       </div>
-    </div>
+    </div> -->
+	<div class="btn-group pull-right">
+        <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+          {% trans "Download Metadata" %}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          {% for link in document.link_set.metadata %}
+            <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
+          {% endfor %}
+        </ul>
+     </div>
     {% has_obj_perm user document "documents.change_document" as can_edit_document %}
     {% if can_edit_document %}
     <div class="btn-group pull-right">
@@ -48,10 +59,10 @@
    
       {% if document.extension|lower in imgtypes %}
       <div id="embedded_map">
-        <img src="{{document.doc_file.url}}" width='100%' />
+        <img src="{% url "document_download" document.id %}" width='100%' />
       </div>
       {% else %}
-        <a href="{{ document.doc_file.url }}" target="_blank">Download the {{ document }} document</a>
+        <a href="{% url "document_download" document.id %}" target="_blank">Download the {{ document }} document</a>
       {%  endif %}
        
       <div class="map-actions">
@@ -64,7 +75,7 @@
         </ul>
       </div>
       <div class="tab-content">
-        {% include "geonode/resourcebase_info_panel.html" with resourcebase=document %}
+        {% include "base/resourcebase_info_panel.html" with resourcebase=document %}
 
         <article id="share" class="tab-pane">
           <!-- TODO: Move this to a reusable template snippet -->
@@ -154,8 +165,6 @@
 
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user document "document" %}
-    {% else %}
-        <script src="{{ STATIC_URL }}lib/js/jquery.raty.min.js"></script>
     {% endif %}
     <script type="text/javascript">
     $(function() {
@@ -163,7 +172,7 @@
             half: true,
             readOnly: true,
             start: $('div.overall_rating').data('rating'),
-            path: "{{ STATIC_URL }}agon_ratings/img/"
+            path: "{{ STATIC_URL }}lib/img/"
         });
     });
     </script>
