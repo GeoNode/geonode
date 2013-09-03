@@ -6,7 +6,7 @@ target
 pip-log.txt
 MANIFEST
 dist
-.idea/*
+.idea/
 # supporting stuff pulled in by paver script
 geonode/development.db
 geoserver
