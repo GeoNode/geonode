@@ -1,0 +1,175 @@
+===============
+Adding New Data
+===============
+
+Uploading shapefile 
+===================
+
+Navigate to the GeoNode home page by clicking the GeoNode logo or the Home link in the menu bar and click the *Upload Data* link.
+
+.. image:: images/upload_data_link.png
+
+When you come to the *Upload Layer* page you will see the following form (* items are required)
+
+.. image:: images/upload_form.png
+
+***Title:**  Give your layer a title.
+
+***Data:**  Choose a Shapefile or GeoTIFF as your data to load.
+
+If you select a GeoTIFF file for the Data item above, the view will remain the same.  If you choose a shapefile, (the part of the shapefile with the “.shp” ending), the view will change to handle the additional parts of the shapefile as shown below as well as an optional encoding selection:  
+
+.. image:: images/shapefile_upload.png
+
+* **Data:**  Choose the .shp portion of the shapefile
+* **DBF:**  Choose the .dbf portion of the shapefile
+* **SHX:**  Choose the .shx portion of the shapefile
+* **PRJ:**  Choose the .prj portion of the shapefile
+
+.. note:: You will increase your chances of a successful upload by having your shapefile or GeoTIFF file be in the “plain vanilla” projection, Geographic WGS 84, also known as EPSG:4326.  To know whether your shapefile is in this projection, the contents of your .prj file will look like this in a text editor: ``GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984", SPHEROID["WGS_1984",6378137.0, 298.257223563]], PRIMEM["Greenwich",0.0], UNIT["Degree",0.0174532925199433]]``
+
+You may not have a .prj file for your GeoTIFF as it is not needed since the projection information for a GeoTIFF is stored in the header of the GeoTIFF.
+
+If your .prj file does not look like this, the upload may still work fine.  If it doesn’t, the most likely culprit is the projection.  The best way to fix that is to use an application like ArcGIS or QGIS and reproject your file to Geographic WGS 84.  This can be done for shapefiles or GeoTIFF files.
+
+**SLD:**  Optionally provide a Styled Layer Descriptor (SLD) file.  This is an XML document that defines the layer's default style.  For more information on creating SLD files, see `Creating styles with desktop software`_.
+
+**XML:**  Optionally provide a metadata XML document in ISO, FGDC or Dublin Core format.  This XML document allows GeoNode to use existing metadata to describe a layer.
+
+***Abstract:**  Provide a description of your data. More information is better.  At the very least when you add real data, please include a brief description of the data, who created it, for what purpose, and when.  Please also include source materials used to create the data layer.  This information is important both for you to remember what the data is about, and to allow someone else a chance to benefit from your work (assuming you want to make the data available for others to use at some point).
+
+**Permissions:**  Default permissions are set such that the world can view your data but only you can change it.  You may optionally grant layer editing permissions to all registered users or to specific users you choose.  Editors can modify layer styles, edit metadata records, and upload new versions of the data.  Similarly, you can grant layer management permissions to select users.  In addition to editing capabilities, managers can modify layer permission settings or delete the layer entirely.
+
+.. image:: images/layer_permissions.png
+
+Click *Upload* and once uploaded you will be presented with a metadata form (see below).
+
+.. note:: When uploading a shapefile, the .shx and .dbf files are *required* in addition to the .shp file. If you neglect to supply them, you will recieve the following error message. You will need to select those files for upload and resubmit the form.
+
+.. image:: images/shapefile_parts_error.png
+
+.. note:: If you receive an different error message in this form, you will need to contact the administrator of the GeoNode to resolve the problem. It is helpful if you cut and paste the contents of the error message when contacting the Administrator.
+
+Metadata
+--------
+
+Once the file has been uploaded, you will see the form below where you will be prompted to fill in descriptive information about the layer.
+
+.. image:: images/metadata_form.png
+
+We strongly encourage you to make use of the many useful metadata fields in the form (* items are required).
+
+***Title -** Provide a title for your dataset.  We recommend using the following naming convention:
+
+``<geography - continent, country, state, or city>_<what it is>_<date data represents>_<optional version>_<optional temp if it is for testing purposes and can be removed after a week>``
+
+Example: 
+``africa_ethnographic_1959_2_temp``
+
+***Date -** This date is filled in automatically with the date of upload, but can be changed.
+
+***Date Type -** (creation/publication/revision) Choose type of date you want to describe. The default type is *creation*.
+
+**Edition -**  Use this field to describe the edition.
+
+***Abstract -**  Give an overview of the dataset. What does the data represent? Who created it and when? What sources were used? 
+
+**Purpose -**  Describe briefly how the data can be used.
+
+**Maintenance Frequency -**  How often is the data updated?
+
+**Keywords -**  Add keywords that will be useful handles others can use to find the dataset.  Separate keywords with a space.
+
+***Keywords Region -** Select a major region of the world.  Other regions in addition to countries will be added.
+
+***Constraints Use -** What are the rules governing the use of this data?  
+
+**Constraints Other -**  Include any additional constraints.
+
+**Spatial Representation Type -** 
+
+* **grid –** raster dataset such as georeferenced satellite image or scanned georeferenced map in GeoTIFF format.
+* **steroModel –** currently not supported unless stored in a GeoTIFF or Shapefile format
+* **textTable -** currently not supported unless stored in a GeoTIFF or Shapefile format
+* **tin -** currently not supported unless stored in a GeoTIFF or Shapefile format
+* **vector –** point, line, or polygon dataset in ESRI Shapefile format.
+
+***Language -**  Please choose the language closest to the language used in the attribute table if the dataset is a Shapefile and for the language used on the map if the dataset is a GeoTIFF.
+
+***Topic Category -** Specify the main thematic category (ISO 19115 format) by which your data could be classified.
+
+**Temporal Extent (Start/End) -** Use a start and end date if the data in your layer is best presented by a date range.
+
+***Geographic Bounding Box -**  This describes the theoretical box necessary to enclose the data geographically and is automatically calculated by the system.  It can also be modified here.  The projection system used to define the bounding box is also defined here.
+
+***Supplemental Information -**   Additional information about your data.
+
+**Distribution URL -**  This URL is calculated by the system.  This URL displays this data layer along with information about it and is a possible form of citation.
+
+**Data Quality Statement -**  Add any information you have describing data quality.
+
+**Point of Contact -**  Person who  should be contacted with questions about the data.
+
+**Metadata Author -**  Name of the person who created the metadata. 
+
+
+Troubleshooting shapefile uploading
+===================================
+
+If the layer does not upload there are several possible reasons why:
+
+* The projection is not being read properly.  If the layer is not already in Geographic WGS 84 projection, also known as EPSG 4326, reproject the shapefile  and try again.
+* The SLD file is not correct. Check to see that the `XML is valid <http://validator.w3.org/#validate_by_input>`_  
+* Check to see that the SLD file was created for this shapefile and not another shapefile.  The fields described in the SLD should match the fields in the shapefile.
+
+If all else fails, project your file to Geographic WGS 84 and don’t include an SLD file.
+
+
+Uploading GeoTIFF
+=================
+
+Raster files are images and can be satellite imagery or scanned maps which have been georeferenced.  GeoTIFF files are rasters and have all the necessary information for display and georeferencing in one file.
+
+Return to the *Upload Data* page.  Now give it a title and choose the *elevation.tif* file to upload. Provide abstract information and click *Upload*.  
+
+.. note:: Raster (GeoTIFF) images do not have the same type of styling options as vector (shapefile) layers do. You must use a raster specific SLD. 
+
+
+Permissions
+===========
+
+Users can control whether others can see and/or modify the layers they load to their Map. Layer permissions can be set at the time of upload and can be modified as needed later.  
+
+.. note:: Currently any uploaded layer which can be viewed by the public is also technically downloadable even though it may appear not to be.  There do exist some custom layers in GeoNode which reside on a separate server and can be viewed but not downloaded, but the ability to make layers viewable but not downloadable is not yet enabled in the GeoNode interface.
+
+
+Adding your new layers to a map
+===============================
+
+Go to the information page for your newly uploaded layer.
+
+To find it, go back to the GeoNode home page, and type the title of your layer into the search field under *Data*.  Click the search button to go to a list of the available data on GeoNode, filtered by your search keywords.
+
+.. image:: images/layer_search.png
+
+You can also click the *Advanced Search* link on the layer search page to be taken to a page that lets you browse the full list of available layers or perform a more complex search.
+
+.. image:: images/layer_browse.png
+
+From the grid that displays the list of layers, click your newly uploaded layer to view the Layer Detail page.
+
+.. image:: images/layer_detail_owner.png
+
+Now click the *Create new map* link in the right hand sidebar.  This will take you to the *Map Composer* with the selected layer added already.
+
+.. image:: images/map_composer_from_layer.png
+
+
+Creating styles with desktop software
+=====================================
+
+You can create Styled Layer Descriptor (SLD) files using desktop tools such as `AtlasStyler <http://en.geopublishing.org/AtlasStyler>`_, `ArcMap2SLD <http://apps.geoinform.fh-mainz.de/arcmap2sld/ArcMap2SLDConverter_Eng.htm>`_, or `Arc2Earth <http://www.arc2earth.com/>`_.:
+
+* AtlasStyler is an open source Java application that can be run independently to compose SLD files for ESRI Shapefiles, OGC WFS and PostGIS datasources.
+* ArcMap2SLD is an open source Windows application that exports the symbolization of an ArcGIS project to an SLD file.  The application runs in parallel with an open ArcGIS 9.0+ session and requires .NET 2.0.
+* Arc2Earth is a commercially available ArcGIS 9.0+ add-on that also allows users to export symbolization of ArcGIS project data to an SLD file.  The add-on also includes many features unrelated to generating SLD files (eg: SHP to KML conversion).  It is available in several editions, and the `SLD export function <http://help.arc2earth.com/help/kb/arc2earth-desktop/export-map-symbols-to-styled-layer-descriptor-sld>`_ is available in the free Community version.
