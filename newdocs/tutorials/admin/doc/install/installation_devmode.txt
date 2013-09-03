@@ -64,10 +64,10 @@ Now a virtual environment has to be set up, in which Geonode will later be runni
 
 *Step 4c*::
 
-Create a new directory where you want your project to be and make a new virtualenvironment::
-
     $ mkdir your_folder
     $ mkvirtualenv geonode
+
+This creates a new directory where you want your project to be and creates a new virtualenvironment
 
 **Step 5**
 

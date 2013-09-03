@@ -22,9 +22,7 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
    install/index
    config/index
    manage/index
-   theme/index
    data/index
-   debug/index
    monitor/index
    backup/index
    deploy/index

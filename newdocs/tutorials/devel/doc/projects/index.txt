@@ -1,4 +1,4 @@
-.. _projects:
+.. _customize_projects:
 
 Customized GeoNode Projects
 ===========================

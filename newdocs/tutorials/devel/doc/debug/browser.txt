@@ -31,10 +31,11 @@ Net Tab Exercises
 ..................
 
 #. Go to layers/maps/search pages and look at the various requests. Note
-  the XHR subtab. Look at the various request specific tabs: headers,
-  params, etc.
+   the XHR subtab. Look at the various request specific tabs: headers,
+   params, etc.
 #. Use the 'disable browser cache' option and see how it affects page
-  loads. Discuss advantages/challenges of caching.
+   loads. Discuss advantages/challenges of caching.
+
 
 DOM Tab
 -------
