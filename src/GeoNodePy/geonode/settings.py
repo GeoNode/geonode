@@ -482,6 +482,9 @@ DEFAULT_WORKSPACE = 'geonode'
 HGL_VALIDATION_KEY='Contact Harvard Geospatial Library to request the validation key'
 CACHE_BACKEND = 'dummy://'
 
+# Regular expression to prevent uploading of SLD's containing links to external images,
+# for example: 'http://[a-zA-Z0-9\.\-]*harvard\.edu'.  Default will allow any link.
+VALID_SLD_LINKS = '.*'
 
 ### Boston neighborhood settings  ###
 ### These need to be set to the correct values for the worldmap instance ###
