@@ -113,7 +113,12 @@ define(['underscore',
      */
     displayFiles = function (file_queue) {
         file_queue.empty();
+        
+        var permission_edit = $("#permission-edit")
 
+        permission_edit.show();
+        var hasFullPermissionsWidget = false;
+        
         $.each(layers, function (name, info) {
             if (!info.type) {
                 log_error({
@@ -123,10 +128,14 @@ define(['underscore',
                 delete layers[name];
             } else {
                 info.display(file_queue);
+                if(info.type.format=='vector'){
+                    hasFullPermissionsWidget = true;
+                };
             }
         });
+        
+        if(!hasFullPermissionsWidget){permission_edit.hide()};
     };
-
 
     /** Function to ...
      *
