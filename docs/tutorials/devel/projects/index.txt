@@ -1,0 +1,29 @@
+.. _customize_projects:
+
+Customized GeoNode Projects
+===========================
+
+This module will teach you about how to set up and customize your own GeoNode-based project by changing the theme, adding additional modules, and integrating with other systems. When complete, you should understand how Downstream GeoNode projects work, and how to set up a project of your own.
+
+.. todo:: Unclear capitalization in places. For example, is "Downstream" a thing? I removed lots of capitalizations in places where I didn't think it was necessary. Please review.
+
+.. todo:: You set up something. When you're done, you have a setup. Different things.
+
+.. todo:: Images desperately need some kind of border around them to keep them separate from the text, and also the ability to be automatically resized. When everything has a white background, impossible to tell where images end and text begins.
+
+.. todo:: Encased files with :file:`path/to/file` to allow for separate (monospaced) rendering.
+
+.. todo:: Code blocks render nicer when using "code-block", even for shell commands. I added this in in most places.
+
+.. todo:: Figures are much more helpful when they have captions. Please add them where they are missing.
+
+.. todo:: Suggest using second-person ("Now you open the...") instead of "let's" (Now let's open the...) or even "we". I changed this in some but not every place.
+
+.. toctree::
+   :maxdepth: 2
+
+   projectsintro 
+   setup
+   theme
+   apps 
+   integration 
