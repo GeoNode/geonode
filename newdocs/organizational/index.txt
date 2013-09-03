@@ -1,3 +1,5 @@
+.. _org_index:
+
 ============================
 Organizational Documentation
 ============================
@@ -21,6 +23,8 @@ In this documentation information on existing projects, contributing to Geonode 
 :ref:`review_process`
 
 :ref:`roadmap`
+
+:ref:`other_geonode_projects`
 
 :ref:`links`
 

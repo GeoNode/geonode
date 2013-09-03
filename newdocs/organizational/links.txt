@@ -31,7 +31,7 @@ Important Forks
 
 Full List here https://github.com/GeoNode/geonode/network/members
 
-.. hint:: Look at the branches in these Forks_
+.. hint:: Look at the branches in these Forks
 
 * https://github.com/opengeo/geonode
 * https://github.com/gfdrr/geonode
