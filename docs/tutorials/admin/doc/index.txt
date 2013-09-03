@@ -1,0 +1,61 @@
+.. _admin:
+
+Administrators Workshop
+=======================
+
+Welcome to the GeoNode Administrators Workshop! This workshop will teach how to manage a deployment of the `GeoNode <http://geonode.org>`_ software application.
+
+.. todo::
+
+      These workshop materials should be accompanied by a data package containing the following files:
+
+      * :file:`/doc`—These workshop materials in HTML format
+      * :file:`/data`—
+
+.. todo:: Create script to generate this bundle.
+
+.. toctree::
+   :hidden:
+
+   intro_admin/index
+   prep/index
+   install/index
+   config/index
+   manage/index
+   data/index
+   monitor/index
+   backup/index
+   deploy/index
+
+:ref:`intro_admin`
+  Learn about GeoNode administration
+
+:ref:`prep`
+  Learn about preparing an environment for installation of GeoNode
+
+:ref:`install`
+  Learn how to install GeoNode
+
+:ref:`config`
+  Learn how to configure GeoNode
+
+:ref:`manage`
+  Learn how to manage a GeoNode installation 
+
+:ref:`theme`
+  Learn how to customize the look and feel of a GeoNode Installation
+
+:ref:`data`
+  Learn how to load and configure data in a GeoNode Installation
+
+:ref:`debug`
+  Learn how to debug and troubleshoot a GeoNode Installation
+
+:ref:`monitor`
+  Learn how to monitor usage and other activity in a GeoNode Installation 
+
+:ref:`backup`
+  Learn how to backup and restore GeoNode configuration and datas
+
+:ref:`deploy`
+  Review a sample GeoNode project deployment and learn how to create your own
