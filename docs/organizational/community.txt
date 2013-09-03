@@ -1,0 +1,51 @@
+.. _community:
+
+Community Ressources
+====================
+
+* GitHub Organization http://github.com/GeoNode
+* GitHub Project 
+    * main page https://github.com/GeoNode/geonode
+    * master https://github.com/GeoNode/geonode/tree/master
+    * dev https://github.com/GeoNode/geonode/tree/dev
+    * Issue Tracker https://github.com/GeoNode/geonode/issues
+    * Pull Requests https://github.com/GeoNode/geonode/pulls
+* Project Docs & Proposals
+    * Wiki https://github.com/GeoNode/geonode/wiki
+    * Roadmap https://github.com/GeoNode/geonode/wiki/Roadmap-Items
+    * GNIPs https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals
+* Web Pages http://github.com/geonode/geonode.github.com (published to http://geonode.org)
+* Docs http://docs.geonode.org/en/latest/index.html
+    * Read the Docs project https://readthedocs.org/projects/geonode/
+* Workshops http://github.com/geonode/geonode-workshops published to:
+    * http://geonode.org/workshops/user/
+    * http://geonode.org/workshops/admin/
+    * http://geonode.org/workshops/devel/
+* Testing Infrastructure
+    * Jenkins http://geonode-testing.dev.opengeo.org:8090
+    * Travis-CI https://travis-ci.org/#!/GeoNode/geonode
+* Localization
+    * Transifex project https://www.transifex.com/projects/p/geonode
+* Ohloh https://www.ohloh.net/p/geonode
+* Current Demo Server http://demo.geonode.org/
+* Latest Beta Demo Site http://beta.dev.geonode.org/
+* UI/UX Review Site https://sites.google.com/a/opengeo.org/geonode-ui/
+* Social
+    * Blog http://geonode.org/blog/
+    * Twitter https://twitter.com/geonode
+    * Google+ https://plus.google.com/u/0/b/100587124776656797019/
+* Mailing Lists
+    * User https://groups.google.com/forum/#!forum/geonode-users
+    * Developers https://groups.google.com/a/opengeo.org/group/geonode-dev/topics
+    * Announcements https://groups.google.com/a/opengeo.org/forum/#!forum/geonode-announcements
+    * Regional (Latin America, Caribbean, Indonesia etc)
+* IRC irc://irc.freenode.net/geonode (logs?)
+* Releases http://dev.geonode.org/release/
+* Packages
+    * https://pypi.python.org/pypi/GeoNode
+    * https://launchpad.net/~geonode
+    * https://launchpad.net/~geonode/+archive/release
+    * https://launchpad.net/~geonode/+archive/testing
+    * https://launchpad.net/~geonode/+archive/snapshots
+* Community Bylaws https://github.com/GeoNode/geonode/wiki/Community-Bylaws
+* General Links https://github.com/GeoNode/geonode/wiki/Geonode-Links

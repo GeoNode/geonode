@@ -1,0 +1,48 @@
+.. _org_index:
+
+============================
+Organizational Documentation
+============================
+
+In this documentation information on existing projects, contributing to Geonode (code, documentation, translation, ...) and the community itself can be found.
+
+:ref:`about`
+
+:ref:`contrib_trans`
+
+:ref:`contrib_docu`
+
+:ref:`doc_guidelines`
+
+:ref:`community`
+
+:ref:`comm_bylaws`
+
+:ref:`review_criteria`
+
+:ref:`review_process`
+
+:ref:`roadmap`
+
+:ref:`other_geonode_projects`
+
+:ref:`links`
+
+
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+    about
+    projects
+    community
+    comm_bylaws
+    review_criteria
+    review_process
+    roadmap
+    links
+    contribute/index
+    contribute/contribute_to_translation
+    contribute/contribute_to_documentation
+    contribute/documentation_guidelines
+
