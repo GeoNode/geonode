@@ -1,4 +1,4 @@
-.. _projects:
+.. _other_geonode_projects:
 
 ================
 GeoNode Projects

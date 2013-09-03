@@ -27,7 +27,7 @@ Instead of *codename* write the name of your system. If you do not know this, ty
 This will return you the name of your system.
 
 .. warning::
-Make sure that you have changed *codename* to the name of your system before you copy the link in the next step!
+    Make sure that you have changed *codename* to the name of your system before you copy the link in the next step!
 
 Now open the *pgdg.list* file using e.g.::
 

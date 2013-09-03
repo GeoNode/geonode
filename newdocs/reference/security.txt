@@ -103,7 +103,9 @@ If you allow a user to edit your layer, this user has the right to do the follow
 This can also be seen here:
 
 .. figure:: img/edit_and_manage.PNG
-  
+
+Edit and manage
+
   .. todo:: EDIT PERMISSIONS HAS TO BE REMOVED!!
   
 Now take a closer look on to the section *Edit Metadata*. All the following things can be edited in the metadata section:
