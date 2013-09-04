@@ -362,7 +362,7 @@ class UploaderBase(TestCase):
 
     def check_upload_model(self, original_name):
         # we can only test this if we're using the same DB as the test instance
-        if not settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']: return
+        if not settings.OGC_SERVER['default']['DATASTORE']: return
         try:
             upload = Upload.objects.get(layer__name=original_name)
         except Upload.DoesNotExist:
