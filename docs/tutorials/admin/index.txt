@@ -11,8 +11,11 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
    intro_admin/index
    prep/index
    install/index
+   quick_install
+   install
    config/index
    manage/index
+   production
    data/index
    monitor/index
    backup/index
@@ -21,11 +24,8 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
    csw
    customize
    debug
-   install
    language
    multi-tenancy
-   production
-   quick_install
    ssl
 
 :ref:`intro_admin`
@@ -34,14 +34,23 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 :ref:`prep`
   Learn about preparing an environment for installation of GeoNode
 
+:ref:`quick_install`
+  Learn how to quickly install GeoNode
+
 :ref:`install`
-  Learn how to install GeoNode
+  Learn how to do a complete installation of GeoNode
+
+:ref:`install_old`
+  Learn how to install and configure GeoNode
 
 :ref:`config`
   Learn how to configure GeoNode
 
 :ref:`manage`
   Learn how to manage a GeoNode installation 
+
+:ref:`production`
+  Learn how to configure GeoNode for production use.
 
 :ref:`data`
   Learn how to load and configure data in a GeoNode Installation
@@ -67,17 +76,9 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 :ref:`customize`
   Learn how to customize the look and feel of your GeoNode installation
 
-:ref:`install_old`
-  Learn how to install and configure GeoNode
-
 :ref:`language`
   Learn how to change the default language of your GeoNode installation
 
 :ref:`multi-tenancy`
   Learn how to configure multiple GeoNode sites on the same server
 
-:ref:`production`
-  Learn how to configure GeoNode for production use.
-
-:ref:`quick_install`
-  Learn how to quickly install GeoNode

@@ -5,6 +5,9 @@ Users Workshop
 
 Welcome to the GeoNode Users Workshop! This workshop will teach how to use the `GeoNode <http://geonode.org>`_ software application.
 
+:ref:`intro_user`
+  An introduction to GeoNode, what it is, what it does, including a brief tour of the application.
+
 :ref:`quickstart`
   Click to get started with the GeoNode quickstart
 
@@ -16,9 +19,6 @@ Welcome to the GeoNode Users Workshop! This workshop will teach how to use the `
 
 :ref:`maps`
   Create and manage a GeoNode map
-
-:ref:`contrib`
-  Learn more about the GeoNode project and how to get involved
 
 .. toctree::
    :hidden:
