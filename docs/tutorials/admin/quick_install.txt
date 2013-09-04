@@ -1,3 +1,5 @@
+.. _quick_install:
+
 ========================
 Quick Installation Guide
 ========================

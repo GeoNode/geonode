@@ -1,3 +1,5 @@
+.. _customize:
+
 ========================================
 Customizing the Look and Feel of GeoNode
 ========================================

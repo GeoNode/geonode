@@ -1,3 +1,5 @@
+.. _language:
+
 =============================
 Changing the Default Language
 =============================
