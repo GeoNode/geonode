@@ -38,7 +38,6 @@ Contributing
     :maxdepth: 3
 
     about
-    overview
     projects
     roadmap
     community_resources
