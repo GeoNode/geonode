@@ -2,7 +2,7 @@
 GeoNode's Documentation
 =======================
 
-Welcome to Geonode's Documentation. GeoNode is an open source Content Management System (CMS) for geospatial data. 
+Welcome to Geonode's Documentation. GeoNode is an Open Source, Content Management System (CMS) for geospatial data. It is a web-based application and platform for developing geospatial information systems (GIS) and for deploying spatial data infrastructures (SDI). 
 
 How To Use The Documentation
 ============================
