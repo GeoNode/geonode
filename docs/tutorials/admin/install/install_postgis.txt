@@ -1,5 +1,5 @@
 =========================================
-PostGis2.0.3 Installation on Ubuntu 12.04
+PostGIS 2.0.3 Installation on Ubuntu 12.04
 =========================================
 
 **Step 1 – Install dependencies**

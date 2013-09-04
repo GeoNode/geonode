@@ -4,8 +4,6 @@
 Contributing to GeoNode
 =======================
 
-.. note:: THIS IS A DRAFT PROPOSAL.  IT HAS NOT YET BEEN VOTED INTO EFFECT BY THE PSC.
-
 If you are interested in helping us to make GeoNode, there are many ways to do so.
 
 Participate in the Discussion

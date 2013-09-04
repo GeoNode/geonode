@@ -1,8 +1,8 @@
 .. _contrib_docu:
 
-==========================================
-How to contribute to GeoNode Documentation
-==========================================
+============================================
+How to contribute to GeoNode's Documentation
+============================================
 
 
 If you feel like adding or changing something in the GeoNode documentation you are very welcome to do so. The documentation always needs improvement as the development of the software is going quite fast.

@@ -1,7 +1,7 @@
-.. _community:
+.. _community_resources:
 
-Community Ressources
-====================
+Community Resources
+===================
 
 * GitHub Organization http://github.com/GeoNode
 * GitHub Project 
