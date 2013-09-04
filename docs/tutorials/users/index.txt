@@ -5,14 +5,6 @@ Users Workshop
 
 Welcome to the GeoNode Users Workshop! This workshop will teach how to use the `GeoNode <http://geonode.org>`_ software application.
 
-These workshop materials should be accompanied by a data package containing the following files:
-
-* :file:`/doc`—These workshop materials in HTML format
-* :file:`/data`—Spatial data to be used during the workshop
-
-.. todo:: Create script to generate this bundle.
-
-
 :ref:`quickstart`
   Click to get started with the GeoNode quickstart
 
