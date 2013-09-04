@@ -4,7 +4,7 @@
 Complete Installation Guide
 ===========================
 
-.. note:: The quick installation guide contains instructions to set it up in most common platforms. It can be found :doc:`here </intro/install>`.
+.. note:: The quick installation guide contains instructions to set it up in most common platforms. It can be found :doc:`here <install>`.
 
 This page describes a generic installation process for GeoNode systems.
 For some platforms the GeoNode project also provides customized installers which are easier to use and more reliable.
@@ -302,4 +302,4 @@ Steps:
 Additional Configuration
 ------------------------
 
-After installing, it is highly advised to follow the :doc:`post installation guide </deploy/production>`.
+After installing, it is highly advised to follow the :doc:`post installation guide <production>`.

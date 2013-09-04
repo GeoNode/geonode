@@ -86,7 +86,7 @@ The last step is to compile GeoServer and start the development servers::
     $ paver setup
     $ paver start
 
-Now you should be able to visit the geonode site by typing ​http://localhost:8000 into your browser window.
+Now you should be able to visit the geonode site by typing http://localhost:8000 into your browser window.
 
 To stop the server::
 
@@ -95,7 +95,7 @@ To stop the server::
     
 **Restart server**
 
-With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open ​http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
+With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
 
 .. note:: *your_name* is the name of your machine and personal folder!
 

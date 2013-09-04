@@ -62,13 +62,4 @@ Finally restart Apache with::
     sudo /etc/init.d/apache2 restart
 
 
-Please refer to :doc:`Translating GeoNode <../developers/translation>` for information on editing GeoNode pages in different languages and create new GeoNode Translations. 
-
-.. toctree::
-    :hidden:
-    :maxdepth: 3
-
-    ../developers/translation
-
-
-
+Please refer to Translating GeoNode for information on editing GeoNode pages in different languages and create new GeoNode Translations. 

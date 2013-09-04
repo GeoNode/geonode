@@ -23,7 +23,7 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
    commands
    csw
    customize
-   debug
+   debugging
    language
    multi-tenancy
    ssl
@@ -67,7 +67,7 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 :ref:`commands`
   Review GeoNode's management commands
 
-:ref:`debug`
+:ref:`debugging`
   Learn how to debug and troubleshoot a GeoNode Installation
 
 :ref:`csw`
