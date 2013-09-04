@@ -2,23 +2,25 @@
 GeoNode's Documentation
 =======================
 
-Welcome to Geonode's Documentation. GeoNode is an Open Source, Content Management System (CMS) for geospatial data. It is a web-based application and platform for developing geospatial information systems (GIS) and for deploying spatial data infrastructures (SDI). 
+Welcome to Geonode's Documentation. 
+
+GeoNode is an Open Source, Content Management System (CMS) for geospatial data. It is a web-based application and platform for developing geospatial information systems (GIS) and for deploying spatial data infrastructures (SDI). 
 
 How To Use The Documentation
 ============================
 
 The documentation is divided into three sections.
 
- #. :doc:`Organizational <organizational/index>`  about, how to contribute, links, resources, other info
- #. :doc:`Tutorials <tutorials/index>`  are based on performing tasks in a workshop like format
- #. :doc:`Reference <reference/index>`  code reference, api, all components, architecture in detail
+ #. :doc:`Organizational: <organizational/index>`  about the project, how to contribute, links, resources, other info
+ #. :doc:`Tutorials: <tutorials/index>` Step-by-step instructions that accomplish a set of tasks for Users, Administrators or Developers.
+ #. :doc:`Reference: <reference/index>` Architecture, component information, API descriptions etc. 
 
 
 For organizational purposes, the documentation is also geared toward 3 distinct types of users.
 
- #. **Users**  Are people who log into a GeoNode website and use its functionality. 
- #. **Administrators** Are people who install and deploy GeoNode websites in production for their Users. 
- #. **Developers**  Are people who write code to add functionality, integrate with other systems, fix bugs, and potentially help an Administrator setup a server and deploy a GeoNode instance for production. 
+ #. **Users**: Are people who log into a GeoNode website and use its functionality. 
+ #. **Administrators**: Are people who install and deploy GeoNode websites in production for their Users. 
+ #. **Developers**:  Are people who write code to add functionality, integrate with other systems, fix bugs, and potentially help an Administrator setup a server and deploy a GeoNode instance for production. 
 
 First Steps
 ===========
@@ -33,20 +35,22 @@ The following sections give an overview of GeoNode from different perspectives, 
 Organizational
 ==============
 
-:doc:`Organizational <organizational/index>` is the section about the GeoNode project itself, how to contribute, learn about the community, links, review process, roadmap and other administraive items.
+The :doc:`Organizational <organizational/index>` section contains information about the GeoNode project itself, how to contribute, learn about the community, helpful links, about the patch review process, the project roadmap and other administraive items.
 
 Tutorials
 =========
 
-:doc:`Tutorials <tutorials/index>` are oriented around performing particular sets of tasks, like adding data or publishing maps, setting up and maintaining a server, or setting up a project to extend from geonode. These tutorials are written in a workshop like format and are broken into three groups Users, Administrators and Developers. 
+The :doc:`Tutorials <tutorials/index>` section contains step-by-step workshops that are oriented around performing particular sets of tasks, like adding data or publishing maps, setting up and maintaining a server, or setting up a project to extend from geonode. These tutorials are written in a workshop like format and are broken into three groups Users, Administrators and Developers. 
 
 Reference
 =========
 
 The :doc:`Reference <reference/index>` section provides details about the internals of the GeoNode project. It has background information about components that make up GeoNode, the security system, APIs and much more.
 
+Need Help?
+==========
 
-Having trouble? We'd like to help!
+Having trouble? Cant find what you are looking for? We'd like to help!
 
  * Search for information in the `archives of the GeoNode  mailing list`_, or
    `post a question`_.
