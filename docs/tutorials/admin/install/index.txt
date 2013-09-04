@@ -10,5 +10,5 @@ Installing GeoNode
 
    quick_install
    installation_devmode
-   install_postgis
    install_postgresql
+   install_postgis

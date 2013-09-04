@@ -8,26 +8,30 @@ In this documentation information on existing projects, contributing to Geonode 
 
 :ref:`about`
 
+:ref:`other_geonode_projects`
+
+:ref:`roadmap`
+
+:ref:`community_resources`
+
+:ref:`links`
+
+:ref:`comm_bylaws`
+
+Contributing
+------------
+
+:ref:`contrib`
+
+:ref:`review_process`
+
+:ref:`review_criteria`
+
 :ref:`contrib_trans`
 
 :ref:`contrib_docu`
 
 :ref:`doc_guidelines`
-
-:ref:`community`
-
-:ref:`comm_bylaws`
-
-:ref:`review_criteria`
-
-:ref:`review_process`
-
-:ref:`roadmap`
-
-:ref:`other_geonode_projects`
-
-:ref:`links`
-
 
 .. toctree::
     :hidden:
@@ -35,14 +39,13 @@ In this documentation information on existing projects, contributing to Geonode 
 
     about
     projects
-    community
-    comm_bylaws
-    review_criteria
-    review_process
     roadmap
+    community_resources
     links
+    comm_bylaws
     contribute/index
+    contribute/review_process
+    contribute/review_criteria
     contribute/contribute_to_translation
     contribute/contribute_to_documentation
     contribute/documentation_guidelines
-

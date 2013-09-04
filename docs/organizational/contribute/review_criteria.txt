@@ -1,8 +1,8 @@
 .. _review_criteria:
 
-===============
-Review criteria
-===============
+=====================
+Patch Review criteria
+=====================
 
 When a patch is rejected in the [[Patch Review Process]], it should be given a valid review.
 
