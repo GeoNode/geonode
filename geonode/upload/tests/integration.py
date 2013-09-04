@@ -447,7 +447,7 @@ class UploaderBase(TestCase):
 
 class TestUpload(UploaderBase):
     settings_overrides = [
-        ("OGC_SERVER['default']['OPTIONS']['DATASTORE']", False)
+        ("OGC_SERVER['default']['DATASTORE']", False)
     ]
     
     def test_shp_upload(self):
@@ -583,6 +583,6 @@ class TestUploadDBDataStore(TestUpload):
         self.assertEquals(100, len(layer_info.timepositions))
 
 # disable DATASTORE tests if not setup
-if not settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']:
+if not settings.OGC_SERVER['default']['DATASTORE']:
     print 'skipping DATASTORE tests'
     del TestUploadDBDataStore
