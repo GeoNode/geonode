@@ -17,6 +17,6 @@ The tutorials are based around performing tasks, like adding data or publishing 
    :hidden:
    :maxdepth: 3
 
-   users/doc/index
-   admin/doc/index
-   devel/doc/index
+   users/index
+   admin/index
+   devel/index
