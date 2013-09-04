@@ -89,7 +89,7 @@ Until now we've only created a superuser. But how to create an ordinary user? Yo
 As mentioned before, this status can be changed as well. To do so, sign in with *your_superuser* again and attend the admin interface. Go again to *Auth* -> *Users*, where now three users
 should appear:
 
-   .. figure:: img/users_admin_interface.PNG
+   .. img/users_admin_interface.PNG
    .. todo:: CREATE THIS IMAGE!
 
 We now want to change the permission of the *geonode_user* so that he will be able to attend the admin interface as well. 
@@ -140,7 +140,7 @@ You can now coose whether you want your layer to be viewed and downloaded by
 We will now upload our **test layer** like shown HERE. If you want your layer only be viewed by certain users or a group, you have to choose *Only users who can edit* in the part *Who can view and download this data*.
 In the section *Who can edit this data* you write down the names of the users you want to have admission on this data. For this first layer we will choose the settings like shown in the following image:
 
-.. figure:: img/layer_test_permission.PNG
+.. img/layer_test_permission.PNG
 .. todo:: CREATE THIS IMAGE! settings: view and download = everybody
 					edit = geonode_user
 					manage = your_superuser (you could leave this empty as well)
@@ -163,13 +163,14 @@ The *geonode_user* is able to edit the **test_layer**. But before going deeper i
   
 Choose *edit permissions* and a window with the permission settings will appear. This window can also be opened by scrolling down the website. On the right handside of the page you should be able to see a button like this.
 
-.. figure:: img/change_layer_permissions.PNG
+.. img/change_layer_permissions.PNG
+.. todo:: CREATE THIS IMG!! 
   
 Click on it and you will see the same window as before.
 
 Now set the permissions of this layer using the following settings:
 
-.. figure:: img/permission_test_layer_2.PNG
+..  img/permission_test_layer_2.PNG
 .. todo:: CREATE THIS IMG!! view and download = only who can edit
 	 			edit = test_user
 				manage = owner (or empty)
@@ -190,7 +191,7 @@ So be aware that each user assigned to edit this layer can even remove it! In ou
 
 Now you are logged in as the user *test_user*. Below the **test_layer** you can see the following:
 
-.. figure:: img/info.PNG
+.. img/info.PNG
 .. todo:: CREATE/CHANGE THIS IMAGE!!
 
 By clicking *Edit Layer* and *Edit Metadata* on top of the layer, you can change this information. The *test_user* is able to change all the metadata of this layer. We now want to change to *point of contact*, therfore scroll down until you see this:
@@ -200,7 +201,7 @@ By clicking *Edit Layer* and *Edit Metadata* on top of the layer, you can change
 
 Change the *point of contact* from *_who_ever_created_this* to *test_user*. *Save* your changes and you will now be able to see the following:
 
-.. figure:: img/point_of_contact_changed.PNG
+.. img/point_of_contact_changed.PNG
 .. todo:: CHANGE THIS IMAGE!
 .. todo:: more detailed!
 .. todo:: did i miss anything?
@@ -224,7 +225,7 @@ The permission on maps are basically the same as on layers, just that there are 
 
 Here you can set the same permissions as known from the layer permissions! Set the permissions of this map as seen here:
 
-.. figure:: img/test_map_permissions.PNG
+.. img/test_map_permissions.PNG
 .. todo:: CREATE THIS IMAGE:: view = anybody
 				edit = *geonode_user* and *test_user*
 				manage = *geonode_user*

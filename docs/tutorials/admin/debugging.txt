@@ -1,4 +1,4 @@
-.. _debug:
+.. _debugging:
 
 ===============================
 Debugging GeoNode Installations
