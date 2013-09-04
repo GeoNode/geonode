@@ -2,28 +2,28 @@
 GeoNode's Documentation
 =======================
 
-Welcome to Geonode the Content Management System for geospatial data. Here you will find all the documentation to Geonode 2.0
+Welcome to Geonode's Documentation. GeoNode is an open source Content Management System (CMS) for geospatial data. 
 
 How To Use The Documentation
 ============================
 
-We have three sections. Each are described in detail below.
+The documentation is divided into three sections.
 
  #. :doc:`Organizational <organizational/index>`  about, how to contribute, links, resources, other info
  #. :doc:`Tutorials <tutorials/index>`  are based on performing tasks in a workshop like format
  #. :doc:`Reference <reference/index>`  code reference, api, all components, architecture in detail
 
 
-We also have three types of users.
+For organizational purposes, the documentation is also geared toward 3 distinct types of users.
 
- #. **Users**  you are a person who logs into a Geonode website and starts using it
- #. **Administrators**  you want to install, play, setup and try geonode
- #. **Developers**  you are a coder, want to add functionality, integrate in some other system, fix bugs, setup a server and deploy
+ #. **Users**  Are people who log into a GeoNode website and use its functionality. 
+ #. **Administrators** Are people who install and deploy GeoNode websites in production for their Users. 
+ #. **Developers**  Are people who write code to add functionality, integrate with other systems, fix bugs, and potentially help an Administrator setup a server and deploy a GeoNode instance for production. 
 
 First Steps
 ===========
 
-The following documents give an overview to GeoNode, they are targeted at a non-technical audience and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation.
+The following sections give an overview of GeoNode from different perspectives, they are targeted at a non-technical audience and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation.
 
  * :doc:`About GeoNode <organizational/about>`
  * :doc:`GeoNode Quickstart <tutorials/users/quickstart/index>`
@@ -33,17 +33,17 @@ The following documents give an overview to GeoNode, they are targeted at a non-
 Organizational
 ==============
 
-:doc:`Organizational <organizational/index>` is  the section about Geonode, how to contribute, learn about the community, links, review process, roadmap and other administraive stuff.
+:doc:`Organizational <organizational/index>` is the section about the GeoNode project itself, how to contribute, learn about the community, links, review process, roadmap and other administraive items.
 
 Tutorials
 =========
 
-:doc:`Tutorials <tutorials/index>` are based around performing tasks, like adding data or publishing maps. The tutorials are written in a workshop like format and are broken into three groups Users, Administrators and Developers. 
+:doc:`Tutorials <tutorials/index>` are oriented around performing particular sets of tasks, like adding data or publishing maps, setting up and maintaining a server, or setting up a project to extend from geonode. These tutorials are written in a workshop like format and are broken into three groups Users, Administrators and Developers. 
 
 Reference
 =========
 
-The :doc:`Reference <reference/index>` section is all about Geonode details. You will see the components, security, API and many more.
+The :doc:`Reference <reference/index>` section provides details about the internals of the GeoNode project. It has background information about components that make up GeoNode, the security system, APIs and much more.
 
 
 Having trouble? We'd like to help!
@@ -66,7 +66,6 @@ Having trouble? We'd like to help!
    :hidden:
    :maxdepth: 3
 
+   organizational/index
    tutorials/index
    reference/index
-   organizational/index
-
