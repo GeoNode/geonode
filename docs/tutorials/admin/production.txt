@@ -1,3 +1,5 @@
+.. _production:
+
 ==================================
 Configuring GeoNode for Production
 ==================================
@@ -231,7 +233,7 @@ The SQL for the stored procedure is distributed with the GeoServer web applicati
     $ psql -d YOUR_DATABASE < geoserver/WEB-INF/classes/org/geonode/security/geonode_authorize_layer.sql
 
 Configuring GeoServer to Use the Database Security Client
-++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 If a context configuration XML file does not already exist, create one for GeoServer. If using Tomcat6 on Ubuntu, this file resides at :file:`/etc/tomcat6/Catalina/localhost/geoserver.xml`. If creating a new file, the following XML should be added (replace ALLCAPS with your specific values)::
 

@@ -3,16 +3,7 @@
 Administrators Workshop
 =======================
 
-Welcome to the GeoNode Administrators Workshop! This workshop will teach how to manage a deployment of the `GeoNode <http://geonode.org>`_ software application.
-
-.. todo::
-
-      These workshop materials should be accompanied by a data package containing the following files:
-
-      * :file:`/doc`—These workshop materials in HTML format
-      * :file:`/data`—
-
-.. todo:: Create script to generate this bundle.
+Welcome to the GeoNode Administrators Workshop! This workshop will teach how to install and manage a deployment of the `GeoNode <http://geonode.org>`_ software application.
 
 .. toctree::
    :hidden:
@@ -26,6 +17,16 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
    monitor/index
    backup/index
    deploy/index
+   commands
+   csw
+   customize
+   debug
+   install
+   language
+   multi-tenancy
+   production
+   quick_install
+   ssl
 
 :ref:`intro_admin`
   Learn about GeoNode administration
@@ -42,14 +43,8 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 :ref:`manage`
   Learn how to manage a GeoNode installation 
 
-:ref:`theme`
-  Learn how to customize the look and feel of a GeoNode Installation
-
 :ref:`data`
   Learn how to load and configure data in a GeoNode Installation
-
-:ref:`debug`
-  Learn how to debug and troubleshoot a GeoNode Installation
 
 :ref:`monitor`
   Learn how to monitor usage and other activity in a GeoNode Installation 
@@ -59,3 +54,30 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 
 :ref:`deploy`
   Review a sample GeoNode project deployment and learn how to create your own
+
+:ref:`commands`
+  Review GeoNode's management commands
+
+:ref:`debug`
+  Learn how to debug and troubleshoot a GeoNode Installation
+
+:ref:`csw`
+  Learn how to configure an alternate CS-W backend for your GeoNode
+ 
+:ref:`customize`
+  Learn how to customize the look and feel of your GeoNode installation
+
+:ref:`install_old`
+  Learn how to install and configure GeoNode
+
+:ref:`language`
+  Learn how to change the default language of your GeoNode installation
+
+:ref:`multi-tenancy`
+  Learn how to configure multiple GeoNode sites on the same server
+
+:ref:`production`
+  Learn how to configure GeoNode for production use.
+
+:ref:`quick_install`
+  Learn how to quickly install GeoNode

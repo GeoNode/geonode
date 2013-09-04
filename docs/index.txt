@@ -67,7 +67,6 @@ Having trouble? Cant find what you are looking for? We'd like to help!
 .. _ticket tracker: http://github.com/GeoNode/geonode/issues
 
 .. toctree::
-   :hidden:
    :maxdepth: 3
 
    organizational/index
