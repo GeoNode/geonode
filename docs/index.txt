@@ -12,7 +12,7 @@ How To Use The Documentation
 The documentation is divided into three sections.
 
  #. :doc:`Organizational: <organizational/index>`  about the project, how to contribute, links, resources, other info
- #. :doc:`Tutorials: <tutorials/index>` Step-by-step instructions that accomplish a set of tasks for Users, Administrators or Developers.
+ #. :doc:`Tutorials: <tutorials/index>` Step-by-step instructions in workshop format that help a user to accomplish a set of tasks.
  #. :doc:`Reference: <reference/index>` Architecture, component information, API descriptions etc. 
 
 
