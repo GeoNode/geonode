@@ -3,16 +3,16 @@
 
 # You can set these variables from the command line.
 LANG        = en
-SPHINXOPTS    = -D language='$(LANG)' $(SOURCEDIR)
-SOURCEDIR     = .
 SPHINXBUILD   = sphinx-build
 PAPER         =
+SOURCEDIR     = .
 BUILDDIR      = _build/$(LANG)
+SPHINXOPTS    = -D language='$(LANG)' $(SOURCEDIR)
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
-ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
+ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS)
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) i18n/pot
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
@@ -136,4 +136,4 @@ doctest:
 gettext:
 	$(SPHINXBUILD) -b gettext $(I18NSPHINXOPTS)
 	@echo
-	@echo "Build finished. The message catalogs are in $(BUILDDIR)/locale."
+	@echo "Build finished."
