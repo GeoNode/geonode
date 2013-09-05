@@ -7,16 +7,18 @@
 # Ariel Aizemberg <ariel.aizemberg@gmail.com>, 2013
 # Clarisa <clarisa.morana@gmail.com>, 2013
 # Clarisa <clarisa.morana@gmail.com>, 2013
+# ingenieroariel <ingenieroariel@gmail.com>, 2013
 # scott_evil <sctevl@gmail.com>, 2013
 # scott_evil <sctevl@gmail.com>, 2013
+# sergioarnal <sergioarnal@gmail.com>, 2013
 # sergioarnal <sergioarnal@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-06-19 20:40-0500\n"
-"PO-Revision-Date: 2013-07-12 15:00+0000\n"
-"Last-Translator: sergioarnal <sergioarnal@gmail.com>\n"
+"PO-Revision-Date: 2013-09-03 14:17+0000\n"
+"Last-Translator: Ariel Aizemberg <ariel.aizemberg@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/geonode/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -182,7 +184,7 @@ msgstr ""
 
 #: base/enumerations.py:66
 msgid "produced or sold information awaiting a patent"
-msgstr ""
+msgstr "información generada o vendida esperando una patente"
 
 #: base/enumerations.py:67
 msgid "withheld from general circulation or disclosure"
@@ -2153,7 +2155,7 @@ msgid ""
 "Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
 "        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr ""
+msgstr "Nota: los metadatos originales de esta capa fueron cargados usando un archivo XML con metadatos. GeoNode soporta un subconjunto de los elementos de las especificaciones ISO, FGDC y Dublin Core. Parte de sus metadatos originales pueden perderse en el proceso. "
 
 #: layers/templates/layers/layer_metadata.html:32
 msgid "Attribute"
@@ -2365,7 +2367,7 @@ msgstr "Bajar Capa de Datos"
 
 #: maps/templates/maps/map_detail.html:49
 msgid "Download Web Map Context"
-msgstr ""
+msgstr "Descargar Web Map Context"
 
 #: maps/templates/maps/map_detail.html:53
 msgid "Print Map"
@@ -3214,7 +3216,7 @@ msgid ""
 "  </ol>\n"
 "  <p>You will be able to see your new map when you search for it from the <a href=\"maps\">Maps</a> tab.</p> \n"
 "  "
-msgstr ""
+msgstr "\n<p>GeoNode provee acceso a un conjunto de datos y una aplicación para la edición de mapas que permite a los usuarios navegar por mapas existentes y contribuir sus propios mapas.</p>\n\n<h4 id=\"browsing-data\">Búsqueda de Datos</h4>\n<p>El tab de <a href=\"data\">Datos</a> le permite ver los datos cargados en este GeoNode.</p>\n<p>Todos lo datos pueden ser descargados en varios formatos para usarlos en otras aplicaciones.</p>\n\n<h4 id=\"developer-access\">Acceso a Desarrolladores</h4>\n<p>La página <a href=\"developer\">Desarrollador</a> es un lugar para que los desarrolladores comiencen a crear aplicaciones con GeoNode. Incluye instrucciones sobre cómo utilizar los servicios web, enlaces al código fuente de GeoNode e información sobre los proyectos de código abierto utilizados.</p>\n\n<h4 id=\"browsing-maps\">Exploracion de mapas</h4>\n<p>El GeoNode permite a los usuarios crear y compartir mapas con otros.</p>\n<p> El tab de <a href=\"maps\">Mapas</a> es un puente de enlace a la exploración de mapas en GeoNode. Desde aquí puedes <strong>buscar un mapa</strong> o <strong>crear un mapa</strong>, el cual abrirá el <a href=\"maps/new\">Editor de Mapas</a>.</p>\n<h5>Modo Google Earth</h5>\n<p> Cualquier mapa en el editor de mapas interactivo, puede ser visto en modo 3D con el plugin de Google Earth. Para cambiar a modo 3D, selecciona el logo del globo de Google Earth, el botón que está a la derecha en la barra de herramientas. Si no tienes el plugin de Google Earth instalado, te pedirá que lo instales. </p>\n\n<h4 id=\"creating-a-map\">Creando un Mapa</h4>\n<p> Para crear un mapa ve al tab de <a href=\"map\">Mapas</a> Contribuidos y dale click al link <a href=\"maps/new\">Crea tu propio mapa</a>. Esto te llevará al  <a href=\"maps/new\">Editor de Mapas</a> con una capa base cargada.</p>\n<p>Para agregar capas de datos desde GeoNode, has click en el botón verde con el signo más, localizado debajo del tab de Datos del lado izquierdo de la pantalla. Esto abrirá un cuadro de diálogo con todas las capas disponibles en GeoNode.</p>\n<p>Para agregar capas a tu mapa, selecciónalas y  dale click al botón de <strong>Agregar Capas</strong>. Cuando finalices dale click a <strong>Hecho</strong> para cerrar el dialogo y volver a el mapa.</p>\n\n<h5>Reorganizando y Removiendo capas</h5>\n<p>Cambia el orden de visualización de las capas listadas en el tab de datos, simplemente arrastrando sus nombres. El orden en el mapa será actualizado para reflejar el cambio. Para apagar la visibilidad de una capa, simplemente deselecionala, y para removerla completamente, seleccionala y dale click al signo rojo de sustracción. </p>\n\n<h5>Guardando tu mapa</h5>\n<p>Una vez que se ha definido un conjunto adecuado de capas y niveles de zoom, es hora de guardar el mapa para que otros puedan verlo. Haz click en el botón Guardar (el ícono que se encuentra a la izquierda en la barra de herramientas, una imagen de un mapa con un disco) y llena el título y un resumen del mapa </p>\n\n<h4 id=\"exporting-a-map\">Exportando un Mapa</h4>\n<p>Cualquier mapa de GeoNode puede ser embebido para su uso en otro sitio o blog. Para exportar un mapa: <p>\n<ol>\n<li>Seleccionalo en la lista de mapas y haz click en el botón 'Exportar mapa'</li>\n<li>Escoge la altura y ancho deseados del widget en el asistente.</li>\n<li>Copia el código HTML proporcionado por el asistente a cualquier página HTML o entrada de un blog </li>\n</ol>\n<p> Esto pondrá un widget interactivo mostrándote el mapa en la página web o blog.</p>\n<p>Nota que el <a href=\"maps/new\">Editor de Mapas</a> tiene un botón para exportar el mapa. Sólo asegúrate de guardar el mapa antes de exportarlo si hay cambios que quieres que otros vean. Se exporta la última versión guardada, no la última versión vista. </p>\n\n<h4 id=\"remixing-a-map\">Reutilizar un Mapa</h4>\n<p>Cualquier mapa disponible puede servir como punto de partida para un nuevo mapa</p>\n<ol>\n<li>Abrir el mapa en el Editor de Mapas. </li>\n<li>Agregar y remover capas. </li>\n<li>Pan y zoom para resaltar el área de interés </li>\n<li><strong>IMPORTANTE:</strong> Actualiza el título, resumen, contacto y tags para el nuevo mapa. </li>\n<li>Guardar el mapa</li>\n</ol>\n<p>Podrás ver tu nuevo mapa, cuando lo busques desde el tab de <a href=\"maps\">Mapas</a>. </p>"
 
 #: templates/help.html:65
 msgid "Sections"
@@ -3378,11 +3380,11 @@ msgstr "Tipo de Representación Espacial"
 #: templates/notification/base.html:15 templates/notification/notices.html:7
 #: templates/notification/notices.html:11
 msgid "Notices"
-msgstr ""
+msgstr "Notificaciones"
 
 #: templates/notification/base.html:16
 msgid "Notice settings"
-msgstr ""
+msgstr "Configuración de Notificaciones"
 
 #: templates/notification/base.html:17
 msgid "Observed objects"
