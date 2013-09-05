@@ -18,9 +18,10 @@ GeoNode uses `Transifex <https://www.transifex.com/projects/p/geonode/>`_ to tra
 
    .. figure:: img/transifex_join_project.PNG
 
-   Click *join an existing project* and type *geonode* into the search bar. You will be directed to the geonode project site on transifex. To join the team, click on the language you want to add a translation in. Then a button *Join the team* will appaer. Hit it, and you will become a part of the team.
+   Click *join an existing project* and type *geonode* into the search bar. You will be directed to the geonode project site on transifex. To join the team, click on the language you want to add a translation in. Then a button *Join the team* will appaer. Hit it, and you will submit for permission to join.
 
-#. Add translation
+#. Wait for permission to update translations from translation leader (email)
+#. Start to Add a translation
 
    Click on the language where you want to add a translation. You'll see two bars, *javascript* and *master*. To start translating, click on one, and hit *Translate now*. You'll see an interface like this
 
@@ -32,7 +33,8 @@ GeoNode uses `Transifex <https://www.transifex.com/projects/p/geonode/>`_ to tra
 
    When you stop translating, do not forget to hit the green *save* button at the top right!
 
-#. Add new language
+How to add a new language
+-------------------------
 
    To add a new language, click on *Request language* on the right top.
 
