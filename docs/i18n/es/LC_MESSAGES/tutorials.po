@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-04 20:42\n"
-"PO-Revision-Date: 2013-09-05 02:01+0000\n"
+"PO-Revision-Date: 2013-09-05 02:11+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/geonode/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -1337,7 +1337,7 @@ msgstr ""
 #: ../../tutorials/devel/old/reference/api.txt:33
 #: ../../tutorials/users/old/index.txt:17
 msgid "Layers"
-msgstr ""
+msgstr "Capas"
 
 #: ../../tutorials/admin/data/permission_and_security.txt:116
 msgid ""
@@ -1514,7 +1514,7 @@ msgstr ""
 #: ../../tutorials/devel/old/reference/api.txt:49
 #: ../../tutorials/users/old/index.txt:22
 msgid "Maps"
-msgstr ""
+msgstr "Mapas"
 
 #: ../../tutorials/admin/data/permission_and_security.txt:222
 msgid ""
@@ -1545,7 +1545,7 @@ msgstr ""
 #: ../../tutorials/admin/data/permission_and_security.txt:242
 #: ../../tutorials/devel/old/reference/api.txt:64
 msgid "Documents"
-msgstr ""
+msgstr "Documentos"
 
 #: ../../tutorials/admin/data/permission_and_security.txt:244
 msgid "All the same is also valid for your uploaded documents."
@@ -4134,7 +4134,7 @@ msgstr ""
 #: ../../tutorials/devel/api/ogc.txt:4
 #: ../../tutorials/devel/intro_devel/reference.txt:9
 msgid "OGC Services"
-msgstr ""
+msgstr "Servicios OGC"
 
 #: ../../tutorials/devel/core/coremodules.txt:4
 msgid "GeoNode's Core Modules"
@@ -6526,7 +6526,7 @@ msgstr ""
 
 #: ../../tutorials/devel/old/architecture.txt:57
 msgid "GeoServer"
-msgstr ""
+msgstr "GeoServer"
 
 #: ../../tutorials/devel/old/architecture.txt:58
 msgid "GeoWebCache"
@@ -12877,7 +12877,7 @@ msgstr ""
 
 #: ../../tutorials/users/old/share.txt:48
 msgid "View in Google Earth"
-msgstr ""
+msgstr "Ver en Google Earth"
 
 #: ../../tutorials/users/old/share.txt:50
 msgid ""
@@ -13296,7 +13296,7 @@ msgstr ""
 
 #: ../../tutorials/users/old/upload.txt:139
 msgid "Permissions"
-msgstr ""
+msgstr "Permisos"
 
 #: ../../tutorials/users/old/upload.txt:141
 msgid ""
