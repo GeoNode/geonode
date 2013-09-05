@@ -12,7 +12,7 @@ geonode/development.db
 geoserver
 downloaded
 
-docs/i18n/pot/.doctrees/
+docs/i18n/pot/
 
 # Static media handling
 *.jshintrc
