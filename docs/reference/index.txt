@@ -12,11 +12,11 @@ Here you will find information about each and every component of Geonode, for ex
 
 :ref:`api`
 
+:ref:`localization`
+
 :ref:`djangoapps`
 
 :ref:`javascript`
-
-:ref:`localization`
 
 .. toctree::
     :hidden:
@@ -28,4 +28,4 @@ Here you will find information about each and every component of Geonode, for ex
     localization
     developers/index
     developers/django-apps
-
+    developers/javascript
