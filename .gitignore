@@ -40,6 +40,7 @@ geonode/static/lib/js/jquery.js
 geonode/static/lib/js/jquery.multi-select.js
 geonode/static/lib/js/jquery.timeago.js
 geonode/static/lib/js/jquery.tinysort.js
+geonode/static/lib/js/jquery.raty.js
 geonode/static/lib/js/json2.js
 geonode/static/lib/js/qunit.js
 geonode/static/lib/js/require.js
