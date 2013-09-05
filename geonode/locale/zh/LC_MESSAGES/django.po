@@ -1,23 +1,23 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # nwang <nwang@opengeo.org>, 2013
+# nwang <nwang@opengeo.org>, 2012-2013
 # nwang <nwang@opengeo.org>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-04 18:18-0700\n"
-"PO-Revision-Date: 2013-06-20 01:21+0000\n"
+"PO-Revision-Date: 2013-09-05 01:20+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
-"Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/"
-"zh/)\n"
-"Language: zh\n"
+"Language-Team: Chinese (http://www.transifex.com/projects/p/geonode/language/zh/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: utils.py:319 security/enumerations.py:28
@@ -37,9 +37,8 @@ msgid "Permission Denied"
 msgstr "权限级别"
 
 #: views.py:105
-#, fuzzy
 msgid "You are not permitted to modify this object"
-msgstr "您无权修改此图层"
+msgstr ""
 
 #: base/enumerations.py:26
 msgid "series"
@@ -1182,18 +1181,16 @@ msgid "keyword identifies a location"
 msgstr "定位关键词"
 
 #: base/models.py:243
-#, fuzzy
 msgid "restrictions"
-msgstr "路段"
+msgstr ""
 
 #: base/models.py:243
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr ""
 
 #: base/models.py:244
-#, fuzzy
 msgid "restrictions other"
-msgstr "其他约束"
+msgstr ""
 
 #: base/models.py:244
 msgid ""
@@ -1211,14 +1208,13 @@ msgstr "数据组使用语言"
 
 #: base/models.py:248
 msgid ""
-"high-level geographic data thematic classification to assist in the grouping "
-"and search of available geographic data sets."
+"high-level geographic data thematic classification to assist in the grouping"
+" and search of available geographic data sets."
 msgstr "用以助于地理信息搜集的高层次地理信息分类"
 
 #: base/models.py:250
-#, fuzzy
 msgid "method used to represent geographic information in the dataset."
-msgstr "在数据组中显示地理信息的方法"
+msgstr ""
 
 #: base/models.py:253
 msgid "temporal extent start"
@@ -1338,14 +1334,12 @@ msgid "Keywords"
 msgstr "关键词"
 
 #: base/templates/base/resourcebase_info_panel.html:44
-#, fuzzy
 msgid "Category"
-msgstr "种类"
+msgstr ""
 
 #: base/templates/base/resourcebase_info_panel.html:51
-#, fuzzy
 msgid "Regions"
-msgstr "注册"
+msgstr ""
 
 #: base/templates/base/resourcebase_info_panel.html:60
 msgid "Owner"
@@ -1364,9 +1358,8 @@ msgid "Maintenance Frequency"
 msgstr "维护频率"
 
 #: base/templates/base/resourcebase_info_panel.html:86
-#, fuzzy
 msgid "Restrictions"
-msgstr "路段"
+msgstr ""
 
 #: base/templates/base/resourcebase_info_panel.html:97
 msgid "Edition"
@@ -1420,23 +1413,23 @@ msgstr "管理"
 
 #: documents/views.py:38
 msgid "You are not permitted to delete this document"
-msgstr ""
+msgstr "您无权删除此文件"
 
 #: documents/views.py:39
 msgid "You do not have permissions for this document."
-msgstr ""
+msgstr "你没有此文件的权限"
 
 #: documents/views.py:40
 msgid "You are not permitted to modify this document"
-msgstr ""
+msgstr "你没有修改此文件的权限"
 
 #: documents/views.py:41
 msgid "You are not permitted to modify this document's metadata"
-msgstr ""
+msgstr "你没有权限修改此文件的元数据"
 
 #: documents/views.py:42
 msgid "You are not permitted to view this document"
-msgstr ""
+msgstr "您无权以查看此文件"
 
 #: documents/views.py:78 documents/views.py:99
 msgid "You are not allowed to view this document."
@@ -1517,7 +1510,7 @@ msgstr "下载元数据"
 
 #: documents/templates/documents/document_detail.html:46
 msgid "Edit Document"
-msgstr ""
+msgstr "编辑文件"
 
 #: documents/templates/documents/document_detail.html:50
 #: layers/templates/layers/layer_detail.html:61
@@ -1531,11 +1524,11 @@ msgstr "修改权限"
 
 #: documents/templates/documents/document_detail.html:52
 msgid "Replace this Document"
-msgstr ""
+msgstr "替换此文件"
 
 #: documents/templates/documents/document_detail.html:53
 msgid "Remove this Document"
-msgstr ""
+msgstr "删除此文件"
 
 #: documents/templates/documents/document_detail.html:70
 #: layers/templates/layers/_actions.html:3
@@ -1570,11 +1563,11 @@ msgstr "标注"
 
 #: documents/templates/documents/document_detail.html:83
 msgid "Share This Document"
-msgstr ""
+msgstr "分享此文件"
 
 #: documents/templates/documents/document_detail.html:103
 msgid "Rate this document"
-msgstr ""
+msgstr "给此文件打分"
 
 #: documents/templates/documents/document_detail.html:107
 #: layers/templates/layers/layer_detail.html:147
@@ -1584,11 +1577,11 @@ msgstr "平均分数"
 
 #: documents/templates/documents/document_detail.html:117
 msgid "Resource using this document"
-msgstr ""
+msgstr "用到此文件的资源"
 
 #: documents/templates/documents/document_detail.html:119
 msgid "List of resources using this document:"
-msgstr ""
+msgstr "列出用到此文件的资源"
 
 #: documents/templates/documents/document_detail.html:123
 msgid "This document is related to a "
@@ -1609,27 +1602,27 @@ msgstr "权限"
 
 #: documents/templates/documents/document_detail.html:134
 msgid "Click the button below to change the permissions of this document."
-msgstr ""
+msgstr "点击下方按钮以改变此文件的使用权限"
 
 #: documents/templates/documents/document_detail.html:135
 msgid "Change Document Permissions"
-msgstr ""
+msgstr "更改文件权限"
 
 #: documents/templates/documents/document_detail.html:139
 #: layers/templates/layers/layer_detail.html:218
 #: maps/templates/maps/map_detail.html:157 templates/500.html:184
 #: templates/base.html:181
 msgid "About"
-msgstr ""
+msgstr "关于"
 
 #: documents/templates/documents/document_detail.html:140
 msgid "Document Owner"
-msgstr ""
+msgstr "文件所有者"
 
 #: documents/templates/documents/document_detail.html:148
 #: layers/templates/layers/layer_detail.html:227
 msgid "Metadata Author"
-msgstr ""
+msgstr "元数据作者"
 
 #: documents/templates/documents/document_list.html:28
 #: layers/templates/layers/layer_list.html:30
@@ -1643,9 +1636,7 @@ msgid ""
 "\n"
 "        Editing details for %(document_title)s\n"
 "      "
-msgstr ""
-"\n"
-" %(document_title)s 的细节修改"
+msgstr "\n %(document_title)s 的细节修改"
 
 #: documents/templates/documents/document_metadata.html:31
 #: layers/templates/layers/layer_metadata.html:62
@@ -1663,7 +1654,7 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(document_title)s?\n"
 "        "
-msgstr ""
+msgstr "\n你确定要移除 %(document_title)s?\n        "
 
 #: documents/templates/documents/document_remove.html:18
 #: layers/templates/layers/layer_remove.html:18
@@ -1679,11 +1670,11 @@ msgstr "不要删除"
 
 #: documents/templates/documents/document_replace.html:4
 msgid "Replace Document"
-msgstr ""
+msgstr "替换文件"
 
 #: documents/templates/documents/document_replace.html:16
 msgid "Replace "
-msgstr ""
+msgstr "替换"
 
 #: documents/templates/documents/document_upload.html:4
 msgid "Upload Document"
@@ -1714,9 +1705,8 @@ msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "在shapefile和空间数据库中使用的属性名称"
 
 #: layers/models.py:248
-#, fuzzy
 msgid "attribute description"
-msgstr "发布描述"
+msgstr ""
 
 #: layers/models.py:248
 msgid "description of attribute to be used in metadata"
@@ -1758,71 +1748,71 @@ msgstr "标明属性在identity中显示的顺序"
 
 #: layers/models.py:255
 msgid "count"
-msgstr ""
+msgstr "数目"
 
 #: layers/models.py:255
 msgid "count value for this field"
-msgstr ""
+msgstr "计算此列的值"
 
 #: layers/models.py:256
 msgid "min"
-msgstr ""
+msgstr "最小值"
 
 #: layers/models.py:256
 msgid "minimum value for this field"
-msgstr ""
+msgstr "此列最小值"
 
 #: layers/models.py:257
 msgid "max"
-msgstr ""
+msgstr "最大值"
 
 #: layers/models.py:257
 msgid "maximum value for this field"
-msgstr ""
+msgstr "此列最大值"
 
 #: layers/models.py:258
 msgid "average"
-msgstr ""
+msgstr "平均值"
 
 #: layers/models.py:258
 msgid "average value for this field"
-msgstr ""
+msgstr "此列平均值"
 
 #: layers/models.py:259
 msgid "median"
-msgstr ""
+msgstr "中间值"
 
 #: layers/models.py:259
 msgid "median value for this field"
-msgstr ""
+msgstr "此列中间值"
 
 #: layers/models.py:260
 msgid "standard deviation"
-msgstr ""
+msgstr "方差"
 
 #: layers/models.py:260
 msgid "standard deviation for this field"
-msgstr ""
+msgstr "此列方差"
 
 #: layers/models.py:261
 msgid "sum"
-msgstr ""
+msgstr "和"
 
 #: layers/models.py:261
 msgid "sum value for this field"
-msgstr ""
+msgstr "此列和"
 
 #: layers/models.py:262
 msgid "unique values for this field"
-msgstr ""
+msgstr "此列唯一值"
 
 #: layers/models.py:263
 msgid "last modified"
-msgstr ""
+msgstr "最后修改"
 
 #: layers/models.py:263
 msgid "date when attribute statistics were last updated"
-msgstr ""
+msgstr "上一次统计更新的时间"
 
 #: layers/models.py:507
 msgid "KML"
@@ -1934,7 +1924,7 @@ msgstr "属性"
 
 #: layers/templates/layers/_layer_list_item.html:25
 msgid "Create a map"
-msgstr ""
+msgstr "创建地图"
 
 #: layers/templates/layers/layer_base.html:13
 #: layers/templates/layers/layer_list.html:9
@@ -1979,7 +1969,7 @@ msgstr "编辑图层"
 #: layers/templates/layers/layer_detail.html:65
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
-msgstr ""
+msgstr "管理样式"
 
 #: layers/templates/layers/layer_detail.html:66
 msgid "Edit Styles"
@@ -2003,7 +1993,7 @@ msgstr "范围"
 
 #: layers/templates/layers/layer_detail.html:94
 msgid "Average"
-msgstr ""
+msgstr "平均值"
 
 #: layers/templates/layers/layer_detail.html:95
 msgid "Median"
@@ -2011,7 +2001,7 @@ msgstr "中值"
 
 #: layers/templates/layers/layer_detail.html:96
 msgid "Standard Deviation"
-msgstr ""
+msgstr "方差"
 
 #: layers/templates/layers/layer_detail.html:126
 msgid "Share This Layer"
@@ -2035,11 +2025,11 @@ msgstr "当前图层未被任何地图使用。"
 
 #: layers/templates/layers/layer_detail.html:172
 msgid "Documents related to this layer"
-msgstr ""
+msgstr "与此图层相关的文件"
 
 #: layers/templates/layers/layer_detail.html:173
 msgid "List of documents related to this layer:"
-msgstr ""
+msgstr "列出与此图层相关的文件"
 
 #: layers/templates/layers/layer_detail.html:182
 msgid "Create a map using this layer"
@@ -2077,7 +2067,7 @@ msgstr "此图层没有与任何样式关联"
 
 #: layers/templates/layers/layer_detail.html:219
 msgid "Layer Owner"
-msgstr ""
+msgstr "图层所有者"
 
 #: layers/templates/layers/layer_metadata.html:12
 #, python-format
@@ -2085,20 +2075,14 @@ msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
-msgstr ""
-"\n"
-"细节修改%(layer_title)s"
+msgstr "\n细节修改%(layer_title)s"
 
 #: layers/templates/layers/layer_metadata.html:17
 msgid ""
-"Note: this layer's orginal metadata was populated by importing a metadata "
-"XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
-"Core metadata elements.\n"
+"Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr ""
-"主意: 此图层的元数据是从元数据XML文件中获取的。GeoNode的元数据输入支持ISO，"
-"FGDC和Dublin Core元数据元素。一些早先的元数据可能已经丢失。"
+msgstr "主意: 此图层的元数据是从元数据XML文件中获取的。GeoNode的元数据输入支持ISO，FGDC和Dublin Core元数据元素。一些早先的元数据可能已经丢失。"
 
 #: layers/templates/layers/layer_metadata.html:23
 msgid "Error updating metadata.  Please check the following fields: "
@@ -2113,9 +2097,8 @@ msgid "Label"
 msgstr ""
 
 #: layers/templates/layers/layer_metadata.html:49
-#, fuzzy
 msgid "Description"
-msgstr "版本"
+msgstr ""
 
 #: layers/templates/layers/layer_metadata.html:49
 msgid "Display Order"
@@ -2127,10 +2110,7 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(layer_title)s?\n"
 "        "
-msgstr ""
-"\n"
-"          确定你要移除 %(layer_title)s?\n"
-"        "
+msgstr "\n          确定你要移除 %(layer_title)s?\n        "
 
 #: layers/templates/layers/layer_remove.html:25
 msgid "This action affects the following maps:"
@@ -2145,9 +2125,8 @@ msgid "Replace Layer"
 msgstr "替换图层"
 
 #: layers/templates/layers/layer_replace.html:38
-#, fuzzy
 msgid "Replace Layer: "
-msgstr "替换图层"
+msgstr ""
 
 #: layers/templates/layers/layer_replace.html:82
 #: upload/templates/upload/layer_upload.html:88
@@ -2158,14 +2137,13 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
-"%(layer_title)s</a>\n"
+"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">%(layer_title)s</a>\n"
 "    "
 msgstr ""
 
 #: layers/templates/layers/layer_style_manage.html:54
 msgid "Update Available Styles"
-msgstr ""
+msgstr "更新样式"
 
 #: maps/models.py:65
 msgid "zoom"
@@ -2276,9 +2254,8 @@ msgid "A rating was given to a map"
 msgstr "一张地图被评分"
 
 #: maps/templates/maps/_map_list_item.html:22
-#, fuzzy
 msgid "View"
-msgstr "查看自"
+msgstr ""
 
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
 #: maps/templates/maps/map_list.html:14 templates/index.html:32
@@ -2299,25 +2276,23 @@ msgstr "下载网络地图背景"
 
 #: maps/templates/maps/map_detail.html:40
 msgid "Edit Map"
-msgstr ""
+msgstr "编辑地图"
 
 #: maps/templates/maps/map_detail.html:44
-#, fuzzy
 msgid "Edit Map Metadata"
-msgstr "修改元数据"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:46
 msgid "Set Map Thumbnail"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:48
-#, fuzzy
 msgid "Edit Map Permissions"
-msgstr "修改权限"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:49
 msgid "Remove this Map"
-msgstr ""
+msgstr "删除地图"
 
 #: maps/templates/maps/map_detail.html:54
 msgid "View Map"
@@ -2341,11 +2316,11 @@ msgstr "这张地图用了以下图层"
 
 #: maps/templates/maps/map_detail.html:134
 msgid "Documents related to this map"
-msgstr ""
+msgstr "与此地图有关的文件"
 
 #: maps/templates/maps/map_detail.html:135
 msgid "List of documents related to this map:"
-msgstr ""
+msgstr "列出与此地图有关文件"
 
 #: maps/templates/maps/map_detail.html:147
 msgid "Specify which users can view or modify this map"
@@ -2370,7 +2345,7 @@ msgstr "生成新地图"
 
 #: maps/templates/maps/map_detail.html:158
 msgid "Map Owner"
-msgstr ""
+msgstr "地图所有者"
 
 #: maps/templates/maps/map_download.html:8
 msgid ""
@@ -2379,23 +2354,15 @@ msgid ""
 "      are hosted on this GeoNode.  The following layers will\n"
 "      be downloaded:\n"
 "    "
-msgstr ""
-"\n"
-"    你可以下载GeoNode里所有图层数据。\n"
-"    将下载以下几层：\n"
-"    "
+msgstr "\n    你可以下载GeoNode里所有图层数据。\n    将下载以下几层：\n    "
 
 #: maps/templates/maps/map_download.html:26
 msgid ""
 "\n"
-"        Additionally, the map contains these layers which will not be "
-"downloaded\n"
+"        Additionally, the map contains these layers which will not be downloaded\n"
 "        due to security restrictions:\n"
 "      "
-msgstr ""
-"\n"
-"此外，由于安全限制该地图包含的这些图层不会被下载：\n"
-"    "
+msgstr "\n此外，由于安全限制该地图包含的这些图层不会被下载：\n    "
 
 #: maps/templates/maps/map_download.html:38
 msgid ""
@@ -2403,11 +2370,7 @@ msgid ""
 "        Finally, the map contains these layers which will not be downloaded\n"
 "        because they are not available directly from this GeoNode:\n"
 "      "
-msgstr ""
-"\n"
-"    最后，该地图包含的这些图层将不会被下载，\n"
-"    因为图层不是GeoNode数据：\n"
-"    "
+msgstr "\n    最后，该地图包含的这些图层将不会被下载，\n    因为图层不是GeoNode数据：\n    "
 
 #: maps/templates/maps/map_download.html:60
 msgid "Start downloading this map"
@@ -2419,9 +2382,7 @@ msgid ""
 "\n"
 "            Updating metadata of %(map_title)s\n"
 "        "
-msgstr ""
-"\n"
-"更新%(map_title)s的元数据"
+msgstr "\n更新%(map_title)s的元数据"
 
 #: maps/templates/maps/map_metadata.html:26
 msgid "Update metadata"
@@ -2437,9 +2398,7 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(map_title)s?\n"
 "    "
-msgstr ""
-"\n"
-"你确定要删除%(map_title)s？"
+msgstr "\n你确定要删除%(map_title)s？"
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2451,8 +2410,8 @@ msgstr "资源授权方"
 
 #: people/enumerations.py:40
 msgid ""
-"party who has processed the data in a manner such that the resource has been "
-"modified"
+"party who has processed the data in a manner such that the resource has been"
+" modified"
 msgstr "资源修改方"
 
 #: people/enumerations.py:41
@@ -2492,7 +2451,8 @@ msgid "party that owns the resource"
 msgstr "资源拥有方"
 
 #: people/enumerations.py:49
-msgid "key party responsible for gathering information and conducting research"
+msgid ""
+"key party responsible for gathering information and conducting research"
 msgstr "信息收集与研究的主要责任方"
 
 #: people/forms.py:33
@@ -2623,7 +2583,7 @@ msgstr "找不到使用此email的用户。"
 
 #: people/templates/people/_profile_filters.html:5
 msgid "All contents"
-msgstr ""
+msgstr "所有内容"
 
 #: people/templates/people/_profile_filters.html:6 templates/500.html:111
 #: templates/base.html:114
@@ -2642,16 +2602,16 @@ msgstr "文件"
 
 #: people/templates/people/_profile_filters.html:9
 msgid "Sort by date"
-msgstr ""
+msgstr "按日期排序"
 
 #: people/templates/people/_profile_filters.html:10
 msgid "Sort by title"
-msgstr ""
+msgstr "按标题排序"
 
 #: people/templates/people/_profile_list_item.html:39
 #: people/templates/people/profile_detail.html:15
 msgid "My Activities"
-msgstr ""
+msgstr "我的活动"
 
 #: people/templates/people/forgot_username_form.html:5
 msgid "Forgot Username"
@@ -2659,14 +2619,14 @@ msgstr "忘记用户名"
 
 #: people/templates/people/forgot_username_form.html:9
 msgid ""
-"Enter your email address and click the submit button.  Your username will be "
-"sent to you."
+"Enter your email address and click the submit button.  Your username will be"
+" sent to you."
 msgstr "请填写您的email地址，然后点击提交按钮。您的用户名会被发到您的电邮信箱"
 
 #: people/templates/people/profile_base.html:12
 #: people/templates/people/profile_list.html:11
 msgid "Explore People"
-msgstr ""
+msgstr "浏览用户"
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -2675,7 +2635,7 @@ msgstr "创建个人信息"
 
 #: people/templates/people/profile_detail.html:7
 msgid "Profile of "
-msgstr ""
+msgstr "简介"
 
 #: people/templates/people/profile_detail.html:51
 msgid "Edit profile information"
@@ -2698,14 +2658,12 @@ msgid "Create a new map"
 msgstr "创建一个新的地图"
 
 #: people/templates/people/profile_detail.html:103
-#, fuzzy
 msgid "Shared on"
-msgstr "分享"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:116
-#, fuzzy
 msgid "No contents found."
-msgstr "没有数据"
+msgstr ""
 
 #: people/templates/people/profile_edit.html:10
 #: people/templates/people/profile_edit.html:18
@@ -2726,19 +2684,19 @@ msgstr "所有种类"
 
 #: search/templates/search/_sort_filters.html:5
 msgid "Less recent"
-msgstr ""
+msgstr "较远的"
 
 #: search/templates/search/_sort_filters.html:6
 msgid "A - Z"
-msgstr ""
+msgstr "A到"
 
 #: search/templates/search/_sort_filters.html:7
 msgid "Z - A"
-msgstr ""
+msgstr "Z到"
 
 #: search/templates/search/_sort_filters.html:9
 msgid "Relevance"
-msgstr ""
+msgstr "关联度"
 
 #: search/templates/search/advanced_search.html:4
 #: search/templates/search/advanced_search.html:10
@@ -2779,7 +2737,7 @@ msgstr "仅是图层"
 
 #: search/templates/search/advanced_search.html:44
 msgid "Users only"
-msgstr ""
+msgstr "仅限用户"
 
 #: search/templates/search/advanced_search.html:52
 msgid "Type: "
@@ -2846,9 +2804,7 @@ msgid ""
 "\n"
 "          You are not allowed to perform this operation.  \n"
 "      "
-msgstr ""
-"\n"
-"您无权执行此操作。"
+msgstr "\n您无权执行此操作。"
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
@@ -2865,12 +2821,9 @@ msgstr "找不到网页"
 #: templates/404.html:6
 msgid ""
 "\n"
-"      The page you requested does not exist.  Perhaps you are using an "
-"outdated bookmark?\n"
+"      The page you requested does not exist.  Perhaps you are using an outdated bookmark?\n"
 "  "
-msgstr ""
-"\n"
-"您请求的页面不存在。原因可能是网址过时？ "
+msgstr "\n您请求的页面不存在。原因可能是网址过时？ "
 
 #: templates/500.html:49 templates/base.html:52
 msgid "Admin"
@@ -2938,11 +2891,8 @@ msgstr ""
 #: templates/500.html:164
 msgid ""
 "\n"
-"      Please contact your GeoNode administrator (he may have received an "
-"email automatically if he configured it properly).\n"
-"      If you are the site administrator, enable debug mode to see the actual "
-"error and fix it or file an issue in <a href=\"http://github.com/GeoNode/"
-"geonode/issues\">GeoNode's issue tracker</a>\n"
+"      Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).\n"
+"      If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "  "
 msgstr ""
 
@@ -2971,9 +2921,8 @@ msgid "Add Comment"
 msgstr "添加评论"
 
 #: templates/_comments.html:20
-#, fuzzy
 msgid "Log in to add a comment"
-msgstr "添加一条评论"
+msgstr ""
 
 #: templates/_comments.html:33
 msgid "By"
@@ -3026,7 +2975,7 @@ msgstr "应用更改"
 
 #: templates/_permissions_form_js.html:126
 msgid "Choose one or more users..."
-msgstr ""
+msgstr "选择一个或多个用户"
 
 #: templates/_viewby.html:3
 msgid "View by"
@@ -3042,11 +2991,11 @@ msgstr "列"
 
 #: templates/about.html:4 templates/about.html.py:8
 msgid "About GeoNode"
-msgstr ""
+msgstr "关于GeoNode"
 
 #: templates/about.html:9
 msgid "About GeoNode."
-msgstr ""
+msgstr "关于GeoNode"
 
 #: templates/developer.html:4 templates/developer.html.py:8
 msgid "Information for Developers"
@@ -3090,83 +3039,49 @@ msgstr "GeoNode帮助"
 
 #: templates/help.html:9
 msgid ""
-"This page provides helpful information about how to use the GeoNode. You can "
-"use the sidebar links to navigate to what you want to know."
+"This page provides helpful information about how to use the GeoNode. You can"
+" use the sidebar links to navigate to what you want to know."
 msgstr "本页提供如何使用GeoNode的帮助信息。请点击工具栏链接了解您想知道的内容"
 
 #: templates/help.html:12
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application "
-"allows users to browse existing maps and contribute their own.</p>\n"
+"  <p>The GeoNode provides access to data sets and a map editing application allows users to browse existing maps and contribute their own.</p>\n"
 "\n"
 "  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/data\">Layers</a> tab allows you to browse data uploaded "
-"to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other "
-"applications.</p>\n"
+"  <p>The <a href=\"/data\">Layers</a> tab allows you to browse data uploaded to this GeoNode.</p>\n"
+"  <p>All data can be downloaded in a variety of formats, for use in other applications.</p>\n"
 "\n"
 "  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
-"developers to get started building applications against the GeoNode. It "
-"includes instructions on using the web services, links to the source code of "
-"the GeoNode, and information about the open source projects used to create "
-"it.</p>\n"
+"  <p>The <a href=\"/developer\"> Developer</a> page is the place for developers to get started building applications against the GeoNode. It includes instructions on using the web services, links to the source code of the GeoNode, and information about the open source projects used to create it.</p>\n"
 "\n"
 "  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</"
-"p>\n"
-"  <p>The <a href=\"maps\">Maps</a> tab is a gateway to map exploration on "
-"GeoNode.  From here you can <strong>search for a map</strong> or "
-"<strong>create a map</strong>, which will open the <a href=\"maps/new\">Map "
-"Composer</a>.</p>\n"
+"  <p>The GeoNode allows users to create and share maps with one another.</p>\n"
+"  <p>The <a href=\"maps\">Maps</a> tab is a gateway to map exploration on GeoNode.  From here you can <strong>search for a map</strong> or <strong>create a map</strong>, which will open the <a href=\"maps/new\">Map Composer</a>.</p>\n"
 "  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
-"with the Google Earth plugin. To switch to 3D mode select the Google Earth "
-"globe logo, the rightmost button on top toolbar. If you do not have the "
-"Google Earth plugin installed you will be prompted to install it.</p>\n"
+"  <p>Any map viewed in the interactive map editor can be seen in 3D mode with the Google Earth plugin. To switch to 3D mode select the Google Earth globe logo, the rightmost button on top toolbar. If you do not have the Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"maps\">Contributed Maps</a> tab "
-"and click the <a href=\"maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"maps/new\">Map Composer</a> with a "
-"base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button "
-"located below the layers tab on the left hand side of the screen. This will "
-"open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
-"strong> button. When finished you may hit <strong>Done</strong> to close the "
-"dialog and go back to the map.</p>\n"
+"  <p>To create a new map go to the <a href=\"maps\">Contributed Maps</a> tab and click the <a href=\"maps/new\">create your own map</a> link.</p>\n"
+"  <p>This will take you to the <a href=\"maps/new\">Map Composer</a> with a base layer loaded.</p>\n"
+"  <p>To add data layers from the GeoNode click on the green plus button located below the layers tab on the left hand side of the screen. This will open a dialog listing all the layers available on the GeoNode.</p>\n"
+"  <p>To add layers to your map select them and hit the <strong>Add Layers</strong> button. When finished you may hit <strong>Done</strong> to close the dialog and go back to the map.</p>\n"
 "\n"
 "  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply "
-"dragging and dropping their names. The order in the map will be updated to "
-"reflect that. To turn a layer's visibility off simply uncheck it, and to "
-"remove it entirely select it and hit the red minus button.</p>\n"
+"  <p>Change the display order of the layers listed in the data tab by simply dragging and dropping their names. The order in the map will be updated to reflect that. To turn a layer's visibility off simply uncheck it, and to remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
 "  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time "
-"to save it so others can see it.  Click the Save button--the left most icon "
-"on the top toolbar, an image of a map with a disk--on the top menu and fill "
-"out the title and abstract of the map.</p>\n"
+"  <p>Once a suitable set of layers and zoom level has been found it's time to save it so others can see it.  Click the Save button--the left most icon on the top toolbar, an image of a map with a disk--on the top menu and fill out the title and abstract of the map.</p>\n"
 "\n"
 "  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or "
-"blog. To export a map:</p>\n"
+"  <p>Any map from the GeoNode can be embedded for use in another site or blog. To export a map:</p>\n"
 "  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and "
-"then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</"
-"li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
-"iFrame-supporting blog post.</li>\n"
+"    <li>Select the from the list of maps on the community or map page and then hit the 'export map' button.</li> \n"
+"    <li>Choose your desired height and width for the widget in the wizard.</li> \n"
+"    <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li>\n"
 "  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or "
-"blog post.</p>\n"
-"  <p>Note that the <a href=\"maps/new\">Map Composer</a> also has a button "
-"to export the map. Just be sure to save the map before exporting if there "
-"are changes that you want others to see. It exports the last saved version, "
-"not the last viewed version.</p>\n"
+"  <p>This will put an interactive widget showing you map in your web page or blog post.</p>\n"
+"  <p>Note that the <a href=\"maps/new\">Map Composer</a> also has a button to export the map. Just be sure to save the map before exporting if there are changes that you want others to see. It exports the last saved version, not the last viewed version.</p>\n"
 "\n"
 "  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
 "  <p>Any map available can serve as a starting point for a new map.</p>\n"
@@ -3174,82 +3089,12 @@ msgid ""
 "    <li>Open the map in the Map Composer.</li>\n"
 "    <li>Add and remove layers as you like.</li>\n"
 "    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
-"and tags to reflect the new map.</li>\n"
+"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info and tags to reflect the new map.</li>\n"
 "    <li>Save the map.</li>\n"
 "  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a "
-"href=\"maps\">Maps</a> tab.</p> \n"
+"  <p>You will be able to see your new map when you search for it from the <a href=\"maps\">Maps</a> tab.</p> \n"
 "  "
-msgstr ""
-"\n"
-"  <p>GeoNode提供数据集和地图编辑应用，允许用户浏览地图或贡献自己的地图。</"
-"p>\n"
-"\n"
-"  <h4 id=\"browsing-data\">浏览数据</h4>\n"
-"  <p>而<a href=\"data\">数据</a> 选项卡允许您浏览上传到GeoNode的地图数据。</"
-"p>\n"
-"  <p>所有数据都可以多种格式下载，这些数据可以在其它程序中使用。</p>\n"
-"\n"
-"  <h4 id=\"developer-access\">开发者访问</h4>\n"
-"  <p>The <a href=\"developer\">开发者</a> 选项卡对开发者开始构建GeoNode应用有"
-"帮助。它包括Web服务使用帮助，GeoNode源代码的链接，以及相关开源项目的信息说"
-"明。</p>\n"
-"\n"
-"  <h4 id=\"browsing-maps\">浏览地图</h4>\n"
-"  <p>GeoNode允许用户创建和分享地图。</p>\n"
-"  <p>The <a href=\"maps\">地图</a> 选项卡是GeoNode地图搜寻入口。从这里你可以 "
-"<strong>查询地图</strong> 或 <strong>创建地图</strong>, 点击这里会打开 <a "
-"href=\"maps/new\">地图设计器</a>.</p>\n"
-"  <h5>谷歌地球模式</h5>\n"
-"  <p>在交互式地图编辑器，使用谷歌地球3D模式插件查看任何地图。\n"
-"选择位于顶部工具栏的最右边的谷歌地球全球的标志按钮，切换到3D模式。\n"
-"如果你没有安装谷歌地球插件，你会被提示安装它。</p>\n"
-"\n"
-"  <h4 id=\"creating-a-map\">创建地图</h4>\n"
-"  <p>要创建一个新的地图去 <a href=\"maps\">贡献地图</a> tab 并点击 <a href="
-"\"maps/new\">创建自己的地图</a> 链接。</p>\n"
-"  <p>这将带你到 <a href=\"maps/new\">地图设计</a> 与基础图层加载。</p>\n"
-"  <p>添加GeoNode数据图层点击\"数据\"选项卡上位于屏幕的左侧下面的绿色加号按"
-"钮。\n"
-"这将打开一个对话框，列出所有GeoNode上的图层。</p>\n"
-"  <p>选择 <strong>添加层</strong> 按钮为地图添加图层。当完成后，您可以点击 "
-"<strong>完成</strong> 关闭对话框并返回到地图。</p>\n"
-"\n"
-"  <h5>图层叠加排序和删除</h5>\n"
-"  <p>简单的拖放图层列表，更改图层显示顺序。\n"
-"在地图上的顺序被改变，地图也会更新。\n"
-"要让图层不显示，只需取消选中，并点击红色的减号按钮来完全消除它。</p>\n"
-"\n"
-"  <h5>保存你的地图</h5>\n"
-"  <p>一旦找到合适的图层和缩放级别设置，将其保存，这样别人可以看到它。点击顶部"
-"菜单上的保存按钮 - 在顶部工具栏最左边、图像为磁盘地图的图标 - 并填写地图的标"
-"题和摘要。</p>\n"
-"\n"
-"  <h4 id=\"exporting-a-map\">导出地图</h4>\n"
-"  <p>任何GeoNode地图都可以嵌入到其他网站或博客中。如何导出一个地图：</p>\n"
-"  <ol>\n"
-"    <li>选择从社区或地图页上的地图，然后选择“导出地图”按钮。</li> \n"
-"    <li>在向导窗口选择您所需的高度和宽度。</li> \n"
-"    <li>复制向导中提供的HTML片段到任何HTML或支持IFRAME页面中。</li>\n"
-"  </ol>\n"
-"  <p>这将会放置一个互动窗口在您的网页或博客，用以显示地图。</p>\n"
-"  <p>请注意 <a href=\"maps/new\">地图设计</a> 也有一个导出地图的按钮。\n"
-"如果有你希望别人看到的变化，只要确保导出前地图已经被保存。\n"
-"你只能导出最后保存的版本，而不是最后查看的版本。</p>\n"
-"\n"
-"  <h4 id=\"remixing-a-map\">叠加地图</h4>\n"
-"  <p>可以通过任意图层组合一张新地图。</p>\n"
-"  <ol>\n"
-"    <li>在地图设计中打开地图</li>\n"
-"    <li>根据需要添加和删除图层。</li>\n"
-"    <li>平移和缩放到感兴趣的区域。</li>\n"
-"    <li><strong>重要事项：</strong> 新的地图要更新标题，摘要，联系信息和标"
-"签，来表示地图是最新的。</li>\n"
-"    <li>保存地图。</li>\n"
-"  </ol>\n"
-"  <p>当你在 <a href=\"maps\">地图</a> 搜索时，您将能够看到新的地图。</p> \n"
-"  "
+msgstr "\n  <p>GeoNode提供数据集和地图编辑应用，允许用户浏览地图或贡献自己的地图。</p>\n\n  <h4 id=\"browsing-data\">浏览数据</h4>\n  <p>而<a href=\"data\">数据</a> 选项卡允许您浏览上传到GeoNode的地图数据。</p>\n  <p>所有数据都可以多种格式下载，这些数据可以在其它程序中使用。</p>\n\n  <h4 id=\"developer-access\">开发者访问</h4>\n  <p>The <a href=\"developer\">开发者</a> 选项卡对开发者开始构建GeoNode应用有帮助。它包括Web服务使用帮助，GeoNode源代码的链接，以及相关开源项目的信息说明。</p>\n\n  <h4 id=\"browsing-maps\">浏览地图</h4>\n  <p>GeoNode允许用户创建和分享地图。</p>\n  <p>The <a href=\"maps\">地图</a> 选项卡是GeoNode地图搜寻入口。从这里你可以 <strong>查询地图</strong> 或 <strong>创建地图</strong>, 点击这里会打开 <a href=\"maps/new\">地图设计器</a>.</p>\n  <h5>谷歌地球模式</h5>\n  <p>在交互式地图编辑器，使用谷歌地球3D模式插件查看任何地图。\n选择位于顶部工具栏的最右边的谷歌地球全球的标志按钮，切换到3D模式。\n如果你没有安装谷歌地球插件，你会被提示安装它。</p>\n\n  <h4 id=\"creating-a-map\">创建地图</h4>\n  <p>要创建一个新的地图去 <a href=\"maps\">贡献地图</a> tab 并点击 <a href=\"maps/new\">创建自己的地图</a> 链接。</p>\n  <p>这将带你到 <a href=\"maps/new\">地图设计</a> 与基础图层加载。</p>\n  <p>添加GeoNode数据图层点击\"数据\"选项卡上位于屏幕的左侧下面的绿色加号按钮。\n这将打开一个对话框，列出所有GeoNode上的图层。</p>\n  <p>选择 <strong>添加层</strong> 按钮为地图添加图层。当完成后，您可以点击 <strong>完成</strong> 关闭对话框并返回到地图。</p>\n\n  <h5>图层叠加排序和删除</h5>\n  <p>简单的拖放图层列表，更改图层显示顺序。\n在地图上的顺序被改变，地图也会更新。\n要让图层不显示，只需取消选中，并点击红色的减号按钮来完全消除它。</p>\n\n  <h5>保存你的地图</h5>\n  <p>一旦找到合适的图层和缩放级别设置，将其保存，这样别人可以看到它。点击顶部菜单上的保存按钮 - 在顶部工具栏最左边、图像为磁盘地图的图标 - 并填写地图的标题和摘要。</p>\n\n  <h4 id=\"exporting-a-map\">导出地图</h4>\n  <p>任何GeoNode地图都可以嵌入到其他网站或博客中。如何导出一个地图：</p>\n  <ol>\n    <li>选择从社区或地图页上的地图，然后选择“导出地图”按钮。</li> \n    <li>在向导窗口选择您所需的高度和宽度。</li> \n    <li>复制向导中提供的HTML片段到任何HTML或支持IFRAME页面中。</li>\n  </ol>\n  <p>这将会放置一个互动窗口在您的网页或博客，用以显示地图。</p>\n  <p>请注意 <a href=\"maps/new\">地图设计</a> 也有一个导出地图的按钮。\n如果有你希望别人看到的变化，只要确保导出前地图已经被保存。\n你只能导出最后保存的版本，而不是最后查看的版本。</p>\n\n  <h4 id=\"remixing-a-map\">叠加地图</h4>\n  <p>可以通过任意图层组合一张新地图。</p>\n  <ol>\n    <li>在地图设计中打开地图</li>\n    <li>根据需要添加和删除图层。</li>\n    <li>平移和缩放到感兴趣的区域。</li>\n    <li><strong>重要事项：</strong> 新的地图要更新标题，摘要，联系信息和标签，来表示地图是最新的。</li>\n    <li>保存地图。</li>\n  </ol>\n  <p>当你在 <a href=\"maps\">地图</a> 搜索时，您将能够看到新的地图。</p> \n  "
 
 #: templates/help.html:65
 msgid "Sections"
@@ -3290,17 +3135,9 @@ msgstr "欢迎"
 #: templates/index.html:21
 msgid ""
 "\n"
-"            GeoNode is an open source platform for sharing geospatial data "
-"and maps.  If you have any questions about the software or service, join our "
-"<a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</"
-"a>.\n"
+"            GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>.\n"
 "          "
-msgstr ""
-"\n"
-"GeoNode是一个开源，共享地理空间数据和地图的平台。如果您有任何有关软件或服务的"
-"问题，请点击https://groups.google.com/d/forum/geonode-users加入我们的邮件名"
-"单.\n"
-"    "
+msgstr "\nGeoNode是一个开源，共享地理空间数据和地图的平台。如果您有任何有关软件或服务的问题，请点击https://groups.google.com/d/forum/geonode-users加入我们的邮件名单.\n    "
 
 #: templates/index.html:25
 msgid "Need help"
@@ -3321,61 +3158,45 @@ msgstr "贡献"
 #: templates/index.html:54
 msgid ""
 "\n"
-"              GeoNode enables you to upload, manage, and browse data layers. "
-"Search for data that is valuable to you, or upload your own data. \n"
+"              GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. \n"
 "            "
-msgstr ""
-"\n"
-"              GeoNode帮助你上传，管理，和浏览地理数据。搜索对你有用的信息，或"
-"者上传你的数据。\n"
-"            "
+msgstr "\n              GeoNode帮助你上传，管理，和浏览地理数据。搜索对你有用的信息，或者上传你的数据。\n            "
 
 #: templates/index.html:58
 msgid ""
 "\n"
-"              GeoNode enables you to compose and share maps. Create a map "
-"with our cartography tool, or explore maps shared by others. \n"
+"              GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. \n"
 "            "
-msgstr ""
-"\n"
-"              GeoNode帮助你制作和分享地图。用我们的制图工具制作地图，或者浏览"
-"别人的地图。 \n"
-"            "
+msgstr "\n              GeoNode帮助你制作和分享地图。用我们的制图工具制作地图，或者浏览别人的地图。 \n            "
 
 #: templates/index.html:67
 msgid "Latest Maps"
 msgstr "最新地图"
 
 #: templates/account/login.html:7 templates/account/login.html.py:24
-#, fuzzy
 msgid "Log in"
-msgstr "注销"
+msgstr "登录"
 
 #: templates/account/login.html:12
 msgid "Log in to an existing account"
 msgstr ""
 
 #: templates/account/login.html:22
-#, fuzzy
 msgid "Forgot your username?"
-msgstr "忘记用户名"
+msgstr ""
 
 #: templates/account/login.html:23
 msgid "Forgot your password?"
 msgstr ""
 
 #: templates/account/logout.html:15
-#, fuzzy
 msgid "Are you sure you want to log out?"
 msgstr ""
-"\n"
-"你确定要删除%(map_title)s？"
 
 #: templates/account/password_reset.html:8
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password reset"
-msgstr "密码"
+msgstr ""
 
 #: templates/account/password_reset.html:15
 msgid ""
@@ -3384,16 +3205,14 @@ msgid ""
 msgstr ""
 
 #: templates/account/password_reset.html:20
-#, fuzzy
 msgid "Reset my password"
-msgstr "更改密码"
+msgstr "重设密码"
 
 #: templates/account/password_reset.html:25
 #, python-format
 msgid ""
-"If you have any trouble resetting your password, contact us at <a href="
-"\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
-"a>."
+"If you have any trouble resetting your password, contact us at <a "
+"href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 msgstr ""
 
 #: templates/activity/actor.html:34
@@ -3419,9 +3238,8 @@ msgid "There are no announcements for you."
 msgstr "没有给你的通知"
 
 #: templates/avatar/change.html:6 templates/avatar/confirm_delete.html:5
-#, fuzzy
 msgid "Back to edit your profile information"
-msgstr "编辑个人信息"
+msgstr ""
 
 #: templates/avatar/change.html:7
 msgid "Your current avatar: "
@@ -3432,14 +3250,12 @@ msgid "You haven't uploaded an avatar yet. Please upload one now."
 msgstr "您还没有上传头像。请现在上传一张。"
 
 #: templates/avatar/change.html:16
-#, fuzzy
 msgid "Choose new Default"
-msgstr "选择新头像"
+msgstr ""
 
 #: templates/avatar/change.html:21
-#, fuzzy
 msgid "Upload New Image"
-msgstr "上传新图层"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3448,14 +3264,13 @@ msgstr ""
 #: templates/avatar/confirm_delete.html:9
 #, python-format
 msgid ""
-"You have no avatars to delete. Please <a href=\"%(avatar_change_url)s"
-"\">upload one</a> now."
+"You have no avatars to delete. Please <a "
+"href=\"%(avatar_change_url)s\">upload one</a> now."
 msgstr ""
 
 #: templates/avatar/confirm_delete.html:15
-#, fuzzy
 msgid "Delete These"
-msgstr "删除"
+msgstr ""
 
 #: templates/notification/base.html:15 templates/notification/notices.html:7
 #: templates/notification/notices.html:11
@@ -3493,8 +3308,7 @@ msgstr "笔记"
 msgid ""
 "You do not have a verified email address to which notices can be sent. You "
 "can add one by going to <a href=\"%(email_url)s\">Account</a>."
-msgstr ""
-"您还未提供一个确认过的电邮地址用以发送通知。您可以在%(email_url)s 里添加一个"
+msgstr "您还未提供一个确认过的电邮地址用以发送通知。您可以在%(email_url)s 里添加一个"
 
 #: templates/notification/notice_settings.html:30
 msgid "Notification Type"
@@ -3657,9 +3471,8 @@ msgid "Resume"
 msgstr ""
 
 #: upload/templates/upload/layer_upload.html:59
-#, fuzzy
 msgid "Are you sure you want to delete this upload?"
-msgstr "您无权删除此图层"
+msgstr ""
 
 #: upload/templates/upload/layer_upload.html:64
 msgid "Delete, and don't ask me again."
@@ -3682,9 +3495,8 @@ msgid "Clear"
 msgstr ""
 
 #: upload/templates/upload/layer_upload.html:107
-#, fuzzy
 msgid "Upload files"
-msgstr "上传图层"
+msgstr ""
 
 #: upload/templates/upload/layer_upload_crs.html:10
 msgid "Provide CRS for "
@@ -3721,189 +3533,3 @@ msgstr ""
 #: upload/templates/upload/layer_upload_time.html:123
 msgid "Convert Number (As Year)"
 msgstr ""
-
-#~ msgid "grid data"
-#~ msgstr "电网数据"
-
-#~ msgid ""
-#~ "three-dimensional view formed by the intersecting homologous           "
-#~ "rays of an overlapping pair of images"
-#~ msgstr "交叉同源光在重叠图像上形成的三维影象"
-
-#~ msgid "textual or tabular data"
-#~ msgstr "文本或表格数据"
-
-#~ msgid "triangulated irregular network"
-#~ msgstr "不规则三角形格网"
-
-#~ msgid "vector data"
-#~ msgstr "矢量数据"
-
-#~ msgid "information pertaining to earth sciences"
-#~ msgstr "地球科学相关信息"
-
-#~ msgid "rearing of animals and/or cultivation of plants"
-#~ msgstr "饲养动物以及种植农作物"
-
-#~ msgid "height above or below sea level"
-#~ msgstr "高于或低于海平面的高度"
-
-#~ msgid ""
-#~ "energy, water and waste systems and communications "
-#~ "infrastructure           and services"
-#~ msgstr "能源，供水及废物处理系统，以及通讯基础设施和服务"
-
-#~ msgid ""
-#~ "features and characteristics of salt water bodies (excluding           "
-#~ "inland waters)"
-#~ msgstr "咸水的特征(去除水)"
-
-#~ msgid "legal land descriptions"
-#~ msgstr "土地法定描述"
-
-#~ msgid ""
-#~ "inland water features, drainage systems and           their "
-#~ "characteristics"
-#~ msgstr "内陆水体，灌溉系统及他们的特征"
-
-#~ msgid "military bases, structures, activities"
-#~ msgstr "军事基地、建筑、活动"
-
-#~ msgid "environmental resources, protection and conservation"
-#~ msgstr "环境资源、保护及养护"
-
-#~ msgid "positional information and services"
-#~ msgstr "定位信息和服务"
-
-#~ msgid "economic activities, conditions and employment"
-#~ msgstr "经济活动，环境以及就业"
-
-#~ msgid ""
-#~ "information used for appropriate actions for future use of the           "
-#~ "land"
-#~ msgstr "使得土地更好为将来使用的信息"
-
-#~ msgid "flora and/or fauna in natural environment"
-#~ msgstr "自然环境中的动植物"
-
-#~ msgid "health, health services, human ecology, and safety"
-#~ msgstr "健康，医疗卫生服务，人类生态学，以及安全设施"
-
-#~ msgid "base maps"
-#~ msgstr "底图"
-
-#~ msgid "means and aids for conveying persons and/or goods"
-#~ msgstr "传送人或物的手段"
-
-#~ msgid "characteristics of society and cultures"
-#~ msgstr "社会与文化特征"
-
-#~ msgid "man-made construction"
-#~ msgstr "人工建筑物"
-
-#~ msgid "processes and phenomena of the atmosphere"
-#~ msgstr "大气的过程和现象"
-
-#~ msgid "constraints use"
-#~ msgstr "使用约束"
-
-#~ msgid ""
-#~ "constraints applied to assure the protection of privacy or intellectual "
-#~ "property, and any special restrictions or limitations or warnings on "
-#~ "using the resource or metadata"
-#~ msgstr "以保护知识产权或隐私而添加的对于使用元数据的限制"
-
-#~ msgid "spatial representation type"
-#~ msgstr "空间呈现类型"
-
-#~ msgid "No Image Available"
-#~ msgstr "没有图片"
-
-#~ msgid "Display Title"
-#~ msgstr "显示标题"
-
-#~ msgid "Visible?"
-#~ msgstr "可视？"
-
-#~ msgid "Update Layer"
-#~ msgstr "更新图层"
-
-#~ msgid "This form allows you to update the data for this layer."
-#~ msgstr "此页面允许你更新此图层的数据。"
-
-#~ msgid ""
-#~ "\n"
-#~ "If the new dataset omits attributes that were included in the previous "
-#~ "version,\n"
-#~ "or changes their types, then existing styles for the layer may not work.\n"
-#~ "Please check your maps if the new data includes such changes.  "
-#~ "Additionally,\n"
-#~ "updated data must be the same format as the data already in place, e.g.\n"
-#~ msgstr ""
-#~ "\n"
-#~ "如果新的数据集忽略前一版本的属性，或更改了字段类型，现有图层样式可能无法正"
-#~ "常工作。请检查您的地图是否包括这种变化。此外，更新数据必须延用之前的数据格"
-#~ "式，如\n"
-
-#~ msgid "Select a layer data file and submit the form to begin the transfer."
-#~ msgstr "选择并提交图层文件以开始传输。"
-
-#~ msgid "No maps are using this layer."
-#~ msgstr "没有地图使用此图层。"
-
-#~ msgid "Supported Formats"
-#~ msgstr "支持格式"
-
-#~ msgid "Print Map"
-#~ msgstr "打印地图"
-
-#~ msgid "View map"
-#~ msgstr "浏览地图"
-
-#~ msgid "View this map in the GeoExplorer GIS Client"
-#~ msgstr "在 GeoExplorer GIS Client中浏览该地图"
-
-#~ msgid "Map"
-#~ msgstr "地图"
-
-#~ msgid "Layer"
-#~ msgstr "图层"
-
-#~ msgid "Document"
-#~ msgstr "文件"
-
-#~ msgid "Actions"
-#~ msgstr "操作"
-
-#~ msgid "Change Your Avatar"
-#~ msgstr "改换您的头像"
-
-#~ msgid "Upload a New Avatar"
-#~ msgstr "上传新头像"
-
-#~ msgid "Upload new avatar"
-#~ msgstr "上传新头像"
-
-#~ msgid "Internal Server Error"
-#~ msgstr "服务内部错误"
-
-#~ msgid ""
-#~ "\n"
-#~ "      An internal error occurred. Please try again, and if the problem "
-#~ "continues, contact your site administrator.\n"
-#~ "  "
-#~ msgstr ""
-#~ "\n"
-#~ "发生内部错误。请重试，如果还有问题，请联系网站管理员。"
-
-#~ msgid "Upload an Avatar"
-#~ msgstr "上传一个头像"
-
-#~ msgid "Upload avatar"
-#~ msgstr "上传头像"
-
-#~ msgid "Topic Category"
-#~ msgstr "主题分类"
-
-#~ msgid "Citation"
-#~ msgstr "引用"

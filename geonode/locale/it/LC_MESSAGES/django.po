@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Opros <anto.opro@gmail.com>, 2013
 # capooti <pcorti@gmail.com>, 2013
@@ -14,14 +14,13 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-04 18:18-0700\n"
-"PO-Revision-Date: 2013-07-20 21:40+0000\n"
-"Last-Translator: doktoreas <luca.casagrande@gmail.com>\n"
-"Language-Team: Italian (http://www.transifex.com/projects/p/geonode/language/"
-"it/)\n"
-"Language: it\n"
+"PO-Revision-Date: 2013-09-05 01:20+0000\n"
+"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
+"Language-Team: Italian (http://www.transifex.com/projects/p/geonode/language/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: it\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: utils.py:319 security/enumerations.py:28
@@ -41,9 +40,8 @@ msgid "Permission Denied"
 msgstr "Permesso negato"
 
 #: views.py:105
-#, fuzzy
 msgid "You are not permitted to modify this object"
-msgstr "Non hai il permesso di modificare questo documento"
+msgstr ""
 
 #: base/enumerations.py:26
 msgid "series"
@@ -1155,9 +1153,7 @@ msgstr "finalità"
 
 #: base/models.py:233
 msgid "summary of the intentions with which the resource(s) was developed"
-msgstr ""
-"sintesi delle intenzioni con cui la risorsa (o le risorse) sono state "
-"sviluppate"
+msgstr "sintesi delle intenzioni con cui la risorsa (o le risorse) sono state sviluppate"
 
 #: base/models.py:235
 msgid "maintenance frequency"
@@ -1167,9 +1163,7 @@ msgstr "frequenza di revisione"
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
-msgstr ""
-"frequenza con cui le modifiche e le cancellazioni sui dati vengono eseguite "
-"dopo essere stati prodotti la prima volta"
+msgstr "frequenza con cui le modifiche e le cancellazioni sui dati vengono eseguite dopo essere stati prodotti la prima volta"
 
 #: base/models.py:241 people/models.py:59
 msgid "keywords"
@@ -1179,10 +1173,7 @@ msgstr "keywords"
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
-msgstr ""
-"parola (o parole) comunemente usate o parola (o parole) e frase (o frasi) "
-"formalizzate usate per descrivere il soggetto (separando attraverso spazio o "
-"virgola"
+msgstr "parola (o parole) comunemente usate o parola (o parole) e frase (o frasi) formalizzate usate per descrivere il soggetto (separando attraverso spazio o virgola"
 
 #: base/models.py:242
 msgid "keywords region"
@@ -1193,26 +1184,22 @@ msgid "keyword identifies a location"
 msgstr "parola chiave che identifica una posizione"
 
 #: base/models.py:243
-#, fuzzy
 msgid "restrictions"
-msgstr "Sezioni"
+msgstr ""
 
 #: base/models.py:243
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr ""
 
 #: base/models.py:244
-#, fuzzy
 msgid "restrictions other"
-msgstr "altre limitazioni"
+msgstr ""
 
 #: base/models.py:244
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
-msgstr ""
-"altre restrizioni e requisiti legali per l'accesso e l'uso della risorsa o "
-"dei metadati"
+msgstr "altre restrizioni e requisiti legali per l'accesso e l'uso della risorsa o dei metadati"
 
 #: base/models.py:247
 msgid "language"
@@ -1224,16 +1211,13 @@ msgstr "lingua usata all'interno del dataset"
 
 #: base/models.py:248
 msgid ""
-"high-level geographic data thematic classification to assist in the grouping "
-"and search of available geographic data sets."
-msgstr ""
-"classificazione tematica di dati geografici di alto livello per facilitare "
-"il raggruppamento e la ricerca di set di dati geografici disponibili."
+"high-level geographic data thematic classification to assist in the grouping"
+" and search of available geographic data sets."
+msgstr "classificazione tematica di dati geografici di alto livello per facilitare il raggruppamento e la ricerca di set di dati geografici disponibili."
 
 #: base/models.py:250
-#, fuzzy
 msgid "method used to represent geographic information in the dataset."
-msgstr "metodo usato per rappresentare l'informazione geografica nel dataset"
+msgstr ""
 
 #: base/models.py:253
 msgid "temporal extent start"
@@ -1267,10 +1251,7 @@ msgstr "URL di distribuzione"
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
-msgstr ""
-"informazioni riguardo le risorse on-line da cui il dataset, le specifiche, o "
-"il nome profilo della community e gli elementi di metadati estesi possono "
-"essere ottenuti"
+msgstr "informazioni riguardo le risorse on-line da cui il dataset, le specifiche, o il nome profilo della community e gli elementi di metadati estesi possono essere ottenuti"
 
 #: base/models.py:260
 msgid "distribution description"
@@ -1288,9 +1269,7 @@ msgstr "Dichiarazione di qualità del dato"
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
-msgstr ""
-"spiegazione generale della conoscenza del produttore dei dati riguardo il "
-"lignaggio di un dataset"
+msgstr "spiegazione generale della conoscenza del produttore dei dati riguardo il lignaggio di un dataset"
 
 #: base/models.py:277
 msgid "CSW typename"
@@ -1358,14 +1337,12 @@ msgid "Keywords"
 msgstr "Parole chiave"
 
 #: base/templates/base/resourcebase_info_panel.html:44
-#, fuzzy
 msgid "Category"
-msgstr "Categorie"
+msgstr ""
 
 #: base/templates/base/resourcebase_info_panel.html:51
-#, fuzzy
 msgid "Regions"
-msgstr "Registrati"
+msgstr ""
 
 #: base/templates/base/resourcebase_info_panel.html:60
 msgid "Owner"
@@ -1384,9 +1361,8 @@ msgid "Maintenance Frequency"
 msgstr "Frequenza di revisione"
 
 #: base/templates/base/resourcebase_info_panel.html:86
-#, fuzzy
 msgid "Restrictions"
-msgstr "Sezioni"
+msgstr ""
 
 #: base/templates/base/resourcebase_info_panel.html:97
 msgid "Edition"
@@ -1629,8 +1605,7 @@ msgstr "Permessi"
 
 #: documents/templates/documents/document_detail.html:134
 msgid "Click the button below to change the permissions of this document."
-msgstr ""
-"Clicca il pulsante qui sotto per modificare i permessi di questo documento."
+msgstr "Clicca il pulsante qui sotto per modificare i permessi di questo documento."
 
 #: documents/templates/documents/document_detail.html:135
 msgid "Change Document Permissions"
@@ -1664,10 +1639,7 @@ msgid ""
 "\n"
 "        Editing details for %(document_title)s\n"
 "      "
-msgstr ""
-"\n"
-"        Modifica dettagli per %(document_title)s\n"
-"      "
+msgstr "\n        Modifica dettagli per %(document_title)s\n      "
 
 #: documents/templates/documents/document_metadata.html:31
 #: layers/templates/layers/layer_metadata.html:62
@@ -1685,10 +1657,7 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(document_title)s?\n"
 "        "
-msgstr ""
-"\n"
-"         Sei sicuro di voler rimuovere %(document_title)s?\n"
-"        "
+msgstr "\n         Sei sicuro di voler rimuovere %(document_title)s?\n        "
 
 #: documents/templates/documents/document_remove.html:18
 #: layers/templates/layers/layer_remove.html:18
@@ -1739,9 +1708,8 @@ msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "nome dell'attributo come memorizzato nello shapefile/database spaziale"
 
 #: layers/models.py:248
-#, fuzzy
 msgid "attribute description"
-msgstr "Descrizione della distribuzione"
+msgstr ""
 
 #: layers/models.py:248
 msgid "description of attribute to be used in metadata"
@@ -1779,8 +1747,7 @@ msgstr "mostra ordine"
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
-msgstr ""
-"specifica l'ordine con cui l'attributo deve essere visualizzato nei risultati"
+msgstr "specifica l'ordine con cui l'attributo deve essere visualizzato nei risultati"
 
 #: layers/models.py:255
 msgid "count"
@@ -1902,9 +1869,7 @@ msgstr "PNG"
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
-msgstr ""
-"E' occorso un errore durante l'invio dei tuoi dati. Riprova o contatta un "
-"amministratore se il problema persiste."
+msgstr "E' occorso un errore durante l'invio dei tuoi dati. Riprova o contatta un amministratore se il problema persiste."
 
 #: layers/views.py:79
 msgid "You are not permitted to delete this layer"
@@ -2075,9 +2040,7 @@ msgstr "Crea una mappa usando questo layer"
 
 #: layers/templates/layers/layer_detail.html:183
 msgid "Click the button below to generate a new map based on this layer."
-msgstr ""
-"Clicca il pulsante qui sotto per generare una nuova mappa basata su questo "
-"livello."
+msgstr "Clicca il pulsante qui sotto per generare una nuova mappa basata su questo livello."
 
 #: layers/templates/layers/layer_detail.html:184 templates/index.html:61
 msgid "Create a Map"
@@ -2085,8 +2048,7 @@ msgstr "Crea una mappa"
 
 #: layers/templates/layers/layer_detail.html:191
 msgid "Click the button below to change the permissions of this layer."
-msgstr ""
-"Clicca il pulsante qui sotto per modificare i permessi di questo livello."
+msgstr "Clicca il pulsante qui sotto per modificare i permessi di questo livello."
 
 #: layers/templates/layers/layer_detail.html:192
 msgid "Change Layer Permissions"
@@ -2100,9 +2062,7 @@ msgstr "Stili"
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
-msgstr ""
-"I seguenti stili sono associati a questo Layer. Scegli uno stile da "
-"visualizzare nell'anteprima della mappa.  "
+msgstr "I seguenti stili sono associati a questo Layer. Scegli uno stile da visualizzare nell'anteprima della mappa.  "
 
 #: layers/templates/layers/layer_detail.html:212
 msgid "No styles associated with this layer"
@@ -2118,24 +2078,14 @@ msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
-msgstr ""
-"\n"
-"        Modifica dettagli per %(layer_title)s\n"
-"      "
+msgstr "\n        Modifica dettagli per %(layer_title)s\n      "
 
 #: layers/templates/layers/layer_metadata.html:17
 msgid ""
-"Note: this layer's orginal metadata was populated by importing a metadata "
-"XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
-"Core metadata elements.\n"
+"Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr ""
-"Note: I metadati originali di questo Layer sono stati popolati importando un "
-"file di metadati XML.\n"
-"        L'import dei metadati di GeoNode supporta un sottinsieme di elementi "
-"di metadata Dublin Core, ISO e FGDC.\n"
-"        Alcuni dei tuoi metadati originali potrebbero essere andati persi."
+msgstr "Note: I metadati originali di questo Layer sono stati popolati importando un file di metadati XML.\n        L'import dei metadati di GeoNode supporta un sottinsieme di elementi di metadata Dublin Core, ISO e FGDC.\n        Alcuni dei tuoi metadati originali potrebbero essere andati persi."
 
 #: layers/templates/layers/layer_metadata.html:23
 msgid "Error updating metadata.  Please check the following fields: "
@@ -2150,9 +2100,8 @@ msgid "Label"
 msgstr ""
 
 #: layers/templates/layers/layer_metadata.html:49
-#, fuzzy
 msgid "Description"
-msgstr "edizione"
+msgstr ""
 
 #: layers/templates/layers/layer_metadata.html:49
 msgid "Display Order"
@@ -2164,10 +2113,7 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(layer_title)s?\n"
 "        "
-msgstr ""
-"\n"
-"          Sei sicuro di voler rimuovere %(layer_title)s?\n"
-"        "
+msgstr "\n          Sei sicuro di voler rimuovere %(layer_title)s?\n        "
 
 #: layers/templates/layers/layer_remove.html:25
 msgid "This action affects the following maps:"
@@ -2182,9 +2128,8 @@ msgid "Replace Layer"
 msgstr "Sostituisci Livello"
 
 #: layers/templates/layers/layer_replace.html:38
-#, fuzzy
 msgid "Replace Layer: "
-msgstr "Sostituisci Livello"
+msgstr ""
 
 #: layers/templates/layers/layer_replace.html:82
 #: upload/templates/upload/layer_upload.html:88
@@ -2192,16 +2137,12 @@ msgid "Files to be uploaded"
 msgstr "File da caricare"
 
 #: layers/templates/layers/layer_style_manage.html:16
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
-"%(layer_title)s</a>\n"
+"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">%(layer_title)s</a>\n"
 "    "
 msgstr ""
-"\n"
-"          Gestisci gli stili disponibili per %(layer_title)s\n"
-"        "
 
 #: layers/templates/layers/layer_style_manage.html:54
 msgid "Update Available Styles"
@@ -2316,9 +2257,8 @@ msgid "A rating was given to a map"
 msgstr "Una valutazione è stata data ad una mappa"
 
 #: maps/templates/maps/_map_list_item.html:22
-#, fuzzy
 msgid "View"
-msgstr "Visualizzata da"
+msgstr ""
 
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
 #: maps/templates/maps/map_list.html:14 templates/index.html:32
@@ -2342,18 +2282,16 @@ msgid "Edit Map"
 msgstr "Modifica Mappa"
 
 #: maps/templates/maps/map_detail.html:44
-#, fuzzy
 msgid "Edit Map Metadata"
-msgstr "Modifica metadati"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:46
 msgid "Set Map Thumbnail"
 msgstr ""
 
 #: maps/templates/maps/map_detail.html:48
-#, fuzzy
 msgid "Edit Map Permissions"
-msgstr "Modifica permessi"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:49
 msgid "Remove this Map"
@@ -2419,25 +2357,15 @@ msgid ""
 "      are hosted on this GeoNode.  The following layers will\n"
 "      be downloaded:\n"
 "    "
-msgstr ""
-"\n"
-"    Qui puoi scaricare tutti i layer di questa mappa che \n"
-"    sono gestiti su questo GeoNode.    I seguenti layer saranno scaricati:\n"
-"    "
+msgstr "\n    Qui puoi scaricare tutti i layer di questa mappa che \n    sono gestiti su questo GeoNode.    I seguenti layer saranno scaricati:\n    "
 
 #: maps/templates/maps/map_download.html:26
 msgid ""
 "\n"
-"        Additionally, the map contains these layers which will not be "
-"downloaded\n"
+"        Additionally, the map contains these layers which will not be downloaded\n"
 "        due to security restrictions:\n"
 "      "
-msgstr ""
-"\n"
-"    Inoltre, la mappa contiene questi layer che non possono essere "
-"scaricati\n"
-"    per vincoli di sicurezza:\n"
-"    "
+msgstr "\n    Inoltre, la mappa contiene questi layer che non possono essere scaricati\n    per vincoli di sicurezza:\n    "
 
 #: maps/templates/maps/map_download.html:38
 msgid ""
@@ -2445,11 +2373,7 @@ msgid ""
 "        Finally, the map contains these layers which will not be downloaded\n"
 "        because they are not available directly from this GeoNode:\n"
 "      "
-msgstr ""
-"\n"
-"    Infine, la mappa contiene questi layer che non possono essere scaricati\n"
-"    perchè non sono disponibili direttamente da questo GeoNode:\n"
-"    "
+msgstr "\n    Infine, la mappa contiene questi layer che non possono essere scaricati\n    perchè non sono disponibili direttamente da questo GeoNode:\n    "
 
 #: maps/templates/maps/map_download.html:60
 msgid "Start downloading this map"
@@ -2461,10 +2385,7 @@ msgid ""
 "\n"
 "            Updating metadata of %(map_title)s\n"
 "        "
-msgstr ""
-"\n"
-"            Aggiornamento metadati di %(map_title)s\n"
-"        "
+msgstr "\n            Aggiornamento metadati di %(map_title)s\n        "
 
 #: maps/templates/maps/map_metadata.html:26
 msgid "Update metadata"
@@ -2480,10 +2401,7 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(map_title)s?\n"
 "    "
-msgstr ""
-"\n"
-"        Sei sicuro di voler rimuovere %(map_title)s?\n"
-"    "
+msgstr "\n        Sei sicuro di voler rimuovere %(map_title)s?\n    "
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2495,11 +2413,9 @@ msgstr "gruppo che ha creato la risorsa"
 
 #: people/enumerations.py:40
 msgid ""
-"party who has processed the data in a manner such that the resource has been "
-"modified"
-msgstr ""
-"gruppo che ha elaborato i dati in modo tale che la risorsa sia stata "
-"modificata"
+"party who has processed the data in a manner such that the resource has been"
+" modified"
+msgstr "gruppo che ha elaborato i dati in modo tale che la risorsa sia stata modificata"
 
 #: people/enumerations.py:41
 msgid "party who published the resource"
@@ -2509,17 +2425,13 @@ msgstr "gruppo che ha pubblicato la risorsa"
 msgid ""
 "party that accepts accountability and responsability for the data and "
 "ensures appropriate care and maintenance of the resource"
-msgstr ""
-"parte che accetta la responsabilità dei dati e garantisce cure appropriate e "
-"la manutenzione della risorsa "
+msgstr "parte che accetta la responsabilità dei dati e garantisce cure appropriate e la manutenzione della risorsa "
 
 #: people/enumerations.py:43
 msgid ""
 "party who can be contacted for acquiring knowledge about or acquisition of "
 "the resource"
-msgstr ""
-"parte che può essere contattata per l'acquisizione di conoscenza o "
-"acquisizione della risorsa"
+msgstr "parte che può essere contattata per l'acquisizione di conoscenza o acquisizione della risorsa"
 
 #: people/enumerations.py:44
 msgid "party who distributes the resource"
@@ -2542,10 +2454,9 @@ msgid "party that owns the resource"
 msgstr "parte che possiede la risorsa"
 
 #: people/enumerations.py:49
-msgid "key party responsible for gathering information and conducting research"
-msgstr ""
-"parte chiave responsabile della raccolta di informazioni e della conduzione "
-"della ricerca"
+msgid ""
+"key party responsible for gathering information and conducting research"
+msgstr "parte chiave responsabile della raccolta di informazioni e della conduzione della ricerca"
 
 #: people/forms.py:33
 msgid "Email Address"
@@ -2575,8 +2486,7 @@ msgstr "Nome dell soggetto"
 msgid ""
 "name of the responsible personsurname, given name, title separated by a "
 "delimiter"
-msgstr ""
-"nome del responsabile cognome, nome, titolo separato da un delimitatore"
+msgstr "nome del responsabile cognome, nome, titolo separato da un delimitatore"
 
 #: people/models.py:48
 msgid "Organization Name"
@@ -2606,9 +2516,7 @@ msgstr "Voce"
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
-msgstr ""
-"numero di telefono con cui le persone possono parlare con l'organizzazione o "
-"l'individuo responsabile"
+msgstr "numero di telefono con cui le persone possono parlare con l'organizzazione o l'individuo responsabile"
 
 #: people/models.py:52
 msgid "Facsimile"
@@ -2618,9 +2526,7 @@ msgstr "Fax"
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
-msgstr ""
-"numero di telefono di una macchina facsimile per l'organizzazione o "
-"l'individuo responsabile "
+msgstr "numero di telefono di una macchina facsimile per l'organizzazione o l'individuo responsabile "
 
 #: people/models.py:53
 msgid "Delivery Point"
@@ -2630,9 +2536,7 @@ msgstr "Informazioni di contatto"
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
-msgstr ""
-"indirizzo fisico e email ai quali l'organizzazione o l'individuo possono "
-"essere contattati"
+msgstr "indirizzo fisico e email ai quali l'organizzazione o l'individuo possono essere contattati"
 
 #: people/models.py:54
 msgid "City"
@@ -2666,9 +2570,7 @@ msgstr "paese dell'indirizzo fisico"
 msgid ""
 "address of the electronic mailbox of the responsible organization or "
 "individual"
-msgstr ""
-"indirizzo della casella di posta elettronica dell'organizzazione o individuo "
-"responsabile "
+msgstr "indirizzo della casella di posta elettronica dell'organizzazione o individuo responsabile "
 
 #: people/views.py:141
 msgid "Your username for "
@@ -2720,11 +2622,9 @@ msgstr "Username dimenticato"
 
 #: people/templates/people/forgot_username_form.html:9
 msgid ""
-"Enter your email address and click the submit button.  Your username will be "
-"sent to you."
-msgstr ""
-"Inserisci il tuo indirizzo email e clicca il bottone sottostante. Il tuo "
-"username ti sarà inviato."
+"Enter your email address and click the submit button.  Your username will be"
+" sent to you."
+msgstr "Inserisci il tuo indirizzo email e clicca il bottone sottostante. Il tuo username ti sarà inviato."
 
 #: people/templates/people/profile_base.html:12
 #: people/templates/people/profile_list.html:11
@@ -2761,14 +2661,12 @@ msgid "Create a new map"
 msgstr "Crea una nuova mappa"
 
 #: people/templates/people/profile_detail.html:103
-#, fuzzy
 msgid "Shared on"
-msgstr "Condividi"
+msgstr ""
 
 #: people/templates/people/profile_detail.html:116
-#, fuzzy
 msgid "No contents found."
-msgstr "Nessun dato trovato"
+msgstr ""
 
 #: people/templates/people/profile_edit.html:10
 #: people/templates/people/profile_edit.html:18
@@ -2894,9 +2792,7 @@ msgstr "codename"
 
 #: security/models.py:50
 msgid "Determines the order that roles are presented in the user interface."
-msgstr ""
-"Determina l'ordine con cui i ruoli vengono visualizzati nell'interfaccia "
-"utente."
+msgstr "Determina l'ordine con cui i ruoli vengono visualizzati nell'interfaccia utente."
 
 #: security/views.py:31
 msgid "???"
@@ -2911,10 +2807,7 @@ msgid ""
 "\n"
 "          You are not allowed to perform this operation.  \n"
 "      "
-msgstr ""
-"\n"
-"          Non hai il permesso di effettuare questa operazione.  \n"
-"      "
+msgstr "\n          Non hai il permesso di effettuare questa operazione.  \n      "
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
@@ -2931,14 +2824,9 @@ msgstr "Pagina non trovata"
 #: templates/404.html:6
 msgid ""
 "\n"
-"      The page you requested does not exist.  Perhaps you are using an "
-"outdated bookmark?\n"
+"      The page you requested does not exist.  Perhaps you are using an outdated bookmark?\n"
 "  "
-msgstr ""
-"\n"
-"La pagina che hai richiesto non esiste. Forse stai usando un vecchio "
-"bookmark?\n"
-"    "
+msgstr "\nLa pagina che hai richiesto non esiste. Forse stai usando un vecchio bookmark?\n    "
 
 #: templates/500.html:49 templates/base.html:52
 msgid "Admin"
@@ -3006,11 +2894,8 @@ msgstr ""
 #: templates/500.html:164
 msgid ""
 "\n"
-"      Please contact your GeoNode administrator (he may have received an "
-"email automatically if he configured it properly).\n"
-"      If you are the site administrator, enable debug mode to see the actual "
-"error and fix it or file an issue in <a href=\"http://github.com/GeoNode/"
-"geonode/issues\">GeoNode's issue tracker</a>\n"
+"      Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).\n"
+"      If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "  "
 msgstr ""
 
@@ -3039,9 +2924,8 @@ msgid "Add Comment"
 msgstr "Aggiungi Commento"
 
 #: templates/_comments.html:20
-#, fuzzy
 msgid "Log in to add a comment"
-msgstr "Aggiungi un commento"
+msgstr ""
 
 #: templates/_comments.html:33
 msgid "By"
@@ -3158,86 +3042,49 @@ msgstr "Aiuto su GeoNode"
 
 #: templates/help.html:9
 msgid ""
-"This page provides helpful information about how to use the GeoNode. You can "
-"use the sidebar links to navigate to what you want to know."
-msgstr ""
-"Questa pagina fornisce informazioni di aiuto sull'utilizzo di GeoNode. Puoi "
-"utilizzare i collegamenti nella barra laterale per ricercare quello che ti "
-"interessa."
+"This page provides helpful information about how to use the GeoNode. You can"
+" use the sidebar links to navigate to what you want to know."
+msgstr "Questa pagina fornisce informazioni di aiuto sull'utilizzo di GeoNode. Puoi utilizzare i collegamenti nella barra laterale per ricercare quello che ti interessa."
 
 #: templates/help.html:12
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application "
-"allows users to browse existing maps and contribute their own.</p>\n"
+"  <p>The GeoNode provides access to data sets and a map editing application allows users to browse existing maps and contribute their own.</p>\n"
 "\n"
 "  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/data\">Layers</a> tab allows you to browse data uploaded "
-"to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other "
-"applications.</p>\n"
+"  <p>The <a href=\"/data\">Layers</a> tab allows you to browse data uploaded to this GeoNode.</p>\n"
+"  <p>All data can be downloaded in a variety of formats, for use in other applications.</p>\n"
 "\n"
 "  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
-"developers to get started building applications against the GeoNode. It "
-"includes instructions on using the web services, links to the source code of "
-"the GeoNode, and information about the open source projects used to create "
-"it.</p>\n"
+"  <p>The <a href=\"/developer\"> Developer</a> page is the place for developers to get started building applications against the GeoNode. It includes instructions on using the web services, links to the source code of the GeoNode, and information about the open source projects used to create it.</p>\n"
 "\n"
 "  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</"
-"p>\n"
-"  <p>The <a href=\"maps\">Maps</a> tab is a gateway to map exploration on "
-"GeoNode.  From here you can <strong>search for a map</strong> or "
-"<strong>create a map</strong>, which will open the <a href=\"maps/new\">Map "
-"Composer</a>.</p>\n"
+"  <p>The GeoNode allows users to create and share maps with one another.</p>\n"
+"  <p>The <a href=\"maps\">Maps</a> tab is a gateway to map exploration on GeoNode.  From here you can <strong>search for a map</strong> or <strong>create a map</strong>, which will open the <a href=\"maps/new\">Map Composer</a>.</p>\n"
 "  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
-"with the Google Earth plugin. To switch to 3D mode select the Google Earth "
-"globe logo, the rightmost button on top toolbar. If you do not have the "
-"Google Earth plugin installed you will be prompted to install it.</p>\n"
+"  <p>Any map viewed in the interactive map editor can be seen in 3D mode with the Google Earth plugin. To switch to 3D mode select the Google Earth globe logo, the rightmost button on top toolbar. If you do not have the Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"maps\">Contributed Maps</a> tab "
-"and click the <a href=\"maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"maps/new\">Map Composer</a> with a "
-"base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button "
-"located below the layers tab on the left hand side of the screen. This will "
-"open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
-"strong> button. When finished you may hit <strong>Done</strong> to close the "
-"dialog and go back to the map.</p>\n"
+"  <p>To create a new map go to the <a href=\"maps\">Contributed Maps</a> tab and click the <a href=\"maps/new\">create your own map</a> link.</p>\n"
+"  <p>This will take you to the <a href=\"maps/new\">Map Composer</a> with a base layer loaded.</p>\n"
+"  <p>To add data layers from the GeoNode click on the green plus button located below the layers tab on the left hand side of the screen. This will open a dialog listing all the layers available on the GeoNode.</p>\n"
+"  <p>To add layers to your map select them and hit the <strong>Add Layers</strong> button. When finished you may hit <strong>Done</strong> to close the dialog and go back to the map.</p>\n"
 "\n"
 "  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply "
-"dragging and dropping their names. The order in the map will be updated to "
-"reflect that. To turn a layer's visibility off simply uncheck it, and to "
-"remove it entirely select it and hit the red minus button.</p>\n"
+"  <p>Change the display order of the layers listed in the data tab by simply dragging and dropping their names. The order in the map will be updated to reflect that. To turn a layer's visibility off simply uncheck it, and to remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
 "  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time "
-"to save it so others can see it.  Click the Save button--the left most icon "
-"on the top toolbar, an image of a map with a disk--on the top menu and fill "
-"out the title and abstract of the map.</p>\n"
+"  <p>Once a suitable set of layers and zoom level has been found it's time to save it so others can see it.  Click the Save button--the left most icon on the top toolbar, an image of a map with a disk--on the top menu and fill out the title and abstract of the map.</p>\n"
 "\n"
 "  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or "
-"blog. To export a map:</p>\n"
+"  <p>Any map from the GeoNode can be embedded for use in another site or blog. To export a map:</p>\n"
 "  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and "
-"then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</"
-"li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
-"iFrame-supporting blog post.</li>\n"
+"    <li>Select the from the list of maps on the community or map page and then hit the 'export map' button.</li> \n"
+"    <li>Choose your desired height and width for the widget in the wizard.</li> \n"
+"    <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li>\n"
 "  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or "
-"blog post.</p>\n"
-"  <p>Note that the <a href=\"maps/new\">Map Composer</a> also has a button "
-"to export the map. Just be sure to save the map before exporting if there "
-"are changes that you want others to see. It exports the last saved version, "
-"not the last viewed version.</p>\n"
+"  <p>This will put an interactive widget showing you map in your web page or blog post.</p>\n"
+"  <p>Note that the <a href=\"maps/new\">Map Composer</a> also has a button to export the map. Just be sure to save the map before exporting if there are changes that you want others to see. It exports the last saved version, not the last viewed version.</p>\n"
 "\n"
 "  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
 "  <p>Any map available can serve as a starting point for a new map.</p>\n"
@@ -3245,106 +3092,12 @@ msgid ""
 "    <li>Open the map in the Map Composer.</li>\n"
 "    <li>Add and remove layers as you like.</li>\n"
 "    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
-"and tags to reflect the new map.</li>\n"
+"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info and tags to reflect the new map.</li>\n"
 "    <li>Save the map.</li>\n"
 "  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a "
-"href=\"maps\">Maps</a> tab.</p> \n"
+"  <p>You will be able to see your new map when you search for it from the <a href=\"maps\">Maps</a> tab.</p> \n"
 "  "
-msgstr ""
-"\n"
-"  <p>GeoNode consente di accedere a set di dati e ad un'applicazione per "
-"l'editing di mappe che permette agli utenti di consultare le mappe esistenti "
-"e contribuire alla piattaforma con le proprie.</p>\n"
-"\n"
-"  <h4 id=\"browsing-data\">Navigazione dei Layer</h4>\n"
-"  <p>La scheda <a href=\"/data\">Layer</a> ti permette di navigare i dati "
-"caricati su GeoNode.</p>\n"
-"  <p>Tutti i dati possono essere scaricati in vari formati, per utilizzarli "
-"in altre applicazioni.</p>\n"
-"\n"
-"  <h4 id=\"developer-access\">Accesso sviluppatori</h4>\n"
-"  <p>La pagina <a href=\"/developer\"> Sviluppatore</a> è il posto da cui "
-"gli sviluppatori possono iniziare a creare applicazioni basate su GeoNode. "
-"Esso comprende le istruzioni sull'utilizzo dei web service, i link al codice "
-"sorgente di GeoNode e informazioni sui progetti open source utilizzati per "
-"crearlo.</p>\n"
-"\n"
-"  <h4 id=\"browsing-maps\">Navigazione delle Mappe</h4>\n"
-"  <p>GeoNode consente agli utenti di creare e consividere mappe con gli "
-"altri.</p>\n"
-"  <p>La scheda <a href=\"maps\">Mappe</a> è il punto di accesso per "
-"l'esplorazione delle mappe su GeoNode. Da qui puoi <strong>cercare una "
-"mappa</strong> o <strong>creare una mappa</strong>, che aprirà il <a href="
-"\"maps/new\">Map Compositore di mappe</a>.</p>\n"
-"  <h5>Modalità Google Earth</h5>\n"
-"  <p>Ogni mappa visualizzata su un editor di mappe interattivo può essere "
-"visualizzata in modalità 3D attraverso il plugin Google Earth. Per passare "
-"dalla modalità 3D seleziona il logo di Google Earth, il pulsante più a "
-"destra sulla barra degli strumenti in alto. Se non hai installato il plugin "
-"di Google Earth, verrà richiesto di farlo.</p>\n"
-"\n"
-"  <h4 id=\"creating-a-map\">Creazione di una Mappa</h4>\n"
-"  <p>Per creare una nuova mappa vai su <a href=\"maps\">Mappe Contribuite</"
-"a> e clicca su <a href=\"maps/new\">Crea la tua mappa</a> link.</p>\n"
-"  <p>Quest'azione di manderà al <a href=\"maps/new\">Compositore di mappe</"
-"a> con un layer di base caricato.</p>\n"
-"  <p>Per aggiungere i Layer da GeoNode clicca sul pulsante verde presente "
-"sotto la scheda Layer sulla sinistra dello schermo. Quest'azione aprirà una "
-"finestra di dialogo con la lista di tutti i Layer disponibili su GeoNode.</"
-"p>\n"
-"  <p>Per aggiungere Layer alla Mappa selezionali e premi il pulsante "
-"<strong>Aggiungi Livelli</strong>. Una volta terminato clicca <strong>Fatto</"
-"strong> per chiudere la finestra di dialogo e tornare indietro sulla Mappa.</"
-"p>\n"
-"\n"
-"  <h5>Riordino e Rimozione Layer</h5>\n"
-"  <p>Cambia l'ordine di visualizzazione dei Layer elencati nella scheda Dati "
-"semplicemente trascinando e rilasciando i loro nomi. L'ordine nella mappa "
-"verrà aggiornato di conseguenza. Per disattivare la visibilità di un Layer è "
-"sufficiente deselezionarlo, e per rimuoverlo completamente selezionalo e "
-"premi il pulsante rosso.</p>\n"
-"\n"
-"  <h5>Salvare la tua mappa</h5>\n"
-"  <p>Una volta trovato un opportuno insieme di Layer e un livello di zoom, è "
-"il momento di salvarlo in modo che gli altri possano vederlo. Fare clic sul "
-"pulsante Salva - l'icona più a sinistra nella barra degli strumenti in alto, "
-"l'immagine di una mappa con un disco - nel menu in alto e compila i campi "
-"con il titolo e l'abstract della mappa.</p>\n"
-"\n"
-"  <h4 id=\"exporting-a-map\">Esportare una mappa</h4>\n"
-"  <p>Ogni mappa di GeoNode può essere inserita all'interno di un altro sito "
-"o blog. Per esportare una mappa:</p>\n"
-"  <ol>\n"
-"    <li>Seleziona la mappa dalla lista delle mappe e clicca il bottone "
-"\"Esporta mappa\".</li> \n"
-"    <li>Scegli l'altezza e la lunghezza desiderate dallo strumento durante "
-"la procedura guidata.</li> \n"
-"    <li>Copia il codice HTML fornito dalla procedura guidata in qualsiasi "
-"pagina HTML o blog che supportino gli i-frame.</li>\n"
-"  </ol>\n"
-"  <p>L'azione creerà un widget interattivo che mostra la tua mappa nella tua "
-"pagina web o sul post del blog.</p>\n"
-"  <p>Nota che il <a href=\"maps/new\">Compositore Mappe</a> ha anche un "
-"bottone per esportare la mappa. Attento a salvare la mappa prima di "
-"esportare se ci sono cambiamenti che vuoi che gli altri vedano. Esso esporta "
-"l'ultima versione salvata, non l'ultima versione visualizzata.</p>\n"
-"\n"
-"  <h4 id=\"remixing-a-map\">Riutilizzo di una mappa</h4>\n"
-"  <p>Ogni mappa disponibile può servire come punto di partenza per una nuova "
-"mappa.</p>\n"
-"  <ol>\n"
-"    <li>Apri la mappa sul Compositore mappe.</li>\n"
-"    <li>Aggiungi e rimuovi i livelli che vuoi.</li>\n"
-"    <li>Sposta e centra la mappa sull'area di tuo interesse.</li>\n"
-"    <li><strong>IMPORTANTE:</strong> Aggiorna il titolo, l'abstract, le "
-"informazioni di contatto e i tag come riferimento alla nuova mappa.</li>\n"
-"    <li>Salva la mappa.</li>\n"
-"  </ol>\n"
-"  <p>Potrai vedere la tua nuova mappa cercando nella sezione <a href=\"maps"
-"\">Mappe</a>. </p> \n"
-"  "
+msgstr "\n  <p>GeoNode consente di accedere a set di dati e ad un'applicazione per l'editing di mappe che permette agli utenti di consultare le mappe esistenti e contribuire alla piattaforma con le proprie.</p>\n\n  <h4 id=\"browsing-data\">Navigazione dei Layer</h4>\n  <p>La scheda <a href=\"/data\">Layer</a> ti permette di navigare i dati caricati su GeoNode.</p>\n  <p>Tutti i dati possono essere scaricati in vari formati, per utilizzarli in altre applicazioni.</p>\n\n  <h4 id=\"developer-access\">Accesso sviluppatori</h4>\n  <p>La pagina <a href=\"/developer\"> Sviluppatore</a> è il posto da cui gli sviluppatori possono iniziare a creare applicazioni basate su GeoNode. Esso comprende le istruzioni sull'utilizzo dei web service, i link al codice sorgente di GeoNode e informazioni sui progetti open source utilizzati per crearlo.</p>\n\n  <h4 id=\"browsing-maps\">Navigazione delle Mappe</h4>\n  <p>GeoNode consente agli utenti di creare e consividere mappe con gli altri.</p>\n  <p>La scheda <a href=\"maps\">Mappe</a> è il punto di accesso per l'esplorazione delle mappe su GeoNode. Da qui puoi <strong>cercare una mappa</strong> o <strong>creare una mappa</strong>, che aprirà il <a href=\"maps/new\">Map Compositore di mappe</a>.</p>\n  <h5>Modalità Google Earth</h5>\n  <p>Ogni mappa visualizzata su un editor di mappe interattivo può essere visualizzata in modalità 3D attraverso il plugin Google Earth. Per passare dalla modalità 3D seleziona il logo di Google Earth, il pulsante più a destra sulla barra degli strumenti in alto. Se non hai installato il plugin di Google Earth, verrà richiesto di farlo.</p>\n\n  <h4 id=\"creating-a-map\">Creazione di una Mappa</h4>\n  <p>Per creare una nuova mappa vai su <a href=\"maps\">Mappe Contribuite</a> e clicca su <a href=\"maps/new\">Crea la tua mappa</a> link.</p>\n  <p>Quest'azione di manderà al <a href=\"maps/new\">Compositore di mappe</a> con un layer di base caricato.</p>\n  <p>Per aggiungere i Layer da GeoNode clicca sul pulsante verde presente sotto la scheda Layer sulla sinistra dello schermo. Quest'azione aprirà una finestra di dialogo con la lista di tutti i Layer disponibili su GeoNode.</p>\n  <p>Per aggiungere Layer alla Mappa selezionali e premi il pulsante <strong>Aggiungi Livelli</strong>. Una volta terminato clicca <strong>Fatto</strong> per chiudere la finestra di dialogo e tornare indietro sulla Mappa.</p>\n\n  <h5>Riordino e Rimozione Layer</h5>\n  <p>Cambia l'ordine di visualizzazione dei Layer elencati nella scheda Dati semplicemente trascinando e rilasciando i loro nomi. L'ordine nella mappa verrà aggiornato di conseguenza. Per disattivare la visibilità di un Layer è sufficiente deselezionarlo, e per rimuoverlo completamente selezionalo e premi il pulsante rosso.</p>\n\n  <h5>Salvare la tua mappa</h5>\n  <p>Una volta trovato un opportuno insieme di Layer e un livello di zoom, è il momento di salvarlo in modo che gli altri possano vederlo. Fare clic sul pulsante Salva - l'icona più a sinistra nella barra degli strumenti in alto, l'immagine di una mappa con un disco - nel menu in alto e compila i campi con il titolo e l'abstract della mappa.</p>\n\n  <h4 id=\"exporting-a-map\">Esportare una mappa</h4>\n  <p>Ogni mappa di GeoNode può essere inserita all'interno di un altro sito o blog. Per esportare una mappa:</p>\n  <ol>\n    <li>Seleziona la mappa dalla lista delle mappe e clicca il bottone \"Esporta mappa\".</li> \n    <li>Scegli l'altezza e la lunghezza desiderate dallo strumento durante la procedura guidata.</li> \n    <li>Copia il codice HTML fornito dalla procedura guidata in qualsiasi pagina HTML o blog che supportino gli i-frame.</li>\n  </ol>\n  <p>L'azione creerà un widget interattivo che mostra la tua mappa nella tua pagina web o sul post del blog.</p>\n  <p>Nota che il <a href=\"maps/new\">Compositore Mappe</a> ha anche un bottone per esportare la mappa. Attento a salvare la mappa prima di esportare se ci sono cambiamenti che vuoi che gli altri vedano. Esso esporta l'ultima versione salvata, non l'ultima versione visualizzata.</p>\n\n  <h4 id=\"remixing-a-map\">Riutilizzo di una mappa</h4>\n  <p>Ogni mappa disponibile può servire come punto di partenza per una nuova mappa.</p>\n  <ol>\n    <li>Apri la mappa sul Compositore mappe.</li>\n    <li>Aggiungi e rimuovi i livelli che vuoi.</li>\n    <li>Sposta e centra la mappa sull'area di tuo interesse.</li>\n    <li><strong>IMPORTANTE:</strong> Aggiorna il titolo, l'abstract, le informazioni di contatto e i tag come riferimento alla nuova mappa.</li>\n    <li>Salva la mappa.</li>\n  </ol>\n  <p>Potrai vedere la tua nuova mappa cercando nella sezione <a href=\"maps\">Mappe</a>. </p> \n  "
 
 #: templates/help.html:65
 msgid "Sections"
@@ -3385,18 +3138,9 @@ msgstr "Benvenuto"
 #: templates/index.html:21
 msgid ""
 "\n"
-"            GeoNode is an open source platform for sharing geospatial data "
-"and maps.  If you have any questions about the software or service, join our "
-"<a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</"
-"a>.\n"
+"            GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>.\n"
 "          "
-msgstr ""
-"\n"
-"            GeoNode è una piattaforma open source per condividere dati "
-"geospaziali e mappe. Se hai domande sul software o sul servizio, iscriviti "
-"alla nostra <a href=\"https://groups.google.com/d/forum/geonode-users"
-"\">mailing list</a>.\n"
-"          "
+msgstr "\n            GeoNode è una piattaforma open source per condividere dati geospaziali e mappe. Se hai domande sul software o sul servizio, iscriviti alla nostra <a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>.\n          "
 
 #: templates/index.html:25
 msgid "Need help"
@@ -3417,63 +3161,45 @@ msgstr "Contribuisci"
 #: templates/index.html:54
 msgid ""
 "\n"
-"              GeoNode enables you to upload, manage, and browse data layers. "
-"Search for data that is valuable to you, or upload your own data. \n"
+"              GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. \n"
 "            "
-msgstr ""
-"\n"
-"              GeoNode ti permette di caricare, gestire e navigare i Layer. "
-"Ricerca i dati che sono importanti per te o carica i dati in tuo possesso. \n"
-"            "
+msgstr "\n              GeoNode ti permette di caricare, gestire e navigare i Layer. Ricerca i dati che sono importanti per te o carica i dati in tuo possesso. \n            "
 
 #: templates/index.html:58
 msgid ""
 "\n"
-"              GeoNode enables you to compose and share maps. Create a map "
-"with our cartography tool, or explore maps shared by others. \n"
+"              GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. \n"
 "            "
-msgstr ""
-"\n"
-"              GeoNode ti permette di creare e condividere mappe. Crea una "
-"mappa con il nostro strumento cartografico, oppure consulta le mappe "
-"condivise da altri utenti. \n"
-"            "
+msgstr "\n              GeoNode ti permette di creare e condividere mappe. Crea una mappa con il nostro strumento cartografico, oppure consulta le mappe condivise da altri utenti. \n            "
 
 #: templates/index.html:67
 msgid "Latest Maps"
 msgstr "Ultime mappe"
 
 #: templates/account/login.html:7 templates/account/login.html.py:24
-#, fuzzy
 msgid "Log in"
-msgstr "Esci"
+msgstr "Entra"
 
 #: templates/account/login.html:12
 msgid "Log in to an existing account"
 msgstr ""
 
 #: templates/account/login.html:22
-#, fuzzy
 msgid "Forgot your username?"
-msgstr "Username dimenticato"
+msgstr ""
 
 #: templates/account/login.html:23
 msgid "Forgot your password?"
 msgstr ""
 
 #: templates/account/logout.html:15
-#, fuzzy
 msgid "Are you sure you want to log out?"
 msgstr ""
-"\n"
-"        Sei sicuro di voler rimuovere %(map_title)s?\n"
-"    "
 
 #: templates/account/password_reset.html:8
 #: templates/account/password_reset.html:14
-#, fuzzy
 msgid "Password reset"
-msgstr "Password"
+msgstr ""
 
 #: templates/account/password_reset.html:15
 msgid ""
@@ -3482,16 +3208,14 @@ msgid ""
 msgstr ""
 
 #: templates/account/password_reset.html:20
-#, fuzzy
 msgid "Reset my password"
-msgstr "Cambia password"
+msgstr ""
 
 #: templates/account/password_reset.html:25
 #, python-format
 msgid ""
-"If you have any trouble resetting your password, contact us at <a href="
-"\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
-"a>."
+"If you have any trouble resetting your password, contact us at <a "
+"href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
 msgstr ""
 
 #: templates/activity/actor.html:34
@@ -3517,9 +3241,8 @@ msgid "There are no announcements for you."
 msgstr "Non ci sono notizie per te."
 
 #: templates/avatar/change.html:6 templates/avatar/confirm_delete.html:5
-#, fuzzy
 msgid "Back to edit your profile information"
-msgstr "Modifica il tuo profilo"
+msgstr ""
 
 #: templates/avatar/change.html:7
 msgid "Your current avatar: "
@@ -3530,14 +3253,12 @@ msgid "You haven't uploaded an avatar yet. Please upload one now."
 msgstr "Non hai ancora caricato un avatar. Per favore caricane uno ora."
 
 #: templates/avatar/change.html:16
-#, fuzzy
 msgid "Choose new Default"
-msgstr "Scegli un nuovo avatar"
+msgstr ""
 
 #: templates/avatar/change.html:21
-#, fuzzy
 msgid "Upload New Image"
-msgstr "Carica layer"
+msgstr ""
 
 #: templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -3546,14 +3267,13 @@ msgstr ""
 #: templates/avatar/confirm_delete.html:9
 #, python-format
 msgid ""
-"You have no avatars to delete. Please <a href=\"%(avatar_change_url)s"
-"\">upload one</a> now."
+"You have no avatars to delete. Please <a "
+"href=\"%(avatar_change_url)s\">upload one</a> now."
 msgstr ""
 
 #: templates/avatar/confirm_delete.html:15
-#, fuzzy
 msgid "Delete These"
-msgstr "Cancella"
+msgstr ""
 
 #: templates/notification/base.html:15 templates/notification/notices.html:7
 #: templates/notification/notices.html:11
@@ -3591,9 +3311,7 @@ msgstr "Note"
 msgid ""
 "You do not have a verified email address to which notices can be sent. You "
 "can add one by going to <a href=\"%(email_url)s\">Account</a>."
-msgstr ""
-"Non hai un indirizzo email valido a cui inviare le notifiche. Ne puoi "
-"aggiungere uno visitando la pagina <a href=\"%(email_url)s\">Account</a>."
+msgstr "Non hai un indirizzo email valido a cui inviare le notifiche. Ne puoi aggiungere uno visitando la pagina <a href=\"%(email_url)s\">Account</a>."
 
 #: templates/notification/notice_settings.html:30
 msgid "Notification Type"
@@ -3756,9 +3474,8 @@ msgid "Resume"
 msgstr ""
 
 #: upload/templates/upload/layer_upload.html:59
-#, fuzzy
 msgid "Are you sure you want to delete this upload?"
-msgstr "Non hai il permesso di eliminare questo layer"
+msgstr ""
 
 #: upload/templates/upload/layer_upload.html:64
 msgid "Delete, and don't ask me again."
@@ -3781,9 +3498,8 @@ msgid "Clear"
 msgstr ""
 
 #: upload/templates/upload/layer_upload.html:107
-#, fuzzy
 msgid "Upload files"
-msgstr "Carica Layer"
+msgstr ""
 
 #: upload/templates/upload/layer_upload_crs.html:10
 msgid "Provide CRS for "
@@ -3820,210 +3536,3 @@ msgstr "Formato data"
 #: upload/templates/upload/layer_upload_time.html:123
 msgid "Convert Number (As Year)"
 msgstr ""
-
-#~ msgid "grid data"
-#~ msgstr "griglia di dati"
-
-#~ msgid ""
-#~ "three-dimensional view formed by the intersecting homologous           "
-#~ "rays of an overlapping pair of images"
-#~ msgstr ""
-#~ "visualizzazione tridimensionale formata dall'intersezione di raggi "
-#~ "omologhi di una coppia sovrapposta di immagini"
-
-#~ msgid "textual or tabular data"
-#~ msgstr "dati testuali o tabellari"
-
-#~ msgid "triangulated irregular network"
-#~ msgstr "rete irregolare triangolata "
-
-#~ msgid "vector data"
-#~ msgstr "dati vettoriali"
-
-#~ msgid "information pertaining to earth sciences"
-#~ msgstr "informazioni relative alle scienze della terra"
-
-#~ msgid "rearing of animals and/or cultivation of plants"
-#~ msgstr "allevamento di animali e/o coltivazione di piante"
-
-#~ msgid "height above or below sea level"
-#~ msgstr "altezza sopra o sotto il livello del mare"
-
-#~ msgid ""
-#~ "energy, water and waste systems and communications "
-#~ "infrastructure           and services"
-#~ msgstr ""
-#~ "sistemi di energia, d'acqua e di rifiuti e infrastrutture e servizi di "
-#~ "comunicazione"
-
-#~ msgid ""
-#~ "features and characteristics of salt water bodies (excluding           "
-#~ "inland waters)"
-#~ msgstr ""
-#~ "peculiarità e caratteristiche delle acque salate (escluse le acque "
-#~ "interne)"
-
-#~ msgid "legal land descriptions"
-#~ msgstr "descrizioni dei terreni legali"
-
-#~ msgid ""
-#~ "inland water features, drainage systems and           their "
-#~ "characteristics"
-#~ msgstr ""
-#~ "peculiarità delle acque interne, sistemi di drenaggio e loro "
-#~ "caratteristiche"
-
-#~ msgid "military bases, structures, activities"
-#~ msgstr "basi militari, strutture, attività"
-
-#~ msgid "environmental resources, protection and conservation"
-#~ msgstr "risorse ambientali, protezione e conservazione"
-
-#~ msgid "positional information and services"
-#~ msgstr "informazioni personali e servizi"
-
-#~ msgid "economic activities, conditions and employment"
-#~ msgstr "attività economiche, condizioni e occupazione"
-
-#~ msgid ""
-#~ "information used for appropriate actions for future use of the           "
-#~ "land"
-#~ msgstr ""
-#~ "informazioni utilizzate per azioni appropriate per il futuro utilizzo del "
-#~ "territorio"
-
-#~ msgid "flora and/or fauna in natural environment"
-#~ msgstr "flora e/o fauna nell'ambiente naturale"
-
-#~ msgid "health, health services, human ecology, and safety"
-#~ msgstr "salute, servizi sanitari, ecologia umana, e sicurezza"
-
-#~ msgid "base maps"
-#~ msgstr "mappe di base"
-
-#~ msgid "means and aids for conveying persons and/or goods"
-#~ msgstr "mezzi e ausili di trasporto per persone e/o merci"
-
-#~ msgid "characteristics of society and cultures"
-#~ msgstr "caratteristiche della società e delle culture"
-
-#~ msgid "man-made construction"
-#~ msgstr "costruzione artificiale"
-
-#~ msgid "processes and phenomena of the atmosphere"
-#~ msgstr "processi e fenomeni dell'atmosfera"
-
-#~ msgid "constraints use"
-#~ msgstr "limiti di utilizzo"
-
-#~ msgid ""
-#~ "constraints applied to assure the protection of privacy or intellectual "
-#~ "property, and any special restrictions or limitations or warnings on "
-#~ "using the resource or metadata"
-#~ msgstr ""
-#~ "vincoli applicati per garantire la protezione della privacy o della "
-#~ "proprietà intellettuale e restrizioni speciali o limitazioni o "
-#~ "avvertimenti sull'uso della risorsa o dei metadati"
-
-#~ msgid "spatial representation type"
-#~ msgstr "tipo di rappresentazione spaziale"
-
-#~ msgid "No Image Available"
-#~ msgstr "Nessuna immagine disponibile"
-
-#~ msgid "Display Title"
-#~ msgstr "Visualizza Titolo"
-
-#~ msgid "Visible?"
-#~ msgstr "Visibile?"
-
-#~ msgid "Update Layer"
-#~ msgstr "Aggiorna Layer"
-
-#~ msgid "This form allows you to update the data for this layer."
-#~ msgstr "Questo form ti consente di aggiornare i dati per questo layer."
-
-#~ msgid ""
-#~ "\n"
-#~ "If the new dataset omits attributes that were included in the previous "
-#~ "version,\n"
-#~ "or changes their types, then existing styles for the layer may not work.\n"
-#~ "Please check your maps if the new data includes such changes.  "
-#~ "Additionally,\n"
-#~ "updated data must be the same format as the data already in place, e.g.\n"
-#~ msgstr ""
-#~ "\n"
-#~ "Se nel nuovo set di dati mancano attributi che erano presenti nella "
-#~ "precedente versione, o ne sono stati cambiati i tipi, gli stili associati "
-#~ "a questo layer potrebbero non funzionare. Controlla nelle tue mappe se i "
-#~ "nuovi dati includono questi cambiamenti. Inoltre i dati aggiornati devono "
-#~ "essere dello stesso formato dei dati già presenti, es.\n"
-
-#~ msgid "Select a layer data file and submit the form to begin the transfer."
-#~ msgstr ""
-#~ "Seleziona un file contenente un layer e invia il form per iniziare il "
-#~ "trasferimento."
-
-#~ msgid "No maps are using this layer."
-#~ msgstr "Nessuna mappa sta utilizzando questo layer."
-
-#~ msgid "Supported Formats"
-#~ msgstr "Formati supportati"
-
-#~ msgid "Print Map"
-#~ msgstr "Stampa Mappa"
-
-#~ msgid "View map"
-#~ msgstr "Visualizza mappa"
-
-#~ msgid "View this map in the GeoExplorer GIS Client"
-#~ msgstr "Visualizza questa mappa nel GeoExplorer GIS Client"
-
-#~ msgid "Read more about "
-#~ msgstr "Per saperne di più"
-
-#~ msgid "Map"
-#~ msgstr "Mappa"
-
-#~ msgid "Layer"
-#~ msgstr "Layer"
-
-#~ msgid "Document"
-#~ msgstr "Documento"
-
-#~ msgid "Actions"
-#~ msgstr "Operazioni"
-
-#~ msgid "Change Your Avatar"
-#~ msgstr "Modifica il tuo avatar"
-
-#~ msgid "Upload a New Avatar"
-#~ msgstr "Carica un nuovo avatar"
-
-#~ msgid "Upload new avatar"
-#~ msgstr "Carica un nuovo avatar"
-
-#~ msgid "Internal Server Error"
-#~ msgstr "Errore interno del server"
-
-#~ msgid ""
-#~ "\n"
-#~ "      An internal error occurred. Please try again, and if the problem "
-#~ "continues, contact your site administrator.\n"
-#~ "  "
-#~ msgstr ""
-#~ "\n"
-#~ "Si è verificato un errore interno. Prova ancora e, se il problema "
-#~ "persiste, contatta l'amministratore del sito.    "
-
-#~ msgid "Upload an Avatar"
-#~ msgstr "Carica un avatar"
-
-#~ msgid "Upload avatar"
-#~ msgstr "Carica avatar"
-
-#~ msgid "Topic Category"
-#~ msgstr "Categoria del tema."
-
-#~ msgid "Citation"
-#~ msgstr "Citazione"
