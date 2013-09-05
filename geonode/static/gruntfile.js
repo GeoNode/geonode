@@ -88,7 +88,7 @@ module.exports = function(grunt) {
           src: [
             'bootstrap/img/*.png',
             'select2/*.png', 'select2/spinner.gif',
-            'raty/img/*.png',
+            'raty/lib/img/*.png',
             'multi-select/img/switch.png',
             'datatables/media/images/*.png',
             'jquery-ui/themes/smoothness/images/animated-overlay.gif',
@@ -103,7 +103,6 @@ module.exports = function(grunt) {
             'datatables/media/js/jquery.dataTables.js',
             'jquery-timeago/jquery.timeago.js',
             'tinysort/src/jquery.tinysort.js',
-            'raty/js/jquery.raty.js',
             'raty/lib/jquery.raty.js',
             'jquery-waypoints/waypoints.js',
             'jquery-ui/ui/jquery-ui.custom.js',
