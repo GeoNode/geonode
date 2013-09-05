@@ -89,6 +89,7 @@ pygments_style = 'sphinx'
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
+locale_dirs = ['i18n/']
 
 # -- Options for HTML output ---------------------------------------------------
 
@@ -168,7 +169,6 @@ html_theme = 'default'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'GeoNodedoc'
-
 
 # -- Options for LaTeX output --------------------------------------------------
 
