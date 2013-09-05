@@ -1,0 +1,163 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, GeoNode Development Team
+# This file is distributed under the same license as the GeoNode package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoNode 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-09-04 20:46\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../index.txt:3
+# b346870967524129bdbaef4e9ec21fa0
+msgid "GeoNode's Documentation"
+msgstr ""
+
+#: ../../index.txt:5
+# 666b2c347748480781a4949fcc8a990d
+msgid "Welcome to Geonode's Documentation."
+msgstr ""
+
+#: ../../index.txt:7
+# 7e89add4597e453f8723b71c9b05c047
+msgid "GeoNode is an Open Source, Content Management System (CMS) for geospatial data. It is a web-based application and platform for developing geospatial information systems (GIS) and for deploying spatial data infrastructures (SDI)."
+msgstr ""
+
+#: ../../index.txt:10
+# 87b518964cb84ee29ad26b6b8f54d84a
+msgid "How To Use The Documentation"
+msgstr ""
+
+#: ../../index.txt:12
+# 37c4a66ae5cb4604bb788dbf5cb26a09
+msgid "The documentation is divided into three sections."
+msgstr ""
+
+#: ../../index.txt:14
+# ed83dae43a44428db7609d99e8657693
+msgid ":doc:`Organizational: <organizational/index>`  about the project, how to contribute, links, resources, other info"
+msgstr ""
+
+#: ../../index.txt:15
+# 425a8e3b3e9e4d9386c2b549d667954b
+msgid ":doc:`Tutorials: <tutorials/index>` Step-by-step instructions in workshop format that help a user to accomplish a set of tasks."
+msgstr ""
+
+#: ../../index.txt:16
+# 17304561c46946428ede5ff51f24e210
+msgid ":doc:`Reference: <reference/index>` Architecture, component information, API descriptions etc."
+msgstr ""
+
+#: ../../index.txt:19
+# 6f25aab1f3a4468ebf91cfdf75b823a1
+msgid "For organizational purposes, the documentation is also geared toward 3 distinct types of users."
+msgstr ""
+
+#: ../../index.txt:21
+# 6015de9432aa46448be55e21967e788f
+msgid "**Users**: Are people who log into a GeoNode website and use its functionality."
+msgstr ""
+
+#: ../../index.txt:22
+# a604ca667cc2485d836ce9d9cdedf0c9
+msgid "**Administrators**: Are people who install and deploy GeoNode websites in production for their Users."
+msgstr ""
+
+#: ../../index.txt:23
+# ec11598667354a8fa33d8c72f968ccda
+msgid "**Developers**:  Are people who write code to add functionality, integrate with other systems, fix bugs, and potentially help an Administrator setup a server and deploy a GeoNode instance for production."
+msgstr ""
+
+#: ../../index.txt:26
+# 327929413b8444818257b6bebdf152f1
+msgid "First Steps"
+msgstr ""
+
+#: ../../index.txt:28
+# f3b45277860d4936ada0a801a8111440
+msgid "The following sections give an overview of GeoNode from different perspectives, they are targeted at a non-technical audience and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation."
+msgstr ""
+
+#: ../../index.txt:30
+# 508080bb8a824c92b15b6994e1736a8b
+msgid ":doc:`About GeoNode <organizational/about>`"
+msgstr ""
+
+#: ../../index.txt:31
+# 3d8a08231d4944fda1fc0c484823db24
+msgid ":doc:`GeoNode Quickstart <tutorials/users/quickstart/index>`"
+msgstr ""
+
+#: ../../index.txt:32
+# f12e800efb1041e99fa286a4380a3bc1
+msgid ":doc:`Quick Installation Guide <tutorials/admin/install/quick_install>`"
+msgstr ""
+
+#: ../../index.txt:33
+# febbaf5169fe4b2e81d720479431088a
+msgid ":doc:`Detailed Installation Guide <tutorials/admin/install/installation_devmode>`"
+msgstr ""
+
+#: ../../index.txt:36
+# 2c18537d4986431c80ef68067857d78a
+msgid "Organizational"
+msgstr ""
+
+#: ../../index.txt:38
+# de0f08d3f53a49f488d65d2c5aa4b841
+msgid "The :doc:`Organizational <organizational/index>` section contains information about the GeoNode project itself, how to contribute, learn about the community, helpful links, about the patch review process, the project roadmap and other administraive items."
+msgstr ""
+
+#: ../../index.txt:41
+# 02ae97805d31422c89f1214b319fb05e
+msgid "Tutorials"
+msgstr ""
+
+#: ../../index.txt:43
+# 08637af2248b41559e8018611f958e59
+msgid "The :doc:`Tutorials <tutorials/index>` section contains step-by-step workshops that are oriented around performing particular sets of tasks, like adding data or publishing maps, setting up and maintaining a server, or setting up a project to extend from geonode. These tutorials are written in a workshop like format and are broken into three groups Users, Administrators and Developers."
+msgstr ""
+
+#: ../../index.txt:46
+# aeb30033893c41858886561f8720c6e7
+msgid "Reference"
+msgstr ""
+
+#: ../../index.txt:48
+# 2f606f5979b5413e9969db3280a89305
+msgid "The :doc:`Reference <reference/index>` section provides details about the internals of the GeoNode project. It has background information about components that make up GeoNode, the security system, APIs and much more."
+msgstr ""
+
+#: ../../index.txt:51
+# 31ac35379e094196b6e1acfe359f6f1c
+msgid "Need Help?"
+msgstr ""
+
+#: ../../index.txt:53
+# a8acc7f47c2d4a289e7da6222beb0fcf
+msgid "Having trouble? Cant find what you are looking for? We'd like to help!"
+msgstr ""
+
+#: ../../index.txt:55
+# 24156ce8b90a4f72b08c372125406b51
+msgid "Search for information in the `archives of the GeoNode  mailing list`_, or `post a question`_."
+msgstr ""
+
+#: ../../index.txt:58
+# afa70f974bbd4eefb483849a156b6eb0
+msgid "Ask a question in the `#geonode IRC channel`_ using `Freenode's web based client`_"
+msgstr ""
+
+#: ../../index.txt:61
+# 8fb369650efc4262858e895d9c04c16f
+msgid "Report bugs with GeoNode in our `ticket tracker`_."
+msgstr ""
+
