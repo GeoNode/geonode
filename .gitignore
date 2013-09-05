@@ -33,7 +33,7 @@ geonode/static/lib/js/assets.min.js
 geonode/static/lib/js/bootstrap-datepicker.js
 geonode/static/lib/js/bootstrap.js
 geonode/static/lib/js/jquery-ui.custom.js
-geonode/static/lib/js/jquery.ajaxQueue.min.js
+geonode/static/lib/js/jquery.ajaxQueue.js
 geonode/static/lib/js/jquery.ajaxprogress.js
 geonode/static/lib/js/jquery.dataTables.js
 geonode/static/lib/js/jquery.js
