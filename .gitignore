@@ -12,6 +12,8 @@ geonode/development.db
 geoserver
 downloaded
 
+docs/i18n/pot/.doctrees/
+
 # Static media handling
 *.jshintrc
 geonode/static/.components/
