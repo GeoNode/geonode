@@ -18,7 +18,7 @@ Committers must:
 GeoNode Improvement Proposals (GNIPS)
 -------------------------------------
 
-If a committer thinks a proposed change to the software is particularly destabilizing or far-reaching, that committer can upgrade the ticket for that change to a GeoNode Improvement Proposal (GNIP).  GNIP tickets are an opportunity for committers and users alike to provide feedback about the design of a proposed feature or architectural change.  The proposal should be iteratively edited in response to community feedback.
+GNIPS_ If a committer thinks a proposed change to the software is particularly destabilizing or far-reaching, that committer can upgrade the ticket for that change to a GeoNode Improvement Proposal (GNIP).  GNIP tickets are an opportunity for committers and users alike to provide feedback about the design of a proposed feature or architectural change.  The proposal should be iteratively edited in response to community feedback.
 
 To upgrade an issue to a GNIP, an active committer should give the ticket the 'GNIP' label in the issue tracker, and announce the issue on the developer mailing list.
 
@@ -38,3 +38,5 @@ Project Steering Committee
 --------------------------
 
 In the event that a revision to these bylaws becomes necessary, authority for that decision lies with the currently presiding Project Steering Committee (PSC).  The PSC at any time is made up of the top 7 committers over the past 365 days, by number of commits.
+
+.. _GNIPS: https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals
