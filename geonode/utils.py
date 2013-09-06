@@ -560,7 +560,7 @@ class GXPLayerBase(object):
 
         The "source" property will be left unset; the layer is not aware of the
         name assigned to its source plugin.  See
-        :method:`geonode.maps.models.Map.viewer_json` for an example of
+        geonode.maps.models.Map.viewer_json for an example of
         generating a full map configuration.
         """
         try:
