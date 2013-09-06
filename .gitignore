@@ -68,6 +68,8 @@ geonode/static/geonode/junit.xml
 
 # Docs
 docs/_build
+*.pot
+*.mo
 
 # ec2.py
 scripts/cloud/.gnec2.cfg

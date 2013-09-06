@@ -1,74 +1,34 @@
-=======================
-GeoNode's Documentation
-=======================
+========================================
+How to translate GeoNode's Documentation
+========================================
 
-Welcome to Geonode's Documentation. 
+How to build the documentation
+==============================
 
-GeoNode is an Open Source, Content Management System (CMS) for geospatial data. It is a web-based application and platform for developing geospatial information systems (GIS) and for deploying spatial data infrastructures (SDI). 
+TODO
 
-How To Use The Documentation
-============================
+How to translate the documentation
+==================================
 
-The documentation is divided into three sections.
+1. As a firt step, generate all of the needed .pot files::
 
- #. :doc:`Organizational: <organizational/index>`  about the project, how to contribute, links, resources, other info
- #. :doc:`Tutorials: <tutorials/index>` Step-by-step instructions in workshop format that help a user to accomplish a set of tasks.
- #. :doc:`Reference: <reference/index>` Architecture, component information, API descriptions etc. 
+    cd docs
+    sphinx-build -b gettext . i18n/pot
+  
+2. Run the pre_translate.sh script to generate all of the .po files for each language::
 
+    $ sh scripts/pre_translate.sh
+  
+3. Now edit the .po files you need, make the translations and then run the post_translate.sh script. There are two workflows, the first using your favourite editor, the second using the transifex ui. Using your own editor, first pull from transifex, then change the files, pull files to transifex and then compile the messages using the post_translate.sh script::
 
-For organizational purposes, the documentation is also geared toward 3 distinct types of users.
+    $ tx pull -a
+    $ vi i18n/it/LC_MESSAGES/index.po
+    $ tx push -s -t
+    $ sh scripts/post_translate.sh
+  
+4. Finally build your html or pdf, and you should get the localized versions as well::
 
- #. **Users**: Are people who log into a GeoNode website and use its functionality. 
- #. **Administrators**: Are people who install and deploy GeoNode websites in production for their Users. 
- #. **Developers**:  Are people who write code to add functionality, integrate with other systems, fix bugs, and potentially help an Administrator setup a server and deploy a GeoNode instance for production. 
+    $ make html LANG=it
+    
+5. In case master (English) doc is updated, regenerate the .pot files (step 1), the corresponding .po files will be merged, and then continue with the same workflow
 
-First Steps
-===========
-
-The following sections give an overview of GeoNode from different perspectives, they are targeted at a non-technical audience and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation.
-
- * :doc:`About GeoNode <organizational/about>`
- * :doc:`GeoNode Quickstart <tutorials/users/quickstart/index>`
- * :doc:`Quick Installation Guide <tutorials/admin/install/quick_install>`
- * :doc:`Detailed Installation Guide <tutorials/admin/install/installation_devmode>`
-
-Organizational
-==============
-
-The :doc:`Organizational <organizational/index>` section contains information about the GeoNode project itself, how to contribute, learn about the community, helpful links, about the patch review process, the project roadmap and other administraive items.
-
-Tutorials
-=========
-
-The :doc:`Tutorials <tutorials/index>` section contains step-by-step workshops that are oriented around performing particular sets of tasks, like adding data or publishing maps, setting up and maintaining a server, or setting up a project to extend from geonode. These tutorials are written in a workshop like format and are broken into three groups Users, Administrators and Developers. 
-
-Reference
-=========
-
-The :doc:`Reference <reference/index>` section provides details about the internals of the GeoNode project. It has background information about components that make up GeoNode, the security system, APIs and much more.
-
-Need Help?
-==========
-
-Having trouble? Cant find what you are looking for? We'd like to help!
-
- * Search for information in the `archives of the GeoNode  mailing list`_, or
-   `post a question`_.
-
- * Ask a question in the `#geonode IRC channel`_ using
-   `Freenode's web based client`_
-
- * Report bugs with GeoNode in our `ticket tracker`_.
-
-.. _archives of the GeoNode mailing list: https://groups.google.com/d/forum/geonode-users
-.. _post a question: mailto:geonode-users+subscribe@googlegroups.com
-.. _#geonode IRC channel: irc://irc.freenode.net/geonode
-.. _Freenode's web based client: http://webchat.freenode.net
-.. _ticket tracker: http://github.com/GeoNode/geonode/issues
-
-.. toctree::
-   :maxdepth: 3
-
-   organizational/index
-   tutorials/index
-   reference/index

@@ -1,5 +1,6 @@
 .. _install_installation_devmode:
 
+===================================
 Install GeoNode in development mode
 ===================================
 

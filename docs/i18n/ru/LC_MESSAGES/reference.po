@@ -5,14 +5,14 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-04 20:42\n"
-"PO-Revision-Date: 2013-09-05 18:41+0000\n"
+"PO-Revision-Date: 2013-09-05 02:20+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
-"Language-Team: Spanish (http://www.transifex.com/projects/p/geonode/language/es/)\n"
+"Language-Team: Russian (http://www.transifex.com/projects/p/geonode/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: ../../reference/architecture.txt:5
 msgid "GeoNode Architecture"
@@ -854,7 +854,7 @@ msgstr ""
 
 #: ../../reference/security.txt:18 ../../reference/security.txt:75
 msgid "Layers"
-msgstr "Capas"
+msgstr "Слои"
 
 #: ../../reference/security.txt:20
 msgid "view and download a layer"
@@ -870,7 +870,7 @@ msgstr ""
 
 #: ../../reference/security.txt:26 ../../reference/security.txt:147
 msgid "Maps"
-msgstr "Mapas"
+msgstr "Карты"
 
 #: ../../reference/security.txt:28
 msgid "view and download a map"
@@ -886,7 +886,7 @@ msgstr ""
 
 #: ../../reference/security.txt:34 ../../reference/security.txt:163
 msgid "Documents"
-msgstr "Documentos"
+msgstr "Документы"
 
 #: ../../reference/security.txt:36
 msgid "view and download a document"
@@ -1024,7 +1024,7 @@ msgstr ""
 
 #: ../../reference/security.txt:92
 msgid "Any registered user"
-msgstr "Cualquier usuario registrado"
+msgstr "Для каждого зарегистрировавшегося пользователя"
 
 #: ../../reference/security.txt:93
 msgid "Only a certain user or group"
@@ -1038,7 +1038,7 @@ msgstr ""
 
 #: ../../reference/security.txt:97
 msgid "Edit metadata"
-msgstr "Editar metadatos"
+msgstr ""
 
 #: ../../reference/security.txt:98
 msgid "Edit styles"
@@ -1072,15 +1072,15 @@ msgstr ""
 
 #: ../../reference/security.txt:113
 msgid "Owner"
-msgstr "Dueño"
+msgstr "Владелец"
 
 #: ../../reference/security.txt:114
 msgid "Title"
-msgstr "Título"
+msgstr "Название"
 
 #: ../../reference/security.txt:115
 msgid "Date"
-msgstr "Fecha"
+msgstr "Дата"
 
 #: ../../reference/security.txt:116
 msgid "Data type"
@@ -1088,15 +1088,15 @@ msgstr ""
 
 #: ../../reference/security.txt:117
 msgid "Edition"
-msgstr "Edición"
+msgstr "Редактирование"
 
 #: ../../reference/security.txt:118
 msgid "Abstract"
-msgstr "Resumen"
+msgstr "Абстракт"
 
 #: ../../reference/security.txt:119
 msgid "Purpose"
-msgstr "Propósito"
+msgstr "Цель"
 
 #: ../../reference/security.txt:120
 msgid "Maintainance frequency"
@@ -1108,7 +1108,7 @@ msgstr ""
 
 #: ../../reference/security.txt:122
 msgid "Restrictions"
-msgstr "Restricciones"
+msgstr ""
 
 #: ../../reference/security.txt:123
 msgid "Restrictions other"
@@ -1116,11 +1116,11 @@ msgstr ""
 
 #: ../../reference/security.txt:124
 msgid "Language"
-msgstr "Idioma"
+msgstr "Язык"
 
 #: ../../reference/security.txt:125
 msgid "Category"
-msgstr "Categoría"
+msgstr ""
 
 #: ../../reference/security.txt:126
 msgid "Spatial representation type"
@@ -1152,7 +1152,7 @@ msgstr ""
 
 #: ../../reference/security.txt:133
 msgid "Keywords"
-msgstr "Palabras claves"
+msgstr "Ключевые слова"
 
 #: ../../reference/security.txt:134
 msgid "Point of contact"
