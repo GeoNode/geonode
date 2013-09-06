@@ -20,6 +20,7 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
    monitor/index
    backup/index
    deploy/index
+   admin_panel/index
    commands
    csw
    customize
@@ -63,6 +64,9 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 
 :ref:`deploy`
   Review a sample GeoNode project deployment and learn how to create your own
+
+:ref:`admin_panel`
+  Manage users and data through the administration panel
 
 :ref:`commands`
   Review GeoNode's management commands
