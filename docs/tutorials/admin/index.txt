@@ -13,7 +13,6 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
    install/index
    quick_install
    install
-   config/index
    manage/index
    production
    data/index
@@ -43,9 +42,6 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 
 :ref:`install_old`
   Learn how to install and configure GeoNode
-
-:ref:`config`
-  Learn how to configure GeoNode
 
 :ref:`manage`
   Learn how to manage a GeoNode installation 

@@ -1,9 +1,7 @@
-.. _config.deploy_config:
+.. _manual_installation:
 
 Configurations
 ==============
-
-some text here
 
 .. note:: Please note that all the paths are user specific, so they might not coincide with the paths you will have to use!
 
@@ -85,16 +83,6 @@ to your db settings in local_settings.py.
 
 .. figure:: img/local_settings_changes.PNG
 
-Install psycopg2
-****************
-
-If you do not already have it on your machine, it is neccessary to install *psycopg2*, the postgresql adapter for Python programming language. But, be sure that you are working in your virtualenv, otherwise you will create a permission problem!! Thus activate your virtualenv first
-
-.. code-block:: console
-
-	$ source home/user/.venvs/geonode/bin/activate
-	$ cd
-	$ pip install psycopg2
 
 Synchronise db
 **************
@@ -103,7 +91,7 @@ To synchronise the database call the django command *syncdb*
 
 .. code-block:: console
 
-   $ django-admin.py syncdb --noinput --all
+   $ python manage.py syncdb --noinput --all
    
 
 Create new superuser
@@ -113,7 +101,7 @@ Furthermore a new django superuser has to be created
 
 .. code-block:: console
 
-   $ django-admin.py createsuperuser --settings=geonode.settings
+   $ python manage.py createsuperuser
 
 You will be asked to enter a username, an email adress and a password.
 
@@ -128,7 +116,7 @@ The collectstatic command will create a new folder *static_root*.
 
 .. code-block:: console
 
-   $ django-admin.py collectstatic --settings=geonode.settings --noinput
+   $ python manage.py collectstatic
 
 Enable geonode upload function
 ******************************
@@ -173,12 +161,12 @@ This file should inlcude the following, but don´t forget to adjust the paths!
 
 .. code-block:: python
 
-  WSGIDaemonProcess geonode python-path=/home/barbara/geonode:/home/barbara/.venvs/geonode/lib/python2.7/site-packages user=www-data threads=15 processes=2
+  WSGIDaemonProcess geonode python-path=/home/user/geonode:/home/user/.venvs/geonode/lib/python2.7/site-packages user=www-data threads=15 processes=2
 
   <VirtualHost *:80>
 	ServerName http://localhost:8000
 	ServerAdmin webmaster@localhost
-	DocumentRoot /home/barbara/geonode/geonode
+	DocumentRoot /home/user/geonode/geonode
 
 	ErrorLog /var/log/apache2/error.log
 	LogLevel warn
@@ -186,17 +174,17 @@ This file should inlcude the following, but don´t forget to adjust the paths!
 
 	WSGIProcessGroup geonode
 	WSGIPassAuthorization On
-	WSGIScriptAlias / /home/barbara/geonode/geonode/wsgi.py
+	WSGIScriptAlias / /home/user/geonode/geonode/wsgi.py
 
-	<Directory "/home/barbara/geonode/geonode/">
+	<Directory "/home/user/geonode/geonode/">
 		Order allow,deny
 		Options Indexes FollowSymLinks
 		Allow from all
 		IndexOptions FancyIndexing
 	</Directory>
 
-	Alias /static/ /home/barbara/geonode/geonode/static/
-	Alias /uploaded/ /home/barbara/geonode/geonode/uploaded/
+	Alias /static/ /home/user/geonode/geonode/static/
+	Alias /uploaded/ /home/user/geonode/geonode/uploaded/
 
 	<Proxy *>
   		Order allow,deny
@@ -206,9 +194,7 @@ This file should inlcude the following, but don´t forget to adjust the paths!
 	ProxyPreserveHost On
 	ProxyPass /geoserver http://localhost:8080/geoserver
 	ProxyPassReverse /geoserver http://localhost:8080/geoserver
-	ProxyPass /geonetwork http://localhost:8080/geonetwork
-	ProxyPassReverse /geonetwork http://localhost:8080/geonetwork
-
+	
   </VirtualHost>
 
 Enable the new site
@@ -233,11 +219,11 @@ If you now type localhost into your webbrowser, the geonode webpage will appear.
 
 Change this entry::
 
-	Alias /static/ /home/barbara/geonode/geonode/static/
+	Alias /static/ /home/user/geonode/geonode/static/
 	
 to::
 
-	Alias /static/ /home/barbara/geonode/geonode/static_root/
+	Alias /static/ /home/user/geonode/geonode/static_root/
 
 Now reload apache2 again using ``sudo service apache2 reload`` and visit localhost/admin. Now you should be able to see this
 
@@ -282,7 +268,7 @@ Change permissions of folders
 
    $ sudo chown www-data:www-data /home/user/geonode/geonode/static/
    $ sudo chown www-data:www-data /home/user/geonode/geonode/uploaded/
-   $ sudo chown www-data:www-data /home/barbara/geonode/geonode/static_root/
+   $ sudo chown www-data:www-data /home/user/geonode/geonode/static_root/
    
    $ sudo service apache2 reload
    

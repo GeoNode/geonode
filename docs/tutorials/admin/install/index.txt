@@ -6,9 +6,8 @@ Installing GeoNode
 .. todo:: Notes say: "Simple GeoNode installation process on Ubuntu"
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    quick_install
    installation_devmode
-   install_postgresql
-   install_postgis
+   manual_install/index

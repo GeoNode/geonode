@@ -1,0 +1,21 @@
+.. _manual_installation:
+
+Fully manual installation
+=========================
+
+The manual installation is intended for who is confortable with Linux system administration. This can be done with every GeoNode release, both official and custom made.
+It’s suitable for servers that already have some of the components installed such as Tomcat, Apache with virtualhosts already configured.
+If the server has a fresh Ubuntu installation it’s strongly suggested instead to adjust the spackage/support/config-ubuntu.sh script to match the desired installation paths.
+
+
+Get the code and install it in the virtuelnv::
+
+    $ mkvirtualenv geonode
+    $ cd geonode
+    $ git clone https://github.com/GeoNode/geonode.git
+    $ pip install -e . --use-mirrors
+    $ paver setup
+
+This will also create the geoserver artifact ready to be deployed under Tomcat.
+
+Follows :ref:`deploy_config`
