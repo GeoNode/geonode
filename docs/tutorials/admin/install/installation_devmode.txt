@@ -6,12 +6,12 @@ Install GeoNode in development mode
 
 In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following steps are required:
 
-* install build tools and libraries
-* install dependencies (Python and Java) and supporting tools
-* add PPA repository (for static development)
-* set up a virtual environment (virtualenv)
-* clone geonode from github and install it in the virtual environment
-* compile geoserver and start the development servers 
+#. install build tools and libraries (see Step 1)
+#. install dependencies (Python and Java) and supporting tools (see Step 2)
+#. add PPA repository (see Step 3)
+#. set up a virtual environment (virtualenv)
+#. clone geonode from github and install it in the virtual environment
+#. run paver to get install geoserver and start the development servers
 
 .. note:: The following steps have to be executed in your terminal. The *Steps 1 – 4a* have to be done as a root user, therefore don´t forget to type sudo in front (as shown in the steps)!
 
@@ -23,7 +23,7 @@ The first step is to install required build tools and libraries::
 
 **Step 2**
 
-As known from installing former releases of Geonode, some dependencies and supporting tools have to be installed before Geonode can be set up.
+Install dependencies and supporting tools before Geonode can be set up.
 
 *Python native dependencies*::
 
@@ -39,7 +39,7 @@ As known from installing former releases of Geonode, some dependencies and suppo
 
 **Step 3**
 
-Your third step is to add a new PPA repository, which is required for the static development::
+Now add a new PPA repository, which is required for the static development::
 
     $ sudo add-apt-repository ppa:chris-lea/node.js
     $ sudo apt-get update
@@ -49,20 +49,20 @@ Your third step is to add a new PPA repository, which is required for the static
 
 **Step 4** 
 
-Now a virtual environment has to be set up, in which Geonode will later be running. Virtualenv has already been installed during *Step 2 (Python dependencies)*. Now you need to download and install a virutalenvwrapper (*Step 4a*), which has to be added to your environment (*Step 4b*). Before you can download and install Geonode, you have to set up the local virtual environment for Geonode (*Step 4c*).
+Now lets set up a virtual environment in which Geonode will later be running. Virtualenv has already been installed during *Step 2 (Python dependencies)*.
 
-*Step 4a*::
+***Step 4a** Download and install a virutalenvwrapper*::
 
     $ sudo pip install virtualenvwrapper
 
-*Step 4b*::
+***Step 4b** Add the virtualenvwrapper to your new environement.*::
 
     $ export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
     $ export WORKON_HOME=~/.venvs
     $ source /usr/local/bin/virtualenvwrapper.sh
     $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
 
-*Step 4c*::
+*Step 4c*  set up the local virtual environment for Geonode *Note: needs to be done before you can download and install Geonode*::
 
     $ mkdir your_folder
     $ mkvirtualenv geonode
