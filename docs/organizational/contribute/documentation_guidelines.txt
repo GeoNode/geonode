@@ -1,15 +1,18 @@
 .. _doc_guidelines:
 
-=====================
-How to write the Docs
-=====================
+==========================
+How to write Documentation
+==========================
 
-Here we will describe how to write the documentation using Restructured Text. Lets dive in
+Geonode uses Restructured Text with `Sphinx <http://sphinx.pocoo.org>`_ . Writing style should follow the same policies as geoserver does in their `Documentation Style Guide <http://docs.geoserver.org/latest/en/docguide/style.html>`_
 
 Sphinx Syntax
 =============
 
-This page contains syntax rules, tips, and tricks for using Sphinx and reStructuredText.  For more information, please see this  `comprehensive guide to reStructuredText <http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html>`_, as well as the `Sphinx reStructuredText Primer <http://sphinx.pocoo.org/rest.html>`_.
+This page contains syntax rules, tips, and tricks for using Sphinx and reStructuredText.  For more information, please see:
+ * `RST Quick Reference <http://docutils.sourceforge.net/docs/user/rst/quickref.html#section-structure>`_
+ * `Comprehensive guide to reStructuredText <http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html>`_
+ * `Sphinx reStructuredText Primer <http://sphinx.pocoo.org/rest.html>`_
 
 Basic markup
 ------------
@@ -32,6 +35,67 @@ A reStructuredText document is written in plain text.  Without the need for comp
    * - Monospace
      - `` ``monospace`` `` (double back quote)
      - ``monospace``
+
+Sections, subtitles and titles
+------------------------------
+
+Use sections to break up long pages and to help Sphinx generate tables of contents.
+
+The top of the page (i.e. the title) should have an equals sign (=) above and below::
+
+   ==============
+   Camel Spotting
+   ==============
+
+Level 2 section headers should have an equals sign (=) below the section name with same length as name::
+
+   I am a level 2 header
+   =====================
+
+
+Level 3 sections should have a single minus symbol (-)::
+
+   I am a level 3 header
+   ---------------------
+
+
+Level 4 sections should have a single dot,periol symbol (.)::
+
+   I am a level 4 header
+   .....................
+
+Page labels
+-----------
+
+**Ensure every page has a label.** For example if the page is named ``foo_bar.rst`` then the page should have the label at the top of the file (line1) ::
+
+   ..  _foo_bar:
+
+Other pages can then link to that page by using the following code::
+
+   :ref:`foo_bar`
+
+.. _linking:
+
+Linking
+-------
+
+Links to other pages should never be titled as "here".  Sphinx makes this easy by automatically inserting the title of the linked document.
+
+Using the following code::
+
+    :ref:`linking`
+
+And here is the link in action :ref:`linking`  to use the link place this code some where in your open file::
+
+    .. _linking:
+
+
+To insert a link to an external website::
+
+   `Text of the link <http://docs.geoserver.org/latest/en/docguide/style.html>`_
+
+The resulting link would look like this: `Text of the link <http://example.com>`_
 
 Lists
 -----
@@ -93,67 +157,6 @@ This is done with the following code::
         - Four sides of equal length, 90 degree angles
       * - Rectangle
         - Four sides, 90 degree angles
-
-Page labels
------------
-
-**Ensure every page has a label.** For example if the page is named ``foo_bar.rst`` then the page should have the label at the top of the file (line1) ::
-
-   ..  _foo_bar:
-
-Other pages can then link to that page by using the following code::
-
-   :ref:`foo_bar`
-
-.. _linking:
-
-Linking
--------
-
-Links to other pages should never be titled as "here".  Sphinx makes this easy by automatically inserting the title of the linked document.
-
-Using the following code::
-
-    :ref:`linking`
-
-And here is the link in action :ref:`linking`  to use the link place this code some where in your open file::
-
-    .. _linking:
-
-
-To insert a link to an external website::
-
-   `Text of the link <http://example.com>`_
-
-The resulting link would look like this: `Text of the link <http://example.com>`_
-
-Sections, subtitles and titles
-------------------------------
-
-Use sections to break up long pages and to help Sphinx generate tables of contents.
-
-The top of the page (i.e. the title) should have an equals sign (=) above and below::
-
-   ==============
-   Camel Spotting
-   ==============
-
-Level 2 section headers should have an equals sign (=) below the section name with same length as name::
-
-   I am a level 2 header
-   =====================
-
-
-Level 3 sections should have a single minus symbol (-)::
-
-   I am a level 3 header
-   ---------------------
-
-
-Level 4 sections should have a single dot,periol symbol (.)::
-
-   I am a level 4 header
-   .....................
 
 
 Notes and warnings
