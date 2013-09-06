@@ -1,0 +1,12 @@
+.. _admin_panel.documents:
+
+
+Manage the documents using the admin panel
+==========================================
+
+As for the layers, most of the information related to the documents can and should be modified using the GeoNode's document metadata page.
+
+.. figure:: img/admin-documents.png
+
+Through the document detail page is possible to edit the metadata information.
+The fields related to the bounding box or the file attached should not be edited directly.
