@@ -1,3 +1,42 @@
+geonode (2.0.0+beta54) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [ce9464] include raty in assets.min.js
+
+  [ Christian Spanring ]
+  * [e725bc] fixes regex in gruntfile
+
+  [ mdiener21 ]
+  * [109fe0] merged the files, deleted redundant links, dead links and updated to the new structure
+  * [0a5318] updated how to transifex localization
+
+  [ vdeparday ]
+  * [7bd63b] Fixes #1107, the custom Manager was not instantiated and also correct a few type issues in the post_save
+
+  [ Simone Dalmasso ]
+  * [82d6c4] add admin panel section
+
+  [ mdiener21 ]
+  * [b1e69e] updated the install procedure
+  * [20f5c9] finished documentation sphinx guidelines and add logo for example
+
+  [ capooti ]
+  * [f7b54f] Added a very basic workflow to manage the i18n documentation process. Refs #1099.
+
+  [ mdiener21 ]
+  * [ae8d99] documentation guidelines updated and completed
+
+  [ Simone Dalmasso ]
+  * [f9fdc1] reorganize the admin tutorial
+  * [41792c] more doc install reorganization
+
+  [ Tyler Garner ]
+  * [b4a1b8] Changed the set_metadata function to safely check for the date key.
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Fri, 06 Sep 2013 17:23:24 +0200
+
 geonode (2.0.0+beta53) precise; urgency=high
 
   [ Michael Diener ]
