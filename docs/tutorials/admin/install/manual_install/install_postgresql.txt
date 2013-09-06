@@ -1,10 +1,12 @@
+.. _install_postgresql:
+
 Installation of Postgresql-9.2 on Ubuntu 12.04 
 ==============================================
 
 Installation
 ------------
 
-The Installation of Postgresql-9.2 on Ubuntu 12.04 includes two main steps (Generelly, this installation should work for each version of Postgresql!). 
+The Installation of Postgresql-9.2 on Ubuntu 12.04 includes two main steps (Generally, this installation should work for each version of Postgresql!). 
 
 
 
