@@ -6,11 +6,13 @@ target
 pip-log.txt
 MANIFEST
 dist
-
+.idea/
 # supporting stuff pulled in by paver script
 geonode/development.db
 geoserver
 downloaded
+
+docs/i18n/pot/
 
 # Static media handling
 *.jshintrc
@@ -31,13 +33,14 @@ geonode/static/lib/js/assets.min.js
 geonode/static/lib/js/bootstrap-datepicker.js
 geonode/static/lib/js/bootstrap.js
 geonode/static/lib/js/jquery-ui.custom.js
-geonode/static/lib/js/jquery.ajaxQueue.min.js
+geonode/static/lib/js/jquery.ajaxQueue.js
 geonode/static/lib/js/jquery.ajaxprogress.js
 geonode/static/lib/js/jquery.dataTables.js
 geonode/static/lib/js/jquery.js
 geonode/static/lib/js/jquery.multi-select.js
 geonode/static/lib/js/jquery.timeago.js
 geonode/static/lib/js/jquery.tinysort.js
+geonode/static/lib/js/jquery.raty.js
 geonode/static/lib/js/json2.js
 geonode/static/lib/js/qunit.js
 geonode/static/lib/js/require.js

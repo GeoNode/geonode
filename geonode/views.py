@@ -24,6 +24,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.conf import settings
+from django.db.models import Q
 from geonode.utils import ogc_server_settings
 
 def index(request, template='index.html'):
@@ -83,7 +84,10 @@ def ajax_lookup(request):
             content='use a field named "query" to specify a prefix to filter usernames',
             mimetype='text/plain'
         )
-    users = User.objects.filter(username__startswith=request.POST['query'])
+    keyword = request.POST['query']
+    users = User.objects.filter(Q(username__startswith=keyword) |
+        Q(profile__name__contains=keyword) | 
+        Q(profile__organization__contains=keyword))
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),
