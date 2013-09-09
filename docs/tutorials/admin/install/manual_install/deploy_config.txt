@@ -1,4 +1,4 @@
-.. _manual_installation:
+.. _deploy_config:
 
 Configurations
 ==============
@@ -23,13 +23,20 @@ To create the user:
 
 Now you will be asked to enter a password. This must be *geonode* (you can change it if you want to, but be aware that you have to edit the local_settings.py if you do so!)
 
-To create the database:
+To create the databases (the geonode one and the spatial for shapefile imports):
 
 .. code-block:: console
 
-   	$ sudo -u postgres createdb -T template_postgis203 -O geonode geonode
+   	$ sudo -u postgres createdb -O geonode geonode
+    $ sudo -u postgres createdb -O geonode geonode-imports
+    $ sudo su postgres
+    $ psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql geonode-imports
+    $ psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql geonode-imports
+    $ exit
+
    	
-This creates a db called *geonode* (which automatically has the postgis extension as well!) with its owner *geonode*. If you do not have a template with the postgis extension, create one using this guide (LINK).
+This creates a db called *geonode* and *geonode-imports* (which automatically has the postgis extension as well!) with owner *geonode*. 
+
 
 Change authentication method
 ****************************
@@ -71,18 +78,14 @@ The next step is to set the local settings. In the directory ../geonode/geonode 
 
 .. code-block:: console
 
-	$ sudo mv local_settings.py.sample local_settings.py
+	$ sudo mv geonode/local_settings.py.sample geonode/local_settings.py
 	
-Add::
+Uncomment the line 10 and modify the line 12 as follows::
 
-	'PORT': '5432',
-	
-to your db settings in local_settings.py.
+    'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    'NAME': 'geonode-imports',
 
 .. note:: If you do not use *geonode* as password for your database, then you have to edit the local_settings.py and change your password in this part of the file
-
-.. figure:: img/local_settings_changes.PNG
-
 
 Synchronise db
 **************
@@ -164,7 +167,7 @@ This file should inlcude the following, but don´t forget to adjust the paths!
   WSGIDaemonProcess geonode python-path=/home/user/geonode:/home/user/.venvs/geonode/lib/python2.7/site-packages user=www-data threads=15 processes=2
 
   <VirtualHost *:80>
-	ServerName http://localhost:8000
+	ServerName http://localhost
 	ServerAdmin webmaster@localhost
 	DocumentRoot /home/user/geonode/geonode
 
@@ -236,8 +239,7 @@ Until now you won't be able to attend the geoserver webpage (without using ``pav
 
 .. code-block:: console
 
-	$ cd /opt/apache-tomcat-X.Y.Z/bin
-	$ sudo ./shutdown.sh
+	$ sudo /etc/init.d/tomcat7 stop
 	
 When installing geonode in developing mode, you´ve also got a *geoserver.war* file included. You will find this in your geonode directory::
 
@@ -247,15 +249,13 @@ Now copy this file into the *webapps* folder of tomcat
 
 .. code-block:: console
 
-	$ sudo cp geoserver.war /opt/apache-tomcat-7.0.42/webapps
+	$ sudo mv geonode/downloaded/geoserver.war /var/lib/tomcat7/webapps/
 	
 By starting tomcat it will unpack the geoserver.war and create a new directory ``tomcat/webapps/geoserver``. 
 
 .. code-block:: console
 
-	$ cd /opt/apache-tomcat-X.Y.Z/bin
-	$ sudo ./catalina.sh run
-	$ sudo service apache2 reload
+	$ sudo /etc/init.d/tomcat7 start
 	
 Let´s try to attend http://localhost:8080/geoserver or localhost/geoserver. You will now see the geoserver homepage.
 

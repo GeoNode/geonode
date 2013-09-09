@@ -10,10 +10,9 @@ If the server has a fresh Ubuntu installation it’s strongly suggested instead 
 
 Get the code and install it in the virtuelnv::
 
-    $ mkvirtualenv geonode
-    $ cd geonode
     $ git clone https://github.com/GeoNode/geonode.git
-    $ pip install -e . --use-mirrors
+    $ cd geonode
+    $ sudo pip install -e . --use-mirrors
     $ paver setup
 
 This will also create the geoserver artifact ready to be deployed under Tomcat.
