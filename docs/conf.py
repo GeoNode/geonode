@@ -90,6 +90,7 @@ pygments_style = 'sphinx'
 #modindex_common_prefix = []
 
 locale_dirs = ['i18n/']
+gettext_compact = True
 
 # -- Options for HTML output ---------------------------------------------------
 
