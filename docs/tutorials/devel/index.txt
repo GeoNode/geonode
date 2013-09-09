@@ -17,6 +17,7 @@ Welcome to the Developers Workshop! This workshop will teach how to develop with
    api/index
    envsetup/index
    devprocess/index
+   release/index
 
 :ref:`intro_devel`
   Learn about GeoNode's core components, its Architecture, the tools it is developed with and the standards it supports.
@@ -47,5 +48,8 @@ Welcome to the Developers Workshop! This workshop will teach how to develop with
 
 :ref:`org_index`
   Learn about GeoNode's development process and how to work with the GeoNode community.
+
+:ref:`release`
+  Learn how to make a release of GeoNode
 
 
