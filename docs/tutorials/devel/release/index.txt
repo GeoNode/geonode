@@ -34,7 +34,6 @@ Install the following packages in additon to the python virtulenv tools::
 Get the GeoNode code (from master) in a virtuelnv::
 
     $ mkvirtualenv geonode
-    $ cd geonode
     $ git clone https://github.com/GeoNode/geonode.git
     $ cd geonode
 
@@ -68,9 +67,8 @@ The followings are the only commands needed if the environment and the various r
 Make sure to have pulled the master to the desired commit.
 Edit the file geonode/__init__.py at line 21 and set the correct version.
 
-Install GeoNode in the virtualenv::
+Install GeoNode in the virtualenv (make sure to have the virtualenv activated and be in the geonode folder)::
 
-    $ workon geonode
     $ pip install -e geonode
 
 Publish the package::
