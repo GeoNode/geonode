@@ -1,4 +1,4 @@
-.. _load_data_to_geonode:
+.. _data:
 
 Loading Data into a GeoNode
 ===========================
