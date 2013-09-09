@@ -1,3 +1,15 @@
+geonode (2.0.0+beta55) precise; urgency=high
+
+  [ Christian Spanring ]
+  * [7518ea] fixes waypoints dependency when DEBUG_STATIC is set.
+
+  [ Jeffrey Johnson ]
+  * [44a405] Comment out console.log in LayerInfo.js (closes #1087)
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Mon, 09 Sep 2013 03:13:04 +0000
+
 geonode (2.0.0+beta54) precise; urgency=high
 
   [ Simone Dalmasso ]
