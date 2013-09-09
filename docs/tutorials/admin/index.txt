@@ -77,3 +77,5 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 :ref:`multi-tenancy`
   Learn how to configure multiple GeoNode sites on the same server
 
+:ref:`ssl`
+  Learn how to run GeoNode with Secure Sockets Layer (SSL) 
