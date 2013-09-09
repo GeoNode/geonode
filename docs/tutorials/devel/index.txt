@@ -11,7 +11,6 @@ Welcome to the Developers Workshop! This workshop will teach how to develop with
    intro_devel/index
    core/index
    projects/index
-   data/index
    debug/index
    api/index
    envsetup/index
@@ -26,9 +25,6 @@ Welcome to the Developers Workshop! This workshop will teach how to develop with
 
 :ref:`customize_projects`
   Learn how existing projects leverage GeoNode and create your own GeoNode based project.
-
-:ref:`data`
-  Learn how to load data into a GeoNode with GeoServer, on the command line or programatically with scripts. 
 
 :ref:`debug`
   Learn how to debug GeoNode instances and projects.

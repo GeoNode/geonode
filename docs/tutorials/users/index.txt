@@ -20,6 +20,9 @@ Welcome to the GeoNode Users Workshop! This workshop will teach how to use the `
 :ref:`maps`
   Create and manage a GeoNode map
 
+:ref:`data`
+  Learn how to load data into a GeoNode with GeoServer, on the command line or programatically with scripts.
+
 :ref:`processing`
   Learn how to use the data in your GeoNode to do Spatial data processing with various tools.
 
@@ -32,4 +35,5 @@ Welcome to the GeoNode Users Workshop! This workshop will teach how to use the `
    accounts/index
    layers/index
    maps/index
+   data/index
    processing/index
