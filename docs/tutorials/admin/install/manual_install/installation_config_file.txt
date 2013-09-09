@@ -1,6 +1,6 @@
 .. _installation_config_file:
 
-Installation using the ubunut config file
+Installation using the ubuntu config file
 =========================================
 
 
