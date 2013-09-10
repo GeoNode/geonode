@@ -1,0 +1,15 @@
+.. _manual_install:
+
+Manual installation of GeoNode
+==================
+
+There are two ways to install GeoNode from a release, the first is by using the automated script provided, after it has been properly configured while the second is fully manual and let’s the administrator have the complete control over the components. However the first method is based on a config script that lets the administrator decide where and how the components must be installed and thus the automated script option is strongly recommended for everyone.
+
+
+.. toctree::
+   :maxdepth: 1
+
+   dependencies
+   installation_config_file
+   install_postgresql
+   install_postgis

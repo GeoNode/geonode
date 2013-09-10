@@ -3,10 +3,21 @@
 {% load i18n %}
 
 <section class="last">
-  {% if profile.user %}
-  <div class="avatar span1"><a href="{% url "profile_detail" profile.user.username %}">{% avatar profile.user 40 %}</a></div>
+  {% with 40 as avatar_size %}
+    {% if profile.user %}
+      <div class="avatar span1"><a href="{% url "profile_detail" profile.user.username %}">{% avatar profile.user avatar_size %}</a></div>
+    {% else %}
+      <div class="avatar span1"><img width="{{ avatar_size }}px" src="{{ STATIC_URL }}geonode/img/default-avatar.jpg" /></div>
+    {% endif %}
+  {% endwith %}
   <div class="pull-left">
-    <h3><a href="{{ profile.get_absolute_url }}">{{ profile.name }}</a></h3>
+    <h3>
+    {% if profile.user %}
+      <a href="{{ profile.get_absolute_url }}">{{ profile.name }}</a>
+    {% else %}
+      {{ profile.name }}
+    {% endif %}
+    </h3>
     <div class="details">
       <div class="meta">
         <p>
@@ -15,9 +26,5 @@
           {% endif %}</p>
       </div>
     </div>
-  {% else %}
-    <p>{{ profile.name }}</p>
-    <p>{{ profile.organization }}</p>
-  {% endif %}
   </div>
 </section>

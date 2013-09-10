@@ -25,6 +25,7 @@ class RegionAdmin(admin.ModelAdmin):
     model = Region
     list_display_links = ('name',)
     list_display = ('code', 'name')
+    search_fields = ('code', 'name',)
     
 class SpatialRepresentationTypeAdmin(admin.ModelAdmin):
     model = SpatialRepresentationType

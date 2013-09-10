@@ -24,6 +24,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.conf import settings
+from django.db.models import Q
+from geonode.utils import ogc_server_settings
 
 def index(request, template='index.html'):
     from geonode.search.views import search_page
@@ -82,7 +84,10 @@ def ajax_lookup(request):
             content='use a field named "query" to specify a prefix to filter usernames',
             mimetype='text/plain'
         )
-    users = User.objects.filter(username__startswith=request.POST['query'])
+    keyword = request.POST['query']
+    users = User.objects.filter(Q(username__startswith=keyword) |
+        Q(profile__name__contains=keyword) | 
+        Q(profile__organization__contains=keyword))
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),
@@ -117,11 +122,7 @@ def _fixup_ows_url(thumb_spec):
     # so rendering of thumbnails fails - replace those uri's with full geoserver URL
     import re
     gspath = '"/geoserver/wms' # this should be in img src attributes
-    for key in settings.OGC_SERVER:
-        if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']: 
-            repl = '"' + settings.OGC_SERVER[key]['LOCATION'] + "/wms"
-            break
-        else: repl = '"' + settings.OGC_SERVER['default']['LOCATION'] + "/wms"
+    repl = '"' + ogc_server_settings.public_url + "/wms"
     return re.sub(gspath, repl, thumb_spec)
 
 def err403(request):

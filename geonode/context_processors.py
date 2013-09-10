@@ -22,6 +22,7 @@ from geonode import get_version
 from geonode.catalogue import default_catalogue_backend
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
+from geonode.utils import ogc_server_settings
 
 def resource_urls(request):
     """Global values to pass to templates"""
@@ -29,7 +30,7 @@ def resource_urls(request):
 
     return dict(
         STATIC_URL=settings.STATIC_URL,
-        GEOSERVER_BASE_URL=settings.OGC_SERVER['default']['LOCATION'],
+        GEOSERVER_BASE_URL=ogc_server_settings.LOCATION,
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
         REGISTRATION_OPEN=settings.REGISTRATION_OPEN,
         VERSION=get_version(),
@@ -37,10 +38,10 @@ def resource_urls(request):
         SITE_DOMAIN=site.domain,
         DOCUMENTS_APP = settings.DOCUMENTS_APP,
         UPLOADER_URL = reverse('data_upload') if getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest') == 'geonode.importer' else reverse('layer_upload'),
-        GEOGIT_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('GEOGIT_ENABLED', False),
+        GEOGIT_ENABLED = ogc_server_settings.GEOGIT_ENABLED,
         TIME_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', False),
         DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False),
-        MF_PRINT_ENABLED = settings.OGC_SERVER['default']['OPTIONS'].get("MAPFISH_PRINT_ENABLED", False),
-        PRINTNG_ENABLED = settings.OGC_SERVER['default']['OPTIONS'].get("PRINTNG_ENABLED", False),
-        GS_SECURITY_ENABLED = settings.OGC_SERVER['default']['OPTIONS'].get("GEONODE_SECURITY_ENABLED", False)
+        MF_PRINT_ENABLED = ogc_server_settings.MAPFISH_PRINT_ENABLED,
+        PRINTNG_ENABLED = ogc_server_settings.PRINTNG_ENABLED,
+        GS_SECURITY_ENABLED = ogc_server_settings.GEONODE_SECURITY_ENABLED
     )

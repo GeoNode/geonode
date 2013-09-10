@@ -45,6 +45,7 @@ from geonode.geoserver.helpers import cascading_delete, get_sld_for, delete_from
 from geonode.layers.metadata import set_metadata
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.base.models import SpatialRepresentationType
+from geonode.utils import ogc_server_settings
 
 # Geoserver functionality
 import geoserver
@@ -270,7 +271,7 @@ def cleanup(name, uuid):
 
 
 def save(layer, base_file, user, overwrite=True, title=None,
-         abstract=None, permissions=None, keywords=()):
+         abstract=None, permissions=None, keywords=(), charset='UTF-8'):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer
@@ -281,8 +282,8 @@ def save(layer, base_file, user, overwrite=True, title=None,
     # Step -1. Verify if the filename is in ascii format.
     try:
         base_file.decode('ascii')
-    except UnicodeDecodeError:
-        msg = "Please use only characters from the english alphabet for the filename."
+    except UnicodeEncodeError:
+        msg = "Please use only characters from the english alphabet for the filename. '%s' is not yet supported." % os.path.basename(base_file).encode('UTF-8')
         raise GeoNodeException(msg)
 
     logger.info('Uploading layer: [%s], base filename: [%s]', layer, base_file)
@@ -344,7 +345,7 @@ def save(layer, base_file, user, overwrite=True, title=None,
                 'gathering extra files', name)
     if the_layer_type == FeatureType.resource_type:
         logger.debug('Uploading vector layer: [%s]', base_file)
-        if settings.OGC_SERVER['default']['OPTIONS']['DATASTORE'] != '':
+        if ogc_server_settings.DATASTORE:
             create_store_and_resource = _create_db_featurestore
         else:
             create_store_and_resource = _create_featurestore
@@ -378,6 +379,7 @@ def save(layer, base_file, user, overwrite=True, title=None,
     try:
         store, gs_resource = create_store_and_resource(name,
                                                        data,
+                                                       charset=charset,
                                                        overwrite=overwrite)
     except UploadError, e:
         msg = ('Could not save the layer %s, there was an upload '
@@ -703,32 +705,32 @@ def upload(incoming, user=None, overwrite=False,
     return output
 
 
-def _create_featurestore(name, data, overwrite):
+def _create_featurestore(name, data, overwrite=False, charset="UTF-8"):
     cat = Layer.objects.gs_catalog
-    cat.create_featurestore(name, data, overwrite=overwrite)
+    cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
     return cat.get_store(name), cat.get_resource(name)
 
 
-def _create_coveragestore(name, data, overwrite):
+def _create_coveragestore(name, data, overwrite=False, charset="UTF-8"):
     cat = Layer.objects.gs_catalog
     cat.create_coveragestore(name, data, overwrite=overwrite)
     return cat.get_store(name), cat.get_resource(name)
 
 
-def _create_db_featurestore(name, data, overwrite=False, charset=None):
+def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8"):
     """Create a database store then use it to import a shapefile.
 
     If the import into the database fails then delete the store
     (and delete the PostGIS table for it).
     """
     cat = Layer.objects.gs_catalog
-    dsname = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
+    dsname = ogc_server_settings.DATASTORE
 
     try:
         ds = cat.get_store(dsname)
     except FailedRequestError:
         ds = cat.create_datastore(dsname)
-        db = settings.DATABASES[dsname]
+        db = ogc_server_settings.datastore_db
         db_engine = 'postgis' if \
             'postgis' in db['ENGINE'] else db['ENGINE']
         ds.connection_parameters.update(

@@ -56,12 +56,13 @@ from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
-
+from geonode.utils import ogc_server_settings
 from geoserver.resource import FeatureType
 
 logger = logging.getLogger("geonode.layers.views")
 
-_user, _password = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']
+
+_user, _password = ogc_server_settings.credentials
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
@@ -123,7 +124,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
         out = {'success': False}
 
         if form.is_valid():
-            tempdir, base_file = form.write_files()
             title = form.cleaned_data["layer_title"]
 
             # Replace dots in filename - GeoServer REST API upload bug
@@ -137,11 +137,16 @@ def layer_upload(request, template='upload/layer_upload.html'):
             name = slugify(name_base.replace(".","_"))
 
             try:
+                # Moved this inside the try/except block because it can raise
+                # exceptions when unicode characters are present.
+                # This should be followed up in upstream Django.
+                tempdir, base_file = form.write_files()
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
+                        charset = form.cleaned_data["charset"],
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
-                        permissions = form.cleaned_data["permissions"]
+                        permissions = form.cleaned_data["permissions"],
                         )
             except Exception, e:
                 logger.exception(e)
@@ -170,11 +175,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    for key in settings.OGC_SERVER:
-        if settings.OGC_SERVER[key]['OPTIONS']['PUBLIC_PROXY_ENDPOINT_ENABLED']: 
-            maplayer = GXPLayer(name = layer.typename, ows_url = settings.OGC_SERVER[key]['LOCATION'] + "wms", layer_params=json.dumps( layer.attribute_config()))
-            break
-        else:  maplayer = GXPLayer(name = layer.typename, ows_url = settings.OGC_SERVER['default']['LOCATION'] + "wms", layer_params=json.dumps( layer.attribute_config()))
+    maplayer = GXPLayer(name = layer.typename, ows_url = ogc_server_settings.public_url + "wms", layer_params=json.dumps( layer.attribute_config()))
 
     layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
 
@@ -222,12 +223,19 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         new_keywords = layer_form.cleaned_data['keywords']
 
         if new_poc is None:
-            poc_form = ProfileForm(request.POST, prefix="poc")
+            if poc.user is None:
+                poc_form = ProfileForm(request.POST, prefix="poc", instance=poc)
+            else:
+                poc_form = ProfileForm(request.POST, prefix="poc")
             if poc_form.has_changed and poc_form.is_valid():
                 new_poc = poc_form.save()
 
         if new_author is None:
-            author_form = ProfileForm(request.POST, prefix="author")
+            if metadata_author.user is None:
+                author_form = ProfileForm(request.POST, prefix="author", 
+                    instance=metadata_author)
+            else:
+                author_form = ProfileForm(request.POST, prefix="author")
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
@@ -375,7 +383,7 @@ def layer_style_manage(req, layername):
         except (FailedRequestError, EnvironmentError) as e:
             msg = ('Could not connect to geoserver at "%s"'
                'to manage style information for layer "%s"' % (
-                settings.OGC_SERVER['default']['LOCATION'], layer.name)
+                ogc_server_settings.LOCATION, layer.name)
             )
             logger.warn(msg, e)
             # If geoserver is not online, return an error
@@ -532,7 +540,7 @@ def layer_batch_download(request):
             "layers" : [layer_son(lyr) for lyr in layers]
         }
 
-        url = "%srest/process/batchDownload/launch/" % settings.OGC_SERVER['default']['LOCATION']
+        url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
         resp, content = http_client.request(url,'POST',body=json.dumps(fake_map))
         return HttpResponse(content, status=resp.status)
 
@@ -543,7 +551,7 @@ def layer_batch_download(request):
         if download_id is None:
             return HttpResponse(status=404)
 
-        url = "%srest/process/batchDownload/status/%s" % (settings.OGC_SERVER['default']['LOCATION'], download_id)
+        url = "%srest/process/batchDownload/status/%s" % (ogc_server_settings.LOCATION, download_id)
         resp,content = http_client.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 
@@ -591,7 +599,7 @@ def resolve_user(request):
         if acl_user:
             user = acl_user.username
             superuser = acl_user.is_superuser
-        elif _get_basic_auth_info(request) == (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']):
+        elif _get_basic_auth_info(request) == ogc_server_settings.credentials:
             geoserver = True
             superuser = True
         else:
@@ -630,8 +638,8 @@ def layer_acls(request):
 
             # Nope, is it the special geoserver user?
             if (acl_user is None and
-                username == settings.OGC_SERVER['default']['USER'] and
-                password == settings.OGC_SERVER['default']['PASSWORD']):
+                username == ogc_server_settings.USER and
+                password == ogc_server_settings.PASSWORD):
                 # great, tell geoserver it's an admin.
                 result = {
                    'rw': [],
@@ -685,7 +693,7 @@ def feature_edit_check(request, layername):
     Otherwise, return a status of 401 (unauthorized).
     """
     layer = get_object_or_404(Layer, typename=layername)
-    feature_edit = any((getattr(settings, a, None) for a in ("GEOGIT_DATASTORE", "OGC_SERVER['default']['OPTIONS']['DATASTORE']"))) 
+    feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or ogc_server_settings.DATASTORE 
     if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
     else:

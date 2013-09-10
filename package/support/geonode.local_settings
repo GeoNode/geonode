@@ -45,15 +45,13 @@ OGC_SERVER = {
         'LOCATION' : GEOSERVER_BASE_URL,
         'USER' : 'admin',
         'PASSWORD' : 'geoserver',
-        'OPTIONS' : {
-            'MAPFISH_PRINT_ENABLED' : True,
-            'PRINTNG_ENABLED' : True,
-            'GEONODE_SECURITY_ENABLED' : True,
-            'GEOGIT_ENABLED' : False,
-            'WMST_ENABLED' : False,
-            # Set to name of database in DATABASES dictionary to enable
-            'DATASTORE': 'datastore',
-        }
+        'MAPFISH_PRINT_ENABLED' : True,
+        'PRINTNG_ENABLED' : True,
+        'GEONODE_SECURITY_ENABLED' : True,
+        'GEOGIT_ENABLED' : False,
+        'WMST_ENABLED' : False,
+        # Set to name of database in DATABASES dictionary to enable
+        'DATASTORE': 'datastore',
     }
 }
 

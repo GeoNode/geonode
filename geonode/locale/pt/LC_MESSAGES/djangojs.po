@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-15 12:41-0500\n"
-"PO-Revision-Date: 2013-06-13 14:06+0000\n"
+"PO-Revision-Date: 2013-08-29 23:00+0000\n"
 "Last-Translator: Jeffrey Johnson <jjohnson@opengeo.org>\n"
 "Language-Team: Portuguese (http://www.transifex.com/projects/p/geonode/language/pt/)\n"
 "MIME-Version: 1.0\n"
@@ -111,7 +111,7 @@ msgstr ""
 
 #: templates/lang.js:26
 msgid "Layers"
-msgstr ""
+msgstr "Camadas"
 
 #: templates/lang.js:27
 msgid "Legend"
@@ -406,7 +406,7 @@ msgstr ""
 
 #: templates/lang.js:158 templates/lang.js.c:179
 msgid "Next"
-msgstr ""
+msgstr "Próximo"
 
 #: templates/lang.js:159 templates/lang.js.c:180
 msgid "of"
@@ -422,7 +422,7 @@ msgstr ""
 
 #: templates/lang.js:162 templates/lang.js.c:182
 msgid "Search"
-msgstr ""
+msgstr "Pesquisa"
 
 #: templates/lang.js:163 templates/lang.js.c:183
 msgid "Showing"

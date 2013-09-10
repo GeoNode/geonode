@@ -1,0 +1,17 @@
+.. _admin_panel.profiles:
+
+
+Manage profiles using the admin panel
+=====================================
+
+Usually the profile section should be updated by the single users using the dedicated link in the GeoNode user dropdown.
+Although is possible for an administrator to compile some personal information of the user.
+
+Clicking on the "People" -> "Profiles" section (see figure) will open a web for with some personal information plus a section called "Contact roles".
+
+.. figure:: img/admin-people.png
+
+Is important that this last section is not modified here unless the administrator is very confident in that operation.
+
+.. figure:: img/admin-profiles-contactroles.png
+

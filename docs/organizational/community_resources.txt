@@ -1,0 +1,113 @@
+.. _community_resources:
+
+===================
+Community Resources
+===================
+
+Here you will find many links to resources on Github, external sites using Geonode.  Think of like your Geonode Bookmarks.
+
+Main Links
+----------
+These 3 top links are the Geonode landing pages and will take you to all other information on Geonode.
+
+* Main HomePage and Blog http://geonode.org
+* Documentation http://docs.geonode.org
+* GitHub Code http://github.com/GeoNode
+
+Community Contact
+-----------------
+Contact members and ask questions
+
+* Mailing Lists
+    * Users Forum https://groups.google.com/forum/#!forum/geonode-users
+    * Developers Forum https://groups.google.com/a/opengeo.org/group/geonode-dev/topics
+* Announcements https://groups.google.com/a/opengeo.org/forum/#!forum/geonode-announcements
+* IRC irc://irc.freenode.net/geonode (logs?)
+* Social Media
+    * Blog http://geonode.org/blog/
+    * Twitter https://twitter.com/geonode
+    * Google+ https://plus.google.com/u/0/b/100587124776656797019/
+
+Github Project Links
+--------------------
+
+* Main Github page https://github.com/GeoNode/geonode
+* Master Branch https://github.com/GeoNode/geonode/tree/master
+* Issue Tracker https://github.com/GeoNode/geonode/issues
+* Pull Requests https://github.com/GeoNode/geonode/pulls
+* Wiki https://github.com/GeoNode/geonode/wiki
+* GNIPs https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals
+* geonode.org Homepage Code http://github.com/geonode/geonode.github.com (published to http://geonode.org)
+
+
+* Releases http://dev.geonode.org/release/
+* Localisation using Transifex https://www.transifex.com/projects/p/geonode
+
+Demo Sites
+----------
+* Demo Geonode Site http://demo.geonode.org/
+* Latest Beta Demo Site http://beta.dev.geonode.org/
+* UI/UX Review Site https://sites.google.com/a/opengeo.org/geonode-ui/
+
+Testing and Packaging
+---------------------
+* Testing
+    * Jenkins Continuous Integration Server http://geonode-testing.dev.opengeo.org:8090
+    * Integration Test Suite https://github.com/GeoNode/geonode-integration
+    * Travis-CI https://travis-ci.org/#!/GeoNode/geonode
+    * Ohloh https://www.ohloh.net/p/geonode
+* Packages
+    * Debian Package https://github.com/GeoNode/geonode-deb
+    * RPM Redhat https://github.com/GeoNode/geonode-rpm
+    * Chef https://github.com/GeoNode/chef-geonode
+    * PyPi https://pypi.python.org/pypi/GeoNode
+    * Launchpad
+        * https://launchpad.net/~geonode
+        * https://launchpad.net/~geonode/+archive/release
+        * https://launchpad.net/~geonode/+archive/testing
+        * https://launchpad.net/~geonode/+archive/snapshots
+
+Important Forks
+---------------
+
+Full List here https://github.com/GeoNode/geonode/network/members
+
+.. hint:: Look at the branches in these Forks
+
+* https://github.com/opengeo/geonode
+* https://github.com/gfdrr/geonode
+* https://github.com/dwinslow/geonode
+* https://github.com/ingenieroariel/geonode
+* https://github.com/jj0hns0n/geonode
+* https://github.com/ahocevar/geonode
+* https://github.com/groldan/geonode
+* https://github.com/AIFDR/geonode
+* https://github.com/cga-harvard/cga-worldmap
+* https://github.com/sopac/geonode
+* https://github.com/dialog-it/geonode
+* https://github.com/eldarion/geonode
+
+Downstream Github Projects
+--------------------------
+
+* https://github.com/aifdr/tsudat2
+* https://github.com/aifdr/riab
+* https://github.com/gem/
+* https://github.com/opengeo/mapstory
+* https://github.com/dialog-it/anzsm
+* https://github.com/CIGNo-project/CIGNo
+* Many More ...
+
+Additional Modules
+------------------
+
+* https://github.com/simod/geonode-documents
+* https://github.com/GFDRR/geonode-registry
+* https://github.com/eldarion/geonode/branches
+
+Public Sites
+------------
+
+* Risiko (Risk in a Box) demo site http://demo.riskinabox.org/
+* CIGNo network: CNR - ISMAR Node http://cigno.ve.ismar.cnr.it/
+* ... Many Many More
