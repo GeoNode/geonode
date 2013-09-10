@@ -24,14 +24,11 @@
     {% block header %}
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
+        <section>
         <div class="container">
           <div class="row">
             <div class="span3">
-              <a href="{% url "home" %}">
-                <span class="nav-logo">
-                  <a class="brand">{{ SITE_NAME }}</a>
-                </span>
-              </a>
+              <a href="{% url "home" %}"><span class="nav-logo"></span></a>
             </div>
             <div class="span9">
               <div class="nav-collapse pull-right">
@@ -57,7 +54,7 @@
                           <li class="divider"></li>
                           <li><a href="{% url "account_logout" %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
                         </ul>
-                      </li>
+                      </li> <!-- ./dropdown user -->
                       <li class="divider-v">|</li>
                       <li class="actions">
                         <!--a href="#" rel="tooltip" title="{% trans 'Notifications' %}"><i class="icon-bullhorn"></i></a>
@@ -66,33 +63,33 @@
                         <a href="{% url "help" %}" rel="tooltip" title="{% trans 'Help' %}"><i class="icon-question-sign"></i></a>
                       </li>
                     {% else %}
-                        <li class="dropdown">
-                          <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Sign in" %}</a>
-                          <ul class="dropdown-menu">
-                            <li>
-                                <form action="{% url "account_login" %}" method="post" class="sign-in">
-                                    {% csrf_token %}
-                                    <label for="id_username">{% trans "Username" %}:</label>
-                                    <input id="id_username" name="username" type="text" />
-                                    <label for="id_password">{% trans "Password" %}:</label>
-                                    <input id="id_password" name="password" type="password" />
-                                    <label class="checkbox">
-                                        <input type="checkbox" />
-                                        {% trans "Remember Me" %}
-                                    </label>
-                                    <button type="submit" class="btn pull-right">{% trans "Sign in" %}</button>
-                                </form>
-                            </li>
-                          </ul>
-                        </li>
-                        {% if REGISTRATION_OPEN %}
-                          <li class="navbar-text">{% trans "or" %}</li>
-                          <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
-                        {% endif %}
-                        <li class="divider-v">|</li>
-                        <li class="actions">
-                            <a href="{% url "help" %}" rel="tooltip" title="help"><i class="icon-question-sign"></i></a>
-                        </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Sign in" %}</a>
+                        <ul class="dropdown-menu">
+                          <li>
+                            <form action="{% url "account_login" %}" method="post" class="sign-in">
+                            {% csrf_token %}
+                              <label for="id_username">{% trans "Username" %}:</label>
+                              <input id="id_username" name="username" type="text" />
+                              <label for="id_password">{% trans "Password" %}:</label>
+                              <input id="id_password" name="password" type="password" />
+                              <label class="checkbox">
+                                <input type="checkbox" />
+                                  {% trans "Remember Me" %}
+                              </label>
+                              <button type="submit" class="btn pull-right">{% trans "Sign in" %}</button>
+                            </form>
+                          </li>
+                        </ul>
+                      </li>
+                      {% if REGISTRATION_OPEN %}
+                      <li class="navbar-text">{% trans "or" %}</li>
+                      <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
+                      {% endif %}
+                      <li class="divider-v">|</li>
+                      <li class="actions">
+                        <a href="{% url "help" %}" rel="tooltip" title="help"><i class="icon-question-sign"></i></a>
+                      </li>
                     {% endif %}
                   </ul>
                 </div>
@@ -102,8 +99,8 @@
                 <input id="search" type="text" name="q"/>
               </form>
             </div>
-           </div>
-           <div class="row nav-box">
+          </div>
+          <div class="row nav-box">
             <div class="span10">
               <nav class="main-nav">
                 <ul>
@@ -131,86 +128,88 @@
                   {% block extra-nav %}{% endblock %}
                 </ul>
               </nav>
-            </div>
+            </div> <!-- ./span10 -->
             <div class="span2">
               <ul class="social">
                   <li><a href="http://www.facebook.com/sharer.php?u=http://{{ request.get_host }}{{ request.get_full_path }}" class="fb">facebook</a></li>
-                  <li><a href="https://twitter.com/share?url=http://{{   request.get_host }}{{ request.get_full_path }}" class="tw">twitter</a></li>
-                  <li><a href="https://plusone.google.com/_/ 1/confirm?hl=en&url=http://{{ request.get_host }}{{ request.get_full_path }}" class="gp">google+</a></li>
+                  <li><a href="https://twitter.com/share?url=http://{{ request.get_host }}{{ request.get_full_path }}" class="tw">twitter</a></li>
+                  <li><a href="https://plusone.google.com/_/1/confirm?hl=en&url=http://{{ request.get_host }}{{ request.get_full_path }}" class="gp">google+</a></li>
               </ul>
-            </div>
-          </div>
-        </div>
-       </section>
-      </div>
-    </div>
+            </div> <!-- /.span2 -->
+          </div> <!-- /.row nav-box -->
+        </div> <!-- /.container -->
+        </section>
+      </div> <!-- /.navbar-inner -->
+    </div> <!-- /.navbar navbar-fixed-top -->
     {% endblock header %}
+
     {% block middle %}
     <div class="content-wrap">
-        {% if site_wide_announcements %}
-            <div id="site_wide_announcements">
-                {% for announcement in site_wide_announcements %}
-                <div class="alert alert-block">
-                    <a type="button" class="close" data-dismiss="alert" href="{% url "announcement_hide" announcement.pk %}?next={{ request.path }}">×</button>
-                    <h4><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a> -</h4>
-                    <div>{{ announcement.content }}</div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        <div class="container">
-          <div class="row">
-            {% block body_outer %}
-              <div class="span8">
-                {% block body %}{% endblock %}
-              </div>
-              <div class="span4">
-                {% block sidebar %}{% endblock %}
-              </div>
-            {% endblock %}
-          </div>
+      {% if site_wide_announcements %}
+      <div id="site_wide_announcements">
+        {% for announcement in site_wide_announcements %}
+        <div class="alert alert-block">
+          <a type="button" class="close" data-dismiss="alert" href="{% url "announcement_hide" announcement.pk %}?next={{ request.path }}">×</button>
+          <h4><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a> -</h4>
+          <div>{{ announcement.content }}</div>
         </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div class="container">
+        <div class="row">
+        {% block body_outer %}
+          <div class="span8">
+          {% block body %}{% endblock %}
+          </div>
+          <div class="span4">
+          {% block sidebar %}{% endblock %}
+          </div>
+        {% endblock %}
+        </div>
+      </div> <!-- /.container -->
     </div>
     {% endblock middle %}
+    
     {% block footer %}
     <footer class="footer">
       <div class="container">
-          <div class="pull-left">
-              {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
-              <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
-              <a href="{% url "about" %}">{% trans "About" %}</a>
-          </div>
-          <div class="pull-right">
-            {% if csrf_token != "NOTPROVIDED" %}
-              {% get_current_language as LANGUAGE %}
-              <form class="form-inline" action="/i18n/setlang/" method="post">
-                {% csrf_token %}
-                <label>{% trans "Language" %}</label>
-                <select class="input span2" name="language" onchange="javascript:form.submit()">
-                  {% for lang in LANGUAGES %}
-                    <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
-                      {{ lang.1 }}
-                    </option>
-                  {% endfor %}
-                </select>
-              </form>
-            {% endif %}
-          </div>
-      </div>
+        <div class="pull-left">
+          {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
+          <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
+          <a href="{% url "about" %}">{% trans "About" %}</a>
+        </div>
+        <div class="pull-right">
+        {% if csrf_token != "NOTPROVIDED" %}
+          {% get_current_language as LANGUAGE %}
+          <form class="form-inline" action="/i18n/setlang/" method="post">
+          {% csrf_token %}
+            <label>{% trans "Language" %}</label>
+            <select class="input span2" name="language" onchange="javascript:form.submit()">
+              {% for lang in LANGUAGES %}
+              <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                {{ lang.1 }}
+              </option>
+              {% endfor %}
+            </select>
+          </form>
+        {% endif %}
+        </div> <!-- /.pull-right -->
+      </div> <!-- /.container -->
     </footer>
     {% endblock footer %}
+    
     {% if DEBUG_STATIC %}
     <script src="{{ STATIC_URL }}lib/js/jquery.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.dataTables.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.timeago.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.ajaxprogress.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/jquery.ajaxQueue.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.ajaxQueue.min.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery-ui.custom.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.raty.js"></script>
     <script src="{{ STATIC_URL }}lib/js/bootstrap.js"></script>
     <script src="{{ STATIC_URL }}lib/js/json2.js"></script>
     <script src="{{ STATIC_URL }}lib/js/select2.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/waypoints.js"></script>
     {% else %}
     <script src="{{ STATIC_URL }}lib/js/assets.min.js"></script>
     {% endif %}
