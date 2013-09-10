@@ -13,7 +13,7 @@ Get the code and install it in the virtuelnv::
     $ git clone https://github.com/GeoNode/geonode.git
     $ cd geonode
     $ sudo pip install -e . --use-mirrors
-    $ paver setup
+    $ sudo paver setup
 
 This will also create the geoserver artifact ready to be deployed under Tomcat.
 
@@ -49,6 +49,8 @@ To create the databases (the geonode one and the spatial for shapefile imports):
     $ sudo su postgres
     $ psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql geonode-imports
     $ psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql geonode-imports
+    $ psql -d geonode-imports -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
+    $ psql -d geonode-imports -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
     $ exit
 
     
