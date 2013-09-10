@@ -62,7 +62,7 @@ In the postgres config path, */etc/postgresql/9.2/main*, you should find the fil
 
 .. code-block:: console
 
-    $ cd /etc/postgresql/9.2/main
+    $ cd /etc/postgresql/9.1/main
     $ sudo vi pg_hba.conf
 
 The file should contain the following default settings until now:
