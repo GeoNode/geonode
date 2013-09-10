@@ -34,7 +34,7 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 DEBUG = TEMPLATE_DEBUG = True
 
 # Set to True to load non-minified versions of (static) client dependencies
-DEBUG_STATIC = True 
+DEBUG_STATIC = False
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
@@ -397,37 +397,18 @@ CACHE_TIME=0
 OGC_SERVER = {
     'default' : {
         'BACKEND' : 'geonode.geoserver',
-        'LOCATION' : 'https://localhost:8080/geoserver/',
-        'USER' : 'admin',
-        'PASSWORD' : 'geoserver',
-        'OPTIONS' : {
-            'MAPFISH_PRINT_ENABLED' : True,
-            'PRINTNG_ENABLED' : True,
-            'GEONODE_SECURITY_ENABLED' : True,
-            'GEOGIT_ENABLED' : False,
-            'WMST_ENABLED' : False,
-             # Set to name of database in DATABASES dictionary to enable
-            'DATASTORE': '', #'datastore',
-            'PUBLIC_PROXY_ENDPOINT_ENABLED' : False,
-            'CATALOG_WRITE_ENABLED': True
-        }
-    },
-    'proxy' : {
-        'BACKEND' : 'geonode.geoserver',
         'LOCATION' : 'http://localhost:8080/geoserver/',
+        'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',
         'USER' : 'admin',
         'PASSWORD' : 'geoserver',
-        'OPTIONS' : {
-            'MAPFISH_PRINT_ENABLED' : True,
-            'PRINTNG_ENABLED' : True,
-            'GEONODE_SECURITY_ENABLED' : True,
-            'GEOGIT_ENABLED' : False,
-            'WMST_ENABLED' : False,
-            # Set to name of database in DATABASES dictionary to enable
-            'DATASTORE': '', #'datastore',
-            'PUBLIC_PROXY_ENDPOINT_ENABLED' : True,
-            'CATALOG_WRITE_ENABLED': False
-        }
+        'MAPFISH_PRINT_ENABLED' : True,
+        'PRINTNG_ENABLED' : True,
+        'GEONODE_SECURITY_ENABLED' : True,
+        'GEOGIT_ENABLED' : False,
+        'WMST_ENABLED' : False,
+        'BACKEND_WRITE_ENABLED': True,
+        # Set to name of database in DATABASES dictionary to enable
+        'DATASTORE': '', #'datastore',
     }
 }
 

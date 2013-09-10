@@ -1,0 +1,17 @@
+.. _installation_config_file:
+
+Installation using the ubunut config file
+=========================================
+
+
+Get the code::
+
+    $ git clone https://github.com/GeoNode/geonode.git
+    $ cd geonode
+
+The package comes with a semi-automatic installer, located in the unzipped directory.
+The installer script (located in package/support/config-ubuntu.sh) has a configuration file associated with it which allows you to provide the details of your installation, such as where your webserver looks for documents.
+
+Once edited (if necessary) the config file running the following command will install GeoNode::
+
+    sudo ./install.sh support/config-ubuntu.sh 
