@@ -106,6 +106,10 @@ Uncomment the line 10 and modify the line 12 as follows::
 
 .. note:: If you do not use *geonode* as password for your database, then you have to edit the local_settings.py and change your password in this part of the file
 
+Add the following as a directive::
+
+    ALLOWED_HOST = ['domain or IP']
+
 Synchronise db
 **************
 

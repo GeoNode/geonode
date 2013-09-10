@@ -11,41 +11,6 @@ The steps mentioned in the first section are required to run GeoNode, the ones i
 
           For example: instead of ``http://<host>/geoserver``, write down: ``http://mygeonode.com/geoserver`` or ``http://127.0.0.1/geoserver``
 
-Required steps
-==============
-
-Creating a super user
----------------------
-
-To create a superuser you can run::
-
-    $ geonode createsuperuser
-
-or, if you installed by source::
-
-    $ source path/to/geonode/virtualenv/bin/activate
-    $ django-admin.py createsuperuser --settings=geonode.settings
-
-Once your user is created, you can navigate to your site using the IP address or hostname and log in. 
-
-.. note:: Don't forget to change the SITEURL as explained in the next step before uploading data.
-
-Configuring the correct DNS or IP address
------------------------------------------
-
-By default GeoNode runs in ``http://localhost/``, but when running in production it needs to know the public IP address or the DNS entry.
-
-To configure it, edit the ``SITEURL`` setting in ``local_settings.py`` (which can be found either in your GeoNodePy/src/geonode folder or in ``/etc/geonode/local_settings.py`` if you used an automated installer, for example::
-
-    SITEURL='http://127.0.0.1/'
-
-Once that it is changed you have to re-start the apache server::
-
-    $ sudo service apache2 restart
-
-.. warning:: Don't forget the trailing slash, because it is used to construct the ``GEOSERVER_BASE_URL`` param.
-
-
 Set the correct GeoServer Proxy URL value
 ---------------------------------------------
 
@@ -175,11 +140,6 @@ Some other things that require tweaking:
 
 .. TODO: Specify how to do this
 
-* Configuring Django to use a "real" Postgres database instead of
-  embedded ones.
-
-.. TODO: Specify how to do this
-
 Robot Exclusion File
 --------------------
 
@@ -191,7 +151,6 @@ In order to request that "robots" do not make requests directly to GeoServer, yo
 
     User-agent: *
     Disallow: /geoserver/
-    Disallow: /geoserver-geonode-dev/
 
 This will only affect automated web agents; web browsers in particular are unaffected.
 

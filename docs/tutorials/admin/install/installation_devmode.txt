@@ -103,7 +103,7 @@ With every restart of your machine, you have to restart geonode as well. That me
  
    To activate your virtualenv you just need to type::
    
-       $ source /home/your_name/.venvs/geonode/bin/activate
+       $ workon geonode
 
    .. note:: Be careful with this, you might have another path, so check first where your virtualenv has been installed!
 
