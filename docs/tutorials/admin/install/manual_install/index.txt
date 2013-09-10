@@ -12,6 +12,5 @@ There are two ways to install GeoNode from a release, the first is by using the 
    dependencies
    installation_config_file
    manual_installation
-   deploy_config
    install_postgresql
    install_postgis
