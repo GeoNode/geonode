@@ -7,19 +7,23 @@
 {% overall_rating document "document" as document_rating %}
 {% num_ratings document as num_votes %}
 <article>
-  <div class="abstract-placeholder">{{ document.abstract }}</div>
-  <div class="pull-left">
-    <h3><i class="icon-file-text-alt"></i> <a href="{% url "document_detail" document.id %}">{{ document.title }}</a></h3>
-      <div class="details">
-        <div class="meta">
-          <p>Doc {% trans 'from' %} <a href="{% url "profile_detail" document.owner.username %}">{{ document.owner }}</a>, {{ document.date|timesince }} {% trans 'ago' %}</p>
-          <p class="abstract">{{ document.abstract }}</p>
-          <ul class="nav stats">
-            <li><a href="{% url "document_detail" document.id %}"><strong>{{ document.popular_count }}</strong> {% trans "view" %}{{ document.popular_count|pluralize }}</a></li>
-            <li><a href="{% url "document_detail" document.id %}#rate"><strong><span class="overall_rating"></span></strong><span class="avg_rating" data-rating="{{ document_rating }}">{% trans "Average rating" %} ({{num_votes}} {% trans "votes" %})</span></a></li>
-          </ul>
-        </div>
+  <div class="content">
+    <div class="abstract-placeholder">{{ document.abstract }}</div>
+    <div class="item-header">
+      <h3><i class="icon-file-text-alt"></i> <a href="{% url "document_detail" document.id %}">{{ document.title }}</a></h3>
+    </div>
+    <div class="details">
+      <div class="meta">
+        <p>Doc {% trans 'from' %} <a href="{% url "profile_detail" document.owner.username %}">{{ document.owner }}</a>, {{ document.date|timesince }} {% trans 'ago' %}</p>
+        <p class="abstract">{{ document.abstract }}</p>
+        <ul class="nav stats">
+          <li><a href="{% url "document_detail" document.id %}"><strong>{{ document.popular_count }}</strong> {% trans "view" %}{{ document.popular_count|pluralize }}</a></li>
+          <li><a href="{% url "document_detail" document.id %}#rate"><strong><span class="overall_rating"></span></strong><span class="avg_rating" data-rating="{{ document_rating }}">{% trans "Average rating" %} ({{num_votes}} {% trans "votes" %})</span></a></li>
+        </ul>
+      </div>
+      <div class="tools">
         <p><a href="{% if document.doc_file %}{{ document.doc_file.url }}{% endif %}" class="btn btn-mini">{% trans "Download" %}</a></p>
       </div>
     </div>
+  </div>
 </article>

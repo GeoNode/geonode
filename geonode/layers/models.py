@@ -105,7 +105,7 @@ class Layer(ResourceBase):
     styles = models.ManyToManyField(Style, related_name='layer_styles')
 
     def update_thumbnail(self, save=True):
-        self.save_thumbnail(self._thumbnail_url(width=198, height=98), save)
+        self.save_thumbnail(self._thumbnail_url(width=200, height=150), save)
 
 
     def _render_thumbnail(self, spec):
