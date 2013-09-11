@@ -44,7 +44,6 @@ function reorganize_configuration() {
 	cp -rp $INSTALL_DIR/support/geonode.updateip $GEONODE_BIN/geonode-updateip
 	cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
 	cp -rp $INSTALL_DIR/support/geonode.local_settings $GEONODE_ETC/local_settings.py
-    cp -rp $INSTALL_DIR/../downloaded/geoserver.war $TOMCAT_WEBAPPS
 
 	chmod +x $GEONODE_BIN/geonode
 	chmod +x $GEONODE_BIN/geonode-updateip
