@@ -76,7 +76,8 @@ class OGC_Server(object):
         """
         The Open Web Service url for the server.
         """
-        return self.LOCATION + 'ows' if not self.OWS_LOCATION else self.OWS_LOCATION
+        location = self.PUBLIC_LOCATION if self.PUBLIC_LOCATION else self.LOCATION
+        return self.OWS_LOCATION if self.OWS_LOCATION else location + 'ows'
 
     @property
     def rest(self):
