@@ -1,2 +1,2 @@
 #!/bin/bash
-django-admin $@ --settings=geonode.settings
+django-admin.py $@ --settings=geonode.settings

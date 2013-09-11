@@ -95,7 +95,7 @@ Installation
 
    More instructions can be found in the ``README`` distributed with the release as well as the pointer to the documentation page about configuring GeoNode for production after it has been installed.
 
-2) follow the instructions in :ref:`manual_install.installation_config_file`
+2) follow the instructions in :ref:`installation_config_file`
 
 
 Manual Installation
@@ -141,6 +141,8 @@ The key steps for setting up a GeoNode installation are as follows:
      * ``OGC_SERVER`` the base URL for the GeoServer for your GeoNode site, for example `http://example.com/geoserver/`.
 
        Some features of GeoNode require you to set up a web proxy so that GeoServer and the Django application are on the same domain ("example.com" in this example.).
+
+Continue to :ref:`manual_installation`.
 
 
 Java Web Applications (WARs)

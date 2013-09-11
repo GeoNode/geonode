@@ -45,7 +45,7 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
   Learn how to configure GeoNode for production use.
 
 :ref:`data`
-  Learn how to load and configure data in a GeoNode Installation
+  Learn how to load data into a GeoNode with GeoServer, on the command line or programatically with scripts.
 
 :ref:`monitor`
   Learn how to monitor usage and other activity in a GeoNode Installation 
@@ -77,3 +77,5 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 :ref:`multi-tenancy`
   Learn how to configure multiple GeoNode sites on the same server
 
+:ref:`ssl`
+  Learn how to run GeoNode with Secure Sockets Layer (SSL) 

@@ -15,7 +15,10 @@ Accessing the admin panel
 =========================
 
 Only the staff users (including the superusers) can access the admin interface.
-The link can be found by clicking in the upper right corner on the user name, see figure
+
+.. note:: User's staff membership can be set by the admin panel itself, see how in the :ref:`admin_panel.users-groups` section.
+
+The link to access the admin interface can be found by clicking in the upper right corner on the user name, see figure
 
 .. figure:: img/admin-login.png
 
