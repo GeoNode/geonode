@@ -15,9 +15,8 @@ Creating a backup
 
 #. Stop all services::
 
-    sudo /etc/init.d/apache2 stop
-    sudo /etc/init.d/tomcat6 stop
-    sudo /etc/init.d/postgresql-8.4 stop
+    sudo service apache2 stop
+    sudo /etc/init.d/tomcat7 stop
 
 #. Backup Geonode config & GeoServer data directory::
 
@@ -28,9 +27,8 @@ Creating a backup
 
 #. Restart all services::
 
-    sudo /etc/init.d/apache2 start
-    sudo /etc/init.d/tomcat6 start
-    sudo /etc/init.d/postgresql-8.4 start
+    sudo service apache2 start
+    sudo /etc/init.d/tomcat7 start
 
 
 Restoring a backup
@@ -38,9 +36,8 @@ Restoring a backup
 
 #. First stop all services::
 
-    sudo /etc/init.d/apache2 stop
-    sudo /etc/init.d/tomcat6 stop
-    sudo /etc/init.d/postgresql-8.4 stop
+    sudo service apache2 stop
+    sudo /etc/init.d/tomcat7 stop
 
 #. Restore Geonode config & GeoServer data directory::
 
@@ -51,15 +48,15 @@ Restoring a backup
 
 #. Make a backup of the GeoNode database (PostgreSQL needs to be running)::
 
-    sudo /etc/init.d/postgresql-8.4 start
+    sudo service postgresql start
     sudo -u postgres -i "psql -c 'drop database geonode;'"
     sudo -u postgres -i "psql -c 'create database geonode;'"
     sudo -u postgres -s "pg_restore -Fc -d geonode /path/to/geonodedb.backup"
 
 #. Start all services::
 
-    sudo /etc/init.d/apache2 start
-    sudo /etc/init.d/tomcat6 start
+    sudo service apache2 start
+    sudo /etc/init.d/tomcat7 start
 
 Notes
 =====
