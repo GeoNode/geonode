@@ -4,8 +4,16 @@
 Manage profiles using the admin panel
 =====================================
 
-Usually the profile section should be updated by the single users using the dedicated link in the GeoNode user dropdown.
-Although is possible for an administrator to compile some personal information of the user.
+So far GeoNode implements two distinc roles, that can be assigned to resources such as layers, maps or documents:
+
+* party who authored the resource
+* party who can be contacted for acquiring knowledge about or acquisition of the resource
+
+This two profiles can be set in the GeoNode interface by accessing the metadata page and setting the "Point of Contact" and "Metadata Author" fields respectively.
+
+Is possible for an administrator to add new roles if needed, by clicking on the "Add Role" button in the "People" -> "Roles" section:
+
+.. figure:: img/admin-roles-add.png
 
 Clicking on the "People" -> "Profiles" section (see figure) will open a web for with some personal information plus a section called "Contact roles".
 

@@ -98,9 +98,9 @@ function setup_django_every_time() {
     ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
 
     export DJANGO_SETTINGS_MODULE=geonode.settings
-    django-admin syncdb --noinput --all
-    django-admin collectstatic --noinput
-    django-admin loaddata $GEONODE_SHARE/admin.json
+    django-admin.py syncdb --noinput --all
+    django-admin.py collectstatic --noinput
+    django-admin.py loaddata $GEONODE_SHARE/admin.json
 
     # Create an empty uploads dir
     mkdir -p $GEONODE_WWW/uploaded
