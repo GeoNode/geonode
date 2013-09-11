@@ -17,5 +17,6 @@ The installer script (located in package/support/config-ubuntu.sh) has a configu
 Once edited (if necessary) the config file running the following command will install GeoNode::
 
     $ sudo ./install.sh support/config-ubuntu.sh
+    $ sudo cp ../downloaded/geoserver.war /var/lib/tomcat7/webapps
     $ sudo geonode-updateip youraddress
     $ geonode createsuperuser
