@@ -49,6 +49,7 @@ class UtilsTests(TestCase):
                 'GEONODE_SECURITY_ENABLED': True,
                 'GEOGIT_ENABLED': True,
                 'WMST_ENABLED': False,
+                'WPS_ENABLED': False,
                 'DATASTORE': str(),
             }
         }
@@ -67,6 +68,7 @@ class UtilsTests(TestCase):
         self.assertTrue(ogc_settings.GEONODE_SECURITY_ENABLED)
         self.assertTrue(ogc_settings.GEOGIT_ENABLED)
         self.assertFalse(ogc_settings.WMST_ENABLED)
+        self.assertFalse(ogc_settings.WPS_ENABLED)
 
 
     def test_ogc_server_defaults(self):
@@ -89,6 +91,7 @@ class UtilsTests(TestCase):
                     'GEONODE_SECURITY_ENABLED' : True,
                     'GEOGIT_ENABLED' : False,
                     'WMST_ENABLED' : False,
+                    'WPS_ENABLED' : False,
                     'DATASTORE': str(),
             }
         }
