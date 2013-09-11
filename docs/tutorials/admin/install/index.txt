@@ -4,7 +4,7 @@
 Complete Installation Guide
 ===========================
 
-.. note:: The quick installation guide contains instructions to set it up in most common platforms. It can be found :doc:`here <install>`.
+.. note:: The quick installation guide contains instructions to set it up in most common platforms.
 
 This page describes a generic installation process for GeoNode systems.
 For some platforms the GeoNode project also provides customized installers which are easier to use and more reliable.
@@ -13,6 +13,12 @@ This is the most customizable, but also the most difficult, installation mechani
 
 Some platforms have more convenient packages available, so check below to see whether one is available for your OS before going through these steps.
 
+.. toctree::
+   :maxdepth: 2
+
+   quick_install
+   installation_devmode
+   manual_install/index
 
 Recommended Minimum System Requirements
 =======================================
@@ -185,10 +191,3 @@ Steps
 
    The ``<param-value>`` tag should enclose the URL to the Django application
    homepage.
-
-.. toctree::
-   :maxdepth: 2
-
-   quick_install
-   installation_devmode
-   manual_install/index
