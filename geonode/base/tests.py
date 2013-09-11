@@ -97,7 +97,7 @@ class UtilsTests(TestCase):
         ogc_settings = OGC_Servers_Handler(OGC_SERVER)['default']
         self.assertEqual(ogc_settings.server, defaults)
         self.assertEqual(ogc_settings.rest, defaults['LOCATION']+'rest')
-        self.assertEqual(ogc_settings.ows, defaults['LOCATION']+'wms')
+        self.assertEqual(ogc_settings.ows, defaults['LOCATION']+'ows')
 
         # Make sure we get None vs a KeyError when the key does not exist
         self.assertIsNone(ogc_settings.SFDSDFDSF)
