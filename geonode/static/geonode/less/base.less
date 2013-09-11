@@ -140,6 +140,7 @@ img.olTileImage {
 }
 
 // General layout styles
+
 .nav-logo {
   float: left;
   width: 130px;
@@ -604,6 +605,7 @@ section.widget-mini {
 
 article h3 [class^="icon-"], [class*=" icon-"] {
       color: @blueLight;
+      margin-left: 1px;
       margin-right: 5px;
     }
 article a [class^="icon-"], [class*=" icon-"] {
@@ -626,6 +628,8 @@ article.abstract {
   margin-bottom:15px;
 }
 
+.search-count {margin: 10px 40px;}
+
 .list article,
 .grid article {
   .rating, .activity {
@@ -638,52 +642,50 @@ article.abstract {
     }
   }
 }
+/* List */
+
+.people .list article {
+  margin-left: 0;
+}
+.people .search-count {margin-left: 0}
 
 .list article {
-  max-width: 600px;
-  overflow:hidden;
+  border-bottom: 1px solid @grayLight;
+  clear: both;
+  margin-left: 40px;
+  .content {
+    margin-left: 0;
+  }
 
   h3 {
+    color: @blueLight;
     font-size: 14px;
-    font-weight: normal;
-    min-width: 400px;
+    margin-left: 5px;
     overflow: hidden;
-    text-overflow: ellipses;
+    text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   p {
     font-size: 12px;
-    width: 480px;
   }
-  .stats {display: none}
-
-  .avatar {
+  .item-header img {
+    border: 1px solid @grayLight;
     display: block;
     float:left;
-    height: 80px;
-    margin:5px 10px 10px 0;
-    width: 80px;
-  }
-
-  .thumb {
-    display: block;
-    float:left;
-    height: 80px;
-    margin:5px 10px 10px 0;
+    height: 75px;
+    margin: 0;
+    margin-right: 10px;
     overflow: hidden;
     padding: 0;
-    width: 80px;
-
-    img {
-      left: -50px;
-      position: relative;
-      margin: 0;
-      padding: 0;
-    }
+    width: 100px;
+  }
+  .avatar img {
+    border: 0;
+    height: 50px;
+    width: 50px;
   }
   .details {
-    float:left;
     overflow: hidden;
   }
   .abstract-placeholder {
@@ -691,22 +693,29 @@ article.abstract {
   }
 }
 
+body.home {
+  .search-count {margin-left: 10px}
+  article {margin-left: 0;}
+}
+body.people article .content {
+  margin-left: 0;
+}
+
+
+/* Grid */
 .grid article {
-  height: 225px;
+  height: 265px;
   width: 200px;
-  margin: 0 20px 20px 0;
+  margin: 0 -18px 20px 36px;
   overflow: hidden;
   padding: 0;
   float: left;
   border-radius: 4px;
   border: 1px solid @grayLight;
-  /*   -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-          box-shadow: 0 1px 3px rgba(0,0,0,0.2); */
 
   img.thumb {
-    float:left;
-    margin:0 10px 10px 0;
+    height: 150px;
+    margin:0;
   }
 
   h3 {
@@ -728,7 +737,7 @@ article.abstract {
   .abstract-placeholder {
     color: @grayNeutral;
     font-size: 10px;
-    height: 80px;
+    height: 130px;
     margin-bottom: 10px;
     overflow: hidden;
     padding: 10px;
@@ -736,14 +745,14 @@ article.abstract {
   }
 
   img {
-    float:left;
     margin: 0;
   }
 
   .avatar img {
-    margin-bottom: 15px;
-    margin-left: 60px;
-    margin-top: 15px;
+    clear: both;
+    margin-bottom: 30px;
+    margin-left: 50px;
+    margin-top: 30px;
   }
 
   .details {
@@ -763,9 +772,11 @@ article.abstract {
       margin-left: -5px;
       margin-top: -10px;
     }
+    .tools {
+      clear: left;
+    }
   }
 }
-
 .grid article:first-child {
   margin-left: 0;
 }
@@ -833,7 +844,6 @@ aside .well {
 
 /* Font-awesome icon rotation */
 .icon-rotate-45:before {
-  margin-left: -3px;
   -webkit-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
@@ -1041,12 +1051,14 @@ ul.space li {
 
 /** slide nav pane (layers & maps) **/
 #contain-slider {
+  margin-left: 0;
   overflow: hidden;
-
   .tab-content {
-     margin-left: 40px;
-     width: auto;
-     padding-bottom: 40px;
+    margin-left: 0; /* it was 40px before */
+    padding-bottom: 40px;
+  }
+  .span4 {
+    margin-left: 0;
   }
 }
 #slide-pane {
@@ -1299,6 +1311,7 @@ body.home {
 
       &.latest-maps .thumb {
         border: 1px solid @bdrColor;
+        padding: 9px;
       }
       &.latest-maps h3 {
         font-size: 14px;
@@ -1728,7 +1741,7 @@ ul.stats {
 /* Select2 */
 
 .ms-container ul {
-  border: 1px solid @grayLight;
+  border: 1px solid @grayLighter;
   margin-left: 0;
   list-style-type: none;
   padding: 10px;
