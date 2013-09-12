@@ -201,14 +201,14 @@ class Map(ResourceBase, GXPMapBase):
         if len(self.layers) == 0:
             return
         if self.thumbnail == None:
-            self.save_thumbnail(self._thumbnail_url(width=159, height=63), save)
+            self.save_thumbnail(self._thumbnail_url(width=240, height=180), save)
                 
 
     def _render_thumbnail(self, spec):
         http = httplib2.Http()
         url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
         hostname = urlparse(settings.SITEURL).hostname
-        params = dict(width=198, height=98, auth="%s,%s,%s" % (hostname, _user, _password))
+        params = dict(width=240, height=180, auth="%s,%s,%s" % (hostname, _user, _password))
         url = url + "?" + urllib.urlencode(params)
         http.add_credentials(_user, _password)
         netloc = urlparse(url).netloc
@@ -270,7 +270,7 @@ class Map(ResourceBase, GXPMapBase):
         # with the WMS parser.
         p = "&".join("%s=%s"%item for item in params.items())
 
-        return '<img src="%s"/>' % (ogc_server_settings.LOCATION + "wms/reflect?" + p)
+        return '<img src="%s"/>' % (ogc_server_settings.public_url + "wms/reflect?" + p)
 
     class Meta:
         # custom permissions,
@@ -357,7 +357,7 @@ class Map(ResourceBase, GXPMapBase):
             map_layers.append(MapLayer(
                 map = self,
                 name = layer.typename,
-                ows_url = ogc_server_settings.LOCATION + "wms",
+                ows_url = ogc_server_settings.public_url + "wms",
                 stack_order = index,
                 visibility = True
             ))

@@ -28,11 +28,14 @@ For a normal, not privileged user is enough to just fill the personal informatio
 
 If the user has to access the admin panel or be a supersuser it's enought just to tick the "staff" and "superuser" checkboxes.
 
+.. figure:: img/admin-users-new-2.png
+
 Changing a user
 ---------------
 
 To modify an existing user click on "Users" then on a username in the list. The same form will be presented.
 
+.. figure:: img/admin-users-list.png
 
 Groups
 ======
