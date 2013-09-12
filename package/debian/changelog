@@ -1,3 +1,80 @@
+geonode (2.0.0+beta57) precise; urgency=high
+
+  [ mwengren ]
+  * [59a333] Added support for 'proxy' OGC_SERVER config that allows secondary LOCATION config for public GeoServer access point
+  * [b8181a] Remove redundant config in settings.py
+  * [5dd544] Fix syntax error for check of 'CATALOG_WRITE_ENABLED' in layers/models.py
+  * [2de7c8] Added back in the 'DATASTORE' key in OGC_SERVER OPTIONS dict that was dropped
+
+  [ Christian Spanring ]
+  * [7518ea] fixes waypoints dependency when DEBUG_STATIC is set.
+
+  [ Jeffrey Johnson ]
+  * [44a405] Comment out console.log in LayerInfo.js (closes #1087)
+
+  [ Simone Dalmasso ]
+  * [18237b] add release docs
+
+  [ capooti ]
+  * [7b868b] Added the gettext_compact option in conf.py file.
+  * [30415b] Updated the -How to translate GeoNode's Documentation- file.
+  * [d6100a] Added the initial .po files to git after a tx pull.
+  * [ce51b8] Updated part of the admin panel section in the admin workshop. Added new screenshots.
+
+  [ Simone Dalmasso ]
+  * [11156e] some updates on the installation guide
+  * [cc26e0] move deploy_config under manual installation
+
+  [ Jeffrey Johnson ]
+  * [eea21d] Move processing to users section
+  * [9ad8d8] Move data section to users tutorial
+  * [20dfe4] Moving data section to admin tutorial
+  * [f3b839] change heading in admin/data/index.txt
+  * [84633d] Add ssl to tutorials/admin/index
+
+  [ Simone Dalmasso ]
+  * [481753] fix some installation details
+  * [80b0fb] use django-admin.py in the installer
+  * [7f6023] some other small fixes in the installation process
+  * [e5baa2] fix installation from config file
+
+  [ Paolo Pasquali ]
+  * [04acda] Fix items layout, home page IE8 bugs
+  * [8438d2] Restoring scripts
+
+  [ Simone Dalmasso ]
+  * [8e5d41] add some other admin docs
+
+  [ Ariel Nunez ]
+  * [8586a7] ows url should link to /ows instead of /wms
+
+  [ Simone Dalmasso ]
+  * [5a0abb] Take out the geoserver installation from the install script
+  * [d99367] further work on the admin doc
+  * [16e906] add the geoserver deployment to the installation with config file
+  * [24cfc0] fix failing test
+
+  [ Tom Kralidis ]
+  * [ea78f4] execute WPS statistics only if WPS is enabled on OGC_SERVER (#1128)
+
+  [ mwengren ]
+  * [bcfc86] Changed ogc_server_settings.ows to use PUBLIC_URL if present
+
+  [ Simone Dalmasso ]
+  * [541291] update the user registration
+
+  [ capooti ]
+  * [5fe1e6] Updated first part of the admin data tutorial.
+  * [ce728d] Updated the admin OSM data tutorial.
+
+  [ mwengren ]
+  * [615299] Added test cases for PUBLIC_LOCATION, BACKEND_WRITE_ENABLED in OGC_SERVER config
+
+  [ Ariel Nunez ]
+  * [e4d775] Added service=WMS to get_wms method
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 12 Sep 2013 22:42:20 +0000
+
 geonode (2.0.0+beta54) precise; urgency=high
 
   [ Simone Dalmasso ]
