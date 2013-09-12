@@ -331,7 +331,7 @@ def new_map_config(request):
                 layers.append(MapLayer(
                     map = map_obj,
                     name = layer.typename,
-                    ows_url = ogc_server_settings.ows,
+                    ows_url = ogc_server_settings.public_url + "wms",
                     layer_params=json.dumps( layer.attribute_config()),
                     visibility = True
                 ))

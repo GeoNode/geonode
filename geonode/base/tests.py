@@ -42,6 +42,7 @@ class UtilsTests(TestCase):
             'default': {
                 'BACKEND': 'geonode.geoserver',
                 'LOCATION': 'http://localhost:8080/geoserver/',
+                'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',
                 'USER': 'admin',
                 'PASSWORD': 'geoserver',
                 'MAPFISH_PRINT_ENABLED': True,
@@ -49,6 +50,7 @@ class UtilsTests(TestCase):
                 'GEONODE_SECURITY_ENABLED': True,
                 'GEOGIT_ENABLED': True,
                 'WMST_ENABLED': False,
+                'BACKEND_WRITE_ENABLED': True,
                 'WPS_ENABLED': False,
                 'DATASTORE': str(),
             }
@@ -59,6 +61,7 @@ class UtilsTests(TestCase):
         self.assertEqual(ogc_settings.server, default)
         self.assertEqual(ogc_settings.BACKEND, default.get('BACKEND'))
         self.assertEqual(ogc_settings.LOCATION, default.get('LOCATION'))
+        self.assertEqual(ogc_settings.PUBLIC_LOCATION, default.get('PUBLIC_LOCATION'))
         self.assertEqual(ogc_settings.USER, default.get('USER'))
         self.assertEqual(ogc_settings.PASSWORD, default.get('PASSWORD'))
         self.assertEqual(ogc_settings.DATASTORE, str())
@@ -68,6 +71,7 @@ class UtilsTests(TestCase):
         self.assertTrue(ogc_settings.GEONODE_SECURITY_ENABLED)
         self.assertTrue(ogc_settings.GEOGIT_ENABLED)
         self.assertFalse(ogc_settings.WMST_ENABLED)
+        self.assertTrue(ogc_settings.BACKEND_WRITE_ENABLED)
         self.assertFalse(ogc_settings.WPS_ENABLED)
 
 
@@ -84,6 +88,7 @@ class UtilsTests(TestCase):
             'default' : {
                     'BACKEND' : 'geonode.geoserver',
                     'LOCATION' : 'http://localhost:8080/geoserver/',
+                    'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',
                     'USER' : 'admin',
                     'PASSWORD' : 'geoserver',
                     'MAPFISH_PRINT_ENABLED' : True,
@@ -91,6 +96,7 @@ class UtilsTests(TestCase):
                     'GEONODE_SECURITY_ENABLED' : True,
                     'GEOGIT_ENABLED' : False,
                     'WMST_ENABLED' : False,
+                    'BACKEND_WRITE_ENABLED': True,
                     'WPS_ENABLED' : False,
                     'DATASTORE': str(),
             }
