@@ -122,7 +122,7 @@ def _fixup_ows_url(thumb_spec):
     # so rendering of thumbnails fails - replace those uri's with full geoserver URL
     import re
     gspath = '"/geoserver/wms' # this should be in img src attributes
-    repl = '"' + ogc_server_settings.LOCATION + "/wms"
+    repl = '"' + ogc_server_settings.public_url + "/wms"
     return re.sub(gspath, repl, thumb_spec)
 
 def err403(request):
