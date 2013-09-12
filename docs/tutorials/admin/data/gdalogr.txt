@@ -3,7 +3,7 @@
 Using GDAL and OGR to convert your Data for use in GeoNode
 ==========================================================
 
-GeoNode supports uploading data in shapefiles, csv, kml and GeoTiff formats. If your data is in other formats, you will need to convert it into one of these formats for use in GeoNode. This section will walk you through the steps necessary to convert your data into formats suitable for uploading into GeoNode.
+GeoNode supports uploading data in shapefiles, GeoTiff, csv and kml formats (for the last two formats only if you are using the geonode.importer backend in the UPLOAD variable in settings.py). If your data is in other formats, you will need to convert it into one of these formats for use in GeoNode. This section will walk you through the steps necessary to convert your data into formats suitable for uploading into GeoNode.
 
 You will need to make sure that you have the gdal library installed on your system. On Ubuntu you can install this package with the following command::
 
@@ -83,7 +83,9 @@ This gives you information about the number of features, the extent, the project
 
 Next, lets go ahead and convert this layer into a shapefile by issuing the following command::
 
-    $ ogr2ogr postcode_polygon.shp vicgrid94/mif/lga_polygon/macedon\ ranges/VMADMIN/POSTCODE_POLYGON.mid POSTCODE_POLYGON
+    $ ogr2ogr -t_srs EPSG:4326 postcode_polygon.shp vicgrid94/mif/lga_polygon/macedon\ ranges/VMADMIN/POSTCODE_POLYGON.mid POSTCODE_POLYGON
+
+Note that we have also reprojected the layer to the WGS84 spatial reference system with the -t_srs ogr2ogr option.
 
 The output of this command will look like the following::
 
@@ -101,27 +103,18 @@ You will now have a set of files that make up the postcode_polygon.shp shapefile
 The output will look similar to the output we saw above when we inspected the MapInfo file we converted from::
 
     INFO: Open of `postcode_polygon.shp'
-        using driver `ESRI Shapefile' successful.
+          using driver `ESRI Shapefile' successful.
 
     Layer name: postcode_polygon
-    Geometry: 3D Polygon
+    Geometry: Polygon
     Feature Count: 26
-    Extent: (2413931.249367, 2400162.366186) - (2508952.174431, 2512183.046927)
+    Extent: (144.030296, -37.898156) - (145.101137, -36.888878)
     Layer SRS WKT:
-    PROJCS["Lambert_Conformal_Conic",
-        GEOGCS["GCS_Unknown",
-            DATUM["GDA94",
-                SPHEROID["GRS_80",6378137,298.257222101]],
-            PRIMEM["Greenwich",0],
-            UNIT["Degree",0.017453292519943295]],
-        PROJECTION["Lambert_Conformal_Conic_2SP"],
-        PARAMETER["standard_parallel_1",-36],
-        PARAMETER["standard_parallel_2",-38],
-        PARAMETER["latitude_of_origin",-37],
-        PARAMETER["central_meridian",145],
-        PARAMETER["false_easting",2500000],
-        PARAMETER["false_northing",2500000],
-        UNIT["Meter",1]]
+    GEOGCS["GCS_WGS_1984",
+        DATUM["WGS_1984",
+            SPHEROID["WGS_84",6378137,298.257223563]],
+        PRIMEM["Greenwich",0],
+        UNIT["Degree",0.017453292519943295]]
     PFI: String (10.0)
     POSTCODE: String (4.0)
     FEATURE_TY: String (6.0)
@@ -133,11 +126,11 @@ The output will look similar to the output we saw above when we inspected the Ma
 
 These files can now be loaded into your GeoNode instance via the normal uploader.
 
-Visit the upload page in your GeoNode.
+Visit the upload page in your GeoNode, drag and drop the files that composes the shapefile that you have generated using the GDAL ogr2ogr command (postcode_polygon.dbf, postcode_polygon.prj, postcode_polygon.shp, postcode_polygon.shx). Give the permissions as needed and then click the "Upload files" button.
 
 .. figure:: img/upload_shapefile.png
 
-You can edit the metadata for the layer and then click "Update" and you will see the Layer Info page for this layer.
+As soon as the import process complets, you will have the possibility to go straight to the layer info page ("Layer Info" button), or to edit the metadata for that layer ("Edit Metadata" button), or to manage the styles for that layer ("Manage Styles").
 
 .. figure:: img/layer_info_vector.png
 
@@ -190,6 +183,10 @@ The output should look like the following::
         NoData Value=-9999
 
 You can then inspect the batemans_ele files by executing the following command::
+
+    $ gdalinfo batemans_ele
+    
+And this should be the corresponding output::
 
     Driver: AIG/Arc/Info Binary Grid
     Files: batemans_ele

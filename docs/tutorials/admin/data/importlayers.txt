@@ -45,6 +45,7 @@ While the description of most of the options should be self explanatory, its wor
 
 - The -i option will force the command to stop when it first encounters an error. Without this option specified, the process will skip over errors that have layers and continue loading the other layers.
 - The -o option specifies that layers with the same name as the base name will be loaded and overwrite the existing layer.
+- The -u option specifies which will be the user that owns the imported layers. The same user will be the point of contact and the metadata author as well for that layer
 - The -k option is used to add keywords for all of the layers imported.
 
 The import layers management command is invoked by specifying options as described above and specifying the path to a single layer file or to a directory that contains multiple files. For purposes of this exercise, lets use the default set of testing layers that ship with geonode. You can replace this path with the directory to your own shapefiles::
@@ -125,4 +126,4 @@ If you encounter errors with this command that you cannot solve, you should brin
 
 You should now have the knowledge necessary to import layers into your GeoNode project from a directory on the servers filesystem and can use this to load many layers into your GeoNode at once. 
 
-.. note:: The ownership of the imported layers will be assigned to the primary superuser in your system. You can use GeoNodes Django Admin interface to modify this after the fact if you want them to be owned by another user.
+.. note:: If you do not use the -u command option, the ownership of the imported layers will be assigned to the primary superuser in your system. You can use GeoNodes Django Admin interface to modify this after the fact if you want them to be owned by another user.

@@ -3,9 +3,11 @@
 GeoServer Data Configuration
 ============================
 
-While it is possible to import layers directly from your servers filesystem into your GeoNode, you may have an existing GeoServer that already has data in it, or you may want to configure data from a GeoServer which is not directly supported by uploading data. GeoServer supports a wide range of data formats and connections to database, and while many of them are not supported as GeoNode upload formats, if they can be configured in GeoServer, you can add them to your GeoNode by following the procedure described below.
+While it is possible to import layers directly from your servers filesystem into your GeoNode, you may have an existing GeoServer that already has data in it, or you may want to configure data from a GeoServer which is not directly supported by uploading data.
 
-GeoServer supprts 3 types of data: Raster, Vector and Databases. For a list of the supported formats for each type of data, consult the following pages.
+GeoServer supports a wide range of data formats and connections to database, and while many of them are not supported as GeoNode upload formats, if they can be configured in GeoServer, you can add them to your GeoNode by following the procedure described below.
+
+GeoServer supports 3 types of data: Raster, Vector and Databases. For a list of the supported formats for each type of data, consult the following pages:
 
 - http://docs.geoserver.org/latest/en/user/data/vector/index.html#data-vector
 - http://docs.geoserver.org/latest/en/user/data/raster/index.html
@@ -13,7 +15,7 @@ GeoServer supprts 3 types of data: Raster, Vector and Databases. For a list of t
 
 .. note:: Some of these raster or vector formats or database types require that you install specific plugins in your GeoServer in order to use the. Please consult the GeoServer documentation for more information.
 
-Lets walk through an example of configuring a PostGIS database in GeoServer and then configuring those layers in your GeoNode.
+Lets walk through an example of configuring a new PostGIS database in GeoServer and then configuring those layers in your GeoNode.
 
 First visit the GeoServer administration interface on your server. This is usually on port 8080 and is available at http://localhost:8080/geoserver/web/
 
@@ -81,7 +83,7 @@ This help option displays the following::
       --version             show program's version number and exit
       -h, --help            show this help message and exit
 
-In this case, we can use the default options. So enter the following command to configure the layers from our GeoServer into our GeoNode::
+For this sample, we can use the default options. So enter the following command to configure the layers from our GeoServer into our GeoNode::
 
     $ python manage.py updatelayers
 
