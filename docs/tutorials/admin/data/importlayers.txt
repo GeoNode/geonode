@@ -5,13 +5,10 @@ Using importlayers to import Data into GeoNode
 
 The geonode.layers app includes 2 management commands that you can use to load or configure data in your GeoNode. Both of these are invoked by using the manage.py script. This section will walk you through how to use the importlayers management command and the subsequent section will lead you through the process of using updatelayers.
 
-First, make sure the virtual environment for your project is activated. If you have installed from packages and followed the steps from Chapter 3, this can be accomplished by issuing the following command::
 
-    $ source /var/lib/geonode/bin/activate
+The first thing to do is to use the --help option to the importlayers command to investigate the options to this management command. You can display this help by executing the following command::
 
-Once your virtualenv is activated, the first thing to do is to use the --help option to the importlayers command to investigate the options to this management command. You can display this help by executing the following command::
-
-    $ python manage.py importlayers --help
+    $ geonode importlayers --help
 
 This will produce output that looks like the following::
     
@@ -52,7 +49,7 @@ While the description of most of the options should be self explanatory, its wor
 
 The import layers management command is invoked by specifying options as described above and specifying the path to a single layer file or to a directory that contains multiple files. For purposes of this exercise, lets use the default set of testing layers that ship with geonode. You can replace this path with the directory to your own shapefiles::
 
-    $ python manage.py importlayers -v 3 /var/lib/geonode/lib/python2.7/site-packages/gisdata/data/good/vector/
+    $ geonode importlayers -v 3 /var/lib/geonode/lib/python2.7/site-packages/gisdata/data/good/vector/
 
 This command will produce the following output to your terminal::
 

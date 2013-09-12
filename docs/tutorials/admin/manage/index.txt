@@ -2,4 +2,8 @@
 
 Managing a GeoNode Installation
 ===============================
-Still to come ...
+
+.. toctree::
+   :maxdepth: 2
+
+   permission_and_security

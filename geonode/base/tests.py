@@ -49,6 +49,7 @@ class UtilsTests(TestCase):
                 'GEONODE_SECURITY_ENABLED': True,
                 'GEOGIT_ENABLED': True,
                 'WMST_ENABLED': False,
+                'WPS_ENABLED': False,
                 'DATASTORE': str(),
             }
         }
@@ -67,6 +68,7 @@ class UtilsTests(TestCase):
         self.assertTrue(ogc_settings.GEONODE_SECURITY_ENABLED)
         self.assertTrue(ogc_settings.GEOGIT_ENABLED)
         self.assertFalse(ogc_settings.WMST_ENABLED)
+        self.assertFalse(ogc_settings.WPS_ENABLED)
 
 
     def test_ogc_server_defaults(self):
@@ -89,6 +91,7 @@ class UtilsTests(TestCase):
                     'GEONODE_SECURITY_ENABLED' : True,
                     'GEOGIT_ENABLED' : False,
                     'WMST_ENABLED' : False,
+                    'WPS_ENABLED' : False,
                     'DATASTORE': str(),
             }
         }
@@ -97,7 +100,7 @@ class UtilsTests(TestCase):
         ogc_settings = OGC_Servers_Handler(OGC_SERVER)['default']
         self.assertEqual(ogc_settings.server, defaults)
         self.assertEqual(ogc_settings.rest, defaults['LOCATION']+'rest')
-        self.assertEqual(ogc_settings.ows, defaults['LOCATION']+'wms')
+        self.assertEqual(ogc_settings.ows, defaults['LOCATION']+'ows')
 
         # Make sure we get None vs a KeyError when the key does not exist
         self.assertIsNone(ogc_settings.SFDSDFDSF)

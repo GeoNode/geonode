@@ -12,4 +12,3 @@ This module will walk you through the various options available to load data int
    geoserver
    gdalogr
    osm 
-   permission_and_security

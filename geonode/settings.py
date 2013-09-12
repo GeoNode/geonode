@@ -407,6 +407,7 @@ OGC_SERVER = {
         'GEOGIT_ENABLED' : False,
         'WMST_ENABLED' : False,
         'BACKEND_WRITE_ENABLED': True,
+        'WPS_ENABLED' : False,
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': '', #'datastore',
     }

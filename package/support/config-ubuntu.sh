@@ -6,7 +6,7 @@ INSTALL_DIR=.
 # or something like $(CURDIR)/debian/geonode/
 TARGET_ROOT=''
 # Tomcat webapps directory
-TOMCAT_WEBAPPS=$TARGET_ROOT/var/lib/tomcat6/webapps
+TOMCAT_WEBAPPS=$TARGET_ROOT/var/lib/tomcat7/webapps
 # Geoserver data dir, it will survive removals and upgrades
 GEOSERVER_DATA_DIR=$TARGET_ROOT/var/lib/geoserver/geonode-data
 # Place where GeoNode media is going to be served
@@ -25,7 +25,7 @@ GEONODE_LOG=$TARGET_ROOT/var/log/geonode
 # for example 'service httpd' or '/etc/init.d/apache2'
 APACHE_SERVICE="invoke-rc.d apache2"
 # sama sama
-TOMCAT_SERVICE="invoke-rc.d tomcat6"
+TOMCAT_SERVICE="invoke-rc.d tomcat7"
 
 # For Ubuntu 10.04
 if [ -d "/usr/share/postgresql/8.4/contrib" ]
