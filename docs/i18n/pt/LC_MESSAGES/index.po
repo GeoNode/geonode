@@ -1,0 +1,206 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, GeoNode Development Team
+# This file is distributed under the same license as the GeoNode package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoNode\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-09-06 17:02\n"
+"PO-Revision-Date: 2013-09-06 16:00+0000\n"
+"Last-Translator: capooti <pcorti@gmail.com>\n"
+"Language-Team: Portuguese (http://www.transifex.com/projects/p/geonode/language/pt/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: pt\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# adb763a177f243aa84cd64313742c9ef
+#: ../../source/index.txt:3
+msgid "GeoNode's Documentation"
+msgstr " "
+
+# ce36f3802c0a46cba8e1e1dbed2c1052
+#: ../../source/index.txt:5
+msgid "Welcome to Geonode's Documentation."
+msgstr ""
+
+# db28157039fd4f0b80d409393b49579e
+#: ../../source/index.txt:7
+msgid ""
+"GeoNode is an Open Source, Content Management System (CMS) for geospatial "
+"data. It is a web-based application and platform for developing geospatial "
+"information systems (GIS) and for deploying spatial data infrastructures "
+"(SDI)."
+msgstr ""
+
+# a259ca03794147708df78923a38affa7
+#: ../../source/index.txt:10
+msgid "How To Use The Documentation 3"
+msgstr ""
+
+# 97d35cf974854bc3a2b53df918af4e39
+#: ../../source/index.txt:12
+msgid "The documentation is divided into three sections."
+msgstr ""
+
+# 79dd108f5bda4327a93746c7ef62f995
+#: ../../source/index.txt:14
+msgid ""
+":doc:`Organizational: <organizational/index>`  about the project, how to "
+"contribute, links, resources, other info"
+msgstr ""
+
+# b3ade4a1837c4ac1851c106276edc251
+#: ../../source/index.txt:15
+msgid ""
+":doc:`Tutorials: <tutorials/index>` Step-by-step instructions in workshop "
+"format that help a user to accomplish a set of tasks."
+msgstr ""
+
+# 8b9d4776e49047848edfb0ac4500e279
+#: ../../source/index.txt:16
+msgid ""
+":doc:`Reference: <reference/index>` Architecture, component information, API"
+" descriptions etc."
+msgstr ""
+
+# 6ca91bd6392c44c181e79c3b5778c845
+#: ../../source/index.txt:19
+msgid ""
+"For organizational purposes, the documentation is also geared toward 3 "
+"distinct types of users."
+msgstr ""
+
+# 2376fbe2c9b14cbfa9bbc8eedcf13b35
+#: ../../source/index.txt:21
+msgid ""
+"**Users**: Are people who log into a GeoNode website and use its "
+"functionality."
+msgstr ""
+
+# 2c30edb9c8ba4ae7bc64dc1a6bf76faf
+#: ../../source/index.txt:22
+msgid ""
+"**Administrators**: Are people who install and deploy GeoNode websites in "
+"production for their Users."
+msgstr ""
+
+# 19afa79cabe34002b4dcc738f928a419
+#: ../../source/index.txt:23
+msgid ""
+"**Developers**:  Are people who write code to add functionality, integrate "
+"with other systems, fix bugs, and potentially help an Administrator setup a "
+"server and deploy a GeoNode instance for production."
+msgstr ""
+
+# 43b3d336b88d4dbfa03a6090cfbec707
+#: ../../source/index.txt:26
+msgid "First Steps"
+msgstr ""
+
+# e835360062434af699174a9b9ae3c4b6
+#: ../../source/index.txt:28
+msgid ""
+"The following sections give an overview of GeoNode from different "
+"perspectives, they are targeted at a non-technical audience and the quick "
+"installation guide at people who just want to get it installed and will come"
+" back later to the complete documentation."
+msgstr ""
+
+# 9938a1e784074cf192668239cb356fc9
+#: ../../source/index.txt:30
+msgid ":doc:`About GeoNode <organizational/about>`"
+msgstr ""
+
+# 37297615112f445f9ad8d85e222d3828
+#: ../../source/index.txt:31
+msgid ":doc:`GeoNode Quickstart <tutorials/users/quickstart/index>`"
+msgstr ""
+
+# 82cf2627c8754a93b23b2ca0b4b7c60e
+#: ../../source/index.txt:32
+msgid ""
+":doc:`Quick Installation Guide <tutorials/admin/install/quick_install>`"
+msgstr ""
+
+# bc0fce75428d497a999653ced4225b42
+#: ../../source/index.txt:33
+msgid ""
+":doc:`Detailed Installation Guide "
+"<tutorials/admin/install/installation_devmode>`"
+msgstr ""
+
+# e7b7611c2d4844edb50ba8f663f8a7cf
+#: ../../source/index.txt:36
+msgid "Organizational"
+msgstr ""
+
+# 4af93159e9534909b2d1b6795a3fa0f5
+#: ../../source/index.txt:38
+msgid ""
+"The :doc:`Organizational <organizational/index>` section contains "
+"information about the GeoNode project itself, how to contribute, learn about"
+" the community, helpful links, about the patch review process, the project "
+"roadmap and other administraive items."
+msgstr ""
+
+# c7ed986ca8a04afe97248696b635a43b
+#: ../../source/index.txt:41
+msgid "Tutorials"
+msgstr ""
+
+# 4bab14005b34422683b7594a8ccfabe0
+#: ../../source/index.txt:43
+msgid ""
+"The :doc:`Tutorials <tutorials/index>` section contains step-by-step "
+"workshops that are oriented around performing particular sets of tasks, like"
+" adding data or publishing maps, setting up and maintaining a server, or "
+"setting up a project to extend from geonode. These tutorials are written in "
+"a workshop like format and are broken into three groups Users, "
+"Administrators and Developers."
+msgstr ""
+
+# 3858a430a7684fefb81c56154460a5e5
+#: ../../source/index.txt:46
+msgid "Reference"
+msgstr ""
+
+# de60aff7947d4dc98cc3befa02e6c88c
+#: ../../source/index.txt:48
+msgid ""
+"The :doc:`Reference <reference/index>` section provides details about the "
+"internals of the GeoNode project. It has background information about "
+"components that make up GeoNode, the security system, APIs and much more."
+msgstr ""
+
+# dfad38f5018c40c7beaf3b07900a361c
+#: ../../source/index.txt:51
+msgid "Need Help?"
+msgstr ""
+
+# 559e42ef9f274a50b834d87355c459c5
+#: ../../source/index.txt:53
+msgid "Having trouble? Cant find what you are looking for? We'd like to help!"
+msgstr ""
+
+# 5db8281a52984326a530cc3a46a7df99
+#: ../../source/index.txt:55
+msgid ""
+"Search for information in the `archives of the GeoNode  mailing list`_, or "
+"`post a question`_."
+msgstr ""
+
+# 6592e591eb2c4bceb794eb3e5df86a42
+#: ../../source/index.txt:58
+msgid ""
+"Ask a question in the `#geonode IRC channel`_ using `Freenode's web based "
+"client`_"
+msgstr ""
+
+# ded243c1c33d4375b3e3eae174891a27
+#: ../../source/index.txt:61
+msgid "Report bugs with GeoNode in our `ticket tracker`_."
+msgstr ""
