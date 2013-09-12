@@ -124,7 +124,7 @@ class OGC_Servers_Handler(object):
         for option in ['MAPFISH_PRINT_ENABLED', 'PRINTING_ENABLED', 'GEONODE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:
             server.setdefault(option, True)
 
-        for option in ['GEOGIT_ENABLED', 'WMST_ENABLED']:
+        for option in ['GEOGIT_ENABLED', 'WMST_ENABLED', 'WPS_ENABLED']:
             server.setdefault(option, False)
 
     def __getitem__(self, alias):
