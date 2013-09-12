@@ -63,7 +63,11 @@ Layer Detail Tabs
 
       *Layer Info tab*
 
-#. Click the :guilabel:`Attributes` tab. This lists the attributes of the layer, including statistics such as mean and standard deviation (where applicable).
+#. Click the :guilabel:`Attributes` tab. This lists the attributes of the layer, including statistics (range, average, median and standard deviation).  Layer attribute statistics are made available only for numeric attributes.  As we can see, this layer's attributes are not numeric, so no statistics are calculated.
+
+   .. figure:: img/layerattributes.png
+
+      *Attributes tab*
 
 #. Click the :guilabel:`Ratings` tab. This tab allows you (and others viewing this page) to rate this layer. Ratings can be based on quality, accuracy, or any other metric. Click on the appropriate star to rate this layer.
 
