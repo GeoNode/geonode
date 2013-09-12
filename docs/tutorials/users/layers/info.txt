@@ -24,7 +24,10 @@ Downloads
 
 .. todo:: No option to edit data. Why not?
 
-At the top of the page there are two buttons titled :guilabel:`Download Layer` and :guilabel:`Download Metadata`. These buttons provide access to the ability to extract geospatial data and metadata from within GeoNode. In this way, GeoNode allows for two way data access; one can import as well as export data.
+At the top of the page there are two buttons titled :guilabel:`Download Layer` and :guilabel:`Download Metadata`. These buttons provide access to the ability to extract geospatial data and metadata from within GeoNode. In this way, GeoNode allows for two way data and metadata access; one can import as well as export data.
+
+Data
+^^^^
 
 #. Click the :guilabel:`Download Layer` button. You will see a list of options of the supported export formats.
 
@@ -39,7 +42,20 @@ At the top of the page there are two buttons titled :guilabel:`Download Layer` a
 .. todo:: Wanted to show other format options, but all of them didn't really work all that well.
 
 Metadata
---------
+^^^^^^^^
+
+#. Click the :guilabel:`Download Metadata` button. You will see a list of options of the supported export formats.
+
+.. figure:: img/metadataformats.png
+
+   *Available metadata export formats*
+
+#. Click the option for :guilabel:`DUBLIN CORE`.
+
+#. GeoNode will process the request and display XML metadata.  Try clicking various metadata formats, and note how it is the same metadata content in various formats compatible with metadata and GIS packages.
+
+Layer Detail Tabs
+-----------------
 
 #. Scroll down the page toward the bottom. Five tabs are available: :guilabel:`Info`, :guilabel:`Attributes`, :guilabel:`Share`, :guilabel:`Ratings`, and :guilabel:`Comments`. The info tab is already highlighted, and presents basic information about the layer, of the kind that was seen on the layer list page.
 
