@@ -270,7 +270,7 @@ class Map(ResourceBase, GXPMapBase):
         # with the WMS parser.
         p = "&".join("%s=%s"%item for item in params.items())
 
-        return '<img src="%s"/>' % (ogc_server_settings.LOCATION + "wms/reflect?" + p)
+        return '<img src="%s"/>' % (ogc_server_settings.public_url + "wms/reflect?" + p)
 
     class Meta:
         # custom permissions,
@@ -357,7 +357,7 @@ class Map(ResourceBase, GXPMapBase):
             map_layers.append(MapLayer(
                 map = self,
                 name = layer.typename,
-                ows_url = ogc_server_settings.LOCATION + "wms",
+                ows_url = ogc_server_settings.public_url + "wms",
                 stack_order = index,
                 visibility = True
             ))

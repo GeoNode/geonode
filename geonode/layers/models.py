@@ -132,7 +132,7 @@ class Layer(ResourceBase):
         # with the WMS parser.
         p = "&".join("%s=%s"%item for item in params.items())
 
-        return ogc_server_settings.LOCATION + "wms/reflect?" + p
+        return ogc_server_settings.public_url + "wms/reflect?" + p
 
 
     def verify(self):
@@ -275,7 +275,9 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     """
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
-    cascading_delete(Layer.objects.gs_catalog, instance.typename)
+    #cascading_delete should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
+    if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
+        cascading_delete(Layer.objects.gs_catalog, instance.typename)
 
 
 def pre_save_layer(instance, sender, **kwargs):
@@ -362,7 +364,9 @@ def geoserver_pre_save(instance, sender, **kwargs):
         metadata_links.append((link.name, link.mime, link.url))
 
     gs_resource.metadata_links = metadata_links
-    gs_catalog.save(gs_resource)
+    #gs_resource should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
+    if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
+        gs_catalog.save(gs_resource)
 
     gs_layer = gs_catalog.get_layer(instance.name)
 
@@ -370,7 +374,9 @@ def geoserver_pre_save(instance, sender, **kwargs):
         gs_layer.attribution = str(instance.poc.user)
         profile = Profile.objects.get(user=instance.poc.user)
         gs_layer.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
-        gs_catalog.save(gs_layer)
+        #gs_layer should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
+        if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
+            gs_catalog.save(gs_layer)
 
     """Get information from geoserver.
 
@@ -428,7 +434,9 @@ def geoserver_post_save(instance, sender, **kwargs):
         return
 
     gs_resource.keywords = instance.keyword_list()
-    gs_catalog.save(gs_resource)
+    #gs_resource should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
+    if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
+        gs_catalog.save(gs_resource)
 
     bbox = gs_resource.latlon_bbox
     dx = float(bbox[1]) - float(bbox[0])
@@ -441,7 +449,7 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     # Set download links for WMS, WCS or WFS and KML
 
-    links = wms_links(ogc_server_settings.LOCATION + 'wms?',
+    links = wms_links(ogc_server_settings.public_url + 'wms?',
                     instance.typename.encode('utf-8'), instance.bbox_string,
                     instance.srid, height, width)
 
@@ -457,7 +465,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
 
     if instance.storeType == "dataStore":
-        links = wfs_links(ogc_server_settings.LOCATION + 'wfs?', instance.typename.encode('utf-8'))
+        links = wfs_links(ogc_server_settings.public_url + 'wfs?', instance.typename.encode('utf-8'))
         for ext, name, mime, wfs_url in links:
             Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                             url=wfs_url,
@@ -479,7 +487,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         permissions['authenticated'] = instance.get_gen_level(AUTHENTICATED_USERS)
         instance.set_gen_level(ANONYMOUS_USERS,'layer_readonly')
 
-        links = wcs_links(ogc_server_settings.LOCATION + 'wcs?', instance.typename.encode('utf-8'),
+        links = wcs_links(ogc_server_settings.public_url + 'wcs?', instance.typename.encode('utf-8'),
             bbox=instance.bbox[:-1], crs=instance.bbox[-1], height=height, width=width)
         for ext, name, mime, wcs_url in links:
             Link.objects.get_or_create(resource= instance.resourcebase_ptr,
@@ -495,7 +503,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         instance.set_gen_level(ANONYMOUS_USERS,permissions['anonymous'])
         instance.set_gen_level(AUTHENTICATED_USERS,permissions['authenticated'])
 
-    kml_reflector_link_download = ogc_server_settings.LOCATION + "wms/kml?" + urllib.urlencode({
+    kml_reflector_link_download = ogc_server_settings.public_url + "wms/kml?" + urllib.urlencode({
         'layers': instance.typename.encode('utf-8'),
         'mode': "download"
     })
@@ -510,7 +518,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
                     )
 
-    kml_reflector_link_view = ogc_server_settings.LOCATION + "wms/kml?" + urllib.urlencode({
+    kml_reflector_link_view = ogc_server_settings.public_url + "wms/kml?" + urllib.urlencode({
         'layers': instance.typename.encode('utf-8'),
         'mode': "refresh"
     })
@@ -525,7 +533,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
                     )
 
-    tile_url = ('%sgwc/service/gmaps?' % ogc_server_settings.LOCATION +
+    tile_url = ('%sgwc/service/gmaps?' % ogc_server_settings.public_url +
                 'layers=%s' % instance.typename.encode('utf-8') +
                 '&zoom={z}&x={x}&y={y}' +
                 '&format=image/png8'
@@ -649,7 +657,7 @@ def set_attributes(layer):
 
     attribute_map = []
     if layer.storeType == "dataStore":
-        dft_url = ogc_server_settings.LOCATION + "wfs?" + urllib.urlencode({
+        dft_url = ogc_server_settings.public_url + "wfs?" + urllib.urlencode({
             "service": "wfs",
             "version": "1.0.0",
             "request": "DescribeFeatureType",
@@ -663,7 +671,7 @@ def set_attributes(layer):
         except Exception:
             attribute_map = []
     elif layer.storeType == "coverageStore":
-        dc_url = ogc_server_settings.LOCATION + "wcs?" + urllib.urlencode({
+        dc_url = ogc_server_settings.public_url + "wcs?" + urllib.urlencode({
             "service": "wcs",
             "version": "1.1.0",
             "request": "DescribeCoverage",
