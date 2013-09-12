@@ -5,9 +5,11 @@ Creating a new account
 
 Before you can save or edit any layers on a GeoNode instance, you need to create an account.
 
-#. From any page in the web interface, you will see a :guilabel:`Sign in` link. Click that link, and in the dialog that displays, click the :guilabel:`Register now` link.
+#. From any page in the web interface, you will see a :guilabel:`Register` link. Click that link, and the register form will appear 
 
-   .. figure:: img/signin.png
+.. note:: The registrations in GeoNode must be open, in case you don't see the register link then it's not possible to register unless the addministrator of the side does that for you.
+
+.. figure:: img/signin.png
 
       *Sign in screen*
 
