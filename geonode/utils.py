@@ -186,7 +186,7 @@ def check_geonode_is_up():
 
 def get_wms():
     global _wms
-    wms_url = ogc_server_settings.ows + "?request=GetCapabilities&version=1.1.0"
+    wms_url = ogc_server_settings.ows + "?service=WMS&request=GetCapabilities&version=1.1.0"
     netloc = urlparse(wms_url).netloc
     http = httplib2.Http()
     http.add_credentials(_user, _password)
