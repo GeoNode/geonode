@@ -61,3 +61,17 @@ The easiest way to do this is to copy the ``MAP_BASELAYERS`` setting from :file:
     "source": {"url": "http://my-server/wms?"},
 
 The source's title in the composer would depend on what is configured in the external WMS server.
+
+OpenStreetMap
+-------------
+
+Data from OpenStreetMap is used to generate the map tiles which are the default base layer in your GeoNode. These are provided by MapQuest and are reasonably current with recent edits to the OpenStreetMap database. You can switch to an alternate set of map tiles by changing your base layer. 
+
+.. figure:: images/osm_layers.png
+
+If you would like to change the default base layer to use the alternate OSM tile set, you can change this in the settings.py file for your project. In the MAP_BASELAYERS dictionary, set the visibility setting to True for the gxp_olsource and False for the gxp_mapquestsource. 
+
+.. figure:: images/change_osm.png
+
+If instead of map tiles, you would like to work with OSM database itself, you should consult the section :ref:`osm2pgsql` in the developer workshop.
+
