@@ -12,6 +12,7 @@ fi
 # Checkout exts from server
 GEOSERVER_EXT_GIT=git://github.com/GeoNode/geoserver-geonode-ext.git
 git clone $GEOSERVER_EXT_GIT tmp
+git checkout $GIT_BRANCH
 
 cp -r debian tmp
 pushd tmp
@@ -32,7 +33,7 @@ mvn clean install
 # Build for launchpad
 git-dch --spawn-editor=snapshot --new-version=$DEB_VERSION --git-author --id-length=6 --ignore-branch  --auto --release
 debuild -S
-dput ppa:geonode/snapshots ../geoserver-geonode_${DEB_VERSION}_source.changes
+dput ppa:geonode/$PPA ../geoserver-geonode_${DEB_VERSION}_source.changes
 rm ../geoserver-geonode*
 
 # Re-build local debs
