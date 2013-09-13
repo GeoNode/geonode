@@ -18,7 +18,7 @@ Get the code and install it in the virtuelnv::
 This will also create the geoserver artifact ready to be deployed under Tomcat.
 
 Configurations
-==============
+--------------
 
 .. note:: Please note that all the paths are user specific, so they might not coincide with the paths you will have to use!
 

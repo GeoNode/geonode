@@ -121,7 +121,7 @@ The key steps for setting up a GeoNode installation are as follows:
 
    The Django frontend can be served in various ways, one of the most performant is Apache httpd with mod_wsgi installed.
 
-   The Django project has further documentation on how to serve Django applications at https://docs.djangoproject.com/en/1.2/howto/deployment/ .
+   The Django project has further documentation on how to serve Django applications at https://docs.djangoproject.com/en/1.5/howto/deployment/ .
 
    You will also need a web server capable of simply serving static files; if you are using Apache httpd it can serve this purpose as well.
 
@@ -165,17 +165,11 @@ GeoServer with GeoNode Extensions
 GeoNode's GeoServer integration requires some specific extensions to help
 GeoNode in managing GeoServer layers.  GeoNode releases include a GeoServer WAR
 archive with these extensions pre-installed.  However, some manual
-configuration may still be needed.
+configuration may still be needed in case of not standard installation.
 
 Steps
 .....
-
-1. *Deploy* GeoServer to your servlet container using the normal mechanism.
-   For Tomcat and Jetty, this simply means placing
-   ``geoserver.war`` in the webapps subdirectory of the servlet
-   container's installation directory.
-
-2. *Configure* GeoServer with the location of the GeoNode site, used for
+ *Configure* GeoServer with the location of the GeoNode site, used for
    authentication (so that GeoServer can recognize logins from the main site).
    This setting defaults to http://localhost:8000/, so if you are running
    the GeoNode Django application on a different port, or on a different server
