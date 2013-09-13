@@ -10,6 +10,7 @@ Welcome to the Developers Workshop! This workshop will teach how to develop with
 
    intro_devel/index
    core/index
+   install_devmode/index
    projects/index
    debug/index
    api/index
@@ -22,6 +23,9 @@ Welcome to the Developers Workshop! This workshop will teach how to develop with
 
 :ref:`core`
   Learn about the pre-requisites you will need in order to develop with GeoNode. Take a look at its core modules and how they work together to provide a complete web mapping tool. 
+
+:ref:`install_devmode`
+  Prepare your development environment by installing GeoNode in dev mode.
 
 :ref:`customize_projects`
   Learn how existing projects leverage GeoNode and create your own GeoNode based project.
