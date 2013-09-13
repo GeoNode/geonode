@@ -1,3 +1,30 @@
+geonode (2.0.0+beta58) precise; urgency=high
+
+  [ Tom Kralidis ]
+  * [5a7ed0] Add blurb about metadata downloads to Layer Information page (#1152)
+  * [93db6d] Add blurb about layer attributes to layer info docs page (#1154)
+
+  [ Simone Dalmasso ]
+  * [f6751c] move install demoed under developers workshop
+  * [a96ecf] adjust a bit the install flow
+
+  [ Tom Kralidis ]
+  * [5bd5ac] make URL /ows for all, add wcs link
+
+  [ capooti ]
+  * [7ff5bd] Updated the "sharing layers" screenshots. Refs #1133.
+
+  [ Tom Kralidis ]
+  * [06ba55] add info on OWS
+
+  [ Simone Dalmasso ]
+  * [1d6295] Some testing doc
+  * [ad121c] Add few lines
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 13 Sep 2013 13:18:37 +0000
+
 geonode (2.0.0+beta57) precise; urgency=high
 
   [ mwengren ]

@@ -64,7 +64,7 @@ The recommended install method in these platforms is to use a virtualization sol
 
 Some GeoNode developers prefer to use `Vagrant`_ - a VirtualBox wrapper. The Vagrant quickstart guide shows how to get a Linux VM configured in most operating systems.
 
-http://vagrantup.com/docs/getting-started/index.html
+http://docs.vagrantup.com/v2/getting-started/index.html
 
 .. _Virtual Box: http://virtualbox.org
 .. _Vagrant: http://vagrantup.com
