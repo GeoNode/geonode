@@ -1,0 +1,91 @@
+.. _acrgis:
+
+ArcGIS
+======
+
+ArcGIS Desktop (ArcMap) supports adding WMS layers to your map project. The following set of steps will walk you through how to configure a WMS Layer from your GeoNode within ArcMap.
+
+First, you can start with a new empty project or add these layers to your existing project.
+
+.. figure:: img/arcmap_empty.png
+
+Next click the ArcCatalog button on the toolbar to bring up its interface.
+
+.. figure:: img/arccatalog.png
+
+From there, double click the "Add WMS Server" item in the tree to bring up the dialog that lets you enter the details for your WMS.
+
+.. figure:: img/arc_add_wms.png
+
+Next, enter the URL for your GeoNode's WMS endpoint which is the base url with /geoserver/wms appended to the end of the URL. You can also enter your credentials into the optional Account section of this dialog to gain access to non-public layers that your user may have access to.
+
+.. figure:: img/arc_enter_wms_url.png
+
+Click the "Get Layers" button to ask ArcMap to query your WMS's GetCapabilities document to get the list of available layers.
+
+.. figure:: img/arcmap_wms_layers.png
+
+After you click the OK button, your GeoNode layers will appear in the ArcCatalog Interface.
+
+.. figure:: img/arcmap_layers_catalog.png
+
+Once your server is configured in ArcMap, you can right click on one of the layers and investigate its properties.
+
+.. figure:: img/arcmap_layer_properties.png
+
+In order to actually add the layer to your project, you can drag and drop it into the Table of Contents, or right click and select "Create Layer". Your Layer will now be displayed in the map panel of your project.
+
+.. figure:: img/arcmap_wms_layer_drag.png
+
+.. figure:: img/arcmap_wms_layer_map.png
+
+Once the layer is in your projects Table of Contents, you can right click on it and select the Layer Properties option and select the Styles Tab to choose from the available styles for that layer.
+
+.. figure:: img/arcmap_wms_styles.png
+
+
+Now that we have seen how to add a WMS layer to our ArcMap project, lets walk through how to add the same layers as a WFS which retrieves the actual feature data from your GeoNode rather than a rendered map as you get with WMS. Adding layers as a WFS gives you more control over how the layers are styled within ArcMap and makes them available for you to use with other ArcGIS tools like the Geoprocessing toolbox.
+
+.. note:: Adding WFS layers to ArcMap requires that you have the Data Interoperability Extension installed. This extension is not included in ArcMap by default and is licensed and installed separately.
+
+Start by opening up the ArcCatalog Interface within ArcMap and make sure that you have the "Interoperability Connections" option listed in the list. 
+
+.. figure:: img/arcmap_interoperability.png
+
+Next select "Add Interoperability Connection" to bring up the dialog that lets you add the WFS endpoint from your GeoNode.
+
+.. figure:: img/arcmap_interop_add.png
+
+Select "WFS (Web Feature Service)" in the Format dropdown and enter the URL to the WFS endpoint for your GeoNode in the Dataset field. The WFS endpoint is your base URL + /geoserver/wfs
+
+.. figure:: img/arcmap_interop_wfs.png
+
+You will need to click the "Parameters" button to supply more connection information including your credentials which will give you the ability to use private layers that you have access to. 
+
+.. figure:: img/arcmap_wfs_params.png
+
+Select the Feature Types button to have ArcMap get a list of layers from the WFS Service of your GeoNode. 
+
+.. figure:: img/arcmap_wfs_layers.png
+
+Select the layers that you want to add and click OK and ArcMap will import the features from your GeoNode into the system.
+
+.. figure:: img/arcmap_wfs_import.png
+
+Depending on the projection of your data, you may receive a warning about Alignment and Accuracy of data transformations. You can specify the transformation manually or simply hit close to ignore this dialog. If you dont want to be warned again, use the checkboxes in this dialog to hide these warnings temporarily or permanently.
+
+.. figure:: img/arcmap_wfs_transformations.png
+
+Your WFS Layer will be added to your map and you can view it in the Map Panel. If you need to, use the "Zoom to Layer Extent" or other zoom tools to zoom to the bounds of your layer.
+
+.. figure:: img/arcmap_wfs_layer_view.png
+
+You can now use the identify tool to inspect a feature in your layer, or perform any other function that you can normally use to work with Vector Layers in ArcMap.
+
+.. figure:: img/arcmap_wfs_identify.png
+
+Since your layer was imported as actual vector features, you can use normal ArcMap styling tools to style the layer to match how you want it to be displayed.
+
+.. figure:: img/arcmap_wfs_style.png
+
+Now that you have added layers from your GeoNode as both WMS and WFS, you can explore the other options available to you with these layers within ArcMap. 
