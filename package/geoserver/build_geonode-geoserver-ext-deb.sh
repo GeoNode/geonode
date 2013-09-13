@@ -12,10 +12,10 @@ fi
 # Checkout exts from server
 GEOSERVER_EXT_GIT=git://github.com/GeoNode/geoserver-geonode-ext.git
 git clone $GEOSERVER_EXT_GIT tmp
-git checkout $GIT_BRANCH
 
 cp -r debian tmp
 pushd tmp
+git checkout $GIT_BRANCH
 
 # Replace GeoNode port for production.
 sed -i 's/localhost:8000/127.0.0.1/g' \
