@@ -17,7 +17,6 @@ Some platforms have more convenient packages available, so check below to see wh
    :maxdepth: 2
 
    quick_install
-   installation_devmode
    manual_install/index
 
 Recommended Minimum System Requirements
