@@ -15,7 +15,7 @@ Welcome to the Developers Workshop! This workshop will teach how to develop with
    debug/index
    api/index
    envsetup/index
-   devprocess/index
+   testing 
    release/index
 
 :ref:`intro_devel`
