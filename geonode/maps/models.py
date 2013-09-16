@@ -30,11 +30,12 @@ from django.conf import settings
 from django.db import models
 from django.db.models import signals
 from django.utils import simplejson as json
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import slugify
 
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, resourcebase_post_save, resourcebase_post_delete
@@ -49,6 +50,7 @@ from geonode.utils import http_client, ogc_server_settings
 
 from geoserver.catalog import Catalog
 from geoserver.layer import Layer as GsLayer
+from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
@@ -390,6 +392,60 @@ class Map(ResourceBase, GXPMapBase):
     @property
     def class_name(self):
         return self.__class__.__name__
+
+    @property
+    def is_public(self):
+        """
+        Returns True if anonymous (public) user can view map.
+        """
+        user = AnonymousUser()
+        return user.has_perm('maps.view_map', obj=self)
+
+    @property
+    def layer_group(self):
+        """
+        Returns layer group name from local OWS for this map instance.
+        """
+        cat = Catalog(ogc_server_settings.rest, _user, _password)
+        lg_name = '%s_%d' % (slugify(self.title), self.id)
+        return cat.get_layergroup(lg_name)
+ 
+    def publish_layer_group(self):
+        """
+        Publishes local map layers as WMS layer group on local OWS.
+        """
+        # temporary permission workaround: 
+        # only allow public maps to be published
+        if not self.is_public:
+            return 'Only public maps can be saved as layer group.'
+
+        map_layers = MapLayer.objects.filter(map=self.id)
+        
+        # Local Group Layer layers and corresponding styles
+        layers = []
+        lg_styles = []
+        for ml in map_layers:
+            if ml.local:
+                layer = Layer.objects.get(typename=ml.name)
+                style = ml.styles or getattr(layer.default_style, 'name', '')
+                layers.append(layer)
+                lg_styles.append(style)
+        lg_layers = [l.name for l in layers]
+
+        # Group layer bounds and name             
+        lg_bounds = [str(coord) for coord in self.bbox] 
+        lg_name = '%s_%d' % (slugify(self.title), self.id)
+
+        # Update existing or add new group layer
+        cat = Catalog(ogc_server_settings.rest, _user, _password)
+        lg = self.layer_group
+        if lg is None:
+            lg = GsUnsavedLayerGroup(cat, lg_name, lg_layers, lg_styles, lg_bounds)
+        else:
+            lg.layers, lg.styles, lg.bounds = lg_layers, lg_styles, lg_bounds
+        cat.save(lg)
+        return lg_name
+
 
 class MapLayer(models.Model, GXPLayerBase):
     """
