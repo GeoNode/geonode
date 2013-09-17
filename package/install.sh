@@ -98,6 +98,11 @@ function setup_django_every_time() {
     ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
 
     export DJANGO_SETTINGS_MODULE=geonode.settings
+
+    # django-admin is what should be used for debian packages
+    # django-admin.py is what should be used for manual installations
+    # I am putting django-admin by default and filing a ticket:
+    # https://github.com/GeoNode/geonode/issues/1180
     django-admin syncdb --noinput --all
     django-admin collectstatic --noinput
     django-admin loaddata $GEONODE_SHARE/admin.json

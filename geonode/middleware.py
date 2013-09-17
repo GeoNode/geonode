@@ -2,6 +2,7 @@ from django.conf import settings
 from django.utils import simplejson as json
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.utils import ogc_server_settings
 
 class PrintProxyMiddleware(object):
     def process_request(self, request):
@@ -17,7 +18,7 @@ def print_map(request):
     permissions = {}
     params = json.loads(request.body)
     for layer in params['layers']:
-        if settings.OGC_SERVER['default']['LOCATION'] in layer['baseURL']:
+        if ogc_server_settings.LOCATION in layer['baseURL']:
             for layer_name in layer['layers']:
                 layer_obj = Layer.objects.get(typename=layer_name)
                 permissions[layer_obj] = {}

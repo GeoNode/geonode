@@ -16,6 +16,24 @@ DATABASES = {
     }
 }
 
+# OGC (WMS/WFS/WCS) Server Settings
+OGC_SERVER = {
+    'default' : {
+        'BACKEND' : 'geonode.geoserver',
+        'LOCATION' : GEOSERVER_BASE_URL,
+        'USER' : 'admin',
+        'PASSWORD' : 'geoserver',
+        'MAPFISH_PRINT_ENABLED' : True,
+        'PRINTNG_ENABLED' : True,
+        'GEONODE_SECURITY_ENABLED' : True,
+        'GEOGIT_ENABLED' : False,
+        'WMST_ENABLED' : False,
+        # Set to name of database in DATABASES dictionary to enable
+        'DATASTORE': 'datastore',
+
+    }
+}
+
 # GeoNode vector data backend configuration.
 
 # Uploader backend (rest or importer)

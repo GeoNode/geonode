@@ -6,11 +6,13 @@ target
 pip-log.txt
 MANIFEST
 dist
-
+.idea/
 # supporting stuff pulled in by paver script
 geonode/development.db
 geoserver
 downloaded
+
+docs/i18n/pot/
 
 # Static media handling
 *.jshintrc
@@ -18,6 +20,34 @@ geonode/static/.components/
 geonode/static/geoexplorer/
 geonode/static_root/
 geonode/static/node_modules/
+node_modules/
+# Listing all of them instead of putting geonode/static/lib out of version control.
+geonode/local_settings.py
+geonode/static/lib/css/jquery-ui.css
+geonode/static/lib/css/jquery.dataTables.css
+geonode/static/lib/css/multi-select.css
+geonode/static/lib/css/qunit.css
+geonode/static/lib/css/select2.css
+geonode/static/lib/css/assets.min.css
+geonode/static/lib/js/assets.min.js
+geonode/static/lib/js/bootstrap-datepicker.js
+geonode/static/lib/js/bootstrap.js
+geonode/static/lib/js/jquery-ui.custom.js
+geonode/static/lib/js/jquery.ajaxQueue.js
+geonode/static/lib/js/jquery.ajaxprogress.js
+geonode/static/lib/js/jquery.dataTables.js
+geonode/static/lib/js/jquery.js
+geonode/static/lib/js/jquery.multi-select.js
+geonode/static/lib/js/jquery.timeago.js
+geonode/static/lib/js/jquery.tinysort.js
+geonode/static/lib/js/jquery.raty.js
+geonode/static/lib/js/json2.js
+geonode/static/lib/js/qunit.js
+geonode/static/lib/js/require.js
+geonode/static/lib/js/select2.js
+geonode/static/lib/js/text.js
+geonode/static/lib/js/underscore.js
+geonode/static/lib/js/waypoints.js
 
 # Uploaded files
 geonode/uploaded
@@ -42,3 +72,4 @@ docs/_build
 
 # ec2.py
 scripts/cloud/.gnec2.cfg
+jquery.raty.js

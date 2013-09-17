@@ -1,0 +1,1951 @@
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoNode\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-09-04 20:42\n"
+"PO-Revision-Date: 2013-09-05 02:01+0000\n"
+"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
+"Language-Team: Persian (http://www.transifex.com/projects/p/geonode/language/fa/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fa\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../organizational/about.txt:5
+msgid "About GeoNode"
+msgstr ""
+
+#: ../../organizational/about.txt:9
+msgid ""
+"**GeoNode is a geospatial content management system**, a platform for the "
+"management and publication of geospatial data. It brings together mature and"
+" stable open-source software projects under a consistent and easy-to-use "
+"interface allowing non-specialized users to share data and create "
+"interactive maps."
+msgstr ""
+
+#: ../../organizational/about.txt:11
+msgid ""
+"Data management tools built into GeoNode allow for integrated creation of "
+"data, metadata, and map visualizations. Each dataset in the system can be "
+"shared publicly or restricted to allow access to only specific users. Social"
+" features like user profiles and commenting and rating systems allow for the"
+" development of communities around each platform to facilitate the use, "
+"management, and quality control of the data the GeoNode instance contains."
+msgstr ""
+
+#: ../../organizational/about.txt:13
+msgid ""
+"It is also designed to be a flexible platform that software developers can "
+"extend, modify or integrate against to meet requirements in their own "
+"applications."
+msgstr ""
+
+#: ../../organizational/about.txt:17
+msgid "Online demo"
+msgstr ""
+
+#: ../../organizational/about.txt:19
+msgid ""
+"A live demo of the latest stable build is available at `demo.geonode.org`_."
+msgstr ""
+
+#: ../../organizational/about.txt:21
+msgid ""
+"Anyone may sign up for a user account, upload and style data, create and "
+"share maps, and change permissions. Since it is a demo site, we don’t make "
+"any guarantee that your data and maps will always be there. But it should "
+"hopefully allow you to easily preview the capabilities of GeoNode."
+msgstr ""
+
+#: ../../organizational/about.txt:29
+msgid "Geospatial data storage"
+msgstr ""
+
+#: ../../organizational/about.txt:31
+msgid ""
+"GeoNode allows the user to upload vector (currently only Shapefiles) and "
+"raster data in their original projections using a web form. Vector data is "
+"uploaded in ESRI Shapefile format and satellite imagery and other kinds of "
+"raster data are uploaded as GeoTIFFs."
+msgstr ""
+
+#: ../../organizational/about.txt:34
+msgid ""
+"Special importance is given to standard metadata formats like ISO "
+"19139:2007. After the upload is finished, the user is presented with a form "
+"to fill in the metadata and it is made available using a `CSW`_ interface. "
+"Users may also upload a metadata XML document (in ISO, FGDC, or Dublin Core "
+"format) to fill in key GeoNode metadata elements automatically."
+msgstr ""
+
+#: ../../organizational/about.txt:36
+msgid ""
+"Similarly, GeoNode provides a web based styler, that lets the user change "
+"how the data looks and preview the changes in real time."
+msgstr ""
+
+#: ../../organizational/about.txt:42
+msgid "Data mixing, maps creation"
+msgstr ""
+
+#: ../../organizational/about.txt:44
+msgid ""
+"Once the data has been uploaded, GeoNode lets the user search for it "
+"geographically or via keywords and create maps."
+msgstr ""
+
+#: ../../organizational/about.txt:46
+msgid ""
+"All the layers are automatically reprojected to web mercator for maps "
+"display, making it possible to use different popular base layers, like Open "
+"Street Map, Google Satellite or Bing layers."
+msgstr ""
+
+#: ../../organizational/about.txt:48
+msgid ""
+"Once maps are saved, it is possible to embed them in any webpage or get a "
+"PDF version for printing."
+msgstr ""
+
+#: ../../organizational/about.txt:52
+msgid "GeoNode as a building block"
+msgstr ""
+
+#: ../../organizational/about.txt:54
+msgid ""
+"A handful of other Open Source projects, like :ref:`other_geonode_projects` "
+"extend GeoNode's functionality by tapping into the re-usability of Django "
+"applications."
+msgstr ""
+
+#: ../../organizational/about.txt:56
+msgid ""
+"The development community is very supportive of new projects and contributes"
+" ideas and guidance for newcomers."
+msgstr ""
+
+#: ../../organizational/about.txt:60
+msgid "Convinced! Where do I sign?"
+msgstr ""
+
+#: ../../organizational/about.txt:62
+msgid ""
+"The next obvious steps are to :ref:`quick_installation`, :doc:`read the "
+"tutorials </tutorials/index>` and email geonode-"
+"users+subscribe@googlegroups.com to join the community. Thanks for your "
+"interest!"
+msgstr ""
+
+#: ../../organizational/about.txt:68
+msgid "The registration process for the mailing list is the following:"
+msgstr ""
+
+#: ../../organizational/about.txt:67
+msgid ""
+"Send an email to geonode-users+subscribe@googlegroups.com with any subject "
+"or content"
+msgstr ""
+
+#: ../../organizational/about.txt:68
+msgid ""
+"Get a confirmation notice from geonode-users+subconfirm@googlegroups.com and"
+" comfirm by replying"
+msgstr ""
+
+#: ../../organizational/about.txt:69
+msgid ""
+"Once the above is complete, you are registered and you can start sending "
+"emails to the community"
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:5
+msgid "Community Bylaws"
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:8
+msgid "Committers"
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:10
+msgid ""
+"The GeoNode community is divided into two groups - users and committers.  "
+"There are no requirements or responsibilities to be a GeoNode user.  To be a"
+" committer, you must be voted in by the existing committers (2 +1's and no "
+"-1's; a committer must initiate the vote.)  Non-committers are encouraged to"
+" engage in discussions on the mailing lists, code review, and issue reports "
+"to qualify them to be voted in as committers.  Committers (or PRIMARY "
+"AUTHORS) can be found in the [AUTHORS "
+"file](https://github.com/GeoNode/geonode/blob/dev/AUTHORS)"
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:16
+msgid "Committers must:"
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:14
+msgid ""
+"make useful contributions to the project in the form of commits at least "
+"once in a 6-month period, else they fall back to \"committer emeritus\" "
+"status.  A committer emeritus has no special involvement in the project, but"
+" may request committer privileges from the current body of committers."
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:15
+msgid ""
+"review code contributions, which may come from other committers or from "
+"users.  Users must submit code externally to the main GeoNode repository (ie"
+" as a patch or a github pull request); committers can do this as well if "
+"they see review as particularly important (for example, a patch might affect"
+" a particularly crucial component of GeoNode, or a committer might be "
+"working in a part of the code that he is relatively unfamiliar with.)   A "
+"review should result in either (a) instructions on how to bring the code to "
+"a more acceptable condition or (b) merging the changes in and notifying the "
+"submitter that this has been done."
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:16
+msgid ""
+"Committers also have the option to \"self-review\" and commit changes "
+"directly.  It is at the discretion of individual committers when this is "
+"appropriate, but it should be rare - we encourage committers to only use "
+"this option when they deem a change extremely safe."
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:19
+msgid "GeoNode Improvement Proposals (GNIPS)"
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:21
+msgid ""
+"If a committer thinks a proposed change to the software is particularly "
+"destabilizing or far-reaching, that committer can upgrade the ticket for "
+"that change to a GeoNode Improvement Proposal (GNIP).  GNIP tickets are an "
+"opportunity for committers and users alike to provide feedback about the "
+"design of a proposed feature or architectural change.  The proposal should "
+"be iteratively edited in response to community feedback."
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:23
+msgid ""
+"To upgrade an issue to a GNIP, an active committer should give the ticket "
+"the 'GNIP' label in the issue tracker, and announce the issue on the "
+"developer mailing list."
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:25
+msgid ""
+"If a ticket has a GNIP label, its patch can't be committed unless it also "
+"has the 'Approved' label.  To be approved, it must pass community vote (see "
+"below)."
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:29
+msgid ""
+"When the GNIP is announced, other committers should review and provide "
+"feedback in the issue comments.  Feedback should take the form of:"
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:28
+msgid "+1 (with optional comment)"
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:29
+msgid ""
+"-1, with mandatory rationale and suggestion for a better approach.  The "
+"suggestion may be omitted if the objection doesn't have a straightforward "
+"solution - we don't want to withhold feedback just because problems with a "
+"proposal are hard to solve."
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:31
+msgid ""
+"After receiving feedback, the proposal's author should discuss the feedback "
+"on the list if necessary and adjust the proposal in response."
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:33
+msgid ""
+"A proposal can be Approved when there are 3 +1 responses (including the "
+"author's implicit approval) and no -1 responses from committers; and no "
+"feedback is offered in 3 days.  If a proposal fails to receive multiple +1 "
+"responses within 5 days of the request for feedback it is rejected and the "
+"issue should be **closed** (but the author is free to draft similar "
+"proposals in the future.)  Any committer may reverse or withdraw votes on a "
+"proposal until the proposal is closed."
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:35
+msgid ""
+"If a user would like to submit a GNIP, they are welcome to write it as a "
+"ticket but should find an active committer willing to promote it to GNIP "
+"status."
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:38
+msgid "Project Steering Committee"
+msgstr ""
+
+#: ../../organizational/comm_bylaws.txt:40
+msgid ""
+"In the event that a revision to these bylaws becomes necessary, authority "
+"for that decision lies with the currently presiding Project Steering "
+"Committee (PSC).  The PSC at any time is made up of the top 7 committers "
+"over the past 365 days, by number of commits."
+msgstr ""
+
+#: ../../organizational/community_resources.txt:4
+msgid "Community Resources"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:6
+msgid "GitHub Organization http://github.com/GeoNode"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:11
+msgid "GitHub Project"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:8
+msgid "main page https://github.com/GeoNode/geonode"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:9
+msgid "master https://github.com/GeoNode/geonode/tree/master"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:10
+msgid "dev https://github.com/GeoNode/geonode/tree/dev"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:11
+msgid "Issue Tracker https://github.com/GeoNode/geonode/issues"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:12
+msgid "Pull Requests https://github.com/GeoNode/geonode/pulls"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:15
+msgid "Project Docs & Proposals"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:14
+msgid "Wiki https://github.com/GeoNode/geonode/wiki"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:15
+msgid "Roadmap https://github.com/GeoNode/geonode/wiki/Roadmap-Items"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:16
+msgid ""
+"GNIPs https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:17
+msgid ""
+"Web Pages http://github.com/geonode/geonode.github.com (published to "
+"http://geonode.org)"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:18
+msgid "Docs http://docs.geonode.org/en/latest/index.html"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:19
+msgid "Read the Docs project https://readthedocs.org/projects/geonode/"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:22
+msgid "Workshops http://github.com/geonode/geonode-workshops published to:"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:21
+msgid "http://geonode.org/workshops/user/"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:22
+msgid "http://geonode.org/workshops/admin/"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:23
+msgid "http://geonode.org/workshops/devel/"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:25
+msgid "Testing Infrastructure"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:25
+msgid "Jenkins http://geonode-testing.dev.opengeo.org:8090"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:26
+msgid "Travis-CI https://travis-ci.org/#!/GeoNode/geonode"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:27
+msgid "Localization"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:28
+msgid "Transifex project https://www.transifex.com/projects/p/geonode"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:29
+msgid "Ohloh https://www.ohloh.net/p/geonode"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:30
+msgid "Current Demo Server http://demo.geonode.org/"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:31
+msgid "Latest Beta Demo Site http://beta.dev.geonode.org/"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:32
+msgid "UI/UX Review Site https://sites.google.com/a/opengeo.org/geonode-ui/"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:35
+msgid "Social"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:34
+msgid "Blog http://geonode.org/blog/"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:35
+msgid "Twitter https://twitter.com/geonode"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:36
+msgid "Google+ https://plus.google.com/u/0/b/100587124776656797019/"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:40
+msgid "Mailing Lists"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:38
+msgid "User https://groups.google.com/forum/#!forum/geonode-users"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:39
+msgid ""
+"Developers https://groups.google.com/a/opengeo.org/group/geonode-dev/topics"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:40
+msgid ""
+"Announcements https://groups.google.com/a/opengeo.org/forum/#!forum/geonode-"
+"announcements"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:41
+msgid "Regional (Latin America, Caribbean, Indonesia etc)"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:42
+msgid "IRC irc://irc.freenode.net/geonode (logs?)"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:43
+msgid "Releases http://dev.geonode.org/release/"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:48
+msgid "Packages"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:45
+msgid "https://pypi.python.org/pypi/GeoNode"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:46
+msgid "https://launchpad.net/~geonode"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:47
+msgid "https://launchpad.net/~geonode/+archive/release"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:48
+msgid "https://launchpad.net/~geonode/+archive/testing"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:49
+msgid "https://launchpad.net/~geonode/+archive/snapshots"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:50
+msgid ""
+"Community Bylaws https://github.com/GeoNode/geonode/wiki/Community-Bylaws"
+msgstr ""
+
+#: ../../organizational/community_resources.txt:51
+msgid "General Links https://github.com/GeoNode/geonode/wiki/Geonode-Links"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:5
+msgid "How to contribute to GeoNode's Documentation"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:8
+msgid ""
+"If you feel like adding or changing something in the GeoNode documentation "
+"you are very welcome to do so. The documentation always needs improvement as"
+" the development of the software is going quite fast."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:10
+msgid ""
+"In order to be able to contribute to GeoNode documentation the following "
+"steps have to be done:"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:12
+#: ../../organizational/contribute/contribute_to_documentation.txt:24
+msgid "Create an account on GitHub"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:13
+msgid "Fork our repository"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:14
+msgid "Edit the files in the */docs* directory"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:15
+msgid "Make pull requests"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:17
+msgid ""
+"All these things can generally be done on the web, you won't need to "
+"download anything. But if you want to add images to your documentation you "
+"will have to do some more inital steps, because this can't be done on the "
+"web. To learn about how images can be added to your documentaion and which "
+"additional steps have to be done, read the section *Add images*."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:21
+msgid ""
+"In the following part the general steps will be explained more detailed."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:26
+msgid ""
+"The first step for you will be to create an account on GitHub. Just go to "
+"https://github.com/, find a username that suits you, enter your email and a "
+"password and hit *Sign up for GitHub*. Now you've signed in, you can type "
+"*geonode* into the searching area at the top of the website. On top of the "
+"search results you will find the repository *GeoNode/geonode*. By clicking "
+"on it you will be entering the repository and will be able to see all the "
+"folders and files that are needed for geonode. The files needed for the "
+"documentation can be found in */docs*."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:31
+msgid "Fork a repository"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:33
+msgid ""
+"In order to make changes to these files, you first have to fork this "
+"repository. On the top of the website you can see the following buttons:"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:37
+msgid ""
+"Click on the button *Fork* at the top right and the *geonode* repository "
+"will be forked. You should now be able to see your repository "
+"*your_name/geonode*. If you want to read more about how to fork a repository"
+" go to https://help.github.com/articles/fork-a-repo."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:42
+msgid "Edit files"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:44
+msgid ""
+"To make some changes to already exiting files or to create new files, go to "
+"your GitHub account. Under *repositories* you will find the geonode "
+"repository that you have forked. Click on it and you will again see all the "
+"folders and files GeoNode needs."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:48
+msgid ""
+"Click on the folder *docs* and search for the file that you want to edit. If"
+" you found it, click on it and you will be able to see the content of this "
+"file."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:52
+msgid ""
+"To make changes to this file, hit the button *edit* on the right top. You "
+"can now make your changes or add something to the existing content."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:56
+msgid ""
+"As you can see now, the documentation is written in *reStructeredText*, a "
+"lightweight markup language. To learn how to use it you should read the "
+"documentation that can be found here "
+"http://docutils.sourceforge.net/docs/user/rst/quickref.html. By hitting the "
+"*preview* button you will be able to see how your text it is going to look "
+"like on the web. To save your changes, click on *Commit Changes* at the "
+"bottom of the site. Now you've saved the changes in your repository, but the"
+" original geonode repository still doesn't know anything about that! In "
+"order to tell them that you have made some changes you have to send a *pull "
+"request* (as descriped below)."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:61
+msgid "**Create a new branch**"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:63
+msgid ""
+"If you are planning bigger changes on the structure of the documentation it "
+"is recommended to create a new branch and make your edits here. A new branch"
+" can be created by clicking on the button *branch: master* as shown here."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:68
+msgid ""
+"Just type the name of your new branch, hit enter and your branch will be "
+"created. To learn more about branches it is recommended to take a look here "
+"http://git-scm.com/book/en/Git-Branching-What-a-Branch-Is."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:70
+msgid "Before you start editing make sure that you are in the right branch!"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:73
+msgid "**Create a new folder/file**"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:75
+msgid ""
+"If you want to add a completely new issue to the documentation, you have to "
+"create a new file (and maybe even folder). As you will see there is no "
+"possibility to create an empty folder. You always have to create a new file "
+"as well! This can be done here"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:81
+msgid ""
+"If you click on *create new file here* you can first subdirect to another "
+"folder by typing the *foldername* followed by /. If this folder doesn't "
+"exist until now, one will be created. To create a new file in this folder "
+"just type *filename.rst* into the box and hit enter. A short example on how "
+"to manage this is given here http://i.stack.imgur.com/n3Wg3.gif."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:87
+msgid ""
+"Now a black box will appear where you can add your comments. To save the "
+"file, hit the green *Commit New File* button at the bottom."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:91
+msgid "Add images"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:93
+msgid ""
+"This section is about adding images to your documentation. Providing that "
+"you've read and done the steps described above you can now follow those "
+"further steps."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:96
+msgid "**Install and set up Git**"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:98
+msgid ""
+"To add images to your documentation you have to get your repository onto "
+"your local machine. So far you only had your repository on the web. To be "
+"able to work on your local machine as well, you have to install *git*. To do"
+" so, type::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:103
+msgid "(Usually git has already been installed during geonode installation)"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:105
+msgid ""
+"Before you go further you should do some setup steps (can be found here: "
+"https://help.github.com/articles/set-up-git)."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:107
+msgid "**Clone repository**"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:109
+msgid ""
+"We assume you have already forked the geonode repository. If not, please do "
+"so following _link and return back if ready."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:111
+msgid ""
+"Until now your repository only exists on the web! To get your forked "
+"repository on to your machine, you have to *clone* it. To do so, open a "
+"terminal, go to the folder where you want the projet to be and type::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:116
+msgid ""
+"Now change the active directory to the newly cloned geonode directory "
+"using::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:120
+msgid ""
+"To keep track of the original repository (the geonode repository where you "
+"forked from), you need to add a remote named *upstream*. Therefore type::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:124
+msgid "By typing::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:128
+msgid ""
+"changes not present in your local repository will be pulled in without "
+"modifying your files."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:130
+msgid "**Add folder with images**"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:132
+msgid ""
+"If you've already made some changes and commits to your repository on the "
+"web (during cloning the repository and now), you have to update your "
+"repository on the local machine!"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:134
+msgid "Therefore you have to run the following commands::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:140
+msgid "Or instead you could use::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:144
+msgid ""
+"Your repository should now be up to date! For more information on those "
+"commands go to http://git-scm.com/docs."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:147
+msgid ""
+"If you've created a new branch, and you want to add the new folder to this "
+"branch, make sure you are working on this branch!"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:149
+msgid "Typing::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:153
+msgid ""
+"will show you the current branch. To change this you have to run this "
+"command (*your_branch* is the name of the branch you want to change in)::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:157
+msgid ""
+"Now you can easily add a new folder containing images to your repository. Go"
+" to the repository on your local machine and decide where you want your new "
+"folder containing the images to be (e.g in *docs_example*). There create a "
+"new folder (e.g. *images*) and add the images manually. Once you've done "
+"this, open a terminal and direct to to the folder *docs_example*. To add the"
+" folder *images* including all content to the repository, type::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:163
+msgid "If this command doesn't work, check your path, maybe it is incorrect!"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:165
+msgid ""
+"*Remark*: In order to commit and push the folder, it must not be emtpy!"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:167
+msgid "The next step is to commit the folder/files::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:171
+msgid ""
+"Instead of 'Message' write something like 'add images'. To push the files to"
+" the repository type::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:176
+msgid "Now you are able to see the folder on the web as well!"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:178
+msgid "**Include images**"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:180
+msgid ""
+"To include the images in to your documentation, you have to add the "
+"following lines to your file::"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:185
+msgid ""
+"Be aware that everytime you commit something on the web, you have to make "
+"*git pull* on your machine, to keep it up to date!"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:188
+msgid "Pull Request"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_documentation.txt:190
+msgid ""
+"If you are done with your changes, you can send a pull request. This means, "
+"that you let the core developers know that you have done some changes and "
+"you would like them to review. They can hit accept and your changes will go "
+"in to the main line. The *pull request* can be found here."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:5
+msgid "How to contribute to GeoNode's Translation"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:7
+msgid ""
+"GeoNode uses `Transifex <https://www.transifex.com/projects/p/geonode/>`_ to"
+" translate the webpage and code from english to any other language. To be "
+"able to contribute to the translation, you need to get an account on "
+"transifex."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:9
+msgid "Create account"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:11
+msgid ""
+"Go to `<https://www.transifex.com>`_ and, click *Try it for free* and enter "
+"the needed information to create your account."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:15
+msgid "Join our project"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:17
+msgid ""
+"After activating the link you've got you will be asked whether you want to "
+"start a new project or to join an existing project."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:21
+msgid ""
+"Click *join an existing project* and type *geonode* into the search bar. You"
+" will be directed to the geonode project site on transifex. To join the "
+"team, click on the language you want to add a translation in. Then a button "
+"*Join the team* will appaer. Hit it, and you will become a part of the team."
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:23
+msgid "Add translation"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:25
+msgid ""
+"Click on the language where you want to add a translation. You'll see two "
+"bars, *javascript* and *master*. To start translating, click on one, and hit"
+" *Translate now*. You'll see an interface like this"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:29
+msgid "Click *untranslated* and add your translation like shown below"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:33
+msgid ""
+"When you stop translating, do not forget to hit the green *save* button at "
+"the top right!"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:35
+msgid "Add new language"
+msgstr ""
+
+#: ../../organizational/contribute/contribute_to_translation.txt:37
+msgid "To add a new language, click on *Request language* on the right top."
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:5
+msgid "How to write the Docs"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:7
+msgid ""
+"Here we will describe how to write the documentation using Restructured "
+"Text. Lets dive in"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:9
+msgid "Starting with how we notate a title and subtitles"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:13
+msgid "I am a first 1 level title"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:14
+msgid ""
+"a first order title has an equals sign (=) above and below the title :: "
+"================= top level 1 title ================="
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:21
+msgid "I am a Second 2 level title"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:22
+msgid ""
+"here we use one line of equals signs (=) under the second level title :: top"
+" level 2 title ================="
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:28
+msgid "I am a Third 3 level title"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:29
+msgid ""
+"these are a minus symbol (-) on your keyboard :: top level 3 title "
+"-----------------"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:35
+msgid "I am a Fourth 4 level title"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:36
+msgid ""
+"these are a dots using the period (.) on your keyboard :: top level 4 title "
+"................."
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:42
+msgid "I am a Firth 5 level title"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:43
+msgid ""
+"here we use a plus (+) on your keyboard :: top level 3 title "
+"+++++++++++++++++"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:51
+msgid "Still in Progress"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:53
+msgid "..todo  write up how to do linking"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:55
+msgid "add image"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:56
+msgid "add comment"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:57
+msgid "add code sample"
+msgstr ""
+
+#: ../../organizational/contribute/documentation_guidelines.txt:58
+msgid "create a table"
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:5
+msgid "Contributing to GeoNode"
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:7
+msgid ""
+"If you are interested in helping us to make GeoNode, there are many ways to "
+"do so."
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:10
+msgid "Participate in the Discussion"
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:12
+msgid ""
+"GeoNode has a mailing list (https://groups.google.com/d/forum/geonode-users)"
+" where users can ask and answer questions about the software. There is also "
+"an IRC chat room on Freenode (http://freenode.net/) where users and "
+"developers can discuss GeoNode in real time. Sometimes users also post "
+"interesting tips for managing sites running GeoNode. If you want to help out"
+" with GeoNode, one easy way is to sign up for the mailing list and help "
+"answer questions."
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:18
+msgid "Report Problems"
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:20
+msgid ""
+"While we do our best to keep GeoNode fast and bug-free, problems can and do "
+"arise. Informative bug reports are a key part of the bug fixing process, so "
+"if you do run into a problem with GeoNode, please don't hesitate to report "
+"it on our bug tracker, available online at "
+"http://github.com/GeoNode/geonode/issues. Useful information for bug reports"
+" includes:"
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:24
+msgid ""
+"What were you doing when the bug occurred? Does the problem occur every time"
+" you do that, or only occasionally?"
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:26
+msgid "What were you expecting to happen? What happened instead?"
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:28
+msgid ""
+"What version of the software are you using? Please also note any changes "
+"from the default configuration."
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:30
+msgid ""
+"If there is a data file involved in the bug (such as a Shapefile that "
+"doesn't render properly), please consider including it in the bug report. We"
+" do understand that not all data files are freely distributable."
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:34
+msgid "Write Documentation"
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:36
+msgid ""
+"GeoNode's documentation can always use improvement - there are always more "
+"questions to be answered. For managing contributions to the manual, GeoNode "
+"uses a process similar to that used for managing the code itself. The "
+"documentation is generated from source files in the `docs/` directory within"
+" the GeoNode source repository. See http://sphinx.pocoo.org/ for more "
+"information on the documentation system we use."
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:41
+msgid ""
+"If you want to learn more about contributing to the documentation, please go"
+" ahead to the :ref:`contrib_docu`. We also have some guidelines to help with"
+" writing once you are set up :ref:`doc_guidelines`."
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:44
+msgid "Provide Translations"
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:46
+msgid ""
+"If GeoNode doesn't provide a user interface in your native language, "
+"consider contributing a new translation. To get started here are the "
+"instructions :ref:`contrib_trans`."
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:50
+msgid "Write Code"
+msgstr ""
+
+#: ../../organizational/contribute/index.txt:52
+msgid ""
+"Of course since GeoNode is an open source project we do encourage "
+"contributions of source code as well. If you are interested in making small "
+"changes, you can find an open ticket on "
+"http://github.com/GeoNode/geonode/issues, hack away, and get started on the "
+"Patch Review Process."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:5
+msgid "Patch Review criteria"
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:7
+msgid ""
+"When a patch is rejected in the [[Patch Review Process]], it should be given"
+" a valid review."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:9
+msgid ""
+"This review should point out issues with the patch where it fails to meet "
+"one or more of the following criteria."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:11
+msgid "Major new features must be approved by the Improvement Process"
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:13
+msgid ""
+"GeoNode needs to be coherent software despite the diverse interests driving "
+"its development.  Therefor, major new features need to first be approved "
+"according to the [[Improvement Process]]."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:15
+msgid ""
+"If a patch fails by this criterion, then its developer is welcome to go "
+"through the improvement process to get approval.  Otherwise, they can "
+"refactor their patch into a GeoNode extension."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:17
+msgid "Patches need sufficient documentation"
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:19
+msgid ""
+"We strive to keep GeoNode well-documented.  If a patch contributes "
+"significant functionality to GeoNode that requires documentation to be "
+"understood, the patch review is an opportunity to hold the developer "
+"accountable for providing the adequate documentation."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:21
+msgid "New functionality needs to be internationalized"
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:23
+msgid ""
+"We strive to build GeoNode in a way that can be used in many different "
+"localities, by all languages.  While there is no localization requirement "
+"for GeoNode besides providing default English text, new user-facing features"
+" need to be sufficiently internationalized so that others can write "
+"translations."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:25
+msgid "Design consistency"
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:27
+msgid ""
+"We strive to keep the default user interface for GeoNode appealing for new "
+"users and developer's approaching the project.  If a patch significantly "
+"diminishes the user experience of the software, then a patch may be rejected"
+" with a review of how to improve it."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:29
+msgid ""
+"Good design can sometimes be in the eye of the beholder.  Developer's are "
+"encouraged to consult the community and/or a designer about the user "
+"interface design of their patches, and to be humble in their design "
+"criticisms of others."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:31
+msgid "Code should be covered by automated tests"
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:33
+msgid ""
+"To make development easier for others and guarantee software quality, we "
+"strive to have good automated test coverage in GeoNode.  Patches may fail a "
+"review for having insufficient unit and/or integration tests."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:35
+msgid ""
+"Reviews saying that a patch has insufficient tests should offer actionable "
+"advice on how to improve those tests.  This advice could be to improve code "
+"coverage.  It may also be a list of possible cases that currently lack "
+"tests."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:37
+msgid "Patches should not have known bugs"
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:39
+msgid ""
+"A patch may be rejected for having a known bug, (e.g.) one discovered by "
+"reading the code or testing it at the time of review."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:41
+msgid "Patches should meet GeoNode's code style guidelines"
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:43
+msgid ""
+"New patches should meet GeoNode's code style guidelines.  We follow "
+"different conventions per language:"
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:45
+msgid ""
+"In Java we use the GeoTools/GeoServer convention, essentially the "
+"[conventions recommended by Oracle](http://www.oracle.com/   technetwork/   "
+"java/codeconvtoc-136057.html) modified to make the recommended line length "
+"100 columns instead of 80 to accommodate the long identifiers commonly used "
+"in GeoTools code. The GeoServer project provides an [Eclipse "
+"configuration](http://docs.geoserver.org/stable/en/developer/eclipse-"
+"guide/index.html#eclipse-preferences) which helps to stick to this "
+"convention."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:46
+msgid ""
+"In Python we use the conventions enumerated in "
+"[PEP8](http://www.python.org/dev/peps/pep-0008/). Many editors have plugins "
+"available to assist with conformance to this convention."
+msgstr ""
+
+#: ../../organizational/contribute/review_criteria.txt:47
+msgid ""
+"In JavaScript we use the OpenLayers conventions, described on the "
+"[OpenLayers wiki](http://trac.osgeo.org/openlayers/wiki/CodingStandards)."
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:4
+msgid "GeoNode Patch Review Process"
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:6
+msgid ""
+"This document outlines the code review process for GeoNode code. Each commit"
+" proposed for inclusion in GeoNode should be reviewed by at least one "
+"developer other than the author. For pragmatic reasons, some developers, "
+"referred to in this document as *core committers*, may commit directly to "
+"the GeoNode repository without waiting for review. Such changes are still "
+"subject to review, and may be reverted if they fail any of the [[Review "
+"Criteria]]."
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:11
+msgid ""
+"A related process is [[Improvement Proposals]]. While patch review protects "
+"code quality in the GeoNode project at a small granularity, the Improvement "
+"Proposal process is intended to promote coordinated design and feedback for "
+"larger modifications such as new features or architectural changes."
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:15
+msgid "Goals"
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:17
+msgid ""
+"By requiring a review of code coming into GeoNode, we aim to maintain code "
+"quality within the GeoNode project while still allowing contributions from "
+"the GeoNode community."
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:21
+msgid "Review Criteria"
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:23
+msgid ""
+"Patch reviews should adhere to the standards set in the [[Review Criteria]],"
+" a [[Project Steering Committee]] approved set of criteria for the inclusion"
+" of new code."
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:27
+msgid "Process"
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:29
+msgid ""
+"For contributors who do not have commit access to the GeoNode repository, "
+"the review process is as follows:"
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:31
+msgid "Find or create a ticket describing the feature or bug to be resolved."
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:32
+msgid "Create changes to GeoNode code addressing the ticket."
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:33
+msgid ""
+"Publish those changes and request a review from the GeoNode committers. The "
+"recommended format is a GitHub [pull request](http://help.github.com/pull-"
+"requests/). If you are unable or unwilling to provide a change as a branch "
+"on GitHub, please consult the developer's list for advice."
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:36
+msgid ""
+"At least one GeoNode committer should review the submitted changes. If he "
+"finds the patch acceptable, the changes will be pulled into GeoNode. If "
+"problems are found, then he should list them clearly in order to allow the "
+"original author to update the submission (at which point we return to point "
+"2 in this process.) In the case of a feature idea which is simply not "
+"suitable for inclusion as core GeoNode functionality, the patch may be "
+"rejected outright."
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:41
+msgid ""
+"![Code Review Flow](http://geonode.org/wp-content/uploads/2011/05/code-"
+"review-flow.png)"
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:43
+msgid "The general workflow for code patches coming into GeoNode."
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:45
+msgid ""
+"_Note: If after a few days your patch has not been reviewed by any GeoNode "
+"committer, please feel free to bring it up either in the mailing list or the"
+" IRC channel. The GeoNode community (and it's committers) try to respond "
+"quickly and give adequate feedback to maintain the interest of new potential"
+" members. However, sometimes other responsibilities prevent us from "
+"responding quickly._"
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:48
+msgid "Core Committers"
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:50
+msgid ""
+"It is assumed that core committers are familiar with the quality guidelines "
+"and capable of producing acceptable patches without the need for waiting on "
+"review. Therefore, core committers may make changes without requesting "
+"review first (although they are welcome to request review for code if they "
+"feel it is appropriate.) For commits made without prior review, committers "
+"should review the changes and revert them if they are in violation of the "
+"project quality guidelines."
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:55
+msgid "Becoming a Core Committer"
+msgstr ""
+
+#: ../../organizational/contribute/review_process.txt:57
+msgid ""
+"In order for a developer to become a core committer, he must demonstrate "
+"familiarity with the quality guidelines for the GeoNode project by producing"
+" at least two patches which successfully pass review and are merged without "
+"requiring modification. A candidate for core committer-ship must be "
+"nominated by a member of the [[Project Steering Committee]], and approved "
+"via Apache consensus voting among PSC members."
+msgstr ""
+
+#: ../../organizational/index.txt:5
+msgid "Organizational Documentation"
+msgstr ""
+
+#: ../../organizational/index.txt:7
+msgid ""
+"In this documentation information on existing projects, contributing to "
+"Geonode (code, documentation, translation, ...) and the community itself can"
+" be found."
+msgstr ""
+
+#: ../../organizational/index.txt:9
+msgid ":ref:`about`"
+msgstr ""
+
+#: ../../organizational/index.txt:11
+msgid ":ref:`other_geonode_projects`"
+msgstr ""
+
+#: ../../organizational/index.txt:13
+msgid ":ref:`roadmap`"
+msgstr ""
+
+#: ../../organizational/index.txt:15
+msgid ":ref:`community_resources`"
+msgstr ""
+
+#: ../../organizational/index.txt:17
+msgid ":ref:`links`"
+msgstr ""
+
+#: ../../organizational/index.txt:19
+msgid ":ref:`comm_bylaws`"
+msgstr ""
+
+#: ../../organizational/index.txt:22
+msgid "Contributing"
+msgstr ""
+
+#: ../../organizational/index.txt:24
+msgid ":ref:`contrib`"
+msgstr ""
+
+#: ../../organizational/index.txt:26
+msgid ":ref:`review_process`"
+msgstr ""
+
+#: ../../organizational/index.txt:28
+msgid ":ref:`review_criteria`"
+msgstr ""
+
+#: ../../organizational/index.txt:30
+msgid ":ref:`contrib_trans`"
+msgstr ""
+
+#: ../../organizational/index.txt:32
+msgid ":ref:`contrib_docu`"
+msgstr ""
+
+#: ../../organizational/index.txt:34
+msgid ":ref:`doc_guidelines`"
+msgstr ""
+
+#: ../../organizational/links.txt:5
+msgid "Geonode links"
+msgstr ""
+
+#: ../../organizational/links.txt:8
+msgid "Home Pages"
+msgstr ""
+
+#: ../../organizational/links.txt:10
+msgid "http://geonode.org/ - Main HomePage and Blog"
+msgstr ""
+
+#: ../../organizational/links.txt:11
+msgid "http://dev.geonode.org/trac/ - Trac System for GeoNode"
+msgstr ""
+
+#: ../../organizational/links.txt:12
+msgid "https://github.com/GeoNode/geonode/wiki - GeoNode GitHub Wiki"
+msgstr ""
+
+#: ../../organizational/links.txt:15
+msgid "Source Code"
+msgstr ""
+
+#: ../../organizational/links.txt:17
+msgid ""
+"https://github.com/geonode/geonode - Main Fork master and synth branches"
+msgstr ""
+
+#: ../../organizational/links.txt:18
+msgid "https://github.com/GeoNode/geonode-client - Main Fork of Client"
+msgstr ""
+
+#: ../../organizational/links.txt:19
+msgid ""
+"https://github.com/GeoNode/geonode-integration - Integration Test Suite"
+msgstr ""
+
+#: ../../organizational/links.txt:20
+msgid "https://github.com/GeoNode/geonode/pulls - Open Pull Requests"
+msgstr ""
+
+#: ../../organizational/links.txt:23
+msgid "Other Important"
+msgstr ""
+
+#: ../../organizational/links.txt:25
+msgid ""
+"http://geonode-testing.dev.opengeo.org:8090/ - Continuous Integration Server"
+msgstr ""
+
+#: ../../organizational/links.txt:26
+msgid ""
+"https://github.com/GeoNode/geonode/wiki/Roadmap-Items - GeoNode RoadMap "
+"Items"
+msgstr ""
+
+#: ../../organizational/links.txt:27
+msgid ""
+"https://github.com/GeoNode/geonode/wiki/Proposals-under-discussion - GeoNode"
+" Improvement Proposals"
+msgstr ""
+
+#: ../../organizational/links.txt:30
+msgid "Important Forks"
+msgstr ""
+
+#: ../../organizational/links.txt:32
+msgid "Full List here https://github.com/GeoNode/geonode/network/members"
+msgstr ""
+
+#: ../../organizational/links.txt:34
+msgid "Look at the branches in these Forks"
+msgstr ""
+
+#: ../../organizational/links.txt:36
+msgid "https://github.com/opengeo/geonode"
+msgstr ""
+
+#: ../../organizational/links.txt:37
+msgid "https://github.com/gfdrr/geonode"
+msgstr ""
+
+#: ../../organizational/links.txt:38
+msgid "https://github.com/dwinslow/geonode"
+msgstr ""
+
+#: ../../organizational/links.txt:39
+msgid "https://github.com/ingenieroariel/geonode"
+msgstr ""
+
+#: ../../organizational/links.txt:40
+msgid "https://github.com/jj0hns0n/geonode"
+msgstr ""
+
+#: ../../organizational/links.txt:41
+msgid "https://github.com/ahocevar/geonode"
+msgstr ""
+
+#: ../../organizational/links.txt:42
+msgid "https://github.com/groldan/geonode"
+msgstr ""
+
+#: ../../organizational/links.txt:43
+msgid "https://github.com/AIFDR/geonode"
+msgstr ""
+
+#: ../../organizational/links.txt:44
+msgid "https://github.com/cga-harvard/cga-worldmap"
+msgstr ""
+
+#: ../../organizational/links.txt:45
+msgid "https://github.com/sopac/geonode"
+msgstr ""
+
+#: ../../organizational/links.txt:46
+msgid "https://github.com/dialog-it/geonode"
+msgstr ""
+
+#: ../../organizational/links.txt:47
+msgid "https://github.com/eldarion/geonode"
+msgstr ""
+
+#: ../../organizational/links.txt:50
+msgid "Downstream Projects"
+msgstr ""
+
+#: ../../organizational/links.txt:52
+msgid "https://github.com/aifdr/tsudat2"
+msgstr ""
+
+#: ../../organizational/links.txt:53
+msgid "https://github.com/aifdr/riab"
+msgstr ""
+
+#: ../../organizational/links.txt:54
+msgid "https://github.com/gem/"
+msgstr ""
+
+#: ../../organizational/links.txt:55
+msgid "https://github.com/opengeo/mapstory"
+msgstr ""
+
+#: ../../organizational/links.txt:56
+msgid "https://github.com/dialog-it/anzsm"
+msgstr ""
+
+#: ../../organizational/links.txt:57
+msgid "https://github.com/CIGNo-project/CIGNo"
+msgstr ""
+
+#: ../../organizational/links.txt:58
+msgid "Many More ..."
+msgstr ""
+
+#: ../../organizational/links.txt:61
+msgid "Packaging"
+msgstr ""
+
+#: ../../organizational/links.txt:63
+msgid "https://github.com/GeoNode/geonode-deb"
+msgstr ""
+
+#: ../../organizational/links.txt:64
+msgid "https://github.com/GeoNode/geonode-rpm"
+msgstr ""
+
+#: ../../organizational/links.txt:65
+msgid "https://github.com/GeoNode/chef-geonode"
+msgstr ""
+
+#: ../../organizational/links.txt:68
+msgid "Documentation"
+msgstr ""
+
+#: ../../organizational/links.txt:70
+msgid "http://docs.geonode.org/"
+msgstr ""
+
+#: ../../organizational/links.txt:71
+msgid "https://github.com/GeoNode/geonode/tree/master/docs"
+msgstr ""
+
+#: ../../organizational/links.txt:74
+msgid "Additional Modules"
+msgstr ""
+
+#: ../../organizational/links.txt:76
+msgid "https://github.com/simod/geonode-documents"
+msgstr ""
+
+#: ../../organizational/links.txt:77
+msgid "https://github.com/GFDRR/geonode-registry"
+msgstr ""
+
+#: ../../organizational/links.txt:78
+msgid "https://github.com/eldarion/geonode/branches"
+msgstr ""
+
+#: ../../organizational/links.txt:81
+msgid "Public Sites"
+msgstr ""
+
+#: ../../organizational/links.txt:83
+msgid "http://demo.geonode.org/ - GeoNode Demo Site"
+msgstr ""
+
+#: ../../organizational/links.txt:84
+msgid "http://demo.riskinabox.org/ - Risiko (Risk in a Box) demo site"
+msgstr ""
+
+#: ../../organizational/links.txt:85
+msgid "http://cigno.ve.ismar.cnr.it/ - CIGNo network: CNR - ISMAR Node"
+msgstr ""
+
+#: ../../organizational/links.txt:86
+msgid "... Many Many More"
+msgstr ""
+
+#: ../../organizational/links.txt:89
+msgid "Social Media"
+msgstr ""
+
+#: ../../organizational/links.txt:91
+msgid "http://twitter.com/geonode"
+msgstr ""
+
+#: ../../organizational/projects.txt:5
+msgid "GeoNode Projects"
+msgstr ""
+
+#: ../../organizational/projects.txt:7
+msgid ""
+"This page is an attempt to collect information about downstream projects "
+"using GeoNode as a base. Please email the geonode@librelist.com list with "
+"your project description to be included."
+msgstr ""
+
+#: ../../organizational/projects.txt:10
+msgid "UCDavis ICE"
+msgstr ""
+
+#: ../../organizational/projects.txt:12
+msgid "http://maps.ice.ucdavis.edu"
+msgstr ""
+
+#: ../../organizational/projects.txt:14
+msgid ""
+"Still in the early stages but will become the GIS repository for the "
+"university lab I work for (20+ people). That means it will be where we put "
+"all of our unique GIS data (at least 1 TB) for internal and external "
+"retrieval. To get and idea of what that could mean, you can see a list of "
+"projects we're working on right now on."
+msgstr ""
+
+#: ../../organizational/projects.txt:20
+msgid "http://ice.ucdavis.edu"
+msgstr ""
+
+#: ../../organizational/projects.txt:22
+msgid ""
+"Our primary focus: Making it easy to create web services from any of our "
+"data. Including building groups that can be lumped together in separate WMS "
+"capabilites. GIS data distribution including a raw data link and WCS "
+"services. Metadata searching."
+msgstr ""
+
+#: ../../organizational/projects.txt:28
+msgid ""
+"The only customization we've done so far is to change the upload to only be "
+"allowed from selected members of our site. Also of note several of our "
+"layers are fed from postgis outside of the geonode setup."
+msgstr ""
+
+#: ../../organizational/projects.txt:33
+msgid "Harvard WorldMap"
+msgstr ""
+
+#: ../../organizational/projects.txt:35
+msgid ""
+"WorldMap is a GeoNode project being developed by the Center for Geographic "
+"Analysis (CGA) at Harvard University to lower barriers for those who wish to"
+" explore, visualize, edit, collaborate with, and publish geographically "
+"referenced information.  WorldMap currently allows users to:"
+msgstr ""
+
+#: ../../organizational/projects.txt:37
+msgid ""
+"Create and edit point, line or polygon layers online and link map features "
+"to multimedia content"
+msgstr ""
+
+#: ../../organizational/projects.txt:38
+msgid ""
+"Search and display GeoRSS feeds from the Harvard Geospatial Library, "
+"YouTube, and Picasa."
+msgstr ""
+
+#: ../../organizational/projects.txt:39
+msgid "Display layers from ArcGIS REST services."
+msgstr ""
+
+#: ../../organizational/projects.txt:40
+msgid ""
+"View a list of saved edits made to a map and revert to previously saved "
+"versions of the map."
+msgstr ""
+
+#: ../../organizational/projects.txt:41
+msgid ""
+"Search for layers by keywords and geographic extent directly from a map "
+"page."
+msgstr ""
+
+#: ../../organizational/projects.txt:42
+msgid "Create custom URL's for maps"
+msgstr ""
+
+#: ../../organizational/projects.txt:44
+msgid "WorldMap: http://worldmap.harvard.edu"
+msgstr ""
+
+#: ../../organizational/projects.txt:45
+msgid "Github code: https://github.com/cga-harvard/cga-worldmap"
+msgstr ""
+
+#: ../../organizational/projects.txt:48
+msgid "Montagne Aperte2"
+msgstr ""
+
+#: ../../organizational/projects.txt:50
+msgid ""
+"Montagne Aperte2 is Luca Cassagrande's GeoNode application. Once it is done,"
+" It will be used by engineers to publish services, data and maps. Some minor"
+" changes from the default version:"
+msgstr ""
+
+#: ../../organizational/projects.txt:52
+msgid "Graphic"
+msgstr ""
+
+#: ../../organizational/projects.txt:53
+msgid "GPX format for download (Required for hikers)"
+msgstr ""
+
+#: ../../organizational/projects.txt:54
+msgid "Ushahidi integration (not yet defined)"
+msgstr ""
+
+#: ../../organizational/projects.txt:56
+msgid "http://www.montagneaperte.it"
+msgstr ""
+
+#: ../../organizational/projects.txt:59
+msgid "MetroBoston DataCommon"
+msgstr ""
+
+#: ../../organizational/projects.txt:61
+msgid ""
+"MetroBoston DataCommon is a customized GeoNode instance and serves as the "
+"main data dissemination platform for the Metropolitan Area Planning Council "
+"in the Metro Boston region."
+msgstr ""
+
+#: ../../organizational/projects.txt:63
+msgid "In addition to GeoNode's core features,"
+msgstr ""
+
+#: ../../organizational/projects.txt:65
+msgid ""
+"it integrates an open source Flash-based data visualization software "
+"(Weave), similar to GeoNode's map composer, with GeoNode's permission "
+"architecture;"
+msgstr ""
+
+#: ../../organizational/projects.txt:66
+msgid ""
+"it adds a reporting application, called \"Community Snapshots\", to render "
+"pre-defined visual reports for a given set of regional units."
+msgstr ""
+
+#: ../../organizational/projects.txt:67
+msgid ""
+"it includes CMS-like functionality for content-editors to create static "
+"pages on the plattform;"
+msgstr ""
+
+#: ../../organizational/projects.txt:69
+msgid "On the roadmap:"
+msgstr ""
+
+#: ../../organizational/projects.txt:71
+msgid "Comments and ratings - enable data and visualization conversations;"
+msgstr ""
+
+#: ../../organizational/projects.txt:72
+msgid ""
+"Data Stories - easy to use data walk-throughs to educate users how to read "
+"and work with data and indicators;"
+msgstr ""
+
+#: ../../organizational/projects.txt:73
+msgid "User groups - for organizations or topic related;"
+msgstr ""
+
+#: ../../organizational/projects.txt:74
+msgid ""
+"Social media integration - allow users to share their visualizations, data "
+"and maps on Facebook and Twitter."
+msgstr ""
+
+#: ../../organizational/projects.txt:76
+msgid "http://metrobostondatacommon.org/ Github: https://github.com/mapc/mbdc"
+msgstr ""
+
+#: ../../organizational/roadmap.txt:5
+msgid "Roadmap Process"
+msgstr ""
+
+#: ../../organizational/roadmap.txt:8
+msgid ""
+"The GeoNode Roadmap Process is designed to complement the more technical "
+"GeoNode [[Improvement Proposals]] and strives to make it easier for the "
+"various organizations invested in GeoNode to collaborate on features of "
+"common interest."
+msgstr ""
+
+#: ../../organizational/roadmap.txt:10
+msgid ""
+"It is based on the `roadmap items "
+"<https://spreadsheets.google.com/a/opengeo.org/spreadsheet/ccc?key=0AklXlBUnMqOrdDNackdvX3ZRS0Fha0xCeGhjSjZ1dEE>`_"
+" developed at the `GeoNode Roadmapping Summit <http://geonode.org/2011/05"
+"/roadmapping-summit/>`_ held in May 2011."
+msgstr ""
+
+#: ../../organizational/roadmap.txt:12
+msgid ""
+"Overall, the process for adding items to the collective roadmap is as "
+"follows:"
+msgstr ""
+
+#: ../../organizational/roadmap.txt:14
+msgid "Organizational partner has an intent to add a feature to the roadmap"
+msgstr ""
+
+#: ../../organizational/roadmap.txt:15
+msgid ""
+"Organizational partner communicates with the `organizational partners list "
+"<https://groups.google.com/a/opengeo.org/group/geonode-org/>`_ about the "
+"change to gauge interest and determine who else is committed to making it "
+"happen"
+msgstr ""
+
+#: ../../organizational/roadmap.txt:16
+msgid ""
+"Organizational partner creates a feature specification on the wiki to "
+"further flesh out the idea"
+msgstr ""
+
+#: ../../organizational/roadmap.txt:17
+msgid ""
+"Organizational partner finds a committer on the `developer list "
+"<https://groups.google.com/a/opengeo.org/group/geonode-dev/>`_ to shepherd "
+"the roadmap item through the GeoNode [[Improvements Process | Improvement "
+"Proposals]]"
+msgstr ""
+
+#: ../../organizational/roadmap.txt:19
+msgid "Each roadmap item will go through four stages:"
+msgstr ""
+
+#: ../../organizational/roadmap.txt:21
+msgid "Descriptive Stage (under discussion/\"Active\")"
+msgstr ""
+
+#: ../../organizational/roadmap.txt:22
+msgid "Technical Stage"
+msgstr ""
+
+#: ../../organizational/roadmap.txt:23
+msgid "Development Stage"
+msgstr ""
+
+#: ../../organizational/roadmap.txt:24
+msgid "Released"
+msgstr ""
+
+#: ../../organizational/roadmap.txt:26
+msgid ""
+"After communicating on the `organizational partners list "
+"<https://groups.google.com/a/opengeo.org/group/geonode-org/>`_ the roadmap "
+"items enters the *Descriptive Stage* and must have a wiki page that lays out"
+" the description, user stories, and other interested parties. Optionally, "
+"the roadmap item will also include an idea of the difficulty and goals as "
+"well as any wireframes, technical diagrams, or prior art."
+msgstr ""
+
+#: ../../organizational/roadmap.txt:28
+msgid ""
+"A roadmap item enters the *Technical Stage* once a committer has been found "
+"to shepherd the roadmap item through the [[GNIP | Improvement Proposals]] "
+"process, then the wiki page must contain a clear sense of the technical "
+"assumptions, requirements or dependencies, and suggested implementation. "
+"Some roadmap items may need to be divided into multiple independent GNIP "
+"proposals."
+msgstr ""
+
+#: ../../organizational/roadmap.txt:30
+msgid ""
+"Once it passes through the [[GNIP | Improvement Proposals]] process, a "
+"roadmap item enters the *Development Stage* on its way to *Release*."
+msgstr ""
+
+#: ../../organizational/roadmap.txt:32
+msgid "[[RoadMap-Items]]"
+msgstr ""

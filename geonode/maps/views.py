@@ -47,11 +47,11 @@ from geonode.maps.forms import MapForm
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
 from geonode.documents.models import get_related_documents
-
+from geonode.utils import ogc_server_settings
 
 logger = logging.getLogger("geonode.maps.views")
 
-_user, _password = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD']
+_user, _password = ogc_server_settings.credentials
 
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
@@ -331,7 +331,7 @@ def new_map_config(request):
                 layers.append(MapLayer(
                     map = map_obj,
                     name = layer.typename,
-                    ows_url = settings.OGC_SERVER['default']['LOCATION'] + "wms",
+                    ows_url = ogc_server_settings.public_url + "wms",
                     layer_params=json.dumps( layer.attribute_config()),
                     visibility = True
                 ))
@@ -378,7 +378,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
 
     map_status = dict()
     if request.method == 'POST':
-        url = "%srest/process/batchDownload/launch/" % settings.OGC_SERVER['default']['LOCATION']
+        url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
 
         def perm_filter(layer):
             return request.user.has_perm('layers.view_layer', obj=layer)
@@ -424,7 +424,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
          "locked_layers": locked_layers,
          "remote_layers": remote_layers,
          "downloadable_layers": downloadable_layers,
-         "geoserver" : settings.OGC_SERVER['default']['LOCATION'],
+         "geoserver" : ogc_server_settings.LOCATION,
          "site" : settings.SITEURL
     }))
 
@@ -436,7 +436,7 @@ def map_download_check(request):
     try:
         layer = request.session["map_status"]
         if type(layer) == dict:
-            url = "%srest/process/batchDownload/status/%s" % (settings.OGC_SERVER['default']['LOCATION'],layer["id"])
+            url = "%srest/process/batchDownload/status/%s" % (ogc_server_settings.LOCATION,layer["id"])
             resp,content = http_client.request(url,'GET')
             status= resp.status
             if resp.status == 400:

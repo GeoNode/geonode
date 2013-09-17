@@ -4,12 +4,13 @@
 # 
 # Translators:
 # Opros <anto.opro@gmail.com>, 2013
+# Opros <anto.opro@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-15 12:41-0500\n"
-"PO-Revision-Date: 2013-06-20 01:15+0000\n"
+"PO-Revision-Date: 2013-09-05 02:20+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/geonode/language/it/)\n"
 "MIME-Version: 1.0\n"

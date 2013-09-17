@@ -176,6 +176,7 @@ $(function(){
                     }));
                 }
             }
+            rateMore();
         });
     }
     

@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="modal-body" id="permissions-body" >
-  <div class="control-group">
+  <div class="control-group" id="permission-view-download" >
     <label class="control-label"><strong>{% trans "Who can view and download this data?" %}</strong></label>
     <div class="controls">
       <label class="radio inline">
@@ -17,7 +17,7 @@
       </label>
     </div>
   </div>
-  <div class="control-group">
+  <div class="control-group" id="permission-edit" >
     <label class="control-label"><strong>{% trans "Who can edit this data?" %}</strong></label>
     <div class="controls">
       <label class="radio">

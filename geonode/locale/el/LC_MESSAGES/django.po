@@ -1,39 +1,43 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
+# kalxas <gcpp.kalxas@gmail.com>, 2013
 # kalxas <gcpp.kalxas@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-19 20:40-0500\n"
-"PO-Revision-Date: 2013-06-20 01:21+0000\n"
+"POT-Creation-Date: 2013-09-04 18:18-0700\n"
+"PO-Revision-Date: 2013-09-05 01:20+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
-"Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/"
-"el/)\n"
-"Language: el\n"
+"Language-Team: Greek (http://www.transifex.com/projects/p/geonode/language/el/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: el\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: utils.py:214 security/enumerations.py:28
+#: utils.py:319 security/enumerations.py:28
 msgid "Anonymous Users"
 msgstr "Ανώνυμοι Χρήστες"
 
-#: utils.py:218 security/enumerations.py:29
+#: utils.py:323 security/enumerations.py:29
 msgid "Registered Users"
 msgstr "Εγγεγραμμένοι Χρήστες"
 
-#: utils.py:227
+#: utils.py:332
 msgid "User"
 msgstr "Χρήστης"
 
-#: utils.py:559
+#: utils.py:664
 msgid "Permission Denied"
 msgstr "Πρόσβαση Απορρίφθηκε"
+
+#: views.py:105
+msgid "You are not permitted to modify this object"
+msgstr ""
 
 #: base/enumerations.py:26
 msgid "series"
@@ -147,1393 +151,1286 @@ msgstr "τα δεδομένα ανανεώνονται δύο φορές το έ
 msgid "data is updated every three months"
 msgstr "τα δεδομένα ανανεώνονται κάθε τρείς μήνες"
 
-#: base/enumerations.py:61
-msgid ""
-"exclusive right to the publication, production, or sale of the rights to a "
-"literary, dramatic, musical, or artistic work, or to the use of a commercial "
-"print or label, granted by law for a specified period of time to an author, "
-"composer, artist, distributor"
-msgstr ""
-
-#: base/enumerations.py:62
-msgid ""
-"rights to financial benefit from and control of distribution of non-tangible "
-"property that is a result of creativity"
-msgstr ""
-
-#: base/enumerations.py:63
-msgid "formal permission to do something"
-msgstr ""
-
-#: base/enumerations.py:64
-msgid "limitation not listed"
-msgstr ""
-
-#: base/enumerations.py:65
-msgid ""
-"government has granted exclusive right to make, sell, use or license an "
-"invention or discovery"
-msgstr ""
-
-#: base/enumerations.py:66
-msgid "produced or sold information awaiting a patent"
-msgstr ""
-
-#: base/enumerations.py:67
-msgid "withheld from general circulation or disclosure"
-msgstr ""
-
-#: base/enumerations.py:68
-msgid ""
-"a name, symbol, or other device identifying a product, officially registered "
-"and legally restricted to the use of the owner or manufacturer"
-msgstr ""
-
-#: base/enumerations.py:72
-msgid "grid data"
-msgstr "καναβοποιημένα δεδομένα"
-
-#: base/enumerations.py:74
-msgid ""
-"three-dimensional view formed by the intersecting homologous           rays "
-"of an overlapping pair of images"
-msgstr ""
-"τρισδιάστατη προβολή που σχηματίζεται από τις τεμνόμενες ομόλογες ακτίνες σε "
-"ένα επικαλυπτόμενο ζεύγος εικόνων"
-
 #: base/enumerations.py:76
-msgid "textual or tabular data"
-msgstr "λεκτικά ή πινακοποιημένα δεδομένα"
-
-#: base/enumerations.py:77
-msgid "triangulated irregular network"
-msgstr "μη κανονικό δίκτυο τριγωνισμού (TIN)"
-
-#: base/enumerations.py:78
-msgid "vector data"
-msgstr "διανυσματικά δεδομένα"
-
-#: base/enumerations.py:83
-msgid "information pertaining to earth sciences"
-msgstr "πληροφορία που αφορά τις επιστήμες της γης"
-
-#: base/enumerations.py:84
-msgid "rearing of animals and/or cultivation of plants"
-msgstr "εκτροφή των ζώων και / ή καλλιέργεια των φυτών"
-
-#: base/enumerations.py:85
-msgid "height above or below sea level"
-msgstr "υψόμετρο πάνω ή κάτω από την μέση στάθμη της θάλασσας"
-
-#: base/enumerations.py:87
-msgid ""
-"energy, water and waste systems and communications infrastructure           "
-"and services"
-msgstr ""
-"ενέργεια, νερό, συστήματα αποβλήτων και συστήματα επικοινωνίας υποδομών και "
-"υπηρεσιών"
-
-#: base/enumerations.py:90
-msgid ""
-"features and characteristics of salt water bodies (excluding           "
-"inland waters)"
-msgstr ""
-"οντότητες και χαρακτηριστικά των θαλάσσιων υδάτων (πλην των εσωτερικών "
-"υδάτων)"
-
-#: base/enumerations.py:92
-msgid "legal land descriptions"
-msgstr "νομικές περιγραφές γης"
-
-#: base/enumerations.py:94
-msgid ""
-"inland water features, drainage systems and           their characteristics"
-msgstr ""
-"χαρακτηριστικά των επίγειων υδάτων, συστήματα αποχέτευσης και τα "
-"χαρακτηριστικά τους"
-
-#: base/enumerations.py:96
-msgid "military bases, structures, activities"
-msgstr "στρατιωτικές βάσεις, δομές, δραστηριότητες"
-
-#: base/enumerations.py:97
-msgid "environmental resources, protection and conservation"
-msgstr "περιβαλλοντικοί πόροι, προστασία και διατήρηση"
-
-#: base/enumerations.py:98
-msgid "positional information and services"
-msgstr "πληροφορίες θέσης και υπηρεσίες"
-
-#: base/enumerations.py:99
-msgid "economic activities, conditions and employment"
-msgstr "οικονομικές δραστηριότητες, συνθήκες και απασχόληση"
-
-#: base/enumerations.py:101
-msgid ""
-"information used for appropriate actions for future use of the           land"
-msgstr ""
-"πληροφορίες που χρησιμοποιούνται για κατάλληλα μέτρα για τη μελλοντική χρήση "
-"της γης"
-
-#: base/enumerations.py:103
-msgid "flora and/or fauna in natural environment"
-msgstr "χλωρίδα ή / και πανίδα στο φυσικό περιβάλλον"
-
-#: base/enumerations.py:104
-msgid "health, health services, human ecology, and safety"
-msgstr "υγεία, υπηρεσίες υγείας, ανθρώπινη οικολογία και ασφάλεια"
-
-#: base/enumerations.py:105
-msgid "base maps"
-msgstr "χάρτες υποβάθρου"
-
-#: base/enumerations.py:106
-msgid "means and aids for conveying persons and/or goods"
-msgstr "μέσα και βοηθήματα για τη μεταφορά προσώπων ή / και αγαθών"
-
-#: base/enumerations.py:107
-msgid "characteristics of society and cultures"
-msgstr "χαρακτηριστικά της κοινωνίας και των πολιτισμών"
-
-#: base/enumerations.py:108
-msgid "man-made construction"
-msgstr "ανθρωπογενείς κατασκευές"
-
-#: base/enumerations.py:110
-msgid "processes and phenomena of the atmosphere"
-msgstr "διαδικασίες και φαινόμενα της ατμόσφαιρας"
-
-#: base/enumerations.py:129
 msgid "No information provided"
 msgstr "Δεν παρέχεται καμία πληροφορία"
 
-#: base/enumerations.py:133
+#: base/enumerations.py:80
 msgid "Afghanistan"
 msgstr "Αφγανιστάν"
 
-#: base/enumerations.py:134
+#: base/enumerations.py:81
 msgid "Aland Islands"
 msgstr "Νήσοι Άλαντ"
 
-#: base/enumerations.py:135
+#: base/enumerations.py:82
 msgid "Albania"
 msgstr "Αλβανία"
 
-#: base/enumerations.py:136
+#: base/enumerations.py:83
 msgid "Algeria"
 msgstr "Αλγερία"
 
-#: base/enumerations.py:137
+#: base/enumerations.py:84
 msgid "American Samoa"
 msgstr "Αμερικανική Σαμόα"
 
-#: base/enumerations.py:138
+#: base/enumerations.py:85
 msgid "Andorra"
 msgstr "Ανδόρα"
 
-#: base/enumerations.py:139
+#: base/enumerations.py:86
 msgid "Angola"
 msgstr "Ανγκόλα"
 
-#: base/enumerations.py:140
+#: base/enumerations.py:87
 msgid "Anguilla"
 msgstr "Ανγκουίλα"
 
-#: base/enumerations.py:141
+#: base/enumerations.py:88
 msgid "Antigua and Barbuda"
 msgstr "Αντίγκουα και Μπαρμπούντα"
 
-#: base/enumerations.py:142
+#: base/enumerations.py:89
 msgid "Argentina"
 msgstr "Αργεντινή"
 
-#: base/enumerations.py:143
+#: base/enumerations.py:90
 msgid "Armenia"
 msgstr "Αρμενία"
 
-#: base/enumerations.py:144
+#: base/enumerations.py:91
 msgid "Aruba"
 msgstr "Αρούμπα"
 
-#: base/enumerations.py:145
+#: base/enumerations.py:92
 msgid "Australia"
 msgstr "Αυστραλία"
 
-#: base/enumerations.py:146
+#: base/enumerations.py:93
 msgid "Austria"
 msgstr "Αυστρία"
 
-#: base/enumerations.py:147
+#: base/enumerations.py:94
 msgid "Azerbaijan"
 msgstr "Αζερμπαϊτζάν"
 
-#: base/enumerations.py:148
+#: base/enumerations.py:95
 msgid "Bahamas"
 msgstr "Μπαχάμες"
 
-#: base/enumerations.py:149
+#: base/enumerations.py:96
 msgid "Bahrain"
 msgstr "Μπαχρέιν"
 
-#: base/enumerations.py:150
+#: base/enumerations.py:97
 msgid "Bangladesh"
 msgstr "Μπανγκλαντές"
 
-#: base/enumerations.py:151
+#: base/enumerations.py:98
 msgid "Barbados"
 msgstr "Μπαρμπάντος"
 
-#: base/enumerations.py:152
+#: base/enumerations.py:99
 msgid "Belarus"
 msgstr "Λευκορωσία"
 
-#: base/enumerations.py:153
+#: base/enumerations.py:100
 msgid "Belgium"
 msgstr "Βέλγιο"
 
-#: base/enumerations.py:154
+#: base/enumerations.py:101
 msgid "Belize"
 msgstr "Μπελίζ"
 
-#: base/enumerations.py:155
+#: base/enumerations.py:102
 msgid "Benin"
 msgstr "Μπενίν"
 
-#: base/enumerations.py:156
+#: base/enumerations.py:103
 msgid "Bermuda"
 msgstr "Βερμούδα"
 
-#: base/enumerations.py:157
+#: base/enumerations.py:104
 msgid "Bhutan"
 msgstr "Μπουτάν"
 
-#: base/enumerations.py:158
+#: base/enumerations.py:105
 msgid "Bolivia"
 msgstr "Βολιβία"
 
-#: base/enumerations.py:159
+#: base/enumerations.py:106
 msgid "Bosnia and Herzegovina"
 msgstr "Βοσνία-Ερζεγοβίνη"
 
-#: base/enumerations.py:160
+#: base/enumerations.py:107
 msgid "Botswana"
 msgstr "Μποτσουάνα"
 
-#: base/enumerations.py:161
+#: base/enumerations.py:108
 msgid "Brazil"
 msgstr "Βραζιλία"
 
-#: base/enumerations.py:162
+#: base/enumerations.py:109
 msgid "British Virgin Islands"
 msgstr "Βρετανικές Παρθένοι Νήσοι"
 
-#: base/enumerations.py:163
+#: base/enumerations.py:110
 msgid "Brunei Darussalam"
 msgstr "Μπρουνέι Νταρουσαλάμ"
 
-#: base/enumerations.py:164
+#: base/enumerations.py:111
 msgid "Bulgaria"
 msgstr "Βουλγαρία"
 
-#: base/enumerations.py:165
+#: base/enumerations.py:112
 msgid "Burkina Faso"
 msgstr "Μπουρκίνα Φάσο"
 
-#: base/enumerations.py:166
+#: base/enumerations.py:113
 msgid "Burundi"
 msgstr "Μπουρούντι"
 
-#: base/enumerations.py:167
+#: base/enumerations.py:114
 msgid "Cambodia"
 msgstr "Καμπότζη"
 
-#: base/enumerations.py:168
+#: base/enumerations.py:115
 msgid "Cameroon"
 msgstr "Καμερούν"
 
-#: base/enumerations.py:169
+#: base/enumerations.py:116
 msgid "Canada"
 msgstr "Καναδάς"
 
-#: base/enumerations.py:170
+#: base/enumerations.py:117
 msgid "Cape Verde"
 msgstr "Πράσινο Ακρωτήριο"
 
-#: base/enumerations.py:171
+#: base/enumerations.py:118
 msgid "Cayman Islands"
 msgstr "Νησιά Καϊμάν"
 
-#: base/enumerations.py:172
+#: base/enumerations.py:119
 msgid "Central African Republic"
 msgstr "Κεντροαφρικανική Δημοκρατία"
 
-#: base/enumerations.py:173
+#: base/enumerations.py:120
 msgid "Chad"
 msgstr "Τσαντ"
 
-#: base/enumerations.py:174
+#: base/enumerations.py:121
 msgid "Channel Islands"
 msgstr "Νησιά της Μάγχης"
 
-#: base/enumerations.py:175
+#: base/enumerations.py:122
 msgid "Chile"
 msgstr "Χιλή"
 
-#: base/enumerations.py:176
+#: base/enumerations.py:123
 msgid "China"
 msgstr "Κίνα"
 
-#: base/enumerations.py:177
+#: base/enumerations.py:124
 msgid "China - Hong Kong"
 msgstr "Κίνα - Χονγκ Κονγκ"
 
-#: base/enumerations.py:178
+#: base/enumerations.py:125
 msgid "China - Macao"
 msgstr "Κίνα - Μακάο"
 
-#: base/enumerations.py:179
+#: base/enumerations.py:126
 msgid "Colombia"
 msgstr "Κολομβία"
 
-#: base/enumerations.py:180
+#: base/enumerations.py:127
 msgid "Comoros"
 msgstr "Κομόρες"
 
-#: base/enumerations.py:181
+#: base/enumerations.py:128
 msgid "Congo"
 msgstr "Κογκό"
 
-#: base/enumerations.py:182
+#: base/enumerations.py:129
 msgid "Cook Islands"
 msgstr "Νήσοι Κουκ"
 
-#: base/enumerations.py:183
+#: base/enumerations.py:130
 msgid "Costa Rica"
 msgstr "Κόστα Ρίκα"
 
-#: base/enumerations.py:184
+#: base/enumerations.py:131
 msgid "Cote d'Ivoire"
 msgstr "Ακτή Ελεφαντοστού"
 
-#: base/enumerations.py:185
+#: base/enumerations.py:132
 msgid "Croatia"
 msgstr "Κροατία"
 
-#: base/enumerations.py:186
+#: base/enumerations.py:133
 msgid "Cuba"
 msgstr "Κούβα"
 
-#: base/enumerations.py:187
+#: base/enumerations.py:134
 msgid "Cyprus"
 msgstr "Κύπρος"
 
-#: base/enumerations.py:188
+#: base/enumerations.py:135
 msgid "Czech Republic"
 msgstr "Δημοκρατία της Τσεχίας"
 
-#: base/enumerations.py:189
+#: base/enumerations.py:136
 msgid "Democratic People's Republic of Korea"
 msgstr "Λαϊκή Δημοκρατία της Κορέας"
 
-#: base/enumerations.py:190
+#: base/enumerations.py:137
 msgid "Democratic Republic of the Congo"
 msgstr "Λαϊκή Δημοκρατία του Κονγκό"
 
-#: base/enumerations.py:191
+#: base/enumerations.py:138
 msgid "Denmark"
 msgstr "Δανία"
 
-#: base/enumerations.py:192
+#: base/enumerations.py:139
 msgid "Djibouti"
 msgstr "Τζιμπουτί"
 
-#: base/enumerations.py:193
+#: base/enumerations.py:140
 msgid "Dominica"
 msgstr "Ντομίνικα"
 
-#: base/enumerations.py:194
+#: base/enumerations.py:141
 msgid "Dominican Republic"
 msgstr "Δομινικανή Δημοκρατία"
 
-#: base/enumerations.py:195
+#: base/enumerations.py:142
 msgid "Ecuador"
 msgstr "Εκουαδόρ"
 
-#: base/enumerations.py:196
+#: base/enumerations.py:143
 msgid "Egypt"
 msgstr "Αίγυπτος"
 
-#: base/enumerations.py:197
+#: base/enumerations.py:144
 msgid "El Salvador"
 msgstr "Ελ Σαλβαδόρ"
 
-#: base/enumerations.py:198
+#: base/enumerations.py:145
 msgid "Equatorial Guinea"
 msgstr "Ισημερινή Γουινέα"
 
-#: base/enumerations.py:199
+#: base/enumerations.py:146
 msgid "Eritrea"
 msgstr "Ερυθραία"
 
-#: base/enumerations.py:200
+#: base/enumerations.py:147
 msgid "Estonia"
 msgstr "Εσθονία"
 
-#: base/enumerations.py:201
+#: base/enumerations.py:148
 msgid "Ethiopia"
 msgstr "Αιθιοπία"
 
-#: base/enumerations.py:202
+#: base/enumerations.py:149
 msgid "Faeroe Islands"
 msgstr "Νήσοι Φερόες"
 
-#: base/enumerations.py:203
+#: base/enumerations.py:150
 msgid "Falkland Islands (Malvinas)"
 msgstr "Νησιά Φώκλαντ (Μαλβίνες)"
 
-#: base/enumerations.py:204
+#: base/enumerations.py:151
 msgid "Fiji"
 msgstr "Φίτζι"
 
-#: base/enumerations.py:205
+#: base/enumerations.py:152
 msgid "Finland"
 msgstr "Φινλανδία"
 
-#: base/enumerations.py:206
+#: base/enumerations.py:153
 msgid "France"
 msgstr "Γαλλία"
 
-#: base/enumerations.py:207
+#: base/enumerations.py:154
 msgid "French Guiana"
 msgstr "Γαλλική Γουιάνα"
 
-#: base/enumerations.py:208
+#: base/enumerations.py:155
 msgid "French Polynesia"
 msgstr "Γαλλική Πολυνησία"
 
-#: base/enumerations.py:209
+#: base/enumerations.py:156
 msgid "Gabon"
 msgstr "Γκαμπόν"
 
-#: base/enumerations.py:210
+#: base/enumerations.py:157
 msgid "Gambia"
 msgstr "Γκάμπια"
 
-#: base/enumerations.py:211
+#: base/enumerations.py:158
 msgid "Georgia"
 msgstr "Γεωργία"
 
-#: base/enumerations.py:212
+#: base/enumerations.py:159
 msgid "Germany"
 msgstr "Γερμανία"
 
-#: base/enumerations.py:213
+#: base/enumerations.py:160
 msgid "Ghana"
 msgstr "Γκάνα"
 
-#: base/enumerations.py:214
+#: base/enumerations.py:161
 msgid "Gibraltar"
 msgstr "Γιβραλτάρ"
 
-#: base/enumerations.py:215
+#: base/enumerations.py:162
 msgid "Greece"
 msgstr "Ελλάδα"
 
-#: base/enumerations.py:216
+#: base/enumerations.py:163
 msgid "Greenland"
 msgstr "Γροιλανδία"
 
-#: base/enumerations.py:217
+#: base/enumerations.py:164
 msgid "Grenada"
 msgstr "Γρενάδα"
 
-#: base/enumerations.py:218
+#: base/enumerations.py:165
 msgid "Guadeloupe"
 msgstr "Γουαδελούπη"
 
-#: base/enumerations.py:219
+#: base/enumerations.py:166
 msgid "Guam"
 msgstr "Γκουάμ"
 
-#: base/enumerations.py:220
+#: base/enumerations.py:167
 msgid "Guatemala"
 msgstr "Γουατεμάλα"
 
-#: base/enumerations.py:221
+#: base/enumerations.py:168
 msgid "Guernsey"
 msgstr "Γκέρνσεϊ"
 
-#: base/enumerations.py:222
+#: base/enumerations.py:169
 msgid "Guinea"
 msgstr "Γουινέα"
 
-#: base/enumerations.py:223
+#: base/enumerations.py:170
 msgid "Guinea-Bissau"
 msgstr "Γουινέα-Μπισάου"
 
-#: base/enumerations.py:224
+#: base/enumerations.py:171
 msgid "Guyana"
 msgstr "Γουιάνα"
 
-#: base/enumerations.py:225
+#: base/enumerations.py:172
 msgid "Haiti"
 msgstr "Αϊτή"
 
-#: base/enumerations.py:226
+#: base/enumerations.py:173
 msgid "Holy See (Vatican City)"
 msgstr "Αγία Έδρα (Πόλη του Βατικανού)"
 
-#: base/enumerations.py:227
+#: base/enumerations.py:174
 msgid "Honduras"
 msgstr "Ονδούρα"
 
-#: base/enumerations.py:228
+#: base/enumerations.py:175
 msgid "Hungary"
 msgstr "Ουγγαρία"
 
-#: base/enumerations.py:229
+#: base/enumerations.py:176
 msgid "Iceland"
 msgstr "Ισλανδία"
 
-#: base/enumerations.py:230
+#: base/enumerations.py:177
 msgid "India"
 msgstr "Ινδία"
 
-#: base/enumerations.py:231
+#: base/enumerations.py:178
 msgid "Indonesia"
 msgstr "Ινδονησία"
 
-#: base/enumerations.py:232
+#: base/enumerations.py:179
 msgid "Iran"
 msgstr "Ιράν"
 
-#: base/enumerations.py:233
+#: base/enumerations.py:180
 msgid "Iraq"
 msgstr "Ιράκ"
 
-#: base/enumerations.py:234
+#: base/enumerations.py:181
 msgid "Ireland"
 msgstr "Ιρλανδία"
 
-#: base/enumerations.py:235
+#: base/enumerations.py:182
 msgid "Isle of Man"
 msgstr "Νήσος του Μαν"
 
-#: base/enumerations.py:236
+#: base/enumerations.py:183
 msgid "Israel"
 msgstr "Ισραήλ"
 
-#: base/enumerations.py:237
+#: base/enumerations.py:184
 msgid "Italy"
 msgstr "Ιταλία"
 
-#: base/enumerations.py:238
+#: base/enumerations.py:185
 msgid "Jamaica"
 msgstr "Ιαμαϊκή"
 
-#: base/enumerations.py:239
+#: base/enumerations.py:186
 msgid "Japan"
 msgstr "Ιαπωνία"
 
-#: base/enumerations.py:240
+#: base/enumerations.py:187
 msgid "Jersey"
 msgstr "Φανέλα"
 
-#: base/enumerations.py:241
+#: base/enumerations.py:188
 msgid "Jordan"
 msgstr "Ιορδανία"
 
-#: base/enumerations.py:242
+#: base/enumerations.py:189
 msgid "Kazakhstan"
 msgstr "Καζακστάν"
 
-#: base/enumerations.py:243
+#: base/enumerations.py:190
 msgid "Kenya"
 msgstr "Κένυα"
 
-#: base/enumerations.py:244
+#: base/enumerations.py:191
 msgid "Kiribati"
 msgstr "Κιριμπάτι"
 
-#: base/enumerations.py:245
+#: base/enumerations.py:192
 msgid "Kuwait"
 msgstr "Κουβέιτ"
 
-#: base/enumerations.py:246
+#: base/enumerations.py:193
 msgid "Kyrgyzstan"
 msgstr "Κιργιστάν"
 
-#: base/enumerations.py:247
+#: base/enumerations.py:194
 msgid "Lao People's Democratic Republic"
 msgstr "Δημοκρατική Λάος Δημοκρατία"
 
-#: base/enumerations.py:248
+#: base/enumerations.py:195
 msgid "Latvia"
 msgstr "Λετονία"
 
-#: base/enumerations.py:249
+#: base/enumerations.py:196
 msgid "Lebanon"
 msgstr "Λίβανος"
 
-#: base/enumerations.py:250
+#: base/enumerations.py:197
 msgid "Lesotho"
 msgstr "Λεσόθο"
 
-#: base/enumerations.py:251
+#: base/enumerations.py:198
 msgid "Liberia"
 msgstr "Λιβερία"
 
-#: base/enumerations.py:252
+#: base/enumerations.py:199
 msgid "Libyan Arab Jamahiriya"
 msgstr "Αραβική Δημοκρατία της Λιβύης"
 
-#: base/enumerations.py:253
+#: base/enumerations.py:200
 msgid "Liechtenstein"
 msgstr "Λιχτενστάιν"
 
-#: base/enumerations.py:254
+#: base/enumerations.py:201
 msgid "Lithuania"
 msgstr "Λιθουανία"
 
-#: base/enumerations.py:255
+#: base/enumerations.py:202
 msgid "Luxembourg"
 msgstr "Λουξεμβούργο"
 
-#: base/enumerations.py:256
+#: base/enumerations.py:203
 msgid "Macedonia"
 msgstr "Μακεδονίας"
 
-#: base/enumerations.py:257
+#: base/enumerations.py:204
 msgid "Madagascar"
 msgstr "Μαδαγασκάρη"
 
-#: base/enumerations.py:258
+#: base/enumerations.py:205
 msgid "Malawi"
 msgstr "Μαλάουι"
 
-#: base/enumerations.py:259
+#: base/enumerations.py:206
 msgid "Malaysia"
 msgstr "Μαλαισία"
 
-#: base/enumerations.py:260
+#: base/enumerations.py:207
 msgid "Maldives"
 msgstr "Μαλδίβες"
 
-#: base/enumerations.py:261
+#: base/enumerations.py:208
 msgid "Mali"
 msgstr "Μάλι"
 
-#: base/enumerations.py:262
+#: base/enumerations.py:209
 msgid "Malta"
 msgstr "Μάλτα"
 
-#: base/enumerations.py:263
+#: base/enumerations.py:210
 msgid "Marshall Islands"
 msgstr "Νησιά Μάρσαλ"
 
-#: base/enumerations.py:264
+#: base/enumerations.py:211
 msgid "Martinique"
 msgstr "Μαρτινίκα"
 
-#: base/enumerations.py:265
+#: base/enumerations.py:212
 msgid "Mauritania"
 msgstr "Μαυριτανία"
 
-#: base/enumerations.py:266
+#: base/enumerations.py:213
 msgid "Mauritius"
 msgstr "Μαυρίκιος"
 
-#: base/enumerations.py:267
+#: base/enumerations.py:214
 msgid "Mayotte"
 msgstr "Μαγιότ"
 
-#: base/enumerations.py:268
+#: base/enumerations.py:215
 msgid "Mexico"
 msgstr "Μεξικό"
 
-#: base/enumerations.py:269
+#: base/enumerations.py:216
 msgid "Micronesia, Federated States of"
 msgstr "Μικρονησία, Ομόσπονδες Πολιτείες της"
 
-#: base/enumerations.py:270
+#: base/enumerations.py:217
 msgid "Monaco"
 msgstr "Μονακό"
 
-#: base/enumerations.py:271
+#: base/enumerations.py:218
 msgid "Mongolia"
 msgstr "Μογγολία"
 
-#: base/enumerations.py:272
+#: base/enumerations.py:219
 msgid "Montenegro"
 msgstr "Μαυροβούνιο"
 
-#: base/enumerations.py:273
+#: base/enumerations.py:220
 msgid "Montserrat"
 msgstr "Μοντσεράτ"
 
-#: base/enumerations.py:274
+#: base/enumerations.py:221
 msgid "Morocco"
 msgstr "Μαρόκο"
 
-#: base/enumerations.py:275
+#: base/enumerations.py:222
 msgid "Mozambique"
 msgstr "Μοζαμβίκη"
 
-#: base/enumerations.py:276
+#: base/enumerations.py:223
 msgid "Myanmar"
 msgstr "Μιανμάρ"
 
-#: base/enumerations.py:277
+#: base/enumerations.py:224
 msgid "Namibia"
 msgstr "Ναμίμπια"
 
-#: base/enumerations.py:278
+#: base/enumerations.py:225
 msgid "Nauru"
 msgstr "Ναουρού"
 
-#: base/enumerations.py:279
+#: base/enumerations.py:226
 msgid "Nepal"
 msgstr "Νεπάλ"
 
-#: base/enumerations.py:280
+#: base/enumerations.py:227
 msgid "Netherlands"
 msgstr "Ολλανδία"
 
-#: base/enumerations.py:281
+#: base/enumerations.py:228
 msgid "Netherlands Antilles"
 msgstr "Ολλανδικές Αντίλλες"
 
-#: base/enumerations.py:282
+#: base/enumerations.py:229
 msgid "New Caledonia"
 msgstr "Νέα Καληδονία"
 
-#: base/enumerations.py:283
+#: base/enumerations.py:230
 msgid "New Zealand"
 msgstr "Νέα Ζηλανδία"
 
-#: base/enumerations.py:284
+#: base/enumerations.py:231
 msgid "Nicaragua"
 msgstr "Νικαράγουα"
 
-#: base/enumerations.py:285
+#: base/enumerations.py:232
 msgid "Niger"
 msgstr "Νίγηρας"
 
-#: base/enumerations.py:286
+#: base/enumerations.py:233
 msgid "Nigeria"
 msgstr "Νιγηρία"
 
-#: base/enumerations.py:287
+#: base/enumerations.py:234
 msgid "Niue"
 msgstr "Νιούε"
 
-#: base/enumerations.py:288
+#: base/enumerations.py:235
 msgid "Norfolk Island"
 msgstr "Νησί Νόρφολκ"
 
-#: base/enumerations.py:289
+#: base/enumerations.py:236
 msgid "Northern Mariana Islands"
 msgstr "Βόρειες Μαριάνες"
 
-#: base/enumerations.py:290
+#: base/enumerations.py:237
 msgid "Norway"
 msgstr "Νορβηγία"
 
-#: base/enumerations.py:291
+#: base/enumerations.py:238
 msgid "Occupied Palestinian Territory"
 msgstr "Κατεχόμενα Παλαιστινιακά Εδάφη"
 
-#: base/enumerations.py:292
+#: base/enumerations.py:239
 msgid "Oman"
 msgstr "Ομάν"
 
-#: base/enumerations.py:293
+#: base/enumerations.py:240
 msgid "Pakistan"
 msgstr "Πακιστάν"
 
-#: base/enumerations.py:294
+#: base/enumerations.py:241
 msgid "Palau"
 msgstr "Παλάου"
 
-#: base/enumerations.py:295
+#: base/enumerations.py:242
 msgid "Panama"
 msgstr "Παναμάς"
 
-#: base/enumerations.py:296
+#: base/enumerations.py:243
 msgid "Papua New Guinea"
 msgstr "Παπούα Νέα Γουινέα"
 
-#: base/enumerations.py:297
+#: base/enumerations.py:244
 msgid "Paraguay"
 msgstr "Παραγουάη"
 
-#: base/enumerations.py:298
+#: base/enumerations.py:245
 msgid "Peru"
 msgstr "Περού"
 
-#: base/enumerations.py:299
+#: base/enumerations.py:246
 msgid "Philippines"
 msgstr "Φιλιππίνες"
 
-#: base/enumerations.py:300
+#: base/enumerations.py:247
 msgid "Pitcairn"
 msgstr "Πίτκερν"
 
-#: base/enumerations.py:301
+#: base/enumerations.py:248
 msgid "Poland"
 msgstr "Πολωνία"
 
-#: base/enumerations.py:302
+#: base/enumerations.py:249
 msgid "Portugal"
 msgstr "Πορτογαλία"
 
-#: base/enumerations.py:303
+#: base/enumerations.py:250
 msgid "Puerto Rico"
 msgstr "Πουέρτο Ρίκο"
 
-#: base/enumerations.py:304
+#: base/enumerations.py:251
 msgid "Qatar"
 msgstr "Κατάρ"
 
-#: base/enumerations.py:305
+#: base/enumerations.py:252
 msgid "Republic of Korea"
 msgstr "Δημοκρατία της Κορέας"
 
-#: base/enumerations.py:306
+#: base/enumerations.py:253
 msgid "Republic of Moldova"
 msgstr "Δημοκρατία της Μολδαβίας"
 
-#: base/enumerations.py:307
+#: base/enumerations.py:254
 msgid "Reunion"
 msgstr "Ρεουνιόν"
 
-#: base/enumerations.py:308
+#: base/enumerations.py:255
 msgid "Romania"
 msgstr "Ρουμανία"
 
-#: base/enumerations.py:309
+#: base/enumerations.py:256
 msgid "Russian Federation"
 msgstr "Ρωσική Ομοσπονδία"
 
-#: base/enumerations.py:310
+#: base/enumerations.py:257
 msgid "Rwanda"
 msgstr "Ρουάντα"
 
-#: base/enumerations.py:311
+#: base/enumerations.py:258
 msgid "Saint-Barthelemy"
 msgstr "Του Αγίου Βαρθολομαίου"
 
-#: base/enumerations.py:312
+#: base/enumerations.py:259
 msgid "Saint Helena"
 msgstr "Αγία Ελένη"
 
-#: base/enumerations.py:313
+#: base/enumerations.py:260
 msgid "Saint Kitts and Nevis"
 msgstr "Άγιος Χριστόφορος και Νέβις"
 
-#: base/enumerations.py:314
+#: base/enumerations.py:261
 msgid "Saint Lucia"
 msgstr "Αγία Λουκία"
 
-#: base/enumerations.py:315
+#: base/enumerations.py:262
 msgid "Saint-Martin (French part)"
 msgstr "Άγιος-Μαρτίνος (γαλλικό τμήμα)"
 
-#: base/enumerations.py:316
+#: base/enumerations.py:263
 msgid "Saint Pierre and Miquelon"
 msgstr "Σεν Πιερ και Μικελόν"
 
-#: base/enumerations.py:317
+#: base/enumerations.py:264
 msgid "Saint Vincent and the Grenadines"
 msgstr "Άγιος Βικέντιος και Γρεναδίνες"
 
-#: base/enumerations.py:318
+#: base/enumerations.py:265
 msgid "Samoa"
 msgstr "Σαμόα"
 
-#: base/enumerations.py:319
+#: base/enumerations.py:266
 msgid "San Marino"
 msgstr "Σαν Μαρίνο"
 
-#: base/enumerations.py:320
+#: base/enumerations.py:267
 msgid "Sao Tome and Principe"
 msgstr "Σάο Τομέ και Πρίνσιπε"
 
-#: base/enumerations.py:321
+#: base/enumerations.py:268
 msgid "Saudi Arabia"
 msgstr "Σαουδική Αραβία"
 
-#: base/enumerations.py:322
+#: base/enumerations.py:269
 msgid "Senegal"
 msgstr "Σενεγάλη"
 
-#: base/enumerations.py:323
+#: base/enumerations.py:270
 msgid "Serbia"
 msgstr "Σερβία"
 
-#: base/enumerations.py:324
+#: base/enumerations.py:271
 msgid "Seychelles"
 msgstr "Σεϋχέλλες"
 
-#: base/enumerations.py:325
+#: base/enumerations.py:272
 msgid "Sierra Leone"
 msgstr "Σιέρα Λεόνε"
 
-#: base/enumerations.py:326
+#: base/enumerations.py:273
 msgid "Singapore"
 msgstr "Σιγκαπούρη"
 
-#: base/enumerations.py:327
+#: base/enumerations.py:274
 msgid "Slovakia"
 msgstr "Σλοβακία"
 
-#: base/enumerations.py:328
+#: base/enumerations.py:275
 msgid "Slovenia"
 msgstr "Σλοβενία"
 
-#: base/enumerations.py:329
+#: base/enumerations.py:276
 msgid "Solomon Islands"
 msgstr "Νησιά Σολομώντα"
 
-#: base/enumerations.py:330
+#: base/enumerations.py:277
 msgid "Somalia"
 msgstr "Σομαλία"
 
-#: base/enumerations.py:331
+#: base/enumerations.py:278
 msgid "South Africa"
 msgstr "Νότια Αφρική"
 
-#: base/enumerations.py:332
+#: base/enumerations.py:279
 msgid "Spain"
 msgstr "Ισπανία"
 
-#: base/enumerations.py:333
+#: base/enumerations.py:280
 msgid "Sri Lanka"
 msgstr "Σρι Λάνκα"
 
-#: base/enumerations.py:334
+#: base/enumerations.py:281
 msgid "Sudan"
 msgstr "Σουδάν"
 
-#: base/enumerations.py:335
+#: base/enumerations.py:282
 msgid "Suriname"
 msgstr "Σουρινάμ"
 
-#: base/enumerations.py:336
+#: base/enumerations.py:283
 msgid "Svalbard and Jan Mayen Islands"
 msgstr "Σβάλμπαρντ και Γιαν Μαγιέν Νήσοι"
 
-#: base/enumerations.py:337
+#: base/enumerations.py:284
 msgid "Swaziland"
 msgstr "Ζουαζιλάνδη"
 
-#: base/enumerations.py:338
+#: base/enumerations.py:285
 msgid "Sweden"
 msgstr "Σουηδία"
 
-#: base/enumerations.py:339
+#: base/enumerations.py:286
 msgid "Switzerland"
 msgstr "Ελβετία"
 
-#: base/enumerations.py:340
+#: base/enumerations.py:287
 msgid "Syrian Arab Republic"
 msgstr "Αραβική Δημοκρατία της Συρίας"
 
-#: base/enumerations.py:341
+#: base/enumerations.py:288
 msgid "Tajikistan"
 msgstr "Τατζικιστάν"
 
-#: base/enumerations.py:342
+#: base/enumerations.py:289
 msgid "Thailand"
 msgstr "Ταϊλάνδη"
 
-#: base/enumerations.py:343
+#: base/enumerations.py:290
 msgid "Timor-Leste"
 msgstr "Ανατολικό Τιμόρ"
 
-#: base/enumerations.py:344
+#: base/enumerations.py:291
 msgid "Togo"
 msgstr "Τόγκο"
 
-#: base/enumerations.py:345
+#: base/enumerations.py:292
 msgid "Tokelau"
 msgstr "Τοκελάου"
 
-#: base/enumerations.py:346
+#: base/enumerations.py:293
 msgid "Tonga"
 msgstr "Τόνγκα"
 
-#: base/enumerations.py:347
+#: base/enumerations.py:294
 msgid "Trinidad and Tobago"
 msgstr "Τρινιντάντ και Τομπάγκο"
 
-#: base/enumerations.py:348
+#: base/enumerations.py:295
 msgid "Tunisia"
 msgstr "Τυνησία"
 
-#: base/enumerations.py:349
+#: base/enumerations.py:296
 msgid "Turkey"
 msgstr "Τουρκία"
 
-#: base/enumerations.py:350
+#: base/enumerations.py:297
 msgid "Turkmenistan"
 msgstr "Τουρκμενιστάν"
 
-#: base/enumerations.py:351
+#: base/enumerations.py:298
 msgid "Turks and Caicos Islands"
 msgstr "Τερκς και Κέικος"
 
-#: base/enumerations.py:352
+#: base/enumerations.py:299
 msgid "Tuvalu"
 msgstr "Τουβαλού"
 
-#: base/enumerations.py:353
+#: base/enumerations.py:300
 msgid "Uganda"
 msgstr "Ουγκάντα"
 
-#: base/enumerations.py:354
+#: base/enumerations.py:301
 msgid "Ukraine"
 msgstr "Ουκρανία"
 
-#: base/enumerations.py:355
+#: base/enumerations.py:302
 msgid "United Arab Emirates"
 msgstr "Ηνωμένα Αραβικά Εμιράτα"
 
-#: base/enumerations.py:356
+#: base/enumerations.py:303
 msgid "United Kingdom"
 msgstr "Ηνωμένο Βασίλειο"
 
-#: base/enumerations.py:357
+#: base/enumerations.py:304
 msgid "United Republic of Tanzania"
 msgstr "Ενωμένη Δημοκρατία της Τανζανίας"
 
-#: base/enumerations.py:358
+#: base/enumerations.py:305
 msgid "United States of America"
 msgstr "Ηνωμένες Πολιτείες Αμερικής"
 
-#: base/enumerations.py:359
+#: base/enumerations.py:306
 msgid "United States Virgin Islands"
 msgstr "Αμερικανικές Παρθένοι Νήσοι"
 
-#: base/enumerations.py:360
+#: base/enumerations.py:307
 msgid "Uruguay"
 msgstr "Ουρουγουάη"
 
-#: base/enumerations.py:361
+#: base/enumerations.py:308
 msgid "Uzbekistan"
 msgstr "Ουζμπεκιστάν"
 
-#: base/enumerations.py:362
+#: base/enumerations.py:309
 msgid "Vanuatu"
 msgstr "Βανουάτου"
 
-#: base/enumerations.py:363
+#: base/enumerations.py:310
 msgid "Venezuela (Bolivarian Republic of)"
 msgstr "Βενεζουέλα (Βολιβαριανή Δημοκρατία της)"
 
-#: base/enumerations.py:364
+#: base/enumerations.py:311
 msgid "Viet Nam"
 msgstr "Βιετνάμ"
 
-#: base/enumerations.py:365
+#: base/enumerations.py:312
 msgid "Wallis and Futuna Islands"
 msgstr "Νήσοι Γουόλις και Φουτούνα"
 
-#: base/enumerations.py:366
+#: base/enumerations.py:313
 msgid "Western Sahara"
 msgstr "Δυτική Σαχάρα"
 
-#: base/enumerations.py:367
+#: base/enumerations.py:314
 msgid "Yemen"
 msgstr "Υεμένη"
 
-#: base/enumerations.py:368
+#: base/enumerations.py:315
 msgid "Zambia"
 msgstr "Ζάμπια"
 
-#: base/enumerations.py:369
+#: base/enumerations.py:316
 msgid "Zimbabwe"
 msgstr "Ζιμπάμπουε"
 
-#: base/models.py:171 security/models.py:46
+#: base/models.py:226 security/models.py:46
 msgid "title"
 msgstr "τίτλος"
 
-#: base/models.py:171
+#: base/models.py:226
 msgid "name by which the cited resource is known"
 msgstr "όνομα με το οποίο η αναφερόμενη πηγή είναι γνωστή"
 
-#: base/models.py:172
+#: base/models.py:227
 msgid "date"
 msgstr "ημερομηνία"
 
-#: base/models.py:172
+#: base/models.py:227
 msgid "reference date for the cited resource"
 msgstr "ημερομηνία αναφοράς του πόρου που αναφέρεται"
 
-#: base/models.py:174
+#: base/models.py:229
 msgid "date type"
 msgstr "τύπος ημερομηνίας"
 
-#: base/models.py:174
+#: base/models.py:229
 msgid "identification of when a given event occurred"
 msgstr "αναγνώριση του χρόνου που συνέβη ένα δεδομένο συμβάν"
 
-#: base/models.py:176
+#: base/models.py:231
 msgid "edition"
 msgstr "έκδοση"
 
-#: base/models.py:176
+#: base/models.py:231
 msgid "version of the cited resource"
 msgstr "έκδοση του αναφερόμενου πόρου"
 
-#: base/models.py:177
+#: base/models.py:232
 msgid "abstract"
 msgstr "περίληψη"
 
-#: base/models.py:177
+#: base/models.py:232
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "σύντομη συνοπτική περιγραφή του περιεχομένου του πόρου"
 
-#: base/models.py:178
+#: base/models.py:233
 msgid "purpose"
 msgstr "σκοπός"
 
-#: base/models.py:178
+#: base/models.py:233
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "περίληψη των προθέσεων με την οποία αναπτύχθηκε ο πόρος"
 
-#: base/models.py:180
+#: base/models.py:235
 msgid "maintenance frequency"
 msgstr "συχνότητα συντήρησης"
 
-#: base/models.py:180
+#: base/models.py:235
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
-msgstr ""
-"συχνότητα με την οποία οι τροποποιήσεις και διαγραφές που γίνονται στα "
-"δεδομένα μετά την ημερομηνία παραγωγής"
+msgstr "συχνότητα με την οποία οι τροποποιήσεις και διαγραφές που γίνονται στα δεδομένα μετά την ημερομηνία παραγωγής"
 
-#: base/models.py:186 people/models.py:59
+#: base/models.py:241 people/models.py:59
 msgid "keywords"
 msgstr "λέξεις-κλειδιά"
 
-#: base/models.py:186 people/models.py:59
+#: base/models.py:241 people/models.py:59
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
-msgstr ""
-"συχνά χρησιμοποιούμενες λέξεις ή τυποποιημένες λέξεις ή φράσεις που "
-"χρησιμοποιείται για να περιγραφεί το θέμα (διαχωρίζονται με κόμμα ή κενό)"
+msgstr "συχνά χρησιμοποιούμενες λέξεις ή τυποποιημένες λέξεις ή φράσεις που χρησιμοποιείται για να περιγραφεί το θέμα (διαχωρίζονται με κόμμα ή κενό)"
 
-#: base/models.py:187
+#: base/models.py:242
 msgid "keywords region"
 msgstr "λέξεις-κλειδιά περιοχή"
 
-#: base/models.py:187
+#: base/models.py:242
 msgid "keyword identifies a location"
 msgstr "λέξη-κλειδί που προσδιορίζει μια θέση"
 
-#: base/models.py:188
-msgid "constraints use"
-msgstr "περιορισμοί χρήσης"
-
-#: base/models.py:188
-msgid ""
-"constraints applied to assure the protection of privacy or intellectual "
-"property, and any special restrictions or limitations or warnings on using "
-"the resource or metadata"
+#: base/models.py:243
+msgid "restrictions"
 msgstr ""
-"περιορισμοί που εφαρμόζονται για τη διασφάλιση της προστασίας της ιδιωτικής "
-"ζωής ή της πνευματικής ιδιοκτησίας, καθώς και τυχόν ειδικοί περιορισμοί ή "
-"απαγορεύσεις ή προειδοποιήσεις σχετικά με τη χρήση του πόρου ή των "
-"μεταδεδομένων."
 
-#: base/models.py:189
-msgid "constraints other"
-msgstr "άλλοι περιορισμοί"
+#: base/models.py:243
+msgid "limitation(s) placed upon the access or use of the data."
+msgstr ""
 
-#: base/models.py:189
+#: base/models.py:244
+msgid "restrictions other"
+msgstr ""
+
+#: base/models.py:244
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
-msgstr ""
-"άλλοι περιορισμοί και νομικές προϋποθέσεις για την πρόσβαση και χρήση του "
-"πόρου ή των μεταδεδομένων"
+msgstr "άλλοι περιορισμοί και νομικές προϋποθέσεις για την πρόσβαση και χρήση του πόρου ή των μεταδεδομένων"
 
-#: base/models.py:190
-msgid "spatial representation type"
-msgstr "τύπος χωρικής αναπαράστασης"
-
-#: base/models.py:190
-msgid "method used to represent geographic information in the dataset"
-msgstr ""
-"μέθοδος που χρησιμοποιείται για να αναπαρασταθεί γεωγραφική πληροφορία στο "
-"σύνολο δεδομένων"
-
-#: base/models.py:193
+#: base/models.py:247
 msgid "language"
 msgstr "γλώσσα"
 
-#: base/models.py:193
+#: base/models.py:247
 msgid "language used within the dataset"
 msgstr "γλώσσα που χρησιμοποιείται στο σύνολο δεδομένων"
 
-#: base/models.py:194
+#: base/models.py:248
 msgid ""
-"high-level geographic data thematic classification to assist in the grouping "
-"and search of available geographic data sets."
-msgstr ""
-"υψηλού επιπέδου θεματική κατηγοριοποίηση γεωγραφικών δεδομένων που βοηθά "
-"στην ομαδοποίηση και την αναζήτηση των διαθέσιμων γεωγραφικών δεδομένων."
+"high-level geographic data thematic classification to assist in the grouping"
+" and search of available geographic data sets."
+msgstr "υψηλού επιπέδου θεματική κατηγοριοποίηση γεωγραφικών δεδομένων που βοηθά στην ομαδοποίηση και την αναζήτηση των διαθέσιμων γεωγραφικών δεδομένων."
 
-#: base/models.py:197
+#: base/models.py:250
+msgid "method used to represent geographic information in the dataset."
+msgstr ""
+
+#: base/models.py:253
 msgid "temporal extent start"
 msgstr "χρονική διάρκεια έναρξη"
 
-#: base/models.py:197
+#: base/models.py:253
 msgid "time period covered by the content of the dataset (start)"
-msgstr ""
-"χρονική περίοδος που καλύπτεται από το περιεχόμενο του συνόλου δεδομένων "
-"(έναρξη)"
+msgstr "χρονική περίοδος που καλύπτεται από το περιεχόμενο του συνόλου δεδομένων (έναρξη)"
 
-#: base/models.py:198
+#: base/models.py:254
 msgid "temporal extent end"
 msgstr "χρονική διάρκεια τέλος"
 
-#: base/models.py:198
+#: base/models.py:254
 msgid "time period covered by the content of the dataset (end)"
-msgstr ""
-"χρονική περίοδος που καλύπτεται από το περιεχόμενο του συνόλου δεδομένων "
-"(λήξη)"
+msgstr "χρονική περίοδος που καλύπτεται από το περιεχόμενο του συνόλου δεδομένων (λήξη)"
 
-#: base/models.py:200
+#: base/models.py:256
 msgid "supplemental information"
 msgstr "συμπληρωματικές πληροφορίες"
 
-#: base/models.py:200
+#: base/models.py:256
 msgid "any other descriptive information about the dataset"
 msgstr "τυχόν άλλες περιγραφικές πληροφορίες σχετικά με το σύνολο δεδομένων"
 
-#: base/models.py:203
+#: base/models.py:259
 msgid "distribution URL"
 msgstr "URL διανομής"
 
-#: base/models.py:203
+#: base/models.py:259
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
-msgstr ""
-"πληροφορίες σχετικά με διαδικτυακές πηγές από τις οποίες το σύνολο "
-"δεδομένων, οι προδιαγραφές, ή το όνομα προφίλ της κοινότητας και εκτεταμένα "
-"μεταδεδομένα μπορούν να ληφθούν"
+msgstr "πληροφορίες σχετικά με διαδικτυακές πηγές από τις οποίες το σύνολο δεδομένων, οι προδιαγραφές, ή το όνομα προφίλ της κοινότητας και εκτεταμένα μεταδεδομένα μπορούν να ληφθούν"
 
-#: base/models.py:204
+#: base/models.py:260
 msgid "distribution description"
 msgstr "περιγραφή διανομής"
 
-#: base/models.py:204
+#: base/models.py:260
 msgid "detailed text description of what the online resource is/does"
-msgstr ""
-"λεπτομερής περιγραφή σχετικά με το ποιος και τι είναι ο διαδικτυακός πόρος"
+msgstr "λεπτομερής περιγραφή σχετικά με το ποιος και τι είναι ο διαδικτυακός πόρος"
 
-#: base/models.py:207
+#: base/models.py:263
 msgid "data quality statement"
 msgstr "δήλωση ποιότητας δεδομένων"
 
-#: base/models.py:207
+#: base/models.py:263
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
-msgstr ""
-"γενική εξήγηση της γνώσης του παραγωγού των δεδομένων σχετικά με την "
-"καταγωγή τους"
+msgstr "γενική εξήγηση της γνώσης του παραγωγού των δεδομένων σχετικά με την καταγωγή τους"
 
-#: base/models.py:221
+#: base/models.py:277
 msgid "CSW typename"
 msgstr "όνομα τύπου καταλόγου CSW "
 
-#: base/models.py:222
+#: base/models.py:278
 msgid "CSW schema"
 msgstr "σχήμα καταλόγου CSW"
 
-#: base/models.py:223
+#: base/models.py:279
 msgid "CSW source"
 msgstr "πηγή καταλόγου CSW"
 
-#: base/models.py:224
+#: base/models.py:280
 msgid "CSW insert date"
 msgstr "ημερομηνία εισαγωγής καταλόγου CSW"
 
-#: base/models.py:225
+#: base/models.py:281
 msgid "CSW type"
 msgstr "τύπος καταλόγου CSW"
 
-#: base/models.py:226
+#: base/models.py:282
 msgid "CSW anytext"
 msgstr "πεδίο καταλόγου CSW anytext "
 
-#: base/models.py:227
+#: base/models.py:283
 #: base/migrations/0003_change_default_for_csw_wkt_geometry.py:11
 #: base/migrations/0003_change_default_for_csw_wkt_geometry.py:15
 msgid "CSW WKT geometry"
 msgstr "γεωμετρία καταλόγου CSW σε μορφή WKT"
 
-#: base/models.py:356
+#: base/models.py:423
 msgid "For example \"kml\""
 msgstr "Για παράδειγμα \"kml\""
 
-#: base/models.py:358
+#: base/models.py:425
 msgid "For example \"View in Google Earth\""
 msgstr "Για παράδειγμα \"View in Google Earth\""
 
-#: base/models.py:359
+#: base/models.py:426
 msgid "For example \"text/xml\""
 msgstr "Για παράδειγμα \"text/xml\""
 
-#: documents/forms.py:24 layers/forms.py:57 maps/forms.py:29
+#: base/templates/base/resourcebase_info_panel.html:7
+msgid "Title"
+msgstr "Τίτλος"
+
+#: base/templates/base/resourcebase_info_panel.html:14
+msgid "Abstract"
+msgstr "Περίληψη"
+
+#: base/templates/base/resourcebase_info_panel.html:21
+#: search/templates/search/_general_filters.html:25
+msgid "Date"
+msgstr "Ημερομηνία"
+
+#: base/templates/base/resourcebase_info_panel.html:28
+#: search/templates/search/_type_filters.html:3
+msgid "Type"
+msgstr "Τύπος"
+
+#: base/templates/base/resourcebase_info_panel.html:35
+#: search/templates/search/_general_filters.html:36
+msgid "Keywords"
+msgstr "Λέξεις-κλειδιά"
+
+#: base/templates/base/resourcebase_info_panel.html:44
+msgid "Category"
+msgstr ""
+
+#: base/templates/base/resourcebase_info_panel.html:51
+msgid "Regions"
+msgstr ""
+
+#: base/templates/base/resourcebase_info_panel.html:60
+msgid "Owner"
+msgstr "Ιδιοκτήτης"
+
+#: base/templates/base/resourcebase_info_panel.html:67
+#: documents/templates/documents/document_detail.html:144
+#: documents/templates/documents/document_metadata.html:26
+#: layers/templates/layers/layer_detail.html:223
+#: layers/templates/layers/layer_metadata.html:57
+msgid "Point of Contact"
+msgstr "Σημείο Επικοινωνίας"
+
+#: base/templates/base/resourcebase_info_panel.html:79
+msgid "Maintenance Frequency"
+msgstr "Συχνότητα Συντήρησης"
+
+#: base/templates/base/resourcebase_info_panel.html:86
+msgid "Restrictions"
+msgstr ""
+
+#: base/templates/base/resourcebase_info_panel.html:97
+msgid "Edition"
+msgstr "Έκδοση"
+
+#: base/templates/base/resourcebase_info_panel.html:104
+msgid "Purpose"
+msgstr "Σκοπός"
+
+#: base/templates/base/resourcebase_info_panel.html:111 templates/500.html:191
+#: templates/base.html:188
+msgid "Language"
+msgstr "Γλώσσα"
+
+#: base/templates/base/resourcebase_info_panel.html:118
+msgid "Temporal Extent"
+msgstr "Χρονική Διάρκεια"
+
+#: base/templates/base/resourcebase_info_panel.html:125
+msgid "Data Quality"
+msgstr "Ποιότητα Δεδομένων"
+
+#: base/templates/base/resourcebase_info_panel.html:132
+msgid "Supplemental Information"
+msgstr "Συμπληρωματικές Πληροφορίες"
+
+#: base/templates/base/resourcebase_info_panel.html:139
+msgid "Spatial Representation Type"
+msgstr "Τύπος Χωρικής Αναπαράστασης"
+
+#: documents/forms.py:24 layers/forms.py:57 maps/forms.py:34
 #: people/forms.py:49
 msgid "A space or comma-separated list of keywords"
 msgstr "Μια λίστα λέξεων κλειδιών χωρισμένες με κόμμα ή κενό "
 
-#: documents/views.py:30 layers/views.py:71 maps/views.py:59
+#: documents/views.py:32 layers/views.py:73 maps/views.py:60
 msgid "No Permissions"
 msgstr "Δεν Έχετε Δικαιώματα"
 
-#: documents/views.py:31 layers/views.py:72 maps/views.py:60
+#: documents/views.py:33 layers/views.py:74 maps/views.py:61
 msgid "Read Only"
 msgstr "Μόνο για ανάγνωση"
 
-#: documents/views.py:32 layers/views.py:73 maps/views.py:61
+#: documents/views.py:34 layers/views.py:75 maps/views.py:62
 msgid "Read/Write"
 msgstr "Ανάγνωση/Εγγραφή"
 
-#: documents/views.py:33 layers/views.py:74 maps/views.py:62
+#: documents/views.py:35 layers/views.py:76 maps/views.py:63
 msgid "Administrative"
 msgstr "Διοικητικές"
 
-#: documents/views.py:36
+#: documents/views.py:38
 msgid "You are not permitted to delete this document"
 msgstr ""
 
-#: documents/views.py:37
+#: documents/views.py:39
 msgid "You do not have permissions for this document."
 msgstr ""
 
-#: documents/views.py:38
+#: documents/views.py:40
 msgid "You are not permitted to modify this document"
 msgstr ""
 
-#: documents/views.py:39
+#: documents/views.py:41
 msgid "You are not permitted to modify this document's metadata"
 msgstr ""
 
-#: documents/views.py:40
+#: documents/views.py:42
 msgid "You are not permitted to view this document"
 msgstr ""
 
-#: documents/views.py:76
+#: documents/views.py:78 documents/views.py:99
 msgid "You are not allowed to view this document."
 msgstr "Δεν έχετε δικαιώματα να δείτε αυτό το χάρτη."
 
@@ -1557,45 +1454,46 @@ msgstr "Πιο δημοφιλή"
 msgid "Most shared"
 msgstr "Περισσότερο κοινοποιημένα"
 
-#: documents/templates/documents/_document_list_item.html:10
-#: maps/templates/maps/_map_list_item.html:9
-msgid "No Image Available"
-msgstr "Εικόνα μη διαθέσιμη"
-
 #: documents/templates/documents/_document_list_item.html:15
 #: layers/templates/layers/_layer_list_item.html:16
-#: maps/templates/maps/_map_list_item.html:15
+#: maps/templates/maps/_map_list_item.html:13
 msgid "from"
 msgstr "από"
 
 #: documents/templates/documents/_document_list_item.html:15
 #: layers/templates/layers/_layer_list_item.html:16
-#: maps/templates/maps/_map_list_item.html:15
+#: maps/templates/maps/_map_list_item.html:13
 msgid "ago"
 msgstr "πρίν"
 
-#: documents/templates/documents/_document_list_item.html:17
+#: documents/templates/documents/_document_list_item.html:18
 #: layers/templates/layers/_layer_list_item.html:19
-#: maps/templates/maps/_map_list_item.html:17
+#: maps/templates/maps/_map_list_item.html:16
 msgid "view"
 msgstr "θέαση"
 
-#: documents/templates/documents/_document_list_item.html:18
+#: documents/templates/documents/_document_list_item.html:19
 #: layers/templates/layers/_layer_list_item.html:20
-#: maps/templates/maps/_map_list_item.html:18
+#: maps/templates/maps/_map_list_item.html:17
 msgid "Average rating"
 msgstr "Μέση αξιολόγηση"
 
+#: documents/templates/documents/_document_list_item.html:19
+#: layers/templates/layers/_layer_list_item.html:20
+#: maps/templates/maps/_map_list_item.html:17
+msgid "votes"
+msgstr ""
+
 #: documents/templates/documents/_document_list_item.html:22
 #: layers/templates/layers/_layer_list_item.html:24
-#: maps/templates/maps/_map_list_item.html:22
-#: maps/templates/maps/map_download.html:65
+#: maps/templates/maps/_map_list_item.html:21
+#: maps/templates/maps/map_download.html:6
 msgid "Download"
 msgstr "Λήψη"
 
 #: documents/templates/documents/document_base.html:12
 #: documents/templates/documents/document_list.html:7
-#: documents/templates/documents/document_list.html:18
+#: documents/templates/documents/document_list.html:13
 msgid "Explore Documents"
 msgstr "Εξερευνήστε Έγγραφα"
 
@@ -1604,134 +1502,130 @@ msgstr "Εξερευνήστε Έγγραφα"
 msgid "Upload Documents"
 msgstr "Ανεβάστε Κείμενα"
 
-#: documents/templates/documents/document_detail.html:35
+#: documents/templates/documents/document_detail.html:33
+#: layers/templates/layers/layer_detail.html:42
+msgid "Download Metadata"
+msgstr "Μεταφόρτωση (κατέβασμα) Μεταδεδομένων"
+
+#: documents/templates/documents/document_detail.html:46
 msgid "Edit Document"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:39
-#: layers/templates/layers/layer_detail.html:59
-#: maps/templates/maps/map_detail.html:35
+#: documents/templates/documents/document_detail.html:50
+#: layers/templates/layers/layer_detail.html:61
 msgid "Edit Metadata"
 msgstr "Επεξεργασία Μεταδεδομένων"
 
-#: documents/templates/documents/document_detail.html:40
-#: layers/templates/layers/layer_detail.html:60
-#: maps/templates/maps/map_detail.html:37
+#: documents/templates/documents/document_detail.html:51
+#: layers/templates/layers/layer_detail.html:63
 msgid "Edit Permissions"
 msgstr "Επεξεργασία Δικαιωμάτων"
 
-#: documents/templates/documents/document_detail.html:41
+#: documents/templates/documents/document_detail.html:52
 msgid "Replace this Document"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:42
+#: documents/templates/documents/document_detail.html:53
 msgid "Remove this Document"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:59
+#: documents/templates/documents/document_detail.html:70
 #: layers/templates/layers/_actions.html:3
-#: maps/templates/maps/map_detail.html:66 templates/_actions.html:3
+#: maps/templates/maps/map_detail.html:73 templates/_actions.html:3
 msgid "Info"
 msgstr "Πληροφορίες"
 
-#: documents/templates/documents/document_detail.html:60
+#: documents/templates/documents/document_detail.html:71
 #: layers/templates/layers/_actions.html:8
-#: maps/templates/maps/map_detail.html:67
-#: maps/templates/maps/map_detail.html:78 templates/_comments.html:11
+#: maps/templates/maps/map_detail.html:76 templates/_comments.html:11
 msgid "Comments"
 msgstr "Σχόλια"
 
-#: documents/templates/documents/document_detail.html:61
+#: documents/templates/documents/document_detail.html:72
 #: layers/templates/layers/_actions.html:7
-#: maps/templates/maps/map_detail.html:68
+#: maps/templates/maps/map_detail.html:75
 msgid "Ratings"
 msgstr "Βαθμολογίες"
 
-#: documents/templates/documents/document_detail.html:62
+#: documents/templates/documents/document_detail.html:73
 #: layers/templates/layers/_actions.html:5
-#: maps/templates/maps/map_detail.html:69 templates/_actions.html:5
+#: maps/templates/maps/map_detail.html:74 templates/_actions.html:5
 msgid "Share"
 msgstr "Μοίρασμα"
 
-#: documents/templates/documents/document_detail.html:63
+#: documents/templates/documents/document_detail.html:74
 #: layers/templates/layers/_actions.html:6
-#: maps/templates/maps/map_detail.html:70
-#: maps/templates/maps/map_detail.html:106
+#: maps/templates/maps/map_detail.html:77
+#: maps/templates/maps/map_detail.html:112
 msgid "Flag"
 msgstr "Σημαία"
 
-#: documents/templates/documents/document_detail.html:72
+#: documents/templates/documents/document_detail.html:83
 msgid "Share This Document"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:92
+#: documents/templates/documents/document_detail.html:103
 msgid "Rate this document"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:96
-#: layers/templates/layers/layer_detail.html:142
-#: maps/templates/maps/map_detail.html:90
+#: documents/templates/documents/document_detail.html:107
+#: layers/templates/layers/layer_detail.html:147
+#: maps/templates/maps/map_detail.html:96
 msgid "Average Rating"
 msgstr "Μέση Βαθμολογία"
 
-#: documents/templates/documents/document_detail.html:106
+#: documents/templates/documents/document_detail.html:117
 msgid "Resource using this document"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:108
+#: documents/templates/documents/document_detail.html:119
 msgid "List of resources using this document:"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:112
+#: documents/templates/documents/document_detail.html:123
 msgid "This document is related to a "
 msgstr "Αυτό το κείμενο είναι σχετικό με"
 
-#: documents/templates/documents/document_detail.html:115
+#: documents/templates/documents/document_detail.html:126
 msgid "This document is not related to any maps or layers"
 msgstr "Αυτό το έγγραφο δεν σχετίζεται με οποιουσδήποτε χάρτες ή επιφάνειες"
 
-#: documents/templates/documents/document_detail.html:122
+#: documents/templates/documents/document_detail.html:133
 #: documents/templates/documents/document_upload.html:44
-#: layers/templates/layers/layer_detail.html:184
-#: maps/templates/maps/map_detail.html:145 templates/_permissions_form.html:7
-#: upload/templates/upload/layer_upload.html:114
+#: layers/templates/layers/layer_detail.html:190
+#: layers/templates/layers/layer_replace.html:98
+#: maps/templates/maps/map_detail.html:146 templates/_permissions_form.html:7
+#: upload/templates/upload/layer_upload.html:116
 msgid "Permissions"
 msgstr "Δικαιώματα"
 
-#: documents/templates/documents/document_detail.html:123
+#: documents/templates/documents/document_detail.html:134
 msgid "Click the button below to change the permissions of this document."
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:124
+#: documents/templates/documents/document_detail.html:135
 msgid "Change Document Permissions"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:128
-#: layers/templates/layers/layer_detail.html:211
-#: maps/templates/maps/map_detail.html:156 templates/base.html:180
+#: documents/templates/documents/document_detail.html:139
+#: layers/templates/layers/layer_detail.html:218
+#: maps/templates/maps/map_detail.html:157 templates/500.html:184
+#: templates/base.html:181
 msgid "About"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:129
+#: documents/templates/documents/document_detail.html:140
 msgid "Document Owner"
 msgstr ""
 
-#: documents/templates/documents/document_detail.html:133
-#: documents/templates/documents/document_metadata.html:26
-#: layers/templates/layers/layer_detail.html:216
-#: layers/templates/layers/layer_metadata.html:40
-#: templates/geonode/resourcebase_info_panel.html:56
-msgid "Point of Contact"
-msgstr "Σημείο Επικοινωνίας"
-
-#: documents/templates/documents/document_detail.html:137
-#: layers/templates/layers/layer_detail.html:220
+#: documents/templates/documents/document_detail.html:148
+#: layers/templates/layers/layer_detail.html:227
 msgid "Metadata Author"
 msgstr ""
 
-#: documents/templates/documents/document_list.html:33
-#: layers/templates/layers/layer_list.html:35
-#: maps/templates/maps/map_list.html:34 search/templates/search/search.html:32
+#: documents/templates/documents/document_list.html:28
+#: layers/templates/layers/layer_list.html:30
+#: maps/templates/maps/map_list.html:29 search/templates/search/search.html:27
 msgid "Your selections"
 msgstr "Οι επιλογές σας"
 
@@ -1741,18 +1635,15 @@ msgid ""
 "\n"
 "        Editing details for %(document_title)s\n"
 "      "
-msgstr ""
-"\n"
-"        Επεξεργασία λεπτομερειών για το %(document_title)s\n"
-"        "
+msgstr "\n        Επεξεργασία λεπτομερειών για το %(document_title)s\n        "
 
-#: documents/templates/documents/document_metadata.html:30
-#: layers/templates/layers/layer_metadata.html:44
+#: documents/templates/documents/document_metadata.html:31
+#: layers/templates/layers/layer_metadata.html:62
 msgid "Metadata Provider"
 msgstr "Πάροχος Μεταδεδομένων"
 
-#: documents/templates/documents/document_metadata.html:34
-#: layers/templates/layers/layer_metadata.html:48
+#: documents/templates/documents/document_metadata.html:36
+#: layers/templates/layers/layer_metadata.html:67
 msgid "Update"
 msgstr "Ενημέρωση"
 
@@ -1788,218 +1679,215 @@ msgstr ""
 msgid "Upload Document"
 msgstr "Ανεβάστε Έγγραφα"
 
-#: layers/models.py:57
+#: layers/models.py:58
 msgid "style name"
 msgstr "όνομα στυλ"
 
-#: layers/models.py:59
+#: layers/models.py:60
 msgid "sld text"
 msgstr "κείμενο sld"
 
-#: layers/models.py:60
+#: layers/models.py:61
 msgid "sld version"
 msgstr "έκδοση sld"
 
-#: layers/models.py:61
+#: layers/models.py:62
 msgid "sld url"
 msgstr "ηλεκτρονική διεύθυνση sld"
 
-#: layers/models.py:259
+#: layers/models.py:247
 msgid "attribute name"
 msgstr "όνομα χαρακτηριστικού"
 
-#: layers/models.py:259
+#: layers/models.py:247
 msgid "name of attribute as stored in shapefile/spatial database"
-msgstr ""
-"όνομα του χαρακτηριστικού όπως είναι αποθηκευμένο σε shapefile / χωρική βάση "
-"δεδομένων"
+msgstr "όνομα του χαρακτηριστικού όπως είναι αποθηκευμένο σε shapefile / χωρική βάση δεδομένων"
 
-#: layers/models.py:260
+#: layers/models.py:248
+msgid "attribute description"
+msgstr ""
+
+#: layers/models.py:248
+msgid "description of attribute to be used in metadata"
+msgstr ""
+
+#: layers/models.py:249
 msgid "attribute label"
 msgstr "ετικέτα χαρακτηριστικού"
 
-#: layers/models.py:260
+#: layers/models.py:249
 msgid "title of attribute as displayed in GeoNode"
 msgstr "τίτλος του χαρακτηριστικού, όπως εμφανίζεται στο GeoNode"
 
-#: layers/models.py:261
+#: layers/models.py:250
 msgid "attribute type"
 msgstr "τύπος χαρακτηριστικού"
 
-#: layers/models.py:261
+#: layers/models.py:250
 msgid "the data type of the attribute (integer, string, geometry, etc)"
-msgstr ""
-"ο τύπος δεδομένων του χαρακτηριστικού (ακέραιος, αλφαριθμητικό, γεωμετρία, "
-"κλπ)"
+msgstr "ο τύπος δεδομένων του χαρακτηριστικού (ακέραιος, αλφαριθμητικό, γεωμετρία, κλπ)"
 
-#: layers/models.py:262
+#: layers/models.py:251
 msgid "visible?"
 msgstr "ορατό;"
 
-#: layers/models.py:262
+#: layers/models.py:251
 msgid "specifies if the attribute should be displayed in identify results"
-msgstr ""
-"καθορίζει εάν το χαρακτηριστικό θα πρέπει να εμφανίζεται σε αναγνωριστικά "
-"αποτελέσματα"
+msgstr "καθορίζει εάν το χαρακτηριστικό θα πρέπει να εμφανίζεται σε αναγνωριστικά αποτελέσματα"
 
-#: layers/models.py:263
+#: layers/models.py:252
 msgid "display order"
 msgstr "σειρά παρουσίασης"
 
-#: layers/models.py:263
+#: layers/models.py:252
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
-msgstr ""
-"καθορίζει τη σειρά με την οποία το χαρακτηριστικό θα πρέπει να εμφανίζεται "
-"σε αναγνωριστικά αποτελέσματα"
+msgstr "καθορίζει τη σειρά με την οποία το χαρακτηριστικό θα πρέπει να εμφανίζεται σε αναγνωριστικά αποτελέσματα"
 
-#: layers/models.py:266
+#: layers/models.py:255
 msgid "count"
 msgstr ""
 
-#: layers/models.py:266
+#: layers/models.py:255
 msgid "count value for this field"
 msgstr ""
 
-#: layers/models.py:267
+#: layers/models.py:256
 msgid "min"
 msgstr ""
 
-#: layers/models.py:267
+#: layers/models.py:256
 msgid "minimum value for this field"
 msgstr ""
 
-#: layers/models.py:268
+#: layers/models.py:257
 msgid "max"
 msgstr ""
 
-#: layers/models.py:268
+#: layers/models.py:257
 msgid "maximum value for this field"
 msgstr ""
 
-#: layers/models.py:269
+#: layers/models.py:258
 msgid "average"
 msgstr ""
 
-#: layers/models.py:269
+#: layers/models.py:258
 msgid "average value for this field"
 msgstr ""
 
-#: layers/models.py:270
+#: layers/models.py:259
 msgid "median"
 msgstr ""
 
-#: layers/models.py:270
+#: layers/models.py:259
 msgid "median value for this field"
 msgstr ""
 
-#: layers/models.py:271
+#: layers/models.py:260
 msgid "standard deviation"
 msgstr ""
 
-#: layers/models.py:271
+#: layers/models.py:260
 msgid "standard deviation for this field"
 msgstr ""
 
-#: layers/models.py:272
+#: layers/models.py:261
 msgid "sum"
 msgstr ""
 
-#: layers/models.py:272
+#: layers/models.py:261
 msgid "sum value for this field"
 msgstr ""
 
-#: layers/models.py:273
+#: layers/models.py:262
 msgid "unique values for this field"
 msgstr ""
 
-#: layers/models.py:274
+#: layers/models.py:263
 msgid "last modified"
 msgstr ""
 
-#: layers/models.py:274
+#: layers/models.py:263
 msgid "date when attribute statistics were last updated"
 msgstr ""
 
-#: layers/models.py:509
+#: layers/models.py:507
 msgid "KML"
 msgstr "KML"
 
-#: layers/models.py:524
+#: layers/models.py:522
 msgid "View in Google Earth"
 msgstr "Προβολή στο Google Earth"
 
-#: layers/models.py:540
+#: layers/models.py:538
 msgid "Tiles"
 msgstr "Πλακίδια"
 
-#: layers/ows.py:90
+#: layers/ows.py:91
 msgid "Zipped Shapefile"
 msgstr "Συμπιεσμένο Shapefile"
 
-#: layers/ows.py:91
+#: layers/ows.py:92
 msgid "GML 2.0"
 msgstr "GML 2.0"
 
-#: layers/ows.py:92
+#: layers/ows.py:93
 msgid "GML 3.1.1"
 msgstr "GML 3.1.1"
 
-#: layers/ows.py:93
+#: layers/ows.py:94
 msgid "CSV"
 msgstr "CSV"
 
-#: layers/ows.py:94
+#: layers/ows.py:95
 msgid "Excel"
 msgstr "Excel"
 
-#: layers/ows.py:95
+#: layers/ows.py:96
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: layers/ows.py:118
+#: layers/ows.py:119
 msgid "JPEG"
 msgstr "JPEG"
 
-#: layers/ows.py:119
+#: layers/ows.py:120
 msgid "PDF"
 msgstr "PDF"
 
-#: layers/ows.py:120
+#: layers/ows.py:121
 msgid "PNG"
 msgstr "PNG"
 
-#: layers/views.py:67
+#: layers/views.py:69
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
-msgstr ""
-"Υπήρξε ένα σφάλμα στην προσπάθεια να ανεβάσουμε τα δεδομένα σας. Παρακαλώ "
-"προσπαθήστε ξανά, ή επικοινωνήστε με τον διαχειριστή αν το πρόβλημα "
-"συνεχίζεται."
+msgstr "Υπήρξε ένα σφάλμα στην προσπάθεια να ανεβάσουμε τα δεδομένα σας. Παρακαλώ προσπαθήστε ξανά, ή επικοινωνήστε με τον διαχειριστή αν το πρόβλημα συνεχίζεται."
 
-#: layers/views.py:77
+#: layers/views.py:79
 msgid "You are not permitted to delete this layer"
 msgstr "Δεν επιτρέπεται να διαγράψετε αυτή την επιφάνεια"
 
-#: layers/views.py:78
+#: layers/views.py:80
 msgid "You do not have permissions for this layer."
 msgstr "Δεν έχετε πρόσβαση για αυτή την επιφάνεια "
 
-#: layers/views.py:79
+#: layers/views.py:81
 msgid "You are not permitted to modify this layer"
 msgstr "Δεν επιτρέπεται να τροποποιήσετε αυτή την επιφάνεια"
 
-#: layers/views.py:80
+#: layers/views.py:82
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "Δεν επιτρέπεται να τροποποιήσετε τα μεταδεδομένα αυτής της επιφάνειας"
 
-#: layers/views.py:81
+#: layers/views.py:83
 msgid "You are not permitted to view this layer"
 msgstr "Δεν σας επιτρέπεται να δείτε αυτή την επιφάνεια"
 
-#: layers/views.py:625
+#: layers/views.py:606 layers/views.py:656
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Άκυρα Διαπιστευτήρια Εξουσιοδότησης HTTP."
 
@@ -2028,7 +1916,8 @@ msgid "A rating was given to a layer"
 msgstr "Βαθμολογήθηκε μια επιφάνεια"
 
 #: layers/templates/layers/_actions.html:4
-#: layers/templates/layers/layer_metadata.html:30
+#: layers/templates/layers/layer_metadata.html:32
+#: layers/templates/layers/layer_metadata.html:47
 msgid "Attributes"
 msgstr "Χαρακτηριστικά"
 
@@ -2038,18 +1927,19 @@ msgstr ""
 
 #: layers/templates/layers/layer_base.html:13
 #: layers/templates/layers/layer_list.html:9
-#: layers/templates/layers/layer_list.html:20 templates/index.html:29
+#: layers/templates/layers/layer_list.html:15 templates/index.html:29
 #: upload/templates/upload/layer_upload_base.html:13
 msgid "Explore Layers"
 msgstr "Εξερεύνηση Επιφανειών"
 
 #: layers/templates/layers/layer_base.html:15 templates/index.html:57
-#: upload/templates/upload/layer_upload.html:38
+#: upload/templates/upload/layer_upload.html:42
 #: upload/templates/upload/layer_upload_base.html:15
 msgid "Upload Layers"
 msgstr "Μεταφόρτωση (ανέβασμα) Επιφανειών"
 
-#: layers/templates/layers/layer_change_poc.html:5 templates/base.html:110
+#: layers/templates/layers/layer_change_poc.html:5 templates/500.html:108
+#: templates/base.html:111
 msgid "Home"
 msgstr "Αρχική Σελίδα"
 
@@ -2067,168 +1957,151 @@ msgstr "Αντιστοιχίστε ένα νέο σημείο επαφής γι�
 msgid "Submit"
 msgstr "Υποβολή"
 
-#: layers/templates/layers/layer_detail.html:29
+#: layers/templates/layers/layer_detail.html:30
 msgid "Download Layer"
 msgstr "Μεταφόρτωση (κατέβασμα) Επιφανειών"
 
-#: layers/templates/layers/layer_detail.html:40
-msgid "Download Metadata"
-msgstr "Μεταφόρτωση (κατέβασμα) Μεταδεδομένων"
-
-#: layers/templates/layers/layer_detail.html:54
+#: layers/templates/layers/layer_detail.html:56
 msgid "Edit Layer"
 msgstr "Επεξεργασία Επιφάνειας"
 
-#: layers/templates/layers/layer_detail.html:61
+#: layers/templates/layers/layer_detail.html:65
+#: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:62
-#: maps/templates/maps/map_detail.html:36
+#: layers/templates/layers/layer_detail.html:66
 msgid "Edit Styles"
 msgstr "Επεξεργασία Στυλ"
 
-#: layers/templates/layers/layer_detail.html:63
+#: layers/templates/layers/layer_detail.html:67
 msgid "Replace this Layer"
 msgstr "Αντικατάσταση αυτής της Επιφάνειας"
 
-#: layers/templates/layers/layer_detail.html:64
+#: layers/templates/layers/layer_detail.html:68
 msgid "Remove this Layer"
 msgstr "Διέγραψε αυτή την Επιφάνεια"
 
-#: layers/templates/layers/layer_detail.html:87
+#: layers/templates/layers/layer_detail.html:92
 msgid "Attribute Name"
 msgstr "Όνομα Ιδιότητας"
 
-#: layers/templates/layers/layer_detail.html:88
+#: layers/templates/layers/layer_detail.html:93
 msgid "Range"
 msgstr "Έκταση"
 
-#: layers/templates/layers/layer_detail.html:89
+#: layers/templates/layers/layer_detail.html:94
 msgid "Average"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:90
+#: layers/templates/layers/layer_detail.html:95
 msgid "Median"
 msgstr "Ενδιάμεση τιμή"
 
-#: layers/templates/layers/layer_detail.html:91
+#: layers/templates/layers/layer_detail.html:96
 msgid "Standard Deviation"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:121
+#: layers/templates/layers/layer_detail.html:126
 msgid "Share This Layer"
 msgstr "Μοιράσου αυτή την Επιφάνεια"
 
-#: layers/templates/layers/layer_detail.html:138
+#: layers/templates/layers/layer_detail.html:143
 msgid "Rate this layer"
 msgstr "Βαθμολόγησε αυτή την Επιφάνεια"
 
-#: layers/templates/layers/layer_detail.html:153
+#: layers/templates/layers/layer_detail.html:158
 msgid "Maps using this layer"
 msgstr "Χάρτες που χρησιμοποιούν αυτή την επιφάνεια"
 
-#: layers/templates/layers/layer_detail.html:155
+#: layers/templates/layers/layer_detail.html:160
 msgid "List of maps using this layer:"
 msgstr "Λίστα χαρτών που χρησιμοποιούν αυτή την επιφάνεια:"
 
-#: layers/templates/layers/layer_detail.html:161
+#: layers/templates/layers/layer_detail.html:166
 msgid "This layer is not currently used in any maps."
-msgstr ""
-"Αυτή η επιφάνεια δεν χρησιμοποιείται επί του παρόντος σε οποιονδήποτε χάρτη."
+msgstr "Αυτή η επιφάνεια δεν χρησιμοποιείται επί του παρόντος σε οποιονδήποτε χάρτη."
 
-#: layers/templates/layers/layer_detail.html:167
+#: layers/templates/layers/layer_detail.html:172
 msgid "Documents related to this layer"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:168
+#: layers/templates/layers/layer_detail.html:173
 msgid "List of documents related to this layer:"
 msgstr ""
 
-#: layers/templates/layers/layer_detail.html:177
+#: layers/templates/layers/layer_detail.html:182
 msgid "Create a map using this layer"
 msgstr "Δημιουργήστε ένα χάρτη με αυτή την επιφάνεια"
 
-#: layers/templates/layers/layer_detail.html:178
+#: layers/templates/layers/layer_detail.html:183
 msgid "Click the button below to generate a new map based on this layer."
-msgstr ""
-"Κατε κλίκ στο κουμπί παρακάτω για να δημιουργήσετε ένα νέο χάρτη βασισμένο "
-"σε αυτή την επιφάνεια"
+msgstr "Κατε κλίκ στο κουμπί παρακάτω για να δημιουργήσετε ένα νέο χάρτη βασισμένο σε αυτή την επιφάνεια"
 
-#: layers/templates/layers/layer_detail.html:179 templates/index.html:61
+#: layers/templates/layers/layer_detail.html:184 templates/index.html:61
 msgid "Create a Map"
 msgstr "Δημιουργήστε ένα χάρτη"
 
-#: layers/templates/layers/layer_detail.html:185
+#: layers/templates/layers/layer_detail.html:191
 msgid "Click the button below to change the permissions of this layer."
-msgstr ""
-"Κατε κλίκ στο κουμπί παρακάτω για να αλλαξετε τα δικαιώματα για αυτή την "
-"επιφάνεια"
+msgstr "Κατε κλίκ στο κουμπί παρακάτω για να αλλαξετε τα δικαιώματα για αυτή την επιφάνεια"
 
-#: layers/templates/layers/layer_detail.html:186
+#: layers/templates/layers/layer_detail.html:192
 msgid "Change Layer Permissions"
 msgstr "Αλλάξτε τα δικαιώματα της επιφάνειας"
 
-#: layers/templates/layers/layer_detail.html:191
+#: layers/templates/layers/layer_detail.html:198
 msgid "Styles"
 msgstr "Στυλ"
 
-#: layers/templates/layers/layer_detail.html:192
+#: layers/templates/layers/layer_detail.html:199
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
-msgstr ""
-"Τα ακόλουθα στύλ συνδέονται με αυτή την επιφάνεια. Επιλέξτε ένα στυλ για να "
-"το δείτε στο χάρτη προεπισκόπησης."
+msgstr "Τα ακόλουθα στύλ συνδέονται με αυτή την επιφάνεια. Επιλέξτε ένα στυλ για να το δείτε στο χάρτη προεπισκόπησης."
 
-#: layers/templates/layers/layer_detail.html:205
+#: layers/templates/layers/layer_detail.html:212
 msgid "No styles associated with this layer"
 msgstr "Κανένα στύλ δεν είναι συνδεδεμένο με αυτό το επίπεδο"
 
-#: layers/templates/layers/layer_detail.html:212
+#: layers/templates/layers/layer_detail.html:219
 msgid "Layer Owner"
 msgstr ""
 
-#: layers/templates/layers/layer_metadata.html:17
+#: layers/templates/layers/layer_metadata.html:12
 #, python-format
 msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
-msgstr ""
-"\n"
-"        Επεξεργασία λεπτομερειών για %(layer_title)s\n"
-"      "
+msgstr "\n        Επεξεργασία λεπτομερειών για %(layer_title)s\n      "
 
-#: layers/templates/layers/layer_metadata.html:22
+#: layers/templates/layers/layer_metadata.html:17
 msgid ""
-"Note: this layer's orginal metadata was populated by importing a metadata "
-"XML file.\n"
-"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
-"Core metadata elements.\n"
+"Note: this layer's orginal metadata was populated by importing a metadata XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr ""
-"Σημείωση: Τα αρχικά μεταδεδομένα για αυτή την επιφάνεια προέρχονται από "
-"αρχείο XML.\n"
-"        Η εισαγωγή μεταδεδομένων στο GeoNode υποστηρίζει ένα υποσύνολο του "
-"ISO, FGDC, και στοιχεία μεταδεδομένων του Dublin Core.\n"
-"         Μερικά από τα αρχικά σας μεταδεδομένα μπορεί να έχουν χαθεί."
+msgstr "Σημείωση: Τα αρχικά μεταδεδομένα για αυτή την επιφάνεια προέρχονται από αρχείο XML.\n        Η εισαγωγή μεταδεδομένων στο GeoNode υποστηρίζει ένα υποσύνολο του ISO, FGDC, και στοιχεία μεταδεδομένων του Dublin Core.\n         Μερικά από τα αρχικά σας μεταδεδομένα μπορεί να έχουν χαθεί."
 
-#: layers/templates/layers/layer_metadata.html:32
+#: layers/templates/layers/layer_metadata.html:23
+msgid "Error updating metadata.  Please check the following fields: "
+msgstr ""
+
+#: layers/templates/layers/layer_metadata.html:49
 msgid "Attribute"
 msgstr "Ιδιότητα"
 
-#: layers/templates/layers/layer_metadata.html:32
-msgid "Display Title"
-msgstr "Εμφάνιση Τίτλου"
+#: layers/templates/layers/layer_metadata.html:49
+msgid "Label"
+msgstr ""
 
-#: layers/templates/layers/layer_metadata.html:32
+#: layers/templates/layers/layer_metadata.html:49
+msgid "Description"
+msgstr ""
+
+#: layers/templates/layers/layer_metadata.html:49
 msgid "Display Order"
 msgstr "Σειρά Εμφάνισης"
-
-#: layers/templates/layers/layer_metadata.html:32
-msgid "Visible?"
-msgstr "Ορατό;"
 
 #: layers/templates/layers/layer_remove.html:11
 #, python-format
@@ -2236,13 +2109,9 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(layer_title)s?\n"
 "        "
-msgstr ""
-"\n"
-"          Θέλετε σίγουρα να διαγράψετε το %(layer_title)s?\n"
-"        "
+msgstr "\n          Θέλετε σίγουρα να διαγράψετε το %(layer_title)s?\n        "
 
 #: layers/templates/layers/layer_remove.html:25
-#: layers/templates/layers/layer_replace.html:176
 msgid "This action affects the following maps:"
 msgstr "Η ενέργεια αυτή επηρεάζει τους παρακάτω χάρτες:"
 
@@ -2250,147 +2119,112 @@ msgstr "Η ενέργεια αυτή επηρεάζει τους παρακάτ�
 msgid "No maps are using this layer"
 msgstr "Κανένας χάρτης δεν χρησιμοποιεί αυτή την επιφάνεια"
 
-#: layers/templates/layers/layer_replace.html:4
-#: layers/templates/layers/layer_replace.html:164
-msgid "Update Layer"
-msgstr "Ενημέρωση Επιφάνειας"
-
-#: layers/templates/layers/layer_replace.html:15
+#: layers/templates/layers/layer_replace.html:5
 msgid "Replace Layer"
 msgstr "Αντικατάσταση Επιφάνειας"
 
-#: layers/templates/layers/layer_replace.html:165
-msgid "This form allows you to update the data for this layer."
+#: layers/templates/layers/layer_replace.html:38
+msgid "Replace Layer: "
 msgstr ""
-"Αυτή η φόρμα σας επιτρέπει να ενημερώσετε τα δεδομένα για αυτή την επιφάνεια."
 
-#: layers/templates/layers/layer_replace.html:166
-msgid ""
-"\n"
-"If the new dataset omits attributes that were included in the previous "
-"version,\n"
-"or changes their types, then existing styles for the layer may not work.\n"
-"Please check your maps if the new data includes such changes.  "
-"Additionally,\n"
-"updated data must be the same format as the data already in place, e.g.\n"
+#: layers/templates/layers/layer_replace.html:82
+#: upload/templates/upload/layer_upload.html:88
+msgid "Files to be uploaded"
 msgstr ""
-"\n"
-"Αν το νέο σετ δεδομένων δεν περιέχει χαρακτηριστικά που υπήρχαν στην "
-"προηγούμενη,\n"
-"έκδοση ή αλλάζει τους τύπους τους, τότε τα υπάρχοντα στυλ για την επιφάνεια "
-"μπορεί να μην δουλεύουν.\n"
-"Παρακαλώ ελέγξτε στους χάρτες αν τα νέα δεδομένα περιέχουν τέτοιες αλλαγές.  "
-"Επιπρόσθετα,\n"
-"τα νέα δεδομένα πρέπει να είναι του ίδιου τύπου αρχείου με τα υπάρχοντα "
-"δεδομένα, π.χ.\n"
 
-#: layers/templates/layers/layer_replace.html:174
-msgid "Select a layer data file and submit the form to begin the transfer."
-msgstr ""
-"Επιλέξτε ένα αρχείο δεδομένων επιφάνειας και υποβάλετε τη φόρμα για να "
-"ξεκινήσει η μεταφορά."
-
-#: layers/templates/layers/layer_replace.html:182
-msgid "No maps are using this layer."
-msgstr "Κανένας χάρτης δεν χρησιμοποιεί αυτή την επιφάνεια."
-
-#: layers/templates/layers/layer_replace.html:188
-msgid "Supported Formats"
-msgstr "Υποστηριζόμενοι Τύποι Αρχείου"
-
-#: layers/templates/layers/layer_style_manage.html:24
+#: layers/templates/layers/layer_style_manage.html:16
 #, python-format
 msgid ""
 "\n"
-"          Manage Available Styles for %(layer_title)s\n"
-"        "
+"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">%(layer_title)s</a>\n"
+"    "
 msgstr ""
 
-#: layers/templates/layers/layer_style_manage.html:46
+#: layers/templates/layers/layer_style_manage.html:54
 msgid "Update Available Styles"
 msgstr ""
 
-#: maps/models.py:60
+#: maps/models.py:65
 msgid "zoom"
 msgstr "μεγέθυνση"
 
-#: maps/models.py:64
+#: maps/models.py:69
 msgid "projection"
 msgstr "προβολή"
 
-#: maps/models.py:68
+#: maps/models.py:73
 msgid "center X"
 msgstr "κέντρο X"
 
-#: maps/models.py:72
+#: maps/models.py:77
 msgid "center Y"
 msgstr "κέντρο Y"
 
-#: maps/models.py:324
+#: maps/models.py:404
 msgid "stack order"
 msgstr "ταξινόμηση στοίβας"
 
-#: maps/models.py:328
+#: maps/models.py:408
 msgid "format"
 msgstr "τύπος αρχείου"
 
-#: maps/models.py:332
+#: maps/models.py:412
 msgid "name"
 msgstr "όνομα"
 
-#: maps/models.py:339
+#: maps/models.py:419
 msgid "opacity"
 msgstr "αδιαφάνεια"
 
-#: maps/models.py:342
+#: maps/models.py:422
 msgid "styles"
 msgstr "στυλ"
 
-#: maps/models.py:345
+#: maps/models.py:425
 msgid "transparent"
 msgstr "διαφανής"
 
-#: maps/models.py:348
+#: maps/models.py:428
 msgid "fixed"
 msgstr "σταθερό"
 
-#: maps/models.py:352
+#: maps/models.py:432
 msgid "group"
 msgstr "ομάδα"
 
-#: maps/models.py:356
+#: maps/models.py:436
 msgid "visibility"
 msgstr "ορατότητα"
 
-#: maps/models.py:359
+#: maps/models.py:439
 msgid "ows URL"
 msgstr "Ηλεκτρονική Διεύθυνση Υπηρεσίας OWS"
 
-#: maps/models.py:362
+#: maps/models.py:442
 msgid "layer params"
 msgstr "παράμετροι επιφάνειας"
 
-#: maps/models.py:369
+#: maps/models.py:449
 msgid "source params"
 msgstr "παράμετροι πηγής"
 
-#: maps/views.py:65
+#: maps/views.py:66
 msgid "You are not permitted to delete this map."
 msgstr "Δεν επιτρέπεται να διαγράψετε αυτό το χάρτη."
 
-#: maps/views.py:66
+#: maps/views.py:67
 msgid "You do not have permissions for this map."
 msgstr "Δεν έχετε δικαιώματα για αυτόν τον χάρτη."
 
-#: maps/views.py:67
+#: maps/views.py:68
 msgid "You must be logged in to save this map"
 msgstr "Θα πρέπει να συνδεθείτε για να αποθηκεύσετε αυτό το χάρτη"
 
-#: maps/views.py:68
+#: maps/views.py:69
 msgid "You are not allowed to modify this map's metadata."
 msgstr "Δεν επιτρέπεται να τροποποιήσετε τα μεταδεδομένα αυτού του χάρτη."
 
-#: maps/views.py:69
+#: maps/views.py:70
 msgid "You are not allowed to view this map."
 msgstr "Δεν σας επιτρέπεται να δείτε αυτό το χάρτη."
 
@@ -2418,139 +2252,126 @@ msgstr "Βαθμολογία για Χάρτη"
 msgid "A rating was given to a map"
 msgstr "Μια βαθμολογία προστέθηκε σε ένα χάρτη"
 
+#: maps/templates/maps/_map_list_item.html:22
+msgid "View"
+msgstr ""
+
 #: maps/templates/maps/map_base.html:5 maps/templates/maps/map_base.html:12
-#: maps/templates/maps/map_list.html:19 templates/index.html:32
+#: maps/templates/maps/map_list.html:14 templates/index.html:32
 msgid "Explore Maps"
 msgstr "Εξερεύνηση Χάρτών"
 
-#: maps/templates/maps/map_detail.html:30
-msgid "Edit Map"
-msgstr ""
-
-#: maps/templates/maps/map_detail.html:38
-msgid "Remove this Map"
-msgstr ""
-
-#: maps/templates/maps/map_detail.html:44
+#: maps/templates/maps/map_detail.html:27
 msgid "Download Map"
 msgstr "Λήψη Χάρτη"
 
-#: maps/templates/maps/map_detail.html:48
+#: maps/templates/maps/map_detail.html:31
 msgid "Download Data Layers"
 msgstr "Κατεβάστε Επιφάνειες Δεδομένων"
 
-#: maps/templates/maps/map_detail.html:49
+#: maps/templates/maps/map_detail.html:32
 msgid "Download Web Map Context"
 msgstr "Μεταφορτώστε Web Map Context"
 
-#: maps/templates/maps/map_detail.html:53
-msgid "Print Map"
-msgstr "Εκτύπωση Χάρτη"
-
-#: maps/templates/maps/map_detail.html:86 templates/_actions.html:6
-msgid "Rate this Map"
-msgstr "Βαθμολογήστε αυτό το Χάρτη"
-
-#: maps/templates/maps/map_detail.html:99
-msgid "Share This Map"
-msgstr "Μοιραστείτε αυτό το Χάρτη"
-
-#: maps/templates/maps/map_detail.html:112
-msgid "Map Layers"
-msgstr "Επιφάνειες Χάρτη"
-
-#: maps/templates/maps/map_detail.html:113
-msgid "This map uses the following layers:"
-msgstr "Αυτός ο χάρτης χρησιμοποιεί τις ακόλουθες επιφάνειες:"
-
-#: maps/templates/maps/map_detail.html:128
-msgid "Documents related to this map"
+#: maps/templates/maps/map_detail.html:40
+msgid "Edit Map"
 msgstr ""
 
-#: maps/templates/maps/map_detail.html:129
-msgid "List of documents related to this map:"
+#: maps/templates/maps/map_detail.html:44
+msgid "Edit Map Metadata"
 msgstr ""
 
-#: maps/templates/maps/map_detail.html:138
-msgid "View map"
-msgstr "Επισκόπηση χάρτη"
+#: maps/templates/maps/map_detail.html:46
+msgid "Set Map Thumbnail"
+msgstr ""
 
-#: maps/templates/maps/map_detail.html:139
-msgid "View this map in the GeoExplorer GIS Client"
-msgstr "Δείτε αυτό το χάρτη στην εφαρμογή GIS GeoExplorer"
+#: maps/templates/maps/map_detail.html:48
+msgid "Edit Map Permissions"
+msgstr ""
 
-#: maps/templates/maps/map_detail.html:140
+#: maps/templates/maps/map_detail.html:49
+msgid "Remove this Map"
+msgstr ""
+
+#: maps/templates/maps/map_detail.html:54
 msgid "View Map"
 msgstr "Επισκόπηση Χάρτη"
 
-#: maps/templates/maps/map_detail.html:146
-msgid "Specify which users can view or modify this map"
+#: maps/templates/maps/map_detail.html:92 templates/_actions.html:6
+msgid "Rate this Map"
+msgstr "Βαθμολογήστε αυτό το Χάρτη"
+
+#: maps/templates/maps/map_detail.html:105
+msgid "Share This Map"
+msgstr "Μοιραστείτε αυτό το Χάρτη"
+
+#: maps/templates/maps/map_detail.html:118
+msgid "Map Layers"
+msgstr "Επιφάνειες Χάρτη"
+
+#: maps/templates/maps/map_detail.html:119
+msgid "This map uses the following layers:"
+msgstr "Αυτός ο χάρτης χρησιμοποιεί τις ακόλουθες επιφάνειες:"
+
+#: maps/templates/maps/map_detail.html:134
+msgid "Documents related to this map"
 msgstr ""
-"Καθορίστε ποιοί χρήστες μπορούν να δουν ή να τροποποιήσουν αυτό το χάρτη"
+
+#: maps/templates/maps/map_detail.html:135
+msgid "List of documents related to this map:"
+msgstr ""
 
 #: maps/templates/maps/map_detail.html:147
+msgid "Specify which users can view or modify this map"
+msgstr "Καθορίστε ποιοί χρήστες μπορούν να δουν ή να τροποποιήσουν αυτό το χάρτη"
+
+#: maps/templates/maps/map_detail.html:148
 msgid "Change Permissions of this Map"
 msgstr "Αλλαγή Δικαιωμάτων σε αυτόν τον Χάρτη"
 
-#: maps/templates/maps/map_detail.html:151
+#: maps/templates/maps/map_detail.html:152
 msgid "Copy this map"
 msgstr "Αντιγράψτε αυτό το χάρτη"
 
-#: maps/templates/maps/map_detail.html:152
+#: maps/templates/maps/map_detail.html:153
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Αντιγράψτε τον χάρτη και τροποποιήστε τον για δικούς σας σκοπούς"
 
-#: maps/templates/maps/map_detail.html:153
-#: maps/templates/maps/map_list.html:18
+#: maps/templates/maps/map_detail.html:154
+#: maps/templates/maps/map_list.html:13
 msgid "Create a New Map"
 msgstr "Δημιουργήστε ένα Νέο Χάρτη"
 
-#: maps/templates/maps/map_detail.html:157
+#: maps/templates/maps/map_detail.html:158
 msgid "Map Owner"
 msgstr ""
 
-#: maps/templates/maps/map_download.html:67
+#: maps/templates/maps/map_download.html:8
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
 "      are hosted on this GeoNode.  The following layers will\n"
 "      be downloaded:\n"
 "    "
-msgstr ""
-"\n"
-"      Εδώ μπορείτε να κατεβάσετε όλες τις επιφάνειες του χάρτη που \n"
-"      που φιλοξενούνται σε αυτό το GeoNode. Οι παρακάτω επιφάνειες\n"
-"      θα μεταφορτωθούν:\n"
-"    "
+msgstr "\n      Εδώ μπορείτε να κατεβάσετε όλες τις επιφάνειες του χάρτη που \n      που φιλοξενούνται σε αυτό το GeoNode. Οι παρακάτω επιφάνειες\n      θα μεταφορτωθούν:\n    "
 
-#: maps/templates/maps/map_download.html:85
+#: maps/templates/maps/map_download.html:26
 msgid ""
 "\n"
-"        Additionally, the map contains these layers which will not be "
-"downloaded\n"
+"        Additionally, the map contains these layers which will not be downloaded\n"
 "        due to security restrictions:\n"
 "      "
-msgstr ""
-"\n"
-"        Επιπλέον, ο χάρτης περιέχει αυτές τις επιφάνειες οι οποίες δεν θα "
-"κατέβουν\n"
-"        λόγω των περιορισμών ασφαλείας:\n"
-"      "
+msgstr "\n        Επιπλέον, ο χάρτης περιέχει αυτές τις επιφάνειες οι οποίες δεν θα κατέβουν\n        λόγω των περιορισμών ασφαλείας:\n      "
 
-#: maps/templates/maps/map_download.html:97
+#: maps/templates/maps/map_download.html:38
 msgid ""
 "\n"
 "        Finally, the map contains these layers which will not be downloaded\n"
 "        because they are not available directly from this GeoNode:\n"
 "      "
-msgstr ""
-"\n"
-"        Τέλος, ο χάρτης περιέχει τις παρακάτω επιφάνειες που δεν θα "
-"κατέβουν\n"
-"        λόγω του ότι δεν είναι άμεσα διαθέσιμες σε αυτό το GeoNode:\n"
-"      "
+msgstr "\n        Τέλος, ο χάρτης περιέχει τις παρακάτω επιφάνειες που δεν θα κατέβουν\n        λόγω του ότι δεν είναι άμεσα διαθέσιμες σε αυτό το GeoNode:\n      "
 
-#: maps/templates/maps/map_download.html:115
+#: maps/templates/maps/map_download.html:60
 msgid "Start downloading this map"
 msgstr "Ξεκινήστε τη λήψη αυτού του χάρτη"
 
@@ -2560,10 +2381,7 @@ msgid ""
 "\n"
 "            Updating metadata of %(map_title)s\n"
 "        "
-msgstr ""
-"\n"
-"            Ενημέρωση μεταδεδομένων του %(map_title)s\n"
-"        "
+msgstr "\n            Ενημέρωση μεταδεδομένων του %(map_title)s\n        "
 
 #: maps/templates/maps/map_metadata.html:26
 msgid "Update metadata"
@@ -2579,10 +2397,7 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(map_title)s?\n"
 "    "
-msgstr ""
-"\n"
-"        Σίγουρα θέλετε να διαγράψετε %(map_title)s;\n"
-"    "
+msgstr "\n        Σίγουρα θέλετε να διαγράψετε %(map_title)s;\n    "
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -2594,11 +2409,9 @@ msgstr "ομάδα που έχει συντάξει τον πόρο"
 
 #: people/enumerations.py:40
 msgid ""
-"party who has processed the data in a manner such that the resource has been "
-"modified"
-msgstr ""
-"ομάδα που έχει επεξεργαστεί τα δεδομένα με τρόπο τέτοιο ώστε ο πόρος να έχει "
-"τροποποιηθεί"
+"party who has processed the data in a manner such that the resource has been"
+" modified"
+msgstr "ομάδα που έχει επεξεργαστεί τα δεδομένα με τρόπο τέτοιο ώστε ο πόρος να έχει τροποποιηθεί"
 
 #: people/enumerations.py:41
 msgid "party who published the resource"
@@ -2608,17 +2421,13 @@ msgstr "ομάδα που δημοσίευσε τον πόρο"
 msgid ""
 "party that accepts accountability and responsability for the data and "
 "ensures appropriate care and maintenance of the resource"
-msgstr ""
-"ομάδα που αποδέχεται λογοδοσία και ευθύνη για τα δεδομένα και εξασφαλίζει "
-"την ενδεδειγμένη φροντίδα και συντήρηση του πόρου"
+msgstr "ομάδα που αποδέχεται λογοδοσία και ευθύνη για τα δεδομένα και εξασφαλίζει την ενδεδειγμένη φροντίδα και συντήρηση του πόρου"
 
 #: people/enumerations.py:43
 msgid ""
 "party who can be contacted for acquiring knowledge about or acquisition of "
 "the resource"
-msgstr ""
-"ομάδα με την οποία μπορεί να γίνει επαφή για την απόκτησή του πόρου ή για "
-"την απόκτηση γνώσεων σχετικά με τον πόρο"
+msgstr "ομάδα με την οποία μπορεί να γίνει επαφή για την απόκτησή του πόρου ή για την απόκτηση γνώσεων σχετικά με τον πόρο"
 
 #: people/enumerations.py:44
 msgid "party who distributes the resource"
@@ -2641,10 +2450,9 @@ msgid "party that owns the resource"
 msgstr "ομάδα που κατέχει τον πόρο"
 
 #: people/enumerations.py:49
-msgid "key party responsible for gathering information and conducting research"
-msgstr ""
-"βασικό πρόσωπο που είναι υπεύθυνο για τη συλλογή πληροφοριών και τη "
-"διεξαγωγή της έρευνας"
+msgid ""
+"key party responsible for gathering information and conducting research"
+msgstr "βασικό πρόσωπο που είναι υπεύθυνο για τη συλλογή πληροφοριών και τη διεξαγωγή της έρευνας"
 
 #: people/forms.py:33
 msgid "Email Address"
@@ -2674,9 +2482,7 @@ msgstr "Όνομα Ατόμου"
 msgid ""
 "name of the responsible personsurname, given name, title separated by a "
 "delimiter"
-msgstr ""
-"όνομα του αρμόδιου προσώπου με επώνυμο, όνομα, τίτλο που χωρίζονται από έναν "
-"χαρακτήρα ορίου (delimiter)"
+msgstr "όνομα του αρμόδιου προσώπου με επώνυμο, όνομα, τίτλο που χωρίζονται από έναν χαρακτήρα ορίου (delimiter)"
 
 #: people/models.py:48
 msgid "Organization Name"
@@ -2686,7 +2492,7 @@ msgstr "Όνομα Οργανισμού"
 msgid "name of the responsible organization"
 msgstr "όνομα του υπεύθυνου οργανισμού"
 
-#: people/models.py:49 templates/base.html:49
+#: people/models.py:49 templates/500.html:47 templates/base.html:50
 msgid "Profile"
 msgstr "Προφίλ"
 
@@ -2706,9 +2512,7 @@ msgstr "Τηλέφωνο"
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
-msgstr ""
-"αριθμό τηλεφώνου με τον οποίο το κοινό μπορεί να μιλήσει με τον αρμόδιο "
-"οργανισμό ή άτομο"
+msgstr "αριθμό τηλεφώνου με τον οποίο το κοινό μπορεί να μιλήσει με τον αρμόδιο οργανισμό ή άτομο"
 
 #: people/models.py:52
 msgid "Facsimile"
@@ -2718,9 +2522,7 @@ msgstr "Fax"
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
-msgstr ""
-"αριθμός τηλεφώνου ή αριθμός τηλεομοιοτυπίας για τον υπεύθυνο οργανισμό ή "
-"άτομο"
+msgstr "αριθμός τηλεφώνου ή αριθμός τηλεομοιοτυπίας για τον υπεύθυνο οργανισμό ή άτομο"
 
 #: people/models.py:53
 msgid "Delivery Point"
@@ -2730,9 +2532,7 @@ msgstr "Σημείο Παράδοσης"
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
-msgstr ""
-"ταχυδρομική διεύθυνση και διεύθυνση ηλεκτρονικού ταχυδρομείου στην οποία "
-"μπορεί να γίνει επαφή με τον οργανισμό ή το άτομο"
+msgstr "ταχυδρομική διεύθυνση και διεύθυνση ηλεκτρονικού ταχυδρομείου στην οποία μπορεί να γίνει επαφή με τον οργανισμό ή το άτομο"
 
 #: people/models.py:54
 msgid "City"
@@ -2778,39 +2578,37 @@ msgstr "Το όνομα χρήστη σας έχει σταλεί με ηλεκ�
 
 #: people/views.py:158
 msgid "No user could be found with that email address."
-msgstr ""
-"Κανένας χρήστης δεν βρεθηκε με την διεύθυνση ηλεκτρονικού ταχυδρομείου."
-
-#: people/templates/people/_profile_about_item.html:10
-msgid "Read more about "
-msgstr ""
+msgstr "Κανένας χρήστης δεν βρεθηκε με την διεύθυνση ηλεκτρονικού ταχυδρομείου."
 
 #: people/templates/people/_profile_filters.html:5
 msgid "All contents"
 msgstr ""
 
-#: people/templates/people/_profile_filters.html:6 templates/base.html:113
+#: people/templates/people/_profile_filters.html:6 templates/500.html:111
+#: templates/base.html:114
 msgid "Layers"
 msgstr "Επιφάνειες"
 
-#: people/templates/people/_profile_filters.html:7 templates/base.html:116
+#: people/templates/people/_profile_filters.html:7 templates/500.html:114
+#: templates/base.html:117
 msgid "Maps"
 msgstr "Χάρτες"
 
-#: people/templates/people/_profile_filters.html:8 templates/base.html:121
+#: people/templates/people/_profile_filters.html:8 templates/500.html:119
+#: templates/base.html:122
 msgid "Documents"
 msgstr "Έγγραφα"
 
-#: people/templates/people/_profile_filters.html:12
+#: people/templates/people/_profile_filters.html:9
 msgid "Sort by date"
 msgstr ""
 
-#: people/templates/people/_profile_filters.html:13
+#: people/templates/people/_profile_filters.html:10
 msgid "Sort by title"
 msgstr ""
 
-#: people/templates/people/_profile_list_item.html:37
-#: people/templates/people/profile_detail.html:61
+#: people/templates/people/_profile_list_item.html:39
+#: people/templates/people/profile_detail.html:15
 msgid "My Activities"
 msgstr ""
 
@@ -2820,11 +2618,9 @@ msgstr "Ξεχάσατε το Όνομα Χρήστη"
 
 #: people/templates/people/forgot_username_form.html:9
 msgid ""
-"Enter your email address and click the submit button.  Your username will be "
-"sent to you."
-msgstr ""
-"Εισάγετε τη διεύθυνση ηλεκτρονικού ταχυδρομείου σας και κάντε κλικ στο "
-"κουμπί submit. Το όνομα χρήστη θα σας αποσταλεί."
+"Enter your email address and click the submit button.  Your username will be"
+" sent to you."
+msgstr "Εισάγετε τη διεύθυνση ηλεκτρονικού ταχυδρομείου σας και κάντε κλικ στο κουμπί submit. Το όνομα χρήστη θα σας αποσταλεί."
 
 #: people/templates/people/profile_base.html:12
 #: people/templates/people/profile_list.html:11
@@ -2837,76 +2633,43 @@ msgid "Create Profile"
 msgstr "Δημιουργία προφίλ"
 
 #: people/templates/people/profile_detail.html:7
-#: people/templates/people/profile_detail.html:13
 msgid "Profile of "
 msgstr ""
 
-#: people/templates/people/profile_detail.html:34
-msgid "Map"
-msgstr "Χάρτης"
-
-#: people/templates/people/profile_detail.html:37
-msgid "Layer"
-msgstr "Επιφάνεια"
-
-#: people/templates/people/profile_detail.html:40
-msgid "Document"
-msgstr "Κείμενο"
-
-#: people/templates/people/profile_detail.html:49
-#: search/templates/search/search_content.html:27
-msgid "No data found"
-msgstr "Δεν βρέθηκαν δεδομένα"
-
-#: people/templates/people/profile_detail.html:64
-msgid "Actions"
-msgstr "Ενέργειες"
-
-#: people/templates/people/profile_detail.html:66
+#: people/templates/people/profile_detail.html:51
 msgid "Edit profile information"
 msgstr "Επεξεργασία πληροφοριών προφίλ"
 
-#: people/templates/people/profile_detail.html:67
+#: people/templates/people/profile_detail.html:52
 msgid "Account Settings"
 msgstr "Ρυθμίσεις Λογαριασμού"
 
-#: people/templates/people/profile_detail.html:68
+#: people/templates/people/profile_detail.html:53
 msgid "Change password"
 msgstr "Αλλαγή κωδικού πρόσβασης"
 
-#: people/templates/people/profile_detail.html:69
+#: people/templates/people/profile_detail.html:54
 msgid "Upload new layers"
 msgstr "Ανεβάστε Νέα Επιφάνεια"
 
-#: people/templates/people/profile_detail.html:70
+#: people/templates/people/profile_detail.html:55
 msgid "Create a new map"
 msgstr "Δημιουργήστε ένα νέο χάρτη"
 
-#: people/templates/people/profile_edit.html:8 templates/avatar/add.html:9
-msgid "You haven't uploaded an avatar yet. Please upload one now."
-msgstr "Δεν έχετε ανεβάσει ένα εικονίδιο. Παρακαλούμε να ανεβάσετε ένα τώρα."
+#: people/templates/people/profile_detail.html:103
+msgid "Shared on"
+msgstr ""
 
-#: people/templates/people/profile_edit.html:11
-msgid "Change Your Avatar"
-msgstr "Αλλάξτε το εικονίδιό σας"
+#: people/templates/people/profile_detail.html:116
+msgid "No contents found."
+msgstr ""
 
-#: people/templates/people/profile_edit.html:17
-msgid "Choose new avatar"
-msgstr "Επιλέξτε νέο εικονίδιο"
-
-#: people/templates/people/profile_edit.html:23
-msgid "Upload a New Avatar"
-msgstr "Ανεβάστε Νέο Εικονίδιο"
-
-#: people/templates/people/profile_edit.html:29
-msgid "Upload new avatar"
-msgstr "Ανεβάστε νέο εικονίδιο"
-
-#: people/templates/people/profile_edit.html:34
+#: people/templates/people/profile_edit.html:10
+#: people/templates/people/profile_edit.html:18
 msgid "Edit Your Profile"
 msgstr "Επεξεργασία του προφίλ σας"
 
-#: people/templates/people/profile_edit.html:40
+#: people/templates/people/profile_edit.html:24
 msgid "Update profile"
 msgstr "Ενημέρωση προφίλ"
 
@@ -2914,19 +2677,9 @@ msgstr "Ενημέρωση προφίλ"
 msgid "Categories"
 msgstr "Κατηγορίες"
 
-#: search/templates/search/_general_filters.html:8
+#: search/templates/search/_general_filters.html:7
 msgid "All Categories"
 msgstr "Όλες οι Κατηγορίες"
-
-#: search/templates/search/_general_filters.html:25
-#: templates/geonode/resourcebase_info_panel.html:21
-msgid "Date"
-msgstr "Ημερομηνία"
-
-#: search/templates/search/_general_filters.html:36
-#: templates/geonode/resourcebase_info_panel.html:35
-msgid "Keywords"
-msgstr "Λέξεις-κλειδιά"
 
 #: search/templates/search/_sort_filters.html:5
 msgid "Less recent"
@@ -2944,86 +2697,86 @@ msgstr ""
 msgid "Relevance"
 msgstr ""
 
-#: search/templates/search/_type_filters.html:3
-#: templates/geonode/resourcebase_info_panel.html:28
-msgid "Type"
-msgstr "Τύπος"
-
 #: search/templates/search/advanced_search.html:4
-#: search/templates/search/advanced_search.html:15
+#: search/templates/search/advanced_search.html:10
 #: search/templates/search/search.html:6
-#: search/templates/search/search.html:17 templates/base.html:128
+#: search/templates/search/search.html:12 templates/500.html:126
+#: templates/base.html:129
 msgid "Search"
 msgstr "Αναζήτηση"
 
-#: search/templates/search/advanced_search.html:19
+#: search/templates/search/advanced_search.html:14
 msgid "Search for: "
 msgstr "Αναζήτηση για:"
 
-#: search/templates/search/advanced_search.html:25
+#: search/templates/search/advanced_search.html:20
 msgid "All of the words"
 msgstr "Όλες τις λέξεις"
 
-#: search/templates/search/advanced_search.html:31
-#: search/templates/search/advanced_search.html:117
+#: search/templates/search/advanced_search.html:26
+#: search/templates/search/advanced_search.html:112
 msgid "Search "
 msgstr "Αναζήτηση"
 
-#: search/templates/search/advanced_search.html:34
+#: search/templates/search/advanced_search.html:29
 msgid "Exclude words from your search"
 msgstr "Εξαίρεση λέξεων από την αναζήτησή σας"
 
-#: search/templates/search/advanced_search.html:40
+#: search/templates/search/advanced_search.html:35
 msgid "All categories"
 msgstr "Όλες οι κατηγορίες"
 
-#: search/templates/search/advanced_search.html:43
+#: search/templates/search/advanced_search.html:38
 msgid "Maps only"
 msgstr "Μόνο σε χάρτες"
 
-#: search/templates/search/advanced_search.html:46
+#: search/templates/search/advanced_search.html:41
 msgid "Layers only"
 msgstr "Μόνο σε επιφάνειες"
 
-#: search/templates/search/advanced_search.html:49
+#: search/templates/search/advanced_search.html:44
 msgid "Users only"
 msgstr ""
 
-#: search/templates/search/advanced_search.html:57
+#: search/templates/search/advanced_search.html:52
 msgid "Type: "
 msgstr "Τύπος:"
 
-#: search/templates/search/advanced_search.html:62
+#: search/templates/search/advanced_search.html:57
 msgid "From this site/portal"
 msgstr "Από αυτή την ιστοσελίδα / πύλη"
 
-#: search/templates/search/advanced_search.html:68
+#: search/templates/search/advanced_search.html:63
 msgid "From this group"
 msgstr "Από αυτή την ομάδα"
 
-#: search/templates/search/advanced_search.html:74
+#: search/templates/search/advanced_search.html:69
 msgid "From this organization"
 msgstr "Από αυτόν τον οργανισμό"
 
-#: search/templates/search/advanced_search.html:80
+#: search/templates/search/advanced_search.html:75
 msgid "From this geographic region"
 msgstr "Από αυτή τη γεωγραφική περιοχή"
 
-#: search/templates/search/advanced_search.html:90
+#: search/templates/search/advanced_search.html:85
 msgid "Metadata: "
 msgstr "Μεταδεδομένα:"
 
-#: search/templates/search/advanced_search.html:95
+#: search/templates/search/advanced_search.html:90
 msgid "Since this date"
 msgstr "Από αυτή την ημερομηνία"
 
-#: search/templates/search/advanced_search.html:104
+#: search/templates/search/advanced_search.html:99
 msgid "Until this date"
 msgstr "Μέχρι αυτή την ημερομηνία"
 
-#: search/templates/search/advanced_search.html:118
+#: search/templates/search/advanced_search.html:113
 msgid "Clear Options "
 msgstr "Καθάρισμα Επιλογών"
+
+#: search/templates/search/search_content.html:27
+msgid "No data found"
+msgstr "Δεν βρέθηκαν δεδομένα"
 
 #: security/enumerations.py:31
 msgid "Invalid permission level."
@@ -3035,9 +2788,7 @@ msgstr "κωδική ονομασία"
 
 #: security/models.py:50
 msgid "Determines the order that roles are presented in the user interface."
-msgstr ""
-"Καθορίζει τη σειρά που οι ρόλοι παρουσιάζονται στο περιβάλλον εργασίας "
-"χρήστη."
+msgstr "Καθορίζει τη σειρά που οι ρόλοι παρουσιάζονται στο περιβάλλον εργασίας χρήστη."
 
 #: security/views.py:31
 msgid "???"
@@ -3052,10 +2803,7 @@ msgid ""
 "\n"
 "          You are not allowed to perform this operation.  \n"
 "      "
-msgstr ""
-"\n"
-"          Δεν μπορείτε να κάνετε αυτή την ενέργεια.  \n"
-"      "
+msgstr "\n          Δεν μπορείτε να κάνετε αυτή την ενέργεια.  \n      "
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
@@ -3072,44 +2820,118 @@ msgstr "Η σελίδα δεν βρέθηκε"
 #: templates/404.html:6
 msgid ""
 "\n"
-"      The page you requested does not exist.  Perhaps you are using an "
-"outdated bookmark?\n"
+"      The page you requested does not exist.  Perhaps you are using an outdated bookmark?\n"
 "  "
+msgstr "\n      Η σελίδα που ζητήσατε δεν υπάρχει. Ίσως να χρησιμοποιείτε ένα παλιό σελιδοδείκτη;\n  "
+
+#: templates/500.html:49 templates/base.html:52
+msgid "Admin"
+msgstr "Διαχειριστής"
+
+#: templates/500.html:52 templates/base.html:55
+msgid "GeoServer"
+msgstr "GeoServer"
+
+#: templates/500.html:55 templates/base.html:58
+#: templates/account/logout.html:6 templates/account/logout.html.py:12
+#: templates/account/logout.html:17
+msgid "Log out"
+msgstr "Αποσύνδεση"
+
+#: templates/500.html:60 templates/base.html:63
+msgid "Notifications"
+msgstr "Ειδοποιήσεις"
+
+#: templates/500.html:61 templates/base.html:64
+msgid "Messages"
+msgstr "Μηνύματα"
+
+#: templates/500.html:62 templates/base.html:65
+msgid "Upload"
+msgstr "Ανεβάστε"
+
+#: templates/500.html:63 templates/base.html:66
+msgid "Help"
+msgstr "Βοήθεια"
+
+#: templates/500.html:67 templates/500.html.py:80 templates/base.html:70
+#: templates/base.html.py:83
+msgid "Sign in"
+msgstr "Είσοδος"
+
+#: templates/500.html:72 templates/base.html:75
+msgid "Username"
+msgstr "Όνομα Χρήστη"
+
+#: templates/500.html:74 templates/base.html:77
+msgid "Password"
+msgstr "Κωδικός Ασφαλείας"
+
+#: templates/500.html:78 templates/base.html:81
+msgid "Remember Me"
+msgstr "Αυτόματη Σύνδεση"
+
+#: templates/500.html:86 templates/base.html:89
+msgid "or"
+msgstr "ή"
+
+#: templates/500.html:87 templates/base.html:90
+msgid "Register"
+msgstr "Εγγραφή"
+
+#: templates/500.html:123 templates/base.html:126
+msgid "People"
+msgstr "Άτομα"
+
+#: templates/500.html:163
+msgid "There was a problem loading this page"
 msgstr ""
-"\n"
-"      Η σελίδα που ζητήσατε δεν υπάρχει. Ίσως να χρησιμοποιείτε ένα παλιό "
-"σελιδοδείκτη;\n"
-"  "
 
-#: templates/500.html:5
-msgid "Internal Server Error"
-msgstr "Εσωτερικό σφάλμα εξυπηρετητή"
-
-#: templates/500.html:6
+#: templates/500.html:164
 msgid ""
 "\n"
-"      An internal error occurred. Please try again, and if the problem "
-"continues, contact your site administrator.\n"
+"      Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).\n"
+"      If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "  "
 msgstr ""
-"\n"
-"      Παρουσιάστηκε ένα εσωτερικό σφάλμα. Παρακαλούμε δοκιμάστε ξανά, και αν "
-"το πρόβλημα συνεχιστεί, επικοινωνήστε με το διαχειριστή της ιστοσελίδας.\n"
-"  "
+
+#: templates/500.html:182 templates/base.html:179
+msgid "Powered by"
+msgstr "Ενεργοποιημένο από "
+
+#: templates/500.html:182 templates/base.html:179
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: templates/500.html:182 templates/base.html:179
+msgid "version"
+msgstr "έκδοση"
+
+#: templates/500.html:183 templates/base.html:180
+msgid "Developers"
+msgstr ""
 
 #: templates/_actions.html:4
 msgid "Add to Favorites"
 msgstr "Προσθήκη στα Αγαπημένα"
 
-#: templates/_comments.html:13
+#: templates/_comments.html:16
 msgid "Add Comment"
 msgstr "Προσθήση Σχολίου"
 
-#: templates/_comments.html:35
+#: templates/_comments.html:20
+msgid "Log in to add a comment"
+msgstr ""
+
+#: templates/_comments.html:33
+msgid "By"
+msgstr ""
+
+#: templates/_comments.html:48
 msgid "Add a Comment"
 msgstr "Προσθέστε ένα σχόλιο"
 
-#: templates/_comments.html:45
+#: templates/_comments.html:58
 msgid "Submit Comments"
 msgstr "Υποβολή Σχολίων"
 
@@ -3142,6 +2964,7 @@ msgid "Who can manage and edit this data?"
 msgstr "Ποιός μπορεί να διαχειριστεί και να επεξεργαστεί αυτά τα δεδομένα;"
 
 #: templates/_permissions_form.html:11
+#: upload/templates/upload/layer_upload.html:62
 msgid "Cancel"
 msgstr "Ακύρωση"
 
@@ -3149,7 +2972,7 @@ msgstr "Ακύρωση"
 msgid "Apply Changes"
 msgstr "Εφαρμογή Αλλαγών"
 
-#: templates/_permissions_form_js.html:124
+#: templates/_permissions_form_js.html:126
 msgid "Choose one or more users..."
 msgstr ""
 
@@ -3173,91 +2996,13 @@ msgstr ""
 msgid "About GeoNode."
 msgstr ""
 
-#: templates/base.html:51
-msgid "Admin"
-msgstr "Διαχειριστής"
-
-#: templates/base.html:54
-msgid "GeoServer"
-msgstr "GeoServer"
-
-#: templates/base.html:57
-msgid "Log out"
-msgstr "Αποσύνδεση"
-
-#: templates/base.html:62
-msgid "Notifications"
-msgstr "Ειδοποιήσεις"
-
-#: templates/base.html:63
-msgid "Messages"
-msgstr "Μηνύματα"
-
-#: templates/base.html:64
-msgid "Upload"
-msgstr "Ανεβάστε"
-
-#: templates/base.html:65
-msgid "Help"
-msgstr "Βοήθεια"
-
-#: templates/base.html:69 templates/base.html.py:82
-msgid "Sign in"
-msgstr "Είσοδος"
-
-#: templates/base.html:74
-msgid "Username"
-msgstr "Όνομα Χρήστη"
-
-#: templates/base.html:76
-msgid "Password"
-msgstr "Κωδικός Ασφαλείας"
-
-#: templates/base.html:80
-msgid "Remember Me"
-msgstr "Αυτόματη Σύνδεση"
-
-#: templates/base.html:88
-msgid "or"
-msgstr "ή"
-
-#: templates/base.html:89
-msgid "Register"
-msgstr "Εγγραφή"
-
-#: templates/base.html:125
-msgid "People"
-msgstr "Άτομα"
-
-#: templates/base.html:178
-msgid "Powered by"
-msgstr "Ενεργοποιημένο από "
-
-#: templates/base.html:178
-msgid "GeoNode"
-msgstr "GeoNode"
-
-#: templates/base.html:178
-msgid "version"
-msgstr "έκδοση"
-
-#: templates/base.html:179
-msgid "Developers"
-msgstr ""
-
-#: templates/base.html:187 templates/geonode/resourcebase_info_panel.html:96
-msgid "Language"
-msgstr "Γλώσσα"
-
 #: templates/developer.html:4 templates/developer.html.py:8
 msgid "Information for Developers"
 msgstr "Πληροφορίες για Προγραμματιστές"
 
 #: templates/developer.html:9
 msgid "Useful information for developers interested in GeoNode."
-msgstr ""
-"Χρήσιμες πληροφορίες για τους προγραμματιστές που ενδιαφέρονται για το "
-"GeoNode."
+msgstr "Χρήσιμες πληροφορίες για τους προγραμματιστές που ενδιαφέρονται για το GeoNode."
 
 #: templates/developer.html:51
 msgid "GeoNode's Web Services"
@@ -3265,9 +3010,7 @@ msgstr "Υπηρεσίες Διαδικτύου GeoNode"
 
 #: templates/developer.html:52
 msgid "GeoNode's Web Services are available from the following URLs:"
-msgstr ""
-"Υπηρεσίες Διαδικτύου GeoNode είναι διαθέσιμες από τις ακόλουθες διευθύνσεις "
-"URL:"
+msgstr "Υπηρεσίες Διαδικτύου GeoNode είναι διαθέσιμες από τις ακόλουθες διευθύνσεις URL:"
 
 #: templates/developer.html:55
 msgid "Dynamic tiles via WMS:"
@@ -3295,86 +3038,49 @@ msgstr "Βοήθεια GeoNode"
 
 #: templates/help.html:9
 msgid ""
-"This page provides helpful information about how to use the GeoNode. You can "
-"use the sidebar links to navigate to what you want to know."
-msgstr ""
-"Η σελίδα αυτή παρέχει χρήσιμες πληροφορίες σχετικά με το πώς να "
-"χρησιμοποιήσετε το GeoNode. Μπορείτε να χρησιμοποιήσετε τους συνδέσμους στην "
-"πλαϊνή μπάρα για να περιηγηθείτε στις πληροφορίες."
+"This page provides helpful information about how to use the GeoNode. You can"
+" use the sidebar links to navigate to what you want to know."
+msgstr "Η σελίδα αυτή παρέχει χρήσιμες πληροφορίες σχετικά με το πώς να χρησιμοποιήσετε το GeoNode. Μπορείτε να χρησιμοποιήσετε τους συνδέσμους στην πλαϊνή μπάρα για να περιηγηθείτε στις πληροφορίες."
 
 #: templates/help.html:12
 msgid ""
 "\n"
-"  <p>The GeoNode provides access to data sets and a map editing application "
-"allows users to browse existing maps and contribute their own.</p>\n"
+"  <p>The GeoNode provides access to data sets and a map editing application allows users to browse existing maps and contribute their own.</p>\n"
 "\n"
 "  <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"  <p>The <a href=\"/data\">Layers</a> tab allows you to browse data uploaded "
-"to this GeoNode.</p>\n"
-"  <p>All data can be downloaded in a variety of formats, for use in other "
-"applications.</p>\n"
+"  <p>The <a href=\"/data\">Layers</a> tab allows you to browse data uploaded to this GeoNode.</p>\n"
+"  <p>All data can be downloaded in a variety of formats, for use in other applications.</p>\n"
 "\n"
 "  <h4 id=\"developer-access\">Developer Access</h4>\n"
-"  <p>The <a href=\"/developer\"> Developer</a> page is the place for "
-"developers to get started building applications against the GeoNode. It "
-"includes instructions on using the web services, links to the source code of "
-"the GeoNode, and information about the open source projects used to create "
-"it.</p>\n"
+"  <p>The <a href=\"/developer\"> Developer</a> page is the place for developers to get started building applications against the GeoNode. It includes instructions on using the web services, links to the source code of the GeoNode, and information about the open source projects used to create it.</p>\n"
 "\n"
 "  <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
-"  <p>The GeoNode allows users to create and share maps with one another.</"
-"p>\n"
-"  <p>The <a href=\"maps\">Maps</a> tab is a gateway to map exploration on "
-"GeoNode.  From here you can <strong>search for a map</strong> or "
-"<strong>create a map</strong>, which will open the <a href=\"maps/new\">Map "
-"Composer</a>.</p>\n"
+"  <p>The GeoNode allows users to create and share maps with one another.</p>\n"
+"  <p>The <a href=\"maps\">Maps</a> tab is a gateway to map exploration on GeoNode.  From here you can <strong>search for a map</strong> or <strong>create a map</strong>, which will open the <a href=\"maps/new\">Map Composer</a>.</p>\n"
 "  <h5>Google Earth Mode</h5>\n"
-"  <p>Any map viewed in the interactive map editor can be seen in 3D mode "
-"with the Google Earth plugin. To switch to 3D mode select the Google Earth "
-"globe logo, the rightmost button on top toolbar. If you do not have the "
-"Google Earth plugin installed you will be prompted to install it.</p>\n"
+"  <p>Any map viewed in the interactive map editor can be seen in 3D mode with the Google Earth plugin. To switch to 3D mode select the Google Earth globe logo, the rightmost button on top toolbar. If you do not have the Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "  <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"  <p>To create a new map go to the <a href=\"maps\">Contributed Maps</a> tab "
-"and click the <a href=\"maps/new\">create your own map</a> link.</p>\n"
-"  <p>This will take you to the <a href=\"maps/new\">Map Composer</a> with a "
-"base layer loaded.</p>\n"
-"  <p>To add data layers from the GeoNode click on the green plus button "
-"located below the layers tab on the left hand side of the screen. This will "
-"open a dialog listing all the layers available on the GeoNode.</p>\n"
-"  <p>To add layers to your map select them and hit the <strong>Add Layers</"
-"strong> button. When finished you may hit <strong>Done</strong> to close the "
-"dialog and go back to the map.</p>\n"
+"  <p>To create a new map go to the <a href=\"maps\">Contributed Maps</a> tab and click the <a href=\"maps/new\">create your own map</a> link.</p>\n"
+"  <p>This will take you to the <a href=\"maps/new\">Map Composer</a> with a base layer loaded.</p>\n"
+"  <p>To add data layers from the GeoNode click on the green plus button located below the layers tab on the left hand side of the screen. This will open a dialog listing all the layers available on the GeoNode.</p>\n"
+"  <p>To add layers to your map select them and hit the <strong>Add Layers</strong> button. When finished you may hit <strong>Done</strong> to close the dialog and go back to the map.</p>\n"
 "\n"
 "  <h5>Reordering and Removing Layers</h5>\n"
-"  <p>Change the display order of the layers listed in the data tab by simply "
-"dragging and dropping their names. The order in the map will be updated to "
-"reflect that. To turn a layer's visibility off simply uncheck it, and to "
-"remove it entirely select it and hit the red minus button.</p>\n"
+"  <p>Change the display order of the layers listed in the data tab by simply dragging and dropping their names. The order in the map will be updated to reflect that. To turn a layer's visibility off simply uncheck it, and to remove it entirely select it and hit the red minus button.</p>\n"
 "\n"
 "  <h5>Saving your map</h5>\n"
-"  <p>Once a suitable set of layers and zoom level has been found it's time "
-"to save it so others can see it.  Click the Save button--the left most icon "
-"on the top toolbar, an image of a map with a disk--on the top menu and fill "
-"out the title and abstract of the map.</p>\n"
+"  <p>Once a suitable set of layers and zoom level has been found it's time to save it so others can see it.  Click the Save button--the left most icon on the top toolbar, an image of a map with a disk--on the top menu and fill out the title and abstract of the map.</p>\n"
 "\n"
 "  <h4 id=\"exporting-a-map\">Exporting a Map</h4>\n"
-"  <p>Any map from the GeoNode can be embedded for use in another site or "
-"blog. To export a map:</p>\n"
+"  <p>Any map from the GeoNode can be embedded for use in another site or blog. To export a map:</p>\n"
 "  <ol>\n"
-"    <li>Select the from the list of maps on the community or map page and "
-"then hit the 'export map' button.</li> \n"
-"    <li>Choose your desired height and width for the widget in the wizard.</"
-"li> \n"
-"    <li>Copy the HTML snippet provided in the wizard to any HTML page or "
-"iFrame-supporting blog post.</li>\n"
+"    <li>Select the from the list of maps on the community or map page and then hit the 'export map' button.</li> \n"
+"    <li>Choose your desired height and width for the widget in the wizard.</li> \n"
+"    <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li>\n"
 "  </ol>\n"
-"  <p>This will put an interactive widget showing you map in your web page or "
-"blog post.</p>\n"
-"  <p>Note that the <a href=\"maps/new\">Map Composer</a> also has a button "
-"to export the map. Just be sure to save the map before exporting if there "
-"are changes that you want others to see. It exports the last saved version, "
-"not the last viewed version.</p>\n"
+"  <p>This will put an interactive widget showing you map in your web page or blog post.</p>\n"
+"  <p>Note that the <a href=\"maps/new\">Map Composer</a> also has a button to export the map. Just be sure to save the map before exporting if there are changes that you want others to see. It exports the last saved version, not the last viewed version.</p>\n"
 "\n"
 "  <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
 "  <p>Any map available can serve as a starting point for a new map.</p>\n"
@@ -3382,114 +3088,12 @@ msgid ""
 "    <li>Open the map in the Map Composer.</li>\n"
 "    <li>Add and remove layers as you like.</li>\n"
 "    <li>Pan and zoom to highlight the area of interest.</li>\n"
-"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info "
-"and tags to reflect the new map.</li>\n"
+"    <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info and tags to reflect the new map.</li>\n"
 "    <li>Save the map.</li>\n"
 "  </ol>\n"
-"  <p>You will be able to see your new map when you search for it from the <a "
-"href=\"maps\">Maps</a> tab.</p> \n"
+"  <p>You will be able to see your new map when you search for it from the <a href=\"maps\">Maps</a> tab.</p> \n"
 "  "
-msgstr ""
-"\n"
-"  <p>Το GeoNode παρέχει πρόσβαση σε σετ δεδομένων και σε εφαρμογή "
-"επεξεργασίας χάρτη επιτρέποντας στους χρήστες να εξερευνήσουν τους "
-"υπάρχοντες χάρτες και να συμβάλλουν δημιουργώντας δικούς τους.</p>\n"
-"\n"
-"  <h4 id=\"browsing-data\">Εξερευνήστε τα Δεδομένα</h4>\n"
-"  <p>Η ετικέτα <a href=\"data\">Δεδομένα</a> σας επιτρέπει να εξερευνήσετε "
-"δεδομένα που έχουν ανεβεί σε αυτό το GeoNode.</p>\n"
-"  <p>Όλα τα δεδομένα μπορούν να κατεβούν σε διάφορους τύπους αρχείων, για "
-"χρήση σε άλλες εφαρμογές.</p>\n"
-"\n"
-"  <h4 id=\"developer-access\">Σελίδα Προγραμματιστών</h4>\n"
-"  <p>Η σελίδα <a href=\"developer\"> Προγραμματιστών</a> είναι ένα μέρος "
-"όπου οι προγραμματιστές μπορούν να αρχίσουν να φτιάχνουν εφαρμογές "
-"χρησιμοποιώντας το GeoNode. Περιλαμβάνει οδηγίες για την χρήση των υπηρεσιών "
-"δικτύου, συνδέσμους για τον πηγαίο κώδικα του GeoNode και πληροφορίες για τα "
-"ομαδικά έργα(project) ανοιχτού κώδικα που χρησιμοποιήθηκαν για την "
-"δημιουργία του. </p>\n"
-"\n"
-"  <h4 id=\"browsing-maps\">Εξερευνώντας Χάρτες</h4>\n"
-"  <p>Το GeoNode επιτρέπει στους χρήστες να δημιουργήσουν και να μοιραστούν "
-"χάρτες μεταξύ τους.</p>\n"
-"  <p>Η ετικέτα <a href=\"maps\">Χάρτες</a> είναι μια πύλη για την εξερεύνηση "
-"χαρτών στο GeoNode.  Από εδώ μπορείτε να <strong>αναζητήσετε ένα χάρτη</"
-"strong> ή να <strong>δημιουργήσετε ένα χάρτη</strong>, το οποίο θα ανοίξει "
-"το <a href=\"maps/new\">Συνθέτη Χαρτών</a>.</p>\n"
-"  <h5>Προβολή Google Earth</h5>\n"
-"  <p>Ο κάθε χάρτης μπορεί να προβληθεί σε 3D απεικόνιση με την χρήση του "
-"Google Earth plugin. Για να μεταβείτε στην 3D προβολή επιλέξτε το λογότυπο "
-"υδρογείου σφαίρας του Google Earth, το τελείως αριστερά κουμπί της πάνω "
-"εργαλειοθήκης. Αν δεν έχετε το Google Earth plugin εγκατεστημένο θα "
-"ερωτηθείτε αν θέλετε να το εγκαταστήσετε.</p>\n"
-"\n"
-"  <h4 id=\"creating-a-map\">Δημιουργώντας ένα Χάρτη</h4>\n"
-"  <p>Για να δημιουργήσετε ένα νέο χάρτη πηγαίνετε στην ετικέτα <a href=\"maps"
-"\">Χάρτες</a> και κάντε κλικ στον σύνδεσμο <a href=\"maps/new\">Δημιουργήστε "
-"τον δικό σας χάρτη</a>.</p>\n"
-"  <p>Αυτό θα σας πάρει στο <a href=\"maps/new\">Συνθέτη Χαρτών</a> με ένα "
-"υπόβαθρο φορτωμένο.</p>\n"
-"  <p>Για να προσθέσετε επιφάνειες δεδομένων από το GeoNode κάντε κλικ στο "
-"πράσινο κουμπί με το συν (σύμβολο της πρόσθεσης) που βρίσκεται κάτω από την "
-"ετικέτα Δεδομένα στην αριστερή πλευρά της οθόνης. Αυτό θα ανοίξει ένα "
-"πλαίσιο διαλόγου το οποίο θα περιέχει όλες τις επιφάνειες που είναι "
-"διαθέσιμες στο GeoNode.</p>\n"
-"  <p>Για να προσθέσετε επιφάνειες στον χάρτη σας επιλέγξτε τις και πατήστε "
-"το κουμπί <strong>Προσθήκη Επιφανειών</strong>. Όταν τελειώσετε μπορείτε να "
-"πατήσετε το <strong>Ολοκλήρωση</strong> για να κλείσετε το πλαίσιο διαλόγου "
-"και να επιστρέψετε στον χάρτη.</p>\n"
-"\n"
-"  <h5>Αναδιοργάνωση και Κατάργηση Επιφανειών</h5>\n"
-"  <p>Αλλάγξτε την σειρά προβολής των επιφανειών που υπάρχουν στο πλαίσιο "
-"δεδομένων κάνοντας drag and drop τα ονόματα τους. Η σειρά στον χάρτη θα "
-"ανανεωθεί για να αντιπροσωπεύσει την νέα σειρά επιφανειών. Για να κρύψετε "
-"μια επιφάνεια απλά απενεργοποιήστε την, και για να την καταργήσετε εντελώς "
-"επιλέξτε την και πατήστε το κόκκινο κουμπί με το πλην (σύμβολο της "
-"αφαίρεσης).</p>\n"
-"\n"
-"  <h5>Αποθηκεύοντας τον χάρτη σας</h5>\n"
-"  <p>Μόλις βρείτε το επιθυμητό σετ επιφανειών και επίπεδο μεγέθυνσης είναι "
-"ώρα για να αποθηκεύσετε τον χάρτη σας ώστε να τον δουν και οι υπόλοιποι.  "
-"Κάντε κλικ στο κουμπί Αποθήκευση--το εικονίδιο που βρίσκεται τελείως "
-"αριστερά στην πάνω εργαλειοθήκη, μια εικόνα ενός χάρτη με μια δισκέτα--στο "
-"πάνω μενού(menu) και συμπληρώστε τον τίτλο και την περίληψη του χάρτη.</p>\n"
-"\n"
-"  <h4 id=\"exporting-a-map\">Δημοσιεύοντας ένα Χάρτη</h4>\n"
-"  <p>Ο κάθε χάρτης από το GeoNode μπορεί να ενσωματωθεί για χρήση σε άλλο "
-"ιστότοπο(site) ή ιστολόγιο(blog). Για να δημοσιεύσετε ένα χάρτη:</p>\n"
-"  <ol>\n"
-"    <li>Επιλέξτε τον από την λίστα χαρτών στην κοινότητα ή στην σελίδα "
-"χαρτών και μετά πατήστε το κουμπί 'Δημοσίευση Χάρτη'.</li> \n"
-"    <li>Επιλέξτε το επιθυμητό ύψος και πλάτος για το πλαίσιο στον οδηγό.</"
-"li> \n"
-"    <li>Αντιγράψτε τον κώδικα HTML που υπάρχει στον οδηγό σε οποιαδήποτε "
-"HTML σελίδα ή καταχώρηση ιστολογίου που υποστηρίζει iFrame.</li>\n"
-"  </ol>\n"
-"  <p>Αυτό θα βάλει ένα διαδραστικό πλαίσιο που θα δείχνει τον χάρτη σας στην "
-"ιστοσελίδα ή στην καταχώρηση ιστολογίου σας.</p>\n"
-"  <p>Σημειώστε οτι και ο <a href=\"maps/new\">Συνθέτης Χαρτών</a> διαθέτει "
-"κουμπί για εξαγωγή χάρτη --το δεύτερο κουμπί στην πάνω εργαλειοθήκη--. Απλά "
-"βεβαιωθείτε πριν κάνετε εξαγωγή χάρτη ότι έχετε αποθηκεύσει οποιεσδήποτε "
-"αλλαγές που θέλετε να δουν και οι υπόλοιποι. Εξάγει την τελευταία "
-"αποθηκευμένη έκδοση, όχι την τελευταία προβαλλόμενη έκδοση.</p>\n"
-"\n"
-"  <h4 id=\"remixing-a-map\">Συνθέτοντας ένα Χάρτη</h4>\n"
-"  <p>Κάθε χάρτης μπορεί να χρησιμοποιηθεί σαν βάση για ένα νέο χάρτη.</p>\n"
-"  <ol>\n"
-"    <li>Ανοίξτε τον χάρτη που θέλετε να χρησιμοποιήσετε σαν βάση και πατήστε "
-"στο πλαίσιο 'Διαχείριση' στα δεξιά, την επιλογή 'Προβολή ή επεξεργασία αυτού "
-"του χάρτη'. Ανοίγει αυτόματα ο Συνθέτης Χαρτών.</li>\n"
-"    <li>Προσθέστε και αφαιρέστε επιφάνειες όπως επιθυμείτε.</li>\n"
-"    <li>Μετακινηθείτε και ζουμάρετε στον χάρτη για να επισημάνετε την "
-"περιοχή ενδιαφέροντος.</li>\n"
-"    <li><strong>ΣΗΜΑΝΤΙΚΌ:</strong> Ανανεώστε τον τίτλο, την περίληψη, της "
-"πληροφορίες επικοινωνίας και τις ετικέτες ώστε να αντιπροσωπεύουν τον νέο "
-"χάρτη.</li>\n"
-"    <li>Αποθηκεύστε τον χάρτη.</li>\n"
-"  </ol>\n"
-"  <p>Θα μπορείτε να δείτε τον νέο σας χάρτη όταν τον αναζητήσετε στην "
-"ετικέτα <a href=\"maps\">Χάρτες</a>.</p> \n"
-"  "
+msgstr "\n  <p>Το GeoNode παρέχει πρόσβαση σε σετ δεδομένων και σε εφαρμογή επεξεργασίας χάρτη επιτρέποντας στους χρήστες να εξερευνήσουν τους υπάρχοντες χάρτες και να συμβάλλουν δημιουργώντας δικούς τους.</p>\n\n  <h4 id=\"browsing-data\">Εξερευνήστε τα Δεδομένα</h4>\n  <p>Η ετικέτα <a href=\"data\">Δεδομένα</a> σας επιτρέπει να εξερευνήσετε δεδομένα που έχουν ανεβεί σε αυτό το GeoNode.</p>\n  <p>Όλα τα δεδομένα μπορούν να κατεβούν σε διάφορους τύπους αρχείων, για χρήση σε άλλες εφαρμογές.</p>\n\n  <h4 id=\"developer-access\">Σελίδα Προγραμματιστών</h4>\n  <p>Η σελίδα <a href=\"developer\"> Προγραμματιστών</a> είναι ένα μέρος όπου οι προγραμματιστές μπορούν να αρχίσουν να φτιάχνουν εφαρμογές χρησιμοποιώντας το GeoNode. Περιλαμβάνει οδηγίες για την χρήση των υπηρεσιών δικτύου, συνδέσμους για τον πηγαίο κώδικα του GeoNode και πληροφορίες για τα ομαδικά έργα(project) ανοιχτού κώδικα που χρησιμοποιήθηκαν για την δημιουργία του. </p>\n\n  <h4 id=\"browsing-maps\">Εξερευνώντας Χάρτες</h4>\n  <p>Το GeoNode επιτρέπει στους χρήστες να δημιουργήσουν και να μοιραστούν χάρτες μεταξύ τους.</p>\n  <p>Η ετικέτα <a href=\"maps\">Χάρτες</a> είναι μια πύλη για την εξερεύνηση χαρτών στο GeoNode.  Από εδώ μπορείτε να <strong>αναζητήσετε ένα χάρτη</strong> ή να <strong>δημιουργήσετε ένα χάρτη</strong>, το οποίο θα ανοίξει το <a href=\"maps/new\">Συνθέτη Χαρτών</a>.</p>\n  <h5>Προβολή Google Earth</h5>\n  <p>Ο κάθε χάρτης μπορεί να προβληθεί σε 3D απεικόνιση με την χρήση του Google Earth plugin. Για να μεταβείτε στην 3D προβολή επιλέξτε το λογότυπο υδρογείου σφαίρας του Google Earth, το τελείως αριστερά κουμπί της πάνω εργαλειοθήκης. Αν δεν έχετε το Google Earth plugin εγκατεστημένο θα ερωτηθείτε αν θέλετε να το εγκαταστήσετε.</p>\n\n  <h4 id=\"creating-a-map\">Δημιουργώντας ένα Χάρτη</h4>\n  <p>Για να δημιουργήσετε ένα νέο χάρτη πηγαίνετε στην ετικέτα <a href=\"maps\">Χάρτες</a> και κάντε κλικ στον σύνδεσμο <a href=\"maps/new\">Δημιουργήστε τον δικό σας χάρτη</a>.</p>\n  <p>Αυτό θα σας πάρει στο <a href=\"maps/new\">Συνθέτη Χαρτών</a> με ένα υπόβαθρο φορτωμένο.</p>\n  <p>Για να προσθέσετε επιφάνειες δεδομένων από το GeoNode κάντε κλικ στο πράσινο κουμπί με το συν (σύμβολο της πρόσθεσης) που βρίσκεται κάτω από την ετικέτα Δεδομένα στην αριστερή πλευρά της οθόνης. Αυτό θα ανοίξει ένα πλαίσιο διαλόγου το οποίο θα περιέχει όλες τις επιφάνειες που είναι διαθέσιμες στο GeoNode.</p>\n  <p>Για να προσθέσετε επιφάνειες στον χάρτη σας επιλέγξτε τις και πατήστε το κουμπί <strong>Προσθήκη Επιφανειών</strong>. Όταν τελειώσετε μπορείτε να πατήσετε το <strong>Ολοκλήρωση</strong> για να κλείσετε το πλαίσιο διαλόγου και να επιστρέψετε στον χάρτη.</p>\n\n  <h5>Αναδιοργάνωση και Κατάργηση Επιφανειών</h5>\n  <p>Αλλάγξτε την σειρά προβολής των επιφανειών που υπάρχουν στο πλαίσιο δεδομένων κάνοντας drag and drop τα ονόματα τους. Η σειρά στον χάρτη θα ανανεωθεί για να αντιπροσωπεύσει την νέα σειρά επιφανειών. Για να κρύψετε μια επιφάνεια απλά απενεργοποιήστε την, και για να την καταργήσετε εντελώς επιλέξτε την και πατήστε το κόκκινο κουμπί με το πλην (σύμβολο της αφαίρεσης).</p>\n\n  <h5>Αποθηκεύοντας τον χάρτη σας</h5>\n  <p>Μόλις βρείτε το επιθυμητό σετ επιφανειών και επίπεδο μεγέθυνσης είναι ώρα για να αποθηκεύσετε τον χάρτη σας ώστε να τον δουν και οι υπόλοιποι.  Κάντε κλικ στο κουμπί Αποθήκευση--το εικονίδιο που βρίσκεται τελείως αριστερά στην πάνω εργαλειοθήκη, μια εικόνα ενός χάρτη με μια δισκέτα--στο πάνω μενού(menu) και συμπληρώστε τον τίτλο και την περίληψη του χάρτη.</p>\n\n  <h4 id=\"exporting-a-map\">Δημοσιεύοντας ένα Χάρτη</h4>\n  <p>Ο κάθε χάρτης από το GeoNode μπορεί να ενσωματωθεί για χρήση σε άλλο ιστότοπο(site) ή ιστολόγιο(blog). Για να δημοσιεύσετε ένα χάρτη:</p>\n  <ol>\n    <li>Επιλέξτε τον από την λίστα χαρτών στην κοινότητα ή στην σελίδα χαρτών και μετά πατήστε το κουμπί 'Δημοσίευση Χάρτη'.</li> \n    <li>Επιλέξτε το επιθυμητό ύψος και πλάτος για το πλαίσιο στον οδηγό.</li> \n    <li>Αντιγράψτε τον κώδικα HTML που υπάρχει στον οδηγό σε οποιαδήποτε HTML σελίδα ή καταχώρηση ιστολογίου που υποστηρίζει iFrame.</li>\n  </ol>\n  <p>Αυτό θα βάλει ένα διαδραστικό πλαίσιο που θα δείχνει τον χάρτη σας στην ιστοσελίδα ή στην καταχώρηση ιστολογίου σας.</p>\n  <p>Σημειώστε οτι και ο <a href=\"maps/new\">Συνθέτης Χαρτών</a> διαθέτει κουμπί για εξαγωγή χάρτη --το δεύτερο κουμπί στην πάνω εργαλειοθήκη--. Απλά βεβαιωθείτε πριν κάνετε εξαγωγή χάρτη ότι έχετε αποθηκεύσει οποιεσδήποτε αλλαγές που θέλετε να δουν και οι υπόλοιποι. Εξάγει την τελευταία αποθηκευμένη έκδοση, όχι την τελευταία προβαλλόμενη έκδοση.</p>\n\n  <h4 id=\"remixing-a-map\">Συνθέτοντας ένα Χάρτη</h4>\n  <p>Κάθε χάρτης μπορεί να χρησιμοποιηθεί σαν βάση για ένα νέο χάρτη.</p>\n  <ol>\n    <li>Ανοίξτε τον χάρτη που θέλετε να χρησιμοποιήσετε σαν βάση και πατήστε στο πλαίσιο 'Διαχείριση' στα δεξιά, την επιλογή 'Προβολή ή επεξεργασία αυτού του χάρτη'. Ανοίγει αυτόματα ο Συνθέτης Χαρτών.</li>\n    <li>Προσθέστε και αφαιρέστε επιφάνειες όπως επιθυμείτε.</li>\n    <li>Μετακινηθείτε και ζουμάρετε στον χάρτη για να επισημάνετε την περιοχή ενδιαφέροντος.</li>\n    <li><strong>ΣΗΜΑΝΤΙΚΌ:</strong> Ανανεώστε τον τίτλο, την περίληψη, της πληροφορίες επικοινωνίας και τις ετικέτες ώστε να αντιπροσωπεύουν τον νέο χάρτη.</li>\n    <li>Αποθηκεύστε τον χάρτη.</li>\n  </ol>\n  <p>Θα μπορείτε να δείτε τον νέο σας χάρτη όταν τον αναζητήσετε στην ετικέτα <a href=\"maps\">Χάρτες</a>.</p> \n  "
 
 #: templates/help.html:65
 msgid "Sections"
@@ -3530,19 +3134,9 @@ msgstr "Καλώς ήρθατε"
 #: templates/index.html:21
 msgid ""
 "\n"
-"            GeoNode is an open source platform for sharing geospatial data "
-"and maps.  If you have any questions about the software or service, join our "
-"<a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</"
-"a>.\n"
+"            GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href=\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>.\n"
 "          "
-msgstr ""
-"\n"
-"           Το GeoNode είναι ένα ελεύθερο λογισμικό για την ανταλλαγή "
-"γεωχωρικών δεδομένων και χαρτών. Αν έχετε οποιεσδήποτε ερωτήσεις σχετικά με "
-"το λογισμικό ή την υπηρεσία, μπορείτε να επικοινωνήσετε με τη <a href="
-"\"https://groups.google.com/d/forum/geonode-users\">λίστα ηλεκτρονικού "
-"ταχυδρομίου</a>.\n"
-"          "
+msgstr "\n           Το GeoNode είναι ένα ελεύθερο λογισμικό για την ανταλλαγή γεωχωρικών δεδομένων και χαρτών. Αν έχετε οποιεσδήποτε ερωτήσεις σχετικά με το λογισμικό ή την υπηρεσία, μπορείτε να επικοινωνήσετε με τη <a href=\"https://groups.google.com/d/forum/geonode-users\">λίστα ηλεκτρονικού ταχυδρομίου</a>.\n          "
 
 #: templates/index.html:25
 msgid "Need help"
@@ -3563,34 +3157,64 @@ msgstr "Συνεισφέρετε"
 #: templates/index.html:54
 msgid ""
 "\n"
-"              GeoNode enables you to upload, manage, and browse data layers. "
-"Search for data that is valuable to you, or upload your own data. \n"
+"              GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. \n"
 "            "
-msgstr ""
-"\n"
-"              Το GeoNode σας δίνει τη δυνατότητα να ανεβάσετε, να "
-"διαχειρίζεστε και να περιηγηθείτε σε επιφάνειες δεδομένων. Αναζητήστε "
-"δεδομένα που είναι πολύτιμα για σας, ή ανεβάστε τα δικά σας δεδομένα.\n"
-"            "
+msgstr "\n              Το GeoNode σας δίνει τη δυνατότητα να ανεβάσετε, να διαχειρίζεστε και να περιηγηθείτε σε επιφάνειες δεδομένων. Αναζητήστε δεδομένα που είναι πολύτιμα για σας, ή ανεβάστε τα δικά σας δεδομένα.\n            "
 
 #: templates/index.html:58
 msgid ""
 "\n"
-"              GeoNode enables you to compose and share maps. Create a map "
-"with our cartography tool, or explore maps shared by others. \n"
+"              GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. \n"
 "            "
-msgstr ""
-"\n"
-"              Το GeoNode σας δίνει τη δυνατότητα να συνθέσετε και να "
-"μοιραστείτε χάρτες. Δημιουργήστε ένα χάρτη με το εργαλείο χαρτογράφησης μας, "
-"ή εξερευνήστε χάρτες που μοιράζονται οι άλλοι. \n"
-"            "
+msgstr "\n              Το GeoNode σας δίνει τη δυνατότητα να συνθέσετε και να μοιραστείτε χάρτες. Δημιουργήστε ένα χάρτη με το εργαλείο χαρτογράφησης μας, ή εξερευνήστε χάρτες που μοιράζονται οι άλλοι. \n            "
 
 #: templates/index.html:67
 msgid "Latest Maps"
 msgstr "Πρόσφατοι Χάρτες"
 
-#: templates/activity/actor.html:31
+#: templates/account/login.html:7 templates/account/login.html.py:24
+msgid "Log in"
+msgstr "Σύνδεση"
+
+#: templates/account/login.html:12
+msgid "Log in to an existing account"
+msgstr ""
+
+#: templates/account/login.html:22
+msgid "Forgot your username?"
+msgstr ""
+
+#: templates/account/login.html:23
+msgid "Forgot your password?"
+msgstr ""
+
+#: templates/account/logout.html:15
+msgid "Are you sure you want to log out?"
+msgstr ""
+
+#: templates/account/password_reset.html:8
+#: templates/account/password_reset.html:14
+msgid "Password reset"
+msgstr ""
+
+#: templates/account/password_reset.html:15
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll send you "
+"an email allowing you to reset it."
+msgstr ""
+
+#: templates/account/password_reset.html:20
+msgid "Reset my password"
+msgstr ""
+
+#: templates/account/password_reset.html:25
+#, python-format
+msgid ""
+"If you have any trouble resetting your password, contact us at <a "
+"href=\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</a>."
+msgstr ""
+
+#: templates/activity/actor.html:34
 msgid "No actions yet"
 msgstr "Δεν υπάρχουν ακόμη ενέργειες"
 
@@ -3612,65 +3236,40 @@ msgstr "Απόκρυψη ανακοίνωσης"
 msgid "There are no announcements for you."
 msgstr "Δεν υπάρχουν ανακοινώσεις για εσάς"
 
-#: templates/avatar/add.html:6
+#: templates/avatar/change.html:6 templates/avatar/confirm_delete.html:5
+msgid "Back to edit your profile information"
+msgstr ""
+
+#: templates/avatar/change.html:7
 msgid "Your current avatar: "
 msgstr "Το τρέχον σας εικονίδιο:"
 
-#: templates/avatar/add.html:12
-msgid "Upload an Avatar"
-msgstr "Ανεβάστε ένα εικονίδιο"
+#: templates/avatar/change.html:10
+msgid "You haven't uploaded an avatar yet. Please upload one now."
+msgstr "Δεν έχετε ανεβάσει ένα εικονίδιο. Παρακαλούμε να ανεβάσετε ένα τώρα."
 
-#: templates/avatar/add.html:18
-msgid "Upload avatar"
-msgstr "Ανέβασμα εικονιδίου χρήστη"
+#: templates/avatar/change.html:16
+msgid "Choose new Default"
+msgstr ""
 
-#: templates/geonode/resourcebase_info_panel.html:7
-msgid "Title"
-msgstr "Τίτλος"
+#: templates/avatar/change.html:21
+msgid "Upload New Image"
+msgstr ""
 
-#: templates/geonode/resourcebase_info_panel.html:14
-msgid "Abstract"
-msgstr "Περίληψη"
+#: templates/avatar/confirm_delete.html:6
+msgid "Please select the avatars that you would like to delete."
+msgstr ""
 
-#: templates/geonode/resourcebase_info_panel.html:42
-msgid "Topic Category"
-msgstr "Θεματική Κατηγορία"
+#: templates/avatar/confirm_delete.html:9
+#, python-format
+msgid ""
+"You have no avatars to delete. Please <a "
+"href=\"%(avatar_change_url)s\">upload one</a> now."
+msgstr ""
 
-#: templates/geonode/resourcebase_info_panel.html:49
-msgid "Owner"
-msgstr "Ιδιοκτήτης"
-
-#: templates/geonode/resourcebase_info_panel.html:68
-msgid "Maintenance Frequency"
-msgstr "Συχνότητα Συντήρησης"
-
-#: templates/geonode/resourcebase_info_panel.html:75
-msgid "Citation"
-msgstr "Παραπομπή"
-
-#: templates/geonode/resourcebase_info_panel.html:82
-msgid "Edition"
-msgstr "Έκδοση"
-
-#: templates/geonode/resourcebase_info_panel.html:89
-msgid "Purpose"
-msgstr "Σκοπός"
-
-#: templates/geonode/resourcebase_info_panel.html:103
-msgid "Temporal Extent"
-msgstr "Χρονική Διάρκεια"
-
-#: templates/geonode/resourcebase_info_panel.html:110
-msgid "Data Quality"
-msgstr "Ποιότητα Δεδομένων"
-
-#: templates/geonode/resourcebase_info_panel.html:117
-msgid "Supplemental Information"
-msgstr "Συμπληρωματικές Πληροφορίες"
-
-#: templates/geonode/resourcebase_info_panel.html:124
-msgid "Spatial Representation Type"
-msgstr "Τύπος Χωρικής Αναπαράστασης"
+#: templates/avatar/confirm_delete.html:15
+msgid "Delete These"
+msgstr ""
 
 #: templates/notification/base.html:15 templates/notification/notices.html:7
 #: templates/notification/notices.html:11
@@ -3708,10 +3307,7 @@ msgstr "Σημείωμα"
 msgid ""
 "You do not have a verified email address to which notices can be sent. You "
 "can add one by going to <a href=\"%(email_url)s\">Account</a>."
-msgstr ""
-"Δεν έχει ελεγχθεί η διεύθυνση ηλεκτρονικού ταχυδρομείου ώστε να μπορούν να "
-"σταλούν ανακοινώσεις. Μπορείτε να προσθέσετε μια πηγαίνοντας στο <a href="
-"\"%(email_url)s\">Λογαριασμό</a>."
+msgstr "Δεν έχει ελεγχθεί η διεύθυνση ηλεκτρονικού ταχυδρομείου ώστε να μπορούν να σταλούν ανακοινώσεις. Μπορείτε να προσθέσετε μια πηγαίνοντας στο <a href=\"%(email_url)s\">Λογαριασμό</a>."
 
 #: templates/notification/notice_settings.html:30
 msgid "Notification Type"
@@ -3750,7 +3346,7 @@ msgid "previous"
 msgstr "προηγούμενο"
 
 #: templates/pagination/pagination.html:17
-#: upload/templates/upload/layer_upload_crs.html:28
+#: upload/templates/upload/layer_upload_crs.html:29
 #: upload/templates/upload/layer_upload_time.html:149
 msgid "Next"
 msgstr "Επόμενο"
@@ -3839,6 +3435,8 @@ msgid "you"
 msgstr "εσείς"
 
 #: templates/user_messages/inbox.html:44
+#: upload/templates/upload/layer_upload.html:53
+#: upload/templates/upload/layer_upload.html:61
 msgid "Delete"
 msgstr "Διαγραφή"
 
@@ -3862,16 +3460,44 @@ msgid "Send Reply"
 msgstr "Αποστολή Απάντησης"
 
 #: upload/templates/upload/layer_upload.html:5
-#: upload/templates/upload/layer_upload_crs.html:6
+#: upload/templates/upload/layer_upload_crs.html:7
 #: upload/templates/upload/layer_upload_csv.html:7
 msgid "Upload Layer"
 msgstr "Ανεβάστε Επιφάνεια"
 
-#: upload/templates/upload/layer_upload.html:82
-msgid "Files to be uploaded"
+#: upload/templates/upload/layer_upload.html:52
+msgid "Resume"
 msgstr ""
 
-#: upload/templates/upload/layer_upload_crs.html:9
+#: upload/templates/upload/layer_upload.html:59
+msgid "Are you sure you want to delete this upload?"
+msgstr ""
+
+#: upload/templates/upload/layer_upload.html:64
+msgid "Delete, and don't ask me again."
+msgstr ""
+
+#: upload/templates/upload/layer_upload.html:77
+msgid "Drop files here"
+msgstr ""
+
+#: upload/templates/upload/layer_upload.html:80
+msgid " or select them one by one:"
+msgstr ""
+
+#: upload/templates/upload/layer_upload.html:94
+msgid "Select the charset or leave default"
+msgstr ""
+
+#: upload/templates/upload/layer_upload.html:106
+msgid "Clear"
+msgstr ""
+
+#: upload/templates/upload/layer_upload.html:107
+msgid "Upload files"
+msgstr ""
+
+#: upload/templates/upload/layer_upload_crs.html:10
 msgid "Provide CRS for "
 msgstr ""
 
