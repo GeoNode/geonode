@@ -39,6 +39,7 @@ from geonode.upload import upload
 from geonode.upload.utils import rename_and_prepare, find_sld, get_upload_type
 from geonode.upload.forms import UploadFileForm
 from geonode.base.enumerations import CHARSETS
+from geonode.utils import ogc_server_settings
 from geonode.geoserver.uploader import uploader
 
 from django.conf import settings
@@ -63,8 +64,7 @@ logger = logging.getLogger(__name__)
 
 _SESSION_KEY = 'geonode_upload_session'
 _ALLOW_TIME_STEP = getattr(settings, "UPLOADER_SHOW_TIME_STEP", False)
-_ASYNC_UPLOAD = 'DATASTORE' in settings.OGC_SERVER['default']['OPTIONS'] and \
-                bool(settings.OGC_SERVER['default']['OPTIONS'].get('DATASTORE', str()))
+_ASYNC_UPLOAD = True if ogc_server_settings.DATASTORE else False
 
 # at the moment, the various time support transformations require the database
 if _ALLOW_TIME_STEP and not _ASYNC_UPLOAD:

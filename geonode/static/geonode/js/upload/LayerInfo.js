@@ -211,7 +211,7 @@ define(function (require, exports) {
      *  @returns {string}
      */
     LayerInfo.prototype.markError = function (error, status) {
-        this.logStatus({msg: error, level: 'alert-error'});
+        this.logStatus({msg: error, level: 'alert-error', empty:true});
     };
 
     /** Function to mark the start of the upload
@@ -260,7 +260,8 @@ define(function (require, exports) {
         var self = this;
         if (self.polling) {
             $.ajax({ url: "/upload/progress", type: 'GET', success: function(data){
-                console.log('polling'); 
+                // TODO: Not sure we need to do anything here?
+                //console.log('polling');
             }, dataType: "json", complete: setTimeout(function() {self.startPolling()}, 3000), timeout: 30000 });
         }
     };

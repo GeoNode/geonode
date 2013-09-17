@@ -194,10 +194,6 @@ class ThumbnailMixin(object):
 
 
 class ResourceBaseManager(models.Manager):
-
-    def __init__(self):
-        models.Manager.__init__(self)
-
     def admin_contact(self):
         # this assumes there is at least one superuser
         superusers = User.objects.filter(is_superuser=True).order_by('id')
@@ -388,6 +384,8 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
+    objects = ResourceBaseManager()
+
 class LinkManager(models.Manager):
     """Helper class to access links grouped by type
     """
@@ -438,15 +436,16 @@ def resourcebase_post_save(instance, sender, **kwargs):
     if resourcebase.owner:
         user = resourcebase.owner
     else:
-        user = ResourceBase.objects.admin_contact()
+        user = ResourceBase.objects.admin_contact().user
         
     if resourcebase.poc is None:
         pc, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": resourcebase.owner.username})
+                                           defaults={"name": user.username}
+                                           )
         resourcebase.poc = pc
     if resourcebase.metadata_author is None:  
         ac, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": resourcebase.owner.username}
+                                           defaults={"name": user.username}
                                            )
         resourcebase.metadata_author = ac
 

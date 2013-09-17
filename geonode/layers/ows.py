@@ -28,6 +28,7 @@ from owslib.coverage.wcsBase import ServiceException
 from owslib.util import http_post
 import urllib
 from geonode import GeoNodeException
+from geonode.utils import ogc_server_settings
 
 logger = logging.getLogger(__name__)
 
@@ -129,7 +130,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
     """Derive aggregate statistics from WPS endpoint"""
 
     # generate statistics using WPS
-    url = '%s/ows' % (settings.OGC_SERVER['default']['LOCATION'])
+    url = '%s/ows' % (ogc_server_settings.public_url)
 
     # TODO: use owslib.wps.WebProcessingService for WPS interaction
     # this requires GeoServer's WPS gs:Aggregate function to

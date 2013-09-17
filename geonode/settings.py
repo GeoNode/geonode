@@ -398,17 +398,18 @@ OGC_SERVER = {
     'default' : {
         'BACKEND' : 'geonode.geoserver',
         'LOCATION' : 'http://localhost:8080/geoserver/',
+        'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',
         'USER' : 'admin',
         'PASSWORD' : 'geoserver',
-        'OPTIONS' : {
-            'MAPFISH_PRINT_ENABLED' : True,
-            'PRINTNG_ENABLED' : True,
-            'GEONODE_SECURITY_ENABLED' : True,
-            'GEOGIT_ENABLED' : False,
-            'WMST_ENABLED' : False,
-            # Set to name of database in DATABASES dictionary to enable
-            'DATASTORE': '', #'datastore',
-        }
+        'MAPFISH_PRINT_ENABLED' : True,
+        'PRINTNG_ENABLED' : True,
+        'GEONODE_SECURITY_ENABLED' : True,
+        'GEOGIT_ENABLED' : False,
+        'WMST_ENABLED' : False,
+        'BACKEND_WRITE_ENABLED': True,
+        'WPS_ENABLED' : False,
+        # Set to name of database in DATABASES dictionary to enable
+        'DATASTORE': '', #'datastore',
     }
 }
 

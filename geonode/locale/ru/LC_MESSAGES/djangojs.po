@@ -1,15 +1,15 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-15 12:41-0500\n"
-"PO-Revision-Date: 2012-09-13 04:34+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2013-09-05 01:30+0000\n"
+"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/geonode/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -234,9 +234,7 @@ msgstr "Маленький"
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
-"Ошибка при подключении к серверу.\n"
-"Пожалуйста, проверьте url и повторите снова."
+msgstr "Ошибка при подключении к серверу.\nПожалуйста, проверьте url и повторите снова."
 
 #: templates/lang.js:59
 msgid "Layer Properties"
@@ -262,10 +260,7 @@ msgstr "Переключить на Google Earth 3D просмотр"
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr ""
-"Карта, которую вы пытаетесь загрузить не существует. Создать новую карту "
-"вместо."
-
+msgstr "Карта, которую вы пытаетесь загрузить не существует. Создать новую карту вместо."
 
 #: templates/lang.js:65
 msgid "Unknown Map"
@@ -339,9 +334,7 @@ msgstr "Нет фона"
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr ""
-"Ваша карта готова для публикации в сети! Просто скопируйте следующий "
-"HTML для того, чтобы разместить карту на вашем вебсайте:"
+msgstr "Ваша карта готова для публикации в сети! Просто скопируйте следующий HTML для того, чтобы разместить карту на вашем вебсайте:"
 
 #: templates/lang.js:126 templates/lang.js.c:192
 msgid "Abstract:"

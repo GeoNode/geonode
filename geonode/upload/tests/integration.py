@@ -362,7 +362,7 @@ class UploaderBase(TestCase):
 
     def check_upload_model(self, original_name):
         # we can only test this if we're using the same DB as the test instance
-        if not settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']: return
+        if not settings.OGC_SERVER['default']['DATASTORE']: return
         try:
             upload = Upload.objects.get(layer__name=original_name)
         except Upload.DoesNotExist:
@@ -447,7 +447,7 @@ class UploaderBase(TestCase):
 
 class TestUpload(UploaderBase):
     settings_overrides = [
-        ("OGC_SERVER['default']['OPTIONS']['DATASTORE']", False)
+        ("OGC_SERVER['default']['DATASTORE']", False)
     ]
     
     def test_shp_upload(self):
@@ -583,6 +583,6 @@ class TestUploadDBDataStore(TestUpload):
         self.assertEquals(100, len(layer_info.timepositions))
 
 # disable DATASTORE tests if not setup
-if not settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']:
+if not settings.OGC_SERVER['default']['DATASTORE']:
     print 'skipping DATASTORE tests'
     del TestUploadDBDataStore
