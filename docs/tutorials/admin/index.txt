@@ -1,0 +1,78 @@
+.. _admin:
+
+Administrators Workshop
+=======================
+
+Welcome to the GeoNode Administrators Workshop! This workshop will teach how to install and manage a deployment of the `GeoNode <http://geonode.org>`_ software application.
+
+.. toctree::
+   :hidden:
+
+   intro_admin/index
+   prep/index
+   install/index
+   production
+   manage/index
+   monitor/index
+   backup/index
+   deploy/index
+   data/index
+   admin_panel/index
+   commands
+   csw
+   customize
+   debugging
+   language
+   multi-tenancy
+   ssl
+
+:ref:`intro_admin`
+  Learn about GeoNode administration
+
+:ref:`prep`
+  Learn about preparing an environment for installation of GeoNode
+
+:ref:`install`
+  Learn how to install GeoNode 
+
+:ref:`production`
+  Learn how to configure GeoNode for production use.
+
+:ref:`manage`
+  Learn how to manage a GeoNode installation 
+
+:ref:`monitor`
+  Learn how to monitor usage and other activity in a GeoNode Installation 
+
+:ref:`backup`
+  Learn how to backup and restore GeoNode configuration and datas
+
+:ref:`deploy`
+  Review a sample GeoNode project deployment and learn how to create your own
+
+:ref:`data`
+  Learn how to load data into a GeoNode with GeoServer, on the command line or programatically with scripts.
+
+:ref:`admin_panel`
+  Manage users and data through the administration panel
+
+:ref:`commands`
+  Review GeoNode's management commands
+
+:ref:`debugging`
+  Learn how to debug and troubleshoot a GeoNode Installation
+
+:ref:`csw`
+  Learn how to configure an alternate CS-W backend for your GeoNode
+ 
+:ref:`customize`
+  Learn how to customize the look and feel of your GeoNode installation
+
+:ref:`language`
+  Learn how to change the default language of your GeoNode installation
+
+:ref:`multi-tenancy`
+  Learn how to configure multiple GeoNode sites on the same server
+
+:ref:`ssl`
+  Learn how to run GeoNode with Secure Sockets Layer (SSL) 

@@ -77,7 +77,8 @@ module.exports = function(grunt) {
             'datatables/media/css/jquery.dataTables.css',
             'select2/select2.css', 
             'multi-select/css/multi-select.css',
-            'qunit/qunit/qunit.css'
+            'qunit/qunit/qunit.css',
+            'jquery-ui/themes/smoothness/jquery-ui.css'
           ]
         }, {
           expand: true,
@@ -87,9 +88,10 @@ module.exports = function(grunt) {
           src: [
             'bootstrap/img/*.png',
             'select2/*.png', 'select2/spinner.gif',
-            'raty/img/*.png',
+            'raty/lib/img/*.png',
             'multi-select/img/switch.png',
-            'datatables/media/images/*.png'
+            'datatables/media/images/*.png',
+            'jquery-ui/themes/smoothness/images/animated-overlay.gif',
           ]
         }, {
           expand: true,
@@ -101,8 +103,11 @@ module.exports = function(grunt) {
             'datatables/media/js/jquery.dataTables.js',
             'jquery-timeago/jquery.timeago.js',
             'tinysort/src/jquery.tinysort.js',
-            'raty/js/jquery.raty.js',
+            'raty/lib/jquery.raty.js',
             'jquery-waypoints/waypoints.js',
+            'jquery-ui/ui/jquery-ui.custom.js',
+            'jquery-ajaxprogress/jquery.ajaxprogress.js',
+            'jquery.ajaxQueue/dist/jquery.ajaxQueue.js',
             'multi-select/js/jquery.multi-select.js',
             'bootstrap-datepicker/js/bootstrap-datepicker.js',
             'json2/json2.js',
@@ -116,23 +121,38 @@ module.exports = function(grunt) {
       }
     },
 
-    // replace image paths in CSS to match lib/img/
+    /*! 
+     * change image paths in CSS to match url('../lib/img/image.png')
+     * regex should cover following url patterns:
+     * /url\("?images\//g          url("images/animated-overlay.gif")
+     *                             url(images/ui-bg_flat_75_ffffff_40x100.png)
+     * /url\('(?!(images|\.))/g    url('select2.png')
+     *                             url('spinner.gif')
+     * /url\((?!('|"))/g           url(select2x2.png)
+     * must not change             url('../img/switch.png')
+     * /url\('\.\.\/images\//g     url('../images/back_enabled.png')
+     * must not change             alpha(opacity=25)
+     * 
+     * TODO: write testcase
+     * var urls = ['url("images/animated-overlay.gif")', 'url(images/ui-bg_flat_75_ffffff_40x100.png)', "url('select2.png')", "url('spinner.gif')", "url(select2x2.png)", "url('../img/switch.png')", "url('../images/back_enabled.png')", "alpha(opacity=25)"],
+     * urlsClean = [];
+     * urls.forEach(function(elem) {
+     *   var urlClean = elem.replace(/url\((("?images\/)|('(?!(images|\.)))|(?!('|"))|('\.\.\/images\/))/g, 'url(\'../img/').replace(/(png|gif|jpg)?(\)|'\)|"\))/g, '$1\')');
+     *   urlsClean.push(urlClean);
+     * });
+     * console.log(urlsClean);
+     */
+    
     replace: {
       development: {
         src: ['lib/css/*.css'],
         overwrite: true,
         replacements: [{ 
-          from: /url\('(?!\.)/g,
+          from: /url\((("?images\/)|('(?!(images|\.)))|(?!('|"))|('\.\.\/images\/))/g,
           to: 'url(\'../img/'
         }, {
-          from: /url\((?!\')/g, 
-          to: 'url(\'../img/'
-        }, { 
-          from: /..\/images\//g,
-          to: '../img/'
-        }, {
-          from: /(png|gif|jpg)(?=\))/g, 
-          to: '$1\''
+          from: /(png|gif|jpg)+(\)|'\)|"\))/g, 
+          to: '$1\')'
         }]
       }
     },
@@ -147,7 +167,8 @@ module.exports = function(grunt) {
           'lib/css/assets.min.css': [
             'lib/css/jquery.dataTables.css',
             'lib/css/select2.css',
-            'lib/css/multi-select.css'
+            'lib/css/multi-select.css',
+            'lib/css/jquery-ui.css'
           ]
         }
       }
@@ -161,17 +182,20 @@ module.exports = function(grunt) {
       production: {
         files: {
           'lib/js/assets.min.js': [
-            'lib/js/json2.js',
             'lib/js/jquery.js',
-            'lib/js/jquery.timeago.js',
             'lib/js/jquery.dataTables.js',
+            'lib/js/jquery.timeago.js',
             'lib/js/jquery.tinysort.js',
             'lib/js/jquery.raty.js',
-            'lib/js/jquery.multi-select.js',
-            'lib/js/select2.js',
             'lib/js/waypoints.js',
-            'lib/js/bootstrap.js',
-            'lib/js/bootstrap-datepicker.js'
+            'lib/js/jquery-ui.custom.js',
+            'lib/js/jquery.ajaxprogress.js',
+            'lib/js/jquery.ajaxQueue.js',
+            'lib/js/jquery.multi-select.js',
+            'lib/js/bootstrap-datepicker.js',
+            'lib/js/json2.js',
+            'lib/js/select2.js',
+            'lib/js/bootstrap.js'
           ],
           'lib/js/require.js': ['lib/js/require.js'],
           'lib/js/text.js': ['lib/js/text.js'],

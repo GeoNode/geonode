@@ -1,0 +1,10 @@
+.. _prep:
+
+Preparing your environment
+==========================
+
+The environment suggested for the GeoNode installation is Ubuntu 12.04 LTS.
+
+It can be either a real physical machine or a virtual machine.
+
+If you intend to use virtual machine we suggest the use of `Vagrant <http://www.vagrantup.com/>`_

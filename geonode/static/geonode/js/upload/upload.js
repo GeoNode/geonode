@@ -113,7 +113,12 @@ define(['underscore',
      */
     displayFiles = function (file_queue) {
         file_queue.empty();
+        
+        var permission_edit = $("#permission-edit")
 
+        permission_edit.show();
+        var hasFullPermissionsWidget = false;
+        
         $.each(layers, function (name, info) {
             if (!info.type) {
                 log_error({
@@ -123,10 +128,14 @@ define(['underscore',
                 delete layers[name];
             } else {
                 info.display(file_queue);
+                if(info.type.format=='vector'){
+                    hasFullPermissionsWidget = true;
+                };
             }
         });
+        
+        if(!hasFullPermissionsWidget){permission_edit.hide()};
     };
-
 
     /** Function to ...
      *
@@ -159,7 +168,7 @@ define(['underscore',
     doDelete = function(event) {
         var id = event.srcElement.id.split("-")[1];
         var target = "/upload/delete/" + id;
-        $.ajax({
+        $.ajaxQueue({
             url: target,
             async: false,
             contentType: false,
@@ -174,7 +183,7 @@ define(['underscore',
     doResume = function(event) {
         var id = event.srcElement.id.split("-")[1];
         var target = "/upload/?id=" + id;
-        $.ajax({
+        $.ajaxQueue({
             url: target,
             async: false,
             contentType: false,
@@ -202,7 +211,7 @@ define(['underscore',
 
     doSrs = function (event) {
         var form = $("#srsForm")
-        $.ajax({
+        $.ajaxQueue({
            type: "POST",
            url: '/upload/srs',
            data: form.serialize(), // serializes the form's elements.
@@ -232,7 +241,7 @@ define(['underscore',
 
     doTime = function (event) {
         var form = $("#timeForm")
-        $.ajax({
+        $.ajaxQueue({
            type: "POST",
            url: '/upload/time',
            data: form.serialize(), // serializes the form's elements.

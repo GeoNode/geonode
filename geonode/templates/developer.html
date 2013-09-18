@@ -53,11 +53,15 @@
   <table class="table table-striped table-condensed">
     <tr>
       <td><strong>{% trans "Dynamic tiles via WMS:" %}</strong></td>
-      <td><a href="{{GEOSERVER_BASE_URL}}wms?service=WMS&version=1.1.1&request=GetCapabilities">WMS 1.1.1</a></td>
+      <td><a href="{{GEOSERVER_BASE_URL}}ows?service=WMS&version=1.1.1&request=GetCapabilities">WMS 1.1.1</a></td>
     </tr>
     <tr>
       <td><strong>{% trans "Vector data via WFS:" %}</strong></td>
-      <td><a href="{{GEOSERVER_BASE_URL}}wfs?service=WFS&version=1.1.0&request=GetCapabilities">WFS 1.1.0</a></td>
+      <td><a href="{{GEOSERVER_BASE_URL}}ows?service=WFS&version=1.1.0&request=GetCapabilities">WFS 1.1.0</a></td>
+    </tr>
+    <tr>
+      <td><strong>{% trans "Raster data via WCS:" %}</strong></td>
+      <td><a href="{{GEOSERVER_BASE_URL}}ows?service=WCS&version=1.1.1&request=GetCapabilities">WCS 1.1.1</a></td>
     </tr>
     <tr>
       <td><strong>{% trans "Metadata search via CSW:" %}</strong></td>

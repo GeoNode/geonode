@@ -1,0 +1,77 @@
+.. _other_geonode_projects:
+
+================
+GeoNode Projects
+================
+
+This page is an attempt to collect information about downstream projects using GeoNode as a base. Please email the geonode@librelist.com list with your project description to be included.
+
+UCDavis ICE
+-----------
+
+http://maps.ice.ucdavis.edu
+
+Still in the early stages but will become the GIS repository for the
+university lab I work for (20+ people). That means it will be where we
+put all of our unique GIS data (at least 1 TB) for internal and external
+retrieval. To get and idea of what that could mean, you can see a list
+of projects we're working on right now on.
+
+http://ice.ucdavis.edu
+
+Our primary focus:
+Making it easy to create web services from any of our data. Including
+building groups that can be lumped together in separate WMS capabilites.
+GIS data distribution including a raw data link and WCS services.
+Metadata searching.
+
+The only customization we've done so far is to change the upload to only
+be allowed from selected members of our site. Also of note several of
+our layers are fed from postgis outside of the geonode setup.
+
+Harvard WorldMap
+----------------
+
+WorldMap is a GeoNode project being developed by the Center for Geographic Analysis (CGA) at Harvard University to lower barriers for those who wish to explore, visualize, edit, collaborate with, and publish geographically referenced information.  WorldMap currently allows users to:
+
+* Create and edit point, line or polygon layers online and link map features to multimedia content
+* Search and display GeoRSS feeds from the Harvard Geospatial Library, YouTube, and Picasa.
+* Display layers from ArcGIS REST services.
+* View a list of saved edits made to a map and revert to previously saved versions of the map.
+* Search for layers by keywords and geographic extent directly from a map page.
+* Create custom URL's for maps
+ 
+* WorldMap: http://worldmap.harvard.edu
+* Github code: https://github.com/cga-harvard/cga-worldmap
+
+Montagne Aperte2
+----------------
+
+Montagne Aperte2 is Luca Cassagrande's GeoNode application. Once it is done, It will be used by engineers to publish services, data and maps. Some minor changes from the default version:
+
+* Graphic
+* GPX format for download (Required for hikers)
+* Ushahidi integration (not yet defined)
+
+http://www.montagneaperte.it
+
+MetroBoston DataCommon
+----------------------
+
+MetroBoston DataCommon is a customized GeoNode instance and serves as the main data dissemination platform for the Metropolitan Area Planning Council in the Metro Boston region. 
+
+In addition to GeoNode's core features, 
+
+* it integrates an open source Flash-based data visualization software (Weave), similar to GeoNode's map composer, with GeoNode's permission architecture;
+* it adds a reporting application, called "Community Snapshots", to render pre-defined visual reports for a given set of regional units.
+* it includes CMS-like functionality for content-editors to create static pages on the plattform;
+
+On the roadmap:
+
+* Comments and ratings - enable data and visualization conversations;
+* Data Stories - easy to use data walk-throughs to educate users how to read and work with data and indicators;
+* User groups - for organizations or topic related;
+* Social media integration - allow users to share their visualizations, data and maps on Facebook and Twitter.
+
+http://metrobostondatacommon.org/  
+Github: https://github.com/mapc/mbdc

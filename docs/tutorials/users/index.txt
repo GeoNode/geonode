@@ -1,0 +1,39 @@
+.. _users:
+
+Users Workshop
+==============
+
+Welcome to the GeoNode Users Workshop! This workshop will teach how to use the `GeoNode <http://geonode.org>`_ software application.
+
+:ref:`intro_user`
+  An introduction to GeoNode, what it is, what it does, including a brief tour of the application.
+
+:ref:`quickstart`
+  Click to get started with the GeoNode quickstart
+
+:ref:`accounts`
+  Create an account in GeoNode and interact with other users
+
+:ref:`layers`
+  Create and manage GeoNode layers
+
+:ref:`maps`
+  Create and manage a GeoNode map
+
+:ref:`integration`
+  Learn how to integrate GeoNode with other applications and systems.
+
+:ref:`processing`
+  Learn how to use the data in your GeoNode to do Spatial data processing with various tools.
+
+.. toctree::
+   :hidden:
+   :maxdepth: 3
+
+   intro/index
+   quickstart/index
+   accounts/index
+   layers/index
+   maps/index
+   integration/index
+   processing/index

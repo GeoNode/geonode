@@ -194,10 +194,6 @@ class ThumbnailMixin(object):
 
 
 class ResourceBaseManager(models.Manager):
-
-    def __init__(self):
-        models.Manager.__init__(self)
-
     def admin_contact(self):
         # this assumes there is at least one superuser
         superusers = User.objects.filter(is_superuser=True).order_by('id')
@@ -350,7 +346,13 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
                 description = '%s (%s Format)' % (self.title, url.name)
                 links.append((self.title, description, 'WWW:DOWNLOAD-1.0-http--download', url.url))
         return links
-
+    
+    def maintenance_frequency_title(self):
+        return [v for i, v in enumerate(UPDATE_FREQUENCIES) if v[0] == self.maintenance_frequency][0][1].title()
+        
+    def language_title(self):
+        return [v for i, v in enumerate(ALL_LANGUAGES) if v[0] == self.language][0][1].title()
+    
     def _set_poc(self, poc):
         # reset any poc asignation to this resource
         ContactRole.objects.filter(role=self.poc_role, resource=self).delete()
@@ -381,6 +383,8 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
         return the_ma
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
+
+    objects = ResourceBaseManager()
 
 class LinkManager(models.Manager):
     """Helper class to access links grouped by type
@@ -432,15 +436,16 @@ def resourcebase_post_save(instance, sender, **kwargs):
     if resourcebase.owner:
         user = resourcebase.owner
     else:
-        user = ResourceBase.objects.admin_contact()
+        user = ResourceBase.objects.admin_contact().user
         
     if resourcebase.poc is None:
         pc, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": resourcebase.owner.username})
+                                           defaults={"name": user.username}
+                                           )
         resourcebase.poc = pc
     if resourcebase.metadata_author is None:  
         ac, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": resourcebase.owner.username}
+                                           defaults={"name": user.username}
                                            )
         resourcebase.metadata_author = ac
 

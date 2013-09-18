@@ -1,0 +1,97 @@
+.. _multi-tenancy:
+
+===============================
+GeoSites: GeoNode Multi-Tenancy
+===============================
+
+GeoSites is an approach to support multiple websites with GeoNode. Each GeoSite can have different templates, apps, and data permissions but share a single database (useful for sharing users and data layers), GeoServer, and CSW.  Some of this functionality is currently available with the dev branch of GeoNode, although a fully working system will require extending the GeoNode security app to support the Django Sites framework.
+
+A key component in managing multiple sites is keeping data organized and using a structured series of settings files so that common settings can be shared and only site specific settings are separated out.
+
+One Website to Rule Them All
+============================
+
+The GeoSites approach uses a 'master' website in order to simplify data management. This master site serves as a single website from which all data can be managed. Additionally, if desired, any or all of the django apps installed in the other sites can be added to the master site to provide a single admin interface that gives full access to all apps.  The master website also serves as the single URL which GeoServer authenticates to.
+
+GeoServer and PostGIS
+=====================
+
+The single GeoServer instance is the main method in which new data is added to the websites.  To keep data organized, workspaces should be used:
+
+* geonode: This is the default workspace, and should not contain anything at first since it will be the workspace data is uploaded to by users.
+* common: This workspace should contain data that is common to all websites.
+* website: One workspace should be created for each website that contains data that is specific to that workspace.
+* other: Other workspaces may be created for specific themed data that may be shared across multiple, but not all, sites.
+
+Since in GeoServer a datastore (PostGIS database) belongs to a single workspace and the database may contain data for multiple sites, schemas should be used to keep the data separated out and should mirror the workspaces above (with the public schema being for common data).   One PostGIS datastore will then be created for each workspace/schema.
+
+Settings Files and Web Server
+=============================
+
+The majority of settings are common to all GeoNode sites and these should be separated out into a settings_master.py file. Apache (or other web server) will have a virtual site set-up for each website (including the master site, which will be the default), with each one pointing to a separate .wsgi file. Each .wsgi file will point to a settings file unique to that site.  The site settings file will be limited in scope, only containing the differences between the sites including:
+
+* SITE_ID: Each one is unique, the master site should have a SITE_ID of 1.
+* SITENAME
+* SITEURL
+* ROOT_URLCONF: This may be optional. The main site url.conf can be configured to automatically import the urls.py of all SITE_APPS, so a different ROOT_URLCONF is only needed if there are further differences.
+* SITE_APPS: Containing the site specific apps
+* App settings: Any further settings required for the above sites
+* Other site specific settings, such as REGISTRATION_OPEN
+
+At the end of the site specific settings file it will include the global settings file::
+
+    PROJECT_ROOT = os.path.dirname(mastersite.__file__)
+    execfile(os.path.join(PROJECT_ROOT,’settings_global.py’)
+
+Where PROJECT_ROOT is the location of the entire project containing all the websites and the global settings file.  The global settings file is read in via ‘exec’ rather than import so that it can then modify and use variables from the site specific settings file.   
+
+The main difference between the settings_global.py file and the default GeoNode settings file is the inclusion of a SITE_ROOT directory. Therefore, three directories will be defined:
+
+* SITE_ROOT: The directory where the site specific settings and files are located (templates, static)
+* PROJECT_ROOT: The top-level directory of all the GeoSites which should include the global settings file as well as template and static files
+* GEONODE_ROOT: The GeoNode directory.
+
+The TEMPLATE_DIRS, and STATICFILES_DIRS will then include all three directories as shown::
+
+    TEMPLATE_DIRS = (
+        os.path.join(SITE_ROOT, 'templates/'),
+        os.path.join(PROJECT_ROOT,'templates/'),  # files common to all sites
+        os.path.join(GEONODE_ROOT, 'templates/')
+    )
+
+    STATICFILES_DIRS = (
+        os.path.join(SITE_ROOT, 'static/'),
+        os.path.join(PROJECT_ROOT, 'static/'),
+        os.path.join(GEONODE_ROOT, 'static/')
+    )
+
+At the end of the settings_global.py the following variables will be set based on site specific settings::
+
+    STATIC_URL = os.path.join(SITEURL,’static/’)
+    GEONODE_CLIENT_LOCATION = os.path.join(STATIC_URL,’geonode/’)
+    GEOSERVER_BASE_URL = SITEURL + ‘geoserver/’
+    if SITE_APPS:
+        INSTALLED_APPS += SITE_APPS
+
+..note the settings files also require differences between development and production servers which are not currently discussed here.
+
+Templates and Static Files
+==========================
+
+As mentioned above for each website there will be three directories used for template and static files.  The first template file found will be the one used so templates in the SITE_ROOT/templates directory will override those in PROJECT_ROOT/templates, which will override those in GEONODE_ROOT/templates.
+
+Static files work differently because (at least on a production server) they are collected and stored in a single location.  Because of this care must be taken to avoid clobbering of files between sites, so each site directory should contain all static files in a subdirectory with the name of the site (e.g., static/masshealth/logo.png )
+
+The location of the proper static directory can then be found in the templates syntax such as::
+
+    {{ STATIC_URL }}{{ SITENAME|lower }}/logo.png
+
+Site Permissions
+================
+
+The main aspect of GeoSites that is currently not implemented is to be able to set permissions by site, so that data can be viewable from one site but not another. This will require extending the GeoNode security app to utilize the Django sites framework, so that every object can be set to:
+No Sites: If no site is set the object should still be accessible by the master site to ensure that data is never orphaned.
+All Sites: All sites have access to data
+One of more individual Sites: Set specific sites.
+
+To help in management it is further suggested that a management command be added (or extend updatelayers) which will batch set the permissions for data.   The site specific settings file can specifiy one or more GeoServer workspaces.  The management command will then set all data within those workspaces to be accessible from that site.  (note: this command will be used in a loop, cycling through all sites).

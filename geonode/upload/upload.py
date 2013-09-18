@@ -32,6 +32,7 @@ State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
 from geonode.geoserver.helpers import get_sld_for
+from geonode.base.models import SpatialRepresentationType
 from geonode.layers.utils import get_valid_layer_name
 from geonode.layers.utils import layer_type
 from geonode.layers.metadata import set_metadata
@@ -45,6 +46,7 @@ from geonode.upload import signals
 from geonode.upload.utils import create_geoserver_db_featurestore
 from geonode.upload.utils import find_file_re
 from geonode.upload.utils import gs_uploader
+from geonode.utils import ogc_server_settings
 
 import geoserver
 from geoserver.resource import Coverage
@@ -294,16 +296,14 @@ def run_import(upload_session, async):
 
     # if a target datastore is configured, ensure the datastore exists
     # in geoserver and set the uploader target appropriately
-    if (hasattr(settings, 'GEOGIT_DATASTORE') and settings.GEOGIT_DATASTORE and
-        upload_session.geogit == True and
-        import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
+    if (ogc_server_settings.GEOGIT_ENABLED and upload_session.geogit == True and import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
         target = create_geoserver_db_featurestore(store_type='geogit', store_name = upload_session.geogit_store)
         _log('setting target datastore %s %s',
              target.name, target.workspace.name
             )
         import_session.tasks[0].set_target(
             target.name, target.workspace.name)
-    elif (settings.OGC_SERVER['default']['OPTIONS']['DATASTORE'] != '' and
+    elif (ogc_server_settings.DATASTORE and
         import_session.tasks[0].items[0].layer.layer_type != 'RASTER'):
         target = create_geoserver_db_featurestore(store_type='postgis', store_name = upload_session.geogit_store)
         _log('setting target datastore %s %s',
@@ -576,7 +576,11 @@ def final_step(upload_session, user):
 
         # set model properties
         for (key, value) in vals.items():
-            setattr(saved_layer, key, value)
+            if key == "spatial_representation_type":
+                #value = SpatialRepresentationType.objects.get(identifier=value)
+                pass
+            else:
+                setattr(saved_layer, key, value)
 
         saved_layer.save()
 

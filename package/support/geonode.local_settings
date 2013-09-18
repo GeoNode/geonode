@@ -4,6 +4,8 @@ import geonode
 
 DEBUG = TEMPLATE_DEBUG = False
 
+DEBUG_STATIC = False
+
 SITENAME = 'GeoNode'
 SITEURL = 'http://localhost/'
 
@@ -33,6 +35,26 @@ DATABASES = {
     }
 }
 
+
+GEOSERVER_BASE_URL = SITEURL + 'geoserver/'
+
+# OGC (WMS/WFS/WCS) Server Settings
+OGC_SERVER = {
+    'default' : {
+        'BACKEND' : 'geonode.geoserver',
+        'LOCATION' : GEOSERVER_BASE_URL,
+        'USER' : 'admin',
+        'PASSWORD' : 'geoserver',
+        'MAPFISH_PRINT_ENABLED' : True,
+        'PRINTNG_ENABLED' : True,
+        'GEONODE_SECURITY_ENABLED' : True,
+        'GEOGIT_ENABLED' : False,
+        'WMST_ENABLED' : False,
+        # Set to name of database in DATABASES dictionary to enable
+        'DATASTORE': 'datastore',
+    }
+}
+
 LANGUAGE_CODE = 'en'
 
 MEDIA_ROOT = '/var/www/geonode/uploaded'
@@ -42,8 +64,6 @@ STATIC_ROOT = '/var/www/geonode/static/'
 # site.  See http://docs.djangoproject.com/en/1.2/ref/settings/#secret-key
 SECRET_KEY = 'THE_SECRET_KEY'
 
-# The FULLY QUALIFIED url to the GeoServer instance for this GeoNode.
-GEOSERVER_BASE_URL = SITEURL + 'geoserver/'
 
 CATALOGUE = {
     'default': {
