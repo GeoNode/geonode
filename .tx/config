@@ -12,3 +12,27 @@ file_filter = geonode/locale/<lang>/LC_MESSAGES/djangojs.po
 source_file = geonode/locale/en/LC_MESSAGES/djangojs.po
 source_lang = en
 type = PO
+
+[geonode.docs-index]
+file_filter = docs/i18n/<lang>/LC_MESSAGES/index.po
+source_file = docs/i18n/en/LC_MESSAGES/index.po
+source_lang = en
+type = PO
+
+[geonode.docs-organizational]
+file_filter = docs/i18n/<lang>/LC_MESSAGES/organizational.po
+source_file = docs/i18n/en/LC_MESSAGES/organizational.po
+source_lang = en
+type = PO
+
+[geonode.docs-reference]
+file_filter = docs/i18n/<lang>/LC_MESSAGES/reference.po
+source_file = docs/i18n/en/LC_MESSAGES/reference.po
+source_lang = en
+type = PO
+
+[geonode.docs-tutorials]
+file_filter = docs/i18n/<lang>/LC_MESSAGES/tutorials.po
+source_file = docs/i18n/en/LC_MESSAGES/tutorials.po
+source_lang = en
+type = PO

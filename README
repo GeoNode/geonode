@@ -166,7 +166,6 @@ Mac OSX Development Build Instructions::
     paver setup
     paver start
 
-
 Once fully started, you should see a message indicating the address of your geonode.
 The default username and password are ``admin`` and ``admin``::
   
@@ -174,6 +173,21 @@ The default username and password are ``admin`` and ``admin``::
   The GeoNode is an unstoppable machine
   Press CTRL-C to shut down
 
+Before starting GeoNode (paver start), you could test your installation by running tests::
+
+    paver test
+    paver test_integration
+    
+In case you want to build yourself the documentation, you need to install Sphinx and the run 'make html' from within the docs directory::
+
+    pip install Sphinx
+    cd docs
+    make html
+    
+You can eventually generate a pdf containing the whole documentation set. For this purpose, if using Ubuntu 12.4 you will need to install the texlive-full package::
+
+    sudo apt-get install texlive-full
+    make latexpdf
 
 .. note:: 
 

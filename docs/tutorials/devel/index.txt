@@ -1,0 +1,51 @@
+.. _devel:
+
+Developers Workshop
+===================
+
+Welcome to the Developers Workshop! This workshop will teach how to develop with and for the `GeoNode <http://geonode.org>`_ software application.
+
+.. toctree::
+   :hidden:
+
+   intro_devel/index
+   core/index
+   install_devmode/index
+   projects/index
+   debug/index
+   api/index
+   envsetup/index
+   testing 
+   release/index
+
+:ref:`intro_devel`
+  Learn about GeoNode's core components, its Architecture, the tools it is developed with and the standards it supports.
+
+:ref:`core`
+  Learn about the pre-requisites you will need in order to develop with GeoNode. Take a look at its core modules and how they work together to provide a complete web mapping tool. 
+
+:ref:`install_devmode`
+  Prepare your development environment by installing GeoNode in dev mode.
+
+:ref:`customize_projects`
+  Learn how existing projects leverage GeoNode and create your own GeoNode based project.
+
+:ref:`debug`
+  Learn how to debug GeoNode instances and projects.
+
+:ref:`envsetup`
+  Learn how to set up a GeoNode development environment so you can contribute to GeoNode's core.
+
+:ref:`api`
+  Learn about the APIs GeoNode leverages and provides.
+
+:ref:`devprocess`
+  Learn about GeoNode's development process and how to work with the GeoNode community.
+
+:ref:`org_index`
+  Learn about GeoNode's development process and how to work with the GeoNode community.
+
+:ref:`release`
+  Learn how to make a release of GeoNode
+
+

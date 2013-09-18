@@ -23,11 +23,12 @@ import logging
 import re
 import errno
 import uuid
+import datetime
 from itertools import cycle, izip
 
 from django.conf import settings
 
-from geonode.utils import _user, _password
+from geonode.utils import _user, _password, ogc_server_settings
 
 from geoserver.catalog import Catalog, FailedRequestError
 
@@ -179,7 +180,7 @@ def cascading_delete(cat, layer_name):
       if e.errno == errno.ECONNREFUSED:
         msg = ('Could not connect to geoserver at "%s"'
                'to save information for layer "%s"' % (
-               settings.OGC_SERVER['default']['LOCATION'], layer_name)
+               ogc_server_settings.LOCATION, layer_name)
               )
         logger.warn(msg, e)
         return None
@@ -225,9 +226,9 @@ def delete_from_postgis(resource_name):
     to be used after deleting a layer from the system.
     """
     import psycopg2
-    dsname = settings.OGC_SERVER['default']['OPTIONS']['DATASTORE']
-    db = settings.DATABASES[dsname]
-    conn=psycopg2.connect("dbname='" + db['NAME'] + "' user='" + db['user'] + "'  password='" + db['password'] + "' port=" + db['PORT'] + " host='" + db['HOST'] + "'")
+    dsname = ogc_server_settings.DATASTORE
+    db = ogc_server_settings.datastore_db
+    conn=psycopg2.connect("dbname='" + db['NAME'] + "' user='" + db['USER'] + "'  password='" + db['PASSWORD'] + "' port=" + db['PORT'] + " host='" + db['HOST'] + "'")
     try:
         cur = conn.cursor()
         cur.execute("SELECT DropGeometryTable ('%s')" %  resource_name)
@@ -248,8 +249,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
 
     if verbosity > 1:
         print >> console, "Inspecting the available layers in GeoServer ..."
-    url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
-    cat = Catalog(url, _user, _password)
+    cat = Catalog(ogc_server_settings.rest, _user, _password)
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
         resources = cat.get_resources(workspace=workspace)
@@ -273,7 +273,15 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
     if verbosity > 1:
         msg =  "Found %d layers, starting processing" % number
         print >> console, msg
-    output = []
+    output = {
+        'stats': {
+            'failed':0,
+            'updated':0,
+            'created':0,
+        },
+        'layers': []
+    }
+    start = datetime.datetime.now()
     for i, resource in enumerate(resources):
         name = resource.name
         store = resource.store
@@ -306,23 +314,28 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
             if created:
                 layer.set_default_permissions()
                 status = 'created'
+                output['stats']['created']+=1
             else:
                 status = 'updated'
+                output['stats']['updated']+=1
 
         msg = "[%s] Layer %s (%d/%d)" % (status, name, i+1, number)
         info = {'name': name, 'status': status}
         if status == 'failed':
+            output['stats']['failed']+=1
             info['traceback'] = traceback
             info['exception_type'] = exception_type
             info['error'] = error
-        output.append(info)
+        output['layers'].append(info)
         if verbosity > 0:
             print >> console, msg
+    finish = datetime.datetime.now()
+    td = finish - start
+    output['stats']['duration_sec'] = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
     return output
 
 def get_stores(store_type = None):
-    url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
-    cat = Catalog(url, _user, _password) 
+    cat = Catalog(ogc_server_settings.rest, _user, _password)
     stores = cat.get_stores()
     store_list = []
     for store in stores:

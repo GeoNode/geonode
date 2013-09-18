@@ -1,120 +1,56 @@
 =======================
-GeoNode's documentation
+GeoNode's Documentation
 =======================
+
+Welcome to Geonode's Documentation. 
+
+GeoNode is an Open Source, Content Management System (CMS) for geospatial data. It is a web-based application and platform for developing geospatial information systems (GIS) and for deploying spatial data infrastructures (SDI). 
+
+How To Use The Documentation
+============================
+
+The documentation is divided into three sections.
+
+ #. :doc:`Organizational: <organizational/index>`  about the project, how to contribute, links, resources, other info
+ #. :doc:`Tutorials: <tutorials/index>` Step-by-step instructions in workshop format that help a user to accomplish a set of tasks.
+ #. :doc:`Reference: <reference/index>` Architecture, component information, API descriptions etc. 
+
+
+For organizational purposes, the documentation is also geared toward 3 distinct types of users.
+
+ #. **Users**: Are people who log into a GeoNode website and use its functionality. 
+ #. **Administrators**: Are people who install and deploy GeoNode websites in production for their Users. 
+ #. **Developers**:  Are people who write code to add functionality, integrate with other systems, fix bugs, and potentially help an Administrator setup a server and deploy a GeoNode instance for production. 
 
 First Steps
 ===========
 
-The following documents give an overview to GeoNode, the overview document is targeted at non-technical audiences and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation.
+The following sections give an overview of GeoNode from different perspectives, they are targeted at a non-technical audience and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation.
 
- * :doc:`About GeoNode <intro/overview>`
- * :doc:`Quick Installation Guide <intro/install>`
+ * :doc:`About GeoNode <organizational/about>`
+ * :doc:`GeoNode Quickstart <tutorials/users/quickstart/index>`
+ * :doc:`Quick Installation Guide <tutorials/admin/install/quick_install>`
+ * :doc:`Manual Installation Guide <tutorials/admin/install/manual_install/index>`
 
-.. _the GeoNode demo site: http://demo.geonode.org
-
-.. toctree::
-    :hidden:
-    :maxdepth: 3
-
-    intro/overview
-    intro/install
-
-
-For users
-=========
-
-Users are not required to have experience with GIS systems but most power GeoNode users have existing knowledge of tools like ESRI's ArcGIS or QGIS.
-
-The end user documentation is formatted in form of tutorials, this material has mostly been developed for workshops during FOSS4G and similar conferences.
-
- * :doc:`Tutorials Overview <users/index>`
- * :doc:`Registering a New Account <users/register>`
- * :doc:`Adding New Data <users/upload>`
- * :doc:`Creating Maps <users/create>`
- * :doc:`Exploring Maps <users/explore>`
- * :doc:`Sharing and Printing <users/share>`
-
-
-.. toctree::
-    :hidden:
-    :maxdepth: 3
-
-    users/index
-    users/register
-    users/upload
-    users/create
-    users/explore
-    users/share
-
-For Administrators
-==================
-
-Administrators are expected to have some experience with Linux systems but they are not required to be software developers.
-
- * :doc:`Complete Installation Guide <deploy/install>`
- * :doc:`Configuring GeoNode for Production <deploy/production>`
- * :doc:`Customizing the Look and Feel of GeoNode <deploy/customize>`
- * :doc:`Debugging GeoNode Installations <deploy/debug>`
- * :doc:`Running GeoNode under SSL <deploy/ssl>`
- * :doc:`Changing the Default Language <deploy/language>`
- * :doc:`Backup configuration & data <deploy/backup>`
- * :doc:`Management commands for GeoNode <deploy/commands>`
- * :doc:`Configuring Alternate CSW Backends <deploy/csw>`
- * :doc:`GeoSites: GeoNode Multi-Tenancy <deploy/multi-tenancy>`
-
-.. toctree::
-    :hidden:
-    :maxdepth: 3
-
-    deploy/install
-    deploy/production
-    deploy/customize
-    deploy/debug
-    deploy/ssl
-    deploy/language
-    deploy/backup
-    deploy/commands
-    deploy/csw
-    deploy/multi-tenancy
-
-For Developers
+Organizational
 ==============
 
-Would you like to Contribute to GeoNode's continued development? These pages will guide you through the process of setting up your development environment through to submitting patches for inclusion in GeoNode.
+The :doc:`Organizational <organizational/index>` section contains information about the GeoNode project itself, how to contribute, learn about the community, helpful links, about the patch review process, the project roadmap and other administraive items.
 
- * :doc:`Configuring GeoNode in development mode <developers/setup>`
- * :doc:`Testing in GeoNode <developers/tests>`
- * :doc:`Architecture Overview <developers/architecture>`
- * :doc:`GeoNode API <developers/api>`
- * :doc:`Extending GeoNode <developers/extend>`
- * :doc:`Contributing to GeoNode <developers/contribute>`
- * :doc:`GeoNode Patch Review Process <developers/patches>`
- * :doc:`GeoNode Improvement Proposals - GNIP <developers/gnips>`
- * :doc:`GeoNode's Roadmap Process <developers/roadmap>`
- * :doc:`Translating GeoNode <developers/translation>`
- * :doc:`Developers Reference Documentation <developers/reference/index>`
+Tutorials
+=========
 
-.. toctree::
-    :hidden:
-    :maxdepth: 3
+The :doc:`Tutorials <tutorials/index>` section contains step-by-step workshops that are oriented around performing particular sets of tasks, like adding data or publishing maps, setting up and maintaining a server, or setting up a project to extend from geonode. These tutorials are written in a workshop like format and are broken into three groups Users, Administrators and Developers. 
 
-    developers/setup
-    developers/tests
-    developers/architecture
-    developers/extend
-    developers/contribute
-    developers/patches
-    developers/gnips
-    developers/roadmap
-    developers/translation
-    developers/reference/index
-    developers/reference/django-apps
-    developers/reference/javascript
+Reference
+=========
 
-Getting help
-============
+The :doc:`Reference <reference/index>` section provides details about the internals of the GeoNode project. It has background information about components that make up GeoNode, the security system, APIs and much more.
 
-Having trouble? We'd like to help!
+Need Help?
+==========
+
+Having trouble? Cant find what you are looking for? We'd like to help!
 
  * Search for information in the `archives of the GeoNode  mailing list`_, or
    `post a question`_.
@@ -129,3 +65,10 @@ Having trouble? We'd like to help!
 .. _#geonode IRC channel: irc://irc.freenode.net/geonode
 .. _Freenode's web based client: http://webchat.freenode.net
 .. _ticket tracker: http://github.com/GeoNode/geonode/issues
+
+.. toctree::
+   :maxdepth: 3
+
+   organizational/index
+   tutorials/index
+   reference/index

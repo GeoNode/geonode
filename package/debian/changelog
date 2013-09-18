@@ -1,3 +1,666 @@
+geonode (2.0.0+beta59) precise; urgency=high
+
+  [ Vivien Deparday ]
+  * [d4f7fb] Update quick_install.txt
+
+  [ capooti ]
+  * [96c757] Updated the users/layers/upload and users/layers/more doc pages as per #1132.
+  * [a30562] Removed a screenshot uncorrectly added in last commit.
+
+  [ Ariel Nunez ]
+  * [602065] Fix django-admin reference in packages, it was breaking debian packages
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 13 Sep 2013 14:07:06 +0000
+
+geonode (2.0.0+beta58) precise; urgency=high
+
+  [ Tom Kralidis ]
+  * [5a7ed0] Add blurb about metadata downloads to Layer Information page (#1152)
+  * [93db6d] Add blurb about layer attributes to layer info docs page (#1154)
+
+  [ Simone Dalmasso ]
+  * [f6751c] move install demoed under developers workshop
+  * [a96ecf] adjust a bit the install flow
+
+  [ Tom Kralidis ]
+  * [5bd5ac] make URL /ows for all, add wcs link
+
+  [ capooti ]
+  * [7ff5bd] Updated the "sharing layers" screenshots. Refs #1133.
+
+  [ Tom Kralidis ]
+  * [06ba55] add info on OWS
+
+  [ Simone Dalmasso ]
+  * [1d6295] Some testing doc
+  * [ad121c] Add few lines
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 13 Sep 2013 13:18:37 +0000
+
+geonode (2.0.0+beta57) precise; urgency=high
+
+  [ mwengren ]
+  * [59a333] Added support for 'proxy' OGC_SERVER config that allows secondary LOCATION config for public GeoServer access point
+  * [b8181a] Remove redundant config in settings.py
+  * [5dd544] Fix syntax error for check of 'CATALOG_WRITE_ENABLED' in layers/models.py
+  * [2de7c8] Added back in the 'DATASTORE' key in OGC_SERVER OPTIONS dict that was dropped
+
+  [ Christian Spanring ]
+  * [7518ea] fixes waypoints dependency when DEBUG_STATIC is set.
+
+  [ Jeffrey Johnson ]
+  * [44a405] Comment out console.log in LayerInfo.js (closes #1087)
+
+  [ Simone Dalmasso ]
+  * [18237b] add release docs
+
+  [ capooti ]
+  * [7b868b] Added the gettext_compact option in conf.py file.
+  * [30415b] Updated the -How to translate GeoNode's Documentation- file.
+  * [d6100a] Added the initial .po files to git after a tx pull.
+  * [ce51b8] Updated part of the admin panel section in the admin workshop. Added new screenshots.
+
+  [ Simone Dalmasso ]
+  * [11156e] some updates on the installation guide
+  * [cc26e0] move deploy_config under manual installation
+
+  [ Jeffrey Johnson ]
+  * [eea21d] Move processing to users section
+  * [9ad8d8] Move data section to users tutorial
+  * [20dfe4] Moving data section to admin tutorial
+  * [f3b839] change heading in admin/data/index.txt
+  * [84633d] Add ssl to tutorials/admin/index
+
+  [ Simone Dalmasso ]
+  * [481753] fix some installation details
+  * [80b0fb] use django-admin.py in the installer
+  * [7f6023] some other small fixes in the installation process
+  * [e5baa2] fix installation from config file
+
+  [ Paolo Pasquali ]
+  * [04acda] Fix items layout, home page IE8 bugs
+  * [8438d2] Restoring scripts
+
+  [ Simone Dalmasso ]
+  * [8e5d41] add some other admin docs
+
+  [ Ariel Nunez ]
+  * [8586a7] ows url should link to /ows instead of /wms
+
+  [ Simone Dalmasso ]
+  * [5a0abb] Take out the geoserver installation from the install script
+  * [d99367] further work on the admin doc
+  * [16e906] add the geoserver deployment to the installation with config file
+  * [24cfc0] fix failing test
+
+  [ Tom Kralidis ]
+  * [ea78f4] execute WPS statistics only if WPS is enabled on OGC_SERVER (#1128)
+
+  [ mwengren ]
+  * [bcfc86] Changed ogc_server_settings.ows to use PUBLIC_URL if present
+
+  [ Simone Dalmasso ]
+  * [541291] update the user registration
+
+  [ capooti ]
+  * [5fe1e6] Updated first part of the admin data tutorial.
+  * [ce728d] Updated the admin OSM data tutorial.
+
+  [ mwengren ]
+  * [615299] Added test cases for PUBLIC_LOCATION, BACKEND_WRITE_ENABLED in OGC_SERVER config
+
+  [ Ariel Nunez ]
+  * [e4d775] Added service=WMS to get_wms method
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 12 Sep 2013 22:42:20 +0000
+
+geonode (2.0.0+beta54) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [ce9464] include raty in assets.min.js
+
+  [ Christian Spanring ]
+  * [e725bc] fixes regex in gruntfile
+
+  [ mdiener21 ]
+  * [109fe0] merged the files, deleted redundant links, dead links and updated to the new structure
+  * [0a5318] updated how to transifex localization
+
+  [ vdeparday ]
+  * [7bd63b] Fixes #1107, the custom Manager was not instantiated and also correct a few type issues in the post_save
+
+  [ Simone Dalmasso ]
+  * [82d6c4] add admin panel section
+
+  [ mdiener21 ]
+  * [b1e69e] updated the install procedure
+  * [20f5c9] finished documentation sphinx guidelines and add logo for example
+
+  [ capooti ]
+  * [f7b54f] Added a very basic workflow to manage the i18n documentation process. Refs #1099.
+
+  [ mdiener21 ]
+  * [ae8d99] documentation guidelines updated and completed
+
+  [ Simone Dalmasso ]
+  * [f9fdc1] reorganize the admin tutorial
+  * [41792c] more doc install reorganization
+
+  [ Tyler Garner ]
+  * [b4a1b8] Changed the set_metadata function to safely check for the date key.
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Fri, 06 Sep 2013 17:23:24 +0200
+
+geonode (2.0.0+beta53) precise; urgency=high
+
+  [ Michael Diener ]
+  * [b6ea5b] Create quickstart.rst
+  * [28a3ec] Update quickstart.rst
+
+  [ b-angerer ]
+  * [23f0fb] new img
+  * [4dd017] Update tutorial_security.rst
+  * [84762b] Update permissions.rst
+  * [826018] Update permissions.rst
+  * [8a5ac5] Update tutorial_security.rst
+  * [28528b] Update contribute.rst
+  * [a9d44f] Create index.rst
+  * [b5d72d] Create index.rst
+  * [0a7489] Create index.rst
+  * [813561] Update permissions.rst
+  * [93b20a] Create contribute_to_docu.rst
+  * [9ca409] Create installation_devmode.rst
+  * [c39d63] Delete install_geonode_in_devmode.md
+  * [b91cf6] Delete config_geonode_dev.md
+  * [d5c889] Create security
+  * [a1b7ed] Create permission_and_security.rst
+  * [10166a] Create How_to_change_default_db.rst
+  * [afbf4b] Update How_to_change_default_db.rst
+  * [6b8490] Update How_to_change_default_db.rst
+  * [3c01d4] Update How_to_change_default_db.rst
+  * [07cc86] Update How_to_change_default_db.rst
+  * [18a18e] Create apache.rst
+  * [8bc14a] Create tomcat.rst
+  * [6c9e96] Update How_to_change_default_db.rst
+  * [193681] Update apache.rst
+  * [8c2f7f] Update tomcat.rst
+  * [904373] Update tomcat.rst
+  * [48bd6a] Update apache.rst
+  * [788c7e] Update installation_devmode.rst
+  * [e50002] Update installation_devmode.rst
+  * [3a5203] Update How_to_change_default_db.rst
+  * [35f0a9] Create deploy_install.rst
+  * [28d55b] Update deploy_install.rst
+  * [0a5433] Create deploy_config.rst
+  * [ec2832] Update deploy_config.rst
+  * [9a48b6] Create contribute_to_translation.rst
+  * [c3d133] Update deploy_install.rst
+  * [e29fae] Update deploy_install.rst
+  * [92df47] Update deploy_config.rst
+  * [4630c8] Update deploy_config.rst
+  * [0c0d92] Update deploy_config.rst
+  * [933edb] Update deploy_config.rst
+  * [25ad12] Update deploy_install.rst
+  * [4a1675] Update installation_devmode.rst
+  * [ffc1f5] Update installation_devmode.rst
+  * [e7acee] Update installation_devmode.rst
+  * [14c9e6] Update deploy_config.rst
+  * [51191e] Update installation_devmode.rst
+  * [209dd6] Update deploy_config.rst
+  * [225583] Update How_to_change_default_db.rst
+  * [8d6a4f] Update deploy_config.rst
+  * [167d81] Update deploy_config.rst
+  * [aa4ee2] Update deploy_config.rst
+  * [0dcc86] Update deploy_config.rst
+  * [f54336] Delete tomcat.rst
+  * [f151ec] Delete apache.rst
+  * [2f2bb6] Delete How_to_change_default_db.rst
+
+  [ Michael Diener ]
+  * [5b95ef] Create index.rst
+
+  [ b-angerer ]
+  * [edc5d4] Update deploy_config.rst
+
+  [ Michael Diener ]
+  * [56ddf2] Update index.rst
+  * [50b08e] copy of original wiki article in geonode wiki moving to main docs
+  * [a8f1a6] how to contribute to docs from Barbara
+  * [87ce3b] added link to how to contribute to docs
+  * [35b931] Update how_to_contribute.rst
+  * [05627c] Update how_to_contribute.rst
+  * [55e2e7] Update how_to_contribute.rst
+  * [ccdce6] Update how_to_contribute.rst
+  * [3e9f47] Update how_to_contribute.rst
+  * [0694d2] Update how_to_contribute.rst
+  * [cebedd] Update how_to_contribute_to_docs.rst
+  * [d6e2dc] Update how_to_contribute_to_docs.rst
+  * [0920cc] Create index.rst
+
+  [ root ]
+  * [ba8c2e] move admin workshops to tutorials
+  * [f6fa5d] move devel workshop to tutorials
+  * [5c93ab] move user workshop to tutorials
+  * [885f1f] modify index
+  * [db5230] add file ref
+  * [360a97] modify index
+  * [8026a7] modify files
+  * [f6e5d3] add new files to data
+  * [73d908] add img
+  * [2f270b] wiki docs
+  * [0dcb84] modified
+  * [907aa3] change img
+  * [8a0bf2] add img
+  * [0ec1e7] add img
+  * [adeb98] new img
+  * [10976c] change img path
+
+  [ b-angerer ]
+  * [b4e02d] Delete deploy_config.rst
+  * [160a6d] Delete deploy_install.rst
+  * [ad8745] Delete index.rst
+  * [cb2ef2] Delete installation_devmode.rst
+  * [3b663e] Delete permission_and_security.rst
+  * [6c15f0] Delete index.rst
+
+  [ mdiener21 ]
+  * [8247e5] updated 2.0 structure and new files
+  * [74d40c] updated 2.0 structure and new files
+
+  [ Barbara ]
+  * [6626c9] deleted
+  * [dc7bd1] test
+  * [cbe249] delete
+  * [ebac0f] new test
+  * [1f1c02] delete
+  * [206266] add images
+  * [9f0c72] new images
+  * [d8bdbb] correct spelling mistake
+  * [1482ff] replace security.rst
+  * [2e4564] change security.rst
+
+  [ b-angerer ]
+  * [43e75a] Update security.rst
+  * [21d916] Update permission_and_security.rst
+
+  [ mdiener21 ]
+  * [374ef6] documentation restructure and relink
+  * [397d3f] documentation tutorials restructure and relink
+  * [37264b] added images organizational other files
+  * [a7b7c2] moved folder /users/ to old_docs  folder
+  * [79ce91] moved postgis, postgres install into folder /tutorials/admin/install  plus  line space error fixed
+  * [c1fc2b] updated to remove return char, moved one file to organizational
+  * [a2c7fd] moved reference docs to ref section
+  * [e99803] index update with references
+  * [046ff6] moved all docs into new folder newdocs
+  * [6ebf16] test doc
+  * [20df58] Merge branch 're_org_docs' of https://github.com/b-angerer/geonode into golfgis
+  * [957845] added new index organizational
+
+  [ root ]
+  * [d7470b] add text
+
+  [ mdiener21 ]
+  * [5734ab] move _ext into newdocs
+  * [0955a2] added _ext files
+  * [275159] remove api.txt problem, added  todo extension sphinx
+
+  [ Barbara ]
+  * [e08ce3] modify conf.py
+  * [7fe55e] modified index
+
+  [ root ]
+  * [a3184d] add index
+  * [c81973] add folder contribute
+  * [ef8a9b] add files
+  * [e33305] changes
+  * [614997] deleted
+  * [3ca23a] deleted
+  * [f13b11] delete
+  * [35bae7] deleted
+  * [26de00] deleted
+  * [60a1f3] deleted
+  * [cdfc42] modify
+  * [943d5f] modify
+  * [c3123b] modify
+  * [12fc5d] modify
+  * [8ece91] modify
+  * [f84aa6] modify
+  * [21b9fd] modify
+  * [edbd6c] modified
+
+  [ Barbara ]
+  * [4976e9] deleted
+
+  [ root ]
+  * [a78160] modified
+  * [395c97] modified
+
+  [ Barbara ]
+  * [0eaa6d] deleted
+
+  [ root ]
+  * [71a050] modified
+  * [77925a] modified
+
+  [ mdiener21 ]
+  * [cea114] lots of fixes to toc  doctree errors and warnings, text corrections and more
+  * [9b1b3c] remove empty folder moreinfo in tutorial users with new link to organizational how to contribute
+
+  [ Simone Dalmasso ]
+  * [cf3b27] add the alternative path to raty
+
+  [ capooti ]
+  * [70cc24] Added some more static files, generated by paver update_static, to .gitignore.
+
+  [ Simone Dalmasso ]
+  * [a6b342] put rate stars even if there are less that 5 items
+
+  [ capooti ]
+  * [8ab588] This fixes #975. It avoids that a new instance of an existing profile external to GeoNode is created after saving again the form.
+
+  [ Simone Dalmasso ]
+  * [d6b89e] rate existing in in any case, avoids possible unrated items
+
+  [ capooti ]
+  * [1bb6fc] Fixed the profile about item template.
+
+  [ mdiener21 ]
+  * [b1119b] added guidelines how to write documentation and about
+  * [a85ead] lots of index toctree corrections and links within the docs corrected
+
+  [ capooti ]
+  * [8a8584] Remove the 'Who can edit this data?' div if in the upload are there are only rasters. Refs #603.
+  * [5f8e52] The select user ajax view now search, with the username, the individual and organization name as well.
+
+  [ mdiener21 ]
+  * [70b6a1] removed .idea files
+  * [658182] fixed remaining warnings duplicate lables rst errors
+
+  [ Jeffrey Johnson ]
+  * [f4eaa5] some rearrange/cleanup
+  * [575979] Moving things around back to normal docs dir
+  * [451ad9] Update version in conf.py
+  * [87fca3] remove old docs
+  * [32ec47] remove errant new_docs in master
+  * [5e5d76] clean add of old docs from master
+  * [26435c] Removing _ext (not used here)
+  * [7d3d6d] Moving docs stuff around
+  * [54f777] Moving more docs stuff around
+  * [193470] Remove .idea
+  * [ef48d6] Move errant local_settings.py to local_settings.py.sample
+  * [11e7c3] small docs changes
+
+  [ capooti ]
+  * [498c34] Slightly improved some admin pages.
+
+  [ Christian Spanring ]
+  * [582fd5] re-introduces jquery raty to static css and js assets. resolves #1073
+
+  [ Jeffrey Johnson ]
+  * [95a8c6] removing duplicate rst docs
+  * [8b54b9] Move docs_old under old dirs in docs tree
+  * [181185] move stuff out of docs/organizational/old
+  * [b43e2b] move things out of docs/tutorials/admin/old
+  * [166868] edits to docs/index.txt
+  * [7f7832] edits to docs/index.txt
+  * [47795b] More updates to index.html
+  * [0362be] Remove doc path from tutorials/index
+  * [b11303] minor edit to docs/index.txt
+  * [3cd338] Moving more stuff around and some edits
+  * [cce362] More docs changes
+  * [292daf] Remove duplicate overview
+  * [ca5a04] remove section about data for users workshop
+  * [f41840] more small docs tweaks
+  * [168b2b] more docs tweaks to get rid of warnings etc
+  * [318461] Fix failing test
+  * [9c4ed5] Finish fixing test
+  * [bf343d] Add javascript to reference/index.txt
+  * [6e3236] Remove _templates from workshops
+  * [c88e0d] Initial i18n setup for docs
+  * [dda7bd] Update spanish from transifex
+  * [1b2694] Update after makemessages
+  * [8549d0] Update from transifex
+  * [739cbd] Update after compilemessages
+  * [ad92f7] Small change in russian from transifex
+  * [ec5dfb] Further work on docs i18n setup
+  * [f82049] Initial add docs i18n
+  * [5d244e] add docs/i18n/pot/.doctrees/ to .gitignore
+  * [21a02b] Remove pot dir from tree
+  * [b0dc14] adding zh_CN to docs i18n
+  * [a626bc] Update es docs from transifex
+
+  [ capooti ]
+  * [422a64] Updated README file with instructions to build the documentation.
+
+  [ Christian Spanring ]
+  * [f7ca71] updates jquery raty depency to version 2.5.2
+  * [55f406] change to non-minified version of jquery.ajaxQueue in gruntfile
+
+  [ Tyler Garner ]
+  * [7003bc] Fixes issue #1086.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 05 Sep 2013 15:21:23 +0000
+
+geonode (2.0.0+beta52) precise; urgency=high
+
+  * [9ed9c9] Fixed typo in DATASTORE retrieval
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Sat, 31 Aug 2013 01:50:54 +0000
+
+geonode (2.0.0+beta51) precise; urgency=high
+
+  * [2a5371] Cosmetic fixes in layer upload page
+  * [466e58] Added animaget overlay from jquery ui progress bar
+  * [c099da] Added jquery-ui.css to .gitignore
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 30 Aug 2013 21:52:26 +0000
+
+geonode (2.0.0+beta50) precise; urgency=high
+
+  [ Tyler Garner ]
+  * [39f4ea] Updated local_settings.py samples.
+
+  [ Ariel Nunez ]
+  * [021281] Disable GEOGIT by default
+  * [d521f9] Improved handling of unicode files with non ascii characters. refs #1017
+  * [40aa92] Added changelog commit to publish paver task
+  * [8348a8] Updated changelog
+  * [735142] Added better error message for non ascii encoding.\nThis only works in the development server and does not seem to work in apache
+  * [f35f34] Added missing quotation mark in pavement.py
+  * [9cca0d] Removed mention of 2.0b50
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 30 Aug 2013 21:28:39 +0000
+
+geonode (2.0.0+beta49) precise; urgency=high
+
+  [ vdeparday ]
+  * [e57c92] Create /updatelayers hook, reformat output of gs_slurp to avoid code duplication
+
+  [ Simone Dalmasso ]
+  * [0400c0] use another way to check if the datastore is enabled in layer_edit_check
+
+  [ capooti ]
+  * [e16958] Now paver will install GeoNode with Python 2.6 too.
+  * [e04557] Added the basic instructions to run tests after installing GeoNode.
+
+  [ vdeparday ]
+  * [91a382] Modify updatelayers command version to match the new output of gs_slurp
+  * [d5b17f] Require to be superuser to run updatelayers
+
+  [ Tyler Garner ]
+  * [d850b8] Created a OGC_Servers_Handler and  OGC_Server class to make dealing with OGC Server settings less painful.
+
+  [ Ariel Nunez ]
+  * [50cbce] Updated .gitignore
+  * [af7339] Updated OGC_SERVER settings in local_settings.py
+  * [da1a91] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 30 Aug 2013 20:22:53 +0000
+
+geonode (2.0.0+beta48) precise; urgency=high
+
+  * [ce0b6a] Harmonized source and production in gruntfile
+  * [145e11] Updated changelog
+  * [84fe76] Updated minified javascript to include jqueryui
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 30 Aug 2013 02:19:49 +0000
+
+geonode (2.0.0+beta47) precise; urgency=high
+
+  * [3be4ed] Updated German, Spanish and Italian translations
+  * [284eed] Added some portuguese translations
+  * [962acf] Updated translations
+  * [1be776] Removed files that are automatically created and were ignored before
+  * [6bbf9d] Added minified files to the repository
+  * [1a5e6a] Added ajax progress to gruntfile
+  * [8b1830] Updated assets.min.js
+  * [d2d6e6] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 30 Aug 2013 01:05:13 +0000
+
+geonode (2.0.0+beta46) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [3b9f2e] add basic charset choice to the upload form
+  * [2d982e] handle charset on layer save
+
+  [ Ariel Nunez ]
+  * [6daa73] Added charset option to create_featurestore
+  * [12d4c0] Added charset encoding to save method
+
+  [ b-angerer ]
+  * [762f09] Update AUTHORS
+
+  [ Ian Schneider ]
+  * [674fd5] remove curly dangling bracket
+
+  [ Tyler Garner ]
+  * [361300] Encode strings that may receive non-ascii characters to utf-8.
+
+  [ Ariel Nunez ]
+  * [6ee099] Get charset from upload form.
+  * [c33428] Fixed merge conflict
+  * [221bee] Added russian .po
+  * [754749] Added missing .mo files
+  * [ee0572] Added DEBUG_STATIC=False to default settings
+  * [b8ff7f] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 29 Aug 2013 22:10:57 +0000
+
+geonode (2.0.0+beta45) precise; urgency=high
+
+  [ Jeffrey Johnson ]
+  * [64b9b9] Initial work on progress in upload
+  * [8f3637] More work to make upload progress work with rest based uploads
+  * [1aeb6f] Update javascript dependencies
+  * [7788ba] Rework progress function
+  * [209f3d] Adding ajax queue
+  * [b44d3f] Adding ajax queue to base template in debug
+  * [bc21ca] Use ajaxQueue in layer upload
+  * [fd4435] Fix polling setup
+
+  [ Michael Diener ]
+  * [162b3e] added Michael Diener to authors
+
+  [ Tyler Garner ]
+  * [42fac6] Updated acls and resolve_user functions to use the user's profile setting.
+
+  [ Ariel Nunez ]
+  * [b1aba8] Updated changelog
+  * [955c8b] Updated geoserver url in local_settings
+  * [4c6c47] Updated compiled libs
+  * [dcb1b9] Updated settings and local_settings to set DEBUG_STATIC to False
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 29 Aug 2013 12:19:19 +0000
+
+geonode (2.0.0+beta42) precise; urgency=high
+
+  [ capooti ]
+  * [f8dc5e] Moved resourcebase_info_panel.html to its proper path.
+
+  [ Simone Dalmasso ]
+  * [27c527] use just 'postgis' instead of the full engine in _create_db_featurestore
+
+  [ capooti ]
+  * [e3a4a9] Fixes several broken metadata attributes in layer info page.
+
+  [ Ariel Nunez ]
+  * [d9c20e] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 28 Aug 2013 12:37:54 +0000
+
+geonode (2.0.0+beta41) precise; urgency=high
+
+  [ Ariel Nunez ]
+  * [1f303c] Updated changelog
+
+  [ Tyler Garner ]
+  * [805bdb] Reverted previous changes that were unnecessary.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 28 Aug 2013 02:35:20 +0000
+
+geonode (2.0.0+beta40) precise; urgency=high
+
+  [ Tyler Garner ]
+  * [8fe926] Fixes to make both the rest and importers work again.
+
+  [ Ariel Nunez ]
+  * [433dd6] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 27 Aug 2013 21:56:20 +0000
+
+geonode (2.0.0+beta39) precise; urgency=high
+
+  [ Ian Schneider ]
+  * [a0209e] follow up to c4dd8d9e, fix slop and add test
+
+  [ Tyler Garner ]
+  * [1387ab] Updated the GEOGIT_ENABLED and TIME_ENABLED items in resource_urls to use the UPLOADER setting dict.
+
+  [ Matthew Hanson ]
+  * [a3c732] fixed bug with datastore upload
+
+  [ Ariel Nunez ]
+  * [5d610e] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 27 Aug 2013 19:05:41 +0000
+
+geonode (2.0.0+beta38) precise; urgency=high
+
+  * [6bf2f6] Fixed references to user and password in geoserver helpers
+  * [d0f3c4] Comment out delete_from_postgis because it was part of a try/except block that was too general
+  * [7553c4] Updated changelog
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 27 Aug 2013 16:00:08 +0000
+
+geonode (2.0.0+beta37) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [45ee45] indent with spaces in pavement
+  * [13c80d] add missing settings in utils
+  * [70fd79] read the missing indentation
+
+  [ Ariel Nunez ]
+  * [5dc0f1] Updated changelog
+  * [a8ba91] Potential fixes for the missing thumbnails problem
+
+  [ Tyler Garner ]
+  * [ca9bb3] Fixes _ASYNC_UPLOAD function to work with new settings.
+
+  [ Ariel Nunez ]
+  * [2f828a] Enable saving shapefiles to postgis by default in packages, refs #1035
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 27 Aug 2013 14:40:27 +0000
+
 geonode (2.0.0+beta35) precise; urgency=high
 
   * [a2d5fb] Added thumbnail creation fix to install.sh

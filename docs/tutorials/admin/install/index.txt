@@ -1,0 +1,13 @@
+.. _install:
+
+Installing GeoNode
+==================
+
+This section will guide you through the steps necessary to install GeoNode from packages, manually or in development mode.
+
+.. toctree::
+   :maxdepth: 2
+
+   quick_install
+   complete_install
+   manual_install/index

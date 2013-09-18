@@ -1,0 +1,59 @@
+.. _ogc:
+
+OGC Web Services
+================
+
+Overview
+--------
+
+At its core, GeoNode provides a standards-based platform to enable integrated, programmatic access to your data via OGC Web Services, which are essential building blocks required to deploy an OGC-compliant spatial data infrastructure (SDI).  These Web Services enable discovery, visualization and access your data, all without necessarily having to interact directly with your GeoNode website, look and feel/UI, etc.
+
+OGC Web Services:
+
+- operate over HTTP (GET, POST)
+- provide a formalized, accepted API
+- provide formalized, accepted formats
+
+The OGC Web Services provided by GeoNode have a mature implementation base and provide an multi-application approach to integration.  This means, as a developer, there are already numerous off-the-shelf GIS packages, tools and webapps (proprietary, free, open source) that natively support OGC Web Services.
+
+There are numerous ways to leverage OGC Web Services from GeoNode:
+
+- desktop GIS
+- web-based application
+- client libraries / toolkits
+- custom development
+
+Your GeoNode lists OGC Web Services and their URLs at ``http://localhost:8000/developer``.  You can use these APIs directly to interact with your GeoNode.
+
+The following sections briefly describe the OGC Web Services provided by GeoNode.
+
+Web Map Service (WMS)
+---------------------
+
+WMS provides an API to retrieve map images (PNG, JPEG, etc.) of geospatial data.  WMS is suitable for visualization and when access to raw data is not a requirement.
+
+WFS
+---
+
+WFS provides provides an API to retrieve raw geospatial vector data directly.  WFS is suitable for direct query and access to geographic features.
+
+WCS
+---
+
+WCS provides provides an API to retrieve raw geospatial raster data directly.  WCS is suitable for direct access to satellite imagery, DEMs, etc.
+
+CSW
+---
+
+CSW provides an interface to publish and search metadata (data about data).  CSW is suitable for cataloguing geospatial data and making it discoverable to enable visualization and access.
+
+WMTS
+----
+
+WMTS provides an API to retrive pre-rendered map tiles of geospatial data.
+
+WMC
+---
+
+WMC provides a format to save and load map views and application state via XML.  This allows, for example, a user to save their web mapping application in WMC and share it with others, viewing the same content.
+

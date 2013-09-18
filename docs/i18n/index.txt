@@ -1,0 +1,30 @@
+========================================
+How to translate GeoNode's Documentation
+========================================
+
+1. As a firt step, generate all of the needed .pot files (any time the master documentation changes)::
+
+    cd docs
+    sphinx-build -b gettext . i18n/pot
+  
+2. Run the pre_translate.sh script to generate/merge (update) all of the .po files for each language::
+
+    $ sh i18n/scripts/pre_translate.sh
+  
+3. Do a pull from transifex to get latest translations::
+
+    $ tx pull -a
+    
+3. Now edit the .po files you need, make the translations and then run the post_translate.sh script::
+
+    $ vi i18n/it/LC_MESSAGES/index.po
+    $ sh i18n/scripts/post_translate.sh
+    
+4. Do a push to transifex to update translations::
+
+    $ tx push -s -t
+  
+4. Finally build your html or pdf, and you should get the localized versions as well::
+
+    $ make html LANG=it
+    

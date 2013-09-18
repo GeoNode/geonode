@@ -36,8 +36,8 @@ try:
 except ImportError:
     from paver.easy import pushd
 
-assert sys.version_info >= (2, 7), \
-    SystemError("GeoNode Build requires python 2.7 or better")
+assert sys.version_info >= (2, 6), \
+    SystemError("GeoNode Build requires python 2.6 or better")
 
 
 def grab(src, dest, name):
@@ -84,8 +84,8 @@ def setup_geoserver(options):
             webapp_dir.makedirs()
 
         print 'extracting geoserver'
-        with zipfile.ZipFile(geoserver_bin, "r") as z:
-            z.extractall(webapp_dir)
+        z = zipfile.ZipFile(geoserver_bin, "r")
+        z.extractall(webapp_dir)
 
         _install_data_dir()
 
@@ -101,8 +101,8 @@ def _install_data_dir():
 
     if os.path.exists(data_dir_zip):
         print 'extracting datadir'
-        with zipfile.ZipFile(data_dir_zip, "r") as z:
-            z.extractall(geoserver_dir)
+        z = zipfile.ZipFile(data_dir_zip, "r")
+        z.extractall(geoserver_dir)
 
         config = geoserver_dir / 'data/security/auth/geonodeAuthProvider/config.xml'
         with open(config) as f:
@@ -297,7 +297,7 @@ def start_geoserver(options):
     data_dir = path('geoserver/data').abspath()
     web_app = path('geoserver/geoserver').abspath()
     log_file = path('geoserver/jetty.log').abspath()
-
+    config = path('scripts/misc/jetty-runner.xml').abspath()
     # @todo - we should not have set workdir to the datadir but a bug in geoserver
     # prevents geonode security from initializing correctly otherwise
     with pushd(data_dir):
@@ -307,7 +307,7 @@ def start_geoserver(options):
             ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
             ' -jar %(jetty_runner)s'
             ' --log %(log_file)s'
-            ' --path /geoserver %(web_app)s'
+            ' %(config)s'
             ' > /dev/null &' % locals()
           ))
 
@@ -492,10 +492,13 @@ def publish():
     })
 
     version, simple_version = versions()
+    sh('git add package/debian/changelog')
+    sh('git commit -m "Updated changelog for version %s"' % version)
     sh('git tag %s' % version)
     sh('git push origin %s' % version)
     sh('git tag debian/%s' % simple_version)
     sh('git push origin debian/%s' % simple_version)
+    sh('git push origin master')
     sh('python setup.py sdist upload')
 
 

@@ -1,0 +1,42 @@
+.. _comm_bylaws:
+
+================
+Community Bylaws
+================
+
+Committers
+----------
+
+The GeoNode community is divided into two groups - users and committers.  There are no requirements or responsibilities to be a GeoNode user.  To be a committer, you must be voted in by the existing committers (2 +1's and no -1's; a committer must initiate the vote.)  Non-committers are encouraged to engage in discussions on the mailing lists, code review, and issue reports to qualify them to be voted in as committers.  Committers (or PRIMARY AUTHORS) can be found in the [AUTHORS file](https://github.com/GeoNode/geonode/blob/dev/AUTHORS)
+ 
+  
+Committers must:
+  * make useful contributions to the project in the form of commits at least once in a 6-month period, else they fall back to "committer emeritus" status.  A committer emeritus has no special involvement in the project, but may request committer privileges from the current body of committers.
+  * review code contributions, which may come from other committers or from users.  Users must submit code externally to the main GeoNode repository (ie as a patch or a github pull request); committers can do this as well if they see review as particularly important (for example, a patch might affect a particularly crucial component of GeoNode, or a committer might be working in a part of the code that he is relatively unfamiliar with.)   A review should result in either (a) instructions on how to bring the code to a more acceptable condition or (b) merging the changes in and notifying the submitter that this has been done.
+  * Committers also have the option to "self-review" and commit changes directly.  It is at the discretion of individual committers when this is appropriate, but it should be rare - we encourage committers to only use this option when they deem a change extremely safe.
+
+GeoNode Improvement Proposals (GNIPS)
+-------------------------------------
+
+GNIPS_ If a committer thinks a proposed change to the software is particularly destabilizing or far-reaching, that committer can upgrade the ticket for that change to a GeoNode Improvement Proposal (GNIP).  GNIP tickets are an opportunity for committers and users alike to provide feedback about the design of a proposed feature or architectural change.  The proposal should be iteratively edited in response to community feedback.
+
+To upgrade an issue to a GNIP, an active committer should give the ticket the 'GNIP' label in the issue tracker, and announce the issue on the developer mailing list.
+
+If a ticket has a GNIP label, its patch can't be committed unless it also has the 'Approved' label.  To be approved, it must pass community vote (see below).
+
+When the GNIP is announced, other committers should review and provide feedback in the issue comments.  Feedback should take the form of:
+  * +1 (with optional comment)
+  * -1, with mandatory rationale and suggestion for a better approach.  The suggestion may be omitted if the objection doesn't have a straightforward solution - we don't want to withhold feedback just because problems with a proposal are hard to solve.
+
+After receiving feedback, the proposal's author should discuss the feedback on the list if necessary and adjust the proposal in response.
+
+A proposal can be Approved when there are 3 +1 responses (including the author's implicit approval) and no -1 responses from committers; and no feedback is offered in 3 days.  If a proposal fails to receive multiple +1 responses within 5 days of the request for feedback it is rejected and the issue should be **closed** (but the author is free to draft similar proposals in the future.)  Any committer may reverse or withdraw votes on a proposal until the proposal is closed.
+
+If a user would like to submit a GNIP, they are welcome to write it as a ticket but should find an active committer willing to promote it to GNIP status.
+
+Project Steering Committee
+--------------------------
+
+In the event that a revision to these bylaws becomes necessary, authority for that decision lies with the currently presiding Project Steering Committee (PSC).  The PSC at any time is made up of the top 7 committers over the past 365 days, by number of commits.
+
+.. _GNIPS: https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals
