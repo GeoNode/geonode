@@ -1,2 +1,6 @@
 #!/bin/bash
-django-admin $@ --settings=geonode.settings
+if hash django-admin 2>/dev/null; then
+    django-admin $@ --settings=geonode.settings
+else
+    django-admin.py $@ --settings=geonode.settings
+fi
