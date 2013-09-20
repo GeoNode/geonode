@@ -238,7 +238,7 @@ def delete_from_postgis(resource_name):
     finally:
         conn.close()
 
-def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None, store=None, filter=None):
+def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None, store=None, filter=None, skip_unadvertised=False):
     """Configure the layers available in GeoServer in GeoNode.
 
        It returns a list of dictionaries with the name of the layer,
@@ -261,9 +261,10 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
     if filter:
         resources = [k for k in resources if filter in k.name]
 
-    # filter out layers explicitly disabled by geoserver
+    # filter out layers depending on enabled, advertised status:
     resources = [k for k in resources if k.enabled == "true"]
-   
+    if skip_unadvertised: resources = [k for k in resources if k.advertised == "true" or k.advertised == None]
+    
     # TODO: Should we do something with these?
     # i.e. look for matching layers in GeoNode and also disable? 
     disabled_resources = [k for k in resources if k.enabled == "false"]
