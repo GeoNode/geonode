@@ -24,10 +24,6 @@ install:
 	mkdir -p $(CURDIR)/debian/geoserver-geonode/etc/tomcat7/Catalina/localhost
 	echo '<Context path="/geoserver" docBase="/usr/share/geoserver/" />'  >> $(CURDIR)/debian/geoserver-geonode/etc/tomcat7/Catalina/localhost/geoserver.xml
 
-	# copy geonode-ext.jar into opengeo suite geoserver
-	mkdir -p $(CURDIR)/debian/geoserver-geonode-suite/usr/share/opengeo-suite/geoserver/WEB-INF/lib/
-	unzip $(CURDIR)/target/geonode-geoserver-ext-0.3-geoserver-plugin.zip -d $(CURDIR)/debian/geoserver-geonode-suite/usr/share/opengeo-suite/geoserver/WEB-INF/lib/
-
 binary-indep: install
 
 binary-arch: install
