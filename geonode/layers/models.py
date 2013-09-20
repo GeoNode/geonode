@@ -331,7 +331,6 @@ def geoserver_pre_save(instance, sender, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    logger.debug("geoserver_pre_save: pre-gs_catalog.get_resource (first), instance name: %s", instance.name)
     url = ogc_server_settings.rest
     try:
         gs_catalog = Catalog(url, _user, _password)
@@ -411,7 +410,6 @@ def geoserver_post_save(instance, sender, **kwargs):
        The way keywords are implemented require the layer
        to be saved to the database before accessing them.
     """
-    logger.debug("geoserver_post_save: pre-gs_catalog.get_resource, instance name: %s", instance.name)
     url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
 
     try:
