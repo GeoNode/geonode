@@ -305,9 +305,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
                 "owner": owner,
                 "uuid": str(uuid.uuid4())
             })
-            logger.debug("helpers.gs_slurp: pre-layer.save(), layer name: %s", name)
             layer.save()
-            logger.debug("helpers.gs_slurp: post-layer.save(), layer name: %s", name)
 
         except Exception, e:
             if ignore_errors:
