@@ -158,7 +158,7 @@ class Layer(ResourceBase):
     @property
     def store_type(self):
         cat = Layer.objects.gs_catalog
-        res= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
+        res= cat.get_resource(self.name, store=self.store, workspace=self.workspace)
         res.store.fetch()
         return res.store.dom.find('type').text
 
