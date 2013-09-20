@@ -152,6 +152,21 @@
         <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
         <a href="{% url "new_map" %}?copy={{ map.id }}" class="btn btn-large">{% trans "Create a New Map" %}</a>
     </div>
+
+    {% if map.is_public and can_edit_map or map.layer_group %}
+    <div class='well layer-group'>
+      <h2>{% trans "Map WMS" %}</h2>
+      <dl>{% if map.layer_group %}
+        <dt>WMS layer group for local map layers:</dt>
+        <dd><em>{{ map.layer_group.name }}</em> (on <a href="{{ ows }}?request=GetCapabilities">local OWS</a>)</dd>
+      {% endif %}</dl>
+      {% if can_edit_map %}
+      <p>{% trans "Publish local map layers as WMS layer group" %}</p>
+      <a href="{%url "map_wms" map.id %}" class="btn btn-large">{% trans "Publish Map WMS" %}</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
     <div class="well last">
     <h2>{% trans "About" %}</h2>
     <p>{% trans "Map Owner" %}</p>
@@ -186,6 +201,46 @@
      path: "{{ STATIC_URL }}lib/img/"
    });
    $("#rate-map").raty();
+
+  {% verbatim %}
+  // Publish layer group
+  // TODO: this should really not be inside a script tag...
+  var $wmsBtn = $(".layer-group .btn"),
+      layerGroupElTpl;
+
+  if ($wmsBtn.length > 0) {
+
+    $wmsBtn.on("click", function(event) {
+      event.preventDefault();
+
+      $.ajax({
+        type: "PUT",
+        url: $wmsBtn.attr("href")
+      })
+
+        .done(function(data) {
+          layerGroupElTpl = "<dt>WMS layer group for local map layers:</dt> \
+            <dd><em>{{layerGroupName}}</em> (on <a href='{{ows}}?request=GetCapabilities'>local OWS</a>)</dd>";
+          $.each(data, function(key, value) {
+            // client-side template hack
+            layerGroupElTpl = layerGroupElTpl.replace("{{"+ key + "}}", value);
+          });
+        })
+
+        .fail(function(){
+          layerGroupElTpl = "<dt>Error:</dt> \
+            <dd>Layer group could not be created.</dd>";
+        })
+
+        .always(function(){
+          $(".layer-group dl").html(layerGroupElTpl);
+        });
+
+    });
+  };
+  {% endverbatim %}
+
+
  });
 
  (function() {
