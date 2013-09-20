@@ -158,9 +158,7 @@ class Layer(ResourceBase):
     @property
     def store_type(self):
         cat = Layer.objects.gs_catalog
-        gs_resources = cat.get_resources(store=self.store, workspace=self.workspace)
-        for resources in gs_resources:
-            if resources.title == self.name: res = resources
+        res= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
         res.store.fetch()
         return res.store.dom.find('type').text
 
@@ -333,12 +331,11 @@ def geoserver_pre_save(instance, sender, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
+    logger.debug("geoserver_pre_save: pre-gs_catalog.get_resource (first), instance name: %s", instance.name)
     url = ogc_server_settings.rest
     try:
         gs_catalog = Catalog(url, _user, _password)
-        gs_resources = gs_catalog.get_resources(store=instance.store, workspace=instance.workspace)
-        for res in gs_resources:
-            if res.title == instance.name: gs_resource = res
+        gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
     except (EnvironmentError, FailedRequestError) as e:
         gs_resource = None
         msg = ('Could not connect to geoserver at "%s"'
@@ -391,9 +388,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
        * Download links (WMS, WCS or WFS and KML)
        * Styles (SLD)
     """
-    gs_resources = gs_catalog.get_resources(store=instance.store, workspace=instance.workspace)
-    for res in gs_resources:
-        if res.title == instance.name: gs_resource = res
+    gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
 
     bbox = gs_resource.latlon_bbox
 
@@ -416,13 +411,12 @@ def geoserver_post_save(instance, sender, **kwargs):
        The way keywords are implemented require the layer
        to be saved to the database before accessing them.
     """
+    logger.debug("geoserver_post_save: pre-gs_catalog.get_resource, instance name: %s", instance.name)
     url = "%srest" % settings.OGC_SERVER['default']['LOCATION']
 
     try:
         gs_catalog = Catalog(url, _user, _password)
-        gs_resources = gs_catalog.get_resources(store=instance.store, workspace=instance.workspace)
-        for res in gs_resources:
-            if res.title == instance.name: gs_resource = res
+        gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
     except (FailedRequestError, EnvironmentError) as e:
         msg = ('Could not connect to geoserver at "%s"'
                'to save information for layer "%s"' % (
