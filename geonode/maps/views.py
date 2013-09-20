@@ -26,7 +26,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
@@ -122,6 +122,7 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         'layers': layers,
         'permissions_json': json.dumps(_perms_info(map_obj, MAP_LEV_NAMES)),
         "documents": get_related_documents(map_obj),
+        'ows': getattr(ogc_server_settings, 'ows', ''),
     }))
 
 
@@ -458,6 +459,38 @@ def map_wmc(request, mapid, template="maps/wmc.xml"):
         'map': mapObject,
         'siteurl': settings.SITEURL,
     }), mimetype='text/xml')
+
+def map_wms(request, mapid):
+    """
+    Publish local map layers as group layer in local OWS.
+
+    /maps/:id/wms
+
+    GET: return endpoint information for group layer,
+    PUT: update existing or create new group layer.
+    """
+
+    mapObject = _resolve_map(request, mapid, 'maps.view_map')
+
+    if request.method == 'PUT':
+        try:
+            layerGroupName = mapObject.publish_layer_group()
+            response = dict(
+                layerGroupName=layerGroupName,
+                ows=getattr(ogc_server_settings, 'ows', ''),
+            )
+            return HttpResponse(json.dumps(response), mimetype="application/json")
+        except FailedRequestError:
+            return HttpResponseServerError()
+        
+    if request.method == 'GET':
+        response = dict(
+            layerGroupName=getattr(mapObject.layer_group, 'name', ''),
+            ows=getattr(ogc_server_settings, 'ows', ''),
+        )
+        return HttpResponse(json.dumps(response), mimetype="application/json")
+
+    return HttpResponseNotAllowed(['PUT', 'GET'])
 
 #### MAPS PERMISSIONS ####
 
