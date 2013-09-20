@@ -1,3 +1,25 @@
+geonode (2.0.0+beta61) precise; urgency=high
+
+  [ mwengren ]
+  * [d1c9ca] Added an option to updatelayers to check for 'advertised' status of GeoServer layers and skip if false.  Requires modified gsconfig.py
+  * [65d800] Change to --skip-unadvertised filter to accept 'None' values: in some cases there will be no 'advertised' property in REST API representations
+  * [30f09e] Change --skip-unadvertised option help msg
+
+  [ Christian Spanring ]
+  * [a54a7d] adds group layer publishing for local map layers to maps
+  * [931303] adds grunt watch for CSS development
+
+  [ Micah Wengren ]
+  * [c4f7a9] Change geoserver_post_save to use correct url reference
+  * [3caae7] Bump gsconfig version requirement to 0.6.4
+
+  [ Tyler Garner ]
+  * [8497ef] Fixes issue 951.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 20 Sep 2013 19:01:38 +0000
+
 geonode (2.0.0+beta60) precise; urgency=high
 
   [ Ariel Nunez ]
