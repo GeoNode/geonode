@@ -3,9 +3,9 @@
 Fully manual installation
 =========================
 
-The manual installation is intended for who is confortable with Linux system administration. This can be done with every GeoNode release, both official and custom made.
+The manual installation is intended for who are confortable with Linux system administration. This can be done with every GeoNode release, both official and custom made.
 It’s suitable for servers that already have some of the components installed such as Tomcat, Apache with virtualhosts already configured.
-If the server has a fresh Ubuntu installation it’s strongly suggested instead to adjust the spackage/support/config-ubuntu.sh script to match the desired installation paths.
+If the server has a fresh Ubuntu installation it’s strongly suggested instead to adjust the package/support/config-ubuntu.sh script to match the desired installation paths.
 
 
 Get the code and install it in the virtuelnv::
