@@ -1,3 +1,46 @@
+geonode (2.0.0+beta60) precise; urgency=high
+
+  [ Ariel Nunez ]
+  * [ab44b2] Added link to ticket in django-admin workaround
+
+  [ Simone Dalmasso ]
+  * [9f8ed9] make geonode.binary use the available django-admin
+  * [1f89b6] use the geonode binary in the install script
+
+  [ vdeparday ]
+  * [8bbfb6] Moving most of the integration section to the relevant user and admin sections; fixes #1163
+
+  [ Ariel Nunez ]
+  * [081ff0] Added jetty speedups from #1071, thanks Ian.
+  * [950e26] Bumped version to 0.6.4
+
+  [ Michael Weisman ]
+  * [946bf2] Don't hardcode git branch and ppa
+
+  [ Ariel Núñez ]
+  * [1c6182] Update AUTHORS
+
+  [ Michael Weisman ]
+  * [93887b] Check out  on geoserver-ext not geonode
+
+  [ Jeffrey Johnson ]
+  * [5662bd] More work on docs
+
+  [ Ariel Nunez ]
+  * [0eb192] Remove trailing slash in ALLOWED_HOSTS via updateip, fixes #1184
+
+  [ Michael Weisman ]
+  * [23408b] Stop building opengeo suite geondoe ext
+  * [6a38e8] Build wars
+
+  [ Simone Dalmasso ]
+  * [4c455d] fix config file install
+
+  [ Ariel Nunez ]
+  * [876cca] Updated gsconfig to 0.6.6
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 20 Sep 2013 17:34:34 +0000
+
 geonode (2.0.0+beta59) precise; urgency=high
 
   [ Vivien Deparday ]
