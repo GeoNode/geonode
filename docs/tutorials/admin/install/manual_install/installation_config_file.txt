@@ -15,8 +15,9 @@ The package comes with a semi-automatic installer, located in the unzipped direc
 The installer script (located in package/support/config-ubuntu.sh) has a configuration file associated with it which allows you to provide the details of your installation, such as where your webserver looks for documents.
 
 Once edited (if necessary) the config file running the following command will install GeoNode::
-
-    $ sudo package/install.sh package/support/config-ubuntu.sh
+    
+    $ cd package
+    $ sudo ./install.sh support/config-ubuntu.sh
     $ sudo cp downloaded/geoserver.war /var/lib/tomcat7/webapps
     $ sudo geonode-updateip youraddress
     $ geonode createsuperuser
