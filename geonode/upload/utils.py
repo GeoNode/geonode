@@ -26,6 +26,7 @@ from django.conf import settings
 
 from geonode.geoserver.uploader.uploader import Uploader
 from geonode.layers.models import Layer
+from geonode.upload.files import _clean_string
 from geonode.utils import _user, _password
 from geoserver.catalog import FailedRequestError
 from geonode.utils import ogc_server_settings
@@ -83,7 +84,6 @@ def rename_and_prepare(base_file):
     Additionally, if a SLD file is present, extract this.
     """
     name, ext = os.path.splitext(os.path.basename(base_file))
-    xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
     dirname = os.path.dirname(base_file)
     if ext == ".zip":
         zf = ZipFile(base_file, 'r')
@@ -91,7 +91,7 @@ def rename_and_prepare(base_file):
         main_file = None
         for f in zf.namelist():
             name, ext = os.path.splitext(os.path.basename(f))
-            if xml_unsafe.search(name):
+            if _clean_string(name) != name:
                 rename = True
             # @todo other files - need to unify extension handling somewhere
             if ext.lower() == '.shp':
@@ -115,13 +115,13 @@ def rename_and_prepare(base_file):
             base_file = os.path.join(dirname, main_file)
 
     for f in os.listdir(dirname):
-        safe = xml_unsafe.sub("_", f)
+        safe = _clean_string(f)
         if safe != f:
             os.rename(os.path.join(dirname, f), os.path.join(dirname, safe))
 
     return os.path.join(
         dirname,
-        xml_unsafe.sub('_', os.path.basename(base_file))
+        _clean_string(os.path.basename(base_file))
     )
         
 
