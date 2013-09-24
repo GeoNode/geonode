@@ -116,7 +116,6 @@ class OGC_Servers_Handler(object):
 
         server.setdefault('BACKEND', 'geonode.geoserver')
         server.setdefault('LOCATION', 'http://localhost:8080/geoserver/')
-        server.setdefault('PUBLIC_LOCATION', 'http://localhost:8080/geoserver/')
         server.setdefault('USER', 'admin')
         server.setdefault('PASSWORD', 'geoserver')
         server.setdefault('DATASTORE', str())
