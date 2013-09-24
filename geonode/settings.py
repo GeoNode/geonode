@@ -398,7 +398,7 @@ OGC_SERVER = {
     'default' : {
         'BACKEND' : 'geonode.geoserver',
         'LOCATION' : 'http://localhost:8080/geoserver/',
-        'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',
+        'PUBLIC_LOCATION' : SITEURL + 'geoserver/',
         'USER' : 'admin',
         'PASSWORD' : 'geoserver',
         'MAPFISH_PRINT_ENABLED' : True,
@@ -501,7 +501,7 @@ DEFAULT_MAP_ZOOM = 0
 MAP_BASELAYERS = [{
     "source": {
         "ptype": "gxp_wmscsource",
-        "url": OGC_SERVER['default']['LOCATION'] + "wms",
+        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
         "restUrl": "/gs/rest"
      }
   },{
