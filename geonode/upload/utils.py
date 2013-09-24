@@ -154,7 +154,7 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
             ds = cat.get_store(store_name)
         else:
             logging.info(
-                'Creating target datastore ' % dsname)
+                'Creating target datastore %s' % dsname)
             ds = cat.create_datastore(dsname)
             db = ogc_server_settings.datastore_db
             ds.connection_parameters.update(
