@@ -148,7 +148,7 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
             ds = cat.create_datastore(store_name)
             ds.type = "GeoGIT"
             ds.connection_parameters.update(
-                geogit_repository=store_name,
+                geogit_repository=os.path.join(ogc_server_settings.GEOGIT_DATASTORE_DIR, store_name),
                 create="true")
             cat.save(ds)
             ds = cat.get_store(store_name)

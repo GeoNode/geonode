@@ -98,6 +98,7 @@ class UtilsTests(TestCase):
                     'BACKEND_WRITE_ENABLED': True,
                     'WPS_ENABLED' : False,
                     'DATASTORE': str(),
+                    'GEOGIT_DATASTORE_DIR': str(),
             }
         }
 
