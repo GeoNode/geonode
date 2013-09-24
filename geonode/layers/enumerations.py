@@ -21,6 +21,7 @@
 LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES = [
     'xsd:byte',
     'xsd:decimal',
+    'xsd:double',
     'xsd:int',
     'xsd:integer',
     'xsd:long',
