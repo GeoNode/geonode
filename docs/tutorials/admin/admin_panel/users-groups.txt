@@ -1,8 +1,8 @@
 .. _admin_panel.users-groups:
 
 
-Manage users an groups through the admin panel
-==============================================
+Manage users and groups through the admin panel
+===============================================
 
 The admin section called Auth has the two links to access the Users and Groups
 sections, see figure

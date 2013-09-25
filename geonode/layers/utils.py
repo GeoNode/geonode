@@ -46,7 +46,7 @@ from geonode.layers.metadata import set_metadata
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.base.models import SpatialRepresentationType
 from geonode.utils import ogc_server_settings
-
+from geonode.upload.files import _clean_string
 # Geoserver functionality
 import geoserver
 from geoserver.catalog import FailedRequestError, UploadError
@@ -168,10 +168,11 @@ def get_files(filename):
 
 
 def get_valid_name(layer_name):
-    """Create a brand new name
     """
-    xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
-    name = xml_unsafe.sub("_", layer_name)
+    Create a brand new name
+    """
+
+    name = _clean_string(layer_name)
     proposed_name = name
     count = 1
     while Layer.objects.filter(name=proposed_name).count() > 0:

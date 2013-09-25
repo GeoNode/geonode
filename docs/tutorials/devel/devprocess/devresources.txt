@@ -1,4 +1,0 @@
-.. _devresources:
-
-Development Resources
-=====================
