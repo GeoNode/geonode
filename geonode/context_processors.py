@@ -30,7 +30,7 @@ def resource_urls(request):
 
     return dict(
         STATIC_URL=settings.STATIC_URL,
-        GEOSERVER_BASE_URL=ogc_server_settings.LOCATION,
+        GEOSERVER_BASE_URL=ogc_server_settings.public_url,
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
         REGISTRATION_OPEN=settings.REGISTRATION_OPEN,
         VERSION=get_version(),
