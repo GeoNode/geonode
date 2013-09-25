@@ -11,12 +11,12 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
    intro_admin/index
    prep/index
    install/index
-   manage/index
    production
-   data/index
+   manage/index
    monitor/index
    backup/index
    deploy/index
+   data/index
    admin_panel/index
    commands
    csw
@@ -32,20 +32,14 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 :ref:`prep`
   Learn about preparing an environment for installation of GeoNode
 
-:ref:`quick_installation`
-  Learn how to quickly install GeoNode
-
 :ref:`install`
-  Learn how to do a complete installation of GeoNode
-
-:ref:`manage`
-  Learn how to manage a GeoNode installation 
+  Learn how to install GeoNode 
 
 :ref:`production`
   Learn how to configure GeoNode for production use.
 
-:ref:`data`
-  Learn how to load data into a GeoNode with GeoServer, on the command line or programatically with scripts.
+:ref:`manage`
+  Learn how to manage a GeoNode installation 
 
 :ref:`monitor`
   Learn how to monitor usage and other activity in a GeoNode Installation 
@@ -55,6 +49,9 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 
 :ref:`deploy`
   Review a sample GeoNode project deployment and learn how to create your own
+
+:ref:`data`
+  Learn how to load data into a GeoNode with GeoServer, on the command line or programatically with scripts.
 
 :ref:`admin_panel`
   Manage users and data through the administration panel

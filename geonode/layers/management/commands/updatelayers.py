@@ -34,6 +34,11 @@ class Command(BaseCommand):
             dest='ignore_errors',
             default=False,
             help='Stop after any errors are encountered.'),
+        make_option('--skip-unadvertised',
+            action='store_true',
+            dest='skip_unadvertised',
+            default=False,
+            help='Skip processing unadvertised layers from GeoSever.'),
         make_option('-u', '--user', dest="user", default=None,
             help="Name of the user account which should own the imported layers"),
         make_option('-f', '--filter', dest="filter", default=None,
@@ -46,6 +51,7 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
+        skip_unadvertised = options.get('skip_unadvertised')
         verbosity = int(options.get('verbosity'))
         user = options.get('user')
         owner = get_valid_user(user)
@@ -59,7 +65,7 @@ class Command(BaseCommand):
             console = None
 
         output = gs_slurp(ignore_errors, verbosity=verbosity,
-                owner=owner, console=console, workspace=workspace, store=store, filter=filter)
+                owner=owner, console=console, workspace=workspace, store=store, filter=filter, skip_unadvertised=skip_unadvertised)
 
         if verbosity > 1:
             print "\nDetailed report of failures:"

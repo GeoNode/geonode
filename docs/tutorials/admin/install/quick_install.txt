@@ -69,17 +69,3 @@ http://docs.vagrantup.com/v2/getting-started/index.html
 .. _Virtual Box: http://virtualbox.org
 .. _Vagrant: http://vagrantup.com
 .. _Ubuntu Linux: http://www.ubuntu.com/download
-
-    Status
-    API
-    Training
-    Shop
-    Blog
-    About
-
-    © 2013 GitHub, Inc.
-    Terms
-    Privacy
-    Security
-    Contact
-

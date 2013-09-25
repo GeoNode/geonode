@@ -106,12 +106,22 @@ def _contains_bad_names(file_names):
     xml_unsafe = re.compile(r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)")
     return any([ xml_unsafe.search(f) for f in file_names ])
 
+def _clean_string(str, regex=r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)", replace="_"):
+    """
+    Replaces a string that matches the regex with the replacement.
+    """
+    regex = re.compile(regex)
+
+    if str[0].isdigit():
+        str = replace + str
+
+    return regex.sub(replace, str)
 
 def _rename_files(file_names):
     renamed = []
     for f in file_names:
         dirname, base_name = os.path.split(f)
-        safe = xml_unsafe.sub("_", base_name)
+        safe = _clean_string(base_name)
         if safe != base_name:
             safe = os.path.join(dirname, safe)
             os.rename(f, safe)

@@ -398,6 +398,9 @@ OGC_SERVER = {
     'default' : {
         'BACKEND' : 'geonode.geoserver',
         'LOCATION' : 'http://localhost:8080/geoserver/',
+        # PUBLIC_LOCATION needs to be kept like this because in dev mode
+        # the proxy won't work and the integratin tests will fail
+        # the entire block has to be overridden in the local_settings
         'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',
         'USER' : 'admin',
         'PASSWORD' : 'geoserver',
@@ -501,7 +504,7 @@ DEFAULT_MAP_ZOOM = 0
 MAP_BASELAYERS = [{
     "source": {
         "ptype": "gxp_wmscsource",
-        "url": OGC_SERVER['default']['LOCATION'] + "wms",
+        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
         "restUrl": "/gs/rest"
      }
   },{

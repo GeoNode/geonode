@@ -1,3 +1,99 @@
+geonode (2.0.0+beta63) precise; urgency=high
+
+  [ Tyler Garner ]
+  * [3e55e0] Adds the GEOGIT_DATASTORE_DIR settings variable to specify a default location for geogit stores.
+  * [7707c2] Remove PUBLIC_LOCATION from the OGC_SERVER settings test case.
+
+  [ Ariel Nunez ]
+  * [d36d16] GEOSERVER_BASE_URL should point to the public_url
+
+  [ Simone Dalmasso ]
+  * [70192f] put back the PUBLIC_LOCATION to 8080 for dev mode
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 25 Sep 2013 14:48:33 +0000
+
+geonode (2.0.0+beta62) precise; urgency=high
+
+  [ Tom Kralidis ]
+  * [c2e4ec] add xsd:double (#1128)
+
+  [ Tyler Garner ]
+  * [7c4fc1] Added missing string formatter.
+
+  [ Ariel Nunez ]
+  * [fd3ff1] Fixed location of geoserver in settings.py
+  * [935125] Fixed geoserver url retrieving in local settings
+  * [59e100] Do not set a default for  PUBLIC_LOCATION, instead the code should default to LOCATION if PUBLIC_LOCATION is not set
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 24 Sep 2013 15:43:04 +0000
+
+geonode (2.0.0+beta61) precise; urgency=high
+
+  [ mwengren ]
+  * [d1c9ca] Added an option to updatelayers to check for 'advertised' status of GeoServer layers and skip if false.  Requires modified gsconfig.py
+  * [65d800] Change to --skip-unadvertised filter to accept 'None' values: in some cases there will be no 'advertised' property in REST API representations
+  * [30f09e] Change --skip-unadvertised option help msg
+
+  [ Christian Spanring ]
+  * [a54a7d] adds group layer publishing for local map layers to maps
+  * [931303] adds grunt watch for CSS development
+
+  [ Micah Wengren ]
+  * [c4f7a9] Change geoserver_post_save to use correct url reference
+  * [3caae7] Bump gsconfig version requirement to 0.6.4
+
+  [ Tyler Garner ]
+  * [8497ef] Fixes issue 951.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 20 Sep 2013 19:01:38 +0000
+
+geonode (2.0.0+beta60) precise; urgency=high
+
+  [ Ariel Nunez ]
+  * [ab44b2] Added link to ticket in django-admin workaround
+
+  [ Simone Dalmasso ]
+  * [9f8ed9] make geonode.binary use the available django-admin
+  * [1f89b6] use the geonode binary in the install script
+
+  [ vdeparday ]
+  * [8bbfb6] Moving most of the integration section to the relevant user and admin sections; fixes #1163
+
+  [ Ariel Nunez ]
+  * [081ff0] Added jetty speedups from #1071, thanks Ian.
+  * [950e26] Bumped version to 0.6.4
+
+  [ Michael Weisman ]
+  * [946bf2] Don't hardcode git branch and ppa
+
+  [ Ariel Núñez ]
+  * [1c6182] Update AUTHORS
+
+  [ Michael Weisman ]
+  * [93887b] Check out  on geoserver-ext not geonode
+
+  [ Jeffrey Johnson ]
+  * [5662bd] More work on docs
+
+  [ Ariel Nunez ]
+  * [0eb192] Remove trailing slash in ALLOWED_HOSTS via updateip, fixes #1184
+
+  [ Michael Weisman ]
+  * [23408b] Stop building opengeo suite geondoe ext
+  * [6a38e8] Build wars
+
+  [ Simone Dalmasso ]
+  * [4c455d] fix config file install
+
+  [ Ariel Nunez ]
+  * [876cca] Updated gsconfig to 0.6.6
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 20 Sep 2013 17:34:34 +0000
+
 geonode (2.0.0+beta59) precise; urgency=high
 
   [ Vivien Deparday ]

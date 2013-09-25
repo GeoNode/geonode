@@ -88,7 +88,6 @@ class UtilsTests(TestCase):
             'default' : {
                     'BACKEND' : 'geonode.geoserver',
                     'LOCATION' : 'http://localhost:8080/geoserver/',
-                    'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',
                     'USER' : 'admin',
                     'PASSWORD' : 'geoserver',
                     'MAPFISH_PRINT_ENABLED' : True,
@@ -99,6 +98,7 @@ class UtilsTests(TestCase):
                     'BACKEND_WRITE_ENABLED': True,
                     'WPS_ENABLED' : False,
                     'DATASTORE': str(),
+                    'GEOGIT_DATASTORE_DIR': str(),
             }
         }
 
