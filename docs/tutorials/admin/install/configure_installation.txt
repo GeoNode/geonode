@@ -1,5 +1,6 @@
 .. _configure_installation:
 
+==============================
 Configure Geonode Installation
 ==============================
 
