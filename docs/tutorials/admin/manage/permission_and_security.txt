@@ -16,7 +16,7 @@ Users
 
 Your first step will be to create a user. There are three options to do so, depending on which kind of user you want to create you may
 choose a different option. We will start with creating a *superuser*, because this user is the most important. A superuser
-has all the permissions without explicity assigning them.
+has all the permissions without explicitly assigning them.
 
 The easiest way to create a superuser (in linux) is to open your terminal and type::
 
@@ -27,7 +27,7 @@ If you installed geonode by source you have to take the following commands::
   $ source .venvs/geonode/bin activate
   $ django-admin.py createsuperuser --settings=geonode.settings
   
-You will be asked a username (in this tutorial we will call the superuser you now create *your_superuser*), an email adress and a password.
+You will be asked a username (in this tutorial we will call the superuser you now create *your_superuser*), an email address and a password.
   
 Now you've created a superuser you should become familiar with the *Django Admin Interface*. As a superuser you are having
 access to this interface, where you can manage users, layers, permission and more. To learn more detailed about this interface
@@ -236,7 +236,7 @@ Save your changes and then log out and log in as *test_user*. You should now be 
 
 .. todo:: this IMAGE should be without add permissions!! but not possible at the moment!
 
-As you may recognize, this user is not able to change the permissios on this map. If you log in as the user *geonode_user* you should be able to see the button *change map permissions* when you scroll down the page.
+As you may recognize, this user is not able to change the permissions on this map. If you log in as the user *geonode_user* you should be able to see the button *change map permissions* when you scroll down the page.
 
 Documents
 ---------

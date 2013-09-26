@@ -26,7 +26,7 @@ Upon clicking "save" a new form will be presented asking for some personal infor
 
 For a normal, not privileged user is enough to just fill the personal information and then confirm with "save".
 
-If the user has to access the admin panel or be a supersuser it's enought just to tick the "staff" and "superuser" checkboxes.
+If the user has to access the admin panel or be a superuser it's enough just to tick the "staff" and "superuser" checkboxes.
 
 .. figure:: img/admin-users-new-2.png
 
