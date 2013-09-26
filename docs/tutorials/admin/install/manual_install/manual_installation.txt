@@ -7,8 +7,9 @@ The manual installation is intended for who are confortable with Linux system ad
 It’s suitable for servers that already have some of the components installed such as Tomcat, Apache with virtualhosts already configured.
 If the server has a fresh Ubuntu installation it’s strongly suggested instead to adjust the package/support/config-ubuntu.sh script to match the desired installation paths.
 
+.. note:: You need to first install dependencies such as virtualenv, see :ref:`install_devmode`
 
-Get the code and install it in the virtuelnv::
+Get the code and install it in the virtualenv::
 
     $ git clone https://github.com/GeoNode/geonode.git
     $ cd geonode
