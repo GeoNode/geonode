@@ -171,7 +171,7 @@ INSTALLED_APPS = (
     'pagination',
     'taggit',
     'taggit_templatetags',
-    'south',
+    #'south',
     'friendlytagloader',
     'geoexplorer',
     'django_extensions',
