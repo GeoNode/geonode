@@ -293,7 +293,7 @@ On the WMS Service page
    There is only one consideration for the Web Map Service page
 
      * Don't set the "Resource Consumption Limits."
-       This sounds a bit counterintuitive, but these limits are implemented in an inefficient way such that unless resource-intensive requests are common on your server it is more efficient to avoid the limits.
+       This sounds a bit counter intuitive, but these limits are implemented in an inefficient way such that unless resource-intensive requests are common on your server it is more efficient to avoid the limits.
        A better implementation of this feature is available for GeoServer 2.1 and will be incorporated in GeoNode 1.1.
 
 
