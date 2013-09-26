@@ -25,6 +25,24 @@ For deployment of GeoNode on a single server, the following are the *bare minimu
   For spatial data, cached tiles, and "scratch space" useful for administration, a decent baseline size for GeoNode deployments is 100GB.
 * 64-bit hardware recommended.
 
+Installing Dependencies
+=======================
+
+As mentioned above, you must have some external software installed before you can setup GeoNode.
+
+Ubuntu 12.04 Dependencies :ref:`dependencies`
+
+This includes:
+
+* A Python interpreter
+* A Java Runtime Environment (JRE)
+* Apache Tomcat servlet container
+* Python development libraries
+* PostgresQL database
+* The GDAL, GEOS, and OGR geospatial software libraries
+
+For convenience, appropriate commands to retrieve these dependencies on different OS's are listed below:
+
 
 Installing GeoNode from a release
 =================================
@@ -48,38 +66,10 @@ These scripts have been tested on Ubuntu, please review them carefully before us
 The stack used is:
 
 * *Servlet Container*: Apache Tomcat
-
 * *Static File Server*: Apache httpd
-
 * *Python/WSGI Container*: mod_wsgi
-
 * *Django Database*: PostgresQL
 
-
-Installing Dependencies
------------------------
-
-As mentioned above, you must have some external software installed before you can setup GeoNode.
-This includes:
-
-* A Python interpreter
-
-* A Java Runtime Environment (JRE)
-
-* Apache Tomcat servlet container
- 
-* Python development libraries
-
-* PostgresQL database
-
-* The GDAL, GEOS, and OGR geospatial software libraries
-
-For convenience, appropriate commands to retrieve these dependencies on different OS's are listed below:
-
-Ubuntu
-......
-
-:ref:`dependencies`
 
 Installation
 ------------
@@ -94,11 +84,42 @@ Installation
 
    More instructions can be found in the ``README`` distributed with the release as well as the pointer to the documentation page about configuring GeoNode for production after it has been installed.
 
-2) follow the instructions in :ref:`installation_config_file`
+
+
+Installation using the ubuntu config file
+=========================================
+
+Get the code::
+
+    $ git clone https://github.com/GeoNode/geonode.git
+    $ cd geonode
+    $ sudo pip install -e .
+    $ sudo paver setup
+
+The package comes with a semi-automatic installer, located in the unzipped directory.
+The installer script (located in package/support/config-ubuntu.sh) has a configuration file associated with it which allows you to provide the details of your installation, such as where your webserver looks for documents.
+
+Once edited (if necessary) the config file running the following command will install GeoNode::
+
+    $ cd package
+    $ sudo ./install.sh support/config-ubuntu.sh
+    $ sudo cp downloaded/geoserver.war /var/lib/tomcat7/webapps
+    $ sudo geonode-updateip youraddress
+    $ geonode createsuperuser
+
+GeoNode can now be accessed at http://localhost
+
+
+.. note:: Before proceed with the installation make sure to install the needed :ref:`dependencies`.
 
 
 Manual Installation
 ===================
+The manual installation is intended for who are confortable with Linux system administration. This can be done with every GeoNode release, both official and custom made.
+It’s suitable for servers that already have some of the components installed such as Tomcat, Apache with virtualhosts already configured.
+If the server has a fresh Ubuntu installation it’s strongly suggested instead to adjust the package/support/config-ubuntu.sh script to match the desired installation paths.
+
+There are two ways to install GeoNode from a release, the first is by using the automated script provided, after it has been properly configured while the second is fully manual and let’s the administrator have the complete control over the components. However the first method is based on a config script that lets the administrator decide where and how the components must be installed and thus the automated script option is strongly recommended for everyone.
 
 This section is mostly intended for packagers working on installers for GeoNode on new platforms.
 If you simply want a customized installation of GeoNode, we recommend reviewing and modifying the installer script included with GeoNode instead of starting "from scratch."
@@ -134,14 +155,14 @@ The key steps for setting up a GeoNode installation are as follows:
      In order to simplify upgrades, it is recommended to rename the file ``local_settings.py.sample`` to ``local_setting.py`` for your own settings; any settings in this file will override the default ones in the settings file included with GeoNode.
 
      The settings to use here are:
-    
+
      * ``DATABASES`` the parameters of the GeoNode's database and the database used to import the shapefiles.
 
      * ``OGC_SERVER`` the base URL for the GeoServer for your GeoNode site, for example `http://example.com/geoserver/`.
 
        Some features of GeoNode require you to set up a web proxy so that GeoServer and the Django application are on the same domain ("example.com" in this example.).
 
-Continue to :ref:`manual_installation`.
+
 
 
 Java Web Applications (WARs)
