@@ -3,11 +3,30 @@
 Installing GeoNode
 ==================
 
-This section will guide you through the steps necessary to install GeoNode from packages, manually or in development mode.
+This section will guide you through the steps necessary to install GeoNode from packages(quick install), manually or in development mode.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    quick_install
    complete_install
-   manual_install/index
+
+:ref:`install_devmode`
+  How to install GeoNode for development (for Developers) and prepare your development environment.
+
+:ref:`dependencies`
+  After install change to Postgresql-Postgis, Tomcat, Apache...
+
+:ref:`configure_installation`
+  swap out default sqlite db, dev-server with apache, jetty to tomcat...
+
+
+Other installations:
+
+.. toctree::
+   :maxdepth: 1
+
+   configure_installation
+   dependencies
+   install_postgresql
+   install_postgis

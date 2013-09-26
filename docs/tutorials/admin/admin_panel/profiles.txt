@@ -4,7 +4,7 @@
 Manage profiles using the admin panel
 =====================================
 
-So far GeoNode implements two distinc roles, that can be assigned to resources such as layers, maps or documents:
+So far GeoNode implements two distinct roles, that can be assigned to resources such as layers, maps or documents:
 
 * party who authored the resource
 * party who can be contacted for acquiring knowledge about or acquisition of the resource
