@@ -64,6 +64,12 @@ Level 4 sections should have a single dot,periol symbol (.)::
    I am a level 4 header
    .....................
 
+
+Level 5 sections should have a single dot,periol symbol (.)::
+
+   I am a level 5 header
+   +++++++++++++++++++++
+
 Page labels
 -----------
 
