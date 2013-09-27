@@ -1,0 +1,16 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+
+{% block title %} {% blocktrans %}Announcements : {{ announcement }}{% endblocktrans %} {{ block.super }} {% endblock %}
+
+{% block body %}
+    <h2 class="page-title">{{ announcement.title }}</h2>
+    <p>{{ announcement.creation_date }}</p>
+    <br/>
+    <div class="span10">
+    <blockquote>
+        <p>{{ announcement.content }}</p>
+        <small>{{ announcement.creator }}</small>
+    </blockquote>
+
+{% endblock %}
