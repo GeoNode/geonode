@@ -9,15 +9,16 @@ The community encourages the Test Driven Development (TDD) and the contribution
 GeoNode has Unit, Integration and Javascript tests. The Unit tests are located
  in the tests file of every django app (Maps, Layers, Documents, Catalogue,
   Search, Security etc).
+
 The Integration, CSW and smoke tests are located under the tests folder).
 
-The tests are meant to be ran using the SQLLite database, some of them may
- fail using PostgreSQL or others.
+The tests are meant to be ran using the SQLite database, some of them may fail using PostgreSQL or others.
 
 If running them in development mode make sure to have the jetty server
  shut down otherwise the test could get stuck. To make sure it is run::
     
     $ paver stop
+
 
 Unit Tests
 ----------
