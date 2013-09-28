@@ -1,4 +1,4 @@
-{% load i18n avatar_tags %}
+{% load i18n avatar_tags announcements_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -14,7 +14,8 @@
       {% else %}
       <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
       {% endif %}
-      {% block extra_head %}{% endblock %}
+      {% block extra_head %}
+      {% endblock %}
     {% endblock %}
     <!--[if lt IE 9]>
       <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -47,6 +48,9 @@
                           <li><a href="{{ user.get_profile.get_absolute_url }}"><i class="icon-user"></i> {% trans "Profile" %}</a></li>
                           {% if user.is_staff %}
                             <li><a href="{% url "admin:index" %}"><i class="icon-cog"></i> {% trans "Admin" %}</a></li>
+                          {% endif %}
+                          {% if perms.announcements.can_manage %}
+                            <li><a href="{% url "announcements_list" %}"><i class="icon-bullhorn"></i> {% trans "Announcements" %}</a></li>
                           {% endif %}
                           {% if user.is_superuser %}
                             <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="icon-globe"></i> {% trans "GeoServer" %}</a></li>
@@ -144,13 +148,15 @@
     {% endblock header %}
 
     {% block middle %}
+    {% announcements as site_wide_announcements %}
     <div class="content-wrap">
       {% if site_wide_announcements %}
       <div id="site_wide_announcements">
         {% for announcement in site_wide_announcements %}
-        <div class="alert alert-block">
-          <a type="button" class="close" data-dismiss="alert" href="{% url "announcement_hide" announcement.pk %}?next={{ request.path }}">×</button>
-          <h4><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a> -</h4>
+        <div class="alert alert-block announcement">
+          <a type="button" class="close" data-dismiss="alert" data-dismiss-url="{% url "announcements_dismiss" announcement.pk %}" href="#">×</a>
+          <h4><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a></h4>
+          <p><small><em>{{ announcement.creation_date }}</em></small></p>
           <div>{{ announcement.content }}</div>
         </div>
         {% endfor %}
@@ -215,6 +221,7 @@
     <script src="{{ STATIC_URL }}lib/js/assets.min.js"></script>
     {% endif %}
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
     <script>
       $("#search").select2({
         minimumInputLength: 1,
