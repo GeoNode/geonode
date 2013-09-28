@@ -1,0 +1,326 @@
+.. _settings:
+
+================
+GeoNode Settings
+================
+
+The user interface of a GeoNode site is built on top of the Django web
+framework.  GeoNode includes a few "apps" (reusable Django modules) to support
+development of those user interfaces.  While these apps have reasonable default
+configurations, for customized GeoNode sites you will probably want to adjust
+these apps for your specific needs.
+
+.. comment::
+    :local:
+    :depth: 1
+
+Documents settings
+==================
+
+Here's a list of settings available in Django core and their default values.
+Settings provided by contrib apps are listed below, followed by a topical index
+of the core settings.
+
+ALLOWED_DOCUMENT_TYPES
+----------------------
+  Default: ``['doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
+
+  A list of acceptable file extensions that can be uploaded to the Documents app.
+
+DOCUMENTS_APP
+-------------
+  Default: ``True``
+
+  Enables the Documents app.
+
+MAX_DOCUMENT_SIZE
+-----------------
+  Default: ``2``
+
+
+Maps settings
+=============
+
+OGC_SERVER
+----------
+  Default: ``{}`` (Empty dictionary)
+
+  A dictionary of OGC servers and and their options.  The main
+  server should be listed in the 'default' key.  If there is no 'default'
+  key or if the ``OGC_SERVER`` setting does not exist Geonode will raise
+  an Improperly Configured exception.  Below is an example of the ``OGC_SERVER``
+  setting::
+
+   OGC_SERVER = {
+     'default' : {
+         'LOCATION' : 'http://localhost:8080/geoserver/',
+         'USER' : 'admin',
+         'PASSWORD' : 'geoserver',
+     }
+   }
+
+BACKEND
+~~~~~~~
+Default: ``"geonode.geoserver"``
+
+The OGC server backend to use.  The backend choices are:
+
+* ``'geonode.geoserver'``
+
+BACKEND_WRITE_ENABLED
+~~~~~~~~~~~~~~~~~~~~~
+Default: ``True``
+
+Specifies whether the OGC server can be written to.  If False, actions that modify
+data on the OGC server will not execute.
+
+LOCATION
+~~~~~~~~
+Default: ``"http://localhost:8080/geoserver/"``
+
+A base URL from which GeoNode can construct OGC service URLs.
+If using Geoserver you can determine this by
+visiting the GeoServer administration home page without the
+/web/ at the end.  For example, if your GeoServer administration app is at
+http://example.com/geoserver/web/, your server's location is http://example.com/geoserver.
+
+PUBLIC_LOCATION
+~~~~~~~~~~~~~~~
+Default: ``"http://localhost:8080/geoserver/"``
+
+The URL used to in most public requests from Geonode.  This settings allows a user to write to one OGC server (the LOCATION setting)
+and read from a seperate server or the PUBLIC_LOCATION.
+
+USER
+~~~~
+Default: ``'admin'``
+
+The administrative username for the OGC server as a string.
+
+PASSWORD
+~~~~~~~~
+Default: ``'geoserver'``
+
+The administrative password for the OGC server as a string.
+
+MAPFISH_PRINT_ENABLED
+~~~~~~~~~~~~~~~~~~~~~
+Default: ``True``
+
+A boolean that represents whether the Mapfish printing extension is enabled on the server.
+
+PRINTNG_ENABLED
+~~~~~~~~~~~~~~~
+Default: ``True``
+
+A boolean that represents whether printing of maps and layers is enabled.
+
+GEONODE_SECURITY_ENABLED
+~~~~~~~~~~~~~~~~~~~~~~~~
+Default: ``True``
+
+A boolean that represents whether Geonode's security application is enabled.
+
+GEOGIT_ENABLED
+~~~~~~~~~~~~~~
+Default: ``False``
+
+A boolean that represents whether the OGC server supports Geogit datastores.
+
+WMST_ENABLED
+~~~~~~~~~~~~
+Default: ``False``
+
+Not implemented.
+
+WPS_ENABLED
+~~~~~~~~~~~
+Default: ``False``
+
+Not implemented.
+
+DATASTORE
+~~~~~~~~~
+Default: ``''`` (Empty string)
+
+An optional string that represents the name of a vector datastore that Geonode uploads
+are imported into.  In order to support vector datastore imports there also needs to be an
+entry for the datastore in the ``DATABASES`` dictionary with the same name.  Example::
+
+ OGC_SERVER = {
+   'default' : {
+      'LOCATION' : 'http://localhost:8080/geoserver/',
+      'USER' : 'admin',
+      'PASSWORD' : 'geoserver',
+      'DATASTORE': 'geonode_imports'
+   }
+ }
+
+ DATABASES = {
+  'default': {
+      'ENGINE': 'django.db.backends.sqlite3',
+      'NAME': 'development.db',
+  },
+  'geonode_imports' : {
+      'ENGINE': 'django.contrib.gis.db.backends.postgis',
+      'NAME': 'geonode_imports',
+      'USER' : 'geonode_user',
+      'PASSWORD' : 'a_password',
+      'HOST' : 'localhost',
+      'PORT' : '5432',
+   }
+  }
+
+CATALOGUE
+---------
+  A dict with the following keys:
+
+  * ENGINE: The CSW backend (default is ``geonode.catalogue.backends.pycsw_local``)
+  * URL: The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+  * USERNAME: login credentials (if required)
+  * PASSWORD: login credentials (if required)
+
+  pycsw is the default CSW enabled in GeoNode.  pycsw configuration directives
+  are managed in the PYCSW entry.
+
+PYCSW
+-----
+  A dict with pycsw's configuration.  Of note are the sections
+  ``metadata:main`` to set CSW server metadata and ``metadata:inspire``
+  to set INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true``
+  will enable INSPIRE support.  See http://pycsw.org/docs/configuration.html
+  for full pycsw configuration details.
+
+SITEURL
+-------
+  Default: ``'http://localhost:8000/'``
+
+  A base URL for use in creating absolute links to Django views.
+
+DEFAULT_MAP_BASE_LAYER
+----------------------
+  The name of the background layer to include in newly created maps.
+
+DEFAULT_MAP_CENTER
+------------------
+  Default: ``(0, 0)``
+
+  A 2-tuple with the latitude/longitude coordinates of the center-point to use
+  in newly created maps.
+
+DEFAULT_MAP_ZOOM
+----------------
+  Default: ``0``
+
+  The zoom-level to use in newly created maps.  This works like the OpenLayers
+  zoom level setting; 0 is at the world extent and each additional level cuts
+  the viewport in half in each direction.
+
+Search settings
+=============
+
+DEFAULT_SEARCH_SIZE
+-------------------
+
+DEFAULT_TABLESPACE
+------------------
+
+DEFAULT_TOPICCATEGORY
+---------------------
+
+
+EMAIL_BACKEND
+EMAIL_HOST
+EMAIL_HOST_PASSWORD
+EMAIL_HOST_USER
+EMAIL_PORT
+EMAIL_SUBJECT_PREFIX
+EMAIL_USE_TLS
+FILE_CHARSET
+FILE_UPLOAD_HANDLERS
+FILE_UPLOAD_MAX_MEMORY_SIZE
+FILE_UPLOAD_PERMISSIONS
+FILE_UPLOAD_TEMP_DIR
+FIRST_DAY_OF_WEEK
+FIXTURE_DIRS
+FORCE_SCRIPT_NAME
+FORMAT_MODULE_PATH
+GEOGIT_DATASTORE_NAME
+IGNORABLE_404_URLS
+INSTALLED_APPS
+INTERNAL_IPS
+LANGUAGES
+LANGUAGES_BIDI
+LANGUAGE_CODE
+LANGUAGE_COOKIE_NAME
+LEAFLET_CONFIG
+LOCALE_PATHS
+LOCKDOWN_GEONODE
+LOGGING
+LOGGING_CONFIG
+LOGIN_REDIRECT_URL
+LOGIN_URL
+LOGOUT_URL
+MANAGERS
+MAP_BASELAYERS
+MAX_DOCUMENT_SIZE
+MEDIA_ROOT
+MEDIA_URL
+MESSAGE_STORAGE
+MIDDLEWARE_CLASSES
+MISSING_THUMBNAIL
+MONTH_DAY_FORMAT
+NOSE_ARGS
+NUMBER_GROUPING
+OGC_SERVER
+PASSWORD_HASHERS
+PASSWORD_RESET_TIMEOUT_DAYS
+PREPEND_WWW
+PRINTNG_ENABLED
+PROFANITIES_LIST
+PROJECT_ROOT
+PYCSW
+REGISTRATION_OPEN
+ROOT_URLCONF
+SECRET_KEY
+SECURE_PROXY_SSL_HEADER
+SEND_BROKEN_LINK_EMAILS
+SERVER_EMAIL
+SESSION_CACHE_ALIAS
+SESSION_COOKIE_AGE
+SESSION_COOKIE_DOMAIN
+SESSION_COOKIE_HTTPONLY
+SESSION_COOKIE_NAME
+SESSION_COOKIE_PATH
+SESSION_COOKIE_SECURE
+SESSION_ENGINE
+SESSION_EXPIRE_AT_BROWSER_CLOSE
+SESSION_FILE_PATH
+SESSION_SAVE_EVERY_REQUEST
+SESSION_SERIALIZER
+SETTINGS_MODULE
+SHORT_DATETIME_FORMAT
+SHORT_DATE_FORMAT
+SIGNING_BACKEND
+
+TEMPLATE_DEBUG
+TEMPLATE_DIRS
+TEMPLATE_LOADERS
+TEMPLATE_STRING_IF_INVALID
+TEST_RUNNER
+THEME_ACCOUNT_CONTACT_EMAIL
+THOUSAND_SEPARATOR
+TIME_FORMAT
+TIME_INPUT_FORMATS
+TIME_ZONE
+TRANSACTIONS_MANAGED
+UPLOADER
+USE_ETAGS
+USE_I18N
+USE_L10N
+USE_THOUSAND_SEPARATOR
+USE_TZ
+USE_X_FORWARDED_HOST
+WSGI_APPLICATION
+X_FRAME_OPTIONS
+YEAR_MONTH_FORMAT
