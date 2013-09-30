@@ -46,12 +46,10 @@
     </li>
   {% endif %}
   
-  {% if resourcebase.regions %}
+  {% if resourcebase.regions.all %}
    <li>
       <strong>{% trans "Regions" %}:</strong>
-        {% for region in resourcebase.regions.all %}
-          {{ region }}
-        {% endfor %}
+        {{ resourcebase.regions.all|join:", " }}
     </li>
   {% endif %}
           
