@@ -5,7 +5,6 @@ Complete Installation Guide
 ===========================
 
 This page describes a generic installation process for GeoNode.  The manual installation is intended for who are confortable with Linux system administration.
-This is the most customizable, but also the most difficult.
 
 .. note:: The :ref:`quick_installation`  is easier to use.
 .. note:: Some platforms have more convenient packages available, so check below to see whether one is available for your OS before going through these steps.
@@ -88,43 +87,45 @@ There are two ways to install GeoNode from a release:
 This section is mostly intended for packagers working on installers for GeoNode on new platforms.
 If you simply want a customized installation of GeoNode, we recommend reviewing and modifying the installer script included with GeoNode instead of starting "from scratch."
 
-A GeoNode installation has two webservers running side-by-side, one for the Java applications and another one for the Python/Django applications and static files.
+A GeoNode installation has two webservers running side-by-side
+#. Java Applications (Geoserver)
+#. Python/Django applications and static files.
 
-The key steps for setting up a GeoNode installation are as follows:
+The key steps for setting up a GeoNode:
 
-#. *Set up applications.*
+#. **Set up applications.**
 
-   The GeoServer web application must be served using a Java Servlet container; two popular and free containers are Jetty and Tomcat.
+   #. The **GeoServer** web application must be served using a *Java Servlet container*; two popular and free containers are Jetty and Tomcat.
 
-   Typically a Java web application can be deployed by simply copying the .war file into the appropriate place.
+      Typically a Java web application can be deployed by simply copying the .war file into the appropriate place.
 
-   The Django frontend can be served in various ways, one of the most performant is Apache httpd with mod_wsgi installed.
+   #. The **Django** frontend can be served in various ways, one of the most performant is Apache httpd with mod_wsgi installed.
 
-   The Django project has further documentation on how to serve Django applications at https://docs.djangoproject.com/en/1.5/howto/deployment/ .
+      The Django project has further documentation on how to serve Django applications at https://docs.djangoproject.com/en/1.5/howto/deployment/ .
 
-   You will also need a web server capable of simply serving static files; if you are using Apache httpd it can serve this purpose as well.
+      You will also need a web server capable of simply serving static files; if you are using Apache httpd it can serve this purpose as well.
 
-#. *Configure them to talk to each other*.
+#. **Configure them to talk to each other**.
 
    GeoNode and GeoServer communicate over HTTP, and therefore must know each others' URLs.
 
-   *Two settings files* contain the settings relevant to most GeoNode deployments:
+   **Two settings files** contain the settings relevant to most GeoNode deployments:
 
    #. GeoServer's ``WEB-INF/web.xml`` file; this will be in the "exploded war" directory created when your servlet container deploys the GeoServer application.
 
-     You can edit it in the text editor of your choice, add a config-param element with the name "GEONODE_BASE_URL" and the value being the base URL of your site.
+      You can edit it in the text editor of your choice, add a config-param element with the name "GEONODE_BASE_URL" and the value being the base URL of your site.
 
    #. The Django application's ``settings.py`` file; this will be in the directory where you installed the Django application under ``geonode/settings.py``.
 
-     In order to simplify upgrades, it is recommended to rename the file ``local_settings.py.sample`` to ``local_setting.py`` for your own settings; any settings in this file will override the default ones in the settings file included with GeoNode.
+      In order to simplify upgrades, it is recommended to rename the file ``local_settings.py.sample`` to ``local_setting.py`` for your own settings; any settings in this file will override the default ones in the settings file included with GeoNode.
 
-     The settings to use here are:
+      The settings to use here are:
 
-     * ``DATABASES`` the parameters of the GeoNode's database and the database used to import the shapefiles.
+      * ``DATABASES`` the parameters of the GeoNode's database and the database used to import the shapefiles.
 
-     * ``OGC_SERVER`` the base URL for the GeoServer for your GeoNode site, for example `http://example.com/geoserver/`.
+      * ``OGC_SERVER`` the base URL for the GeoServer for your GeoNode site, for example `http://example.com/geoserver/`.
 
-       Some features of GeoNode require you to set up a web proxy so that GeoServer and the Django application are on the same domain ("example.com" in this example.).
+      Some features of GeoNode require you to set up a web proxy so that GeoServer and the Django application are on the same domain ("example.com" in this example.).
 
 
 Installation using the ubuntu config file
