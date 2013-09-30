@@ -155,7 +155,7 @@ GeoNode can now be accessed at http://localhost
 
 
 Java Web Applications (WARs)
-============================
+----------------------------
 
 GeoNode requires a Java servlet container compatible with the J2EE standard,
 2.5 or higher.  `Jetty <http://jetty.mortbay.org/>`_ and `Tomcat
