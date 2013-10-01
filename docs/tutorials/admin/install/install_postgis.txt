@@ -4,6 +4,10 @@
 PostGIS 2.0.3 Installation on Ubuntu 12.04
 ==========================================
 
+The best is to visit http://postgis.net to get all the up to date installation details.
+
+.. warning:: this document will eventually be out dated please refer to http://www.postgis.net for installation guide
+
 **Step 1 – Install dependencies**
 
 Before you can install PostGis 2.0.3, some dependencies have to be installed first. You can do this by using the Linux command *apt-get*. It is recommended to install postgresql-9.2 before you install PostGis 2.0.3. For the installation guide of postgresql-9.2 see ... .

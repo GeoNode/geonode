@@ -1,7 +1,7 @@
 .. _install_devmode:
 
-Install GeoNode in development mode
-===================================
+Install GeoNode for Development
+===============================
 
 
 In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following steps are required:
@@ -15,15 +15,12 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
 .. note:: The following steps have to be executed in your terminal. The *Steps 1 – 4a* have to be done as a root user, therefore don´t forget to type sudo in front (as shown in the steps)!
 
-**Step 1**
-
-The first step is to install required build tools and libraries::
+**Step 1** Install build tools and libraries::
 
     $ sudo apt-get install build-essential libxml2-dev libxslt-dev
 
-**Step 2**
 
-Install dependencies and supporting tools before Geonode can be set up.
+**Step 2** Install dependencies
 
 *Python native dependencies*::
 
@@ -37,9 +34,9 @@ Install dependencies and supporting tools before Geonode can be set up.
 
     $ sudo apt-get install -y git gettext
 
-**Step 3**
+**Step 3** add a new PPA repository
 
-Now add a new PPA repository, which is required for the static development::
+This is required for static development::
 
     $ sudo add-apt-repository ppa:chris-lea/node.js
     $ sudo apt-get update
@@ -47,9 +44,10 @@ Now add a new PPA repository, which is required for the static development::
     $ sudo npm install -g bower
     $ sudo npm install -g grunt-cli
 
-**Step 4** 
+**Step 4** set up a virtual environment
 
-Now lets set up a virtual environment in which Geonode will later be running. Virtualenv has already been installed during *Step 2 (Python dependencies)*.
+Here is where Geonode will later be running.
+.. note:: Virtualenv was installed in *Step 2 above*.
 
 ***Step 4a** Download and install a virutalenvwrapper*::
 

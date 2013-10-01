@@ -12,8 +12,8 @@ The paths to the different locations are assumed to be on Ubuntu with GeoNode in
 Customizing the home page
 =========================
 
-GeoNode uses Django's template engine, :file:`/etc/geonode/templates` is empty by default but it is abover other folders in the template lookup hierarchy.
-This means that it is possible to copy any html template to that location and it will take precence.
+GeoNode uses Django's template engine, :file:`/etc/geonode/templates` is empty by default but it is above other folders in the template lookup hierarchy.
+This means that it is possible to copy any html template to that location and it will take precedence.
 Let's start by doing the following::
 
     sudo cp /var/lib/geonode/geonode/templates/index.html /etc/geonode/templates
@@ -37,19 +37,19 @@ Similarly to the way the templates work, GeoNode's images and css files can be o
 The original GeoNode logo is located at :file:`/var/lib/geonode/geonode/media/theme/img/logo-bg.png`.
 Make a copy and edit it using Photoshop, GIMP, or your preferred image editor and then save it in :file:`/etc/geonode/media/theme/img/logo-bg.png`.
 
-Once the logo is placed there, it is neccessary to run the media collection command::
+Once the logo is placed there, it is necessary to run the media collection command::
 
     sudo geonode collectstatic -v0
 
-This will gather all the media in the diferent locations (both source and the user customizations) and put it in the directory being served by apache: :file:`/var/www/geonode/static/`.
+This will gather all the media in the different locations (both source and the user customizations) and put it in the directory being served by apache: :file:`/var/www/geonode/static/`.
 
-.. note:: It is not recommended to change the files directly in :file:`/var/www/geonode/static/` because they are overwritten any time the media collaction command is run.
+.. note:: It is not recommended to change the files directly in :file:`/var/www/geonode/static/` because they are overwritten any time the media collection command is run.
 
 
 Changing the entire site media
 ==============================
 
-All the files in :file:`/var/lib/geonode/geonode/media/theme` can be overriden using this method, including :file:`site.css` which contains most of the color schemes for the entire site. Once you copy it, the file should live in :file:`/etc/geonode/media/theme/site.css`.
+All the files in :file:`/var/lib/geonode/geonode/media/theme` can be overridden using this method, including :file:`site.css` which contains most of the color schemes for the entire site. Once you copy it, the file should live in :file:`/etc/geonode/media/theme/site.css`.
 
 
 Adding external WMS servers by default to the map composer
