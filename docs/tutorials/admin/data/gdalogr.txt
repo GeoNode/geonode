@@ -130,7 +130,7 @@ Visit the upload page in your GeoNode, drag and drop the files that composes the
 
 .. figure:: img/upload_shapefile.png
 
-As soon as the import process complets, you will have the possibility to go straight to the layer info page ("Layer Info" button), or to edit the metadata for that layer ("Edit Metadata" button), or to manage the styles for that layer ("Manage Styles").
+As soon as the import process completes, you will have the possibility to go straight to the layer info page ("Layer Info" button), or to edit the metadata for that layer ("Edit Metadata" button), or to manage the styles for that layer ("Manage Styles").
 
 .. figure:: img/layer_info_vector.png
 

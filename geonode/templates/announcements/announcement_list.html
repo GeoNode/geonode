@@ -1,20 +1,55 @@
 {% extends "site_base.html" %}
+{% load pagination_tags %}
+{% load staticfiles %}
+{% load url from future %}
 {% load i18n %}
 {% block title %} {% trans "Announcements" %} - {{ block.super }} {% endblock %}
 
-{% block body %}
-    <h1>{% trans "Announcements" %}</h1>
-    
-    {% if object_list %}
-    <ul>
-        {% for announcement in object_list %}
-        <li>
-            <a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a> -
-            <a href="{% url "announcement_hide" announcement.pk %}?next={{ request.path }}">{% trans "Hide announcement" %}</a>
-        </li>
-        {% endfor %}
+{% block body_class %}maps{% endblock %}
+
+{% block body_outer %}
+  <div class="span12">
+    <ul class="nav nav-tabs" id="subnav-tabs">
+          <li><a href="{% url "announcements_create" %}" class="explore">{% trans 'Announcements' %}</a></li>
     </ul>
-    {% else %}
-        <strong>{% trans "There are no announcements for you." %}</strong>
-    {% endif %}
+  </div>
+
+{% block body %}
+    <div class="span12">
+      <a href="{% url "announcements_create" %}" class="btn btn-large btn-primary pull-right strong">{% trans "New Announcement" %}</a>
+      <h2 class="page-title">{% trans "Announcements" %}</h2>
+    </div>
+    <div class="span8 filter">
+      <br/>
+    </div>
+    <div class="span12">
+      <div class="row" id="contain-slider">
+        <div class="tab-content span10 paginate paginate-auto" id="search-content">
+           <table class="table">
+           <thead>
+               <td><b>Title</b></td>
+               <td><b>Annoucenment</b></td>
+               <td><b>Published From</b></td>
+           </thead>
+            {% for announcement in announcement_list %}
+                <tr>
+                    <td>
+                        <a href="{% url "announcements_update" pk=announcement.pk %}">{{ announcement.title|truncatewords:50  }}</a>
+                    </td>
+                    <td>
+                        {{ announcement.content|truncatewords:8 }}
+                    </td>
+                    <td>
+                        {% if announcement.publish_start or announcement.publish_end %}
+                        Published from <b>{{ announcement.publish_start|date:"F j, Y" }}<b/> to
+                        <b>{{ announcement.publish_end|date:"F j, Y"|default:"(no end date)" }}<b/>.
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        </div>
+      </div>
+    </div>
+{% endblock %}
 {% endblock %}

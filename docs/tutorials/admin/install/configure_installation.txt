@@ -1,29 +1,17 @@
-.. _manual_installation:
+.. _configure_installation:
 
-Fully manual installation
-=========================
+==============================
+Configure Geonode Installation
+==============================
 
-The manual installation is intended for who are confortable with Linux system administration. This can be done with every GeoNode release, both official and custom made.
-It’s suitable for servers that already have some of the components installed such as Tomcat, Apache with virtualhosts already configured.
-If the server has a fresh Ubuntu installation it’s strongly suggested instead to adjust the package/support/config-ubuntu.sh script to match the desired installation paths.
+You have installed GeoNode with the default installation and now want to configure a Postgresql Database, use Apache, use Tomcat, local settings, create superuser, ...
 
+.. note:: You need to first install GeoNode, see :ref:`quick_installation` or :ref:`install_devmode` or :ref:`complete_install`
 
-Get the code and install it in the virtuelnv::
+.. note:: all the paths are user specific, so they might not coincide with the paths you will have to use!
 
-    $ git clone https://github.com/GeoNode/geonode.git
-    $ cd geonode
-    $ sudo pip install -e . --use-mirrors
-    $ sudo paver setup
-
-This will also create the geoserver artifact ready to be deployed under Tomcat.
-
-Configurations
---------------
-
-.. note:: Please note that all the paths are user specific, so they might not coincide with the paths you will have to use!
-
-Change default database
------------------------
+Change default database to Postgresql-PostGIS
+---------------------------------------------
 
 If you have installed geonode in developing mode, it will be running with the sqlite3 db as default. But this can be changed! In order to make geonode to use postgresql just follow the steps from this section.
 
