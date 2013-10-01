@@ -127,6 +127,9 @@ The key steps for setting up a GeoNode:
 
       Some features of GeoNode require you to set up a web proxy so that GeoServer and the Django application are on the same domain ("example.com" in this example.).
 
+Other Configurations
+====================
+Detailed configurations can be found here aswell :ref:`configure_installation`
 
 Installation using the ubuntu config file
 =========================================
