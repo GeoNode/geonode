@@ -33,7 +33,6 @@ Installing Dependencies
 Some external software must be installed before you can setup GeoNode.
 This packaging contains both the Java and Django web application code for GeoNode, and requires some external software installed (a WSGI-compliant webserver and a Java application container) to complete the GeoNode platform.
 
-
 This includes:
 
 * A Python interpreter
@@ -43,8 +42,12 @@ This includes:
 * PostgresQL database
 * The GDAL, GEOS, and OGR geospatial software libraries
 
-For convenience, appropriate commands to retrieve these dependencies on different OS's are listed below:
-    Ubuntu 12.04 Dependencies :ref:`dependencies`
+For convenience, appropriate commands to retrieve these dependencies on Ubuntu 12.04 LTS are listed below::
+
+    $ sudo apt-get install python python-support python-dev python-virtualenv openjdk-6-jre tomcat7 postgresql-9.1 postgresql-contrib-9.1 gcc patch zip python-imaging gdal-bin libgeos-dev python-urlgrabber python-pastescript gettext postgresql-contrib postgresql-9.1-postgis libpq-dev unzip libjpeg-dev libpng-dev python-gdal libproj-dev python-psycopg2 apache2 libapache2-mod-wsgi git-core gettext libxml2-dev libxslt-dev
+
+Beware that in case of use of postgres 9.2 as described in :ref:`install_postgresql` and :ref:`install_postgis` all the postgres and postgis references must be remove from the above command.
+
 
 Installing GeoNode from a release
 =================================
