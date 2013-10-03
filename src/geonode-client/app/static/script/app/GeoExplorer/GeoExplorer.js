@@ -1590,6 +1590,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             text: this.picasaText,
             iconCls: "icon-picasa",
             scope:this,
+            disabled: true,
             handler: function() {
                 this.showFeedDialog('gx_picasasource')
             },
@@ -1601,6 +1602,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             text: this.youTubeText,
             iconCls: "icon-youtube",
             scope:this,
+            disabled: true,
             handler: function() {
                 this.showFeedDialog('gx_youtubesource')
             },
@@ -1665,8 +1667,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             "->"
         ];
         
-        //Only show this for Boston map
-        if (this.urlsuffix == 31) {
+        //Only show this for Boston map; silly hack
+        if (this.urlsuffix == 'boston') {
         	tools.splice(13,0,new GeoExplorer.SocialExplorer(this));
         }        
 
