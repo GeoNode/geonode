@@ -236,28 +236,34 @@
            </gmd:geographicElement>
          </gmd:EX_Extent>
        </gmd:extent>
+       {% if layer.temporal_extent_start or layer.temporal_extent_end %}
          <gmd:extent>
              <gmd:EX_Extent>
                  <gmd:temporalElement>
                      <gmd:EX_TemporalExtent>
                          <gmd:extent>
                              <gml:TimePeriod>
+                                 {% if layer.temporal_extent_start %}
                                  <gml:beginPosition>
                                      <gmd:date>
                                          <gco:DateTime>{{layer.temporal_extent_start|date:"c"}}</gco:DateTime>
                                      </gmd:date>
                                  </gml:beginPosition>
+                                 {% endif %}
+                                 {% if layer.temporal_extent_end %}
                                  <gml:endPosition>
                                      <gmd:date>
-                                        <gco:DateTime>{{layer.temporal_extent_end|date:"c"}}</gco:DateTime>
-                                    </gmd:date>
+                                         <gco:DateTime>{{layer.temporal_extent_end|date:"c"}}</gco:DateTime>
+                                     </gmd:date>
                                  </gml:endPosition>
+                                 {% endif %}
                              </gml:TimePeriod>
                          </gmd:extent>
                      </gmd:EX_TemporalExtent>
                  </gmd:temporalElement>
              </gmd:EX_Extent>
          </gmd:extent>
+       {% endif %}
        <gmd:supplementalInformation>
          <gco:CharacterString>
             {{ layer.supplemental_information }}
