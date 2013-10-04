@@ -589,6 +589,7 @@ def set_styles(layer, gs_catalog):
         style_set.append(save_style(alt_style))
 
     layer.styles = style_set
+    return layer
 
 def save_style(gs_style):
     style, created = Style.objects.get_or_create(name = gs_style.sld_name)
