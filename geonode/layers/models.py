@@ -316,7 +316,7 @@ def post_delete_layer(instance, sender, **kwargs):
     MapLayer.objects.filter(name=instance.typename).delete()
     logger.debug("Going to delete the default style for [%s]", instance.typename.encode('utf-8'))
 
-    if Layer.objects.filter(default_style__id=instance.default_style.id).count() == 0:
+    if instance.default_style and Layer.objects.filter(default_style__id=instance.default_style.id).count() == 0:
         instance.default_style.delete()
 
 def geoserver_pre_save(instance, sender, **kwargs):
