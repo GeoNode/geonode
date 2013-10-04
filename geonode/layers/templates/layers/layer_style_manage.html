@@ -26,7 +26,11 @@
     <div class="span9">
       <select id='default_style' name='default_style'>
       {% for style in layer_styles %}
-        <option value="{{ style }}">{{ style }}</option> 
+        {% if style = layer.default_style.name %}
+        <option value="{{ style }}" selected>{{ style }}</option>
+        {% else %}
+        <option value="{{ style }}">{{ style }}</option>
+        {% endif %}
       {% endfor %}
       </select>
     </div>
