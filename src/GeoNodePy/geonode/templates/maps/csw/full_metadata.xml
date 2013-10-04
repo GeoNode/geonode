@@ -108,7 +108,7 @@
            <gmd:date>
              <gmd:CI_Date>
                <gmd:date>
-                 <gco:DateTime>{{layer.date|date:"Y-m-d"}}</gco:DateTime>
+                 <gco:DateTime>{{layer.date|date:"c"}}</gco:DateTime>
                </gmd:date>
                <gmd:dateType>
                  <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode"
@@ -236,6 +236,28 @@
            </gmd:geographicElement>
          </gmd:EX_Extent>
        </gmd:extent>
+         <gmd:extent>
+             <gmd:EX_Extent>
+                 <gmd:temporalElement>
+                     <gmd:EX_TemporalExtent>
+                         <gmd:extent>
+                             <gml:TimePeriod>
+                                 <gml:beginPosition>
+                                     <gmd:date>
+                                         <gco:DateTime>{{layer.temporal_extent_start|date:"c"}}</gco:DateTime>
+                                     </gmd:date>
+                                 </gml:beginPosition>
+                                 <gml:endPosition>
+                                     <gmd:date>
+                                        <gco:DateTime>{{layer.temporal_extent_end|date:"c"}}</gco:DateTime>
+                                    </gmd:date>
+                                 </gml:endPosition>
+                             </gml:TimePeriod>
+                         </gmd:extent>
+                     </gmd:EX_TemporalExtent>
+                 </gmd:temporalElement>
+             </gmd:EX_Extent>
+         </gmd:extent>
        <gmd:supplementalInformation>
          <gco:CharacterString>
             {{ layer.supplemental_information }}

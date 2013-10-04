@@ -119,7 +119,7 @@ class LayerContactForm(forms.Form):
         label = _("Metadata Author"), required=False,
         queryset = Contact.objects.exclude(user=None),
         widget=autocomplete_light.ChoiceWidget('ContactAutocomplete'))
-    
+
     class Meta:
         model = Contact
 
@@ -1729,7 +1729,24 @@ def _metadata_search(query, start, limit, sortby, sortorder, **kw):
     if sortby:
         sortby = 'dc:' + sortby
 
-    csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None), sortby=sortby, sortorder=sortorder)
+    #Filter by category if present
+    category = kw.get('topic_category', None)
+    profile = kw.get('profile', None)
+
+    cql = None
+    if category or profile:
+        cql = ""
+        if category:
+            cql += "topicCat = \'%s\'" % category
+        if profile:
+            cql += " and " if category else ""
+            cql += "csw:AnyText like '%%profiles/%s/'" % profile
+
+        for keyword in keywords:
+            cql += " and csw:AnyText like '%%%s%%'" % keyword
+
+
+    csw.getrecords(keywords=keywords, startposition=start+1, maxrecords=limit, bbox=kw.get('bbox', None), sortby=sortby, sortorder=sortorder, cql=cql)
 
     # build results
     # XXX this goes directly to the result xml doc to obtain
