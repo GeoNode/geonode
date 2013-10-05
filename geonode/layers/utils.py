@@ -410,7 +410,7 @@ def save(layer, base_file, user, overwrite=True, title=None,
     if gs_resource is not None:
         assert gs_resource.name == name
     else:
-        msg = ('GeoNode encounterd problems when creating layer %s.'
+        msg = ('GeoNode encountered problems when creating layer %s.'
                'It cannot find the Layer that matches this Workspace.'
                'try renaming your files.' % name)
         logger.warn(msg)

@@ -372,7 +372,7 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     poc = property(_get_poc, _set_poc)
 
     def _set_metadata_author(self, metadata_author):
-        # reset any metadata_author asignation to this resource
+        # reset any metadata_author assignation to this resource
         ContactRole.objects.filter(role=self.metadata_author_role, resource=self).delete()
         #create the new assignation
         ContactRole.objects.create(role=self.metadata_author_role,
