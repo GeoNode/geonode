@@ -7,7 +7,7 @@ GeoNode Settings
 Here’s a list of settings available in GeoNode and their default values.  This includes settings for some external applications that
 GeoNode depends on.
 
-.. comment::
+.. comment:
     :local:
     :depth: 1
 
@@ -165,7 +165,7 @@ setting::
    }
 
 BACKEND
-~~~~~~~
+.......
 Default: ``"geonode.geoserver"``
 
 The OGC server backend to use.  The backend choices are:
@@ -173,14 +173,14 @@ The OGC server backend to use.  The backend choices are:
 * ``'geonode.geoserver'``
 
 BACKEND_WRITE_ENABLED
-~~~~~~~~~~~~~~~~~~~~~
+.....................
 Default: ``True``
 
 Specifies whether the OGC server can be written to.  If False, actions that modify
 data on the OGC server will not execute.
 
 DATASTORE
-~~~~~~~~~
+.........
 Default: ``''`` (Empty string)
 
 An optional string that represents the name of a vector datastore that Geonode uploads
@@ -212,19 +212,19 @@ entry for the datastore in the ``DATABASES`` dictionary with the same name.  Exa
   }
 
 GEOGIT_ENABLED
-~~~~~~~~~~~~~~
+..............
 Default: ``False``
 
 A boolean that represents whether the OGC server supports GeoGit datastores.
 
 GEONODE_SECURITY_ENABLED
-~~~~~~~~~~~~~~~~~~~~~~~~
+........................
 Default: ``True``
 
 A boolean that represents whether Geonode's security application is enabled.
 
 LOCATION
-~~~~~~~~
+........
 Default: ``"http://localhost:8080/geoserver/"``
 
 A base URL from which GeoNode can construct OGC service URLs.
@@ -234,45 +234,45 @@ visiting the GeoServer administration home page without the
 http://example.com/geoserver/web/, your server's location is http://example.com/geoserver.
 
 MAPFISH_PRINT_ENABLED
-~~~~~~~~~~~~~~~~~~~~~
+.....................
 Default: ``True``
 
 A boolean that represents whether the Mapfish printing extension is enabled on the server.
 
 PASSWORD
-~~~~~~~~
+........
 Default: ``'geoserver'``
 
 The administrative password for the OGC server as a string.
 
 PRINTNG_ENABLED
-~~~~~~~~~~~~~~~
+...............
 Default: ``True``
 
 A boolean that represents whether printing of maps and layers is enabled.
 
 
 PUBLIC_LOCATION
-~~~~~~~~~~~~~~~
+...............
 Default: ``"http://localhost:8080/geoserver/"``
 
 The URL used to in most public requests from Geonode.  This settings allows a user to write to one OGC server (the LOCATION setting)
 and read from a seperate server or the PUBLIC_LOCATION.
 
 USER
-~~~~
+....
 Default: ``'admin'``
 
 The administrative username for the OGC server as a string.
 
 WMST_ENABLED
-~~~~~~~~~~~~
+............
 Default: ``False``
 
 Not implemented.
 
 WPS_ENABLED
-~~~~~~~~~~~
+...........
 Default: ``False``
 
 Not implemented.
@@ -344,7 +344,7 @@ Default::
 A dictionary of Uploader settings and and their values.
 
 BACKEND
-~~~~~~~
+.......
 Default: ``'geonode.rest'``
 
 The uploader backend to use.  The backend choices are:
@@ -365,13 +365,13 @@ Default::
     }
 
 TIME_ENABED
-~~~~~~~~~~~
+...........
 Default: ``False``
 
 A boolean that specifies whether the upload should allow the user to enable time support when uploading data.
 
 GEOGIT_ENABED
-~~~~~~~~~~~
+.............
 Default: ``False``
 
 A boolean that specifies whether the uploader should allow the user to upload data into a GeoGit datastore.
