@@ -7,30 +7,30 @@ How to contribute to GeoNode's Documentation
 
 If you feel like adding or changing something in the GeoNode documentation you are very welcome to do so. The documentation always needs improvement as the development of the software is going quite fast.
 
-In order to be able to contribute to GeoNode documentation the following steps have to be done:
+In order to contribute to the GeoNode documentation you should:
 
 * Create an account on GitHub
-* Fork our repository
+* Fork the GeoNode repository
 * Edit the files in the */docs* directory
-* Make pull requests
+* Submit pull requests
 
-All these things can generally be done on the web, you won't need to download anything. But if you want to add images to your documentation you will have to do some more inital steps, because this can't
-be done on the web. To learn about how images can be added to your documentaion and which additional steps have to be done, read the section *Add images*.
+All these things can generally be done on the web, you won't need to download anything. But if you want to add images to the documentation you will have to do some more initial steps, because this can't
+be done on the web. To learn about how images can be added to your documentation and which additional steps have to be done, read the section *Add images*.
 
 
-In the following part the general steps will be explained more detailed.
+The general steps are explained in more detail below.
 
 Create an account on GitHub
 ---------------------------
 
-The first step for you will be to create an account on GitHub. Just go to https://github.com/, find a username that suits you, enter your email and a password and hit *Sign up for GitHub*. 
-Now you've signed in, you can type *geonode* into the searching area at the top of the website. On top of the search results you will find the repository *GeoNode/geonode*. By clicking on it you will be entering the repository and will be able to see all the folders and files that are needed for geonode. 
+The first step is to create an account on GitHub. Just go to `Github <https://www.github.com>`_, find a username that suits you, enter your email and a password and hit *Sign up for GitHub*.
+Now you've signed in, you can type *geonode* into the searching area at the top of the website. On top of the search results you will find the repository *GeoNode/geonode*. By clicking on it you will be entering the repository and will be able to see all the folders and files that are needed for GeoNode.
 The files needed for the documentation can be found in */docs*. 
 
 Fork a repository
 ------------------
 
-In order to make changes to these files, you first have to fork this repository. On the top of the website you can see the following buttons:
+In order to make changes to these files, you first have to fork the repository. On the top of the website you can see the following buttons:
 
 .. image:: img/fork_repo.PNG
 
@@ -55,7 +55,7 @@ To make changes to this file, hit the button *edit* on the right top. You can no
 
 As you can see now, the documentation is written in *reStructeredText*, a lightweight markup language. To learn how to use it you should read the documentation that can be found here http://docutils.sourceforge.net/docs/user/rst/quickref.html.
 By hitting the *preview* button you will be able to see how your text it is going to look like on the web. To save your changes, click on *Commit Changes* at the bottom of the site. Now you've saved the changes in your repository, but the original geonode repository still doesn't know anything about that!
-In order to tell them that you have made some changes you have to send a *pull request* (as descriped below).
+In order to tell them that you have made some changes you have to send a *pull request* (as described below).
 
 
 **Create a new branch**
