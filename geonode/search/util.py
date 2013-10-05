@@ -131,7 +131,7 @@ def julian_date(year,month,day,hour=0,minute=0,second=0):
 def caldate(mjd):
     """Given mjd return calendar date.
 
-    Retrns a tuple (year,month,day,hour,minute,second). The last is a
+    Returns a tuple (year,month,day,hour,minute,second). The last is a
     floating point number and others are integers. The precision in
     seconds is about 1e-4.
 

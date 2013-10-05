@@ -39,7 +39,7 @@ class GeoNodeCSWTest(TestCase):
 
         csw = get_catalogue(skip_caps=False)
 
-        # test that OGC:CSW URLs are identifical to what's defined in GeoNode
+        # test that OGC:CSW URLs are identical to what is defined in GeoNode
         for op in csw.catalogue.operations:
             self.assertEqual(csw.catalogue.url, op.methods['Get']['url'],
                         'Expected GeoNode URL to be equal to all CSW URLs')
@@ -60,7 +60,7 @@ class GeoNodeCSWTest(TestCase):
         self.assertTrue('gmd:MD_Metadata' in typenames,
             'Expected "gmd:MD_Metadata" to be a supported typeNames value')
 
-        # test that http://www.isotc211.org/2005/gmd is a supported outputschema
+        # test that http://www.isotc211.org/2005/gmd is a supported output schema
         for o in csw.catalogue.operations:
             if o.name == 'GetRecords':
                 outputschemas = o.parameters['outputSchema']['values']

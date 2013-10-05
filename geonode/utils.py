@@ -655,14 +655,14 @@ def _get_viewer_projection_info(srid):
 
 def resolve_object(request, model, query, permission=None,
                    permission_required=True, permission_msg=None):
-    '''Resolve an object using the provided query and check the optional
+    """Resolve an object using the provided query and check the optional
     permission. Model views should wrap this function as a shortcut.
 
     query - a dict to use for querying the model
     permission - an optional permission to check
     permission_required - if False, allow get methods to proceed
     permission_msg - optional message to use in 403
-    '''
+    """
 
     obj = get_object_or_404(model, **query)
     allowed = True
