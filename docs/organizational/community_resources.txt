@@ -96,6 +96,7 @@ Downstream Github Projects
 * https://github.com/opengeo/mapstory
 * https://github.com/dialog-it/anzsm
 * https://github.com/CIGNo-project/CIGNo
+* https://github.com/ROGUE-JCTD/rogue_geonode
 * Many More ...
 
 Additional Modules
