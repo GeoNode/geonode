@@ -4,15 +4,23 @@
 GeoNode Settings
 ================
 
-The user interface of a GeoNode site is built on top of the Django web
-framework.  GeoNode includes a few "apps" (reusable Django modules) to support
-development of those user interfaces.  While these apps have reasonable default
-configurations, for customized GeoNode sites you will probably want to adjust
-these apps for your specific needs.
+Here’s a list of settings available in GeoNode and their default values.  This includes settings for some external applications that
+GeoNode depends on.
 
 .. comment::
     :local:
     :depth: 1
+
+Base settings
+=============
+
+DEFAULT_TOPICCATEGORY
+---------------------
+Default: ``'location'``
+
+The identifier of the default topic category to use when uploading new layers.  The value specified for this setting must be
+present in the TopicCategory table or GeoNode will return a ``TopicCategory.DoesNotExist`` exception.
+
 
 Documents settings
 ==================
@@ -23,33 +31,130 @@ of the core settings.
 
 ALLOWED_DOCUMENT_TYPES
 ----------------------
-  Default: ``['doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
+Default: ``['doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
 
-  A list of acceptable file extensions that can be uploaded to the Documents app.
+A list of acceptable file extensions that can be uploaded to the Documents app.
 
 DOCUMENTS_APP
 -------------
-  Default: ``True``
+Default: ``True``
 
-  Enables the Documents app.
+Enables the Documents app.
 
 MAX_DOCUMENT_SIZE
 -----------------
-  Default: ``2``
+Default: ``2``
 
 
 Maps settings
 =============
 
+CATALOGUE
+---------
+A dict with the following keys:
+
+* ENGINE: The CSW backend (default is ``geonode.catalogue.backends.pycsw_local``)
+* URL: The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+* USERNAME: login credentials (if required)
+* PASSWORD: login credentials (if required)
+
+pycsw is the default CSW enabled in GeoNode.  pycsw configuration directives
+are managed in the PYCSW entry.
+
+
+DEFAULT_MAP_BASE_LAYER
+----------------------
+The name of the background layer to include in newly created maps.
+
+DEFAULT_MAP_CENTER
+------------------
+Default: ``(0, 0)``
+
+A 2-tuple with the latitude/longitude coordinates of the center-point to use
+in newly created maps.
+
+DEFAULT_MAP_ZOOM
+----------------
+Default: ``0``
+
+The zoom-level to use in newly created maps.  This works like the OpenLayers
+zoom level setting; 0 is at the world extent and each additional level cuts
+the viewport in half in each direction.
+
+MAP_BASELAYERS
+--------------
+Default::
+
+
+    MAP_BASELAYERS = [{
+    "source": {
+        "ptype": "gxp_wmscsource",
+        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+        "restUrl": "/gs/rest"
+     }
+      },{
+        "source": {"ptype": "gxp_olsource"},
+        "type":"OpenLayers.Layer",
+        "args":["No background"],
+        "visibility": False,
+        "fixed": True,
+        "group":"background"
+      }, {
+        "source": {"ptype": "gxp_olsource"},
+        "type":"OpenLayers.Layer.OSM",
+        "args":["OpenStreetMap"],
+        "visibility": False,
+        "fixed": True,
+        "group":"background"
+      }, {
+        "source": {"ptype": "gxp_mapquestsource"},
+        "name":"osm",
+        "group":"background",
+        "visibility": True
+      }, {
+        "source": {"ptype": "gxp_mapquestsource"},
+        "name":"naip",
+        "group":"background",
+        "visibility": False
+      }, {
+        "source": {"ptype": "gxp_bingsource"},
+        "name": "AerialWithLabels",
+        "fixed": True,
+        "visibility": False,
+        "group":"background"
+      },{
+        "source": {"ptype": "gxp_mapboxsource"},
+      }, {
+        "source": {"ptype": "gxp_olsource"},
+        "type":"OpenLayers.Layer.WMS",
+        "group":"background",
+        "visibility": False,
+        "fixed": True,
+        "args":[
+          "bluemarble",
+          "http://maps.opengeo.org/geowebcache/service/wms",
+          {
+            "layers":["bluemarble"],
+            "format":"image/png",
+            "tiled": True,
+            "tilesOrigin": [-20037508.34, -20037508.34]
+          },
+          {"buffer": 0}
+        ]
+
+    }]
+
+A list of dictionaries that specify the default map layers.
+
 OGC_SERVER
 ----------
-  Default: ``{}`` (Empty dictionary)
+Default: ``{}`` (Empty dictionary)
 
-  A dictionary of OGC servers and and their options.  The main
-  server should be listed in the 'default' key.  If there is no 'default'
-  key or if the ``OGC_SERVER`` setting does not exist Geonode will raise
-  an Improperly Configured exception.  Below is an example of the ``OGC_SERVER``
-  setting::
+A dictionary of OGC servers and and their options.  The main
+server should be listed in the 'default' key.  If there is no 'default'
+key or if the ``OGC_SERVER`` setting does not exist Geonode will raise
+an Improperly Configured exception.  Below is an example of the ``OGC_SERVER``
+setting::
 
    OGC_SERVER = {
      'default' : {
@@ -73,71 +178,6 @@ Default: ``True``
 
 Specifies whether the OGC server can be written to.  If False, actions that modify
 data on the OGC server will not execute.
-
-LOCATION
-~~~~~~~~
-Default: ``"http://localhost:8080/geoserver/"``
-
-A base URL from which GeoNode can construct OGC service URLs.
-If using Geoserver you can determine this by
-visiting the GeoServer administration home page without the
-/web/ at the end.  For example, if your GeoServer administration app is at
-http://example.com/geoserver/web/, your server's location is http://example.com/geoserver.
-
-PUBLIC_LOCATION
-~~~~~~~~~~~~~~~
-Default: ``"http://localhost:8080/geoserver/"``
-
-The URL used to in most public requests from Geonode.  This settings allows a user to write to one OGC server (the LOCATION setting)
-and read from a seperate server or the PUBLIC_LOCATION.
-
-USER
-~~~~
-Default: ``'admin'``
-
-The administrative username for the OGC server as a string.
-
-PASSWORD
-~~~~~~~~
-Default: ``'geoserver'``
-
-The administrative password for the OGC server as a string.
-
-MAPFISH_PRINT_ENABLED
-~~~~~~~~~~~~~~~~~~~~~
-Default: ``True``
-
-A boolean that represents whether the Mapfish printing extension is enabled on the server.
-
-PRINTNG_ENABLED
-~~~~~~~~~~~~~~~
-Default: ``True``
-
-A boolean that represents whether printing of maps and layers is enabled.
-
-GEONODE_SECURITY_ENABLED
-~~~~~~~~~~~~~~~~~~~~~~~~
-Default: ``True``
-
-A boolean that represents whether Geonode's security application is enabled.
-
-GEOGIT_ENABLED
-~~~~~~~~~~~~~~
-Default: ``False``
-
-A boolean that represents whether the OGC server supports Geogit datastores.
-
-WMST_ENABLED
-~~~~~~~~~~~~
-Default: ``False``
-
-Not implemented.
-
-WPS_ENABLED
-~~~~~~~~~~~
-Default: ``False``
-
-Not implemented.
 
 DATASTORE
 ~~~~~~~~~
@@ -171,17 +211,71 @@ entry for the datastore in the ``DATABASES`` dictionary with the same name.  Exa
    }
   }
 
-CATALOGUE
----------
-  A dict with the following keys:
+GEOGIT_ENABLED
+~~~~~~~~~~~~~~
+Default: ``False``
 
-  * ENGINE: The CSW backend (default is ``geonode.catalogue.backends.pycsw_local``)
-  * URL: The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-  * USERNAME: login credentials (if required)
-  * PASSWORD: login credentials (if required)
+A boolean that represents whether the OGC server supports GeoGit datastores.
 
-  pycsw is the default CSW enabled in GeoNode.  pycsw configuration directives
-  are managed in the PYCSW entry.
+GEONODE_SECURITY_ENABLED
+~~~~~~~~~~~~~~~~~~~~~~~~
+Default: ``True``
+
+A boolean that represents whether Geonode's security application is enabled.
+
+LOCATION
+~~~~~~~~
+Default: ``"http://localhost:8080/geoserver/"``
+
+A base URL from which GeoNode can construct OGC service URLs.
+If using Geoserver you can determine this by
+visiting the GeoServer administration home page without the
+/web/ at the end.  For example, if your GeoServer administration app is at
+http://example.com/geoserver/web/, your server's location is http://example.com/geoserver.
+
+MAPFISH_PRINT_ENABLED
+~~~~~~~~~~~~~~~~~~~~~
+Default: ``True``
+
+A boolean that represents whether the Mapfish printing extension is enabled on the server.
+
+PASSWORD
+~~~~~~~~
+Default: ``'geoserver'``
+
+The administrative password for the OGC server as a string.
+
+PRINTNG_ENABLED
+~~~~~~~~~~~~~~~
+Default: ``True``
+
+A boolean that represents whether printing of maps and layers is enabled.
+
+
+PUBLIC_LOCATION
+~~~~~~~~~~~~~~~
+Default: ``"http://localhost:8080/geoserver/"``
+
+The URL used to in most public requests from Geonode.  This settings allows a user to write to one OGC server (the LOCATION setting)
+and read from a seperate server or the PUBLIC_LOCATION.
+
+USER
+~~~~
+Default: ``'admin'``
+
+The administrative username for the OGC server as a string.
+
+WMST_ENABLED
+~~~~~~~~~~~~
+Default: ``False``
+
+Not implemented.
+
+WPS_ENABLED
+~~~~~~~~~~~
+Default: ``False``
+
+Not implemented.
 
 PYCSW
 -----
@@ -193,134 +287,106 @@ PYCSW
 
 SITEURL
 -------
-  Default: ``'http://localhost:8000/'``
+Default: ``'http://localhost:8000/'``
 
-  A base URL for use in creating absolute links to Django views.
-
-DEFAULT_MAP_BASE_LAYER
-----------------------
-  The name of the background layer to include in newly created maps.
-
-DEFAULT_MAP_CENTER
-------------------
-  Default: ``(0, 0)``
-
-  A 2-tuple with the latitude/longitude coordinates of the center-point to use
-  in newly created maps.
-
-DEFAULT_MAP_ZOOM
-----------------
-  Default: ``0``
-
-  The zoom-level to use in newly created maps.  This works like the OpenLayers
-  zoom level setting; 0 is at the world extent and each additional level cuts
-  the viewport in half in each direction.
+A base URL for use in creating absolute links to Django views and generating links in metadata.
 
 Search settings
-=============
+===============
 
 DEFAULT_SEARCH_SIZE
 -------------------
+Default: ``10``
 
-DEFAULT_TABLESPACE
-------------------
+An integer that specifies the default search size when using ``geonode.search`` for querying data.
 
-DEFAULT_TOPICCATEGORY
----------------------
+Security settings
+=================
 
+AUTH_EXEMPT_URLS
+----------------
+Default: ``()`` (Empty tuple)
 
-EMAIL_BACKEND
-EMAIL_HOST
-EMAIL_HOST_PASSWORD
-EMAIL_HOST_USER
-EMAIL_PORT
-EMAIL_SUBJECT_PREFIX
-EMAIL_USE_TLS
-FILE_CHARSET
-FILE_UPLOAD_HANDLERS
-FILE_UPLOAD_MAX_MEMORY_SIZE
-FILE_UPLOAD_PERMISSIONS
-FILE_UPLOAD_TEMP_DIR
-FIRST_DAY_OF_WEEK
-FIXTURE_DIRS
-FORCE_SCRIPT_NAME
-FORMAT_MODULE_PATH
-GEOGIT_DATASTORE_NAME
-IGNORABLE_404_URLS
-INSTALLED_APPS
-INTERNAL_IPS
-LANGUAGES
-LANGUAGES_BIDI
-LANGUAGE_CODE
-LANGUAGE_COOKIE_NAME
-LEAFLET_CONFIG
-LOCALE_PATHS
+A tuple of url patterns that the user can visit without being authenticated.
+This setting has no effect if ``LOCKDOWN_GEONODE`` is not True.  For example,
+``AUTH_EXEMPT_URLS = ('/maps',)`` will allow unauthenticated users to
+browse maps.
+
 LOCKDOWN_GEONODE
-LOGGING
-LOGGING_CONFIG
-LOGIN_REDIRECT_URL
-LOGIN_URL
-LOGOUT_URL
-MANAGERS
-MAP_BASELAYERS
-MAX_DOCUMENT_SIZE
-MEDIA_ROOT
-MEDIA_URL
-MESSAGE_STORAGE
-MIDDLEWARE_CLASSES
-MISSING_THUMBNAIL
-MONTH_DAY_FORMAT
-NOSE_ARGS
-NUMBER_GROUPING
-OGC_SERVER
-PASSWORD_HASHERS
-PASSWORD_RESET_TIMEOUT_DAYS
-PREPEND_WWW
-PRINTNG_ENABLED
-PROFANITIES_LIST
-PROJECT_ROOT
-PYCSW
-REGISTRATION_OPEN
-ROOT_URLCONF
-SECRET_KEY
-SECURE_PROXY_SSL_HEADER
-SEND_BROKEN_LINK_EMAILS
-SERVER_EMAIL
-SESSION_CACHE_ALIAS
-SESSION_COOKIE_AGE
-SESSION_COOKIE_DOMAIN
-SESSION_COOKIE_HTTPONLY
-SESSION_COOKIE_NAME
-SESSION_COOKIE_PATH
-SESSION_COOKIE_SECURE
-SESSION_ENGINE
-SESSION_EXPIRE_AT_BROWSER_CLOSE
-SESSION_FILE_PATH
-SESSION_SAVE_EVERY_REQUEST
-SESSION_SERIALIZER
-SETTINGS_MODULE
-SHORT_DATETIME_FORMAT
-SHORT_DATE_FORMAT
-SIGNING_BACKEND
+----------------
+Default: ``False``
 
-TEMPLATE_DEBUG
-TEMPLATE_DIRS
-TEMPLATE_LOADERS
-TEMPLATE_STRING_IF_INVALID
-TEST_RUNNER
-THEME_ACCOUNT_CONTACT_EMAIL
-THOUSAND_SEPARATOR
-TIME_FORMAT
-TIME_INPUT_FORMATS
-TIME_ZONE
-TRANSACTIONS_MANAGED
+By default, the GeoNode application allows visitors to view most pages without being authenticated. If this is set to ``True``
+users must be authenticated before accessing URL routes not included in ``AUTH_EXEMPT_URLS``.
+
+Upload settings
+===============
+
+GEOGIT_DATASTORE_NAME
+---------------------
+Default: ``None``
+
+A string with the default GeoGit datastore name.  This value is only used if no GeoGit datastore name is provided
+when data is uploaded but it must be populated if your deployment supports GeoGit.
+
 UPLOADER
-USE_ETAGS
-USE_I18N
-USE_L10N
-USE_THOUSAND_SEPARATOR
-USE_TZ
-USE_X_FORWARDED_HOST
-WSGI_APPLICATION
-X_FRAME_OPTIONS
-YEAR_MONTH_FORMAT
+--------
+Default::
+
+    {
+        'BACKEND' : 'geonode.rest',
+        'OPTIONS' : {
+            'TIME_ENABLED': False,
+            'GEOGIT_ENABLED': False,
+        }
+    }
+
+A dictionary of Uploader settings and and their values.
+
+BACKEND
+~~~~~~~
+Default: ``'geonode.rest'``
+
+The uploader backend to use.  The backend choices are:
+
+* ``'geonode.importer'``
+* ``'geonode.rest'``
+
+The importer backend requires the Geoserver importer backend to be enabled and is required for uploading data into
+GeoGit datastores.
+
+OPTIONS
+-------
+Default::
+
+    'OPTIONS' : {
+        'TIME_ENABLED': False,
+        'GEOGIT_ENABLED': False,
+    }
+
+TIME_ENABED
+~~~~~~~~~~~
+Default: ``False``
+
+A boolean that specifies whether the upload should allow the user to enable time support when uploading data.
+
+GEOGIT_ENABED
+~~~~~~~~~~~
+Default: ``False``
+
+A boolean that specifies whether the uploader should allow the user to upload data into a GeoGit datastore.
+
+User Account settings
+=====================
+
+REGISTRATION_OPEN
+-----------------
+Default: ``False``
+
+A boolean that specifies whether users can self-register for an account on your site.
+
+THEME_ACCOUNT_CONTACT_EMAIL
+---------------------------
+Default: ``'admin@example.com'``
+
+This email address is added to the bottom of the password reset page in case users have trouble un-locking their account.
