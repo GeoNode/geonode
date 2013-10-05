@@ -1,7 +1,7 @@
 .. _configure_installation:
 
 ==============================
-Configure Geonode Installation
+Configure GeoNode Installation
 ==============================
 
 You have installed GeoNode with the default installation and now want to configure a Postgresql Database, use Apache, use Tomcat, local settings, create superuser, ...
@@ -13,7 +13,7 @@ You have installed GeoNode with the default installation and now want to configu
 Change default database to Postgresql-PostGIS
 ---------------------------------------------
 
-If you have installed geonode in developing mode, it will be running with the sqlite3 db as default. But this can be changed! In order to make geonode to use postgresql just follow the steps from this section.
+If you have installed geonode in developing mode, it will be running with the sqlite3 db as default. But this can be changed! In order to make GeoNode to use postgresql just follow the steps from this section.
 
 Create geonode user and database
 ********************************
@@ -28,7 +28,7 @@ To create the user:
 
 Now you will be asked to enter a password. This must be *geonode* (you can change it if you want to, but be aware that you have to edit the local_settings.py if you do so!)
 
-To create the databases (the geonode one and the spatial for shapefile imports):
+To create the databases (the GeoNode one and the spatial for shapefile imports):
 
 .. code-block:: console
 
@@ -48,7 +48,7 @@ This creates a db called *geonode* and *geonode-imports* (which automatically ha
 Change authentication method
 ****************************
 
-In the postgres config path, */etc/postgresql/9.2/main*, you should find the file *pg_hba.conf*. This file has to be edited in order to allow the geonode user to have access to the database (?). Therfore change the directory to this file and open it  
+In the postgres config path, */etc/postgresql/9.2/main*, you should find the file *pg_hba.conf*. This file has to be edited in order to allow the GeoNode user to have access to the database (?). Therefore change the directory to this file and open it
 
 .. code-block:: console
 
@@ -117,7 +117,7 @@ Furthermore a new django superuser has to be created
 
    $ python manage.py createsuperuser
 
-You will be asked to enter a username, an email adress and a password.
+You will be asked to enter a username, an email address and a password.
 
 
 Other steps
@@ -164,14 +164,14 @@ Beside this module you also have to enable the proxy module. This can be done ve
 
     $ sudo a2enmod proxy_http
 
-We have to create one more configuration file for geonode. Go to the folder *sites-available* and create a file called *geonode*
+We have to create one more configuration file for GeoNode. Go to the folder *sites-available* and create a file called *geonode*
 
 .. code-block:: console
 
     $ cd /etc/apache2/sites-available
     $ sudo gedit geonode
 
-This file should inlcude the following, but don´t forget to adjust the paths!
+This file should include the following, but don´t forget to adjust the paths!
 
 .. code-block:: python
 
@@ -225,7 +225,7 @@ Now reload apache
 
     $ sudo service apache2 reload
 
-If you now type localhost into your webbrowser, the geonode webpage will appear. You can now login with your newly created superuser account. But if you try to attend the django admin interface, you will only see the content of this webpage but without any design. To change this, you have to change the following entry in our geonode configuration file
+If you now type localhost into your web browser, the GeoNode web page will appear. You can now login with your newly created superuser account. But if you try to attend the django admin interface, you will only see the content of this web page but without any design. To change this, you have to change the following entry in our GeoNode configuration file
 
 .. code-block:: console
 
