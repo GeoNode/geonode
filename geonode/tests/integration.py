@@ -200,7 +200,7 @@ class GeoNodeMapTest(TestCase):
                 raise GeoNodeException(msg)
 
         server_url = settings.OGC_SERVER['default']['LOCATION'] + 'ows?'
-        # Verify that the GeoServer GetCapabilities record is accesible:
+        # Verify that the GeoServer GetCapabilities record is accessible:
         #metadata = get_layers_metadata(server_url, '1.0.0')
         #msg = ('The metadata list should not be empty in server %s'
         #        % server_url)

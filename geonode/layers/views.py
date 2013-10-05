@@ -85,9 +85,9 @@ _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 def _resolve_layer(request, typename, permission='layers.change_layer',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
-    '''
+    """
     Resolve the layer by the provided typename and check the optional permission.
-    '''
+    """
     return resolve_object(request, Layer, {'typename':typename},
                           permission = permission, permission_msg=msg, **kwargs)
 

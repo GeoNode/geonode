@@ -251,9 +251,9 @@ def _get_layer_results(query):
     if query.categories:
         q = _filter_category(q, query.categories)
 
-    # this is a special optimization for prefetching results when requesting
+    # this is a special optimization for pre-fetching results when requesting
     # all records via search
-    # keywords and thumbnails cannot be prefetched at the moment due to
+    # keywords and thumbnails cannot be pre-fetched at the moment due to
     # the way the contenttypes are implemented
     if query.limit == 0 and using_geodjango:
         q = q.defer(None).prefetch_related("owner","spatial_temporal_index")
@@ -300,9 +300,9 @@ def _get_document_results(query):
     if query.categories:
         q = _filter_category(q, query.categories)
 
-    # this is a special optimization for prefetching results when requesting
+    # this is a special optimization for pre-fetching results when requesting
     # all records via search
-    # keywords and thumbnails cannot be prefetched at the moment due to
+    # keywords and thumbnails cannot be pre-fetched at the moment due to
     # the way the contenttypes are implemented
     if query.limit == 0 and using_geodjango:
         q = q.defer(None).prefetch_related("owner","spatial_temporal_index")
