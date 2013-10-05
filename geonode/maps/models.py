@@ -267,7 +267,7 @@ class Map(ResourceBase, GXPMapBase):
         if height is not None:
             params['height'] = height
 
-        # Avoid usring urllib.urlencode here because it breaks the url.
+        # Avoid using urllib.urlencode here because it breaks the url.
         # commas and slashes in values get encoded and then cause trouble
         # with the WMS parser.
         p = "&".join("%s=%s"%item for item in params.items())

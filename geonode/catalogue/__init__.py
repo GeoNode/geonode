@@ -66,7 +66,7 @@ def load_backend(backend_name):
 
 
 def default_catalogue_backend():
-    """Get the default bakcend
+    """Get the default backend
     """
     msg = "There is no '%s' backend in CATALOGUE" % DEFAULT_CATALOGUE_ALIAS
     assert DEFAULT_CATALOGUE_ALIAS in settings.CATALOGUE, msg
