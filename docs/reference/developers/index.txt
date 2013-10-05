@@ -8,6 +8,7 @@ Here you will find information about each and every component of Geonode, for ex
 
 :ref:`javascript`
 
+:ref:`settings`
 
 .. toctree::
     :hidden:
@@ -15,4 +16,6 @@ Here you will find information about each and every component of Geonode, for ex
 
     django-apps
     javascript
+    settings
+
 
