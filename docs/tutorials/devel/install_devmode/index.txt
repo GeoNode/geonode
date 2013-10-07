@@ -4,31 +4,27 @@ Install GeoNode for Development
 ===============================
 
 
-In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following steps are required:
+In order to install GeoNode 2.0 in developing mode on Ubuntu 12.04 the following steps are required:
 
 #. install build tools and libraries (see Step 1)
 #. install dependencies (Python and Java) and supporting tools (see Step 2)
 #. add PPA repository (see Step 3)
 #. set up a virtual environment (virtualenv)
-#. clone geonode from github and install it in the virtual environment
+#. clone GeoNode from Github and install it in the virtual environment
 #. run paver to get install geoserver and start the development servers
 
 .. note:: The following steps have to be executed in your terminal. The *Steps 1 – 4a* have to be done as a root user, therefore don´t forget to type sudo in front (as shown in the steps)!
 
 **Step 1** Install build tools and libraries::
 
-    $ sudo apt-get install -y build-essential libxml2-dev libxslt-dev
+    $ sudo apt-get install build-essential libxml2-dev libxslt-dev
 
 
 **Step 2** Install dependencies
 
 *Python native dependencies*::
 
-    $ sudo apt-get install -y python-dev python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-pip python-software-properties
-
-*Setup virtualenv tools*::
-
-    sudo pip install virtualenvwrapper
+    $ sudo apt-get install python-dev python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2
 
 *Java dependencies*::
 
@@ -42,42 +38,43 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
 This is required for static development::
 
-    $ sudo add-apt-repository -y ppa:chris-lea/node.js
+    $ sudo add-apt-repository ppa:chris-lea/node.js
     $ sudo apt-get update
-    $ sudo apt-get install -y nodejs
+    $ sudo apt-get install nodejs
     $ sudo npm install -g bower
     $ sudo npm install -g grunt-cli
 
 **Step 4** set up a virtual environment
 
-Here is where Geonode will later be running.
+Here is where GeoNode will later be running.
 .. note:: Virtualenv was installed in *Step 2 above*.
 
-***Step 4a** Add the virtualenvwrapper to your new environement.*::
+***Step 4a** Download and install a virutalenvwrapper*::
+
+    $ sudo pip install virtualenvwrapper
+
+***Step 4b** Add the virtualenvwrapper to your new environment.*::
 
     $ export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
     $ export WORKON_HOME=~/.venvs
     $ source /usr/local/bin/virtualenvwrapper.sh
     $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
 
-*Step 4b*  set up the local virtual environment for Geonode *Note: needs to be done before you can download and install Geonode*::
+*Step 4c*  set up the local virtual environment for GeoNode *Note: needs to be done before you can download and install GeoNode*::
 
     $ mkdir your_folder
     $ mkvirtualenv geonode
-    $ workon geonode
 
-This creates a new directory where you want your project to be and creates a new virtualenvironment and starts you working in your virtualenv
+This creates a new directory where you want your project to be and creates a new virtual environment
 
 **Step 5**
 
-To download the latest geonode version from github, the command *clone* is used::
+To download the latest GeoNode version from Github, the command *clone* is used::
 
     $ git clone https://github.com/GeoNode/geonode.git
 
+In order to go on and complete the installation you have to direct to your now existing GeoNode folder::
 
-In order to go on and complete the installation you have to direct to your now exisiting geonode folder::
-
-    $ pip install -e geonode --use-mirrors
     $ cd geonode
 
 **Step 6**
@@ -87,7 +84,7 @@ The last step is to compile GeoServer and start the development servers::
     $ paver setup
     $ paver start
 
-Now you should be able to visit the geonode site by typing http://localhost:8000 into your browser window.
+Now you should be able to visit the GeoNode site by typing http://localhost:8000 into your browser window.
 
 To stop the server::
 
@@ -96,7 +93,7 @@ To stop the server::
     
 **Restart server**
 
-With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
+With every restart of your machine, you have to restart GeoNode as well. That means, you will not be able to open http://localhost:8000 directly after starting your machine new. In order to be able to use GeoNode now, you have to activate your virtual environment and to start the development servers.
 
 .. note:: *your_name* is the name of your machine and personal folder!
 
@@ -110,7 +107,7 @@ With every restart of your machine, you have to restart geonode as well. That me
 
 #. Start the server
   
-   To start the server go to your geonode folder::
+   To start the server go to your GeoNode folder::
    
        $ cd geonode
    
@@ -125,7 +122,7 @@ With every restart of your machine, you have to restart geonode as well. That me
 
 **Next step**
 
-Create a superuser so you can log on to your local geonode installation at http://localhost:8000
+Create a superuser so you can log on to your local GeoNode installation at http://localhost:8000
 
 .. code-block:: console
 
