@@ -371,7 +371,7 @@ Default: ``False``
 A boolean that specifies whether the upload should allow the user to enable time support when uploading data.
 
 GEOGIT_ENABED
-~~~~~~~~~~~
+~~~~~~~~~~~~~
 Default: ``False``
 
 A boolean that specifies whether the uploader should allow the user to upload data into a GeoGit datastore.
