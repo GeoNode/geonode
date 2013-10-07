@@ -26,6 +26,7 @@ Here you will find information about each and every component of Geonode, for ex
     components
     security
     localization
+    settings
     developers/index
     developers/django-apps
     developers/javascript
