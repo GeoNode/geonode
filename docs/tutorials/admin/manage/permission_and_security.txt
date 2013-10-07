@@ -46,13 +46,13 @@ Go to *Auth* -> *Users* and you will see all the users that exist at the moment.
 
 As you can see, there are three boxes that can be checked and unchecked. Because you've created a superuser, all three boxes
 are checked as default. If only the box *active* would have been checked, the user would not be a superuser and would not be able to
-attend the *Django Admin Interface* (which is only available for users with the *staff* status). Therefore keep the following
+access the *Django Admin Interface* (which is only available for users with the *staff* status). Therefore keep the following
 two things in mind:
 
-* a superuser is able to attend the *Django Admin Interface* and he has all permissions on the data uploaded to geonode.
-* an ordinary user (created from geonode interface) does only have to status *active* as default. This user does not have the ability to attend the *Django Admin Interface* and certain permissions have to be added for him.
+* a superuser is able to access the *Django Admin Interface* and he has all permissions on the data uploaded to GeoNode.
+* an ordinary user (created from the GeoNode interface) only has *active* permissions by default. The user will not have the ability to access the *Django Admin Interface* and certain permissions have to be added for him.
 
-Until now we've only created a superuser. But how to create an ordinary user? You basically have two options to do so.
+Until now we've only created superusers. So how do you create an ordinary user? You have two options:
 
 #. Django Admin Interface
 
@@ -70,12 +70,12 @@ Until now we've only created a superuser. But how to create an ordinary user? Yo
 
    .. todo:: groups and permissions!
    
-   To test whether the new user was successfully created, go back to the geonode webpage and try to sign in. 
+   To test whether the new user was successfully created, go back to the GeoNode web page and try to sign in.
 
-#. Geonode website
+#. GeoNode website
 
-   To create an ordinary user you could also just use the geonode website. If you installed geonode using a release, you should
-   be able to see a *Register* button on the top, beside the *Sign in* button (you might have to log out before). 
+   To create an ordinary user you could also just use the GeoNode website. If you installed GeoNode using a release, you should
+    see a *Register* button on the top, beside the *Sign in* button (you might have to log out before).
    
    .. figure:: img/register.PNG
    
@@ -104,9 +104,9 @@ To sum it up, we have now created three users with different kind of permissions
 .. todo:: is this user permitted to change permission of contact roles, eg.? check this out! or could you assign him these permissions.
 
    
-You should know have an overview over the different kinds of users and how to create and edit them. You've also learned about the permissions a certain user has and how to change them using the *Django Amdin Interface*.
+You should know have an overview over the different kinds of users and how to create and edit them. You've also learned about the permissions a certain user has and how to change them using the *Django Admin Interface*.
 
-.. note:: If you've installed geonode in developing mode, the *Register* button won't be seen from the beginning. To add this button to the website, you have to change the `REGISTRATION_OPEN = False` in the settings.py to `REGISTRATION_OPEN = True`. Then reload geonode and you should also be able to see the *Register* button.
+.. note:: If you've installed GeoNode in developing mode, the *Register* button won't be seen from the beginning. To add this button to the website, you have to change the `REGISTRATION_OPEN = False` in the settings.py to `REGISTRATION_OPEN = True`. Then reload GeoNode and you should also be able to see the *Register* button.
 
 .. todo:: generally more about the django interface, about the generic roles etc.!
 
@@ -115,7 +115,7 @@ Layers
 
 Now that we've already created some users, we will take a closer look on the security of layers, how you can protect your data not to be viewed or edited by unwanted users.
 
-.. hint:: As already mentioned before it is important to know that a superuser does have unrestricted access to all your uploaeded data.  That means you cannot ban a superuser from viewing, downloading or editing a layer!
+.. hint:: As already mentioned before it is important to know that a superuser does have unrestricted access to all your uploaded data.  That means you cannot ban a superuser from viewing, downloading or editing a layer!
 
 .. todo:: maybe you could do that, using the django admin interface
 
@@ -129,9 +129,9 @@ As it can be seen here, the access on your layer is split up into three groups:
 * edit data
 * manage and edit data
 
-The difference between *manage and edit layer* and simply *edit layer* is only, that a user assigned to *edit layer* is not able to change
-the permissions on the layer (as a user assigned to *manage and edit layer* is!).
-You can now coose whether you want your layer to be viewed and downloaded by
+The difference between *manage and edit layer* and *edit layer* is that a user assigned to *edit layer* is not able to change
+the permissions on the layer whereas a user assigned to *manage and edit layer* can change the permissions.
+You can now choose whether you want your layer to be viewed and downloaded by
 
 * anyone
 * any registered user
@@ -152,7 +152,7 @@ If you now log out, your layer can still be seen, but the unregistered users won
 .. figure:: img/edit_and_download_layer.PNG
 .. todo:: CHANGE IMAGE TO TEST LAYER!
 
-The *geonode_user* is able to edit the **test_layer**. But before going deeper into this, we have to first take a look on another case. As an administrator you might also upload your layers to geoserver and then make them available on geonode using *updatelayers*. Or you even add the layers via the terminal using *importlayers* (LINK TUTORIAL). To set the permissions on this layer, click on the **test layer** (you've uploaded via *updatelayers*) and you will see the same menu as shown in the image above. Click *Edit layer* and the menu will appear.
+The *geonode_user* is able to edit the **test_layer**. But before going deeper into this, we have to first take a look on another case. As an administrator you might also upload your layers to geoserver and then make them available on GeoNode using *updatelayers*. Or you even add the layers via the terminal using *importlayers* (LINK TUTORIAL). To set the permissions on this layer, click on the **test layer** (you've uploaded via *updatelayers*) and you will see the same menu as shown in the image above. Click *Edit layer* and the menu will appear.
 
 
 .. figure:: img/edit_and_manage.PNG
@@ -161,7 +161,7 @@ The *geonode_user* is able to edit the **test_layer**. But before going deeper i
 
 .. todo:: maybe tutorial about adding layers for admins?
   
-Choose *edit permissions* and a window with the permission settings will appear. This window can also be opened by scrolling down the website. On the right handside of the page you should be able to see a button like this.
+Choose *edit permissions* and a window with the permission settings will appear. This window can also be opened by scrolling down the website. On the right-hand side of the page you should be able to see a button like this.
 
 .. img/change_layer_permissions.PNG
 .. todo:: CREATE THIS IMG!! 
@@ -194,7 +194,7 @@ Now you are logged in as the user *test_user*. Below the **test_layer** you can 
 .. img/info.PNG
 .. todo:: CREATE/CHANGE THIS IMAGE!!
 
-By clicking *Edit Layer* and *Edit Metadata* on top of the layer, you can change this information. The *test_user* is able to change all the metadata of this layer. We now want to change to *point of contact*, therfore scroll down until you see this:
+By clicking *Edit Layer* and *Edit Metadata* on top of the layer, you can change this information. The *test_user* is able to change all the metadata of this layer. We now want to change to *point of contact*, therefore scroll down until you see this:
 
 .. figure:: img/point_of_contact.PNG
 

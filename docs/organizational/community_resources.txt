@@ -4,11 +4,11 @@
 Community Resources
 ===================
 
-Here you will find many links to resources on Github, external sites using Geonode.  Think of like your Geonode Bookmarks.
+Here you will find many links to resources on Github, external sites using GeoNode.  Think of like your GeoNode Bookmarks.
 
 Main Links
 ----------
-These 3 top links are the Geonode landing pages and will take you to all other information on Geonode.
+These 3 top links are the GeoNode landing pages and will take you to all other information on GeoNode.
 
 * Main HomePage and Blog http://geonode.org
 * Documentation http://docs.geonode.org
@@ -45,7 +45,7 @@ Github Project Links
 
 Demo Sites
 ----------
-* Demo Geonode Site http://demo.geonode.org/
+* Demo GeoNode Site http://demo.geonode.org/
 * Latest Beta Demo Site http://beta.dev.geonode.org/
 * UI/UX Review Site https://sites.google.com/a/opengeo.org/geonode-ui/
 
@@ -96,6 +96,7 @@ Downstream Github Projects
 * https://github.com/opengeo/mapstory
 * https://github.com/dialog-it/anzsm
 * https://github.com/CIGNo-project/CIGNo
+* https://github.com/ROGUE-JCTD/rogue_geonode
 * Many More ...
 
 Additional Modules
