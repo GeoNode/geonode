@@ -180,12 +180,12 @@ configuration may still be needed in case of not standard installation.
 Steps
 .....
  #. *Configure* GeoServer with the location of the GeoNode site, used for
-   authentication (so that GeoServer can recognize logins from the main site).
-   This setting defaults to http://localhost:8000/, so if you are running
-   the GeoNode Django application on a different port, or on a different server
-   from the one running GeoServer, then you will need to change this by adding
-   a block of XML to ``WEB-INF/web.xml`` within the unpacked application
-   directory, like so::
+    authentication (so that GeoServer can recognize logins from the main site).
+    This setting defaults to http://localhost:8000/, so if you are running
+    the GeoNode Django application on a different port, or on a different server
+    from the one running GeoServer, then you will need to change this by adding
+    a block of XML to ``WEB-INF/web.xml`` within the unpacked application
+    directory, like so::
 
        <context-param>
            <param-name>GEONODE_BASE_URL</param-name>

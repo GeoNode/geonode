@@ -4,30 +4,30 @@
 Organizational
 ==============
 
-This is information on existing projects, contributing to Geonode (code, documentation, translation, ...) and the community itself.
+This is information on existing projects, contributing to GeoNode (code, documentation, translation, ...) and the community itself.
 
-:ref:`about` - What is Geonode, the big picture.
+:ref:`about` - What is GeoNode, the big picture.
 
-:ref:`roadmap` - How Geonode can move ahead into the future.
+:ref:`roadmap` - How GeoNode can move ahead into the future.
 
-:ref:`community_resources` - Lots of links, think of it like your personal Geonode bookmarks
+:ref:`community_resources` - Lots of links, think of it like your personal GeoNode bookmarks
 
 :ref:`comm_bylaws` - Some rules to keeps us stronger
 
-:ref:`other_geonode_projects` - Who else is doing cool stuff with Geonode
+:ref:`other_geonode_projects` - Who else is doing cool stuff with GeoNode
 
-GNIPS_  Geonode Improvment Proposals
+GNIPS_  GeoNode Improvement Proposals
 
 
 Contributing
 ------------
-Helping out the Geonode project is great and by contributing we all benefit and here is how.
+Helping out the GeoNode project is great and by contributing we all benefit and here is how.
 
 :ref:`contrib`  is the best way to help out and here we show you how.
 
 :ref:`review_process` is where code review happens, explained for developers.
 
-:ref:`review_criteria` for extending geonode.
+:ref:`review_criteria` for extending GeoNode.
 
 :ref:`contrib_trans` and update an existing language or add a new one.
 
