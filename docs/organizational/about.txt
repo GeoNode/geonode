@@ -59,13 +59,13 @@ The development community is very supportive of new projects and contributes ide
 Convinced! Where do I sign?
 ===========================
 
-The next obvious steps are to :ref:`quick_installation`, :doc:`read the tutorials </tutorials/index>` and email geonode-users+subscribe@googlegroups.com to join the community. Thanks for your interest!
+The next steps are to follow the :ref:`quick_installation`, :doc:`read the tutorials </tutorials/index>` and email geonode-users+subscribe@googlegroups.com to join the community. Thanks for your interest!
 
 .. note::
 
     The registration process for the mailing list is the following:
       #. Send an email to geonode-users+subscribe@googlegroups.com with any subject or content
-      #. Get a confirmation notice from geonode-users+subconfirm@googlegroups.com and comfirm by replying
+      #. Get a confirmation notice from geonode-users+subconfirm@googlegroups.com and confirm by replying
       #. Once the above is complete, you are registered and you can start sending emails to the community
 
 

@@ -39,7 +39,7 @@ these apps for your specific needs.
         support JavaScript applications accessing GeoServer
 
       geonode.search
-        searching Geonode.
+        searching GeoNode.
 
       geonode.security
         provide django auth backend for providing security system.
@@ -130,7 +130,7 @@ importlayers
 updatelayers
   ``python manage.py updatelayers``
 
-  Scan Geoserver for data that has not been added to Geonode.
+  Scan Geoserver for data that has not been added to GeoNode.
 
 ``geonode.maps`` - Map creation and geospatial data management
 ==============================================================
@@ -167,7 +167,7 @@ OGC_SERVER
 
   A dictionary of OGC servers and and their options.  The main
   server should be listed in the 'default' key.  If there is no 'default'
-  key or if the ``OGC_SERVER`` setting does not exist Geonode will raise
+  key or if the ``OGC_SERVER`` setting does not exist GeoNode will raise
   an Improperly Configured exception.  Below is an example of the ``OGC_SERVER``
   setting::
 
@@ -204,7 +204,7 @@ OGC_SERVER
   PUBLIC_LOCATION
     Default: ``"http://localhost:8080/geoserver/"``
 
-    The URL used to in most public requests from Geonode.  This settings allows a user to write to one OGC server (the LOCATION setting)
+    The URL used to in most public requests from GeoNode.  This settings allows a user to write to one OGC server (the LOCATION setting)
     and read from a seperate server or the PUBLIC_LOCATION.
 
   USER
@@ -230,7 +230,7 @@ OGC_SERVER
   GEONODE_SECURITY_ENABLED
     Default: ``True``
 
-    A boolean that represents whether Geonode's security application is enabled.
+    A boolean that represents whether GeoNode's security application is enabled.
 
   GEOGIT_ENABLED
     Default: ``False``
@@ -250,7 +250,7 @@ OGC_SERVER
   DATASTORE
     Default: ``''`` (Empty string)
 
-    An optional string that represents the name of a vector datastore that Geonode uploads
+    An optional string that represents the name of a vector datastore that GeoNode uploads
     are imported into.  In order to support vector datastore imports there also needs to be an
     entry for the datastore in the ``DATABASES`` dictionary with the same name.  Example::
 
@@ -280,10 +280,10 @@ OGC_SERVER
 
 
 GEOSERVER_CREDENTIALS
-  Removed in Geonode 2.0, this value is now specified in the ``OGC_SERVER`` settings.
+  Removed in GeoNode 2.0, this value is now specified in the ``OGC_SERVER`` settings.
 
 GEOSERVER_BASE_URL
-  Removed in Geonode 2.0, this value is now specified in the ``OGC_SERVER`` settings.
+  Removed in GeoNode 2.0, this value is now specified in the ``OGC_SERVER`` settings.
 
 CATALOGUE
   A dict with the following keys:
@@ -345,9 +345,9 @@ geonode.proxy.views.geoserver
   against the Django site, and will use the default ``OGC_SERVER`` ``USER``,
   ``PASSWORD`` and ``LOCATION`` settings as defined in the maps application.
 
-``geonode.search`` - Provides the Geonode search functionality.
+``geonode.search`` - Provides the GeoNode search functionality.
 ===============================================================
-This Django app provides a fast search functionality to Geonode.
+This Django app provides a fast search functionality to GeoNode.
 
 Views
 -----
