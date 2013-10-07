@@ -276,7 +276,7 @@ class Session(_UploadBase):
         use_url - if true, post a URL to the uploader
         """
         # @todo getting the task response updates the session tasks, but
-        # neglects to retreive the overall session status field
+        # neglects to retrieve the overall session status field
         fname = os.path.basename(files[0])
         _,ext = os.path.splitext(fname)
         if use_url:

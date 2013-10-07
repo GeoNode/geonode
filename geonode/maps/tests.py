@@ -259,7 +259,7 @@ community."
                           content_type="application/json")
         self.assertEquals(response.status_code, 404)
 
-        # Test that GET retunrs permissions
+        # Test that GET returns permissions
         response = c.get(url(mapid))
         assert('permissions' in response.content)
 

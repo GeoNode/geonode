@@ -410,7 +410,7 @@ def save(layer, base_file, user, overwrite=True, title=None,
     if gs_resource is not None:
         assert gs_resource.name == name
     else:
-        msg = ('GeoNode encounterd problems when creating layer %s.'
+        msg = ('GeoNode encountered problems when creating layer %s.'
                'It cannot find the Layer that matches this Workspace.'
                'try renaming your files.' % name)
         logger.warn(msg)
@@ -570,7 +570,7 @@ def file_upload(filename, user=None, title=None,
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
-    # Do not do attemt to do anything unless geonode is running
+    # Do not do attempt to do anything unless geonode is running
     check_geonode_is_up()
 
     # Get a valid user
@@ -604,7 +604,7 @@ def upload(incoming, user=None, overwrite=False,
 
        This function also verifies that each layer is in GeoServer.
 
-       Supported extensions are: .shp, .tif, and .zip (of a shapfile).
+       Supported extensions are: .shp, .tif, and .zip (of a shapefile).
        It catches GeoNodeExceptions and gives a report per file
     """
     if verbosity > 1:
