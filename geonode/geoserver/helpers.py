@@ -244,6 +244,10 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
        It returns a list of dictionaries with the name of the layer,
        the result of the operation and the errors and traceback if it failed.
     """
+
+    # avoid circular import problem
+    from geonode.layers.models import set_attributes
+
     if console is None:
         console = open(os.devnull, 'w')
 
@@ -300,6 +304,8 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
                 "uuid": str(uuid.uuid4())
             })
             layer.save()
+            # recalculate the layer statistics
+            set_attributes(layer, overwrite=True)
 
         except Exception, e:
             if ignore_errors:
