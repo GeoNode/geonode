@@ -400,7 +400,7 @@ OGC_SERVER = {
         'BACKEND' : 'geonode.geoserver',
         'LOCATION' : 'http://localhost:8080/geoserver/',
         # PUBLIC_LOCATION needs to be kept like this because in dev mode
-        # the proxy won't work and the integratin tests will fail
+        # the proxy won't work and the integration tests will fail
         # the entire block has to be overridden in the local_settings
         'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',
         'USER' : 'admin',
@@ -411,7 +411,7 @@ OGC_SERVER = {
         'GEOGIT_ENABLED' : False,
         'WMST_ENABLED' : False,
         'BACKEND_WRITE_ENABLED': True,
-        'WPS_ENABLED' : False,
+        'WPS_ENABLED' : True,
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': '', #'datastore',
     }

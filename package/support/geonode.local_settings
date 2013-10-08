@@ -51,6 +51,8 @@ OGC_SERVER = {
         'GEONODE_SECURITY_ENABLED' : True,
         'GEOGIT_ENABLED' : False,
         'WMST_ENABLED' : False,
+        'BACKEND_WRITE_ENABLED': True,
+        'WPS_ENABLED' : True,
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': 'datastore',
     }

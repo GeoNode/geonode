@@ -280,7 +280,7 @@ def new_map_config(request):
     '''
     View that creates a new map.
 
-    If the query argument 'copy' is given, the inital map is
+    If the query argument 'copy' is given, the initial map is
     a copy of the map with the id specified, otherwise the
     default map configuration is used.  If copy is specified
     and the map specified does not exist a 404 is returned.
