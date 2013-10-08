@@ -634,7 +634,7 @@ def get_attribute_statistics(layer_name, field):
         logger.exception('Error generating layer aggregate statistics')
 
 
-def set_attributes(layer):
+def set_attributes(layer, overwrite=False):
     """
     Retrieve layer attribute names & types from Geoserver,
     then store in GeoNode database using Attribute model
@@ -693,7 +693,7 @@ def set_attributes(layer):
         for field, ftype in attribute_map:
             if field == la.attribute:
                 lafound = True
-        if not lafound:
+        if overwrite or not lafound:
             logger.debug("Going to delete [%s] for [%s]", la.attribute, layer.name.encode('utf-8'))
             la.delete()
 
