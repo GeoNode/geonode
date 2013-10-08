@@ -331,7 +331,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    url = ogc_server_settings.rest
+    url = ogc_server_settings.internal_rest
     try:
         gs_catalog = Catalog(url, _user, _password)
         gs_resource = gs_catalog.get_resource(instance.name)
@@ -410,7 +410,7 @@ def geoserver_post_save(instance, sender, **kwargs):
        The way keywords are implemented requires the layer
        to be saved to the database before accessing them.
     """
-    url = ogc_server_settings.rest
+    url = ogc_server_settings.internal_rest
     
     try:
         gs_catalog = Catalog(url, _user, _password)
@@ -658,7 +658,7 @@ def set_attributes(layer, overwrite=False):
 
     attribute_map = []
     if layer.storeType == "dataStore":
-        dft_url = ogc_server_settings.public_url + "wfs?" + urllib.urlencode({
+        dft_url = ogc_server_settings.LOCATION + "wfs?" + urllib.urlencode({
             "service": "wfs",
             "version": "1.0.0",
             "request": "DescribeFeatureType",
@@ -672,7 +672,7 @@ def set_attributes(layer, overwrite=False):
         except Exception:
             attribute_map = []
     elif layer.storeType == "coverageStore":
-        dc_url = ogc_server_settings.public_url + "wcs?" + urllib.urlencode({
+        dc_url = ogc_server_settings.LOCATION + "wcs?" + urllib.urlencode({
             "service": "wcs",
             "version": "1.1.0",
             "request": "DescribeCoverage",
