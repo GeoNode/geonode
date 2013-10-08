@@ -132,7 +132,7 @@ class Layer(ResourceBase):
         # with the WMS parser.
         p = "&".join("%s=%s"%item for item in params.items())
 
-        return ogc_server_settings.public_url + "wms/reflect?" + p
+        return ogc_server_settings.LOCATION + "wms/reflect?" + p
 
 
     def verify(self):
@@ -566,7 +566,7 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     for link in instance.link_set.all():
         if not urlparse(settings.SITEURL).hostname == urlparse(link.url).hostname and not \
-                    urlparse(ogc_server_settings.LOCATION).hostname == urlparse(link.url).hostname:
+                    urlparse(ogc_server_settings.public_url).hostname == urlparse(link.url).hostname:
             link.delete()
 
     #Save layer attributes
