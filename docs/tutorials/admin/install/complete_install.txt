@@ -1,36 +1,21 @@
 .. _complete_install:
 
-    While we intend to provide a detailed, accurate explanation of the
-    installation process, it may become out of date.  If you run into problems
-    with the process described in this document, please don't hesitate to let
-    the GeoNode team know so we can keep it up to date.
+===========================
+Complete Installation Guide
+===========================
 
-Basically there are three different ways for you to install Geonode. Depending on your purpose, you can choose between those. If you just want to test Geonode, then try the ref:`quick installation`. If you intend to use Geonode with some already installed components, then use the Complete Installation Guide. This installation will give you full control over the components and you will be able to configure the components the way you need them. If you instead want to do some development, use the Installation in developing mode guide.
+.. note:: While we intend to provide a detailed, accurate explanation of the installation process, it may become out of date. If you run into problems with the process described in this document, please don't hesitate to let the GeoNode team know so we can keep it up to date.
 
-.. todo:: add links!
+This page describes a generic installation process for GeoNode. This manual installation is intended for who are comfortable with Linux system administration. Basically there are two ways to install GeoNode manually.
 
-#. Quick Installation
-#. Complete Installation
-#. Installation in developing mode
-
-.. todo:: add links!
-
-=================================================
-Complete Installation Guide - Manual Installation
-=================================================
-
-This page describes a generic installation process for GeoNode. The manual installation is intended for who are comfortable with Linux system administration. There are two ways to install GeoNode from a package
-
-	#. The first one is by using the automated script provided. This option is strongly recommended for everyone who simply wants a 	customized installation of GeoNode. This method lets you decide where and how the components must be installed.
+	#. The first one is by using the automated script provided. This option is strongly recommended for everyone who simply wants a 	customized installation of GeoNode.
 
 	#. The second one is fully manual and lets you have the complete control over the components but is also more complicated.
 
-Depending on how much .... . Until step "soundso" the installations are the same, afterwards you have to choose between the two methods.
-
 .. note:: The :ref:`quick_installation`  is easier to use.
 
-#. Recommended Minimum System Requirements
-------------------------------------------
+Recommended Minimum System Requirements
+---------------------------------------
 
 For deployment of GeoNode on a single server, the following are the *bare minimum* system requirements:
 
@@ -41,8 +26,8 @@ For deployment of GeoNode on a single server, the following are the *bare minimu
   For spatial data, cached tiles, and "scratch space" useful for administration, a decent baseline size for GeoNode deployments is 100GB.
 * 64-bit hardware recommended.
 
-#. Installing Dependencies
---------------------------
+Installing Dependencies
+-----------------------
 
 Some external software must be installed before you can install GeoNode. The package contains both the Java and Django web application code for GeoNode, and requires some external software installed to complete the GeoNode platform.
 
@@ -87,7 +72,6 @@ First of all, you have to get the code::
     $ sudo paver setup						# this downloads geoserver.war
 
 	#. Installation using the ubuntu config file
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	The package comes with a semi-automatic installer, located in the unzipped directory. The installer script **(located in package/  		install.sh)** has a configuration file **(located in package/support/config-ubuntu.sh)** associated with it which allows you to 	provide the details of your installation, such as where your webserver looks for documents. Therefore you need to adjust the 
 	conifg-ubuntu.sh file according to your needs before you run the installation. Also note that you might have to change the postgresql 		and postgis version in this file, according to the versions you use! 
@@ -110,7 +94,6 @@ First of all, you have to get the code::
 
 
 	#. Fully Manual Installation
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	This section is mostly intended for packagers working on installers for GeoNode on new platforms. This method can be done with every 		GeoNode release, both official and custom made. It’s suitable for servers that already have some of the components installed such as 		Tomcat, Apache with virtualhosts already configured.
 
