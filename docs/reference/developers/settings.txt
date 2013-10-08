@@ -1,8 +1,8 @@
 .. _settings:
 
-================
-GeoNode Settings
-================
+========
+Settings
+========
 
 Here’s a list of settings available in GeoNode and their default values.  This includes settings for some external applications that
 GeoNode depends on.
