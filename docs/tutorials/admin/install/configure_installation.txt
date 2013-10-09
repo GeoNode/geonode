@@ -4,7 +4,7 @@
 Configure Geonode Installation
 ==============================
 
-You have installed GeoNode with the default installation and now want to configure a Postgresql Database, use Apache, use Tomcat, local settings, create superuser, ...
+You have installed GeoNode in development mode and now want to configure a Postgresql Database, use Apache, use Tomcat, local settings, create superuser, ...
 
 .. note:: You need to first install GeoNode, see :ref:`quick_installation` or :ref:`install_devmode` or :ref:`complete_install`
 
@@ -45,7 +45,7 @@ If you have installed geonode in developing mode, it will be running with the sq
 
 
 #. **Change authentication method**
-   In the postgres config path, */etc/postgresql/9.2/main*, you should find the file *pg_hba.conf*. This file has to be edited in order to allow the geonode user to have access to the database (?). Therfore change the directory to this file and open it
+   In the postgres config path, */etc/postgresql/9.2/main*, you should find the file *pg_hba.conf*. This file has to be edited in order to allow the geonode user to have access to the database. Therfore change the directory to this file and open it
 
    .. code-block:: console
 
