@@ -54,18 +54,15 @@ Beware that in case of use of postgres 9.2 as described in :ref:`install_postgre
 
 .. note:: Be sure that you've installed all the required dependencies before you go further with the installation of GeoNode.
 
-
-
-.. note:: The following four steps are the same for both types of installations!
-
 Download Code
 -------------
-Now we can download the code using git.
+
+Download the code using git.
 
 .. code-block:: console
 
-    $ git clone https://github.com/GeoNode/geonode.git      # download code from github
-    $ cd geonode                            # change into the folder called geonde
+    $ git clone https://github.com/GeoNode/geonode.git      	# download code from github
+    $ cd geonode                            			# change into the folder called geonde
     $ sudo pip install -e .					# this installs django etc.
     $ sudo paver setup						# this downloads geoserver.war
 
@@ -74,10 +71,10 @@ Now if you like to see if all is working so far type:
 .. code-block:: console
 
     $ sudo paver start						# starts everything with default configs! NOT for production!
-    $ sudo paver stop						# stops all and you can continure with complete install
+    $ sudo paver stop						# stops all and you can continue with complete install
 
 
-will start GeoNode at http://localhost/. But until now, GeoNode is running with the default configurations, e.g it uses Jetty as servlet container and sqlite3 as database. Also GeoNode won't start without using the command above. Changing this, the following 		configurations on the used components have to be done.
+This will start GeoNode at http://localhost/. But until now, GeoNode is running with the default configurations, e.g it uses Jetty as servlet container and sqlite3 as database. Also GeoNode won't start without using the command above. Changing this, the following 		configurations on the used components have to be done.
 
 
 Configure
