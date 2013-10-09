@@ -6,125 +6,166 @@ Install GeoNode for Development
 
 In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following steps are required:
 
-#. install build tools and libraries (see Step 1)
-#. install dependencies (Python and Java) and supporting tools (see Step 2)
-#. add PPA repository (see Step 3)
+#. install build tools and libraries
+#. install dependencies (Python and Java) and supporting tools
+#. add PPA repository
 #. set up a virtual environment (virtualenv)
 #. clone geonode from github and install it in the virtual environment
 #. run paver to get install geoserver and start the development servers
 
-.. note:: The following steps have to be executed in your terminal. The *Steps 1 – 4a* have to be done as a root user, therefore don´t forget to type sudo in front (as shown in the steps)!
+.. note:: The following steps have to be executed in your terminal. The steps have to be done as a root user, therefore don´t forget to type sudo in front!
 
-**Step 1** Install build tools and libraries::
+#. Install build tools and libraries
 
-    $ sudo apt-get install build-essential libxml2-dev libxslt-dev
+   .. code-block:: console
+
+	$ sudo apt-get install build-essential libxml2-dev libxslt-dev
 
 
-**Step 2** Install dependencies
+#. Install dependencies
 
-*Python native dependencies*::
+   *Python native dependencies*
 
-    $ sudo apt-get install python-dev python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2
+   .. code-block:: console
 
-*Java dependencies*::
+	$ sudo apt-get install python-dev python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2
 
-    $ sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
+   *Java dependencies*
 
-*supporting tools*::
+   .. code-block:: console
 
-    $ sudo apt-get install -y git gettext
+	$ sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
 
-**Step 3** add a new PPA repository
+   *supporting tools*
 
-This is required for static development::
+   .. code-block:: console
 
-    $ sudo add-apt-repository ppa:chris-lea/node.js
-    $ sudo apt-get update
-    $ sudo apt-get install nodejs
-    $ sudo npm install -g bower
-    $ sudo npm install -g grunt-cli
+	$ sudo apt-get install -y git gettext
 
-**Step 4** set up a virtual environment
+#. Add a new PPA repository
 
-Here is where Geonode will later be running.
-.. note:: Virtualenv was installed in *Step 2 above*.
+   This is required for static development
 
-***Step 4a** Download and install a virutalenvwrapper*::
+   .. code-block:: console
 
-    $ sudo pip install virtualenvwrapper
+	$ sudo add-apt-repository ppa:chris-lea/node.js
+	$ sudo apt-get update
+	$ sudo apt-get install nodejs
+	$ sudo npm install -g bower
+	$ sudo npm install -g grunt-cli
 
-***Step 4b** Add the virtualenvwrapper to your new environement.*::
+#. Set up a virtual environment
 
-    $ export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
-    $ export WORKON_HOME=~/.venvs
-    $ source /usr/local/bin/virtualenvwrapper.sh
-    $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
+   Here is where Geonode will later be running.
 
-*Step 4c*  set up the local virtual environment for Geonode *Note: needs to be done before you can download and install Geonode*::
+   .. note:: Virtualenv was installed in the second step (python dependencies).
 
-    $ mkdir your_folder
-    $ mkvirtualenv geonode
+   #. Download and install a virutalenvwrapper
 
-This creates a new directory where you want your project to be and creates a new virtualenvironment
+      .. code-block:: console
+	
+	   $ sudo pip install virtualenvwrapper
 
-**Step 5**
+   #. Add the virtualenvwrapper to your new environement
 
-To download the latest geonode version from github, the command *clone* is used::
+      .. code-block:: console
 
-    $ git clone https://github.com/GeoNode/geonode.git
+	   $ export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
+	   $ export WORKON_HOME=~/.venvs
+	   $ source /usr/local/bin/virtualenvwrapper.sh
+	   $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
 
-In order to go on and complete the installation you have to direct to your now exisiting geonode folder::
+   #. set up the local virtual environment for Geonode 
 
-    $ cd geonode
+      .. note:: This needs to be done before you can download and install Geonode!
 
-**Step 6**
+      .. code-block:: console
 
-The last step is to compile GeoServer and start the development servers::
+	   $ mkdir your_folder
+	   $ mkvirtualenv geonode
 
-    $ paver setup
-    $ paver start
+      This creates a new directory where you want your project to be and creates a new virtualenvironment
 
-Now you should be able to visit the geonode site by typing http://localhost:8000 into your browser window.
+#. Get the code
 
-To stop the server::
+   To download the latest geonode version from github, the command *clone* is used
 
-    $ Ctrl c
-    $ paver stop
-    
-**Restart server**
+   .. code-block:: console
 
-With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open http://localhost:8000 directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
+	$ git clone https://github.com/GeoNode/geonode.git
 
-.. note:: *your_name* is the name of your machine and personal folder!
+   In order to go on and complete the installation you have to direct to your now exisiting geonode folder
 
-#. Activate virtualenv
- 
-   To activate your virtualenv you just need to type::
-   
-       $ workon geonode
+   .. code-block:: console
 
-   .. note:: Be careful with this, you might have another path, so check first where your virtualenv has been installed!
+	$ cd geonode
 
 #. Start the server
-  
-   To start the server go to your geonode folder::
+
+   The last step is to compile GeoServer and start the development servers
+
+   .. code-block:: console
+
+	$ paver setup
+	$ paver start
+
+   Now you should be able to visit the geonode site by typing http://localhost:8000 into your browser window.
+
+   To stop the server
+
+   .. code-block:: console
+
+	$ Ctrl c
+	$ paver stop
+
+#. Create a superuser
+
+   Create a superuser so you can log on to your local geonode installation at http://localhost:8000
+
+   .. code-block:: console
+
+       $ django-admin.py createsuperuser –-settings=geonode.settings
+    
+#. Restart server
+
+   With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
+
+   .. note:: *username* is the name of your machine and personal folder!
+
+   #. Activate virtualenv
+ 
+      To activate your virtualenv you just need to type
+
+      .. code-block:: console
    
-       $ cd geonode
+	   $ workon geonode
+
+      .. todo:: this is not working for me!!! My steps still have to be
+
+      or
+
+      .. code-block:: console
+
+	   $ source /home/username/.venvs/geonode/bin/activate
+
+      .. note:: Be careful with the path, it might not be the same for you!
+
+   #. Start the server
+
+      .. code-block:: console
    
-   and then run::
-   
-       $ paver start_geoserver
-       $ paver start_django
+	$ cd geonode
+	$ paver start_geoserver
+	$ paver start_django
 
-   Now you are able to access http://localhost:8000 again.
+      Now you are able to access http://localhost:8000 again.
 
-.. note:: Remember that you have to do these steps each time you restart your machine!!
+      .. note:: Remember that you have to do these steps each time you restart your machine!!
 
-**Next step**
+.. hint:: Now you've followed these installation instructions, geonode is running in development mode. This also means that you are using all the default settings of geonode. If you want to change them, e.g use Tomcat instead of Jetty, or Postgresql instead of sqlite3, you may follow the steps from :ref:`configure_installation`.
 
-Create a superuser so you can log on to your local geonode installation at http://localhost:8000
+.. toctree::
+   :maxdepth: 1
 
-.. code-block:: console
-
-    $ django-admin.py createsuperuser –-settings=geonode.settings
+   configure_installation
 
