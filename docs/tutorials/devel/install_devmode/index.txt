@@ -162,10 +162,10 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
       .. note:: Remember that you have to do these steps each time you restart your machine!!
 
-.. hint:: Now you've followed these installation instructions, geonode is running in development mode. This also means that you are using all the default settings of geonode. If you want to change them, e.g use Tomcat instead of Jetty, or Postgresql instead of sqlite3, you may follow the steps from :ref:`configure_installation`.
+.. hint:: Now you've followed these installation instructions, geonode is running in development mode. This also means that you are using all the default settings of geonode. If you want to change them, e.g use Tomcat instead of Jetty, or Postgresql instead of sqlite3, you may follow the steps from the section **Configure Manually** in :ref:`complete_install`.
 
 .. toctree::
    :maxdepth: 1
 
-   configure_installation
+   /admin/install/complete_install
 
