@@ -3,16 +3,9 @@
 Installing GeoNode
 ==================
 
-This section will guide you through the steps necessary to install GeoNode. Basically there are three different ways for you to install GeoNode. Depending on your purpose, you can choose between those. If you just want to test Geonode or just want a completely configured GeoNode, then try the :ref:`quick_install`. If you intend to use Geonode with some already installed components, then use the :ref:`complete install` guide. This installation will give you full control over the components and you will be able to configure the components the way you need them. If you instead want to do some development, use the :ref:`install_devmode` guide.
+This section will guide you through the steps necessary to install GeoNode. Basically there are three different ways for you to install GeoNode. Depending on your purpose, you can choose between those. If you just want to test Geonode or just want a completely configured GeoNode, then try the :ref:`quick_installation`. If you intend to use Geonode with some already installed components, then use the :ref:`complete_install` guide. This installation will give you full control over the components and you will be able to configure the components the way you need them. If you instead want to do some development, use the :ref:`install_devmode` guide.
 
-.. toctree::
-   :maxdepth: 1
-
-   quick_install
-   complete_install
-   devel/install_devmode/index
-
-:ref:`quick_install`
+:ref:`quick_installation`
   How to install GeoNode using PPA repositories.
 
 :ref:`complete_install`
@@ -27,6 +20,5 @@ Other install links:
 .. toctree::
    :maxdepth: 1
 
-   configure_installation
    install_postgresql
    install_postgis
