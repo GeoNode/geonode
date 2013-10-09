@@ -12,6 +12,8 @@ This page describes a generic installation process for GeoNode. This manual inst
 
 	#. The second one is fully manual and lets you have the complete control over the components but is also more complicated.
 
+The sections on the *Recommended Minimum System Requirements* and the *Installing Dependencies* section is valid for both kinds of installations. Also the first part of the section *Installation GeoNode* has to be done in both installation methods. After these initial steps, the methods differ from each other and you have to choose wich one suits you best.
+
 .. note:: The :ref:`quick_installation`  is easier to use.
 
 Recommended Minimum System Requirements
@@ -29,7 +31,7 @@ For deployment of GeoNode on a single server, the following are the *bare minimu
 Installing Dependencies
 -----------------------
 
-Some external software must be installed before you can install GeoNode. The package contains both the Java and Django web application code for GeoNode, and requires some external software installed to complete the GeoNode platform.
+Some external software must be installed before you can install GeoNode. The GeoNode package contains both the Java and Django web application code for GeoNode, but requires some external software installed to complete the GeoNode platform.
 
 This includes:
 
@@ -62,16 +64,24 @@ After installing the needed dependencies the next steps are to download the code
 * *Python/WSGI Container*: mod_wsgi
 * *Django Database*: PostgresQL
 
-The following steps are the same for both types of installations!
+.. note:: The following four steps are the same for both types of installations!
 
-First of all, you have to get the code::
+First of all, you have to get the code:
+
+.. code-block:: console
 
     $ git clone https://github.com/GeoNode/geonode.git
     $ cd geonode
     $ sudo pip install -e .					# this installs django etc.
     $ sudo paver setup						# this downloads geoserver.war
 
-	#. Installation using the ubuntu config file
+Now you have to choose between one of the two methods to finish the installation of GeoNode:
+
+#. Installation using the ubuntu config file
+#. Fully Manual Installation
+
+Installation using the ubuntu config file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	The package comes with a semi-automatic installer, located in the unzipped directory. The installer script **(located in package/  		install.sh)** has a configuration file **(located in package/support/config-ubuntu.sh)** associated with it which allows you to 	provide the details of your installation, such as where your webserver looks for documents. Therefore you need to adjust the 
 	conifg-ubuntu.sh file according to your needs before you run the installation. Also note that you might have to change the postgresql 		and postgis version in this file, according to the versions you use! 
@@ -84,37 +94,34 @@ First of all, you have to get the code::
     	$ sudo geonode-updateip youraddress
     	$ geonode createsuperuser
 
-	.. todo:: do i have to do the third step? or can i use a former geoserver version? I guess yes, just set the path right!
-
 	GeoNode can now be accessed at http://localhost
 
 	.. note:: Before proceed with the installation make sure to install the needed :ref:`dependencies`.
 
-	.. note:: More instructions can be found in the ``README`` distributed with the release as well as the pointer to the documentation 		page about configuring GeoNode for production after it has been installed.
-
-
-	#. Fully Manual Installation
+Fully Manual Installation
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	This section is mostly intended for packagers working on installers for GeoNode on new platforms. This method can be done with every 		GeoNode release, both official and custom made. It’s suitable for servers that already have some of the components installed such as 		Tomcat, Apache with virtualhosts already configured.
 
-	.. note:: If the server has a fresh Ubuntu installation it’s strongly suggested instead to adjust the *package/support/
-	config-ubuntu.sh* script to match the desired installation paths.
+	.. note:: If the server has a fresh Ubuntu installation it’s strongly suggested instead to adjust the *package/support/config-ubuntu.sh* script to match the desired installation paths.
 
-	Trying::
+	Trying
 
-    	$ sudo paver start
+	.. code-block:: console
 
-	will start GeoNode at http://localhost/. But until now, GeoNode is running with the default configurations, e.g it uses Jetty as 	 servlet container (true?) and GeoNode also won't start without using the command above. To change this, the following 		  		configurations of the used components have to be done.
+    		$ sudo paver start
 
-	#. Make directories
+	will start GeoNode at http://localhost/. But until now, GeoNode is running with the default configurations, e.g it uses Jetty as 	 servlet container and sqlite3 as database. Also GeoNode won't start without using the command above. Changing this, the following 		configurations on the used components have to be done.
+
+#. **Make directories**
 
 	First of all you have to make the directories and copy some things into it. Do I really have to do this? 	
 
-	#. Configure Postgresql and Postgis
+#. **Configure Postgresql and Postgis**
 
 	Until now GeoNode uses sqlite3 as the default db. The following steps will show you how to make geonode to use postgresql and postgis.
 
-		#. **Create geonode user and database**
+		**Create geonode user and database**
 
    		First of all a user called *geonode* (with password *geonode*), as well as a database called *geonode* has to be created.
 
@@ -122,7 +129,7 @@ First of all, you have to get the code::
 
    		.. code-block:: console
 
-    		$ sudo -u postgres createuser -P geonode
+    			$ sudo -u postgres createuser -P geonode
 
   		Now you will be asked to enter a password. This must be *geonode* (you can change it if you want to, but be aware that you 			have to edit the local_settings.py if you do so!)
 
@@ -130,26 +137,27 @@ First of all, you have to get the code::
 
    		.. code-block:: console
 
-    		$ sudo -u postgres createdb -O geonode geonode
-   		$ sudo -u postgres createdb -O geonode geonode-imports
-    		$ sudo su postgres
-    		$ psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql geonode-imports
-    		$ psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql geonode-imports
-    		$ psql -d geonode-imports -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
-    		$ psql -d geonode-imports -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
-    		$ exit
+    			$ sudo -u postgres createdb -O geonode geonode
+   			$ sudo -u postgres createdb -O geonode geonode-imports
+    			$ sudo su postgres
+    			$ psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql geonode-imports
+    			$ psql -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql geonode-imports
+    			$ psql -d geonode-imports -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
+    			$ psql -d geonode-imports -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
+    			$ exit
 
     
    		This creates a db called *geonode* and *geonode-imports* (which automatically has the postgis extension as well!) with owner 			*geonode*.
 
 
-		#. **Change authentication method**
+		**Change authentication method**
+
   		In the postgres config path, */etc/postgresql/9.2/main*, you should find the file *pg_hba.conf*. This file has to be edited in 			order to allow the geonode user to have access to the database. Therfore change the directory to this file and open it
 
    		.. code-block:: console
 
-   		$ cd /etc/postgresql/9.1/main
-    		$ sudo vi pg_hba.conf
+   			$ cd /etc/postgresql/9.1/main
+    			$ sudo vi pg_hba.conf
 
   		The file should contain the following default settings until now:
 
@@ -157,8 +165,8 @@ First of all, you have to get the code::
 
    		and then set the authentication method of the following entry from *peer* to *trust*::
 
-    		#TYPE	DATABASE    USER    METHOD
-    		local   all	    all     md5
+    			#TYPE	DATABASE    USER    METHOD
+    			local   all	    all     md5
 
    		After changing this file, the postgres service has to be restarted. This is essential, because otherwise the changed 			configurations won't be considered!
 
@@ -166,16 +174,16 @@ First of all, you have to get the code::
 
    		.. code-block:: console
 
-    		$ sudo service postgresql restart
+    			$ sudo service postgresql restart
 
    		.. note:: service could be also called postgresql-9.1 or postgresql-9.2 depending on your installation
 
    		Additional entry::
     
-    		#Type   DATABASE    USER    ADDRESS     METHOD
-    		host    geonode     geonode 127.0.0.1/32    md5
+    			#Type   DATABASE    USER    ADDRESS     METHOD
+    			host    geonode     geonode 127.0.0.1/32    md5
 
-		#. **Setup local settings**
+		**Setup local settings**
 
    		The next step is to set the local settings. 
 
@@ -183,7 +191,7 @@ First of all, you have to get the code::
 
    		.. code-block:: console
 
-    		$ sudo mv geonode/local_settings.py.sample geonode/local_settings.py
+    			$ sudo mv geonode/local_settings.py.sample geonode/local_settings.py
     
    		Uncomment the line 10 and modify the line 12 as follows::
 
@@ -194,7 +202,7 @@ First of all, you have to get the code::
 
    		Add the following as a directive::
 
-    		ALLOWED_HOST = ['domain or IP']
+    			ALLOWED_HOST = ['domain or IP']
 
 		**Synchronise db**
 
@@ -202,62 +210,60 @@ First of all, you have to get the code::
 
    		.. code-block:: console
 
-    		$ python manage.py syncdb --noinput --all
+    			$ python manage.py syncdb --noinput --all
 
 
-	#. Django configurations
+#. **Django configurations**
 
 	The **Django** frontend can be served in various ways, one of the most performant is Apache httpd with mod_wsgi installed.
 
      	You will also need a web server capable of simply serving static files; if you are using Apache httpd it can serve this purpose as 		well.
 
-	.. note:: The Django project has further documentation on how to serve Django applications at https://docs.djangoproject.com/en/1.5/
-howto/deployment/ .
+	.. note:: The Django project has further documentation on how to serve Django applications at https://docs.djangoproject.com/en/1.5/howto/deployment/ .
 
 	Before the webserver will be configured, some other steps are needed to execute.
 
-		#. Create new superuser
+		**Create new superuser**
 
-		Furthermore a new django superuser has to be created
+		A new django superuser has to be created
 
 		.. code-block:: console
 
-   		$ python manage.py createsuperuser
+   			$ python manage.py createsuperuser
 
 		You will be asked to enter a username, an email adress and a password.
 
-		#. Create local static files
+		**Create local static files**
 
 		The collectstatic command will create a new folder *static_root*.
 
 		.. code-block:: console
 
-   		$ python manage.py collectstatic
+   			$ python manage.py collectstatic
 
-		#. Enable geonode upload function
+		**Enable geonode upload function**
 
 		An empty folder called *uploaded* must be created
 
 		.. code-block:: console
 
-   		$ sudo mkdir -p /home/user/geonode/geonode/uploaded
+   			$ sudo mkdir -p /home/user/geonode/geonode/uploaded
    
 		When using apache webserver change owner to www-data
 
 		.. code-block:: console
    
-   		$ sudo chown www-data -R /home/user/geonode/geonode/uploaded
+   			$ sudo chown www-data -R /home/user/geonode/geonode/uploaded
 
-		#. Webserver configurations (Apache and mod_wsgi)
+#. **Webserver configurations (Apache and mod_wsgi)**
 
-		#. **first make apache to load the mod_wsgi module**.
+		**Make apache to load the mod_wsgi module**
 
    		If you've done the installation from above, you should already have a *httpd.conf* file that includes one line
 
    		.. code-block:: python
 
-      		LoadModule wsgi_module /path/to/modules/mod_wsgi.so
-
+      			LoadModule wsgi_module /path/to/modules/mod_wsgi.so
 
   		 .. note:: If you do not already have this, then please add this line to *httpd.conf* now!
 
@@ -265,90 +271,90 @@ howto/deployment/ .
 
    		.. code-block:: console
 
-      		 $ sudo a2enmod proxy_http
+      		 	$ sudo a2enmod proxy_http
 
   		We have to create one more configuration file for geonode. Go to the folder *sites-available* and create a file called 			*geonode*
 
    		.. code-block:: console
 
-       		$ cd /etc/apache2/sites-available
-       		$ sudo gedit geonode
+       			$ cd /etc/apache2/sites-available
+       			$ sudo gedit geonode
 
    		This file should inlcude the following, but don´t forget to adjust the paths!
 
    		.. code-block:: python
 
-     		WSGIDaemonProcess geonode python-path=/home/user/geonode:/home/user/.venvs/geonode/lib/python2.7/site-packages user=www-data 			threads=15 processes=2
+     			WSGIDaemonProcess geonode python-path=/home/user/geonode:/home/user/.venvs/geonode/lib/python2.7/site-packages user=www-data threads=15 processes=2
 
-      		<VirtualHost *:80>
-        		ServerName http://localhost
-        		ServerAdmin webmaster@localhost
-        		DocumentRoot /home/user/geonode/geonode
+      			<VirtualHost *:80>
+        			ServerName http://localhost
+        			ServerAdmin webmaster@localhost
+        			DocumentRoot /home/user/geonode/geonode
 
-        		ErrorLog /var/log/apache2/error.log
-        		LogLevel warn
-        		CustomLog /var/log/apache2/access.log combined
+        			ErrorLog /var/log/apache2/error.log
+        			LogLevel warn
+        			CustomLog /var/log/apache2/access.log combined
 
-        		WSGIProcessGroup geonode
-        		WSGIPassAuthorization On
-        		WSGIScriptAlias / /home/user/geonode/geonode/wsgi.py
+        			WSGIProcessGroup geonode
+        			WSGIPassAuthorization On
+        			WSGIScriptAlias / /home/user/geonode/geonode/wsgi.py
 
-        		<Directory "/home/user/geonode/geonode/">
-           		Order allow,deny
-            		Options Indexes FollowSymLinks
-            		Allow from all
-            		IndexOptions FancyIndexing
-        		</Directory>
+        			<Directory "/home/user/geonode/geonode/">
+           			Order allow,deny
+            			Options Indexes FollowSymLinks
+            			Allow from all
+            			IndexOptions FancyIndexing
+        			</Directory>
 
-        		Alias /static/ /home/user/geonode/geonode/static/
-        		Alias /uploaded/ /home/user/geonode/geonode/uploaded/
+        			Alias /static/ /home/user/geonode/geonode/static/
+        			Alias /uploaded/ /home/user/geonode/geonode/uploaded/
 
-        		<Proxy *>
-            		Order allow,deny
-            		Allow from all
-        		</Proxy>
+        			<Proxy *>
+            			Order allow,deny
+            			Allow from all
+        			</Proxy>
 
-        		ProxyPreserveHost On
-        		ProxyPass /geoserver http://localhost:8080/geoserver
-        		ProxyPassReverse /geoserver http://localhost:8080/geoserver
+        			ProxyPreserveHost On
+        			ProxyPass /geoserver http://localhost:8080/geoserver
+        			ProxyPassReverse /geoserver http://localhost:8080/geoserver
 
-      		</VirtualHost>
+      			</VirtualHost>
 
-		#. **Enable the new site**
+		**Enable the new site**
 
    		.. code-block:: console
 
-       		$ sudo a2ensite geonode
+       			$ sudo a2ensite geonode
 
    		This command will create a file *geonode* in the folder *sites-enabled*.
 
-		#. **Now reload apache**
+		**Now reload apache**
 
    		.. code-block:: console
 
-       		$ sudo service apache2 reload
+       			$ sudo service apache2 reload
 
    		If you now type localhost into your webbrowser, the geonode webpage will appear. You can now login with your newly created 			superuser account. But if you try to attend the django admin interface, you will only see the content of this webpage but 			without any design. To change this, you have to change the following entry in our geonode configuration file
 
    		.. code-block:: console
 
-       		$ sudo gedit /etc/apache2/sites-available/geonode
+       			$ sudo gedit /etc/apache2/sites-available/geonode
 
    		Change this entry::
 
-       		Alias /static/ /home/user/geonode/geonode/static/
+       			Alias /static/ /home/user/geonode/geonode/static/
     
    		to::
 
-       		Alias /static/ /home/user/geonode/geonode/static_root/
+       			Alias /static/ /home/user/geonode/geonode/static_root/
 
-		#. **Now reload apache2**
+		**Now reload apache2**
 
    		again using ``sudo service apache2 reload`` and visit localhost/admin. Now you should be able to see this
 
    		.. figure:: img/admin_interface.PNG
 
-	#. Change permissions of folders
+#. **Change permissions of folders**
 
    	.. code-block:: console
 
@@ -358,11 +364,11 @@ howto/deployment/ .
 
        		$ sudo service apache2 reload
 
-	#. Configure application server
+#. **Configure application server**
 	
 	The **GeoServer** web application must be served using a *Java Servlet container*; two popular and free containers are Jetty and 	 Tomcat. Jetty is used as default in your GeoNode installation. Typically a Java web application (WARs) can be deployed by simply 	 copying the .war file into the appropriate place. So if you are going to use Tomcat instead, then copy the geoserver.war file into 		Tomcats webapps directory, as shown in the steps below.
         
-		#. **Deploy your geoserver with Tomcat**
+		**Deploy your geoserver with Tomcat**
 
    		To do so we need Tomcat installed and *not* running. So if you've got Tomcat running at the moment, stop it
 
@@ -372,31 +378,33 @@ howto/deployment/ .
     
    		You can find the *geoserver.war* in the folder downloaded in your geonode directory::
 
-       		geonode/downloaded/geoserver.war
+       			geonode/downloaded/geoserver.war
 
    		Now copy this file into the *webapps* folder of tomcat
 
    		.. code-block:: console
 
-       		$ sudo mv geonode/downloaded/geoserver.war /var/lib/tomcat7/webapps/
+       			$ sudo mv geonode/downloaded/geoserver.war /var/lib/tomcat7/webapps/
     
    		By starting tomcat it will unpack the geoserver.war and create a new directory ``tomcat/webapps/geoserver``.
 
    		.. code-block:: console
 
-       		$ sudo /etc/init.d/tomcat7 start
+       			$ sudo /etc/init.d/tomcat7 start
     
    		Let´s try to attend http://localhost:8080/geoserver or localhost/geoserver. You will now see the geoserver homepage.
 
    		.. figure:: img/geoserver_webpage.PNG
 
+questions:
 
 - some configuration in geonode to tell him where he can reach geoserver and vice versa. # ???
 - some optimizations (optimize the java virtual machine, web server, database) # ???
 - optionally a metadata catalogue like geonetwork (we use an internal pycsw) # ???
+- paths?!
+- geoserver with geonode extension (needed?)
 
-
-GeoServer with GeoNode Extensions => this goes up (including the section about WARs)
+GeoServer with GeoNode Extensions
 ---------------------------------
 
 GeoNode's GeoServer integration requires some specific extensions to help
@@ -422,14 +430,3 @@ Steps
    The ``<param-value>`` tag should enclose the URL to the Django application
    homepage.
 
-************ WHERE TO PUT THIS?
-   These vary from distribution to distribution - for example Ubuntu systems keep Apache site configurations in ``/etc/apache2/sites-available/`` while CentOS uses ``/etc/httpd/conf.d/``; and of course if you are using custom-built software you may need a totally separate configuration.
-
-   Samples for common platforms are included, please check for one that matches your distribution.
-
-   If it is not available or you would like to install to a custom directory, the configurations are simple shell scripts and you can copy and modify one to meet your needs.
-
-
-Some scripts are included to assist in configuring this external software in a default recommended configuration.
-These scripts have been tested on **Ubuntu**, please review them carefully before using them on another operating system.
-*************
