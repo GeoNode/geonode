@@ -80,25 +80,33 @@ This will start GeoNode at http://localhost/. But until now, GeoNode is running 
 Configure
 ---------
 
-Final steps setting up Geonode using the stack:
+Final steps to configure Geonode include the stack:
 
 * *Servlet Container*: Apache Tomcat for Geoserver
 * *Static File Server*: Apache httpd
 * *Python/WSGI Container*: mod_wsgi
 * *Django Database*: PostgresQL
 
-Now you have to choose between one of the two methods to finish the installation-configuration of GeoNode:
+Please choose between one of the two methods to finish the installation-configuration of GeoNode:
 
-  #. Configure using the ubuntu config file
-  #. Configure manually
+  #. Configure using the ubuntu config file     # recommended way with .sh scripts
+  #. Configure manually                         # slow manual way
 
 #. **Configure using the ubuntu config file**
 
 
-    The package comes with a semi-automatic installer, located in the unzipped directory. The installer script **(located in package/  		install.sh)** has a configuration file **(located in package/support/config-ubuntu.sh)** associated with it which allows you to 	provide the details of your installation, such as where your webserver looks for documents. Therefore you need to adjust the
-    conifg-ubuntu.sh file according to your needs before you run the installation. Also note that you might have to change the postgresql 		and postgis version in this file, according to the versions you use!
+    This is a semi-automatic configuration script involving two .sh scripts.
+    
+     * Installer configuration file **(located in package/support/config-ubuntu.sh)**  First thing to edit
+     * The installer script **(located in package/  		install.sh)**     Second thing to edit
+     
+    #. First open the package/support/config-ubuntu.sh installer configuration file. Now provide the details of your installation, such as where your webserver looks for documents.
+    
+    #. Second open the install.sh and configure to your needs. 
+    
+    .. note:: you might have to change the postgresql 		and postgis version in this file, according to the versions you use!
 
-    Once edited (if necessary) the config file running the following commands will install GeoNode::
+    Once edited (if necessary) run the ./install.sh file with the following commands::
 
         $ cd package					                               # change into the folder called "package"
         $ sudo ./install.sh support/config-ubuntu.sh			       	       # run the install.sh with the ubuntu config.sh
