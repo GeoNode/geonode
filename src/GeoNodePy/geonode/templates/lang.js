@@ -96,6 +96,7 @@ if (window.GeoExplorer) {
         zoomSliderTipText: gettext("Zoom Level"),
         zoomToLayerExtentText: gettext("Zoom to Layer Extent"),
         zoomVisibleButtonText: gettext("Zoom to Original Map Extent"),
+        flickrText: gettext("Flickr"),
         picasaText: gettext("Picasa"),
         youTubeText: gettext("YouTube"),
         hglText: gettext("Harvard Geospatial Library"),

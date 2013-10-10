@@ -313,6 +313,7 @@ GOOGLE_SECRET_KEY = None
 GOOGLE_ANALYTICS_CODE=""
 
 YAHOO_API_KEY=""
+FLICKR_API_KEY=""
 
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)

@@ -406,14 +406,6 @@ div.overlay-scaleline {
     background-image: url(img/silk/add.png);
 }
 
-.x-btn .icon-picasa {
-    background-image: url(img/worldmap/picasa.png);
-}
-
-.x-btn .icon-youtube {
-    background-image: url(img/worldmap/youtube.gif);
-}
-
 
 .x-span-font-eight {
     font-size: 8pt;
@@ -538,4 +530,8 @@ div.chart-overlay {
 
 .icon-harvard {
     background-image: url('img/harvard.png');
+}
+
+.icon-flickr {
+    background-image: url('img/flickr.png');
 }

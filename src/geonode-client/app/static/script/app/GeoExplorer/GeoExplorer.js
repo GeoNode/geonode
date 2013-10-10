@@ -137,6 +137,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     connErrorText: "UT:The server returned an error",
     connErrorDetailsText: "UT:Details...",
     feedAdditionLabel: "UT:Add feeds",
+    flickrText: "UT:Flickr",
     googleEarthBtnText: "UT:Google Earth",
     heightLabel: 'UT: Height',
     helpLabel: 'UT: Help',
@@ -1586,11 +1587,24 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
 
 
+        var flickrMenuItem = {
+            text: this.flickrText,
+            iconCls: "icon-flickr",
+            scope:this,
+            disabled: false,
+            hidden: false,
+            handler: function() {
+                this.showFeedDialog('gx_flickrsource')
+            },
+            scope: this
+        };
+
         var picasaMenuItem = {
             text: this.picasaText,
             iconCls: "icon-picasa",
             scope:this,
             disabled: true,
+            hidden: true,
             handler: function() {
                 this.showFeedDialog('gx_picasasource')
             },
@@ -1603,6 +1617,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             iconCls: "icon-youtube",
             scope:this,
             disabled: true,
+            hidden: true,
             handler: function() {
                 this.showFeedDialog('gx_youtubesource')
             },
@@ -1625,6 +1640,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             id: 'moreBtn',
             menu: {
                 items: [
+                    flickrMenuItem,
                     picasaMenuItem,
                     youtubeMenuItem,
                     hglMenuItem
