@@ -55,6 +55,7 @@
                           {% if user.is_superuser %}
                             <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="icon-globe"></i> {% trans "GeoServer" %}</a></li>
                           {% endif %}
+                          <li><a href="{% url "recent-activity" %}"><i class="icon-fire"></i> {% trans "Recent Activity" %}</a></li>
                           <li class="divider"></li>
                           <li><a href="{% url "account_logout" %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
                         </ul>
