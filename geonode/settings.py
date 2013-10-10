@@ -516,9 +516,9 @@ MAP_BASELAYERS = [{
     "fixed": True,
     "group":"background"
   }, {
-    "source": {"ptype": "gxp_olsource"},
+    "source": {"ptype": "gxp_osmsource"},
     "type":"OpenLayers.Layer.OSM",
-    "args":["OpenStreetMap"],
+    "name":"mapnik",
     "visibility": False,
     "fixed": True,
     "group":"background"
