@@ -116,7 +116,6 @@ Please choose between one of the two methods to finish the installation-configur
 
     GeoNode can now be accessed at http://localhost
 
-    .. note:: Before proceed with the installation make sure to install the needed :ref:`dependencies`.
 
 #. **Configure Manually**
 
