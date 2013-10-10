@@ -47,11 +47,22 @@ attributes are selected below.</p>
       {% endfor %}
     </select>
   </div>
-  <input type="submit" value="Next" />
+  <a href="#" id="upload-csv-submit" class="btn">Next</a>
 </form>
+<div id="csv-status">
+    <div id="status">
+
+    </div>
+</div>
 {% else %}
 <p>We did not detect columns that could be used for the latitude and longitude.
 Please verify that you have two columns in your csv file that can be used for
 the latitude and longitude.</p>
 {% endif %}
+{% endblock %}
+
+{% block extra_script %}
+<script data-main="{% static 'geonode/js/upload/csv' %}"
+  src="{% static 'lib/js/require.js' %}">
+</script>
 {% endblock %}
