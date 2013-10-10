@@ -565,8 +565,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     #remove links that belong to and old address
 
     for link in instance.link_set.all():
-        if not urlparse(settings.SITEURL).hostname == urlparse(link.url).hostname and not \
-                    urlparse(ogc_server_settings.LOCATION).hostname == urlparse(link.url).hostname:
+        if not urlparse(ogc_server_settings.public_url).hostname == urlparse(link.url).hostname:
             link.delete()
 
     #Save layer attributes
