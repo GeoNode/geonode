@@ -1,5 +1,5 @@
 {% extends 'site_base.html' %}
-{% load activity_tags social_tags i18n %}
+{% load activity_tags  social_tags i18n %}
 {% block extra_head %}
 <script>
 $(function () {
@@ -13,8 +13,7 @@ $(function () {
 <link href="{{ STATIC_URL }}geonode/css/activity.css" rel="stylesheet" />
 {% endblock %}
 
-{% block title %}{% ifequal request.user actor %}My Activity feed{% else %}{{ actor }}'s Activity Feed{% endifequal %}{% endblock %}
-{% block content_title %}{% ifequal request.user actor %}My Activity feed{% else %}{{ actor }}'s Activity Feed{% endifequal %}{% endblock %}
+{% block title %}{% trans "Recent activity" %}{% endblock %}
 
 {% comment %}
 {% block navlinks %}
@@ -25,7 +24,7 @@ $(function () {
 
 {% block body %}
 <div class="span12">
-  <h2 class="page-title span12">Activity Feed for {{ actor }}</h2>
+  <h2 class="page-title span12">{% trans "Recent activity" %}</h2>
   <div class="span11">
 	{% for action in action_list %}
     {% activity_item action %}
