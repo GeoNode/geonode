@@ -4,17 +4,10 @@
 Complete Installation Guide
 ===========================
 
-.. note:: While we intend to provide a detailed, accurate explanation of the installation process, it may become out of date. If you run into problems with the process described in this document, please don't hesitate to let the GeoNode team know so we can keep it up to date.
+The manual installation is intended for those who are comfortable with Linux system administration.
 
-This page describes a generic installation process for GeoNode. This manual installation is intended for who are comfortable with Linux system administration. Basically there are two ways to install GeoNode manually.
 
-    #. The first one is by using the automated script provided. This option is strongly recommended for everyone who simply wants a 	customized installation of GeoNode.
-
-    #. The second one is fully manual and lets you have the complete control over the components but is also more complicated.
-
-The sections on the *Recommended Minimum System Requirements* and the *Installing Dependencies* section is valid for both kinds of installations. Also the first part of the section *Installation GeoNode* has to be done in both installation methods. After these initial steps, the methods differ from each other and you have to choose wich one suits you best.
-
-.. note:: The :ref:`quick_installation`  is easier to use.
+.. note:: Here is the link to our :ref:`quick_installation` .
 
 Recommended Minimum System Requirements
 ---------------------------------------
@@ -89,8 +82,10 @@ Final steps to configure Geonode include the stack:
 
 Please choose between one of the two methods to finish the installation-configuration of GeoNode:
 
-  #. Configure using the ubuntu config file     # recommended way with .sh scripts
-  #. Configure manually                         # slow manual way
+  #. Configure using the ubuntu config file, this is the recommended way using the provided .sh scripts
+  #. Configure manually, doing each step by hand as opposed to using the .sh scripts
+  
+  In the end you will have the same running instance of Geonode.
 
 #. **Configure using the ubuntu config file**
 
@@ -431,4 +426,8 @@ Steps
 
    The ``<param-value>`` tag should enclose the URL to the Django application
    homepage.
+   
+
+.. note:: While we intend to provide a detailed, accurate explanation of the installation process, if you run into problems with the process described in this document, please don't hesitate to let the GeoNode team know so we can keep it up to date.
+
 
