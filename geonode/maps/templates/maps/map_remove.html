@@ -8,7 +8,7 @@
 {% block body_class %}maps{% endblock %}
 
 {% block body %}
-<form action="/maps/{{map.id}}/remove" method="POST">
+<form action="{% url "map_remove" map.id %}" method="POST">
   <legend>
     {% blocktrans with map.title as map_title %}
         Are you sure you want to remove {{ map_title }}?
