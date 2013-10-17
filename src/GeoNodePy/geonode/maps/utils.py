@@ -361,7 +361,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
                '%s: "%s"' + 
                _('. This should never happen because a brand new name '
                'should have been generated. But since it happened, '
-               'try renaming the file or deleting the store in '
+        Creating layer       'try renaming the file or deleting the store in '
                'GeoServer.'))  % (name, str(e)))
         logger.warn(msg)
         e.args = (msg,)
