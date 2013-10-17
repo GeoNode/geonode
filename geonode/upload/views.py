@@ -24,8 +24,8 @@ by the view function.
 
 The pattern to support separation of view/logic is each step in the upload
 process is suffixed with "_step". The view for that step is suffixed with
-"_step_view". The goal of seperation of view/logic is to support various
-programatic uses of this API. The logic steps should not accept request objects
+"_step_view". The goal of separation of view/logic is to support various
+programmatic uses of this API. The logic steps should not accept request objects
 or return response objects.
 
 State is stored in a UploaderSession object stored in the user's session.

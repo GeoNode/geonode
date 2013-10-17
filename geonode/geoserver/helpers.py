@@ -43,7 +43,7 @@ _default_style_names = ["point", "line", "polygon", "raster"]
 
 def _add_sld_boilerplate(symbolizer):
     """
-    Wrap an XML snippet representing a single symbolizer in the approperiate
+    Wrap an XML snippet representing a single symbolizer in the appropriate
     elements to make it a valid SLD which applies that symbolizer to all features,
     including format strings to allow interpolating a "name" variable in.
     """
@@ -136,7 +136,7 @@ def get_sld_for(layer):
     name = layer.default_style.name if layer.default_style is not None else "point"
 
     # FIXME: When gsconfig.py exposes the default geometry type for vector
-    # layers we should use that rather than guessing based on the autodetected
+    # layers we should use that rather than guessing based on the auto-detected
     # style.
 
     if name in _style_templates:
@@ -191,7 +191,7 @@ def cascading_delete(cat, layer_name):
         # If there is no associated resource,
         # this method can not delete anything.
         # Let's return and make a note in the log.
-        logger.debug('cascading_delete was called with a non existant resource')
+        logger.debug('cascading_delete was called with a non existent resource')
         return
     resource_name = resource.name
     lyr = cat.get_layer(resource_name)
@@ -244,6 +244,10 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
        It returns a list of dictionaries with the name of the layer,
        the result of the operation and the errors and traceback if it failed.
     """
+
+    # avoid circular import problem
+    from geonode.layers.models import set_attributes
+
     if console is None:
         console = open(os.devnull, 'w')
 
@@ -278,7 +282,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
     
     number = len(resources)
     if verbosity > 1:
-        msg =  "Found %d layers, starting processing" % number
+        msg = "Found %d layers, starting processing" % number
         print >> console, msg
     output = {
         'stats': {
@@ -307,6 +311,8 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
                 "uuid": str(uuid.uuid4())
             })
             layer.save()
+            # recalculate the layer statistics
+            set_attributes(layer, overwrite=True)
 
         except Exception, e:
             if ignore_errors:

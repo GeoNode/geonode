@@ -37,7 +37,7 @@ import os.path
 
 
 # This is used to populate the database with the search fixture data. This is
-# primarly used as a first step to generate the json data for the fixture using
+# primarily used as a first step to generate the json data for the fixture using
 # django's dumpdata
 
 imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'

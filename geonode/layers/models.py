@@ -127,7 +127,7 @@ class Layer(ResourceBase):
         if height is not None:
             params['height'] = height
 
-        # Avoid usring urllib.urlencode here because it breaks the url.
+        # Avoid using urllib.urlencode here because it breaks the url.
         # commas and slashes in values get encoded and then cause trouble
         # with the WMS parser.
         p = "&".join("%s=%s"%item for item in params.items())
@@ -208,7 +208,7 @@ class Layer(ResourceBase):
             user = User.objects.get(username=username)
             self.set_user_level(user, self.LEVEL_NONE)
 
-        # assign owner admin privs
+        # assign owner admin privileges
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
@@ -316,7 +316,7 @@ def post_delete_layer(instance, sender, **kwargs):
     MapLayer.objects.filter(name=instance.typename).delete()
     logger.debug("Going to delete the default style for [%s]", instance.typename.encode('utf-8'))
 
-    if Layer.objects.filter(default_style__id=instance.default_style.id).count() == 0:
+    if instance.default_style and Layer.objects.filter(default_style__id=instance.default_style.id).count() == 0:
         instance.default_style.delete()
 
 def geoserver_pre_save(instance, sender, **kwargs):
@@ -346,7 +346,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
         return
 
     # If there is no resource returned it could mean one of two things:
-    # a) There is a syncronization problem in geoserver
+    # a) There is a synchronization problem in geoserver
     # b) The unit tests are running and another geoserver is running in the
     # background.
     # For both cases it is sensible to stop processing the layer
@@ -407,7 +407,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
 def geoserver_post_save(instance, sender, **kwargs):
     """Save keywords to GeoServer
 
-       The way keywords are implemented require the layer
+       The way keywords are implemented requires the layer
        to be saved to the database before accessing them.
     """
     url = ogc_server_settings.rest
@@ -425,7 +425,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         return
 
     # If there is no resource returned it could mean one of two things:
-    # a) There is a syncronization problem in geoserver
+    # a) There is a synchronization problem in geoserver
     # b) The unit tests are running and another geoserver is running in the
     # background.
     # For both cases it is sensible to stop processing the layer
@@ -565,8 +565,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     #remove links that belong to and old address
 
     for link in instance.link_set.all():
-        if not urlparse(settings.SITEURL).hostname == urlparse(link.url).hostname and not \
-                    urlparse(ogc_server_settings.LOCATION).hostname == urlparse(link.url).hostname:
+        if not urlparse(ogc_server_settings.public_url).hostname == urlparse(link.url).hostname:
             link.delete()
 
     #Save layer attributes
@@ -589,6 +588,7 @@ def set_styles(layer, gs_catalog):
         style_set.append(save_style(alt_style))
 
     layer.styles = style_set
+    return layer
 
 def save_style(gs_style):
     style, created = Style.objects.get_or_create(name = gs_style.sld_name)
@@ -601,7 +601,7 @@ def save_style(gs_style):
 
 def is_layer_attribute_aggregable(store_type, field_name, field_type):
     """
-    Dechiper whether layer attribute is suitable for statistical derivation
+    Decipher whether layer attribute is suitable for statistical derivation
     """
 
     # must be vector layer
@@ -633,7 +633,7 @@ def get_attribute_statistics(layer_name, field):
         logger.exception('Error generating layer aggregate statistics')
 
 
-def set_attributes(layer):
+def set_attributes(layer, overwrite=False):
     """
     Retrieve layer attribute names & types from Geoserver,
     then store in GeoNode database using Attribute model
@@ -692,7 +692,7 @@ def set_attributes(layer):
         for field, ftype in attribute_map:
             if field == la.attribute:
                 lafound = True
-        if not lafound:
+        if overwrite or not lafound:
             logger.debug("Going to delete [%s] for [%s]", la.attribute, layer.name.encode('utf-8'))
             la.delete()
 

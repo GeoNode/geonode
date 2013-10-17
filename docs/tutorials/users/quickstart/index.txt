@@ -1,7 +1,7 @@
 .. _quickstart:
 
 ==================
-Geonode Quickstart
+GeoNode Quickstart
 ==================
 
 Open Source Geospatial Content Management System
@@ -15,7 +15,7 @@ In this Quickstart guide you will learn the following:
     #. create a map using your new layer
     #. share your map with others
     
-To start GeoNode on your OSGeoLive DVD you have to choose *Geospatial* => *Browser Clients* => *Start GeoNode* and the GeoNode webpage will automatically
+To start GeoNode on your OSGeoLive DVD you have to choose *Geospatial* => *Browser Clients* => *Start GeoNode* and the GeoNode web page will automatically
 be opened at http://localhost:8000/ (I assume!). The page will look like shown in the image below.
 
     .. figure:: img/start_page.PNG
@@ -145,7 +145,7 @@ Now let's finish our map.
 
 #. The title and abstract as previously created should still be there. Make any adjustments as necessary, and click *Save*.
 
-#. A new dialog will appear with instructions on how to embed this map in a webpage, including a code snippet. You can adjust the parameters as necessary.
+#. A new dialog will appear with instructions on how to embed this map in a web page, including a code snippet. You can adjust the parameters as necessary.
 
    .. figure:: ../maps/img/publishmap.png
 
@@ -159,7 +159,7 @@ Now you've gotten a quick insight in the possibilities of GeoNode. To learn more
 To install GeoNode on your own server, follow our `Quick Installation Guide <http://docs.geonode.org/en/latest/intro/install.html>`_ or the `Complete Installation Guide <http://docs.geonode.org/en/latest/deploy/install.html>`_. 
 In order to get started with GeoNode our `documentation <http://docs.geonode.org/en/latest/index.html>`_ might be useful.
 
-If you need help or want to get some information about a specific topic please don't hasitate to ask us! You can do this through the #geonode IRC channel using http://webchat.freenode.net/
+If you need help or want to get some information about a specific topic please don't hesitate to ask us! You can do this through the #geonode IRC channel using http://webchat.freenode.net/
 or by asking your question in our `google group <https://groups.google.com/forum/#!forum/geonode-users>`_ !
     
     
