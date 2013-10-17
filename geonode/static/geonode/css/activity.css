@@ -1,0 +1,135 @@
+.activity {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+  *margin-right: .3em;
+  content: "\f045";
+  font-size: 3em;
+  color: #dddddd;
+  float: left;
+  margin: 10px 15px 0px 0px;
+  height: 50px;
+}
+.activity:before {
+  content: "\f045";
+}
+.activity-item {
+  padding: 20px;
+  border-bottom: 1px solid #dddddd;
+}
+.activity-timestamp {
+  font-variant: small-caps;
+}
+.activity-body {
+  padding: 10px 0px 10px 70px;
+}
+.comment {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+  *margin-right: .3em;
+  content: "\f086";
+  font-size: 3em;
+  color: #dddddd;
+  float: left;
+  margin: 10px 15px 0px 0px;
+  height: 50px;
+}
+.comment:before {
+  content: "\f086";
+}
+.delete {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+  *margin-right: .3em;
+  content: "\f014";
+  font-size: 3em;
+  color: #dddddd;
+  float: left;
+  margin: 10px 15px 0px 0px;
+  height: 50px;
+}
+.delete:before {
+  content: "\f014";
+}
+.edit {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+  *margin-right: .3em;
+  content: "\f14b";
+  font-size: 3em;
+  color: #dddddd;
+  float: left;
+  margin: 10px 15px 0px 0px;
+  height: 50px;
+}
+.edit:before {
+  content: "\f14b";
+}
+.layer {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+  *margin-right: .3em;
+  content: "\f096";
+  font-size: 3em;
+  color: #dddddd;
+  float: left;
+  margin: 10px 15px 0px 0px;
+  height: 50px;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+}
+.layer:before {
+  content: "\f096";
+}
+.map {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+  *margin-right: .3em;
+  content: "\f0ac";
+  font-size: 3em;
+  color: #dddddd;
+  float: left;
+  margin: 10px 15px 0px 0px;
+  height: 50px;
+}
+.map:before {
+  content: "\f0ac";
+}
+.upload {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+  *margin-right: .3em;
+  content: "\f093";
+  font-size: 3em;
+  color: #dddddd;
+  float: left;
+  margin: 10px 15px 0px 0px;
+  height: 50px;
+}
+.upload:before {
+  content: "\f093";
+}

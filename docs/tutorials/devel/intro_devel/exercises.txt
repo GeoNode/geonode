@@ -9,26 +9,23 @@ Components and Services
 Hint, if ``bash-completion`` is installed, try <TAB><TAB> to get completions.
 
 #. start/stop services
+      .. code-block:: console
 
-  .. code-block:: console
-
-    $ sudo service apache2
-    $ sudo service apache2 reload
-    $ sudo service tomcat7
-    $ sudo service postgresql
-
+        $ sudo service apache2
+        $ sudo service apache2 reload
+        $ sudo service tomcat7
+        $ sudo service postgresql
 #. basic psql interactions
+      .. code-block:: console
 
-  .. code-block:: console
-
-    $ sudo su - postgres
-    $ psql
-    => help                 # get help
-    => \?                   # psql specific commands
-    => \l                   # list databases
-    => \c geonode           # switch database
-    => \ds                  # list tables
-    => \dS layers_layer     # describe table
+        $ sudo su - postgres
+        $ psql
+        => help                 # get help
+        => \?                   # psql specific commands
+        => \l                   # list databases
+        => \c geonode           # switch database
+        => \ds                  # list tables
+        => \dS layers_layer     # describe table
 
 OGC Standards
 -------------

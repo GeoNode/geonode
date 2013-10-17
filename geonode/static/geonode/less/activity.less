@@ -1,0 +1,69 @@
+@import "mixins.less";
+@import "variables.less";
+
+@icon-size: 3em;
+@grayLight: #dddddd;
+
+.activity{
+  .activity-icon(@share);
+}
+
+.activity-item{
+  padding:20px;
+  border-bottom: 1px solid @grayLight;
+}
+
+.activity-icon(@icon){
+  .icon(@icon);
+  font-size: @icon-size;
+  color: @grayLight;
+  float: left;
+  margin:10px 15px 0px 0px;
+  height:50px;
+
+  &:before{
+    content:@icon;
+  }
+}
+
+.activity-timestamp{
+  font-variant: small-caps;
+}
+
+.activity-body{
+  padding: 10px 0px 10px 70px;
+}
+
+.comment{
+  .activity-icon(@comments);
+}
+
+.delete{
+  .activity-icon(@trash);
+}
+
+.edit{
+  .activity-icon(@edit-sign);
+}
+
+.layer{
+  .activity-icon(@check-empty);
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+}
+
+.map{
+  .activity-icon(@globe);
+}
+
+.upload{
+  .activity-icon(@upload-alt);
+}
+
+
+
+

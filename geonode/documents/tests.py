@@ -32,7 +32,7 @@ class LayersTest(TestCase):
         create_models('map')
 
     def test_create_document_with_no_rel(self):
-        """Tests the createion of a document with no relations"""
+        """Tests the creation of a document with no relations"""
         f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
     
         superuser = User.objects.get(pk=2)
@@ -42,7 +42,7 @@ class LayersTest(TestCase):
         self.assertEquals(Document.objects.get(pk=c.id).title, 'theimg')
 
     def test_create_document_with_rel(self):
-        """Tests the createion of a document with no a map related"""
+        """Tests the creation of a document with no a map related"""
         f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
     
         superuser = User.objects.get(pk=2)

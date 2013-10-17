@@ -200,6 +200,7 @@ INSTALLED_APPS = (
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
+    'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
 )
@@ -345,9 +346,9 @@ AGON_RATINGS_CATEGORY_CHOICES = {
 
 # Activity Stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': ('auth.user', 'layers.layer', 'maps.map'),
+    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment'),
     'FETCH_RELATIONS': True,
-    'USE_PREFETCH': True,
+    'USE_PREFETCH': False,
     'USE_JSONFIELD': True,
     'GFK_FETCH_DEPTH': 1,
 }
@@ -399,7 +400,7 @@ OGC_SERVER = {
         'BACKEND' : 'geonode.geoserver',
         'LOCATION' : 'http://localhost:8080/geoserver/',
         # PUBLIC_LOCATION needs to be kept like this because in dev mode
-        # the proxy won't work and the integratin tests will fail
+        # the proxy won't work and the integration tests will fail
         # the entire block has to be overridden in the local_settings
         'PUBLIC_LOCATION' : 'http://localhost:8080/geoserver/',
         'USER' : 'admin',
@@ -410,7 +411,7 @@ OGC_SERVER = {
         'GEOGIT_ENABLED' : False,
         'WMST_ENABLED' : False,
         'BACKEND_WRITE_ENABLED': True,
-        'WPS_ENABLED' : False,
+        'WPS_ENABLED' : True,
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': '', #'datastore',
     }
@@ -515,9 +516,9 @@ MAP_BASELAYERS = [{
     "fixed": True,
     "group":"background"
   }, {
-    "source": {"ptype": "gxp_olsource"},
+    "source": {"ptype": "gxp_osmsource"},
     "type":"OpenLayers.Layer.OSM",
-    "args":["OpenStreetMap"],
+    "name":"mapnik",
     "visibility": False,
     "fixed": True,
     "group":"background"

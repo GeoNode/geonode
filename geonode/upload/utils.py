@@ -38,7 +38,7 @@ def gs_uploader():
 
 def get_upload_type(filename):
     # @todo - this is bad and all file handling should be fixed now 
-    # (but I'm working on somethign else)!
+    # (but I'm working on something else)!
     
     base_name, extension = os.path.splitext(filename)
     extension = extension[1:].lower()

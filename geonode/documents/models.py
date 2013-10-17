@@ -17,9 +17,7 @@ from geonode.people.models import Profile
 
 class Document(ResourceBase):
     """
-
     A document is any kind of information that can be attached to a map such as pdf, images, videos, xls...
-
     """
 
     # Relation to the resource model
@@ -61,7 +59,7 @@ class Document(ResourceBase):
             user = User.objects.get(username=username)
             self.set_user_level(user, self.LEVEL_NONE)
         
-        # assign owner admin privs
+        # assign owner admin privileges
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 

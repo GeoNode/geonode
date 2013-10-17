@@ -55,7 +55,9 @@ class searchTest(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        "Hook method for setting up class fixture before running tests in the class."
+        """
+        Hook method for setting up class fixture before running tests in the class.
+        """
         from django.core.cache import cache
         cache.clear()
         searchTest('_fixture_setup')._fixture_setup(True)
@@ -64,7 +66,9 @@ class searchTest(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        "Hook method for deconstructing the class fixture after running all tests in the class."
+        """
+        Hook method for deconstructing the class fixture after running all tests in the class.
+        """
         searchTest('_fixture_teardown')._fixture_teardown(True)
         logging.getLogger('south').setLevel(logging.DEBUG)
 
@@ -94,7 +98,7 @@ class searchTest(TestCase):
         if 'layer' in facets:
             self.assertEquals(facets['raster'] + facets['vector'], facets['layer'])
 
-#        import pprint; pprint.pprint(jsonvalue)
+        #import pprint; pprint.pprint(jsonvalue)
         self.assertFalse(jsonvalue.get('errors'))
         self.assertTrue(jsonvalue.get('success'))
 

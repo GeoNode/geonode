@@ -5,13 +5,13 @@ Tutorials
 The tutorials are based around performing tasks, like adding data or publishing maps. The tutorials are written in a workshop like format and are broken into three groups *Users*, *Administrators* and *Developers*.
 
 :ref:`users`
-	In the user workshop you will learn how to create an account on Geonode, add layers and maps to your account as well as publishing those.
+	In the user workshop you will learn how to create an account on GeoNode, add layers and maps to your account as well as publishing those.
 
 :ref:`admin`
-	The administrator workshop will guide you through the installation and configuration of Geonode, as well as explore further possibilities with Geonode.
+	The administrator workshop will guide you through the installation and configuration of GeoNode, as well as explore further possibilities with GeoNode.
 
 :ref:`devel`
-	The developers workshop will show you how to set up your own Genode project, start developing, customizing, integrating, bug fixing etc.
+	The developers workshop will show you how to set up your own GeNode project, start developing, customizing, integrating, bug fixing etc.
 
 .. toctree::
    :hidden:
