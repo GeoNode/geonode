@@ -14,12 +14,12 @@ Check out our online gallery http://geonode.org/gallery/
 And for those who cannot wait here is a listof downstream geonodes on github:
 
 .. list-table::
-   :widths: 20 80
+   :widths: 20 250
    :header-rows: 1
 
    * - Name
-     - web link
-     - github link
+     - web
+     - github
    * - Mapstory
      - http://www.mapstory.org
      - https://github.com/MapStory/mapstory
