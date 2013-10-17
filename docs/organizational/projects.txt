@@ -4,7 +4,7 @@
 GeoNode Projects
 ================
 
-This page is an attempt to collect information about downstream projects using GeoNode as a base. Please email the geonode@librelist.com list with your project description to be included.
+This page is an attempt to collect information about downstream projects using GeoNode as a base. Please email the geonode-users@googlegroups.com list with your project description to be included.
 
 Downstream Project Links
 ------------------------
