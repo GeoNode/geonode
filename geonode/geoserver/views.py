@@ -3,6 +3,7 @@ from django.utils import simplejson
 from helpers import get_stores
 from helpers import gs_slurp
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import User
 
 def stores(request, store_type=None):
     stores = get_stores(store_type)
@@ -12,10 +13,12 @@ def stores(request, store_type=None):
 @user_passes_test(lambda u: u.is_superuser)
 def updatelayers(request):
     params = request.REQUEST
-    user = params.get('user',None)
+    #Get the owner specified in the request if any, otherwise used the logged user
+    owner = params.get('owner', None)
+    owner = User.objects.get(username=owner) if owner is not None else request.user
     workspace = params.get('workspace', None)
     store = params.get('store',None)
-    layer = params.get('layer',None)
+    filter = params.get('filter',None)
 
-    output = gs_slurp(ignore_errors=False, owner=user, workspace=workspace, store=store, filter=layer)
+    output = gs_slurp(ignore_errors=False, owner=owner, workspace=workspace, store=store, filter=filter)
     return HttpResponse(simplejson.dumps(output))
