@@ -1684,7 +1684,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         ];
         
         //Only show this for Boston map; silly hack
-        if (this.urlsuffix == 'boston') {
+        if (this.about["urlsuffix"] == 'boston') {
         	tools.splice(13,0,new GeoExplorer.SocialExplorer(this));
         }        
 
