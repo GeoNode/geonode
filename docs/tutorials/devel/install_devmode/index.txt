@@ -19,7 +19,7 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
    .. code-block:: console
 
-	$ sudo apt-get install build-essential libxml2-dev libxslt-dev
+    $ sudo apt-get install build-essential libxml2-dev libxslt-dev
 
 
 #. Install dependencies
@@ -28,19 +28,19 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
    .. code-block:: console
 
-	$ sudo apt-get install python-dev python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2
+    $ sudo apt-get install python-dev python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2
 
    *Java dependencies*
 
    .. code-block:: console
 
-	$ sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
+    $ sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
 
    *supporting tools*
 
    .. code-block:: console
 
-	$ sudo apt-get install -y git gettext
+    $ sudo apt-get install -y git gettext
 
 #. Add a new PPA repository
 
@@ -48,11 +48,11 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
    .. code-block:: console
 
-	$ sudo add-apt-repository ppa:chris-lea/node.js
-	$ sudo apt-get update
-	$ sudo apt-get install nodejs
-	$ sudo npm install -g bower
-	$ sudo npm install -g grunt-cli
+    $ sudo add-apt-repository ppa:chris-lea/node.js
+    $ sudo apt-get update
+    $ sudo apt-get install nodejs
+    $ sudo npm install -g bower
+    $ sudo npm install -g grunt-cli
 
 #. Set up a virtual environment
 
@@ -63,17 +63,17 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
    #. Download and install a virutalenvwrapper
 
       .. code-block:: console
-	
-	   $ sudo pip install virtualenvwrapper
+
+       $ sudo pip install virtualenvwrapper
 
    #. Add the virtualenvwrapper to your new environement
 
       .. code-block:: console
 
-	   $ export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
-	   $ export WORKON_HOME=~/.venvs
-	   $ source /usr/local/bin/virtualenvwrapper.sh
-	   $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
+       $ export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
+       $ export WORKON_HOME=~/.venvs
+       $ source /usr/local/bin/virtualenvwrapper.sh
+       $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
 
    #. set up the local virtual environment for Geonode 
 
@@ -81,8 +81,8 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
       .. code-block:: console
 
-	   $ mkdir your_folder
-	   $ mkvirtualenv geonode
+       $ mkdir your_folder
+       $ mkvirtualenv geonode
 
       This creates a new directory where you want your project to be and creates a new virtualenvironment
 
@@ -92,13 +92,13 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
    .. code-block:: console
 
-	$ git clone https://github.com/GeoNode/geonode.git
+    $ git clone https://github.com/GeoNode/geonode.git
 
    In order to go on and complete the installation you have to direct to your now exisiting geonode folder
 
    .. code-block:: console
 
-	$ cd geonode
+    $ cd geonode
 
 #. Start the server
 
@@ -106,8 +106,8 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
    .. code-block:: console
 
-	$ paver setup
-	$ paver start
+    $ paver setup
+    $ paver start
 
    Now you should be able to visit the geonode site by typing http://localhost:8000 into your browser window.
 
@@ -115,8 +115,8 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
    .. code-block:: console
 
-	$ Ctrl c
-	$ paver stop
+    $ Ctrl c
+    $ paver stop
 
 #. Create a superuser
 
@@ -125,7 +125,7 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
    .. code-block:: console
 
        $ django-admin.py createsuperuser –-settings=geonode.settings
-    
+
 #. Restart server
 
    With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
@@ -133,12 +133,12 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
    .. note:: *username* is the name of your machine and personal folder!
 
    #. Activate virtualenv
- 
+
       To activate your virtualenv you just need to type
 
       .. code-block:: console
-   
-	   $ workon geonode
+
+       $ workon geonode
 
       .. todo:: this is not working for me!!! My steps still have to be
 
@@ -146,17 +146,17 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
       .. code-block:: console
 
-	   $ source /home/username/.venvs/geonode/bin/activate
+       $ source /home/username/.venvs/geonode/bin/activate
 
       .. note:: Be careful with the path, it might not be the same for you!
 
    #. Start the server
 
       .. code-block:: console
-   
-	$ cd geonode
-	$ paver start_geoserver
-	$ paver start_django
+
+    $ cd geonode
+    $ paver start_geoserver
+    $ paver start_django
 
       Now you are able to access http://localhost:8000 again.
 
