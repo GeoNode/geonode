@@ -1,3 +1,39 @@
+geonode (2.0.0+rc1) precise; urgency=high
+
+  [ Tyler Garner ]
+  * [7aa29e] Fixes #1229.
+
+  [ Michael Diener ]
+  * [475150] removed redundancy and added some more explanations
+  * [db35e3] added step 1,2,3 text and alignment
+
+  [ crabtree ]
+  * [9403f1] using django url templatetag in map_remove.html instead of raw url path
+
+  [ Michael Diener ]
+  * [0ff51c] added downstream projects on github to the list
+  * [fbb128] fix width of table
+  * [ad2d51] removed librelist email for geonode-users@googlegroups.com
+
+  [ vdeparday ]
+  * [947ea5] Make sure the endpoint /gs/updatelayers pass a username
+
+  [ Simone Dalmasso ]
+  * [bdf927] use libxslt1-dev in the dependencies
+  * [9dea3c] update also the readme
+
+  [ mdiener21 ]
+  * [d0a16e] added doc how to translate documentation
+  * [595b8b] added doc how to translate documentation
+  * [8d8be3] removed tabs to spaces
+
+  [ Ian Schneider ]
+  * [b89797] ensure mvn install target called for zip plugin
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Mon, 21 Oct 2013 13:24:29 +0000
+
 geonode (2.0.0+beta64) precise; urgency=high
 
   [ Tyler Garner ]
