@@ -7,17 +7,19 @@
     <li><a data-class="all" class="active trigger-query">{% trans "All Categories" %}</a></li>
     {% categories as category_list %}
     {% for category in category_list %}
-    <li><a data-class="{{category.identifier}}" class="trigger-query">{{ category.gn_description }}
-    {% if type == 'layer' %}
-    <span class="badge pull-right">{{ category.layer_count }}</span>
-    {% elif type == 'map' %}
-    <span class="badge pull-right">{{ category.map_count }}</span>
-    {% elif type == 'document' %}
-    <span class="badge pull-right">{{ category.document_count }}</span>
-    {% else %}
-    <span class="badge pull-right">{{ category.layer_count|add:category.map_count|add:category.document_count }}</span>
-    {% endif %}
-    </a></li>
+        {% if category.is_choice %}
+        <li><a data-class="{{category.identifier}}" class="trigger-query">{{ category.gn_description }}
+        {% if type == 'layer' %}
+        <span class="badge pull-right">{{ category.layer_count }}</span>
+        {% elif type == 'map' %}
+        <span class="badge pull-right">{{ category.map_count }}</span>
+        {% elif type == 'document' %}
+        <span class="badge pull-right">{{ category.document_count }}</span>
+        {% else %}
+        <span class="badge pull-right">{{ category.layer_count|add:category.map_count|add:category.document_count }}</span>
+        {% endif %}
+        </a></li>
+        {% endif %}
     {% endfor %}
   </ul>
 </nav>
