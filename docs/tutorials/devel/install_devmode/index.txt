@@ -26,7 +26,7 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
    .. code-block:: console
 
-    $ sudo apt-get install -y build-essential libxml2-dev libxslt-dev
+    $ sudo apt-get install -y build-essential libxml2-dev libxslt1-dev
 
 
 #. Install dependencies
@@ -71,10 +71,7 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
    Here is where Geonode will later be running.
 
-   .. note:: Virtualenv was installed in the second step (python dependencies).
-
-
-#. Add the virtualenvwrapper to your new environement
+   Add the virtualenvwrapper to your new environement
 
       .. code-block:: console
 
@@ -83,9 +80,7 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
        $ source /usr/local/bin/virtualenvwrapper.sh
        $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
 
-   #. set up the local virtual environment for Geonode 
-
-      .. note:: This needs to be done before you can download and install Geonode!
+   set up the local virtual environment for Geonode
 
       .. code-block:: console
 
@@ -113,23 +108,31 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
 #. Compile and Start the server
 
-   The last step is to compile GeoServer and start the development servers
+   The last step is to compile GeoServer and setup
 
    .. code-block:: console
 
     $ paver setup
-    $ paver start
 
-   Now you should be able to visit the geonode site by typing http://localhost:8000 into your browser window.
-
-   To stop the server
+#. Now we can start our geonode instance
 
    .. code-block:: console
 
-    $ Ctrl c
-    $ paver stop
+    $ paver start
 
-#. Create a superuser
+   Visit the geonode site by typing http://localhost:8000 into your browser window.
+
+#. To stop the server
+
+   type hold **Ctrl c**  on your keyboard to stop the server
+
+   now type:
+
+   .. code-block:: console
+
+    $ paver stop    # to stop all django, geoserver services
+
+#. Next create a superuser for your django geonode
 
    Create a superuser so you can log on to your local geonode installation at http://localhost:8000
 
@@ -137,7 +140,8 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
        $ django-admin.py createsuperuser –-settings=geonode.settings
 
-#. Restart server
+Start working on Geonode the next day after install
+===================================================
 
    With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
 
@@ -165,9 +169,9 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
       .. code-block:: console
 
-    $ cd geonode
-    $ paver start_geoserver
-    $ paver start_django
+       $ cd geonode
+       $ paver start_geoserver
+       $ paver start_django
 
       Now you are able to access http://localhost:8000 again.
 
