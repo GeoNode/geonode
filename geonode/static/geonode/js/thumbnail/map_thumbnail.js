@@ -1,4 +1,4 @@
-var createMapThumbnail = function() {
+var createMapThumbnail = function(obj_id) {
     var xmap = $('.olMapViewport');
     height = xmap.height();
     width = xmap.width();
@@ -13,7 +13,15 @@ var createMapThumbnail = function() {
             e.removeAttr("id");
         }
     });
-    var url = window.location.pathname.replace('/view', '') + '/thumbnail';
+
+    var url = window.location.pathname.replace('/view', '');
+
+    if (typeof obj_id != 'undefined' && url.indexOf('new')){
+        url = url.replace('new', obj_id);
+    }
+
+    url+= '/thumbnail';
+
     $.ajax({
         type: "POST",
         url: url, 
