@@ -3,39 +3,37 @@
 Setting up your GeoNode project
 ===============================
 
-This section will walk you through the steps necessary to set up your own GeoNode project. It assumes that you have installed GeoNode from the Ubuntu packages and that you have a working GeoNode site.
+.. warning:: These instructions are only valid if you've installed GeoNode in development mode!!
+
+.. note:: If you've installed GeoNode using apt-get and want to customize your GeoNode then go to the :ref:`customize_admin` of the Administrator Workshop.
+
+This section will walk you through the steps necessary to set up your own GeoNode project. It assumes that you have installed GeoNode in developing mode.
 
 Setup steps
 -----------
 
 If you are working remotely, you should first connect to the machine that has your GeoNode installation. You will need to perform the following steps in a directory where you intend to keep your newly created project.
 
-#. Activate GeoNode's Virtual Environment:
+#. Activate GeoNode’s Virtual Environment
 
    .. code-block:: console
 
-      $ source /var/lib/geonode/bin/activate
+	$ workon geonode
 
-#. Create your GeoNode project from the template:
-
-   .. code-block:: console
-
-      $ django-admin.py startproject --template=https://github.com/GeoNode/geonode-project/zipball/master my_geonode
-      $ cd my_geonode
-
-#. Update your :file:`local_settings.py`. You will need to check the :file:`local_settings.py` that is included with the template project and be sure that it reflects your own local environment. You should pay particular attention to the Database settings especially if you intend to reuse the database that was set up with your base GeoNode installation.
-
-#. Synchronize your database:
+#. Create your GeoNode project from the template
 
    .. code-block:: console
 
-      $ python manage.py syncdb --all
+	$ django-admin startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst
+	$ cd my_geonode
 
-#. Run the test server:
+#. Update your local_settings.py. You will need to check the local_settings.py that is included with the template project and be sure that it reflects your own local environment. You should pay particular attention to the Database settings especially if you intend to reuse the database that was set up with your base GeoNode installation.
+
+#. Run the test server
 
    .. code-block:: console
 
-      $ python manage.py runserver
+	$ python manage.py runserver
 
 #. Visit your new GeoNode site at http://localhost:8000.
 
@@ -191,47 +189,12 @@ no organization is required for your project specific templates, when overriding
 or replacing a template from another app, the path must be the same as the template
 to be replaced.
 
-Deploying your GeoNode Project
-------------------------------
-
-Now that your own project is set up, you will need to replace the existing default configuration with configuration for your own project in order to visit your new project site.
-
-.. todo:: Needs details.
-
-#. Update Apache configuration
-
-#. Check GeoServer configuration
-
-#. Check database configuration
-
-Production Ready
-----------------
-
-While not a complete checklist, some changes should be made prior to deploying
-to production.
-
-* Ensure DEBUG=False in your effective `settings`.
-* Change any admin passwords from any common defaults (i.e. admin/admin)
-* Change the geoserver `master password <http://docs.geoserver.org/stable/en/user/webadmin/security/passwords.html#webadmin-sec-masterpasswordprovider>`_ from the default
-* Ensure GeoServer is `ready <http://docs.geoserver.org/stable/en/user/production/index.html>`_.
-
-
 Staying in sync with mainline GeoNode
 -------------------------------------
 
-One of the primary reasons to set up your own GeoNode project using this method is so that you can stay in sync with the mainline GeoNode as the core development team makes new releases. Your own project should not be adversely affected by these changes, but you will receive bug fixes and other improvements by staying in sync.
+If you want to stay in sync with the mainline GeoNode you have to execute the following commands. Your own project should not be adversely affected by these changes, but you will receive bug fixes and other improvements by staying in sync.
 
-#. Upgrade GeoNode:
+.. code-block:: console
 
-   .. code-block:: console
-
-      $ apt-get update
-      $ apt-get install geonode
-
-#. Verify that your new project works with the upgraded GeoNode:
-
-   .. code-block:: console
-
-      $ python manage.py runserver
-
-#. Navigate to http://localhost:8000.
+	$ git fetch upstream master
+	$ git merge
