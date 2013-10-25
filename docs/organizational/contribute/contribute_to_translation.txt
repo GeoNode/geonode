@@ -81,8 +81,8 @@ Using this options it is assumed that you have a local GitHub repository forked 
 
 #. Now make a pull request and GeoNode will push your changes to transifex.
 
-Only for maintainers
---------------------
+Only for transifex maintainers
+------------------------------
 
 .. note:: This section is only for the maintainers of a transifex group!
 
