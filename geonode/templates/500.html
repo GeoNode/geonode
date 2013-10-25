@@ -11,7 +11,7 @@
       <link href="/static/geonode/css/ext-compatibility.css" rel="stylesheet" />
       <link href="/static/lib/css/jquery.dataTables.css" rel="stylesheet" />
       <link href="/static/lib/css/select2.css" rel="stylesheet"/>
-      {% block extra_head %}{% endblock %}
+      {% block extra_head %}{{ block.super }}{% endblock %}
     {% endblock %}
     <!--[if lt IE 9]>
       <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>

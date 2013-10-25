@@ -6,29 +6,12 @@
 
 {% block body_class %}data data-list upload{% endblock %}
 
-{% block extra_head %}
-
-{% endblock %}
-
+{% block extra_head %}{{ block.super }}{% endblock %}
 
 {% block head %}
 
 <!-- TODO Move this to site-wide css or remove -->
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geonode/css/fileuploadfield.css"/>
-<style type="text/css">
-    .uip {
-        border: 1px solid gray;
-        border-radius: 3px;
-        padding: .5em;
-        margin: .5em
-    }
-    #drop-zone {
-      background: #eee;
-      height: 100px;
-      margin-bottom: 10px;
-      padding: 5px;
-    }
-</style>
 {{ block.super }}
 {% endblock %}
 
@@ -104,11 +87,10 @@
 {% endblock %}
 
 {% block extra_script %}
-{% if DEBUG_STATIC %}
+
 <script data-main="{% static 'geonode/js/upload/main' %}"
   src="{% static 'lib/js/require.js' %}">
 </script>
-{% endif %}
 
 <script type="text/javascript">
 {% autoescape off %}
