@@ -1,25 +1,32 @@
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-04 20:42\n"
+"POT-Creation-Date: 2013-10-23 10:50\n"
 "PO-Revision-Date: 2013-09-05 02:20+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
-"Language-Team: Italian (http://www.transifex.com/projects/p/geonode/language/it/)\n"
+"Language-Team: Italian (http://www.transifex.com/projects/p/geonode/language/"
+"it/)\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: it\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+# d9fc6d0fb42b40dea4f4b3571a96d9e0
 #: ../../reference/architecture.txt:5
-msgid "GeoNode Architecture"
+msgid "Architecture"
 msgstr ""
 
 #: ../../reference/architecture.txt:8
 msgid "The Big Picture"
+msgstr ""
+
+# 56629ae90cd24f4ab66fbc2bc7eef91e
+#: ../../reference/architecture.txt:13
+msgid "GeoNode Component Architecture"
 msgstr ""
 
 #: ../../reference/architecture.txt:18
@@ -65,8 +72,8 @@ msgstr ""
 
 #: ../../reference/architecture.txt:34
 msgid ""
-"More: http://reinout.vanrees.org/weblog/2011/12/13/django-mvc-"
-"explanation.html"
+"More: http://reinout.vanrees.org/weblog/2011/12/13/django-mvc-explanation."
+"html"
 msgstr ""
 
 #: ../../reference/architecture.txt:37 ../../reference/architecture.txt:41
@@ -79,9 +86,9 @@ msgstr ""
 
 #: ../../reference/architecture.txt:43
 msgid ""
-"This is a python specification for supporting a common interface between all"
-" of the various web frameworks and an application (Apache, for example) that"
-" is 'serving'."
+"This is a python specification for supporting a common interface between all "
+"of the various web frameworks and an application (Apache, for example) that "
+"is 'serving'."
 msgstr ""
 
 #: ../../reference/architecture.txt:45
@@ -137,8 +144,8 @@ msgstr ""
 
 #: ../../reference/architecture.txt:65
 msgid ""
-"Data uploaded to GeoNode is first processed in GeoNode and finally published"
-" to GeoServer (or ingested into the spatial database)"
+"Data uploaded to GeoNode is first processed in GeoNode and finally published "
+"to GeoServer (or ingested into the spatial database)"
 msgstr ""
 
 #: ../../reference/architecture.txt:70
@@ -154,8 +161,8 @@ msgstr ""
 
 #: ../../reference/architecture.txt:76
 msgid ""
-"The database stores configuration and application information. This includes"
-" users, layers, maps, etc."
+"The database stores configuration and application information. This includes "
+"users, layers, maps, etc."
 msgstr ""
 
 #: ../../reference/architecture.txt:78
@@ -194,10 +201,10 @@ msgstr ""
 
 #: ../../reference/architecture.txt:100
 msgid ""
-"GeoNode's CSW endpoint is deployed available at "
-"``http://localhost:8000/catalogue/csw`` and is available for clients to use "
-"for standards-based discovery.  See http://pycsw.org/docs/tools.html for a "
-"list of CSW clients and tools."
+"GeoNode's CSW endpoint is deployed available at ``http://localhost:8000/"
+"catalogue/csw`` and is available for clients to use for standards-based "
+"discovery.  See http://pycsw.org/docs/tools.html for a list of CSW clients "
+"and tools."
 msgstr ""
 
 #: ../../reference/architecture.txt:105
@@ -215,11 +222,12 @@ msgid ""
 "jQuery is used for incremental enhancement of many GeoNode HTML interfaces."
 msgstr ""
 
-#: ../../reference/components.txt:4
-msgid "GeoNode Components"
-msgstr ""
+#: ../../reference/components.txt:5
+#, fuzzy
+msgid "Components"
+msgstr "Documenti"
 
-#: ../../reference/components.txt:6
+#: ../../reference/components.txt:7
 msgid ""
 ":ref:`architecture` is based on a set of core tools and libraries that "
 "provide the building blocks on which the application is built. Having a "
@@ -227,84 +235,84 @@ msgid ""
 "as a developer working with GeoNode."
 msgstr ""
 
-#: ../../reference/components.txt:8
+#: ../../reference/components.txt:9
 msgid ""
 "Lets look at each of these components and discuss how they are used within "
 "the GeoNode application."
 msgstr ""
 
-#: ../../reference/components.txt:11
+#: ../../reference/components.txt:12
 msgid "Django"
 msgstr ""
 
-#: ../../reference/components.txt:13
+#: ../../reference/components.txt:14
 msgid ""
 "GeoNode is based on Django_ which is a high level Python web development "
 "framework that encourages rapid development and clean pragmatic design. "
 "Django is based on the Model View Controller (MVC_) architecture pattern, "
 "and as such, GeoNode models layers, maps and other modules with Django's "
-"Model_ module and and these models are used via Django's ORM_ in views which"
-" contain the business logic of the GeoNode application and are used to drive"
-" HTML templates to display the web pages within the application."
+"Model_ module and and these models are used via Django's ORM_ in views which "
+"contain the business logic of the GeoNode application and are used to drive "
+"HTML templates to display the web pages within the application."
 msgstr ""
 
-#: ../../reference/components.txt:21
+#: ../../reference/components.txt:22
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: ../../reference/components.txt:23
+#: ../../reference/components.txt:24
 msgid ""
-"GeoServer_ is a an open source software server written in Java that provides"
-" OGC compliant services which publish data from many spatial data sources. "
+"GeoServer_ is a an open source software server written in Java that provides "
+"OGC compliant services which publish data from many spatial data sources. "
 "GeoServer is used as the core GIS component inside GeoNode and is used to "
 "render the layers in a GeoNode instance, create map tiles from the layers, "
 "provide for downloading those layers in various formats and to allow for "
 "transactional editing of those layers."
 msgstr ""
 
-#: ../../reference/components.txt:28
+#: ../../reference/components.txt:29
 msgid "GeoExplorer"
 msgstr "GeoExplorer"
 
-#: ../../reference/components.txt:30
+#: ../../reference/components.txt:31
 msgid ""
 "GeoExplorer_ is a web application, based on the GeoExt_ framework, for "
-"composing and publishing web maps with OGC and other web based GIS Services."
-" GeoExplorer is used inside GeoNode to provide many of the GIS and "
+"composing and publishing web maps with OGC and other web based GIS Services. "
+"GeoExplorer is used inside GeoNode to provide many of the GIS and "
 "cartography functions that are a core part of the application."
 msgstr ""
 
-#: ../../reference/components.txt:36
+#: ../../reference/components.txt:37
 msgid "PostgreSQL and PostGIS"
 msgstr ""
 
-#: ../../reference/components.txt:38
+#: ../../reference/components.txt:39
 msgid ""
 "PostgreSQL_ and PostGIS_ are the database components that store and manage "
 "spatial data and information for GeoNode and the django modules that it is "
 "composed of, pycsw and GeoServer. All of these tables and data are stored "
-"within a geonode database in PostgreSQL. GeoServer uses PostGIS to store and"
-" manage spatial vector data for each layer which are stored as a separate "
+"within a geonode database in PostgreSQL. GeoServer uses PostGIS to store and "
+"manage spatial vector data for each layer which are stored as a separate "
 "table in the database."
 msgstr ""
 
-#: ../../reference/components.txt:44
+#: ../../reference/components.txt:45
 msgid "pycsw"
 msgstr ""
 
-#: ../../reference/components.txt:46
+#: ../../reference/components.txt:47
 msgid ""
 "pycsw_ is an OGC CSW server implementation written in Python.  GeoNode uses "
-"pycsw to provide an OGC compliant standards-based CSW metadata and catalogue"
-" component of spatial data infrastructures, supporting popular geospatial "
+"pycsw to provide an OGC compliant standards-based CSW metadata and catalogue "
+"component of spatial data infrastructures, supporting popular geospatial "
 "metadata standards such as Dublin Core, ISO 19115, FGDC and DIF."
 msgstr ""
 
-#: ../../reference/components.txt:51
+#: ../../reference/components.txt:52
 msgid "Geospatial Python Libraries"
 msgstr ""
 
-#: ../../reference/components.txt:53
+#: ../../reference/components.txt:54
 msgid ""
 "GeoNode leverages several geospatial python libraries including gsconfig_ "
 "and OWSLib_. gsconfig is used to communicates with GeoServer's REST "
@@ -313,26 +321,26 @@ msgid ""
 "with other OGC services."
 msgstr ""
 
-#: ../../reference/components.txt:59
+#: ../../reference/components.txt:60
 msgid "Django Pluggables"
 msgstr ""
 
-#: ../../reference/components.txt:61
+#: ../../reference/components.txt:62
 msgid ""
 "GeoNode uses a set of Django plugins which are usually referred to as "
 "pluggables. Each of these pluggables provides a particular set of "
 "functionality inside the application from things like Registration and "
-"Profiles to interactivity with external sites. Being based on Django enables"
-" GeoNode to take advantage of the large ecosystem of these pluggables out "
-"there, and while a specific set is included in GeoNode itself, many more are"
-" available for use in applications based on GeoNode."
+"Profiles to interactivity with external sites. Being based on Django enables "
+"GeoNode to take advantage of the large ecosystem of these pluggables out "
+"there, and while a specific set is included in GeoNode itself, many more are "
+"available for use in applications based on GeoNode."
 msgstr ""
 
-#: ../../reference/components.txt:64
+#: ../../reference/components.txt:65
 msgid "jQuery"
 msgstr ""
 
-#: ../../reference/components.txt:66
+#: ../../reference/components.txt:67
 msgid ""
 "jQuery_ is a feature-rich javascript library that is used within GeoNode to "
 "provide an interactive and responsive user interface as part of the "
@@ -341,11 +349,11 @@ msgid ""
 "to the interface by adding additional plugins."
 msgstr ""
 
-#: ../../reference/components.txt:71
+#: ../../reference/components.txt:72
 msgid "Bootstrap"
 msgstr ""
 
-#: ../../reference/components.txt:73
+#: ../../reference/components.txt:74
 msgid ""
 "Bootstrap_ is a front-end framework for laying out and styling the pages "
 "that make up the GeoNode application. It is designed to ensure that the "
@@ -368,274 +376,740 @@ msgid ""
 "probably want to adjust these apps for your specific needs."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:33
-msgid "``geonode.security`` - GeoNode granular Auth Backend"
+# 4e503a1e26ed493aa44dde490079cdc4
+#: ../../reference/developers/django-apps.txt:49
+msgid "``geonode.base`` - GeoNode core functionality"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:35
-msgid ""
-"This app provides a Granular (object level) Django Auth backend for use in "
-"assigning permissions to individual objects (maps and layers)."
+# fb38f4fa0d054e37b9332b1f5d22f5f8
+#: ../../reference/developers/django-apps.txt:51
+msgid "Stores core functionality used throughout the GeoNode application."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:39
-#: ../../reference/developers/django-apps.txt:104
-msgid "``settings.py`` Entries"
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:47
-msgid "MEDIA_LOCATIONS"
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:42
-msgid ""
-"GeoNode uses a lot of JavaScript and CSS includes due to the distribution "
-"restrictions imposed by ExtJS.  The MEDIA_LOCATIONS settings file should be "
-"a Python dict providing mappings from abstracted library prefixes to actual "
-"media URLs, suitable for use in the site.  To see the prefix names used in "
-"the default templates, an example, consult the settings.py for the example "
-"``geonode`` site included in the source tree."
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:52
-msgid "LOCKDOWN_GEONODE"
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:50
-msgid ""
-"Boolean.  By default, the GeoNode application allows visitors to view most "
-"pages without being authenticated.  Set ``LOCKDOWN_GEONODE = True`` to "
-"require a user to be authenticated before viewing the application."
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:58
-msgid "AUTH_EXEMPT_URLS"
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:55
-msgid ""
-"A tuple of url patterns that the user can visit without being authenticated."
-" This setting has no effect if LOCKDOWN_GEONODE is not True.  For example, "
-"``AUTH_EXEMPT_URLS = ('/maps',)`` will allow unauthenticated users to browse"
-" maps."
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:61
+#: ../../reference/developers/django-apps.txt:54
+#: ../../reference/developers/django-apps.txt:108
+#: ../../reference/developers/django-apps.txt:380
 msgid "Template Tags"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:67
-msgid "geonode_media <media_name>"
+# 93c73298d9824c6e87a7b65c5c9bf7bf
+#: ../../reference/developers/django-apps.txt:55
+msgid "num_ratings <object>"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:63
-msgid ""
-"Accesses entries in MEDIA_LOCATIONS without requiring the view to explicitly"
-" add it to the template context.  Example usage::"
+# b1a6c539057648d2b500770d548f9f20
+#: ../../reference/developers/django-apps.txt:57
+msgid "Returns the number of ratings an object has.  Example usage::"
 msgstr ""
 
+# 458ff9f1f55d4a3dbcdddc8112f8aae8
+#: ../../reference/developers/django-apps.txt:64
+msgid "categories"
+msgstr ""
+
+# dba38e5311bc4929bdf1bd6c9cd272db
+#: ../../reference/developers/django-apps.txt:66
+msgid "Returns topic categories and the count of objects in each category."
+msgstr ""
+
+# aeb06061d5d343bc8fa8f4932508a661
 #: ../../reference/developers/django-apps.txt:70
-msgid "``geonode.maps`` - Map creation and geospatial data management"
+msgid "``geonode.documents`` - Document creation and management"
 msgstr ""
 
+# 7e5492b093724dd6870ee57f69f83f29
 #: ../../reference/developers/django-apps.txt:72
 msgid ""
-"This Django app provides some support for managing and manipulating "
-"geospatial datasets.  In particular, it provides tools for editing, viewing,"
-" and searching metadata for data layers, and for editing, viewing, and "
-"searching maps that aggregate data layers to display data about a particular"
-" topic."
+"Manages uploaded files that can be related to maps.  Documents can be any "
+"type of file that is included in the ALLOWED_DOCUMENTS_TYPES setting."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:78
+#: ../../reference/developers/django-apps.txt:76
+#: ../../reference/developers/django-apps.txt:163
+#: ../../reference/developers/django-apps.txt:362
+msgid "``settings.py`` Entries"
+msgstr ""
+
+# df4c84ed146f4738b776d70b6e615c70
+# 5f70adebeb9242e9a6b50bdfe8f4a656
+#: ../../reference/developers/django-apps.txt:81
+#: ../../reference/developers/settings.txt:39
+msgid "DOCUMENTS_APP"
+msgstr ""
+
+# 9cf6b0f1ce8b4e0889ed34316384107b
+# 048bd7b344ad49cf8206861ab1951380
+# 6b7e77fa13d84507bee9f5e8c016f057
+# 455402eb48624e7c989ed1943027c4a7
+# 96605ca35b3544deb9889fc7940421da
+# dc57786afa2f41189e7ac132b61e4317
+# ad4b159dea094b9f9579c4de38c53072
+# 1da0c886270445a4974d5284ac17c50a
+# e8452cd17ac940a9a17d0bceb402e196
+# 51b5142210bb43ab924c21021a2de544
+#: ../../reference/developers/django-apps.txt:79
+#: ../../reference/developers/django-apps.txt:190
+#: ../../reference/developers/django-apps.txt:221
+#: ../../reference/developers/django-apps.txt:226
+#: ../../reference/developers/django-apps.txt:231
+#: ../../reference/developers/settings.txt:40
+#: ../../reference/developers/settings.txt:177
+#: ../../reference/developers/settings.txt:222
+#: ../../reference/developers/settings.txt:238
+#: ../../reference/developers/settings.txt:250
+msgid "Default: ``True``"
+msgstr ""
+
+# fc987c925b34421fa3d0ec36ef30b91c
+# 44db428fe49a468db5be0040040a8610
+#: ../../reference/developers/django-apps.txt:81
+#: ../../reference/developers/settings.txt:42
+msgid "Enables the Documents app."
+msgstr ""
+
+# 0fa7103d403c4445b252eea20388b6c7
+# fe51cc768759478f9bb7e0aed4f5780d
+#: ../../reference/developers/django-apps.txt:86
+#: ../../reference/developers/settings.txt:33
+msgid "ALLOWED_DOCUMENT_TYPES"
+msgstr ""
+
+# e0575cdcef55411b931cfe74a4961fd6
+# 006bf306886a4a55bc9ddff5e67ef09a
+#: ../../reference/developers/django-apps.txt:84
+#: ../../reference/developers/settings.txt:34
+msgid ""
+"Default: ``['doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', "
+"'tif', 'tiff', 'png', 'gif', 'txt']``"
+msgstr ""
+
+# 007b662c874446ca91c90631fcb2ddc6
+# c681a187a5b9477ba7db87c470e621e6
+#: ../../reference/developers/django-apps.txt:86
+#: ../../reference/developers/settings.txt:36
+msgid ""
+"A list of acceptable file extensions that can be uploaded to the Documents "
+"app."
+msgstr ""
+
+# 50a018d5e4564e26aafc19de99c3b740
+# ca0c6fb8a9ab46b4b57d34fcdcd6eedc
+#: ../../reference/developers/django-apps.txt:91
+#: ../../reference/developers/settings.txt:45
+msgid "MAX_DOCUMENT_SIZE"
+msgstr ""
+
+# 2da6430a85334d8991be34e8cf1b4c60
+# c8dceda4e5cc49adb59f063b5117340d
+#: ../../reference/developers/django-apps.txt:89
+#: ../../reference/developers/settings.txt:46
+msgid "Default: ``2``"
+msgstr ""
+
+# 02a788451bad46d5aa5789fd1b5a8221
+#: ../../reference/developers/django-apps.txt:91
+msgid ""
+"The maximum size (in megabytes) that an upload will be before it gets "
+"rejected."
+msgstr ""
+
+# 2f5f5d6f64cc41878fd42d5d8f080394
+#: ../../reference/developers/django-apps.txt:94
+msgid "``geonode.layers`` - Layer creation and geospatial data management"
+msgstr ""
+
+# 8164bb4ddf31486ba7771cb2323ac903
+#: ../../reference/developers/django-apps.txt:95
+msgid ""
+"This Django app provides support for managing and manipulating single "
+"geospatial datasets known as layers."
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:98
+#: ../../reference/developers/django-apps.txt:144
 msgid "Models"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:80
-msgid "The maps app provides two main model types:"
+# 4c446643de484d42b009850b3ecad999
+#: ../../reference/developers/django-apps.txt:99
+msgid "Attribute - Feature attributes for a layer managed by the GeoNode."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:82
+#: ../../reference/developers/django-apps.txt:100
 msgid "Layer - A data layer managed by the GeoNode"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:84
+# e4464d0b1ba544358f24250134187152
+#: ../../reference/developers/django-apps.txt:101
+msgid "Style - A data layer's style managed by the GeoNode"
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:104
+#: ../../reference/developers/django-apps.txt:150
+#: ../../reference/developers/django-apps.txt:335
+#: ../../reference/developers/django-apps.txt:353
+msgid "Views"
+msgstr ""
+
+# 9b1bea9d7c0840a58a0b7ae593c6e985
+#: ../../reference/developers/django-apps.txt:105
+msgid ""
+"Creating, viewing, browsing, editing, and deleting layers and their metadata"
+msgstr ""
+
+# be47ac4361fb43afa95f20b1e5a5433a
+#: ../../reference/developers/django-apps.txt:110
+msgid "featured_layers"
+msgstr ""
+
+# a75f7cf2fc5f4e5a9c788658e0cc8542
+#: ../../reference/developers/django-apps.txt:110
+msgid "Returns the the 7 newest layers."
+msgstr ""
+
+# 64571a32539f499ca595198968cf7396
+#: ../../reference/developers/django-apps.txt:113
+msgid "layer_thumbnail <layer>"
+msgstr ""
+
+# 7d2f7c14131249f4af9b2a44de698091
+#: ../../reference/developers/django-apps.txt:113
+msgid "Returns the layer's thumbnail."
+msgstr ""
+
+# a9ec808d5f364115b44bac7b2a38b324
+#: ../../reference/developers/django-apps.txt:116
+msgid "``manage.py`` Commands"
+msgstr ""
+
+# 210c290e3fe1416196a90794ae411c42
+#: ../../reference/developers/django-apps.txt:121
+msgid "cleardeadlayers"
+msgstr ""
+
+# 47349ca890764a4fa61d9e4b977fe767
+#: ../../reference/developers/django-apps.txt:119
+msgid "``python manage.py cleardeadlayers``"
+msgstr ""
+
+# 24fa725a400c4d43b33659a4e3fa5c1c
+#: ../../reference/developers/django-apps.txt:121
+msgid ""
+"Identifies and removes layers in the Django app which don't correspond to "
+"layers in the GeoServer catalog."
+msgstr ""
+
+# 1c5b309ad1db4d94b765b4ec03767dbe
+#: ../../reference/developers/django-apps.txt:128
+msgid "importlayers"
+msgstr ""
+
+# c0a9c291f6064209b12e59eb1266b968
+#: ../../reference/developers/django-apps.txt:124
+msgid "``python manage.py importlayers``"
+msgstr ""
+
+# 9636beef2d7e48969290fa6b2e47b72c
+#: ../../reference/developers/django-apps.txt:126
+msgid ""
+"Brings a data file or a directory full of data files into a GeoNode site.  "
+"Layers are added to the Django database, the GeoServer configuration, and "
+"the GeoNetwork metadata index."
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:133
+msgid "updatelayers"
+msgstr ""
+
+# 34042874ccb34c4a99c08c543d228da2
+#: ../../reference/developers/django-apps.txt:131
+msgid "``python manage.py updatelayers``"
+msgstr ""
+
+# 43ac142963334b34971a4b6dffbede32
+#: ../../reference/developers/django-apps.txt:133
+msgid "Scan Geoserver for data that has not been added to GeoNode."
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:136
+msgid "``geonode.maps`` - Map creation and geospatial data management"
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:138
+msgid ""
+"This Django app provides some support for managing and manipulating "
+"geospatial datasets.  In particular, it provides tools for editing, viewing, "
+"and searching metadata for data layers, and for editing, viewing, and "
+"searching maps that aggregate data layers to display data about a particular "
+"topic."
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:146
 msgid ""
 "Map - A collection of data layers composed in a particular order to form a "
 "map"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:86
+# 2291f0b8379e49a7900cb6e598f1163a
+#: ../../reference/developers/django-apps.txt:147
 msgid ""
-"Additionally, there is a MapLayer model that maintains some map-specific "
-"information related to a layer, such as the z-indexing order."
+"MapLayer - A model that maintains some map-specific information related to a "
+"layer, such as the z-indexing order."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:90
-#: ../../reference/developers/django-apps.txt:169
-msgid "Views"
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:92
+#: ../../reference/developers/django-apps.txt:152
 msgid "The maps app provides views for:"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:94
+#: ../../reference/developers/django-apps.txt:154
 msgid "Creating, viewing, browsing, editing, and deleting Maps"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:95
-msgid ""
-"Creating, viewing, browsing, editing, and deleting Layers and their metadata"
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:97
+#: ../../reference/developers/django-apps.txt:156
 msgid ""
 "These operations require the use of GeoServer to manage map rendering, as "
 "well as GeoExt to provide interactive editing and previewing of maps and "
 "data layers."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:100
+# 05a8279051214b03a5d6b7f58fd49ed6
+#: ../../reference/developers/django-apps.txt:159
 msgid ""
-"There are also some url mappings in the geonode.maps.urls module for easy "
-"inclusion in GeoNode sites."
+"There are also some url mappings in the ``geonode.maps.urls`` module for "
+"easy inclusion in GeoNode sites."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:108
+# 1dc44928cae64760920ee78066383daa
+# a1b5ec1305bc4788991234d990d8a7d6
+#: ../../reference/developers/django-apps.txt:280
+#: ../../reference/developers/settings.txt:150
+msgid "OGC_SERVER"
+msgstr ""
+
+# 13f5703d6c5f4f49a4dcc1e0764f745f
+# e856ac008b584bd3a4cf2166b6c3e7e2
+#: ../../reference/developers/django-apps.txt:166
+#: ../../reference/developers/settings.txt:151
+msgid "Default: ``{}`` (Empty dictionary)"
+msgstr ""
+
+# e5bb21e6ad5344a1acd035f36cf09e4a
+#: ../../reference/developers/django-apps.txt:168
+msgid ""
+"A dictionary of OGC servers and and their options.  The main server should "
+"be listed in the 'default' key.  If there is no 'default' key or if the "
+"``OGC_SERVER`` setting does not exist GeoNode will raise an Improperly "
+"Configured exception.  Below is an example of the ``OGC_SERVER`` setting::"
+msgstr ""
+
+# 75c86261d59345d38d8bfef0dee241a4
+# e670788cebcf407da62689879e4942e8
+# af8c68edcae944d09426efbf053d8785
+#: ../../reference/developers/django-apps.txt:187
+#: ../../reference/developers/settings.txt:168
+#: ../../reference/developers/settings.txt:347
+msgid "BACKEND"
+msgstr ""
+
+# 14ab1f9df8a64072a652a2921e78d26a
+# f62d83769847413a9d1a23f31e7f7ca9
+#: ../../reference/developers/django-apps.txt:183
+#: ../../reference/developers/settings.txt:169
+msgid "Default: ``\"geonode.geoserver\"``"
+msgstr ""
+
+# 134cfc37cbf9468a93cc122ebfb528fd
+# 7c13f15df5c649b180c1bec9d5e1518b
+#: ../../reference/developers/django-apps.txt:185
+#: ../../reference/developers/settings.txt:171
+msgid "The OGC server backend to use.  The backend choices are:"
+msgstr ""
+
+# caa3cb2d9602460b9cc90006a9372bf8
+# 17bf9f5e28844a4bb9baadaa7567081c
+#: ../../reference/developers/django-apps.txt:187
+#: ../../reference/developers/settings.txt:173
+msgid "``'geonode.geoserver'``"
+msgstr ""
+
+# 472f6da47f9844cfa94edcbe0f616894
+# e547b417be1542f183193b646a7459da
+#: ../../reference/developers/django-apps.txt:193
+#: ../../reference/developers/settings.txt:176
+msgid "BACKEND_WRITE_ENABLED"
+msgstr ""
+
+# a1c853af55b2403e935bdf60692d88e4
+# 47f6fe74d6e84c7d9d6649e0ab461057
+#: ../../reference/developers/django-apps.txt:192
+#: ../../reference/developers/settings.txt:179
+msgid ""
+"Specifies whether the OGC server can be written to.  If False, actions that "
+"modify data on the OGC server will not execute."
+msgstr ""
+
+# feb97a7af41d46d3b6b8d3c225ca251f
+# d484aa6643714d3496c866bf771b32ec
+#: ../../reference/developers/django-apps.txt:202
+#: ../../reference/developers/settings.txt:227
+msgid "LOCATION"
+msgstr ""
+
+# ae6778129a9841828d107be44da96319
+# cb5fa74e53b445d5aac09a6f8bd14102
+# a7c364f1113e4cb0a505fbe00933006c
+# 1207a000ef6947e68b9cc2a248b02e1e
+#: ../../reference/developers/django-apps.txt:196
+#: ../../reference/developers/django-apps.txt:205
+#: ../../reference/developers/settings.txt:228
+#: ../../reference/developers/settings.txt:257
+msgid "Default: ``\"http://localhost:8080/geoserver/\"``"
+msgstr ""
+
+# 8f06586967b84056bc809f03abc4955b
+# 1e29e3ce00554ff3880a7f044f054cd8
+#: ../../reference/developers/django-apps.txt:198
+#: ../../reference/developers/settings.txt:230
+msgid ""
+"A base URL from which GeoNode can construct OGC service URLs. If using "
+"Geoserver you can determine this by visiting the GeoServer administration "
+"home page without the /web/ at the end.  For example, if your GeoServer "
+"administration app is at http://example.com/geoserver/web/, your server's "
+"location is http://example.com/geoserver."
+msgstr ""
+
+# d94a6b943d814ad2a90bc49f5f6ec97c
+# bd6256d5ea084a22bb0431e33c55ef82
+#: ../../reference/developers/django-apps.txt:208
+#: ../../reference/developers/settings.txt:256
+msgid "PUBLIC_LOCATION"
+msgstr ""
+
+# 9c07a55ee00549ea954e7de995a9f59f
+#: ../../reference/developers/django-apps.txt:207
+msgid ""
+"The URL used to in most public requests from GeoNode.  This settings allows "
+"a user to write to one OGC server (the LOCATION setting) and read from a "
+"seperate server or the PUBLIC_LOCATION."
+msgstr ""
+
+# ef925297796b44ca931fdd2f8a810822
+# c91b0573fc8a47bfb69e711e9f6d3b1a
+#: ../../reference/developers/django-apps.txt:213
+#: ../../reference/developers/settings.txt:263
+msgid "USER"
+msgstr ""
+
+# b8c58de924f84842b1b686018f8ba43b
+# 10f36945b02e4904b6e811456fb19178
+#: ../../reference/developers/django-apps.txt:211
+#: ../../reference/developers/settings.txt:264
+msgid "Default: ``'admin'``"
+msgstr ""
+
+# d92c18575a5248d186deade64ecfbda0
+# 0497cde989cf40f5849c38b81a935d26
+#: ../../reference/developers/django-apps.txt:213
+#: ../../reference/developers/settings.txt:266
+msgid "The administrative username for the OGC server as a string."
+msgstr ""
+
+# 26a8594db4aa454f85f605979a086a8a
+# fe4b5f773e8f4d6a9292e68099f4fcc6
+#: ../../reference/developers/django-apps.txt:218
+#: ../../reference/developers/settings.txt:243
+msgid "PASSWORD"
+msgstr ""
+
+# 5b2fb1e784784b0d8573e40b742e3760
+# eb2fa588a8844607a93801c2f8bee8c3
+#: ../../reference/developers/django-apps.txt:216
+#: ../../reference/developers/settings.txt:244
+msgid "Default: ``'geoserver'``"
+msgstr ""
+
+# 5b480c93d9fb4563abb437c98924c2f9
+# d6e4306831514c02b2924fca4b83b171
+#: ../../reference/developers/django-apps.txt:218
+#: ../../reference/developers/settings.txt:246
+msgid "The administrative password for the OGC server as a string."
+msgstr ""
+
+# 5d8d6d6bfbc040af92fe085011754391
+# bc0b62f9c9534befbc546b11991b5301
+#: ../../reference/developers/django-apps.txt:223
+#: ../../reference/developers/settings.txt:237
+msgid "MAPFISH_PRINT_ENABLED"
+msgstr ""
+
+# bc19872d342c4ebbb6c192fcbef08919
+# 1d4894378e894fe192e9831a1c8006f7
+#: ../../reference/developers/django-apps.txt:223
+#: ../../reference/developers/settings.txt:240
+msgid ""
+"A boolean that represents whether the Mapfish printing extension is enabled "
+"on the server."
+msgstr ""
+
+# 03e3e51886164f6e8594874a9d4bdc58
+# b46bc8c6b54a4db488658cd5c46d38fa
+#: ../../reference/developers/django-apps.txt:228
+#: ../../reference/developers/settings.txt:249
+msgid "PRINTNG_ENABLED"
+msgstr ""
+
+# c6f02419b3f7470b899fbb4b3ab671e5
+# 1bef6ae83f1a4da79fe7f5176c0089a1
+#: ../../reference/developers/django-apps.txt:228
+#: ../../reference/developers/settings.txt:252
+msgid ""
+"A boolean that represents whether printing of maps and layers is enabled."
+msgstr ""
+
+# 0420d87f222145c48121e7620625728e
+# 9bca54c4ce864f0db585393b58c5d1b2
+#: ../../reference/developers/django-apps.txt:233
+#: ../../reference/developers/settings.txt:221
+msgid "GEONODE_SECURITY_ENABLED"
+msgstr ""
+
+# a3ecb6936ff64ec6b7055a5d9a12f42c
+#: ../../reference/developers/django-apps.txt:233
+msgid ""
+"A boolean that represents whether GeoNode's security application is enabled."
+msgstr ""
+
+# 5f23d1f7e5d244ebba7b965895d428b8
+# c3a41ea18c774fbd84e9864e50fef700
+#: ../../reference/developers/django-apps.txt:238
+#: ../../reference/developers/settings.txt:215
+msgid "GEOGIT_ENABLED"
+msgstr ""
+
+# c2b68beb1f084bfeac02c3c887183e34
+# 51c7c14140414093882dd3db4da7fc3a
+# f8de4ebd0d784cdfb07d6bde75d0eb54
+# fda9959127ca4e6ea99ce53bee7ef570
+# fe00d7dd40864118b50c44a4edf0992a
+# 9ce54c98a16640ea95ef7433e5069411
+# 83da23b19a6545a4ae943128bd5c697b
+# 44f35af21bac4e40a34625718c59abe5
+# ab90eed8f12340d2a6041df4adce0379
+# a33452a65d4a4434bdcd8b7a6b78baaa
+# 3b4b8d496ed04dcd8f2091517077c402
+#: ../../reference/developers/django-apps.txt:236
+#: ../../reference/developers/django-apps.txt:241
+#: ../../reference/developers/django-apps.txt:246
+#: ../../reference/developers/django-apps.txt:365
+#: ../../reference/developers/settings.txt:216
+#: ../../reference/developers/settings.txt:270
+#: ../../reference/developers/settings.txt:276
+#: ../../reference/developers/settings.txt:317
+#: ../../reference/developers/settings.txt:369
+#: ../../reference/developers/settings.txt:375
+#: ../../reference/developers/settings.txt:384
+msgid "Default: ``False``"
+msgstr ""
+
+# 0fe05bfadaae404b907911d895194aae
+#: ../../reference/developers/django-apps.txt:238
+msgid ""
+"A boolean that represents whether the OGC server supports Geogit datastores."
+msgstr ""
+
+# 852e596b5a5b4a1286d7ae79561e393b
+# ef589c948df246b3b630d57b6bd99853
+#: ../../reference/developers/django-apps.txt:243
+#: ../../reference/developers/settings.txt:269
+msgid "WMST_ENABLED"
+msgstr ""
+
+# 968a68c80db542af88cb0af38053df3b
+# 4c97348c57b64d97bb7620356a2a9e5c
+# 071730c1828640d0ba229d29896c2883
+# bce8fa5625614b8db6dee9eb2eedc63f
+#: ../../reference/developers/django-apps.txt:243
+#: ../../reference/developers/django-apps.txt:248
+#: ../../reference/developers/settings.txt:272
+#: ../../reference/developers/settings.txt:278
+msgid "Not implemented."
+msgstr ""
+
+# ddb1277a605f4affab674cc6680c263e
+# d19cdb503271424a8a575ab743d52bd3
+#: ../../reference/developers/django-apps.txt:248
+#: ../../reference/developers/settings.txt:275
+msgid "WPS_ENABLED"
+msgstr ""
+
+# 1f85e1ba51084c9fbb28ccae53c024b4
+# 13340c97cc4b45a2bb7670820497f510
+#: ../../reference/developers/django-apps.txt:280
+#: ../../reference/developers/settings.txt:183
+msgid "DATASTORE"
+msgstr ""
+
+# 4f229a96802c49afa58ccf02c6888e85
+# 59799623efe645998851f2e29b74659b
+#: ../../reference/developers/django-apps.txt:251
+#: ../../reference/developers/settings.txt:184
+msgid "Default: ``''`` (Empty string)"
+msgstr ""
+
+# 3297040446f840469c2ee7127d3f2efa
+#: ../../reference/developers/django-apps.txt:253
+msgid ""
+"An optional string that represents the name of a vector datastore that "
+"GeoNode uploads are imported into.  In order to support vector datastore "
+"imports there also needs to be an entry for the datastore in the "
+"``DATABASES`` dictionary with the same name.  Example::"
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:283
 msgid "GEOSERVER_CREDENTIALS"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:107
+# 1e340dbb6fd74f228df8492669fe5598
+# 1e0f5b635e7c4d30a8b68e06158a3760
+#: ../../reference/developers/django-apps.txt:283
+#: ../../reference/developers/django-apps.txt:286
 msgid ""
-"A 2-tuple with the username and password for a user with privileges to "
-"manage data in the GeoServer coupled to this GeoNode."
+"Removed in GeoNode 2.0, this value is now specified in the ``OGC_SERVER`` "
+"settings."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:116
+#: ../../reference/developers/django-apps.txt:286
 msgid "GEOSERVER_BASE_URL"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:111
-msgid ""
-"A base URL from which GeoNode can construct GeoServer service URLs.  This is"
-" the servlet context URL for the servlet container, or you can determine it "
-"by visiting the GeoServer administration app's home page without the /web/ "
-"at the end.  If your GeoServer administration app is at "
-"http://example.com/geoserver/web/ , your GEOSERVER_BASE_URL is "
-"http://example.com/ ."
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:127
+#: ../../reference/developers/django-apps.txt:297
+#: ../../reference/developers/settings.txt:53
 msgid "CATALOGUE"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:119
+#: ../../reference/developers/django-apps.txt:289
+#: ../../reference/developers/settings.txt:54
 msgid "A dict with the following keys:"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:121
+#: ../../reference/developers/django-apps.txt:291
+#: ../../reference/developers/settings.txt:56
 msgid ""
-"ENGINE: The CSW backend (default is "
-"``geonode.catalogue.backends.pycsw_local``)"
+"ENGINE: The CSW backend (default is ``geonode.catalogue.backends."
+"pycsw_local``)"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:122
+#: ../../reference/developers/django-apps.txt:292
+#: ../../reference/developers/settings.txt:57
 msgid "URL: The FULLY QUALIFIED base url to the CSW instance for this GeoNode"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:123
+#: ../../reference/developers/django-apps.txt:293
+#: ../../reference/developers/settings.txt:58
 msgid "USERNAME: login credentials (if required)"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:124
+#: ../../reference/developers/django-apps.txt:294
+#: ../../reference/developers/settings.txt:59
 msgid "PASSWORD: login credentials (if required)"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:126
+#: ../../reference/developers/django-apps.txt:296
+#: ../../reference/developers/settings.txt:61
 msgid ""
-"pycsw is the default CSW enabled in GeoNode.  pycsw configuration directives"
-" are managed in the PYCSW entry."
+"pycsw is the default CSW enabled in GeoNode.  pycsw configuration directives "
+"are managed in the PYCSW entry."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:134
+#: ../../reference/developers/django-apps.txt:304
+#: ../../reference/developers/settings.txt:281
 msgid "PYCSW"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:130
+#: ../../reference/developers/django-apps.txt:300
+#: ../../reference/developers/settings.txt:282
 msgid ""
-"A dict with pycsw's configuration.  Of note are the sections "
-"``metadata:main`` to set CSW server metadata and ``metadata:inspire`` to set"
-" INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true`` will "
-"enable INSPIRE support.  See http://pycsw.org/docs/configuration.html for "
-"full pycsw configuration details."
+"A dict with pycsw's configuration.  Of note are the sections ``metadata:"
+"main`` to set CSW server metadata and ``metadata:inspire`` to set INSPIRE "
+"options.  Setting ``metadata:inspire['enabled']`` to ``true`` will enable "
+"INSPIRE support.  See http://pycsw.org/docs/configuration.html for full "
+"pycsw configuration details."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:137
+#: ../../reference/developers/django-apps.txt:309
+#: ../../reference/developers/settings.txt:289
 msgid "SITEURL"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:137
+# 02c8987fbd124486ad38b3b89f574094
+# 31e3b0d4ceef47a6a15df5a3b45b4e7c
+#: ../../reference/developers/django-apps.txt:307
+#: ../../reference/developers/settings.txt:290
+msgid "Default: ``'http://localhost:8000/'``"
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:309
 msgid "A base URL for use in creating absolute links to Django views."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:140
+#: ../../reference/developers/django-apps.txt:312
+#: ../../reference/developers/settings.txt:66
 msgid "DEFAULT_MAP_BASE_LAYER"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:140
+#: ../../reference/developers/django-apps.txt:312
+#: ../../reference/developers/settings.txt:67
 msgid "The name of the background layer to include in newly created maps."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:144
+#: ../../reference/developers/django-apps.txt:318
+#: ../../reference/developers/settings.txt:70
 msgid "DEFAULT_MAP_CENTER"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:143
-msgid ""
-"A 2-tuple with the latitude/longitude coordinates of the center-point to use"
-" in newly created maps."
+# 68369341b4e94f50b6bd63afb1cdd1ae
+# b126446d4a8040fb93f6ca4b62428280
+#: ../../reference/developers/django-apps.txt:315
+#: ../../reference/developers/settings.txt:71
+msgid "Default: ``(0, 0)``"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:149
+#: ../../reference/developers/django-apps.txt:317
+#: ../../reference/developers/settings.txt:73
+msgid ""
+"A 2-tuple with the latitude/longitude coordinates of the center-point to use "
+"in newly created maps."
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:325
+#: ../../reference/developers/settings.txt:77
 msgid "DEFAULT_MAP_ZOOM"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:147
+# 6749620d61a247ba9873638aa141a175
+# a2f1826b850e400c8175e88d273a2927
+#: ../../reference/developers/django-apps.txt:321
+#: ../../reference/developers/settings.txt:78
+msgid "Default: ``0``"
+msgstr ""
+
+# dc2b09cb05da4b6e97b4d1ec67f576d2
+# efaffb1557a74a3d8d006e15e592d9f8
+#: ../../reference/developers/django-apps.txt:323
+#: ../../reference/developers/settings.txt:80
 msgid ""
-"The zoom-level to use in newly created maps.  This works like the OpenLayers"
-" zom level setting; 0 is at the world extent and each additional level cuts "
+"The zoom-level to use in newly created maps.  This works like the OpenLayers "
+"zoom level setting; 0 is at the world extent and each additional level cuts "
 "the viewport in half in each direction."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:153
-msgid "GOOGLE_API_KEY"
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:152
-msgid ""
-"A Google Maps v2 API key to use when a Google Maps background layer is used."
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:156
-msgid "``django-admin.py`` Commands"
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:159
-msgid "updatelayers"
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:159
-msgid "Scan GeoServer for data that hasn't been added to the GeoNode yet"
-msgstr ""
-
-#: ../../reference/developers/django-apps.txt:162
+#: ../../reference/developers/django-apps.txt:328
 msgid ""
 "``geonode.proxy`` - Assist JavaScript applications in accessing remote "
 "servers"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:164
+#: ../../reference/developers/django-apps.txt:330
 msgid ""
 "This Django app provides some HTTP proxies for accessing data from remote "
 "servers, to overcome restrictions imposed by the same-origin policy used by "
@@ -643,27 +1117,117 @@ msgid ""
 "various XML documents from OGC-compliant data services."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:173
+#: ../../reference/developers/django-apps.txt:339
 msgid "geonode.proxy.views.proxy"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:172
+#: ../../reference/developers/django-apps.txt:338
 msgid ""
 "This view forwards requests without authentication to a URL provided in the "
 "request, similar to the proxy.cgi script provided by the OpenLayers project."
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:179
+#: ../../reference/developers/django-apps.txt:346
 msgid "geonode.proxy.views.geoserver"
 msgstr ""
 
-#: ../../reference/developers/django-apps.txt:176
+# ec2211e0e84d4bfcabccde6645d94f09
+#: ../../reference/developers/django-apps.txt:342
 msgid ""
 "This view proxies requests to GeoServer.  Instead of a URL-encoded URL "
 "parameter, the path component of the request is expected to be a path "
 "component for GeoServer.  Requests to this URL require valid authentication "
-"against the Django site, and will use the GEOSERVER_CREDENTIALS and "
-"GEOSERVER_BASE_URL settings as defined in the maps application."
+"against the Django site, and will use the default ``OGC_SERVER`` ``USER``, "
+"``PASSWORD`` and ``LOCATION`` settings as defined in the maps application."
+msgstr ""
+
+# 74837c6397304e97afba9fca8c8b8934
+#: ../../reference/developers/django-apps.txt:349
+msgid "``geonode.search`` - Provides the GeoNode search functionality."
+msgstr ""
+
+# 828212ff3920427f942ebdef288084fd
+#: ../../reference/developers/django-apps.txt:350
+msgid "This Django app provides a fast search functionality to GeoNode."
+msgstr ""
+
+# 4b320ae9005747c7858a105562dc27de
+#: ../../reference/developers/django-apps.txt:354
+msgid ""
+"search_api- Builds and executes a search query based on url parameters and "
+"returns matching results in requested format."
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:357
+msgid "``geonode.security`` - GeoNode granular Auth Backend"
+msgstr ""
+
+# 84a9b6ed4e4c400681512133890dacda
+#: ../../reference/developers/django-apps.txt:359
+msgid ""
+"This app provides an authentication backend for use in assigning permissions "
+"to individual objects (maps and layers)."
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:369
+#: ../../reference/developers/settings.txt:316
+msgid "LOCKDOWN_GEONODE"
+msgstr ""
+
+# 3a1c2b232c2a4c4bb666c35094b5adce
+#: ../../reference/developers/django-apps.txt:367
+msgid ""
+"By default, the GeoNode application allows visitors to view most pages "
+"without being authenticated.  Set ``LOCKDOWN_GEONODE = True`` to require a "
+"user to be authenticated before viewing the application."
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:377
+#: ../../reference/developers/settings.txt:307
+msgid "AUTH_EXEMPT_URLS"
+msgstr ""
+
+# f38aedb620f44fddbe4e216dd87bd2e3
+# 085f4ce38c5c43efbadb4e3447b93dad
+#: ../../reference/developers/django-apps.txt:372
+#: ../../reference/developers/settings.txt:308
+msgid "Default: ``()`` (Empty tuple)"
+msgstr ""
+
+# d2a963dc785c4a8795ba88f66d5ee277
+# b7c3737a54144e7ebf1d7c17f77738c6
+#: ../../reference/developers/django-apps.txt:374
+#: ../../reference/developers/settings.txt:310
+msgid ""
+"A tuple of url patterns that the user can visit without being authenticated. "
+"This setting has no effect if ``LOCKDOWN_GEONODE`` is not True.  For "
+"example, ``AUTH_EXEMPT_URLS = ('/maps',)`` will allow unauthenticated users "
+"to browse maps."
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:386
+msgid "geonode_media <media_name>"
+msgstr ""
+
+#: ../../reference/developers/django-apps.txt:382
+msgid ""
+"Accesses entries in MEDIA_LOCATIONS without requiring the view to explicitly "
+"add it to the template context.  Example usage::"
+msgstr ""
+
+# e515a830d15546c38b08a9434947380f
+#: ../../reference/developers/django-apps.txt:390
+msgid "has_obj_perm <user> <obj> <permission>"
+msgstr ""
+
+# c7610a6a9de746c78f372138d8f2336b
+#: ../../reference/developers/django-apps.txt:389
+msgid "Checks whether the user has the specified permission on an object."
+msgstr ""
+
+# 972d590e229b4de18e26fbbe4c4148f9
+#: ../../reference/developers/django-apps.txt:391
+msgid "``{% has_obj_perm user obj \"app.view_thing\" as can_view_thing %}``"
 msgstr ""
 
 #: ../../reference/developers/index.txt:3
@@ -684,14 +1248,20 @@ msgstr ""
 msgid ":ref:`javascript`"
 msgstr ""
 
+# e01716ba6aea4fbdb345591554c64181
+# e3c6a961661548318c006d3e6ae297fd
+#: ../../reference/developers/index.txt:11 ../../reference/index.txt:21
+msgid ":ref:`settings`"
+msgstr ""
+
 #: ../../reference/developers/javascript.txt:5
 msgid "JavaScript in GeoNode"
 msgstr ""
 
 #: ../../reference/developers/javascript.txt:7
 msgid ""
-"GeoNode provides a number of facilities for interactivity in the web browser"
-" built on top of several high-quality JavaScript frameworks:"
+"GeoNode provides a number of facilities for interactivity in the web browser "
+"built on top of several high-quality JavaScript frameworks:"
 msgstr ""
 
 #: ../../reference/developers/javascript.txt:9
@@ -750,11 +1320,289 @@ msgstr ""
 
 #: ../../reference/developers/javascript.txt:36
 msgid ""
-"Controls - Controls are tools for use in OpenLayers maps (such as a freehand"
-" control for drawing new geometries onto a map, or an identify control for "
+"Controls - Controls are tools for use in OpenLayers maps (such as a freehand "
+"control for drawing new geometries onto a map, or an identify control for "
 "getting information about individual features on a map.)  GeoExt provides "
-"tools for using these controls as ExtJS \"Actions\" - operations that can be"
-" invoked as buttons or menu options or associated with other events."
+"tools for using these controls as ExtJS \"Actions\" - operations that can be "
+"invoked as buttons or menu options or associated with other events."
+msgstr ""
+
+# e0205a93aa774e74bda3178e367c6aca
+#: ../../reference/developers/settings.txt:5
+msgid "Settings"
+msgstr ""
+
+# 290b71524a7c466d9757a9ee3b79448e
+#: ../../reference/developers/settings.txt:7
+msgid ""
+"Here’s a list of settings available in GeoNode and their default values.  "
+"This includes settings for some external applications that GeoNode depends "
+"on."
+msgstr ""
+
+# e130025f3c6a4b75b22d526b3487ffa1
+#: ../../reference/developers/settings.txt:15
+msgid "Base settings"
+msgstr ""
+
+# 94c71fdd25df41c7b5434ee78d15948a
+#: ../../reference/developers/settings.txt:18
+msgid "DEFAULT_TOPICCATEGORY"
+msgstr ""
+
+# a07068f0f60d4989a0426da15ad04185
+#: ../../reference/developers/settings.txt:19
+msgid "Default: ``'location'``"
+msgstr ""
+
+# e05a0e415ce1497e8ad6d45513e3393f
+#: ../../reference/developers/settings.txt:21
+msgid ""
+"The identifier of the default topic category to use when uploading new "
+"layers.  The value specified for this setting must be present in the "
+"TopicCategory table or GeoNode will return a ``TopicCategory.DoesNotExist`` "
+"exception."
+msgstr ""
+
+#: ../../reference/developers/settings.txt:26
+#, fuzzy
+msgid "Documents settings"
+msgstr "Documenti"
+
+# 14cda11843134e69a364e325872f7e53
+#: ../../reference/developers/settings.txt:28
+msgid ""
+"Here's a list of settings available in Django core and their default values. "
+"Settings provided by contrib apps are listed below, followed by a topical "
+"index of the core settings."
+msgstr ""
+
+# 0bcbfd7ca60245a5a10bc3ca5bb5ed38
+#: ../../reference/developers/settings.txt:50
+msgid "Maps settings"
+msgstr ""
+
+# 3a1aa77511a24f738d1a4130dcc72291
+#: ../../reference/developers/settings.txt:85
+msgid "MAP_BASELAYERS"
+msgstr ""
+
+# f267658b7f494e6a9831047f25cb361f
+# 2ddbdb7703284239b721d2032910a968
+# 732cae9fad0b436e987738ac463a6b8c
+#: ../../reference/developers/settings.txt:86
+#: ../../reference/developers/settings.txt:334
+#: ../../reference/developers/settings.txt:360
+msgid "Default::"
+msgstr ""
+
+# 0c8ca88fefae4fe7b9833eb437de4261
+#: ../../reference/developers/settings.txt:147
+msgid "A list of dictionaries that specify the default map layers."
+msgstr ""
+
+# 025abcb46d794407bd0a09e5c3f8691e
+#: ../../reference/developers/settings.txt:153
+msgid ""
+"A dictionary of OGC servers and and their options.  The main server should "
+"be listed in the 'default' key.  If there is no 'default' key or if the "
+"``OGC_SERVER`` setting does not exist Geonode will raise an Improperly "
+"Configured exception.  Below is an example of the ``OGC_SERVER`` setting::"
+msgstr ""
+
+# c83a89e80dfa4170bc0d07b9ee3489ba
+#: ../../reference/developers/settings.txt:186
+msgid ""
+"An optional string that represents the name of a vector datastore that "
+"Geonode uploads are imported into.  In order to support vector datastore "
+"imports there also needs to be an entry for the datastore in the "
+"``DATABASES`` dictionary with the same name.  Example::"
+msgstr ""
+
+# c085e28e59134891b9b3a102c7fffe3c
+#: ../../reference/developers/settings.txt:218
+msgid ""
+"A boolean that represents whether the OGC server supports GeoGit datastores."
+msgstr ""
+
+# 26fdbac3338a43929ec68f61e01e82e7
+#: ../../reference/developers/settings.txt:224
+msgid ""
+"A boolean that represents whether Geonode's security application is enabled."
+msgstr ""
+
+# a88c91b6f1fd4f9ba41e85eba2fe0509
+#: ../../reference/developers/settings.txt:259
+msgid ""
+"The URL used to in most public requests from Geonode.  This settings allows "
+"a user to write to one OGC server (the LOCATION setting) and read from a "
+"seperate server or the PUBLIC_LOCATION."
+msgstr ""
+
+# 9c86934349f04512b1a070e40b971d0f
+#: ../../reference/developers/settings.txt:292
+msgid ""
+"A base URL for use in creating absolute links to Django views and generating "
+"links in metadata."
+msgstr ""
+
+# d85018f316c941d1b922e63e748e43dd
+#: ../../reference/developers/settings.txt:295
+msgid "Search settings"
+msgstr ""
+
+# 84d606ba47974d6493d4892bfabe5520
+#: ../../reference/developers/settings.txt:298
+msgid "DEFAULT_SEARCH_SIZE"
+msgstr ""
+
+# dfb4142b285049bd84343327d1d2e696
+#: ../../reference/developers/settings.txt:299
+msgid "Default: ``10``"
+msgstr ""
+
+# 390b2deea7654e6d9990e0c064a4fc89
+#: ../../reference/developers/settings.txt:301
+msgid ""
+"An integer that specifies the default search size when using ``geonode."
+"search`` for querying data."
+msgstr ""
+
+# e1fee77261ed42358fe242fe84a97aea
+#: ../../reference/developers/settings.txt:304
+msgid "Security settings"
+msgstr ""
+
+# b0dd008c0e4c4aa88aa1823918dfc4a8
+#: ../../reference/developers/settings.txt:319
+msgid ""
+"By default, the GeoNode application allows visitors to view most pages "
+"without being authenticated. If this is set to ``True`` users must be "
+"authenticated before accessing URL routes not included in "
+"``AUTH_EXEMPT_URLS``."
+msgstr ""
+
+# e899187842ea4439968d814ea5560a8c
+#: ../../reference/developers/settings.txt:323
+msgid "Upload settings"
+msgstr ""
+
+# 3ce69d2f8fc74f6cbdab4ddc89e8bf85
+#: ../../reference/developers/settings.txt:326
+msgid "GEOGIT_DATASTORE_NAME"
+msgstr ""
+
+# 65c6ee195cd0474c9affcd690e5d3205
+#: ../../reference/developers/settings.txt:327
+msgid "Default: ``None``"
+msgstr ""
+
+# eab540483df74791abbd6397e8b799bc
+#: ../../reference/developers/settings.txt:329
+msgid ""
+"A string with the default GeoGit datastore name.  This value is only used if "
+"no GeoGit datastore name is provided when data is uploaded but it must be "
+"populated if your deployment supports GeoGit."
+msgstr ""
+
+# 1f86357a48a647afbf50da6d8b112729
+#: ../../reference/developers/settings.txt:333
+msgid "UPLOADER"
+msgstr ""
+
+# 849ad8e2cf6a40cb846c399a562ccc84
+#: ../../reference/developers/settings.txt:344
+msgid "A dictionary of Uploader settings and and their values."
+msgstr ""
+
+# 9fef19b313e64a5c9248945cc4d4efa4
+#: ../../reference/developers/settings.txt:348
+msgid "Default: ``'geonode.rest'``"
+msgstr ""
+
+# 7f45797598854a93ac2c058a295436ee
+#: ../../reference/developers/settings.txt:350
+msgid "The uploader backend to use.  The backend choices are:"
+msgstr ""
+
+# 61988830b5d64791a97a8bac60589631
+#: ../../reference/developers/settings.txt:352
+msgid "``'geonode.importer'``"
+msgstr ""
+
+# 0013ffadcc3647499d900b3eb34fa983
+#: ../../reference/developers/settings.txt:353
+msgid "``'geonode.rest'``"
+msgstr ""
+
+# d8df4a62723348829107f4d9578dec34
+#: ../../reference/developers/settings.txt:355
+msgid ""
+"The importer backend requires the Geoserver importer backend to be enabled "
+"and is required for uploading data into GeoGit datastores."
+msgstr ""
+
+# 0bd2ac1696744895aba41897bb4fcb68
+#: ../../reference/developers/settings.txt:359
+msgid "OPTIONS"
+msgstr ""
+
+# 3c71e4f228724dd3b97653542077e6cb
+#: ../../reference/developers/settings.txt:368
+msgid "TIME_ENABED"
+msgstr ""
+
+# c50d1dabb0f04576ac3b8516f86f79b5
+#: ../../reference/developers/settings.txt:371
+msgid ""
+"A boolean that specifies whether the upload should allow the user to enable "
+"time support when uploading data."
+msgstr ""
+
+# 067ea181069e49a88e28819ee391634b
+#: ../../reference/developers/settings.txt:374
+msgid "GEOGIT_ENABED"
+msgstr ""
+
+# afa8b086dc154b4fa17b698b64e543b7
+#: ../../reference/developers/settings.txt:377
+msgid ""
+"A boolean that specifies whether the uploader should allow the user to "
+"upload data into a GeoGit datastore."
+msgstr ""
+
+# 3a1eca0bc7dd4609a283feb2fde0d17f
+#: ../../reference/developers/settings.txt:380
+msgid "User Account settings"
+msgstr ""
+
+# 6292cc84928446d8b5fa96a2133caf43
+#: ../../reference/developers/settings.txt:383
+msgid "REGISTRATION_OPEN"
+msgstr ""
+
+# 573a1c740bc7479c9964f50b00b4859a
+#: ../../reference/developers/settings.txt:386
+msgid ""
+"A boolean that specifies whether users can self-register for an account on "
+"your site."
+msgstr ""
+
+# 1809b13fe5d6470789ef265ce3b39b41
+#: ../../reference/developers/settings.txt:389
+msgid "THEME_ACCOUNT_CONTACT_EMAIL"
+msgstr ""
+
+# bb06ae2905ad480f8e39ac43c2111826
+#: ../../reference/developers/settings.txt:390
+msgid "Default: ``'admin@example.com'``"
+msgstr ""
+
+# 98ffbcea2d26488a9db0bb9be234680c
+#: ../../reference/developers/settings.txt:392
+msgid ""
+"This email address is added to the bottom of the password reset page in case "
+"users have trouble un-locking their account."
 msgstr ""
 
 #: ../../reference/index.txt:3
@@ -827,13 +1675,15 @@ msgstr ""
 msgid "Security and Permissions"
 msgstr ""
 
+# ea12f24c2ec04b5ea7aecf9d9e035b6c
 #: ../../reference/security.txt:7
-msgid "This is mainly ment for administrators!"
+msgid "This is mainly meant for administrators!"
 msgstr ""
 
+# bf9674d2d57a4fb9b1298576afc67036
 #: ../../reference/security.txt:9
 msgid ""
-"Geonode has the ability to restrict the access on your layers and maps, "
+"GeoNode has the ability to restrict the access on your layers and maps, "
 "including the metadata and your uploaded documents. This section will help "
 "you to understand which restrictions are possible and what to take care of "
 "while using them. Generally permissions can be set on all your uploaded "
@@ -906,10 +1756,9 @@ msgid ""
 "the different kinds of users."
 msgstr ""
 
+# f8f50c28c7314bbc9e2a3830a66d6baa
 #: ../../reference/security.txt:50
-msgid ""
-"First of all it has to be said that there are basically two kind of useres "
-"in geonode:"
+msgid "GeoNode has two types of users:"
 msgstr ""
 
 #: ../../reference/security.txt:52
@@ -940,15 +1789,16 @@ msgstr ""
 msgid "active"
 msgstr ""
 
+# ef3c52f5291846219c3747fdbdcd095e
 #: ../../reference/security.txt:62
 msgid ""
-"A superuser is usually generated directly after the installation of geonode "
-"via the terminal. When creating a *superuser* through the terminal it always"
-" has the status *active* and the status *staff* as well. It is also "
-"important to know that a superuser is a user that has all permissions "
-"without explicitly assigning them! That means that he is able to upload and "
-"edit layers, create maps etc. and can not be restricted from that! So the "
-"superuser is basically the adminstrator, who knows and has access on "
+"A superuser is usually generated directly after the installation of GeoNode "
+"via the terminal. When creating a *superuser* through the terminal it always "
+"has the status *active* and the status *staff* as well. It is also important "
+"to know that a superuser is a user that has all permissions without "
+"explicitly assigning them! That means that he is able to upload and edit "
+"layers, create maps etc. and can not be restricted from that! So the "
+"superuser is basically the administrator, who knows and has access on "
 "everything."
 msgstr ""
 
@@ -956,37 +1806,39 @@ msgstr ""
 msgid ""
 "The status *staff* only implies that a user with this status is able to "
 "attend the *Django Admin Interface*. *Active* has no special meaning, it "
-"only says that there is a user and it is available. Instead of deleting this"
-" user, you could just unset the status *active*, your user will still be "
+"only says that there is a user and it is available. Instead of deleting this "
+"user, you could just unset the status *active*, your user will still be "
 "remaining, but it won´t show up."
 msgstr ""
 
+# f7faf7911d6a444eb66f927bd55e7667
 #: ../../reference/security.txt:68
-msgid "Basically there are three options to creat a user:"
+msgid "There are three options to create a user:"
 msgstr ""
 
 #: ../../reference/security.txt:70
 msgid "terminal: Here you can only create a superuser"
 msgstr ""
 
+# 92f6d819a4694d578b98634323a7a4ff
 #: ../../reference/security.txt:71
 msgid ""
-"geonode interface: A *normal* user will be created by signing up to geonode."
-" It only has the status *active* so far!"
+"GeoNode interface: A *normal* user will be created by signing up to GeoNode. "
+"It only has the status *active* so far!"
 msgstr ""
 
 #: ../../reference/security.txt:72
 msgid ""
 "django admin interface: A new user can be created as well as the status of "
-"an already existing user can be changed, e.g make a generic user a "
-"superuser."
+"an already existing user can be changed, e.g make a generic user a superuser."
 msgstr ""
 
+# 66e9ecb2bc3f4d158b6e477941d3541f
 #: ../../reference/security.txt:76
 msgid ""
 "As mentioned above, a superuser has access on all the uploaded data. In "
-"order to restrict other users from certain data, use the superuser to change"
-" those permissions. Generally you have the following possibilies of "
+"order to restrict other users from certain data, use the superuser to change "
+"those permissions. Generally you have the following possibilities of "
 "permissions:"
 msgstr ""
 
@@ -1009,9 +1861,9 @@ msgstr ""
 #: ../../reference/security.txt:87
 msgid ""
 "The difference between *who can edit* and *who can edit and manage* is the "
-"fact, that only a user who is allowed to *edit and manage* is able to change"
-" the permissions on this layer/map. (It should be that way but there is a "
-"bug so far!)"
+"fact, that only a user who is allowed to *edit and manage* is able to change "
+"the permissions on this layer/map. (It should be that way but there is a bug "
+"so far!)"
 msgstr ""
 
 #: ../../reference/security.txt:89
@@ -1098,8 +1950,9 @@ msgstr "Abstract"
 msgid "Purpose"
 msgstr "Finalità"
 
+# cf6a6cc4fd444bb7b1b25b95cb9f0662
 #: ../../reference/security.txt:120
-msgid "Maintainance frequency"
+msgid "Maintenance frequency"
 msgstr ""
 
 #: ../../reference/security.txt:121
@@ -1180,8 +2033,8 @@ msgstr ""
 
 #: ../../reference/security.txt:144
 msgid ""
-"Any user who is permitted to edit your layer is also able to replace or even"
-" remove it!"
+"Any user who is permitted to edit your layer is also able to replace or even "
+"remove it!"
 msgstr ""
 
 #: ../../reference/security.txt:149
@@ -1234,4 +2087,21 @@ msgstr ""
 msgid ""
 "Until now it is not possible to set permissions to groups! This action may "
 "come in a further GeoNode release!"
+msgstr ""
+
+# 112b9ab8aece4ec6a210077bcb6ddc7a
+#: ../../reference/security.txt:176
+msgid "Require authentication to access GeoNode"
+msgstr ""
+
+# 88768e46f80c498785405a8aab4890ee
+#: ../../reference/security.txt:178
+msgid ""
+"By default, unregistered users can view maps, layers, and documents on your "
+"site without being authenticated.  GeoNode comes a security option that "
+"requires users to authenticate before accessing any page.  To enable this "
+"option, set the ``LOCKDOWN_GEONODE`` setting to true in your ``settings.py`` "
+"file.  You can fine-tune which url routes are white-listed (accessible by "
+"unregistered users) by listing the routes in the ``AUTH_EXEMPT_URLS`` "
+"tuple.  See the :ref:`djangoapps` documentation for more information."
 msgstr ""

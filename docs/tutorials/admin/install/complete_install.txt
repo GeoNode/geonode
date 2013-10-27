@@ -4,17 +4,10 @@
 Complete Installation Guide
 ===========================
 
-.. note:: While we intend to provide a detailed, accurate explanation of the installation process, it may become out of date. If you run into problems with the process described in this document, please don't hesitate to let the GeoNode team know so we can keep it up to date.
+The manual installation is intended for those who are comfortable with Linux system administration.
 
-This page describes a generic installation process for GeoNode. This manual installation is intended for who are comfortable with Linux system administration. Basically there are two ways to install GeoNode manually.
 
-    #. The first one is by using the automated script provided. This option is strongly recommended for everyone who simply wants a 	customized installation of GeoNode.
-
-    #. The second one is fully manual and lets you have the complete control over the components but is also more complicated.
-
-The sections on the *Recommended Minimum System Requirements* and the *Installing Dependencies* section is valid for both kinds of installations. Also the first part of the section *Installation GeoNode* has to be done in both installation methods. After these initial steps, the methods differ from each other and you have to choose wich one suits you best.
-
-.. note:: The :ref:`quick_installation`  is easier to use.
+.. note:: Here is the link to our :ref:`quick_installation` .
 
 Recommended Minimum System Requirements
 ---------------------------------------
@@ -28,8 +21,8 @@ For deployment of GeoNode on a single server, the following are the *bare minimu
   For spatial data, cached tiles, and "scratch space" useful for administration, a decent baseline size for GeoNode deployments is 100GB.
 * 64-bit hardware recommended.
 
-Installing Dependencies
------------------------
+Step 1 Installing Dependencies
+------------------------------
 
 Some external software must be installed before you can install GeoNode. The GeoNode package contains both the Java and Django web application code for GeoNode, but requires some external software installed to complete the GeoNode platform.
 
@@ -54,8 +47,8 @@ Beware that in case of use of postgres 9.2 as described in :ref:`install_postgre
 
 .. note:: Be sure that you've installed all the required dependencies before you go further with the installation of GeoNode.
 
-Download Code
--------------
+Step 2 Download Code
+--------------------
 
 Download the code using git.
 
@@ -77,8 +70,8 @@ Now if you like to see if all is working so far type:
 This will start GeoNode at http://localhost/. But until now, GeoNode is running with the default configurations, e.g it uses Jetty as servlet container and sqlite3 as database. Also GeoNode won't start without using the command above. Changing this, the following 		configurations on the used components have to be done.
 
 
-Configure
----------
+Step 3 Configure
+----------------
 
 Final steps to configure Geonode include the stack:
 
@@ -89,8 +82,10 @@ Final steps to configure Geonode include the stack:
 
 Please choose between one of the two methods to finish the installation-configuration of GeoNode:
 
-  #. Configure using the ubuntu config file     # recommended way with .sh scripts
-  #. Configure manually                         # slow manual way
+  #. Configure using the ubuntu config file, this is the recommended way using the provided .sh scripts
+  #. Configure manually, doing each step by hand as opposed to using the .sh scripts
+  
+  In the end you will have the same running instance of Geonode.
 
 #. **Configure using the ubuntu config file**
 
@@ -403,32 +398,31 @@ Please choose between one of the two methods to finish the installation-configur
            .. figure:: img/geoserver_webpage.PNG
 
 
-GeoServer with GeoNode Extensions
----------------------------------
-    .. warning:: Geoserver is not a Vanilla Geoserver install, please use the geoserver.war that comes with geonode.
+       .. warning:: Geoserver is not a Vanilla Geoserver install, please use the geoserver.war that comes with geonode. In the future we might use a Vanilla Geoserver, it is in discussion
 
-    .. note:: in the future we might use a Vanilla Geoserver maybe, it is in discussion
 
-GeoNode's GeoServer integration requires some specific extensions to help
-GeoNode in managing GeoServer layers.  GeoNode releases include a GeoServer WAR
-archive with these extensions pre-installed.  However, some manual
-configuration may still be needed in case of not standard installation.
+   GeoNode's GeoServer integration requires some specific extensions to help
+   GeoNode in managing GeoServer layers.  GeoNode releases include a GeoServer WAR
+   archive with these extensions pre-installed.  However, some manual
+   configuration may still be needed in case of not standard installation.
 
-Steps
-.....
- #. *Configure* GeoServer with the location of the GeoNode site, used for
-    authentication (so that GeoServer can recognize logins from the main site).
-    This setting defaults to http://localhost:8000/, so if you are running
-    the GeoNode Django application on a different port, or on a different server
-    from the one running GeoServer, then you will need to change this by adding
-    a block of XML to ``WEB-INF/web.xml`` within the unpacked application
-    directory, like so::
+    #. *Configure* GeoServer with the location of the GeoNode site, used for
+       authentication (so that GeoServer can recognize logins from the main site).
+       This setting defaults to http://localhost:8000/, so if you are running
+       the GeoNode Django application on a different port, or on a different server
+       from the one running GeoServer, then you will need to change this by adding
+       a block of XML to ``WEB-INF/web.xml`` within the unpacked application
+       directory, like so::
 
-       <context-param>
-           <param-name>GEONODE_BASE_URL</param-name>
-           <param-value>http://localhost/</param-value>
-       </context-param> 
+          <context-param>
+              <param-name>GEONODE_BASE_URL</param-name>
+              <param-value>http://localhost/</param-value>
+          </context-param> 
+   
+      The ``<param-value>`` tag should enclose the URL to the Django application
+      homepage.
+   
 
-   The ``<param-value>`` tag should enclose the URL to the Django application
-   homepage.
+   .. note:: While we intend to provide a detailed, accurate explanation of the installation process, if you run into problems with the process described in this document, please don't hesitate to let the GeoNode team know so we can keep it up to date.
+
 
