@@ -285,7 +285,7 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     metadata_uploaded = models.BooleanField(default=False)
     metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
 
-    thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True)
+    thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __unicode__(self):
         return self.title
