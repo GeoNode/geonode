@@ -11,17 +11,6 @@ GeoNode depends on.
     :local:
     :depth: 1
 
-Base settings
-=============
-
-DEFAULT_TOPICCATEGORY
----------------------
-Default: ``'location'``
-
-The identifier of the default topic category to use when uploading new layers.  The value specified for this setting must be
-present in the TopicCategory table or GeoNode will return a ``TopicCategory.DoesNotExist`` exception.
-
-
 Documents settings
 ==================
 
@@ -45,10 +34,9 @@ MAX_DOCUMENT_SIZE
 -----------------
 Default: ``2``
 
-
-Maps settings
-=============
-
+Metadata settings
+=================
+  
 CATALOGUE
 ---------
 A dict with the following keys:
@@ -61,6 +49,37 @@ A dict with the following keys:
 pycsw is the default CSW enabled in GeoNode.  pycsw configuration directives
 are managed in the PYCSW entry.
 
+PYCSW
+-----
+  A dict with pycsw's configuration.  Of note are the sections
+  ``metadata:main`` to set CSW server metadata and ``metadata:inspire``
+  to set INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true``
+  will enable INSPIRE support.  See http://pycsw.org/docs/configuration.html
+  for full pycsw configuration details.
+  
+DEFAULT_TOPICCATEGORY
+---------------------
+Default: ``'location'``
+
+The identifier of the default topic category to use when uploading new layers.  The value specified for this setting must be
+present in the TopicCategory table or GeoNode will return a ``TopicCategory.DoesNotExist`` exception.
+
+MODIFY_TOPICCATEGORY
+--------------------
+Default: ``False``
+
+Metadata Topic Categories list should not be modified, as it is strictly defined
+by ISO (See: http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml 
+and check the <CodeListDictionary gml:id="MD_MD_TopicCategoryCode"> element).
+
+Some customisation it is still possible changing the is_choice and the GeoNode 
+description fields.
+
+In case it is absolutely necessary to add/delete/update categories, it is
+possible to set the MODIFY_TOPICCATEGORY setting to True.
+
+Maps settings
+=============
 
 DEFAULT_MAP_BASE_LAYER
 ----------------------
@@ -276,14 +295,6 @@ WPS_ENABLED
 Default: ``False``
 
 Not implemented.
-
-PYCSW
------
-  A dict with pycsw's configuration.  Of note are the sections
-  ``metadata:main`` to set CSW server metadata and ``metadata:inspire``
-  to set INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true``
-  will enable INSPIRE support.  See http://pycsw.org/docs/configuration.html
-  for full pycsw configuration details.
 
 SITEURL
 -------

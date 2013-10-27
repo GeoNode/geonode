@@ -15,11 +15,18 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
 .. note:: The following steps have to be executed in your terminal. The steps have to be done as a root user, therefore don´t forget to type sudo in front!
 
+#. retrieve latest apt-get list
+
+   .. code-block:: console
+  
+    $ sudo apt-get update
+    
+
 #. Install build tools and libraries
 
    .. code-block:: console
 
-	$ sudo apt-get install build-essential libxml2-dev libxslt-dev
+    $ sudo apt-get install -y build-essential libxml2-dev libxslt1-dev
 
 
 #. Install dependencies
@@ -28,61 +35,58 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
    .. code-block:: console
 
-	$ sudo apt-get install python-dev python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2
+    $ sudo apt-get install -y python-dev python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-pip python-software-properties
+
+   *Install Python Viturual Environment*
+
+   .. code-block:: console
+
+    $ sudo pip install virtualenvwrapper
 
    *Java dependencies*
 
    .. code-block:: console
 
-	$ sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
+    $ sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
 
    *supporting tools*
 
    .. code-block:: console
 
-	$ sudo apt-get install -y git gettext
+    $ sudo apt-get install -y git gettext
 
-#. Add a new PPA repository
+#. Node and tools required for static development
 
    This is required for static development
 
    .. code-block:: console
 
-	$ sudo add-apt-repository ppa:chris-lea/node.js
-	$ sudo apt-get update
-	$ sudo apt-get install nodejs
-	$ sudo npm install -g bower
-	$ sudo npm install -g grunt-cli
+    $ sudo add-apt-repository -y ppa:chris-lea/node.js
+    $ sudo apt-get update
+    $ sudo apt-get install -y nodejs
+    $ sudo npm install -y -g bower
+    $ sudo npm install -y -g grunt-cli
 
 #. Set up a virtual environment
 
    Here is where Geonode will later be running.
 
-   .. note:: Virtualenv was installed in the second step (python dependencies).
-
-   #. Download and install a virutalenvwrapper
-
-      .. code-block:: console
-	
-	   $ sudo pip install virtualenvwrapper
-
-   #. Add the virtualenvwrapper to your new environement
+   Add the virtualenvwrapper to your new environement
 
       .. code-block:: console
 
-	   $ export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
-	   $ export WORKON_HOME=~/.venvs
-	   $ source /usr/local/bin/virtualenvwrapper.sh
-	   $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
+       $ export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
+       $ export WORKON_HOME=~/.venvs
+       $ source /usr/local/bin/virtualenvwrapper.sh
+       $ export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
 
-   #. set up the local virtual environment for Geonode 
-
-      .. note:: This needs to be done before you can download and install Geonode!
+   set up the local virtual environment for Geonode
 
       .. code-block:: console
 
-	   $ mkdir your_folder
-	   $ mkvirtualenv geonode
+       $ mkdir your_folder
+       $ mkvirtualenv geonode
+       $ workon geonode
 
       This creates a new directory where you want your project to be and creates a new virtualenvironment
 
@@ -92,53 +96,64 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
    .. code-block:: console
 
-	$ git clone https://github.com/GeoNode/geonode.git
+    $ git clone https://github.com/GeoNode/geonode.git
 
-   In order to go on and complete the installation you have to direct to your now exisiting geonode folder
+
+#. Install GeoNode in the new active local virtualenv
+
+   .. code-block:: console
+   
+    $ pip install -e geonode --use-mirrors
+    $ cd geonode
+
+#. Compile and Start the server
+
+   The last step is to compile GeoServer and setup
 
    .. code-block:: console
 
-	$ cd geonode
+    $ paver setup
 
-#. Start the server
-
-   The last step is to compile GeoServer and start the development servers
+#. Now we can start our geonode instance
 
    .. code-block:: console
 
-	$ paver setup
-	$ paver start
+    $ paver start
 
-   Now you should be able to visit the geonode site by typing http://localhost:8000 into your browser window.
+   Visit the geonode site by typing http://localhost:8000 into your browser window.
 
-   To stop the server
+#. To stop the server
+
+   type hold **Ctrl c**  on your keyboard to stop the server
+
+   now type:
 
    .. code-block:: console
 
-	$ Ctrl c
-	$ paver stop
+    $ paver stop    # to stop all django, geoserver services
 
-#. Create a superuser
+#. Next create a superuser for your django geonode
 
    Create a superuser so you can log on to your local geonode installation at http://localhost:8000
 
    .. code-block:: console
 
        $ django-admin.py createsuperuser –-settings=geonode.settings
-    
-#. Restart server
+
+Start working on Geonode the next day after install
+===================================================
 
    With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers. 
 
    .. note:: *username* is the name of your machine and personal folder!
 
    #. Activate virtualenv
- 
+
       To activate your virtualenv you just need to type
 
       .. code-block:: console
-   
-	   $ workon geonode
+
+       $ workon geonode
 
       .. todo:: this is not working for me!!! My steps still have to be
 
@@ -146,17 +161,17 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
       .. code-block:: console
 
-	   $ source /home/username/.venvs/geonode/bin/activate
+       $ source /home/username/.venvs/geonode/bin/activate
 
       .. note:: Be careful with the path, it might not be the same for you!
 
    #. Start the server
 
       .. code-block:: console
-   
-	$ cd geonode
-	$ paver start_geoserver
-	$ paver start_django
+
+       $ cd geonode
+       $ paver start_geoserver
+       $ paver start_django
 
       Now you are able to access http://localhost:8000 again.
 
