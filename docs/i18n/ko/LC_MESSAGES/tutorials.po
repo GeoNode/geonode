@@ -1,12 +1,14 @@
 # 
 # Translators:
+# 뿅이 <bykim0706@gmail.com>, 2013
+# MinPa Lee <mapplus@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-04 20:42\n"
-"PO-Revision-Date: 2013-09-05 02:20+0000\n"
-"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
+"PO-Revision-Date: 2013-10-21 17:10+0000\n"
+"Last-Translator: 뿅이 <bykim0706@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/geonode/language/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,161 +18,161 @@ msgstr ""
 
 #: ../../tutorials/admin/backup/index.txt:5
 msgid "Backing up and Restoring GeoNode"
-msgstr ""
+msgstr "GeoNode의 백업과 복원"
 
 #: ../../tutorials/admin/backup/index.txt:7
 msgid ""
 "In order to completely backup a GeoNode installation requries that each "
 "separate component of GeoNode be tackled separately.  There are separate "
 "backup files for Geonode/Djangoand GeoServer."
-msgstr ""
+msgstr "GeoNode 설치를 완전히 백업하기 위해서는 GeoNode 각각의 개별 구성요소를 개별적으로 처리해야 합니다. GeoNode/DJango 및 GeoServer에 대한 별도의 백업 파일이 있습니다."
 
 #: ../../tutorials/admin/backup/index.txt:10
 msgid "Creating a backup"
-msgstr ""
+msgstr "백업 만들기"
 
 #: ../../tutorials/admin/backup/index.txt:12
 #: ../../tutorials/admin/backup/index.txt:52
 msgid ""
 "Make a backup of the GeoNode database (PostgreSQL needs to be running)::"
-msgstr ""
+msgstr "GeoNode 데이터베이스(PostgreSQL은 실행되어야 함)의 백업 만들기::"
 
 #: ../../tutorials/admin/backup/index.txt:16
 msgid "Stop all services::"
-msgstr ""
+msgstr "모든 서비스를 중지합니다:"
 
 #: ../../tutorials/admin/backup/index.txt:22
 msgid "Backup Geonode config & GeoServer data directory::"
-msgstr ""
+msgstr "GeoNode 구성 및 GeoServer 데이터 디렉토리를 백업합니다::"
 
 #: ../../tutorials/admin/backup/index.txt:27
 msgid ""
 "In addition, any templates, design changes, and/or CSS files will also need "
 "to be captured."
-msgstr ""
+msgstr "추가로, 템플릿, 디자인 변경 및 CSS 파일 또한 백업해야 합니다."
 
 #: ../../tutorials/admin/backup/index.txt:29
 msgid "Restart all services::"
-msgstr ""
+msgstr "모든 서비스를 다시 시작합니다::"
 
 #: ../../tutorials/admin/backup/index.txt:37
 msgid "Restoring a backup"
-msgstr ""
+msgstr "백업을 복원하기"
 
 #: ../../tutorials/admin/backup/index.txt:39
 msgid "First stop all services::"
-msgstr ""
+msgstr "먼저 모든 서비스를 중지합니다::"
 
 #: ../../tutorials/admin/backup/index.txt:45
 msgid "Restore Geonode config & GeoServer data directory::"
-msgstr ""
+msgstr "GeoNode 구성 및 GeoServer 데이터 디렉토리를 복원합니다::"
 
 #: ../../tutorials/admin/backup/index.txt:50
 msgid ""
 "In addition, any templates, design changes, and/or CSS files will need to be"
 " restored."
-msgstr ""
+msgstr "추가로, 템플릿, 디자인 변경 및 CSS 파일을 복원해야 합니다."
 
 #: ../../tutorials/admin/backup/index.txt:59
 msgid "Start all services::"
-msgstr ""
+msgstr "모든 서비스를 시작합니다::"
 
 #: ../../tutorials/admin/backup/index.txt:65
 msgid "Notes"
-msgstr ""
+msgstr "일러두기"
 
 #: ../../tutorials/admin/backup/index.txt:67
 msgid ""
 "This approach works between machines with the same version of Linux and "
 "Geonode, and may not work between different versions of Linux, PostgreSQL, "
 "and PostGIS."
-msgstr ""
+msgstr "이 방법은 리눅스 및 GeoNode의 동일한 버전의 시스템 간에 작동하며, 서로 다른 리눅스, PostgreSQL 및 PostGIS 버전에서는 작동하지 않을 수 있습니다."
 
 #: ../../tutorials/admin/commands.txt:5
 msgid "Management Commands for GeoNode"
-msgstr ""
+msgstr "GeoNode에 대한 관리 명령어"
 
 #: ../../tutorials/admin/commands.txt:7
 msgid ""
 "GeoNode comes with administrative commands to help with day to day tasks."
-msgstr ""
+msgstr "GeoNode는 매일 매일의 작업을 돕기 위한 관리 명령어을 제공합니다."
 
 #: ../../tutorials/admin/commands.txt:9
 msgid ""
 "Below is the list of the ones that come from the GeoNode application, the "
 "full list can be obtained by doing::"
-msgstr ""
+msgstr "아래는 GeoNode 응용 프로그램의 명령어들 중 하나이며, 전체 목록은 다음을 수행하여 얻을 수 있습니다::"
 
 #: ../../tutorials/admin/commands.txt:15
 msgid "importlayers"
-msgstr ""
+msgstr "importlayers"
 
 #: ../../tutorials/admin/commands.txt:17
 msgid "Imports a file or folder with geospatial files to GeoNode."
-msgstr ""
+msgstr " GeoNode로 파일 또는 지리 공간 파일을 가진 폴더를가져옵니다."
 
 #: ../../tutorials/admin/commands.txt:19
 msgid ""
 "It supports data in Shapefile and GeoTiff format. It also picks up the "
 "styles if a ``.sld`` file is present."
-msgstr ""
+msgstr "Shape 파일 및 GeoTiff 포맷 데이터를 지원합니다. 만약 ``.sld`` 파일이 있으면 스타일 역시 지원합니다."
 
 #: ../../tutorials/admin/commands.txt:21 ../../tutorials/admin/commands.txt:41
 #: ../../tutorials/admin/commands.txt:57 ../../tutorials/admin/commands.txt:69
 msgid "Usage::"
-msgstr ""
+msgstr "사용법::"
 
 #: ../../tutorials/admin/commands.txt:25 ../../tutorials/admin/commands.txt:45
 msgid "Additional options::"
-msgstr ""
+msgstr "추가 옵션::"
 
 #: ../../tutorials/admin/commands.txt:35
 #: ../../tutorials/devel/old/reference/django-apps.txt:157
 msgid "updatelayers"
-msgstr ""
+msgstr "updatelayers"
 
 #: ../../tutorials/admin/commands.txt:37
 msgid "Update the GeoNode application with data from GeoServer."
-msgstr ""
+msgstr "GeoServer의 데이터를 이용하여 GeoNode 응용 프로그램을 갱신합니다."
 
 #: ../../tutorials/admin/commands.txt:39
 msgid ""
 "This is useful to add data in formats that are not supported in GeoNode by "
 "default, and for example to link it it to ArcSDE datastores."
-msgstr ""
+msgstr "이는 기본적으로 GeoNode가 지원하지 않는 포맷의 데이터를 추가하는데 유용하며, 예를 들면 ArcSDE 데이터 저장소를 연결하는 경우입니다."
 
 #: ../../tutorials/admin/commands.txt:51
 msgid "cleardeadlayers"
-msgstr ""
+msgstr "cleardeadlayers"
 
 #: ../../tutorials/admin/commands.txt:53
 msgid "Deletes layers that do not have a record in GeoServer anymore."
-msgstr ""
+msgstr "GeoServer에서 더 이상 레코드가 없는 레이어를 삭제합니다."
 
 #: ../../tutorials/admin/commands.txt:55
 msgid ""
 "This is useful to fix aborted or partial uploads or situations in which "
 "GeoServer is changed through it is UI and GeoNode is left out of sync."
-msgstr ""
+msgstr "문제 해결 또는 부분 업로드 또는 UI를 통해 GeoServer가 변경되고 GeoNode가 동기화되지 않은 상황을 해결하는데 유용합니다."
 
 #: ../../tutorials/admin/commands.txt:63
 msgid "emit_notices"
-msgstr ""
+msgstr "emit_notices"
 
 #: ../../tutorials/admin/commands.txt:65
 msgid "Sends email notices, for example after layers have been uploaded."
-msgstr ""
+msgstr "이메일 알림을 보냅니다, 예를 들면 레이어를 업로드 한 후와 같은 경우입니다."
 
 #: ../../tutorials/admin/commands.txt:67
 msgid ""
 "It should be configured as a cronjob, running for example every 5 minutes, "
 "otherwise the notices will be created (available in the system) but not "
 "sent. It requires the email gateway to be set correctly."
-msgstr ""
+msgstr "이는 예를 들면 5분마다 실행되는, cronjob으로 구성되어야 합니다,  그렇지 않으면 알림은 생성(시스템 내에서 사용가능)되지만 전송되지 않을 것입니다. 이메일 게이트웨이가 올바르게 설정되어 있어야 합니다."
 
 #: ../../tutorials/admin/config/deploy_config.txt:4
 msgid "Configurations"
-msgstr ""
+msgstr "환경구성"
 
 #: ../../tutorials/admin/config/deploy_config.txt:6
 #: ../../tutorials/admin/config/deploy_install.txt:6
@@ -181,54 +183,54 @@ msgstr ""
 msgid ""
 "Please note that all the paths are user specific, so they might not coincide"
 " with the paths you will have to use!"
-msgstr ""
+msgstr "모든 경로는 사용자 별로 다르므로, 여러분이 사용해야 할 경로와 일치하지 않을 수 있습니다!"
 
 #: ../../tutorials/admin/config/deploy_config.txt:11
 msgid "Change default database"
-msgstr ""
+msgstr "기본 데이터베이스 변경"
 
 #: ../../tutorials/admin/config/deploy_config.txt:13
 msgid ""
 "If you have installed geonode in developing mode, it will be running with "
 "the sqlite3 db as default. But this can be changed! In order to make geonode"
 " to use postgresql just follow the steps from this section."
-msgstr ""
+msgstr "여러분이 개발 모드로 GeoNode를 설치한 경우, 기본적으로 SQLite3 데이터베이스로 실행됩니다. 하지만 이는 변경할 수 있습니다! GeoNode가 PostgreSQL을 사용하려면 이 섹션에서 다음 단계를 따르면 됩니다."
 
 #: ../../tutorials/admin/config/deploy_config.txt:16
 msgid "Create geonode user and database"
-msgstr ""
+msgstr "GeoNode 사용자 및 데이터베이스 생성"
 
 #: ../../tutorials/admin/config/deploy_config.txt:18
 msgid ""
 "First of all a user called *geonode* (with password *geonode*), as well as a"
 " database called *geonode* has to be created."
-msgstr ""
+msgstr "우선 *geonode*라는 데이터베이스 뿐만 아니라 *geonode*(*geonode*라는 비밀번호를 가진) 사용자를 만들어야 합니다."
 
 #: ../../tutorials/admin/config/deploy_config.txt:20
 msgid "To create the user:"
-msgstr ""
+msgstr "사용자를 만들려면:"
 
 #: ../../tutorials/admin/config/deploy_config.txt:26
 msgid ""
 "Now you will be asked to enter a password. This must be *geonode* (you can "
 "change it if you want to, but be aware that you have to edit the "
 "local_settings.py if you do so!)"
-msgstr ""
+msgstr "지금 여러분이 비밀번호를 입력하라는 메시지가 표시될 것입니다. 이는 반드시 *geonode*(원하는 경우 변경할 수 있지만, 이렇게 하면 local_settings.py 파일을 편집해야 합니다!)이어야 합니다."
 
 #: ../../tutorials/admin/config/deploy_config.txt:28
 msgid "To create the database:"
-msgstr ""
+msgstr "데이터베이스를 만들려면:"
 
 #: ../../tutorials/admin/config/deploy_config.txt:34
 msgid ""
 "This creates a db called *geonode* (which automatically has the postgis "
 "extension as well!) with its owner *geonode*. If you do not have a template "
 "with the postgis extension, create one using this guide (LINK)."
-msgstr ""
+msgstr "다음은 *geonode* 소유자인 *geonode*(자동으로 PostGIS 확장을 가진!)라는 데이터베이스를 생성합니다. PostGIS 확장이 없다면, 다음 안내서 (LINK)를 이용하여 PostGIS 확장을 설치하고 템플릿을 생성하십시오."
 
 #: ../../tutorials/admin/config/deploy_config.txt:37
 msgid "Change authentication method"
-msgstr ""
+msgstr "인증 방법 변경"
 
 #: ../../tutorials/admin/config/deploy_config.txt:39
 msgid ""
@@ -240,13 +242,13 @@ msgstr ""
 
 #: ../../tutorials/admin/config/deploy_config.txt:46
 msgid "The file should contain the following default settings until now:"
-msgstr ""
+msgstr "현재까지 위에서 제시된 파일은 다음에 나오는 기본 설정을 포함해야 합니다:"
 
 #: ../../tutorials/admin/config/deploy_config.txt:50
 msgid ""
 "and then set the authentication method of the following entry from *peer* to"
 " *trust*::"
-msgstr ""
+msgstr "그런다음 *peer*에서 *trust*까지 인증방법을 다음과 같이 설정해야 합니다.::"
 
 #: ../../tutorials/admin/config/deploy_config.txt:55
 msgid ""
@@ -1121,7 +1123,7 @@ msgstr ""
 
 #: ../../tutorials/admin/data/permission_and_security.txt:5
 msgid "Security and Permissions"
-msgstr ""
+msgstr "보안 및 사용권한"
 
 #: ../../tutorials/admin/data/permission_and_security.txt:7
 msgid ""
@@ -1139,7 +1141,7 @@ msgstr ""
 
 #: ../../tutorials/admin/data/permission_and_security.txt:15
 msgid "Users"
-msgstr ""
+msgstr "사용자"
 
 #: ../../tutorials/admin/data/permission_and_security.txt:17
 msgid ""
@@ -4677,7 +4679,7 @@ msgstr ""
 
 #: ../../tutorials/devel/core/prerequisites.txt:83
 msgid "Django"
-msgstr ""
+msgstr "Django"
 
 #: ../../tutorials/devel/core/prerequisites.txt:85
 msgid ""
@@ -5989,7 +5991,7 @@ msgstr ""
 
 #: ../../tutorials/devel/index.txt:43
 msgid ":ref:`api`"
-msgstr ""
+msgstr ":ref:`api`"
 
 #: ../../tutorials/devel/index.txt:43
 msgid "Learn about the APIs GeoNode leverages and provides."
@@ -6590,7 +6592,7 @@ msgstr ""
 
 #: ../../tutorials/devel/old/architecture.txt:79
 msgid "GeoNode and GeoServer"
-msgstr ""
+msgstr "GeoNode와 GeoServer"
 
 #: ../../tutorials/devel/old/architecture.txt:81
 msgid ""
@@ -6712,19 +6714,19 @@ msgstr ""
 msgid ""
 "`ExtJS <http://extjs.com/>`_ for component-based UI construction and data "
 "access"
-msgstr ""
+msgstr "`ExtJS <http://extjs.com/>`_ 컴포넌트 기반 UI 구성 및 데이터 액세스"
 
 #: ../../tutorials/devel/old/architecture.txt:160
 #: ../../tutorials/devel/old/reference/javascript.txt:9
 msgid ""
 "`OpenLayers <http://openlayers.org/>`_ for interactive mapping and other "
 "geospatial operations"
-msgstr ""
+msgstr "`OpenLayers <http://openlayers.org/>`_ 인터렉티브 매핑 및 기타 지리공간 작업"
 
 #: ../../tutorials/devel/old/architecture.txt:162
 #: ../../tutorials/devel/old/reference/javascript.txt:11
 msgid "`GeoExt <http://geoext.org/>`_ for integrating ExtJS with OpenLayers"
-msgstr ""
+msgstr "`GeoExt <http://geoext.org/>`_  ExtJS와 OpenLayers를 통합"
 
 #: ../../tutorials/devel/old/architecture.txt:163
 #: ../../tutorials/devel/old/reference/javascript.txt:12
@@ -8026,7 +8028,7 @@ msgstr ""
 #: ../../tutorials/devel/old/reference/api.txt:6
 #: ../../tutorials/devel/old/reference/django-apps.txt:76
 msgid "Models"
-msgstr ""
+msgstr "모델"
 
 #: ../../tutorials/devel/old/reference/api.txt:8
 msgid "This section covers the GeoNode models and related API."
@@ -8245,7 +8247,7 @@ msgstr ""
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:3
 msgid "GeoNode Django Apps"
-msgstr ""
+msgstr "GeoNode Django 앱"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:5
 msgid ""
@@ -8273,7 +8275,7 @@ msgstr ""
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:45
 msgid "MEDIA_LOCATIONS"
-msgstr ""
+msgstr "MEDIA_LOCATIONS"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:40
 msgid ""
@@ -8287,7 +8289,7 @@ msgstr ""
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:50
 msgid "LOCKDOWN_GEONODE"
-msgstr ""
+msgstr "LOCKDOWN_GEONODE"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:48
 msgid ""
@@ -8298,7 +8300,7 @@ msgstr ""
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:56
 msgid "AUTH_EXEMPT_URLS"
-msgstr ""
+msgstr "AUTH_EXEMPT_URLS"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:53
 msgid ""
@@ -8320,7 +8322,7 @@ msgstr ""
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:68
 msgid "``geonode.maps`` - Map creation and geospatial data management"
-msgstr ""
+msgstr "``geonode.maps`` - 지도 생성 및 지리공간 데이터 관리"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:70
 msgid ""
@@ -8333,11 +8335,11 @@ msgstr ""
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:78
 msgid "The maps app provides two main model types:"
-msgstr ""
+msgstr "지도 응용 프로그램은 두 가지 모델 유형을 제공합니다:"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:80
 msgid "Layer - A data layer managed by the GeoNode"
-msgstr ""
+msgstr "레이어 - GeoNode에 의해 관리되는 데이터 레이어"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:82
 msgid ""
@@ -8349,12 +8351,12 @@ msgstr ""
 msgid ""
 "Additionally, there is a MapLayer model that maintains some map-specific "
 "information related to a layer, such as the z-indexing order."
-msgstr ""
+msgstr "또한, Z-인덱스 순서와 같은 레이어와 관련된 지도의 특정 정보를 관리하기 위한 MapLayer 모델이 있습니다."
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:88
 #: ../../tutorials/devel/old/reference/django-apps.txt:167
 msgid "Views"
-msgstr ""
+msgstr "뷰"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:90
 msgid "The maps app provides views for:"
@@ -8384,7 +8386,7 @@ msgstr ""
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:106
 msgid "GEOSERVER_CREDENTIALS"
-msgstr ""
+msgstr "GEOSERVER_CREDENTIALS"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:105
 msgid ""
@@ -8394,7 +8396,7 @@ msgstr ""
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:114
 msgid "GEOSERVER_BASE_URL"
-msgstr ""
+msgstr "GEOSERVER_BASE_URL"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:109
 msgid ""
@@ -8408,7 +8410,7 @@ msgstr ""
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:125
 msgid "CATALOGUE"
-msgstr ""
+msgstr "CATALOGUE"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:117
 msgid "A dict with the following keys:"
@@ -8495,17 +8497,17 @@ msgstr ""
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:154
 msgid "``django-admin.py`` Commands"
-msgstr ""
+msgstr "``django-admin.py`` 명령어"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:157
 msgid "Scan GeoServer for data that hasn't been added to the GeoNode yet"
-msgstr ""
+msgstr "GeoNode에 아직 추가되지 않은 GeoServer 데이터를 스캔"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:160
 msgid ""
 "``geonode.proxy`` - Assist JavaScript applications in accessing remote "
 "servers"
-msgstr ""
+msgstr "``geonode.proxy`` - 원격 서버에 액세스하는  JavaScript 응용 프로그램을 지원"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:162
 msgid ""
@@ -8517,7 +8519,7 @@ msgstr ""
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:171
 msgid "geonode.proxy.views.proxy"
-msgstr ""
+msgstr "geonode.proxy.views.proxy"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:170
 msgid ""
@@ -8527,7 +8529,7 @@ msgstr ""
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:177
 msgid "geonode.proxy.views.geoserver"
-msgstr ""
+msgstr "geonode.proxy.views.geoserver"
 
 #: ../../tutorials/devel/old/reference/django-apps.txt:174
 msgid ""
@@ -11198,7 +11200,7 @@ msgstr ""
 
 #: ../../tutorials/index.txt:3
 msgid "Tutorials"
-msgstr ""
+msgstr "자습서"
 
 #: ../../tutorials/index.txt:5
 msgid ""
