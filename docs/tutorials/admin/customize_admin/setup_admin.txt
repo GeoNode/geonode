@@ -1,41 +1,46 @@
-.. _projects.setup:
-
-Setting up your GeoNode project
-===============================
-
-.. warning:: These instructions are only valid if you've installed GeoNode in development mode!!
-
-.. note:: If you've installed GeoNode using apt-get and want to customize your GeoNode then go to the :ref:`customize_admin` of the Administrator Workshop.
-
-This section will walk you through the steps necessary to set up your own GeoNode project. It assumes that you have installed GeoNode in developing mode.
+.. _customize.setup_admin:
 
 Setup steps
 -----------
 
+.. warning:: These instructions are only valid if you've installed GeoNode systemwide using apt-get!!
+
 If you are working remotely, you should first connect to the machine that has your GeoNode installation. You will need to perform the following steps in a directory where you intend to keep your newly created project.
 
-#. Activate GeoNode’s Virtual Environment
-
-   .. code-block:: console
-
-	$ workon geonode
-
-#. Create your GeoNode project from the template
-
-   .. code-block:: console
-
+.. code-block:: console
+	
 	$ django-admin startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst
-	$ cd my_geonode
+	$ sudo pip install -e my_geonode
 
-#. Update your local_settings.py. You will need to check the local_settings.py that is included with the template project and be sure that it reflects your own local environment. You should pay particular attention to the Database settings especially if you intend to reuse the database that was set up with your base GeoNode installation.
+.. note:: You should NOT use the name *geonode* for your project as it will conflict with your default geonode package name.
 
-#. Run the test server
+These commands create a new template based on the geonode example project.
 
-   .. code-block:: console
+Edit the file /etc/apache2/sites-available/geonode and change the following directive from::
 
-	$ python manage.py runserver
+    WSGIScriptAlias / /var/www/geonode/wsgi/geonode.wsgi
 
-#. Visit your new GeoNode site at http://localhost:8000.
+to::
+
+    WSGIScriptAlias / /path/to/my_geonode/my_geonode/wsgi.py
+
+Then restart apache
+
+.. code-block:: console
+
+	$ sudo service apache2 restart
+
+Now you can edit the templates in my_geonode/templates, the css and images to match your needs like shown in <Theming your Geonode>_. #Link!
+
+.. note:: After going through the theming guide you'll have to return to this site to execute one more command in order to finish the theming!
+
+When you've done the changes, run the following command in the *my_geonode* folder:
+
+.. code-block:: console
+
+	$ python manage.py collectstatic
+
+And now you should see all the changes you've made to your GeoNode.
 
 Source code revision control
 ----------------------------
@@ -189,12 +194,21 @@ no organization is required for your project specific templates, when overriding
 or replacing a template from another app, the path must be the same as the template
 to be replaced.
 
+
 Staying in sync with mainline GeoNode
 -------------------------------------
 
-If you want to stay in sync with the mainline GeoNode you have to execute the following commands. Your own project should not be adversely affected by these changes, but you will receive bug fixes and other improvements by staying in sync.
+One of the primary reasons to set up your own GeoNode project using this method is so that you can stay in sync with the mainline GeoNode as the core development team makes new releases. Your own project should not be adversely affected by these changes, but you will receive bug fixes and other improvements by staying in sync.
 
-.. code-block:: console
+    Upgrade GeoNode::
 
-	$ git fetch upstream master
-	$ git merge
+    	$ apt-get update
+    	$ apt-get install geonode
+
+    Verify that your new project works with the upgraded GeoNode::
+
+    	$ python manage.py runserver
+
+    Navigate to http://localhost:8000.
+
+
