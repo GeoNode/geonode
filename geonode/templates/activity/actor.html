@@ -1,6 +1,7 @@
 {% extends 'site_base.html' %}
 {% load activity_tags social_tags i18n %}
 {% block extra_head %}
+{{ block.super }}
 <script>
 $(function () {
     $("#follow_button, #unfollow_button").click(function () {
