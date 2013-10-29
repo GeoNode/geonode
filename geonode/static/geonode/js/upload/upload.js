@@ -173,8 +173,13 @@ define(['underscore',
             async: false,
             contentType: false,
         }).done(function (resp) {
-            var div = "incomplete-" + id;
-            $(div).hide();
+            var div = "#incomplete-" + id;
+            $(div).remove();
+
+            if ($('#incomplete-download-list > div[id^=incomplete]').length == 0){
+                $('#incomplete-download-list').hide();
+            }
+
         }).fail(function (resp) {
             //
         });
