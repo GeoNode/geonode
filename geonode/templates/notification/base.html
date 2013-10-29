@@ -3,6 +3,7 @@
 {% load i18n %}
 
 {% block extra_head %}
+{{ block.super }}
     <link rel="alternate" type="application/atom+xml" title="Notices Feed" href="{% url "notification_feed_for_user" %}" />
     <link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/notification.css" />
 {% endblock %}
