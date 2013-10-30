@@ -89,7 +89,7 @@ Only for transifex maintainers
 
 .. note:: This section is only for the maintainers of a transifex group!
 
-#. As a firt step, generate all of the needed .pot files (any time the master documentation changes)::
+#. As a firt step, generate all of the needed .pot files (any time from master documentation changes)::
 
    $ cd docs
    $ sphinx-build -b gettext . i18n/pot
@@ -102,12 +102,12 @@ Only for transifex maintainers
 
    $ tx pull -a
     
-#. Now edit the .po files you need, make the translations and then run the post_translate.sh script::
+#. Now edit the .po files you need (here using Italian  /it), make the translations and then run the post_translate.sh script::
 
    $ vi i18n/it/LC_MESSAGES/index.po
    $ sh i18n/scripts/post_translate.sh
     
-#. Do a push to transifex to update translations::
+#. Do a push to transifex to update translations on the server::
 
    $ tx push -s -t
   
