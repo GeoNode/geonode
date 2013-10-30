@@ -11836,7 +11836,7 @@ msgstr ""
 
 #: ../../tutorials/users/integration/google_earth.txt:4
 msgid "Google Earth"
-msgstr ""
+msgstr "Google Earth"
 
 #: ../../tutorials/users/integration/google_earth.txt:6
 msgid ""
@@ -11845,6 +11845,10 @@ msgid ""
 "viewer directly in GeoNode by clicking the google earth icon in the map "
 "panel."
 msgstr ""
+"GeoNodes integrierte Kartenoberfläche lässt Sie ihre Ebenen und Karten in dem "
+"Google Earth Plugin direkt in Ihrem Browser betrachten. Sie können direkt in "
+"GeoNode zu dieser 3D Ansicht wechseln, in dem Sie auf das Google Earth Symbol in "
+"dem Karten Panel klicken."
 
 #: ../../tutorials/users/integration/google_earth.txt:10
 msgid ""
@@ -11852,24 +11856,33 @@ msgid ""
 "sufficiently, and then it will switch to rendering it as a vector overlay "
 "that you can click on to view the attributes for the feature you clicked on."
 msgstr ""
+"GeoServer wird Ihre Ebene als Bild rendern bis Sie ausreichend hineingezoomt haben, "
+"dann wird GeoServer dazu übergehen die Ebene als Vektor Overlay zu rendern, damit "
+"die Eigenschaften der von Ihnen angeklickten Features angezeigt werden können."
 
 #: ../../tutorials/users/integration/google_earth.txt:14
 msgid ""
 "You can also use this option in the GeoExplorer client by clicking the same "
 "button."
 msgstr ""
+"Sie können diese Option ebenfalls im GeoExplorer Client benutzen in dem Sie auf denselben "
+"Knopf drücken."
 
 #: ../../tutorials/users/integration/google_earth.txt:18
 msgid ""
 "Some of the GeoExplorer options will not be available to you when you are in "
 "this mode, they will be grayed out an inaccessible."
 msgstr ""
+"Manche der GeoExplorer Optionen werden allerdings nicht verfügbar sein wenn Sie "
+"in diesem Modus sind. Sie sind grau hinterlegt und inaktiv."
 
 #: ../../tutorials/users/integration/google_earth.txt:20
 msgid ""
 "If instead you want to use layers from your GeoNode in the Google Earth "
 "client itself, you have a few options available to you."
 msgstr ""
+"Wenn Sie stattdessen Ebenen aus Ihrem GeoNode in dem Google Earth Client "
+"selbst verwenden wollen, haben Sie ein paar Optionen zur Verfügung."
 
 #: ../../tutorials/users/integration/google_earth.txt:22
 msgid ""
@@ -11878,12 +11891,18 @@ msgid ""
 "layer, your GeoNode could take several seconds or longer to generate this "
 "KML and return it to you."
 msgstr ""
+"Nun können Sie als Erstes die KML Option aus dem Menü zum Herunterladen "
+"auswählen um die gesamte Ebene als einzelne KML Datei herunterzuladen. "
+"Je nach Größe der Ebene wird Ihr GeoNode einige Sekunden oder länger benötigen "
+"um die KML Datei zu generieren."
 
 #: ../../tutorials/users/integration/google_earth.txt:26
 msgid ""
 "When the layer is generated, it will be downloaded to your desktop machine "
 "and you can simply double click it to open it in Google Earth."
 msgstr ""
+"Wenn die Ebene erstellt wurde wird Sie auf Ihren Desktop heruntergeladen und Sie "
+"können durch einen einfachen Doppelklick in Google Earth öffnen."
 
 #: ../../tutorials/users/integration/google_earth.txt:30
 msgid ""
@@ -11891,6 +11910,9 @@ msgid ""
 "Download menu to view the layer in Google Earth using the same methodology "
 "described above depending on the zoom level."
 msgstr ""
+"Alternativ können Sie die \"In Google Earth betrachten\" Option aus dem Menu "
+"zum Herunterladen verwenden um die Ebene in Google Earth anzuzeigen, wobei "
+"dieselbe Methodik wie oben beschrieben verwendet wird, abhängig von der Zoom Stufe."
 
 #: ../../tutorials/users/integration/google_earth.txt:34
 msgid ""
@@ -11898,6 +11920,9 @@ msgid ""
 "the layers on the server and you can double click it to open it in Google "
 "Earth."
 msgstr ""
+"Das wird eine KMZ Datei auf Ihren Desktop herunterladen, welche eine Referenz "
+"zu der Ebene auf dem Server beinhaltet und über Doppelklick kann Sie in Google "
+"Earth geöffnet werden."
 
 #: ../../tutorials/users/integration/google_earth.txt:38
 msgid ""
@@ -11907,6 +11932,12 @@ msgid ""
 "on the server. Choose whichever method is best for your own needs and "
 "purposes."
 msgstr ""
+"Der grundlegende Unterschiede zwischen diesen beiden Optionen ist, dass in "
+"der ersten Option *ALLE* Daten auf einmal auf Ihren Desktop heruntergeladen werden, "
+"und als solches kann die heruntergeladene Datei offline genutzt werden, während "
+"die Datei welche in der zweiten Option heruntergeladen wurde nur ein Netzwerk Link "
+"zu der Ebene auf dem Server ist. Wählen Sie die Methode die am Besten Ihren Ansprüchen "
+"gerecht wird."
 
 #: ../../tutorials/users/integration/google_earth.txt:40
 msgid ""
@@ -11917,6 +11948,12 @@ msgid ""
 "project to disk. Consult Google Earths documentation for more information "
 "about how to do this."
 msgstr ""
+"Haben Sie einmal Ihre Ebenen zu dem Orte Panel in Google Earth hinzugefügt, "
+"können Sie diese von dem Abschnitt *temporäre Orte* zu *Meine Orte* schieben, "
+"wenn Sie die Ebene auch noch nach der aktuellen Sitzung in Google Earth verwenden "
+"wollen. Sie können diese auch in Ordner organisieren und Google Earths Funktionalität "
+"nutzen um sie auf CD zu speichern. Für weitere Information dazu konsultieren Sie "
+"bitte die Google Earth Dokumentation."
 
 # c85f1d161bb6482f9b056641f11d350c
 #: ../../tutorials/users/integration/index.txt:5
@@ -11939,22 +11976,31 @@ msgid ""
 "process is very similar to how we add these same layers to ArcMap, and we "
 "will walk through the steps necessary in the following section."
 msgstr ""
+"Quantum GIS oder qGIS ist eine Open Source, Cross-Platform DesktopGIS Anwendung."
+"Es kann auch dazu verwendet werden, Ebenen aus Ihrer GeoNode Instanz als WMS oder "
+"WFS hinzuzufügen. Dieser Prozess ist sehr ähnlich zu dem Hinzufügen der Ebenen in "
+"ArcMap. In dem folgenden Abschnitt werden wir die dafür notwendigen Schritte beschreiben."
 
 #: ../../tutorials/users/integration/qgis.txt:8
 msgid "First, select \"Add WMS Layer\" from the Layer menu."
-msgstr ""
+msgstr "Wählen Sie als erstes \"WMS Ebene hinzufügen\" im Ebenenmenü aus."
 
 #: ../../tutorials/users/integration/qgis.txt:12
 msgid ""
 "The Add WMS Layer Dialog will be displayed where you are able to specify the "
 "parameters to connect to your WMS server."
 msgstr ""
+"Ein WMS Ebene hinzufügen Dialog erscheint in welchem Sie die Möglichkeit haben "
+"die Verbindungsparameter für Ihren WMS Server einzugeben."
 
 #: ../../tutorials/users/integration/qgis.txt:16
 msgid ""
 "Next, you need to fill in the parameters to connect to your GeoNode "
 "instance. The URL for your GeoNode's WMS is the base URL + /geoserver/wms"
 msgstr ""
+"Als nächstes müssen Sie die Parameter für die Verbindung mit Ihrer GeoNode "
+"Instanz eingeben. Die URL für Ihren GeoNode WMS ist die Basis URL + /geoserver/"
+"wms"
 
 #: ../../tutorials/users/integration/qgis.txt:20
 msgid ""
@@ -11962,31 +12008,41 @@ msgid ""
 "servers. Make sure its selected, then, click the connect button to have QGIS "
 "retrieve the list of layers from your GeoNode."
 msgstr ""
+"Nachdem Sie auf den OK Button gedrückt haben wird Ihr Server in der Liste der Server "
+"erscheinen. Stellen Sie sicher dass dieser angeklickt ist und betätigen Sie nun den "
+"Knopf zum Verbinden damit QGIS die Liste der Ebenen von GeoNode bekommt."
 
 #: ../../tutorials/users/integration/qgis.txt:24
 msgid ""
 "Select the layers you want to add to your QGIS project and click \"Add\"."
 msgstr ""
+"Wählen Sie die Ebenen aus die Sie zu Ihrem QGIS Projekt hinzufügen wolen und "
+"klicken Sie auf \"Hinzufügen\"." 
 
 #: ../../tutorials/users/integration/qgis.txt:28
 msgid "Your layer will be displayed in the map panel."
-msgstr ""
+msgstr "Ihre Ebene wird in dem Karten Panel angezeigt."
 
 #: ../../tutorials/users/integration/qgis.txt:32
 msgid "You can then zoom into your features in the Map."
-msgstr ""
+msgstr "Sie können zu Ihren Features in der Karte hineinzoomen."
 
 #: ../../tutorials/users/integration/qgis.txt:36
 msgid ""
 "From there, you can use the identify tool to inspect the attributes of one "
 "of the features on the map."
 msgstr ""
+"Dort können Sie auch das Identifizierungswerkzeug verwenden um die "
+"Eigenschaften eines Features auf der Karte anzusehen."
 
 #: ../../tutorials/users/integration/qgis.txt:40
 msgid ""
 "Or, you can look at the layer metadata by right clicking on the layer and "
 "selecting Layer Properties and selecting the metadata tab."
 msgstr ""
+"Sie können die Metadaten der Ebene allerdings auch durch einen Rechtsklick auf "
+"die Ebene selbst anzeigen lassen indem Sie nach Erscheinen des Dialogfensters "
+"auf Ebeneneigenschaften klicken und dannn den Metadaten Tab auswählen."
 
 #: ../../tutorials/users/integration/qgis.txt:44
 msgid ""
@@ -11994,34 +12050,46 @@ msgid ""
 "WMS. Depending on your version of QGIS, you may need to add the WFS plugin. "
 "You can use the Plugin manager to add it."
 msgstr ""
+"Das Hinzufügen von WFS Servern und Ebenen zu Ihrem QGIS Projekt ist sehr ähnlich "
+"dem Hinzufügen von WMS. Abhängig von ihrer QGIS Version müssen Sie eventuell noch "
+"ein WFS Plugin beifügen. Sie können den Plugin Manager verwenden um es hinzuzufügen." 
 
 #: ../../tutorials/users/integration/qgis.txt:48
 msgid ""
 "Once the plugin is installed, you can select the \"Add WFS Layer\" option "
 "from the Layer menu."
 msgstr ""
+"Ist das Plugin einmal installiert, wählen Sie die \"WFS Ebene hinzufügen\" Option "
+"des Ebenenmenüs aus."
 
 #: ../../tutorials/users/integration/qgis.txt:52
 msgid ""
 "Step through the same process you did for WMS to create a new WFS "
 "connection. First specify server parameters and click OK."
 msgstr ""
+"Gehen Sie den selben Prozess wie mit dem WMS durch um eine neue "
+"WFS Verbindung zu erstellen. Spezifizieren Sie zuerst Ihre Server "
+"Parameter und klicken Sie danach auf OK."
 
 #: ../../tutorials/users/integration/qgis.txt:56
 msgid ""
 "Then click Connect to retrieve the list of layers on the server and select "
 "the layers you want to add and click Apply."
 msgstr ""
+"Um die Liste der Ebenen auf dem Server zu erhalten klicken Sie danach auf Verbinden "
+"und wählen dann in der Liste die Ebenen aus, die Sie hinzufügen wollen und klicken "
+"auf Anwenden."
 
 #: ../../tutorials/users/integration/qgis.txt:60
 msgid "The layer(s) you selected will be displayed in the map panel."
-msgstr ""
+msgstr "Die ausgewählten Ebenen werden in dem Karten Panel angezeigt."
 
 #: ../../tutorials/users/integration/qgis.txt:64
 msgid ""
 "You can use the same identify tool to inspect features in the map panel."
 msgstr ""
-""
+"Sie können dasselbe Identifizierungswerkzeug benutzen um die Eigenschaften "
+"in dem Karten Panel anzusehen."
 
 #: ../../tutorials/users/integration/qgis.txt:68
 msgid ""
