@@ -6,14 +6,17 @@ How to contribute to GeoNode's Translation
 
 GeoNode uses `Transifex <https://www.transifex.com/projects/p/geonode/>`_ to translate the webpage and code from english to any other language. To be able to contribute to the translation, you need to get an account on transifex.
 
-Translate using Transifex
-=========================
+Edit translations directly on Transifex webpage
+===============================================
+
+Here you will see how easy it is to update the translations directly on the transifex website.
 
 #. Create account
 
-   Go to `<https://www.transifex.com>`_ and, click *Try it for free* and enter the needed information to create your account.
+   Go to `<https://www.transifex.com>`_ and, click *Try it for free* and enter the needed information to create your free account.
 
    .. figure:: img/transifex_homepage.PNG
+
 
 #. Join our project
 
@@ -49,10 +52,10 @@ Translate using Transifex
 
    To translate in your favourite editor, download the file hitting *Download file for translation*. This will download a .po file, which includes the strings to be translated (*msgid*). Put your translation into the *msgstr* and when you're done, save the file and upload it to transifex (using the same dialog window as for the download).
 
-Translate using github locally
-==============================
+Translate on local machine from github
+======================================
 
-Using this options it is assumed that you have a local GitHub repository forked from GeoNode.
+Using this options it is assumed that you have a local Geonode GitHub repository forked.
 
 .. note:: It is recommended to first create a new branch e.g. *translation* in your repository for your translations.
 
