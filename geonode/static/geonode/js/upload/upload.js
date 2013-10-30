@@ -166,7 +166,8 @@ define(['underscore',
     }
 
     doDelete = function(event) {
-        var id = event.srcElement.id.split("-")[1];
+        var target = event.target || event.srcElement;
+        var id = target.id.split("-")[1];
         var target = "/upload/delete/" + id;
         $.ajaxQueue({
             url: target,
@@ -186,7 +187,8 @@ define(['underscore',
     };
 
     doResume = function(event) {
-        var id = event.srcElement.id.split("-")[1];
+        var target = event.target || event.srcElement;
+        var id = target.id.split("-")[1];
         var target = "/upload/?id=" + id;
         $.ajaxQueue({
             url: target,
