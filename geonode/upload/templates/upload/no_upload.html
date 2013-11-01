@@ -1,10 +1,11 @@
 {% extends "upload/base.html" %}
+{% load i18n %}
 
 {% block body %}
 <div class="twocol">
-    <p>Your upload is either complete or you haven't resumed an earlier one.</p>
-    <p>Returning to the upload starting page in <span id="cnt">5</span> seconds.</p>
-    <p>Or just go <a href="{% url "data_upload" %}">now</a>.</p>
+    <p>{% trans "Your upload is either complete or you haven't resumed an earlier one." %}</p>
+    <p>{% blocktrans %}Returning to the upload starting page in <span id="cnt">5</span>seconds {% endblocktrans %}.</p>
+    <p>{% blocktrans %} Or just go <a href="{% url "data_upload" %}">now{% endblocktrans %}</a>.</p>
 </div>
 <script type="text/javascript">
     var cnt = 5;
