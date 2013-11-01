@@ -31,6 +31,8 @@ from django.conf import settings
 from geonode.utils import _user, _password, ogc_server_settings
 
 from geoserver.catalog import Catalog, FailedRequestError
+from geoserver.store import CoverageStore, DataStore
+from geoserver.workspace import Workspace
 
 logger = logging.getLogger(__name__)
 
@@ -238,7 +240,7 @@ def delete_from_postgis(resource_name):
     finally:
         conn.close()
 
-def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None, store=None, filter=None, skip_unadvertised=False):
+def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None, store=None, filter=None, skip_unadvertised=False, remove_deleted=False):
     """Configure the layers available in GeoServer in GeoNode.
 
        It returns a list of dictionaries with the name of the layer,
@@ -262,6 +264,13 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
         resources = cat.get_resources(store=store)
     else:
         resources = cat.get_resources(workspace=workspace)
+    if remove_deleted:
+        resources_for_delete_compare = resources[:]
+        workspace_for_delete_compare = workspace
+        # filter out layers for delete comparison with GeoNode layers by following criteria:
+        # enabled = true, if --skip-unadvertised: advertised = true, but disregard the filter parameter in the case of deleting layers
+        resources_for_delete_compare = [k for k in resources_for_delete_compare if k.enabled == "true"]
+        if skip_unadvertised: resources_for_delete_compare = [k for k in resources_for_delete_compare if k.advertised == "true" or k.advertised == None]
     if filter:
         resources = [k for k in resources if filter in k.name]
 
@@ -282,8 +291,10 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
             'failed':0,
             'updated':0,
             'created':0,
+            'deleted':0,
         },
-        'layers': []
+        'layers': [],
+        'deleted_layers': []
     }
     start = datetime.datetime.now()
     for i, resource in enumerate(resources):
@@ -335,6 +346,59 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
         output['layers'].append(info)
         if verbosity > 0:
             print >> console, msg
+    
+    if remove_deleted:
+        q = Layer.objects.filter()
+        if workspace_for_delete_compare is not None:
+            if isinstance(workspace_for_delete_compare, Workspace): q = q.filter(workspace__exact=workspace_for_delete_compare.name)
+            else: q = q.filter(workspace__exact=workspace_for_delete_compare)
+        if store is not None:
+            if isinstance(store, CoverageStore) or isinstance(store, DataStore): q = q.filter(store__exact=store.name)
+            else: q = q.filter(store__exact=store)
+        logger.debug("Executing 'remove_deleted' logic")
+        logger.debug("GeoNode Layers Found:")
+        for layer in q:
+            logger.debug("GeoNode Layer info: name: %s, workspace: %s, store: %s", layer.name, layer.workspace, layer.store)
+        
+        # compare the list of GeoNode layers obtained via query/filter with valid resources found in GeoServer 
+        # filtered per options passed to updatelayers
+        # add any layers not found in GeoServer to deleted_layers
+        deleted_layers = []
+        for layer in q:
+            # if layer.name not found it should be deleted:
+            if layer.name not in [resource.name for resource in resources_for_delete_compare]: 
+                deleted_layers.append(layer)
+            else:
+                # if the layer name is found but is not in the same workspace/store it should be deleted
+                for resource in resources_for_delete_compare:
+                    if resource.name == layer.name and (resource.workspace.name != layer.workspace or resource.store.name != layer.store):
+                        deleted_layers.append(layer)
+
+        number_deleted = len(deleted_layers)
+        if verbosity > 1:
+            msg = "\nFound %d layers to delete, starting processing" % number_deleted if number_deleted > 0 else "\nFound %d layers to delete" % number_deleted
+            print >> console, msg
+        
+        for i, layer in enumerate(deleted_layers):
+            logger.debug("GeoNode Layer to delete: name: %s, workspace: %s, store: %s", layer.name, layer.workspace, layer.store)
+            try:
+                layer.delete()
+                output['stats']['deleted']+=1
+                status = "delete_succeeded"
+            except Exception, e:
+                status = "delete_failed"
+
+            msg = "[%s] Layer %s (%d/%d)" % (status, layer.name, i+1, number_deleted)
+            info = {'name': layer.name, 'status': status}
+            if status == "delete_failed":
+                exception_type, error, traceback = sys.exc_info()
+                info['traceback'] = traceback
+                info['exception_type'] = exception_type
+                info['error'] = error
+            output['deleted_layers'].append(info)
+            if verbosity > 0:
+                print >> console, msg
+
     finish = datetime.datetime.now()
     td = finish - start
     output['stats']['duration_sec'] = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
