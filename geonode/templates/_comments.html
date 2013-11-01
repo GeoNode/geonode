@@ -3,6 +3,7 @@
 {% load pagination_tags %}
 {% load url from future %}
 {% load friendly_loader %}
+{% load i18n %}
 {% friendly_load avatar_tags %}
 
 {% load i18n %}
@@ -54,7 +55,7 @@
         {{ form }}
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">{% trans "Cancel" %}</button>
         <button id="comment_submit_btn" class="btn btn-primary">{% trans 'Submit Comments' %}</button>
     </div>
         </form>

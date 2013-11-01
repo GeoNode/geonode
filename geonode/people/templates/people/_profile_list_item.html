@@ -18,16 +18,16 @@
       <div class="meta">
         <p>
           {% if profile.o.organization %}{{ profile.o.organization }}
-            {% else %}No Group
+            {% else %}{% trans "No Group" %}
           {% endif %}</p>
         <p class="abstract">
           {% if profile.o.profile %}{{ profile.o.profile }}{% endif %}
         </p>
           <ul class="nav stats">
-            <li><a href="/people/profile/{{ profile.o.user.username }}/?content=layers"><strong>{{ profile.layer_count }}</strong> Layers</a></li>
-            <li><a href="/people/profile/{{ profile.o.user.username }}/?content=maps"><strong>{{ profile.map_count }}</strong> Maps</a></li>
+            <li><a href="/people/profile/{{ profile.o.user.username }}/?content=layers"><strong>{{ profile.layer_count }}</strong> {% trans "Layers" %}</a></li>
+            <li><a href="/people/profile/{{ profile.o.user.username }}/?content=maps"><strong>{{ profile.map_count }}</strong> {% trans "Maps" %}</a></li>
             {% if DOCUMENTS_APP %}
-            <li><a href="/people/profile/{{ profile.o.user.username }}/?content=documents"><strong>{{ profile.document_count }}</strong> Documents</a></li>
+            <li><a href="/people/profile/{{ profile.o.user.username }}/?content=documents"><strong>{{ profile.document_count }}</strong> {% trans "Documents" %}</a></li>
             {% endif %}
           </ul>
       </div> <!-- ./meta -->
