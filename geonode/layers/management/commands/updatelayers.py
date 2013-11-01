@@ -39,6 +39,11 @@ class Command(BaseCommand):
             dest='skip_unadvertised',
             default=False,
             help='Skip processing unadvertised layers from GeoSever.'),
+        make_option('--remove-deleted',
+            action='store_true',
+            dest='remove_deleted',
+            default=False,
+            help='Remove GeoNode layers that have been deleted from GeoSever.'),
         make_option('-u', '--user', dest="user", default=None,
             help="Name of the user account which should own the imported layers"),
         make_option('-f', '--filter', dest="filter", default=None,
@@ -52,6 +57,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
         skip_unadvertised = options.get('skip_unadvertised')
+        remove_deleted = options.get('remove_deleted') 
         verbosity = int(options.get('verbosity'))
         user = options.get('user')
         owner = get_valid_user(user)
@@ -65,7 +71,7 @@ class Command(BaseCommand):
             console = None
 
         output = gs_slurp(ignore_errors, verbosity=verbosity,
-                owner=owner, console=console, workspace=workspace, store=store, filter=filter, skip_unadvertised=skip_unadvertised)
+                owner=owner, console=console, workspace=workspace, store=store, filter=filter, skip_unadvertised=skip_unadvertised, remove_deleted=remove_deleted)
 
         if verbosity > 1:
             print "\nDetailed report of failures:"
@@ -75,6 +81,14 @@ class Command(BaseCommand):
                     traceback.print_exception(dict_['exception_type'],
                                               dict_['error'],
                                               dict_['traceback'])
+            if remove_deleted:
+                print "Detailed report of layers to be deleted from GeoNode that failed:"
+                for dict_ in output['deleted_layers']:
+                    if dict_['status'] == 'delete_failed':
+                        print "\n\n", dict_['name'], "\n================"
+                        traceback.print_exception(dict_['exception_type'],
+                                                  dict_['error'],
+                                                  dict_['traceback'])
 
         if verbosity > 0:
             print "\n\nFinished processing %d layers in %s seconds.\n" % (
@@ -88,4 +102,6 @@ class Command(BaseCommand):
                 duration_layer = 0
             if len(output) > 0:
                 print "%f seconds per layer" % duration_layer
+            if remove_deleted: print "\n%d Deleted layers" % output['stats']['deleted']
+            
 
