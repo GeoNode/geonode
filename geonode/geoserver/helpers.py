@@ -369,9 +369,11 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
                 #if layer.name matches a GeoServer resource, check also that workspace and store match, mark valid:
                 if layer.name == resource.name:
                     if layer.workspace == resource.workspace.name and layer.store == resource.store.name:
-                        logger.debug("Matched with GeoServer layer: name: %s, workspace: %s, store: %s", resource.name,resource.workspace.name, resource.store.name)
+                        logger.debug("Matches GeoServer layer: name: %s, workspace: %s, store: %s", resource.name,resource.workspace.name, resource.store.name)
                         layer_found_in_geoserver = True
-            if not layer_found_in_geoserver: deleted_layers.append(layer)
+            if not layer_found_in_geoserver: 
+                logger.debug("----- Layer %s not matched, marked for deletion ---------------", layer.name)
+                deleted_layers.append(layer)
         
         number_deleted = len(deleted_layers)
         if verbosity > 1:
