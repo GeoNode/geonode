@@ -362,18 +362,16 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
         
         # compare the list of GeoNode layers obtained via query/filter with valid resources found in GeoServer 
         # filtered per options passed to updatelayers
-        # add any layers not found in GeoServer to deleted_layers
+        # add any layers not found in GeoServer to deleted_layers (must match workspace and store as well):
         deleted_layers = []
         for layer in q:
-            # if layer.name not found it should be deleted:
-            if layer.name not in [resource.name for resource in resources_for_delete_compare]: 
-                deleted_layers.append(layer)
-            else:
-                # if the layer name is found but is not in the same workspace/store it should be deleted
-                for resource in resources_for_delete_compare:
-                    if resource.name == layer.name and (resource.workspace.name != layer.workspace or resource.store.name != layer.store):
-                        deleted_layers.append(layer)
-
+            layer_found_in_geoserver = False
+            for resource in resources_for_delete_compare:
+                #if layer.name matches a GeoServer resource, check also that workspace and store match, mark valid:
+                if layer.name == resource.name:
+                    if layer.workspace == resource.workspace.name and layer.store == resource.store.name: layer_found_in_geoserver = True
+            if not layer_found_in_geoserver: deleted_layers.append(layer)
+        
         number_deleted = len(deleted_layers)
         if verbosity > 1:
             msg = "\nFound %d layers to delete, starting processing" % number_deleted if number_deleted > 0 else "\nFound %d layers to delete" % number_deleted
