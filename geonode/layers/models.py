@@ -455,10 +455,10 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     for ext, name, mime, wms_url in links:
         Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=wms_url,
+                        name=name,
                         defaults=dict(
                             extension=ext,
-                            name=name,
+                            url=wms_url,
                             mime=mime,
                             link_type='image',
                            )
