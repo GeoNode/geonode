@@ -1,8 +1,8 @@
 .. _architecture:
 
-====================
-GeoNode Architecture
-====================
+============
+Architecture
+============
 
 The Big Picture
 ---------------

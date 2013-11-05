@@ -6,11 +6,17 @@ How to contribute to GeoNode's Translation
 
 GeoNode uses `Transifex <https://www.transifex.com/projects/p/geonode/>`_ to translate the webpage and code from english to any other language. To be able to contribute to the translation, you need to get an account on transifex.
 
+Edit translations directly on Transifex webpage
+===============================================
+
+Here you will see how easy it is to update the translations directly on the transifex website.
+
 #. Create account
 
-   Go to `<https://www.transifex.com>`_ and, click *Try it for free* and enter the needed information to create your account.
+   Go to `<https://www.transifex.com>`_ and, click *Try it for free* and enter the needed information to create your free account.
 
    .. figure:: img/transifex_homepage.PNG
+
 
 #. Join our project
 
@@ -21,9 +27,18 @@ GeoNode uses `Transifex <https://www.transifex.com/projects/p/geonode/>`_ to tra
    Click *join an existing project* and type *geonode* into the search bar. You will be directed to the geonode project site on transifex. To join the team, click on the language you want to add a translation in. Then a button *Join the team* will appaer. Hit it, and you will submit for permission to join.
 
 #. Wait for permission to update translations from translation leader (email)
+
 #. Start to Add a translation
 
-   Click on the language where you want to add a translation. You'll see two bars, *javascript* and *master*. To start translating, click on one, and hit *Translate now*. You'll see an interface like this
+   Click on the language where you want to add a translation. You'll see some bars, e.g. *javascript* and *master*. Choose the one you want to add a translation and you will see a dialog window like this
+
+    .. figure:: img/download_translation.PNG
+
+   Now you have two options to start translating. Either you use the transifex interface (*option 1*) or you download the file to translate locally (*option 2*).
+
+   **Option 1**
+
+   To start translating using the Transifex interface, hit *Translate now*. You'll see an interface like this
 
    .. figure:: img/transifex_interface.PNG
 
@@ -33,11 +48,76 @@ GeoNode uses `Transifex <https://www.transifex.com/projects/p/geonode/>`_ to tra
 
    When you stop translating, do not forget to hit the green *save* button at the top right!
 
-How to add a new language
--------------------------
+   **Option 2**
 
-   To add a new language, click on *Request language* on the right top.
+   To translate in your favourite editor, download the file hitting *Download file for translation*. This will download a .po file, which includes the strings to be translated (*msgid*). Put your translation into the *msgstr* and when you're done, save the file and upload it to transifex (using the same dialog window as for the download).
+
+Translate on local machine from github
+======================================
+
+Using this options it is assumed that you have a local Geonode GitHub repository forked.
+
+.. note:: It is recommended to first create a new branch e.g. *translation* in your repository for your translations.
+
+#. As a firt step, generate all of the needed .pot files (any time the master documentation changes)::
+
+   $ cd docs
+   $ sphinx-build -b gettext . i18n/pot
+  
+#. Run the pre_translate.sh script to generate/merge (update) all of the .po files for each language::
+
+   $ sh i18n/scripts/pre_translate.sh
+  
+#. Do a pull from transifex to get latest translations::
+
+   $ tx pull -a
+    
+#. Now edit the .po files you need, make the translations and then run the post_translate.sh script::
+
+   $ vi i18n/it/LC_MESSAGES/index.po
+   $ sh i18n/scripts/post_translate.sh
+
+#. Now you have to push the changed .po files and the appropriate .pot file (can be found in geonode/docs/i18n/pot) to your remote repository using::
+
+   $ git commit
+   $ git push
+
+#. Now make a pull request and GeoNode will push your changes to transifex.
+
+Only for transifex maintainers
+------------------------------
+
+.. note:: This section is only for the maintainers of a transifex group!
+
+#. As a firt step, generate all of the needed .pot files (any time from master documentation changes)::
+
+   $ cd docs
+   $ sphinx-build -b gettext . i18n/pot
+  
+#. Run the pre_translate.sh script to generate/merge (update) all of the .po files for each language::
+
+   $ sh i18n/scripts/pre_translate.sh
+  
+#. Do a pull from transifex to get latest translations::
+
+   $ tx pull -a
+    
+#. Now edit the .po files you need (here using Italian  /it), make the translations and then run the post_translate.sh script::
+
+   $ vi i18n/it/LC_MESSAGES/index.po
+   $ sh i18n/scripts/post_translate.sh
+    
+#. Do a push to transifex to update translations on the server::
+
+   $ tx push -s -t
+  
+#. Finally build your html or pdf, and you should get the localized versions as well::
+
+   $ make html LANG=it
+
+How to add a new language
+=========================
+
+   To add a new language, click on *Request language* on the right top of the transifex webpage.
 
    .. figure:: img/transifex_request_language.PNG
-
- 

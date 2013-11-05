@@ -1,0 +1,37 @@
+{% extends 'site_base.html' %}
+{% load activity_tags  social_tags i18n %}
+{% block extra_head %}
+{{ block.super }}
+<script>
+$(function () {
+    $("#follow_button, #unfollow_button").click(function () {
+        $.post($(this).attr("href"), {});
+        $(this).parent().find("#follow_button, #unfollow_button").toggle();
+        return false
+    });
+});
+</script>
+<link href="{{ STATIC_URL }}geonode/css/activity.css" rel="stylesheet" />
+{% endblock %}
+
+{% block title %}{% trans "Recent activity" %}{% endblock %}
+
+{% comment %}
+{% block navlinks %}
+<li><a href="{% url "actstream_object_feed" content_type_id=ctype.pk  object_id=actor.pk %}">RSS</a></li>
+<li><a href="{% url "actstream_object_feed_atom" content_type_id=ctype.pk  object_id=actor.pk %}">ATOM</a></li>
+{% endblock %}
+{% endcomment %}
+
+{% block body %}
+<div class="span12">
+  <h2 class="page-title span12">{% trans "Recent activity" %}</h2>
+  <div class="span11">
+	{% for action in action_list %}
+    {% activity_item action %}
+    {% empty %}
+      <div>{% trans "No actions yet" %}</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

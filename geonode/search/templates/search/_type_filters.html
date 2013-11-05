@@ -2,11 +2,11 @@
 <nav class="filter">
   <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Type" %}</a></h2>
   <ul class="nav" id="types">
-    <li><a data-class="map" {% if facets.map > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Maps <span class="badge pull-right">{{ facets.map }}</span></a></li>
-    <li><a data-class="layer" {% if facets.layer > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Layers <span class="badge pull-right">{{ facets.layer }}</span></a></li>
-    <li><a style="padding-left: 40px" data-class="raster" {% if facets.raster > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Rasters <span class="badge sub-type pull-right">{{ facets.raster }}</span></a></li>
-    <li><a style="padding-left: 40px" data-class="vector" {% if facets.vector > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Vectors <span class="badge sub-type pull-right">{{ facets.vector }}</span></a></li>
-    <li><a data-class="document" {% if facets.document > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Documents <span class="badge pull-right">{{ facets.document }}</span></a></li>
-    <li><a data-class="user" {% if facets.user > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>Users <span class="badge pull-right">{{ facets.user }}</span></a></li>
+    <li><a data-class="map" {% if facets.map > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Maps" %} <span class="badge pull-right">{{ facets.map }}</span></a></li>
+    <li><a data-class="layer" {% if facets.layer > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Layers" %} <span class="badge pull-right">{{ facets.layer }}</span></a></li>
+    <li><a style="padding-left: 40px" data-class="raster" {% if facets.raster > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Rasters" %} <span class="badge sub-type pull-right">{{ facets.raster }}</span></a></li>
+    <li><a style="padding-left: 40px" data-class="vector" {% if facets.vector > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Vectors" %} <span class="badge sub-type pull-right">{{ facets.vector }}</span></a></li>
+    <li><a data-class="document" {% if facets.document > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Documents" %} <span class="badge pull-right">{{ facets.document }}</span></a></li>
+    <li><a data-class="user" {% if facets.user > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Users" %} <span class="badge pull-right">{{ facets.user }}</span></a></li>
   </ul>
 </nav>

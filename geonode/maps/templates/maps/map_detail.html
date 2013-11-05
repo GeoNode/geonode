@@ -157,8 +157,8 @@
     <div class='well layer-group'>
       <h2>{% trans "Map WMS" %}</h2>
       <dl>{% if map.layer_group %}
-        <dt>WMS layer group for local map layers:</dt>
-        <dd><em>{{ map.layer_group.name }}</em> (on <a href="{{ ows }}?request=GetCapabilities">local OWS</a>)</dd>
+        <dt>{% trans "WMS layer group for local map layers" %}:</dt>
+        <dd><em>{{ map.layer_group.name }}</em> ({% trans "on" %} <a href="{{ ows }}?request=GetCapabilities">{% trans "local OWS" %}</a>)</dd>
       {% endif %}</dl>
       {% if can_edit_map %}
       <p>{% trans "Publish local map layers as WMS layer group" %}</p>

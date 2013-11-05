@@ -23,8 +23,8 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
-from django.conf import settings
 from django.db.models import Q
+from django.template import RequestContext
 from geonode.utils import ogc_server_settings
 
 def index(request, template='index.html'):

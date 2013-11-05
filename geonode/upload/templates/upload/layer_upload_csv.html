@@ -8,13 +8,12 @@
 
 {% block body %}
 {% if present_choices %}
-<h2>Geospatial Data</h2>
-<p>Please indicate which attributes contain the latitude and longitude
-coordinates in the CSV data.</p>
+<h2>{% trans "Geospatial Data" %}</h2>
+<p>{% trans "Please indicate which attributes contain the latitude and longitude coordinates in the CSV data." %}</p>
 {% if guessed_lat_or_lng %}
-<p>With this data, GeoNode was able to guess which attributes contain the
+<p>{% blocktrans %}With this data, GeoNode was able to guess which attributes contain the
 latitude and longitude coordinates, but please confirm that the correct
-attributes are selected below.</p>
+attributes are selected below.{% endblocktrans %}</p>
 {% endif %}
 <form method="POST" id="csvForm">
   {% csrf_token %}
@@ -22,9 +21,9 @@ attributes are selected below.</p>
   <div class="msg alert alert-error">{{ error }}</div>
   {% endif %}
   <div>
-    <label for="lat" style="display: inline-block; width: 75px">Latitude</label>
+    <label for="lat" style="display: inline-block; width: 75px">{% trans "Latitude" %}</label>
     <select id="lat" name="lat">
-      <option value="None">Select an attribute</option>
+      <option value="None">{% trans "Select an attribute" %}</option>
       {% for option in point_candidates %}
       <option value="{{ option }}"
       {% if selected_lat and selected_lat == option %}
@@ -35,9 +34,9 @@ attributes are selected below.</p>
     </select>
   </div>
   <div style="margin: 10px 0">
-    <label for="lat" style="display: inline-block; width: 75px">Longitude</label>
+    <label for="lat" style="display: inline-block; width: 75px">{% trans "Longitude" %}</label>
     <select id="lng" name="lng">
-      <option value="None">Select an attribute</option>
+      <option value="None">{% trans "Select an attribute" %}</option>
       {% for option in point_candidates %}
       <option value="{{ option }}"
       {% if selected_lng and selected_lng == option %}
@@ -47,11 +46,22 @@ attributes are selected below.</p>
       {% endfor %}
     </select>
   </div>
-  <input type="submit" value="Next" />
+  <a href="#" id="upload-csv-submit" class="btn">{% trans "Next" %}</a>
 </form>
+<div id="csv-status">
+    <div id="status">
+
+    </div>
+</div>
 {% else %}
-<p>We did not detect columns that could be used for the latitude and longitude.
+<p>{% blocktrans %}We did not detect columns that could be used for the latitude and longitude.
 Please verify that you have two columns in your csv file that can be used for
-the latitude and longitude.</p>
+the latitude and longitude.{% endblocktrans %}</p>
 {% endif %}
+{% endblock %}
+
+{% block extra_script %}
+<script data-main="{% static 'geonode/js/upload/csv' %}"
+  src="{% static 'lib/js/require.js' %}">
+</script>
 {% endblock %}
