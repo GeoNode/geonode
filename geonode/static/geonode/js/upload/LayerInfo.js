@@ -224,7 +224,7 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.markStart = function () {
         this.logStatus({
-            msg: 'Your upload has started<div id="prog"></div><div id="loading"></div><img src="/static/geonode/img/loading.gif">',
+            msg: 'Your upload has started<div class="progress" id="prog"><div class="bar bar-success" style="width:0%"></div>',
             level: 'alert-success',
             empty: 'true'
         });
@@ -279,7 +279,7 @@ define(function (require, exports) {
                 async: true,
                 beforeSend: function() {
                     self.logStatus({
-                        msg: '<p>Performing Final GeoServer Config Step <img src="/static/geonode/img/loading.gif"></p>',
+                        msg: '<p>Performing Final GeoServer Config Step <img class="pull-right" src="/static/geonode/img/loading.gif"></p>',
                         level: 'alert-success',
                         empty: 'true'
                     });
@@ -395,19 +395,14 @@ define(function (require, exports) {
                     req.upload.addEventListener('progress', function(evt) {
                         if(evt.lengthComputable) {
                             var pct = (evt.loaded / evt.total) * 100;
-                            $('#prog')
-                                .progressbar('option', 'value', pct)
-                                .children('.ui-progressbar-value')
-                                .html(pct.toPrecision(3) + '%')
-                                .css('display', 'block');
+                            $('#prog > .bar').css('width', pct.toPrecision(3) + '%');
                         }
                     }, false);
                 }
                 return req;
             },
             beforeSend: function () {
-                self.markStart(); 
-                this.prog = $('#prog').progressbar({ value: 0 });
+                self.markStart();
                 self.polling = true;
                 self.startPolling();
             },
@@ -577,7 +572,8 @@ define(function (require, exports) {
     };
 
     LayerInfo.prototype.doGeoGitToggle = function () {
-        var id = event.srcElement.id;
+        var target = event.target || event.srcElement;
+        var id = target.id;
         var base_name = id.split(':')[0];
         var geogit = $('#' + id.replace(':', '\\:')).is(':checked');
         if (geogit) {

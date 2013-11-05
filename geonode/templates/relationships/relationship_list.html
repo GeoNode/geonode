@@ -23,7 +23,7 @@
         </p></li>
         </div>
         {% empty %}
-            <li>You're not {{ status_slug }} anyone!</li>
+            <li>{% blocktrans %}You're not {{ status_slug }} anyone!{% endblocktrans %}</li>
     {% endfor %}
     </ul>
 </div>

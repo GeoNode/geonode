@@ -1,3 +1,180 @@
+geonode (2.0.0+rc1) precise; urgency=high
+
+  [ Tyler Garner ]
+  * [7aa29e] Fixes #1229.
+
+  [ Michael Diener ]
+  * [475150] removed redundancy and added some more explanations
+  * [db35e3] added step 1,2,3 text and alignment
+
+  [ crabtree ]
+  * [9403f1] using django url templatetag in map_remove.html instead of raw url path
+
+  [ Michael Diener ]
+  * [0ff51c] added downstream projects on github to the list
+  * [fbb128] fix width of table
+  * [ad2d51] removed librelist email for geonode-users@googlegroups.com
+
+  [ vdeparday ]
+  * [947ea5] Make sure the endpoint /gs/updatelayers pass a username
+
+  [ Simone Dalmasso ]
+  * [bdf927] use libxslt1-dev in the dependencies
+  * [9dea3c] update also the readme
+
+  [ mdiener21 ]
+  * [d0a16e] added doc how to translate documentation
+  * [595b8b] added doc how to translate documentation
+  * [8d8be3] removed tabs to spaces
+
+  [ Ian Schneider ]
+  * [b89797] ensure mvn install target called for zip plugin
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Mon, 21 Oct 2013 13:24:29 +0000
+
+geonode (2.0.0+beta64) precise; urgency=high
+
+  [ Tyler Garner ]
+  * [62408c] Added OGC_SERVER settings documentation.
+  * [5fda6a] Added more apps to the documentation.
+  * [af1e74] Fixes spelling errors/docstrings.
+  * [fa1a02] Added more django apps and settings to the documentation.
+  * [f7d0c7] Fixed spelling errors and added the geonode.security.middleware documentation.
+  * [e0c3ea] More docs cleanup.
+
+  [ mdiener21 ]
+  * [9a70cf] added link to install Geonode for developers to Admin install tutorial
+  * [231f6d] documentation install spelling fixes and streamlined workflow installation
+  * [8dac6a] renamed manual installation to configure installation to reflect content, this was never a manual installation document
+  * [15c0ec] fix toctree
+  * [d216d0] small fixes
+  * [a53fda] updated to recommend seeing postgis.net homepage for installation
+  * [85c707] reorginize location
+  * [dd84d9] renamed to reflect configuration documentation after geonode install
+  * [5b22d9] fix toctree added dependencies configure_installation
+  * [224319] updated links and structure
+  * [6d8c4c] merged manual and complete install into one, still needs review
+  * [798c5d] renamed manual install to configure after install to reflect doc content
+  * [90d7ec] updated links to reflect new docs
+  * [4743e0] updated links and title for clarity
+  * [2dafa5] removed no longer needed files, moved img dir
+
+  [ Michael Diener ]
+  * [0ca464] Update settings.py
+
+  [ Ariel Nunez ]
+  * [b343e8] Upgrade gsconfig to 0.6.7
+
+  [ mdiener21 ]
+  * [a14f60] added level 5 header style to doc ref
+  * [c31378] updated title style to conform to doc style guide
+  * [8df973] fix style error
+  * [00362e] removed duplicate old used dependancy django-user-accounts==1.0b7
+  * [1ecb08] fixed structure remove duplicate text..still needs work
+
+  [ Tyler Garner ]
+  * [9f41cc] Fixed the regions attribute to only display when an object has regions in detail views.
+  * [640b21] Fixed the announcements.
+  * [67b952] Initial settings work.
+
+  [ mdiener21 ]
+  * [191c45] intro text updated to be more specific
+  * [ed7c9c] cleared up some text and made it easier to read..ongoing work in progress
+  * [f63b76] fix title tag
+  * [816603] added link to configuration page to manual install
+  * [b0b3d4] added ordered lists to instructions and cleaned up redundant text
+  * [928aad] fixed ordered list to show proper numbering
+  * [d2c5b0] moved reference links to index page and removed reference.txt
+  * [1472a7] moved dependencies into complete install
+  * [1b61c0] moved dependencies into complete install
+
+  [ Guido Stein ]
+  * [fbc5db] update dev install ubuntu in readme
+
+  [ mdiener21 ]
+  * [b0acb0] update developer install to reflect README updates
+
+  [ Simone Dalmasso ]
+  * [48253f] add dialogs template
+
+  [ Tyler Garner ]
+  * [9b6868] Don't try to delete default styles if they don't exist.
+
+  [ Christian Spanring ]
+  * [cead59] shows and saves default style on layer manage style page
+
+  [ Tyler Garner ]
+  * [c2aac3] Finished the settings documentation.
+  * [c9235a] Spelling/docstring fixes.
+  * [35cec7] Cleaned up spelling errors and capitalization inconsistencies in the docs.
+  * [361246] Cleaned up spelling errors and capitalization inconsistencies in the docs, added the ROGUE project to the downstream GeoNode projects.
+
+  [ mdiener21 ]
+  * [c5cc87] fix title underline too short
+  * [89bcd2] fix indent to short
+  * [fad018] added settings to doc tree
+  * [f646db] added settings ref to index
+
+  [ Simone Dalmasso ]
+  * [e0a7db] update the local settings
+  * [27ba1c] enable WPS by default and let updatelayers to update statistics
+  * [efcb92] use ogc server public url in ows links management
+
+  [ Tyler Garner ]
+  * [8ec335] Removes the layer styles tool from the GeoExt widget in the map detail page.  Fixes #1126.
+
+  [ mdiener21 ]
+  * [a5e542] reduce title redundancy
+  * [41babe] fix title rst style reduce title redundancy
+  * [09a6ed] fix title rst style
+
+  [ Barbara ]
+  * [ec281b] updated manual installation
+  * [687ae8] updated index
+  * [ebce68] more changes
+  * [80df8e] update
+
+  [ Tyler Garner ]
+  * [432d48] Activity stream enhancements.
+
+  [ Barbara ]
+  * [84b4f4] updated
+  * [ed11b5] updated index.txt
+  * [15d561] updated configuration
+  * [929e96] updated postgis
+  * [c232d5] update
+  * [1afffc] updated
+
+  [ mdiener21 ]
+  * [183ffe] complete install re-worked
+
+  [ Barbara ]
+  * [1c9fee] change link to configuration
+  * [e1e00a] small fixes on shape
+  * [b1612a] small fixes
+
+  [ Tyler Garner ]
+  * [ab6fc3] Small JS additions to allow the importer backend to finish CSV uploads. Fixes #1224.
+
+  [ Barbara ]
+  * [f35b19] did some todos
+
+  [ Michael Diener ]
+  * [c5ef8c] manual config using ubuntu config file updated for clarity
+  * [537905] removed un-neccessary text
+
+  [ Tyler Garner ]
+  * [be906b] Uses the OSMSource plugin for the OSM layer in the default basemap. Fixes #142.
+
+  [ Barbara ]
+  * [5a6841] file deleted
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Thu, 10 Oct 2013 18:40:04 +0000
+
 geonode (2.0.0+beta63) precise; urgency=high
 
   [ Tyler Garner ]

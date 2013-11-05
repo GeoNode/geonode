@@ -1,0 +1,25 @@
+.. _customize_admin:
+
+===========================
+Customize the look and feel 
+===========================
+
+.. warning:: These instructions are only valid if you've installed GeoNode systemwide using apt-get!! 
+
+.. note:: If you've installed GeoNode in developing mode and now want to theme your GeoNode use the instructions from :ref:`customize_projects` (Developers Workshop).
+
+You might want to change the look of GeoNode, editing the colors and the logo of the website and adjust the templates for your needs. To do so, you first have to set up your own geonode project from a template. If you've successfully done this, you can go further and start theming your geonode project.
+
+.. toctree::
+   :hidden:
+
+   setup_admin
+   theme_admin	
+
+:ref:`customize.setup_admin`
+  Setup your own geonode project
+
+:ref:`customize.theme_admin`
+  Theme your geonode project
+
+

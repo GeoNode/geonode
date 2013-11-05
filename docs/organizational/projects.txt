@@ -4,7 +4,36 @@
 GeoNode Projects
 ================
 
-This page is an attempt to collect information about downstream projects using GeoNode as a base. Please email the geonode@librelist.com list with your project description to be included.
+This page is an attempt to collect information about downstream projects using GeoNode as a base. Please email the geonode-users@googlegroups.com list with your project description to be included.
+
+Downstream Project Links
+------------------------
+
+Check out our online gallery http://geonode.org/gallery/
+
+And for those who cannot wait here is a listof downstream geonodes on github:
+
+.. list-table::
+   :widths: 20 250
+   :header-rows: 1
+
+   * - Name
+     - web
+     - github
+   * - Mapstory
+     - http://www.mapstory.org
+     - https://github.com/MapStory/mapstory
+   * - ROGUE JCTD
+     - na
+     - https://github.com/ROGUE-JCTD/rogue_geonode
+   * - Inasafe
+     - http://inasafe.org/
+     - https://github.com/inasafe/safe-geonode
+   * - AIFDR
+     - http://www.aifdr.org/
+     - https://github.com/AIFDR/geonode  
+     
+
 
 UCDavis ICE
 -----------

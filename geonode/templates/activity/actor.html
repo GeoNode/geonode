@@ -1,19 +1,13 @@
 {% extends 'site_base.html' %}
-{% load activity_tags i18n %}
+{% load activity_tags social_tags i18n %}
+
 {% block extra_head %}
-<script>
-$(function () {
-    $("#follow_button, #unfollow_button").click(function () {
-        $.post($(this).attr("href"), {});
-        $(this).parent().find("#follow_button, #unfollow_button").toggle();
-        return false
-    });
-});
-</script>
+{{ block.super }}
+<link href="{{ STATIC_URL }}geonode/css/activity.css" rel="stylesheet" />
 {% endblock %}
 
-{% block title %}{% ifequal request.user actor %}My Activity feed{% else %}{{ actor }}'s Activity Feed{% endifequal %}{% endblock %}
-{% block content_title %}{% ifequal request.user actor %}My Activity feed{% else %}{{ actor }}'s Activity Feed{% endifequal %}{% endblock %}
+{% block title %}{% ifequal request.user actor %}{% trans "My Activity feed" %}{% else %}{{ actor }}'s {% trans "Activity Feed" %}{% endifequal %}{% endblock %}
+{% block content_title %}{% ifequal request.user actor %}{%  trans "My Activity feed" %}{% else %}{{ actor }}'s {% trans "Activity Feed" %}{% endifequal %}{% endblock %}
 
 {% comment %}
 {% block navlinks %}
@@ -24,16 +18,13 @@ $(function () {
 
 {% block body %}
 <div class="span12">
-  <h2 class="page-title span12">Activity Feed</h2>
-  <div class="span8">
-  <p>{{ actor }}</p>
-  <ul class="span12">
+  <h2 class="page-title span12">{%  trans "Activity Feed for"  %} {{ actor }}</h2>
+  <div class="span11">
 	{% for action in action_list %}
-    <li>{% include 'activity/action.html' %}</li>
+    {% activity_item action %}
     {% empty %}
-      {% trans "No actions yet" %}
+      <div>{% trans "No actions yet" %}</div>
     {% endfor %}
-  </ul>
   </div>
 </div>
 {% endblock %}

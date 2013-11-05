@@ -61,10 +61,10 @@
 
   <form method="POST" id="timeForm">
       
-  <h3>Time Options</h3>
+  <h3>{% trans "Time Options" %}</h3>
     {% csrf_token %}
     
-    <h4>Choose time attribute:</h4>
+    <h4>{% trans "Choose time attribute" %}:</h4>
     <div class="formSection clearfix" title="Map animations will not be enabled">
         <input type="radio" name="timetype" checked="checked" id="notime">
         <label for="notime">{% trans "This data does not have a time attribute" %}</label>
@@ -96,7 +96,7 @@
     </div>
     {% endif %}
     
-    <h4>Choose optional end time attribute:</h4>
+    <h4>{% trans "Choose optional end time attribute" %}:</h4>
     {% if time_form.time_attribute %}
     <div class="formSection clearfix right" title="Use an existing timestamp attribute in the data">
         <input type="radio" name="end_timetype" id="end_existing">
@@ -125,22 +125,22 @@
     {% endif %}
 
     <div id="presentation" class="formSection left">
-        <h4>Present time attribute as:</h4>
+        <h4>{% trans "Present time attribute as" %}:</h4>
         <div>
             <input id="LIST" type='radio' value='LIST' checked='checked' name='presentation_strategy'/>
-            <label for="LIST"><strong>List</strong> of all the distinct time values</label>
+            <label for="LIST"><strong>{% trans "List" %}</strong> {% trans "of all the distinct time values" %}</label>
         </div>
         <div>
             <input id="DISCRETE_INTERVAL" type='radio' value='DISCRETE_INTERVAL' name='presentation_strategy'/>
-            <label for="DISCRETE_INTERVAL"><strong>Intervals</strong> defined by the resolution</label>
+            <label for="DISCRETE_INTERVAL"><strong>{% trans "Intervals" %}</strong> {% trans "defined by the resolution" %}</label>
         </div>
         <div>
             <input id="CONTINUOUS_INTERVAL" type='radio' value='CONTINUOUS_INTERVAL' name='presentation_strategy'/>
-            <label for="CONTINUOUS_INTERVAL"><strong>Continuous Intervals</strong> for data that is frequently updated, resolution describes the frequency of updates</label>
+            <label for="CONTINUOUS_INTERVAL"><strong>{% trans "Continuous Intervals" %}</strong> {% trans "for data that is frequently updated, resolution describes the frequency of updates" %}</label>
         </div>
         
         <div id="precision" style="display:none">
-            <p><strong>Resolution of time attribute: <input type="text" name="precision_value" size="3"/>
+            <p><strong>{% trans "Resolution of time attribute" %}: <input type="text" name="precision_value" size="3"/>
             {{ time_form.precision_step }}
             </p>
         </div>
@@ -150,38 +150,40 @@
   </form>
 </div>
 <div id="timehelp" class="span5">
-    <h3>Need Help?</h3>
-    <h4>Enabling Time</h4>
-    <p>A feature can currently support one or two time attributes. If a single
+    <h3>{% trans "Need Help?" %}</h3>
+    <h4>{% trans "Enabling Time" %}</h4>
+    <p>{% blocktrans %}A feature can currently support one or two time attributes. If a single
     attribute is used, the feature is considered relevant at that single point in time. If two
     attributes are used, the second attribute represents the end of a valid period for the
-    feature.</p>
-    <h4>Selecting an Attribute</h4>
-    <p>A time attribute can be one of:</p>
+    feature.{% endblocktrans %}</p>
+    <h4>{% trans "Selecting an Attribute" %}</h4>
+    <p>{% trans "A time attribute can be one of" %}:</p>
     <ul>
-        <li>An existing date</li>
-        <li>Text that can be converted to a timestamp</li>
-        <li>A number representing a year</li>
+        <li>{% trans "An existing date" %}</li>
+        <li>{% trans "Text that can be converted to a timestamp" %}</li>
+        <li>{% trans "A number representing a year" %}</li>
     </ul>
     <p>
+    {% blocktrans %}
     For text attributes, one can specify a custom format or use the 'best guess' approach.
     The most common formatting flags are:
+    {% endblocktrans %}
     </p>
     <ul>
-        <li><code>y</code> year</li>
-        <li><code>M</code> month</li>
-        <li><code>d</code> day of month</li>
-        <li><code>H</code> hour of day (0-23)</li>
-        <li><code>k</code> hour of day (1-24)</li>
-        <li><code>m</code> minute in hour</li>
-        <li><code>s</code> second in minute</li>
+        <li><code>y</code> {% trans "year" %}</li>
+        <li><code>M</code> {% trans "month" %}</li>
+        <li><code>d</code> {% trans "day of month" %}</li>
+        <li><code>H</code> {% trans "hour of day" %} (0-23)</li>
+        <li><code>k</code> {% trans "hour of day" %} (1-24)</li>
+        <li><code>m</code> {% trans "minute in hour" %}</li>
+        <li><code>s</code> {% trans "second in minute" %}</li>
     </ul>
     
-    <p class="alert alert-info">Note that single quotes represent a literal character.</p>
-    <p class="alert alert-info">To remove ambiguity, repeat a code to represent the maximum number of digits - for example yyyy</p>
+    <p class="alert alert-info">{% trans "Note that single quotes represent a literal character." %}</p>
+    <p class="alert alert-info">{% trans "To remove ambiguity, repeat a code to represent the maximum number of digits - for example yyyy" %}</p>
     
-    The 'best guess' will handle date and optional time variants of <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO-8601</a>.
-    In terms of the formatting flags noted above, these are:
+    {% trans "The 'best guess' will handle date and optional time variants of" %} <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO-8601</a>.
+    {% trans "In terms of the formatting flags noted above, these are" %}:
     <pre>
     yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
     yyyy-MM-dd'T'HH:mm:sss'Z'

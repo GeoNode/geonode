@@ -1,0 +1,28 @@
+{% load i18n %}
+<div class="activity-item">
+
+    <span class="{{ activity_class|default:'activity' }}"></span>
+
+    <a href="{{ actor.get_absolute_url }}">{{ username }}</a>
+
+    {{ verb|safe }}
+
+    {% if object %}
+        {% if object.get_absolute_url %}<a href="{{ object.get_absolute_url }}">{{ object }}</a>
+        {% else %}
+            {{ object_name }}
+        {% endif %}
+    {% elif object_name %}
+        {{ object_name }}
+    {% endif %}
+
+    {% if target %}
+        {{ preposition|default:"to" }}
+        <a href="{{ target.get_absolute_url }}">{{ target }}</a>
+    {% endif %}
+
+
+<div class="activity-timestamp muted">{{ timestamp|timesince }} {% trans "ago" %}</div>
+
+
+</div>

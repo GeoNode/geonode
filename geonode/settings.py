@@ -200,6 +200,7 @@ INSTALLED_APPS = (
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
+    'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
 )
@@ -345,9 +346,9 @@ AGON_RATINGS_CATEGORY_CHOICES = {
 
 # Activity Stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': ('auth.user', 'layers.layer', 'maps.map'),
+    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment'),
     'FETCH_RELATIONS': True,
-    'USE_PREFETCH': True,
+    'USE_PREFETCH': False,
     'USE_JSONFIELD': True,
     'GFK_FETCH_DEPTH': 1,
 }
@@ -387,6 +388,10 @@ SITEURL = "http://localhost:8000/"
 
 # Default TopicCategory to be used for resources. Use the slug field here
 DEFAULT_TOPICCATEGORY = 'location'
+
+# Topic Categories list should not be modified (they are ISO). In case you 
+# absolutely need it set to True this variable
+MODIFY_TOPICCATEGORY = False
 
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 
@@ -515,9 +520,9 @@ MAP_BASELAYERS = [{
     "fixed": True,
     "group":"background"
   }, {
-    "source": {"ptype": "gxp_olsource"},
+    "source": {"ptype": "gxp_osmsource"},
     "type":"OpenLayers.Layer.OSM",
-    "args":["OpenStreetMap"],
+    "name":"mapnik",
     "visibility": False,
     "fixed": True,
     "group":"background"

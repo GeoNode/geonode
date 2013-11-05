@@ -166,22 +166,29 @@ define(['underscore',
     }
 
     doDelete = function(event) {
-        var id = event.srcElement.id.split("-")[1];
+        var target = event.target || event.srcElement;
+        var id = target.id.split("-")[1];
         var target = "/upload/delete/" + id;
         $.ajaxQueue({
             url: target,
             async: false,
             contentType: false,
         }).done(function (resp) {
-            var div = "incomplete-" + id;
-            $(div).hide();
+            var div = "#incomplete-" + id;
+            $(div).remove();
+
+            if ($('#incomplete-download-list > div[id^=incomplete]').length == 0){
+                $('#incomplete-download-list').hide();
+            }
+
         }).fail(function (resp) {
             //
         });
     };
 
     doResume = function(event) {
-        var id = event.srcElement.id.split("-")[1];
+        var target = event.target || event.srcElement;
+        var id = target.id.split("-")[1];
         var target = "/upload/?id=" + id;
         $.ajaxQueue({
             url: target,

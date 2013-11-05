@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-04 20:42\n"
-"PO-Revision-Date: 2013-09-05 02:01+0000\n"
+"PO-Revision-Date: 2013-10-12 18:20+0000\n"
 "Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
 "Language-Team: Persian (http://www.transifex.com/projects/p/geonode/language/fa/)\n"
 "MIME-Version: 1.0\n"
@@ -1076,7 +1076,7 @@ msgstr ""
 
 #: ../../reference/security.txt:114
 msgid "Title"
-msgstr ""
+msgstr "عنوان"
 
 #: ../../reference/security.txt:115
 msgid "Date"

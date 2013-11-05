@@ -6,29 +6,12 @@
 
 {% block body_class %}data data-list upload{% endblock %}
 
-{% block extra_head %}
-
-{% endblock %}
-
+{% block extra_head %}{{ block.super }}{% endblock %}
 
 {% block head %}
 
 <!-- TODO Move this to site-wide css or remove -->
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geonode/css/fileuploadfield.css"/>
-<style type="text/css">
-    .uip {
-        border: 1px solid gray;
-        border-radius: 3px;
-        padding: .5em;
-        margin: .5em
-    }
-    #drop-zone {
-      background: #eee;
-      height: 100px;
-      margin-bottom: 10px;
-      padding: 5px;
-    }
-</style>
 {{ block.super }}
 {% endblock %}
 
@@ -38,26 +21,26 @@
       <h2 class="page-title">{% trans "Replace Layer: " %}{{ layer.title }}</h2>
 
         {% if incomplete %}
-            <section style="border: none" class="uip">
-                <h3 class="uip">Incomplete Uploads</h3>
-                <p>You have the following incomplete uploads:</p>
+            <section class="widget" id="incomplete-download-list">
+                <h2>{% trans "Incomplete Uploads" %}</h2>
+                <p>{% trans "You have the following incomplete uploads" %}:</p>
                 {% for u in incomplete %}
-                    <div class="clearfix uip" style="" id="incomplete-{{ u.import_id }}">
-                        <div class="pull-left">{{ u.name }}, last updated on {{ u.date }}</div>
+                    <div class="clearfix uip" id="incomplete-{{ u.import_id }}">
+                        <div class="pull-left">{{ u.name }}, {% trans "last updated on" %} {{ u.date }}</div>
                         <div class="upload_actions pull-right">
-                            <a class="btn btn-mini" href="#" id="resume-{{ u.import_id }}">Resume</a>
-                            <a class="btn btn-mini icon-trash" href="#" id="delete-{{ u.import_id }}">Delete</a>
+                            <a class="btn btn-mini" href="#" id="resume-{{ u.import_id }}">{% trans "Resume" %}</a>
+                            <a class="btn btn-mini" href="#" id="delete-{{ u.import_id }}"><i class="icon-trash"></i> {% trans "Delete" %}</a>
                         </div>
                     </div>
+                {% endfor %}
             </section>
-            {% endfor %}
             <div id="confirm-delete" class="hide alert alert-warn" style="padding:10px; margin: 10px 0;">
-                Are you sure you want to delete this upload?
+                {% trans "Are you sure you want to delete this upload?" %}
                 <div style="margin: 5px 0">
-                <a href="#y" class="btn btn-danger">Delete</a>
-                <a href="#n" class="btn">Cancel</a>
+                <a href="#y" class="btn btn-danger">{% trans "Delete" %}</a>
+                <a href="#n" class="btn">{% trans "Cancel" %}</a>
                 </div>
-                <a href="#yy" style="font-weight:normal">Delete, and don't ask me again.</a>
+                <a href="#yy" style="font-weight:normal">{% trans "Delete, and don't ask me again." %}</a>
             </div>
         {% endif %}
         {% block additional_info %}{% endblock %}
@@ -70,8 +53,10 @@
         {% endif %}
 
             <section id="drop-zone">
-              <h2>Drag and Drop files here</h2>
+              <h2>{% trans "Drop files here" %}</h2>
             </section>
+
+           {% trans " or select them one by one:" %}
 
             <form id="file-uploader" method="post" enctype="multipart/form-data">
               <input class="btn" id="file-input" type="file" multiple>
@@ -85,8 +70,8 @@
             </section>
 
             <section>
-              <a href="#" id="clear-button">Clear</a>
-              <a href="#" id="upload-button" class="btn">Upload files</a>
+              <a href="#" id="clear-button">{% trans "Clear" %}</a>
+              <a href="#" id="upload-button" class="btn">{% trans "Upload Files" %}</a>
             </section>
 
         </div>
@@ -104,11 +89,10 @@
 {% endblock %}
 
 {% block extra_script %}
-{% if DEBUG_STATIC %}
+
 <script data-main="{% static 'geonode/js/upload/main' %}"
   src="{% static 'lib/js/require.js' %}">
 </script>
-{% endif %}
 
 <script type="text/javascript">
 {% autoescape off %}

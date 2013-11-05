@@ -11,13 +11,16 @@
 
   <form method="POST" id="crsForm">
     {% csrf_token %}    
-    <h3>Coordinate Reference System</h3>
+    <h3>{% trans "Coordinate Reference System" %}</h3>
     {% if native_crs %}
-    <p>A coordinate reference system for this layer could not be determined.
-    Locate or enter the appropriate ESPG code for this layer below.
-    One way to do this is do visit: 
-    <a href="http://prj2epsg.org/search" target="_">prj2epsg</a> 
-    and enter the following:
+    <p>
+    {% blocktrans %}
+        A coordinate reference system for this layer could not be determined.
+        Locate or enter the appropriate ESPG code for this layer below.
+        One way to do this is do visit:
+        <a href="http://prj2epsg.org/search" target="_">prj2epsg</a>
+        and enter the following:
+    {% endblocktrans %}
     </p>
     <pre>
     {{ native_crs }}
@@ -28,8 +31,12 @@
     </div>
     <input id='next' type="button" value="{% trans "Next" %}"/>
     {% else %}
-    <p>There is a problem recognizing the projection of this data. Please
-    reproject this data to a more common projection.</p>
+    <p>
+        {% blocktrans %}
+        There is a problem recognizing the projection of this data. Please
+        reproject this data to a more common projection.
+        {% endblocktrans %}
+    </p>
     </p>
     {% endif %}
   </form>
