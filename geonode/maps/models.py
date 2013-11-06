@@ -560,7 +560,7 @@ def pre_save_maplayer(instance, sender, **kwargs):
         return
 
     try:
-        c = Catalog(ogc_server_settings.rest, _user, _password)
+        c = Catalog(ogc_server_settings.internal_rest, _user, _password)
         instance.local = isinstance(c.get_layer(instance.name),GsLayer)
     except EnvironmentError, e:
         if e.errno == errno.ECONNREFUSED:
