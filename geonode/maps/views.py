@@ -425,7 +425,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
          "locked_layers": locked_layers,
          "remote_layers": remote_layers,
          "downloadable_layers": downloadable_layers,
-         "geoserver" : ogc_server_settings.LOCATION,
+         "geoserver" : ogc_server_settings.public_url,
          "site" : settings.SITEURL
     }))
 
