@@ -189,7 +189,7 @@ class ThumbnailMixin(object):
     def get_thumbnail_url(self):
         thumb = self.thumbnail
         return thumb == None and self._get_default_thumbnail() or thumb.thumb_file.url
-
+ 
     def has_thumbnail(self):
         '''Determine if the thumbnail object exists and an image exists'''
         thumb = self.thumbnail
