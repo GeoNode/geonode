@@ -105,14 +105,16 @@ class Layer(ResourceBase):
     styles = models.ManyToManyField(Style, related_name='layer_styles')
 
     def update_thumbnail(self, save=True):
-        self.save_thumbnail(self._thumbnail_url(width=200, height=150), save)
-
+        try:
+            self.save_thumbnail(self._thumbnail_url(width=200, height=150), save)
+        except RuntimeError, e:
+            logger.warn('Could not create thumbnail for %s' % self, e)
 
     def _render_thumbnail(self, spec):
         resp, content = http_client.request(spec)
-        if resp.status < 200 or resp.status > 299:
-            logger.warning('Unable to obtain thumbnail: %s', content)
-            return
+        if 'ServiceException' in content or resp.status < 200 or resp.status > 299:
+            msg = 'Unable to obtain thumbnail: %s' % content
+            raise RuntimeError(msg)
         return content
 
 
