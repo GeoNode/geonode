@@ -22,6 +22,45 @@ gxp.plugins.Styler.prototype.enableActionIfAvailable  = function(url) {
     });
 };
 
+
+gxp.WMSStylesDialog.prototype.createGeoServerStylerConfig = function (layerRecord, url) {
+    var layer = layerRecord.getLayer();
+    if (!url) {
+        url = layerRecord.get("restUrl");
+    }
+    if (!url) {
+        url = layer.url.split("?").shift().replace(/\/(wms|ows)\/?$/, "/rest");
+    }
+    return {
+        xtype:"gxp_wmsstylesdialog",
+        layerRecord:layerRecord,
+        classifyEnabled: true,
+        plugins:[
+            {
+                ptype:"gxp_geoserverstylewriter",
+                baseUrl:url
+            }
+        ],
+        listeners:{
+            "styleselected":function (cmp, style) {
+                layer.mergeNewParams({
+                    styles:style
+                });
+            },
+            "modified":function (cmp, style) {
+                cmp.saveStyles();
+            },
+            "saved":function (cmp, style) {
+                layer.mergeNewParams({
+                    _olSalt:Math.random(),
+                    styles:style
+                });
+            },
+            scope:this
+        }
+    };
+}
+
 gxp.WMSLayerPanel.prototype.createStylesPanel = function(url) {
     var config = gxp.WMSStylesDialog.createGeoServerStylerConfig(
             this.layerRecord, url

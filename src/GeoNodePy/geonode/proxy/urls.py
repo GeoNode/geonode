@@ -6,6 +6,8 @@ urlpatterns = patterns('geonode.proxy.views',
         proxy_path='/gs/rest/styles', downstream_path='rest/styles')),
     (r'^gs/rest/layers', 'geoserver_rest_proxy', dict(
         proxy_path='/gs/rest/layers', downstream_path='rest/layers')),
+    (r'^gs/rest/sldservice', 'geoserver_rest_proxy', dict(
+        proxy_path='/gs/rest/sldservice', downstream_path='rest/sldservice')),
     (r'^picasa/','picasa'),
     (r'^youtube/','youtube'),
     (r'^flickr/','flickr'),

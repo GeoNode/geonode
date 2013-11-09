@@ -17,6 +17,7 @@ if (java.lang.System.getProperty("app.debug")) {
     pathMappings = {
         "/externals/gxp/theme/": "/externals/gxp/src/theme/",
         "/theme/ux/colorpicker/": "/script/ux/colorpicker/",
+        "/theme/ux/spinner/": "/script/ux/spinner/",
         "/theme/ux/fileuploadfield/": "/script/ux/fileuploadfield/css/"
     };
 

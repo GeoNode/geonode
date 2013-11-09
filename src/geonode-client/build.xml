@@ -92,6 +92,11 @@
             <fileset file="app/static/script/ux/colorpicker/side_slider.jpg"/>
             <fileset file="app/static/script/ux/colorpicker/mask.png"/>
         </copy>
+        <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/theme/ux/spinner">
+            <fileset file="app/static/script/ux/spinner/Spinner.css"/>
+            <fileset file="app/static/script/ux/spinner/spinner.gif"/>
+            <fileset file="app/static/script/ux/spinner/spinner-split.gif"/>
+        </copy>
         <!-- copy GeoExt resources -->
         <copy todir="${build}/${ant.project.name}/WEB-INF/app/static/externals/geoext/resources">
             <fileset dir="app/static/externals/geoext/resources"/>
