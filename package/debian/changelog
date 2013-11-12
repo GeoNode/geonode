@@ -1,3 +1,25 @@
+geonode (2.0.0+rc3) precise; urgency=high
+
+  [ Ariel Nunez ]
+  * [39640c] Pegging the setup.py file to Django 1.5.4.
+  * [f4bff4] Django 1.5.5 is already out
+
+  [ Simone Dalmasso ]
+  * [49d125] use public url in the map download page
+  * [326059] use an initial query in search
+
+  [ Ariel Nunez ]
+  * [399211] Added fixsitename command, refs #498
+  * [630566] Added fixsitename call to updateip, fixes #498
+  * [560df6] Fixed missing thumb behavior, fixes #998
+
+  [ Bart van den Eijnden ]
+  * [62ac08] when login is successfull, update the CSRFToken in OpenLayers.Request.DEFAULT_CONFIG.headers
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 08 Nov 2013 18:32:28 +0000
+
 geonode (2.0.0+rc2) precise; urgency=high
 
   [ Simone Dalmasso ]
