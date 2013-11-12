@@ -396,11 +396,13 @@ def map_download(request, mapid, template='maps/map_download.html'):
 
         resp, content = http_client.request(url, 'POST', body=mapJson)
 
-        if resp.status not in (400, 404, 417):
+        status = int(resp.status)
+
+        if status == 200:
             map_status = json.loads(content)
             request.session["map_status"] = map_status
         else:
-            pass # XXX fix
+            raise Exception('Could not start the download of %s. Error was: %s' % (mapObject.title, content))
 
     locked_layers = []
     remote_layers = []
