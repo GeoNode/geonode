@@ -47,10 +47,12 @@ def set_metadata(xml):
             'Uploaded XML document is not XML: %s' % str(err))
 
     # check if document is an accepted XML metadata format
-    try:
-        tagname = exml.tag.split('}')[1]
-    except IndexError:
-        tagname = exml.tag
+    tagname = get_tagname(exml)
+
+    if tagname == 'GetRecordByIdResponse':  # strip CSW element
+        LOGGER.info('stripping CSW root element')
+        exml = exml.getchildren()[0]
+        tagname = get_tagname(exml)
 
     if tagname == 'MD_Metadata':  # ISO
         vals, keywords = iso2dict(exml)
@@ -192,3 +194,11 @@ def sniff_date(datestr):
             return datetime.datetime.strptime(datestr.strip(), dfmt)
         except ValueError:
             pass
+
+def get_tagname(element):
+    """get tagname without namespace"""
+    try:
+        tagname = element.tag.split('}')[1]
+    except IndexError:
+        tagname = element.tag
+    return tagname
