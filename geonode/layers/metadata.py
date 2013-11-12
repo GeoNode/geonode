@@ -136,9 +136,6 @@ def fgdc2dict(exml):
     if hasattr(mdata.idinfo, 'keywords'):
         if mdata.idinfo.keywords.theme:
             for theme in mdata.idinfo.keywords.theme:
-                print "themekt: %s" % theme['themekt']
-                print "themekey: %s" % theme['themekey']
-
                 lowered_themekt = theme['themekt'].lower()
 
                 # Owslib doesn't support extracting the Topic Category
