@@ -74,7 +74,6 @@ def setup_geoserver(options):
 
     grab(GEOSERVER_URL, geoserver_bin, "geoserver binary")
     grab(JETTY_RUNNER_URL, jetty_runner, "jetty runner")
-    grab(DATA_DIR_URL, data_dir, "data dir")
 
     if not geoserver_dir.exists():
         geoserver_dir.makedirs()
@@ -96,22 +95,16 @@ def _install_data_dir():
         data_dir.rmtree()
 
     geoserver_dir = path('geoserver')
-    download_dir = path('downloaded')
-    data_dir_zip = download_dir / os.path.basename(DATA_DIR_URL)
+    original_data_dir = geoserver_dir / path('data')
+    justcopy(original_data_dir, target_data_dir)
 
-    if os.path.exists(data_dir_zip):
-        print 'extracting datadir'
-        z = zipfile.ZipFile(data_dir_zip, "r")
-        z.extractall(geoserver_dir)
+    config = target_data_dir / '/security/auth/geonodeAuthProvider/config.xml'
 
-        config = geoserver_dir / 'data/security/auth/geonodeAuthProvider/config.xml'
-        with open(config) as f:
-            xml = f.read()
-            m = re.search('baseUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
+    with open(config) as f:
+        xml = f.read()
+        m = re.search('baseUrl>([^<]+)', xml)
+        xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
         with open(config, 'w') as f: f.write(xml)
-    else:
-        print 'data_dir_zip not found, unable to extract and configure'
 
 
 @task
