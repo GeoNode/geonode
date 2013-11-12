@@ -135,7 +135,20 @@ def fgdc2dict(exml):
 
     if hasattr(mdata.idinfo, 'keywords'):
         if mdata.idinfo.keywords.theme:
-            keywords = mdata.idinfo.keywords.theme[0]['themekey']
+            for theme in mdata.idinfo.keywords.theme:
+                print "themekt: %s" % theme['themekt']
+                print "themekey: %s" % theme['themekey']
+
+                lowered_themekt = theme['themekt'].lower()
+
+                # Owslib doesn't support extracting the Topic Category
+                # from FGDC.  So we add support here.
+                # http://www.fgdc.gov/metadata/geospatial-metadata-standards
+                if all(ss in lowered_themekt for ss in ['iso', '19115', 'topic']) \
+                    and any(ss in lowered_themekt for ss in ['category', 'categories']):
+                    vals['topic_category'] = theme['themekey'][0]
+
+                keywords.extend(theme['themekey'])
 
     if hasattr(mdata.idinfo.timeperd, 'timeinfo'):
         if hasattr(mdata.idinfo.timeperd.timeinfo, 'rngdates'):
