@@ -109,6 +109,10 @@ class Map(ResourceBase, GXPMapBase):
                Layer.objects.filter(name__in=layer_names)
 
     def json(self, layer_filter):
+        """
+        Get a JSON representation of this map suitable for sending to geoserver
+        for creating a download of all layers
+        """
         map_layers = MapLayer.objects.filter(map=self.id)
         layers = []
         for map_layer in map_layers:
@@ -121,6 +125,7 @@ class Map(ResourceBase, GXPMapBase):
         if layer_filter:
             layers = [l for l in layers if layer_filter(l)]
 
+        # the readme text will appear in a README file in the zip
         readme = (
             "Title: %s\n" +
             "Author: %s\n"
@@ -136,7 +141,8 @@ class Map(ResourceBase, GXPMapBase):
             }
 
         map_config = {
-            "map" : { "readme": readme },
+            # the title must be provided and is used for the zip file name
+            "map" : { "readme": readme, "title": self.title },
             "layers" : [layer_json(lyr) for lyr in layers]
         }
 
