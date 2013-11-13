@@ -27,12 +27,17 @@ import datetime
 from itertools import cycle, izip
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import pre_delete
 
 from geonode.utils import _user, _password, ogc_server_settings
 
 from geoserver.catalog import Catalog, FailedRequestError
 from geoserver.store import CoverageStore, DataStore
 from geoserver.workspace import Workspace
+
+from dialogos.models import Comment
+from agon_ratings.models import OverallRating
 
 logger = logging.getLogger(__name__)
 
@@ -383,12 +388,21 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
         for i, layer in enumerate(deleted_layers):
             logger.debug("GeoNode Layer to delete: name: %s, workspace: %s, store: %s", layer.name, layer.workspace, layer.store)
             try:
+                from geonode.layers.models import geoserver_pre_delete
+                #delete ratings:
+                ct = ContentType.objects.get_for_model(layer)
+                OverallRating.objects.filter(content_type = ct, object_id = layer.id).delete()
+                Comment.objects.filter(content_type = ct, object_id = layer.id).delete()
+                
+                pre_delete.disconnect(geoserver_pre_delete, sender=Layer)
                 layer.delete()
                 output['stats']['deleted']+=1
                 status = "delete_succeeded"
             except Exception, e:
                 status = "delete_failed"
-
+            finally:
+                pre_delete.connect(geoserver_pre_delete, sender=Layer)
+            
             msg = "[%s] Layer %s (%d/%d)" % (status, layer.name, i+1, number_deleted)
             info = {'name': layer.name, 'status': status}
             if status == "delete_failed":
