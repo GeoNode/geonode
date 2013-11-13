@@ -130,7 +130,7 @@ def flickr(request):
     # coords[1] = coords[1] if float(coords[1]) > -90 else -90
     # coords[3] = coords[3] if float(coords[3])  < 90 else 90
     # newbbox = str(coords[0]) + ',' + str(coords[1]) + ',' + str(coords[2]) + ',' + str(coords[3])
-    url = url + "&tags=%s&per_page=%s&has_geo=1&format=json&extras=geo,url_q&nojsoncallback=1" % (query,maxResults)
+    url = url + "&tags=%s&per_page=%s&has_geo=1&format=json&extras=geo,url_q&accuracy=1&nojsoncallback=1" % (query,maxResults)
     feed_response = urllib.urlopen(url).read()
     return HttpResponse(feed_response, mimetype="text/xml")
 
