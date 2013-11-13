@@ -1,3 +1,13 @@
+geonode (2.0.0+rc5) precise; urgency=high
+
+  [ Ian Schneider ]
+  * [9a94f3] partial fix for #1257, map download null.zip
+
+  [ Ariel Nunez ]
+  * [051088] Change priority of geoserver's package
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 13 Nov 2013 20:00:37 +0000
+
 geonode (2.0.0+rc4) precise; urgency=high
 
   [ Tom Kralidis ]
