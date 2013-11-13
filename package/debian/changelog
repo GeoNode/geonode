@@ -1,3 +1,125 @@
+geonode (2.0.0+rc4) precise; urgency=high
+
+  [ Tom Kralidis ]
+  * [810cee] strip csw:GetRecordByIdResponse element if it exists
+  * [71900a] no error message anymore
+
+  [ Tyler Garner ]
+  * [22eaac] Bumped the django-geoexplorer version to 3.0.5, fixes #1036.
+
+  [ Ariel Nunez ]
+  * [966e1c] Fixed 500.html
+  * [57735d] Removed block in 500 template
+  * [dce0a9] Fixed #1256
+  * [be37d4] Stopped downloading a data.zip.
+  * [eacd42] Do not rely on data.zip, use geoserver's
+  * [8e220a] Raise exception if map download fails, do not fail silently.
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 13 Nov 2013 13:44:04 +0000
+
+geonode (2.0.0+rc3) precise; urgency=high
+
+  [ Ariel Nunez ]
+  * [39640c] Pegging the setup.py file to Django 1.5.4.
+  * [f4bff4] Django 1.5.5 is already out
+
+  [ Simone Dalmasso ]
+  * [49d125] use public url in the map download page
+  * [326059] use an initial query in search
+
+  [ Ariel Nunez ]
+  * [399211] Added fixsitename command, refs #498
+  * [630566] Added fixsitename call to updateip, fixes #498
+  * [560df6] Fixed missing thumb behavior, fixes #998
+
+  [ Bart van den Eijnden ]
+  * [62ac08] when login is successfull, update the CSRFToken in OpenLayers.Request.DEFAULT_CONFIG.headers
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 08 Nov 2013 18:32:28 +0000
+
+geonode (2.0.0+rc2) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [fd4f94] use internal location where possible
+  * [1cb336] fix thumbnail and links
+
+  [ Michael Diener ]
+  * [012050] update to reflect main github readme dev installation directions
+
+  [ capooti ]
+  * [9dddf0] Now in the categories list in layers and maps page the category with is_choice set to false are not displayed.
+  * [00fc80] Added the MODIFY_TOPICCATEGORY to allow topic categories metadata customization when strictly necessary.
+
+  [ mdiener21 ]
+  * [79efbb] fixes to reflect 1 to 1 the  readme.rst  installation method
+
+  [ Barbara ]
+  * [ab68aa] add image to translation doc
+  * [7370fa] add other options to translation docs
+
+  [ Tyler Garner ]
+  * [d169a6] Added the block.super variable to templates that use the extra_head block to fix #1241.
+  * [e7a7da] Fixes javascript and styling problems in the replace layer view.
+  * [12e8de] Fixes #1242.
+
+  [ capooti ]
+  * [10e654] Added the documentation for the MODIFY_TOPICCATEGORY setting, and reorganized some of the settings in a "Metadata Settings" section.
+
+  [ Barbara ]
+  * [8ca66b] add instructions on geonode project
+  * [905a60] modified setup
+  * [a20ccf] old setup
+  * [b1a74a] added toctree
+
+  [ b-angerer ]
+  * [faf723] modify translation docs
+  * [74a83f] added translation
+  * [4c9f47] modified
+  * [cdc9da] modified
+  * [41aa56] modified po files - no translation added
+  * [0a5dab] modified po files - no translation added
+  * [38e0ab] modified po files - no translation added
+
+  [ Ariel Nunez ]
+  * [2fd7c1] Added on_delete=models.SET_NULL to thumbnails to prevent them from deleting layers, thanks Fuyou on #django
+
+  [ capooti ]
+  * [661fed] Now categories, keywords and date filters in layers, maps and docs page are collapsed by default. Thanks @ppasq!
+
+  [ Simone Dalmasso ]
+  * [60e07f] use the dot in the cdv and kml extensions in uploader
+
+  [ Tyler Garner ]
+  * [560bc9] Added support for Basic authentication end-to-end headers to the GeoNode proxy view.
+
+  [ Micah Wengren ]
+  * [84fcbe] Added parent template references for block extra_head in a couple templates where missing
+
+  [ Tyler Garner ]
+  * [9c49bd] Small js and html improvements to the incomplete uploads section of the upload page.
+
+  [ b-angerer ]
+  * [b73d28] added german translation
+
+  [ mdiener21 ]
+  * [f4ace9] update title text
+  * [523b12] small text fix
+
+  [ Tyler Garner ]
+  * [38ccdd] Fixed a JS error and made strings translatable in the actor template.
+  * [e68331] Replaces the JQuery UI progressbar with the Bootstrap progressbar and safely checks event targets.
+  * [19ab7b] CSS and JS cleanup in in the map_download template.
+  * [47088a] Set up all template strings for translation.  Fixes #617.
+
+  [ Simone Dalmasso ]
+  * [493146] fix the maps thumbnails internal url
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 06 Nov 2013 13:48:28 +0000
+
 geonode (2.0.0+rc1) precise; urgency=high
 
   [ Tyler Garner ]

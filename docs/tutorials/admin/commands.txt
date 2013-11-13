@@ -70,3 +70,14 @@ Usage::
 
     geonode emit_notices
 
+
+fixsitename
+===========
+
+Uses SITENAME and SITEURL to set the values of the default site object.
+
+This information is used in the page titles and when sending emails from GeoNode, for example, new registrations.
+
+Usage::
+
+   geonode fixsitename

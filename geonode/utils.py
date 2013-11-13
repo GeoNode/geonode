@@ -93,6 +93,21 @@ class OGC_Server(object):
         """
         return self.LOCATION if not self.PUBLIC_LOCATION else self.PUBLIC_LOCATION
 
+    @property
+    def internal_ows(self):
+        """
+        The Open Web Service url for the server used by GeoNode internally.
+        """
+        location = self.LOCATION
+        return location + 'ows'
+
+    @property
+    def internal_rest(self):
+        """
+        The internal REST endpoint for the server.
+        """
+        return self.LOCATION + 'rest'
+
     def __str__(self):
         return self.alias
 
@@ -186,7 +201,7 @@ def check_geonode_is_up():
 
 def get_wms():
     global _wms
-    wms_url = ogc_server_settings.ows + "?service=WMS&request=GetCapabilities&version=1.1.0"
+    wms_url = ogc_server_settings.internal_ows + "?service=WMS&request=GetCapabilities&version=1.1.0"
     netloc = urlparse(wms_url).netloc
     http = httplib2.Http()
     http.add_credentials(_user, _password)
