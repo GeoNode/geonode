@@ -1,3 +1,22 @@
+geonode (2.0.0+rc4) precise; urgency=high
+
+  [ Tom Kralidis ]
+  * [810cee] strip csw:GetRecordByIdResponse element if it exists
+  * [71900a] no error message anymore
+
+  [ Tyler Garner ]
+  * [22eaac] Bumped the django-geoexplorer version to 3.0.5, fixes #1036.
+
+  [ Ariel Nunez ]
+  * [966e1c] Fixed 500.html
+  * [57735d] Removed block in 500 template
+  * [dce0a9] Fixed #1256
+  * [be37d4] Stopped downloading a data.zip.
+  * [eacd42] Do not rely on data.zip, use geoserver's
+  * [8e220a] Raise exception if map download fails, do not fail silently.
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 13 Nov 2013 13:44:04 +0000
+
 geonode (2.0.0+rc3) precise; urgency=high
 
   [ Ariel Nunez ]
