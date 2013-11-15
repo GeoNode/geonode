@@ -389,10 +389,11 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
             logger.debug("GeoNode Layer to delete: name: %s, workspace: %s, store: %s", layer.name, layer.workspace, layer.store)
             try:
                 from geonode.layers.models import geoserver_pre_delete
-                #delete ratings:
+                #delete ratings, comments, and taggit tags:
                 ct = ContentType.objects.get_for_model(layer)
                 OverallRating.objects.filter(content_type = ct, object_id = layer.id).delete()
                 Comment.objects.filter(content_type = ct, object_id = layer.id).delete()
+                layer.keywords.clear()
                 
                 pre_delete.disconnect(geoserver_pre_delete, sender=Layer)
                 layer.delete()
