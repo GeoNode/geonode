@@ -67,7 +67,7 @@ Now if you like to see if all is working so far type:
     $ sudo paver stop						# stops all and you can continue with complete install
 
 
-This will start GeoNode at http://localhost/. But until now, GeoNode is running with the default configurations, e.g it uses Jetty as servlet container and sqlite3 as database. Also GeoNode won't start without using the command above. Changing this, the following 		configurations on the used components have to be done.
+This will start GeoNode at http://localhost:8000/. But until now, GeoNode is running with the default configurations, e.g it uses Jetty as servlet container and sqlite3 as database. Also GeoNode won't start without using the command above. Changing this, the following 		configurations on the used components have to be done.
 
 
 Step 3 Configure
