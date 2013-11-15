@@ -60,3 +60,40 @@ The typical location of the file that needs to be modified is ``/var/lib/tomcat6
     <param-name>serviceStrategy</param-name>
     <param-value>PARTIAL_BUFFER2</param-value>
   </context-param>
+
+Add the Django debug toolbar
+----------------------------
+
+The django debug toolbar offers a lot of information on about how the page you are seeing is created and used. From the database hits to the views involved.
+It is a configurable set of panels that display various debug information about the current request/response and when clicked, display more details about the panel's content.
+
+To install it::
+
+  $ pip install django-debug-toolbar
+
+The  edit your settings and add the following to the MIDDLEWARE_CLASSES::
+
+  MIDDLEWARE_CLASSES = (
+      # ...
+      'debug_toolbar.middleware.DebugToolbarMiddleware',
+      # ...
+  )
+
+Add the following to your INSTALLED_APPS::
+
+  INSTALLED_APPS = (
+    # ...
+    'debug_toolbar',
+  )
+
+Add also the following settings::
+
+  INTERNAL_IPS = ('127.0.0.1',)
+
+  DEBUG_TOOLBAR_CONFIG = {
+      'INTERCEPT_REDIRECTS': False,
+  }
+
+For more set up read the official docs here:
+
+http://django-debug-toolbar.readthedocs.org/en/latest/
