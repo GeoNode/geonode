@@ -14,9 +14,7 @@ GeoNode depends on.
 Documents settings
 ==================
 
-Here's a list of settings available in Django core and their default values.
-Settings provided by contrib apps are listed below, followed by a topical index
-of the core settings.
+Here's a list of settings available for the Documents app in GeoNode.
 
 ALLOWED_DOCUMENT_TYPES
 ----------------------
@@ -363,7 +361,7 @@ The uploader backend to use.  The backend choices are:
 * ``'geonode.importer'``
 * ``'geonode.rest'``
 
-The importer backend requires the Geoserver importer backend to be enabled and is required for uploading data into
+The importer backend requires the Geoserver importer extension to be enabled and is required for uploading data into
 GeoGit datastores.
 
 OPTIONS

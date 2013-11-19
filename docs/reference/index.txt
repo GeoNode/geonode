@@ -32,3 +32,4 @@ Here you will find information about each and every component of Geonode, for ex
     developers/index
     developers/django-apps
     developers/javascript
+    developers/settings
