@@ -16,6 +16,10 @@ If you are working remotely, you should first connect to the machine that has yo
 
 These commands create a new template based on the geonode example project.
 
+Rename the local_settings.py.sample to local_settings.py and edit it's content by setting the SITEURL and SITENAME. This file will be your main settings file for your project. It inherits all the settings from the original one plus you can override the ones that you need. 
+
+.. note:: In order for the edits to the local_settings.py file to take effect, you have to restart apache.
+
 Edit the file /etc/apache2/sites-available/geonode and change the following directive from::
 
     WSGIScriptAlias / /var/www/geonode/wsgi/geonode.wsgi
@@ -63,7 +67,7 @@ It is recommended that you immediately put your new project under source code re
 
       *Your new Empty GitHub Repository*
 
-#. Initialize your own repository:
+#. Initialize your own repository in the my_geonode folder:
 
    .. code-block:: console
 
@@ -103,6 +107,7 @@ Your GeoNode project will now be structured as depicted below::
     |-- my_geonode
     |   |-- __init__.py
     |   |-- settings.py
+    |   |-- local_settings.py
     |   |-- static
     |   |   |-- README
     |   |   |-- css
@@ -136,7 +141,7 @@ project. When run with no arguments, it will list all of the management commands
 settings.py
 ~~~~~~~~~~~
 
-:file:`settings.py` is the primary settings file for your project. It is quite
+:file:`settings.py` is the primary settings file for your project. It imports the settings from the system geonode and adds the local paths. It is quite
 common to put all sensible defaults here and keep deployment specific configuration
 in the :file:`local_settings.py` file. All of the possible settings values and
 their meanings are detailed in the Django documentation.
