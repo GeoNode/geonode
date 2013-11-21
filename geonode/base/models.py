@@ -169,6 +169,10 @@ class ThumbnailMixin(object):
         if render is None:
             raise Exception('Must have _render_thumbnail(spec) function')
         image = render(spec)
+
+        if not image:
+            return
+
         #Clean any orphan Thumbnail before
         Thumbnail.objects.filter(resourcebase__id=None).delete()
         
