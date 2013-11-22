@@ -53,10 +53,9 @@
         <div class="span10">
           <fieldset>
             <div class="control-group">
-	      <div id="search_map" class="search-map" style="height:350px;width:350px;"></div>
-              <label class="control-label" for="id_type_site">{% trans 'From this site/portal' %}</label>
-              <div class="controls">
-                <input type="text" class="hidden" id="extent" name="extent" />
+	      <div id="search_map" class="search-map" style="height:350px;width:100%;"></div>
+              <div class="controls hidden" >
+                <input type="text" id="extent" name="extent" />
               </div>
             </div>
           </fieldset>
@@ -174,7 +173,7 @@
             z-index:0;
         }
         .hidden{
-            display:block;
+            display:none;
         }
     </style>
 
