@@ -900,13 +900,13 @@ def tweetview(request):
     config['first_visit'] = first_visit
     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map)
 
-    geops_ip = settings.GEOPS_IP
+    geops_ip = "standard"
     if "geopsip" in request.GET:
         geops_ip = request.GET["geopsip"]
 
     try:
         conn = httplib2.Http(timeout=10)
-        testUrl = "http://" +  geops_ip  + "?REQUEST%3DGetFeatureInfo%26SQL%3Dselect%20min(time)%2Cmax(time)%20from%20tweets"
+        testUrl = settings.SITEURL  + "tweetserver/" +  geops_ip  + "/?REQUEST%3DGetFeatureInfo%26SQL%3Dselect%20min(time)%2Cmax(time)%20from%20tweets"
         #testUrl = "http://worldmap.harvard.edu"
         resp, content = conn.request(testUrl, 'GET')
         timerange = json.loads(content)  

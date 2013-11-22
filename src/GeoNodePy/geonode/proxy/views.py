@@ -178,13 +178,18 @@ def hglServiceStarter (request, layer):
     startUrl = HGL_URL + "/RemoteServiceStarter?ValidationKey=" + settings.HGL_VALIDATION_KEY + "&AddLayer=" + layer
     return HttpResponse(urllib.urlopen(startUrl).read())
 
-def tweetServerProxy(request):
+def tweetServerProxy(request,geopsip):
     url = urlsplit(request.get_full_path())
-    tweet_url = "http://" + settings.GEOPS_IP + "?" + url.query
+    if geopsip == "standard":
+        geopsip = settings.GEOPS_IP
+    tweet_url = "http://" + geopsip + "?" + url.query
 
     step1 = urllib.urlopen(tweet_url)
     step2 = step1.read()
-    response = HttpResponse(step2, mimetype= step1.info().dict['content-type'])
+    if 'content-type' in step1.info().dict:
+        response = HttpResponse(step2, mimetype= step1.info().dict['content-type'])
+    else:
+        response = HttpResponse(step2)
     try :
         cookie = step1.info().dict['set-cookie'].split(";")[0].split("=")[1]
         response.set_cookie("tweet_count", cookie)

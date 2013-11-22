@@ -14,6 +14,6 @@ urlpatterns = patterns('geonode.proxy.views',
     (r'^hglpoint/','hglpoints'),
     (r'^hglServiceStarter/(?P<layer>[^/]*)/?','hglServiceStarter'),
     (r'^tweettrends','tweetTrendProxy'),
-    (r'^tweetserver','tweetServerProxy'),
+    (r'^tweetserver/(?P<geopsip>[A-Za-z0-9\._\-\:]+)/','tweetServerProxy'),
     (r'^tweetDownload','tweetDownload'),
 )

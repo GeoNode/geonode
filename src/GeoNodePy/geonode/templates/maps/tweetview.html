@@ -48,7 +48,7 @@
 <script type="text/javascript">
 {% autoescape off %}
 
-host = "http://{{GEOPS_IP}}";
+host = "/tweetserver/{{GEOPS_IP}}";
 
 Ext.sequence(Ext.form.SliderField.prototype, 'initComponent', function () {
     this.slider.on('change', this.fireEvent.createDelegate(this, 'change', 0));
@@ -666,7 +666,7 @@ var graphWindow = new Ext.Window({
 });
 
 var tweetConfig = {title:"{% trans 'Twitter Trends' %}", source:"local", group:"Twitter", name:"heatmap",
-    url:"http://{{GEOPS_IP}}", srs:"EPSG:900913", format:"image/png", bbox:[-180, -90, 180, 90],
+    url:"/tweetserver/{{GEOPS_IP}}/", srs:"EPSG:900913", format:"image/png", bbox:[-180, -90, 180, 90],
     singleTile:true, tiled:false, ratio:1, opacity:1, visibility:true, queryable:true
 };
 
