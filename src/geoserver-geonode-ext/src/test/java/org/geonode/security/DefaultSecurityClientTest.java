@@ -18,6 +18,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 /**
  * Unit test suite for {@link DefaultSecurityClient}
  * 
@@ -30,13 +33,13 @@ public class DefaultSecurityClientTest extends GeoServerSecurityTestSupport {
 
     private DefaultSecurityClient client;
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void setUp() throws Exception {
         mockHttpClient = EasyMock.createNiceMock(HTTPClient.class);
         client = new DefaultSecurityClient("http://localhost:8000/", mockHttpClient);
     }
 
+    @Test
     public void testSetApplicationContext() throws Exception {
         final String baseUrl = "http://127.0.0.1/fake";
         DefaultSecurityClient client2 = new DefaultSecurityClient(baseUrl, mockHttpClient);
@@ -44,6 +47,7 @@ public class DefaultSecurityClientTest extends GeoServerSecurityTestSupport {
         assertEquals(baseUrl, client2.getBaseUrl());
     }
 
+    @Test
     public void testAuthenticateAnonymous() throws Exception {
         String response = "{'is_superuser': false, 'rw': [], 'ro': [], 'is_anonymous': true, 'name': ''}";
         EasyMock.expect(
@@ -75,6 +79,7 @@ public class DefaultSecurityClientTest extends GeoServerSecurityTestSupport {
 
     }
 
+    @Test
     public void testAuthenticateCookie() throws Exception {
         final String cookieValue = "ABCD";
         final String[] requestHeaders = { "Cookie",
@@ -112,6 +117,7 @@ public class DefaultSecurityClientTest extends GeoServerSecurityTestSupport {
         assertTrue(authorities.contains(GeoNodeDataAccessManager.getAdminRole()));
     }
 
+    @Test
     public void testAuthenticateUserPassword() throws Exception {
         String username = "aang";
         String password = "katara";

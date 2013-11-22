@@ -25,14 +25,8 @@
       -->
     <param-value>FILE</param-value>
   </context-param>
-<!--
-    <context-param>
-        <param-name>org.geonode.security.databaseSecurityClient.url</param-name>
-        <param-value>jdbc:postgresql://localhost:5432/worldmap?user=wmuser&amp;=wmus3r2012</param-value>
-    </context-param>
--->
-
-    <!-- If true, enable versioning datastore as well -->
+  
+  <!-- If true, enable versioning datastore as well -->
   <context-param>
     <param-name>enableVersioning</param-name>
     <param-value>true</param-value>

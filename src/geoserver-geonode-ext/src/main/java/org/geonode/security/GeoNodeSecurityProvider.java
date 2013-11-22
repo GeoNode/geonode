@@ -64,7 +64,6 @@ public class GeoNodeSecurityProvider extends GeoServerSecurityProvider implement
             dataSource.setUrl(securityClientDatabaseURL);
             configured = new DatabaseSecurityClient(dataSource, baseUrl, httpClient);
         }
-        
         Logging.getLogger(getClass()).log(Level.INFO, "using geonode {0} security client", securityClient);
         return configured;
     }

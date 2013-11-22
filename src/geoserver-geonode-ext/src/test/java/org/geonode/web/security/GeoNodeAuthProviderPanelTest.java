@@ -5,7 +5,9 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.TestPanelSource;
 import org.geonode.security.GeoNodeAuthProviderConfig;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Test;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class GeoNodeAuthProviderPanelTest extends GeoServerWicketTestSupport {
@@ -22,11 +24,12 @@ public class GeoNodeAuthProviderPanelTest extends GeoServerWicketTestSupport {
     }
     
     @Override
-    protected void tearDownInternal() throws Exception {
-        super.tearDownInternal();
+    protected void onTearDown(SystemTestData testData) throws Exception {
+        super.onTearDown(testData);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
+    @Test
     public void testVisitPanel() {
         GeoNodeAuthProviderConfig config = new GeoNodeAuthProviderConfig();
         login();

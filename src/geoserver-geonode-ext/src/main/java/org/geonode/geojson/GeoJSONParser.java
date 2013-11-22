@@ -37,6 +37,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.geotools.feature.DefaultFeatureCollection;
 
 /**
  * This class is a (complementary) companion class to {@link GeoJSONSerializer}.
@@ -309,7 +310,7 @@ public class GeoJSONParser {
             throw new JSONException("Missing required attribute 'features'");
         }
 
-        FeatureCollection featureCollection = FeatureCollections.newCollection();
+        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
         JSONArray features = obj.getJSONArray("features");
 
         for (int i = 0; i < features.size(); i++)

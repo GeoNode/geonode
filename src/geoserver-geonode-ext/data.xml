@@ -1,0 +1,18 @@
+<assembly>
+  <id>geoserver-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>.</outputDirectory>
+      <unpack>false</unpack>
+      <includes>
+        <include>org.opengeo:geonode-geoserver-ext</include>
+        <include>org.geotools:gt-process</include>
+      </includes>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+    </dependencySet>
+  </dependencySets>
+</assembly>

@@ -123,7 +123,4 @@
     <property name="titleKey" value="GeoNodeAuthProviderPanel.title" />
     <property name="descriptionKey" value="GeoNodeAuthProviderPanel.description"/>
   </bean>
-    <bean id="layerBoundsTransactionPlugin" class="org.geonode.wfst.LayerBoundsTransactionPlugin" >
-        <constructor-arg ref="catalog" />
-    </bean>
 </beans>

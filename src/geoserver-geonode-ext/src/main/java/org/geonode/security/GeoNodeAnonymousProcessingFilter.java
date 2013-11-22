@@ -75,4 +75,12 @@ public class GeoNodeAnonymousProcessingFilter extends GeoServerSecurityFilter im
         // move forward along the chain
         chain.doFilter(request, response);
     }
+
+    public boolean applicableForHtml() {
+        return true;
+    }
+
+    public boolean applicableForServices() {
+        return true;
+    }
 }

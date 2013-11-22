@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.IOUtils;
 import org.springframework.util.Assert;
@@ -53,6 +54,8 @@ public class HTTPClient {
 
         GetMethod get = new GetMethod(url);
         get.setFollowRedirects(true);
+        // this is needed for any potential use of subdomain cookies (.domain.tld for exam
+        get.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
 
         final int numHeaders = requestHeaders == null ? 0 : requestHeaders.length / 2;
         for (int i = 0; i < numHeaders; i++) {

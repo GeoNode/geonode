@@ -107,4 +107,12 @@ public class GeoNodeCookieProcessingFilter extends GeoServerSecurityFilter
 
         return null;
     }
+
+    public boolean applicableForHtml() {
+        return true;
+    }
+
+    public boolean applicableForServices() {
+        return true;
+    }
 }

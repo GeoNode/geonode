@@ -58,6 +58,11 @@
       <version>${geoserver.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>web-wps</artifactId>
+      <version>${geoserver.version}</version>
+    </dependency>
+    <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <version>2.7.1</version>
@@ -115,7 +120,38 @@
       <artifactId>guava</artifactId>
       <version>11.0.1</version>
     </dependency>
+    <dependency>
+        <groupId>org.opengeo.geoserver</groupId>
+        <artifactId>importer</artifactId>
+        <version>2.3-SNAPSHOT</version>
+        <scope>runtime</scope>
+    </dependency>
 
+    <dependency>
+        <groupId>org.opengeo.data.csv</groupId>
+        <artifactId>csv</artifactId>
+        <version>2.3-SNAPSHOT</version>
+        <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geotools.xsd</groupId>
+      <artifactId>gt-xsd-kml</artifactId>
+      <version>${geotools.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.opengeo.geoserver</groupId>
+        <artifactId>printng</artifactId>
+        <version>2.3-SNAPSHOT</version>
+        <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-shapefile</artifactId>
+        <version>${geotools.version}</version>
+    </dependency>
 
     <!-- GeoJSON module dependencies -->
     <dependency>
@@ -136,7 +172,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.2</version>
+      <version>4.10</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -206,8 +242,8 @@
     </dependency>
   </dependencies>
   <properties>
-    <geotools.version>8.2</geotools.version>
-    <geoserver.version>2.2</geoserver.version>
+    <geotools.version>9-SNAPSHOT</geotools.version>
+    <geoserver.version>2.3-SNAPSHOT</geoserver.version>
     <jetty.version>6.1.8</jetty.version>
     <maven.test.search.classdir>true</maven.test.search.classdir>
   </properties>
@@ -251,6 +287,14 @@
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+            <argLine>-XX:MaxPermSize=256m</argLine>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.4</version>
         <configuration>
@@ -288,6 +332,7 @@
         <configuration>
           <descriptors>
             <descriptor>assembly.xml</descriptor>
+            <descriptor>data.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
