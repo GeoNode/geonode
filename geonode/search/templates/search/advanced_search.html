@@ -47,6 +47,20 @@
             </div>
           </fieldset>
         </div>
+        <div class="span2">
+          <h3>{% trans "Search by Extent: "%}</h3>
+        </div>
+        <div class="span10">
+          <fieldset>
+            <div class="control-group">
+	      <div id="search_map" class="search-map" style="height:350px;width:350px;"></div>
+              <label class="control-label" for="id_type_site">{% trans 'From this site/portal' %}</label>
+              <div class="controls">
+                <input type="text" class="hidden" id="extent" name="extent" />
+              </div>
+            </div>
+          </fieldset>
+        </div>
         <!-- TODO implement search from portals/organization/group/geographic region-->
         <!--<div class="span2">
           <h3>{% trans "Type: "%}</h3>
@@ -125,7 +139,51 @@
     <script type="text/javascript">
         $(function() {
           $(".date").datepicker();
+
+           var map;
+           var latlon_proj = new OpenLayers.Projection("EPSG:4326");
+           var merc_proj = new OpenLayers.Projection("EPSG:900913");
+
+           var update_textbox = function(){
+                var tempbounds = map.getExtent().transform(merc_proj, latlon_proj);
+                $("#extent").val(tempbounds.left + "," + tempbounds.right + "," + tempbounds.bottom + "," + tempbounds.top);
+           }
+
+           function init_map(){
+                map = new OpenLayers.Map( 'search_map');
+                layer = new OpenLayers.Layer.OSM();
+                map.addLayer(layer);
+                map.setCenter(
+                    new OpenLayers.LonLat(0,0).transform(
+                        new OpenLayers.Projection("EPSG:4326"),
+                        map.getProjectionObject()
+                    ), 1
+                );    
+                map.events.register("moveend", map, update_textbox);
+
+                map.events.register("zoomend", map, update_textbox);
+            }
+
+            init_map();
+
         });
     </script>
+
+    <style type="text/css">
+        .olMapViewport{
+            z-index:0;
+        }
+        .hidden{
+            display:block;
+        }
+    </style>
+
+    
 {% endblock %}
+
+{% block extra_head %}
+    <script src="{{ STATIC_URL }}geonode/js/search/OpenLayers.light.js" type="text/javascript"></script>
+{% endblock %}
+
+
 
