@@ -278,7 +278,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 }
                 // use the proxy for all non-local requests
                 if(this.proxy && options.url.indexOf(this.proxy) !== 0 &&
-                    options.url.indexOf(window.location.protocol) === 0) {
+                    options.url.indexOf("http") === 0) {
                     var parts = options.url.replace(/&$/, "").split("?");
                     var params = Ext.apply(parts[1] && Ext.urlDecode(
                         parts[1]) || {}, options.params);
@@ -1373,9 +1373,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             sourceComboBox.onSelect(record, 0);
                             newSourceWindow.hide();
                         },
-                        failure: function() {
+                        fallback: function() {
                             // TODO: wire up success/failure
                             newSourceWindow.setError("Error contacting server.\nPlease check the url and try again.");
+                            app.busyMask.hide();
                         },
                         scope: app
                     });
