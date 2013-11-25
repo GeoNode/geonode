@@ -184,6 +184,12 @@ def tweetServerProxy(request,geopsip):
         geopsip = settings.GEOPS_IP
     tweet_url = "http://" + geopsip + "?" + url.query
 
+    identifyQuery = re.search("QUERY_LAYERS", tweet_url)
+
+    if identifyQuery is not None:
+        if re.search("%20limit%2010", tweet_url)is None:
+            return HttpResponse(status=403)
+
     step1 = urllib.urlopen(tweet_url)
     step2 = step1.read()
     if 'content-type' in step1.info().dict:
@@ -205,6 +211,7 @@ def tweetDownload (request):
 
     proxy_url = urlsplit(request.get_full_path())
     download_url = "http://" + settings.GEOPS_IP + "?" + proxy_url.query  + settings.GEOPS_DOWNLOAD
+
 
     http = httplib2.Http()
     response, content = http.request(

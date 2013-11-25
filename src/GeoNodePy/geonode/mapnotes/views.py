@@ -46,17 +46,20 @@ def annotations(request, mapid, id=None):
     geoj = GeoJSON.GeoJSON()
     if id != None:
         obj = MapNote.objects.get(pk=id)
+        map_obj = Map.objects.get(id=mapid)
         if  request.method == "DELETE":
-            obj.delete()
-            return HttpResponse(status=200)
-        elif request.method != "GET":
-            map_obj = Map.objects.get(id=mapid)
             if request.user.id == obj.owner_id or request.user.has_perm('maps.change_map', obj=map_obj):
+                obj.delete()
+                return HttpResponse(status=200)
+            else:
+                return HttpResponse(status=403)
+        elif request.method != "GET":
+            if request.user.id == obj.owner_id:
                 features = geoj.decode(request.raw_post_data)
                 obj = applyGeometry(obj, features[0])
             else:
                 return HttpResponse(status=403)
-        return HttpResponse(serialize([obj], ['title','content', 'owner_id']))
+        return HttpResponse(serialize([obj], ['title','content', 'owner_id']), status=200)
     if request.method == "GET":
         bbox = [float(n) for n in re.findall('[0-9\.\-]+', request.GET["bbox"])]
         features = MapNote.objects.filter(map=Map.objects.get(pk=mapid),geometry__intersects=Envelope(bbox).wkt)
@@ -68,8 +71,10 @@ def annotations(request, mapid, id=None):
                 obj = MapNote(map=Map.objects.get(id=mapid), owner=request.user)
                 obj = applyGeometry(obj, feature)
                 created_features.append(obj)
-                features = created_features
-    data = serialize(features, ['title','content', 'owner_id'])                
+            features = created_features
+        else:
+            return HttpResponse(status=301)
+    data = serialize(features, ['title','content', 'owner_id'])
     if 'callback' in request.REQUEST:
         data = '%s(%s);' % (request.REQUEST['callback'], data)
         return HttpResponse(data, "text/javascript")

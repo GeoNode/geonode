@@ -26,9 +26,20 @@ Ext.onReady(function() {
             ptype: "gxp_wmsgetfeatureinfo",
             // uncomment the line below if you want feature info in a grid
             format: "grid",
-            actionTarget: "main.tbar",
+            actionTarget: "maintweetview.tbar",
             outputConfig: {width: 400, height: 200, panIn: false}
-        }],
+        },
+            {
+                ptype: "gxp_coordinatetool",
+                title: "<span class='x-btn-text'>{% trans 'Map Coordinates - longitude, latitude' %}</span>",
+                actionTarget:  {target: "main.tbar"}
+            },
+            {
+                ptype: "gxp_annotation",
+                user: "{{ user.id }}",
+                toggleGroup: 'featureGroup',
+                actionTarget:  {target: "main.tbar", index: 6}
+            }],
         createTools: function() {
             return [new Ext.Button({
                 tooltip: GeoExplorer.prototype.backgroundContainerText,

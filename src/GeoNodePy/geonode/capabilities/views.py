@@ -46,13 +46,17 @@ def get_capabilities(request, user=None, mapid=None, category=None):
     rootdoc = None
     rootlayerelem = None        
     layers = None
-        
+
+    cap_name = settings.SITENAME + ' Capabilities - '
     if user is not None:
         layers = Layer.objects.filter(owner__username=user)
+        cap_name += user
     elif category is not None:
         layers = Layer.objects.filter(topic_category__name=category)
+        cap_name += category
     elif map is not None:
         map_obj = Map.objects.get(id=mapid)
+        cap_name += map_obj.title
         typenames = []
         for maplayer in map_obj.maplayers:
             if maplayer.local:
@@ -67,6 +71,7 @@ def get_capabilities(request, user=None, mapid=None, category=None):
                     rootdoc = etree.ElementTree(layercap)
                     rootlayerelem = rootdoc.find('.//Capability/Layer')
                     format_online_resource(workspace, layername, rootdoc)
+                    rootdoc.find('.//Service/Name').text = cap_name
                 except Exception, e:
                     logger.error("Error occurred creating GetCapabilities for %s:%s" % (layer.typename, str(e)))
             else:  
