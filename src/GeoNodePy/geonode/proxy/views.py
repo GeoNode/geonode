@@ -212,7 +212,6 @@ def tweetDownload (request):
     proxy_url = urlsplit(request.get_full_path())
     download_url = "http://" + settings.GEOPS_IP + "?" + proxy_url.query  + settings.GEOPS_DOWNLOAD
 
-
     http = httplib2.Http()
     response, content = http.request(
         download_url, request.method)
