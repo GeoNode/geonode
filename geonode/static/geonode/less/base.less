@@ -1654,7 +1654,79 @@ body.upload-prms .steps .step3 { color:@gray; }
   }
 }
 
-// portals
+#drop-zone {
+  background: @grayLighter;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 2px dashed @grayLight;
+  h2 {
+    color: @grayLight;
+    margin: 20px 0;
+    text-align: center;
+    i {
+      font-size: 2em;
+    }
+  }
+}
+.uip {
+  border: 1px solid @grayLight;
+  border-radius: 3px;
+  padding: .5em;
+  margin: .5em
+}
+ul#global-errors {
+  list-style-type: none;
+  margin-left: 0;
+}
+section.charset {
+  border-bottom: 1px solid @grayLight;
+  margin: 20px 0;
+}
+#clear-button {
+  border: 1px solid @grayLight;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 13px;
+  line-height: 18px;
+  padding: 3px 11px;
+  margin: 0 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* FileUploadField component styles
+   ----------------------------- */
+.x-form-file-wrap {
+    position: relative;
+    height: 22px;
+}
+.x-form-file-wrap .x-form-file {
+  position: absolute;
+  right: 0;
+  /* Alert! This causes a Parse Error in Less
+  -moz-opacity: 0;
+  filter:alpha(opacity: 0); */
+  opacity: 0;
+  z-index: 2;
+    height: 22px;
+}
+.x-form-file-wrap .x-form-file-btn {
+  position: absolute;
+  right: 0;
+  z-index: 1;
+}
+.x-form-file-wrap .x-form-file-text {
+    position: absolute;
+    left: 0;
+    z-index: 3;
+    color: #777;
+}
+
+/* Portals
+   ----------------------------- */
 body.portals {
   p.btns {
     text-align:left;
@@ -1753,25 +1825,4 @@ ul.stats {
 
 #pb .ui-progressbar-value {
   background: rgb(125, 196, 243);
-}
-
-/* Uploader styles */
-#drop-zone {
-  background: #eee;
-  height: 100px;
-  margin-bottom: 10px;
-  padding: 5px;
-  border: 4px dashed gray;
-}
-#drop-zone h2 {
-  vertical-align:middle;
-  text-align: center;
-  margin-top: 30px;
-  color: gray;
-}
-.uip {
-  border: 1px solid gray;
-  border-radius: 3px;
-  padding: .5em;
-  margin: .5em
 }
