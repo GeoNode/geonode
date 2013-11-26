@@ -30,7 +30,10 @@ Edit the local_settings file::
 
     $ sudo nano /etc/geonode/local_settings.py
 
-Edit the DATABASE_PASSWORD with another one and the SECRET_KEY with something of your choice. Then restart apache.
+Edit the DATABASE_PASSWORD with another one and the SECRET_KEY with something of your choice. 
+
+Edit the SITEURL directive to "http://localhost:4567/"
+Then restart apache.
 
 Edit the geonode role's password in postgres using the same used in the local_settings::
 
