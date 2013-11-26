@@ -189,7 +189,9 @@
 }(document, 'script', 'facebook-jssdk'));</script>
 
 {% if request.user.is_authenticated %}
- {% user_rating_js request.user map "map" %}
+      {% user_rating_js request.user map "map" %}
+{% else %}
+      {% overall_rating map "map" as the_map_rating %}
 {% endif %}
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/thumbnail/map_thumbnail.js"></script>
 <script type="text/javascript">
@@ -199,6 +201,9 @@
      readOnly: true,
      start: $('div.overall_rating').data('rating'),
      path: "{{ STATIC_URL }}lib/img/"
+     {% if not request.user.is_authenticated %},
+     score: {{ the_map_rating }}
+     {% endif %}
    });
    $("#rate-map").raty();
 
