@@ -165,6 +165,8 @@
 
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user document "document" %}
+    {% else %}
+        {% overall_rating document "document" as the_doc_rating %}
     {% endif %}
     <script type="text/javascript">
     $(function() {
@@ -173,6 +175,9 @@
             readOnly: true,
             start: $('div.overall_rating').data('rating'),
             path: "{{ STATIC_URL }}lib/img/"
+            {% if not request.user.is_authenticated %},
+            score: {{ the_doc_rating }}
+            {% endif %}
         });
     });
     </script>
