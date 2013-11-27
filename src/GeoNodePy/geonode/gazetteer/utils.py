@@ -49,18 +49,17 @@ def get_geometry_type(layer_name):
         conn.close()
 
 
-def getGazetteerEntry(id):
+def getGazetteerEntry(input_id):
 
     try:
-        results = GazetteerEntry.objects.filter(id__exact=id)
+        results = GazetteerEntry.objects.filter(id=input_id)
         posts = []
         for entry in results:
-            #(result[0] + ':' + str(result[1]) + ':' + str(result[2]) + ':' + str(result[3]))
             posts.append({'placename': entry.place_name, 'coordinates': (entry.longitude, entry.latitude),
                           'source': formatSourceLink(entry.layer_name), 'id': entry.id})
         return posts
     except Exception, e:
-        logger.error("Error retrieving results for gazetteer by id %d:%s", id, str(e))
+        logger.error("Error retrieving results for gazetteer by id %d:%s", input_id, str(e))
         raise
 
 
@@ -106,11 +105,14 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 
     if start_date:
         start_date = parseDate(start_date)
+        print("START DATE: %s" % start_date)
 
     if end_date:
         end_date = parseDate(end_date)
+        print("END DATE: %s" % end_date)
 
     if start_date and end_date:
+        print ("BOTH DATES")
         #Return all placenames that ended after the start date or started before the end date
         criteria = criteria & (Q(julian_end__gte=start_date) &  Q(julian_start__lte=end_date) |\
                                (Q(julian_start__isnull=True) & Q(julian_end__gte=start_date)) |\
@@ -120,17 +122,19 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 
 
     elif start_date:
-        #Return all placenames that started before this date
+        print ("START DATE ONLY")
+        #Return all placenames that existed on this date or afterward
         #End_date >= the specified start date or start_date <= the specified date or both are null
-        criteria = criteria & ((Q(julian_end__gte=start_date) & Q(julian_start__lte=start_date)) |\
+        criteria = criteria & ((Q(julian_end__gte=start_date)) |\
                                (Q(julian_end__isnull=True) & Q(julian_start__lte=start_date)) |\
                                (Q(julian_start__isnull=True) & Q(julian_end__gte=start_date)) |\
                                (Q(julian_start__isnull=True) & Q(julian_end__isnull=True)))
 
     elif end_date:
-        #Return all placenames that started before this date
+        print ("END DATE ONLY")
+        #Return all placenames that existed on this date or before
         #End_date >= the specified end date or start_date <= the specified date or both are null
-        criteria = criteria & ((Q(julian_end__gte=end_date) & Q(julian_start__lte=end_date)) |\
+        criteria = criteria & ((Q(julian_start__lte=end_date)) |\
                                (Q(julian_start__isnull=True) & Q(julian_end__gte=end_date)) |\
                                (Q(julian_end__isnull=True) & Q(julian_start__lte=end_date)) |\
                                (Q(julian_start__isnull=True) & Q(julian_end__isnull=True)))
@@ -140,14 +144,15 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 
     matchingEntries=(GazetteerEntry.objects.extra(
         where=['placename_tsv @@ to_tsquery(%s)'],
-        params=[re.sub("\s+"," & ",place_name.strip()) + ":*"]).filter(criteria))[:500] if settings.GAZETTEER_FULLTEXTSEARCH else GazetteerEntry.objects.filter(criteria)
+        params=[re.sub("\s+"," & ",place_name.strip()) + ":*"]).filter(criteria))[:500] \
+        if settings.GAZETTEER_FULLTEXTSEARCH else GazetteerEntry.objects.filter(criteria)
 
 
     posts = []
 
 
     for entry in matchingEntries:
-        posts.append({'placename': entry.place_name, 'coordinates': (entry.latitude, entry.longitude),
+        posts.append({'placename': entry.place_name, 'coordinates': {'lat': entry.latitude, 'lon': entry.longitude},
             'source': formatSourceLink(entry.layer_name), 'start_date': entry.start_date, 'end_date': entry.end_date,
             'gazetteer_id': entry.id})
     return posts

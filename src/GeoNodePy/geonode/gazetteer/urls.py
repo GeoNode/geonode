@@ -1,4 +1,3 @@
-__author__ = 'mbertrand'
 from geonode.gazetteer.handlers import DjangoAuthentication
 from django.conf.urls.defaults import *
 from piston.resource import Resource

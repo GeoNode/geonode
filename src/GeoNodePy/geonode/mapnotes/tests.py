@@ -57,8 +57,6 @@ class MapNotesTest(TestCase):
         c = Client()
         c.login(username='bobby', password='bob')
         response = c.post("/annotations/1", data=json_payload, content_type="application/json")
-        print response.content
-        #self.assertEquals(response.status, 200)
         note_json = json.loads(response.content)
         self.assertEquals(1, len(note_json["features"]))
         self.assertEquals(4, note_json["features"][0]["id"])
@@ -79,8 +77,6 @@ class MapNotesTest(TestCase):
         c = Client()
         c.login(username='bobby', password='bob')
         response = c.post("/annotations/1/1",  data=json_payload, content_type="application/json")
-        print response.content
-        #self.assertEquals(response.status, 200)
         note_json = json.loads(response.content)
         self.assertEquals(1, len(note_json["features"]))
         self.assertEquals(1, note_json["features"][0]["id"])

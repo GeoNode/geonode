@@ -6,20 +6,14 @@ by the Boston Resource Authority.  It is not necessary for standard WorldMap fun
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
-from django.core.urlresolvers import reverse
-import httplib2
 from django.conf import settings
-from django.template import RequestContext, loader
-from django.contrib.auth.decorators import login_required
-from django.utils.html import escape
-from django.views.decorators.csrf import csrf_exempt
+from django.template import RequestContext
 import logging
-from urlparse import urlparse
 import psycopg2
-from geonode.maps.models import Map, LayerStats, Layer
-import re
+from geonode.maps.models import Map
 from django.utils import simplejson as json
 from django.core.cache import cache
+
 logger = logging.getLogger("geonode.hoods.views")
 
 
