@@ -387,6 +387,14 @@ def save(layer, base_file, user, overwrite=True, title=None,
                'error: %s' % (name, str(e)))
         logger.warn(msg)
         e.args = (msg,)
+        # When we arrive here, let's do some unholy things to debug 
+	# https://github.com/GeoNode/geonode/issues/1288
+        jetty_log = '/home/travis/build/GeoNode/geonode/geoserver/jetty.log'
+        geoserver_log = '/home/travis/build/GeoNode/geonode/geoserver/data/logs/geoserver.log'
+        with open(geoserver_log) as glog:
+            lines = glog.readlines()
+            # let's print only the last 200 lines
+            print lines[:len(lines)-200]
         raise
     except ConflictingDataError, e:
         # A datastore of this name already exists
