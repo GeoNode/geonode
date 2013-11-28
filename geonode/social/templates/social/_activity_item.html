@@ -1,9 +1,8 @@
 {% load i18n %}
+
 <div class="activity-item">
-
-    <span class="{{ activity_class|default:'activity' }}"></span>
-
-    <a href="{{ actor.get_absolute_url }}">{{ username }}</a>
+  <span class="{{ activity_class|default:'activity' }}"></span>
+  <p><a href="{{ actor.get_absolute_url }}">{{ username }}</a>
 
     {{ verb|safe }}
 
@@ -18,7 +17,7 @@
 
     {% if target %}
         {{ preposition|default:"to" }}
-        <a href="{{ target.get_absolute_url }}">{{ target }}</a>
+        <a href="{{ target.get_absolute_url }}">{{ target }}</a></p>
     {% endif %}
 
 
