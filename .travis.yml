@@ -30,6 +30,8 @@ script:
   - paver test_integration
   - paver test_integration -n geonode.tests.csw
 #  - paver test_javascript
+  - cat /home/travis/build/GeoNode/geonode/geoserver/data/logs/geoserver.log
+  - cat /home/travis/build/GeoNode/geonode/geoserver/jetty.log
 
 after_script:
   - paver reset_hard
