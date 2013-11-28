@@ -246,6 +246,8 @@
 
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user layer "layer" %}
+    {% else %}
+      {% overall_rating layer 'layer' as the_layer_rating %}
     {% endif %}
     <script type="text/javascript">
     $(function() {
@@ -254,6 +256,9 @@
             readOnly: true,
             start: $('div.overall_rating').data('rating'),
             path: "{{ STATIC_URL }}lib/img/"
+            {% if not request.user.is_authenticated %},
+            score: {{ the_layer_rating }}
+            {% endif %}
         });
     });
     </script>

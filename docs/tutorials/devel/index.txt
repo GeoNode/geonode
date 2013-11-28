@@ -39,9 +39,6 @@ Welcome to the Developers Workshop! This workshop will teach how to develop with
 :ref:`api`
   Learn about the APIs GeoNode leverages and provides.
 
-:ref:`devprocess`
-  Learn about GeoNode's development process and how to work with the GeoNode community.
-
 :ref:`org_index`
   Learn about GeoNode's development process and how to work with the GeoNode community.
 
