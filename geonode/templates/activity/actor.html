@@ -2,9 +2,7 @@
 {% load activity_tags social_tags i18n %}
 
 {% block extra_head %}
-{{ block.super }}
-<link href="{{ STATIC_URL }}geonode/css/activity.css" rel="stylesheet" />
-{% endblock %}
+{{ block.super }}{% endblock %}
 
 {% block title %}{% ifequal request.user actor %}{% trans "My Activity feed" %}{% else %}{{ actor }}'s {% trans "Activity Feed" %}{% endifequal %}{% endblock %}
 {% block content_title %}{% ifequal request.user actor %}{%  trans "My Activity feed" %}{% else %}{{ actor }}'s {% trans "Activity Feed" %}{% endifequal %}{% endblock %}
@@ -17,14 +15,18 @@
 {% endcomment %}
 
 {% block body %}
-<div class="span12">
-  <h2 class="page-title span12">{%  trans "Activity Feed for"  %} {{ actor }}</h2>
-  <div class="span11">
-	{% for action in action_list %}
-    {% activity_item action %}
-    {% empty %}
-      <div>{% trans "No actions yet" %}</div>
-    {% endfor %}
+<div class="row">
+  <div class="span12">
+    <h2 class="page-title">{%  trans "Activity Feed for"  %} {{ actor }}</h2>
+    <div class="row">
+      <div class="span12">
+	    {% for action in action_list %}
+        {% activity_item action %}
+        {% empty %}
+        <p>{% trans "No actions yet" %}</p>
+        {% endfor %}
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
