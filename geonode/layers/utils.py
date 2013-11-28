@@ -394,7 +394,8 @@ def save(layer, base_file, user, overwrite=True, title=None,
         with open(geoserver_log) as glog:
             lines = glog.readlines()
             # let's print only the last 200 lines
-            print lines[:len(lines)-200]
+            for line in lines[len(lines)-200:]:
+                print line
         raise
     except ConflictingDataError, e:
         # A datastore of this name already exists
