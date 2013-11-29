@@ -294,6 +294,12 @@ Default: ``False``
 
 Not implemented.
 
+TIMTEOUT
+........
+Default: ``10``
+
+The maximum time to wait for the server to respond.
+
 SITEURL
 -------
 Default: ``'http://localhost:8000/'``

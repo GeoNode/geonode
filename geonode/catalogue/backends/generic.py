@@ -28,6 +28,7 @@ from owslib.util import http_post, nspath
 from urlparse import urlparse
 from lxml import etree
 from geonode.catalogue.backends.base import BaseCatalogueBackend
+from geonode.utils import ogc_server_settings
 
 logger = logging.getLogger(__name__)
 
@@ -163,7 +164,7 @@ class Catalogue(CatalogueServiceWeb):
             request = urllib2.Request(self.url, md_doc, headers)
             response = self.urlopen(request)
         else:
-            response = http_post(self.url, md_doc)
+            response = http_post(self.url, md_doc, timeout=ogc_server_settings.TIMEOUT)
         return response
 
     def create_from_layer(self, layer):

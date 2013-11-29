@@ -418,6 +418,7 @@ OGC_SERVER = {
         'WPS_ENABLED' : True,
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': '', #'datastore',
+        'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }
 

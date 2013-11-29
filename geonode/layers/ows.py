@@ -142,7 +142,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
                                'field': field
                               })
      
-    response = http_post(url, request)
+    response = http_post(url, request, timeout=ogc_server_settings.TIMEOUT)
 
     exml = etree.fromstring(response)
 
@@ -170,7 +170,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
                                    'field': field
                                   })
 
-        response = http_post(url, request)
+        response = http_post(url, request, timeout=ogc_server_settings.TIMEOUT)
 
         exml = etree.fromstring(response)    
 
