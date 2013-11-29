@@ -3,6 +3,7 @@
 <div class="activity-item">
   <p>
     <span class="icon-activity {{ activity_class|default:'activity' }}"></span>
+    
     <a href="{{ actor.get_absolute_url }}">{{ username }}</a>
 
     {{ verb|safe }}

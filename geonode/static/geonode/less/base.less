@@ -1868,18 +1868,73 @@ ul.stats {
 }
 /* Activity
    ----------------------------- */
+.activity-item {
+  border-left: 2px solid @grayNeutral;
+  color: @grayNeutral;
+  margin-left: 20px;
+  padding: 10px;
+  .comment {
+    content: "\f086";
+  }
+  .comment:before {
+    content: "\f086";
+  }
+  .delete {
+    content: "\f014";
+  }
+  .delete:before {
+    content: "\f014";
+  }
+  .edit {
+    content: "\f14b";
+  }
+  .edit:before {
+    content: "\f14b";
+  }
+  .layer {
+    content: "\f096";
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+  }
+  .layer:before {
+    content: "\f096";
+  }
+  .map {
+    content: "\f041";
+  }
+  .map:before {
+    content: "\f041";
+  }
+  .upload {
+    content: "\f093";
+  }
+  .upload:before {
+    content: "\f093";
+  }
+}
 .icon-activity {
-  color: @grayLight;
+  background: @grayNeutral;
+     -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+          border-radius: 20px;
+  border: 2px solid white;
+  color: white;
   float: left;
   font-family: FontAwesome;
   font-weight: normal;
-  font-size: 2em;
+  font-size: 1.2em;
   font-style: normal;
-  margin: 5px 10px 10px 0;
+  height: 20px;
+  line-height: 1.25em;
+  margin: 0 10px 10px -28px;
+  padding: 4px;
   text-align: center;
   text-decoration: inherit;
-  width: 30px;
-  -webkit-font-smoothing: antialiased;
+  width: 20px;
 }
 
 .activity {
@@ -1888,54 +1943,9 @@ ul.stats {
 .activity:before {
   content: "\f045";
 }
-.activity-item {
-  border-bottom: 1px solid @grayLight;
-  color: @grayNeutral;
-  padding: 10px;
-}
 .activity-timestamp {
   font-variant: small-caps;
   margin-top: -10px;
 }
-.comment {
-  content: "\f086";
-}
-.comment:before {
-  content: "\f086";
-}
-.delete {
-  content: "\f014";
-}
-.delete:before {
-  content: "\f014";
-}
-.edit {
-  content: "\f14b";
-}
-.edit:before {
-  content: "\f14b";
-}
-.layer {
-  content: "\f096";
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  -o-transform: rotate(45deg);
-  transform: rotate(45deg);
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
-}
-.layer:before {
-  content: "\f096";
-}
-.map {
-  content: "\f041";
-}
-.map:before {
-  content: "\f041";
-}
-.upload {
-  content: "\f093";
-}
-.upload:before {
-  content: "\f093";
-}
+
+
