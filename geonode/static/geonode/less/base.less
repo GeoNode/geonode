@@ -1868,11 +1868,16 @@ ul.stats {
 }
 /* Activity
    ----------------------------- */
+.no-style-list {
+  list-style-type: none;
+  margin-top: 20px;
+}
 .activity-item {
-  border-left: 2px solid @grayNeutral;
+  border-bottom: 1px solid @grayLighter;
+  border-left: 1px solid @grayLight;
   color: @grayNeutral;
-  margin-left: 20px;
-  padding: 10px;
+  margin-top: -10px;
+  padding: 20px 18px;
   .comment {
     content: "\f086";
   }
@@ -1926,15 +1931,25 @@ ul.stats {
   float: left;
   font-family: FontAwesome;
   font-weight: normal;
-  font-size: 1.2em;
+  font-size: 1.25em;
   font-style: normal;
   height: 20px;
   line-height: 1.25em;
-  margin: 0 10px 10px -28px;
+  margin: 0 10px 10px -35px;
   padding: 4px;
   text-align: center;
   text-decoration: inherit;
   width: 20px;
+}
+.thumb-activity {
+  clear:both;
+  height: 60px;
+  img {
+    border: 1px solid @grayLight; 
+    float: left; 
+    margin-right: 5px;  
+    width:60px
+  }
 }
 
 .activity {
@@ -1944,7 +1959,6 @@ ul.stats {
   content: "\f045";
 }
 .activity-timestamp {
-  font-variant: small-caps;
   margin-top: -10px;
 }
 

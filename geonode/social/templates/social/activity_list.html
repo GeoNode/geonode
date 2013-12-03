@@ -29,11 +29,13 @@ $(function () {
     <h2 class="page-title">{% trans "Recent activity" %}</h2>
     <div class="row">
       <div class="span12">
-      {% for action in action_list %}
+        <ul class="no-style-list">
+        {% for action in action_list %}       
         {% activity_item action %}
         {% empty %}
         <p>{% trans "No actions yet" %}</p>
         {% endfor %}
+        </ul>
       </div>
     </div>
   </div>
