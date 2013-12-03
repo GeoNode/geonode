@@ -294,11 +294,11 @@ Default: ``False``
 
 Not implemented.
 
-TIMTEOUT
-........
+TIMEOUT
+.......
 Default: ``10``
 
-The maximum time to wait for the server to respond.
+The maximum time, in seconds, to wait for the server to respond.
 
 SITEURL
 -------
