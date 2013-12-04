@@ -704,6 +704,15 @@ article.abstract {
   .details {
     overflow: hidden;
   }
+  .resources-abstract {
+    height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+  }
+  .sharing-date {
+    margin-bottom: 10px;
+  }
   .abstract-placeholder {
     display: none;
   }
@@ -1340,7 +1349,6 @@ body.home {
       &.article-list article h6 a {
         color:@linkColor;
       }
-
       &.latest-maps .thumb {
         border: 1px solid @bdrColor;
         padding: 9px;
@@ -1866,3 +1874,100 @@ ul.stats {
 #pb .ui-progressbar-value {
   background: rgb(125, 196, 243);
 }
+/* Activity
+   ----------------------------- */
+.no-style-list {
+  list-style-type: none;
+  margin-top: 20px;
+}
+.activity-item {
+  border-bottom: 1px solid @grayLighter;
+  border-left: 1px solid @grayLight;
+  color: @grayNeutral;
+  margin-top: -10px;
+  padding: 20px 18px;
+  .comment {
+    content: "\f086";
+  }
+  .comment:before {
+    content: "\f086";
+  }
+  .delete {
+    content: "\f014";
+  }
+  .delete:before {
+    content: "\f014";
+  }
+  .edit {
+    content: "\f14b";
+  }
+  .edit:before {
+    content: "\f14b";
+  }
+  .layer {
+    content: "\f096";
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+  }
+  .layer:before {
+    content: "\f096";
+  }
+  .map {
+    content: "\f041";
+  }
+  .map:before {
+    content: "\f041";
+  }
+  .upload {
+    content: "\f093";
+  }
+  .upload:before {
+    content: "\f093";
+  }
+}
+.icon-activity {
+  background: @grayNeutral;
+     -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+          border-radius: 20px;
+  border: 2px solid white;
+  color: white;
+  float: left;
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-size: 1.25em;
+  font-style: normal;
+  height: 20px;
+  line-height: 1.25em;
+  margin: 0 10px 10px -35px;
+  padding: 4px;
+  text-align: center;
+  text-decoration: inherit;
+  width: 20px;
+}
+.thumb-activity {
+  clear:both;
+  height: 60px;
+  img {
+    border: 1px solid @grayLight; 
+    float: left; 
+    margin-right: 5px;  
+    width:60px
+  }
+}
+
+.activity {
+  content: "\f045";
+}
+.activity:before {
+  content: "\f045";
+}
+.activity-timestamp {
+  margin-top: -10px;
+}
+
+
