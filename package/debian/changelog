@@ -1,3 +1,102 @@
+geonode (2.0.0+rc6) precise; urgency=high
+
+  [ Micah Wengren ]
+  * [9f46d4] Add --remove-deleted option to updatelayers.  Remove layers from GeoNode that no longer exist in GeoServer (incl --skip-unadvertised filter). Log results in stdout and debug logs
+  * [cd324c] Modified logic for GeoServer layer comparison for marking valid GeoNode layers
+  * [3d56a5] Streamline debug logging statements for GeoNode resource comparison with GeoServer, cleanup
+  * [061646] One more debug logging line for better reporting in matching iteration
+  * [1d41ae] Added code to remove ratings and comments for a layer directly in gs_slurp. Avoid calling geoserver_pre_delete
+
+  [ Tyler Garner ]
+  * [19a9dd] Remove "or groups" from the upload template until group permissions are supported.  Fixes #1262.
+
+  [ Micah Wengren ]
+  * [081cc3] Removed cleardeadlayers command and updated documentation with descriptions for all updatelayers options
+
+  [ Ariel Nunez ]
+  * [6e6b03] Updated messages
+  * [087339] Fixed translation problem in upload templates
+
+  [ Simone Dalmasso ]
+  * [b1dcfc] docs, add the port 8000 to paver start mode
+  * [8fe84d] add django debug toolbar
+
+  [ Micah Wengren ]
+  * [5be24f] Delete layer tag (keywords) references when layer is deleted
+
+  [ Jeffrey Johnson ]
+  * [9ea397] Update domain name to demo.geonode.org in fabfile.py
+
+  [ Tyler Garner ]
+  * [44eed6] Remove the cleardeadlayers reference from the Django-apps page.
+  * [e6049c] Improve the settings documentation.
+  * [09fde6] Document the GeoNode paver commands (Fixes #1169).
+
+  [ Simone Dalmasso ]
+  * [dbd328] fix typos
+  * [9d925c] small additions to the geonode_project usage
+  * [4b3428] show complete extension for invalid files
+  * [5e6efa] fix a not closed div
+  * [6d96d4] add few lines on the issue tracker
+  * [e0ebca] remove the devprocess reference
+  * [5c571c] Add something on development tools
+  * [674b21] add setup on vagrant guide
+
+  [ Calvin Metcalf ]
+  * [b90172] #1276 replace pil with pillow
+
+  [ Tyler Garner ]
+  * [b6495c] Add the document model to the actstream settings.
+
+  [ Simone Dalmasso ]
+  * [aefcfb] fix rating in detail pages for unauthenticated
+  * [46bb06] add missing port in vagrant doc
+  * [2af05b] add __init__.py file in the base commands folder
+
+  [ Paolo Pasquali ]
+  * [8602b3] Fix #1266
+  * [c749fb] Some Upload Layers style
+  * [b71696] More styles for Upload Layers template
+  * [1c8a4c] Fix Layer Replace template
+  * [761c64] Add icon placeholder in documents search list #1269
+
+  [ Simone Dalmasso ]
+  * [4d7f28] don’t delete the resource but the store recursively
+  * [888e92] apply a patch to helpers
+
+  [ Paolo Pasquali ]
+  * [8d255b] indentation only
+  * [883ae0] Fix Activity layout
+  * [d903a9] Some style in Activity Feed page
+  * [5deb67] Fix Activity Layout
+
+  [ Tom Kralidis ]
+  * [304427] add timeout configuration to handle long requests (#1279)
+
+  [ Tyler Garner ]
+  * [6fa8f8] Remove the GeoNode projects page from the documentation and redirect links to geonode.org/gallery/.  Fixes 1147.
+
+  [ Paolo Pasquali ]
+  * [6f7d9d] Add thumbs and style to activity templates
+
+  [ Tyler Garner ]
+  * [01ab69] Update javascript in GeoNode page to reflect current static setup.  Fixes #1175.
+  * [1d431e] Fix TIMEOUT typo in the settings documentation and specify the time units as seconds.
+
+  [ Simone Dalmasso ]
+  * [66686c] Add just few pdb commands.
+  * [1689a5] add missing __init__ file
+
+  [ Paolo Pasquali ]
+  * [6e9681] Add thumbs in profile resources
+
+  [ Calvin Metcalf ]
+  * [374b05] make social optional
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 04 Dec 2013 16:27:16 +0000
+
 geonode (2.0.0+rc5) precise; urgency=high
 
   [ Ian Schneider ]
