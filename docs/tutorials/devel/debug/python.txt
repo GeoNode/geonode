@@ -86,4 +86,4 @@ To set a breakpoint, insert the following code before the code to debug.
 When execution reaches this statement, the debugger will activate. The commands
 are noted in the link above. In addition to those debugger specific commands,
 general python statements are supported. For example, typing the name of a
-variable in scope will yield the value via string coersion.
+variable in scope will yield the value via string coersion. Typing "n" will execute the next line, "c" wil continue the execution of the program, "q" will quit.
