@@ -334,6 +334,15 @@ Default: ``False``
 By default, the GeoNode application allows visitors to view most pages without being authenticated. If this is set to ``True``
 users must be authenticated before accessing URL routes not included in ``AUTH_EXEMPT_URLS``.
 
+Social settings
+===============
+
+SOCIAL_BUTTONS
+--------------
+Default: ``True``
+
+A boolean which specifies whether the social media icons and javascript should be rendered in GeoNode.
+
 Upload settings
 ===============
 
