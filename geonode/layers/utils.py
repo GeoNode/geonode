@@ -378,33 +378,19 @@ def save(layer, base_file, user, overwrite=True, title=None,
     # ------------------
 
     try:
+        if name == 'points_epsg2249_no_prj':
+            print cat.get_styles()
+
         store, gs_resource = create_store_and_resource(name,
                                                        data,
                                                        charset=charset,
                                                        overwrite=overwrite)
-        
-        geoserver_log = '/home/travis/build/GeoNode/geonode/geoserver/data/logs/geoserver.log'
-        if name == 'points_epsg2249_no_prj':
-            with open(geoserver_log) as glog:
-                lines = glog.readlines()
-                # let's print only the last 200 lines
-                for line in lines:
-                    print line
 
     except UploadError, e:
         msg = ('Could not save the layer %s, there was an upload '
                'error: %s' % (name, str(e)))
         logger.warn(msg)
         e.args = (msg,)
-        # When we arrive here, let's do some unholy things to debug 
-        # https://github.com/GeoNode/geonode/issues/1288
-        if name == 'points_epsg2249_no_prj':
-            jetty_log = '/home/travis/build/GeoNode/geonode/geoserver/jetty.log'
-            geoserver_log = '/home/travis/build/GeoNode/geonode/geoserver/data/logs/geoserver.log'
-            with open(geoserver_log) as glog:
-                lines = glog.readlines()
-                for line in lines:
-                    print line
         raise
     except ConflictingDataError, e:
         # A datastore of this name already exists
