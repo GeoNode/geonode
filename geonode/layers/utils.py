@@ -386,10 +386,10 @@ def save(layer, base_file, user, overwrite=True, title=None,
         geoserver_log = '/home/travis/build/GeoNode/geonode/geoserver/data/logs/geoserver.log'
         if name == 'points_epsg2249_no_prj':
             with open(geoserver_log) as glog:
-            lines = glog.readlines()
-            # let's print only the last 200 lines
-            for line in lines:
-                print line
+                lines = glog.readlines()
+                # let's print only the last 200 lines
+                for line in lines:
+                    print line
 
     except UploadError, e:
         msg = ('Could not save the layer %s, there was an upload '
@@ -402,9 +402,9 @@ def save(layer, base_file, user, overwrite=True, title=None,
             jetty_log = '/home/travis/build/GeoNode/geonode/geoserver/jetty.log'
             geoserver_log = '/home/travis/build/GeoNode/geonode/geoserver/data/logs/geoserver.log'
             with open(geoserver_log) as glog:
-            lines = glog.readlines()
-            for line in lines:
-                print line
+                lines = glog.readlines()
+                for line in lines:
+                    print line
         raise
     except ConflictingDataError, e:
         # A datastore of this name already exists
