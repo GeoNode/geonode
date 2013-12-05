@@ -18,7 +18,7 @@ Here's a list of settings available for the Documents app in GeoNode.
 
 ALLOWED_DOCUMENT_TYPES
 ----------------------
-Default: ``['doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
+Default: ``['doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
 
 A list of acceptable file extensions that can be uploaded to the Documents app.
 
