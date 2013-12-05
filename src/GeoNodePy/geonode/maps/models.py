@@ -28,7 +28,7 @@ from django.core.cache import cache
 import sys
 import re
 from geonode.maps.encode import despam, XssCleaner
-
+from geonode.flexidates import FlexiDateField, FlexiDateFormField
 
 
 logger = logging.getLogger("geonode.maps.models")
@@ -910,8 +910,8 @@ class Layer(models.Model, PermissionLevelMixin):
     topic_category = models.ForeignKey(LayerCategory, blank=True, null=True)
 
     # Section 5
-    temporal_extent_start = models.DateField(_('temporal extent start'), blank=True, null=True)
-    temporal_extent_end = models.DateField(_('temporal extent end'), blank=True, null=True)
+    temporal_extent_start = models.CharField(_('temporal extent start'), max_length=24, blank=True, null=True)
+    temporal_extent_end = models.CharField(_('temporal extent end'), max_length=24, blank=True, null=True)
     geographic_bounding_box = models.TextField(_('geographic bounding box'))
     supplemental_information = models.TextField(_('supplemental information'), blank=True, null=True, default='')
 

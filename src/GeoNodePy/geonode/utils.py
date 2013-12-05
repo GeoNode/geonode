@@ -1,4 +1,3 @@
-
 from UserDict import DictMixin
 from ConfigParser import ConfigParser, NoOptionError
 import datetime
@@ -143,3 +142,4 @@ class WorldmapDatabaseRouter(object):
         elif model._meta.app_label == 'gazetteer':
             return False
         return None
+

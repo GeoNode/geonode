@@ -28,6 +28,7 @@ from urlparse import urlparse
 import unicodedata
 from django.db.models import Q
 import logging
+from geonode.flexidates import FlexiDateFormField
 import taggit
 from geonode.maps.utils import forward_mercator
 from geonode.maps.owslib_csw import CswRecord
@@ -149,8 +150,8 @@ class LayerForm(forms.ModelForm):
     date = forms.DateTimeField(label='*' + (_('Date')), widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"date"}
     date.widget.widgets[1].attrs = {"class":"time"}
-    temporal_extent_start = forms.DateField(required=False,label= _('Temporal Extent Start Date'), widget=forms.DateInput(attrs={"class":"date"}))
-    temporal_extent_end = forms.DateField(required=False,label= _('Temporal Extent End Date'), widget=forms.DateInput(attrs={"class":"date"}))
+    temporal_extent_start = FlexiDateFormField(required=False,label= _('Temporal Extent Start Date'))
+    temporal_extent_end = FlexiDateFormField(required=False,label= _('Temporal Extent End Date'))
     title = forms.CharField(label = '*' + _('Title'), max_length=255)
     abstract = forms.CharField(label = '*' + _('Abstract'), widget=forms.Textarea(attrs={'cols': 60}))
     constraints_use = forms.ChoiceField(label= _('Contraints'), choices=CONSTRAINT_OPTIONS, 

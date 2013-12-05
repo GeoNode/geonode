@@ -246,14 +246,14 @@
                                  {% if layer.temporal_extent_start %}
                                  <gml:beginPosition>
                                      <gmd:date>
-                                         <gco:DateTime>{{layer.temporal_extent_start|date:"c"}}</gco:DateTime>
+                                         <gco:DateTime>{{layer.temporal_extent_start}}</gco:DateTime>
                                      </gmd:date>
                                  </gml:beginPosition>
                                  {% endif %}
                                  {% if layer.temporal_extent_end %}
                                  <gml:endPosition>
                                      <gmd:date>
-                                         <gco:DateTime>{{layer.temporal_extent_end|date:"c"}}</gco:DateTime>
+                                         <gco:DateTime>{{layer.temporal_extent_end}}</gco:DateTime>
                                      </gmd:date>
                                  </gml:endPosition>
                                  {% endif %}

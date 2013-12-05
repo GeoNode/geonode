@@ -426,6 +426,7 @@ USE_GAZETTEER = False
 # Defines settings for multiple databases,
 # only use if PostGIS integration enabled
 # and USE_GAZETTEER = True
+#GAZETTEER_DB_ALIAS = "wmdata"
 #DATABASES = {
 #    'default': {
 #        'ENGINE': DATABASE_ENGINE,
@@ -452,7 +453,7 @@ USE_GAZETTEER = False
 #
 #    }
 #SOUTH_TESTS_MIGRATE = False
-GAZETTEER_FULLTEXTSEARCH = False
+#GAZETTEER_FULLTEXTSEARCH = False
 ##### END GAZETTEER SETTINGS #####
 
 #Set to true to schedule asynchronous updates of

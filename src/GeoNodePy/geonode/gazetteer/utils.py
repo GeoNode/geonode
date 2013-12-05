@@ -12,6 +12,7 @@ import psycopg2
 from django.db.models import Q
 from geonode.maps.models import Layer, LayerAttribute, MapLayer, Map
 from django.core.cache import cache
+from geonode.flexidates import parse_julian_date
 import re
 
 GAZETTEER_TABLE = 'gazetteer_gazetteerentry'
@@ -35,8 +36,7 @@ def get_geometry_type(layer_name):
     Return the geometry type (POINT, POLYGON etc), geometry column name, and projection of a layer
     """
 
-    conn = psycopg2.connect(
-        "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+    conn = getConnection()
     try:
         cur = conn.cursor()
         cur.execute("select type, f_geometry_column, srid from geometry_columns where f_table_name = '%s'" % layer_name)
@@ -104,11 +104,11 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
         criteria =  criteria & Q(layer_name__in=layers)
 
     if start_date:
-        start_date = parseDate(start_date)
+        start_date = parse_julian_date(start_date)
         print("START DATE: %s" % start_date)
 
     if end_date:
-        end_date = parseDate(end_date)
+        end_date = parse_julian_date(end_date)
         print("END DATE: %s" % end_date)
 
     if start_date and end_date:
@@ -267,8 +267,7 @@ def add_to_gazetteer(layer_name, name_attributes, start_attribute=None, end_attr
             " as l WHERE  l.\"" + attribute.attribute + "\" is not null AND " +\
             "fid not in (SELECT feature_fid from " + GAZETTEER_TABLE + " where layer_name = '" + layer_name + "' and layer_attribute = '" + attribute.attribute + "'))")
 
-    conn = psycopg2.connect(
-        "dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+    conn = getConnection()
 
     try:
         cur = conn.cursor()
@@ -331,6 +330,14 @@ def getYahooResults(place_name):
     except:
         return []
 
+def getConnection():
+    return psycopg2.connect(
+        #"dbname='" + settings.DB_DATASTORE_DATABASE + "' user='" + settings.DB_DATASTORE_USER + "'  password='" + settings.DB_DATASTORE_PASSWORD + "' port=" + settings.DB_DATASTORE_PORT + " host='" + settings.DB_DATASTORE_HOST + "'")
+        "dbname='" + settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['NAME'] + "' user='" + \
+        settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['USER'] + "'  password='" + \
+        settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['PASSWORD'] + "' port=" + \
+        settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['PORT'] + " host='" + \
+        settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['HOST'] + "'")
 
 def getGeonamesResults(place_name):
     g = geocoders.GeoNames()
@@ -348,17 +355,5 @@ def formatExternalGeocode(geocoder, geocodeResult):
     return {'placename': geocodeResult[0], 'coordinates': geocodeResult[1], 'source': geocoder, 'start_date': 'N/A', \
             'end_date': 'N/A', 'gazetteer_id': 'N/A'}
 
-def parseDate(dateString):
-    from datautil.date import DateutilDateParser
-    from jdcal import gcal2jd
-    parser = DateutilDateParser()
-    flexdate = parser.parse(dateString)
-    julian = gcal2jd(int(flexdate.year), int(flexdate.month if flexdate.month is not '' else '1'), \
-        int(flexdate.day if flexdate.day is not '' else '1'))
-    return julian[0] + julian[1]
 
-def julianDate(year,month=1,day=1,hour=0,min=0,sec=0,utc=0):
-    jd = (367*year) - (7*(year+((month+9)/12))/4) + (275*month/9)+ day + 1721013.5 + utc/24 \
-         - 0.5*sign((100*year)+month-190002.5) + 0.5 + hour/24.0 + min/(60.0*24.0) + sec/(3600.0*24.0)
-    return jd
 
