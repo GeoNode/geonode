@@ -18,7 +18,7 @@ Here's a list of settings available for the Documents app in GeoNode.
 
 ALLOWED_DOCUMENT_TYPES
 ----------------------
-Default: ``['doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
+Default: ``['doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
 
 A list of acceptable file extensions that can be uploaded to the Documents app.
 
@@ -333,6 +333,15 @@ Default: ``False``
 
 By default, the GeoNode application allows visitors to view most pages without being authenticated. If this is set to ``True``
 users must be authenticated before accessing URL routes not included in ``AUTH_EXEMPT_URLS``.
+
+Social settings
+===============
+
+SOCIAL_BUTTONS
+--------------
+Default: ``True``
+
+A boolean which specifies whether the social media icons and javascript should be rendered in GeoNode.
 
 Upload settings
 ===============
