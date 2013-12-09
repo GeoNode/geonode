@@ -276,10 +276,9 @@ define(['underscore',
         return false;        
     };
 
-    /** Function to ...
+    /** Function to Upload the selected files to the server
      *
-     *  @params  
-     *  @returns
+     *  @returns false
      */
     doUploads = function () {
         var checked = checkFiles();
@@ -290,8 +289,13 @@ define(['underscore',
                 layerinfo.uploadFiles();
             });
         }
+        return false;
     };
 
+    /** Function to ...
+     *
+     *  @returns false
+     */
     init_geogit_stores = function() {
         $.ajax({
             url: '/gs/rest/stores/geogit/',
