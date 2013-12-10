@@ -6,6 +6,7 @@
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
+{% include "geonode/xblock_header.html" %}
 {{ block.super }}
 {% if "gme-" in GOOGLE_API_KEY %}
 <script src="https://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
@@ -63,6 +64,11 @@ Ext.onReady(function() {
       
     
     app = new GeoExplorer.Viewer(config);
+
+    MESSAGING.getInstance().registerHandler("info", function(m) { alert("the slave code received this 'info' message: "+m.getMessage()); });
+    setTimeout(function() {MESSAGING.getInstance().send(new Message("info","ad-hoc message from slave"));}, 1500);
+
+
 {% endautoescape %}
 });
 </script>
