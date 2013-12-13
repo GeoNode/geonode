@@ -21,18 +21,7 @@ class Migration(SchemaMigration):
             orm['contenttypes.contenttype'].objects.filter(app_label='maps', model='contactrole').update(app_label='layers')
             
     def backwards(self, orm):
-        
-        # move back some models from layers to maps app
-        
-        # 1. maps_layer moved from layers_layer 
-        db.rename_table('layers_layer', 'maps_layer')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='layers', model='layer').update(app_label='maps')
-        
-        # 2. maps_contactrole moved from layers_contactrole 
-        db.rename_table('layers_contactrole', 'maps_contactrole')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='layers', model='contactrole').update(app_label='maps')
+        raise RuntimeError("Cannot reverse this migration.")
             
     models = {
         'auth.group': {

@@ -122,30 +122,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
-        # Removing unique constraint on 'ContactRole', fields ['contact', 'layer', 'role']
-        db.delete_unique('maps_contactrole', ['contact_id', 'layer_id', 'role_id'])
-
-        # Deleting model 'Contact'
-        db.delete_table('maps_contact')
-
-        # Deleting model 'Layer'
-        db.delete_table('maps_layer')
-
-        # Deleting model 'Map'
-        db.delete_table('maps_map')
-
-        # Deleting model 'MapLayer'
-        db.delete_table('maps_maplayer')
-
-        # Deleting model 'Role'
-        db.delete_table('maps_role')
-
-        # Removing M2M table for field permissions on 'Role'
-        db.delete_table('maps_role_permissions')
-
-        # Deleting model 'ContactRole'
-        db.delete_table('maps_contactrole')
+        raise RuntimeError("Cannot reverse this migration.")
 
 
     models = {
