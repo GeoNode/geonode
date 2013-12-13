@@ -7,7 +7,8 @@ from django.db import models
 class Migration(SchemaMigration):
 
     depends_on = (
-        ("maps", "0008_move_models_to_people"),
+        ("maps", "0002_move_models_to_people"),
+        ("security", "0002_initial"),
     )
 
     def forwards(self, orm):

@@ -26,22 +26,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
-        # move back some models from people app to maps app
-        
-        # 1.  maps_role moved from people_role
-        db.rename_table('people_role', 'maps_role')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='people', model='role').update(app_label='maps')
-        
-        # 2. maps_role_permissions moved from people_role_permissions 
-        db.rename_table('people_role_permissions', 'maps_role_permissions')
-        
-        # 3. maps_contact moved from people_profile 
-        db.rename_table('people_profile', 'maps_contact')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='people', model='profile').update(app_label='maps')
-            orm['contenttypes.contenttype'].objects.filter(app_label='people', model='profile').update(model='contact')
+        raise RuntimeError("Cannot reverse this migration.")
     
     models = {
         'actstream.action': {

@@ -84,42 +84,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
-        # Deleting model 'Link'
-        db.delete_table('layers_link')
-
-        # Deleting model 'Attribute'
-        db.delete_table('layers_attribute')
-
-        # Deleting model 'Style'
-        db.delete_table('layers_style')
-
-        # Deleting model 'TopicCategory'
-        db.delete_table('layers_topiccategory')
-
-        # Renaming and altering the bbox fields
-        # renaming
-        db.rename_column('layers_layer', 'bbox_x0', 'bbox_left')
-        db.rename_column('layers_layer', 'bbox_x1', 'bbox_right')
-        db.rename_column('layers_layer', 'bbox_y0', 'bbox_bottom')
-        db.rename_column('layers_layer', 'bbox_y1', 'bbox_top')
-        # altering
-        db.alter_column('layers_layer', 'bbox_left', models.FloatField(null=True, blank=True))
-        db.alter_column('layers_layer', 'bbox_right', models.FloatField(null=True, blank=True))
-        db.alter_column('layers_layer', 'bbox_bottom', models.FloatField(null=True, blank=True))
-        db.alter_column('layers_layer', 'bbox_top', models.FloatField(null=True, blank=True))
-
-        # Deleting field 'Layer.srid'
-        db.delete_column('layers_layer', 'srid')
-        
-        # Deleting field 'Layer.category'
-        db.delete_column('layers_layer', 'category_id')
-
-        # Deleting field 'Layer.default_style'
-        db.delete_column('layers_layer', 'default_style_id')
-
-        # Removing M2M table for field styles on 'Layer'
-        db.delete_table('layers_layer_styles')
+        raise RuntimeError("Cannot reverse this migration.")
 
 
     models = {
