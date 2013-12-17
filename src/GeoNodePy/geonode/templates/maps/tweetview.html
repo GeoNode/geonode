@@ -37,13 +37,41 @@
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/colorpicker/color-picker.ux.css"/>
 <link rel="stylesheet" type="text/css" href="{{ GEONODE_CLIENT_LOCATION }}theme/ux/spinner/Spinner.css" />
 
+
+
+{{ block.super }}
+
 <style type="text/css">
     #templates {
         display: none;
     }
-</style>
 
-{{ block.super }}
+    #wmpower {
+        display: block;
+        position:absolute;
+        left: 280px;
+        top: 30px;
+        font-size:8pt;
+        color: #000;
+    }
+
+    #wmpower a {
+        font-size: 8pt;
+        font-weight:bold;
+        color: #000;
+    }
+
+    #page-breadcrumb {
+        left: 0px;
+        top: 10px;
+    }
+    #page-breadcrumb span{
+        left: 0px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+</style>
 
 <script type="text/javascript">
 {% autoescape off %}
@@ -242,6 +270,7 @@ var permalink = function (id) {
 
 var titleTemplate = new Ext.Template("<span>{title}</span>");
 Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title:(config.about.officialurl ? '' : 'Current Map: ') + (config.about.title ? config.about.title : 'New Map')}));
+Ext.DomHelper.overwrite(Ext.get("wmpower"), "Powered by <a href=\"http://map-d.com\">Map-D</a>");
 
 app.on("saved", function (id) {
     //reset title header
