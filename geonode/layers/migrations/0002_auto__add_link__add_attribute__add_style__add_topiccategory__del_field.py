@@ -82,7 +82,6 @@ class Migration(SchemaMigration):
         ))
         db.create_unique('layers_layer_styles', ['layer_id', 'style_id'])
 
-
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
 
