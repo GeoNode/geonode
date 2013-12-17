@@ -146,7 +146,7 @@ define(['underscore',
         var files = layers[Object.keys(layers)[0]]['files'];
         var types = [];
         for (var i = 0; i<files.length; i++){
-            var ext = files[i].name.split('.').pop();
+            var ext = files[i].name.split('.')[1];
             if ($.inArray(ext,types) == -1){
                 types.push(ext);
             }

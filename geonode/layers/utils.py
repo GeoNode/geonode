@@ -382,11 +382,27 @@ def save(layer, base_file, user, overwrite=True, title=None,
                                                        data,
                                                        charset=charset,
                                                        overwrite=overwrite)
+        
     except UploadError, e:
         msg = ('Could not save the layer %s, there was an upload '
                'error: %s' % (name, str(e)))
         logger.warn(msg)
         e.args = (msg,)
+        # When we arrive here, let's do some unholy things to debug 
+        # https://github.com/GeoNode/geonode/issues/1288
+        if name == 'points_epsg2249_no_prj':
+            jetty_log = '/home/travis/build/GeoNode/geonode/geoserver/jetty.log'
+            geoserver_log = '/home/travis/build/GeoNode/geonode/geoserver/data/logs/geoserver.log'
+            for style in cat.get_styles():
+                print style.name
+            with open(geoserver_log) as glog:
+                lines = glog.readlines()
+                for line in lines:
+                    print line
+            with open(jetty_log) as glog:
+                lines = glog.readlines()
+                for line in lines:
+                    print line
         raise
     except ConflictingDataError, e:
         # A datastore of this name already exists
