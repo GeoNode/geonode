@@ -97,7 +97,7 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 def layer_list(request, template='layers/layer_list.html'):
     from geonode.search.views import search_page
     post = request.POST.copy()
-    post.update({'type': 'layer'})
+    post.update({'type': 'layer,raster,vector'})
     request.POST = post
     return search_page(request, template=template)
 
