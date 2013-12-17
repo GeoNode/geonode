@@ -42,9 +42,11 @@ $(function(){
             'sort': params.sort[0],
             'q': params.q
         };
+        /*
         if (typeof default_type != 'undefined'){
             data.type = default_type;
         }
+        */
         return data;
     }
 
