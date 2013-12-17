@@ -68,6 +68,16 @@ Ext.onReady(function() {
     MESSAGING.getInstance().registerHandler("info", function(m) { alert("the slave code received this 'info' message: "+m.getMessage()); });
     setTimeout(function() {MESSAGING.getInstance().send(new Message("info","ad-hoc message from slave"));}, 1500);
 
+    app.on("portalReady", function() {
+        app.mapPanel.map.events.register("moveend", app.mapPanel, function(){
+            MESSAGING.getInstance().send(new Message("moveend",[app.mapPanel.center, app.mapPanel.map.getExtent()]));
+        });
+
+        app.mapPanel.map.events.register("zoomend", app.mapPanel.map, function(){
+            MESSAGING.getInstance().send(new Message("zoomend", app.mapPanel.map.zoom));
+        });
+
+    });
 
 {% endautoescape %}
 });
