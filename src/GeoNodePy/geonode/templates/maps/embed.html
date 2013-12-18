@@ -66,17 +66,25 @@ Ext.onReady(function() {
     app = new GeoExplorer.Viewer(config);
 
     MESSAGING.getInstance().registerHandler("info", function(m) { alert("the slave code received this 'info' message: "+m.getMessage()); });
-    setTimeout(function() {MESSAGING.getInstance().send(new Message("info","ad-hoc message from slave"));}, 1500);
+//    setTimeout(function() {MESSAGING.getInstance().send(new Message("info","ad-hoc message from slave"));}, 1500);
 
     app.on("portalReady", function() {
         app.mapPanel.map.events.register("moveend", app.mapPanel, function(){
-            MESSAGING.getInstance().send(new Message("moveend",[app.mapPanel.center, app.mapPanel.map.getExtent()]));
+            MESSAGING.getInstance().send(new Message("moveend",{center:app.mapPanel.map.getCenter(),zoomLevel:app.mapPanel.map.getZoom()}));
         });
 
         app.mapPanel.map.events.register("zoomend", app.mapPanel.map, function(){
-            MESSAGING.getInstance().send(new Message("zoomend", app.mapPanel.map.zoom));
+            MESSAGING.getInstance().send(new Message("zoomend", app.mapPanel.map.getZoom()));
         });
 
+        MESSAGING.getInstance().registerHandler("setZoomLevel", function(m) { app.mapPanel.map.zoomTo(m.getMessage()); });
+        MESSAGING.getInstance().registerHandler("setCenter",function(m) {
+            var data = m.getMessage();
+            app.mapPanel.map.setCenter([data.centerLon, data.centerLat],data.zoomLevel,false,false);
+           // console.log("slave set center to ("+data.centerLon+","+data.centerLat+") @zoom="+data.zoomLevel);
+        });
+
+        MESSAGING.getInstance().send(new Message("portalReady", {}));
     });
 
 {% endautoescape %}
