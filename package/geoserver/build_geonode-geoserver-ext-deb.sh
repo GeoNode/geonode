@@ -48,7 +48,7 @@ if [ -d $DL_ROOT/$GIT_REV ]; then
 fi
 
 mkdir $DL_ROOT/$GIT_REV
-cp ../*.deb $DL_ROOT/$GIT_REV/.
+#cp ../*.deb $DL_ROOT/$GIT_REV/.
 cp target/geoserver.war $DL_ROOT/$GIT_REV/.
 cp target/geonode-geoserver-ext-*-geoserver-plugin.zip $DL_ROOT/$GIT_REV/.
 cp target/*data.zip $DL_ROOT/$GIT_REV/data.zip
