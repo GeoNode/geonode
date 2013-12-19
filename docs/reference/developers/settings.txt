@@ -14,13 +14,11 @@ GeoNode depends on.
 Documents settings
 ==================
 
-Here's a list of settings available in Django core and their default values.
-Settings provided by contrib apps are listed below, followed by a topical index
-of the core settings.
+Here's a list of settings available for the Documents app in GeoNode.
 
 ALLOWED_DOCUMENT_TYPES
 ----------------------
-Default: ``['doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
+Default: ``['doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
 
 A list of acceptable file extensions that can be uploaded to the Documents app.
 
@@ -296,6 +294,12 @@ Default: ``False``
 
 Not implemented.
 
+TIMEOUT
+.......
+Default: ``10``
+
+The maximum time, in seconds, to wait for the server to respond.
+
 SITEURL
 -------
 Default: ``'http://localhost:8000/'``
@@ -330,6 +334,15 @@ Default: ``False``
 By default, the GeoNode application allows visitors to view most pages without being authenticated. If this is set to ``True``
 users must be authenticated before accessing URL routes not included in ``AUTH_EXEMPT_URLS``.
 
+Social settings
+===============
+
+SOCIAL_BUTTONS
+--------------
+Default: ``True``
+
+A boolean which specifies whether the social media icons and javascript should be rendered in GeoNode.
+
 Upload settings
 ===============
 
@@ -363,7 +376,7 @@ The uploader backend to use.  The backend choices are:
 * ``'geonode.importer'``
 * ``'geonode.rest'``
 
-The importer backend requires the Geoserver importer backend to be enabled and is required for uploading data into
+The importer backend requires the Geoserver importer extension to be enabled and is required for uploading data into
 GeoGit datastores.
 
 OPTIONS

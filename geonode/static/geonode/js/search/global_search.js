@@ -10,7 +10,8 @@ $(function(){
             keywords: [],
             date_start: [],
             date_end: [],
-            sort: []
+            sort: [],
+            q: initial_query
         };
         
         // traverse the active filters to build the query parameters
@@ -38,11 +39,14 @@ $(function(){
             'kw': params.keywords.join(','),
             'start_date': params.date_start[0],
             'end_date': params.date_end[0],
-            'sort': params.sort[0]
+            'sort': params.sort[0],
+            'q': params.q
         };
-        if (typeof default_type != 'undefined'){
+        
+        if (typeof default_type != 'undefined' && data.type == ''){
             data.type = default_type;
         }
+        
         return data;
     }
 

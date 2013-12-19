@@ -37,6 +37,7 @@ else
     echo "ALLOWED_HOSTS=['"$NEWIP"', 'localhost']" >> $GEONODE_ETC/local_settings.py
 fi
 
+geonode fixsitename
 
 # Restart apache server
 $APACHE_SERVICE restart

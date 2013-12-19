@@ -81,6 +81,17 @@ GeoNode.ComposerMixin = {
         }
     },
 
+    /** private: method[getCRSFToken]
+     * Read the CSRFToken from the cookie.
+     */
+    getCRSFToken: function() {
+        var csrfToken, csrfMatch = document.cookie.match(/csrftoken=(\w+)/);
+        if (csrfMatch && csrfMatch.length > 0) {
+            csrfToken = csrfMatch[1];
+        }
+        return csrfToken;
+    },
+
     /** private: method[authenticate]
      * Show the login dialog for the user to login.
      */
@@ -91,7 +102,7 @@ GeoNode.ComposerMixin = {
                   success: function(form, action) {
                       this.setAuthorizedRoles(["ROLE_ADMINISTRATOR"]);
                       win.close();
-                      document.cookie = action.response.getResponseHeader("Set-Cookie");
+                      OpenLayers.Request.DEFAULT_CONFIG.headers['X-CSRFToken'] = this.getCRSFToken();
                       // resend the original request
                       if (options) {
                           Ext.Ajax.request(options);
@@ -107,10 +118,7 @@ GeoNode.ComposerMixin = {
                   scope: this
               });
           }.createDelegate(this);
-          var csrfToken, csrfMatch = document.cookie.match(/csrftoken=(\w+);/);
-          if (csrfMatch && csrfMatch.length > 0) {
-              csrfToken = csrfMatch[1];
-          }
+          var csrfToken = this.getCRSFToken();
           var win = new Ext.Window({
               title: "GeoNode Login",
               modal: true,

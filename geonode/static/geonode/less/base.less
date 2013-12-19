@@ -685,8 +685,33 @@ article.abstract {
     height: 50px;
     width: 50px;
   }
+  .icon-placeholder {
+    background: @grayLighter;
+    border: 1px solid @grayLight;
+    float: left;
+    height: 75px;
+    margin-right: 10px;
+    overflow: hidden;
+    padding: 0;
+    i {
+      background: @grayLighter;
+      color: @grayLight;
+      font-size: 4em;
+      line-height: 1.2em;
+      padding: 0 31px;
+    }
+  }
   .details {
     overflow: hidden;
+  }
+  .resources-abstract {
+    height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+  }
+  .sharing-date {
+    margin-bottom: 10px;
   }
   .abstract-placeholder {
     display: none;
@@ -753,6 +778,22 @@ body.people article .content {
     margin-bottom: 30px;
     margin-left: 50px;
     margin-top: 30px;
+  }
+
+  .icon-placeholder {
+    background: @grayLighter;
+    float: left;
+    height: 150px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    padding: 0;
+    i {
+      background: @grayLighter;
+      color: @grayLight;
+      font-size: 8em;
+      line-height: 1.2em;
+      padding: 0 63px;
+    }
   }
 
   .details {
@@ -1308,7 +1349,6 @@ body.home {
       &.article-list article h6 a {
         color:@linkColor;
       }
-
       &.latest-maps .thumb {
         border: 1px solid @bdrColor;
         padding: 9px;
@@ -1654,7 +1694,87 @@ body.upload-prms .steps .step3 { color:@gray; }
   }
 }
 
-// portals
+#drop-zone {
+  background: @grayLighter;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 2px dashed @grayLight;
+  h2 {
+    color: @grayLight;
+    margin: 20px 0;
+    text-align: center;
+    i {
+      font-size: 2em;
+    }
+  }
+}
+.uip {
+  border: 1px solid @grayLight;
+  border-radius: 3px;
+  padding: .5em;
+  margin: .5em
+}
+#file-queue {
+  ul {
+    margin-bottom: 20px;
+  }
+  #status {
+    margin-left: -20px;
+  }
+}
+ul#global-errors {
+  list-style-type: none;
+  margin-left: 0;
+}
+section.charset {
+  border-bottom: 1px solid @grayLight;
+  margin: 20px 0;
+}
+#clear-button {
+  border: 1px solid @grayLight;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 13px;
+  line-height: 18px;
+  padding: 3px 11px;
+  margin: 0 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* FileUploadField component styles
+   ----------------------------- */
+.x-form-file-wrap {
+    position: relative;
+    height: 22px;
+}
+.x-form-file-wrap .x-form-file {
+  position: absolute;
+  right: 0;
+  /* Alert! This causes a Parse Error in Less
+  -moz-opacity: 0;
+  filter:alpha(opacity: 0); */
+  opacity: 0;
+  z-index: 2;
+    height: 22px;
+}
+.x-form-file-wrap .x-form-file-btn {
+  position: absolute;
+  right: 0;
+  z-index: 1;
+}
+.x-form-file-wrap .x-form-file-text {
+    position: absolute;
+    left: 0;
+    z-index: 3;
+    color: #777;
+}
+
+/* Portals
+   ----------------------------- */
 body.portals {
   p.btns {
     text-align:left;
@@ -1754,24 +1874,100 @@ ul.stats {
 #pb .ui-progressbar-value {
   background: rgb(125, 196, 243);
 }
-
-/* Uploader styles */
-#drop-zone {
-  background: #eee;
-  height: 100px;
-  margin-bottom: 10px;
-  padding: 5px;
-  border: 4px dashed gray;
+/* Activity
+   ----------------------------- */
+.no-style-list {
+  list-style-type: none;
+  margin-top: 20px;
 }
-#drop-zone h2 {
-  vertical-align:middle;
+.activity-item {
+  border-bottom: 1px solid @grayLighter;
+  border-left: 1px solid @grayLight;
+  color: @grayNeutral;
+  margin-top: -10px;
+  padding: 20px 18px;
+  .comment {
+    content: "\f086";
+  }
+  .comment:before {
+    content: "\f086";
+  }
+  .delete {
+    content: "\f014";
+  }
+  .delete:before {
+    content: "\f014";
+  }
+  .edit {
+    content: "\f14b";
+  }
+  .edit:before {
+    content: "\f14b";
+  }
+  .layer {
+    content: "\f096";
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+  }
+  .layer:before {
+    content: "\f096";
+  }
+  .map {
+    content: "\f041";
+  }
+  .map:before {
+    content: "\f041";
+  }
+  .upload {
+    content: "\f093";
+  }
+  .upload:before {
+    content: "\f093";
+  }
+}
+.icon-activity {
+  background: @grayNeutral;
+     -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+          border-radius: 20px;
+  border: 2px solid white;
+  color: white;
+  float: left;
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-size: 1.25em;
+  font-style: normal;
+  height: 20px;
+  line-height: 1.25em;
+  margin: 0 10px 10px -35px;
+  padding: 4px;
   text-align: center;
-  margin-top: 30px;
-  color: gray;
+  text-decoration: inherit;
+  width: 20px;
 }
-.uip {
-  border: 1px solid gray;
-  border-radius: 3px;
-  padding: .5em;
-  margin: .5em
+.thumb-activity {
+  clear:both;
+  height: 60px;
+  img {
+    border: 1px solid @grayLight; 
+    float: left; 
+    margin-right: 5px;  
+    width:60px
+  }
 }
+
+.activity {
+  content: "\f045";
+}
+.activity:before {
+  content: "\f045";
+}
+.activity-timestamp {
+  margin-top: -10px;
+}
+
+
