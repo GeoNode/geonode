@@ -31,16 +31,16 @@ DEB_VERSION=2.0+$(date +"%Y%m%d%H%M")
 mvn clean install war:war -DskipTests
 
 # Build for launchpad
-git-dch --spawn-editor=snapshot --new-version=$DEB_VERSION --git-author --id-length=6 --ignore-branch  --auto --release
-sed -i 's/urgency=low/urgency=high/g' \
-    debian/changelog
+#git-dch --spawn-editor=snapshot --new-version=$DEB_VERSION --git-author --id-length=6 --ignore-branch  --auto --release
+#sed -i 's/urgency=low/urgency=high/g' \
+#    debian/changelog
 
-debuild -S
-dput ppa:geonode/$PPA ../geoserver-geonode_${DEB_VERSION}_source.changes
-rm ../geoserver-geonode*
+#debuild -S
+#dput ppa:geonode/$PPA ../geoserver-geonode_${DEB_VERSION}_source.changes
+#rm ../geoserver-geonode*
 
 # Re-build local debs
-debuild
+#debuild
 
 # Copy .debs, .jar, and .war into place on the server
 if [ -d $DL_ROOT/$GIT_REV ]; then
