@@ -358,6 +358,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
             print >> console, msg
     
     if remove_deleted:
+        from geonode.layers.models import Layer
         q = Layer.objects.filter()
         if workspace_for_delete_compare is not None:
             if isinstance(workspace_for_delete_compare, Workspace): q = q.filter(workspace__exact=workspace_for_delete_compare.name)
