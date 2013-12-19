@@ -86,32 +86,39 @@
           {% autopaginate object_list 5 %}
             {% for obj in object_list %}
             <article>
-                <h3>
+              <div class="content">
+                <div class="item-header">
                 {% if obj.class_name = 'Map' %}
-                  <i class="icon-map-marker"></i>
+                <img class="thumb" src="/uploaded/{{ obj.thumbnail.thumb_file }}" />
+                <h3><i class="icon-map-marker"></i>
                 {% endif %}
                 {% if obj.class_name = 'Layer' %}
-                  <i class="icon-unchecked icon-rotate-45"></i>
+                <img class="thumb" src="/uploaded/{{ obj.thumbnail.thumb_file }}" />
+                <h3><i class="icon-unchecked icon-rotate-45"></i>
                 {% endif %}
                 {% if obj.class_name = 'Document' %}
-                  <i class="icon-file-text-alt"></i>
+                <div class="icon-placeholder"><i class="icon-file-text-alt"></i></div>
+                <h3><i class="icon-file-text-alt"></i>
                 {% endif %}
-                <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a></h3>
-                <div class="details">
-                  <div class="meta">
-                    <p>{{ obj.abstract }}</p>
-                    <p>{% trans "Shared on" %} {{ obj.date|date:"d b Y" }}</p>
-                  </div>
+                  <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
+                </h3>
+              </div>
+              <div class="details">
+                <div class="meta">
+                  <p class="resources-abstract">{{ obj.abstract }}</p>
+                  <p class="sharing-date">{% trans "Shared on" %} {{ obj.date|date:"d b Y" }}</p>
+                </div>
               </div>
             </article>
             {% endfor %}
-        {% endif %}
+          {% endif %}
         </div>
-         {% if object_list|length > 0 %}
+        {% if object_list|length > 0 %}
           {% paginate %}
         {% endif %}
       </div>
       {% else %}
+      </div>
       <article>
         <p>{% trans "No contents found." %}</p>
       </article>

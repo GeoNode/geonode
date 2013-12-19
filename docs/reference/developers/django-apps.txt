@@ -115,11 +115,6 @@ layer_thumbnail <layer>
 ``manage.py`` Commands
 ----------------------
 
-cleardeadlayers
-  ``python manage.py cleardeadlayers``
-
-  Identifies and removes layers in the Django app which don't correspond to layers in the GeoServer catalog.
-
 importlayers
    ``python manage.py importlayers``
 
@@ -389,3 +384,14 @@ has_obj_perm <user> <obj> <permission>
   Checks whether the user has the specified permission on an object.
 
   ``{% has_obj_perm user obj "app.view_thing" as can_view_thing %}``
+
+
+Django's error templates
+========================
+
+GeoNode customizes some of Django's default error templates.
+
+500.html
+--------
+
+If no custom handler for 500 errors is set up in the URLconf module, django will call django.views.defaults.server_error which expects a 500.html file in the root of the templates directory. In GeoNode, we have put a template that does not inherit from anything as 500.html and because most of Django's machinery is down when an INTERNAL ERROR (500 code) is encountered the use of template tags should be avoided.

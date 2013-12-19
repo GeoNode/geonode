@@ -147,7 +147,8 @@ LOGOUT_URL = '/account/logout/'
 # Activate the Documents application
 DOCUMENTS_APP = True
 ALLOWED_DOCUMENT_TYPES = [
-    'doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt'
+    'doc', 'docx','gif', 'jpg', 'jpeg', 'ods', 'odt', 'pdf', 'png', 'ppt', 
+    'rar', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 
 ]
 MAX_DOCUMENT_SIZE = 2 # MB
 
@@ -346,7 +347,7 @@ AGON_RATINGS_CATEGORY_CHOICES = {
 
 # Activity Stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment'),
+    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment', 'documents.document'),
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': False,
     'USE_JSONFIELD': True,
@@ -418,6 +419,7 @@ OGC_SERVER = {
         'WPS_ENABLED' : True,
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': '', #'datastore',
+        'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
 }
 
@@ -568,6 +570,7 @@ LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
 }
 
+SOCIAL_BUTTONS = True
 
 # Require users to authenticate before using Geonode
 LOCKDOWN_GEONODE = False

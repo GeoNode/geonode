@@ -123,7 +123,7 @@ define(['underscore',
             if (!info.type) {
                 log_error({
                     title: 'Unsupported type',
-                    message: 'File ' + info.name + ' is an unsupported file type, please select another file.'
+                    message: 'File ' + info.files[0].name + ' is an unsupported file type, please select another file.'
                 });
                 delete layers[name];
             } else {
@@ -146,7 +146,7 @@ define(['underscore',
         var files = layers[Object.keys(layers)[0]]['files'];
         var types = [];
         for (var i = 0; i<files.length; i++){
-            var ext = files[i].name.split('.')[1];
+            var ext = files[i].name.split('.').pop();
             if ($.inArray(ext,types) == -1){
                 types.push(ext);
             }
@@ -276,10 +276,9 @@ define(['underscore',
         return false;        
     };
 
-    /** Function to ...
+    /** Function to Upload the selected files to the server
      *
-     *  @params  
-     *  @returns
+     *  @returns false
      */
     doUploads = function () {
         var checked = checkFiles();
@@ -290,8 +289,13 @@ define(['underscore',
                 layerinfo.uploadFiles();
             });
         }
+        return false;
     };
 
+    /** Function to ...
+     *
+     *  @returns false
+     */
     init_geogit_stores = function() {
         $.ajax({
             url: '/gs/rest/stores/geogit/',

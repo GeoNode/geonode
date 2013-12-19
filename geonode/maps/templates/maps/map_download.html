@@ -7,8 +7,7 @@
   <p>
     {% blocktrans %}
       Here you can download all the layers of this map that
-      are hosted on this GeoNode.  The following layers will
-      be downloaded:
+      are hosted on this GeoNode.
     {% endblocktrans %}
     <ul>
       {% for layer in downloadable_layers %} 
@@ -19,6 +18,10 @@
             {{ layer }}
           {% endif %}
         </li>
+      {% empty %}
+      {% blocktrans %}
+      <div class="alert alert-warning">Could not find downloadable layers for this map. You can go back to  
+      {% endblocktrans %}<a href="{% url 'map_detail' map.id %}">{{map.title}}</a></div>
       {% endfor %} 
     </ul>
    
