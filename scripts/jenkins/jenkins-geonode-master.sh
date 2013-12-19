@@ -14,7 +14,8 @@ fi
 virtualenv --system-site-packages $PYENV_HOME
 source $PYENV_HOME/bin/activate
 
-# Install test tools
+# Install build & test tools
+pip install --quiet paver
 pip install --quiet nosexcover
 pip install --quiet pylint
 pip install --quiet pyflakes
