@@ -1,6 +1,6 @@
 # Setup environment variables.
 MAVEN_HOME=/usr/share/maven
-JAVA_HOME=/usr/lib/jvm/java-6-openjdk/
+JAVA_HOME=/usr/lib/jvm/java-7-oracle/
 PYENV_HOME=$HOME/.pyenv-master/
 DL_ROOT=/var/www/geonode
 GIT_REV=$(git log -1 --pretty=format:%h)
