@@ -59,7 +59,7 @@ cp target/*data.zip $DL_ROOT/$GIT_REV/data.zip
 # Cleanup
 rm -rf $DL_ROOT/latest
 ln -sf $DL_ROOT/$GIT_REV $DL_ROOT/latest
-rm ../geoserver-geonode*
+#rm ../geoserver-geonode*
 
 popd
 rm -rf tmp
