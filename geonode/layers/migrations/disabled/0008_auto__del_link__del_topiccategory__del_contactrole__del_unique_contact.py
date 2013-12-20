@@ -8,6 +8,8 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
+        import ipdb;ipdb.set_trace()
+        
         # Removing unique constraint on 'ContactRole', fields ['contact', 'layer', 'role']
         db.delete_unique('layers_contactrole', ['contact_id', 'layer_id', 'role_id'])
 

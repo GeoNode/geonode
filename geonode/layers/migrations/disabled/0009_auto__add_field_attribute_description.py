@@ -9,6 +9,9 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding field 'Attribute.description'
+        
+        import ipdb;ipdb.set_trace()
+        
         db.add_column(u'layers_attribute', 'description',
                       self.gf('django.db.models.fields.CharField')(max_length=255, null=True),
                       keep_default=False)
