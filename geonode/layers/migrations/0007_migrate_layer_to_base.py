@@ -3,16 +3,56 @@ import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
+from geonode.base.models import ResourceBase
 
 class Migration(DataMigration):
 
+    depends_on = (
+        ("documents", "0001_initial"),
+    )
+
     def forwards(self, orm):
-        # Adding field 'Layer.resourcebase_ptr_id'
-        db.add_column('layers_layer', 'resourcebase_ptr', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['base.ResourceBase'], null=True, blank=True), keep_default=False)
+
+        for layer in orm.Layer.objects.all():
+            #rbase = ResourceBase()
+            #bbox = layer.geographic_bounding_box.split('((')[1].split(',')
+            #rbase = ResourceBase.objects
+            import ipdb;ipdb.set_trace()
+            rbase = orm['base.ResourceBase'].objects.create(
+                id=layer.id,
+                uuid=layer.uuid,
+                owner=layer.owner,
+                title=layer.title,
+                date=layer.date,
+                date_type=layer.date_type,
+                edition=layer.edition,
+                abstract=layer.abstract,
+                purpose=layer.purpose,
+                maintenance_frequency=layer.maintenance_frequency,
+                keywords_region=layer.keywords_region,
+                constraints_other=layer.constraints_other,
+                language=layer.language,
+                spatial_representation_type=layer.spatial_representation_type,
+                temporal_extent_start=layer.temporal_extent_start,
+                temporal_extent_end=layer.temporal_extent_end,
+                supplemental_information=layer.supplemental_information,
+                distribution_url=layer.distribution_url,
+                distribution_description=layer.distribution_description,
+                data_quality_statement=layer.data_quality_statement,
+                srid=layer.srid,
+                csw_typename=layer.csw_typename,
+                bbox_x0=layer.bbox_x0,
+                bbox_x1=layer.bbox_x1,
+                bbox_y0=layer.bbox_y0,
+                bbox_y1=layer.bbox_y1
+            )
+            import ipdb;ipdb.set_trace()
+            rbase.save()
+
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
-        
+
     models = {
         'actstream.action': {
             'Meta': {'ordering': "('-timestamp',)", 'object_name': 'Action'},
@@ -213,6 +253,7 @@ class Migration(DataMigration):
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'popular_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'purpose': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'resourcebase_ptr': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.ResourceBase']", 'null': 'True', 'blank': 'True'}),
             'share_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'spatial_representation_type': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'srid': ('django.db.models.fields.CharField', [], {'default': "'EPSG:4326'", 'max_length': '255'}),
