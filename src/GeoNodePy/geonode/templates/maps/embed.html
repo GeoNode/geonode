@@ -98,11 +98,17 @@ Ext.onReady(function() {
             var data = JSON.parse(m.getMessage());
             for(var id in data){
                var layer = app.mapPanel.map.getLayer(id);
-               layer.setVisibility(data[id]['visibility']);
+               //layer.setVisibility(data[id]['visibility']);
+               Ext.getCmp("layer_menu_" + id).setChecked(data[id]['visibility']);
                layer.setOpacity(data[id]['opacity']);
             }
         });
         MESSAGING.getInstance().send(new Message("portalReady", {}));
+
+        var layermenu = app.toolbar.items[0];
+
+
+
     });
 
 {% endautoescape %}
