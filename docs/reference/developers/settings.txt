@@ -324,7 +324,7 @@ geonode.org. A value of '*' will match anything and is not recommended for produ
 
 PROXY_URL
 ---------
-Default ``/proxy?url=``
+Default ``/proxy/?url=``
 
 The url to a proxy that will be used when making client-side requests in GeoNode.  By default, the
 internal GeoNode proxy is used but administrators may favor using their own, less restrictive proxies.
