@@ -12,7 +12,7 @@ Ext.onReady(function() {
 {% autoescape off %}
     var config = Ext.apply({
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
-        proxy: "/proxy/?url=",
+        proxy: '{{ PROXY_URL }}',
         {% if MF_PRINT_ENABLED %}
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
         {% else %}
