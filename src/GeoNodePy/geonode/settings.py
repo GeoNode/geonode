@@ -499,6 +499,12 @@ GEOPS_IP =  '128.30.77.57:8083'
 #GEOPS_IP =  '140.247.116.252:8083'
 GEOPS_DOWNLOAD = ''
 
+SESSION_COOKIE_HTTPONLY = True
+
+# Only works with Django 1.6+
+CSRF_COOKIE_HTTPONLY = True
+
+
 try:
     from local_settings import *
 except ImportError:
