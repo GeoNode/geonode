@@ -1,3 +1,66 @@
+geonode (2.0.0+rc7) precise; urgency=high
+
+  [ Tyler Garner ]
+  * [4ba656] Document the SOCIAL_BUTTONS setting.
+
+  [ capooti ]
+  * [8344d8] This fixes #1301.
+
+  [ Tyler Garner ]
+  * [9015d8] Fix ALLOWED_DOCUMENT_TYPES typo in the documentation.
+
+  [ capooti ]
+  * [dabffc] Added some more popular file extensions to ALLOWED_DOCUMENT_TYPES.
+
+  [ Simone Dalmasso ]
+  * [6242a8] add missing import in helpers for remove-deleted option
+
+  [ Reinier Battenberg ]
+  * [b2ab31] doUpload now returns false so the page does not scroll upwards when Upload is clicked
+
+  [ Calvin Metcalf ]
+  * [4c05f7] correct command
+
+  [ Tyler Garner ]
+  * [209717] Fix the quick start url to point to the users tutorial in the docs.
+
+  [ capooti ]
+  * [ba3d72] Layer type (vector/raster) on layer list page is back.
+
+  [ Simone Dalmasso ]
+  * [a5f4ec] use default type if not specified
+
+  [ capooti ]
+  * [8063d6] Reset the default_type to layer.
+  * [1257b7] A couple of selection filters were not collapsed by default.
+
+  [ Simone Dalmasso ]
+  * [7afb0b] don’t run the integrations tests in travis.
+  * [87ae0b] trigger a new build
+  * [46d58f] don’t grab geoserver in travis
+  * [5701db] just comment out the before script
+  * [c73319] remove the old docs
+  * [b5f404] remove the outdated customize doc page
+
+  [ Jeffrey Johnson ]
+  * [eb211c] Working on jenkins-geonode-master.sh during migration to new build server
+  * [e1ad5a] More work on migrating build server (pointing to old server for downloads for now)
+  * [f4c37c] Update java home for oracle jdk in jenkins-geonode-master.sh
+  * [60cacc] Skip tests when building geoserver extension (temporary)
+  * [a2942d] Disable deb building for now in build_geonode-geoserver-ext-deb.sh
+  * [1981c5] Change back to normal build.geonode.org url in pavement.py
+  * [0f3468] Dont try to copy the deb that we are not currently building.
+  * [87fddb] Comment out one problematic rm for now
+  * [cd7744] Reenable sourcing of ~/.bashrc now that the ec2 tools are configured
+  * [ff8e90] Re-enable integration tests on jenkins server
+
+  [ Tyler Garner ]
+  * [26c157] Improve security for the proxy view.  Fixes #1308.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 20 Dec 2013 03:29:25 +0000
+
 geonode (2.0.0+rc6) precise; urgency=high
 
   [ Micah Wengren ]
