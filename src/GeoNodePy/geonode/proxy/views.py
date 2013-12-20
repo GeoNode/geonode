@@ -75,14 +75,16 @@ def proxy(request):
 
 def valid_response(responseContent):
     #Proxy should only be used when expecting an XML or JSON response
+
+    #ArcGIS Server GetFeatureInfo xml response
+    if re.match("<FeatureInfoResponse", responseContent):
+        return responseContent
+
     if responseContent[0] == "<":
         try:
             from defusedxml.ElementTree import fromstring
             et = fromstring(responseContent)
             if re.match("WMT_MS_Capabilities|WMS_DescribeLayerResponse|\{http\:\/\/www\.opengis\.net\/gml\}FeatureCollection", et.tag):
-                return responseContent
-            #ArcGIS Server GetFeatureInfo xml response
-            elif re.match("<FeatureInfoResponse", responseContent):
                 return responseContent
         except ParseError:
             return None
