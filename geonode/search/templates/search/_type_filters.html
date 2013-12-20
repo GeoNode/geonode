@@ -1,7 +1,7 @@
 {% load i18n %}
 <nav class="filter">
   <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Type" %}</a></h2>
-  <ul class="nav hide" id="types" >
+  <ul class="nav" id="types" >
     <li><a data-class="map" {% if facets.map > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Maps" %} <span class="badge pull-right">{{ facets.map }}</span></a></li>
     <li><a data-class="layer" {% if facets.layer > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Layers" %} <span class="badge pull-right">{{ facets.layer }}</span></a></li>
     <li><a style="padding-left: 40px" data-class="raster" {% if facets.raster > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Rasters" %} <span class="badge sub-type pull-right">{{ facets.raster }}</span></a></li>
