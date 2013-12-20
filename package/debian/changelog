@@ -1,3 +1,21 @@
+geonode (2.0.0+rc8) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [8ef921] add missing double quotes in layer detail
+  * [b967ec] add missing slash in proxy url
+  * [b45f00] fix the clear options button in advanced search
+  * [4a9931] keep open the type filters
+
+  [ capooti ]
+  * [d0583a] This fixes #1311, thanks @bartvde!
+
+  [ Tyler Garner ]
+  * [ee93a7] Fix typo in the default PROXY_URL setting.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 20 Dec 2013 13:57:55 +0000
+
 geonode (2.0.0+rc7) precise; urgency=high
 
   [ Tyler Garner ]
