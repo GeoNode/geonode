@@ -14,10 +14,7 @@ class Migration(DataMigration):
     def forwards(self, orm):
 
         for layer in orm.Layer.objects.all():
-            #rbase = ResourceBase()
-            #bbox = layer.geographic_bounding_box.split('((')[1].split(',')
-            #rbase = ResourceBase.objects
-        
+            # create a resource base instance for each layer
             rbase, is_created = orm['base.ResourceBase'].objects.get_or_create(
                 id=layer.id,
                 uuid=layer.uuid,
@@ -44,7 +41,28 @@ class Migration(DataMigration):
                 bbox_y0=layer.bbox_y0,
                 bbox_y1=layer.bbox_y1
             )
+            # Move the spatial_representation_type CHOICES based field to the new spatial_representation_type_new
+            print 'srt is: %s' % layer.spatial_representation_type
+            srt = orm['base.SpatialRepresentationType'].objects.filter(identifier=layer.spatial_representation_type)
+            if srt:
+                rbase.spatial_representation_type = srt[0]
+            # Move the constraints_use CHOICES based field to the new restriction_code_type
+            rct = orm['base.RestrictionCodeType'].objects.filter(identifier=layer.constraints_use)
+            if rct:
+                rbase.restriction_code_type = rct[0]
+                
+            # Move the topic_category text field to the new categorytype
+            tc = orm['base.TopicCategory'].objects.filter(identifier=layer.topic_category)
+            if tc:
+                print tc
+                rbase.category = tc[0]
+            # Move the keywords_region field based on the COUNTRIES CHOICES to the new regions field
+            region = orm['base.Region'].objects.filter(code=layer.keywords_region)
+            if region:
+                rbase.regions.add(region[0])
+            # save rbase
             rbase.save()
+            # assign layer to resource base
             layer.resourcebase_ptr = rbase
             layer.save()
 
