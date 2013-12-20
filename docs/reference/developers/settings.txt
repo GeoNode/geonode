@@ -306,6 +306,29 @@ Default: ``'http://localhost:8000/'``
 
 A base URL for use in creating absolute links to Django views and generating links in metadata.
 
+Proxy settings
+==============
+
+PROXY_ALLOWED_HOSTS
+-------------------
+Default: ``()`` (Empty tuple)
+
+A tuple of strings representing the host/domain names that GeoNode can proxy requests to. This is a security measure
+to prevent an attacker from using the GeoNode proxy to render malicious code or access internal sites.
+
+Values in this tuple can be fully qualified names (e.g. 'www.geonode.org'), in which case they will be matched against
+the request’s Host header exactly (case-insensitive, not including port). A value beginning with a period can be used
+as a subdomain wildcard: ``.geonode.org`` will match geonode.org, www.geonode.org, and any other subdomain of
+geonode.org. A value of '*' will match anything and is not recommended for production deployments.
+
+
+PROXY_URL
+---------
+Default ``/proxy?url=``
+
+The url to a proxy that will be used when making client-side requests in GeoNode.  By default, the
+internal GeoNode proxy is used but administrators may favor using their own, less restrictive proxies.
+
 Search settings
 ===============
 
