@@ -34,7 +34,7 @@ from django.utils import simplejson as json
 from owslib.wms import WebMapService
 from django.http import HttpResponse
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS, INVALID_PERMISSION_MESSAGE
-
+from urlparse import urlsplit
 
 class ServerDoesNotExist(Exception):
     pass
@@ -107,6 +107,14 @@ class OGC_Server(object):
         The internal REST endpoint for the server.
         """
         return self.LOCATION + 'rest'
+
+    @property
+    def hostname(self):
+        return urlsplit(self.LOCATION).hostname
+
+    @property
+    def netloc(self):
+        return urlsplit(self.LOCATION).netloc
 
     def __str__(self):
         return self.alias

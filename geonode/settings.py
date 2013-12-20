@@ -581,8 +581,18 @@ AUTH_EXEMPT_URLS = ()
 if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('geonode.security.middleware.LoginRequiredMiddleware',)
 
+
+# A tuple of hosts the proxy can send requests to.
+PROXY_ALLOWED_HOSTS = ()
+
+# The proxy to use when making cross origin requests.
+PROXY_URL = '/proxy?url='
+
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *
 except ImportError:
     pass
+
+
