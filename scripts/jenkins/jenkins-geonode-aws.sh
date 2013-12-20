@@ -1,6 +1,6 @@
 #!/bin/bash
 source ~/.bashrc
-PYENV_HOME=$HOME/.pyenv-aws/
+PYENV_HOME=$HOME/.pyenv-aws
 source $PYENV_HOME/bin/activate
 
 # Install build & test tools
