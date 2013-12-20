@@ -17,8 +17,8 @@ class Migration(DataMigration):
             #rbase = ResourceBase()
             #bbox = layer.geographic_bounding_box.split('((')[1].split(',')
             #rbase = ResourceBase.objects
-            import ipdb;ipdb.set_trace()
-            rbase = orm['base.ResourceBase'].objects.create(
+        
+            rbase, is_created = orm['base.ResourceBase'].objects.get_or_create(
                 id=layer.id,
                 uuid=layer.uuid,
                 owner=layer.owner,
@@ -29,10 +29,8 @@ class Migration(DataMigration):
                 abstract=layer.abstract,
                 purpose=layer.purpose,
                 maintenance_frequency=layer.maintenance_frequency,
-                keywords_region=layer.keywords_region,
                 constraints_other=layer.constraints_other,
                 language=layer.language,
-                spatial_representation_type=layer.spatial_representation_type,
                 temporal_extent_start=layer.temporal_extent_start,
                 temporal_extent_end=layer.temporal_extent_end,
                 supplemental_information=layer.supplemental_information,
@@ -46,9 +44,9 @@ class Migration(DataMigration):
                 bbox_y0=layer.bbox_y0,
                 bbox_y1=layer.bbox_y1
             )
-            import ipdb;ipdb.set_trace()
             rbase.save()
-
+            layer.resourcebase_ptr = rbase
+            layer.save()
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
