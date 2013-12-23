@@ -46,7 +46,7 @@ from geonode.layers.metadata import set_metadata
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.base.models import SpatialRepresentationType
 from geonode.utils import ogc_server_settings
-from geonode.upload.files import _clean_string
+from geonode.upload.files import _clean_string, _rename_zip
 # Geoserver functionality
 import geoserver
 from geoserver.catalog import FailedRequestError, UploadError
@@ -373,6 +373,8 @@ def save(layer, base_file, user, overwrite=True, title=None,
     #FIXME: DONT DO THIS
     #-------------------
     if 'shp' not in files:
+        if files['base'][-4:] == ".zip":
+            _rename_zip(files['base'], name)
         main_file = files['base']
         data = main_file
     # ------------------
