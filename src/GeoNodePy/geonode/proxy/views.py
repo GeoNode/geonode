@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 import logging
 from urlparse import urlparse
 from geonode.maps.models import LayerStats, Layer
+from xml.etree.ElementTree import XML, ParseError
 import re
 
 logger = logging.getLogger("geonode.proxy.views")
@@ -45,28 +46,57 @@ def proxy(request):
                 )
 
     url = urlsplit(request.GET['url'])
+
+    # Don't allow localhost connections unless in DEBUG mode
+    if not settings.DEBUG and re.search('localhost|127.0.0.1', url.hostname):
+        return HttpResponse(status=403)
+
     locator = url.path
     if url.query != "":
         locator += '?' + url.query
     if url.fragment != "":
         locator += '#' + url.fragment
 
+    # Strip all headers and cookie info
     headers = {}
-    if settings.SESSION_COOKIE_NAME in request.COOKIES:
-        headers["Cookie"] = request.META["HTTP_COOKIE"]
 
-    if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
-        headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
     conn = HTTPConnection(url.hostname, url.port) if url.scheme == "http" else HTTPSConnection(url.hostname, url.port)
     conn.request(request.method, locator, request.raw_post_data, headers)
     result = conn.getresponse()
+
     response = HttpResponse(
-            result.read(),
+            valid_response(result.read()),
             status=result.status,
             content_type=result.getheader("Content-Type", "text/plain")
             )
     return response
+
+
+def valid_response(responseContent):
+    #Proxy should only be used when expecting an XML or JSON response
+
+    #ArcGIS Server GetFeatureInfo xml response
+    if re.match("<FeatureInfoResponse", responseContent):
+        return responseContent
+
+    if responseContent[0] == "<":
+        try:
+            from defusedxml.ElementTree import fromstring
+            et = fromstring(responseContent)
+            if re.match("WMT_MS_Capabilities|WMS_DescribeLayerResponse|\{http\:\/\/www\.opengis\.net\/gml\}FeatureCollection", et.tag):
+                return responseContent
+        except ParseError:
+            return None
+    elif re.match('\[|\{', responseContent):
+        try:
+            json.loads(responseContent)
+            return responseContent
+        except:
+            return None
+    return None
+
+
 
 @csrf_exempt
 def geoserver_rest_proxy(request, proxy_path, downstream_path):

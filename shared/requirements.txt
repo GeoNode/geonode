@@ -19,6 +19,7 @@ South==0.7.3
 django-taggit==0.9.3
 ordereddict
 simplejson
+defusedxml
 
 #Uncomment the following to use memcached
 #python-memcached
@@ -41,4 +42,4 @@ jdcal
 #For mapnotes
 vectorformats
 #For autocomplete
-django-autocomplete-light
+django-autocomplete-light==1.4.5
