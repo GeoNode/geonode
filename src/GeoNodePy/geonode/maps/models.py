@@ -1626,6 +1626,9 @@ class LayerAttribute(models.Model):
     def __str__(self):
         return "%s" % self.attribute
 
+    def __unicode__(self):
+        return self.attribute
+
 
 class Map(models.Model, PermissionLevelMixin):
     """
