@@ -52,6 +52,13 @@
         {{ resourcebase.regions.all|join:", " }}
     </li>
   {% endif %}
+  
+  {% if resourcebase.license %}
+    <li>
+      <strong>{% trans "License" %}:</strong>
+      {{ resourcebase.license.name }}
+    </li>
+  {% endif %}
           
   {% if resourcebase.owner %}
     <li>

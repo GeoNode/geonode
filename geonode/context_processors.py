@@ -43,5 +43,6 @@ def resource_urls(request):
         DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False),
         MF_PRINT_ENABLED = ogc_server_settings.MAPFISH_PRINT_ENABLED,
         PRINTNG_ENABLED = ogc_server_settings.PRINTNG_ENABLED,
-        GS_SECURITY_ENABLED = ogc_server_settings.GEONODE_SECURITY_ENABLED
+        GS_SECURITY_ENABLED = ogc_server_settings.GEONODE_SECURITY_ENABLED,
+        PROXY_URL = getattr(settings, 'PROXY_URL', '/proxy/?url=')
     )

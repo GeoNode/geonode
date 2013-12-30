@@ -1,3 +1,183 @@
+geonode (2.0.0+rc8) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [8ef921] add missing double quotes in layer detail
+  * [b967ec] add missing slash in proxy url
+  * [b45f00] fix the clear options button in advanced search
+  * [4a9931] keep open the type filters
+
+  [ capooti ]
+  * [d0583a] This fixes #1311, thanks @bartvde!
+
+  [ Tyler Garner ]
+  * [ee93a7] Fix typo in the default PROXY_URL setting.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 20 Dec 2013 13:57:55 +0000
+
+geonode (2.0.0+rc7) precise; urgency=high
+
+  [ Tyler Garner ]
+  * [4ba656] Document the SOCIAL_BUTTONS setting.
+
+  [ capooti ]
+  * [8344d8] This fixes #1301.
+
+  [ Tyler Garner ]
+  * [9015d8] Fix ALLOWED_DOCUMENT_TYPES typo in the documentation.
+
+  [ capooti ]
+  * [dabffc] Added some more popular file extensions to ALLOWED_DOCUMENT_TYPES.
+
+  [ Simone Dalmasso ]
+  * [6242a8] add missing import in helpers for remove-deleted option
+
+  [ Reinier Battenberg ]
+  * [b2ab31] doUpload now returns false so the page does not scroll upwards when Upload is clicked
+
+  [ Calvin Metcalf ]
+  * [4c05f7] correct command
+
+  [ Tyler Garner ]
+  * [209717] Fix the quick start url to point to the users tutorial in the docs.
+
+  [ capooti ]
+  * [ba3d72] Layer type (vector/raster) on layer list page is back.
+
+  [ Simone Dalmasso ]
+  * [a5f4ec] use default type if not specified
+
+  [ capooti ]
+  * [8063d6] Reset the default_type to layer.
+  * [1257b7] A couple of selection filters were not collapsed by default.
+
+  [ Simone Dalmasso ]
+  * [7afb0b] don’t run the integrations tests in travis.
+  * [87ae0b] trigger a new build
+  * [46d58f] don’t grab geoserver in travis
+  * [5701db] just comment out the before script
+  * [c73319] remove the old docs
+  * [b5f404] remove the outdated customize doc page
+
+  [ Jeffrey Johnson ]
+  * [eb211c] Working on jenkins-geonode-master.sh during migration to new build server
+  * [e1ad5a] More work on migrating build server (pointing to old server for downloads for now)
+  * [f4c37c] Update java home for oracle jdk in jenkins-geonode-master.sh
+  * [60cacc] Skip tests when building geoserver extension (temporary)
+  * [a2942d] Disable deb building for now in build_geonode-geoserver-ext-deb.sh
+  * [1981c5] Change back to normal build.geonode.org url in pavement.py
+  * [0f3468] Dont try to copy the deb that we are not currently building.
+  * [87fddb] Comment out one problematic rm for now
+  * [cd7744] Reenable sourcing of ~/.bashrc now that the ec2 tools are configured
+  * [ff8e90] Re-enable integration tests on jenkins server
+
+  [ Tyler Garner ]
+  * [26c157] Improve security for the proxy view.  Fixes #1308.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 20 Dec 2013 03:29:25 +0000
+
+geonode (2.0.0+rc6) precise; urgency=high
+
+  [ Micah Wengren ]
+  * [9f46d4] Add --remove-deleted option to updatelayers.  Remove layers from GeoNode that no longer exist in GeoServer (incl --skip-unadvertised filter). Log results in stdout and debug logs
+  * [cd324c] Modified logic for GeoServer layer comparison for marking valid GeoNode layers
+  * [3d56a5] Streamline debug logging statements for GeoNode resource comparison with GeoServer, cleanup
+  * [061646] One more debug logging line for better reporting in matching iteration
+  * [1d41ae] Added code to remove ratings and comments for a layer directly in gs_slurp. Avoid calling geoserver_pre_delete
+
+  [ Tyler Garner ]
+  * [19a9dd] Remove "or groups" from the upload template until group permissions are supported.  Fixes #1262.
+
+  [ Micah Wengren ]
+  * [081cc3] Removed cleardeadlayers command and updated documentation with descriptions for all updatelayers options
+
+  [ Ariel Nunez ]
+  * [6e6b03] Updated messages
+  * [087339] Fixed translation problem in upload templates
+
+  [ Simone Dalmasso ]
+  * [b1dcfc] docs, add the port 8000 to paver start mode
+  * [8fe84d] add django debug toolbar
+
+  [ Micah Wengren ]
+  * [5be24f] Delete layer tag (keywords) references when layer is deleted
+
+  [ Jeffrey Johnson ]
+  * [9ea397] Update domain name to demo.geonode.org in fabfile.py
+
+  [ Tyler Garner ]
+  * [44eed6] Remove the cleardeadlayers reference from the Django-apps page.
+  * [e6049c] Improve the settings documentation.
+  * [09fde6] Document the GeoNode paver commands (Fixes #1169).
+
+  [ Simone Dalmasso ]
+  * [dbd328] fix typos
+  * [9d925c] small additions to the geonode_project usage
+  * [4b3428] show complete extension for invalid files
+  * [5e6efa] fix a not closed div
+  * [6d96d4] add few lines on the issue tracker
+  * [e0ebca] remove the devprocess reference
+  * [5c571c] Add something on development tools
+  * [674b21] add setup on vagrant guide
+
+  [ Calvin Metcalf ]
+  * [b90172] #1276 replace pil with pillow
+
+  [ Tyler Garner ]
+  * [b6495c] Add the document model to the actstream settings.
+
+  [ Simone Dalmasso ]
+  * [aefcfb] fix rating in detail pages for unauthenticated
+  * [46bb06] add missing port in vagrant doc
+  * [2af05b] add __init__.py file in the base commands folder
+
+  [ Paolo Pasquali ]
+  * [8602b3] Fix #1266
+  * [c749fb] Some Upload Layers style
+  * [b71696] More styles for Upload Layers template
+  * [1c8a4c] Fix Layer Replace template
+  * [761c64] Add icon placeholder in documents search list #1269
+
+  [ Simone Dalmasso ]
+  * [4d7f28] don’t delete the resource but the store recursively
+  * [888e92] apply a patch to helpers
+
+  [ Paolo Pasquali ]
+  * [8d255b] indentation only
+  * [883ae0] Fix Activity layout
+  * [d903a9] Some style in Activity Feed page
+  * [5deb67] Fix Activity Layout
+
+  [ Tom Kralidis ]
+  * [304427] add timeout configuration to handle long requests (#1279)
+
+  [ Tyler Garner ]
+  * [6fa8f8] Remove the GeoNode projects page from the documentation and redirect links to geonode.org/gallery/.  Fixes 1147.
+
+  [ Paolo Pasquali ]
+  * [6f7d9d] Add thumbs and style to activity templates
+
+  [ Tyler Garner ]
+  * [01ab69] Update javascript in GeoNode page to reflect current static setup.  Fixes #1175.
+  * [1d431e] Fix TIMEOUT typo in the settings documentation and specify the time units as seconds.
+
+  [ Simone Dalmasso ]
+  * [66686c] Add just few pdb commands.
+  * [1689a5] add missing __init__ file
+
+  [ Paolo Pasquali ]
+  * [6e9681] Add thumbs in profile resources
+
+  [ Calvin Metcalf ]
+  * [374b05] make social optional
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 04 Dec 2013 16:27:16 +0000
+
 geonode (2.0.0+rc5) precise; urgency=high
 
   [ Ian Schneider ]

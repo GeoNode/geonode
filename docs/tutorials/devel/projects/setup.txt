@@ -24,7 +24,7 @@ If you are working remotely, you should first connect to the machine that has yo
 
    .. code-block:: console
 
-	$ django-admin startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst
+	$ django-admin.py startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst
 	$ cd my_geonode
 
 #. Update your local_settings.py. You will need to check the local_settings.py that is included with the template project and be sure that it reflects your own local environment. You should pay particular attention to the Database settings especially if you intend to reuse the database that was set up with your base GeoNode installation.
