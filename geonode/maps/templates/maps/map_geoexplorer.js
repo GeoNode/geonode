@@ -27,7 +27,7 @@ Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     var config = Ext.apply({
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
-        proxy: "/proxy/?url=",
+        proxy: '{{ PROXY_URL }}',
         {% if PRINTNG_ENABLED %}
         listeners: {
             'save': function(obj_id) {
