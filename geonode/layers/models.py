@@ -31,7 +31,7 @@ from django.db import models
 from django.db.models import signals
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext, ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
@@ -457,10 +457,10 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     for ext, name, mime, wms_url in links:
         Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=wms_url,
+                        name=ugettext(name),
                         defaults=dict(
                             extension=ext,
-                            name=name,
+                            url=wms_url,
                             mime=mime,
                             link_type='image',
                            )
