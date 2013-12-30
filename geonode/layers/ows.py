@@ -93,7 +93,7 @@ def wfs_links(wfs_url, identifier):
             ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
             ("csv", _("CSV"), "csv", {}),
             ("excel", _("Excel"), "excel", {}),
-            ("json", _("GeoJSON"), "json", {})
+            ("json", _("GeoJSON"), "json", {'srsName': 'EPSG:4326'})
      ]
      output = []
      for ext, name, mime, extra_params in types:
