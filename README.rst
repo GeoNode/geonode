@@ -34,10 +34,10 @@ software installed and in your PATH:
   - If not, download from http://java.sun.com/javase/downloads/index.jsp 
     (Make sure to install the *JDK*!) 
 
-* Python 2.6:
+* Python 2.7:
   - To verify that it is available, run 
     ``python --version`` and verify that it reports a version number like
-    ``Python 2.6``
+    ``Python 2.7``
   - If not, download from http://python.org/download/
   - Python must be compiled w/ SSL support and sqlite support to
     support the WorldMap development setup.  Installing the sqlite and
