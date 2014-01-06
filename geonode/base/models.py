@@ -208,6 +208,16 @@ class ResourceBaseManager(models.Manager):
         return contact
 
 
+class License(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    url = models.URLField(max_length=2000, null=True, blank=True)
+    license_text = models.TextField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+
 class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     """
     Base Resource Object loosely based on ISO 19115:2003
@@ -241,6 +251,8 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), help_text=_('keyword identifies a location'), blank=True)
     restriction_code_type = models.ForeignKey(RestrictionCodeType, verbose_name=_('restrictions'), help_text=_('limitation(s) placed upon the access or use of the data.'), null=True, blank=True, limit_choices_to=Q(is_choice=True))
     constraints_other = models.TextField(_('restrictions other'), blank=True, null=True, help_text=_('other restrictions and legal prerequisites for accessing and using the resource or metadata'))
+
+    license = models.ForeignKey(License, null=True, blank=True)
 
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng', help_text=_('language used within the dataset'))
