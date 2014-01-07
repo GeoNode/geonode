@@ -13,9 +13,6 @@ def uncertify(request, modelid, modeltype):
     model = get_model(*modeltype.split('.',1))
     model_obj = model.objects.get(pk=modelid)
     
-    if model_obj.owner == request.user:
-        return HttpResponse(status=403)
-    
     model_title = modelid
     
     if hasattr(model_obj, 'title'):
@@ -39,9 +36,6 @@ def certify(request, modeltype, modelid):
     ''' Certify a map or layer'''
     model = get_model(*modeltype.split('.',1))
     model_obj = model.objects.get(pk=modelid)
-    
-    if model_obj.owner == request.user:
-        return HttpResponse(status=403)
     
     model_title = modelid
     

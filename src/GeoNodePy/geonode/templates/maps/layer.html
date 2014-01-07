@@ -449,7 +449,7 @@
 	{% endif %}
 	</ul>
 	
-	{% if user.is_authenticated and user != layer.owner %}
+	{% if user.is_authenticated %}
 	<ul>
 	{% if certified %}
 	<li><a href="{% url uncertify 'maps.Layer' layer.id %}">
