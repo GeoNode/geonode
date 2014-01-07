@@ -4,7 +4,7 @@
 PIL
 lxml
 
-OWSLib==0.4.0
+OWSLib
 Django==1.4
 django-extensions==0.8
 httplib2==0.7.4
@@ -12,7 +12,8 @@ psycopg2==2.4.1
 -e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
 django-registration==0.8
 django-profiles==0.2
--e git+https://github.com/mbertrand/django-avatar.git#egg=avatar
+#-e git+https://github.com/mbertrand/django-avatar.git#egg=avatar
+geonode-avatar==2.1.1
 dialogos==0.1
 agon-ratings==0.2
 South==0.7.3

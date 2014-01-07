@@ -600,7 +600,7 @@ class Contact(models.Model):
     is_org_member = models.BooleanField(_('Affiliated with Harvard'), blank=True, null=False, default=False)
     member_expiration_dt = models.DateField(_('Harvard affiliation expires on: '), blank=False, null=False, default=datetime.today())
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
-
+    is_certifier = models.BooleanField(_('Allowed to certify maps & layers'), blank=False, null=False, default=False)
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
