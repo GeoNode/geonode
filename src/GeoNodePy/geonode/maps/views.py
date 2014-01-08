@@ -1802,6 +1802,19 @@ def search_result_detail(request):
         'category' : category
     }))
 
+def maps_search_result_detail(request):
+    mapid = request.GET.get("mapid", None)
+    if  mapid is None:
+        return HttpResponse(status=400)
+    try:
+        map = Map.objects.get(id=mapid)
+    except Exception:
+        map = None
+
+    return render_to_response('maps/search_result_snippet_map.html', RequestContext(request, {
+        'map': map,
+    }))
+
 def _extract_links(rec, xml):
     download_links = []
     dl_type_path = "/".join([

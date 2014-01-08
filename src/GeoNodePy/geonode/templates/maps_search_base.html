@@ -16,6 +16,7 @@ Ext.onReady(function(){
         trackSelection: true,
         permalinkURL: '{% url maps_search %}',
         searchURL: '{% url maps_search_api %}',
+        mapDetailURL: '{% url map_search_detail %}',
         searchParams: {{init_search}}
     });
 

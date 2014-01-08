@@ -195,7 +195,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
         var table_el = el.query('.search-table')[0];
         var controls_el = el.query('.search-controls')[0];
         
-        var expander = new GeoNode.SearchTableRowExpander({fetchURL: this.layerDetailURL}); 
+        var expander = new GeoNode.SearchTableRowExpander({fetchURL: this.layerDetailURL});
 
 
         tableCfg = {
