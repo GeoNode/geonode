@@ -37,33 +37,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
-        # Deleting field 'Attribute.count'
-        db.delete_column('layers_attribute', 'count')
-
-        # Deleting field 'Attribute.min'
-        db.delete_column('layers_attribute', 'min')
-
-        # Deleting field 'Attribute.max'
-        db.delete_column('layers_attribute', 'max')
-
-        # Deleting field 'Attribute.average'
-        db.delete_column('layers_attribute', 'average')
-
-        # Deleting field 'Attribute.median'
-        db.delete_column('layers_attribute', 'median')
-
-        # Deleting field 'Attribute.stddev'
-        db.delete_column('layers_attribute', 'stddev')
-
-        # Deleting field 'Attribute.sum'
-        db.delete_column('layers_attribute', 'sum')
-
-        # Deleting field 'Attribute.unique_values'
-        db.delete_column('layers_attribute', 'unique_values')
-
-        # Deleting field 'Attribute.last_stats_updated'
-        db.delete_column('layers_attribute', 'last_stats_updated')
+        raise RuntimeError("Cannot reverse this migration.")
 
 
     models = {
