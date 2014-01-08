@@ -29,6 +29,7 @@ class Migration(SchemaMigration):
             ('attribute_type', self.gf('django.db.models.fields.CharField')(default='xsd:string', max_length=50)),
             ('visible', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('display_order', self.gf('django.db.models.fields.IntegerField')(default=1)),
+            ('description', self.gf('django.db.models.fields.CharField')(max_length=255, null=True)),
         ))
         db.send_create_signal('layers', ['Attribute'])
 

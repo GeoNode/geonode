@@ -8,7 +8,7 @@ class Migration(SchemaMigration):
 
     depends_on = (
         ("maps", "0002_move_models_to_people"),
-        ("security", "0002_initial"),
+        ("security", "0001_initial"),
     )
 
     def forwards(self, orm):

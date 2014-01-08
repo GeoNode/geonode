@@ -29,93 +29,6 @@ class Migration(SchemaMigration):
         # Adding field 'MapLayer.local'
         db.add_column('maps_maplayer', 'local', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
-        # Adding field 'Map.uuid'
-        db.add_column('maps_map', 'uuid', self.gf('django.db.models.fields.CharField')(default=datetime.date(2012, 12, 28), max_length=36), keep_default=False)
-
-        # Adding field 'Map.date'
-        db.add_column('maps_map', 'date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now), keep_default=False)
-
-        # Adding field 'Map.date_type'
-        db.add_column('maps_map', 'date_type', self.gf('django.db.models.fields.CharField')(default='publication', max_length=255), keep_default=False)
-
-        # Adding field 'Map.edition'
-        db.add_column('maps_map', 'edition', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.purpose'
-        db.add_column('maps_map', 'purpose', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.maintenance_frequency'
-        db.add_column('maps_map', 'maintenance_frequency', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.keywords_region'
-        db.add_column('maps_map', 'keywords_region', self.gf('django.db.models.fields.CharField')(default='USA', max_length=3), keep_default=False)
-
-        # Adding field 'Map.constraints_use'
-        db.add_column('maps_map', 'constraints_use', self.gf('django.db.models.fields.CharField')(default='copyright', max_length=255), keep_default=False)
-
-        # Adding field 'Map.constraints_other'
-        db.add_column('maps_map', 'constraints_other', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.spatial_representation_type'
-        db.add_column('maps_map', 'spatial_representation_type', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.language'
-        db.add_column('maps_map', 'language', self.gf('django.db.models.fields.CharField')(default='eng', max_length=3), keep_default=False)
-
-        # Adding field 'Map.topic_category'
-        db.add_column('maps_map', 'topic_category', self.gf('django.db.models.fields.CharField')(default='location', max_length=255), keep_default=False)
-
-        # Adding field 'Map.category'
-        db.add_column('maps_map', 'category', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['layers.TopicCategory'], null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.temporal_extent_start'
-        db.add_column('maps_map', 'temporal_extent_start', self.gf('django.db.models.fields.DateField')(null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.temporal_extent_end'
-        db.add_column('maps_map', 'temporal_extent_end', self.gf('django.db.models.fields.DateField')(null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.supplemental_information'
-        db.add_column('maps_map', 'supplemental_information', self.gf('django.db.models.fields.TextField')(default=u'No information provided'), keep_default=False)
-
-        # Adding field 'Map.distribution_url'
-        db.add_column('maps_map', 'distribution_url', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.distribution_description'
-        db.add_column('maps_map', 'distribution_description', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.data_quality_statement'
-        db.add_column('maps_map', 'data_quality_statement', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.srid'
-        db.add_column('maps_map', 'srid', self.gf('django.db.models.fields.CharField')(default='EPSG:4326', max_length=255), keep_default=False)
-
-        # Adding field 'Map.csw_typename'
-        db.add_column('maps_map', 'csw_typename', self.gf('django.db.models.fields.CharField')(default='gmd:MD_Metadata', max_length=32), keep_default=False)
-
-        # Adding field 'Map.csw_schema'
-        db.add_column('maps_map', 'csw_schema', self.gf('django.db.models.fields.CharField')(default='http://www.isotc211.org/2005/gmd', max_length=64), keep_default=False)
-
-        # Adding field 'Map.csw_mdsource'
-        db.add_column('maps_map', 'csw_mdsource', self.gf('django.db.models.fields.CharField')(default='local', max_length=256), keep_default=False)
-
-        # Adding field 'Map.csw_insert_date'
-        db.add_column('maps_map', 'csw_insert_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True), keep_default=False)
-
-        # Adding field 'Map.csw_type'
-        db.add_column('maps_map', 'csw_type', self.gf('django.db.models.fields.CharField')(default='dataset', max_length=32), keep_default=False)
-
-        # Adding field 'Map.csw_anytext'
-        db.add_column('maps_map', 'csw_anytext', self.gf('django.db.models.fields.TextField')(null=True), keep_default=False)
-
-        # Adding field 'Map.csw_wkt_geometry'
-        db.add_column('maps_map', 'csw_wkt_geometry', self.gf('django.db.models.fields.TextField')(default='SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'), keep_default=False)
-
-        # Adding field 'Map.metadata_uploaded'
-        db.add_column('maps_map', 'metadata_uploaded', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
-
-        # Adding field 'Map.metadata_xml'
-        db.add_column('maps_map', 'metadata_xml', self.gf('django.db.models.fields.TextField')(default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', null=True, blank=True), keep_default=False)
-
         # Adding field 'Map.popular_count'
         db.add_column('maps_map', 'popular_count', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
 
@@ -183,13 +96,6 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'layers.topiccategory': {
-            'Meta': {'ordering': "('name',)", 'object_name': 'TopicCategory'},
-            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'})
-        },
         'maps.map': {
             'Meta': {'object_name': 'Map'},
             'abstract': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
@@ -197,44 +103,14 @@ class Migration(SchemaMigration):
             'bbox_x1': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
             'bbox_y0': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
             'bbox_y1': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
-            'category': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['layers.TopicCategory']", 'null': 'True', 'blank': 'True'}),
             'center_x': ('django.db.models.fields.FloatField', [], {}),
             'center_y': ('django.db.models.fields.FloatField', [], {}),
-            'constraints_other': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'constraints_use': ('django.db.models.fields.CharField', [], {'default': "'copyright'", 'max_length': '255'}),
-            'csw_anytext': ('django.db.models.fields.TextField', [], {'null': 'True'}),
-            'csw_insert_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
-            'csw_mdsource': ('django.db.models.fields.CharField', [], {'default': "'local'", 'max_length': '256'}),
-            'csw_schema': ('django.db.models.fields.CharField', [], {'default': "'http://www.isotc211.org/2005/gmd'", 'max_length': '64'}),
-            'csw_type': ('django.db.models.fields.CharField', [], {'default': "'dataset'", 'max_length': '32'}),
-            'csw_typename': ('django.db.models.fields.CharField', [], {'default': "'gmd:MD_Metadata'", 'max_length': '32'}),
-            'csw_wkt_geometry': ('django.db.models.fields.TextField', [], {'default': "'SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'"}),
-            'data_quality_statement': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'date_type': ('django.db.models.fields.CharField', [], {'default': "'publication'", 'max_length': '255'}),
-            'distribution_description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'distribution_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'edition': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'keywords_region': ('django.db.models.fields.CharField', [], {'default': "'USA'", 'max_length': '3'}),
-            'language': ('django.db.models.fields.CharField', [], {'default': "'eng'", 'max_length': '3'}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'maintenance_frequency': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'metadata_uploaded': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'metadata_xml': ('django.db.models.fields.TextField', [], {'default': '\'<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>\'', 'null': 'True', 'blank': 'True'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'popular_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'projection': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'purpose': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'share_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'spatial_representation_type': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'srid': ('django.db.models.fields.CharField', [], {'default': "'EPSG:4326'", 'max_length': '255'}),
-            'supplemental_information': ('django.db.models.fields.TextField', [], {'default': "u'No information provided'"}),
-            'temporal_extent_end': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'temporal_extent_start': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'topic_category': ('django.db.models.fields.CharField', [], {'default': "'location'", 'max_length': '255'}),
-            'uuid': ('django.db.models.fields.CharField', [], {'max_length': '36'}),
             'zoom': ('django.db.models.fields.IntegerField', [], {})
         },
         'maps.maplayer': {

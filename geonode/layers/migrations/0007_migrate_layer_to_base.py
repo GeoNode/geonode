@@ -42,7 +42,6 @@ class Migration(DataMigration):
                 bbox_y1=layer.bbox_y1
             )
             # Move the spatial_representation_type CHOICES based field to the new spatial_representation_type_new
-            print 'srt is: %s' % layer.spatial_representation_type
             srt = orm['base.SpatialRepresentationType'].objects.filter(identifier=layer.spatial_representation_type)
             if srt:
                 rbase.spatial_representation_type = srt[0]
@@ -54,7 +53,6 @@ class Migration(DataMigration):
             # Move the topic_category text field to the new categorytype
             tc = orm['base.TopicCategory'].objects.filter(identifier=layer.topic_category)
             if tc:
-                print tc
                 rbase.category = tc[0]
             # Move the keywords_region field based on the COUNTRIES CHOICES to the new regions field
             region = orm['base.Region'].objects.filter(code=layer.keywords_region)
