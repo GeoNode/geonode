@@ -27,6 +27,9 @@ class Migration(DataMigration):
         
         # Deleting field bbox_y1
         db.delete_column('maps_map', 'bbox_y1')
+        
+        # Deleting field map_id
+        #db.delete_column('maps_map', 'map_id')
 
 
     def backwards(self, orm):

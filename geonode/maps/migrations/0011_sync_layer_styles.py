@@ -3,15 +3,15 @@ import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
+from geonode.layers.models import Layer
 
 class Migration(DataMigration):
-    
+
     def forwards(self, orm):
-        # set new primary key for maps_map
-        db.delete_column('maps_map', 'id')
-        db.create_primary_key('maps_map', ['resourcebase_ptr_id'])
-        # set fk for maps_maplayer
-        db.alter_column('maps_maplayer', 'map_id', models.ForeignKey(orm['maps.map'], null=True, blank=True))
+        # update styles for layers
+        for layer in Layer.objects.all():
+            print 'Syncronizing styles for %s layer.' % layer.name
+            layer.save()
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
@@ -30,7 +30,7 @@ class Migration(DataMigration):
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'target_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
             'target_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 31, 4, 50, 26, 456128)'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 1, 10, 7, 39, 2, 165129)'}),
             'verb': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         u'auth.group': {
@@ -48,7 +48,7 @@ class Migration(DataMigration):
         },
         u'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 31, 4, 50, 26, 459500)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 1, 10, 7, 39, 2, 171384)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -56,7 +56,7 @@ class Migration(DataMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 31, 4, 50, 26, 459075)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 1, 10, 7, 39, 2, 171003)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),

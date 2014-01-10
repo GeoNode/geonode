@@ -3,19 +3,15 @@ import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
-from geonode.layers.models import Layer
-from geonode.maps.models import Map
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        # update thumbnails for layers and maps
-        for m in Map.objects.all():
-            print 'Generating new thumbnail for %s map.' % m.title
-            m.update_thumbnail()
-        for layer in Layer.objects.all():
-            print 'Generating new thumbnail for %s layer.' % layer.name
-            layer.update_thumbnail()
+        # Deleting field id
+        db.delete_column('layers_layer', 'id')
+        # set new primary key for layers_layer
+        db.create_primary_key('layers_layer', ['resourcebase_ptr_id'])
+
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
@@ -34,7 +30,7 @@ class Migration(DataMigration):
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'target_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
             'target_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 1, 6, 5, 37, 37, 366081)'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 1, 10, 5, 46, 57, 679891)'}),
             'verb': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         u'auth.group': {
@@ -52,7 +48,7 @@ class Migration(DataMigration):
         },
         u'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 1, 6, 5, 37, 37, 372294)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 1, 10, 5, 46, 57, 688538)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -60,7 +56,7 @@ class Migration(DataMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 1, 6, 5, 37, 37, 371903)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 1, 10, 5, 46, 57, 688151)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -72,16 +68,6 @@ class Migration(DataMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'resource': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.ResourceBase']"}),
             'role': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['people.Role']"})
-        },
-        u'base.link': {
-            'Meta': {'object_name': 'Link'},
-            'extension': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'link_type': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'mime': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'resource': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.ResourceBase']"}),
-            'url': ('django.db.models.fields.TextField', [], {'unique': 'True', 'max_length': '1000'})
         },
         u'base.region': {
             'Meta': {'ordering': "('name',)", 'object_name': 'Region'},
@@ -249,4 +235,4 @@ class Migration(DataMigration):
         }
     }
 
-    complete_apps = ['base', 'layers']
+    complete_apps = ['layers']

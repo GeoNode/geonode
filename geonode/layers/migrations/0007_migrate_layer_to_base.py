@@ -60,6 +60,7 @@ class Migration(DataMigration):
                 rbase.regions.add(region[0])
             # save rbase
             rbase.save()
+            
             # assign layer to resource base
             layer.resourcebase_ptr = rbase
             layer.save()
@@ -353,6 +354,31 @@ class Migration(DataMigration):
             'symmetrical_slug': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'to_slug': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'verb': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        u'security.genericobjectrolemapping': {
+            'Meta': {'unique_together': "(('subject', 'object_ct', 'object_id', 'role'),)", 'object_name': 'GenericObjectRoleMapping'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_ct': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'role': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'generic_mappings'", 'to': u"orm['security.ObjectRole']"}),
+            'subject': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        u'security.objectrole': {
+            'Meta': {'unique_together': "(('content_type', 'codename'),)", 'object_name': 'ObjectRole'},
+            'codename': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'list_order': ('django.db.models.fields.IntegerField', [], {}),
+            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+        },
+        u'security.userobjectrolemapping': {
+            'Meta': {'unique_together': "(('user', 'object_ct', 'object_id', 'role'),)", 'object_name': 'UserObjectRoleMapping'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_ct': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'role': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_mappings'", 'to': u"orm['security.ObjectRole']"}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'role_mappings'", 'to': u"orm['auth.User']"})
         },
         'sites.site': {
             'Meta': {'ordering': "('domain',)", 'object_name': 'Site', 'db_table': "'django_site'"},
