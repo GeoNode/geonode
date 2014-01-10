@@ -2220,7 +2220,7 @@ class MapLayer(models.Model):
         elif self.source_params.find( "gxp_hglsource") > -1:
             # call HGL ServiceStarter asynchronously to load the layer into HGL geoserver
             from geonode.queue.tasks import loadHGL
-            #loadHGL.delay(self.name)
+            loadHGL.delay(self.name)
 
 
         #Create cache of maplayer config that will last for 60 seconds (in case permissions or maplayer properties are changed)
