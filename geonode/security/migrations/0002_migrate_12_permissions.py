@@ -3,19 +3,93 @@ import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
+import psycopg2 # TODO we need to figure out how to make it work if the django engine is sqlite or others
+from django.contrib.contenttypes.models import ContentType
+from geonode import settings
+from geonode.layers.models import Layer
+from geonode.maps.models import Map
 
 class Migration(DataMigration):
-    
+
+    depends_on = (
+        ("maps", "0009_remove_fields_moved_to_base"),
+    )
+
     def forwards(self, orm):
-        # set new primary key for maps_map
-        db.delete_column('maps_map', 'id')
-        db.create_primary_key('maps_map', ['resourcebase_ptr_id'])
-        # set fk for maps_maplayer
-        db.alter_column('maps_maplayer', 'map_id', models.ForeignKey(orm['maps.map'], null=True, blank=True))
+        # permissions stuff
+        sconn = "dbname=%s user=%s password=%s" % (settings.DATABASES['default']['NAME'],
+                settings.DATABASES['default']['USER'], settings.DATABASES['default']['PASSWORD'])
+        conn = psycopg2.connect(sconn) 
+        cur = conn.cursor()
+        # permissions for layers
+        for layer in Layer.objects.all():
+            ct = ContentType.objects.get(name='layer')
+            # from core_userobjectrolemapping
+            cur.execute('SELECT user_id, role_id FROM core_userobjectrolemapping WHERE object_id = %s AND object_ct_id = %s;'
+                % (layer.id, ct.id))
+            for row in cur.fetchall():
+                user_id = row[0]
+                role_id = row[1]
+                print 'Importing userobjectrolemapping for layer %s' % layer.name
+                uorm, is_created = orm['security.userobjectrolemapping'].objects.get_or_create(
+                    user_id = user_id,
+                    object_id = layer.resourcebase_ptr_id,
+                    role_id = role_id,
+                    object_ct_id = ct.id
+                )
+                uorm.save()
+            # from core_genericobjectrolemapping
+            cur.execute('SELECT subject, role_id FROM core_genericobjectrolemapping WHERE object_id = %s AND object_ct_id = %s;'
+                % (layer.id, ct.id))
+            for row in cur.fetchall():
+                subject = row[0]
+                role_id = row[1]
+                print 'Importing genericobjectrolemapping for layer %s' % layer.name
+                gorm, is_created = orm['security.genericobjectrolemapping'].objects.get_or_create(
+                    subject = subject,
+                    object_id = layer.resourcebase_ptr_id,
+                    role_id = role_id,
+                    object_ct_id = ct.id
+                )
+                gorm.save()
+        # permissions for maps
+        for m in orm['maps.Map'].objects.all():
+            ct = ContentType.objects.get(name='map')
+            #import ipdb;ipdb.set_trace()
+            # from core_userobjectrolemapping
+            cur.execute('SELECT user_id, role_id FROM core_userobjectrolemapping WHERE object_id = %s AND object_ct_id = %s;'
+                % (m.map_id, ct.id))
+            for row in cur.fetchall():
+                user_id = row[0]
+                role_id = row[1]
+                print 'Importing userobjectrolemapping for map %s' % m.title
+                uorm, is_created = orm['security.userobjectrolemapping'].objects.get_or_create(
+                    user_id = user_id,
+                    object_id = m.resourcebase_ptr_id,
+                    role_id = role_id,
+                    object_ct_id = ct.id
+                )
+                uorm.save()
+            # from core_genericobjectrolemapping
+            cur.execute('SELECT subject, role_id FROM core_genericobjectrolemapping WHERE object_id = %s AND object_ct_id = %s;'
+                % (m.map_id, ct.id))
+            for row in cur.fetchall():
+                subject = row[0]
+                role_id = row[1]
+                print 'Importing genericobjectrolemapping for map %s' % m.title
+                gorm, is_created = orm['security.genericobjectrolemapping'].objects.get_or_create(
+                    subject = subject,
+                    object_id = m.resourcebase_ptr_id,
+                    role_id = role_id,
+                    object_ct_id = ct.id
+                )
+                gorm.save()
+        cur.close()
+        conn.close()
+
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
-
 
     models = {
         u'actstream.action': {
@@ -30,7 +104,7 @@ class Migration(DataMigration):
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'target_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
             'target_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 31, 4, 50, 26, 456128)'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 1, 8, 8, 32, 43, 881359)'}),
             'verb': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         u'auth.group': {
@@ -48,7 +122,7 @@ class Migration(DataMigration):
         },
         u'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 31, 4, 50, 26, 459500)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 1, 8, 8, 32, 43, 887398)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -56,7 +130,7 @@ class Migration(DataMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 31, 4, 50, 26, 459075)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 1, 8, 8, 32, 43, 886877)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -68,6 +142,16 @@ class Migration(DataMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'resource': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.ResourceBase']"}),
             'role': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['people.Role']"})
+        },
+        u'base.link': {
+            'Meta': {'object_name': 'Link'},
+            'extension': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'link_type': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'mime': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'resource': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.ResourceBase']"}),
+            'url': ('django.db.models.fields.TextField', [], {'unique': 'True', 'max_length': '1000'})
         },
         u'base.region': {
             'Meta': {'ordering': "('name',)", 'object_name': 'Region'},
@@ -154,11 +238,55 @@ class Migration(DataMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        u'layers.attribute': {
+            'Meta': {'object_name': 'Attribute'},
+            'attribute': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
+            'attribute_label': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
+            'attribute_type': ('django.db.models.fields.CharField', [], {'default': "'xsd:string'", 'max_length': '50'}),
+            'average': ('django.db.models.fields.CharField', [], {'default': "'NA'", 'max_length': '255', 'null': 'True'}),
+            'count': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'display_order': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'last_stats_updated': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'layer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'attribute_set'", 'to': u"orm['layers.Layer']"}),
+            'max': ('django.db.models.fields.CharField', [], {'default': "'NA'", 'max_length': '255', 'null': 'True'}),
+            'median': ('django.db.models.fields.CharField', [], {'default': "'NA'", 'max_length': '255', 'null': 'True'}),
+            'min': ('django.db.models.fields.CharField', [], {'default': "'NA'", 'max_length': '255', 'null': 'True'}),
+            'stddev': ('django.db.models.fields.CharField', [], {'default': "'NA'", 'max_length': '255', 'null': 'True'}),
+            'sum': ('django.db.models.fields.CharField', [], {'default': "'NA'", 'max_length': '255', 'null': 'True'}),
+            'unique_values': ('django.db.models.fields.TextField', [], {'default': "'NA'", 'null': 'True', 'blank': 'True'}),
+            'visible': ('django.db.models.fields.BooleanField', [], {'default': 'True'})
+        },
+        u'layers.layer': {
+            'Meta': {'object_name': 'Layer', '_ormbases': [u'base.ResourceBase']},
+            'default_style': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'layer_default_style'", 'null': 'True', 'to': u"orm['layers.Style']"}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'popular_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            u'resourcebase_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['base.ResourceBase']", 'unique': 'True', 'primary_key': 'True'}),
+            'share_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'store': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'storeType': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'styles': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'layer_styles'", 'symmetrical': 'False', 'to': u"orm['layers.Style']"}),
+            'typename': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '128'}),
+            'workspace': ('django.db.models.fields.CharField', [], {'max_length': '128'})
+        },
+        u'layers.style': {
+            'Meta': {'object_name': 'Style'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
+            'sld_body': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'sld_title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'sld_url': ('django.db.models.fields.CharField', [], {'max_length': '1000', 'null': 'True'}),
+            'sld_version': ('django.db.models.fields.CharField', [], {'max_length': '12', 'null': 'True', 'blank': 'True'}),
+            'workspace': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
+        },
         u'maps.map': {
             'Meta': {'object_name': 'Map', '_ormbases': [u'base.ResourceBase']},
             'center_x': ('django.db.models.fields.FloatField', [], {}),
             'center_y': ('django.db.models.fields.FloatField', [], {}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'map_id': ('django.db.models.fields.IntegerField', [], {}),
             'popular_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'projection': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             u'resourcebase_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['base.ResourceBase']", 'unique': 'True', 'primary_key': 'True'}),
@@ -206,6 +334,31 @@ class Migration(DataMigration):
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
             'value': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'})
         },
+        u'security.genericobjectrolemapping': {
+            'Meta': {'unique_together': "(('subject', 'object_ct', 'object_id', 'role'),)", 'object_name': 'GenericObjectRoleMapping'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_ct': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'role': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'generic_mappings'", 'to': u"orm['security.ObjectRole']"}),
+            'subject': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        u'security.objectrole': {
+            'Meta': {'unique_together': "(('content_type', 'codename'),)", 'object_name': 'ObjectRole'},
+            'codename': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'list_order': ('django.db.models.fields.IntegerField', [], {}),
+            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+        },
+        u'security.userobjectrolemapping': {
+            'Meta': {'unique_together': "(('user', 'object_ct', 'object_id', 'role'),)", 'object_name': 'UserObjectRoleMapping'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_ct': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'role': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_mappings'", 'to': u"orm['security.ObjectRole']"}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'role_mappings'", 'to': u"orm['auth.User']"})
+        },
         u'taggit.tag': {
             'Meta': {'object_name': 'Tag'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -221,4 +374,4 @@ class Migration(DataMigration):
         }
     }
 
-    complete_apps = ['maps']
+    complete_apps = ['maps', 'layers']
