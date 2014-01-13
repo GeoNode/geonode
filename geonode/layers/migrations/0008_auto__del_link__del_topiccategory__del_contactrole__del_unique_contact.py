@@ -6,6 +6,10 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ("actstream", "0007_auto__add_field_follow_started"),
+    )
+
     def forwards(self, orm):
         
         # Removing unique constraint on 'ContactRole', fields ['contact', 'layer', 'role']

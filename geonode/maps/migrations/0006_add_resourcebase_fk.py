@@ -7,7 +7,7 @@ from django.db import models
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        # add temp filed to be removed
+        # add temp field to be removed later
         db.add_column('maps_map', 'map_id', self.gf('django.db.models.fields.IntegerField')(default=1), keep_default=False)
         # Adding field 'Map.resourcebase_ptr_id'
         db.add_column('maps_map', 'resourcebase_ptr', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['base.ResourceBase'], null=True, blank=True), keep_default=False)
