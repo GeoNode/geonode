@@ -1,30 +1,36 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
+        # Deleting field title
+        db.delete_column('maps_map', 'title')
         
-        # Adding model 'Document'
-        db.create_table(u'documents_document', (
-            (u'resourcebase_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['base.ResourceBase'], unique=True, primary_key=True)),
-            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'], null=True, blank=True)),
-            ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True, blank=True)),
-            ('doc_file', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
-            ('extension', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True)),
-            ('popular_count', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('share_count', self.gf('django.db.models.fields.IntegerField')(default=0)),
-        ))
-        db.send_create_signal(u'documents', ['Document'])
+        # Deleting field abstract
+        db.delete_column('maps_map', 'abstract')
+        
+        # Deleting field owner_id
+        db.delete_column('maps_map', 'owner_id')
+        
+        # Deleting field bbox_x0
+        db.delete_column('maps_map', 'bbox_x0')
+        
+        # Deleting field bbox_y0
+        db.delete_column('maps_map', 'bbox_y0')
+        
+        # Deleting field bbox_x1
+        db.delete_column('maps_map', 'bbox_x1')
+        
+        # Deleting field bbox_y1
+        db.delete_column('maps_map', 'bbox_y1')
 
 
     def backwards(self, orm):
-        
-        # Deleting model 'Document'
-        db.delete_table(u'documents_document')
+        raise RuntimeError("Cannot reverse this migration.")
 
 
     models = {
@@ -40,7 +46,7 @@ class Migration(SchemaMigration):
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'target_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
             'target_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 13, 9, 5, 28, 118210)'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 31, 4, 50, 26, 456128)'}),
             'verb': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         u'auth.group': {
@@ -58,7 +64,7 @@ class Migration(SchemaMigration):
         },
         u'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 13, 9, 5, 28, 120835)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 31, 4, 50, 26, 459500)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -66,7 +72,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 13, 9, 5, 28, 120426)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 31, 4, 50, 26, 459075)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -164,15 +170,34 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        u'documents.document': {
-            'Meta': {'object_name': 'Document', '_ormbases': [u'base.ResourceBase']},
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']", 'null': 'True', 'blank': 'True'}),
-            'doc_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
-            'extension': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
+        u'maps.map': {
+            'Meta': {'object_name': 'Map', '_ormbases': [u'base.ResourceBase']},
+            'center_x': ('django.db.models.fields.FloatField', [], {}),
+            'center_y': ('django.db.models.fields.FloatField', [], {}),
+            'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'popular_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'projection': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             u'resourcebase_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['base.ResourceBase']", 'unique': 'True', 'primary_key': 'True'}),
-            'share_count': ('django.db.models.fields.IntegerField', [], {'default': '0'})
+            'share_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'zoom': ('django.db.models.fields.IntegerField', [], {})
+        },
+        u'maps.maplayer': {
+            'Meta': {'ordering': "['stack_order']", 'object_name': 'MapLayer'},
+            'fixed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'format': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'group': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'layer_params': ('django.db.models.fields.TextField', [], {}),
+            'local': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'map': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'layer_set'", 'to': u"orm['maps.Map']"}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
+            'opacity': ('django.db.models.fields.FloatField', [], {'default': '1.0'}),
+            'ows_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'source_params': ('django.db.models.fields.TextField', [], {}),
+            'stack_order': ('django.db.models.fields.IntegerField', [], {}),
+            'styles': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'transparent': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'visibility': ('django.db.models.fields.BooleanField', [], {'default': 'True'})
         },
         u'people.profile': {
             'Meta': {'object_name': 'Profile'},
@@ -212,4 +237,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['documents']
+    complete_apps = ['maps']

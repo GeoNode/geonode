@@ -1,0 +1,9 @@
+.. _manage:
+
+Migrate a GeoNode 1.2 instance
+==============================
+
+.. toctree::
+   :maxdepth: 2
+
+   migrate_from_12_to_20

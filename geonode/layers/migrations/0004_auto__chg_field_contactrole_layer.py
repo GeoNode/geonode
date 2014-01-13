@@ -7,19 +7,11 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
         # Changing field 'ContactRole.layer'
         db.alter_column('layers_contactrole', 'layer_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['layers.Layer'], null=True))
 
     def backwards(self, orm):
-        
-        # Changing field 'ContactRole.layer'
-        # first we need to remove record with null values - not sure why they are there at all, do we really need records without an association to a layer?
-        contactroles = orm.ContactRole.objects.filter(layer__isnull=True)
-        contactroles.delete()
-        
-        # Now let's make the column not accepting null values
-        db.alter_column('layers_contactrole', 'layer_id', self.gf('django.db.models.fields.related.ForeignKey')(default=0, to=orm['layers.Layer']))
+        raise RuntimeError("Cannot reverse this migration.")
 
 
     models = {

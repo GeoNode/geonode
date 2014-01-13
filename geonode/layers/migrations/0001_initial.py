@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     depends_on = (
-        ("maps", "0009_move_models_to_layers"),
+        ("maps", "0003_move_models_to_layers"),
     )
     
     def forwards(self, orm):

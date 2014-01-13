@@ -1,0 +1,72 @@
+.. _migrate_from_12_to_20:
+
+==============================
+Migrate a GeoNode 1.2 instance
+==============================
+
+In case you have an existing GeoNode 1.2 instance and you want to migrate it to latest version (2.0), this document should provide to help you to get the desired result.
+
+Before starting
+---------------
+
+Before proceding with the following instructions, make sure to backup your Django database and your GeoServer data directory.
+
+GeoNode 2.0 installation
+------------------------
+
+As a first step, install GeoNode 2.0 and make it sure everything works smoothly using a new Django database. Then change the local_settings.py file, and set the DATABASE settings to the GeoNode Dababase path of the 1.2 version.
+
+GeoServer configuration
+-----------------------
+
+Remove the old GeoServer 2.2 instance from your servlet container.
+
+Deploy the included GeoServer 2.4 to your servlet container (you can find it in the geonode/downloaded/geoserver.war). Then replace the GeoServer data directory with the one from the old GeoServer instance.
+
+Remove the security directory in the deployed geoserver/data directory and replace it with the security directory included in the geonode/geoserver/geoserver/data directory.
+
+Edit the security/auth/geonodeAuthProvider/config.xml file and set the <baseUrl> element to the url where GeoNode is running
+
+In case you are using a PostGIS data store, edit the geoserver data directory PostGIS store in the geoserver/data/workspace directory and change the password to your current one. Don't forget, when everything is working, to change it again from the GeoServer admin, in order to encrypt your password.
+For example::
+
+    $ vi geoserver/data/workspaces/geonode/uploaded/datastore.xml
+    
+and then change this element::
+
+    <entry key="passwd">crypt1:+r9dV97SpWKB1m5pIjcvcw==</entry>
+    
+to:
+
+    <entry key="passwd">yourpassword</entry>
+
+Restart your servlet container and check if GeoServer is working properly. Also, try the preview for some of the layers.
+
+Migrate the database
+--------------------
+
+With GeoServer up and running, truncate the south_migrationhistory table::
+
+    $ psql -c 'TRUNCATE TABLE south_migrationhistory;' gn_django
+    
+Run the syncdb command::
+
+    $ python $CWD/manage.py syncdb
+    
+Now you will need to fake some application migrations and then migrate::
+
+    python $CWD/manage.py migrate taggit --fake 0001
+    python $CWD/manage.py migrate maps --fake 0001
+    python $CWD/manage.py migrate
+    
+The procedure should completely migrate the database to a fresh 2.0 instance
+
+Generate thumbnails and sync metadata and styles for layers
+-----------------------------------------------------------
+
+Now generate the missing thumbnails and sync metadata and styles for all of the layers, by running the updatelayers command::
+
+    $ ./manage.py updatelayers
+
+
+
