@@ -84,7 +84,7 @@ def valid_response(responseContent):
         try:
             from defusedxml.ElementTree import fromstring
             et = fromstring(responseContent)
-            if re.match("\{http\:\/\/www\.opengis\.net\/wms\}WMS_Capabilities|WMT_MS_Capabilities|WMS_DescribeLayerResponse|\{http\:\/\/www\.opengis\.net\/gml\}FeatureCollection", et.tag):
+            if re.match("\{http\:\/\/www\.opengis\.net\/wms\}WMS_Capabilities|WMT_MS_Capabilities|WMS_DescribeLayerResponse|\{http\:\/\/www\.opengis\.net\/gml\}FeatureCollection|msGMLOutput", et.tag):
                 return responseContent
         except ParseError:
             return None
