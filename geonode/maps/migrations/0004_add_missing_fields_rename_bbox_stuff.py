@@ -7,17 +7,40 @@ from django.db import models
 class Migration(SchemaMigration):
 
     depends_on = (
-        ("maps", "0002_move_models_to_people"),
-        ("security", "0001_initial"),
+        ("layers", "0001_initial"),
+        ("layers", "0002_auto__add_link__add_attribute__add_style__add_topiccategory__del_field.py"),
+        ("layers", "0003_auto__add_missing_fields.py"),
     )
 
     def forwards(self, orm):
-        # nothing to do, as the initial models have been moved from maps
-        pass
+        
+        # Renaming and altering the bbox fields
+        # renaming
+        db.rename_column('maps_map', 'bbox_left', 'bbox_x0')
+        db.rename_column('maps_map', 'bbox_right', 'bbox_x1')
+        db.rename_column('maps_map', 'bbox_bottom', 'bbox_y0')
+        db.rename_column('maps_map', 'bbox_top', 'bbox_y1')
+        # altering
+        db.alter_column('maps_map', 'bbox_x0', models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True))
+        db.alter_column('maps_map', 'bbox_x1', models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True))
+        db.alter_column('maps_map', 'bbox_y0', models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True))
+        db.alter_column('maps_map', 'bbox_y1', models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True))
+        
+        # Adding field 'MapLayer.local'
+        db.add_column('maps_maplayer', 'local', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+
+        # Adding field 'Map.popular_count'
+        db.add_column('maps_map', 'popular_count', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
+
+        # Adding field 'Map.share_count'
+        db.add_column('maps_map', 'share_count', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
+
+        # Changing field 'Map.title'
+        db.alter_column('maps_map', 'title', self.gf('django.db.models.fields.CharField')(max_length=255))
+
 
     def backwards(self, orm):
-        # nothing to do, as the initial models have been moved from maps
-        pass
+        raise RuntimeError("Cannot reverse this migration.")
 
 
     models = {
@@ -33,7 +56,7 @@ class Migration(SchemaMigration):
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'target_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
             'target_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 14, 4, 10, 20, 85850)'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 5, 32, 29, 666109)'}),
             'verb': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'auth.group': {
@@ -51,7 +74,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 14, 4, 10, 20, 87552)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 5, 32, 29, 668909)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -59,7 +82,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 14, 4, 10, 20, 87494)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 5, 32, 29, 668850)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'relationships': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'related_to'", 'symmetrical': 'False', 'through': "orm['relationships.Relationship']", 'to': "orm['auth.User']"}),
@@ -73,28 +96,40 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'people.profile': {
-            'Meta': {'object_name': 'Profile'},
-            'area': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'city': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'country': ('django.db.models.fields.CharField', [], {'max_length': '3', 'null': 'True', 'blank': 'True'}),
-            'delivery': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'null': 'True', 'blank': 'True'}),
-            'fax': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'organization': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'position': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'profile': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.OneToOneField', [], {'blank': 'True', 'related_name': "'profile'", 'unique': 'True', 'null': 'True', 'to': "orm['auth.User']"}),
-            'voice': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'zipcode': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
+        'maps.map': {
+            'Meta': {'object_name': 'Map'},
+            'abstract': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'bbox_x0': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
+            'bbox_x1': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
+            'bbox_y0': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
+            'bbox_y1': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
+            'center_x': ('django.db.models.fields.FloatField', [], {}),
+            'center_y': ('django.db.models.fields.FloatField', [], {}),
+            'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
+            'popular_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'projection': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'share_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'zoom': ('django.db.models.fields.IntegerField', [], {})
         },
-        'people.role': {
-            'Meta': {'object_name': 'Role'},
+        'maps.maplayer': {
+            'Meta': {'ordering': "['stack_order']", 'object_name': 'MapLayer'},
+            'fixed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'format': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
+            'group': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'value': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'})
+            'layer_params': ('django.db.models.fields.TextField', [], {}),
+            'local': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'map': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'layer_set'", 'to': "orm['maps.Map']"}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
+            'opacity': ('django.db.models.fields.FloatField', [], {'default': '1.0'}),
+            'ows_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True'}),
+            'source_params': ('django.db.models.fields.TextField', [], {}),
+            'stack_order': ('django.db.models.fields.IntegerField', [], {}),
+            'styles': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
+            'transparent': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'visibility': ('django.db.models.fields.BooleanField', [], {'default': 'True'})
         },
         'relationships.relationship': {
             'Meta': {'ordering': "('created',)", 'unique_together': "(('from_user', 'to_user', 'status', 'site'),)", 'object_name': 'Relationship'},
@@ -122,7 +157,20 @@ class Migration(SchemaMigration):
             'domain': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+        },
+        'taggit.tag': {
+            'Meta': {'object_name': 'Tag'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'})
+        },
+        'taggit.taggeditem': {
+            'Meta': {'object_name': 'TaggedItem'},
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'taggit_taggeditem_tagged_items'", 'to': "orm['contenttypes.ContentType']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'}),
+            'tag': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'taggit_taggeditem_items'", 'to': "orm['taggit.Tag']"})
         }
     }
 
-    complete_apps = ['people']
+    complete_apps = ['maps']

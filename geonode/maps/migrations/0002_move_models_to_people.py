@@ -6,20 +6,28 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
-    depends_on = (
-        ("maps", "0002_move_models_to_people"),
-        ("security", "0001_initial"),
-    )
-
     def forwards(self, orm):
-        # nothing to do, as the initial models have been moved from maps
-        pass
+
+        # move some models from maps app to people app
+        
+        # 1. people_role moved from maps_role
+        db.rename_table('maps_role', 'people_role') 
+        if not db.dry_run:
+            orm['contenttypes.contenttype'].objects.filter(app_label='maps', model='role').update(app_label='people')
+            
+        # 2. people_role_permissions moved from maps_role_permissions
+        db.rename_table('maps_role_permissions', 'people_role_permissions') 
+            
+        # 3. people_profile moved from maps_contact
+        db.rename_table('maps_contact', 'people_profile') 
+        if not db.dry_run:
+            orm['contenttypes.contenttype'].objects.filter(app_label='maps', model='contact').update(app_label='people')
+            orm['contenttypes.contenttype'].objects.filter(app_label='maps', model='contact').update(model='profile')
+
 
     def backwards(self, orm):
-        # nothing to do, as the initial models have been moved from maps
-        pass
-
-
+        raise RuntimeError("Cannot reverse this migration.")
+    
     models = {
         'actstream.action': {
             'Meta': {'ordering': "('-timestamp',)", 'object_name': 'Action'},
@@ -33,7 +41,7 @@ class Migration(SchemaMigration):
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'target_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
             'target_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 14, 4, 10, 20, 85850)'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 2, 42, 5, 220379)'}),
             'verb': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'auth.group': {
@@ -51,7 +59,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 14, 4, 10, 20, 87552)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 2, 42, 5, 221639)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -59,7 +67,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 14, 4, 10, 20, 87494)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 2, 42, 5, 221583)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'relationships': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'related_to'", 'symmetrical': 'False', 'through': "orm['relationships.Relationship']", 'to': "orm['auth.User']"}),
@@ -85,7 +93,6 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'organization': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'position': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'profile': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'blank': 'True', 'related_name': "'profile'", 'unique': 'True', 'null': 'True', 'to': "orm['auth.User']"}),
             'voice': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'zipcode': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})

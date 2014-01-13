@@ -1,50 +1,72 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
+from geonode.base.models import ResourceBase
 
-class Migration(SchemaMigration):
+class Migration(DataMigration):
+
+    depends_on = (
+        ("documents", "0001_initial"),
+    )
 
     def forwards(self, orm):
-    
-        # Adding field 'Layer.csw_typename'
-        db.add_column('layers_layer', 'csw_typename', self.gf('django.db.models.fields.CharField')(default='gmd:MD_Metadata', max_length=32), keep_default=False)
 
-        # Adding field 'Layer.csw_schema'
-        db.add_column('layers_layer', 'csw_schema', self.gf('django.db.models.fields.CharField')(default='http://www.isotc211.org/2005/gmd', max_length=64), keep_default=False)
-
-        # Adding field 'Layer.csw_mdsource'
-        db.add_column('layers_layer', 'csw_mdsource', self.gf('django.db.models.fields.CharField')(default='local', max_length=256), keep_default=False)
-
-        # Adding field 'Layer.csw_insert_date'
-        db.add_column('layers_layer', 'csw_insert_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True), keep_default=False)
-
-        # Adding field 'Layer.csw_type'
-        db.add_column('layers_layer', 'csw_type', self.gf('django.db.models.fields.CharField')(default='dataset', max_length=32), keep_default=False)
-
-        # Adding field 'Layer.csw_anytext'
-        db.add_column('layers_layer', 'csw_anytext', self.gf('django.db.models.fields.TextField')(null=True), keep_default=False)
-
-        # Adding field 'Layer.csw_wkt_geometry'
-        db.add_column('layers_layer', 'csw_wkt_geometry', self.gf('django.db.models.fields.TextField')(default='SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'), keep_default=False)
-
-        # Adding field 'Layer.metadata_uploaded'
-        db.add_column('layers_layer', 'metadata_uploaded', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
-
-        # Adding field 'Layer.metadata_xml'
-        db.add_column('layers_layer', 'metadata_xml', self.gf('django.db.models.fields.TextField')(default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', null=True, blank=True), keep_default=False)
-
-        # Adding field 'Layer.popular_count'
-        db.add_column('layers_layer', 'popular_count', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
-
-        # Adding field 'Layer.share_count'
-        db.add_column('layers_layer', 'share_count', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
-
+        for layer in orm.Layer.objects.all():
+            # create a resource base instance for each layer
+            rbase, is_created = orm['base.ResourceBase'].objects.get_or_create(
+                id=layer.id,
+                uuid=layer.uuid,
+                owner=layer.owner,
+                title=layer.title,
+                date=layer.date,
+                date_type=layer.date_type,
+                edition=layer.edition,
+                abstract=layer.abstract,
+                purpose=layer.purpose,
+                maintenance_frequency=layer.maintenance_frequency,
+                constraints_other=layer.constraints_other,
+                language=layer.language,
+                temporal_extent_start=layer.temporal_extent_start,
+                temporal_extent_end=layer.temporal_extent_end,
+                supplemental_information=layer.supplemental_information,
+                distribution_url=layer.distribution_url,
+                distribution_description=layer.distribution_description,
+                data_quality_statement=layer.data_quality_statement,
+                srid=layer.srid,
+                csw_typename=layer.csw_typename,
+                bbox_x0=layer.bbox_x0,
+                bbox_x1=layer.bbox_x1,
+                bbox_y0=layer.bbox_y0,
+                bbox_y1=layer.bbox_y1
+            )
+            # Move the spatial_representation_type CHOICES based field to the new spatial_representation_type_new
+            srt = orm['base.SpatialRepresentationType'].objects.filter(identifier=layer.spatial_representation_type)
+            if srt:
+                rbase.spatial_representation_type = srt[0]
+            # Move the constraints_use CHOICES based field to the new restriction_code_type
+            rct = orm['base.RestrictionCodeType'].objects.filter(identifier=layer.constraints_use)
+            if rct:
+                rbase.restriction_code_type = rct[0]
+                
+            # Move the topic_category text field to the new categorytype
+            tc = orm['base.TopicCategory'].objects.filter(identifier=layer.topic_category)
+            if tc:
+                rbase.category = tc[0]
+            # Move the keywords_region field based on the COUNTRIES CHOICES to the new regions field
+            region = orm['base.Region'].objects.filter(code=layer.keywords_region)
+            if region:
+                rbase.regions.add(region[0])
+            # save rbase
+            rbase.save()
+            
+            # assign layer to resource base
+            layer.resourcebase_ptr = rbase
+            layer.save()
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
-
 
     models = {
         'actstream.action': {
@@ -59,7 +81,7 @@ class Migration(SchemaMigration):
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'target_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
             'target_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 7, 46, 10, 889346)'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 31, 5, 50, 27, 202581)'}),
             'verb': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'auth.group': {
@@ -77,7 +99,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 7, 46, 10, 890177)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 31, 5, 50, 27, 203728)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -85,7 +107,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 28, 7, 46, 10, 890121)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 31, 5, 50, 27, 203671)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'relationships': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'related_to'", 'symmetrical': 'False', 'through': "orm['relationships.Relationship']", 'to': "orm['auth.User']"}),
@@ -98,6 +120,101 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        u'base.contactrole': {
+            'Meta': {'unique_together': "(('contact', 'resource', 'role'),)", 'object_name': 'ContactRole'},
+            'contact': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['people.Profile']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'resource': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.ResourceBase']"}),
+            'role': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['people.Role']"})
+        },
+        u'base.link': {
+            'Meta': {'object_name': 'Link'},
+            'extension': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'link_type': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'mime': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'resource': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.ResourceBase']"}),
+            'url': ('django.db.models.fields.TextField', [], {'unique': 'True', 'max_length': '1000'})
+        },
+        u'base.region': {
+            'Meta': {'ordering': "('name',)", 'object_name': 'Region'},
+            'code': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+        },
+        u'base.resourcebase': {
+            'Meta': {'object_name': 'ResourceBase'},
+            'abstract': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'bbox_x0': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
+            'bbox_x1': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
+            'bbox_y0': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
+            'bbox_y1': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '19', 'decimal_places': '10', 'blank': 'True'}),
+            'category': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.TopicCategory']", 'null': 'True', 'blank': 'True'}),
+            'constraints_other': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'contacts': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['people.Profile']", 'through': u"orm['base.ContactRole']", 'symmetrical': 'False'}),
+            'csw_anytext': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'csw_insert_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
+            'csw_mdsource': ('django.db.models.fields.CharField', [], {'default': "'local'", 'max_length': '256'}),
+            'csw_schema': ('django.db.models.fields.CharField', [], {'default': "'http://www.isotc211.org/2005/gmd'", 'max_length': '64'}),
+            'csw_type': ('django.db.models.fields.CharField', [], {'default': "'dataset'", 'max_length': '32'}),
+            'csw_typename': ('django.db.models.fields.CharField', [], {'default': "'gmd:MD_Metadata'", 'max_length': '32'}),
+            'csw_wkt_geometry': ('django.db.models.fields.TextField', [], {'default': "'POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'"}),
+            'data_quality_statement': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'date_type': ('django.db.models.fields.CharField', [], {'default': "'publication'", 'max_length': '255'}),
+            'distribution_description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'distribution_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'edition': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'language': ('django.db.models.fields.CharField', [], {'default': "'eng'", 'max_length': '3'}),
+            'maintenance_frequency': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'metadata_uploaded': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'metadata_xml': ('django.db.models.fields.TextField', [], {'default': '\'<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>\'', 'null': 'True', 'blank': 'True'}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True', 'blank': 'True'}),
+            'purpose': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'regions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['base.Region']", 'symmetrical': 'False', 'blank': 'True'}),
+            'restriction_code_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.RestrictionCodeType']", 'null': 'True', 'blank': 'True'}),
+            'spatial_representation_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.SpatialRepresentationType']", 'null': 'True', 'blank': 'True'}),
+            'srid': ('django.db.models.fields.CharField', [], {'default': "'EPSG:4326'", 'max_length': '255'}),
+            'supplemental_information': ('django.db.models.fields.TextField', [], {'default': "u'No information provided'"}),
+            'temporal_extent_end': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            'temporal_extent_start': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            'thumbnail': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.Thumbnail']", 'null': 'True', 'blank': 'True'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'uuid': ('django.db.models.fields.CharField', [], {'max_length': '36'})
+        },
+        u'base.restrictioncodetype': {
+            'Meta': {'ordering': "('identifier',)", 'object_name': 'RestrictionCodeType'},
+            'description': ('django.db.models.fields.TextField', [], {'max_length': '255'}),
+            'gn_description': ('django.db.models.fields.TextField', [], {'max_length': '255'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'identifier': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'is_choice': ('django.db.models.fields.BooleanField', [], {'default': 'True'})
+        },
+        u'base.spatialrepresentationtype': {
+            'Meta': {'ordering': "('identifier',)", 'object_name': 'SpatialRepresentationType'},
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'gn_description': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'identifier': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'is_choice': ('django.db.models.fields.BooleanField', [], {'default': 'True'})
+        },
+        u'base.thumbnail': {
+            'Meta': {'object_name': 'Thumbnail'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'thumb_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
+            'thumb_spec': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'version': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0', 'null': 'True'})
+        },
+        u'base.topiccategory': {
+            'Meta': {'ordering': "('identifier',)", 'object_name': 'TopicCategory'},
+            'description': ('django.db.models.fields.TextField', [], {}),
+            'gn_description': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'identifier': ('django.db.models.fields.CharField', [], {'default': "'location'", 'max_length': '255'}),
+            'is_choice': ('django.db.models.fields.BooleanField', [], {'default': 'True'})
         },
         'layers.attribute': {
             'Meta': {'object_name': 'Attribute'},
@@ -113,7 +230,7 @@ class Migration(SchemaMigration):
             'Meta': {'unique_together': "(('contact', 'layer', 'role'),)", 'object_name': 'ContactRole'},
             'contact': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['people.Profile']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'layer': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['layers.Layer']"}),
+            'layer': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['layers.Layer']", 'null': 'True'}),
             'role': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['people.Role']"})
         },
         'layers.layer': {
@@ -141,7 +258,6 @@ class Migration(SchemaMigration):
             'distribution_description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'distribution_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'edition': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'geographic_bounding_box': ('django.db.models.fields.TextField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'keywords_region': ('django.db.models.fields.CharField', [], {'default': "'USA'", 'max_length': '3'}),
             'language': ('django.db.models.fields.CharField', [], {'default': "'eng'", 'max_length': '3'}),
@@ -152,6 +268,7 @@ class Migration(SchemaMigration):
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'popular_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'purpose': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'resourcebase_ptr': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['base.ResourceBase']", 'null': 'True', 'blank': 'True'}),
             'share_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'spatial_representation_type': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'srid': ('django.db.models.fields.CharField', [], {'default': "'EPSG:4326'", 'max_length': '255'}),
@@ -238,6 +355,31 @@ class Migration(SchemaMigration):
             'to_slug': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'verb': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        u'security.genericobjectrolemapping': {
+            'Meta': {'unique_together': "(('subject', 'object_ct', 'object_id', 'role'),)", 'object_name': 'GenericObjectRoleMapping'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_ct': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'role': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'generic_mappings'", 'to': u"orm['security.ObjectRole']"}),
+            'subject': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        u'security.objectrole': {
+            'Meta': {'unique_together': "(('content_type', 'codename'),)", 'object_name': 'ObjectRole'},
+            'codename': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'list_order': ('django.db.models.fields.IntegerField', [], {}),
+            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+        },
+        u'security.userobjectrolemapping': {
+            'Meta': {'unique_together': "(('user', 'object_ct', 'object_id', 'role'),)", 'object_name': 'UserObjectRoleMapping'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_ct': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'role': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_mappings'", 'to': u"orm['security.ObjectRole']"}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'role_mappings'", 'to': u"orm['auth.User']"})
+        },
         'sites.site': {
             'Meta': {'ordering': "('domain',)", 'object_name': 'Site', 'db_table': "'django_site'"},
             'domain': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
@@ -259,4 +401,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['layers']
+    complete_apps = ['base', 'layers']
