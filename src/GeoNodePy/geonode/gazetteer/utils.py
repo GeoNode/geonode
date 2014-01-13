@@ -152,7 +152,7 @@ def getGazetteerResults(place_name, map=None, layer=None, start_date=None, end_d
 
 
     for entry in matchingEntries:
-        posts.append({'placename': entry.place_name, 'coordinates': {'lat': entry.latitude, 'lon': entry.longitude},
+        posts.append({'placename': entry.place_name, 'coordinates': (entry.latitude, entry.longitude),
             'source': formatSourceLink(entry.layer_name), 'start_date': entry.start_date, 'end_date': entry.end_date,
             'gazetteer_id': entry.id})
     return posts
