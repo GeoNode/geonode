@@ -22,7 +22,7 @@ class TopicCategoryAdmin(admin.ModelAdmin):
     
     def has_add_permission(self, request):
         # the records are from the standard TC 211 list, so no way to add
-        if MODIFY_TOPICCATEGORY:
+        if settings.MODIFY_TOPICCATEGORY:
             return True
         else:
             return False
