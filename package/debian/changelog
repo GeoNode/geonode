@@ -1,3 +1,13 @@
+geonode (2.0.0+rc12) precise; urgency=high
+
+  [ Ariel Núñez ]
+  * [438610] Update AUTHORS
+  * [826578] Added cspanring to AUTHORS
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 14 Jan 2014 05:50:17 +0000
+
 geonode (2.0.0+rc10) precise; urgency=high
 
   [ Micah Wengren ]
