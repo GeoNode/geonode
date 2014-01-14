@@ -4,7 +4,7 @@
 Migrate a GeoNode 1.2 instance
 ==============================
 
-In case you have an existing GeoNode 1.2 instance and you want to migrate it to latest version (2.0), this document should provide to help you to get the desired result.
+In case you have an existing GeoNode 1.2 instance and you want to migrate it to latest version (2.0), this document should help you to get the desired result.
 
 Before starting
 ---------------
@@ -14,7 +14,9 @@ Before proceding with the following instructions, make sure to backup your Djang
 GeoNode 2.0 installation
 ------------------------
 
-As a first step, install GeoNode 2.0 and make it sure everything works smoothly using a new Django database. Then change the local_settings.py file, and set the DATABASE settings to the GeoNode Dababase path of the 1.2 version.
+As a first step, install GeoNode 2.0 and make it sure everything works smoothly using a new Django database. 
+
+Now change the local_settings.py file, and set the DATABASE settings to the GeoNode Dababase path of the 1.2 version.
 
 GeoServer configuration
 -----------------------
@@ -23,12 +25,13 @@ Remove the old GeoServer 2.2 instance from your servlet container.
 
 Deploy the included GeoServer 2.4 to your servlet container (you can find it in the geonode/downloaded/geoserver.war). Then replace the GeoServer data directory with the one from the old GeoServer instance.
 
-Remove the security directory in the deployed geoserver/data directory and replace it with the security directory included in the geonode/geoserver/geoserver/data directory.
+After stopping your servlet container, remove the security directory in the deployed geoserver/data directory and replace it with the security directory included in the geonode/geoserver/geoserver/data directory.
 
 Edit the security/auth/geonodeAuthProvider/config.xml file and set the <baseUrl> element to the url where GeoNode is running
 
-In case you are using a PostGIS data store, edit the geoserver data directory PostGIS store in the geoserver/data/workspace directory and change the password to your current one. Don't forget, when everything is working, to change it again from the GeoServer admin, in order to encrypt your password.
-For example::
+In case you are using a PostGIS data store, edit the PostGIS store in the geoserver/data/workspace directory and change the password to your current one. Don't forget, when everything is working, to change it again from the GeoServer admin, in order to encrypt your password.
+
+For example, edit this file (the data store name, uploaded, could be different in your case)::
 
     $ vi geoserver/data/workspaces/geonode/uploaded/datastore.xml
     
@@ -36,14 +39,14 @@ and then change this element::
 
     <entry key="passwd">crypt1:+r9dV97SpWKB1m5pIjcvcw==</entry>
     
-to:
+to::
 
     <entry key="passwd">yourpassword</entry>
 
-Restart your servlet container and check if GeoServer is working properly. Also, try the preview for some of the layers.
+Restart your servlet container and check if GeoServer is working properly. For example, try the preview for some of the layers.
 
-Migrate the database
---------------------
+Migrate the Django database
+---------------------------
 
 With GeoServer up and running, truncate the south_migrationhistory table::
 
