@@ -1,3 +1,59 @@
+geonode (2.0.0+rc10) precise; urgency=high
+
+  [ Micah Wengren ]
+  * [b02aef] Changed Django get params used in wms_links lookup to move url to defaults dict.  Prevents duplicate WMS links via repeated updatelayers calls
+
+  [ capooti ]
+  * [b50b52] Refactoring migrations.
+  * [4fa053] Added the migration for adding the resourcebase_ptr_id field in layer.
+  * [ecdf77] Added the migrations to move layer stuff to base.
+  * [6330d2] Some more steps added.
+
+  [ Micah Wengren ]
+  * [8f21ba] Decode name value into localized string before get_or_create query.  Now prevents duplicate WMS download links due to changed bounding box in url
+
+  [ capooti ]
+  * [56d44a] Intermediate commit for Simone.
+  * [ac1088] Now resource_base is correctly populated with layers.
+  * [4bdc09] Now importing spatial representations, restriction codes, topic categories and regions from layers to resourcebase.
+
+  [ Jeffrey Johnson ]
+  * [de9ce4] Update dns entry on jenkins-geonode-aws.sh
+  * [ac623b] Use existing venv for aws task
+  * [c4cd4a] Remove trailing slash in jenknis-geonode-aws.sh
+
+  [ Matt Bertrand ]
+  * [554fc9] Rename files inside zip to match new layer name
+
+  [ Ariel Núñez ]
+  * [aa650e] Added license to info panel
+
+  [ Calvin Metcalf ]
+  * [fa6080] use wgs84 for geojson
+
+  [ Ariel Núñez ]
+  * [f5f69e] Added Adam Ziaja to Contributors
+
+  [ Tom Kralidis ]
+  * [882505] add license back to ResourceBase (#1310)
+  * [928848] fix constraints XML
+
+  [ capooti ]
+  * [2879a9] First working version for 1.2 to 2.0 migrations.
+  * [4415c8] Now the permissions, styles and other notable stuff is migrated.
+
+  [ Simone Dalmasso ]
+  * [8050c7] don’t use the geonode settings
+  * [2879cc] fix the missing one
+
+  [ capooti ]
+  * [e8da25] Last commit before doint the migration PR.
+  * [c2b1e2] Added documentation for migrating from 1.2 to 2.0.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 14 Jan 2014 05:09:52 +0000
+
 geonode (2.0.0+rc8) precise; urgency=high
 
   [ Simone Dalmasso ]
