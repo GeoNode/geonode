@@ -11,6 +11,7 @@ $(function(){
             date_start: [],
             date_end: [],
             sort: [],
+			extent:[],
             q: initial_query
         };
         
@@ -33,6 +34,8 @@ $(function(){
             params.categories.shift();
         }
 
+		var extentval = $('#extent').val();
+
         var data = {
             'type': params.types.join(','),
             'category': params.categories.join(','),
@@ -40,7 +43,8 @@ $(function(){
             'start_date': params.date_start[0],
             'end_date': params.date_end[0],
             'sort': params.sort[0],
-            'q': params.q
+            'q': params.q,
+			'extent': extentval
         };
         
         if (typeof default_type != 'undefined' && data.type == ''){
@@ -199,6 +203,12 @@ $(function(){
             query();
         }
     );
+	//does not automatically fire with programmatically updated text
+	$('.trigger-extent').bind("change", 
+		function(event){
+			query();
+		}
+	);
     $('.datepicker').change(
         function(){
             $(this).addClass('active');
