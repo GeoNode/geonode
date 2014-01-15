@@ -32,7 +32,7 @@
               </div>
               <div class="control-group">
                 <label for="id_filter_categories_all" class="radio inline">
-                  <input type="radio" name="type" value="all" id="id_filter_categories_all" checked /> {% trans 'All categories' %}
+                  <input type="radio" name="type" value="all" id="id_filter_categories_all" checked /> {% trans 'All resources' %}
                 </label>
                 <label for="id_filter_categories_maps" class="radio inline">
                   <input type="radio" name="type" value="map" id="id_filter_categories_maps" /> {% trans 'Maps only' %}
@@ -43,6 +43,16 @@
                 <label for="id_filter_categories_groups" class="radio inline">
                   <input type="radio" name="type" value="owner" id="id_filter_categories_groups" /> {% trans 'Users only' %}
                 </label>
+              </div>
+              <div class="control-group">
+                <label for="id_category">{% trans 'Category' %}</label>
+
+                  <select name="category">
+                    <option value="">{% trans 'Search All Categories' %}</option>
+                  {% for category in category_list %}
+                    <option value="{{ category.identifier }}">{{ category }}</option>
+                  {% endfor %}
+                  </select>
               </div>
             </div>
           </fieldset>
