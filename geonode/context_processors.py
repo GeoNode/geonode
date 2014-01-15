@@ -44,5 +44,6 @@ def resource_urls(request):
         MF_PRINT_ENABLED = ogc_server_settings.MAPFISH_PRINT_ENABLED,
         PRINTNG_ENABLED = ogc_server_settings.PRINTNG_ENABLED,
         GS_SECURITY_ENABLED = ogc_server_settings.GEONODE_SECURITY_ENABLED,
-        PROXY_URL = getattr(settings, 'PROXY_URL', '/proxy/?url=')
+        PROXY_URL = getattr(settings, 'PROXY_URL', '/proxy/?url='),
+        SOCIAL_BUTTONS = getattr(settings, 'SOCIAL_BUTTONS', True)
     )
