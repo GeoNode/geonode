@@ -35,6 +35,7 @@ from geonode.search.util import resolve_extension
 from geonode.search.normalizers import apply_normalizers
 from geonode.search.query import query_from_request
 from geonode.search.query import BadQuery
+from geonode.base.models import TopicCategory
 
 from datetime import datetime
 from time import time
@@ -79,7 +80,11 @@ def search_page(request, template='search/search.html', **kw):
         'initial_query': initial_query}))
 
 def advanced_search(request, **kw):
-    return render_to_response('search/advanced_search.html', RequestContext(request))
+    ctx = {
+        'category_list': TopicCategory.objects.all(),
+    }
+    
+    return render_to_response('search/advanced_search.html', RequestContext(request, ctx))
 
 def _get_search_context():
     cache_key = 'simple_search_context'
