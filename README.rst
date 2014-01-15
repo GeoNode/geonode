@@ -55,6 +55,8 @@ software installed and in your PATH:
 
 * Apache Tomcat 6.x or Jetty
 
+* Apache Ant
+
 * PostgreSQL 8.x and PostGIS 1.5
 
 
@@ -98,11 +100,11 @@ password: wm_password
   
   git submodule update --init
   
-  python bootstrap.py --no-site-packages # see note below
+  python bootstrap.py --no-site-packages # see note1 below
   
   source bin/activate
   
-  paver build
+  paver build # see note2 below
   
   django-admin.py createsuperuser --settings=geonode.settings
 
@@ -118,7 +120,7 @@ Once fully started, you should see a message indicating the address of your Worl
   Press CTRL-C to shut down
 
 
-.. note::
+.. note1::
 
   When running ``python bootstrap.py`` the ``--no-site-packages`` option is
   not required.  If enabled, the bootstrap script will sandbox your virtual
@@ -129,6 +131,14 @@ Once fully started, you should see a message indicating the address of your Worl
   vendor, or packaged other than on PyPI.  When in doubt, however, just leave
   this option in.
 
+.. note2::
+
+  When running "pave build" command, if error about version string parsing occurs, 
+  edit ~/cga-worldmap/lib/python2.7/site-packages/django/contrib/gis/geos/libgeos.py,
+  search for "ver = geos_version()" under "def geos_version_info()", 
+  edit "ver = geos_version()" to "ver = geos_version().split(' ')[0]".
+  In this case the space between the version will be deleted.
+  Finally, run "pave build" again.
 
 This command::
 
