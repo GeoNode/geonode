@@ -23,6 +23,7 @@ from geonode.layers.utils import upload
 import traceback
 import datetime
 import sys
+import os
 
 class Command(BaseCommand):
     help = ("Brings a data file or a directory full of data files into a"
@@ -42,14 +43,27 @@ class Command(BaseCommand):
             make_option('-o', '--overwrite', dest='overwrite', default=False, action="store_true",
                 help="Overwrite existing layers if discovered (defaults False)"),
             make_option('-k', '--keywords', dest='keywords', default="",
-                help="The default keywords for the imported layer(s). Will be the same for all imported layers if multiple imports are done in one command")
+                help="The default keywords for the imported layer(s). Will be the same for all imported layers if multiple imports are done in one command"),
+            make_option('-r', '--recursive', dest='recursive', default=False,
+                help="Recurse down through all subdirectories of the identified path")
         )
+
+    def getGeolayers(self, path, params, output):
+        out = upload(path, user=params['user'], overwrite=params['overwrite'], skip=params['skip'],
+                keywords=params['keywords'], verbosity=params['verbosity'], console=params['console'])
+        output.extend(out)
+        for root, dirs, files in os.walk(path):
+            for diritem in dirs:
+                output = self.getGeolayers(root + "/" + diritem , params, output)
+        return output
+
 
     def handle(self, *args, **options):
         verbosity = int(options.get('verbosity'))
         ignore_errors = options.get('ignore_errors')
         user = options.get('user')
         overwrite = options.get('overwrite')
+        recursive = options.get('recursive')
 
         if verbosity > 0:
             console = sys.stdout
@@ -64,10 +78,16 @@ class Command(BaseCommand):
         keywords = options.get('keywords').split()
         start = datetime.datetime.now()
         output = []
-        for path in args:
-            out = upload(path, user=user, overwrite=overwrite, skip=skip,
-                    keywords=keywords, verbosity=verbosity, console=console)
-            output.extend(out)
+
+        if recursive:
+            params = {"user":user, "overwrite":overwrite,"skip":skip, "keywords":keywords,"verbosity":verbosity,"console":console}
+            for path in args:
+                output = self.getGeolayers(path, params, output)
+        else:
+            for path in args:
+                out = upload(path, user=user, overwrite=overwrite, skip=skip,
+                        keywords=keywords, verbosity=verbosity, console=console)
+                output.extend(out)
 
         updated = [dict_['file'] for dict_ in output if dict_['status']=='updated']
         created = [dict_['file'] for dict_ in output if dict_['status']=='created']
