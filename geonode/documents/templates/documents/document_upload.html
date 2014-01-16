@@ -25,7 +25,7 @@
           {% endif %}
             <div>
                 <form id="upload_form" method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
-                    <label for="title">{% trans "Type a title" %}</label><input id="title" name="title" type="text" placeholder="Title" />
+                    <label for="title">{% trans "Type a title" %}</label><input id="titledoc" name="title" type="text" placeholder="Title" />
                     <label for="resource">{% trans "Link to" %}</label><input id="resource" name="q" type="text" />
                     <label for="doc_file">{% trans "Choose a file" %}</label><input id="doc_file" name="file" type="file" />
                     <input type="hidden" name="permissions" id="permissions" value=""/>
