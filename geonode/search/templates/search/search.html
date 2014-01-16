@@ -31,6 +31,7 @@
           <div id="slide-pane">
             <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
             {% include "search/_type_filters.html" %}
+	    {% include "search/_extent_filter.html" %}
             {% include "search/_general_filters.html" %}
           </div>
         </div>
@@ -43,4 +44,85 @@
 
 {% block extra_script %}
  {% include 'search_scripts.html' %}
+
+    <script type="text/javascript">
+
+    Ext.onReady(function() {
+
+      $.extend({
+          getUrlVars: function(){
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for(var i = 0; i < hashes.length; i++)
+            {
+              hash = hashes[i].split('=');
+              vars.push(hash[0]);
+              vars[hash[0]] = hash[1];
+            }
+            return vars;
+          },
+          getUrlVar: function(name){
+            return $.getUrlVars()[name];
+          }
+        });
+
+       var map;
+       var latlon_proj = new OpenLayers.Projection("EPSG:4326");
+       var merc_proj = new OpenLayers.Projection("EPSG:900913");
+
+       var update_textbox = function(){
+            var tempbounds = map.getExtent().transform(merc_proj, latlon_proj);
+            $("#extent").val(tempbounds.left + "," + tempbounds.right + "," + tempbounds.bottom + "," + tempbounds.top);
+            $('.trigger-extent').trigger("change");
+           }
+
+       function init_map(){
+            map = new OpenLayers.Map( 'search_map');
+            layer = new OpenLayers.Layer.OSM();
+            map.addLayer(layer);
+            //there's probably a server side var that could add the extent in?
+            var tempextent = $.getUrlVar('extent');
+            if (tempextent != ""){
+            //assuming extent param is clean and valid
+              //currently in "x0,x1,y0,y1"
+              var tempextent_split = tempextent.split("%2C");
+              
+              var OLbounds = new OpenLayers.Bounds(parseFloat(tempextent_split[0]), parseFloat(tempextent_split[2]), parseFloat(tempextent_split[1]),parseFloat(tempextent_split[3])).transform(latlon_proj, merc_proj);
+              //need [left, bottom, right, top]
+              map.zoomToExtent(OLbounds, true);
+            }
+            else{
+              map.setCenter(
+                  new OpenLayers.LonLat(0,0).transform(
+                      new OpenLayers.Projection("EPSG:4326"),
+                      map.getProjectionObject()
+                  ), 1
+              );   
+            } 
+            map.events.register("moveend", map, update_textbox);
+
+            map.events.register("zoomend", map, update_textbox);
+          }
+
+          init_map();
+    });
+
+    </script>
+
+    <style type="text/css">
+        .olMapViewport{
+            z-index:0;
+        }
+        .hidden{
+            display:none;
+        }
+    </style>
+
 {% endblock extra_script %}
+
+{% block extra_head %}
+    <link href="{{ STATIC_URL }}geoexplorer/externals/ext/resources/css/ext-all.css" type="text/css" rel="stylesheet">
+    <script src="{{ STATIC_URL }}geoexplorer/externals/ext/adapter/ext/ext-base.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}geoexplorer/externals/ext/ext-all.js" type="text/javascript"></script>                       
+    <script src="{{ STATIC_URL }}geoexplorer/script/GeoExplorer.js" type="text/javascript"></script>
+{% endblock %}
