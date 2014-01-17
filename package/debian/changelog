@@ -1,3 +1,27 @@
+geonode (2.0.0+thefinal0) precise; urgency=high
+
+  [ Matt Bertrand ]
+  * [bdea4a] Add external services to user help doc
+
+  [ menegon ]
+  * [755521] Enable proxy for https connections
+
+  [ Mike Fedak ]
+  * [b00b19] \Adds static legend to layer detail
+
+  [ Ariel Núñez ]
+  * [b7e24a] Adding new AUTHORS
+
+  [ Vivien Deparday ]
+  * [d07643] Update AUTHORS
+
+  [ Bebsher L. Salvio ]
+  * [14fd20] Fix style of pagination pager.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 17 Jan 2014 19:31:08 +0000
+
 geonode (2.0.0+rc13) precise; urgency=high
 
   [ Elliot Bradbury ]
