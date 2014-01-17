@@ -427,7 +427,7 @@ OGC_SERVER = {
 UPLOADER = {
     'BACKEND' : 'geonode.rest',
     'OPTIONS' : {
-        'TIME_ENABLED': True,
+        'TIME_ENABLED': False,
         'GEOGIT_ENABLED': False,
     }
 }
@@ -570,7 +570,7 @@ LEAFLET_CONFIG = {
     'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
 }
 
-SOCIAL_BUTTONS = False
+SOCIAL_BUTTONS = True
 
 # Require users to authenticate before using Geonode
 LOCKDOWN_GEONODE = False
