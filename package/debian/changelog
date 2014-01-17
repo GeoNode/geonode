@@ -1,3 +1,61 @@
+geonode (2.0.0+rc13) precise; urgency=high
+
+  [ Elliot Bradbury ]
+  * [5a6835] FGDC Topic Category extraction
+  * [062b7e] Assigns TopicCategory to Layer using extracted metadata.
+  * [c7b32c] Added category_list to advanced search context for category filter
+  * [d1cca9] Added category filter
+  * [3807cd] Added support for capturing multiple keywords from FGDC metadata.
+
+  [ nathanhilbert ]
+  * [425fb7] added OL to search
+  * [2db0ba] added UI for search by extent
+  * [54e8a3] UI cleanup for extent search
+  * [e70db9] added extent filter to search results page
+  * [c28c69] removed extra openlayers in favor of OL wrapped in ExtGeo
+  * [07f06c] added geoexplorer JS packages in search templates and wrapped in Ext
+
+  [ capooti ]
+  * [7ec602] Some small update to the migration documentation.
+  * [0be61b] Added a migration for adding the new base.license model.
+
+  [ Tyler Garner ]
+  * [8f9631] Add the SOCIAL_BUTTONS setting to context_processors.
+
+  [ Ariel Núñez ]
+  * [4cad1f] Added Nathan Hilbert to AUTHORS
+
+  [ Tyler Garner ]
+  * [a36f8f] Fix spelling error and remove duplicate entry in AUTHORS.
+
+  [ Ariel Núñez ]
+  * [876976] Added Elliot Bradbury to AUTHORS
+
+  [ capooti ]
+  * [27c8a5] Fixed the migration's documentation.
+  * [45a141] Now title for documents can use lowercase chars. Something from css was conflicting with the field id.
+
+  [ Ariel Nunez ]
+  * [722b87] Added pyproj instructions when using pip 1.5
+  * [a7653f] Added pyproj exception to paver setup
+
+  [ mikefedak ]
+  * [d79eda] Add details to fix pyproj install on Pip 1.5
+
+  [ vdeparday ]
+  * [ba34da] It is not required to create a new folder and it is actually not used after
+
+  [ state-hiu ]
+  * [fb7133] Added missing inbox link from admin dropdown in response to issue 1267
+
+  [ warex03 ]
+  * [24bd64] Fixed viewby padding and Search menu's content-wrap padding in base.css
+  * [627890] Modified the base.less file
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 17 Jan 2014 01:28:16 +0000
+
 geonode (2.0.0+rc12) precise; urgency=high
 
   [ Ariel Núñez ]
