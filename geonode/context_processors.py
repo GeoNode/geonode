@@ -39,7 +39,7 @@ def resource_urls(request):
         DOCUMENTS_APP = settings.DOCUMENTS_APP,
         UPLOADER_URL = reverse('data_upload') if getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest') == 'geonode.importer' else reverse('layer_upload'),
         GEOGIT_ENABLED = ogc_server_settings.GEOGIT_ENABLED,
-        TIME_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', False),
+        TIME_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', True),
         DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False),
         MF_PRINT_ENABLED = ogc_server_settings.MAPFISH_PRINT_ENABLED,
         PRINTNG_ENABLED = ogc_server_settings.PRINTNG_ENABLED,
