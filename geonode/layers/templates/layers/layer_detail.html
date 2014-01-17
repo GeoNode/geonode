@@ -154,6 +154,15 @@
     </div>
   </div>
   <aside class="span4">
+    
+<div class="well">
+	<!-- Need to make this based on a listener -->
+	
+	<h2>{%trans "Legend" %}</h2>
+	<p>{{ style.sld_title }}</p>
+	<p><img src="{{ GEOSERVER_BASE_URL }}/wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=
+{{ WORKSPACE }}:{{ layer.name }}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on"></p>
+    </div>
     <div class="well">
         <h2>{% trans "Maps using this layer" %}</h2>
         {% if layer.maps %}
