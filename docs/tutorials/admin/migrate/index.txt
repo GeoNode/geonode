@@ -13,14 +13,16 @@ Before proceding with the following instructions, make sure to backup your Djang
 GeoNode 2.0 installation
 ------------------------
 
-As a first step, install GeoNode 2.0 and make it sure everything works smoothly using a new Django database. 
+As a first step, install GeoNode 2.0 and make it sure everything works smoothly using a new Django database. When asked to overwrite the local_settings file and the apache geonode site answer "yes" to both of them.
 
-Now change the local_settings.py file, and set the DATABASE settings to the GeoNode Dababase path of the 1.2 version.
+Now change the /etc/geonode/local_settings.py file, and set the DATABASE password to the GeoNode Dababase path of the 1.2 version.
 
 GeoServer configuration
 -----------------------
 
-Remove the old GeoServer 2.2 instance from your servlet container.
+Geoserver should already be migrated to the version 2.4. 
+
+In case is not remove the old GeoServer 2.2 instance from your servlet container.
 
 Deploy the included GeoServer 2.4 to your servlet container (you can find it in the geonode/downloaded/geoserver.war). Then replace the GeoServer data directory with the one from the old GeoServer instance.
 
@@ -49,17 +51,17 @@ Migrate the Django database
 
 With GeoServer up and running, truncate the south_migrationhistory table::
 
-    $ psql -c 'TRUNCATE TABLE south_migrationhistory;' gn_django
+    $ psql -c 'TRUNCATE TABLE south_migrationhistory;' -d geonode
     
 Run the syncdb command::
 
-    $ python $CWD/manage.py syncdb
+    $ geonode syncdb
     
 Now you will need to fake some application migrations and then migrate::
 
-    python $CWD/manage.py migrate taggit --fake 0001
-    python $CWD/manage.py migrate maps --fake 0001
-    python $CWD/manage.py migrate
+    $ geonode migrate taggit --fake 0001
+    $ geonode migrate maps --fake 0001
+    $ geonode migrate
     
 The procedure should completely migrate the database to a fresh 2.0 instance
 
@@ -68,7 +70,7 @@ Generate thumbnails and sync metadata and styles for layers
 
 Now generate the missing thumbnails and sync metadata and styles for all of the layers, by running the updatelayers command::
 
-    $ ./manage.py updatelayers
+    $ geonode updatelayers
 
 
 
