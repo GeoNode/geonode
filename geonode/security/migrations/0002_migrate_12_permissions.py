@@ -17,8 +17,11 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         # permissions stuff
-        sconn = "dbname=%s user=%s password=%s" % (settings.DATABASES['default']['NAME'],
-                settings.DATABASES['default']['USER'], settings.DATABASES['default']['PASSWORD'])
+        sconn = "host=%s dbname=%s user=%s password=%s" % (
+            settings.DATABASES['default']['HOST'],
+            settings.DATABASES['default']['NAME'],
+            settings.DATABASES['default']['USER'],
+            settings.DATABASES['default']['PASSWORD'])
         conn = psycopg2.connect(sconn) 
         cur = conn.cursor()
         # permissions for layers

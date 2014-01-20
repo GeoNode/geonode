@@ -10,7 +10,9 @@ class Migration(DataMigration):
             
     def forwards(self, orm):
         from geonode.base.models import ResourceBase
-        id_prog = ResourceBase.objects.all().order_by("-id")[0].id
+        id_prog = 0
+        if ResourceBase.objects.all().count() > 0:
+            id_prog = ResourceBase.objects.all().order_by("-id")[0].id
         for m in orm.Map.objects.all():
             id_prog=id_prog+1
             # create a resource base instance for each map

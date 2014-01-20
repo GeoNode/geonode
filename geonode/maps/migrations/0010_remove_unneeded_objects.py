@@ -9,9 +9,9 @@ class Migration(DataMigration):
     def forwards(self, orm):
     
         from django.contrib.contenttypes.models import ContentType
-        # removing tables
-        db.delete_table(u'maps_thumbnail')
-        ContentType.objects.filter(app_label='maps', model='thumbnail').delete()
+        # removing tables (only WFP here)
+        #db.delete_table(u'maps_thumbnail')
+        #ContentType.objects.filter(app_label='maps', model='thumbnail').delete()
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
