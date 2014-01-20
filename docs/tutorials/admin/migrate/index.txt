@@ -52,7 +52,17 @@ Migrate the Django database
 With GeoServer up and running, truncate the south_migrationhistory table::
 
     $ psql -c 'TRUNCATE TABLE south_migrationhistory;' -d geonode
+
+Add the spatial columns to your database. If you have chosen a different database as datastore in the local_settings.py then add them on that one.
     
+    $ psql -U geonode -d geonode -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
+
+    $ psql -U geonode -d geonode -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
+
+    $ psql -U geonode -d geonode -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
+
+    $ psql -U geonode -d geonode -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
+
 Run the syncdb command::
 
     $ geonode syncdb
