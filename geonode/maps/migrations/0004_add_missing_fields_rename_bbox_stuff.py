@@ -15,11 +15,16 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Renaming and altering the bbox fields
-        # renaming
-        db.rename_column('maps_map', 'bbox_left', 'bbox_x0')
-        db.rename_column('maps_map', 'bbox_right', 'bbox_x1')
-        db.rename_column('maps_map', 'bbox_bottom', 'bbox_y0')
-        db.rename_column('maps_map', 'bbox_top', 'bbox_y1')
+        # Adding field 'Layer.bbox_top'
+        db.add_column('maps_map', 'bbox_x0', self.gf('django.db.models.fields.FloatField')(null=True, blank=True), keep_default=False)
+        db.add_column('maps_map', 'bbox_x1', self.gf('django.db.models.fields.FloatField')(null=True, blank=True), keep_default=False)
+        db.add_column('maps_map', 'bbox_y0', self.gf('django.db.models.fields.FloatField')(null=True, blank=True), keep_default=False)
+        db.add_column('maps_map', 'bbox_y1', self.gf('django.db.models.fields.FloatField')(null=True, blank=True), keep_default=False)
+        # renaming (this only for WFP instance)
+        #db.rename_column('maps_map', 'bbox_left', 'bbox_x0')
+        #db.rename_column('maps_map', 'bbox_right', 'bbox_x1')
+        #db.rename_column('maps_map', 'bbox_bottom', 'bbox_y0')
+        #db.rename_column('maps_map', 'bbox_top', 'bbox_y1')
         # altering
         db.alter_column('maps_map', 'bbox_x0', models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True))
         db.alter_column('maps_map', 'bbox_x1', models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True))
