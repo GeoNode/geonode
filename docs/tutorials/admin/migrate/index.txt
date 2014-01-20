@@ -72,6 +72,7 @@ Now you will need to fake some application migrations and then migrate::
     $ geonode migrate taggit --fake 0001
     $ geonode migrate maps --fake 0001
     $ geonode migrate
+    $ sudo geonode-updateip yourhost
     
 The procedure should completely migrate the database to a fresh 2.0 instance
 
