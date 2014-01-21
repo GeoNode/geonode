@@ -15,6 +15,9 @@ class Migration(DataMigration):
         db.delete_table(u'core_objectrole_permissions')
         db.delete_table(u'core_userobjectrolemapping')
         ContentType.objects.filter(app_label='core').delete()
+        
+        # Deleting map_id in maps_map
+        db.delete_column('maps_map', 'map_id')
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
