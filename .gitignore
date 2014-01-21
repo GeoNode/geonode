@@ -1,3 +1,7 @@
+#Keys 
+git
+git.pub
+
 # build artifacts
 *.pyc
 *.egg-info
