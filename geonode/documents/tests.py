@@ -25,7 +25,7 @@ imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\
                                 '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
 
 class LayersTest(TestCase):
-    fixtures = ['intial_data.json']
+    fixtures = ['intial_data.json', 'bobby']
     
     def setUp(self):
         create_models('document')

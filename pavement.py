@@ -503,10 +503,14 @@ def versions():
 
     branch = 'dev'
 
+    if stage == 'final':
+        stage = 'thefinal'
+
     if stage == 'alpha' and edition == 0:
         tail = '%s%s' % (branch, timestamp)
     else:
         tail = '%s%s' % (stage, edition)
+
 
     simple_version = '%s.%s.%s+%s' % (major, minor, revision, tail)
     return version, simple_version
