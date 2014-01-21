@@ -1,3 +1,9 @@
+geonode (2.0.0+thefinal3) precise; urgency=high
+
+  * [2cd92c] Updated base.css with latest changes to base.less
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 21 Jan 2014 19:00:24 +0000
+
 geonode (2.0.0+thefinal2) precise; urgency=high
 
   * UNRELEASED
