@@ -28,18 +28,23 @@ class Migration(DataMigration):
         # Deleting field bbox_y1
         db.delete_column('maps_map', 'bbox_y1')
         
-        # Deleting field bbox_top
-        db.delete_column('maps_map', 'bbox_top')
         
-        # Deleting field bbox_bottom
-        db.delete_column('maps_map', 'bbox_bottom')
-        
-        # Deleting field bbox_right
-        db.delete_column('maps_map', 'bbox_right')
-        
-        # Deleting field bbox_left
-        db.delete_column('maps_map', 'bbox_left')
-
+        # 0. on some instance there may be the bbox_top... fields
+        db.start_transaction()
+        try:
+            # Deleting field bbox_top
+            db.delete_column('maps_map', 'bbox_top')
+            # Deleting field bbox_bottom
+            db.delete_column('maps_map', 'bbox_bottom')
+            # Deleting field bbox_right
+            db.delete_column('maps_map', 'bbox_right')
+            # Deleting field bbox_left
+            db.delete_column('maps_map', 'bbox_left')
+            db.commit_transaction()
+        except:
+            print 'No need to delete the fields, they are not there'
+            db.rollback_transaction()
+            
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
