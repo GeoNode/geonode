@@ -10,16 +10,22 @@ class Migration(SchemaMigration):
 
         # move some models from maps to layers app
         
-        # 0. add some missing fields
-        # Adding field 'Layer.bbox_top'
-        db.add_column('maps_layer', 'bbox_top', self.gf('django.db.models.fields.FloatField')(null=True, blank=True), keep_default=False)
-        # Adding field 'Layer.bbox_bottom'
-        db.add_column('maps_layer', 'bbox_bottom', self.gf('django.db.models.fields.FloatField')(null=True, blank=True), keep_default=False)
-        # Adding field 'Layer.bbox_left'
-        db.add_column('maps_layer', 'bbox_left', self.gf('django.db.models.fields.FloatField')(null=True, blank=True), keep_default=False)
-        # Adding field 'Layer.bbox_right'
-        db.add_column('maps_layer', 'bbox_right', self.gf('django.db.models.fields.FloatField')(null=True, blank=True), keep_default=False)
-        
+        # 0. add some missing fields (not for wfp)
+        db.start_transaction()
+        try:
+            # Adding field 'Layer.bbox_top'
+            db.add_column('maps_layer', 'bbox_top', self.gf('django.db.models.fields.FloatField')(null=True, blank=True), keep_default=False)
+            # Adding field 'Layer.bbox_bottom'
+            db.add_column('maps_layer', 'bbox_bottom', self.gf('django.db.models.fields.FloatField')(null=True, blank=True), keep_default=False)
+            # Adding field 'Layer.bbox_left'
+            db.add_column('maps_layer', 'bbox_left', self.gf('django.db.models.fields.FloatField')(null=True, blank=True), keep_default=False)
+            # Adding field 'Layer.bbox_right'
+            db.add_column('maps_layer', 'bbox_right', self.gf('django.db.models.fields.FloatField')(null=True, blank=True), keep_default=False)
+            db.commit_transaction()
+        except:
+            print 'No need to create the fields, they are already there'
+            db.rollback_transaction()
+            
         # 1. layers_layer moved from maps_layer
         db.rename_table('maps_layer', 'layers_layer') 
         if not db.dry_run:
