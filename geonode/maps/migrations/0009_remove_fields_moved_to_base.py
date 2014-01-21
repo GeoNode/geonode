@@ -27,7 +27,24 @@ class Migration(DataMigration):
         
         # Deleting field bbox_y1
         db.delete_column('maps_map', 'bbox_y1')
-
+        
+        
+        # 0. on some instance there may be the bbox_top... fields
+        db.start_transaction()
+        try:
+            # Deleting field bbox_top
+            db.delete_column('maps_map', 'bbox_top')
+            # Deleting field bbox_bottom
+            db.delete_column('maps_map', 'bbox_bottom')
+            # Deleting field bbox_right
+            db.delete_column('maps_map', 'bbox_right')
+            # Deleting field bbox_left
+            db.delete_column('maps_map', 'bbox_left')
+            db.commit_transaction()
+        except:
+            print 'No need to delete the fields, they are not there'
+            db.rollback_transaction()
+            
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
@@ -172,9 +189,14 @@ class Migration(DataMigration):
         },
         u'maps.map': {
             'Meta': {'object_name': 'Map', '_ormbases': [u'base.ResourceBase']},
+            'bbox_bottom': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'bbox_left': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'bbox_right': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'bbox_top': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'center_x': ('django.db.models.fields.FloatField', [], {}),
             'center_y': ('django.db.models.fields.FloatField', [], {}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'map_id': ('django.db.models.fields.IntegerField', [], {}),
             'popular_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'projection': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             u'resourcebase_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['base.ResourceBase']", 'unique': 'True', 'primary_key': 'True'}),
