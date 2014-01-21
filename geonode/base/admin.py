@@ -80,19 +80,25 @@ class LinkAdmin(admin.ModelAdmin):
     
 class ThumbnailAdmin(admin.ModelAdmin):
     model = Thumbnail
-    list_display = ('get_title', 'thumb_file', 'get_thumb_url',)
+    list_display = ('get_title', 'get_geonode_type', 'thumb_file', 'get_thumb_url',)
     search_fields = ('resourcebase__title',)
     
     def get_title(self, obj):
         rb = obj.resourcebase_set.all()[0] # should be always just one!
         return rb.title
-    get_title.allow_tags = True
+    get_title.short_description = 'Title' 
     
     def get_thumb_url(self, obj):
         rb = obj.resourcebase_set.all()[0] # should be always just one!
         return u'<img src="%s" alt="%s" height="80px" />' % (rb.get_thumbnail_url(), 
             obj.id)
     get_thumb_url.allow_tags = True
+    get_thumb_url.short_description = 'URL' 
+    
+    def get_geonode_type(self, obj):
+        rb = obj.resourcebase_set.all()[0] # should be always just one!
+        return rb.geonode_type
+    get_geonode_type.short_description = 'Type'
 
 admin.site.register(TopicCategory, TopicCategoryAdmin)
 admin.site.register(Region, RegionAdmin)
