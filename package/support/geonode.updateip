@@ -44,3 +44,6 @@ $APACHE_SERVICE restart
 
 # Run updatelayers
 geonode updatelayers
+
+# Run updatemaplayerip
+geonode updatemaplayerip
