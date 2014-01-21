@@ -301,6 +301,26 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
 
     def __unicode__(self):
         return self.title
+        
+    @property
+    def geonode_type(self):
+        gn_type = ''
+        try:
+            self.layer
+            gn_type = 'layer'
+        except:
+            pass
+        try:
+            self.map
+            gn_type = 'map'
+        except:
+            pass
+        try:
+            self.document
+            gn_type = 'document'
+        except:
+            pass
+        return gn_type
 
     @property
     def bbox(self):
@@ -472,3 +492,5 @@ def resourcebase_post_delete(instance, sender, **kwargs):
     """
     if instance.thumbnail:
         instance.thumbnail.delete()
+        
+    
