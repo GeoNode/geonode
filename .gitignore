@@ -1,6 +1,6 @@
-#Keys 
+#Stuff 
 git
-git.pub
+git.*
 
 # build artifacts
 *.pyc
