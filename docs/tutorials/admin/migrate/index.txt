@@ -5,6 +5,10 @@ Migrate a GeoNode 1.2 instance
 
 In case you have an existing GeoNode 1.2 instance and you want to migrate it to latest version (2.0), this document should help you to get the desired result.
 
+The migrations will move all your data to the new database schema as well as update your geoserver to the version 2.4.
+
+Beware that the migrations only work if you are using PostgreSql as database backend!
+
 Before starting
 ---------------
 
@@ -14,6 +18,8 @@ GeoNode 2.0 installation
 ------------------------
 
 As a first step, install GeoNode 2.0 and make it sure everything works smoothly using a new Django database. When asked to overwrite the local_settings file and the apache geonode site answer "yes" to both of them.
+
+You shoud expect a database connection error during the installation process. This is the correct behavior for the migration purpose.
 
 Now change the /etc/geonode/local_settings.py file, and set the DATABASE password to the GeoNode Dababase path of the 1.2 version.
 
