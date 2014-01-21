@@ -105,7 +105,6 @@ function setup_django_every_time() {
     # https://github.com/GeoNode/geonode/issues/1180
     geonode syncdb --noinput --all
     geonode collectstatic --noinput
-    geonode loaddata $GEONODE_SHARE/admin.json
 
     # Create an empty uploads dir
     mkdir -p $GEONODE_WWW/uploaded
