@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.conf import settings
 
-from geonode.base.models import TopicCategory, ContactRole, ResourceBase, Link, Thumbnail
 from geonode.base.models import (TopicCategory, SpatialRepresentationType,
-    Region, RestrictionCodeType, ContactRole, ResourceBase, Link, License)
+    Region, RestrictionCodeType, ContactRole, ResourceBase, Link, License, Thumbnail)
 
 class LicenseAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
@@ -78,6 +77,22 @@ class LinkAdmin(admin.ModelAdmin):
     list_display = ('id', 'resource', 'extension', 'link_type', 'name', 'mime')
     list_filter = ('resource', 'extension', 'link_type', 'mime')
     search_fields = ('name', 'resource__title',)
+    
+class ThumbnailAdmin(admin.ModelAdmin):
+    model = Thumbnail
+    list_display = ('get_title', 'thumb_file', 'get_thumb_url',)
+    search_fields = ('resourcebase__title',)
+    
+    def get_title(self, obj):
+        rb = obj.resourcebase_set.all()[0] # should be always just one!
+        return rb.title
+    get_title.allow_tags = True
+    
+    def get_thumb_url(self, obj):
+        rb = obj.resourcebase_set.all()[0] # should be always just one!
+        return u'<img src="%s" alt="%s" height="80px" />' % (rb.get_thumbnail_url(), 
+            obj.id)
+    get_thumb_url.allow_tags = True
 
 admin.site.register(TopicCategory, TopicCategoryAdmin)
 admin.site.register(Region, RegionAdmin)
@@ -86,5 +101,5 @@ admin.site.register(RestrictionCodeType, RestrictionCodeTypeAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
 admin.site.register(ResourceBase, ResourceBaseAdmin)
 admin.site.register(Link, LinkAdmin)
-admin.site.register(Thumbnail, admin.ModelAdmin)
+admin.site.register(Thumbnail, ThumbnailAdmin)
 admin.site.register(License, LicenseAdmin)
