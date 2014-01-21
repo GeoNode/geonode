@@ -1,7 +1,7 @@
 geonode (2.0.0+thefinal1) precise; urgency=high
 
   [ Ariel Nunez ]
-  * [fc2701] Added Biboy to AUTHORS
+  * [fc2701] Added Biboy to AUTHORS.
 
   [ Simone Dalmasso ]
   * [532f73] small update on the migrations doc
