@@ -1,3 +1,25 @@
+geonode (2.0.0+thefinal1) precise; urgency=high
+
+  [ Ariel Nunez ]
+  * [fc2701] Added Biboy to AUTHORS
+
+  [ Simone Dalmasso ]
+  * [532f73] small update on the migrations doc
+
+  [ capooti ]
+  * [2b9150] Updated migrations for running from an effective 1.2 instance (WFP one was slightly updated).
+  * [a7bb5e] Fixed the failing case of migrations with an empty layers table.
+  * [d2d21e] Added the host in psycopg2 connection string as without it causes an error in installation procedure, even if default should be localhost.
+
+  [ Simone Dalmasso ]
+  * [d6965e] put back the correct content wrapper padding
+  * [4e37e4] Add something on how to add spatial columns to the db
+  * [b47d4c] add the geonode-updateip after migrations
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 21 Jan 2014 05:47:09 +0000
+
 geonode (2.0.0+thefinal0) precise; urgency=high
 
   [ Matt Bertrand ]
