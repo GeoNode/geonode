@@ -135,9 +135,6 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     poc = map_obj.poc
     metadata_author = map_obj.metadata_author
 
-    ContactRole.objects.get(resource=map_obj, role=map_obj.poc_role)
-    ContactRole.objects.get(resource=map_obj, role=map_obj.metadata_author_role)
-
     if request.method == "POST":
         map_form = MapForm(request.POST, instance=map_obj, prefix="resource")
     else:
