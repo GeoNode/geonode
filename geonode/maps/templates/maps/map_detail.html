@@ -173,6 +173,14 @@
       {% with map.owner.profile as profile %}
         {% include "people/_profile_about_item.html" %} 
       {% endwith %}
+      <p>{% trans "Point of Contact" %}</p>
+      {% with map.poc as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
+      <p>{% trans "Metadata Author" %}</p>
+      {% with map.metadata_author as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
     </div>
   </aside>
   {% include "_permissions_form.html" %}
