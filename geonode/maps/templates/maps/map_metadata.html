@@ -1,33 +1,56 @@
 {% extends "maps/map_base.html" %}
-
 {% load i18n %}
 {% load bootstrap_tags %}
 
 {% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
 
-{% block head %}
-    {{ block.super }}
-{% endblock %}
+{% block body_class %}data{% endblock %}
 
-{% block body_class %}maps{% endblock %}
-
-{% block body %}
-  <form action="{{ map.get_absolute_url }}/metadata" method="POST">
+{% block body_outer %}  
+<form class="form-horizontal" action="{{ map.get_absolute_url }}/metadata" method="POST">
     <legend>
-        {% blocktrans with map.title as map_title %}
-            Updating metadata of {{ map_title }}
-        {% endblocktrans %}
+      {% blocktrans with map.title as map_title %}
+        Editing details for {{ map_title }}
+      {% endblocktrans %}
     </legend>
+    {% if map.metadata_uploaded %}
+	<div style="background-color: orange;">{% blocktrans %}Note: this map's orginal metadata was populated by importing a metadata XML file.
+        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.
+        Some of your original metadata may have been lost.{% endblocktrans %}</div>
+    {% endif %}
+
+    {% if map_form.errors  %}
+	<div style="background-color: pink">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}
+            <ul>
+        {% for field in map_form %}
+            {% if field.errors %}
+                <li>{{ field.label }}</li>
+            {% endif %}
+        {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <br/>
     {% csrf_token %}
     <div class="form-controls">
-        {{ map_form|as_bootstrap }}
+      {{ map_form|as_bootstrap }}
     </div>
+    <fieldset class="form-controls modal-forms modal hide fade" id="poc_form" >
+      <h2>{% trans "Point of Contact" %}</h2>
+      {{ poc_form|as_bootstrap }}
+      <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
+    </fieldset>
+    <fieldset class="form-controls modal-forms modal hide fade" id="metadata_form">
+      <h2>{% trans "Metadata Provider" %}</h2>
+        {{ author_form|as_bootstrap }}
+      <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
+    </fieldset>
     <div class="form-actions">
-      <input type="submit" class="btn btn-primary" value="{% trans "Update metadata" %}"/>
+      <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
     </div>
   </form>
-{% endblock %}
 
+{% endblock %}
 {% block extra_script %}
-{% include 'metadata_form_js.html' %}
+ {% include 'metadata_form_js.html' %} 
 {% endblock %}

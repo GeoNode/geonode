@@ -21,6 +21,7 @@
 import taggit
 from django import forms
 from geonode.maps.models import Map
+from geonode.people.models import Profile
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -30,14 +31,22 @@ class MapForm(forms.ModelForm):
     date.widget.widgets[1].attrs = {"class":"time"}
     temporal_extent_start = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}))
     temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}))
+    poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
+                                 label = "Point Of Contact", required=False,
+                                 queryset = Profile.objects.exclude(user=None))
+
+    metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
+                                             label = "Metadata Author", required=False,
+                                             queryset = Profile.objects.exclude(user=None))
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
     class Meta:
         model = Map
-        exclude = ('contact', 'zoom', 'projection', 'center_x', 'center_y', 'owner', 'uuid',
-                   'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid','popular_count', 'share_count',
-                   'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type', 'csw_wkt_geometry', 
-                   'csw_anytext', 'thumbnail')
+        exclude = ('contacts', 'zoom', 'projection', 'center_x', 'center_y', 'uuid',
+                   'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid',
+                   'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
+                   'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext',
+                   'popular_count', 'share_count', 'thumbnail')
         widgets = {
             'abstract': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
         }
