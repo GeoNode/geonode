@@ -9,7 +9,7 @@ fi
 
 #FIXME(Ariel): Make these variables replaceable from config.sh
 GEONODE_ETC=/etc/geonode
-GEOSERVER_DATA_DIR=/usr/share/geoserver/data/
+GEOSERVER_DATA_DIR=/usr/share/geoserver/data
 APACHE_SERVICE="invoke-rc.d apache2"
 
 # Replace SITEURL in $GEONODE_ETC/local_settings.py
