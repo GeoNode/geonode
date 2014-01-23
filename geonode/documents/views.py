@@ -144,9 +144,9 @@ def document_metadata(request, docid, template='documents/document_metadata.html
     metadata_author = document.metadata_author
 
     if request.method == "POST":
-        document_form = DocumentForm(request.POST, instance=document, prefix="document")
+        document_form = DocumentForm(request.POST, instance=document, prefix="resource")
     else:
-        document_form = DocumentForm(instance=document, prefix="document")
+        document_form = DocumentForm(instance=document, prefix="resource")
 
     if request.method == "POST" and document_form.is_valid():
         new_poc = document_form.cleaned_data['poc']
@@ -154,17 +154,24 @@ def document_metadata(request, docid, template='documents/document_metadata.html
         new_keywords = document_form.cleaned_data['keywords']
 
         if new_poc is None:
-            poc_form = ProfileForm(request.POST, prefix="poc")
+            if poc.user is None:
+                poc_form = ProfileForm(request.POST, prefix="poc", instance=poc)
+            else:
+                poc_form = ProfileForm(request.POST, prefix="poc")
             if poc_form.has_changed and poc_form.is_valid():
                 new_poc = poc_form.save()
 
         if new_author is None:
-            author_form = ProfileForm(request.POST, prefix="author")
+            if metadata_author.user is None:
+                author_form = ProfileForm(request.POST, prefix="author", 
+                    instance=metadata_author)
+            else:
+                author_form = ProfileForm(request.POST, prefix="author")
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
         if new_poc is not None and new_author is not None:
-            the_document = document_form.save(commit=False)
+            the_document = document_form.save()
             the_document.poc = new_poc
             the_document.metadata_author = new_author
             the_document.keywords.add(*new_keywords)

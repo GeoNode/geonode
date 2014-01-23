@@ -199,7 +199,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
 
 @login_required
-
 def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA)
     layer_attribute_set = inlineformset_factory(Layer, Attribute, extra=0, form=LayerAttributeForm, )
@@ -207,14 +206,11 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     poc = layer.poc
     metadata_author = layer.metadata_author
 
-    ContactRole.objects.get(resource=layer, role=layer.poc_role)
-    ContactRole.objects.get(resource=layer, role=layer.metadata_author_role)
-
     if request.method == "POST":
-        layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
+        layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(request.POST, instance=layer, prefix="layer_attribute_set", queryset=Attribute.objects.order_by('display_order'))
     else:
-        layer_form = LayerForm(instance=layer, prefix="layer")
+        layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(instance=layer, prefix="layer_attribute_set", queryset=Attribute.objects.order_by('display_order'))
 
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid():

@@ -48,6 +48,8 @@ from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
 from geonode.documents.models import get_related_documents
 from geonode.utils import ogc_server_settings
+from geonode.base.models import ContactRole
+from geonode.people.forms import ProfileForm, PocForm
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -125,36 +127,69 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         'ows': getattr(ogc_server_settings, 'ows', ''),
     }))
 
-
 @login_required
 def map_metadata(request, mapid, template='maps/map_metadata.html'):
-    '''
-    The view that displays a form for
-    editing map metadata
-    '''
+    
     map_obj = _resolve_map(request, mapid, msg=_PERMISSION_MSG_METADATA)
 
-    if request.method == "POST":
-        # Change metadata, return to map info page
-        map_form = MapForm(request.POST, instance=map_obj, prefix="map")
-        if map_form.is_valid():
-            map_obj = map_form.save(commit=False)
-            if map_form.cleaned_data["keywords"]:
-                map_obj.keywords.add(*map_form.cleaned_data["keywords"])
-            else:
-                map_obj.keywords.clear()
-            map_obj.save()
+    poc = map_obj.poc
+    metadata_author = map_obj.metadata_author
 
-            return HttpResponseRedirect(reverse('map_detail', args=(map_obj.id,)))
+    if request.method == "POST":
+        map_form = MapForm(request.POST, instance=map_obj, prefix="resource")
     else:
-        # Show form
-        map_form = MapForm(instance=map_obj, prefix="map")
+        map_form = MapForm(instance=map_obj, prefix="resource")
+
+    if request.method == "POST" and map_form.is_valid():
+        new_poc = map_form.cleaned_data['poc']
+        new_author = map_form.cleaned_data['metadata_author']
+        new_keywords = map_form.cleaned_data['keywords']
+
+        if new_poc is None:
+            if poc.user is None:
+                poc_form = ProfileForm(request.POST, prefix="poc", instance=poc)
+            else:
+                poc_form = ProfileForm(request.POST, prefix="poc")
+            if poc_form.has_changed and poc_form.is_valid():
+                new_poc = poc_form.save()
+
+        if new_author is None:
+            if metadata_author.user is None:
+                author_form = ProfileForm(request.POST, prefix="author", 
+                    instance=metadata_author)
+            else:
+                author_form = ProfileForm(request.POST, prefix="author")
+            if author_form.has_changed and author_form.is_valid():
+                new_author = author_form.save()
+
+        if new_poc is not None and new_author is not None:
+            the_map = map_form.save()
+            the_map.poc = new_poc
+            the_map.metadata_author = new_author
+            the_map.keywords.clear()
+            the_map.keywords.add(*new_keywords)
+            return HttpResponseRedirect(reverse('map_detail', args=(map_obj.id,)))
+
+    if poc.user is None:
+        poc_form = ProfileForm(instance=poc, prefix="poc")
+    else:
+        map_form.fields['poc'].initial = poc.id
+        poc_form = ProfileForm(prefix="poc")
+        poc_form.hidden=True
+
+    if metadata_author.user is None:
+        author_form = ProfileForm(instance=metadata_author, prefix="author")
+    else:
+        map_form.fields['metadata_author'].initial = metadata_author.id
+        author_form = ProfileForm(prefix="author")
+        author_form.hidden=True
 
     return render_to_response(template, RequestContext(request, {
         "map": map_obj,
-        "map_form": map_form
+        "map_form": map_form,
+        "poc_form": poc_form,
+        "author_form": author_form,
     }))
-
 
 @login_required
 def map_remove(request, mapid, template='maps/map_remove.html'):
