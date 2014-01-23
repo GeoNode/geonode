@@ -72,7 +72,10 @@ class Profile(models.Model):
         return u"%s (%s)" % (self.name, self.organization)
 
     def class_name(value): 
-        return value.__class__.__name__ 
+        return value.__class__.__name__
+        
+    class Meta:
+        ordering = ['name']
 
 @receiver(post_save, sender=User)
 def user_post_save(sender, **kwargs):
