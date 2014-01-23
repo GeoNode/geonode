@@ -1,3 +1,7 @@
+#Stuff 
+git
+git.*
+
 # build artifacts
 *.pyc
 *.egg-info
