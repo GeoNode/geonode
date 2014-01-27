@@ -247,17 +247,25 @@
             var more = (page * 10) < data.total;
             return {
               results: $.map(data.results,function(object){
-                return {id: object.id, text: object.title};
+                return {id: object.id, text: object.title, url: object.detail };
               }),
               more: more
             }
           }          
         },
-        createSearchChoice:function(term, data) { if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} 
+        createSearchChoice:function(term, data) { 
+            if ($(data).filter(function() { 
+                return this.text.localeCompare(term)===0; }).length===0) {
+                    return {id:term, text:term};
+                    } 
         },
         formatSelection: function(item){
-          $('#search').val(item.text);
-          $('#search').parent().submit();
+          if(item.url != undefined) {
+            window.location.href = item.url;
+          } else {
+            $('#search').val(item.text);
+            $('#search').parent().submit();
+          };
         }
       });
     </script>
