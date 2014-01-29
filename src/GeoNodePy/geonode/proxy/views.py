@@ -19,6 +19,7 @@ logger = logging.getLogger("geonode.proxy.views")
 
 HGL_URL = 'http://hgl.harvard.edu:8080/HGL'
 
+_valid_tags = "\{http\:\/\/www\.opengis\.net\/wms\}WMS_Capabilities|WMT_MS_Capabilities|WMS_DescribeLayerResponse|\{http\:\/\/www\.opengis\.net\/gml\}FeatureCollection|msGMLOutput|\{http\:\/\/www.opengis\.net\/wfs\}FeatureCollection"
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 h = httplib2.Http()
@@ -84,7 +85,7 @@ def valid_response(responseContent):
         try:
             from defusedxml.ElementTree import fromstring
             et = fromstring(responseContent)
-            if re.match("\{http\:\/\/www\.opengis\.net\/wms\}WMS_Capabilities|WMT_MS_Capabilities|WMS_DescribeLayerResponse|\{http\:\/\/www\.opengis\.net\/gml\}FeatureCollection|msGMLOutput", et.tag):
+            if re.match(_valid_tags, et.tag):
                 return responseContent
         except ParseError:
             return None
