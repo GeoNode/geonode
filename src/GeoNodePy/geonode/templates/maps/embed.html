@@ -6,6 +6,7 @@
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
+{% include "geonode/xblock_header.html" %}
 {{ block.super }}
 {% if "gme-" in GOOGLE_API_KEY %}
 <script src="https://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
@@ -58,11 +59,52 @@ Ext.onReady(function() {
          */
         rest: "/maps/"
     };
+//console.log("----------------------------------------------");
+//console.log("config = "+JSON.stringify(config));
 
     Ext.apply(config, {{ config }});
       
     
     app = new GeoExplorer.Viewer(config);
+//console.log("==============================================");
+//console.log("config = "+JSON.stringify(config));
+//console.log("==============================================");
+
+    MESSAGING.getInstance().registerHandler("info", function(m) { alert("the slave code received this 'info' message: "+m.getMessage()); });
+//    setTimeout(function() {MESSAGING.getInstance().send(new Message("info","ad-hoc message from slave"));}, 1500);
+
+    app.on("ready", function() {
+        app.mapPanel.map.events.register("moveend", app.mapPanel, function(){
+            MESSAGING.getInstance().send(new Message("moveend",{center:app.mapPanel.map.getCenter(),zoomLevel:app.mapPanel.map.getZoom()}));
+        });
+
+        app.mapPanel.map.events.register("zoomend", app.mapPanel.map, function(){
+            MESSAGING.getInstance().send(new Message("zoomend", app.mapPanel.map.getZoom()));
+        });
+
+        app.mapPanel.map.events.register("changelayer", app.mapPanel.map, function(e) {
+//            console.log("changelayer event: id: "+e.layer.id+"   name: "+e.layer.name);
+            MESSAGING.getInstance().send(new Message("changelayer", {name: e.layer.name, id:e.layer.id, visibility:e.layer.visibility,opacity:e.layer.opacity}));
+        }); 
+//	app.mapPanel.map.events.register("changebaselayer", app.mapPanel.map, function(e) {
+//            console.log("changebaselayer event:   id: "+e.layer.id+"   name: "+e.layer.name);
+//        });
+        MESSAGING.getInstance().registerHandler("setZoomLevel", function(m) { app.mapPanel.map.zoomTo(m.getMessage()); });
+        MESSAGING.getInstance().registerHandler("setCenter",function(m) {
+            var data = m.getMessage();
+            app.mapPanel.map.setCenter([data.centerLon, data.centerLat],data.zoomLevel,false,false);
+        });
+        MESSAGING.getInstance().registerHandler("setLayers",function(m) {
+            var data = JSON.parse(m.getMessage());
+            for(var id in data){
+               var layer = app.mapPanel.map.getLayer(id);
+               layer.setVisibility(data[id]['visibility']);
+               layer.setOpacity(data[id]['opacity']);
+            }
+        });
+        MESSAGING.getInstance().send(new Message("portalReady", {}));
+    });
+
 {% endautoescape %}
 });
 </script>
