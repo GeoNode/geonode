@@ -8,7 +8,7 @@ var queryParams = null;
 function getHost(r) {
    var a= document.createElement("A");
    a.href = r;
-   return a.protocol+"//"+a.hostname+":"+(a.port ? a.port : "80")+"/";
+   return a.protocol+"//"+a.hostname+(a.port ? ":"+ a.port : "")+"/";
 }
 /*
  (function($) {
