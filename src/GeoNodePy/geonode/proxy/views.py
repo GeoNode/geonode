@@ -19,6 +19,7 @@ logger = logging.getLogger("geonode.proxy.views")
 
 HGL_URL = 'http://hgl.harvard.edu:8080/HGL'
 
+_valid_tags = "\{http\:\/\/www\.opengis\.net\/wms\}WMS_Capabilities|WMT_MS_Capabilities|WMS_DescribeLayerResponse|\{http\:\/\/www\.opengis\.net\/gml\}FeatureCollection|msGMLOutput|\{http\:\/\/www.opengis\.net\/wfs\}FeatureCollection"
 
 _user, _password = settings.GEOSERVER_CREDENTIALS
 h = httplib2.Http()
@@ -75,14 +76,16 @@ def proxy(request):
 
 def valid_response(responseContent):
     #Proxy should only be used when expecting an XML or JSON response
+
+    #ArcGIS Server GetFeatureInfo xml response
+    if re.match("<FeatureInfoResponse", responseContent):
+        return responseContent
+
     if responseContent[0] == "<":
         try:
             from defusedxml.ElementTree import fromstring
             et = fromstring(responseContent)
-            if re.match("WMT_MS_Capabilities|WMS_DescribeLayerResponse|\{http\:\/\/www\.opengis\.net\/gml\}FeatureCollection", et.tag):
-                return responseContent
-            #ArcGIS Server GetFeatureInfo xml response
-            elif re.match("<FeatureInfoResponse", responseContent):
+            if re.match(_valid_tags, et.tag):
                 return responseContent
         except ParseError:
             return None

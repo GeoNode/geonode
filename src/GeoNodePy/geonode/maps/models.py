@@ -600,7 +600,7 @@ class Contact(models.Model):
     is_org_member = models.BooleanField(_('Affiliated with Harvard'), blank=True, null=False, default=False)
     member_expiration_dt = models.DateField(_('Harvard affiliation expires on: '), blank=False, null=False, default=datetime.today())
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
-
+    is_certifier = models.BooleanField(_('Allowed to certify maps & layers'), blank=False, null=False, default=False)
 
     created_dttm = models.DateTimeField(auto_now_add=True)
     """
@@ -716,6 +716,23 @@ class LayerManager(models.Manager):
 
     def default_metadata_author(self):
         return self.admin_contact()
+
+    def drop_incomplete_layers(self, ignore_errors=True, verbosity=1, console=sys.stdout, owner=None, max_views=0):
+        bad_layers = Layer.objects.filter(topic_category_id__isnull=True).filter(created_dttm__lt=datetime.today)  \
+            .exclude(owner__isnull=True).exclude(owner_id=1)
+        lc = 0
+        for layer in bad_layers:
+            maplayers = MapLayer.objects.filter(name=layer.typename)
+            if maplayers.count() == 0:
+                stats = LayerStats.objects.filter(layer=layer)
+                if len(stats) == 0 or stats[0].visits <= max_views:
+                    print >> console, "Delete %s" % layer.typename
+                    lc+=1
+                else:
+                    print >> console, "Skip %s, has been viewed more than %d times" % (layer.typename, max_views)
+            else:
+                print >> console, "Skip %s, has been included in a map" % (layer.typename)
+        print >> console, "%d layers deleted" % lc
 
 
     def slurp(self, ignore_errors=True, verbosity=1, console=sys.stdout, owner=None, new_only=False, lnames=None, workspace=None):
@@ -1626,6 +1643,9 @@ class LayerAttribute(models.Model):
     def __str__(self):
         return "%s" % self.attribute
 
+    def __unicode__(self):
+        return self.attribute
+
 
 class Map(models.Model, PermissionLevelMixin):
     """
@@ -2217,7 +2237,7 @@ class MapLayer(models.Model):
         elif self.source_params.find( "gxp_hglsource") > -1:
             # call HGL ServiceStarter asynchronously to load the layer into HGL geoserver
             from geonode.queue.tasks import loadHGL
-            #loadHGL.delay(self.name)
+            loadHGL.delay(self.name)
 
 
         #Create cache of maplayer config that will last for 60 seconds (in case permissions or maplayer properties are changed)

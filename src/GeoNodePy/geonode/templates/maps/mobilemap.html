@@ -153,6 +153,7 @@ var featureEditor = new gxp.plugins.TouchFeatureEditor({
         featureManager,
         featureEditor{% endif %}],
         proxy: "/proxy/?url=",
+        localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
 
         /* The URL to a REST map configuration service.  This service
          * provides listing and, with an authenticated user, saving of

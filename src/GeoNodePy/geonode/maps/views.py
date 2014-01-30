@@ -88,11 +88,6 @@ def default_map_config():
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
 
-class ContactForm(forms.ModelForm):
-    class Meta:
-        model = Contact
-        exclude = ('user','is_org_member',)
-
 
 class GazetteerForm(forms.Form):
 
@@ -1805,6 +1800,19 @@ def search_result_detail(request):
         'layer': layer,
         'layer_is_remote': layer_is_remote,
         'category' : category
+    }))
+
+def maps_search_result_detail(request):
+    mapid = request.GET.get("mapid", None)
+    if  mapid is None:
+        return HttpResponse(status=400)
+    try:
+        map = Map.objects.get(id=mapid)
+    except Exception:
+        map = None
+
+    return render_to_response('maps/search_result_snippet_map.html', RequestContext(request, {
+        'map': map,
     }))
 
 def _extract_links(rec, xml):

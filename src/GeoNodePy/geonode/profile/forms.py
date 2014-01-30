@@ -8,4 +8,4 @@ attrs_dict = { 'class': 'required' }
 class ContactProfileForm(ModelForm):
     class Meta:
         model = Contact
-        exclude = ('is_org_member', 'user', 'member_expiration_dt')
+        exclude = ('is_org_member', 'user', 'member_expiration_dt', 'is_certifier')

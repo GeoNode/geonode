@@ -9,23 +9,11 @@
 {% block content %}
 <div class="onecol">
   <h2>Edit {{ profile.user.username }}'s profile</h2>
-  <p>{% trans "Your current avatar: " %}</p>
-  {% avatar user %}
-  {% if not avatars %}
-  <p>{% trans "You haven't uploaded an avatar yet. Please upload one now." %}</p>
-  {% else %}
-  <form method="POST" action="{% url avatar_change %}">
-    <ul>
-      {{ primary_avatar_form.as_ul }}
-    </ul>
-    <p>{% csrf_token %}<input type="submit" value="{% trans "Choose new Default" %}" /></p>
-  </form>
-  {% endif %}
 
-  <form enctype="multipart/form-data" method="POST" action="{% url avatar_add %}">
-    {{ upload_avatar_form.as_p }}
-    <p>{% csrf_token %}<input type="submit" value="{% trans "Upload New Image" %}" /></p>
-  </form>
+    <div >
+        <div class="avatar">{% avatar user 70 %}</div>
+        <p><a class="btn btn-primary btn-block" href="{% url avatar_change %}">{% trans "Change your avatar" %}</a></p>
+    </div>
 
    {%  if USE_CUSTOM_ORG_AUTHORIZATION %}
     <div style="padding: 10px">

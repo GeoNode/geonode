@@ -1004,3 +1004,8 @@ Comments
 	background-color: #ced9e7;
 	border: 1px solid #000;
 }
+
+.certbadge img {
+    padding:5px;
+    vertical-align:middle;
+}

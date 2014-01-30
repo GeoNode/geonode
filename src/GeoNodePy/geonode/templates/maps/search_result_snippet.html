@@ -1,5 +1,7 @@
 {% load i18n %}
 {% load geonode_auth %}
+{% load avatar_tags %}
+{% load certified %}
 
 <p><b>{% trans "Category:" %}</b>
 {% if category %}
@@ -29,6 +31,14 @@
 {% endif %}
 </p>
 
+{% object_certifications layer as certifications %}
+{% if certifications %}
+    <p><b>{% trans "Certified by:" %}</b>
+    {% for certification in certifications %}
+        <a href="/profiles/{{certification.certifier.username}}"><span class="certbadge">{% avatar certification.certifier 16 %}</span></a>
+    {% endfor %}
+    </p>
+{% endif %}
 
 <p><b>{% trans "Metadata Links:" %}</b>
 {% for link in rec.metadata_links %}
@@ -77,6 +87,9 @@
       {% trans "Visit originating site for more information about this layer." %}
   </a></p>
   {% endif %}
+
+
+
 
 {% else %} 
   {% has_obj_perm user layer "maps.view_layer" as can_view %}

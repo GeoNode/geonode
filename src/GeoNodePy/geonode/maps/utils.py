@@ -736,17 +736,18 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     try:
         ds = cat.get_store(settings.DB_DATASTORE_NAME)
     except FailedRequestError:
-        ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
-        ds.connection_parameters.update(
-            host=settings.DB_DATASTORE_HOST,
-            port=settings.DB_DATASTORE_PORT,
-            database=settings.DB_DATASTORE_DATABASE,
-            user=settings.DB_DATASTORE_USER,
-            passwd=settings.DB_DATASTORE_PASSWORD,
-            dbtype=settings.DB_DATASTORE_TYPE)
-        cat.save(ds)
-        ds = cat.get_store(settings.DB_DATASTORE_NAME)
-
+        store_layers = Layer.objects.filter(store=settings.DB_DATASTORE_NAME)
+        if store_layers.count() == 0:
+            ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
+            ds.connection_parameters.update(
+                host=settings.DB_DATASTORE_HOST,
+                port=settings.DB_DATASTORE_PORT,
+                database=settings.DB_DATASTORE_DATABASE,
+                user=settings.DB_DATASTORE_USER,
+                passwd=settings.DB_DATASTORE_PASSWORD,
+                dbtype=settings.DB_DATASTORE_TYPE)
+            cat.save(ds)
+            ds = cat.get_store(settings.DB_DATASTORE_NAME)
     try:
         cat.add_data_to_store(ds, name, data, overwrite=overwrite, charset=charset)
         return ds, cat.get_resource(name, store=ds)
