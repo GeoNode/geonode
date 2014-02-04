@@ -46,7 +46,7 @@ from geoserver.catalog import FailedRequestError
 from geonode.utils import http_client, _get_basic_auth_info, json_response
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm, LayerStyleUploadForm
 from geonode.layers.models import Layer, Attribute, set_styles, geoserver_post_save, geoserver_pre_save
-from geonode.base.models import ContactRole, Link
+from geonode.base.models import ContactRole
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -58,8 +58,6 @@ from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import ogc_server_settings
 from geoserver.resource import FeatureType
-from geonode.settings import DOWNLOAD_FORMATS_RASTER, \
-        DOWNLOAD_FORMATS_VECTOR, DOWNLOAD_FORMATS_METADATA
 
 logger = logging.getLogger("geonode.layers.views")
 
@@ -194,12 +192,12 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     
     if layer.storeType=='dataStore':
         links = layer.link_set.download().filter(
-            name__in=DOWNLOAD_FORMATS_VECTOR)
+            name__in=settings.DOWNLOAD_FORMATS_VECTOR)
     else:
         links = layer.link_set.download().filter(
-            name__in=DOWNLOAD_FORMATS_RASTER)
+            name__in=settings.DOWNLOAD_FORMATS_RASTER)
     metadata = layer.link_set.metadata().filter(
-        name__in=DOWNLOAD_FORMATS_METADATA)
+        name__in=settings.DOWNLOAD_FORMATS_METADATA)
     return render_to_response(template, RequestContext(request, {
         "layer": layer,
         "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
