@@ -189,12 +189,22 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
     DEFAULT_BASE_LAYERS = default_map_config()[1]
-
+    
+    if layer.storeType=='dataStore':
+        links = layer.link_set.download().filter(
+            name__in=settings.DOWNLOAD_FORMATS_VECTOR)
+    else:
+        links = layer.link_set.download().filter(
+            name__in=settings.DOWNLOAD_FORMATS_RASTER)
+    metadata = layer.link_set.metadata().filter(
+        name__in=settings.DOWNLOAD_FORMATS_METADATA)
     return render_to_response(template, RequestContext(request, {
         "layer": layer,
         "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
         "documents": get_related_documents(layer),
+        "links": links,
+        "metadata": metadata,
     }))
 
 

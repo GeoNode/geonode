@@ -31,7 +31,7 @@
           <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-          {% for link in layer.link_set.download %}
+          {% for link in links %}
             <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
           {% endfor %}
         </ul>
@@ -43,7 +43,7 @@
           <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-          {% for link in layer.link_set.metadata %}
+          {% for link in metadata %}
             <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
           {% endfor %}
         </ul>
