@@ -437,3 +437,42 @@ THEME_ACCOUNT_CONTACT_EMAIL
 Default: ``'admin@example.com'``
 
 This email address is added to the bottom of the password reset page in case users have trouble un-locking their account.
+
+Download settings
+=================
+
+DOWNLOAD_FORMATS_METADATA
+-------------------------
+
+Specifies which metadata formats are available for users to download. 
+
+Default::
+
+    DOWNLOAD_FORMATS_METADATA = [
+        'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'TC211',
+    ]
+    
+DOWNLOAD_FORMATS_VECTOR
+-------------------------
+
+Specifies which formats for vector data are available for users to download. 
+
+Default::
+
+    DOWNLOAD_FORMATS_VECTOR = [
+        'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV', 
+        'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
+    ]
+    
+DOWNLOAD_FORMATS_RASTER
+-------------------------
+
+Specifies which formats for raster data are available for users to download. 
+
+Default::
+
+    DOWNLOAD_FORMATS_RASTER = [
+        'JPEG', 'PDF', 'PNG' 'Tiles',
+    ]
+
+
