@@ -81,7 +81,7 @@ Core development tools and libraries
 
 - bootstrap
 
-  - http://twitter.github.com/bootstrap/
+  - http://twitter.github.io/bootstrap/
   - http://www.w3resource.com/twitter-bootstrap/tutorial.php
 
 - geotools/geoscript/geoserver
@@ -94,7 +94,7 @@ Core development tools and libraries
 - geopython
 
   - http://pycsw.org/docs/documentation.html
-  - http://geopython.github.com/OWSLib/
+  - http://geopython.github.io/OWSLib/
   - https://github.com/toblerity/shapely
   - https://github.com/sgillies/Fiona
   - http://pypi.python.org/pypi/pyproj
