@@ -5,4 +5,6 @@ js_info_dict = {
 }
 
 urlpatterns = patterns('geonode.analytics.views',
-    url(r'^$', 'analytic_list', name='analytics_browse'))
+    url(r'^$', 'analytic_list', name='analytics_browse'),
+    url(r'^new$', 'new_analysis', name="new_analysis"),
+    )
