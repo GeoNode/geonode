@@ -172,7 +172,7 @@ INSTALLED_APPS = (
     'pagination',
     'taggit',
     'taggit_templatetags',
-    'south',
+    #'south',
     'friendlytagloader',
     'geoexplorer',
     'django_extensions',
@@ -198,12 +198,14 @@ INSTALLED_APPS = (
     'geonode.layers',
     'geonode.upload',
     'geonode.maps',
+    'geonode.maps',
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
     'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
+    'geonode.analytics',
 )
 
 LOGGING = {
@@ -359,6 +361,10 @@ SOUTH_MIGRATION_MODULES = {
     'avatar': 'geonode.migrations.avatar',
 }
 SOUTH_TESTS_MIGRATE=False
+
+SOUTH_DATABASE_ADAPTERS = { 
+	'default' :  'south.db.postgresql_psycopg2',
+}
 
 # Settings for Social Apps
 AUTH_PROFILE_MODULE = 'people.Profile'
