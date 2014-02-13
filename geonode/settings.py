@@ -604,7 +604,8 @@ DOWNLOAD_FORMATS_VECTOR = [
     'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
 ]
 DOWNLOAD_FORMATS_RASTER = [
-    'JPEG', 'PDF', 'PNG' 'Tiles',
+    'JPEG', 'PDF', 'PNG', 'ArcGrid', 'GeoTIFF', 'Gtopo30', 'ImageMosaic', 'KML',
+    'View in Google Earth', 'Tiles',
 ]
 
 
