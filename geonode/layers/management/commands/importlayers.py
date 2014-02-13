@@ -42,7 +42,9 @@ class Command(BaseCommand):
             make_option('-o', '--overwrite', dest='overwrite', default=False, action="store_true",
                 help="Overwrite existing layers if discovered (defaults False)"),
             make_option('-k', '--keywords', dest='keywords', default="",
-                help="The default keywords for the imported layer(s). Will be the same for all imported layers if multiple imports are done in one command")
+                help="""The default keywords, separated by comma, for the 
+                    imported layer(s). Will be the same for all imported layers 
+                    if multiple imports are done in one command""")
         )
 
     def handle(self, *args, **options):
@@ -61,7 +63,7 @@ class Command(BaseCommand):
         else:
             skip = True
 
-        keywords = options.get('keywords').split()
+        keywords = options.get('keywords').split(',')
         start = datetime.datetime.now()
         output = []
         for path in args:
