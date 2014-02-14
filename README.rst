@@ -120,7 +120,7 @@ Once fully started, you should see a message indicating the address of your Worl
   Press CTRL-C to shut down
 
 
-.. note1::
+* note1::
 
   When running ``python bootstrap.py`` the ``--no-site-packages`` option is
   not required.  If enabled, the bootstrap script will sandbox your virtual
@@ -131,7 +131,7 @@ Once fully started, you should see a message indicating the address of your Worl
   vendor, or packaged other than on PyPI.  When in doubt, however, just leave
   this option in.
 
-.. note2::
+* note2::
 
   When running "pave build" command, if error about version string parsing occurs, 
   edit ~/cga-worldmap/lib/python2.7/site-packages/django/contrib/gis/geos/libgeos.py,
