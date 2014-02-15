@@ -57,7 +57,7 @@ class LayersTest(TestCase):
     """Tests geonode.layers app/module
     """
 
-    fixtures = ['initial_data.json']
+    fixtures = ['bobby']
 
     def setUp(self):
         self.user = 'admin'

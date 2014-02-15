@@ -154,6 +154,7 @@
   {% include "_permissions_form.html" %}
 {% endblock %}
 {% block extra_script %}
+{% if SOCIAL_BUTTONS %}
 <div id="fb-root"></div>
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
@@ -162,9 +163,11 @@
   js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
-
+{% endif %}
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user document "document" %}
+    {% else %}
+        {% overall_rating document "document" as the_doc_rating %}
     {% endif %}
     <script type="text/javascript">
     $(function() {
@@ -173,20 +176,20 @@
             readOnly: true,
             start: $('div.overall_rating').data('rating'),
             path: "{{ STATIC_URL }}lib/img/"
+            {% if not request.user.is_authenticated %},
+            score: {{ the_doc_rating }}
+            {% endif %}
         });
+        var activeTab = $('[href=' + location.hash + ']');
+        activeTab && activeTab.tab('show');
     });
-    </script>
-    <script>
-        $(function () {
-            var activeTab = $('[href=' + location.hash + ']');
-            activeTab && activeTab.tab('show');
-        });
-
+        {% if SOCIAL_BUTTONS %}
         (function() {
             var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
             po.src = 'https://apis.google.com/js/plusone.js';
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
         })();
+        {% endif %}
     </script>
     {% include "_permissions_form_js.html" %}
 {% endblock extra_script %}

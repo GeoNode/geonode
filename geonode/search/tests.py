@@ -51,7 +51,7 @@ class searchTest(TestCase):
 
     c = Client()
 
-    fixtures = ['initial_data.json']
+    fixtures = ['initial_data.json', 'bobby']
 
     @classmethod
     def setUpClass(cls):

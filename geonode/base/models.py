@@ -189,7 +189,7 @@ class ThumbnailMixin(object):
     def get_thumbnail_url(self):
         thumb = self.thumbnail
         return thumb == None and self._get_default_thumbnail() or thumb.thumb_file.url
-
+ 
     def has_thumbnail(self):
         '''Determine if the thumbnail object exists and an image exists'''
         thumb = self.thumbnail
@@ -206,6 +206,16 @@ class ResourceBaseManager(models.Manager):
         contact = Profile.objects.get_or_create(user=superusers[0],
                                                 defaults={"name": "Geonode Admin"})[0]
         return contact
+
+
+class License(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    url = models.URLField(max_length=2000, null=True, blank=True)
+    license_text = models.TextField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
 
 
 class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
@@ -242,10 +252,12 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     restriction_code_type = models.ForeignKey(RestrictionCodeType, verbose_name=_('restrictions'), help_text=_('limitation(s) placed upon the access or use of the data.'), null=True, blank=True, limit_choices_to=Q(is_choice=True))
     constraints_other = models.TextField(_('restrictions other'), blank=True, null=True, help_text=_('other restrictions and legal prerequisites for accessing and using the resource or metadata'))
 
+    license = models.ForeignKey(License, null=True, blank=True)
+
     # Section 4
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng', help_text=_('language used within the dataset'))
     category = models.ForeignKey(TopicCategory, help_text=_('high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.'), 
-        null=True, blank=True, limit_choices_to=Q(is_choice=True), default=get_default_category)
+        null=True, blank=True, limit_choices_to=Q(is_choice=True))
     spatial_representation_type = models.ForeignKey(SpatialRepresentationType, help_text=_('method used to represent geographic information in the dataset.'), null=True, blank=True, limit_choices_to=Q(is_choice=True))
 
     # Section 5
@@ -285,10 +297,30 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     metadata_uploaded = models.BooleanField(default=False)
     metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
 
-    thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True)
+    thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __unicode__(self):
         return self.title
+        
+    @property
+    def geonode_type(self):
+        gn_type = ''
+        try:
+            self.layer
+            gn_type = 'layer'
+        except:
+            pass
+        try:
+            self.map
+            gn_type = 'map'
+        except:
+            pass
+        try:
+            self.document
+            gn_type = 'document'
+        except:
+            pass
+        return gn_type
 
     @property
     def bbox(self):
@@ -460,3 +492,5 @@ def resourcebase_post_delete(instance, sender, **kwargs):
     """
     if instance.thumbnail:
         instance.thumbnail.delete()
+        
+    

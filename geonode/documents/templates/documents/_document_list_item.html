@@ -8,7 +8,8 @@
 {% num_ratings document as num_votes %}
 <article>
   <div class="content">
-    <div class="abstract-placeholder">{{ document.abstract }}</div>
+    <!-- <div class="abstract-placeholder">{{ document.abstract }}</div> -->
+    <div class="icon-placeholder"><i class="icon-file-text-alt"></i></div>
     <div class="item-header">
       <h3><i class="icon-file-text-alt"></i> <a href="{% url "document_detail" document.id %}">{{ document.title }}</a></h3>
     </div>

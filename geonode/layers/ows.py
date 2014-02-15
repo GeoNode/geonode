@@ -93,7 +93,7 @@ def wfs_links(wfs_url, identifier):
             ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
             ("csv", _("CSV"), "csv", {}),
             ("excel", _("Excel"), "excel", {}),
-            ("json", _("GeoJSON"), "json", {})
+            ("json", _("GeoJSON"), "json", {'srsName': 'EPSG:4326'})
      ]
      output = []
      for ext, name, mime, extra_params in types:
@@ -130,7 +130,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
     """Derive aggregate statistics from WPS endpoint"""
 
     # generate statistics using WPS
-    url = '%s/ows' % (ogc_server_settings.public_url)
+    url = '%s/ows' % (ogc_server_settings.LOCATION)
 
     # TODO: use owslib.wps.WebProcessingService for WPS interaction
     # this requires GeoServer's WPS gs:Aggregate function to
@@ -142,7 +142,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
                                'field': field
                               })
      
-    response = http_post(url, request)
+    response = http_post(url, request, timeout=ogc_server_settings.TIMEOUT)
 
     exml = etree.fromstring(response)
 
@@ -170,7 +170,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
                                    'field': field
                                   })
 
-        response = http_post(url, request)
+        response = http_post(url, request, timeout=ogc_server_settings.TIMEOUT)
 
         exml = etree.fromstring(response)    
 

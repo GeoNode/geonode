@@ -54,7 +54,7 @@ Geospatial Python Libraries
 GeoNode leverages several geospatial python libraries including gsconfig_ and OWSLib_. gsconfig is used to communicates with GeoServer's REST Configuration API to configure GeoNode layers in GeoServer. OWSLib is used to communicate with GeoServer's OGC services and can be used to communicate with other OGC services.
 
 .. _gsconfig: https://github.com/dwins/gsconfig.py
-.. _OWSLib: http://geopython.github.com/OWSLib/
+.. _OWSLib: http://geopython.github.io/OWSLib/
 
 Django Pluggables
 -----------------

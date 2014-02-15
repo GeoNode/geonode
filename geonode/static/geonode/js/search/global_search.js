@@ -10,7 +10,9 @@ $(function(){
             keywords: [],
             date_start: [],
             date_end: [],
-            sort: []
+            sort: [],
+			extent:[],
+            q: initial_query
         };
         
         // traverse the active filters to build the query parameters
@@ -32,17 +34,23 @@ $(function(){
             params.categories.shift();
         }
 
+		var extentval = $('#extent').val();
+
         var data = {
             'type': params.types.join(','),
             'category': params.categories.join(','),
             'kw': params.keywords.join(','),
             'start_date': params.date_start[0],
             'end_date': params.date_end[0],
-            'sort': params.sort[0]
+            'sort': params.sort[0],
+            'q': params.q,
+			'extent': extentval
         };
-        if (typeof default_type != 'undefined'){
+        
+        if (typeof default_type != 'undefined' && data.type == ''){
             data.type = default_type;
         }
+        
         return data;
     }
 
@@ -195,6 +203,12 @@ $(function(){
             query();
         }
     );
+	//does not automatically fire with programmatically updated text
+	$('.trigger-extent').bind("change", 
+		function(event){
+			query();
+		}
+	);
     $('.datepicker').change(
         function(){
             $(this).addClass('active');

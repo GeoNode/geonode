@@ -1,3 +1,512 @@
+geonode (2.0.0+thefinal5) precise; urgency=high
+
+  * UNRELEASED
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 21 Jan 2014 20:08:25 +0000
+
+geonode (2.0.0+thefinal4) precise; urgency=high
+
+  [ Matt Bertrand ]
+  * [6291dc] Update ows_url of local MapLayers to match new IP
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 21 Jan 2014 19:27:56 +0000
+
+geonode (2.0.0+thefinal3) precise; urgency=high
+
+  * [2cd92c] Updated base.css with latest changes to base.less
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 21 Jan 2014 19:00:24 +0000
+
+geonode (2.0.0+thefinal2) precise; urgency=high
+
+  * UNRELEASED
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 21 Jan 2014 18:40:42 +0000
+
+geonode (2.0.0+thefinal1) precise; urgency=high
+
+  [ Ariel Nunez ]
+  * [fc2701] Added Biboy to AUTHORS.
+
+  [ Simone Dalmasso ]
+  * [532f73] small update on the migrations doc
+
+  [ capooti ]
+  * [2b9150] Updated migrations for running from an effective 1.2 instance (WFP one was slightly updated).
+  * [a7bb5e] Fixed the failing case of migrations with an empty layers table.
+  * [d2d21e] Added the host in psycopg2 connection string as without it causes an error in installation procedure, even if default should be localhost.
+
+  [ Simone Dalmasso ]
+  * [d6965e] put back the correct content wrapper padding
+  * [4e37e4] Add something on how to add spatial columns to the db
+  * [b47d4c] add the geonode-updateip after migrations
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 21 Jan 2014 05:47:09 +0000
+
+geonode (2.0.0+thefinal0) precise; urgency=high
+
+  [ Matt Bertrand ]
+  * [bdea4a] Add external services to user help doc
+
+  [ menegon ]
+  * [755521] Enable proxy for https connections
+
+  [ Mike Fedak ]
+  * [b00b19] \Adds static legend to layer detail
+
+  [ Ariel Núñez ]
+  * [b7e24a] Adding new AUTHORS
+
+  [ Vivien Deparday ]
+  * [d07643] Update AUTHORS
+
+  [ Bebsher L. Salvio ]
+  * [14fd20] Fix style of pagination pager.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 17 Jan 2014 19:31:08 +0000
+
+geonode (2.0.0+rc13) precise; urgency=high
+
+  [ Elliot Bradbury ]
+  * [5a6835] FGDC Topic Category extraction
+  * [062b7e] Assigns TopicCategory to Layer using extracted metadata.
+  * [c7b32c] Added category_list to advanced search context for category filter
+  * [d1cca9] Added category filter
+  * [3807cd] Added support for capturing multiple keywords from FGDC metadata.
+
+  [ nathanhilbert ]
+  * [425fb7] added OL to search
+  * [2db0ba] added UI for search by extent
+  * [54e8a3] UI cleanup for extent search
+  * [e70db9] added extent filter to search results page
+  * [c28c69] removed extra openlayers in favor of OL wrapped in ExtGeo
+  * [07f06c] added geoexplorer JS packages in search templates and wrapped in Ext
+
+  [ capooti ]
+  * [7ec602] Some small update to the migration documentation.
+  * [0be61b] Added a migration for adding the new base.license model.
+
+  [ Tyler Garner ]
+  * [8f9631] Add the SOCIAL_BUTTONS setting to context_processors.
+
+  [ Ariel Núñez ]
+  * [4cad1f] Added Nathan Hilbert to AUTHORS
+
+  [ Tyler Garner ]
+  * [a36f8f] Fix spelling error and remove duplicate entry in AUTHORS.
+
+  [ Ariel Núñez ]
+  * [876976] Added Elliot Bradbury to AUTHORS
+
+  [ capooti ]
+  * [27c8a5] Fixed the migration's documentation.
+  * [45a141] Now title for documents can use lowercase chars. Something from css was conflicting with the field id.
+
+  [ Ariel Nunez ]
+  * [722b87] Added pyproj instructions when using pip 1.5
+  * [a7653f] Added pyproj exception to paver setup
+
+  [ mikefedak ]
+  * [d79eda] Add details to fix pyproj install on Pip 1.5
+
+  [ vdeparday ]
+  * [ba34da] It is not required to create a new folder and it is actually not used after
+
+  [ state-hiu ]
+  * [fb7133] Added missing inbox link from admin dropdown in response to issue 1267
+
+  [ warex03 ]
+  * [24bd64] Fixed viewby padding and Search menu's content-wrap padding in base.css
+  * [627890] Modified the base.less file
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 17 Jan 2014 01:28:16 +0000
+
+geonode (2.0.0+rc12) precise; urgency=high
+
+  [ Ariel Núñez ]
+  * [438610] Update AUTHORS
+  * [826578] Added cspanring to AUTHORS
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 14 Jan 2014 05:50:17 +0000
+
+geonode (2.0.0+rc10) precise; urgency=high
+
+  [ Micah Wengren ]
+  * [b02aef] Changed Django get params used in wms_links lookup to move url to defaults dict.  Prevents duplicate WMS links via repeated updatelayers calls
+
+  [ capooti ]
+  * [b50b52] Refactoring migrations.
+  * [4fa053] Added the migration for adding the resourcebase_ptr_id field in layer.
+  * [ecdf77] Added the migrations to move layer stuff to base.
+  * [6330d2] Some more steps added.
+
+  [ Micah Wengren ]
+  * [8f21ba] Decode name value into localized string before get_or_create query.  Now prevents duplicate WMS download links due to changed bounding box in url
+
+  [ capooti ]
+  * [56d44a] Intermediate commit for Simone.
+  * [ac1088] Now resource_base is correctly populated with layers.
+  * [4bdc09] Now importing spatial representations, restriction codes, topic categories and regions from layers to resourcebase.
+
+  [ Jeffrey Johnson ]
+  * [de9ce4] Update dns entry on jenkins-geonode-aws.sh
+  * [ac623b] Use existing venv for aws task
+  * [c4cd4a] Remove trailing slash in jenknis-geonode-aws.sh
+
+  [ Matt Bertrand ]
+  * [554fc9] Rename files inside zip to match new layer name
+
+  [ Ariel Núñez ]
+  * [aa650e] Added license to info panel
+
+  [ Calvin Metcalf ]
+  * [fa6080] use wgs84 for geojson
+
+  [ Ariel Núñez ]
+  * [f5f69e] Added Adam Ziaja to Contributors
+
+  [ Tom Kralidis ]
+  * [882505] add license back to ResourceBase (#1310)
+  * [928848] fix constraints XML
+
+  [ capooti ]
+  * [2879a9] First working version for 1.2 to 2.0 migrations.
+  * [4415c8] Now the permissions, styles and other notable stuff is migrated.
+
+  [ Simone Dalmasso ]
+  * [8050c7] don’t use the geonode settings
+  * [2879cc] fix the missing one
+
+  [ capooti ]
+  * [e8da25] Last commit before doint the migration PR.
+  * [c2b1e2] Added documentation for migrating from 1.2 to 2.0.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 14 Jan 2014 05:09:52 +0000
+
+geonode (2.0.0+rc8) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [8ef921] add missing double quotes in layer detail
+  * [b967ec] add missing slash in proxy url
+  * [b45f00] fix the clear options button in advanced search
+  * [4a9931] keep open the type filters
+
+  [ capooti ]
+  * [d0583a] This fixes #1311, thanks @bartvde!
+
+  [ Tyler Garner ]
+  * [ee93a7] Fix typo in the default PROXY_URL setting.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 20 Dec 2013 13:57:55 +0000
+
+geonode (2.0.0+rc7) precise; urgency=high
+
+  [ Tyler Garner ]
+  * [4ba656] Document the SOCIAL_BUTTONS setting.
+
+  [ capooti ]
+  * [8344d8] This fixes #1301.
+
+  [ Tyler Garner ]
+  * [9015d8] Fix ALLOWED_DOCUMENT_TYPES typo in the documentation.
+
+  [ capooti ]
+  * [dabffc] Added some more popular file extensions to ALLOWED_DOCUMENT_TYPES.
+
+  [ Simone Dalmasso ]
+  * [6242a8] add missing import in helpers for remove-deleted option
+
+  [ Reinier Battenberg ]
+  * [b2ab31] doUpload now returns false so the page does not scroll upwards when Upload is clicked
+
+  [ Calvin Metcalf ]
+  * [4c05f7] correct command
+
+  [ Tyler Garner ]
+  * [209717] Fix the quick start url to point to the users tutorial in the docs.
+
+  [ capooti ]
+  * [ba3d72] Layer type (vector/raster) on layer list page is back.
+
+  [ Simone Dalmasso ]
+  * [a5f4ec] use default type if not specified
+
+  [ capooti ]
+  * [8063d6] Reset the default_type to layer.
+  * [1257b7] A couple of selection filters were not collapsed by default.
+
+  [ Simone Dalmasso ]
+  * [7afb0b] don’t run the integrations tests in travis.
+  * [87ae0b] trigger a new build
+  * [46d58f] don’t grab geoserver in travis
+  * [5701db] just comment out the before script
+  * [c73319] remove the old docs
+  * [b5f404] remove the outdated customize doc page
+
+  [ Jeffrey Johnson ]
+  * [eb211c] Working on jenkins-geonode-master.sh during migration to new build server
+  * [e1ad5a] More work on migrating build server (pointing to old server for downloads for now)
+  * [f4c37c] Update java home for oracle jdk in jenkins-geonode-master.sh
+  * [60cacc] Skip tests when building geoserver extension (temporary)
+  * [a2942d] Disable deb building for now in build_geonode-geoserver-ext-deb.sh
+  * [1981c5] Change back to normal build.geonode.org url in pavement.py
+  * [0f3468] Dont try to copy the deb that we are not currently building.
+  * [87fddb] Comment out one problematic rm for now
+  * [cd7744] Reenable sourcing of ~/.bashrc now that the ec2 tools are configured
+  * [ff8e90] Re-enable integration tests on jenkins server
+
+  [ Tyler Garner ]
+  * [26c157] Improve security for the proxy view.  Fixes #1308.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 20 Dec 2013 03:29:25 +0000
+
+geonode (2.0.0+rc6) precise; urgency=high
+
+  [ Micah Wengren ]
+  * [9f46d4] Add --remove-deleted option to updatelayers.  Remove layers from GeoNode that no longer exist in GeoServer (incl --skip-unadvertised filter). Log results in stdout and debug logs
+  * [cd324c] Modified logic for GeoServer layer comparison for marking valid GeoNode layers
+  * [3d56a5] Streamline debug logging statements for GeoNode resource comparison with GeoServer, cleanup
+  * [061646] One more debug logging line for better reporting in matching iteration
+  * [1d41ae] Added code to remove ratings and comments for a layer directly in gs_slurp. Avoid calling geoserver_pre_delete
+
+  [ Tyler Garner ]
+  * [19a9dd] Remove "or groups" from the upload template until group permissions are supported.  Fixes #1262.
+
+  [ Micah Wengren ]
+  * [081cc3] Removed cleardeadlayers command and updated documentation with descriptions for all updatelayers options
+
+  [ Ariel Nunez ]
+  * [6e6b03] Updated messages
+  * [087339] Fixed translation problem in upload templates
+
+  [ Simone Dalmasso ]
+  * [b1dcfc] docs, add the port 8000 to paver start mode
+  * [8fe84d] add django debug toolbar
+
+  [ Micah Wengren ]
+  * [5be24f] Delete layer tag (keywords) references when layer is deleted
+
+  [ Jeffrey Johnson ]
+  * [9ea397] Update domain name to demo.geonode.org in fabfile.py
+
+  [ Tyler Garner ]
+  * [44eed6] Remove the cleardeadlayers reference from the Django-apps page.
+  * [e6049c] Improve the settings documentation.
+  * [09fde6] Document the GeoNode paver commands (Fixes #1169).
+
+  [ Simone Dalmasso ]
+  * [dbd328] fix typos
+  * [9d925c] small additions to the geonode_project usage
+  * [4b3428] show complete extension for invalid files
+  * [5e6efa] fix a not closed div
+  * [6d96d4] add few lines on the issue tracker
+  * [e0ebca] remove the devprocess reference
+  * [5c571c] Add something on development tools
+  * [674b21] add setup on vagrant guide
+
+  [ Calvin Metcalf ]
+  * [b90172] #1276 replace pil with pillow
+
+  [ Tyler Garner ]
+  * [b6495c] Add the document model to the actstream settings.
+
+  [ Simone Dalmasso ]
+  * [aefcfb] fix rating in detail pages for unauthenticated
+  * [46bb06] add missing port in vagrant doc
+  * [2af05b] add __init__.py file in the base commands folder
+
+  [ Paolo Pasquali ]
+  * [8602b3] Fix #1266
+  * [c749fb] Some Upload Layers style
+  * [b71696] More styles for Upload Layers template
+  * [1c8a4c] Fix Layer Replace template
+  * [761c64] Add icon placeholder in documents search list #1269
+
+  [ Simone Dalmasso ]
+  * [4d7f28] don’t delete the resource but the store recursively
+  * [888e92] apply a patch to helpers
+
+  [ Paolo Pasquali ]
+  * [8d255b] indentation only
+  * [883ae0] Fix Activity layout
+  * [d903a9] Some style in Activity Feed page
+  * [5deb67] Fix Activity Layout
+
+  [ Tom Kralidis ]
+  * [304427] add timeout configuration to handle long requests (#1279)
+
+  [ Tyler Garner ]
+  * [6fa8f8] Remove the GeoNode projects page from the documentation and redirect links to geonode.org/gallery/.  Fixes 1147.
+
+  [ Paolo Pasquali ]
+  * [6f7d9d] Add thumbs and style to activity templates
+
+  [ Tyler Garner ]
+  * [01ab69] Update javascript in GeoNode page to reflect current static setup.  Fixes #1175.
+  * [1d431e] Fix TIMEOUT typo in the settings documentation and specify the time units as seconds.
+
+  [ Simone Dalmasso ]
+  * [66686c] Add just few pdb commands.
+  * [1689a5] add missing __init__ file
+
+  [ Paolo Pasquali ]
+  * [6e9681] Add thumbs in profile resources
+
+  [ Calvin Metcalf ]
+  * [374b05] make social optional
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 04 Dec 2013 16:27:16 +0000
+
+geonode (2.0.0+rc5) precise; urgency=high
+
+  [ Ian Schneider ]
+  * [9a94f3] partial fix for #1257, map download null.zip
+
+  [ Ariel Nunez ]
+  * [051088] Change priority of geoserver's package
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 13 Nov 2013 20:00:37 +0000
+
+geonode (2.0.0+rc4) precise; urgency=high
+
+  [ Tom Kralidis ]
+  * [810cee] strip csw:GetRecordByIdResponse element if it exists
+  * [71900a] no error message anymore
+
+  [ Tyler Garner ]
+  * [22eaac] Bumped the django-geoexplorer version to 3.0.5, fixes #1036.
+
+  [ Ariel Nunez ]
+  * [966e1c] Fixed 500.html
+  * [57735d] Removed block in 500 template
+  * [dce0a9] Fixed #1256
+  * [be37d4] Stopped downloading a data.zip.
+  * [eacd42] Do not rely on data.zip, use geoserver's
+  * [8e220a] Raise exception if map download fails, do not fail silently.
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 13 Nov 2013 13:44:04 +0000
+
+geonode (2.0.0+rc3) precise; urgency=high
+
+  [ Ariel Nunez ]
+  * [39640c] Pegging the setup.py file to Django 1.5.4.
+  * [f4bff4] Django 1.5.5 is already out
+
+  [ Simone Dalmasso ]
+  * [49d125] use public url in the map download page
+  * [326059] use an initial query in search
+
+  [ Ariel Nunez ]
+  * [399211] Added fixsitename command, refs #498
+  * [630566] Added fixsitename call to updateip, fixes #498
+  * [560df6] Fixed missing thumb behavior, fixes #998
+
+  [ Bart van den Eijnden ]
+  * [62ac08] when login is successfull, update the CSRFToken in OpenLayers.Request.DEFAULT_CONFIG.headers
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 08 Nov 2013 18:32:28 +0000
+
+geonode (2.0.0+rc2) precise; urgency=high
+
+  [ Simone Dalmasso ]
+  * [fd4f94] use internal location where possible
+  * [1cb336] fix thumbnail and links
+
+  [ Michael Diener ]
+  * [012050] update to reflect main github readme dev installation directions
+
+  [ capooti ]
+  * [9dddf0] Now in the categories list in layers and maps page the category with is_choice set to false are not displayed.
+  * [00fc80] Added the MODIFY_TOPICCATEGORY to allow topic categories metadata customization when strictly necessary.
+
+  [ mdiener21 ]
+  * [79efbb] fixes to reflect 1 to 1 the  readme.rst  installation method
+
+  [ Barbara ]
+  * [ab68aa] add image to translation doc
+  * [7370fa] add other options to translation docs
+
+  [ Tyler Garner ]
+  * [d169a6] Added the block.super variable to templates that use the extra_head block to fix #1241.
+  * [e7a7da] Fixes javascript and styling problems in the replace layer view.
+  * [12e8de] Fixes #1242.
+
+  [ capooti ]
+  * [10e654] Added the documentation for the MODIFY_TOPICCATEGORY setting, and reorganized some of the settings in a "Metadata Settings" section.
+
+  [ Barbara ]
+  * [8ca66b] add instructions on geonode project
+  * [905a60] modified setup
+  * [a20ccf] old setup
+  * [b1a74a] added toctree
+
+  [ b-angerer ]
+  * [faf723] modify translation docs
+  * [74a83f] added translation
+  * [4c9f47] modified
+  * [cdc9da] modified
+  * [41aa56] modified po files - no translation added
+  * [0a5dab] modified po files - no translation added
+  * [38e0ab] modified po files - no translation added
+
+  [ Ariel Nunez ]
+  * [2fd7c1] Added on_delete=models.SET_NULL to thumbnails to prevent them from deleting layers, thanks Fuyou on #django
+
+  [ capooti ]
+  * [661fed] Now categories, keywords and date filters in layers, maps and docs page are collapsed by default. Thanks @ppasq!
+
+  [ Simone Dalmasso ]
+  * [60e07f] use the dot in the cdv and kml extensions in uploader
+
+  [ Tyler Garner ]
+  * [560bc9] Added support for Basic authentication end-to-end headers to the GeoNode proxy view.
+
+  [ Micah Wengren ]
+  * [84fcbe] Added parent template references for block extra_head in a couple templates where missing
+
+  [ Tyler Garner ]
+  * [9c49bd] Small js and html improvements to the incomplete uploads section of the upload page.
+
+  [ b-angerer ]
+  * [b73d28] added german translation
+
+  [ mdiener21 ]
+  * [f4ace9] update title text
+  * [523b12] small text fix
+
+  [ Tyler Garner ]
+  * [38ccdd] Fixed a JS error and made strings translatable in the actor template.
+  * [e68331] Replaces the JQuery UI progressbar with the Bootstrap progressbar and safely checks event targets.
+  * [19ab7b] CSS and JS cleanup in in the map_download template.
+  * [47088a] Set up all template strings for translation.  Fixes #617.
+
+  [ Simone Dalmasso ]
+  * [493146] fix the maps thumbnails internal url
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 06 Nov 2013 13:48:28 +0000
+
 geonode (2.0.0+rc1) precise; urgency=high
 
   [ Tyler Garner ]

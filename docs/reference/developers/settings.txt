@@ -11,27 +11,14 @@ GeoNode depends on.
     :local:
     :depth: 1
 
-Base settings
-=============
-
-DEFAULT_TOPICCATEGORY
----------------------
-Default: ``'location'``
-
-The identifier of the default topic category to use when uploading new layers.  The value specified for this setting must be
-present in the TopicCategory table or GeoNode will return a ``TopicCategory.DoesNotExist`` exception.
-
-
 Documents settings
 ==================
 
-Here's a list of settings available in Django core and their default values.
-Settings provided by contrib apps are listed below, followed by a topical index
-of the core settings.
+Here's a list of settings available for the Documents app in GeoNode.
 
 ALLOWED_DOCUMENT_TYPES
 ----------------------
-Default: ``['doc', 'docx', 'xls', 'xslx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
+Default: ``['doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'txt']``
 
 A list of acceptable file extensions that can be uploaded to the Documents app.
 
@@ -45,10 +32,9 @@ MAX_DOCUMENT_SIZE
 -----------------
 Default: ``2``
 
-
-Maps settings
-=============
-
+Metadata settings
+=================
+  
 CATALOGUE
 ---------
 A dict with the following keys:
@@ -61,6 +47,37 @@ A dict with the following keys:
 pycsw is the default CSW enabled in GeoNode.  pycsw configuration directives
 are managed in the PYCSW entry.
 
+PYCSW
+-----
+  A dict with pycsw's configuration.  Of note are the sections
+  ``metadata:main`` to set CSW server metadata and ``metadata:inspire``
+  to set INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true``
+  will enable INSPIRE support.  See http://pycsw.org/docs/configuration.html
+  for full pycsw configuration details.
+  
+DEFAULT_TOPICCATEGORY
+---------------------
+Default: ``'location'``
+
+The identifier of the default topic category to use when uploading new layers.  The value specified for this setting must be
+present in the TopicCategory table or GeoNode will return a ``TopicCategory.DoesNotExist`` exception.
+
+MODIFY_TOPICCATEGORY
+--------------------
+Default: ``False``
+
+Metadata Topic Categories list should not be modified, as it is strictly defined
+by ISO (See: http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml 
+and check the <CodeListDictionary gml:id="MD_MD_TopicCategoryCode"> element).
+
+Some customisation it is still possible changing the is_choice and the GeoNode 
+description fields.
+
+In case it is absolutely necessary to add/delete/update categories, it is
+possible to set the MODIFY_TOPICCATEGORY setting to True.
+
+Maps settings
+=============
 
 DEFAULT_MAP_BASE_LAYER
 ----------------------
@@ -277,19 +294,40 @@ Default: ``False``
 
 Not implemented.
 
-PYCSW
------
-  A dict with pycsw's configuration.  Of note are the sections
-  ``metadata:main`` to set CSW server metadata and ``metadata:inspire``
-  to set INSPIRE options.  Setting ``metadata:inspire['enabled']`` to ``true``
-  will enable INSPIRE support.  See http://pycsw.org/docs/configuration.html
-  for full pycsw configuration details.
+TIMEOUT
+.......
+Default: ``10``
+
+The maximum time, in seconds, to wait for the server to respond.
 
 SITEURL
 -------
 Default: ``'http://localhost:8000/'``
 
 A base URL for use in creating absolute links to Django views and generating links in metadata.
+
+Proxy settings
+==============
+
+PROXY_ALLOWED_HOSTS
+-------------------
+Default: ``()`` (Empty tuple)
+
+A tuple of strings representing the host/domain names that GeoNode can proxy requests to. This is a security measure
+to prevent an attacker from using the GeoNode proxy to render malicious code or access internal sites.
+
+Values in this tuple can be fully qualified names (e.g. 'www.geonode.org'), in which case they will be matched against
+the request’s Host header exactly (case-insensitive, not including port). A value beginning with a period can be used
+as a subdomain wildcard: ``.geonode.org`` will match geonode.org, www.geonode.org, and any other subdomain of
+geonode.org. A value of '*' will match anything and is not recommended for production deployments.
+
+
+PROXY_URL
+---------
+Default ``/proxy/?url=``
+
+The url to a proxy that will be used when making client-side requests in GeoNode.  By default, the
+internal GeoNode proxy is used but administrators may favor using their own, less restrictive proxies.
 
 Search settings
 ===============
@@ -318,6 +356,15 @@ Default: ``False``
 
 By default, the GeoNode application allows visitors to view most pages without being authenticated. If this is set to ``True``
 users must be authenticated before accessing URL routes not included in ``AUTH_EXEMPT_URLS``.
+
+Social settings
+===============
+
+SOCIAL_BUTTONS
+--------------
+Default: ``True``
+
+A boolean which specifies whether the social media icons and javascript should be rendered in GeoNode.
 
 Upload settings
 ===============
@@ -352,7 +399,7 @@ The uploader backend to use.  The backend choices are:
 * ``'geonode.importer'``
 * ``'geonode.rest'``
 
-The importer backend requires the Geoserver importer backend to be enabled and is required for uploading data into
+The importer backend requires the Geoserver importer extension to be enabled and is required for uploading data into
 GeoGit datastores.
 
 OPTIONS
@@ -390,3 +437,42 @@ THEME_ACCOUNT_CONTACT_EMAIL
 Default: ``'admin@example.com'``
 
 This email address is added to the bottom of the password reset page in case users have trouble un-locking their account.
+
+Download settings
+=================
+
+DOWNLOAD_FORMATS_METADATA
+-------------------------
+
+Specifies which metadata formats are available for users to download. 
+
+Default::
+
+    DOWNLOAD_FORMATS_METADATA = [
+        'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'TC211',
+    ]
+    
+DOWNLOAD_FORMATS_VECTOR
+-------------------------
+
+Specifies which formats for vector data are available for users to download. 
+
+Default::
+
+    DOWNLOAD_FORMATS_VECTOR = [
+        'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV', 
+        'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
+    ]
+    
+DOWNLOAD_FORMATS_RASTER
+-------------------------
+
+Specifies which formats for raster data are available for users to download. 
+
+Default::
+
+    DOWNLOAD_FORMATS_RASTER = [
+        'JPEG', 'PDF', 'PNG' 'Tiles',
+    ]
+
+

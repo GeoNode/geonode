@@ -43,39 +43,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-
-        # Deleting field 'Layer.csw_typename'
-        db.delete_column('layers_layer', 'csw_typename')
-
-        # Deleting field 'Layer.csw_schema'
-        db.delete_column('layers_layer', 'csw_schema')
-
-        # Deleting field 'Layer.csw_mdsource'
-        db.delete_column('layers_layer', 'csw_mdsource')
-
-        # Deleting field 'Layer.csw_insert_date'
-        db.delete_column('layers_layer', 'csw_insert_date')
-
-        # Deleting field 'Layer.csw_type'
-        db.delete_column('layers_layer', 'csw_type')
-
-        # Deleting field 'Layer.csw_anytext'
-        db.delete_column('layers_layer', 'csw_anytext')
-
-        # Deleting field 'Layer.csw_wkt_geometry'
-        db.delete_column('layers_layer', 'csw_wkt_geometry')
-
-        # Deleting field 'Layer.metadata_uploaded'
-        db.delete_column('layers_layer', 'metadata_uploaded')
-
-        # Deleting field 'Layer.metadata_xml'
-        db.delete_column('layers_layer', 'metadata_xml')
-
-        # Deleting field 'Layer.popular_count'
-        db.delete_column('layers_layer', 'popular_count')
-
-        # Deleting field 'Layer.share_count'
-        db.delete_column('layers_layer', 'share_count')
+        raise RuntimeError("Cannot reverse this migration.")
 
 
     models = {

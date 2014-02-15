@@ -7,8 +7,7 @@
   <p>
     {% blocktrans %}
       Here you can download all the layers of this map that
-      are hosted on this GeoNode.  The following layers will
-      be downloaded:
+      are hosted on this GeoNode.
     {% endblocktrans %}
     <ul>
       {% for layer in downloadable_layers %} 
@@ -19,6 +18,10 @@
             {{ layer }}
           {% endif %}
         </li>
+      {% empty %}
+      {% blocktrans %}
+      <div class="alert alert-warning">Could not find downloadable layers for this map. You can go back to  
+      {% endblocktrans %}<a href="{% url 'map_detail' map.id %}">{{map.title}}</a></div>
       {% endfor %} 
     </ul>
    
@@ -46,15 +49,17 @@
       </ul>
     {% endif %}
 
-    {% if map_status %} 
-      <button type="button" id="cancel">Cancel</button>
-      <!-- div id="pb"></div -->
-      <div class="progress">
-        <div id="pb" class="bar" style="width: 10%"></div>
+    {% if map_status %}
+      <div class="alert alert-success span8" id="download">
+          <div id="pb-status">{% trans 'Downloading' %}...</div>
+          <div class="progress">
+            <div id="pb" class="bar bar-success"></div>
+          </div>
+          <a class="btn" href="#" id="cancel">{%  trans 'Cancel' %}</a>
+          <a class="btn" href="{% url 'map_download' map.id %}" style="display:none;" id="retry">{%  trans 'Retry' %}</a>
       </div>
-      <div id="pb-status">Downloading.....</div>
     {% elif downloadable_layers|length > 0 %} 
-      <form action="{{site}}maps/{{map.id}}/download" method="POST"> 
+      <form action="{% url 'map_download' map.id %}" method="POST">
         {% csrf_token %}
         <div class="form-actions">
           <input type="submit" class="btn btn-primary" value="{% trans "Start downloading this map" %}" /> 
@@ -74,36 +79,45 @@
 
     "use strict";
 
-    // var checkStatus, progress, pb, process;        
-
+    var processID;
     var checkStatus = setInterval(function (){
 
-      $.get(
-        "{% url 'map_download_check' %}"
-      )
+      $.ajax({
+        type: "GET",
+        url : "{% url 'map_download_check' %}"
+      })
       .done(function(result){
-        
-        var process = $.parseJSON(result);
+        var response = $.parseJSON(result);
+        processID = response.process.id;
 
-        if (process.process.status === "FINISHED") { 
-          location.href = "{{geoserver}}rest/process/batchDownload/download/" +  process.process.id;
-          clearInterval(checkStatus); 
-          $("#pd").css("width", "100%");
-          $("#pb-status").html("Done");
-        }    
-        else { 
-          $("#pd").css("width", process.process.progress + "%");   
-        } 
+        if (response.process.status === "FINISHED") {
+          $('#cancel').hide();
+          $("#pb-status").html("{% trans  "Download Complete" %}");
+          location.href = "{{geoserver}}rest/process/batchDownload/download/" +  processID;
+          clearInterval(checkStatus);
+        }
+
+        if (response.process.status === "FAILED") {
+          $('#download').attr({class:'alert alert-error'});
+          $('.progress').hide();
+          $('#cancel').hide();
+          $('#retry').show();
+          $("#pb-status").html("{% trans  "Download Failed" %}");
+          clearInterval(checkStatus);
+        }
+
+        $("#pb").css("width", response.process.progress + "%");
       });
     }, 1000);
 
     $("#cancel").click(function(){
-      $.get(
-        "{{geoserver}}rest/process/batchDownload/kill/" + process.process.id
-      )
+      $.ajax({
+        type: "GET",
+        url: "{{geoserver}}rest/process/batchDownload/kill/" + processID
+      })
       .done(function(){
         window.alert("You successfuly canceled the download"); 
-        location.href = "{{site}}maps/{{map.id}}"; 
+        location.href = "{% url 'map_detail' map.id %}";
         clearInterval(checkStatus);
       })
       .fail(function(){
