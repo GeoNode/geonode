@@ -9,6 +9,7 @@
     <p class="lead">{% trans "Useful information for developers interested in GeoNode." %}</p>
   </header>
 
+  {% blocktrans %}
   <p><a href="http://geonode.org/">GeoNode</a> is an open service built on open source software. We encourage you to build new applications using the components and resources it provides. This page is a starting point for developers interesting in taking full advantage of GeoNode. It also includes links to the project's source code so anyone can build and customize their own GeoNode. </p>
 
   <h4>GeoNode Software</h4>
@@ -45,6 +46,7 @@
 
   <h4>GeoTools Example Code</h4>
   <p>Create a DataStore and extract a FeatureType from it, then run a Query. It is all documented on the wiki at <code>http://geotools.org/</code>.</p>
+{% endblocktrans %}
 {% endblock %}
 
 {% block sidebar %}

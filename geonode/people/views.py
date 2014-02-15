@@ -67,27 +67,19 @@ def profile_edit(request, username=None):
         "form": form,
     })
 
-def _get_user_objects(profile):   
+def _get_user_objects(profile):
     qs_layers = []
     qs_maps = []
     qs_docs = []
 
     for obj in profile.user.resourcebase_set.all():
-            try:
-                obj.map
-                qs_maps.append(obj.map)
-            except:
-                pass
-            try:
-                obj.layer
-                qs_layers.append(obj.layer)
-            except:
-                pass
-            try: 
-                obj.document
-                qs_docs.append(obj.document)
-            except:
-                pass
+        if obj.geonode_type == 'layer':
+            qs_layers.append(obj.layer)
+        if obj.geonode_type == 'map':
+            qs_maps.append(obj.map)
+        if obj.geonode_type == 'document':
+            qs_docs.append(obj.document)
+            
     # chain objects
     return qs_layers, qs_maps, qs_docs
 

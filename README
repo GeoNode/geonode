@@ -53,7 +53,8 @@ If instead, you are interested in doing development on the source code, here are
     git clone https://github.com/GeoNode/geonode.git
 
     # Install GeoNode in the local virtualenv
-    pip install -e geonode --use-mirrors
+    # In pip 1.5 pyproj needs to be whitelisted
+    pip install -e geonode --use-mirrors --allow-external pyproj --allow-unverified pyproj
     cd geonode
 
     # Compile GeoServer

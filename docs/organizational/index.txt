@@ -14,7 +14,7 @@ This is information on existing projects, contributing to GeoNode (code, documen
 
 :ref:`comm_bylaws` - Some rules to keeps us stronger
 
-:ref:`other_geonode_projects` - Who else is doing cool stuff with GeoNode
+`GeoNode Projects`_ - Who else is doing cool stuff with GeoNode
 
 GNIPS_  GeoNode Improvement Proposals
 
@@ -55,3 +55,4 @@ Helping out the GeoNode project is great and by contributing we all benefit and 
     contribute/contribute_to_doc_translation
 
 .. _GNIPS: https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals
+.. _GeoNode Projects: http://geonode.org/gallery/

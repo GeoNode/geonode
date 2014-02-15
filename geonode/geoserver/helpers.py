@@ -27,10 +27,17 @@ import datetime
 from itertools import cycle, izip
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import pre_delete
 
 from geonode.utils import _user, _password, ogc_server_settings
 
 from geoserver.catalog import Catalog, FailedRequestError
+from geoserver.store import CoverageStore, DataStore
+from geoserver.workspace import Workspace
+
+from dialogos.models import Comment
+from agon_ratings.models import OverallRating
 
 logger = logging.getLogger(__name__)
 
@@ -208,12 +215,17 @@ def cascading_delete(cat, layer_name):
                     # We'll catch the exception and log it.
                     logger.debug(e)
 
-        cat.delete(resource)
+        #Due to a possible bug of geoserver, we need this trick for now
+        try:
+            cat.delete(resource) #This will fail
+        except:
+            cat.reload() #this preservers the integrity of geoserver
+            
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
             delete_from_postgis(resource_name)
         else:
             try:
-                cat.delete(store)
+                cat.delete(store, recurse=True)
             except FailedRequestError as e:
                 # Trying to delete a shared store will fail 
                 # We'll catch the exception and log it.
@@ -238,7 +250,7 @@ def delete_from_postgis(resource_name):
     finally:
         conn.close()
 
-def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None, store=None, filter=None, skip_unadvertised=False):
+def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspace=None, store=None, filter=None, skip_unadvertised=False, remove_deleted=False):
     """Configure the layers available in GeoServer in GeoNode.
 
        It returns a list of dictionaries with the name of the layer,
@@ -253,7 +265,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
 
     if verbosity > 1:
         print >> console, "Inspecting the available layers in GeoServer ..."
-    cat = Catalog(ogc_server_settings.rest, _user, _password)
+    cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
         #workspace should be returned if exists, otherwise throw an error
@@ -269,6 +281,13 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
         resources = cat.get_resources(store=store)
     else:
         resources = cat.get_resources(workspace=workspace)
+    if remove_deleted:
+        resources_for_delete_compare = resources[:]
+        workspace_for_delete_compare = workspace
+        # filter out layers for delete comparison with GeoNode layers by following criteria:
+        # enabled = true, if --skip-unadvertised: advertised = true, but disregard the filter parameter in the case of deleting layers
+        resources_for_delete_compare = [k for k in resources_for_delete_compare if k.enabled == "true"]
+        if skip_unadvertised: resources_for_delete_compare = [k for k in resources_for_delete_compare if k.advertised == "true" or k.advertised == None]
     if filter:
         resources = [k for k in resources if filter in k.name]
 
@@ -289,8 +308,10 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
             'failed':0,
             'updated':0,
             'created':0,
+            'deleted':0,
         },
-        'layers': []
+        'layers': [],
+        'deleted_layers': []
     }
     start = datetime.datetime.now()
     for i, resource in enumerate(resources):
@@ -342,13 +363,78 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
         output['layers'].append(info)
         if verbosity > 0:
             print >> console, msg
+    
+    if remove_deleted:
+        from geonode.layers.models import Layer
+        q = Layer.objects.filter()
+        if workspace_for_delete_compare is not None:
+            if isinstance(workspace_for_delete_compare, Workspace): q = q.filter(workspace__exact=workspace_for_delete_compare.name)
+            else: q = q.filter(workspace__exact=workspace_for_delete_compare)
+        if store is not None:
+            if isinstance(store, CoverageStore) or isinstance(store, DataStore): q = q.filter(store__exact=store.name)
+            else: q = q.filter(store__exact=store)
+        logger.debug("Executing 'remove_deleted' logic")
+        logger.debug("GeoNode Layers Found:")
+        
+        # compare the list of GeoNode layers obtained via query/filter with valid resources found in GeoServer 
+        # filtered per options passed to updatelayers: --workspace, --store, --skip-unadvertised
+        # add any layers not found in GeoServer to deleted_layers (must match workspace and store as well):
+        deleted_layers = []
+        for layer in q:
+            logger.debug("GeoNode Layer info: name: %s, workspace: %s, store: %s", layer.name, layer.workspace, layer.store)
+            layer_found_in_geoserver = False
+            for resource in resources_for_delete_compare:
+                #if layer.name matches a GeoServer resource, check also that workspace and store match, mark valid:
+                if layer.name == resource.name:
+                    if layer.workspace == resource.workspace.name and layer.store == resource.store.name:
+                        logger.debug("Matches GeoServer layer: name: %s, workspace: %s, store: %s", resource.name,resource.workspace.name, resource.store.name)
+                        layer_found_in_geoserver = True
+            if not layer_found_in_geoserver: 
+                logger.debug("----- Layer %s not matched, marked for deletion ---------------", layer.name)
+                deleted_layers.append(layer)
+        
+        number_deleted = len(deleted_layers)
+        if verbosity > 1:
+            msg = "\nFound %d layers to delete, starting processing" % number_deleted if number_deleted > 0 else "\nFound %d layers to delete" % number_deleted
+            print >> console, msg
+        
+        for i, layer in enumerate(deleted_layers):
+            logger.debug("GeoNode Layer to delete: name: %s, workspace: %s, store: %s", layer.name, layer.workspace, layer.store)
+            try:
+                from geonode.layers.models import geoserver_pre_delete
+                #delete ratings, comments, and taggit tags:
+                ct = ContentType.objects.get_for_model(layer)
+                OverallRating.objects.filter(content_type = ct, object_id = layer.id).delete()
+                Comment.objects.filter(content_type = ct, object_id = layer.id).delete()
+                layer.keywords.clear()
+                
+                pre_delete.disconnect(geoserver_pre_delete, sender=Layer)
+                layer.delete()
+                output['stats']['deleted']+=1
+                status = "delete_succeeded"
+            except Exception, e:
+                status = "delete_failed"
+            finally:
+                pre_delete.connect(geoserver_pre_delete, sender=Layer)
+            
+            msg = "[%s] Layer %s (%d/%d)" % (status, layer.name, i+1, number_deleted)
+            info = {'name': layer.name, 'status': status}
+            if status == "delete_failed":
+                exception_type, error, traceback = sys.exc_info()
+                info['traceback'] = traceback
+                info['exception_type'] = exception_type
+                info['error'] = error
+            output['deleted_layers'].append(info)
+            if verbosity > 0:
+                print >> console, msg
+
     finish = datetime.datetime.now()
     td = finish - start
     output['stats']['duration_sec'] = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
     return output
 
 def get_stores(store_type = None):
-    cat = Catalog(ogc_server_settings.rest, _user, _password)
+    cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
     stores = cat.get_stores()
     store_list = []
     for store in stores:

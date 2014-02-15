@@ -35,6 +35,7 @@ from geonode.search.util import resolve_extension
 from geonode.search.normalizers import apply_normalizers
 from geonode.search.query import query_from_request
 from geonode.search.query import BadQuery
+from geonode.base.models import TopicCategory
 
 from datetime import datetime
 from time import time
@@ -58,7 +59,8 @@ def _create_viewer_config():
 _viewer_config = _create_viewer_config()
 
 
-def search_page(request, template='search/search.html', **kw): 
+def search_page(request, template='search/search.html', **kw):
+    initial_query = request.REQUEST.get('q','')
     results, facets, query = search_api(request, format='html', **kw)
     tags = {}
 
@@ -74,11 +76,15 @@ def search_page(request, template='search/search.html', **kw):
     for val in facets.values(): total+=val
     total -= facets['raster'] + facets['vector']
     return render_to_response(template, RequestContext(request, {'object_list': results, 'total': total, 
-        'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': tags}))
+        'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': tags,
+        'initial_query': initial_query}))
 
 def advanced_search(request, **kw):
+    ctx = {
+        'category_list': TopicCategory.objects.all(),
+    }
     
-    return render_to_response('search/advanced_search.html', RequestContext(request))
+    return render_to_response('search/advanced_search.html', RequestContext(request, ctx))
 
 def _get_search_context():
     cache_key = 'simple_search_context'

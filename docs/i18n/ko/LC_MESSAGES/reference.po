@@ -1,12 +1,13 @@
 # 
 # Translators:
+# MinPa Lee <mapplus@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-04 20:42\n"
-"PO-Revision-Date: 2013-09-09 00:50+0000\n"
-"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
+"PO-Revision-Date: 2013-10-21 17:10+0000\n"
+"Last-Translator: MinPa Lee <mapplus@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/geonode/language/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,44 +17,44 @@ msgstr ""
 
 #: ../../reference/architecture.txt:5
 msgid "GeoNode Architecture"
-msgstr ""
+msgstr "GeoNode 아키텍처"
 
 #: ../../reference/architecture.txt:8
 msgid "The Big Picture"
-msgstr ""
+msgstr "큰 그림"
 
 #: ../../reference/architecture.txt:18
 msgid "Django Architecture"
-msgstr ""
+msgstr "Django 아키텍처"
 
 #: ../../reference/architecture.txt:21
 msgid "MVC/MVT"
-msgstr ""
+msgstr "MVC/MVT"
 
 #: ../../reference/architecture.txt:23
 msgid "MVC"
-msgstr ""
+msgstr "MVC"
 
 #: ../../reference/architecture.txt:24
 msgid "Model, View, Controller"
-msgstr ""
+msgstr "모델, 뷰, 컨트롤러"
 
 #: ../../reference/architecture.txt:26
 msgid "MVT"
-msgstr ""
+msgstr "MVT"
 
 #: ../../reference/architecture.txt:26
 msgid "Model, View, Template"
-msgstr ""
+msgstr "모델, 뷰, 템플릿"
 
 #: ../../reference/architecture.txt:28
 msgid "Model represents application data and provides rich ORM functionality"
-msgstr ""
+msgstr "모델은 응용프로그램 데이터를 나타내며 다양한 ORM 기능을 제공합니다"
 
 #: ../../reference/architecture.txt:29
 msgid ""
 "Views are a rendering of a Model most often using the Django template engine"
-msgstr ""
+msgstr "뷰는 Django 템플릿 엔진을 가장 많이 사용하는 모델의 렌더링입니다"
 
 #: ../../reference/architecture.txt:30
 msgid ""
@@ -61,89 +62,89 @@ msgid ""
 "architecture is a subject of discussion. According to the standard "
 "definition, the controller is the layer or component through which the user "
 "interacts and model changes occur."
-msgstr ""
+msgstr "Django에서,  계층화된 아키텍처의 컨트롤러 부분은 일반적으로 논의의 대상입니다.  표준 정의에 따르면,  컨트롤러는 사용자와 상호작용하고 모델 변경이 발생하는 계층 또는 구성 요소입니다."
 
 #: ../../reference/architecture.txt:34
 msgid ""
 "More: http://reinout.vanrees.org/weblog/2011/12/13/django-mvc-"
 "explanation.html"
-msgstr ""
+msgstr "더 많은 정보: http://reinout.vanrees.org/weblog/2011/12/13/django-mvc-explanation.html"
 
 #: ../../reference/architecture.txt:37 ../../reference/architecture.txt:41
 msgid "WSGI"
-msgstr ""
+msgstr "WSGI"
 
 #: ../../reference/architecture.txt:40
 msgid "Web Server Gateway Interface (whis-gey)"
-msgstr ""
+msgstr "Web Server Gateway Interface (whis-gey)"
 
 #: ../../reference/architecture.txt:43
 msgid ""
 "This is a python specification for supporting a common interface between all"
 " of the various web frameworks and an application (Apache, for example) that"
 " is 'serving'."
-msgstr ""
+msgstr "WSGI는 다양한 웹 프레임워크와 서비스를 제공하는 응용 프로그램(아파치 등)간의  공통 인터페이스를 지원하는 파이썬 규약입니다."
 
 #: ../../reference/architecture.txt:45
 msgid ""
 "This allows any WSGI compliant framework to be hosted in any WSGI compliant "
 "server."
-msgstr ""
+msgstr "이는 어떤 WSGI 호환 프레임워크가 어떤 WSGI 호환 서버에서도 호스팅 될 수 있도록 합니다."
 
 #: ../../reference/architecture.txt:46
 msgid ""
 "For most GeoNode development, the details of this specification may be "
 "ignored."
-msgstr ""
+msgstr "대부분의 GeoNode 개발에서는 이 규약의 세부 사항이 무시 될 수도 있습니다."
 
 #: ../../reference/architecture.txt:48
 msgid "More: http://en.wikipedia.org/wiki/Wsgi"
-msgstr ""
+msgstr "더 많은 정보: http://en.wikipedia.org/wiki/Wsgi"
 
 #: ../../reference/architecture.txt:52
 msgid "GeoNode and GeoServer"
-msgstr ""
+msgstr "GeoNode와 GeoServer"
 
 #: ../../reference/architecture.txt:54
 msgid "GeoNode uses GeoServer for providing OGC services."
-msgstr ""
+msgstr "GeoNode는 OGC 서비스를 제공하기 위해 GeoServer를 사용합니다."
 
 #: ../../reference/architecture.txt:56
 msgid "GeoNode configures GeoServer via the REST API"
-msgstr ""
+msgstr "GeoNode는 REST API를 통해 GeoServer를 구성합니다."
 
 #: ../../reference/architecture.txt:57
 msgid ""
 "GeoNode retreives and caches spatial information from GeoServer. This "
 "includes relevant OGC service links, spatial metadata, and attribute "
 "information."
-msgstr ""
+msgstr "GeoNode는 GeoServer에서 공간 정보를 검색하거나 캐시를 제공합니다. 여기에는 관련 OGC 서비스 링크, 공간 메타 데이터 및 속성 정보를 포함하고 있습니다."
 
 #: ../../reference/architecture.txt:60
 msgid ""
 "In summary, GeoServer contains the layer's data and GeoNode's layer model "
 "extends what metadata is present in GeoServer with it's own."
-msgstr ""
+msgstr "요약하면, GeoServer는 레이어의 데이터를 포함하고 GeoNode의 레이어 모델은 GeoServer에 어떤 메타 데이터가 있는지를 확장합니다."
 
 #: ../../reference/architecture.txt:62
 msgid ""
 "GeoNode can discover existing layers published in a GeoServer via the WMS "
 "capabilities document"
-msgstr ""
+msgstr "GeoNode는 WMS Capabilities 문서를 통해 GeoServer에 게시된 기존의 레이어를 검색 할 수 있습니다"
 
 #: ../../reference/architecture.txt:64
 msgid "GeoServer delegates authentication and authorization to GeoNode"
-msgstr ""
+msgstr "GeoServer는 인증 및 권한 부여를 GeoNode에 위임합니다"
 
 #: ../../reference/architecture.txt:65
 msgid ""
 "Data uploaded to GeoNode is first processed in GeoNode and finally published"
 " to GeoServer (or ingested into the spatial database)"
-msgstr ""
+msgstr "GeoNode에 업로드된 데이터는 우선 GeoNode에서 처리되고 마지막으로 GeoServer(또는 공간 데이터베이스로 저장)에 게시됩니다."
 
 #: ../../reference/architecture.txt:70
 msgid "GeoNode and PostgreSQL/PostGIS"
-msgstr ""
+msgstr "GeoNode와 PostgreSQL/PostGIS"
 
 #: ../../reference/architecture.txt:72
 msgid ""
@@ -156,7 +157,7 @@ msgstr ""
 msgid ""
 "The database stores configuration and application information. This includes"
 " users, layers, maps, etc."
-msgstr ""
+msgstr "데이터베이스는 환경 구성과 응용프로그램 정보를 저장합니다. 이는 사용자, 레이어, 지도 등을 포함합니다."
 
 #: ../../reference/architecture.txt:78
 msgid ""
@@ -169,16 +170,16 @@ msgstr ""
 
 #: ../../reference/architecture.txt:86
 msgid "GeoNode and pycsw"
-msgstr ""
+msgstr "GeoNode와 pycsw"
 
 #: ../../reference/architecture.txt:88
 msgid ""
 "GeoNode is built with pycsw embedded as the default CSW server component."
-msgstr ""
+msgstr "GeoNode는 기본 CSW 서버 컴포넌트로 pycsw를 내장하고 있습니다."
 
 #: ../../reference/architecture.txt:91
 msgid "Publishing"
-msgstr ""
+msgstr "게시하기"
 
 #: ../../reference/architecture.txt:93
 msgid ""
@@ -190,7 +191,7 @@ msgstr ""
 
 #: ../../reference/architecture.txt:98
 msgid "Discovery"
-msgstr ""
+msgstr "발견"
 
 #: ../../reference/architecture.txt:100
 msgid ""
@@ -202,22 +203,22 @@ msgstr ""
 
 #: ../../reference/architecture.txt:105
 msgid "Javascript in GeoNode"
-msgstr ""
+msgstr "GeoNode에서의 JavaScript"
 
 #: ../../reference/architecture.txt:107
 msgid ""
 "GeoExplorer runs in the browser and talks with GeoNode and GeoServer's APIs "
 "using AJAX."
-msgstr ""
+msgstr "GeoExplorer는 브라우저에서 실행되고 GeoNode 및 GeoServer API와  AJAX를 이용하여 통신합니다."
 
 #: ../../reference/architecture.txt:109
 msgid ""
 "jQuery is used for incremental enhancement of many GeoNode HTML interfaces."
-msgstr ""
+msgstr "jQuery는 수많은 GeoNode HTML 인터페이스를 점진적으로 개선하는데 사용됩니다."
 
 #: ../../reference/components.txt:4
 msgid "GeoNode Components"
-msgstr ""
+msgstr "GeoNode 구성 요소"
 
 #: ../../reference/components.txt:6
 msgid ""
@@ -231,11 +232,11 @@ msgstr ""
 msgid ""
 "Lets look at each of these components and discuss how they are used within "
 "the GeoNode application."
-msgstr ""
+msgstr "이들 구성요소 각각을 살펴보고 GeoNode 응용 프로그램 내에서 어떻게 사용되는지 살펴봅시다."
 
 #: ../../reference/components.txt:11
 msgid "Django"
-msgstr ""
+msgstr "Django"
 
 #: ../../reference/components.txt:13
 msgid ""
@@ -276,7 +277,7 @@ msgstr ""
 
 #: ../../reference/components.txt:36
 msgid "PostgreSQL and PostGIS"
-msgstr ""
+msgstr "PostgreSQL과 PostGIS"
 
 #: ../../reference/components.txt:38
 msgid ""
@@ -290,7 +291,7 @@ msgstr ""
 
 #: ../../reference/components.txt:44
 msgid "pycsw"
-msgstr ""
+msgstr "pycsw"
 
 #: ../../reference/components.txt:46
 msgid ""
@@ -302,7 +303,7 @@ msgstr ""
 
 #: ../../reference/components.txt:51
 msgid "Geospatial Python Libraries"
-msgstr ""
+msgstr "지리공간 Python 라이브러리"
 
 #: ../../reference/components.txt:53
 msgid ""
@@ -330,7 +331,7 @@ msgstr ""
 
 #: ../../reference/components.txt:64
 msgid "jQuery"
-msgstr ""
+msgstr "jQuery"
 
 #: ../../reference/components.txt:66
 msgid ""
@@ -343,7 +344,7 @@ msgstr ""
 
 #: ../../reference/components.txt:71
 msgid "Bootstrap"
-msgstr ""
+msgstr "Bootstrap"
 
 #: ../../reference/components.txt:73
 msgid ""
@@ -357,7 +358,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:5
 msgid "GeoNode Django Apps"
-msgstr ""
+msgstr "GeoNode Django 앱"
 
 #: ../../reference/developers/django-apps.txt:7
 msgid ""
@@ -385,7 +386,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:47
 msgid "MEDIA_LOCATIONS"
-msgstr ""
+msgstr "MEDIA_LOCATIONS"
 
 #: ../../reference/developers/django-apps.txt:42
 msgid ""
@@ -399,7 +400,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:52
 msgid "LOCKDOWN_GEONODE"
-msgstr ""
+msgstr "LOCKDOWN_GEONODE"
 
 #: ../../reference/developers/django-apps.txt:50
 msgid ""
@@ -410,7 +411,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:58
 msgid "AUTH_EXEMPT_URLS"
-msgstr ""
+msgstr "AUTH_EXEMPT_URLS"
 
 #: ../../reference/developers/django-apps.txt:55
 msgid ""
@@ -422,7 +423,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:61
 msgid "Template Tags"
-msgstr ""
+msgstr "템플릿 태그"
 
 #: ../../reference/developers/django-apps.txt:67
 msgid "geonode_media <media_name>"
@@ -436,7 +437,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:70
 msgid "``geonode.maps`` - Map creation and geospatial data management"
-msgstr ""
+msgstr "``geonode.maps`` - 지도 생성 및 지리공간 데이터 관리"
 
 #: ../../reference/developers/django-apps.txt:72
 msgid ""
@@ -449,32 +450,32 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:78
 msgid "Models"
-msgstr ""
+msgstr "모델"
 
 #: ../../reference/developers/django-apps.txt:80
 msgid "The maps app provides two main model types:"
-msgstr ""
+msgstr "지도 응용 프로그램은 두 가지 모델 유형을 제공합니다:"
 
 #: ../../reference/developers/django-apps.txt:82
 msgid "Layer - A data layer managed by the GeoNode"
-msgstr ""
+msgstr "레이어 - GeoNode에 의해 관리되는 데이터 레이어"
 
 #: ../../reference/developers/django-apps.txt:84
 msgid ""
 "Map - A collection of data layers composed in a particular order to form a "
 "map"
-msgstr ""
+msgstr "지도 - 지도를 구성하기 위해 특정 순서로 구성된 데이터 레이어의 모음"
 
 #: ../../reference/developers/django-apps.txt:86
 msgid ""
 "Additionally, there is a MapLayer model that maintains some map-specific "
 "information related to a layer, such as the z-indexing order."
-msgstr ""
+msgstr "또한, Z-인덱스 순서와 같은 레이어와 관련된 지도의 특정 정보를 관리하기 위한 MapLayer 모델이 있습니다."
 
 #: ../../reference/developers/django-apps.txt:90
 #: ../../reference/developers/django-apps.txt:169
 msgid "Views"
-msgstr ""
+msgstr "뷰"
 
 #: ../../reference/developers/django-apps.txt:92
 msgid "The maps app provides views for:"
@@ -482,12 +483,12 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:94
 msgid "Creating, viewing, browsing, editing, and deleting Maps"
-msgstr ""
+msgstr "지도의 생성, 보기, 탐색, 편집 및 삭제"
 
 #: ../../reference/developers/django-apps.txt:95
 msgid ""
 "Creating, viewing, browsing, editing, and deleting Layers and their metadata"
-msgstr ""
+msgstr "레이어 및 메타데이터의 생성, 보기, 탐색, 편집 및 삭제"
 
 #: ../../reference/developers/django-apps.txt:97
 msgid ""
@@ -504,7 +505,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:108
 msgid "GEOSERVER_CREDENTIALS"
-msgstr ""
+msgstr "GEOSERVER_CREDENTIALS"
 
 #: ../../reference/developers/django-apps.txt:107
 msgid ""
@@ -514,7 +515,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:116
 msgid "GEOSERVER_BASE_URL"
-msgstr ""
+msgstr "GEOSERVER_BASE_URL"
 
 #: ../../reference/developers/django-apps.txt:111
 msgid ""
@@ -528,7 +529,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:127
 msgid "CATALOGUE"
-msgstr ""
+msgstr "CATALOGUE"
 
 #: ../../reference/developers/django-apps.txt:119
 msgid "A dict with the following keys:"
@@ -546,11 +547,11 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:123
 msgid "USERNAME: login credentials (if required)"
-msgstr ""
+msgstr "사용자 이름 : 로그인 자격 증명 (필요한 경우)"
 
 #: ../../reference/developers/django-apps.txt:124
 msgid "PASSWORD: login credentials (if required)"
-msgstr ""
+msgstr "비밀번호: 로그인 자격 증명 (필요한 경우)"
 
 #: ../../reference/developers/django-apps.txt:126
 msgid ""
@@ -560,7 +561,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:134
 msgid "PYCSW"
-msgstr ""
+msgstr "PYCSW"
 
 #: ../../reference/developers/django-apps.txt:130
 msgid ""
@@ -573,23 +574,23 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:137
 msgid "SITEURL"
-msgstr ""
+msgstr "SITEURL"
 
 #: ../../reference/developers/django-apps.txt:137
 msgid "A base URL for use in creating absolute links to Django views."
-msgstr ""
+msgstr "Django 뷰의 절대 링크 작성에 사용하기 위한 기본 URL"
 
 #: ../../reference/developers/django-apps.txt:140
 msgid "DEFAULT_MAP_BASE_LAYER"
-msgstr ""
+msgstr "DEFAULT_MAP_BASE_LAYER"
 
 #: ../../reference/developers/django-apps.txt:140
 msgid "The name of the background layer to include in newly created maps."
-msgstr ""
+msgstr "새로 만들어질 지도에 포함할 배경 레이어의 이름"
 
 #: ../../reference/developers/django-apps.txt:144
 msgid "DEFAULT_MAP_CENTER"
-msgstr ""
+msgstr "DEFAULT_MAP_CENTER"
 
 #: ../../reference/developers/django-apps.txt:143
 msgid ""
@@ -599,7 +600,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:149
 msgid "DEFAULT_MAP_ZOOM"
-msgstr ""
+msgstr "DEFAULT_MAP_ZOOM"
 
 #: ../../reference/developers/django-apps.txt:147
 msgid ""
@@ -610,30 +611,30 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:153
 msgid "GOOGLE_API_KEY"
-msgstr ""
+msgstr "GOOGLE_API_KEY"
 
 #: ../../reference/developers/django-apps.txt:152
 msgid ""
 "A Google Maps v2 API key to use when a Google Maps background layer is used."
-msgstr ""
+msgstr "Google 지도 배경 레이어를 사용할 때 사용할 Google 지도 V2 API 키"
 
 #: ../../reference/developers/django-apps.txt:156
 msgid "``django-admin.py`` Commands"
-msgstr ""
+msgstr "``django-admin.py`` 명령어"
 
 #: ../../reference/developers/django-apps.txt:159
 msgid "updatelayers"
-msgstr ""
+msgstr "updatelayers"
 
 #: ../../reference/developers/django-apps.txt:159
 msgid "Scan GeoServer for data that hasn't been added to the GeoNode yet"
-msgstr ""
+msgstr "GeoNode에 아직 추가되지 않은 GeoServer 데이터를 스캔"
 
 #: ../../reference/developers/django-apps.txt:162
 msgid ""
 "``geonode.proxy`` - Assist JavaScript applications in accessing remote "
 "servers"
-msgstr ""
+msgstr "``geonode.proxy`` - 원격 서버에 액세스하는  JavaScript 응용 프로그램을 지원"
 
 #: ../../reference/developers/django-apps.txt:164
 msgid ""
@@ -645,7 +646,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:173
 msgid "geonode.proxy.views.proxy"
-msgstr ""
+msgstr "geonode.proxy.views.proxy"
 
 #: ../../reference/developers/django-apps.txt:172
 msgid ""
@@ -655,7 +656,7 @@ msgstr ""
 
 #: ../../reference/developers/django-apps.txt:179
 msgid "geonode.proxy.views.geoserver"
-msgstr ""
+msgstr "geonode.proxy.views.geoserver"
 
 #: ../../reference/developers/django-apps.txt:176
 msgid ""
@@ -668,7 +669,7 @@ msgstr ""
 
 #: ../../reference/developers/index.txt:3
 msgid "Developers Reference"
-msgstr ""
+msgstr "개발자 참조"
 
 #: ../../reference/developers/index.txt:5 ../../reference/index.txt:5
 msgid ""
@@ -678,15 +679,15 @@ msgstr ""
 
 #: ../../reference/developers/index.txt:7 ../../reference/index.txt:17
 msgid ":ref:`djangoapps`"
-msgstr ""
+msgstr ":ref:`djangoapps`"
 
 #: ../../reference/developers/index.txt:9 ../../reference/index.txt:19
 msgid ":ref:`javascript`"
-msgstr ""
+msgstr ":ref:`javascript`"
 
 #: ../../reference/developers/javascript.txt:5
 msgid "JavaScript in GeoNode"
-msgstr ""
+msgstr "GeoNode에서의 JavaScript"
 
 #: ../../reference/developers/javascript.txt:7
 msgid ""
@@ -698,17 +699,17 @@ msgstr ""
 msgid ""
 "`ExtJS <http://extjs.com/>`_ for component-based UI construction and data "
 "access"
-msgstr ""
+msgstr "`ExtJS <http://extjs.com/>`_ 컴포넌트 기반 UI 구성 및 데이터 액세스"
 
 #: ../../reference/developers/javascript.txt:11
 msgid ""
 "`OpenLayers <http://openlayers.org/>`_ for interactive mapping and other "
 "geospatial operations"
-msgstr ""
+msgstr "`OpenLayers <http://openlayers.org/>`_ 인터렉티브 매핑 및 기타 지리공간 작업"
 
 #: ../../reference/developers/javascript.txt:13
 msgid "`GeoExt <http://geoext.org/>`_ for integrating ExtJS with OpenLayers"
-msgstr ""
+msgstr "`GeoExt <http://geoext.org/>`_  ExtJS와 OpenLayers를 통합"
 
 #: ../../reference/developers/javascript.txt:14
 msgid ""
@@ -759,47 +760,47 @@ msgstr ""
 
 #: ../../reference/index.txt:3
 msgid "Reference documentation"
-msgstr ""
+msgstr "참조 문서"
 
 #: ../../reference/index.txt:7
 msgid ":ref:`architecture`"
-msgstr ""
+msgstr ":ref:`architecture`"
 
 #: ../../reference/index.txt:9
 msgid ":ref:`components`"
-msgstr ""
+msgstr ":ref:`architecture`"
 
 #: ../../reference/index.txt:11
 msgid ":ref:`security`"
-msgstr ""
+msgstr ":ref:`security`"
 
 #: ../../reference/index.txt:13
 msgid ":ref:`api`"
-msgstr ""
+msgstr ":ref:`api`"
 
 #: ../../reference/index.txt:15
 msgid ":ref:`localization`"
-msgstr ""
+msgstr ":ref:`localization`"
 
 #: ../../reference/localization.txt:5
 msgid "Localization"
-msgstr ""
+msgstr "지역화"
 
 #: ../../reference/localization.txt:7
 msgid "To enable a new language in GeoNode you have to do the following:"
-msgstr ""
+msgstr "GeoNode에 새로운 언어를 사용하려면 다음을 따라야 합니다:"
 
 #: ../../reference/localization.txt:9
 msgid "Install gettext::"
-msgstr ""
+msgstr "gettext 설치::"
 
 #: ../../reference/localization.txt:13
 msgid "Create a directory named locale in the root of your project::"
-msgstr ""
+msgstr "프로젝트의 루트 디렉토리에 locale 이라는 디렉토리를 생성합니다::"
 
 #: ../../reference/localization.txt:17
 msgid "In the root of your project, run::"
-msgstr ""
+msgstr "프로젝트의 루트에서, 실행하십시오::"
 
 #: ../../reference/localization.txt:21
 msgid "Navigate to the GeoNode dir and do::"
@@ -825,11 +826,11 @@ msgstr ""
 
 #: ../../reference/security.txt:5
 msgid "Security and Permissions"
-msgstr ""
+msgstr "보안 및 사용권한"
 
 #: ../../reference/security.txt:7
 msgid "This is mainly ment for administrators!"
-msgstr ""
+msgstr "이것은 주로 관리자를 위한 것입니다!"
 
 #: ../../reference/security.txt:9
 msgid ""
@@ -842,15 +843,15 @@ msgstr ""
 
 #: ../../reference/security.txt:12 ../../reference/security.txt:49
 msgid "Users"
-msgstr ""
+msgstr "사용자"
 
 #: ../../reference/security.txt:14
 msgid "superuser permissions"
-msgstr ""
+msgstr "수퍼유저 권한"
 
 #: ../../reference/security.txt:16
 msgid "django admin interface permissions"
-msgstr ""
+msgstr "Django 관리자 인터페이스 권한"
 
 #: ../../reference/security.txt:18 ../../reference/security.txt:75
 msgid "Layers"
@@ -858,15 +859,15 @@ msgstr "레이어"
 
 #: ../../reference/security.txt:20
 msgid "view and download a layer"
-msgstr ""
+msgstr "레이어 보기 및 다운로드"
 
 #: ../../reference/security.txt:22
 msgid "edit a layer"
-msgstr ""
+msgstr "레이어 편집"
 
 #: ../../reference/security.txt:24
 msgid "edit and manage a layer"
-msgstr ""
+msgstr "레이어 편집 및 관리"
 
 #: ../../reference/security.txt:26 ../../reference/security.txt:147
 msgid "Maps"
@@ -874,15 +875,15 @@ msgstr "지도"
 
 #: ../../reference/security.txt:28
 msgid "view and download a map"
-msgstr ""
+msgstr "지도 보기 및 다운로드"
 
 #: ../../reference/security.txt:30
 msgid "edit a map"
-msgstr ""
+msgstr "지도 편집"
 
 #: ../../reference/security.txt:32
 msgid "edit and manage a map"
-msgstr ""
+msgstr "지도 편집 및 관리"
 
 #: ../../reference/security.txt:34 ../../reference/security.txt:163
 msgid "Documents"
@@ -890,15 +891,15 @@ msgstr "문서"
 
 #: ../../reference/security.txt:36
 msgid "view and download a document"
-msgstr ""
+msgstr "문서 보기 및 다운로드"
 
 #: ../../reference/security.txt:38
 msgid "edit a document"
-msgstr ""
+msgstr "문서 편집"
 
 #: ../../reference/security.txt:40
 msgid "edit and manage a document"
-msgstr ""
+msgstr "문서 편집 및 관리"
 
 #: ../../reference/security.txt:46
 msgid ""
@@ -914,11 +915,11 @@ msgstr ""
 
 #: ../../reference/security.txt:52
 msgid "unregistered users (anonymous)"
-msgstr ""
+msgstr "미등록 사용자(익명)"
 
 #: ../../reference/security.txt:53
 msgid "registered users"
-msgstr ""
+msgstr "등록된 사용자"
 
 #: ../../reference/security.txt:55
 msgid ""
@@ -930,11 +931,11 @@ msgstr ""
 
 #: ../../reference/security.txt:58
 msgid "superuser"
-msgstr ""
+msgstr "수퍼유저"
 
 #: ../../reference/security.txt:59
 msgid "staff"
-msgstr ""
+msgstr "스탭"
 
 #: ../../reference/security.txt:60
 msgid "active"
@@ -963,11 +964,11 @@ msgstr ""
 
 #: ../../reference/security.txt:68
 msgid "Basically there are three options to creat a user:"
-msgstr ""
+msgstr "기본적으로 사용자를 생성하는 세 가지 옵션이 있습니다 :"
 
 #: ../../reference/security.txt:70
 msgid "terminal: Here you can only create a superuser"
-msgstr ""
+msgstr "터미널: 여기에서는 단지 수퍼유저를 생성할 수 있습니다"
 
 #: ../../reference/security.txt:71
 msgid ""
@@ -992,19 +993,19 @@ msgstr ""
 
 #: ../../reference/security.txt:81
 msgid "So there are permissions on:"
-msgstr ""
+msgstr "그래서 다음과 같은 권한이 있습니다:"
 
 #: ../../reference/security.txt:83
 msgid "who can view and download"
-msgstr ""
+msgstr "보기 및 다운로드 가능"
 
 #: ../../reference/security.txt:84
 msgid "who can edit"
-msgstr ""
+msgstr "편집 가능"
 
 #: ../../reference/security.txt:85
 msgid "who can edit and manage"
-msgstr ""
+msgstr "편집 및 관리 가능"
 
 #: ../../reference/security.txt:87
 msgid ""
@@ -1020,49 +1021,49 @@ msgstr ""
 
 #: ../../reference/security.txt:91
 msgid "Anybody"
-msgstr ""
+msgstr "누구나"
 
 #: ../../reference/security.txt:92
 msgid "Any registered user"
-msgstr "등록된 사용자"
+msgstr "등록된 사용자만"
 
 #: ../../reference/security.txt:93
 msgid "Only a certain user or group"
-msgstr ""
+msgstr "특정 사용자 및 그룹만"
 
 #: ../../reference/security.txt:95
 msgid ""
 "If you allow a user to edit your layer, this user has the right to do the "
 "following actions:"
-msgstr ""
+msgstr "사용자에게 여러분의 레이어를 편집할 수 있도록 하면, 이 사용자는 다음과 같은 작업을 수행할 권한을 가집니다:"
 
 #: ../../reference/security.txt:97
 msgid "Edit metadata"
-msgstr ""
+msgstr "메타데이터 편집"
 
 #: ../../reference/security.txt:98
 msgid "Edit styles"
-msgstr ""
+msgstr "스타일 편집"
 
 #: ../../reference/security.txt:99
 msgid "Manage styles"
-msgstr ""
+msgstr "스타일 관리"
 
 #: ../../reference/security.txt:100
 msgid "Replace the layer"
-msgstr ""
+msgstr "레이어 교체"
 
 #: ../../reference/security.txt:101
 msgid "Remove the layer"
-msgstr ""
+msgstr "레이어 제거"
 
 #: ../../reference/security.txt:103
 msgid "This can also be seen here:"
-msgstr ""
+msgstr "이것은 또한 다음에서 볼 수 있습니다:"
 
 #: ../../reference/security.txt:107
 msgid "Edit and manage"
-msgstr ""
+msgstr "편집 및 관리"
 
 #: ../../reference/security.txt:111
 msgid ""
@@ -1084,7 +1085,7 @@ msgstr "날짜"
 
 #: ../../reference/security.txt:116
 msgid "Data type"
-msgstr ""
+msgstr "데이터 유형"
 
 #: ../../reference/security.txt:117
 msgid "Edition"
@@ -1100,11 +1101,11 @@ msgstr "목적"
 
 #: ../../reference/security.txt:120
 msgid "Maintainance frequency"
-msgstr ""
+msgstr "갱신 주기"
 
 #: ../../reference/security.txt:121
 msgid "Keywords region"
-msgstr ""
+msgstr "키워드 지역"
 
 #: ../../reference/security.txt:122
 msgid "Restrictions"
@@ -1112,7 +1113,7 @@ msgstr "제약사항"
 
 #: ../../reference/security.txt:123
 msgid "Restrictions other"
-msgstr ""
+msgstr "기타 제약사항"
 
 #: ../../reference/security.txt:124
 msgid "Language"
@@ -1124,31 +1125,31 @@ msgstr "카테고리"
 
 #: ../../reference/security.txt:126
 msgid "Spatial representation type"
-msgstr ""
+msgstr "공간 표현 유형"
 
 #: ../../reference/security.txt:127
 msgid "Temporal extent start"
-msgstr ""
+msgstr "시간적 범위 시작"
 
 #: ../../reference/security.txt:128
 msgid "Temporal extent end"
-msgstr ""
+msgstr "시간적 범위 종료"
 
 #: ../../reference/security.txt:129
 msgid "Supplemental information"
-msgstr ""
+msgstr "부가 정보"
 
 #: ../../reference/security.txt:130
 msgid "Distribution URL"
-msgstr ""
+msgstr "배포 URL"
 
 #: ../../reference/security.txt:131
 msgid "Distribution description"
-msgstr ""
+msgstr "배포 설명"
 
 #: ../../reference/security.txt:132
 msgid "Data quality statement"
-msgstr ""
+msgstr "데이터 품질 설명"
 
 #: ../../reference/security.txt:133
 msgid "Keywords"
@@ -1156,15 +1157,15 @@ msgstr "키워드"
 
 #: ../../reference/security.txt:134
 msgid "Point of contact"
-msgstr ""
+msgstr "연락처"
 
 #: ../../reference/security.txt:135
 msgid "Metadata author"
-msgstr ""
+msgstr "메타데이터 작성자"
 
 #: ../../reference/security.txt:136
 msgid "Attributes (those can though not be changed!)"
-msgstr ""
+msgstr "속성 (변경할 수 없습니다!)"
 
 #: ../../reference/security.txt:140
 msgid ""
@@ -1192,15 +1193,15 @@ msgstr ""
 
 #: ../../reference/security.txt:151
 msgid "Edit map metadata"
-msgstr ""
+msgstr "지도 메타데이터 편집"
 
 #: ../../reference/security.txt:152
 msgid "Set map thumbnail"
-msgstr ""
+msgstr "지도 썸네일 설정"
 
 #: ../../reference/security.txt:153
 msgid "Remove the map"
-msgstr ""
+msgstr "지도 제거"
 
 #: ../../reference/security.txt:155
 msgid ""
@@ -1210,11 +1211,11 @@ msgstr ""
 
 #: ../../reference/security.txt:157
 msgid "Metadata XML"
-msgstr ""
+msgstr "메타데이터 XML"
 
 #: ../../reference/security.txt:158
 msgid "Thumbnail"
-msgstr ""
+msgstr "썸네일"
 
 #: ../../reference/security.txt:160
 msgid "In *Set map thumbnail* the thumbnail of the map can be set."
@@ -1228,7 +1229,7 @@ msgstr ""
 
 #: ../../reference/security.txt:170
 msgid "Groups"
-msgstr ""
+msgstr "그룹"
 
 #: ../../reference/security.txt:172
 msgid ""

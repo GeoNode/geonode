@@ -110,7 +110,7 @@ You can optionally configure GeoNode to allow new users to register through the 
 
 To allow new user registration:
 
-1. Set up the email backend for Django (see `Django documentation <http://docs.djangoproject.com/en/dev/topics/email/#e-mail-backends>`_) and add the appropriate settings to ``./src/GeoNodePy/geonode/settings.py``.  For example::
+1. Set up the email backend for Django (see `Django documentation <http://docs.djangoproject.com/en/dev/topics/email/#e-mail-backends>`_) and add the appropriate settings to ``./src/GeoNodePy/geonode/local_settings.py``.  For example::
 
        EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
        EMAIL_HOST = 'smtp.gmail.com'
@@ -118,16 +118,12 @@ To allow new user registration:
        EMAIL_HOST_PASSWORD = 'bar'
        EMAIL_PORT = 587
        EMAIL_USE_TLS = True
-
-2. One week activation window::
-
-       ACCOUNT_ACTIVATION_DAYS = 7 
        
-3. In the same settings file set::
+2. In the same settings file set::
 
        REGISTRATION_OPEN=True   
 
-4. With the Django application running, set the domain name of the service properly through the admin interface as specified above in the Sitemaps section.  (This domain name is used in the account activation emails.).
+3. With the Django application running, set the domain name of the service properly through the admin interface as specified above in the Sitemaps section.  (This domain name is used in the account activation emails.).
 
 To register as a new user, click the ''Register'' link in the GeoNode index header.
 

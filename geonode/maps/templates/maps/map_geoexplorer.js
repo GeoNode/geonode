@@ -5,7 +5,7 @@
     display: none;
 }
 #paneltbar {
-    margin-top: 90px;
+    margin-top: 81px;
 }
 button.logout {
     display: none;
@@ -27,11 +27,11 @@ Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     var config = Ext.apply({
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
-        proxy: "/proxy/?url=",
+        proxy: '{{ PROXY_URL }}',
         {% if PRINTNG_ENABLED %}
         listeners: {
-            'save': function() {
-                createMapThumbnail();
+            'save': function(obj_id) {
+                createMapThumbnail(obj_id);
             }
         },
         {% endif %}

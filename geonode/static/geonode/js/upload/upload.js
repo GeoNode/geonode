@@ -123,7 +123,7 @@ define(['underscore',
             if (!info.type) {
                 log_error({
                     title: 'Unsupported type',
-                    message: 'File ' + info.name + ' is an unsupported file type, please select another file.'
+                    message: 'File ' + info.files[0].name + ' is an unsupported file type, please select another file.'
                 });
                 delete layers[name];
             } else {
@@ -146,7 +146,7 @@ define(['underscore',
         var files = layers[Object.keys(layers)[0]]['files'];
         var types = [];
         for (var i = 0; i<files.length; i++){
-            var ext = files[i].name.split('.')[1];
+            var ext = files[i].name.split('.').pop();
             if ($.inArray(ext,types) == -1){
                 types.push(ext);
             }
@@ -166,22 +166,29 @@ define(['underscore',
     }
 
     doDelete = function(event) {
-        var id = event.srcElement.id.split("-")[1];
+        var target = event.target || event.srcElement;
+        var id = target.id.split("-")[1];
         var target = "/upload/delete/" + id;
         $.ajaxQueue({
             url: target,
             async: false,
             contentType: false,
         }).done(function (resp) {
-            var div = "incomplete-" + id;
-            $(div).hide();
+            var div = "#incomplete-" + id;
+            $(div).remove();
+
+            if ($('#incomplete-download-list > div[id^=incomplete]').length == 0){
+                $('#incomplete-download-list').hide();
+            }
+
         }).fail(function (resp) {
             //
         });
     };
 
     doResume = function(event) {
-        var id = event.srcElement.id.split("-")[1];
+        var target = event.target || event.srcElement;
+        var id = target.id.split("-")[1];
         var target = "/upload/?id=" + id;
         $.ajaxQueue({
             url: target,
@@ -269,10 +276,9 @@ define(['underscore',
         return false;        
     };
 
-    /** Function to ...
+    /** Function to Upload the selected files to the server
      *
-     *  @params  
-     *  @returns
+     *  @returns false
      */
     doUploads = function () {
         var checked = checkFiles();
@@ -283,8 +289,13 @@ define(['underscore',
                 layerinfo.uploadFiles();
             });
         }
+        return false;
     };
 
+    /** Function to ...
+     *
+     *  @returns false
+     */
     init_geogit_stores = function() {
         $.ajax({
             url: '/gs/rest/stores/geogit/',

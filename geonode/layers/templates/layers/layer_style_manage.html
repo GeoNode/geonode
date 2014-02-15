@@ -21,7 +21,7 @@
 <form action="{% url "layer_style_manage" layer.typename %}" method="POST">
   <fieldset>
     <div class="span3">
-      <h3>Layer Default Style</h3>
+      <h3>{% trans "Layer Default Style" %}</h3>
     </div>
     <div class="span9">
       <select id='default_style' name='default_style'>
@@ -37,8 +37,8 @@
   </fieldset>
   <fieldset>
     <div class="span3">
-      <h3>Available styles</h3>
-      <p>Click on an available style in the upper box to assign it to this layer. Selected styles appear in the lower box.</p>
+      <h3>{% trans "Available styles" %}</h3>
+      <p>{% trans "Click on an available style in the upper box to assign it to this layer. Selected styles appear in the lower box." %}</p>
     </div>
     <div class="span9">
       <select multiple="multiple" id="style-select" name="style-select">

@@ -20,7 +20,7 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
    admin_panel/index
    commands
    csw
-   customize
+   customize_admin/index
    debugging
    language
    multi-tenancy
@@ -33,7 +33,10 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
   Learn about preparing an environment for installation of GeoNode
 
 :ref:`install`
-  Learn how to install GeoNode 
+  Learn how to install GeoNode
+  
+:ref:`migrate`
+  Learn how to migrate an existing GeoNode 1.2 instance to GeoNode 2.0
 
 :ref:`production`
   Learn how to configure GeoNode for production use.
@@ -65,7 +68,7 @@ Welcome to the GeoNode Administrators Workshop! This workshop will teach how to 
 :ref:`csw`
   Learn how to configure an alternate CS-W backend for your GeoNode
  
-:ref:`customize`
+:ref:`customize_admin`
   Learn how to customize the look and feel of your GeoNode installation
 
 :ref:`language`

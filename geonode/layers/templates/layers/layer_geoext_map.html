@@ -14,7 +14,7 @@
                     actionTarget: "main.tbar",
                     outputConfig: {width: 400, height: 200, panIn: false}
                 }],
-                proxy: "/proxy/?url=",
+                proxy: "{{ PROXY_URL }}",
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
                 authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
 
@@ -49,8 +49,14 @@
             };
 
             config = Ext.apply(config, {{ viewer|safe }});
-
             app = new GeoExplorer.Viewer(config);
+
+            for (var key in app.tools) {
+                var tool = app.tools[key];
+                if (tool.ptype == 'gxp_styler') {
+                    tool.rasterStyling = true;
+                };
+            };
 
             // change style displayed in map
             Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {

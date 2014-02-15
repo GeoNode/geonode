@@ -7,15 +7,12 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
         # Deleting field 'Layer.geographic_bounding_box'
         db.delete_column('layers_layer', 'geographic_bounding_box')
 
 
     def backwards(self, orm):
-        
-        # Adding field 'Layer.geographic_bounding_box'
-        db.add_column('layers_layer', 'geographic_bounding_box', self.gf('django.db.models.fields.TextField')(default='0 0 0 0'), keep_default=False)
+        raise RuntimeError("Cannot reverse this migration.")
 
 
     models = {

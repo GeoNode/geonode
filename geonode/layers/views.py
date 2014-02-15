@@ -189,17 +189,26 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
     DEFAULT_BASE_LAYERS = default_map_config()[1]
-
+    
+    if layer.storeType=='dataStore':
+        links = layer.link_set.download().filter(
+            name__in=settings.DOWNLOAD_FORMATS_VECTOR)
+    else:
+        links = layer.link_set.download().filter(
+            name__in=settings.DOWNLOAD_FORMATS_RASTER)
+    metadata = layer.link_set.metadata().filter(
+        name__in=settings.DOWNLOAD_FORMATS_METADATA)
     return render_to_response(template, RequestContext(request, {
         "layer": layer,
         "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
         "documents": get_related_documents(layer),
+        "links": links,
+        "metadata": metadata,
     }))
 
 
 @login_required
-
 def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA)
     layer_attribute_set = inlineformset_factory(Layer, Attribute, extra=0, form=LayerAttributeForm, )
@@ -207,14 +216,11 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     poc = layer.poc
     metadata_author = layer.metadata_author
 
-    ContactRole.objects.get(resource=layer, role=layer.poc_role)
-    ContactRole.objects.get(resource=layer, role=layer.metadata_author_role)
-
     if request.method == "POST":
-        layer_form = LayerForm(request.POST, instance=layer, prefix="layer")
+        layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(request.POST, instance=layer, prefix="layer_attribute_set", queryset=Attribute.objects.order_by('display_order'))
     else:
-        layer_form = LayerForm(instance=layer, prefix="layer")
+        layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(instance=layer, prefix="layer_attribute_set", queryset=Attribute.objects.order_by('display_order'))
 
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid():
@@ -695,7 +701,7 @@ def feature_edit_check(request, layername):
     """
     layer = get_object_or_404(Layer, typename=layername)
     feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or ogc_server_settings.DATASTORE 
-    if request.user.has_perm('maps.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
+    if request.user.has_perm('layers.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
     else:
         return HttpResponse(json.dumps({'authorized': False}), mimetype="application/json")

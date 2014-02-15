@@ -1,0 +1,68 @@
+.. _migrate:
+
+Migrate a GeoNode 1.2 instance
+==============================
+
+In case you have an existing GeoNode 1.2 instance and you want to migrate it to latest version (2.0), this document should help you to get the desired result.
+
+The migrations will move all your data to the new database schema as well as update your geoserver to the version 2.4.
+
+Beware that the migrations only work if you are using PostgreSql as database backend!
+
+Before starting
+---------------
+
+Before proceding with the following instructions, make sure to backup your Django database and your GeoServer data directory.
+
+GeoNode 2.0 installation
+------------------------
+
+As a first step, install GeoNode 2.0 and make it sure everything works smoothly using a new Django database. When asked to overwrite the local_settings file and the apache geonode site answer "yes" to both of them.
+
+You shoud expect a database connection error during the installation process. This is the correct behavior for the migration purpose.
+
+Now change the /etc/geonode/local_settings.py file, and set the DATABASE password to the GeoNode Dababase path of the 1.2 version.
+
+Migrate the Django database
+---------------------------
+
+With GeoServer up and running, truncate the south_migrationhistory table::
+
+    $ psql -c 'TRUNCATE TABLE south_migrationhistory;' -d geonode
+
+Add the spatial columns to your database. If you have chosen a different database as datastore in the local_settings.py then add them on that one.
+    
+    $ psql -U geonode -d geonode -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
+
+    $ psql -U geonode -d geonode -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
+
+    $ psql -U geonode -d geonode -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
+
+    $ psql -U geonode -d geonode -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
+
+Run the syncdb command::
+
+    $ geonode syncdb
+    
+Now you will need to fake some application migrations and then migrate::
+
+    $ geonode migrate taggit --fake 0001
+    $ geonode migrate maps --fake 0001
+    $ geonode migrate
+    $ sudo geonode-updateip yourhost
+    
+Restart the web server:
+
+    $ sudo service apache2 restart
+
+The procedure should completely migrate the database to a fresh 2.0 instance
+
+Generate thumbnails and sync metadata and styles for layers
+-----------------------------------------------------------
+
+Now generate the missing thumbnails and sync metadata and styles for all of the layers, by running the updatelayers command::
+
+    $ geonode updatelayers
+
+
+

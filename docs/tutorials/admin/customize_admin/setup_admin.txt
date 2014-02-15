@@ -1,0 +1,219 @@
+.. _customize.setup_admin:
+
+Setup steps
+-----------
+
+.. warning:: These instructions are only valid if you've installed GeoNode systemwide using apt-get!!
+
+If you are working remotely, you should first connect to the machine that has your GeoNode installation. You will need to perform the following steps in a directory where you intend to keep your newly created project.
+
+.. code-block:: console
+	
+	$ django-admin startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst
+	$ sudo pip install -e my_geonode
+
+.. note:: You should NOT use the name *geonode* for your project as it will conflict with your default geonode package name.
+
+These commands create a new template based on the geonode example project.
+
+Rename the local_settings.py.sample to local_settings.py and edit it's content by setting the SITEURL and SITENAME. This file will be your main settings file for your project. It inherits all the settings from the original one plus you can override the ones that you need. 
+
+.. note:: In order for the edits to the local_settings.py file to take effect, you have to restart apache.
+
+Edit the file /etc/apache2/sites-available/geonode and change the following directive from::
+
+    WSGIScriptAlias / /var/www/geonode/wsgi/geonode.wsgi
+
+to::
+
+    WSGIScriptAlias / /path/to/my_geonode/my_geonode/wsgi.py
+
+Then restart apache
+
+.. code-block:: console
+
+	$ sudo service apache2 restart
+
+Now you can edit the templates in my_geonode/templates, the css and images to match your needs like shown in <Theming your Geonode>_. #Link!
+
+.. note:: After going through the theming guide you'll have to return to this site to execute one more command in order to finish the theming!
+
+When you've done the changes, run the following command in the *my_geonode* folder:
+
+.. code-block:: console
+
+	$ python manage.py collectstatic
+
+And now you should see all the changes you've made to your GeoNode.
+
+Source code revision control
+----------------------------
+
+It is recommended that you immediately put your new project under source code revision control. The GeoNode development team uses Git and GitHub and recommends that you do the same. If you do not already have a GitHub account, you can easily set one up. A full review of Git and distributed source code revision control systems is beyond the scope of this tutorial, but you may find the `Git Book`_ useful if you are not already familiar with these concepts.
+
+.. _Git Book: http://git-scm.com/book
+
+#. Create a new repository in GitHub. You should use the GitHub user interface to create a new repository for your new project.
+
+   .. figure:: img/github_home.jpg
+
+      *Creating a new GitHub Repository From GitHub's Homepage*
+
+   .. figure:: img/create_repo.jpg
+
+      *Specifying new GitHub Repository Parameters*
+
+   .. figure:: img/new_repo.jpg
+
+      *Your new Empty GitHub Repository*
+
+#. Initialize your own repository in the my_geonode folder:
+
+   .. code-block:: console
+
+      $ git init
+
+#. Add the remote repository reference to your local git configuration:
+
+   .. code-block:: console
+
+      $ git remote add 
+
+#. Add your project files to the repository:
+
+   .. code-block:: console
+
+      $ git add .
+
+#. Commit your changes:
+
+   .. code-block:: console
+
+      $ git commit -am "Initial commit"
+
+#. Push to the remote repository:
+
+   .. code-block:: console
+
+      $ git push origin master
+
+Project structure
+-----------------
+
+Your GeoNode project will now be structured as depicted below::
+
+    |-- README.rst
+    |-- manage.py
+    |-- my_geonode
+    |   |-- __init__.py
+    |   |-- settings.py
+    |   |-- local_settings.py
+    |   |-- static
+    |   |   |-- README
+    |   |   |-- css
+    |   |   |   |-- site_base.css
+    |   |   |-- img
+    |   |   |   |-- README
+    |   |   |-- js
+    |   |       |-- README
+    |   |-- templates
+    |   |   |-- site_base.html
+    |   |   |-- site_index.html
+    |   |-- urls.py
+    |   |-- wsgi.py
+    |-- setup.py
+
+You can also view your project on GitHub.
+
+   .. figure:: img/github_project.png
+
+      *Viewing your project on GitHub*
+
+Each of the key files in your project are described below.
+
+manage.py
+~~~~~~~~~
+
+:file:`manage.py` is the main entry point for managing your project during
+development. It allows running all the management commands from each app in your
+project. When run with no arguments, it will list all of the management commands.
+
+settings.py
+~~~~~~~~~~~
+
+:file:`settings.py` is the primary settings file for your project. It imports the settings from the system geonode and adds the local paths. It is quite
+common to put all sensible defaults here and keep deployment specific configuration
+in the :file:`local_settings.py` file. All of the possible settings values and
+their meanings are detailed in the Django documentation.
+
+A common paradigm for handing 'local settings' (and in other areas where some
+python module may not be available) is:
+
+  .. code-block: python
+  
+  try:
+      from local_settings import *
+  except:
+      pass
+
+This is not required and there are many other solutions to handling varying
+deployment configuration requirements.
+
+urls.py
+~~~~~~~
+
+:file:`urls.py` is where your application specific URL routes go. Additionally,
+any `overrides` can be placed here, too.
+
+wsgi.py
+~~~~~~~
+
+This is a generated file to make deploying your project to a WSGI server easier.
+Unless there is very specific configuration you need, :file:`wsgi.py` can be
+left alone.
+
+setup.py
+~~~~~~~~
+
+There are several packaging options in python but a common approach is to place
+your project metadata (version, author, etc.) and dependencies in :file:`setup.py`.
+
+This is a large topic and not necessary to understand while getting started with
+GeoNode development but will be important for larger projects and to make
+development easier for other developers.
+
+More: http://docs.python.org/2/distutils/setupscript.html
+
+static
+~~~~~~
+
+The :file:`static` directory will contain your fixed resources: css, html, 
+images, etc. Everything in this directory will be copied to the final media
+directory (along with the `static` resources from other apps in your project).
+
+templates
+~~~~~~~~~
+
+All of your projects templates go in the :file:`templates` directory. While
+no organization is required for your project specific templates, when overriding
+or replacing a template from another app, the path must be the same as the template
+to be replaced.
+
+
+Staying in sync with mainline GeoNode
+-------------------------------------
+
+One of the primary reasons to set up your own GeoNode project using this method is so that you can stay in sync with the mainline GeoNode as the core development team makes new releases. Your own project should not be adversely affected by these changes, but you will receive bug fixes and other improvements by staying in sync.
+
+    Upgrade GeoNode::
+
+    	$ apt-get update
+    	$ apt-get install geonode
+
+    Verify that your new project works with the upgraded GeoNode::
+
+    	$ python manage.py runserver
+
+    Navigate to http://localhost:8000.
+
+

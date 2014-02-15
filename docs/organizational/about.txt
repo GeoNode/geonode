@@ -51,7 +51,7 @@ Once maps are saved, it is possible to embed them in any webpage or get a PDF ve
 GeoNode as a building block
 ===========================
 
-A handful of other Open Source projects, like :ref:`other_geonode_projects` extend GeoNode's functionality by tapping into the re-usability of Django applications.
+A handful of other Open Source projects extend GeoNode's functionality by tapping into the re-usability of Django applications.  Visit our gallery to see how the community uses GeoNode: `GeoNode Projects <http://geonode.org/gallery/>`_.
 
 The development community is very supportive of new projects and contributes ideas and guidance for newcomers.
 

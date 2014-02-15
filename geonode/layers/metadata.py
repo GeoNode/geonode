@@ -47,10 +47,12 @@ def set_metadata(xml):
             'Uploaded XML document is not XML: %s' % str(err))
 
     # check if document is an accepted XML metadata format
-    try:
-        tagname = exml.tag.split('}')[1]
-    except IndexError:
-        tagname = exml.tag
+    tagname = get_tagname(exml)
+
+    if tagname == 'GetRecordByIdResponse':  # strip CSW element
+        LOGGER.info('stripping CSW root element')
+        exml = exml.getchildren()[0]
+        tagname = get_tagname(exml)
 
     if tagname == 'MD_Metadata':  # ISO
         vals, keywords = iso2dict(exml)
@@ -135,7 +137,17 @@ def fgdc2dict(exml):
 
     if hasattr(mdata.idinfo, 'keywords'):
         if mdata.idinfo.keywords.theme:
-            keywords = mdata.idinfo.keywords.theme[0]['themekey']
+            for theme in mdata.idinfo.keywords.theme:
+                lowered_themekt = theme['themekt'].lower()
+
+                # Owslib doesn't support extracting the Topic Category
+                # from FGDC.  So we add support here.
+                # http://www.fgdc.gov/metadata/geospatial-metadata-standards
+                if all(ss in lowered_themekt for ss in ['iso', '19115', 'topic']) \
+                    and any(ss in lowered_themekt for ss in ['category', 'categories']):
+                    vals['topic_category'] = theme['themekey'][0]
+
+                keywords.extend(theme['themekey'])
 
     if hasattr(mdata.idinfo.timeperd, 'timeinfo'):
         if hasattr(mdata.idinfo.timeperd.timeinfo, 'rngdates'):
@@ -192,3 +204,11 @@ def sniff_date(datestr):
             return datetime.datetime.strptime(datestr.strip(), dfmt)
         except ValueError:
             pass
+
+def get_tagname(element):
+    """get tagname without namespace"""
+    try:
+        tagname = element.tag.split('}')[1]
+    except IndexError:
+        tagname = element.tag
+    return tagname

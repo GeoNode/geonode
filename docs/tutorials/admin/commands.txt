@@ -36,7 +36,7 @@ updatelayers
 
 Update the GeoNode application with data from GeoServer.
 
-This is useful to add data in formats that are not supported in GeoNode by default, and for example to link it it to ArcSDE datastores.
+This is useful to add data in formats that are not supported in GeoNode by default, and for example to link it it to ArcSDE datastores.  The updatelayers command provides several options that can be used to control how layer information is read from GeoServer and updated in GeoNode.  Refer to 'Additional Options'.
 
 Usage::
 
@@ -44,19 +44,31 @@ Usage::
 
 Additional options::
 
-  --ignore-errors     Do not stop if errors are encountered.
-
-
-cleardeadlayers
-===============
-
-Deletes layers that do not have a record in GeoServer anymore.
-
-This is useful to fix aborted or partial uploads or situations in which GeoServer is changed through it is UI and GeoNode is left out of sync.
-
-Usage::
-
-    geonode cleardeadlayers
+  --ignore-errors       Do not stop if errors are encountered.
+  
+  --skip-unadvertised   Skip processing any layers that are marked 'advertised=False' in GeoServer
+  
+  --remove-deleted      Remove layers from GeoNode that have been deleted (or marked unavailable) from GeoServer.  
+                         Note: this option can be combined with --workspace and --store to only check
+                         for deleted layers in a particular workspace or store.
+                         It can also be combined with --skip-unadvertised, in which case any layers marked 
+                         'advertised=False' will be removed from GeoNode
+                         Also, --remove-deleted does not consider the --filter parameter in determining 
+                         GeoServer layers to be deleted.  When --filter is combined with --remove-deleted, the 
+                         filter will be applied to layers to update, but layers that do not match the filter will
+                         not be marked for deletion from GeoNode.
+                         
+  -u
+  --user                 Name of the GeoNode user account that should own the imported layers.
+  
+  -f
+  --filter               Only update layers from GeoServer that match the given filter prefix.
+  
+  -s
+  --store                Only update layers for the given GeoServer store name.
+  
+  -w
+  --workspace            Only update layers for the given GeoServer workspace name.
 
 
 emit_notices
@@ -70,3 +82,14 @@ Usage::
 
     geonode emit_notices
 
+
+fixsitename
+===========
+
+Uses SITENAME and SITEURL to set the values of the default site object.
+
+This information is used in the page titles and when sending emails from GeoNode, for example, new registrations.
+
+Usage::
+
+   geonode fixsitename
