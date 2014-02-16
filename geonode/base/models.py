@@ -352,6 +352,17 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 
+    def spatial_representation_type_string(self):
+        if hasattr(self.spatial_representation_type, 'identifier'):
+            return self.spatial_representation_type.identifier
+        else:
+            if hasattr(self, 'storeType'): 
+                if self.storeType == 'coverageStore':
+                    return 'grid'
+                return 'vector'
+            else:
+                return None
+
     @property
     def keyword_csv(self):
         keywords_qs = self.keywords.all()
