@@ -1,0 +1,24 @@
+
+.main-pane {
+	resize: both;
+	border: 1px solid black;
+	width: 75%;
+	margin: 15px;
+	overflow: auto;
+}
+
+.right-pane {
+	float: right;
+	border: 1px solid black;
+	width: 20%;
+	margin: 15px;
+	/*resize: both;*/
+	overflow: auto;
+}
+
+.pane {
+	border: 1px solid black;
+	margin: 5px;
+	overflow: auto;
+}
+

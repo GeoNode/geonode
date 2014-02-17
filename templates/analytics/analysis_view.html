@@ -1,38 +1,30 @@
 {% extends "site_base.html" %}
-{% load i18n %}
-{% load maps_tags %}
-{% load layers_tags %}
-{% load pagination_tags %}
-{% load staticfiles %}
-{% load url from future %}
 
-  
+{% load i18n %}
+
 {% block title %} {% trans "Analytics" %} - {{ block.super }} {% endblock %}
 
-{% block body_class %}analytics{% endblock %}
-  
-{% block body_outer %}
+{% block head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}analytics/css/analysis_view.css" type="text/css" charset="utf-8">
 
-  
-<h4>OpenLayers Example Code</h4>
-
-  <p>To include a GeoNode map layer in an OpenLayers map, first find the name for that layer. This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list. For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers.Layer.WMS:</p>
-  <p><code>var geonodeLayer = new OpenLayers.Layer.WMS("GeoNode Risk Data", "http://demo.geonode.org/geoserver/wms",{ layers: "risk:nicaragua_admin" });</code></p>
-
-  <h4>Google Maps Example Code</h4>
-  <p>To include a GeoNode map layer in a Google Map, include the layer namein the URL template.</p>
-  <p><code>var tilelayer =  new GTileLayer(null, null, null, {tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, opacity:0.5 } );</code></p>
-
-  <h4>Shapefile/GeoJSON/GML Output</h4>
-  <p>To get data from the GeoNode web services use the WFS protocol. For example, to get the full Nicaraguan admin boundaries use:</p>
-  <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>
-  <p>Changing output format to <code>json</code>, <code>GML2</code>, <code>GML3</code>, or <code>csv</code> will get data in those formats. The WFS protocol also can handle more precise queries, specifying a bounding box or various spatial and non-spatial filters based on the attributes of the data.</p>
-
-  <h4>GeoTools Example Code</h4>
-
+<div class="">
+	{% include "analytics/_fact_selection.html" %}
+</div>
+<div id="split">
+	<div class="right-pane">
+		<div class="pane">
+			{% include "analytics/_charts.html" %}
+		</div>
+		<div class="pane">
+			{% include "analytics/_table.html" %}
+		</div>
+	</div>
+	<div class="main-pane">
+		{% include "analytics/_main_view.html" %}
+	</div>
+</div>
 
 {% endblock %}
 
-{% block extra_script %} 
-  {% include 'search_scripts.html' %}
-{% endblock extra_script %}                                                                                                                                                                              
+{% block footer %}{% endblock %}
