@@ -9,6 +9,14 @@
     {% with object.o as layer %}
       {% include "layers/_layer_list_item.html" %}
     {% endwith %}
+    
+       
+    {% elif object.o.class_name == 'Analysis' %}
+    {% with object.o as map %}
+      {% include "analytics/_analyse_list_item.html" %}
+    {% endwith %}
+   
+    
   {% elif object.o.class_name == 'Map' %}
     {% with object.o as map %}
       {% include "maps/_map_list_item.html" %}
