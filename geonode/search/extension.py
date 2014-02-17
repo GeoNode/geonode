@@ -21,6 +21,7 @@ from geonode.people.models import Profile
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
+from geonode.analytics.models import Analysis
 from geonode.search.util import resolve_extension
 
 from django.conf import settings
@@ -56,6 +57,10 @@ if not layer_query:
 map_query = resolve_extension('map_query')
 if not map_query:
     map_query = lambda q: Map.objects.filter()
+
+analysis_query = resolve_extension('analysis_query')
+if not analysis_query:
+    analysis_query = lambda q: Analysis.objects.filter()
 
 document_query = resolve_extension('document_query')
 if not document_query:

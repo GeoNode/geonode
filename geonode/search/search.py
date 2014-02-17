@@ -219,6 +219,10 @@ def _get_map_results(query):
 
     return q.distinct()
 
+def _get_analysis_results(query):
+    q = extension.analysis_query(query)
+    
+    return q.distinct()
 
 def _get_layer_results(query):
 
@@ -318,7 +322,7 @@ def _get_document_results(query):
     return q.distinct()
 
 def combined_search_results(query):
-    facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'document', 'user')])
+    facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'document', 'user', 'analysis')])
     results = {'facets' : facets}
 
     bytype = (None,) if u'all' in query.type else query.type
@@ -328,7 +332,12 @@ def combined_search_results(query):
         q = _get_map_results(query)
         facets['map'] = q.count()
         results['maps'] = q
-
+    
+    if None in bytype or u'analysis' in bytype:
+	q = _get_analysis_results(query)
+	facets['analysis'] = q.count()
+	results['analyses'] = q
+	
     if None in bytype or u'layer' in bytype or u'raster' in bytype or u'vector' in bytype:
         q = _get_layer_results(query)
         if u'raster' in bytype and not u'vector' in bytype:
