@@ -328,7 +328,7 @@
        </gmd:scope>
        <gmd:lineage>
          <gmd:LI_Lineage>
-           <gmd:statement {% if not layer.data_quality_statement %}gco:nilReason="missing"/>{% else %}>{{layer.data_quality_statement}}</gmd:statement>{% endif %}
+           <gmd:statement {% if not layer.data_quality_statement %}gco:nilReason="missing"/>{% else %}><gco:CharacterString>{{layer.data_quality_statement}}</gco:CharacterString></gmd:statement>{% endif %}
          </gmd:LI_Lineage>
        </gmd:lineage>
      </gmd:DQ_DataQuality>
