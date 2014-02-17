@@ -23,10 +23,12 @@
       </div> <!-- /.meta -->
       <div class="tools">
         <p>
-          <a href="{% url "analyse_download" map.id %}" class="btn btn-mini">{% trans "Download" %}</a>
-          <a href="{% url "analyse_view" map.id %}" class="btn btn-mini">{% trans "View" %}</a>
+          <a href="{% url "analyse_download" analyse.id %}" class="btn btn-mini">{% trans "Download" %}</a>
+          <a href="{% url "analyse_view" analyse.id %}" class="btn btn-mini">{% trans "View" %}</a>
         </p>
       </div> 
+      
     </div> <!-- /.details --> 
   </div> <!-- /.content -->
-</article>
+  <div> {{Analysis.objects.all}} </div>  
+  </article>
