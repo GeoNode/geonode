@@ -90,6 +90,7 @@ def apply_normalizers(results):
         ('layers', LayerNormalizer),
         ('documents', DocumentNormalizer),
         ('users', OwnerNormalizer),
+        ('analyses', AnalysisNormalizer),
     ]
     for k,n in mapping:
         r = results.get(k, None)
@@ -261,4 +262,28 @@ class OwnerNormalizer(Normalizer):
         doc['doc_cnt'] = Document.objects.filter(owner = user).count()
         doc['_type'] = 'owner'
         doc['_display_type'] = extension.USER_DISPLAY
+        return doc
+    
+class AnalysisNormalizer(Normalizer):
+    def last_modified(self):
+        return self.o.last_modified
+    def populate(self, doc, exclude):
+        mapobj = self.o
+        # resolve any local layers and their keywords
+        #local_kw = [ l.keyword_list() for l in mapobj.local_layers if l.keywords]
+        #keywords = local_kw and list(set( reduce(lambda a,b: a+b, local_kw))) or []
+        doc['id'] = mapobj.id
+        doc['title'] = mapobj.title
+        doc['abstract'] = defaultfilters.linebreaks(mapobj.abstract)
+        doc['category'] = mapobj.category.identifier if mapobj.category else 'location'
+        doc['detail'] = reverse('map_detail', args=(mapobj.id,))
+        doc['owner'] = mapobj.owner
+        doc['owner_detail'] = mapobj.owner.get_absolute_url()
+        doc['last_modified'] = extension.date_fmt(mapobj.last_modified)
+        doc['_type'] = 'analysis'
+        #doc['_display_type'] = extension.MAP_DISPLAY
+#        doc['thumb'] = map.get_thumbnail_url()
+        doc['keywords'] = keywords
+        #if 'bbox' not in exclude:
+            #doc['bbox'] = _bbox(mapobj)
         return doc

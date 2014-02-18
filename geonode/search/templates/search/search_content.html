@@ -4,7 +4,9 @@
   <p class="search-count">Total: {{ total }}</p>
 {% if object_list|length > 0 %}
 {% autopaginate object_list 4 %}
+
 {% for object in object_list %}
+
   {% if object.o.class_name == 'Layer' %}
     {% with object.o as layer %}
       {% include "layers/_layer_list_item.html" %}
@@ -12,8 +14,8 @@
     
        
     {% elif object.o.class_name == 'Analysis' %}
-    {% with object.o as map %}
-      {% include "analytics/_analyse_list_item.html" %}
+    {% with object.o as analysis %}
+      {% include "analytics/_analysis_list_item.html" %}
     {% endwith %}
    
     
