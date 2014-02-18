@@ -66,7 +66,7 @@ def proxy(request):
         conn = HTTPSConnection(url.hostname, url.port)
     else:
         conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator, request.raw_post_data, headers)
+    conn.request(request.method, locator, request.body, headers)
     result = conn.getresponse()
     response = HttpResponse(
             result.read(),
@@ -99,13 +99,13 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
 
     response, content = http.request(
         url, request.method,
-        body=request.raw_post_data or None,
+        body=request.body or None,
         headers=headers)
         
     # we need to sync django here
     # we should remove this geonode dependency calling layers.views straight
     # from GXP, bypassing the proxy
-    if downstream_path == 'rest/styles' and len(request.raw_post_data)>0:
+    if downstream_path == 'rest/styles' and len(request.body)>0:
         # for some reason sometime gxp sends a put with empty request
         # need to figure out with Bart
         from geonode.layers import utils

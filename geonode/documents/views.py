@@ -225,7 +225,7 @@ def document_permissions(request, docid):
             mimetype='text/plain')
 
     if request.method == 'POST':
-        permission_spec = json.loads(request.raw_post_data)
+        permission_spec = json.loads(request.body)
         document_set_permissions(document, permission_spec)
 
         return HttpResponse(

@@ -107,7 +107,7 @@ def _handleThumbNail(req, obj):
         return HttpResponseRedirect(obj.get_thumbnail_url())
     elif req.method == 'POST':
         try:
-            spec = _fixup_ows_url(req.raw_post_data)
+            spec = _fixup_ows_url(req.body)
             obj.save_thumbnail(spec)
             return HttpResponseRedirect(obj.get_thumbnail_url())
         except:

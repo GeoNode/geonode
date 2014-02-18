@@ -367,7 +367,8 @@ class Map(ResourceBase, GXPMapBase):
                 name = layer.typename,
                 ows_url = ogc_server_settings.public_url + "wms",
                 stack_order = index,
-                visibility = True
+                visibility = True,
+                transparent = False
             ))
 
             bbox = self.set_bounds_from_layers(layer_objects)
