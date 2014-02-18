@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('geonode.geoserver.views',
     url(r'^rest/stores/(?P<store_type>\w+)/$', 'stores', name="stores"),

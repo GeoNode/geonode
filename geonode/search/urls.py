@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 
 
 urlpatterns = patterns('geonode.search.views',

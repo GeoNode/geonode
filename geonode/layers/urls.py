@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 js_info_dict = {
     'packages': ('geonode.layers',),
