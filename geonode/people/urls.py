@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('geonode.people.views',
     url(r'^$', 'profile_list' , name='profile_browse'),
