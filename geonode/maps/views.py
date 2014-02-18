@@ -257,7 +257,7 @@ def map_json(request, mapid):
             )
         map_obj = _resolve_map(request, mapid, 'maps.change_map')
         try:
-            map_obj.update_from_viewer(request.raw_post_data)
+            map_obj.update_from_viewer(request.body)
             return HttpResponse(json.dumps(map_obj.viewer_json()))
         except ValueError, e:
             return HttpResponse(
@@ -299,7 +299,7 @@ def new_map_json(request):
         map_obj.save()
         map_obj.set_default_permissions()
         try:
-            map_obj.update_from_viewer(request.raw_post_data)
+            map_obj.update_from_viewer(request.body)
         except ValueError, e:
             return HttpResponse(str(e), status=400)
         else:
@@ -556,7 +556,7 @@ def map_permissions(request, mapid):
         )
 
     if request.method == 'POST':
-        permission_spec = json.loads(request.raw_post_data)
+        permission_spec = json.loads(request.body)
         map_set_permissions(map_obj, permission_spec)
 
         return HttpResponse(

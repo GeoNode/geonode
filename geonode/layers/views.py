@@ -573,7 +573,7 @@ def layer_permissions(request, layername):
             mimetype='text/plain')
 
     if request.method == 'POST':
-        permission_spec = json.loads(request.raw_post_data)
+        permission_spec = json.loads(request.body)
         layer_set_permissions(layer, permission_spec)
 
         return HttpResponse(
