@@ -127,6 +127,26 @@ class OGC_Servers_Handler(object):
         self.servers = ogc_server_dict
         self._servers = local()
 
+    def ensure_valid_configuration(self, alias):
+        """
+        Ensures the settings are valid.
+        """
+        try:
+            server = self.servers[alias]
+        except KeyError:
+            raise ServerDoesNotExist("The server %s doesn't exist" % alias)
+
+        datastore = server.get('DATASTORE')
+        uploader_backend = getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest')
+
+        if uploader_backend == 'geonode.importer' and datastore and not settings.DATABASES.get(datastore):
+            raise ImproperlyConfigured('The OGC_SERVER setting specifies a datastore '
+                                       'but no connection parameters are present.')
+
+        if uploader_backend == 'geonode.importer' and not datastore:
+            raise ImproperlyConfigured('The UPLOADER BACKEND is set to geonode.importer but no DATASTORE is specified.')
+
+
     def ensure_defaults(self, alias):
         """
         Puts the defaults into the settings dictionary for a given connection
@@ -155,6 +175,7 @@ class OGC_Servers_Handler(object):
             return getattr(self._servers, alias)
 
         self.ensure_defaults(alias)
+        self.ensure_valid_configuration(alias)
         server = self.servers[alias]
         server = OGC_Server(alias=alias, ogc_server=server)
         setattr(self._servers, alias, server)
