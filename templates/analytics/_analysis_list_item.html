@@ -10,16 +10,16 @@
   <div class="content">
 
     <div class="item-header">
-      <a href=""><img class="thumb" src="{{ analysis.get_thumbnail_url }}" /></a>
-      <h3><i class="icon-analysis-marker"></i> <a href="">{{ analysis.title }}</a></h3>
+      <a href="{% url "analysis_detail" analysis.id %}"><img class="thumb" src="{{ analysis.get_thumbnail_url }}" /></a>
+      <h3><i class="icon-analysis-marker"></i> <a href="{% url "analysis_detail" analysis.id %}">{{ analysis.title }}</a></h3>
     </div>
     <div class="details">
       <div class="meta">
-        <p>analysis {% trans "from" %} <a href="" rel="author">{{ analysis.owner }}</a>, {{ analysis.last_modified|timesince }} {% trans 'ago' %}</p>
+        <p>analysis {% trans "from" %} <a href="{% url "profile_detail" analysis.owner.username %}" rel="author">{{ analysis.owner }}</a>, {{ analysis.last_modified|timesince }} {% trans 'ago' %}</p>
         <p class="abstract">{{ analysis.abstract }}</p>
         <ul class="nav stats">
-          <li><a href=""><strong>{{ analysis.popular_count }}</strong> {% trans "view" %}{{ analysis.popular_count|pluralize }}</a></li>
-          <li><a href=""><strong><span class="avg_rating" data-rating="{{ analysis_rating }}"> <span class="overall_rating"></span></span></strong>{% trans "Average rating" %} ({{num_votes}} {% trans "votes" %})</a></li>
+          <li><a href="{% url "analysis_detail" analysis.id %}"><strong>{{ analysis.popular_count }}</strong> {% trans "view" %}{{ analysis.popular_count|pluralize }}</a></li>
+          <li><a href="{% url "analysis_detail" analysis.id %}#rate"><strong><span class="avg_rating" data-rating="{{ analysis_rating }}"> <span class="overall_rating"></span></span></strong>{% trans "Average rating" %} ({{num_votes}} {% trans "votes" %})</a></li>
         </ul>
       </div> <!-- /.meta -->
       <div class="tools">
