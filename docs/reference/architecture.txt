@@ -17,6 +17,8 @@ The Big Picture
 Django Architecture
 -------------------
 
+www.djangoproject.com
+
 MVC/MVT
 .......
 
@@ -65,6 +67,7 @@ GeoNode uses GeoServer for providing OGC services.
 - Data uploaded to GeoNode is first processed in GeoNode and finally published
   to GeoServer (or ingested into the spatial database)
 
+More:  http://geoserver.org
 
 GeoNode and PostgreSQL/PostGIS
 ------------------------------
