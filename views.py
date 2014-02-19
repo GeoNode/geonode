@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 
 def analytic_list(request, template='analytics/analysis_list.html'):
@@ -12,4 +12,4 @@ def analytic_list(request, template='analytics/analysis_list.html'):
 #### NEW ANALYSES ####
 
 def new_analysis(request, template='analytics/analysis_view.html'):
-    return render_to_response(template, RequestContext(request, { }))
+    return render(request, template, { })
