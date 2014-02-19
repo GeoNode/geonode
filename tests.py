@@ -13,3 +13,7 @@ class AnalyticsTest(TestCase):
     def test_new_analysis(self):
 	r = self.client.get('/analytics/new/')
 	self.assertEqual(r.status_code, 200)
+	
+    def test_detail_analysis(self):
+	r = self.client.get('/analytics/1/')
+	self.assertEqual(r.status_code, 200)
