@@ -1,1 +1,9 @@
 {% extends "analytics/analysis_base.html" %}
+{% load geonode_auth %}
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load url from future %}
+{% load base_tags %}
+
+{% block title %}{{ analysis.title }} — {{ block.super }}{% endblock %}
