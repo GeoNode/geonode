@@ -42,18 +42,22 @@ os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
 
 # Defines settings for development
 DATABASES = {
+
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
+        'TEST_NAME' : os.path.join(PROJECT_ROOT, 'development-test.db'),
     },
+
     # vector datastore for uploads
     #'datastore' : {
-    #    'ENGINE': 'django.contrib.gis.db.backends.postgis',
-    #    'NAME': '',
-    #    'USER' : '',
-    #    'PASSWORD' : '',
-    #    'HOST' : '',
-    #    'PORT' : '',
+       ##'ENGINE': 'django.contrib.gis.db.backends.postgis',
+       #'ENGINE' : 'django.db.backends.sqlite3',
+       #'NAME': '',
+       #'USER' : '',
+       #'PASSWORD' : '',
+       #'HOST' : '',
+       #'PORT' : '',
     #}
 }
 
