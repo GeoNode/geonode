@@ -2326,21 +2326,8 @@ def post_save_layer(instance, sender, **kwargs):
     if (re.search("coverageStore|dataStore", instance.storeType)):
         logger.info("Call save_to_geoserver for %s", instance.name)
         instance.save_to_geoserver()
-
-    if kwargs['created']:
-        instance._populate_from_gs()
-
-    instance.save_to_geonetwork()
-
-    if kwargs['created']:
-        logger.debug("populate from geonetwork")
-        try:
-            instance._populate_from_gn()
-            instance.save(force_update=True)
-        except:
-            logger.warning("Exception populating from geonetwork record for [%s]", instance.name)
-            raise
-        logger.debug("save instance")
+        if kwargs['created']:
+            instance._populate_from_gs()
 
 signals.pre_delete.connect(delete_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)

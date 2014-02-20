@@ -677,6 +677,7 @@ def describemap(request, mapid):
         if map_form.is_valid():
             map_obj = map_form.save(commit=False)
             if map_form.cleaned_data["keywords"]:
+                map_obj.keywords.clear()
                 map_obj.keywords.add(*map_form.cleaned_data["keywords"])
             else:
                 map_obj.keywords.clear()
@@ -1063,12 +1064,15 @@ def layer_metadata(request, layername):
                 x = XssCleaner()
                 the_layer.abstract = despam(x.strip(layer_form.cleaned_data["abstract"]))
                 the_layer.topic_category = new_category
+                the_layer.keywords.clear()
                 the_layer.keywords.add(*new_keywords)
+
                 if request.user.is_superuser and gazetteer_form.is_valid():
                     the_layer.in_gazetteer = "gazetteer_include" in request.POST
                     if the_layer.in_gazetteer:
                         the_layer.gazetteer_project = gazetteer_form.cleaned_data["project"]
                 the_layer.save()
+                the_layer.save_to_geonetwork()
 
                 if settings.USE_GAZETTEER and show_gazetteer_form:
                     if settings.USE_QUEUE:
@@ -1267,6 +1271,7 @@ def upload_layer(request):
 
                 name = slugify(name_base.replace(".","_"))
 
+
                 saved_layer = save(name, base_file, request.user,
                         overwrite = False,
                         abstract = form.cleaned_data["layer_abstract"],
@@ -1276,7 +1281,6 @@ def upload_layer(request):
                         charset = request.POST.get('charset'),
                         sldfile = sld_file
                         )
-
                 redirect_to  = reverse('data_metadata', args=[saved_layer.typename])
                 if 'mapid' in request.POST and request.POST['mapid'] == 'tab':
                     redirect_to+= "?tab=worldmap_update_panel"
