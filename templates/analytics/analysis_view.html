@@ -9,22 +9,22 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}analytics/css/analysis_view.css" type="text/css" charset="utf-8">
 <script src="http://d3js.org/d3.v3.js" type="text/javascript"></script>
 
-<div id="top-pane">
-	{% include "analytics/_fact_selection.html" %}
-</div>
-<div id="split">
-	<div id="right-pane">
-		<div class="pane">
-			{% include "analytics/_charts.html" %}
-		</div>
-		<div class="pane">
-			{% include "analytics/_table.html" %}
-		</div>
-	</div>
-	<div id="main-pane">
+<table id="analysis-table">
+	<tr>
+		<td colspan="2" id="top-pane">
+			{% include "analytics/_fact_selection.html" %}
+		</td>
+	</tr>
+	<tr>
+		<td id="left-pane">
 		{% include "analytics/_main_view.html" %}
-	</div>
-</div>
+		</td>
+		<td id="right-pane">
+			{% include "analytics/_charts.html" %}
+			{% include "analytics/_table.html" %}
+		</td>
+	</tr>
+</table>
 
 {% endblock %}
 
