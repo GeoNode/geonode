@@ -7,3 +7,58 @@
 {% load base_tags %}
 
 {% block title %}{{ analysis.title }} — {{ block.super }}{% endblock %}
+
+{% block body_class %}analyses{% endblock %}
+
+{% block body_outer %}
+  {% overall_rating analysis "analysis" as analysis_rating %}
+  <div class="span6">
+    <h2 class="page-title">{{ analysis.title }}</h2>
+  </div>
+  <div class="span6 action-group pull-right">
+    <div class="btn-group pull-right">
+      <div class="btn-group">
+        <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+          {% trans "Download Analysis" %}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="">{% trans "Download Data Layers" %} <i class="icon-chevron-right"></i></a></li>
+            <li><a href="" target="_new">{% trans "Download Web Map Context" %} <i class="icon-chevron-right"></i></a></li>
+        </ul>
+      </div>
+
+      {% has_obj_perm user analysis "analyses.change_map" as can_edit_analysis %}
+      {% if can_edit_map %}
+      <div class="btn-group">
+        <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
+          {% trans "Edit Analysis" %}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="">{% trans "Edit Analysis Metadata" %} <i class="icon-chevron-right"></i></a></li>
+          {% if PRINTNG_ENABLED %}
+          <li><a href="#" id="set_thumbnail">{% trans "Set Analysis Thumbnail" %} <i class="icon-chevron-right"></i></a></li>
+          {% endif %}
+          <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Analysis Permissions" %} <i class="icon-chevron-right"></i></a></li>
+          <li><a href="">{% trans "Remove this Analysis" %} <i class="icon-chevron-right"></i></a></li>
+        </ul>
+      </div>
+      {% endif %}
+      <div class="btn-group">
+        <a href="" class="btn btn-large">{% trans "View Analysis" %}</a>
+      </div>
+      {% comment %}
+      <div class="btn-group">
+        <a href="#" class="btn btn-large btn-info strong"><i class="icon-print icon-white"></i> {% trans "Print Analysis" %}</a>
+      </div>
+      {% endcomment %}
+    </div>
+  </div>
+  <div class="span12">
+      <div id="embedded_map" class="mrg-btm">
+        <div id="the_map" width='100%'></div>
+    </div>
+  </div>
+  
+{% endblock %}

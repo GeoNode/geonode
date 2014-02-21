@@ -11,6 +11,18 @@ class Analysis(ResourceBase):
 
     share_count = models.IntegerField(default=0)
 
+    data = models.TextField()
+
+    LEVEL_READ  = 'analysis_readonly'
+    LEVEL_WRITE = 'analysis_readwrite'
+    LEVEL_ADMIN = 'analysis_admin'
+
+    class Meta:
+        # custom permissions,
+        # change and delete are standard in django
+        permissions = (('view_analysis', 'Can view'),
+                       ('change_analysis_permissions', "Can change permissions"), )
+
     def class_name(self):
         return 'Analysis'
 
