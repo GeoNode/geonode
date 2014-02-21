@@ -9,11 +9,11 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}analytics/css/analysis_view.css" type="text/css" charset="utf-8">
 <script src="http://d3js.org/d3.v3.js" type="text/javascript"></script>
 
-<div class="">
+<div id="top-pane">
 	{% include "analytics/_fact_selection.html" %}
 </div>
 <div id="split">
-	<div class="right-pane">
+	<div id="right-pane">
 		<div class="pane">
 			{% include "analytics/_charts.html" %}
 		</div>
@@ -21,7 +21,7 @@
 			{% include "analytics/_table.html" %}
 		</div>
 	</div>
-	<div class="main-pane">
+	<div id="main-pane">
 		{% include "analytics/_main_view.html" %}
 	</div>
 </div>
