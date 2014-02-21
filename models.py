@@ -4,18 +4,18 @@ from django.db.models import signals
 from geonode.base.models import ResourceBase, resourcebase_post_save, resourcebase_post_delete
 
 class Analysis(ResourceBase):
-  last_modified = models.DateTimeField(auto_now_add=True)  
-  # The last time the map was modified.
-  
-  popular_count = models.IntegerField(default=0)
-  
-  share_count = models.IntegerField(default=0)
-  
-  def class_name(self):
-      return 'Analysis'
-  
-  def __unicode__(self):
-    return self.title
+    last_modified = models.DateTimeField(auto_now_add=True)
+    # The last time the map was modified.
+
+    popular_count = models.IntegerField(default=0)
+
+    share_count = models.IntegerField(default=0)
+
+    def class_name(self):
+        return 'Analysis'
+
+    def __unicode__(self):
+        return self.title
 
 def pre_save_analysis(instance, sender, **kwargs):
     pass

@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.template import RequestContext
 
 def analytic_list(request, template='analytics/analysis_list.html'):
     from geonode.search.views import search_page
