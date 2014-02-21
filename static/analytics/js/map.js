@@ -3,7 +3,7 @@ var container = d3.select('#map-pane').append('svg')
     .attr('height', 2000);
     console.log(container);
 
-d3.json("http://127.0.0.1:8000/static/analytics/continent_Europe_subunits.json", function (data) {
+d3.json("http://127.0.0.1:8000/static/analytics/data/continent_Europe_subunits.json", function (data) {
   var zoom = d3.behavior.zoom()
       .translate([0, 0])
       .scale(1)
