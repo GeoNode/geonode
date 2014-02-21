@@ -16,22 +16,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.maps.models import Layer
 
-from geonode.geoserver.uploader.uploader import NotFound
-from geonode.upload.utils import gs_uploader
-from geonode.utils import ogc_server_settings
-
-from django.conf import settings
+import cPickle as pickle
+import logging
+import shutil
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
-
-import cPickle as pickle
-from datetime import datetime
-import logging
+from geonode.layers.models import Layer
+from geonode.utils import ogc_server_settings
+from gsimporter import NotFound
 from os import path
-import shutil
 
 
 class UploadManager(models.Manager):
@@ -39,13 +35,12 @@ class UploadManager(models.Manager):
         models.Manager.__init__(self)
         
     def update_from_session(self, upload_session):
-        self.get(import_id = upload_session.import_session.id).update_from_session(upload_session)
+        self.get(import_id=upload_session.import_session.id).update_from_session(upload_session)
         
     def create_from_session(self, user, import_session):
-        return self.create(
-            user = user, 
-            import_id = import_session.id, 
-            state= import_session.state)
+        return self.create(user=user,
+                           import_id=import_session.id,
+                           state=import_session.state)
             
     def get_incomplete_uploads(self, user):
         return self.filter(user=user, complete=False).exclude(state=Upload.STATE_INVALID)
@@ -58,11 +53,11 @@ class Upload(models.Model):
     user = models.ForeignKey(User, null=True)
     # hold importer state or internal state (STATE_)
     state = models.CharField(max_length=16)
-    date = models.DateTimeField('date', default = datetime.now)
+    date = models.DateTimeField('date', default=datetime.now)
     layer = models.ForeignKey(Layer, null=True)
     upload_dir = models.CharField(max_length=100, null=True)
     name = models.CharField(max_length=64, null=True)
-    complete = models.BooleanField(default = False)
+    complete = models.BooleanField(default=False)
     # hold our serialized session object
     session = models.TextField(null=True)
     # hold a dict of any intermediate Layer metadata - not used for now
@@ -103,7 +98,7 @@ class Upload(models.Model):
         models.Model.delete(self)
         if cascade:
             try:
-                session = gs_uploader().get_session(self.import_id)
+                session = Layer.objects.gs_uploader.get_session(self.import_id)
             except NotFound:
                 session = None
             if session:

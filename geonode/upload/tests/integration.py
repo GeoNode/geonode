@@ -27,38 +27,42 @@ from geonode.upload.models import Upload
 from geonode.upload.views import _ALLOW_TIME_STEP
 from geonode.urls import include
 from geonode.urls import urlpatterns
+from geonode.utils import ogc_server_settings
 from geoserver.catalog import Catalog
 from gisdata import BAD_DATA
 from gisdata import GOOD_DATA
 from owslib.wms import WebMapService
 from unittest import TestCase
+from urllib2 import HTTPError
 import MultipartPostHandler
 import csv
 import glob
 import json
 import os
+import logging
 import signal
 import subprocess
 import tempfile
 import time
+import unittest
 import urllib
 import urllib2
 from zipfile import ZipFile
 
-GEONODE_USER     = 'admin'
-GEONODE_PASSWD   = 'admin'
-GEONODE_URL      = settings.SITEURL.rstrip('/')
-GEOSERVER_URL    = settings.OGC_SERVER['default']['LOCATION']
-GEOSERVER_USER, GEOSERVER_PASSWD = settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'] 
+GEONODE_USER = 'admin'
+GEONODE_PASSWD = 'admin'
+GEONODE_URL = settings.SITEURL.rstrip('/')
+GEOSERVER_URL = ogc_server_settings.LOCATION
+GEOSERVER_USER, GEOSERVER_PASSWD = ogc_server_settings.credentials
 
-import logging
 logging.getLogger('south').setLevel(logging.WARNING)
+logger = logging.getLogger(__name__)
 
 # hack the global urls to ensure we're activated locally
-urlpatterns += patterns('',(r'^upload/', include('geonode.upload.urls')))
+urlpatterns += patterns('', (r'^upload/', include('geonode.upload.urls')))
 
 def upload_step(step=None):
-    step = reverse('data_upload',args=[step] if step else [])
+    step = reverse('data_upload', args=[step] if step else [])
     return step
 
 def parse_cookies(cookies):
@@ -154,7 +158,7 @@ class Client(object):
         resp = self.make_request(upload_step(), data=params, ajax=True)
         data = resp.read()
         try:
-            return (resp, json.loads(data))
+            return resp, json.loads(data)
         except ValueError:
             raise ValueError('probably not json, status %s' % resp.getcode(), data)
 
@@ -163,11 +167,11 @@ class Client(object):
         Takes a path and returns a tuple
         """
         resp = self.get(path)
-        return (resp, BeautifulSoup(resp.read()))
+        return resp, BeautifulSoup(resp.read())
 
     def get_json(self, path):
         resp = self.get(path)
-        return (resp, json.loads(resp.read()))
+        return resp, json.loads(resp.read())
 
     def get_crsf_token(self):
         """ Method that makes a request against the home page to get
@@ -213,9 +217,9 @@ class UploaderBase(TestCase):
             fp.write('\n'.join(test_settings))
 
         # runserver with settings
-        args = ['python','manage.py','runserver','--settings=integration_settings','--verbosity=0']
+        args = ['python', 'manage.py', 'runserver', '--settings=integration_settings', '--verbosity=0']
         # see http://www.doughellmann.com/PyMOTW/subprocess/#process-groups-sessions
-        cls._runserver = subprocess.Popen(args, stderr=open('test.log','w') ,preexec_fn=os.setsid)
+        cls._runserver = subprocess.Popen(args, stderr=open('test.log', 'w'), preexec_fn=os.setsid)
 
         # await startup
         cl = Client(
@@ -235,7 +239,9 @@ class UploaderBase(TestCase):
         super(UploaderBase, cls).tearDownClass()
 
         # kill server process group
-        os.killpg(cls._runserver.pid, signal.SIGKILL)
+        if cls._runserver.pid:
+            os.killpg(cls._runserver.pid, signal.SIGKILL)
+
         if os.path.exists('integration_settings.py'):
             os.unlink('integration_settings.py')
 
@@ -335,7 +341,6 @@ class UploaderBase(TestCase):
         self.check_layer_complete(layer_page, layer_name)
         
     def finish_upload(self, current_step, layer_name, is_raster=False, skip_srs=False):
-
         if (not is_raster and _ALLOW_TIME_STEP):
             resp, data = self.check_and_pass_through_timestep()
             self.assertEquals(resp.code, 200)
@@ -348,13 +353,19 @@ class UploaderBase(TestCase):
             self.assertEquals(current_step, upload_step('srs'))
             # if all is good, the srs step will redirect to the final page
             resp = self.client.get(current_step)
+
+            content = json.loads(resp.read())
+            if not content.get('url') and content.get('redirect_to', current_step) == upload_step('final'):
+                resp = self.client.get(content.get('redirect_to'))
+
         else:
             self.assertEquals(current_step, upload_step('final'))
             resp = self.client.get(current_step)
 
         self.assertEquals(resp.code, 200)
-        url = json.loads(resp.read())['url']
-        # and the final page should redirect to tha layer page
+        c = resp.read()
+        url = json.loads(c)['url']
+        # and the final page should redirect to the layer page
         # @todo - make the check match completely (endswith at least)
         # currently working around potential 'orphaned' db tables
         self.assertTrue(layer_name in url, 'expected %s in URL, got %s' % (layer_name, url))
@@ -362,7 +373,8 @@ class UploaderBase(TestCase):
 
     def check_upload_model(self, original_name):
         # we can only test this if we're using the same DB as the test instance
-        if not settings.OGC_SERVER['default']['DATASTORE']: return
+        if not settings.OGC_SERVER['default']['DATASTORE']:
+            return
         try:
             upload = Upload.objects.get(layer__name=original_name)
         except Upload.DoesNotExist:
@@ -490,28 +502,9 @@ class TestUpload(UploaderBase):
             unsupported_path = unsupported_path.rstrip('c')
 
         self.client.login()  # make sure the client is logged in
-        resp, data = self.client.upload_file(unsupported_path)
-        # currently the upload returns a 200 when there is an error thrown
-        self.assertEquals(resp.code, 200)
-        self.assertTrue('success' in data)
-        self.assertTrue(not data['success'])
-        self.assertTrue('You uploaded a .py file' in data['errors'][0])
 
-    def test_repeated_upload(self):
-        """Verify that we can upload a shapefile twice """
-        Layer.objects.filter(title='single_point').delete()
-
-        shp = os.path.join(GOOD_DATA, 'vector', 'single_point.shp')
-        base = 'single_point'
-        self.client.login()
-        resp, data = self.client.upload_file(shp)
-        self.wait_for_progress(data.get('progress'))
-        self.complete_upload(base, resp, data)
-
-        # try uploading the same layer twice, note the appended '0'
-        resp, data = self.client.upload_file(shp)
-        self.wait_for_progress(data.get('progress'))
-        self.complete_upload(base + "0", resp, data)
+        with self.assertRaises(HTTPError):
+            self.client.upload_file(unsupported_path)
 
     def test_csv(self):
         '''make sure a csv upload fails gracefully/normally when not activated'''
@@ -520,14 +513,15 @@ class TestUpload(UploaderBase):
         self.client.login()
         resp, data = self.client.upload_file(csv_file)
         self.assertTrue('success' in data)
-        self.assertTrue(not data['success'])
-        self.assertTrue('You uploaded a .csv file' in data['errors'][0])
+        self.assertTrue(data['success'])
+        self.assertTrue(data['redirect_to'], "/upload/csv")
 
 
 class TestUploadDBDataStore(TestUpload):
 
     settings_overrides = []
 
+    @unittest.skipUnless(ogc_server_settings.datastore_db and _ALLOW_TIME_STEP, "Vector datastore or time not enabled.")
     def test_csv(self):
         """Override the baseclass test and verify a correct CSV upload"""
 
@@ -540,14 +534,21 @@ class TestUploadDBDataStore(TestUpload):
         self.assertEquals(csv_step, upload_step('csv'))
         form_data = dict(lat='lat', lng='lon', csrfmiddlewaretoken=self.client.get_crsf_token())
         resp = self.client.make_request(csv_step, form_data)
+        content = json.loads(resp.read())
 
-        url = json.loads(resp.read())['url']
+        if not content.get('url') and content.get('redirect_to', csv_step) == upload_step('final'):
+                resp = self.client.get(content.get('redirect_to'))
+                content = json.loads(resp.read())
+
+        url = content.get('url')
+
         self.assertTrue(url.endswith(layer_name),
             'expected url to end with %s, but got %s' % (layer_name, url))
         self.assertEquals(resp.code, 200)
 
         self.check_layer_complete(url, layer_name)
 
+    @unittest.skipUnless(ogc_server_settings.datastore_db and _ALLOW_TIME_STEP, "Vector datastore or time not enabled.")
     def test_time(self):
         """Verify that uploading time based csv files works properly"""
 
@@ -582,7 +583,3 @@ class TestUploadDBDataStore(TestUpload):
         layer_info = wms.items()[0][1]
         self.assertEquals(100, len(layer_info.timepositions))
 
-# disable DATASTORE tests if not setup
-if not settings.OGC_SERVER['default']['DATASTORE']:
-    print 'skipping DATASTORE tests'
-    del TestUploadDBDataStore
