@@ -222,7 +222,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     worldmapDataText: 'WorldMap Data',
     externalDataText: 'External Data',
     leavePageWarningText: 'If you leave this page, unsaved changes will be lost.',
-    
+
     constructor: function(config) {
         this.config = config;
         this.popupCache = {};
@@ -798,7 +798,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         this.busyMask.show();
 
         var addLayerButton = new Ext.Button({
-        	id: "worldmap_addlayers_button",
+            id: "worldmap_addlayers_button",
             tooltip : this.addLayersButtonText,
             disabled: false,
             text: '<span class="x-btn-text">' + this.addLayersButtonText + '</span>',
@@ -866,7 +866,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
 
         this.gxSearchBar = new gxp.SearchBar({
-        	target: this
+            target: this
         });
         var searchPanel = new Ext.Panel({
             anchor: "100% 5%",
@@ -1317,9 +1317,6 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 select: function(combo, record, index) {
                     var source = this.layerSources[record.get("id")];
                     var store = source.store;
-                    if (store.data.items.length == 0){
-                        store.reload();
-                    }
                     store.setDefaultSort('title', 'asc');
                     store.filterBy(function(r) {
                         return !!source.getProjection(r);
@@ -1340,13 +1337,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             iconCls: 'icon-add',
             cls: 'x-btn-link-medium x-btn-text',
             handler: function() {
-                new Ext.Window({
-                    title: gxp.NewSourceDialog.prototype.title,
-                    modal: true,
-                    hideBorders: true,
-                    width: 300,
-                    items: newSourceDialog
-                }).show();
+                newSourceWindow.show();
             }
         });
 
@@ -1358,35 +1349,20 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             handler: function() {
                 this.showFeedDialog();
                 this.searchWindow.hide();
+                newSourceWindow.hide();
+
             },
             scope: this
         });
 
         var app = this;
-        var newSourceDialog = {
-            xtype: "gxp_newsourcedialog",
-            header: false,
+        var newSourceWindow = new gxp.NewSourceWindow({
+            modal: true,
             listeners: {
-                "hide": function(cmp) {
-                    if (!this.outputTarget) {
-                        cmp.ownerCt.hide();
-                    }
-                },
-                "urlselected": function(newSourceDialog, url, type) {
-                    newSourceDialog.setLoading();
-                    var ptype;
-                    switch (type) {
-                        case 'TMS':
-                            ptype = "gxp_tmssource";
-                            break;
-                        case 'REST':
-                            ptype = 'gxp_arcrestsource';
-                            break;
-                        default:
-                            ptype = 'gxp_wmscsource';
-                    }
+                "server-added": function(url, type) {
+                    newSourceWindow.setLoading();
                     app.addLayerSource({
-                        config: {url: url, ptype: ptype},
+                        config: {url: url, ptype: type},
                         callback: function(id) {
                             // add to combo and select
                             var record = new sources.recordType({
@@ -1395,22 +1371,23 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             });
                             sources.insert(0, [record]);
                             sourceComboBox.onSelect(record, 0);
-                            newSourceDialog.hide();
+                            newSourceWindow.hide();
                         },
-                        fallback: function(source,msg) {
+                        fallback: function() {
                             // TODO: wire up success/failure
-                            newSourceDialog.setError(
-                                new Ext.Template(newSourceDialog.addLayerSourceErrorText).apply({type: type, msg: msg})
-                            );
+                            newSourceWindow.setError("Error contacting server.\nPlease check the url and try again.");
                             app.busyMask.hide();
                         },
-                        scope: this
+                        scope: app
                     });
-                },
-                scope: this
+                }
+            },
+            // hack to get the busy mask so we can close it in case of a
+            // communication failure
+            addSource: function(url, success, failure, scope) {
+                app.busyMask = scope.loadMask;
             }
-        };
-
+        });
 
 
         var addLayerButton = new Ext.Button({
@@ -1674,18 +1651,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.mapPanel.add(moreButton);
 
-        
+
         var languageSelect = {
-        	xtype: 'box',
-        	contentEl: 'langselect',
-        	cls: "language-overlay-element"
+            xtype: 'box',
+            contentEl: 'langselect',
+            cls: "language-overlay-element"
         };
 
         //this.mapPanel.add(languageSelect);
 
 
         var publishAction = new Ext.Action({
-        	id: 'worldmap_publish_tool',
+            id: 'worldmap_publish_tool',
             tooltip: this.publishActionText,
             handler: this.makeExportDialog,
             scope: this,
@@ -1706,13 +1683,13 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             infoButton,
             "->"
         ];
-        
+
         //Only show this for Boston map; silly hack
         if (this.about["urlsuffix"] == 'boston') {
-        	tools.splice(13,0,new GeoExplorer.SocialExplorer(this));
-        }        
+            tools.splice(13,0,new GeoExplorer.SocialExplorer(this));
+        }
 
-        
+
         this.on("saved", function() {
             // enable the "Publish Map" button
             publishAction.enable();
@@ -1782,7 +1759,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         var geoEx = this;
         var saveButton = Ext.getCmp("gx_saveButton");
-        var saveAsButton = Ext.getCmp("gx_saveAsButton");        
+        var saveAsButton = Ext.getCmp("gx_saveAsButton");
         var titleField = new Ext.form.TextField({
             width: '95%',
             fieldLabel: this.metaDataMapTitle,
@@ -1793,16 +1770,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 "valid": function() {
                     if (urlField.isValid()) {
                         if (this.config["edit_map"])
-                        	saveButton.enable();
+                            saveButton.enable();
                         if (!saveAsButton.hidden)
-                        	saveAsButton.enable();
+                            saveAsButton.enable();
                     }
                 },
                 "invalid": function() {
                     //saveAsButton.disable();
                     saveButton.disable();
                     if (!saveAsButton.hidden)
-                    	saveAsButton.disable();
+                        saveAsButton.disable();
                 },
                 scope: this
             }
@@ -1866,17 +1843,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             listeners: {
                 "valid": function() {
                     if (titleField.isValid()) {
-                    	if (this.config["edit_map"])
-                    		saveButton.enable();
+                        if (this.config["edit_map"])
+                            saveButton.enable();
                         if (!saveAsButton.hidden)
-                        	saveAsButton.enable();
+                            saveAsButton.enable();
                     }
                 },
                 "invalid": function() {
                     //saveAsButton.disable();
                     saveButton.disable();
                     if (!saveAsButton.hidden)
-                    	saveAsButton.disable();
+                        saveAsButton.disable();
                 },
                 scope: this
             }
@@ -1985,7 +1962,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             },
             scope: this
         });
-        
+
         this.metadataForm = new Ext.Window({
             title: this.metaDataHeader,
             closeAction: 'hide',
@@ -2388,7 +2365,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }
         else {
             /* save an existing map */
-        	var saveAsButton = Ext.getCmp('gx_saveAsButton');
+            var saveAsButton = Ext.getCmp('gx_saveAsButton');
             Ext.Ajax.request({
                 url: this.updateURL(),
                 method: 'PUT',
@@ -2399,7 +2376,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     this.metadataForm.hide();
                     Ext.getCmp('gx_saveButton').enable();
                     if (!saveAsButton.hidden)
-                    	saveAsButton.enable();
+                        saveAsButton.enable();
                 },
                 failure: function(response, options) {
                     if (response.status === 401)
@@ -2408,7 +2385,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                         Ext.Msg.alert('Error', response.responseText);
                         Ext.getCmp('gx_saveButton').enable();
                         if (!saveAsButton.hidden)
-                        	saveAsButton.enable();
+                            saveAsButton.enable();
                     }
                 },
                 scope: this
