@@ -503,11 +503,16 @@ def set_layer_permissions(layer, perm_spec, use_email = False):
     if use_email:
         layer.get_user_levels().exclude(user__email__in = users + [layer.owner]).delete()
         for useremail, level in perm_spec['users']:
+            user_obj = None
             try:
-                user = User.objects.get(email=useremail)
+                user_obj = User.objects.get(email=useremail)
             except User.DoesNotExist:
-                user = _create_new_user(useremail, layer.title, reverse('geonode.maps.views.layer_detail', args=(layer.typename,)), layer.owner_id)
-            layer.set_user_level(user, level)
+                try:
+                    user_obj = _create_new_user(useremail, layer.title, reverse('geonode.maps.views.layer_detail', args=(layer.typename,)), layer.owner_id)
+                except:
+                    logger.error("Could not create new user with email address of %s" % useremail)
+            if user_obj:
+                layer.set_user_level(user_obj, level)
     else:
         layer.get_user_levels().exclude(user__username__in = users + [layer.owner]).delete()
         for username, level in perm_spec['users']:
@@ -528,11 +533,16 @@ def set_map_permissions(m, perm_spec, use_email = False):
     if use_email:
         m.get_user_levels().exclude(user__email__in = users + [m.owner]).delete()
         for useremail, level in perm_spec['users']:
+            user_obj = None
             try:
-                user = User.objects.get(email=useremail)
+                user_obj = User.objects.get(email=useremail)
             except User.DoesNotExist:
-                user = _create_new_user(useremail, m.title, reverse('geonode.maps.views.view', args=[m.id]), m.owner_id)
-            m.set_user_level(user, level)
+                try:
+                    user_obj = _create_new_user(useremail, m.title, reverse('geonode.maps.views.view', args=[m.id]), m.owner_id)
+                except:
+                    logger.error("Could not create new user with email address of %s" % useremail)
+            if user_obj:
+                m.set_user_level(user_obj, level)
     else:
         m.get_user_levels().exclude(user__username__in = users + [m.owner]).delete()
         for username, level in perm_spec['users']:
@@ -2177,13 +2187,18 @@ def batch_permissions(request, use_email=False):
                 logger.info("User [%s]", user)
 
                 if use_email:
+                    user_obj = None
                     try:
-                        userObject = User.objects.get(email=user)
+                        user_obj = User.objects.get(email=user)
                     except User.DoesNotExist:
-                        userObject = _create_new_user(user, lyr.title, reverse('geonode.maps.views.layer_detail', args=(lyr.typename,)), lyr.owner_id)
+                        try:
+                            user_obj = _create_new_user(user, lyr.title, reverse('geonode.maps.views.layer_detail', args=(lyr.typename,)), lyr.owner_id)
+                        except:
+                            logger.error("Could not create new user with email of %s" % user)
                     if user_level not in valid_perms:
                         user_level = "_none"
-                    lyr.set_user_level(userObject, user_level)
+                    if user_obj:
+                        lyr.set_user_level(user_obj, user_level)
                 else:
                     if user_level not in valid_perms:
                         user_level = "_none"
@@ -2229,11 +2244,16 @@ def batch_permissions(request, use_email=False):
                     if user_level not in valid_perms:
                         user_level = "_none"
                     if use_email:
+                        user_obj = None
                         try:
-                            userObject = User.objects.get(email=user)
+                            user_obj = User.objects.get(email=user)
                         except User.DoesNotExist:
-                            userObject = _create_new_user(user, m.title, reverse('geonode.maps.views.view', args=[m.id]), m.owner_id)
-                        m.set_user_level(userObject, user_level)
+                            try:
+                                user_obj = _create_new_user(user, m.title, reverse('geonode.maps.views.view', args=[m.id]), m.owner_id)
+                            except:
+                                logger.error("Could not create new user with email of %s" % user)
+                        if user_obj:
+                            m.set_user_level(userObject, user_level)
                     else:
                         m.set_user_level(user, user_level)
 
