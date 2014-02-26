@@ -103,8 +103,7 @@ def document_download(request, docid):
 def document_upload(request):
     if request.method == 'GET':
         return render_to_response('documents/document_upload.html',
-                                  RequestContext(request),
-                                  context_instance=RequestContext(request)
+                                  RequestContext(request)
         )
 
     elif request.method == 'POST':
