@@ -218,7 +218,7 @@ def tweetServerProxy(request,geopsip):
     identifyQuery = re.search("QUERY_LAYERS", tweet_url)
 
     if identifyQuery is not None:
-        if re.search("%20limit%2010", tweet_url)is None:
+        if re.search("%20limit%2010&", tweet_url)is None:
             return HttpResponse(status=403)
 
     step1 = urllib.urlopen(tweet_url)
