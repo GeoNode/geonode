@@ -276,6 +276,7 @@ COUNTRIES = (
     ('SLB', _('Solomon Islands')),
     ('SOM', _('Somalia')),
     ('ZAF', _('South Africa')),
+    ('SSD', _('South Sudan')),
     ('ESP', _('Spain')),
     ('LKA', _('Sri Lanka')),
     ('SDN', _('Sudan')),
