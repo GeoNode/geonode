@@ -397,7 +397,7 @@ DEFAULT_TOPICCATEGORY = 'location'
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = False
 
-# Thumbnails setttings
+# Thumbnails settings
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 
 THUMBNAIL_BASEDIR = 'thumbnails'
