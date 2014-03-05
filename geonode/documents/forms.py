@@ -35,6 +35,7 @@ class DocumentForm(forms.ModelForm):
         rbases += list(Map.objects.all())
         rbases.sort(key=lambda x: x.title)
         rbases_choices = []
+        rbases_choices.append(['no_link', '---------'])
         for obj in rbases:
             type_id = ContentType.objects.get_for_model(obj.__class__).id
             obj_id = obj.id
@@ -42,15 +43,20 @@ class DocumentForm(forms.ModelForm):
             display_text = '%s (%s)' % (obj.title, obj.geonode_type)
             rbases_choices.append([form_value, display_text])
         self.fields['resource'].choices = rbases_choices
-        self.fields['resource'].initial = 'type:%s-id:%s' % (
-            self.instance.content_type.id, self.instance.object_id)
+        if self.instance.content_type:
+            self.fields['resource'].initial = 'type:%s-id:%s' % (
+                self.instance.content_type.id, self.instance.object_id)
     
     def save(self, *args, **kwargs):
+        contenttype_id = None
+        contenttype = None
+        object_id = None
         resource = self.cleaned_data['resource']
-        matches = re.match("type:(\d+)-id:(\d+)", resource).groups()
-        contenttype_id = matches[0]
-        object_id = matches[1]
-        contenttype = ContentType.objects.get(id=contenttype_id)
+        if resource != 'no_link':
+            matches = re.match("type:(\d+)-id:(\d+)", resource).groups()
+            contenttype_id = matches[0]
+            object_id = matches[1]
+            contenttype = ContentType.objects.get(id=contenttype_id)
         self.cleaned_data['content_type'] = contenttype_id
         self.cleaned_data['object_id'] = object_id
         self.instance.object_id = object_id
