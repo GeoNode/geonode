@@ -15,6 +15,8 @@ from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 from geonode.people.models import Profile
 
+IMGTYPES = ['jpg','jpeg','tif','tiff','png','gif']
+
 class Document(ResourceBase):
     """
     A document is any kind of information that can be attached to a map such as pdf, images, videos, xls...
@@ -63,6 +65,13 @@ class Document(ResourceBase):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
+    def get_thumbnail_url(self):
+        from easy_thumbnails.files import get_thumbnailer
+        if self.extension in IMGTYPES:
+            return get_thumbnailer(self.doc_file)['doc-thumbs'].url
+        else:
+            return None
+        
     @property
     def class_name(self):
         return self.__class__.__name__

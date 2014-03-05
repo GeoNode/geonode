@@ -178,6 +178,7 @@ INSTALLED_APPS = (
     'friendlytagloader',
     'geoexplorer',
     'django_extensions',
+    'easy_thumbnails',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -396,7 +397,16 @@ DEFAULT_TOPICCATEGORY = 'location'
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = False
 
+# Thumbnails setttings
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
+
+THUMBNAIL_BASEDIR = 'thumbnails'
+
+THUMBNAIL_ALIASES = {
+    '': {
+        'doc-thumbs': {'size': (100, 80), 'crop': True},
+    },
+}
 
 # Search Snippet Cache Time in Seconds
 CACHE_TIME=0
