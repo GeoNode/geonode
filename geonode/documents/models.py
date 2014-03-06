@@ -67,10 +67,15 @@ class Document(ResourceBase):
 
     def get_thumbnail_url(self):
         from easy_thumbnails.files import get_thumbnailer
-        if self.extension in IMGTYPES:
+        from geonode.settings import PROJECT_ROOT
+        if self.extension.lower() in IMGTYPES:
             return get_thumbnailer(self.doc_file)['doc-thumbs'].url
         else:
-            return None
+            filename = '%s-placeholder.png' % self.extension
+            picture = open('%s/documents/static/documents/%s' % 
+                (PROJECT_ROOT, filename))
+            return get_thumbnailer(picture, relative_name='documents/%s' % 
+                filename)['doc-thumbs'].url
         
     @property
     def class_name(self):
