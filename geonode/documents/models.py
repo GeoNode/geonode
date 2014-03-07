@@ -7,6 +7,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes import generic
+from django.conf import settings
+
+from easy_thumbnails.files import get_thumbnailer
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
@@ -66,14 +69,17 @@ class Document(ResourceBase):
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
     def get_thumbnail_url(self):
-        from easy_thumbnails.files import get_thumbnailer
-        from geonode.settings import PROJECT_ROOT
         if self.extension.lower() in IMGTYPES:
             return get_thumbnailer(self.doc_file)['doc-thumbs'].url
         else:
             filename = '%s-placeholder.png' % self.extension
-            picture = open('%s/documents/static/documents/%s' % 
-                (PROJECT_ROOT, filename))
+            try:
+                picture = open('%s/documents/static/documents/%s' % 
+                    (settings.PROJECT_ROOT, filename))
+            except IOError:
+                picture = open(
+                    '%s/documents/static/documents/generic-placeholder.png' % 
+                    settings.PROJECT_ROOT)
             return get_thumbnailer(picture, relative_name='documents/%s' % 
                 filename)['doc-thumbs'].url
         
