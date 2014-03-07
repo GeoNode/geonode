@@ -79,7 +79,7 @@ LANGUAGES = (
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
     ('zh-cn', '中文'),
-    ('ja', '日本人'),
+    ('ja', '日本語'),
     ('fa', 'Persian'),
     ('pt', 'Portuguese'),
     ('ru', 'Russian'),
