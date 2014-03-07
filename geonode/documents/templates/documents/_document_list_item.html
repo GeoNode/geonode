@@ -3,13 +3,14 @@
 {% load agon_ratings_tags %}
 {% load documents_tags %}
 {% load base_tags %}
+{% load thumbnail %}
 
 {% overall_rating document "document" as document_rating %}
 {% num_ratings document as num_votes %}
 <article>
   <div class="content">
     <!-- <div class="abstract-placeholder">{{ document.abstract }}</div> -->
-    <div class="icon-placeholder"><i class="icon-file-text-alt"></i></div>
+    <div class="icon-placeholder"><img src="{{ document.get_thumbnail_url }}" alt="thumbnail here" /></div>
     <div class="item-header">
       <h3><i class="icon-file-text-alt"></i> <a href="{% url "document_detail" document.id %}">{{ document.title }}</a></h3>
     </div>

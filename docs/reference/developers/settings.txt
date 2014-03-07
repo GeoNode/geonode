@@ -32,6 +32,28 @@ MAX_DOCUMENT_SIZE
 -----------------
 Default: ``2``
 
+THUMBNAIL_BASEDIR
+-----------------
+
+Default: ``thumbnails``
+
+Save document thumbnail images to a directory directly off MEDIA_ROOT.
+Refer to the easy-thumbnails documentation for more information.
+
+THUMBNAIL_ALIASES
+-----------------
+
+Default:
+
+    THUMBNAIL_ALIASES = {
+        '': {
+            'doc-thumbs': {'size': (100, 80), 'crop': True},
+        },
+    }
+    
+A dictionary of predefined alias options for different targets.
+Refer to the easy-thumbnails documentation for more information.
+
 Metadata settings
 =================
   
@@ -474,5 +496,4 @@ Default::
     DOWNLOAD_FORMATS_RASTER = [
         'JPEG', 'PDF', 'PNG' 'Tiles',
     ]
-
 

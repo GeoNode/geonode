@@ -7,6 +7,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes import generic
+from django.conf import settings
+
+from easy_thumbnails.files import get_thumbnailer
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
@@ -14,6 +17,8 @@ from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 from geonode.people.models import Profile
+
+IMGTYPES = ['jpg','jpeg','tif','tiff','png','gif']
 
 class Document(ResourceBase):
     """
@@ -63,6 +68,21 @@ class Document(ResourceBase):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
+    def get_thumbnail_url(self):
+        if self.extension.lower() in IMGTYPES:
+            return get_thumbnailer(self.doc_file)['doc-thumbs'].url
+        else:
+            filename = '%s-placeholder.png' % self.extension
+            try:
+                picture = open('%s/documents/static/documents/%s' % 
+                    (settings.PROJECT_ROOT, filename))
+            except IOError:
+                picture = open(
+                    '%s/documents/static/documents/generic-placeholder.png' % 
+                    settings.PROJECT_ROOT)
+            return get_thumbnailer(picture, relative_name='documents/%s' % 
+                filename)['doc-thumbs'].url
+        
     @property
     def class_name(self):
         return self.__class__.__name__
