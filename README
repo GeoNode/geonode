@@ -18,7 +18,7 @@ If instead, you are interested in doing development on the source code, here are
     sudo apt-get update
 
     # Essential build tools and libraries
-    sudo apt-get install -y build-essential libxml2-dev libxslt1-dev imagemagick
+    sudo apt-get install -y build-essential libxml2-dev libxslt1-dev
 
     # Python native dependencies
     sudo apt-get install -y python-dev python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-pip python-software-properties
@@ -170,9 +170,11 @@ Mac OSX Development Build Instructions::
     paver setup
     paver start
 
-    # Optional: To generate document thumbnails of PDFs and other file types
+    # Optional: To generate document thumbnails for PDFs and other ghostscripts file types
     # Then download ghostscript: https://www.macupdate.com/app/mac/9980/gpl-ghostscript
+    sudo apt-get install imagemagick
     brew install imagemagick
+    pip install Wand==0.3.5
 
 Once fully started, you should see a message indicating the address of your geonode.
 The default username and password are ``admin`` and ``admin``::

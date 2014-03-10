@@ -114,7 +114,6 @@ setup(name='GeoNode',
         "MultipartPostHandler",
         # translation
         "transifex-client",
-        "Wand==0.3.5"
         ],
       zip_safe=False,
       )

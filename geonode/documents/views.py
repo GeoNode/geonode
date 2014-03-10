@@ -23,8 +23,7 @@ from geonode.people.forms import ProfileForm
 
 from geonode.documents.models import Document
 from geonode.documents.forms import DocumentForm
-
-IMGTYPES = ['jpg','jpeg','tif','tiff','png','gif']
+from geonode.documents.models import IMGTYPES
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 

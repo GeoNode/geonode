@@ -9,6 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes import generic
+from django.conf import settings
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
@@ -16,6 +17,8 @@ from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 from geonode.people.models import Profile
+
+IMGTYPES = ['jpg','jpeg','tif','tiff','png','gif']
 
 logger = logging.getLogger(__name__)
 
@@ -74,26 +77,34 @@ class Document(ResourceBase):
             logger.warn('Could not create thumbnail for %s' % self, e)
 
     def _render_thumbnail(self, spec):
-
+        size = 200, 150
         try:
+            # if wand is installed, than use it for pdf thumbnailing
             from wand import image
-
-            if image and self.extension.lower() in ['pdf', 'jpeg', 'jpg', 'png', 'ps',
-                                                    'ps2', 'ps3', 'gif', 'tiff', 'tif']:
-
+            if image and self.extension.lower() in ['pdf', 'ps', 'ps2', 'ps3',]:
                 logger.debug('Generating a thumbnail for document: {}'.format(self.title))
-
                 with image.Image(filename=self.doc_file.path) as img:
-                    img.sample(200, 150)
+                    img.sample(size)
                     return img.make_blob('png')
-
-        except ImportError:
-            logger.debug('Wand not installed, skipping document thumbnail.')
-            return None
-
         except:
-            logger.error("Error creating thumbnail: {}".format(sys.exc_info()))
-            return None
+            logger.debug('Wand not installed or invalid file, using PIL to generate thumbnail.')
+            from PIL import Image, ImageOps
+            from cStringIO import StringIO
+            if self.extension.lower() in IMGTYPES:
+                img = Image.open(self.doc_file.path)
+                img = ImageOps.fit(img, size, Image.ANTIALIAS)
+            else:
+                filename = '%s-placeholder.png' % self.extension
+                try:
+                    img = Image.open('%s/documents/static/documents/%s' % 
+                        (settings.PROJECT_ROOT, filename))
+                except IOError:
+                    img = Image.open(
+                        '%s/documents/static/documents/generic-placeholder.png' % 
+                        settings.PROJECT_ROOT)
+            imgfile = StringIO()
+            img.save(imgfile, format='PNG')
+            return imgfile.getvalue()
 
     @property
     def class_name(self):
