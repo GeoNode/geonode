@@ -3,8 +3,6 @@ function pieChart() {
     var chart = nv.models.pieChart()
         .x(function(d) { return d.label })
         .y(function(d) { return d.value })
-        .showLabels(true)
-
 
     d3.select("#chart")
         .datum(exampleData())
@@ -20,7 +18,6 @@ function donut() {
     var chart = nv.models.pieChart()
         .x(function(d) { return d.label })
         .y(function(d) { return d.value })
-        .showLabels(true)
         .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
         .labelType("key")	//Configure what type of data to show in the label. Can be "key", "value" or "percent"
         .donut(true)
