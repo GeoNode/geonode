@@ -1,37 +1,40 @@
-nv.addGraph(function() {
-	var chart = nv.models.pieChart()
-		.x(function(d) { return d.label })
-		.y(function(d) { return d.value })
-		.showLabels(true)
-		
-
-	d3.select("#chart")
-		.datum(exampleData())
-	  .transition().duration(1200)
-		.call(chart);
-
-	return chart;
-});	
+function pieChart() {
+  nv.addGraph(function() {
+    var chart = nv.models.pieChart()
+        .x(function(d) { return d.label })
+        .y(function(d) { return d.value })
+        .showLabels(true)
 
 
-nv.addGraph(function() {
-	var chart = nv.models.pieChart()
-		.x(function(d) { return d.label })
-		.y(function(d) { return d.value })
-		.showLabels(true)
+    d3.select("#chart")
+        .datum(exampleData())
+        .transition().duration(1200)
+        .call(chart);
+
+    return chart;
+  });
+}
+
+function donut() {
+  nv.addGraph(function() {
+    var chart = nv.models.pieChart()
+        .x(function(d) { return d.label })
+        .y(function(d) { return d.value })
+        .showLabels(true)
         .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
         .labelType("key")	//Configure what type of data to show in the label. Can be "key", "value" or "percent"
-     	.donut(true)
-     	.donutRatio(0.35);
-		
+        .donut(true)
+        .donutRatio(0.35);
 
-	d3.select("#chart2")
-		.datum(exampleData())
-	  .transition().duration(1200)
-		.call(chart);
 
-	return chart;
-});
+    d3.select("#chart2")
+        .datum(exampleData())
+        .transition().duration(1200)
+        .call(chart);
+
+    return chart;
+  });
+};
 
  function exampleData() {
    return [
@@ -68,4 +71,5 @@ nv.addGraph(function() {
 		 "value" : 5.1387322875705
 	   }
 	 ]
- }		 
+ };
+pieChart();

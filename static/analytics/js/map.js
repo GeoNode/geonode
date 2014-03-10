@@ -1,13 +1,13 @@
-var container = d3.select("body").append("svg")
-    .attr("width", 2000)
-    .attr("height", 2000)
+var container = d3.select('#map-pane').append('svg')
+    .attr('height', 660);
+    console.log(container);
 
-d3.json("continent_Europe_subunits", function (data) {
+d3.json("http://127.0.0.1:8000/static/analytics/data/continent_Europe_subunits.json", function (data) {
   var zoom = d3.behavior.zoom()
       .translate([0, 0])
       .scale(1)
       .scaleExtent([1, 8])
-      .on("zoom", zoomed);	
+      .on("zoom", zoomed);
 
   var drag = d3.behavior.drag()
       .origin(function(d) {return d;})
