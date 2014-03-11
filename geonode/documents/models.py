@@ -88,23 +88,27 @@ class Document(ResourceBase):
                     return img.make_blob('png')
         except:
             logger.debug('Wand not installed or invalid file, using PIL to generate thumbnail.')
-            from PIL import Image, ImageOps
-            from cStringIO import StringIO
-            if self.extension.lower() in IMGTYPES:
-                img = Image.open(self.doc_file.path)
-                img = ImageOps.fit(img, size, Image.ANTIALIAS)
-            else:
-                filename = '%s-placeholder.png' % self.extension
-                try:
-                    img = Image.open('%s/documents/static/documents/%s' % 
-                        (settings.PROJECT_ROOT, filename))
-                except IOError:
-                    img = Image.open(
-                        '%s/documents/static/documents/generic-placeholder.png' % 
-                        settings.PROJECT_ROOT)
-            imgfile = StringIO()
-            img.save(imgfile, format='PNG')
-            return imgfile.getvalue()
+            try:
+                from PIL import Image, ImageOps
+                from cStringIO import StringIO
+                if self.extension.lower() in IMGTYPES:
+                    img = Image.open(self.doc_file.path)
+                    img = ImageOps.fit(img, size, Image.ANTIALIAS)
+                else:
+                    filename = '%s-placeholder.png' % self.extension
+                    try:
+                        img = Image.open('%s/documents/static/documents/%s' % 
+                            (settings.PROJECT_ROOT, filename))
+                    except IOError:
+                        img = Image.open(
+                            '%s/documents/static/documents/generic-placeholder.png' % 
+                            settings.PROJECT_ROOT)
+                imgfile = StringIO()
+                img.save(imgfile, format='PNG')
+                return imgfile.getvalue()
+            except:
+                logger.error('Pillow not installed, cannot generate thumbnails.')
+                return None
 
     @property
     def class_name(self):
