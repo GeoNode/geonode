@@ -176,7 +176,7 @@ INSTALLED_APPS = (
     'pagination',
     'taggit',
     'taggit_templatetags',
-    #'south',
+    'south',
     'friendlytagloader',
     'geoexplorer',
     'django_extensions',
@@ -348,12 +348,15 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     },
     "documents.Document": {
         "document": "How good is this document?"
+    },
+    "analytics.Analysis": { 
+        "analysis": "How good is this analysis?"
     }
 }
 
 # Activity Stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment', 'documents.document'),
+    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment', 'documents.document', 'analytics.analysis'),
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': False,
     'USE_JSONFIELD': True,
