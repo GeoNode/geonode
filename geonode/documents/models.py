@@ -1,4 +1,6 @@
+import logging
 import os
+import sys
 import uuid
 
 from django.db import models
@@ -7,6 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes import generic
+from django.conf import settings
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
@@ -14,6 +17,10 @@ from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 from geonode.people.models import Profile
+
+IMGTYPES = ['jpg','jpeg','tif','tiff','png','gif']
+
+logger = logging.getLogger(__name__)
 
 class Document(ResourceBase):
     """
@@ -54,7 +61,7 @@ class Document(ResourceBase):
         self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
         
         # remove specific user permissions
-        current_perms =  self.get_all_level_info()
+        current_perms = self.get_all_level_info()
         for username in current_perms['users'].keys():
             user = User.objects.get(username=username)
             self.set_user_level(user, self.LEVEL_NONE)
@@ -62,6 +69,46 @@ class Document(ResourceBase):
         # assign owner admin privileges
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
+
+    def update_thumbnail(self, save=True):
+        try:
+            self.save_thumbnail(None, save)
+        except RuntimeError, e:
+            logger.warn('Could not create thumbnail for %s' % self, e)
+
+    def _render_thumbnail(self, spec):
+        size = 200, 150
+        try:
+            # if wand is installed, than use it for pdf thumbnailing
+            from wand import image
+            if image and self.extension.lower() in ['pdf', 'ps', 'ps2', 'ps3',]:
+                logger.debug('Generating a thumbnail for document: {}'.format(self.title))
+                with image.Image(filename=self.doc_file.path) as img:
+                    img.sample(size)
+                    return img.make_blob('png')
+        except:
+            logger.debug('Wand not installed or invalid file, using PIL to generate thumbnail.')
+            try:
+                from PIL import Image, ImageOps
+                from cStringIO import StringIO
+                if self.extension.lower() in IMGTYPES:
+                    img = Image.open(self.doc_file.path)
+                    img = ImageOps.fit(img, size, Image.ANTIALIAS)
+                else:
+                    filename = '%s-placeholder.png' % self.extension
+                    try:
+                        img = Image.open('%s/documents/static/documents/%s' % 
+                            (settings.PROJECT_ROOT, filename))
+                    except IOError:
+                        img = Image.open(
+                            '%s/documents/static/documents/generic-placeholder.png' % 
+                            settings.PROJECT_ROOT)
+                imgfile = StringIO()
+                img.save(imgfile, format='PNG')
+                return imgfile.getvalue()
+            except:
+                logger.error('Pillow not installed, cannot generate thumbnails.')
+                return None
 
     @property
     def class_name(self):
@@ -99,6 +146,12 @@ def pre_save_document(instance, sender, **kwargs):
         instance.bbox_y0 = -90
         instance.bbox_y1 = 90
 
+
+def create_thumbnail(sender, instance, created, **kwargs):
+    if created:
+        instance.update_thumbnail(save=False)
+
+
 def update_documents_extent(sender, **kwargs):
     model = 'map' if isinstance(sender, Map) else 'layer'
     ctype = ContentType.objects.get(model= model)
@@ -106,5 +159,6 @@ def update_documents_extent(sender, **kwargs):
         document.save()
 
 signals.pre_save.connect(pre_save_document, sender=Document)
+signals.post_save.connect(create_thumbnail, sender=Document)
 signals.post_save.connect(resourcebase_post_save, sender=Document)
 map_changed_signal.connect(update_documents_extent)

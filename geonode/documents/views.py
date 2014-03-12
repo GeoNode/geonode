@@ -23,8 +23,7 @@ from geonode.people.forms import ProfileForm
 
 from geonode.documents.models import Document
 from geonode.documents.forms import DocumentForm
-
-IMGTYPES = ['jpg','jpeg','tif','tiff','png','gif']
+from geonode.documents.models import IMGTYPES
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
@@ -125,7 +124,6 @@ def document_upload(request):
         if not doc_file.size < settings.MAX_DOCUMENT_SIZE * 1024 * 1024:
             return HttpResponse(_('This file is too big.'))
 
-        
         document = Document(content_type=content_type, object_id=object_id, title=title, doc_file=doc_file)
         document.owner = request.user
         document.save()
@@ -264,7 +262,7 @@ def document_replace(request, docid, template='documents/document_replace.html')
     document = _resolve_document(request, docid, 'documents.change_document')
 
     if request.method == 'GET':
-        return render_to_response(template,RequestContext(request, {
+        return render_to_response(template, RequestContext(request, {
             "document": document
         }))
     if request.method == 'POST':
@@ -274,8 +272,9 @@ def document_replace(request, docid, template='documents/document_replace.html')
             return HttpResponse('This file is too big.')
 
         doc_file = request.FILES['file']
-        document.doc_file=doc_file
+        document.doc_file = doc_file
         document.save()
+        document.update_thumbnail()
         return HttpResponseRedirect(reverse('document_detail', args=(document.id,)))
 
 @login_required
