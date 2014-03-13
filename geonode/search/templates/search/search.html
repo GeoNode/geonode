@@ -31,7 +31,7 @@
           <div id="slide-pane">
             <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
             {% include "search/_type_filters.html" %}
-	    {% include "search/_extent_filter.html" %}
+	          {% include "search/_extent_filter.html" %}
             {% include "search/_general_filters.html" %}
           </div>
         </div>
@@ -82,7 +82,7 @@
             map.addLayer(layer);
             //there's probably a server side var that could add the extent in?
             var tempextent = $.getUrlVar('extent');
-            if (tempextent != ""){
+            if (tempextent != "" && typeof tempextent != 'undefined'){
             //assuming extent param is clean and valid
               //currently in "x0,x1,y0,y1"
               var tempextent_split = tempextent.split("%2C");
