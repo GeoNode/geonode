@@ -469,6 +469,8 @@ def geoserver_post_save(instance, sender, **kwargs):
     if instance.storeType == "dataStore":
         links = wfs_links(ogc_server_settings.public_url + 'wfs?', instance.typename.encode('utf-8'))
         for ext, name, mime, wfs_url in links:
+            if mime=='SHAPE-ZIP':
+                name = 'Zipped Shapefile'
             Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                             url=wfs_url,
                             defaults=dict(
@@ -529,7 +531,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                         url=kml_reflector_link_view,
                         defaults=dict(
                             extension='kml',
-                            name=_("View in Google Earth"),
+                            name="View in Google Earth",
                             mime='text/xml',
                             link_type='data',
                         )
