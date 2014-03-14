@@ -98,16 +98,10 @@
         <div class="overall_rating" style="float:left" data-rating="{{ map_rating }}"></div> ({{num_votes}})
         <!-- TODO: Add display of who gave what rating based -->
       </article>
-      <article class="tab-pane" id="share">
-        <!-- TODO: Move this to a reusable template snippet -->
-        <header>
-            <h3>{% trans "Share This Map" %}</h3>
-        </header>
-        <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
-        <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
-        <!-- TODO: Add more sharing options -->
-      </article>
-      <!--article class="tab-pane" id="flag">
+      {% block social_links %}
+      {% include "social_links.html" %}
+      {% endblock %}
+        <!--article class="tab-pane" id="flag">
         <h2>{% trans "Flag" %}</h2>
       </article-->
     </div>
@@ -188,6 +182,7 @@
 
 {% block extra_script %}
 {% if SOCIAL_BUTTONS %}
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 <div id="fb-root"></div>
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
