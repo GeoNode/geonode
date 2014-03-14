@@ -125,8 +125,9 @@
         <header>
           <h3>{% trans "Share This Layer" %}</h3>
         </header>
-          <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
+         <div><g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone></div>
           <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
+          <div><a href="https://twitter.com/share" class="twitter-share-button" data-via="geonode" data-lang="en">Tweet</a></div>
         <!-- TODO: Add more sharing options -->
       </article>
       <!--article id="flag" class="tab-pane">
@@ -244,6 +245,7 @@
   {% endif %}
 {% endblock %}
 {% block extra_script %}
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 {% if SOCIAL_BUTTONS %}
 <div id="fb-root"></div>
 <script>
