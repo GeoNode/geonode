@@ -1,7 +1,7 @@
 {% load i18n%}
 
 <div class="modal fade" id="modal_analysis" style="display:none">
-  <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% url "new_analysis_json" %}">
+	<form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% url "new_analysis_json" %}">{% csrf_token %}
     <div class="modal-header">
       <a class="close" data-dismiss="modal">×</a>
       <h3>{% trans "Save Analysis" %}</h3>
