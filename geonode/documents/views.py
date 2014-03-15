@@ -1,6 +1,6 @@
 import json, os
 
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404,render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
@@ -116,14 +116,17 @@ def document_upload(request):
             object_id = None
         
         title = request.POST['title']
-        doc_file = request.FILES['file']
+        try:
+            doc_file = request.FILES['file']
+        except:
+            return render(request,'documents/document_upload.html',{'errors':['Please select a file','']})
         
         if len(request.POST['title'])==0:
-            return HttpResponse(_('You need to provide a document title.'))
+            return render(request,'documents/document_upload.html',{'errors':['You need to provide a document title.','']})
         if not os.path.splitext(doc_file.name)[1].lower()[1:] in ALLOWED_DOC_TYPES:
-            return HttpResponse(_('This file type is not allowed.'))
+            return render(request,'documents/document_upload.html',{'errors':['This file type is not allowed.','']})
         if not doc_file.size < settings.MAX_DOCUMENT_SIZE * 1024 * 1024:
-            return HttpResponse(_('This file is too big.'))
+            return render(request,'documents/document_upload.html',{'errors':['This file is too big.','']})
 
         
         document = Document(content_type=content_type, object_id=object_id, title=title, doc_file=doc_file)
