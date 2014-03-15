@@ -1,7 +1,5 @@
 {% load i18n%}
 
-
-
 <div class="modal fade" id="modal_analysis" style="display:none">
   <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% url "new_analysis_json" %}">
     <div class="modal-header">
@@ -21,24 +19,14 @@
       <div class="control-group">
 	<label class="control-label"><strong>{% trans "Abstract" %}</strong></label>
 	<div class="controls">
-	  <textarea raws="8" cols="100">
-	  Describe the analysis ...
-	  </textarea>	
+	<textarea rows="8" cols="100" placeholder={% trans "Describe the analysis ..." %}></textarea>
 	</div>
       </div>
     </div>
     <div class="modal-footer">
       <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
-      <a href="#" class="btn btn-primary" data-dismiss="modal" id="pemrs_submit">{% trans "Save" %}</a>
+      <a href="#" class="btn btn-primary" data-dismiss="modal" id="analysis_submit">{% trans "Save" %}</a>
     </div>
     <!--  fin -->
   </form>
-    
 </div>
-
-<script>
-	$("#analysis_submit").click(function(){
-        $("#permission_form").submit();
-	});	
-</script>
-

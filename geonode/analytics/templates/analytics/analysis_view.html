@@ -1,6 +1,7 @@
 {% extends "site_base.html" %}
 
 {% load i18n %}
+{% load base_tags %}
 
 {% block title %} {% trans "Analytics" %} - {{ block.super }} {% endblock %}
 
@@ -9,8 +10,8 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}analytics/css/analysis_view.css" type="text/css" charset="utf-8">
 <script src="http://d3js.org/d3.v3.js" type="text/javascript"></script>
 
-{% include "analytics/_save_form.html" %}
 <a href="#modal_analysis" class="btn btn-large btn-primary pull-right strong" data-toggle="modal">{% trans "Save Analysis" %}</a>
+{% include "analytics/_save_form.html" %}
 
 <table id="analysis-table">
 	<tr>
@@ -33,4 +34,13 @@
 
 {% endblock %}
 
+
 {% block footer %}{% endblock %}
+
+{% block extra_script %}
+<script>
+	$("#analysis_submit").click(function(){
+        $("#permission_form").submit();
+	});	
+</script>
+{% endblock %}
