@@ -23,7 +23,7 @@
         </ul>
       </div>
       <div class="tools">
-        <p><a href="{% if document.doc_file %}{{ document.doc_file.url }}{% endif %}" class="btn btn-mini">{% trans "Download" %}</a></p>
+        <p><a href="{% if document.doc_file %}{% url "document_download" document.id %}{% endif %}" class="btn btn-mini">{% trans "Download" %}</a></p>
       </div>
     </div>
   </div>
