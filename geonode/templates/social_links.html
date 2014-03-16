@@ -1,3 +1,7 @@
+{% block extra_head %}
+<link href="{{ STATIC_URL }}geonode/css/social_twitter.css" rel="stylesheet" />
+{% endblock %}
+
 {% block social_links %}
 	<article class="tab-pane" id="share">
         <!-- TODO: Move this to a reusable template snippet -->
@@ -6,7 +10,8 @@
         </header>
         <div><g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone></div>
         <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
-        <div><a href="https://twitter.com/share" class="twitter-share-button" data-via="geonode" data-lang="en">Tweet</a></div>
+        <div><a onclick="window.open('https://twitter.com/intent/tweet?text={{ request.get_host }}{{request.get_full_path}}&url={{ request.get_host }}{{request.get_full_path}}&via=geonode', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');" class="tweetbutton">Tweet</a>
+        </div>
         <!-- TODO: Add more sharing options -->
     </article>
 {% endblock %}
