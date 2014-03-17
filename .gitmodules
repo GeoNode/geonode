@@ -1,3 +1,0 @@
-[submodule "geonode/analytics"]
-	path = geonode/analytics
-	url = https://github.com/loganalysis/core.git
