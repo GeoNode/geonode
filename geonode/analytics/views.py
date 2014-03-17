@@ -51,3 +51,7 @@ def _resolve_analysis(request, id, permission='analysis.change_analysis',
     '''
     return resolve_object(request, Analysis, {'pk':id}, permission = permission,
                           permission_msg=msg, **kwargs)
+
+def new_analysis_json(request):
+	print 'SAVE ANALYSIS !!!'
+	return render(request, template, { })
