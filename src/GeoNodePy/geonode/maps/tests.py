@@ -27,6 +27,8 @@ Layer.objects.gs_catalog = MagicMock()
 Layer.objects.gs_catalog.get_resource.return_value = _gs_resource
 
 geonode.maps.models.get_csw = MagicMock()
+geonode.maps.models.get_csw.return_value.getrecordbyid.return_value = None
+geonode.maps.models.get_csw.return_value.records.values.return_value = [None]
 geonode.maps.models.get_csw.return_value.records.get.return_value.identification.keywords = []
 
 _csw_resource = MagicMock()
@@ -41,7 +43,7 @@ DUMMY_RESULT ={'rows': [], 'total':0, 'query_info': {'start':0, 'limit': 0, 'q':
 geonode.maps.views._metadata_search = Mock()
 geonode.maps.views._metadata_search.return_value = DUMMY_RESULT
 
-geonode.maps.views.get_csw = Mock()
+geonode.maps.views.get_csw = MagicMock()
 geonode.maps.views.get_csw.return_value.getrecordbyid.return_value = None
 geonode.maps.views.get_csw.return_value.records.values.return_value = [None]
 geonode.maps.views._extract_links = Mock()

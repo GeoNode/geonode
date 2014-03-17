@@ -408,25 +408,43 @@ def save(layer, base_file, user, overwrite = True, title=None,
                     link = elem.attrib['{http://www.w3.org/1999/xlink}href']
                     if valid_url.match(link) is None:
                         raise Exception(_("External images in your SLD file are not permitted.  Please contact us if you would like your SLD images hosted on %s") % (settings.SITENAME))
-            
         except ParseError, e:
             msg =_('Your SLD file contains invalid XML')
             logger.warn("%s - %s" % (msg, str(e)))
             e.args = (msg,)
+
+        try:
+            stylename = name + "_".join([choice('qwertyuiopasdfghjklzxcvbnm0123456789') for i in range(4)])
+            cat.create_style(stylename, sld)
+            #FIXME: Should we use the fully qualified typename?
+            if (overwrite):
+                alternate_styles = publishing._get_alternate_styles()
+                alternate_styles.append(cat.get_style(stylename))
+                publishing._set_alternate_styles(alternate_styles)
+            else:
+                publishing.default_style = cat.get_style(stylename)
+            cat.save(publishing)
+        except geoserver.catalog.ConflictingDataError, e:
+            msg = (_('There is already a style in GeoServer named ') +
+               '"%s"' % (name))
+            logger.warn(msg)
+            e.args = (msg,)
+
     else:
         sld = get_sld_for(publishing)
 
-    if sld is not None:
-        try:
-            cat.create_style(name, sld)
-        except geoserver.catalog.ConflictingDataError, e:
-            msg = (_('There is already a style in GeoServer named ') +
+
+        if sld is not None:
+            try:
+                cat.create_style(name, sld)
+            except geoserver.catalog.ConflictingDataError, e:
+                msg = (_('There is already a style in GeoServer named ') +
                    '"%s"' % (name))
-            logger.warn(msg)
-            e.args = (msg,)
-        #FIXME: Should we use the fully qualified typename?
-        publishing.default_style = cat.get_style(name)
-        cat.save(publishing)
+                logger.warn(msg)
+                e.args = (msg,)
+            #FIXME: Should we use the fully qualified typename?
+            publishing.default_style = cat.get_style(name)
+            cat.save(publishing)
 
     # Step 8. Create the Django record for the layer
     logger.info('>>> Step 10. Creating Django record for [%s]', name)
@@ -736,18 +754,16 @@ def _create_db_featurestore(name, data, overwrite = False, charset = None):
     try:
         ds = cat.get_store(settings.DB_DATASTORE_NAME)
     except FailedRequestError:
-        store_layers = Layer.objects.filter(store=settings.DB_DATASTORE_NAME)
-        if store_layers.count() == 0:
-            ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
-            ds.connection_parameters.update(
-                host=settings.DB_DATASTORE_HOST,
-                port=settings.DB_DATASTORE_PORT,
-                database=settings.DB_DATASTORE_DATABASE,
-                user=settings.DB_DATASTORE_USER,
-                passwd=settings.DB_DATASTORE_PASSWORD,
-                dbtype=settings.DB_DATASTORE_TYPE)
-            cat.save(ds)
-            ds = cat.get_store(settings.DB_DATASTORE_NAME)
+        ds = cat.create_datastore(settings.DB_DATASTORE_NAME)
+        ds.connection_parameters.update(
+            host=settings.DB_DATASTORE_HOST,
+            port=settings.DB_DATASTORE_PORT,
+            database=settings.DB_DATASTORE_DATABASE,
+            user=settings.DB_DATASTORE_USER,
+            passwd=settings.DB_DATASTORE_PASSWORD,
+            dbtype=settings.DB_DATASTORE_TYPE)
+        cat.save(ds)
+        ds = cat.get_store(settings.DB_DATASTORE_NAME)
     try:
         cat.add_data_to_store(ds, name, data, overwrite=overwrite, charset=charset)
         return ds, cat.get_resource(name, store=ds)
