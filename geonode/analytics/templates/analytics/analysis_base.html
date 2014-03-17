@@ -1,0 +1,17 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %}{% block title_sub %}{% trans "Explore Analysis" %}{% endblock %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}analitics{% endblock %}
+
+{% block body_outer %}
+  <div class="span12">
+    <ul class="nav nav-tabs" id="subnav-tabs">
+          <li><a href="{% url "analytics_browse" %}" class="explore">{% trans 'Explore Analytics' %}</a></li>
+    </ul>
+  </div>
+  {% block body %}{% endblock body %}
+  {% block sidebar %}{% endblock sidebar %}
+{% endblock %}
