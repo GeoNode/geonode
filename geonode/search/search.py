@@ -23,7 +23,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import backend
 from django.db.models import Q
 
-from geonode.security.models import UserObjectRoleMapping, GenericObjectRoleMapping
+from geonode.security.models import UserObjectRoleMapping, \
+    GenericObjectRoleMapping, GroupObjectRoleMapping
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.maps.models import Map
 from geonode.documents.models import Document
@@ -73,6 +74,11 @@ def _filter_security(q, user, model, permission):
         security = security | Q(id__in=urm)
         # if the user is the owner, make sure these are included
         security = security | Q(owner=user)
+
+        # apply group security
+        for group in user.groups.all():
+            grm = GroupObjectRoleMapping.objects.filter(object_ct=ct, role__permissions__in=[p], group=group).values('object_id')
+            security = security | Q(id__in=grm)
 
     return q.filter(security)
 
