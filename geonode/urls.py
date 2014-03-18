@@ -82,6 +82,8 @@ urlpatterns = patterns('',
                                        name='account_ajax_login'),
     url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup',
                                        name='account_ajax_lookup'),
+    # Groups views
+    (r'^groups/', include('geonode.contrib.groups.urls')),
 
     # Meta
     url(r'^lang\.js$', TemplateView.as_view(template_name='lang.js', content_type='text/javascript'), name='lang'),

@@ -1,0 +1,21 @@
+{% extends "groups/group_base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}{% blocktrans %}Create Group{% endblocktrans %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Create Group" %}</h1>
+    
+    <form class="uniForm" id="form" method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset>
+            {{ form|crispy }}
+            <div class="form_block">
+                <input type="hidden" name="action" value="create" />
+                <input type="submit" value="{% trans 'create' %}"/>
+            </div>
+        </fieldset>
+    </form>
+    
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "groups/group_base.html" %}
+{% load i18n %}
+
+{% block sidebar %}
+    <div class="twocol">
+        <h2>{% trans "Maps & Layers" %}</h2>
+        {% comment %}
+            search form goes here
+        {% endcomment %}
+        <h3>{% trans "Maps" %}</h3>
+        <div>
+            <ul>
+            {% for map in maps %}
+                <li><a href="{{ map.get_absolute_url }}">{{ map.title }}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+        
+        <h3>{% trans "Layers" %}</h3>
+        <div>
+            <ul>
+            {% for layer in layers %}
+                <li><a href="{{ layer.get_absolute_url }}">{{ layer.title }}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div id="assets"></div>
+    </div>
+{% endblock %}

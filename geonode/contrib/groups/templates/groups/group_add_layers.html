@@ -1,0 +1,26 @@
+{% extends "groups/group_base.html" %}
+{% load i18n %}
+
+{% block sidebar %}
+<div class="twocol">
+    <h2>{% trans "Share layers to group" %}</h2>
+    <form method="POST" action="">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Add layers" />
+    </form>
+    
+    {% if layers_added %}
+        <p>
+        {% blocktrans with title=object.title %}
+        Added layer(s) to group {{ title }}:
+        {% endblocktrans %}
+        <ul>
+        {% for layer in layers_added %}
+        <li> {{ layer.title }} </li>
+        {% endfor %}
+        </ul>
+        </p>
+    {% endif %}
+</div>
+{% endblock %}
