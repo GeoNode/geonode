@@ -135,13 +135,13 @@ class GranularBackend(ModelBackend):
         obj_ids = set()
     
         generic_roles = [ANONYMOUS_USERS]
-        if type(acl_obj) is User:
+        if isinstance(acl_obj, User):
             if not acl_obj.is_anonymous():
                 generic_roles.append(AUTHENTICATED_USERS)
                 obj_ids.update([x[0] for x in UserObjectRoleMapping.objects.filter(user=acl_obj,
                                                                                    role__permissions=perm,
                                                                                    object_ct=ct).values_list('object_id')])
-        if type(acl_obj) is Group:
+        if isinstance(acl_obj, Group):
             obj_ids.update([x[0] for x in GroupObjectRoleMapping.objects.filter(group=acl_obj,
                                                                                    role__permissions=perm,
                                                                                    object_ct=ct).values_list('object_id')])
