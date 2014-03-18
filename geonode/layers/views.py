@@ -664,7 +664,7 @@ def layer_acls(request):
                                 status=401,
                                 mimetype="text/plain")
 
-
+    groups = acl_user.groups.all()
     all_readable = set()
     all_writable = set()
     for bck in get_auth_backends():
@@ -672,7 +672,15 @@ def layer_acls(request):
             all_readable.update(bck.objects_with_perm(acl_user,
                                                       'layers.view_layer',
                                                       Layer))
+            for group in groups:
+                all_readable.update(bck.objects_with_perm(group,
+                                                      'layers.view_layer',
+                                                      Layer))
             all_writable.update(bck.objects_with_perm(acl_user,
+                                                      'layers.change_layer',
+                                                      Layer))
+            for group in groups:
+                all_writable.update(bck.objects_with_perm(group,
                                                       'layers.change_layer',
                                                       Layer))
     read_only = [x for x in all_readable if x not in all_writable]
