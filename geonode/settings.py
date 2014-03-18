@@ -178,6 +178,7 @@ INSTALLED_APPS = (
     'friendlytagloader',
     'geoexplorer',
     'django_extensions',
+    'crispy_forms',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -206,6 +207,9 @@ INSTALLED_APPS = (
     'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
+
+    # GeoNode Contrib Apps
+    'geonode.contrib.groups',
 )
 
 LOGGING = {
