@@ -29,6 +29,7 @@ from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
+from geonode.contrib.groups.models import Group
 from geonode.people.models import Profile
 from geonode.base.models import TopicCategory, ResourceBase
 
@@ -76,7 +77,7 @@ def _filter_security(q, user, model, permission):
         security = security | Q(owner=user)
 
         # apply group security
-        for group in user.groups.all():
+        for group in Group.groups_for_user(user): 
             grm = GroupObjectRoleMapping.objects.filter(object_ct=ct, role__permissions__in=[p], group=group).values('object_id')
             security = security | Q(id__in=grm)
 
