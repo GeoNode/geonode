@@ -58,6 +58,7 @@ from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import ogc_server_settings
 from geoserver.resource import FeatureType
+from geonode.contrib.groups.models import Group
 
 logger = logging.getLogger("geonode.layers.views")
 
@@ -664,7 +665,8 @@ def layer_acls(request):
                                 status=401,
                                 mimetype="text/plain")
 
-    groups = acl_user.groups.all()
+    groups = Group.groups_for_user(acl_user)
+
     all_readable = set()
     all_writable = set()
     for bck in get_auth_backends():
