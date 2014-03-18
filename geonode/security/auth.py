@@ -22,9 +22,10 @@ from django.contrib.auth.backends import ModelBackend
 
 from django.contrib.contenttypes.models import ContentType 
 from django.db import models
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from geonode.security.models import GenericObjectRoleMapping, Permission, \
     UserObjectRoleMapping, GroupObjectRoleMapping
+from geonode.contrib.groups.models import Group
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 
 class GranularBackend(ModelBackend):
@@ -115,7 +116,7 @@ class GranularBackend(ModelBackend):
             for rm in UserObjectRoleMapping.objects.select_related('role', 'role__permissions', 'role__permissions__content_type').filter(object_id=obj.id, object_ct=ct, user=user_obj).all():
                 for perm in rm.role.permissions.all():
                     obj_perms.add((perm.content_type.app_label, perm.codename))
-            groups = user_obj.groups.all()
+            groups = Group.groups_for_user(user_obj)
             for group in groups:
                 for rm in GroupObjectRoleMapping.objects.select_related('role', 'role__permissions', 'role__permissions__content_type').filter(object_id=obj.id, object_ct=ct, group=group).all():
                     for perm in rm.role.permissions.all():
@@ -134,7 +135,6 @@ class GranularBackend(ModelBackend):
         ct = ContentType.objects.get_for_model(ModelType)
         
         obj_ids = set()
-    
         generic_roles = [ANONYMOUS_USERS]
         if isinstance(acl_obj, User):
             if not acl_obj.is_anonymous():
