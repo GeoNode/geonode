@@ -18,14 +18,14 @@
 #
 #########################################################################
 
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login
-#from geonode.contrib.groups.models import Group
+from geonode.contrib.groups.models import Group
 from geonode.security.enumerations import GENERIC_GROUP_NAMES
 
 class ObjectRoleManager(models.Manager):
@@ -301,7 +301,7 @@ class PermissionLevelMixin(object):
         # get all group-specific permissions
         group_levels = {}
         for rm in GroupObjectRoleMapping.objects.filter(object_id=self.id, object_ct=my_ct).all():
-            group_levels[rm.group.name] = rm.role.codename
+            group_levels[rm.group.title] = rm.role.codename
         levels['groups'] = group_levels
 
         return levels
