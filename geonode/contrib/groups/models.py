@@ -13,8 +13,8 @@ from django.contrib.sites.models import Site
 
 from taggit.managers import TaggableManager
 
-from geonode.layers.models import Layer
-from geonode.maps.models import Map
+#from geonode.layers.models import Layer
+#from geonode.maps.models import Map
 
 
 class Group(models.Model):
@@ -173,26 +173,26 @@ class GroupInvitation(models.Model):
 class GroupLayer(models.Model):
     
     group = models.ForeignKey(Group)
-    layer = models.ForeignKey(Layer)
+    #layer = models.ForeignKey(Layer)
 
-    @classmethod
-    def layers_for_group(cls, group):
-        layer_ids = cls.objects.filter(group=group).values_list('layer', flat=True)
-        return Layer.objects.filter(id__in=layer_ids)
+    #@classmethod
+    #def layers_for_group(cls, group):
+    #    layer_ids = cls.objects.filter(group=group).values_list('layer', flat=True)
+    #    return Layer.objects.filter(id__in=layer_ids)
 
-    class Meta:
-        unique_together = (("group", "layer"),)
+    #class Meta:
+    #    unique_together = (("group", "layer"),)
 
 
 class GroupMap(models.Model):
     
     group = models.ForeignKey(Group)
-    map = models.ForeignKey(Map)
+    #map = models.ForeignKey(Map)
 
-    @classmethod
-    def maps_for_group(cls, group):
-        map_ids = cls.objects.filter(group=group).values_list('map', flat=True)
-        return Map.objects.filter(id__in=map_ids)
+    #@classmethod
+    #def maps_for_group(cls, group):
+    #    map_ids = cls.objects.filter(group=group).values_list('map', flat=True)
+    #    return Map.objects.filter(id__in=map_ids)
 
-    class Meta:
-        unique_together = (("group", "map"),)
+    #class Meta:
+    #    unique_together = (("group", "map"),)
