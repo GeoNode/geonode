@@ -27,7 +27,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login
 from geonode.contrib.groups.models import Group
 from geonode.security.enumerations import GENERIC_GROUP_NAMES
-
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
+ 
 class ObjectRoleManager(models.Manager):
     def get_by_natural_key(self, codename, app_label, model):
         return self.get(
@@ -305,6 +306,39 @@ class PermissionLevelMixin(object):
         levels['groups'] = group_levels
 
         return levels
+
+    def set_default_permissions(self):
+        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
+        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
+
+        # remove specific user permissions
+        current_perms =  self.get_all_level_info()
+        for username in current_perms['users'].keys():
+            user = User.objects.get(username=username)
+            self.set_user_level(user, self.LEVEL_NONE)
+
+        # assign owner admin privileges
+        if self.owner:
+            self.set_user_level(self.owner, self.LEVEL_ADMIN)
+
+    def set_permissions(self, perm_spec):
+        if "authenticated" in perm_spec:
+            self.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+        if "anonymous" in perm_spec:
+            self.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+        if isinstance(perm_spec['users'], dict): 
+            perm_spec['users'] = perm_spec['users'].items()
+        users = [n[0] for n in perm_spec['users']]
+        excluded = users + [self.owner]
+        existing = self.get_user_levels().exclude(user__username__in=excluded)
+        existing.delete()
+        for username, level in perm_spec['users']:
+            user = User.objects.get(username=username)
+            self.set_user_level(user, level)
+        #TODO: Delete existing group perms? 
+        for group, level in perm_spec['groups']:
+            group = Group.objects.get(slug=group)
+            self.set_group_level(group, level)
 
 # Logic to login a user automatically when it has successfully
 # activated an account:
