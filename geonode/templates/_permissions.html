@@ -13,7 +13,7 @@
       </label>
       <label class="radio inline">
         <input type="radio" name="viewmode" id="perms_view_editors" value="EDITORS">
-        {% trans "Only users who can edit" %}
+        {% trans "Only users and groups who can edit" %}
       </label>
     </div>
   </div>
@@ -26,9 +26,10 @@
       </label>
       <label class="radio">
         <input type="radio" name="editmode" id="perms_edit_list" value="LIST">
-        {% trans "Only the following users:" %}
+        {% trans "Only the following users or groups:" %}
       </label>
       <input type="text" name="editusers" class="user-select" id="perms_edit_editusers">
+      <input type="text" name="editgroups" class="group-select" id="perms_edit_editgroups">
       </input>
     </div>
   </div>
@@ -36,6 +37,7 @@
     <label class="control-label"><strong>{% trans "Who can manage and edit this data?" %}</strong></label>
     <div class="controls">
       <input type="text" name="manageusers" class="user-select" id="perms_edit_manageusers">
+      <input type="text" name="managegroups" class="group-select" id="perms_edit_managegroups">
       </input>
     </div>
   </div>

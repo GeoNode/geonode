@@ -57,6 +57,18 @@
       }
     }
 
+    var perGroupPermissions = [];
+    if (data["editmode"] === "LIST") {
+      var editgroups = form.find("input[name=editgroups]").select2("val");
+      if (editgroups instanceof Array) {
+        $.each(editgroups, function(index, value) {
+          perGroupPermissions.push([value, levels["readwrite"]]);
+        });
+      } else {
+        perGroupPermissions.push([editgroups, levels["readwrite"]]);
+      }
+    }
+
     var manageusers = form.find("input[name=manageusers]").select2("val");
     if (manageusers) {
       if (manageusers instanceof Array) {
@@ -68,10 +80,22 @@
       }
     }
 
+    var managegroups = form.find("input[name=managegroups]").select2("val");
+    if (managegroups) {
+      if (managegroups instanceof Array) {
+        $.each(managegroups, function(index, value) {
+          perGroupPermissions.push([value, levels["admin"]]);
+        });
+      } else {
+        perGroupPermissions.push([managegroups, levels["admin"]]);
+      }
+    }
+
     return {
         anonymous: anonymousPermissions,
         authenticated: authenticatedPermissions,
-        users: perUserPermissions
+        users: perUserPermissions,
+        groups: perGroupPermissions
     };
   };
 
@@ -113,6 +137,7 @@
             }
             $("#perms_edit_manageusers").val(admins.join());
             addSelectUsers();
+            addSelectGroups();
           }
         }
       );
@@ -153,17 +178,62 @@
         }
       });
     }
+
+    function addSelectGroups(){
+      $("input.group-select").select2({
+        placeholder: '{% trans "Choose one or more groups..." %}',
+        minimumInputLength: 1,
+        multiple: true,
+        width: 'element',
+        ajax: {
+          url: "{% url "account_ajax_lookup" %}",
+          dataType: "json",
+          type: "POST",
+          data: function (term, page) {
+            return {
+              query: term,
+            };
+          },
+          results: function (data, page) {
+            return {results: data.groups};
+          }
+        },
+        id: groupID,
+        formatResult: groupFormatResult,
+        formatSelection: groupFormatSelection,
+        initSelection: function(element, callback) {
+          var data = [];
+          var val = element.val().split(",");
+          $(element.val().split(",")).each(function (index,value) {
+              data.push({name: value});
+          });
+          callback(data);
+        }
+      });
+    }
     
     function userID(user) {
-      return user.username
+      return user.username;
+    }
+
+    function groupID(group) {
+      return group.name;
     }
 
     function userFormatResult(user) {
-      return user.username
+      return user.username;
     }
 
     function userFormatSelection(user) {
         return user.username;
+    }
+
+    function groupFormatResult(group) {
+      return group.name;
+    }
+
+    function groupFormatSelection(group) {
+        return group.name;
     }
 
     var toggle_buttons = function() {

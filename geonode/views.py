@@ -26,6 +26,7 @@ from django.utils import simplejson as json
 from django.db.models import Q
 from django.template import RequestContext
 from geonode.utils import ogc_server_settings
+from geonode.contrib.groups.models import Group
 
 def index(request, template='index.html'):
     from geonode.search.views import search_page
@@ -88,8 +89,11 @@ def ajax_lookup(request):
     users = User.objects.filter(Q(username__startswith=keyword) |
         Q(profile__name__contains=keyword) | 
         Q(profile__organization__contains=keyword))
+    groups = Group.objects.filter(Q(title__startswith=keyword) |
+        Q(description__contains=keyword))
     json_dict = {
         'users': [({'username': u.username}) for u in users],
+        'groups': [({'name': g.title}) for g in groups],
         'count': users.count(),
     }
     return HttpResponse(
