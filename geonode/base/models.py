@@ -14,6 +14,7 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
+from geonode.contrib.groups.models import Group
 from geonode.utils import bbox_to_wkt
 from geonode.people.models import Profile, Role
 from geonode.security.models import PermissionLevelMixin
@@ -232,10 +233,8 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     # internal fields
     uuid = models.CharField(max_length=36)
     owner = models.ForeignKey(User, blank=True, null=True)
-
+    groups = models.ManyToManyField(Group, blank=True, null=True)
     contacts = models.ManyToManyField(Profile, through='ContactRole')
-
-    # section 1
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
     date = models.DateTimeField(_('date'), default = datetime.now, help_text=_('reference date for the cited resource')) # passing the method itself, not the result
 

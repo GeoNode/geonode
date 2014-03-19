@@ -170,29 +170,3 @@ class GroupInvitation(models.Model):
         self.state = "declined"
         self.save()
 
-class GroupLayer(models.Model):
-    
-    group = models.ForeignKey(Group)
-    #layer = models.ForeignKey(Layer)
-
-    #@classmethod
-    #def layers_for_group(cls, group):
-    #    layer_ids = cls.objects.filter(group=group).values_list('layer', flat=True)
-    #    return Layer.objects.filter(id__in=layer_ids)
-
-    #class Meta:
-    #    unique_together = (("group", "layer"),)
-
-
-class GroupMap(models.Model):
-    
-    group = models.ForeignKey(Group)
-    #map = models.ForeignKey(Map)
-
-    #@classmethod
-    #def maps_for_group(cls, group):
-    #    map_ids = cls.objects.filter(group=group).values_list('map', flat=True)
-    #    return Map.objects.filter(id__in=map_ids)
-
-    #class Meta:
-    #    unique_together = (("group", "map"),)

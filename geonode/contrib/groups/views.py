@@ -8,7 +8,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.contrib.groups.forms import GroupInviteForm, GroupForm, GroupUpdateForm
 from geonode.contrib.groups.forms import GroupMapForm, GroupLayerForm
-from geonode.contrib.groups.models import Group, GroupInvitation, GroupLayer, GroupMap
+from geonode.contrib.groups.models import Group, GroupInvitation
 
 
 def group_list(request):
@@ -64,8 +64,8 @@ def group_detail(request, slug):
     if not group.can_view(request.user):
         raise Http404()
         
-    maps = GroupMap.maps_for_group(group)
-    layers = GroupLayer.layers_for_group(group)
+    maps = Map.objects.filter(groups=group)
+    layers = Layer.objects.filter(groups=group)
     
     ctx = {
         "object": group,
@@ -162,12 +162,13 @@ def group_add_layers(request, slug):
         if form.is_valid():
             ctx["layers_added"] = []
             for l in form.cleaned_data["layers"]:
-                GroupLayer.objects.get_or_create(layer=l, group=group)
+                l.groups.add(group)
+                l.save()
                 ctx["layers_added"].append(l.title)
     else:
         form = GroupLayerForm()
     
-    current_layers = GroupLayer.layers_for_group(group)
+    current_layers = Layer.objects.filter(groups__id=group.id)
     
     form.fields["layers"].queryset = Layer.objects.filter(
             owner=request.user
@@ -199,12 +200,13 @@ def group_add_maps(request, slug):
         if form.is_valid():
             ctx["maps_added"] = []
             for m in form.cleaned_data["maps"]:
-                GroupMap.objects.get_or_create(map=m, group=group)
+                m.objects.goups.add(group)
+                m.save()
                 ctx["maps_added"].append(m.title)
     else:
         form = GroupMapForm()
     
-    current_maps = GroupMap.maps_for_group(group)
+    current_maps = Map.objects.filter(groups__id=group.id)
     
     form.fields["maps"].queryset = Map.objects.filter(
             owner=request.user
@@ -239,21 +241,18 @@ def group_remove_maps_data(request, slug):
         
         if map_form.is_valid() and layer_form.is_valid():
             for m in map_form.cleaned_data["maps"]:
-                GroupMap.objects.get(map=m).delete()
+                m.groups.remove(group)
             map_form.cleaned_data["maps"] = []
             for l in layer_form.cleaned_data["layers"]:
-                GroupLayer.objects.get(layer=l).delete()
+                l.groups.remove(group)
             layer_form.cleaned_data["layers"] = []
-            
-    # Even if we're removing data, recreate the forms so that they are missing the removed elements.
-    map_ids = GroupMap.objects.filter(group=group).values_list("map", flat=True)
-    layer_ids = GroupLayer.objects.filter(group=group).values_list("layer", flat=True)
+
     
     map_form = GroupMapForm()
-    map_form.fields["maps"].queryset = Map.objects.filter(id__in=map_ids)
+    map_form.fields["maps"].queryset = Map.objects.filter(groups__id=group.id).values_list("id", flat=True)
     
     layer_form = GroupLayerForm()
-    layer_form.fields["layers"].queryset = Layer.objects.filter(id__in=layer_ids)
+    layer_form.fields["layers"].queryset = Layer.objects.filter(groups__id=group.id).values_list("id", flat=True)
     
     ctx["map_form"] = map_form
     ctx["layer_form"] = layer_form
