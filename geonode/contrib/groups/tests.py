@@ -1,13 +1,37 @@
+from django.contrib.auth import get_backends
 from django.contrib.auth.models import User, AnonymousUser
 from django.test import TestCase
 from django.test.client import Client
 from geonode.contrib.groups.models import Group, GroupInvitation
-
+from geonode.layers.models import Layer
+from geonode.search.populate_search_test_data import create_models
+from geonode.security.auth import GranularBackend
+from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 
 class SmokeTest(TestCase):
     "Basic checks to make sure pages load, etc."
 
     fixtures = ["group_test_data"]
+
+    def setUp(self):
+        create_models(type='layer')
+        self.norman = User.objects.get(username="norman")
+        self.bar = Group.objects.get(slug='bar')
+
+    def test_perms(self):
+        self.assertTrue(Layer.objects.all().count() > 0)
+
+        layer = Layer.objects.all()[0]
+        backend = get_backends()[0]
+        # Set the default permissions
+        layer.set_default_permissions()
+
+        norman_perms = backend._get_all_obj_perms(self.norman, layer)
+
+        # Test that LEVEL_READ is set for ANONYMOUS_USERS and AUTHENTICATED_USERS
+        self.assertEqual(layer.get_gen_level(ANONYMOUS_USERS), layer.LEVEL_READ)
+        self.assertEqual(layer.get_gen_level(AUTHENTICATED_USERS), layer.LEVEL_READ)
+
 
     def test_public_pages_render(self):
         "Verify pages that do not require login load without internal error"
