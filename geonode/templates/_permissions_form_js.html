@@ -104,7 +104,7 @@
     $('#permissions-body').ready(function(){
       {% if layer != "none" and document != "none" %}
       $.ajax(
-        "{% if layer %}{% url "layer_permissions" layer.typename %}{% elif map %}{% url "map_permissions" map.id %}{% elif document %}{% url "document_permissions" document.id %}{% endif %}",
+        "{% if layer %}{% url "resource_permissions" 'layer' layer.id %}{% elif map %}{% url "resource_permissions" 'map' map.id %}{% elif document %}{% url "resource_permissions" 'document' document.id %}{% endif %}",
         {
           success: function(data){
             var perms = $.parseJSON($.parseJSON(data).permissions);

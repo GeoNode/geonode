@@ -562,40 +562,6 @@ def layer_batch_download(request):
         resp,content = http_client.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 
-def layer_permissions(request, layername):
-    try:
-        layer = _resolve_layer(request, layername, 'layers.change_layer_permissions')
-    except PermissionDenied:
-        # we are handling this in a non-standard way
-        return HttpResponse(
-            'You are not allowed to change permissions for this layer',
-            status=401,
-            mimetype='text/plain')
-
-    if request.method == 'POST':
-        permission_spec = json.loads(request.raw_post_data)
-        layer.set_permissions(permission_spec)
-
-        return HttpResponse(
-            json.dumps({'success': True}),
-            status=200,
-            mimetype='text/plain'
-        )
-
-    elif request.method == 'GET':
-        permission_spec = json.dumps(layer.get_all_level_info())
-        return HttpResponse(
-            json.dumps({'success': True, 'permissions': permission_spec}),
-            status=200,
-            mimetype='text/plain'
-        )
-    else:
-        return HttpResponse(
-            'No methods other than get and post are allowed',
-            status=401,
-            mimetype='text/plain')
-
-
 def resolve_user(request):
     user = None
     geoserver = False
