@@ -51,7 +51,6 @@ from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.layers.utils import save
-from geonode.layers.utils import layer_set_permissions
 from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
@@ -575,7 +574,7 @@ def layer_permissions(request, layername):
 
     if request.method == 'POST':
         permission_spec = json.loads(request.raw_post_data)
-        layer_set_permissions(layer, permission_spec)
+        layer.set_permissions(permission_spec)
 
         return HttpResponse(
             json.dumps({'success': True}),
