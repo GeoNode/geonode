@@ -93,7 +93,7 @@ def ajax_lookup(request):
         Q(description__contains=keyword))
     json_dict = {
         'users': [({'username': u.username}) for u in users],
-        'groups': [({'name': g.title}) for g in groups],
+        'groups': [({'name': g.slug}) for g in groups],
         'count': users.count(),
     }
     return HttpResponse(
