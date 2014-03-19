@@ -112,6 +112,7 @@ setup(name='GeoNode',
         "nose>=1.0",
         "beautifulsoup4",
         "MultipartPostHandler",
+        "django-jenkins==0.14.1",
         # translation
         "transifex-client",
         ],

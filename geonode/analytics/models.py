@@ -13,11 +13,11 @@ class Analysis(ResourceBase):
 
     data = models.TextField()
 
-    LEVEL_READ  = 'analysis_readonly'
+    LEVEL_READ = 'analysis_readonly'
     LEVEL_WRITE = 'analysis_readwrite'
     LEVEL_ADMIN = 'analysis_admin'
 
-    class Meta:
+    class Meta(object):
         # custom permissions,
         # change and delete are standard in django
         permissions = (('view_analysis', 'Can view'),

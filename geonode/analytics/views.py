@@ -42,11 +42,10 @@ def analysis_view(request, analysisid, template='analytics/analysis_view.html'):
 	    })
 
 def analysis_detail(request, analysisid, template='analytics/analysis_detail.html'):
-    
     analysis_obj = _resolve_analysis(request, analysisid, 'analysis.view_analysis', _PERMISSION_MSG_VIEW)
     analysis_obj.popular_count += 1
     analysis_obj.save()
-    
+
     return render(request, template, {
         'analysis' : analysis_obj,
         'documents' : get_related_documents(analysis_obj),
@@ -58,7 +57,7 @@ def _resolve_analysis(request, id, permission='analysis.change_analysis',
     '''
     Resolve the Analysis by the provided typename and check the optional permission.
     '''
-    return resolve_object(request, Analysis, {'pk':id}, permission = permission,
+    return resolve_object(request, Analysis, {'pk':id}, permission=permission,
                           permission_msg=msg, **kwargs)
 
 def new_analysis_json(request):
@@ -75,3 +74,12 @@ def new_analysis_json(request):
 	else:
 		return HttpResponse(status=405)
 
+        analysis_obj = Analysis(owner=request.user, title=request.POST.get('title'), abstract=request.POST.get('abstract'))
+        analysis_obj.save()
+        return HttpResponse(
+            json.dumps({'id':analysis_obj.id}),
+            status=200,
+            mimetype='application/json'
+        )
+    else:
+        return HttpResponse(status=405)
