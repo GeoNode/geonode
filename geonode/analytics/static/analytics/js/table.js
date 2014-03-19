@@ -26,7 +26,10 @@ d3.json('http://127.0.0.1:8000/static/analytics/data/data.json', function (error
         .enter().append("td")
           .text(function(d) { return d; });
       
-  
+      if (sortable) {
+        $(table).tableSort();
+      }
+
     }
 
     showDataAsTable('#table', values, keys, ['Pays', 'Valeur'], true);
