@@ -142,10 +142,17 @@ class GranularBackend(ModelBackend):
                 obj_ids.update([x[0] for x in UserObjectRoleMapping.objects.filter(user=acl_obj,
                                                                                    role__permissions=perm,
                                                                                    object_ct=ct).values_list('object_id')])
+
+                # If the user is a member of any groups, see if the groups have permission to the object.
+                for group in Group.groups_for_user(acl_obj):
+                    obj_ids.update([x[0] for x in GroupObjectRoleMapping.objects.filter(group=group,
+                                                                                        role__permissions=perm,
+                                                                                        object_ct=ct).values_list('object_id')])
+
         if isinstance(acl_obj, Group):
             obj_ids.update([x[0] for x in GroupObjectRoleMapping.objects.filter(group=acl_obj,
-                                                                                   role__permissions=perm,
-                                                                                   object_ct=ct).values_list('object_id')])
+                                                                                role__permissions=perm,
+                                                                                object_ct=ct).values_list('object_id')])
            
         obj_ids.update([x[0] for x in GenericObjectRoleMapping.objects.filter(subject__in=generic_roles, 
                                                                               role__permissions=perm,
