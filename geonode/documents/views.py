@@ -214,39 +214,6 @@ def document_search_page(request):
          "site" : settings.SITEURL
     }))
 
-def document_permissions(request, docid):
-    try:
-        document = _resolve_document(request, docid, 'documents.change_document_permissions')
-    except PermissionDenied:
-        # we are handling this in a non-standard way
-        return HttpResponse(
-            'You are not allowed to change permissions for this layer',
-            status=401,
-            mimetype='text/plain')
-
-    if request.method == 'POST':
-        permission_spec = json.loads(request.raw_post_data)
-        document.set_permissions(document, permission_spec)
-
-        return HttpResponse(
-            json.dumps({'success': True}),
-            status=200,
-            mimetype='text/plain'
-        )
-
-    elif request.method == 'GET':
-        permission_spec = json.dumps(document.get_all_level_info())
-        return HttpResponse(
-            json.dumps({'success': True, 'permissions': permission_spec}),
-            status=200,
-            mimetype='text/plain'
-        )
-    else:
-        return HttpResponse(
-            'No methods other than get and post are allowed',
-            status=401,
-            mimetype='text/plain')
-
 @login_required
 def document_replace(request, docid, template='documents/document_replace.html'):
     document = _resolve_document(request, docid, 'documents.change_document')

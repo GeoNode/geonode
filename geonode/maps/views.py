@@ -529,43 +529,6 @@ def map_wms(request, mapid):
 
     return HttpResponseNotAllowed(['PUT', 'GET'])
 
-#### MAPS PERMISSIONS ####
-
-def map_permissions(request, mapid):
-    try:
-        map_obj = _resolve_map(request, mapid, 'maps.change_map_permissions')
-    except PermissionDenied:
-        # we are handling this differently for the client
-        return HttpResponse(
-            'You are not allowed to change permissions for this map',
-            status=401,
-            mimetype='text/plain'
-        )
-
-    if request.method == 'POST':
-        permission_spec = json.loads(request.raw_post_data)
-        map_obj.set_permissions(permission_spec)
-
-        return HttpResponse(
-            json.dumps({'success': True}),
-            status=200,
-            mimetype='text/plain'
-        )
-
-    elif request.method == 'GET':
-        permission_spec = json.dumps(map_obj.get_all_level_info())
-        return HttpResponse(
-            json.dumps({'success': True, 'permissions': permission_spec}),
-            status=200,
-            mimetype='text/plain'
-        )
-    else:
-        return HttpResponse(
-            'No methods other than get and post are allowed',
-            status=401,
-            mimetype='text/plain')
-
-
 def _map_fix_perms_for_editor(info):
     perms = {
         Map.LEVEL_READ: Layer.LEVEL_READ,
