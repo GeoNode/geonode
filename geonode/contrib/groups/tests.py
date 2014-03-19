@@ -26,12 +26,43 @@ class SmokeTest(TestCase):
         # Set the default permissions
         layer.set_default_permissions()
 
-        norman_perms = backend._get_all_obj_perms(self.norman, layer)
-
         # Test that LEVEL_READ is set for ANONYMOUS_USERS and AUTHENTICATED_USERS
         self.assertEqual(layer.get_gen_level(ANONYMOUS_USERS), layer.LEVEL_READ)
         self.assertEqual(layer.get_gen_level(AUTHENTICATED_USERS), layer.LEVEL_READ)
 
+        # Test that the default perms give Norman view permissions but not write permissions
+        read_perms = backend.objects_with_perm(self.norman, 'layers.view_layer', Layer)
+        write_perms = backend.objects_with_perm(self.norman, 'layers.change_layer', Layer)
+        self.assertTrue(layer.id in read_perms)
+        self.assertTrue(layer.id not in write_perms)
+
+        # Make sure Norman is not in the bar group.
+        self.assertFalse(self.bar.user_is_member(self.norman))
+
+        # Add norman to the bar group.
+        self.bar.join(self.norman)
+
+        # Make sure Norman is in the bar group.
+        self.assertTrue(self.bar.user_is_member(self.norman))
+
+        # Test that the bar group has default permissions on the layer
+        bar_read_perms = backend.objects_with_perm(self.bar, 'layers.view_layer', Layer)
+        bar_write_perms = backend.objects_with_perm(self.bar, 'layers.change_layer', Layer)
+        self.assertTrue(layer.id in bar_read_perms)
+        self.assertTrue(layer.id not in bar_write_perms)
+
+        # Give the bar group permissions to change the layer.
+        layer.set_group_level(self.bar, Layer.LEVEL_WRITE)
+        bar_read_perms = backend.objects_with_perm(self.bar, 'layers.view_layer', Layer)
+        bar_write_perms = backend.objects_with_perm(self.bar, 'layers.change_layer', Layer)
+        self.assertTrue(layer.id in bar_read_perms)
+        self.assertTrue(layer.id in bar_write_perms)
+
+        # Test that the bar group perms give Norman view and change permissions
+        read_perms = backend.objects_with_perm(self.norman, 'layers.view_layer', Layer)
+        write_perms = backend.objects_with_perm(self.norman, 'layers.change_layer', Layer)
+        self.assertTrue(layer.id in read_perms)
+        self.assertTrue(layer.id in write_perms)
 
     def test_public_pages_render(self):
         "Verify pages that do not require login load without internal error"
