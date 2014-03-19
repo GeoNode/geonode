@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from geonode.utils import resolve_object
@@ -33,6 +34,13 @@ def analytic_list(request, template='analytics/analysis_list.html'):
 def new_analysis(request, template='analytics/analysis_view.html'):
     return render(request, template, { })
 
+def analysis_view(request, analysisid, template='analytics/analysis_view.html'):
+    analysis_obj = _resolve_analysis(request, analysisid, 'analysis.view_analysis', _PERMISSION_MSG_VIEW)
+
+    return render(request, template, {
+	    'analysis' : analysis_obj
+	    })
+
 def analysis_detail(request, analysisid, template='analytics/analysis_detail.html'):
     
     analysis_obj = _resolve_analysis(request, analysisid, 'analysis.view_analysis', _PERMISSION_MSG_VIEW)
@@ -63,11 +71,7 @@ def new_analysis_json(request):
 			)
 		analysis_obj = Analysis(owner=request.user, title=request.POST.get('title'), abstract=request.POST.get('abstract'))
 		analysis_obj.save()
-		return HttpResponse(
-			json.dumps({'id':analysis_obj.id }),
-			status=200,
-			mimetype='application/json'
-		)
+		return redirect('analysis_view', analysisid=analysis_obj.id)
 	else:
 		return HttpResponse(status=405)
 
