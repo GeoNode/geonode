@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 import hashlib
+import logging
 
 from django.db import models
 from django.db.models import Q
@@ -18,8 +19,9 @@ from geonode.contrib.groups.models import Group
 from geonode.utils import bbox_to_wkt
 from geonode.people.models import Profile, Role
 from geonode.security.models import PermissionLevelMixin
-
 from taggit.managers import TaggableManager
+
+logger = logging.getLogger(__name__)
 
 def get_default_category():
     if settings.DEFAULT_TOPICCATEGORY:
@@ -497,6 +499,14 @@ def resourcebase_post_save(instance, sender, **kwargs):
                                            defaults={"name": user.username}
                                            )
         resourcebase.metadata_author = ac
+
+    if hasattr(instance, 'set_default_permissions') and hasattr(instance, 'get_all_level_info'):
+        logger.debug('Checking for permissions.')
+
+        #  True if every key in the get_all_level_info dict is empty.
+        if all(map(lambda perm: not perm, instance.get_all_level_info().values())):
+            logger.debug('There are no permissions for this object, setting default perms.')
+            instance.set_default_permissions()
 
 def resourcebase_post_delete(instance, sender, **kwargs):
     """
