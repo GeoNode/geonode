@@ -292,20 +292,6 @@ class Map(ResourceBase, GXPMapBase):
     LEVEL_WRITE = 'map_readwrite'
     LEVEL_ADMIN = 'map_admin'
 
-    def set_default_permissions(self):
-        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
-        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
-
-        # remove specific user permissions
-        current_perms =  self.get_all_level_info()
-        for username in current_perms['users'].keys():
-            user = User.objects.get(username=username)
-            self.set_user_level(user, self.LEVEL_NONE)
-
-        # assign owner admin privs
-        if self.owner:
-            self.set_user_level(self.owner, self.LEVEL_ADMIN)
-
     def get_extent(self):
         """Generate minx/miny/maxx/maxy of map extent"""
 

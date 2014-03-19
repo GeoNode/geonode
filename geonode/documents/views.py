@@ -132,7 +132,7 @@ def document_upload(request):
         document.save()
         permissionsStr = request.POST['permissions']
         permissions = json.loads(permissionsStr)
-        document_set_permissions(document, permissions)
+        document.set_permissions(permissions)
 
         return HttpResponseRedirect(reverse('document_metadata', args=(document.id,)))
 
@@ -226,7 +226,7 @@ def document_permissions(request, docid):
 
     if request.method == 'POST':
         permission_spec = json.loads(request.raw_post_data)
-        document_set_permissions(document, permission_spec)
+        document.set_permissions(document, permission_spec)
 
         return HttpResponse(
             json.dumps({'success': True}),
@@ -246,19 +246,6 @@ def document_permissions(request, docid):
             'No methods other than get and post are allowed',
             status=401,
             mimetype='text/plain')
-
-def document_set_permissions(document, perm_spec):
-    if "authenticated" in perm_spec:
-        document.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
-    if "anonymous" in perm_spec:
-        document.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-    users = [n[0] for n in perm_spec['users']]
-    excluded = users + [document.owner]
-    existing = document.get_user_levels().exclude(user__username__in=excluded)
-    existing.delete()
-    for username, level in perm_spec['users']:
-        user = User.objects.get(username=username)
-        document.set_user_level(user, level)
 
 @login_required
 def document_replace(request, docid, template='documents/document_replace.html'):

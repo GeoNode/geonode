@@ -201,20 +201,6 @@ class Layer(ResourceBase):
     LEVEL_WRITE = 'layer_readwrite'
     LEVEL_ADMIN = 'layer_admin'
 
-    def set_default_permissions(self):
-        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
-        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
-
-        # remove specific user permissions
-        current_perms =  self.get_all_level_info()
-        for username in current_perms['users'].keys():
-            user = User.objects.get(username=username)
-            self.set_user_level(user, self.LEVEL_NONE)
-
-        # assign owner admin privileges
-        if self.owner:
-            self.set_user_level(self.owner, self.LEVEL_ADMIN)
-
     def tiles_url(self):
         return self.link_set.get(name='Tiles').url
 
