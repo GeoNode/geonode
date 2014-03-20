@@ -301,7 +301,7 @@ class PermissionLevelMixin(object):
         # get all group-specific permissions
         group_levels = {}
         for rm in GroupObjectRoleMapping.objects.filter(object_id=self.id, object_ct=my_ct).all():
-            group_levels[rm.group.title] = rm.role.codename
+            group_levels[rm.group.slug] = rm.role.codename
         levels['groups'] = group_levels
 
         return levels
@@ -361,6 +361,8 @@ class PermissionLevelMixin(object):
             for group, level in perm_spec['groups']:
                 group = Group.objects.get(slug=group)
                 self.set_group_level(group, level)
+
+
 
 # Logic to login a user automatically when it has successfully
 # activated an account:
