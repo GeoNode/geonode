@@ -54,3 +54,5 @@ def filter_by_extent(model, q, extent, user=None):
         q = q.none()
     return q
 
+using_geodjango = False
+
