@@ -7,6 +7,9 @@ from geonode.security.views import _perms_info
 from geonode.documents.models import get_related_documents
 from geonode.analytics.models import Analysis
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from geonode.analytics.forms import AnalysisForm
+from geonode.people.forms import ProfileForm, PocForm
 
 ANALYSIS_LEV_NAMES = {
     Analysis.LEVEL_NONE  : _('No Permissions'),
@@ -73,4 +76,67 @@ def new_analysis_json(request):
         return redirect('analysis_view', analysisid=analysis_obj.id)
     else:
         return HttpResponse(status=405)
+
+@login_required
+def analysis_metadata(request, analysisid, template='analytics/analysis_metadata.html'):
+
+    analysis_obj = _resolve_analysis(request, analysisid, msg=_PERMISSION_MSG_METADATA)
+    poc = analysis_obj.poc
+    metadata_author = analysis_obj.metadata_author
+
+    if request.method == "POST":
+        analysis_form = AnalysisForm(request.POST, instance=analysis_obj, prefix="resource")
+    else:
+        analysis_form = AnalysisForm(instance=analysis_obj, prefix="resource")
+
+        if request.method == "POST" and analysis_form.is_valid():
+            new_poc = analysis_form.cleaned_data['poc']
+            new_author = analysis_form.cleaned_data['metadata_author']
+            new_keywords = analysis_form.cleaned_data['keywords']
+
+            if new_poc is None:
+                if poc.user is None:
+                    poc_form = ProfileForm(request.POST, prefix="poc", instance=poc)
+                else:
+                    poc_form = ProfileForm(request.POST, prefix="poc")
+                    if poc_form.has_changed and poc_form.is_valid():
+                        new_poc = poc_form.save()
+
+                        if new_author is None:
+                            if metadata_author.user is None:
+                                author_form = ProfileForm(request.POST, prefix="author", 
+                                                          instance=metadata_author)
+                            else:
+                                author_form = ProfileForm(request.POST, prefix="author")
+                                if author_form.has_changed and author_form.is_valid():
+                                    new_author = author_form.save()
+
+                                    if new_poc is not None and new_author is not None:
+                                        the_analysis = analysis_form.save()
+                                        the_analysis.poc = new_poc
+                                        the_analysis.metadata_author = new_author
+                                        the_analysis.keywords.clear()
+                                        the_analysis.keywords.add(*new_keywords)
+                                        return HttpResponseRedirect(reverse('analysis_detail', args=(analysis_obj.id,)))
+
+    if poc.user is None:
+        poc_form = ProfileForm(instance=poc, prefix="poc")
+    else:
+        analysis_form.fields['poc'].initial = poc.id
+        poc_form = ProfileForm(prefix="poc")
+        poc_form.hidden=True
+
+        if metadata_author.user is None:
+            author_form = ProfileForm(instance=metadata_author, prefix="author")
+        else:
+            analysis_form.fields['metadata_author'].initial = metadata_author.id
+            author_form = ProfileForm(prefix="author")
+            author_form.hidden=True
+
+            return render(request, template, {
+                "analysis": analysis_obj,
+                "analysis_form": analysis_form,
+                "poc_form": poc_form,
+                "author_form": author_form,
+            })
 
