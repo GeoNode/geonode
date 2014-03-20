@@ -21,7 +21,7 @@
 		</td>
 		<td id="right-pane">
 			{% include "analytics/_charts.html" %}
-			{% include "analytics/_table.html" %}
+			<div id="table"></div>
 		</td>
 	</tr>
 </table>
@@ -29,3 +29,6 @@
 {% endblock %}
 
 {% block footer %}{% endblock %}
+{% block extra_script %}
+<script type='text/javascript' src='{{ STATIC_URL }}/analytics/js/table.js'></script>
+{% endblock %}
