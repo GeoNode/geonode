@@ -508,6 +508,7 @@ def resourcebase_post_save(instance, sender, **kwargs):
             logger.debug('There are no permissions for this object, setting default perms.')
             instance.set_default_permissions()
 
+
 def resourcebase_post_delete(instance, sender, **kwargs):
     """
     Since django signals are not propagated from child to parent classes we need to call this 
@@ -518,3 +519,13 @@ def resourcebase_post_delete(instance, sender, **kwargs):
         instance.thumbnail.delete()
         
     
+def resourcebase_groups_changed(instance, action,  pk_set, **kwargs):
+    """
+    Ensures group permissions are added to new groups.
+    """
+
+    if pk_set and action == "post_add":
+        for group in pk_set:
+            group = instance.groups.get(id=group)
+            if instance.get_group_level(group) == instance.LEVEL_NONE:
+                instance.set_group_level(group, instance.LEVEL_READ)

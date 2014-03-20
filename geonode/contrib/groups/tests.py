@@ -1,12 +1,16 @@
 from django.contrib.auth import get_backends
 from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.test.client import Client
 from geonode.contrib.groups.models import Group, GroupInvitation
+from geonode.documents.models import Document
 from geonode.layers.models import Layer
+from geonode.maps.models import Map
 from geonode.search.populate_search_test_data import create_models
-from geonode.security.auth import GranularBackend
+from geonode.security.models import GroupObjectRoleMapping
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
+
 
 class SmokeTest(TestCase):
     "Basic checks to make sure pages load, etc."
@@ -15,11 +19,16 @@ class SmokeTest(TestCase):
 
     def setUp(self):
         create_models(type='layer')
+        create_models(type='map')
+        create_models(type='document')
         self.norman = User.objects.get(username="norman")
         self.bar = Group.objects.get(slug='bar')
 
-    def test_perms(self):
-        self.assertTrue(Layer.objects.all().count() > 0)
+    def test_group_permissions_extend_to_user(self):
+        """
+        Ensures that when a user is in a group, the group permissions
+        extend to the user.
+        """
 
         layer = Layer.objects.all()[0]
         backend = get_backends()[0]
@@ -42,7 +51,7 @@ class SmokeTest(TestCase):
         # Add norman to the bar group.
         self.bar.join(self.norman)
 
-        # Make sure Norman is in the bar group.
+        # Ensure Norman is in the bar group.
         self.assertTrue(self.bar.user_is_member(self.norman))
 
         # Test that the bar group has default permissions on the layer
@@ -63,6 +72,42 @@ class SmokeTest(TestCase):
         write_perms = backend.objects_with_perm(self.norman, 'layers.change_layer', Layer)
         self.assertTrue(layer.id in read_perms)
         self.assertTrue(layer.id in write_perms)
+
+    def test_groups_get_perms_when_added_to_object(self):
+        """
+        Verify that when a group is added to an object, the group gets permissions.
+
+        This ensures the resourcebase_groups_changed signal is working correctly.  The signal has to be manually
+        added to models that inherit from the ResourceBase class (layers, documents, maps).
+        """
+        layer = Layer.objects.all()[0]
+        document = Document.objects.all()[0]
+        map = Map.objects.all()[0]
+
+        for resource_object in (layer, document, map):
+            content_type = ContentType.objects.get_for_model(resource_object)
+
+            # Ensure the object has no groups.
+            self.assertEqual(0, resource_object.groups.all().count())
+
+            # Make sure the group does not have any permissions on the layer.
+            mappings = GroupObjectRoleMapping.objects.filter(object_id=resource_object.id,
+                                                             object_ct=content_type,
+                                                             group=self.bar)
+            self.assertEqual(mappings.count(), 0)
+
+            # Add the group to the layer.
+            resource_object.groups.add(self.bar)
+
+            # Ensure the group has been added to the layer's groups.
+            self.assertEqual(1, resource_object.groups.all().count())
+            self.assertTrue(self.bar in resource_object.groups.all())
+
+            # Ensure the group now has permissions.
+            mappings = GroupObjectRoleMapping.objects.filter(object_id=resource_object.id,
+                                                             object_ct=content_type,
+                                                             group=self.bar)
+            self.assertTrue(mappings.count() > 0)
 
     def test_public_pages_render(self):
         "Verify pages that do not require login load without internal error"
