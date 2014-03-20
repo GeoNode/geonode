@@ -336,9 +336,10 @@ class PermissionLevelMixin(object):
             user = User.objects.get(username=username)
             self.set_user_level(user, level)
         #TODO: Delete existing group perms? 
-        for group, level in perm_spec['groups']:
-            group = Group.objects.get(slug=group)
-            self.set_group_level(group, level)
+        if 'groups' in perm_spec:
+            for group, level in perm_spec['groups']:
+                group = Group.objects.get(slug=group)
+                self.set_group_level(group, level)
 
 # Logic to login a user automatically when it has successfully
 # activated an account:
