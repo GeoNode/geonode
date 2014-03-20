@@ -263,7 +263,6 @@ class PermissionLevelMixin(object):
         ct = ContentType.objects.get_for_model(self)
         return GroupObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
 
-
     def get_generic_levels(self):
         ct = ContentType.objects.get_for_model(self)
         return GenericObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
@@ -312,7 +311,7 @@ class PermissionLevelMixin(object):
         self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
 
         # remove specific user permissions
-        current_perms =  self.get_all_level_info()
+        current_perms = self.get_all_level_info()
         for username in current_perms['users'].keys():
             user = User.objects.get(username=username)
             self.set_user_level(user, self.LEVEL_NONE)
@@ -321,7 +320,29 @@ class PermissionLevelMixin(object):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
+        # assign group permissions
+        for group in self.groups.all():
+            self.set_group_level(group, self.LEVEL_READ)
+
     def set_permissions(self, perm_spec):
+        """
+        Sets an object's the permission levels based on the perm_spec JSON.
+
+
+        the mapping looks like:
+        {
+            'anonymous': 'readonly',
+            'authenticated': 'readwrite',
+            'users': {
+                <username>: 'admin'
+                ...
+            }
+            'groups': [
+                    (<groupname>, <permission_level>),
+                    (<groupname2>, <permission_level>)
+                ]
+        }
+        """
         if "authenticated" in perm_spec:
             self.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
         if "anonymous" in perm_spec:
