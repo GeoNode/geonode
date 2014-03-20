@@ -1117,9 +1117,6 @@ class Layer(models.Model, PermissionLevelMixin):
                 msg = "CSW Record Missing for layer [%s]" % self.typename
                 raise GeoNodeException(msg)
 
-            if(csw_layer.uri != self.get_absolute_url()):
-                msg = "CSW Layer URL does not match layer URL for layer [%s]" % self.typename
-                raise GeoNodeException(msg)
 
 
     def layer_attributes(self):
