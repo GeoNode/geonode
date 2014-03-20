@@ -6,10 +6,12 @@ from django.test.client import Client
 from geonode.contrib.groups.models import Group, GroupInvitation
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
+from geonode.layers.views import LAYER_LEV_NAMES
 from geonode.maps.models import Map
 from geonode.search.populate_search_test_data import create_models
 from geonode.security.models import GroupObjectRoleMapping
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
+from geonode.security.views import _perms_info
 
 
 class SmokeTest(TestCase):
@@ -108,6 +110,25 @@ class SmokeTest(TestCase):
                                                              object_ct=content_type,
                                                              group=self.bar)
             self.assertTrue(mappings.count() > 0)
+
+    def test_perms_info(self):
+        """
+        Tests the perms_info function (which passes permissions to the response context).
+        """
+        # Add test to test perms being sent to the front end.
+        layer = Layer.objects.all()[0]
+        perms_info = _perms_info(layer, LAYER_LEV_NAMES)
+
+        # Ensure there is no group info for the layer object by default
+        self.assertEqual(dict(), perms_info['groups'])
+
+        # Add the foo group to the layer object groups
+        layer.groups.add(self.bar)
+
+        perms_info = _perms_info(layer, LAYER_LEV_NAMES)
+
+        # Ensure foo is in the perms_info output
+        self.assertDictEqual(perms_info['groups'], {u'bar': u'layer_readonly'})
 
     def test_public_pages_render(self):
         "Verify pages that do not require login load without internal error"
