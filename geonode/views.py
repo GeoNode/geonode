@@ -27,7 +27,6 @@ from django.db.models import Q
 from django.template import RequestContext
 from geonode.utils import resolve_object, ogc_server_settings
 from geonode.contrib.groups.models import Group
-from django.core.exceptions import PermissionDenied
 
 def index(request, template='index.html'):
     from geonode.search.views import search_page
