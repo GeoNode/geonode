@@ -5,8 +5,10 @@
 
 {% block title %} {% trans "Analytics" %} - {{ block.super }} {% endblock %}
 
+{% block body_class %}analytics{% endblock %}
 {% block head %}
 {{ block.super }}
+
 <link rel="stylesheet" href="{{ STATIC_URL }}analytics/css/analysis_view.css" type="text/css" charset="utf-8">
 <link rel="stylesheet" href="{{ STATIC_URL }}analytics/css/table.css" type="text/css" charset="utf-8">
 <link href="{{ STATIC_URL }}analytics/css/nv.d3.css" type="text/css" rel="stylesheet">
@@ -34,8 +36,6 @@
 		</td>
 	</tr>
 </table>
-
-
 
 {% endblock %}
 
