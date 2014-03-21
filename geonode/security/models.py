@@ -356,13 +356,16 @@ class PermissionLevelMixin(object):
         for username, level in perm_spec['users']:
             user = User.objects.get(username=username)
             self.set_user_level(user, level)
-        #TODO: Delete existing group perms? 
-        if 'groups' in perm_spec:
-            for group, level in perm_spec['groups']:
-                group = Group.objects.get(slug=group)
-                self.set_group_level(group, level)
 
+        #TODO: Should this run in a transaction?
+        excluded_groups = [g[0] for g in perm_spec.get('groups', list())]
 
+        # Delete all group levels that do not exist in perm_spec.
+        self.get_group_levels().exclude(group__slug__in=excluded_groups).delete()
+
+        for group, level in perm_spec['groups']:
+            group = Group.objects.get(slug=group)
+            self.set_group_level(group, level)
 
 # Logic to login a user automatically when it has successfully
 # activated an account:
