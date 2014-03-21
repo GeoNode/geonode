@@ -1,0 +1,32 @@
+{% load i18n %}
+
+<div class="modal fade" id="modal_analysis" style="display:none">
+	<form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% url "new_analysis_json" %}">{% csrf_token %}
+    <div class="modal-header">
+      <a class="close" data-dismiss="modal">×</a>
+      <h3>{% trans "Save Analysis" %}</h3>
+    </div>
+    <!--les classes et les id PAS MODIFIÉES-->
+    <div class="modal-body" id="permissions-body" >
+      <div class="control-group">
+	<label class="control-label"><strong>{% trans "Title" %}</strong></label>
+	<div class="controls">
+	  <input type="text" name="title" class="user-select" id="perms_edit_manageusers">
+      </input>
+	</div>
+      </div>
+      
+      <div class="control-group">
+	<label class="control-label"><strong>{% trans "Abstract" %}</strong></label>
+	<div class="controls">
+	<textarea name="abstract" rows="8" cols="100" placeholder={% trans "Describe the analysis ..." %}></textarea>
+	</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
+      <a href="#" class="btn btn-primary" data-dismiss="modal" id="analysis_submit">{% trans "Save" %}</a>
+    </div>
+    <!--  fin -->
+  </form>
+</div>

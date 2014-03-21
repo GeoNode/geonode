@@ -1,10 +1,12 @@
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info
 from geonode.documents.models import get_related_documents
 from geonode.analytics.models import Analysis
+from django.http import HttpResponse
 
 ANALYSIS_LEV_NAMES = {
     Analysis.LEVEL_NONE  : _('No Permissions'),
@@ -32,22 +34,43 @@ def analytic_list(request, template='analytics/analysis_list.html'):
 def new_analysis(request, template='analytics/analysis_view.html'):
     return render(request, template, { })
 
+def analysis_view(request, analysisid, template='analytics/analysis_view.html'):
+    analysis_obj = _resolve_analysis(request, analysisid, 'analysis.view_analysis', _PERMISSION_MSG_VIEW)
+
+    return render(request, template, {
+        'analysis' : analysis_obj
+    })
+
 def analysis_detail(request, analysisid, template='analytics/analysis_detail.html'):
-    
     analysis_obj = _resolve_analysis(request, analysisid, 'analysis.view_analysis', _PERMISSION_MSG_VIEW)
     analysis_obj.popular_count += 1
     analysis_obj.save()
-    
+
     return render(request, template, {
         'analysis' : analysis_obj,
         'documents' : get_related_documents(analysis_obj),
         'permission_json' : json.dumps(_perms_info(analysis_obj, ANALYSIS_LEV_NAMES)),
-        })
+    })
 
 def _resolve_analysis(request, id, permission='analysis.change_analysis',
-                 msg=_PERMISSION_MSG_GENERIC, **kwargs):
+                      msg=_PERMISSION_MSG_GENERIC, **kwargs):
     '''
     Resolve the Analysis by the provided typename and check the optional permission.
     '''
-    return resolve_object(request, Analysis, {'pk':id}, permission = permission,
+    return resolve_object(request, Analysis, {'pk':id}, permission=permission,
                           permission_msg=msg, **kwargs)
+
+def new_analysis_json(request):
+    if request.method == 'POST':
+        if not request.user.is_authenticated():
+            return HttpResponse(
+                'You must be logged in to save new maps',
+                mimetype="text/plain",
+                status=401
+            )
+        analysis_obj = Analysis(owner=request.user, title=request.POST.get('title'), abstract=request.POST.get('abstract'))
+        analysis_obj.save()
+        return redirect('analysis_view', analysisid=analysis_obj.id)
+    else:
+        return HttpResponse(status=405)
+
