@@ -2,9 +2,6 @@ d3.json('http://127.0.0.1:8000/static/analytics/data/data.json', function (error
   
   var keys = data.map(function(d){return d.caption;});
   var values = data.map(function(d){return d.measure;});
-  console.log(keys);
-  console.log(values);
-
  
   function showDataAsTable(container, values, keys, labels, sortable) {
 
@@ -31,9 +28,7 @@ d3.json('http://127.0.0.1:8000/static/analytics/data/data.json', function (error
       }
 
     }
-
     showDataAsTable('#table', values, keys, ['Pays', 'Valeur'], true);
-    
 });
 
 
