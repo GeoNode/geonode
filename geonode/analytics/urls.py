@@ -11,4 +11,5 @@ urlpatterns = patterns('geonode.analytics.views',
     url(r'^new/data/$', 'new_analysis_json', name='new_analysis_json'),
     url(r'^(?P<analysisid>\d+)/view', 'analysis_view', name='analysis_view'),
     url(r'^(?P<analysisid>\d+)/remove', 'analysis_remove', name='analysis_remove'),
+    url(r'^(?P<analysisid>\d+)/metadata/$', 'analysis_metadata', name='analysis_metadata'),
     )
