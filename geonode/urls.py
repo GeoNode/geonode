@@ -26,6 +26,8 @@ from django.views.generic import TemplateView
 
 import geonode.proxy.urls
 
+from geonode.api.urls import api
+
 # Setup Django Admin
 from django.contrib import admin
 admin.autodiscover()
@@ -91,7 +93,7 @@ urlpatterns = patterns('',
                                   {'sitemaps': sitemaps}, name='sitemap'),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
-
+    url(r'', include(api.urls)),
     )
 
 #Documents views

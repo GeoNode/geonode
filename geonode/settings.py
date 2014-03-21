@@ -176,6 +176,7 @@ INSTALLED_APPS = (
     'friendlytagloader',
     'geoexplorer',
     'django_extensions',
+    'tastypie',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -608,4 +609,5 @@ DOWNLOAD_FORMATS_RASTER = [
     'View in Google Earth', 'Tiles',
 ]
 
+TASTYPIE_DEFAULT_FORMATS = ['json']
 
