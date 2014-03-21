@@ -1,0 +1,23 @@
+{% extends "analytics/analysis_base.html" %}
+
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block title_sub %}{% trans "Deleting" %} {{ analysis.title }} {% endblock %}
+
+{% block body_class %}maps analytics{% endblock %}
+
+{% block body %}
+<form action="{% url "analysis_remove" analysis.id %}" method="POST">
+  <legend>
+    {% blocktrans with analysis.title as analysis_title %}
+        Are you sure you want to remove {{ analysis_title }}?
+    {% endblocktrans %}
+  </legend>
+  {% csrf_token %}
+  <div class="form-actions">
+    <input type="submit" class="btn btn-danger" value="{% trans "Yes, I am sure"  %}" />
+    <a href="{{ analysis.get_absolute_url }}" class="btn">{% trans "No, don't remove it" %}</a>
+  </div>
+</form>
+{% endblock %}

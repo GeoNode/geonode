@@ -7,6 +7,7 @@ from geonode.security.views import _perms_info
 from geonode.documents.models import get_related_documents
 from geonode.analytics.models import Analysis
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 
 ANALYSIS_LEV_NAMES = {
     Analysis.LEVEL_NONE  : _('No Permissions'),
@@ -74,3 +75,18 @@ def new_analysis_json(request):
     else:
         return HttpResponse(status=405)
 
+@login_required
+def analysis_remove(request, analysisid, template='analytics/analysis_remove.html'):
+    ''' Delete an analysis. '''
+    analysis_obj = _resolve_analysis(request, analysisid, 'analyses.delete_analysis',
+                           _PERMISSION_MSG_DELETE, permission_required=True)
+
+    if request.method == 'GET':
+        return render(request, template, {
+            "analysis": analysis_obj
+        })
+
+    elif request.method == 'POST':
+        analysis_obj.delete()
+
+        return redirect("analytics_browse")
