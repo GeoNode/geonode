@@ -1,6 +1,8 @@
+import json
 from django.contrib.auth import get_backends
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 from geonode.contrib.groups.models import Group, GroupInvitation
@@ -129,6 +131,74 @@ class SmokeTest(TestCase):
 
         # Ensure foo is in the perms_info output
         self.assertDictEqual(perms_info['groups'], {u'bar': u'layer_readonly'})
+
+    def test_resource_permissions(self):
+        """
+        Tests that the client can get and set group permissions through the test_resource_permissions view.
+        """
+        c = Client()
+        self.assertTrue(c.login(username="admin", password="admin"))
+
+        layer = Layer.objects.all()[0]
+        document = Document.objects.all()[0]
+        map_obj = Map.objects.all()[0]
+
+        objects = layer, document, map_obj
+
+        for obj in objects:
+            response = c.get(reverse('resource_permissions', kwargs=dict(type=obj.geonode_type, resource_id=obj.id)))
+            self.assertEqual(response.status_code, 200)
+            js = json.loads(response.content)
+            permissions = js.get('permissions', dict())
+
+            if isinstance(permissions, unicode) or isinstance(permissions, str):
+                permissions = json.loads(permissions)
+
+            # Ensure the groups value is empty by default
+            self.assertDictEqual(permissions.get('groups'), dict())
+
+
+            permissions = {"anonymous": "_none", "authenticated": "_none", "users": [["admin", obj.LEVEL_WRITE]],
+                           "groups": [[self.bar.slug, obj.LEVEL_WRITE]]}
+
+            # Give the bar group permissions
+            response = c.post(reverse('resource_permissions', kwargs=dict(type=obj.geonode_type, resource_id=obj.id)),
+                              data=json.dumps(permissions), content_type="application/json")
+
+            self.assertEqual(response.status_code, 200)
+
+            response = c.get(reverse('resource_permissions', kwargs=dict(type=obj.geonode_type, resource_id=obj.id)))
+
+            js = json.loads(response.content)
+            permissions = js.get('permissions', dict())
+
+            if isinstance(permissions, unicode) or isinstance(permissions, str):
+                permissions = json.loads(permissions)
+
+            # Make sure the bar group now has write permissions
+            self.assertDictEqual(permissions['groups'], {'bar': obj.LEVEL_WRITE})
+
+            # Remove group permissions
+            permissions = {"anonymous": "_none", "authenticated": "_none", "users": [["admin", obj.LEVEL_WRITE]],
+                           "groups": {}}
+
+            # Update the object's permissions to remove the bar group
+            response = c.post(reverse('resource_permissions', kwargs=dict(type=obj.geonode_type, resource_id=obj.id)),
+                              data=json.dumps(permissions), content_type="application/json")
+
+            self.assertEqual(response.status_code, 200)
+
+            response = c.get(reverse('resource_permissions', kwargs=dict(type=obj.geonode_type, resource_id=obj.id)))
+
+            js = json.loads(response.content)
+            permissions = js.get('permissions', dict())
+
+            if isinstance(permissions, unicode) or isinstance(permissions, str):
+                permissions = json.loads(permissions)
+
+            # Assert the bar group no longer has permissions
+            self.assertDictEqual(permissions['groups'], {})
+
 
     def test_public_pages_render(self):
         "Verify pages that do not require login load without internal error"
