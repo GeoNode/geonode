@@ -46,7 +46,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
-        'TEST_NAME' : os.path.join(PROJECT_ROOT, 'development-test.db'),
     },
 
     # vector datastore for uploads
