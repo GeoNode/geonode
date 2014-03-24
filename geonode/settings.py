@@ -206,6 +206,9 @@ INSTALLED_APPS = (
     'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
+
+    # GeoNode Contrib Apps
+    'geonode.contrib.services',
 )
 
 LOGGING = {

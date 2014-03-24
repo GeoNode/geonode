@@ -21,6 +21,9 @@ import urllib
 
 import uuid
 import logging
+import re
+
+from urlparse import urlsplit, urlunsplit
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -31,37 +34,36 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext, loader
+from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.shortcuts import get_object_or_404
 
-
-#from geonode.core.layers.views import layer_set_permissions
-from geoserver.catalog import Catalog, FailedRequestError
 from owslib.wms import WebMapService
 from owslib.wfs import WebFeatureService
 from owslib.tms import TileMapService
 from owslib.csw import CatalogueServiceWeb
+
 from arcrest import Folder as ArcFolder, MapService as ArcMapService
-from urlparse import urlsplit, urlunsplit
 
+from geoserver.catalog import Catalog, FailedRequestError
 
+#from geonode.core.layers.views import layer_set_permissions
 #from geonode.utils import OGC_Servers_Handler
 from geonode.contrib.services.models import Service, Layer, ServiceLayer, WebServiceHarvestLayersJob, WebServiceRegistrationJob
-from geonode.maps.views import _perms_info, bbox_to_wkt
-from geonode.core.models import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from geonode.security.views import _perms_info
+from geonode.utils import bbox_to_wkt
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.contrib.services.forms import CreateServiceForm, ServiceLayerFormSet, ServiceForm
-from geonode.utils import slugify
-import re
-from geonode.maps.utils import llbbox_to_mercator, mercator_to_llbbox
+from geonode.utils import llbbox_to_mercator, mercator_to_llbbox
 from django.db import transaction
 
 logger = logging.getLogger("geonode.core.layers.views")
 
-
 #ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
 
-_user, _password = settings.GEOSERVER_CREDENTIALS #ogc_server_settings.credentials
+_user = settings.OGC_SERVER['default']['USER']
+_password = settings.OGC_SERVER['default']['PASSWORD']
 
 SERVICE_LEV_NAMES = {
     Service.LEVEL_NONE  : _('No Service Permissions'),
@@ -311,7 +313,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
     if wms is None:
         wms = WebMapService(url)
     # TODO: Make sure we are parsing all service level metadata
-    # TODO: Handle for setting ServiceContactRole
+    # TODO: Handle for setting ServiceProfiletRole
     service = Service.objects.create(base_url = url,
         type = type,
         method='C',
@@ -497,7 +499,7 @@ def _register_indexed_service(type, url, name, username, password, verbosity=Fal
         if wms is None:
             wms = WebMapService(url)
         # TODO: Make sure we are parsing all service level metadata
-        # TODO: Handle for setting ServiceContactRole
+        # TODO: Handle for setting ServiceProfileRole
 
         try:
             service = Service.objects.get(base_url=url)

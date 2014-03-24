@@ -4,13 +4,19 @@ from django.contrib.auth.models import User
 from django.db import models
 from geoserver.catalog import FailedRequestError
 from taggit.managers import TaggableManager
-from geonode.core.models import PermissionLevelMixin, ANONYMOUS_USERS, AUTHENTICATED_USERS, CUSTOM_GROUP_USERS
+from geonode.security.models import PermissionLevelMixin
+from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.contrib.services.enumerations import SERVICE_TYPES, SERVICE_METHODS, GXP_PTYPES
-from geonode.maps.models import Contact, Role, Layer
+from geonode.layers.models import Layer 
+from geonode.people.models import Profile, Role
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import signals
-from geonode.queue.models import STATUS_VALUES
 
+STATUS_VALUES = [
+    'pending',
+    'failed',
+    'process'
+]
 
 logger = logging.getLogger("geonode.contrib.services")
 
@@ -41,7 +47,7 @@ class Service(models.Model, PermissionLevelMixin):
     workspace_ref = models.URLField(False, null=True, blank=True)
     store_ref = models.URLField(null=True, blank=True)
     resources_ref = models.URLField(null = True, blank = True)
-    contacts = models.ManyToManyField(Contact, through='ServiceContactRole')
+    profiles = models.ManyToManyField(Profile, through='ServiceProfileRole')
     owner = models.ForeignKey(User, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
@@ -83,7 +89,7 @@ class Service(models.Model, PermissionLevelMixin):
     def set_default_permissions(self):
         self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
         self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
-        self.set_gen_level(CUSTOM_GROUP_USERS, self.LEVEL_READ)
+        #self.set_gen_level(CUSTOM_GROUP_USERS, self.LEVEL_READ)
 
         # remove specific user permissions
         current_perms =  self.get_all_level_info()
@@ -95,11 +101,11 @@ class Service(models.Model, PermissionLevelMixin):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
-class ServiceContactRole(models.Model):
+class ServiceProfileRole(models.Model):
     """
-    ServiceContactRole is an intermediate model to bind Contacts and Services and apply roles.
+    ServiceProfileRole is an intermediate model to bind Profiles and Services and apply roles.
     """
-    contact = models.ForeignKey(Contact)
+    profiles = models.ForeignKey(Profile)
     service = models.ForeignKey(Service)
     role = models.ForeignKey(Role)
 
