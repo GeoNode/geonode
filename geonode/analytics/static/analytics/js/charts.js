@@ -57,7 +57,7 @@ function setData(data){
 }
 
 // In the future this json will not more exist setData will be called by the class Display
-d3.json("http://127.0.0.1:8000/static/analytics/data/data.json", function (biData) {
+d3.json("/static/analytics/data/data.json", function (biData) {
   setType("donut");
   setData(biData);
 });

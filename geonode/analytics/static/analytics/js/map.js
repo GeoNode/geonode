@@ -2,8 +2,8 @@ var width = $('#map-pane').width(),
 //height = $('#map-pane').height();
 height = 700;
 
-d3.json("http://127.0.0.1:8000/static/analytics/data/europe.topo.json", function (geographicalData) {
-  d3.json("http://127.0.0.1:8000/static/analytics/data/data.json", function (biData) {
+d3.json("/static/analytics/data/europe.topo.json", function (geographicalData) {
+  d3.json("/static/analytics/data/data.json", function (biData) {
     //Will be modified in the future
     var active;
 

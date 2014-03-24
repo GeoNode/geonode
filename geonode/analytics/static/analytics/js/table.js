@@ -1,4 +1,4 @@
-d3.json('http://127.0.0.1:8000/static/analytics/data/data.json', function (error,data) {
+d3.json('/static/analytics/data/data.json', function (error,data) {
   
   var keys = data.map(function(d){return d.caption;});
   var values = data.map(function(d){return d.measure;});
