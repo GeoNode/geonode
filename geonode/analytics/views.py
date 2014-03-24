@@ -42,14 +42,14 @@ def new_analysis(request, template='analytics/analysis_view.html'):
     return render(request, template, { })
 
 def analysis_view(request, analysisid, template='analytics/analysis_view.html'):
-    analysis_obj = _resolve_analysis(request, analysisid, 'analysis.view_analysis', _PERMISSION_MSG_VIEW)
+    analysis_obj = _resolve_analysis(request, analysisid, 'analytics.view_analysis', _PERMISSION_MSG_VIEW)
 
     return render(request, template, {
         'analysis' : analysis_obj
     })
 
 def analysis_detail(request, analysisid, template='analytics/analysis_detail.html'):
-    analysis_obj = _resolve_analysis(request, analysisid, 'analysis.view_analysis', _PERMISSION_MSG_VIEW)
+    analysis_obj = _resolve_analysis(request, analysisid, 'analytics.view_analysis', _PERMISSION_MSG_VIEW)
     analysis_obj.popular_count += 1
     analysis_obj.save()
 
@@ -59,7 +59,7 @@ def analysis_detail(request, analysisid, template='analytics/analysis_detail.htm
         'permission_json' : json.dumps(_perms_info(analysis_obj, ANALYSIS_LEV_NAMES)),
     })
 
-def _resolve_analysis(request, id, permission='analysis.change_analysis',
+def _resolve_analysis(request, id, permission='analytics.change_analysis',
                       msg=_PERMISSION_MSG_GENERIC, **kwargs):
     '''
     Resolve the Analysis by the provided typename and check the optional permission.
@@ -82,7 +82,7 @@ def analysis_set_permissions(m, perm_spec):
 
 def analysis_permissions(request, analysisid):
     try:
-        analysis_obj = _resolve_analysis(request, analysisid, 'analyses.change_analysis_permissions')
+        analysis_obj = _resolve_analysis(request, analysisid, 'analytics.change_analysis_permissions')
     except PermissionDenied:
         # we are handling this differently for the client
         return HttpResponse(
@@ -131,7 +131,7 @@ def new_analysis_json(request):
 @login_required
 def analysis_remove(request, analysisid, template='analytics/analysis_remove.html'):
     ''' Delete an analysis. '''
-    analysis_obj = _resolve_analysis(request, analysisid, 'analyses.delete_analysis',
+    analysis_obj = _resolve_analysis(request, analysisid, 'analytics.delete_analysis',
                            _PERMISSION_MSG_DELETE, permission_required=True)
 
     if request.method == 'GET':
