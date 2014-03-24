@@ -1,11 +1,10 @@
 from django.core.management.base import BaseCommand
 from optparse import make_option
 from geonode.contrib.services.models import Service
-import geonode.maps.autocomplete_light_registry
 from geonode.contrib.services.views import _register_cascaded_service, _register_indexed_service, \
     _register_harvested_service,_register_cascaded_layers,_register_indexed_layers
 import json
-from geonode.maps.utils import get_valid_user
+from geonode.people.utils import get_valid_user
 import traceback
 import sys
 

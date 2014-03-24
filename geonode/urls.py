@@ -63,6 +63,9 @@ urlpatterns = patterns('',
     # Upload views
     (r'^upload/', include('geonode.upload.urls')),
 
+    # Services views
+    (r'^services/', include('geonode.contrib.services.urls')),
+
     # GeoServer Helper Views 
     (r'^gs/', include('geonode.geoserver.urls')),
 
