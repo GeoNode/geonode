@@ -1,0 +1,24 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block head %}
+{{ block.super }}
+
+
+{% endblock %}
+
+{% block title %} Edit Service - {{ block.super }} {% endblock %}
+
+{% block main %}
+    <div class="onecol">
+
+        <h2>Edit Service</h2>
+        <form method="POST" id="service_edit_form">
+            {% csrf_token %}
+            <ul class="form">
+                {{ service_form.as_ul }}
+            </ul>
+            <div align="center"><p><input type="submit" class="submit_btn" value="{% trans "Save" %}" /></p></div>
+        </form>
+    </div>
+{% endblock %}
