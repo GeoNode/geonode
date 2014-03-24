@@ -223,7 +223,7 @@ def _get_map_results(query):
 def _get_analysis_results(query):
     q = extension.analysis_query(query)
 
-    q = _filter_security(q, query.user, Map, 'view_map')
+    q = _filter_security(q, query.user, Analysis, 'view_analysis')
 
     if query.owner:
         q = q.filter(owner__username=query.owner)
@@ -364,12 +364,12 @@ def combined_search_results(query):
         q = _get_map_results(query)
         facets['map'] = q.count()
         results['maps'] = q
-    
+
     if None in bytype or u'analysis' in bytype:
-	q = _get_analysis_results(query)
-	facets['analysis'] = q.count()
-	results['analyses'] = q
-	
+        q = _get_analysis_results(query)
+        facets['analysis'] = q.count()
+        results['analyses'] = q
+
     if None in bytype or u'layer' in bytype or u'raster' in bytype or u'vector' in bytype:
         q = _get_layer_results(query)
         if u'raster' in bytype and not u'vector' in bytype:
