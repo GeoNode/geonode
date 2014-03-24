@@ -1,35 +1,47 @@
-d3.json('http://127.0.0.1:8000/static/analytics/data/data.json', function (error,data) {
-  
-  var keys = data.map(function(d){return d.caption;});
-  var values = data.map(function(d){return d.measure;});
- 
-  function showDataAsTable(container, values, keys, labels, sortable) {
+var Table = {  
+  table : null,
+  theadtr : null,
+  tbody : null,
 
-      var table = d3.select(container).append("table");
-          theadtr = table.append("thead").append("tr");
-          tbody = table.append("tbody");
+  init : function (selector) {
+    this.table = d3.select(selector).append("table");
+    this.thead = this.table.append("thead").append("tr");
+    this.tbody = this.table.append("tbody");
+  },
 
-      var th = theadtr.selectAll("th")
-          .data(labels)
-        .enter().append("th")
-          .text(function(d) { return d; });
+  setData : function (data, labels, sortable) {
+    var keys = d3.keys(data);
+    var values = d3.values(data);
 
-      var tr = tbody.selectAll("tr")
-          .data(values)
-        .enter().append("tr");
+    var captions = values.map(function(d){return d.caption});
+    var measures = values.map(function(d){return d.measure});
 
-      var td = tr.selectAll("td")
-          .data(function(d, i) { return [keys[i], d]; })
-        .enter().append("td")
-          .text(function(d) { return d; });
-      
-      if (sortable) {
-        $(table).tableSort();
-      }
+    // Header
+    var th = this.thead.selectAll("th")
+        .data(labels);
 
+    th.enter().append("th");// Enter
+    th.exit().remove();// Exit
+     
+    th.text(function(d) { return d; });// Update
+
+    // Lines
+    var tr = this.tbody.selectAll("tr")
+        .data(measures);
+
+    tr.enter().append("tr");// Enter
+    tr.exit().remove();// Exit, no update here this is td that will be updated
+
+    
+    var td = tr.selectAll("td")
+        .data(function(d, i) { return [captions[i], d]; });
+
+    td.enter().append("td");// Enter
+    td.exit().remove();// Exit
+    td.text(function(d) { return d; });// Update
+
+    if (sortable) {
+      $(table).tableSort();
     }
-    showDataAsTable('#table', values, keys, ['Pays', 'Valeur'], true);
-});
-
-
-
+  }  
+}
