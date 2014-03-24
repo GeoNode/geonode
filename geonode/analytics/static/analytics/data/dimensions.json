@@ -1,0 +1,99 @@
+{
+    "error" : "OK",
+    "data" :
+    {
+        "schemas" :
+        {
+            "FR" : {
+                "name" : "FR",
+                "caption" : "Français",
+                "cubes" :
+                {
+                    "Sales" : {
+                        "name" : "Sales",
+                        "caption" : "Ventes",
+                        "measures" :
+                        {
+                            "Quantity" : {
+                                "name" : "Quantity",
+                                "caption" : "Quantité",
+                                "description" : "€",
+                                "aggregator" : "sum",
+                                "type" : "numeric"
+                            }
+                        },
+                        "dimensions" : 
+                        {
+                            "Time" : {
+                                "name" : "Time",
+                                "caption" : "Temps",
+                                "hierarchies" :
+                                {
+                                    "Time" : {
+                                        "name" : "Time",  
+                                        "caption" : "Temps",   
+                                        "levels" : 
+                                        [
+                                            {
+                                                "name" : "Year", 
+                                                "caption" : "Année",
+                                                "type" : "time"
+                                            },
+                                            {
+                                                "name" : "Month", 
+                                                "caption" : "Mois",
+                                                "type" : "time"
+                                            },
+                                            {
+                                                "name" : "Day", 
+                                                "caption" : "Jour",
+                                                "type" : "time"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            "Geo" : {
+                                "name" : "Geo",
+                                "caption" : "Geographie",
+                                "hierarchies" :
+                                {
+                                    "Name" : {
+                                        "name" : "Name",
+                                        "caption" : "Nom",
+                                        "levels" :
+                                        [
+                                            {
+                                                "name" : "Country",
+                                                "caption" : "Pays",
+                                                "type" : "geometric",
+                                                "properties" : 
+                                                {
+                                                    "geometry" : {
+                                                        "name" : "geometry",
+                                                        "caption" : "Géométrie",
+                                                        "type" : "geometric"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "name" : "Region",
+                                                "caption" : "Region",
+                                                "type" : "geometric"
+                                            },
+                                            {
+                                                "name" : "City",
+                                                "caption" : "Ville",
+                                                "type" : "geometric"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
