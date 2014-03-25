@@ -42,14 +42,14 @@ def new_analysis(request, template='analytics/analysis_view.html'):
     return render(request, template, { })
 
 def analysis_view(request, analysisid, template='analytics/analysis_view.html'):
-    analysis_obj = _resolve_analysis(request, analysisid, 'analysis.view_analysis', _PERMISSION_MSG_VIEW)
+    analysis_obj = _resolve_analysis(request, analysisid, 'analytics.view_analysis', _PERMISSION_MSG_VIEW)
 
     return render(request, template, {
         'analysis' : analysis_obj
     })
 
 def analysis_detail(request, analysisid, template='analytics/analysis_detail.html'):
-    analysis_obj = _resolve_analysis(request, analysisid, 'analysis.view_analysis', _PERMISSION_MSG_VIEW)
+    analysis_obj = _resolve_analysis(request, analysisid, 'analytics.view_analysis', _PERMISSION_MSG_VIEW)
     analysis_obj.popular_count += 1
     analysis_obj.save()
 
@@ -59,7 +59,7 @@ def analysis_detail(request, analysisid, template='analytics/analysis_detail.htm
         'permission_json' : json.dumps(_perms_info(analysis_obj, ANALYSIS_LEV_NAMES)),
     })
 
-def _resolve_analysis(request, id, permission='analysis.change_analysis',
+def _resolve_analysis(request, id, permission='analytics.change_analysis',
                       msg=_PERMISSION_MSG_GENERIC, **kwargs):
     '''
     Resolve the Analysis by the provided typename and check the optional permission.
