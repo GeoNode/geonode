@@ -394,6 +394,9 @@ SITEURL = "http://localhost:8000/"
 
 USE_QUEUE = False
 
+DEFAULT_WORKSPACE = 'geonode'
+CASCADE_WORKSPACE = 'geonode'
+
 # Default TopicCategory to be used for resources. Use the slug field here
 DEFAULT_TOPICCATEGORY = 'location'
 
