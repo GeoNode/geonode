@@ -1,9 +1,9 @@
-{% extends "page_layout.html" %}
+{% extends "services/services_base.html" %}
 {% load i18n %}
 
 {% block title %} {{ service.name }} - {{ block.super }} {% endblock %}
 
-{% block main %}
+{% block body %}
 <h3>{% trans "Are you sure you want to remove"  %} <strong>{{ service.name }}</strong>?</h3>
 
 <div style="float:left;">
