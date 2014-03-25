@@ -1,4 +1,4 @@
-{% extends "page_layout.html" %}
+{% extends "services/services_base.html" %}
 {% load i18n %}
 
 {% block head %}
@@ -60,7 +60,7 @@ $( document ).ready(function() {
 
 {% block title %} Register Service - {{ block.super }} {% endblock %}
 
-{% block main %}
+{% block body %}
 <div class="twocol">
 
 <h2>Register New Service</h2>

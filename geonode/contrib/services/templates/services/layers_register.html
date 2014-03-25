@@ -1,4 +1,4 @@
-{% extends "page_layout.html" %}
+{% extends "services/services_base.html" %}
 {% load i18n %}
 {% block head %}
 {{ block.super }}
@@ -13,7 +13,7 @@
 
 {% block title %} Services -- Available Layers {{ block.super }} {% endblock %}
 
-{% block main %}
+{% block body %}
 <div class="twocol">
     {% if service %}
     <h1>Select Layers to Import</h1>

@@ -1,4 +1,4 @@
-{% extends "page_layout.html" %}
+{% extends "services/services_base.html" %}
 {% load i18n %}
 {% load geonode_auth %}
 
@@ -39,7 +39,7 @@ Ext.onReady(function() {
 </script>
 {% endblock %}
 
-{% block main %}
+{% block body %}
 <div class="twocol">
   <h3>{{service.title|default:service.name}}</h3>
   <p><strong>{% trans "Name:" %}</strong> {{service.name}}</p>
