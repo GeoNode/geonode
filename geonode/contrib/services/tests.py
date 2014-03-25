@@ -26,31 +26,27 @@ from django.core.urlresolvers import reverse
 from .models import Service
 
 
-
-
 class ServicesTests(TestCase):
     """Tests geonode.contrib.services app/module
     """
+
+    fixtures = ['initial_data.json', 'bobby.json', 'people_data.json']
 
     def setUp(self):
         self.user = 'admin'
         self.passwd = 'admin'
 
-    fixtures = ['map_data.json', 'initial_data.json']
-
-    def test_placholder(self):
-        self.assertEqual(1,1)
-
     def test_register_indexed_wms(self):
-        """Test registering demo.geonode.org as an indexed WMS
+        """Test registering an indexed WMS
         """
         c = Client()
-        c.login(username='admin', password='admin')
-        response = c.post(reverse('register_service'),
-                            {
-                             'type':'WMS',
-                             'url':'http://metaspatial.net/cgi-bin/ogc-wms.xml',
-                            })
+        logged_in = c.login(username='admin', password='admin')
+        
+        response = c.post(reverse('register_service'), 
+                {
+                    'type':'WMS',
+                    'url':'http://metaspatial.net/cgi-bin/ogc-wms.xml',
+                })
         self.assertEqual(response.status_code, 200)
         service_dict = json.loads(response.content)[0]
 
@@ -67,7 +63,7 @@ class ServicesTests(TestCase):
             self.fail("Service not created: %s" % str(e))
 
     def test_register_arcrest(self):
-        """Test registering demo.geonode.org as an indexed WMS
+        """Test registering an arcrest service
         """
         c = Client()
         c.login(username='admin', password='admin')
