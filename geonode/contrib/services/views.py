@@ -48,8 +48,6 @@ from arcrest import Folder as ArcFolder, MapService as ArcMapService
 
 from geoserver.catalog import Catalog, FailedRequestError
 
-#from geonode.core.layers.views import layer_set_permissions
-#from geonode.utils import OGC_Servers_Handler
 from geonode.contrib.services.models import Service, Layer, ServiceLayer, WebServiceHarvestLayersJob, WebServiceRegistrationJob
 from geonode.security.views import _perms_info
 from geonode.utils import bbox_to_wkt
@@ -57,6 +55,7 @@ from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.contrib.services.forms import CreateServiceForm, ServiceLayerFormSet, ServiceForm
 from geonode.utils import llbbox_to_mercator, mercator_to_llbbox
 from django.db import transaction
+from geonode.layers.models import set_attributes
 
 logger = logging.getLogger("geonode.core.layers.views")
 
@@ -288,10 +287,10 @@ def _process_wms_service(url, type, username, password, wms=None, owner=None, pa
         supported_crs  = ','.join(wms.contents.itervalues().next().crsOptions)
     except:
         supported_crs = None
-    if supported_crs and re.search('EPSG:900913|EPSG:3857|EPSG:102100', supported_crs):
-        return _register_indexed_service(type, url, name, username, password, wms=wms, owner=owner, parent=parent)
-    else:
-        return _register_cascaded_service(url, type, name, username, password, wms=wms, owner=owner, parent=parent)
+    #if supported_crs and re.search('EPSG:900913|EPSG:3857|EPSG:102100', supported_crs):
+    #    return _register_indexed_service(type, url, name, username, password, wms=wms, owner=owner, parent=parent)
+    #else:
+    return _register_cascaded_service(url, type, name, username, password, wms=wms, owner=owner, parent=parent)
 
 def _register_cascaded_service(url, type, name, username, password, wms=None, owner=None, parent=None):
     """
@@ -307,8 +306,8 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
                             mimetype='application/json',
                             status=200)
     except:
+        # TODO: Handle this error properly
         pass
-
 
     if wms is None:
         wms = WebMapService(url)
@@ -330,9 +329,8 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
 
     if type in ['WMS', 'OWS']:
         # Register the Service with GeoServer to be cascaded
-        cat = Catalog(settings.GEOSERVER_BASE_URL + "rest", 
+        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", 
                         _user , _password)
-        # Can we always assume that it is geonode?
         try:
             cascade_ws = cat.get_workspace(settings.CASCADE_WORKSPACE)
         except FailedRequestError:
@@ -352,7 +350,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
 
     elif type == 'WFS':
         # Register the Service with GeoServer to be cascaded
-        cat = Catalog(settings.GEOSERVER_BASE_URL + "rest", 
+        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", 
                         _user , _password)
         # Can we always assume that it is geonode?
         cascade_ws = cat.get_workspace(settings.CASCADE_WORKSPACE)
@@ -422,7 +420,7 @@ def _register_cascaded_layers(service, owner=None):
     Register layers for a cascading WMS
     """
     if service.type == 'WMS' or service.type == "OWS":
-        cat = Catalog(settings.GEOSERVER_BASE_URL + "rest", 
+        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", 
                         _user , _password)
         # Can we always assume that it is geonode?
         # Should cascading layers have a separate workspace?
@@ -465,7 +463,6 @@ def _register_cascaded_layers(service, owner=None):
                         if cascaded_layer is not None and cascaded_layer.bbox is None:
                             cascaded_layer._populate_from_gs(gs_resource=resource)
                         cascaded_layer.set_default_permissions()
-                        cascaded_layer.save_to_geonetwork()
 
                         service_layer, created = ServiceLayer.objects.get_or_create(
                             service=service,
@@ -603,7 +600,6 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
 
             # Need to check if layer already exists??
             bbox = list(wms_layer.boundingBoxWGS84)
-            print bbox
             saved_layer, created = Layer.objects.get_or_create(
                 service=service,
                 typename=wms_layer.name,
@@ -616,16 +612,18 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                     abstract=abstract,
                     uuid=layer_uuid,
                     owner=None,
-                    srid=srid
-                    #bbox = bbox
+                    srid=srid,
+                    bbox_x0 = bbox[0],
+                    bbox_x1 = bbox[1],
+                    bbox_y0 = bbox[2],
+                    bbox_y1 = bbox[3]
                 )
             )
             if created:
                 saved_layer.save()
                 saved_layer.set_default_permissions()
                 saved_layer.keywords.add(*keywords)
-                saved_layer.set_layer_attributes()
-                saved_layer.save_to_geonetwork()
+                set_attributes(saved_layer)
 
                 service_layer, created = ServiceLayer.objects.get_or_create(
                     service=service,
@@ -817,7 +815,6 @@ def _register_arcgis_layers(service, arc=None):
         if created:
             saved_layer.set_default_permissions()
             saved_layer.save()
-            saved_layer.save_to_geonetwork()
 
             service_layer, created = ServiceLayer.objects.get_or_create(
                 service=service,
@@ -1050,7 +1047,6 @@ def process_ogp_results(ogp, result_json, owner=None):
                 )
                 saved_layer.set_default_permissions()
                 saved_layer.save()
-                saved_layer.save_to_geonetwork()
                 service_layer, created = ServiceLayer.objects.get_or_create(service=service,typename=typename,
                                                                             defaults=dict(
                                                                                 title=doc["LayerDisplayName"]
