@@ -101,13 +101,14 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
                           target=None)
 
     if verb:
-        activity.send(action.get('actor'),
-                      verb='{verb}'.format(verb=verb),
-                      action_object=action.get('action_object'),
-                      target=action.get('target'),
-                      object_name=action.get('object_name'),
-                      raw_action=raw_action,
-                    )
+        pass
+        #activity.send(action.get('actor'),
+        #              verb='{verb}'.format(verb=verb),
+        #              action_object=action.get('action_object'),
+        #              target=action.get('target'),
+        #              object_name=action.get('object_name'),
+        #              raw_action=raw_action,
+        #            )
 
 def notification_post_save_layer(instance, sender, created, **kwargs):
     if created:
