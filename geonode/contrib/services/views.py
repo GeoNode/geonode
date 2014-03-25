@@ -584,26 +584,26 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
             else:
                 abstract = wms_layer.abstract
 
-            srs = None
+            srid = None
             ###Some ArcGIS WMSServers indicate they support 900913 but really don't
             if 'EPSG:900913' in wms_layer.crsOptions and "MapServer/WmsServer" not in service.base_url:
-                srs = 'EPSG:900913'
+                srid = 'EPSG:900913'
             elif len(wms_layer.crsOptions) > 0:
                 matches = re.findall('EPSG\:(3857|102100|102113)', ' '.join(wms_layer.crsOptions))
                 if matches:
-                    srs = 'EPSG:%s' % matches[0]
-            if srs is None:
+                    srid = 'EPSG:%s' % matches[0]
+            if srid is None:
                 message = "%d Incompatible projection - try setting the service as cascaded" % count
                 return_dict = {'status': 'ok', 'msg': message }
                 return HttpResponse(json.dumps(return_dict),
                                 mimetype='application/json',
                                 status=200)
 
-            llbbox = list(wms_layer.boundingBoxWGS84)
-            bbox = llbbox_to_mercator(llbbox)
+            bbox = list(wms_layer.boundingBoxWGS84)
 
             # Need to check if layer already exists??
-            llbbox = list(wms_layer.boundingBoxWGS84)
+            bbox = list(wms_layer.boundingBoxWGS84)
+            print bbox
             saved_layer, created = Layer.objects.get_or_create(
                 service=service,
                 typename=wms_layer.name,
@@ -616,11 +616,8 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                     abstract=abstract,
                     uuid=layer_uuid,
                     owner=None,
-                    srs=srs,
-                    bbox = bbox,
-                    llbbox = llbbox,
-                    geographic_bounding_box=bbox_to_wkt(str(llbbox[0]), str(llbbox[1]),
-                                                        str(llbbox[2]), str(llbbox[3]), srid="EPSG:4326")
+                    srid=srid
+                    #bbox = bbox
                 )
             )
             if created:
@@ -720,7 +717,7 @@ def _harvest_csw(csw, maxrecords=10, totalrecords=float('inf')):
         else:  # subsequent run, startposition is now paged
             startposition = src.results['nextrecord']
 
-        src.getrecords2(esn='summary', startposition=startposition, maxrecords=maxrecords)
+        src.getrecords(esn='summary', startposition=startposition, maxrecords=maxrecords)
 
         max = min(src.results['matches'],totalrecords)
 
@@ -797,8 +794,7 @@ def _register_arcgis_layers(service, arc=None):
     for layer in arc.layers:
         count = 0
         layer_uuid = str(uuid.uuid1())
-        layer_bbox = [layer.extent.xmin, layer.extent.ymin, layer.extent.xmax, layer.extent.ymax]
-        llbbox =  mercator_to_llbbox(layer_bbox)
+        bbox = [layer.extent.xmin, layer.extent.ymin, layer.extent.xmax, layer.extent.ymax]
         # Need to check if layer already exists??
         saved_layer, created = Layer.objects.get_or_create(
             service=service,
@@ -812,11 +808,10 @@ def _register_arcgis_layers(service, arc=None):
                 abstract=layer._json_struct['description'],
                 uuid=layer_uuid,
                 owner=None,
-                srs="EPSG:%s" % layer.extent.spatialReference.wkid,
-                bbox = layer_bbox,
-                llbbox = llbbox,
-                geographic_bounding_box=bbox_to_wkt(str(llbbox[0]), str(llbbox[1]),
-                                                    str(llbbox[2]), str(llbbox[3]), srid="EPSG:4326" )
+                srid="EPSG:%s" % layer.extent.spatialReference.wkid,
+                bbox = bbox,
+                geographic_bounding_box=bbox_to_wkt(str(bbox[0]), str(bbox[1]),
+                                                    str(bbox[2]), str(bbox[3]), srid="EPSG:4326" )
             )
         )
         if created:
@@ -1047,9 +1042,8 @@ def process_ogp_results(ogp, result_json, owner=None):
                     workspace=doc["WorkspaceName"],
                     title=doc["LayerDisplayName"],
                     owner=None,
-                    srs="EPSG:900913", #Assumption
-                    bbox = llbbox_to_mercator(list(bbox)),
-                    llbbox = list(bbox),
+                    srid="EPSG:900913", #Assumption
+                    bbox = list(bbox),
                     geographic_bounding_box=bbox_to_wkt(str(bbox[0]), str(bbox[1]),
                                                         str(bbox[2]), str(bbox[3]), srid="EPSG:4326" )
                     )
