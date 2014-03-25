@@ -65,7 +65,7 @@
           data: function(term,page){
             return {
               type: 'layer,map',
-              q: term
+              q: term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
             }
           },
           results: function(data) {
