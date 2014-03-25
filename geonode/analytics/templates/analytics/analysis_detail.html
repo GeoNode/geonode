@@ -50,7 +50,7 @@
   <!--</div>-->
   
   <div class="span8">
-    <div class="map-actions">
+    <div class="analysis-actions">
       <ul class="nav nav-tabs">
         <li class="active"><a href="#info" data-toggle="tab"><i class="icon-info-sign"></i>{% trans "Info" %}</a></li>
         <li><a href="#share" data-toggle="tab"><i class="icon-share"></i>{% trans "Share" %}</a></li>
@@ -114,8 +114,8 @@
 	{% endif %}
 	<div class='well'>
 		<h2>{% trans "Copy this analysis" %}</h2>
-		<p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
-		<a href="{% url "new_map" %}?copy={{ analysis.id }}" class="btn btn-large">{% trans "Create a New Analysis" %}</a>
+		<p>{% trans "Duplicate this analysis and modify it for your own purposes" %}</p>
+		<a href="{% url "new_analysis" %}?copy={{ analysis.id }}" class="btn btn-large">{% trans "Create a New Analysis" %}</a>
 	</div>
     <div class="well last">
     <h2>{% trans "About" %}</h2>
@@ -166,7 +166,7 @@
      score: {{ the_analysis_rating }}
      {% endif %}
    });
-   $("#rate-map").raty();
+   $("#rate-analysis").raty();
  });
 
 {% if SOCIAL_BUTTONS %}

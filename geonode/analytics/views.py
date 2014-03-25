@@ -82,7 +82,7 @@ def analysis_set_permissions(m, perm_spec):
 
 def analysis_permissions(request, analysisid):
     try:
-        analysis_obj = _resolve_analysis(request, analysisid, 'analyses.change_map_permissions')
+        analysis_obj = _resolve_analysis(request, analysisid, 'analyses.change_analysis_permissions')
     except PermissionDenied:
         # we are handling this differently for the client
         return HttpResponse(
