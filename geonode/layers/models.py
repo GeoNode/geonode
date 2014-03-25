@@ -98,6 +98,7 @@ class Layer(ResourceBase):
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     typename = models.CharField(max_length=128, unique=True)
+    service = models.ForeignKey('services.Service', null=True, blank=True, related_name='layer_set')
 
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
