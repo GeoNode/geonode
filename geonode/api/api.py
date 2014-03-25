@@ -5,14 +5,26 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 
 from tastypie.resources import ModelResource
-from tastypie.authentication import SessionAuthentication
 from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
 class CommonMetaApi:
-    authentication= SessionAuthentication()
     authorization = DjangoAuthorization()
     allowed_methods = ['get','post','delete','put']
+
+class UserResource(ModelResource):
+    """User api"""
+
+    class Meta(CommonMetaApi):
+        queryset = User.objects.all()
+        resource_name = 'users'
+        allowed_methods = ['get']
+        excludes = ['is_staff', 'password', 'is_superuser',
+             'is_active',  'date_joined', 'last_login']
+
+        filtering = {
+            'username': ALL,
+        }
 
 class LayerResource(ModelResource):
     """Layer API"""
