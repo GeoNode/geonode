@@ -263,27 +263,27 @@ class OwnerNormalizer(Normalizer):
         doc['_type'] = 'owner'
         doc['_display_type'] = extension.USER_DISPLAY
         return doc
-    
+
 class AnalysisNormalizer(Normalizer):
     def last_modified(self):
         return self.o.last_modified
     def populate(self, doc, exclude):
-        mapobj = self.o
+        analysisobj = self.o
         # resolve any local layers and their keywords
-        #local_kw = [ l.keyword_list() for l in mapobj.local_layers if l.keywords]
+        #local_kw = [ l.keyword_list() for l in analysisobj.local_layers if l.keywords]
         #keywords = local_kw and list(set( reduce(lambda a,b: a+b, local_kw))) or []
-        doc['id'] = mapobj.id
-        doc['title'] = mapobj.title
-        doc['abstract'] = defaultfilters.linebreaks(mapobj.abstract)
-        doc['category'] = mapobj.category.identifier if mapobj.category else 'location'
-        doc['detail'] = reverse('map_detail', args=(mapobj.id,))
-        doc['owner'] = mapobj.owner
-        doc['owner_detail'] = mapobj.owner.get_absolute_url()
-        doc['last_modified'] = extension.date_fmt(mapobj.last_modified)
+        doc['id'] = analysisobj.id
+        doc['title'] = analysisobj.title
+        doc['abstract'] = defaultfilters.linebreaks(analysisobj.abstract)
+        doc['category'] = analysisobj.category.identifier if analysisobj.category else 'location'
+        doc['detail'] = reverse('analysis_detail', args=(analysisobj.id,))
+        doc['owner'] = analysisobj.owner.username
+        doc['owner_detail'] = analysisobj.owner.get_absolute_url()
+        doc['last_modified'] = extension.date_fmt(analysisobj.last_modified)
         doc['_type'] = 'analysis'
         #doc['_display_type'] = extension.MAP_DISPLAY
-#        doc['thumb'] = map.get_thumbnail_url()
-        doc['keywords'] = keywords
+        #doc['thumb'] = map.get_thumbnail_url()
+        #doc['keywords'] = keywords
         #if 'bbox' not in exclude:
             #doc['bbox'] = _bbox(mapobj)
         return doc

@@ -14,8 +14,6 @@
 <link href="{{ STATIC_URL }}analytics/css/nv.d3.css" type="text/css" rel="stylesheet">
 <link href="{{ STATIC_URL }}analytics/css/map.css" type="text/css" rel="stylesheet">
 
-<script src="{{ STATIC_URL }}/analytics/js/d3.v3.min.js" type="text/javascript"></script>
-
 <table id="analysis-table">
 	<tr>
 		<td colspan="2" id="top-pane">
@@ -50,6 +48,7 @@
 {% block footer %}{% endblock %}
 
 {% block extra_script %}
+        <script src="{{ STATIC_URL }}/analytics/js/d3.v3.min.js" type="text/javascript"></script>
         <script src="{{ STATIC_URL }}/analytics/js/topojson.v1.min.js" type="text/javascript"></script>
         <script src="{{ STATIC_URL }}analytics/js/Query.js" type="text/javascript" charset="utf-8"></script>
         <script src="{{ STATIC_URL }}analytics/js/QueryBuilder.js" type="text/javascript" charset="utf-8"></script>

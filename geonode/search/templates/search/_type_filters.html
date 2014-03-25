@@ -8,5 +8,6 @@
     <li><a style="padding-left: 40px" data-class="vector" {% if facets.vector > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Vectors" %} <span class="badge sub-type pull-right">{{ facets.vector }}</span></a></li>
     <li><a data-class="document" {% if facets.document > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Documents" %} <span class="badge pull-right">{{ facets.document }}</span></a></li>
     <li><a data-class="user" {% if facets.user > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Users" %} <span class="badge pull-right">{{ facets.user }}</span></a></li>
+    <li><a data-class="analysis" {% if facets.analysis > 0 %} class="active trigger-query" {% else %} class="trigger-query"{% endif %}>{% trans "Analysis" %} <span class="badge pull-right">{{ facets.analysis }}</span></a></li>
   </ul>
 </nav>
