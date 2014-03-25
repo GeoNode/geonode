@@ -8,7 +8,7 @@
 
 {% block title %}{{ analysis.title }} — {{ block.super }}{% endblock %}
 
-{% block body_class %}{% trans "analyses" %}{% endblock %}
+{% block body_class %}analytics{% endblock %}
 
 {% block body_outer %}
   {% overall_rating analysis "analysis" as analysis_rating %}
@@ -26,14 +26,14 @@
           <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-          <li><a href="">{% trans "Edit Analysis Metadata" %} <i class="icon-chevron-right"></i></a></li>
+	  <li><a href="{% url "analysis_metadata" analysis.id%}">{% trans "Edit Analysis Metadata" %} <i class="icon-chevron-right"></i></a></li>
           <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Analysis Permissions" %} <i class="icon-chevron-right"></i></a></li>
-          <li><a href="">{% trans "Remove this Analysis" %} <i class="icon-chevron-right"></i></a></li>
+	  <li><a href="{% url "analysis_remove" analysis.id %}">{% trans "Remove this Analysis" %} <i class="icon-chevron-right"></i></a></li>
         </ul>
       </div>
       {% endif %}
       <div class="btn-group">
-        <a href="" class="btn btn-large">{% trans "View Analysis" %}</a>
+	      <a href="{% url "analysis_view" analysis.id %}" class="btn btn-large">{% trans "View Analysis" %}</a>
       </div>
       {% comment %}
       <div class="btn-group">

@@ -1,13 +1,18 @@
-function pieChart() {
+//The default pie is a pieChart
+var type = "pie";
+
+function pieChart(data) {
   nv.addGraph(function() {
     var chart = nv.models.pieChart()
-        .x(function(d) { return d.label })
-        .y(function(d) { return d.value })
+        .x(function(d) { return d.caption })
+        .y(function(d) { return d.measure })
         .showLabels(true)
         .showLegend(false)
+        .labelThreshold(10)  	//Configure the minimum slice size for labels to show up
+        .labelType("value")	//Configure what type of data to show in the label. Can be "key", "value" or "percent"
 
     d3.select("#chart")
-        .datum(exampleData())
+        .datum(data)
         .transition().duration(1200)
         .call(chart);
 
@@ -15,21 +20,20 @@ function pieChart() {
   });
 }
 
-function donut() {
+function donutChart(data) {
   nv.addGraph(function() {
     var chart = nv.models.pieChart()
-        .x(function(d) { return d.label })
-        .y(function(d) { return d.value })
+        .x(function(d) { return d.caption })
+        .y(function(d) { return d.measure })
         .showLabels(true)
         .showLegend(false)
-        .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
+        .labelThreshold(.05)  	//Configure the minimum slice size for labels to show up
         .labelType("key")	//Configure what type of data to show in the label. Can be "key", "value" or "percent"
         .donut(true)
         .donutRatio(0.35);
 
-
-    d3.select("#chart2")
-        .datum(exampleData())
+    d3.select("#chart")
+        .datum(data)
         .transition().duration(1200)
         .call(chart);
 
@@ -37,40 +41,23 @@ function donut() {
   });
 };
 
- function exampleData() {
-   return [
-	   { 
-		 "label" : "CDS / Options" ,
-		 "value" : 29.765957771107
-	   } , 
-	   { 
-		 "label" : "Cash" , 
-		 "value" : 0
-	   } , 
-	   { 
-		 "label" : "Corporate Bonds" , 
-		 "value" : 32.807804682612
-	   } , 
-	   { 
-		 "label" : "Equity" , 
-		 "value" : 196.45946739256
-	   } , 
-	   { 
-		 "label" : "Index Futures" ,
-		 "value" : 0.19434030906893
-	   } , 
-	   { 
-		 "label" : "Options" , 
-		 "value" : 98.079782601442
-	   } , 
-	   { 
-		 "label" : "Preferred" , 
-		 "value" : 13.925743130903
-	   } , 
-	   { 
-		 "label" : "Not Available" , 
-		 "value" : 5.1387322875705
-	   }
-	 ]
- };
-pieChart();
+function setType(type){
+  this.type = type;
+}
+
+function setData(data){
+  var funct;
+  if(type=="pie"){
+    console.log(type);
+    funct = pieChart;
+  }else{
+    funct = donutChart;
+  }
+  funct(data);
+}
+
+// In the future this json will not more exist setData will be called by the class Display
+d3.json("/static/analytics/data/data.json", function (biData) {
+  setType("donut");
+  setData(biData);
+});

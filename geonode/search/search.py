@@ -26,6 +26,7 @@ from django.db.models import Q
 from geonode.security.models import UserObjectRoleMapping, GenericObjectRoleMapping
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.maps.models import Map
+from geonode.analytics.models import Analysis
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
