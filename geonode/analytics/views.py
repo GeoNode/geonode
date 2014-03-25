@@ -6,6 +6,8 @@ from geonode.utils import resolve_object
 from geonode.security.views import _perms_info
 from geonode.documents.models import get_related_documents
 from geonode.analytics.models import Analysis
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
+from django.contrib.auth.models import User
 
 ANALYSIS_LEV_NAMES = {
     Analysis.LEVEL_NONE  : _('No Permissions'),
