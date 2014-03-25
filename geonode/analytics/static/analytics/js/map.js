@@ -1,59 +1,141 @@
-var container = d3.select('#map-pane').append('svg')
-    .attr('height', 660);
-    console.log(container);
+var width = $('#map-pane').width(),
+//height = $('#map-pane').height();
+height = 700;
 
-d3.json("http://127.0.0.1:8000/static/analytics/data/continent_Europe_subunits.json", function (data) {
-  var zoom = d3.behavior.zoom()
-      .translate([0, 0])
-      .scale(1)
-      .scaleExtent([1, 8])
-      .on("zoom", zoomed);
+d3.json("/static/analytics/data/europe.topo.json", function (geographicalData) {
+  d3.json("/static/analytics/data/data.json", function (biData) {
+    //Will be modified in the future
+    var active;
 
-  var drag = d3.behavior.drag()
-      .origin(function(d) {return d;})
-      .on("dragstart", dragstarted)
-      .on("drag", dragged)
-      .on("dragend", dragended);
+    // Begin of the class
 
-  var group = container.selectAll("g")
-      .data(data.features)
-    .enter()
-      .append("g")
-      .call(zoom)
-      .call(drag);
+    // class attribute
+    var geoData = null;
+    var areas = null;
 
-  var projection = d3.geo.mercator().center([40, 60]).scale(400);
-  var path = d3.geo.path().projection(projection);
 
-  var areas = group.append("path")
-      .attr("d", path)
-      .attr("fill", "steelblue")
-      .on("mouseover", color)
-      .on("mouseout", decolor);
+    var svg = d3.select("#map-pane").append("svg")
+	.attr("width", width)
+	.attr("height", height);
+
+    var g = svg.append("g");
+
+    g.append("rect")
+	.attr("class", "background")
+	.attr("width", width)
+	.attr("height", height)
+	.on("click", reset);
+
+    var europe = g.append("g")
+	.attr("id", "Europe");
+
+    // Create a unit projection.
+    var projection = d3.geo.mercator()
+	.scale(1)
+	.translate([0, 0]);
+
+    // Create a path generator.
+    var path = d3.geo.path()
+	.projection(projection);
+
+    function setGeoData(geoData,levelID){
+      var b = path.bounds(topojson.feature(geoData, geoData.objects.europe));
+      var s = 0.95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
+      var t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+
+      var center = d3.geo.centroid(topojson.feature(geoData, geoData.objects.europe));
+
+      var t = [width/2, height/2];
+
+      // Update the projection to center wuth the computed scale & center & translate.
+      projection
+	  .scale(s)
+	  .center(center)
+	  .translate(t);
+
+      areas = europe.selectAll("path")
+	  .data(topojson.feature(geoData, geoData.objects.europe).features)
+	.enter().append("path")
+	  .attr("d", path)
+	  .on("click", clicked);
+
+      function clicked(d) {
+	if (active === d) return reset();
+	g.selectAll(".active").classed("active", false);
+	d3.select(this).classed("active", active = d);
+
+	var b = path.bounds(d);
+	var s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
+	var t = [-(b[1][0] + b[0][0]) / 2 , -(b[1][1] + b[0][1]) / 2];
+
+	g.transition().duration(750).attr("transform",
+	    "translate(" + projection.translate() + ")"
+	    + "scale(" + s + ")"
+	    + "translate(" + t + ")");
+      }
+    }
+
+    function reset() {
+      g.selectAll(".active").classed("active", active = false);
+
+      var b = path.bounds(geoData);
+      var s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
+      var t = [-(b[1][0] + b[0][0]) / 2 , -(b[1][1] + b[0][1]) / 2];
+
+      g.transition().duration(750).attr("transform",
+	  "translate(" + projection.translate() + ")"
+	  + "scale(" + s + ")"
+	  + "translate(" + t + ")");
+    }
+
+    // To do : before : one assert geoData was make
+    function setData(data, levelID){
+      var minMax = getMinMax(data);
+      var measures = data.map(function (d){ return d.measure;});
+
+      // Function that will translate value to colorClass
+      var quantize = d3.scale.quantize()
+          .domain(minMax)
+          .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+
+      areas.attr("class", function(d){ return idToColorClass(d.id); });
+
+      function idToColorClass(id){
+	var names = data.map(function(d){return d.id});
+
+	return quantize(measures[indexOfInArrayOfArray(names,id)]);
+      }
+    }
+
+    // tanks to indexOf that doesn't work on array of array we need this
+    function indexOfInArrayOfArray(array,idElmt){
+      var i=0;
+      var more = true;
+      while((i<array.length) && more){
+	if(array[i]==idElmt){
+	  more = false;
+	}
+	i++;
+      }
+      if(more==false){
+        return i-1;
+      }else{
+	return undefined;
+      }
+    }
+
+    // Function that gives min and max of our data
+    function getMinMax(data){
+      var mesures=data.map(function(d) {return d.measure;});
+
+      var result=[];
+      result[0]=d3.min(mesures);
+      result[1]=d3.max(mesures);
+      return result;
+    }
+
+    setGeoData(geographicalData);
+    setData(biData);
+
+  });
 });
-      
-function zoomed() {
-  container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-}
-	
-function dragstarted(d) {
-  d3.event.sourceEvent.stopPropagation();
-  d3.select(this).classed("dragging", true);
-}
-
-function dragged(d) {
-}
-
-function dragended(d) {
-  d3.select(this).classed("dragging", false);
-}
-
-function color(d) {
-  d3.select(this).classed("rouge",true);
-  d3.select(this).classed("area",false);
-}
-
-function decolor(d) {
-  d3.select(this).classed("area",true);
-  d3.select(this).classed("rouge",false);
-} 
