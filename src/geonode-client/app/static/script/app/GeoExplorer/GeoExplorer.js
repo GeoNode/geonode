@@ -1892,8 +1892,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
                     }
                     if (isValid) {
-                        geoEx.about.title = titleField.getValue();
-                        geoEx.about["abstract"] = abstractField.getValue();
+                        geoEx.about.title = Ext.util.Format.stripTags(titleField.getValue());
+                        geoEx.about["abstract"] = Ext.util.Format.stripTags(abstractField.getValue());
                         geoEx.about["urlsuffix"] = urlField.getValue();
                         geoEx.about["introtext"] = nicEditors.findEditor('intro_text_area').getContent();
                         geoEx.save(as);

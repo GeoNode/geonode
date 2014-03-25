@@ -1824,7 +1824,7 @@ class Map(models.Model, PermissionLevelMixin):
         config = {
             'id': self.id,
             'about': {
-                'title':    self.title,
+                'title':   self.title,
                 'abstract': self.abstract,
                 'urlsuffix': self.urlsuffix,
                 'introtext' : self.content,
@@ -1869,7 +1869,7 @@ class Map(models.Model, PermissionLevelMixin):
 
         self.title = despam(conf['about']['title'])
         self.abstract = despam(conf['about']['abstract'])
-        self.urlsuffix = escape(conf['about']['urlsuffix'])
+        self.urlsuffix = conf['about']['urlsuffix']
 
         x = XssCleaner()
         self.content = despam(x.strip(conf['about']['introtext']))

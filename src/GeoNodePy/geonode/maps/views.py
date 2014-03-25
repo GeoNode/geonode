@@ -32,7 +32,7 @@ from geonode.flexidates import FlexiDateFormField
 import taggit
 from geonode.maps.utils import forward_mercator
 from geonode.maps.owslib_csw import CswRecord
-from django.utils.html import escape
+from django.utils.html import escape, strip_tags
 from django.forms.models import inlineformset_factory
 from django.core.cache import cache
 from geonode.maps.forms import LayerCreateForm, GEOMETRY_CHOICES
@@ -684,13 +684,18 @@ def describemap(request, mapid):
     if request.method == "POST":
         # Change metadata, return to map info page
         map_form = MapForm(request.POST, instance=map_obj, prefix="map")
+
         if map_form.is_valid():
+            new_title = strip_tags(map_form.cleaned_data["title"])
+            new_abstract = strip_tags(map_form.cleaned_data["abstract"])
             map_obj = map_form.save(commit=False)
             if map_form.cleaned_data["keywords"]:
                 map_obj.keywords.clear()
                 map_obj.keywords.add(*map_form.cleaned_data["keywords"])
             else:
                 map_obj.keywords.clear()
+            map_obj.title = new_title
+            map_obj.abstract = new_abstract
             map_obj.save()
 
             return HttpResponseRedirect(reverse('geonode.maps.views.map_controller', args=(map_obj.id,)))
