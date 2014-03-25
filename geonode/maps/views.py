@@ -32,6 +32,7 @@ from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
+from django.utils.html import strip_tags
 from django.views.decorators.http import require_POST
 
 from geonode.views import _handleThumbNail
@@ -144,6 +145,8 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
         new_poc = map_form.cleaned_data['poc']
         new_author = map_form.cleaned_data['metadata_author']
         new_keywords = map_form.cleaned_data['keywords']
+        new_title = strip_tags(map_form.cleaned_data['title'])
+        new_abstract = strip_tags(map_form.cleaned_data['abstract'])
 
         if new_poc is None:
             if poc.user is None:
@@ -166,8 +169,12 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
             the_map = map_form.save()
             the_map.poc = new_poc
             the_map.metadata_author = new_author
+            the_map.title = new_title
+            the_map.abstract = new_abstract
+            the_map.save()
             the_map.keywords.clear()
             the_map.keywords.add(*new_keywords)
+
             return HttpResponseRedirect(reverse('map_detail', args=(map_obj.id,)))
 
     if poc.user is None:
