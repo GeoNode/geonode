@@ -240,7 +240,7 @@
               limit: 10,
               sort: 'none',
               start: page,
-              q: term
+              q: term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
             }
           },
           results: function(data, page) {
@@ -254,6 +254,7 @@
           }          
         },
         createSearchChoice:function(term, data) { 
+            term = term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
             if ($(data).filter(function() { 
                 return this.text.localeCompare(term)===0; }).length===0) {
                     return {id:term, text:term};
