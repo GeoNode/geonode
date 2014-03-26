@@ -29,7 +29,7 @@
           'readonly': 'document_readonly',
           'none': '_none'
       };
-    } else if (type == "analyses"){
+    } else if (type == "analytics"){
         levels = {
             'admin': 'analysis_admin',
             'readwrite': 'analysis_readwrite',
@@ -188,7 +188,7 @@
       var form = $(this);
       var action = form.attr("action");
       
-      var permissions = permissionsString(form, {% if layer %}'layers'{% elif map %}'maps'{% elif document %}'documents'{% elif analysis %}'analyses'{% endif %});
+      var permissions = permissionsString(form, {% if layer %}'layers'{% elif map %}'maps'{% elif document %}'documents'{% elif analysis %}'analytics'{% endif %});
       $.ajax(
         {
           type: "POST",

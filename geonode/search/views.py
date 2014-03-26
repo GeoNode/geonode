@@ -99,7 +99,7 @@ def _get_search_context():
         'raster' : Layer.objects.filter(storeType='coverageStore').count(),
         'documents': Document.objects.count(),
         'users' : Profile.objects.count(),
-        'analyses' : Analysis.objects.count()
+        'analytics' : Analysis.objects.count()
     }
     topics = Layer.objects.all().values_list('topic_category',flat=True)
     topic_cnts = {}

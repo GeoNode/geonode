@@ -368,7 +368,7 @@ def combined_search_results(query):
     if None in bytype or u'analysis' in bytype:
         q = _get_analysis_results(query)
         facets['analysis'] = q.count()
-        results['analyses'] = q
+        results['analytics'] = q
 
     if None in bytype or u'layer' in bytype or u'raster' in bytype or u'vector' in bytype:
         q = _get_layer_results(query)
