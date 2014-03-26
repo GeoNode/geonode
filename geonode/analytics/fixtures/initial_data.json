@@ -1,6 +1,6 @@
 [
 {
-    "pk": 1,
+    "pk": 10,
     "model": "security.objectrole",
     "fields": {
         "codename": "analysis_readonly",
@@ -13,7 +13,7 @@
     }
 },
 {
-    "pk": 2,
+    "pk": 11,
     "model": "security.objectrole",
     "fields": {
         "codename": "analysis_readwrite",
@@ -28,7 +28,7 @@
 },
 
 {
-    "pk": 3,
+    "pk": 12,
     "model": "security.objectrole",
     "fields": {
         "codename": "analysis_admin",
