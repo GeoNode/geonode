@@ -14,6 +14,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from geonode.analytics.forms import AnalysisForm
 from geonode.people.forms import ProfileForm, PocForm
+from django.core.exceptions import PermissionDenied
 
 ANALYSIS_LEV_NAMES = {
     Analysis.LEVEL_NONE  : _('No Permissions'),
@@ -118,7 +119,7 @@ def new_analysis_json(request):
     if request.method == 'POST':
         if not request.user.is_authenticated():
             return HttpResponse(
-                'You must be logged in to save new maps',
+                'You must be logged in to save new analysis',
                 mimetype="text/plain",
                 status=401
             )
@@ -131,18 +132,24 @@ def new_analysis_json(request):
 @login_required
 def analysis_remove(request, analysisid, template='analytics/analysis_remove.html'):
     ''' Delete an analysis. '''
-    analysis_obj = _resolve_analysis(request, analysisid, 'analytics.delete_analysis',
-                           _PERMISSION_MSG_DELETE, permission_required=True)
+    try:
+        analysis_obj = _resolve_analysis(request, analysisid, 'analytics.delete_analysis',
+                               _PERMISSION_MSG_DELETE, permission_required=True)
+        if request.method == 'GET':
+            return render(request, template, {
+                "analysis": analysis_obj
+            })
 
-    if request.method == 'GET':
-        return render(request, template, {
-            "analysis": analysis_obj
-        })
+        elif request.method == 'POST':
+            analysis_obj.delete()
+            return redirect("analytics_browse")
 
-    elif request.method == 'POST':
-        analysis_obj.delete()
-
-        return redirect("analytics_browse")
+    except PermissionDenied:
+        return HttpResponse(
+            "You are not allowed to remove this analysis.",
+            mimetype="text/plain",
+            status=401
+        )
 
 @login_required
 def analysis_metadata(request, analysisid, template='analytics/analysis_metadata.html'):

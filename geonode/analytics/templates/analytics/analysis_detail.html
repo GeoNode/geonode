@@ -27,8 +27,14 @@
         </a>
         <ul class="dropdown-menu">
 	  <li><a href="{% url "analysis_metadata" analysis.id%}">{% trans "Edit Analysis Metadata" %} <i class="icon-chevron-right"></i></a></li>
-          <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Analysis Permissions" %} <i class="icon-chevron-right"></i></a></li>
-	  <li><a href="{% url "analysis_remove" analysis.id %}">{% trans "Remove this Analysis" %} <i class="icon-chevron-right"></i></a></li>
+	  {% has_obj_perm user analysis "analytics.change_analysis_permissions" as can_change_permissions %}
+	  {% if can_change_permissions %}
+	          <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Analysis Permissions" %} <i class="icon-chevron-right"></i></a></li>
+	  {% endif %}
+	  {% has_obj_perm user analysis "analytics.delete_analysis" as can_delete %}
+	  {% if can_delete %}
+		  <li><a href="{% url "analysis_remove" analysis.id %}">{% trans "Remove this Analysis" %} <i class="icon-chevron-right"></i></a></li>
+	  {% endif %}
         </ul>
       </div>
       {% endif %}
@@ -104,7 +110,6 @@
 		</ul>
 	</div>
 	{% endif %}
-	{% has_obj_perm user analysis "analytics.change_analysis_permissions" as can_change_permissions %}
 	{% if can_change_permissions %}
 	<div class='well'>
 		<h2>{% trans "Permissions" %}</h2>
