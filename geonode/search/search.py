@@ -276,6 +276,28 @@ def _get_layer_results(query):
 
     return q.distinct()
 
+
+def _get_group_results(query):
+    q = extension.group_query(query)
+
+    #q = _filter_security(q, query.user, Group, 'view_group')
+
+    if extension.exclude_patterns:
+        name_filter = reduce(operator.or_,[ Q(name__regex=f) for f in extension.exclude_patterns])
+        q = q.exclude(name_filter)
+
+    if query.kw:
+        q = q.filter(_build_kw_only_query(query.kw))
+
+    if query.exclude:
+        q = q.exclude(reduce(operator.or_, [Q(title__contains=ex) for ex in query.exclude]))
+
+    if query.added:
+        q = q.filter(last_modified__gte=query.added)
+
+    return q.distinct()
+
+
 def _get_document_results(query):
 
     q = extension.document_query(query)
@@ -325,7 +347,7 @@ def _get_document_results(query):
     return q.distinct()
 
 def combined_search_results(query):
-    facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'document', 'user')])
+    facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'document', 'user', 'group')])
     results = {'facets' : facets}
 
     bytype = (None,) if u'all' in query.type else query.type
@@ -351,6 +373,11 @@ def combined_search_results(query):
         q = _get_document_results(query)
         facets['document'] = q.count()
         results['documents'] = q
+
+    if None in bytype or u'group' in bytype:
+        q = _get_group_results(query)
+        facets['group'] = q.count()
+        results['groups'] = q
 
     if query.categories and len(query.categories) == TopicCategory.objects.count() or not query.categories:
         if None in bytype or u'user' in bytype:

@@ -85,11 +85,13 @@ def _annotate(normalizers):
 def apply_normalizers(results):
     '''build the appropriate normalizers for the query set(s) and annotate'''
     normalized = []
+
     mapping = [
         ('maps', MapNormalizer),
         ('layers', LayerNormalizer),
         ('documents', DocumentNormalizer),
         ('users', OwnerNormalizer),
+        ('groups', GroupNormalizer)
     ]
     for k,n in mapping:
         r = results.get(k, None)
@@ -261,4 +263,24 @@ class OwnerNormalizer(Normalizer):
         doc['doc_cnt'] = Document.objects.filter(owner = user).count()
         doc['_type'] = 'owner'
         doc['_display_type'] = extension.USER_DISPLAY
+        return doc
+
+
+class GroupNormalizer(Normalizer):
+    """
+    Normalization object for Groups.
+    """
+    def last_modified(self):
+        return self.o.last_modified
+
+    def populate(self, doc, exclude):
+        group = self.o
+        doc['id'] = group.id
+        doc['slug'] = group.slug
+        doc['title'] = group.title
+        doc['members_cnt'] = group.member_queryset().count()
+        doc['description'] = group.description
+        doc['last_modified'] = extension.date_fmt(group.last_modified)
+        doc['_type'] = 'group'
+        doc['keywords'] = group.keyword_list()
         return doc
