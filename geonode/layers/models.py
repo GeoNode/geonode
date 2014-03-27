@@ -36,7 +36,7 @@ from django.core.urlresolvers import reverse
 
 from geonode import GeoNodeException
 from geonode.base.models import ResourceBase, ResourceBaseManager, Link, \
-    resourcebase_post_save, resourcebase_post_delete, resourcebase_groups_changed
+    resourcebase_post_save, resourcebase_post_delete
 from geonode.utils import _user, _password, get_wms
 from geonode.utils import http_client
 from geonode.geoserver.helpers import cascading_delete
@@ -741,4 +741,3 @@ signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)
 signals.post_save.connect(resourcebase_post_save, sender=Layer)
 signals.post_delete.connect(resourcebase_post_delete, sender=Layer)
-signals.m2m_changed.connect(resourcebase_groups_changed, sender=Layer.groups.through)

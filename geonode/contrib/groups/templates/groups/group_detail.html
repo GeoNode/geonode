@@ -1,29 +1,77 @@
 {% extends "groups/group_base.html" %}
+{% load geonode_auth %}
 {% load i18n %}
 
-{% block sidebar %}
-    <div class="twocol">
-        <h2>{% trans "Maps & Layers" %}</h2>
-        {% comment %}
-            search form goes here
-        {% endcomment %}
-        <h3>{% trans "Maps" %}</h3>
-        <div>
-            <ul>
-            {% for map in maps %}
-                <li><a href="{{ map.get_absolute_url }}">{{ map.title }}</a></li>
-            {% endfor %}
-            </ul>
-        </div>
-        
-        <h3>{% trans "Layers" %}</h3>
-        <div>
-            <ul>
-            {% for layer in layers %}
-                <li><a href="{{ layer.get_absolute_url }}">{{ layer.title }}</a></li>
-            {% endfor %}
-            </ul>
-        </div>
-        <div id="assets"></div>
+{% block title %}{{ object.title|default:object.slug }} — {{ block.super }}{% endblock %}
+
+{% block body_class %}data{% endblock %}
+
+{% block body_outer %}
+  <div class="span6">
+    <h2 class="page-title">{{ object.title|default:object.slug }}</h2>
+  </div>
+  <div class="span4 action-group pull-right">
+    <div class="btn-group pull-right">
+      <!-- edit group dropdown -->
+      <div class="btn-group">
+        <a class="btn btn-large btn-info dropdown-toggle pull-right" data-toggle="dropdown" href="#">
+          {% trans "Edit Group" %}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="{% url "group_update" object.slug %}">{% trans "Edit Group Details" %} <i class="icon-chevron-right"></i></a></li>
+          <li><a href="{% url "group_members" object.slug %}">{% trans "Manage Group Members" %} <i class="icon-chevron-right"></i></a></li>
+        </ul>
+      </div>
     </div>
+  </div>
+  <div class="span8 content">
+  <h2>{% trans "Members" %}</h2>
+  <div class="tab-content paginate paginate-auto" id="search-content">
+      {% include 'search/search_content.html' %}
+  </div>
+
+
+
+  </div>
+  <aside class="span4">
+
+      <!-- sidebar -->
+  <div class="well">
+    <h2>{% trans "Group Image" %}</h2>
+      {% if object.logo %}
+        <img src="{{ object.logo.url }}" alt="{{ object.title }}" class="group-logo" />
+        {% endif %}
+    </div>
+
+<div class="well">
+	<!-- Need to make this based on a listener -->
+	<h2>{% trans "Description" %}</h2>
+	    <p>{{ object.description }}</p>
+    </div>
+    <div class="well">
+        <h2>{% trans "Permissions" %}</h2>
+        <p>
+            {% blocktrans with object.get_access_display as access %}
+            This group is <strong>{{ access }}</strong>.
+            {% endblocktrans %}
+              {% if object.access == "public" %}
+                  {% trans "Anyone may join this group." %}
+              {% else %} {% if object.access == "public-invite" %}
+                  {% trans "Anyone may view this group but membership is by invitation only." %}
+              {% else %} {% if object.access == "private" %}
+                  {% trans "Membership is by invitation only." %}
+              {% endif %} {% endif %} {% endif %}
+        </p>
+    </div>
+    <div class="well">
+      <h2>{% trans "Managers" %}</h2>
+      {% for manager in object.get_managers %}
+      {% with manager.profile as profile %}
+        {% include "people/_profile_about_item.html" %}
+      {% endwith %}
+      {% endfor %}
+    </div>
+  </aside>
 {% endblock %}
+
