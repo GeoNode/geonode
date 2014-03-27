@@ -1,7 +1,6 @@
 import json
 from django.contrib.auth import get_backends
 from django.contrib.auth.models import User, AnonymousUser
-from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
@@ -11,7 +10,6 @@ from geonode.layers.models import Layer
 from geonode.layers.views import LAYER_LEV_NAMES
 from geonode.maps.models import Map
 from geonode.search.populate_search_test_data import create_models
-from geonode.security.models import GroupObjectRoleMapping
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.security.views import _perms_info
 
@@ -233,9 +231,6 @@ class SmokeTest(TestCase):
         response = c.get("/groups/group/bar/update/")
         self.assertEqual(302, response.status_code)
 
-        #response = c.get("/groups/group/bar/remove/")
-        #self.assertEqual(302, response.status_code)
-
         # 405 - json endpoint, doesn't support GET
         response = c.get("/groups/group/bar/invite/")
         self.assertEqual(405, response.status_code)
@@ -260,9 +255,6 @@ class SmokeTest(TestCase):
 
         response = c.get("/groups/group/bar/update/")
         self.assertEqual(200, response.status_code)
-
-       #response = c.get("/groups/group/bar/remove/")
-        #self.assertEqual(200, response.status_code)
 
         # 405 - json endpoint, doesn't support GET
         response = c.get("/groups/group/bar/invite/")
