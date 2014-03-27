@@ -21,6 +21,10 @@
     {% with object as profile %}
       {% include "people/_profile_list_item.html" %}
     {% endwith %}
+  {% elif object.o.class_name == 'Group' %}
+    {% with object as group %}
+      {% include "groups/_group_list_item.html" %}
+    {% endwith %}
   {% endif %}
 {% endfor %}
 {% else %}

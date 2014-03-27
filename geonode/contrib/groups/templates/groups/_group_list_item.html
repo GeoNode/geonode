@@ -1,0 +1,29 @@
+{% load friendly_loader %}
+{% friendly_load avatar_tags %}
+{% friendly_load relationship_tags %}
+{% friendly_load activity_tags %}
+{% load i18n %}
+
+<article>
+  <div class="content">
+    <div class="item-header">
+      <h3><i class="icon-group"></i> <a href="{% url "group_detail" "my-group" %}">{{ group.title }}</a>
+      {% comment %}
+      {% if user.is_authenticated %}
+        {% if  profile.o.user.email %}<a href="mailto:{{ profile.o.user.email }}"><i class="icon-envelope-alt icon-large"></i></a>{% endif %}
+      {% endif %}
+      </h3>
+    </div>
+    {% endcomment %}
+    <div class="details">
+      <div class="meta">
+        <p class="abstract">
+          {{ group.description }}
+        </p>
+          <ul class="nav stats">
+            <li><strong>{{ group.members_cnt }}</strong> {% trans "Members" %}</a></li>
+          </ul>
+      </div> <!-- ./meta -->
+    </div> <!-- ./details -->
+  </div> <!-- ./content -->
+</article>

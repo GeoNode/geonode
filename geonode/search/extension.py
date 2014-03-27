@@ -17,7 +17,8 @@
 #
 #########################################################################
 
-from geonode.people.models import Profile 
+from geonode.contrib.groups.models import Group
+from geonode.people.models import Profile
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
@@ -31,6 +32,7 @@ USER_DISPLAY = 'User'
 MAP_DISPLAY = 'Map'
 LAYER_DISPLAY = 'Layer'
 DOCUMENT_DISPLAY = 'Document'
+GROUP_DISPLAY = 'Group'
 
 # settings API
 search_config = getattr(settings,'SIMPLE_SEARCH_SETTINGS', {})
@@ -61,12 +63,17 @@ document_query = resolve_extension('document_query')
 if not document_query:
     document_query = lambda q: Document.objects.filter()
 
+group_query = resolve_extension('group_query')
+if not group_query:
+    group_query = lambda q: Group.objects.filter()
+
 display_names = resolve_extension('display_names')
 if display_names:
     USER_DISPLAY = display_names.get('user')
     MAP_DISPLAY = display_names.get('map')
     LAYER_DISPLAY = display_names.get('layer')
     DOCUMENT_DISPLAY = display_names.get('document')
+    GROUP_DISPLAY = display_names.get('group')
 
 owner_rank_rules = resolve_extension('owner_rank_rules')
 if not owner_rank_rules:

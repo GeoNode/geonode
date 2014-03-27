@@ -13,13 +13,13 @@ from geonode.contrib.groups.forms import GroupInviteForm, GroupForm, GroupUpdate
 from geonode.contrib.groups.models import Group, GroupInvitation
 from django.views.generic import ListView
 
-def group_list(request):
-    ctx = {
-        "object_list": Group.groups_for_user(request.user),
-    }
-    ctx = RequestContext(request, ctx)
-    return render_to_response("groups/group_list.html", ctx)
 
+def group_list(request, template='groups/group_list.html'):
+    from geonode.search.views import search_page
+    post = request.POST.copy()
+    post.update({'type': 'group'})
+    request.POST = post
+    return search_page(request, template=template)
 
 @login_required
 def group_create(request):
