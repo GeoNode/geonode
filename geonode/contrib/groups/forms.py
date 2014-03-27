@@ -88,11 +88,3 @@ class GroupInviteForm(forms.Form):
         
         return invitees
 
-
-class GroupMapForm(forms.Form):
-    maps = forms.ModelMultipleChoiceField(queryset=Map.objects.all(), widget=forms.CheckboxSelectMultiple, required=False)
-
-
-class GroupLayerForm(forms.Form):
-    layers = forms.ModelMultipleChoiceField(queryset=Layer.objects.all(), widget=forms.CheckboxSelectMultiple, required=False)
-
