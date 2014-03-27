@@ -215,6 +215,10 @@ background-color: transparent;
   width: 15px;
 }
 
+.errorList{
+  color: @errorText;
+}
+
 .navbar {
   .navbar-inner {
     background:@brown;
@@ -1426,6 +1430,7 @@ body.data-list nav.back {
   display: none;
 }
 body.data #subnav-tabs,
+body.groups #subnav-tabs,
 body.maps #subnav-tabs,
 body.people #subnav-tabs,
 body.documents #subnav-tabs {
@@ -1459,6 +1464,8 @@ body.documents #subnav-tabs {
   }
 }
 body.search #subnav-tabs a.search,
+body.update #subnav-tabs a.update,
+body.create #subnav-tabs a.create,
 body.upload #subnav-tabs a.upload,
 body.explore #subnav-tabs a.explore {
   background-color: @grayDark;

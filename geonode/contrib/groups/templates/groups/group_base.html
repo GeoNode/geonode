@@ -1,69 +1,23 @@
-{% extends "groups/base.html" %}
-{% block head %}
-{% include "geonode/ext_header.html" %}
-{% include "geonode/app_header.html" %}
-{{ block.super }}
-{% endblock %}
-{% load i18n avatar_tags %}
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
 
-{% block body %}
-    <div class="threecol">
-        {% comment %}
-            do we reference all images as 'avatar' or is it for user profile images only?
-            {% avatar object.logo 50 %}
-            url below is wrong
-        {% endcomment %}
-        {% if object.logo %}
-        <img src="{{ object.logo.url }}" alt="{{ object.title }}" class="group-logo" />
-        {% endif %}
-        <h2><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h2>
-        {% if object.access == "public" and not is_member %}
-          {% if user.is_authenticated %}
-              <form method="POST" action="{% url "group_join" object.slug %}">
-                  {% csrf_token %}
-                  <input type="submit" value="{% trans "Join" %}" />
-              </form>
-          {% else %}
-              <p>{% trans "Log in to join this group" %}</p>
-          {% endif %}
-        {% endif %}
+{% block title %} {{ block.super }} {% endblock %}
 
-        <p>
-          <strong>{% trans "About:" %}</strong><br />
-          {{ object.description }}
-        </p>
-        
-        {% if is_member %}
-        <p>
-        <h3>{% trans "Actions" %}</h3>
-        <ul>
-          {% if is_manager %}
-            <li><a href="{% url "group_update" object.slug %}">{% trans "Edit Group Details" %}</a></li>
-            <li><a href="{% url "group_members" object.slug %}">{% trans "Manage Group Members" %}</a></li>
-          {% endif %}
-        </ul>
-        </p>
-        {% endif %}
+{% block body_class %}groups explore{% endblock %}
 
-        <h3>{% trans "Permissions" %}</h3>
-        <p>
-        {% blocktrans with object.get_access_display as access %}
-        This group is <strong>{{ access }}</strong>.
-        {% endblocktrans %}
-          {% if object.access == "public" %}
-              {% trans "Anyone may view layers and maps and join this group." %}
-          {% else %} {% if object.access == "public-invite" %}
-              {% trans "Anyone may view layers and maps but membership is by invitation only." %}
-          {% else %} {% if object.access == "private" %}
-              {% trans "Only members may view layers and maps, membership is by invitation only." %}
-          {% endif %} {% endif %} {% endif %}
-        </p>
-
-        <h3>{% trans "Members" %}<span>({{ members|length }})</span></h3>
-        <div class="member-list">
-          {% for member in members %}
-              <a href="{{ member.profile.get_absolute_url }}">{% avatar member 35 %}</a>
-          {% endfor %}
-        </div>
+{% block body_outer %}
+    {% block subnav %}
+    <div class="span12">
+      <ul class="nav nav-tabs" id="subnav-tabs">
+            <li><a href="{% url "group_list" %}" class="explore">{% trans "Explore Groups" %}</a></li>
+            <li><a href="{% url "group_create" %}" class="create">{% trans "Create a Group" %}</a></li>
+            {% if group %}
+            <li><a href="{% url "group_update" group.slug %}" class="update">{% trans "Update Group" %}</a></li>
+            {% endif %}
+      </ul>
     </div>
-{% endblock %}
+    {% endblock subnav %}
+    {% block body %}{% endblock body %}
+    {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}

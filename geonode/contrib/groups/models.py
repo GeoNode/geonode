@@ -19,7 +19,7 @@ class Group(models.Model):
     logo = models.FileField(upload_to="people_peoplegroup", blank=True)
     description = models.TextField()
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
-    access = models.CharField(max_length=15, choices=[
+    access = models.CharField(max_length=15, default="public'", choices=[
         ("public", _("Public")),
         ("public-invite", _("Public (invite-only))")),
         ("private", _("Private")),

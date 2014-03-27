@@ -7137,6 +7137,9 @@ li [class*=" icon-"] {
 .people .dl-horizontal dt {
   width: 15px;
 }
+.errorList {
+  color: #b94a48;
+}
 .navbar .navbar-inner {
   background: #464646;
   border: 0;
@@ -8299,6 +8302,7 @@ body.data-list nav.back {
   display: none;
 }
 body.data #subnav-tabs,
+body.groups #subnav-tabs,
 body.maps #subnav-tabs,
 body.people #subnav-tabs,
 body.documents #subnav-tabs {
@@ -8313,6 +8317,7 @@ body.documents #subnav-tabs {
   border-bottom: 2px solid #484748;
 }
 body.data #subnav-tabs a,
+body.groups #subnav-tabs a,
 body.maps #subnav-tabs a,
 body.people #subnav-tabs a,
 body.documents #subnav-tabs a {
@@ -8328,6 +8333,7 @@ body.documents #subnav-tabs a {
   border-width: 0;
 }
 body.data #subnav-tabs a.active,
+body.groups #subnav-tabs a.active,
 body.maps #subnav-tabs a.active,
 body.people #subnav-tabs a.active,
 body.documents #subnav-tabs a.active {
@@ -8336,14 +8342,17 @@ body.documents #subnav-tabs a.active {
   font-weight: 400;
 }
 body.data #subnav-tabs a:hover,
+body.groups #subnav-tabs a:hover,
 body.maps #subnav-tabs a:hover,
 body.people #subnav-tabs a:hover,
 body.documents #subnav-tabs a:hover,
 body.data #subnav-tabs a:focus,
+body.groups #subnav-tabs a:focus,
 body.maps #subnav-tabs a:focus,
 body.people #subnav-tabs a:focus,
 body.documents #subnav-tabs a:focus,
 body.data #subnav-tabs a:active,
+body.groups #subnav-tabs a:active,
 body.maps #subnav-tabs a:active,
 body.people #subnav-tabs a:active,
 body.documents #subnav-tabs a:active {
@@ -8351,12 +8360,15 @@ body.documents #subnav-tabs a:active {
   color: white;
 }
 body.data #subnav-tabs li,
+body.groups #subnav-tabs li,
 body.maps #subnav-tabs li,
 body.people #subnav-tabs li,
 body.documents #subnav-tabs li {
   margin-bottom: 0;
 }
 body.search #subnav-tabs a.search,
+body.update #subnav-tabs a.update,
+body.create #subnav-tabs a.create,
 body.upload #subnav-tabs a.upload,
 body.explore #subnav-tabs a.explore {
   background-color: #484748;
