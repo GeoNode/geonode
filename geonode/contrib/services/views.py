@@ -728,10 +728,8 @@ def _harvest_csw(csw, maxrecords=10, totalrecords=float('inf')):
 
         # harvest each record to destination CSW
         for record in list(src.records):
-            #print i
             record = src.records[record]
             known_types = {}
-            print record
             for ref in record.references:
                 if ref["scheme"] == "OGC:WMS" or \
                                 "service=wms&request=getcapabilities" in urllib.unquote(ref["url"]).lower():
@@ -796,9 +794,9 @@ def _register_arcgis_layers(service, arc=None):
         # Need to check if layer already exists??
         saved_layer, created = Layer.objects.get_or_create(
             service=service,
-            typename=layer.id,
+            typename=str(layer.id),
             defaults=dict(
-                name=layer.id,
+                name=str(layer.id),
                 store=service.name, #??
                 storeType="remoteStore",
                 workspace="remoteWorkspace",
@@ -807,9 +805,10 @@ def _register_arcgis_layers(service, arc=None):
                 uuid=layer_uuid,
                 owner=None,
                 srid="EPSG:%s" % layer.extent.spatialReference.wkid,
-                bbox = bbox,
-                geographic_bounding_box=bbox_to_wkt(str(bbox[0]), str(bbox[1]),
-                                                    str(bbox[2]), str(bbox[3]), srid="EPSG:4326" )
+                bbox_x0 = bbox[0],
+                bbox_x1 = bbox[1],
+                bbox_y0 = bbox[2],
+                bbox_y1 = bbox[3]
             )
         )
         if created:
