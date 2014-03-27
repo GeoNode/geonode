@@ -37,10 +37,7 @@
         <p>
         <h3>{% trans "Actions" %}</h3>
         <ul>
-          <li><a href="{% url "group_add_maps" object.slug %}">{% trans "Add map(s)" %}</a></li>
-          <li><a href="{% url "group_add_layers" object.slug %}">{% trans "Add layer(s)" %}</a></li>
           {% if is_manager %}
-            <li><a href="{% url "group_remove_maps_data" object.slug %}">{% trans "Remove layers/maps" %}</a></li>
             <li><a href="{% url "group_update" object.slug %}">{% trans "Edit Group Details" %}</a></li>
             <li><a href="{% url "group_members" object.slug %}">{% trans "Manage Group Members" %}</a></li>
           {% endif %}

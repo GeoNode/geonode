@@ -13,7 +13,7 @@ from django.conf import settings
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save, resourcebase_groups_changed
+from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 
@@ -151,4 +151,3 @@ signals.pre_save.connect(pre_save_document, sender=Document)
 signals.post_save.connect(create_thumbnail, sender=Document)
 signals.post_save.connect(resourcebase_post_save, sender=Document)
 map_changed_signal.connect(update_documents_extent)
-signals.m2m_changed.connect(resourcebase_groups_changed, sender=Document.groups.through)

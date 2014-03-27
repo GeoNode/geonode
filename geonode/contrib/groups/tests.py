@@ -77,41 +77,32 @@ class SmokeTest(TestCase):
         self.assertTrue(layer.id in read_perms)
         self.assertTrue(layer.id in write_perms)
 
-    def test_groups_get_perms_when_added_to_object(self):
-        """
-        Verify that when a group is added to an object, the group gets permissions.
 
-        This ensures the resourcebase_groups_changed signal is working correctly.  The signal has to be manually
-        added to models that inherit from the ResourceBase class (layers, documents, maps).
+    def test_group_resource(self):
         """
+        Tests the resources method on a Group object.
+        """
+
         layer = Layer.objects.all()[0]
-        document = Document.objects.all()[0]
         map = Map.objects.all()[0]
 
-        for resource_object in (layer, document, map):
-            content_type = ContentType.objects.get_for_model(resource_object)
+        # Give the self.bar group write perms on the layer
+        layer.set_group_level(self.bar, Layer.LEVEL_WRITE)
+        map.set_group_level(self.bar, Map.LEVEL_WRITE)
 
-            # Ensure the object has no groups.
-            self.assertEqual(0, resource_object.groups.all().count())
+        # Ensure the layer is returned in the group's resources
+        self.assertTrue(layer in self.bar.resources())
+        self.assertTrue(map in self.bar.resources())
 
-            # Make sure the group does not have any permissions on the layer.
-            mappings = GroupObjectRoleMapping.objects.filter(object_id=resource_object.id,
-                                                             object_ct=content_type,
-                                                             group=self.bar)
-            self.assertEqual(mappings.count(), 0)
+        # Test the resource filter
+        self.assertTrue(layer in self.bar.resources(resource_type=Layer))
+        self.assertTrue(map not in self.bar.resources(resource_type=Layer))
 
-            # Add the group to the layer.
-            resource_object.groups.add(self.bar)
+        # Revoke permissions on the layer from the self.bar group
+        layer.set_group_level(self.bar, Layer.LEVEL_NONE)
 
-            # Ensure the group has been added to the layer's groups.
-            self.assertEqual(1, resource_object.groups.all().count())
-            self.assertTrue(self.bar in resource_object.groups.all())
-
-            # Ensure the group now has permissions.
-            mappings = GroupObjectRoleMapping.objects.filter(object_id=resource_object.id,
-                                                             object_ct=content_type,
-                                                             group=self.bar)
-            self.assertTrue(mappings.count() > 0)
+        # Ensure the layer is no longer returned in the groups resources
+        self.assertFalse(layer in self.bar.resources())
 
     def test_perms_info(self):
         """
@@ -125,7 +116,7 @@ class SmokeTest(TestCase):
         self.assertEqual(dict(), perms_info['groups'])
 
         # Add the foo group to the layer object groups
-        layer.groups.add(self.bar)
+        layer.set_group_level(self.bar, Layer.LEVEL_READ)
 
         perms_info = _perms_info(layer, LAYER_LEV_NAMES)
 
@@ -199,6 +190,27 @@ class SmokeTest(TestCase):
             # Assert the bar group no longer has permissions
             self.assertDictEqual(permissions['groups'], {})
 
+    def test_groupmember_manager(self):
+        """
+        Tests the get_managers method.
+        """
+        norman = User.objects.get(username="norman")
+        admin = User.objects.get(username='admin')
+
+        # Make sure norman is not a user
+        self.assertFalse(self.bar.user_is_member(norman))
+
+        # Add norman to the self.bar group
+        self.bar.join(norman)
+
+        # Ensure norman is now a member
+        self.assertTrue(self.bar.user_is_member(norman))
+
+        # Ensure norman is not in the managers queryset
+        self.assertTrue(norman not in self.bar.get_managers())
+
+        # Ensure admin is in the managers queryset
+        self.assertTrue(admin in self.bar.get_managers())
 
     def test_public_pages_render(self):
         "Verify pages that do not require login load without internal error"
@@ -221,14 +233,8 @@ class SmokeTest(TestCase):
         response = c.get("/groups/group/bar/update/")
         self.assertEqual(302, response.status_code)
 
-        response = c.get("/groups/group/bar/maps/")
-        self.assertEqual(302, response.status_code)
-
-        response = c.get("/groups/group/bar/layers/")
-        self.assertEqual(302, response.status_code)
-
-        response = c.get("/groups/group/bar/remove/")
-        self.assertEqual(302, response.status_code)
+        #response = c.get("/groups/group/bar/remove/")
+        #self.assertEqual(302, response.status_code)
 
         # 405 - json endpoint, doesn't support GET
         response = c.get("/groups/group/bar/invite/")
@@ -255,14 +261,8 @@ class SmokeTest(TestCase):
         response = c.get("/groups/group/bar/update/")
         self.assertEqual(200, response.status_code)
 
-        response = c.get("/groups/group/bar/maps/")
-        self.assertEqual(200, response.status_code)
-
-        response = c.get("/groups/group/bar/layers/")
-        self.assertEqual(200, response.status_code)
-
-        response = c.get("/groups/group/bar/remove/")
-        self.assertEqual(200, response.status_code)
+       #response = c.get("/groups/group/bar/remove/")
+        #self.assertEqual(200, response.status_code)
 
         # 405 - json endpoint, doesn't support GET
         response = c.get("/groups/group/bar/invite/")

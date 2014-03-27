@@ -320,10 +320,6 @@ class PermissionLevelMixin(object):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
-        # assign group permissions
-        for group in self.groups.all():
-            self.set_group_level(group, self.LEVEL_READ)
-
     def set_permissions(self, perm_spec):
         """
         Sets an object's the permission levels based on the perm_spec JSON.

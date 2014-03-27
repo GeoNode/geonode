@@ -2,23 +2,18 @@ import datetime
 import itertools
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.db import models, IntegrityError
 from django.template.loader import render_to_string
 from django.utils.hashcompat import sha_constructor
 from django.utils.translation import ugettext_lazy as _
-
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-
 from taggit.managers import TaggableManager
-
-#from geonode.layers.models import Layer
-#from geonode.maps.models import Map
 
 
 class Group(models.Model):
-    
     title = models.CharField(max_length=50)
     slug = models.SlugField(unique=True)
     logo = models.FileField(upload_to="people_peoplegroup", blank=True)
@@ -41,10 +36,33 @@ class Group(models.Model):
     
     def __unicode__(self):
         return self.title
-    
+
+    def resources(self, resource_type=None):
+        """
+        Returns a generator of objects that this group has permissions on.
+
+        :param resource_type: Filter's the queryset to objects with the same type.
+        """
+
+        from geonode.security.models import GroupObjectRoleMapping
+        queryset = GroupObjectRoleMapping.objects.filter(group=self)
+
+        if resource_type:
+            queryset = queryset.filter(object_ct=ContentType.objects.get_for_model(resource_type))
+
+        for resource in queryset:
+            yield resource.object
+
     def member_queryset(self):
         return self.groupmember_set.all()
-    
+
+    def get_managers(self):
+        """
+        Returns a queryset of the group's managers.
+        """
+        return User.objects.filter(id__in=self.member_queryset().filter(role='manager')
+                                                .values_list("user", flat=True))
+
     def user_is_member(self, user):
         if not user.is_authenticated():
             return False
@@ -60,7 +78,7 @@ class Group(models.Model):
             return user.is_authenticated() and self.user_is_member(user)
         else:
             return True
-    
+
     def can_invite(self, user):
         if not user.is_authenticated():
             return False
@@ -97,7 +115,6 @@ class Group(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('group_detail', (), { 'slug': self.slug })
-
 
 class GroupMember(models.Model):
     
