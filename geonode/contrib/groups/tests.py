@@ -188,6 +188,21 @@ class SmokeTest(TestCase):
             # Assert the bar group no longer has permissions
             self.assertDictEqual(permissions['groups'], {})
 
+    def test_create_new_group(self):
+        """
+        Tests creating a group through the group_create route.
+        """
+
+        d = dict(title='TestGroup',
+                 description='This is a test group.',
+                 access='public',
+                 keywords='testing, groups')
+        c = Client()
+        c.login(username="admin", password="admin")
+        response = c.post(reverse('group_create'), data=d)
+        self.assertEqual(response.status_code, 302)  # successful POSTS will redirect to the group's detail view.
+        self.assertTrue(Group.objects.get(title='TestGroup'))
+
     def test_groupmember_manager(self):
         """
         Tests the get_managers method.

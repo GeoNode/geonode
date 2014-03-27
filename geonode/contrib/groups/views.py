@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
-from django.http import Http404, HttpResponseForbidden
+from django.core.urlresolvers import reverse
+from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.views.decorators.http import require_POST
@@ -29,7 +30,7 @@ def group_create(request):
             group.save()
             form.save_m2m()
             group.join(request.user, role="manager")
-            return redirect("group_detail", group.slug)
+            return HttpResponseRedirect(reverse("group_detail", args=[group.slug]))
     else:
         form = GroupForm()
     
@@ -50,12 +51,13 @@ def group_update(request, slug):
             group = form.save(commit=False)
             group.save()
             form.save_m2m()
-            return redirect("group_detail", group.slug)
+            return HttpResponseRedirect(reverse("group_detail", args=[group.slug]))
     else:
         form = GroupForm(instance=group)
     
     return render_to_response("groups/group_update.html", {
         "form": form,
+        "group": group,
     }, context_instance=RequestContext(request))
 
 
