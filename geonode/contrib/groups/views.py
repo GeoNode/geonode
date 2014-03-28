@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
+from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect, HttpResponseNotAllowed
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.views.decorators.http import require_POST
@@ -183,4 +183,19 @@ def group_invite_response(request, token):
         return render_to_response("groups/group_invite_response.html", ctx)
 
 
+@login_required
+def group_remove(request, slug):
+    group = get_object_or_404(Group, slug=slug)
 
+    if not group.user_is_role(request.user, role="manager"):
+        return HttpResponseForbidden()
+
+    if request.method == 'GET':
+        return render_to_response("groups/group_remove.html", RequestContext(request, {
+            "group": group
+        }))
+    if request.method == 'POST':
+        group.delete()
+        return HttpResponseRedirect(reverse("group_list"))
+    else:
+        return HttpResponseNotAllowed()
