@@ -363,6 +363,8 @@ define(function (require, exports) {
                         }
                     } else if (resp.redirect_to === '/upload/final') {
                         self.doFinal(resp);
+                    } else {
+                        window.location = resp.url;
                     }
                 }
             });
