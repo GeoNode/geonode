@@ -40,6 +40,12 @@ class Group(models.Model):
     def __unicode__(self):
         return self.title
 
+    def keyword_list(self):
+        """
+        Returns a list of the Group's keywords.
+        """
+        return [kw.name for kw in self.keywords.all()]
+
     def resources(self, resource_type=None):
         """
         Returns a generator of objects that this group has permissions on.

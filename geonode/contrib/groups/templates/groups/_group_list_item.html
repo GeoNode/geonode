@@ -7,6 +7,11 @@
 <article>
   <div class="content">
     <div class="item-header">
+      {% if group.o.logo %}
+        <div class="avatar"><img src="{{ group.o.logo.url }}" alt="{{ group.o.title }}" class="group-logo" /></div>
+      {% else %}
+          <div class="avatar"><div class="img-missing"></div></div>
+      {% endif %}
       <h3><i class="icon-group"></i> <a href="{% url "group_detail" "my-group" %}">{{ group.title }}</a>
       {% comment %}
       {% if user.is_authenticated %}
@@ -18,11 +23,17 @@
     <div class="details">
       <div class="meta">
         <p class="abstract">
-          {{ group.description }}
+          {{ group.o.description}}
         </p>
-          <ul class="nav stats">
-            <li><strong>{{ group.members_cnt }}</strong> {% trans "Members" %}</a></li>
+          <ul class="nav stats" style="margin-left:0px">
+             {% with member_count=group.o.member_queryset.count %}
+            <li><a href="{% url "group_detail" "my-group" %}"><strong>{{ member_count }}</strong> {% trans "Member" %}{{ member_count|pluralize }}</a></li>
+              {% endwith %}
+          {% with manager_count=group.o.get_managers.count %}
+            <li><a href="{% url "group_detail" "my-group" %}"><strong>{{ manager_count }}</strong> {% trans "Manager" %}{{ manager_count|pluralize }}</a></li>
+              {% endwith %}
           </ul>
+
       </div> <!-- ./meta -->
     </div> <!-- ./details -->
   </div> <!-- ./content -->

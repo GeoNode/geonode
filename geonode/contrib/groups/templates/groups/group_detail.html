@@ -41,7 +41,9 @@
     <h2>{% trans "Group Image" %}</h2>
       {% if object.logo %}
         <img src="{{ object.logo.url }}" alt="{{ object.title }}" class="group-logo" />
-        {% endif %}
+      {% else %}
+        <p>{% trans "This group has not created a logo." %}</p>
+      {% endif %}
     </div>
 
 <div class="well">

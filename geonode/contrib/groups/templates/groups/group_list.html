@@ -1,5 +1,4 @@
-{% extends "groups/base.html" %}
-{% load avatar_tags %}
+{% extends "groups/group_base.html" %}
 {% load pagination_tags %}
 {% load i18n %}
 {% load staticfiles %}
@@ -8,7 +7,7 @@
 
 {% block body_class %}groups groups-list explore{% endblock %}
 
-{% block body_outer %}
+{% block body %}
     <div class="span12">
       <h2 class="page-title">{% trans "Explore Groups" %}</h2>
     </div>

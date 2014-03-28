@@ -7137,7 +7137,7 @@ li [class*=" icon-"] {
 .people .dl-horizontal dt {
   width: 15px;
 }
-.errorList {
+.errorlist {
   color: #b94a48;
 }
 .navbar .navbar-inner {
@@ -7573,6 +7573,7 @@ article.abstract {
 .list article p {
   font-size: 12px;
 }
+.list article .item-header .img-missing,
 .list article .item-header img {
   border: 1px solid #bbbbbb;
   display: block;
@@ -7584,6 +7585,12 @@ article.abstract {
   padding: 0;
   width: 100px;
 }
+.list article .item-header .img-missing {
+  background-color: #bbbbbb;
+  color: #484748;
+  border-radius: 4px;
+}
+.list article .avatar .img-missing,
 .list article .avatar img {
   border: 0;
   height: 50px;
