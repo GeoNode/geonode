@@ -83,8 +83,8 @@ class GroupDetailView(ListView):
         context['object'] = self.group
         context['maps'] = self.group.resources(resource_type=Map)
         context['layers'] = self.group.resources(resource_type=Layer)
-        context['is_member'] = self.group.user_is_member(self.request.user),
-        context['is_manager'] = self.group.user_is_role(self.request.user, "manager"),
+        context['is_member'] = self.group.user_is_member(self.request.user)
+        context['is_manager'] = self.group.user_is_role(self.request.user, "manager")
         context['object_list'] = apply_normalizers({'users': [obj.user.profile for obj in context['object_list']]})
         context['total'] = self.get_queryset().count()
         return context
