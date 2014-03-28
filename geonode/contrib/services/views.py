@@ -287,10 +287,10 @@ def _process_wms_service(url, type, username, password, wms=None, owner=None, pa
         supported_crs  = ','.join(wms.contents.itervalues().next().crsOptions)
     except:
         supported_crs = None
-    #if supported_crs and re.search('EPSG:900913|EPSG:3857|EPSG:102100', supported_crs):
-    #    return _register_indexed_service(type, url, name, username, password, wms=wms, owner=owner, parent=parent)
-    #else:
-    return _register_cascaded_service(url, type, name, username, password, wms=wms, owner=owner, parent=parent)
+    if supported_crs and re.search('EPSG:900913|EPSG:3857|EPSG:102100', supported_crs):
+        return _register_indexed_service(type, url, name, username, password, wms=wms, owner=owner, parent=parent)
+    else:
+        return _register_cascaded_service(url, type, name, username, password, wms=wms, owner=owner, parent=parent)
 
 def _register_cascaded_service(url, type, name, username, password, wms=None, owner=None, parent=None):
     """

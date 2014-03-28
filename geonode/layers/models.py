@@ -173,6 +173,13 @@ class Layer(ResourceBase):
         if self.storeType == 'dataStore':
             return "WFS"
 
+    @property
+    def ows_url(self):
+        if self.storeType == "remoteStore":
+            return self.service.base_url
+        else:
+            return settings.GEOSERVER_BASE_URL + "wms"
+
     def get_absolute_url(self):
         return reverse('layer_detail', args=(self.typename,))
 

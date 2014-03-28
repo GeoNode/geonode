@@ -175,7 +175,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    maplayer = GXPLayer(name = layer.typename, ows_url = ogc_server_settings.public_url + "wms", layer_params=json.dumps( layer.attribute_config()))
+    maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( layer.attribute_config()))
 
     layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
 
