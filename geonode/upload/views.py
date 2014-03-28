@@ -190,20 +190,19 @@ def _next_step_response(req, upload_session, force_ajax=True):
 
 
 def _create_time_form(import_session, form_data):
-    layer = import_session.tasks[0].layer
-    binding_names = {
-        'Integer': 'Whole Number',
-        'Long': 'Whole Number',
-        'Double': 'Real Number',
-        'String': 'Text',
-        'Date': 'Date'
-    }
-    keys = [ att.binding.split('.')[-1] for att in layer.attributes ]
-    atts = [ (att.name, binding_names[key]) for att, key in zip(layer.attributes, keys)
-             if key in binding_names ]
+    feature_type = import_session.tasks[0].layer
+    filter_type = lambda b : [ att.name for att in feature_type.attributes if att.binding == b]
+
+    args = dict(
+        time_names=filter_type('java.util.Date'),
+        text_names=filter_type('java.lang.String'),
+        year_names=filter_type('java.lang.Integer') +
+          filter_type('java.lang.Long') +
+          filter_type('java.lang.Double')
+    )
     if form_data:
-        return forms.TimeForm(form_data, attributes=atts)
-    return forms.TimeForm(attributes=atts)
+        return forms.TimeForm(form_data, **args)
+    return forms.TimeForm(**args)
 
 
 def save_step_view(req, session):
