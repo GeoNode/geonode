@@ -215,7 +215,7 @@ background-color: transparent;
   width: 15px;
 }
 
-.errorList{
+.errorlist{
   color: @errorText;
 }
 
@@ -673,6 +673,7 @@ article.abstract {
   p {
     font-size: 12px;
   }
+  .item-header .img-missing,
   .item-header img {
     border: 1px solid @grayLight;
     display: block;
@@ -684,11 +685,21 @@ article.abstract {
     padding: 0;
     width: 100px;
   }
+
+  .item-header .img-missing{
+    background-color: @grayLight;
+    color: @grayDark;
+    border-radius: 4px;
+  }
+
+  .avatar .img-missing,
   .avatar img {
     border: 0;
     height: 50px;
     width: 50px;
   }
+
+
   .icon-placeholder {
     background: @grayLighter;
     border: 1px solid @grayLight;
