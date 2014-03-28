@@ -359,7 +359,7 @@ class PermissionLevelMixin(object):
         # Delete all group levels that do not exist in perm_spec.
         self.get_group_levels().exclude(group__slug__in=excluded_groups).delete()
 
-        for group, level in perm_spec['groups']:
+        for group, level in perm_spec.get('groups', list()):
             group = Group.objects.get(slug=group)
             self.set_group_level(group, level)
 
