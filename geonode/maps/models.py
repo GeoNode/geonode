@@ -365,7 +365,7 @@ class Map(ResourceBase, GXPMapBase):
             map_layers.append(MapLayer(
                 map = self,
                 name = layer.typename,
-                ows_url = ogc_server_settings.public_url + "wms",
+                ows_url = layer.ows_url + "wms",
                 stack_order = index,
                 visibility = True
             ))
