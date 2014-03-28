@@ -1,0 +1,74 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load base_tags %}
+
+{% block title %} {% trans "Analytics" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}analytics{% endblock %}
+{% block head %}
+{{ block.super }}
+
+<link rel="stylesheet" href="{{ STATIC_URL }}analytics/css/analysis_view.css" type="text/css" charset="utf-8">
+<link rel="stylesheet" href="{{ STATIC_URL }}analytics/css/table.css" type="text/css" charset="utf-8">
+<link href="{{ STATIC_URL }}analytics/css/nv.d3.css" type="text/css" rel="stylesheet">
+<link href="{{ STATIC_URL }}analytics/css/map.css" type="text/css" rel="stylesheet">
+
+<table id="analysis-table">
+	<tr>
+		<td colspan="2" id="top-pane">
+			{% include "analytics/_fact_selection.html" %}
+		</td>
+	</tr>
+	<tr>
+		<td id="left-pane">
+			<svg id="map"></svg>
+			<p>
+			<a class="button" href="#" onclick="Map.zoomIn(1.5)">++</a>
+			<a class="button" href="#" onclick="Map.zoomIn(1.2)">+</a>
+			<a class="button" href="#" onclick="Map.zoomOut(1.2)">-</a>
+			<a class="button" href="#" onclick="Map.zoomOut(1.5)">--</a>
+                        Legend
+			</p>
+		</td>
+		<td id="right-pane">
+			<a href="#modal_analysis" class="btn btn-large btn-primary pull-right strong" data-toggle="modal">{% trans "Save Analysis" %}</a>
+			{% if not analysis %}
+				{% include "analytics/_save_form.html" %}
+			{% endif %}
+			<svg id="chart"/>
+			<div id="table"></div>
+		</td>
+	</tr>
+</table>
+
+{% endblock %}
+
+
+{% block footer %}{% endblock %}
+
+{% block extra_script %}
+        <script src="{{ STATIC_URL }}/analytics/js/d3.v3.min.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}/analytics/js/topojson.v1.min.js" type="text/javascript"></script>
+        <script src="{{ STATIC_URL }}analytics/js/Query.js" type="text/javascript" charset="utf-8"></script>
+        <script src="{{ STATIC_URL }}analytics/js/QueryBuilder.js" type="text/javascript" charset="utf-8"></script>
+        <script src="{{ STATIC_URL }}analytics/js/Display.js" type="text/javascript" charset="utf-8"></script>
+        <script src="{{ STATIC_URL }}analytics/js/Map.js" type="text/javascript" charset="utf-8"></script>
+	<script src="{{ STATIC_URL }}analytics/js/nv.d3.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}analytics/js/Charts.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}/analytics/js/tsort.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}/analytics/js/Table.js" type="text/javascript"></script>
+        <script>
+                Display.init('#map','#chart','#timeline','#table');
+        </script>
+	{% if not analysis %}
+	<script>
+		$("#analysis_submit").click(function(){
+		$("#permission_form").submit();
+		});
+	</script>
+	{% else %}
+
+	{% endif %}
+{% endblock %}
+

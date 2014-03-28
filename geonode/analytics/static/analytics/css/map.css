@@ -1,0 +1,7 @@
+#map { width: 100%; height : 600px; }
+
+.button { background: #CCC; padding : 5px 10px; margin: 0 10px; }
+
+.feature {
+  cursor: pointer;
+}

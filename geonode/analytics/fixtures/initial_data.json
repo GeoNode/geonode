@@ -1,0 +1,48 @@
+[
+{
+    "pk": 10,
+    "model": "security.objectrole",
+    "fields": {
+        "codename": "analysis_readonly",
+        "title": "Read Only",
+        "list_order": 0,
+        "permissions": [ 
+            ["view_analysis", "analytics", "analysis"]
+        ],
+        "content_type": ["analytics", "analysis"]
+    }
+},
+{
+    "pk": 11,
+    "model": "security.objectrole",
+    "fields": {
+        "codename": "analysis_readwrite",
+        "title": "Read/Write",
+        "list_order": 1,
+        "permissions": [ 
+            ["view_analysis", "analytics", "analysis"],
+            ["change_analysis", "analytics", "analysis"]
+        ],
+        "content_type": ["analytics", "analysis"]
+    }
+},
+
+{
+    "pk": 12,
+    "model": "security.objectrole",
+    "fields": {
+        "codename": "analysis_admin",
+        "title": "Administrative",
+        "list_order": 2,
+        "permissions": [ 
+            ["view_analysis", "analytics", "analysis"],
+            ["change_analysis", "analytics", "analysis"],
+            ["delete_analysis", "analytics", "analysis"],
+            ["change_analysis_permissions", "analytics", "analysis"]
+        ],
+        "content_type": ["analytics", "analysis"]
+    }
+}
+]
+
+

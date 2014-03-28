@@ -1,0 +1,30 @@
+#table table { border-collapse: collapse; background: #EEE; border-spacing: 0; width: 80%; margin: 0 auto; }
+#table table th, #table table td { padding: 10px; }
+#table table th { background: #5B799E; border-bottom: 5px solid #36485e; border-right: solid 1px #475F7C; }
+#table table td { border-right: 1px solid #FFF; }
+#table table tr.odd td { background: #DFDFDF; }
+
+table.tableSorter th div.sortArrow {
+	width: 11px;
+	height: 6px;
+	display: inline-block;
+	margin-left: 5px;
+	vertical-align: 2px;
+	position: relative;
+}
+
+table.tableSorter th div.sortArrow div.sortArrowAscending,
+table.tableSorter th div.sortArrow div.sortArrowDescending {
+	position: absolute;
+	display: none;
+	width: 11px;
+	height: 6px;
+}
+
+table.tableSorter th div.sortArrow div.sortArrowAscending {
+	background: url('arrow_asc.png');
+}
+
+table.tableSorter th div.sortArrow div.sortArrowDescending {
+	background: url('arrow_desc.png') no-repeat;
+}

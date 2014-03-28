@@ -26,6 +26,7 @@ from django.db.models import Q
 from geonode.security.models import UserObjectRoleMapping, GenericObjectRoleMapping
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.maps.models import Map
+from geonode.analytics.models import Analysis
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
@@ -219,6 +220,41 @@ def _get_map_results(query):
 
     return q.distinct()
 
+def _get_analysis_results(query):
+    q = extension.analysis_query(query)
+
+    q = _filter_security(q, query.user, Analysis, 'view_analysis')
+
+    if query.owner:
+        q = q.filter(owner__username=query.owner)
+
+    if query.extent:
+        q = filter_by_extent(Analysis, q, query.extent)
+
+    if query.added:
+        q = q.filter(last_modified__gte=query.added)
+
+    if query.period:
+        q = filter_by_period(Analysis, q, *query.period)
+
+    if query.kw:
+        q = q.filter(_build_kw_only_query(query.kw))
+
+    if query.exclude:
+        q = q.exclude(reduce(operator.or_, [Q(title__contains=ex) for ex in query.exclude]))
+
+    if query.categories:
+        q = _filter_category(q, query.categories)
+
+    if query.query:
+        q = _build_map_layer_text_query(q, query, query_keywords=True)
+        rules = _rank_rules(ResourceBase,
+            ['title',10, 5],
+            ['abstract',5, 2],
+        )
+        q = _safely_add_relevance(q, query, rules)
+
+    return q.distinct()
 
 def _get_layer_results(query):
 
@@ -318,7 +354,7 @@ def _get_document_results(query):
     return q.distinct()
 
 def combined_search_results(query):
-    facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'document', 'user')])
+    facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'document', 'user', 'analysis')])
     results = {'facets' : facets}
 
     bytype = (None,) if u'all' in query.type else query.type
@@ -328,6 +364,11 @@ def combined_search_results(query):
         q = _get_map_results(query)
         facets['map'] = q.count()
         results['maps'] = q
+
+    if None in bytype or u'analysis' in bytype:
+        q = _get_analysis_results(query)
+        facets['analysis'] = q.count()
+        results['analytics'] = q
 
     if None in bytype or u'layer' in bytype or u'raster' in bytype or u'vector' in bytype:
         q = _get_layer_results(query)

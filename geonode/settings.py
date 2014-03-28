@@ -44,18 +44,21 @@ os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
 
 # Defines settings for development
 DATABASES = {
+
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(PROJECT_ROOT, 'development.db'),
     },
+
     # vector datastore for uploads
     #'datastore' : {
-    #    'ENGINE': 'django.contrib.gis.db.backends.postgis',
-    #    'NAME': '',
-    #    'USER' : '',
-    #    'PASSWORD' : '',
-    #    'HOST' : '',
-    #    'PORT' : '',
+       ##'ENGINE': 'django.contrib.gis.db.backends.postgis',
+       #'ENGINE' : 'django.db.backends.sqlite3',
+       #'NAME': '',
+       #'USER' : '',
+       #'PASSWORD' : '',
+       #'HOST' : '',
+       #'PORT' : '',
     #}
 }
 
@@ -169,6 +172,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
 
     # Third party apps
+    'django_jenkins',
 
     # Utility
     'pagination',
@@ -200,12 +204,14 @@ INSTALLED_APPS = (
     'geonode.layers',
     'geonode.upload',
     'geonode.maps',
+    'geonode.maps',
     'geonode.proxy',
     'geonode.security',
     'geonode.search',
     'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
+    'geonode.analytics',
 )
 
 LOGGING = {
@@ -344,12 +350,15 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     },
     "documents.Document": {
         "document": "How good is this document?"
+    },
+    "analytics.Analysis": { 
+        "analysis": "How good is this analysis?"
     }
 }
 
 # Activity Stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment', 'documents.document'),
+    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment', 'documents.document', 'analytics.analysis'),
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': False,
     'USE_JSONFIELD': True,
@@ -361,6 +370,10 @@ SOUTH_MIGRATION_MODULES = {
     'avatar': 'geonode.migrations.avatar',
 }
 SOUTH_TESTS_MIGRATE=False
+
+SOUTH_DATABASE_ADAPTERS = { 
+	'default' :  'south.db.postgresql_psycopg2',
+}
 
 # Settings for Social Apps
 AUTH_PROFILE_MODULE = 'people.Profile'

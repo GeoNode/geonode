@@ -29,6 +29,13 @@
           'readonly': 'document_readonly',
           'none': '_none'
       };
+    } else if (type == "analytics"){
+        levels = {
+            'admin': 'analysis_admin',
+            'readwrite': 'analysis_readwrite',
+            'readonly': 'analysis_readonly',
+            'none': '_none'
+      };
     }
 
     if (data["viewmode"] === "ANYONE") {
@@ -80,7 +87,7 @@
     $('#permissions-body').ready(function(){
       {% if layer != "none" and document != "none" %}
       $.ajax(
-        "{% if layer %}{% url "layer_permissions" layer.typename %}{% elif map %}{% url "map_permissions" map.id %}{% elif document %}{% url "document_permissions" document.id %}{% endif %}",
+        "{% if layer %}{% url "layer_permissions" layer.typename %}{% elif map %}{% url "map_permissions" map.id %}{% elif document %}{% url "document_permissions" document.id %}{% elif analysis %}{% url "analysis_permissions" analysis.id %}{% endif %}",
         {
           success: function(data){
             var perms = $.parseJSON($.parseJSON(data).permissions);
@@ -180,8 +187,8 @@
     var perms_submit = function() {
       var form = $(this);
       var action = form.attr("action");
-
-      var permissions = permissionsString(form, {% if layer %}'layers'{% elif map %}'maps'{% elif document %}'documents'{% endif %});
+      
+      var permissions = permissionsString(form, {% if layer %}'layers'{% elif map %}'maps'{% elif document %}'documents'{% elif analysis %}'analytics'{% endif %});
       $.ajax(
         {
           type: "POST",
@@ -198,8 +205,8 @@
     $("#perms_submit").click(function(){
         $("#permission_form").submit();
     });
-    {% if layer or map or document %}
-    $("#permission_form").submit({% if layer or map or document %}perms_submit{% else %}batch_perms_submit{% endif %});
+    {% if layer or map or document or analysis %}
+    $("#permission_form").submit({% if layer or map or document or analysis %}perms_submit{% else %}batch_perms_submit{% endif %});
     {% endif %}
   });
 </script>
