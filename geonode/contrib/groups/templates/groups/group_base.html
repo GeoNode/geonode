@@ -14,6 +14,7 @@
             <li><a href="{% url "group_create" %}" class="create">{% trans "Create a Group" %}</a></li>
             {% if group %}
             <li><a href="{% url "group_update" group.slug %}" class="update">{% trans "Update Group" %}</a></li>
+            <li><a href="{% url "group_remove" group.slug %}" class="remove">{% trans "Remove Group" %}</a></li>
             {% endif %}
       </ul>
     </div>

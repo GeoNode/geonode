@@ -11,6 +11,8 @@
     <h2 class="page-title">{{ object.title|default:object.slug }}</h2>
   </div>
   <div class="span4 action-group pull-right">
+
+    {% if is_manager %}
     <div class="btn-group pull-right">
       <!-- edit group dropdown -->
       <div class="btn-group">
@@ -21,9 +23,11 @@
         <ul class="dropdown-menu">
           <li><a href="{% url "group_update" object.slug %}">{% trans "Edit Group Details" %} <i class="icon-chevron-right"></i></a></li>
           <li><a href="{% url "group_members" object.slug %}">{% trans "Manage Group Members" %} <i class="icon-chevron-right"></i></a></li>
+            <li><a href="{% url "group_remove" object.slug %}">{% trans "Delete this Group" %} <i class="icon-chevron-right"></i></a></li>
         </ul>
       </div>
     </div>
+  {% endif %}
   </div>
   <div class="span8 content">
   <h2>{% trans "Members" %}</h2>

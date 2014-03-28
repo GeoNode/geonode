@@ -203,6 +203,42 @@ class SmokeTest(TestCase):
         self.assertEqual(response.status_code, 302)  # successful POSTS will redirect to the group's detail view.
         self.assertTrue(Group.objects.get(title='TestGroup'))
 
+    def test_delete_group_view(self):
+        """
+        Tests deleting a group through the group_delete route.
+        """
+
+        # Ensure the group exists
+        self.assertTrue(Group.objects.get(id=self.bar.id))
+
+        c = Client()
+        c.login(username="admin", password="admin")
+
+        # Delete the group
+        response = c.post(reverse('group_remove', args=[self.bar.slug]))
+
+        self.assertEqual(response.status_code, 302)  # successful POSTS will redirect to the group list view.
+        self.assertFalse(Group.objects.filter(id=self.bar.id).count() > 0)
+
+    def test_delete_group_view_no_perms(self):
+        """
+        Tests deleting a group through the group_delete with a non-manager.
+        """
+
+        # Ensure the group exists
+        self.assertTrue(Group.objects.get(id=self.bar.id))
+
+        c = Client()
+        c.login(username="norman", password="norman")
+
+        # Delete the group
+        response = c.post(reverse('group_remove', args=[self.bar.slug]))
+
+        self.assertEqual(response.status_code, 403)
+
+        # Ensure the group still exists
+        self.assertTrue(Group.objects.get(id=self.bar.id))
+
     def test_groupmember_manager(self):
         """
         Tests the get_managers method.
