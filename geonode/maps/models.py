@@ -520,7 +520,6 @@ class MapLayer(models.Model, GXPLayerBase):
 
     def layer_config(self):
         cfg = GXPLayerBase.layer_config(self)
-
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
         if self.local:

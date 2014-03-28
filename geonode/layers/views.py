@@ -175,7 +175,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( layer.attribute_config()))
+    config = layer.attribute_config()
+    source_params = {"ptype":layer.service.ptype, "remote": True, "url": layer.service.base_url, "name": layer.service.name}
+    maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config), source_params=json.dumps(source_params))
 
     layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
 
@@ -198,6 +200,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             name__in=settings.DOWNLOAD_FORMATS_RASTER)
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
+
     return render_to_response(template, RequestContext(request, {
         "layer": layer,
         "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),

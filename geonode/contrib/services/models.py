@@ -66,6 +66,7 @@ class Service(models.Model, PermissionLevelMixin):
         """Return a list of all the child layers (resources) for this Service"""
         pass
 
+    @property
     def ptype(self):
         # Return the gxp ptype that should be used to display layers
         return GXP_PTYPES[self.type]
