@@ -18,7 +18,7 @@
   <div class="span6 action-group pull-right">
     <div class="btn-group pull-right">
 
-      {% has_obj_perm user analysis "analyses.change_analysis" as can_edit_analysis %}
+      {% has_obj_perm user analysis "analytics.change_analysis" as can_edit_analysis %}
       {% if can_edit_analysis %}
       <div class="btn-group">
         <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
@@ -104,7 +104,7 @@
 		</ul>
 	</div>
 	{% endif %}
-	{% has_obj_perm user analysis "analyses.change_analysis_permissions" as can_change_permissions %}
+	{% has_obj_perm user analysis "analytics.change_analysis_permissions" as can_change_permissions %}
 	{% if can_change_permissions %}
 	<div class='well'>
 		<h2>{% trans "Permissions" %}</h2>
