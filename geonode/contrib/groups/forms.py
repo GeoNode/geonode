@@ -55,11 +55,45 @@ class GroupUpdateForm(forms.ModelForm):
         model = Group
 
 
+class GroupMemberForm(forms.Form):
+    role = forms.ChoiceField(choices=[
+        ("member", "Member"),
+        ("manager", "Manager"),
+    ])
+    user_identifiers = forms.CharField(widget=forms.Textarea)
+    
+    #TODO Reuse clean_user_identifiers from GroupInviteForm
+    def clean_user_identifiers(self):
+        value = self.cleaned_data["user_identifiers"]
+        new_members, errors = [], []
+        
+        for ui in value.split(","):
+            ui = ui.strip()
+            
+            if email_re.match(ui):
+                try:
+                    new_members.append(User.objects.get(email=ui))
+                except User.DoesNotExist:
+                    new_members.append(ui)
+            else:
+                try:
+                    new_members.append(User.objects.get(username=ui))
+                except User.DoesNotExist:
+                    errors.append(ui)
+        
+        if errors:
+            message = ("The following are not valid email addresses or "
+                "usernames: %s; not added to the group" % ", ".join(errors))
+            raise forms.ValidationError(message)
+        
+        return new_members
+
+    
 class GroupInviteForm(forms.Form):
     
     role = forms.ChoiceField(choices=[
-        ("manager", "Manager"),
         ("member", "Member"),
+        ("manager", "Manager"),
     ])
     user_identifiers = forms.CharField(widget=forms.Textarea)
     
