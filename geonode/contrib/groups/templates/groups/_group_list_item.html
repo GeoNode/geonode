@@ -12,7 +12,7 @@
       {% else %}
           <div class="avatar"><div class="img-missing"></div></div>
       {% endif %}
-      <h3><i class="icon-group"></i> <a href="{% url "group_detail" "my-group" %}">{{ group.title }}</a>
+      <h3><i class="icon-group"></i> <a href="{% url "group_detail" group.o.slug %}">{{ group.title }}</a>
       {% comment %}
       {% if user.is_authenticated %}
         {% if  profile.o.user.email %}<a href="mailto:{{ profile.o.user.email }}"><i class="icon-envelope-alt icon-large"></i></a>{% endif %}
@@ -27,10 +27,10 @@
         </p>
           <ul class="nav stats" style="margin-left:0px">
              {% with member_count=group.o.member_queryset.count %}
-            <li><a href="{% url "group_detail" "my-group" %}"><strong>{{ member_count }}</strong> {% trans "Member" %}{{ member_count|pluralize }}</a></li>
+            <li><a href="{% url "group_detail" group.o.slug %}"><strong>{{ member_count }}</strong> {% trans "Member" %}{{ member_count|pluralize }}</a></li>
               {% endwith %}
           {% with manager_count=group.o.get_managers.count %}
-            <li><a href="{% url "group_detail" "my-group" %}"><strong>{{ manager_count }}</strong> {% trans "Manager" %}{{ manager_count|pluralize }}</a></li>
+            <li><a href="{% url "group_detail" group.o.slug %}"><strong>{{ manager_count }}</strong> {% trans "Manager" %}{{ manager_count|pluralize }}</a></li>
               {% endwith %}
           </ul>
 
