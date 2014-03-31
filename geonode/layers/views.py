@@ -176,8 +176,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
     config = layer.attribute_config()
-    source_params = {"ptype":layer.service.ptype, "remote": True, "url": layer.service.base_url, "name": layer.service.name}
-    maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config), source_params=json.dumps(source_params))
+    if layer.service == None:
+        maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config))
+    else:
+        source_params = {"ptype":layer.service.ptype, "remote": True, "url": layer.service.base_url, "name": layer.service.name}
+        maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config), source_params=json.dumps(source_params))
 
     layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
 
