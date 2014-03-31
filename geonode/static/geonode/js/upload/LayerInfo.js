@@ -440,7 +440,7 @@ define(function (require, exports) {
              if ($(data).filter( function() {
                return this.name.localeCompare(term)===0;
              }).length===0) {
-               return {name:term};
+               return {name:term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')};
              }
            }
           });
