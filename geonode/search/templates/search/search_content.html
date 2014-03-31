@@ -24,7 +24,15 @@
     {% endwith %}
   {% elif object.o.class_name == 'Group' %}
     {% with object as group %}
-      {% include "groups/_group_list_item.html" %}
+    {% if GROUPS_APP %}
+      {% comment %}
+        This is a bit strange, but required as the include is processed before the if
+        http://stackoverflow.com/questions/10950275/conditional-include-tag-in-django?answertab=active#tab-top
+      {% endcomment %}
+      {% with "groups/_group_list_item.html" as groups_template %}
+      {% include groups_template %}
+      {% endwith %}
+    {% endif %}
     {% endwith %}
   {% endif %}
 {% endfor %}

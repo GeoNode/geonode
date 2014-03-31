@@ -18,6 +18,7 @@
 #########################################################################
 
 from django.core.cache import cache
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -90,9 +91,11 @@ def apply_normalizers(results):
         ('maps', MapNormalizer),
         ('layers', LayerNormalizer),
         ('documents', DocumentNormalizer),
-        ('users', OwnerNormalizer),
-        ('groups', GroupNormalizer)
+        ('users', OwnerNormalizer)
     ]
+    if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+        mapping.append(('groups', GroupNormalizer))
+
     for k,n in mapping:
         r = results.get(k, None)
         if not r: continue

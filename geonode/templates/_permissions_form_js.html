@@ -58,6 +58,7 @@
     }
 
     var perGroupPermissions = [];
+    {% if GROUPS_APP %}
     if (data["editmode"] === "LIST") {
       var editgroups = form.find("input[name=editgroups]").select2("val");
       if (editgroups instanceof Array) {
@@ -68,6 +69,7 @@
         perGroupPermissions.push([editgroups, levels["readwrite"]]);
       }
     }
+    {% endif %}
 
     var manageusers = form.find("input[name=manageusers]").select2("val");
     if (manageusers) {
@@ -80,6 +82,7 @@
       }
     }
 
+    {% if GROUPS_APP %}
     var managegroups = form.find("input[name=managegroups]").select2("val");
     if (managegroups) {
       if (managegroups instanceof Array) {
@@ -90,6 +93,7 @@
         perGroupPermissions.push([managegroups, levels["admin"]]);
       }
     }
+    {% endif %}
 
     return {
         anonymous: anonymousPermissions,
@@ -128,12 +132,13 @@
                 users.push(key);
               }
               $("#perms_edit_editusers").val(users.join());
+              {% if GROUPS_APP %}
               var groups = [];
               for (var key in perms["groups"]){
                 groups.push(key);
               }
               $("#perms_edit_editgroups").val(groups.join());
-
+              {% endif %}
             }
             var admins = [];
             for (var key in perms["users"]){
@@ -141,22 +146,26 @@
                 admins.push(key);
               }
             }
+            {% if GROUPS_APP %}
             var group_admins = [];
             for (var key in perms["groups"]){
               if(perms["groups"][key].split('_')[1] === 'admin'){
                 group_admins.push(key);
               }
             }
-            $("#perms_edit_manageusers").val(admins.join());
             $("#perms_edit_managegroups").val(group_admins.join());
-            addSelectUsers();
             addSelectGroups();
+            {% endif %}
+            $("#perms_edit_manageusers").val(admins.join());
+            addSelectUsers();
           }
         }
       );
       {% else %}
       addSelectUsers();
+      {% if GROUPS_APP %}
       addSelectGroups();
+      {% endif %}
       {% endif %}
     });
     
@@ -193,6 +202,7 @@
       });
     }
 
+    {% if GROUPS_APP %}
     function addSelectGroups(){
       $("input.group-select").select2({
         placeholder: '{% trans "Choose one or more groups..." %}',
@@ -225,14 +235,17 @@
         }
       });
     }
+    {% endif %}
     
     function userID(user) {
       return user.username;
     }
 
+    {% if GROUPS_APP %}
     function groupID(group) {
       return group.name;
     }
+    {% endif %} 
 
     function userFormatResult(user) {
       return user.username;
@@ -242,6 +255,7 @@
         return user.username;
     }
 
+    {% if GROUPS_APP %}
     function groupFormatResult(group) {
       return group.name;
     }
@@ -249,6 +263,7 @@
     function groupFormatSelection(group) {
         return group.name;
     }
+    {% endif %}
 
     var toggle_buttons = function() {
       if ($("input.asset-selector:checked").length) {
