@@ -106,8 +106,8 @@ GeoNode.plugins.Save = Ext.extend(gxp.plugins.Tool, {
             disabled: !this.target.about.title,
             handler: function(e){
                 delete this.target.id;
-                this.target.about.title = titleField.getValue();
-                this.target.about["abstract"] = abstractField.getValue();
+                this.target.about.title = Ext.util.Format.stripTags(titleField.getValue());
+                this.target.about["abstract"] = Ext.util.Format.stripTags(abstractField.getValue());
                 this.metadataForm.hide();
                 this._doSave = true;
                 this.target.save(this.metadataForm.saveCallback);
@@ -118,8 +118,8 @@ GeoNode.plugins.Save = Ext.extend(gxp.plugins.Tool, {
             text: this.metadataFormSaveText,
             disabled: !this.target.about.title,
             handler: function(e){
-                this.target.about.title = titleField.getValue();
-                this.target.about["abstract"] = abstractField.getValue();
+                this.target.about.title = Ext.util.Format.stripTags(titleField.getValue());
+                this.target.about["abstract"] = Ext.util.Format.stripTags(abstractField.getValue());
                 this.metadataForm.hide();
                 this._doSave = true;
                 this.target.save(this.metadataForm.saveCallback);

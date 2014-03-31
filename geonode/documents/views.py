@@ -282,15 +282,24 @@ def document_replace(request, docid, template='documents/document_replace.html')
 
 @login_required
 def document_remove(request, docid, template='documents/document_remove.html'):
-    document = _resolve_document(request, docid, 'documents.delete_document',
-                           _PERMISSION_MSG_DELETE)
+    try:
+        document = _resolve_document(request, docid, 'documents.delete_document',
+                               _PERMISSION_MSG_DELETE)
 
-    if request.method == 'GET':
-        return render_to_response(template,RequestContext(request, {
-            "document": document
-        }))
-    if request.method == 'POST':
-        document.delete()
-        return HttpResponseRedirect(reverse("documents_browse"))
-    else:
-        return HttpResponse("Not allowed",status=403)
+        if request.method == 'GET':
+            return render_to_response(template,RequestContext(request, {
+                "document": document
+            }))
+        if request.method == 'POST':
+            document.delete()
+            return HttpResponseRedirect(reverse("documents_browse"))
+        else:
+            return HttpResponse("Not allowed",status=403)
+
+    except PermissionDenied:
+        return HttpResponse(
+                'You are not allowed to delete this document',
+                mimetype="text/plain",
+                status=401
+        )
+
