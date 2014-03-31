@@ -397,6 +397,8 @@ USE_QUEUE = False
 DEFAULT_WORKSPACE = 'geonode'
 CASCADE_WORKSPACE = 'geonode'
 
+OGP_URL = "http://geodata.tufts.edu/solr/select"
+
 # Default TopicCategory to be used for resources. Use the slug field here
 DEFAULT_TOPICCATEGORY = 'location'
 
