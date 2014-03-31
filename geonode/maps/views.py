@@ -201,22 +201,29 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
 @login_required
 def map_remove(request, mapid, template='maps/map_remove.html'):
     ''' Delete a map, and its constituent layers. '''
-    map_obj = _resolve_map(request, mapid, 'maps.delete_map',
-                           _PERMISSION_MSG_DELETE, permission_required=True)
+    try:
+        map_obj = _resolve_map(request, mapid, 'maps.delete_map',
+                               _PERMISSION_MSG_DELETE, permission_required=True)
 
-    if request.method == 'GET':
-        return render_to_response(template, RequestContext(request, {
-            "map": map_obj
-        }))
+        if request.method == 'GET':
+            return render_to_response(template, RequestContext(request, {
+                "map": map_obj
+            }))
 
-    elif request.method == 'POST':
-        layers = map_obj.layer_set.all()
-        for layer in layers:
-            layer.delete()
-        map_obj.delete()
+        elif request.method == 'POST':
+            layers = map_obj.layer_set.all()
+            for layer in layers:
+                layer.delete()
+            map_obj.delete()
 
-        return HttpResponseRedirect(reverse("maps_browse"))
+            return HttpResponseRedirect(reverse("maps_browse"))
 
+    except PermissionDenied:
+            return HttpResponse(
+                   'You are not allowed to delete this map',
+                   mimetype="text/plain",
+                   status=401
+            )
 
 def map_embed(request, mapid=None, template='maps/map_embed.html'):
     if mapid is None:
