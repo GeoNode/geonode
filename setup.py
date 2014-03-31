@@ -90,7 +90,7 @@ setup(name='GeoNode',
         "django-friendly-tag-loader==1.1",
         "django-taggit==0.10a1",
         "django-taggit-templatetags",
-        "django-geoexplorer==3.0.5",
+        "django-geoexplorer==4.0.2",
         "django-notification==1.0",
         "django-announcements==1.0.2",
         "django-activity-stream==0.4.4",
@@ -103,7 +103,7 @@ setup(name='GeoNode',
         "django-downloadview==1.2",
         "django-tastypie==0.11.0",
         #catalogue
-        "pycsw==1.6.1",
+        "pycsw==1.6.4",
         # setup
         "Paver",
         # sample and test data / metadata
