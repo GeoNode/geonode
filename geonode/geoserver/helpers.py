@@ -268,7 +268,10 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
     cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
-        resources = cat.get_resources(workspace=workspace)
+        if workspace is None:
+            resources = []
+        else:
+            resources = cat.get_resources(workspace=workspace)
     elif store is not None:
         store = cat.get_store(store)
         resources = cat.get_resources(store=store)

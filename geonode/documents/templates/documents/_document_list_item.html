@@ -9,8 +9,8 @@
 <article>
   <div class="content">
     <!-- <div class="abstract-placeholder">{{ document.abstract }}</div> -->
-    <div class="icon-placeholder"><i class="icon-file-text-alt"></i></div>
     <div class="item-header">
+        <a href="{% url "document_detail" document.id %}"><img class="thumb" src="{{ document.get_thumbnail_url }}" /></a>
       <h3><i class="icon-file-text-alt"></i> <a href="{% url "document_detail" document.id %}">{{ document.title }}</a></h3>
     </div>
     <div class="details">
@@ -23,7 +23,7 @@
         </ul>
       </div>
       <div class="tools">
-        <p><a href="{% if document.doc_file %}{{ document.doc_file.url }}{% endif %}" class="btn btn-mini">{% trans "Download" %}</a></p>
+        <p><a href="{% if document.doc_file %}{% url "document_download" document.id %}{% endif %}" class="btn btn-mini">{% trans "Download" %}</a></p>
       </div>
     </div>
   </div>

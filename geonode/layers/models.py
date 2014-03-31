@@ -37,7 +37,7 @@ from django.core.urlresolvers import reverse
 from geonode import GeoNodeException
 from geonode.base.models import ResourceBase, ResourceBaseManager, Link, \
     resourcebase_post_save, resourcebase_post_delete
-from geonode.utils import  _user, _password, get_wms
+from geonode.utils import _user, _password, get_wms
 from geonode.utils import http_client
 from geonode.geoserver.helpers import cascading_delete
 from geonode.people.models import Profile
@@ -48,6 +48,7 @@ from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.utils import ogc_server_settings
 
 from geoserver.catalog import Catalog, FailedRequestError
+from owslib.wcs import WebCoverageService
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
@@ -307,7 +308,7 @@ def pre_delete_layer(instance, sender, **kwargs):
         if style.layer_styles.all().count()==1:
             if style != default_style:
                 style.delete()
-    
+
 def post_delete_layer(instance, sender, **kwargs):
     """
     Removed the layer from any associated map, if any.
@@ -413,7 +414,7 @@ def geoserver_post_save(instance, sender, **kwargs):
        to be saved to the database before accessing them.
     """
     url = ogc_server_settings.internal_rest
-    
+
     try:
         gs_catalog = Catalog(url, _user, _password)
         gs_resource = gs_catalog.get_resource(instance.name)
@@ -469,6 +470,8 @@ def geoserver_post_save(instance, sender, **kwargs):
     if instance.storeType == "dataStore":
         links = wfs_links(ogc_server_settings.public_url + 'wfs?', instance.typename.encode('utf-8'))
         for ext, name, mime, wfs_url in links:
+            if mime=='SHAPE-ZIP':
+                name = 'Zipped Shapefile'
             Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                             url=wfs_url,
                             defaults=dict(
@@ -480,7 +483,6 @@ def geoserver_post_save(instance, sender, **kwargs):
                             )
                         )
 
-
     elif instance.storeType == 'coverageStore':
         #FIXME(Ariel): This works for public layers, does it work for restricted too?
         # would those end up with no geotiff links, like, forever?
@@ -489,8 +491,13 @@ def geoserver_post_save(instance, sender, **kwargs):
         permissions['authenticated'] = instance.get_gen_level(AUTHENTICATED_USERS)
         instance.set_gen_level(ANONYMOUS_USERS,'layer_readonly')
 
+        #Potentially 3 dimensions can be returned by the grid if there is a z
+        #axis.  Since we only want width/height, slice to the second dimension
+        covWidth, covHeight = get_coverage_grid_extent(instance)[:2]
         links = wcs_links(ogc_server_settings.public_url + 'wcs?', instance.typename.encode('utf-8'),
-            bbox=instance.bbox[:-1], crs=instance.bbox[-1], height=height, width=width)
+                          bbox=gs_resource.native_bbox[:-1],
+                          crs=gs_resource.native_bbox[-1],
+                          height=str(covHeight), width=str(covWidth))
         for ext, name, mime, wcs_url in links:
             Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                                 url=wcs_url,
@@ -501,7 +508,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                     link_type='data',
                                 )
                             )
-            
+                    
         instance.set_gen_level(ANONYMOUS_USERS,permissions['anonymous'])
         instance.set_gen_level(AUTHENTICATED_USERS,permissions['authenticated'])
 
@@ -529,7 +536,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                         url=kml_reflector_link_view,
                         defaults=dict(
                             extension='kml',
-                            name=_("View in Google Earth"),
+                            name="View in Google Earth",
                             mime='text/xml',
                             link_type='data',
                         )
@@ -561,6 +568,44 @@ def geoserver_post_save(instance, sender, **kwargs):
                             name=instance.typename,
                             mime='text/html',
                             link_type='html',
+                            )
+                        )
+
+    ogc_wms_url = ogc_server_settings.public_url + 'wms?'
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=ogc_wms_url,
+                        defaults=dict(
+                            extension='html',
+                            name=instance.name,
+                            url=ogc_wms_url,
+                            mime='text/html',
+                            link_type='OGC:WMS',
+                        )
+                    )
+                        
+    if instance.storeType == "dataStore":
+        ogc_wfs_url = ogc_server_settings.public_url + 'wfs?'
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                            url=ogc_wfs_url,
+                            defaults=dict(
+                                extension='html',
+                                name=instance.name,
+                                url=ogc_wfs_url,
+                                mime='text/html',
+                                link_type='OGC:WFS',
+                            )
+                        )
+
+    if instance.storeType == "coverageStore":
+        ogc_wcs_url = ogc_server_settings.public_url + 'wcs?'
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                            url=ogc_wcs_url,
+                            defaults=dict(
+                                extension='html',
+                                name=instance.name,
+                                url=ogc_wcs_url,
+                                mime='text/html',
+                                link_type='OGC:WCS',
                             )
                         )
 
@@ -634,6 +679,18 @@ def get_attribute_statistics(layer_name, field):
         return wps_execute_layer_attribute_statistics(layer_name, field)
     except Exception:
         logger.exception('Error generating layer aggregate statistics')
+
+
+def get_coverage_grid_extent(instance):
+    """
+        Returns a list of integers with the size of the coverage
+        extent in pixels
+    """
+
+    wcs = WebCoverageService(ogc_server_settings.public_url + 'wcs', '1.0.0')
+    grid = wcs.contents[instance.workspace + ':' + instance.name].grid
+    return [(int(h) - int(l) + 1) for
+            h, l in zip(grid.highlimits, grid.lowlimits)]
 
 
 def set_attributes(layer, overwrite=False):
