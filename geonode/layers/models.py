@@ -468,7 +468,6 @@ def geoserver_post_save(instance, sender, **kwargs):
                             )
                         )
 
-
     elif instance.storeType == 'coverageStore':
         #FIXME(Ariel): This works for public layers, does it work for restricted too?
         # would those end up with no geotiff links, like, forever?
@@ -494,7 +493,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                     link_type='data',
                                 )
                             )
-
+                    
         instance.set_gen_level(ANONYMOUS_USERS,permissions['anonymous'])
         instance.set_gen_level(AUTHENTICATED_USERS,permissions['authenticated'])
 
@@ -554,6 +553,44 @@ def geoserver_post_save(instance, sender, **kwargs):
                             name=instance.typename,
                             mime='text/html',
                             link_type='html',
+                            )
+                        )
+
+    ogc_wms_url = ogc_server_settings.public_url + 'wms?'
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=ogc_wms_url,
+                        defaults=dict(
+                            extension='html',
+                            name=instance.name,
+                            url=ogc_wms_url,
+                            mime='text/html',
+                            link_type='OGC:WMS',
+                        )
+                    )
+                        
+    if instance.storeType == "dataStore":
+        ogc_wfs_url = ogc_server_settings.public_url + 'wfs?'
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                            url=ogc_wfs_url,
+                            defaults=dict(
+                                extension='html',
+                                name=instance.name,
+                                url=ogc_wfs_url,
+                                mime='text/html',
+                                link_type='OGC:WFS',
+                            )
+                        )
+
+    if instance.storeType == "coverageStore":
+        ogc_wcs_url = ogc_server_settings.public_url + 'wcs?'
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                            url=ogc_wcs_url,
+                            defaults=dict(
+                                extension='html',
+                                name=instance.name,
+                                url=ogc_wcs_url,
+                                mime='text/html',
+                                link_type='OGC:WCS',
                             )
                         )
 
