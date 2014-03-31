@@ -208,7 +208,7 @@ INSTALLED_APPS = (
     'geonode.documents',
 
     # GeoNode Contrib Apps
-    'geonode.contrib.groups',
+    #'geonode.contrib.groups',
 )
 
 LOGGING = {

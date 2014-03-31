@@ -18,11 +18,13 @@
 #
 #########################################################################
 
+from django.conf import settings
+from django.contrib import admin
 from geonode.security.models import ObjectRole, UserObjectRoleMapping, \
     GroupObjectRoleMapping, GenericObjectRoleMapping
-from django.contrib import admin
 
 admin.site.register(ObjectRole)
 admin.site.register(UserObjectRoleMapping)
-admin.site.register(GroupObjectRoleMapping)
 admin.site.register(GenericObjectRoleMapping)
+if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+    admin.site.register(GroupObjectRoleMapping)

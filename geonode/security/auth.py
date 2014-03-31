@@ -19,13 +19,15 @@
 #########################################################################
 
 from django.contrib.auth.backends import ModelBackend
-
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType 
 from django.db import models
 from django.contrib.auth.models import User
 from geonode.security.models import GenericObjectRoleMapping, Permission, \
-    UserObjectRoleMapping, GroupObjectRoleMapping
-from geonode.contrib.groups.models import Group
+    UserObjectRoleMapping
+if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+    from geonode.security.models import GroupObjectRoleMapping
+    from geonode.contrib.groups.models import Group
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 
 class GranularBackend(ModelBackend):
@@ -116,11 +118,12 @@ class GranularBackend(ModelBackend):
             for rm in UserObjectRoleMapping.objects.select_related('role', 'role__permissions', 'role__permissions__content_type').filter(object_id=obj.id, object_ct=ct, user=user_obj).all():
                 for perm in rm.role.permissions.all():
                     obj_perms.add((perm.content_type.app_label, perm.codename))
-            groups = Group.groups_for_user(user_obj)
-            for group in groups:
-                for rm in GroupObjectRoleMapping.objects.select_related('role', 'role__permissions', 'role__permissions__content_type').filter(object_id=obj.id, object_ct=ct, group=group).all():
-                    for perm in rm.role.permissions.all():
-                        obj_perms.add((perm.content_type.app_label, perm.codename))
+            if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+                groups = Group.groups_for_user(user_obj)
+                for group in groups:
+                    for rm in GroupObjectRoleMapping.objects.select_related('role', 'role__permissions', 'role__permissions__content_type').filter(object_id=obj.id, object_ct=ct, group=group).all():
+                        for perm in rm.role.permissions.all():
+                            obj_perms.add((perm.content_type.app_label, perm.codename))
 
         return obj_perms
 
@@ -143,16 +146,18 @@ class GranularBackend(ModelBackend):
                                                                                    role__permissions=perm,
                                                                                    object_ct=ct).values_list('object_id')])
 
-                # If the user is a member of any groups, see if the groups have permission to the object.
-                for group in Group.groups_for_user(acl_obj):
-                    obj_ids.update([x[0] for x in GroupObjectRoleMapping.objects.filter(group=group,
-                                                                                        role__permissions=perm,
-                                                                                        object_ct=ct).values_list('object_id')])
+                if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+                    # If the user is a member of any groups, see if the groups have permission to the object.
+                    for group in Group.groups_for_user(acl_obj):
+                        obj_ids.update([x[0] for x in GroupObjectRoleMapping.objects.filter(group=group,
+                                                                                            role__permissions=perm,
+                                                                                            object_ct=ct).values_list('object_id')])
 
-        if isinstance(acl_obj, Group):
-            obj_ids.update([x[0] for x in GroupObjectRoleMapping.objects.filter(group=acl_obj,
-                                                                                role__permissions=perm,
-                                                                                object_ct=ct).values_list('object_id')])
+        if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+            if isinstance(acl_obj, Group):
+                obj_ids.update([x[0] for x in GroupObjectRoleMapping.objects.filter(group=acl_obj,
+                                                                                    role__permissions=perm,
+                                                                                    object_ct=ct).values_list('object_id')])
            
         obj_ids.update([x[0] for x in GenericObjectRoleMapping.objects.filter(subject__in=generic_roles, 
                                                                               role__permissions=perm,
