@@ -178,7 +178,7 @@ class Layer(ResourceBase):
         if self.storeType == "remoteStore":
             return self.service.base_url
         else:
-            return settings.GEOSERVER_BASE_URL + "wms"
+            return settings.OGC_SERVER['default']['LOCATION'] + "wms"
 
     def get_absolute_url(self):
         return reverse('layer_detail', args=(self.typename,))
