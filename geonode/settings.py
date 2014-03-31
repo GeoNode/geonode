@@ -179,6 +179,7 @@ INSTALLED_APPS = (
     'geoexplorer',
     'django_extensions',
     'tastypie',
+    'polymorphic',
 
     # Theme
     "pinax_theme_bootstrap_account",
