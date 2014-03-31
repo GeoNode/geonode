@@ -28,7 +28,7 @@ class GeoNodeAuthorization(DjangoAuthorization):
 
     def read_list(self, object_list, bundle):
         return [i for i in object_list if bundle.request.user.has_perm(
-            perms[bundle.obj.class_name]['view'], i)]
+            perms[i.class_name]['view'], i)]
 
     def read_detail(self, object_list, bundle):
         return bundle.request.user.has_perm(perms[bundle.obj.class_name]['view'], bundle.obj)
