@@ -32,6 +32,7 @@ from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
+from django.utils.html import strip_tags
 from django.views.decorators.http import require_POST
 
 from geonode.views import _handleThumbNail
@@ -144,6 +145,8 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
         new_poc = map_form.cleaned_data['poc']
         new_author = map_form.cleaned_data['metadata_author']
         new_keywords = map_form.cleaned_data['keywords']
+        new_title = strip_tags(map_form.cleaned_data['title'])
+        new_abstract = strip_tags(map_form.cleaned_data['abstract'])
 
         if new_poc is None:
             if poc.user is None:
@@ -166,8 +169,12 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
             the_map = map_form.save()
             the_map.poc = new_poc
             the_map.metadata_author = new_author
+            the_map.title = new_title
+            the_map.abstract = new_abstract
+            the_map.save()
             the_map.keywords.clear()
             the_map.keywords.add(*new_keywords)
+
             return HttpResponseRedirect(reverse('map_detail', args=(map_obj.id,)))
 
     if poc.user is None:
@@ -194,22 +201,29 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
 @login_required
 def map_remove(request, mapid, template='maps/map_remove.html'):
     ''' Delete a map, and its constituent layers. '''
-    map_obj = _resolve_map(request, mapid, 'maps.delete_map',
-                           _PERMISSION_MSG_DELETE, permission_required=True)
+    try:
+        map_obj = _resolve_map(request, mapid, 'maps.delete_map',
+                               _PERMISSION_MSG_DELETE, permission_required=True)
 
-    if request.method == 'GET':
-        return render_to_response(template, RequestContext(request, {
-            "map": map_obj
-        }))
+        if request.method == 'GET':
+            return render_to_response(template, RequestContext(request, {
+                "map": map_obj
+            }))
 
-    elif request.method == 'POST':
-        layers = map_obj.layer_set.all()
-        for layer in layers:
-            layer.delete()
-        map_obj.delete()
+        elif request.method == 'POST':
+            layers = map_obj.layer_set.all()
+            for layer in layers:
+                layer.delete()
+            map_obj.delete()
 
-        return HttpResponseRedirect(reverse("maps_browse"))
+            return HttpResponseRedirect(reverse("maps_browse"))
 
+    except PermissionDenied:
+            return HttpResponse(
+                   'You are not allowed to delete this map',
+                   mimetype="text/plain",
+                   status=401
+            )
 
 def map_embed(request, mapid=None, template='maps/map_embed.html'):
     if mapid is None:
