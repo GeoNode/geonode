@@ -60,9 +60,8 @@ class GroupMemberForm(forms.Form):
         ("member", "Member"),
         ("manager", "Manager"),
     ])
-    user_identifiers = forms.CharField(widget=forms.Textarea)
-    
-    #TODO Reuse clean_user_identifiers from GroupInviteForm
+    user_identifiers = forms.CharField(widget=forms.TextInput(attrs={'class': 'user-select'}))
+
     def clean_user_identifiers(self):
         value = self.cleaned_data["user_identifiers"]
         new_members, errors = [], []
@@ -87,8 +86,8 @@ class GroupMemberForm(forms.Form):
             raise forms.ValidationError(message)
         
         return new_members
-
     
+
 class GroupInviteForm(forms.Form):
     
     role = forms.ChoiceField(choices=[

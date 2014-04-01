@@ -28,10 +28,16 @@
         <h2>{% trans "Add members" %}</h2>
         <form class="uniForm" method="POST" action="{% url "group_members_add" object.slug %}">
             {% csrf_token %}
-            {{ member_form }}<br/>
-            <input type="submit" value="add-members" />
+            {{ member_form }}<br/><br/>
+            <input type="submit" value="Add Group Members" />
         </form>
     {% endif %}
 
 </div>
 {% endblock %}
+
+{% block extra_script %}
+{% with "none" as layer %}
+{% include "_permissions_form_js.html" %}
+{% endwith %}
+{% endblock extra_script %}
