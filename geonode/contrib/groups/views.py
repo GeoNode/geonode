@@ -228,6 +228,10 @@ def group_remove(request, slug):
             "group": group
         }))
     if request.method == 'POST':
+
+        if not group.user_is_role(request.user, role="manager"):
+            return HttpResponseForbidden()
+
         group.delete()
         return HttpResponseRedirect(reverse("group_list"))
     else:
