@@ -23,3 +23,14 @@
 {% endif %}
 </div>
 {% endblock %}
+
+{% block sidebar %}
+<div id="sidebar" class="threecol">
+
+    <h3>{% trans "Manage" %}</h3>
+    <ul>
+        <li><a href="{% url "register_service" %}">{% trans "Register a new Service" %}</a></li>
+    </ul>
+
+</div>
+{% endblock %}

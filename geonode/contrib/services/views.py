@@ -444,17 +444,17 @@ def _register_cascaded_layers(service, owner=None):
                     resource = cat.create_wfslayer(cascade_ws, store, layer)
 
                 if resource:
-                    cascaded_layer, created = Layer.objects.get_or_create(name=resource.name, service=service,
+                    cascaded_layer, created = Layer.objects.get_or_create(
+                        typename = "%s:%s" % (cascade_ws.name, resource.name),
                         defaults = {
+                            "name": resource.name,
                             "workspace": cascade_ws.name,
                             "store": store.name,
                             "storeType": store.resource_type,
-                            "typename": "%s:%s" % (cascade_ws.name, resource.name),
                             "title": resource.title or 'No title provided',
                             "abstract": resource.abstract or 'No abstract provided',
                             "owner": None,
-                            "uuid": str(uuid.uuid4()),
-                            "service": service
+                            "uuid": str(uuid.uuid4())
                         })
 
 
@@ -601,7 +601,6 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
             # Need to check if layer already exists??
             bbox = list(wms_layer.boundingBoxWGS84)
             saved_layer, created = Layer.objects.get_or_create(
-                service=service,
                 typename=wms_layer.name,
                 defaults=dict(
                     name=wms_layer.name,
@@ -626,12 +625,12 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                 set_attributes(saved_layer)
 
                 service_layer, created = ServiceLayer.objects.get_or_create(
-                    service=service,
-                    typename=wms_layer.name
+                    typename=wms_layer.name,
+                    service = service
                 )
                 service_layer.layer = saved_layer
-                service_layer.title=wms_layer.title,
-                service_layer.description=wms_layer.abstract,
+                service_layer.title=wms_layer.title
+                service_layer.description=wms_layer.abstract
                 service_layer.styles=wms_layer.styles
                 service_layer.save()
             count += 1
@@ -793,7 +792,6 @@ def _register_arcgis_layers(service, arc=None):
         bbox = [layer.extent.xmin, layer.extent.ymin, layer.extent.xmax, layer.extent.ymax]
         # Need to check if layer already exists??
         saved_layer, created = Layer.objects.get_or_create(
-            service=service,
             typename=str(layer.id),
             defaults=dict(
                 name=str(layer.id),
@@ -1028,10 +1026,9 @@ def process_ogp_results(ogp, result_json, owner=None):
                 )
 
                 layer_uuid = str(uuid.uuid1())
-                saved_layer, created = Layer.objects.get_or_create(service=service, typename=typename,
+                saved_layer, created = Layer.objects.get_or_create(typename=typename,
                     defaults=dict(
                     name=doc["Name"],
-                    service = service,
                     uuid=layer_uuid,
                     store=service.name, #??
                     storeType="remoteStore",
@@ -1060,7 +1057,7 @@ def service_detail(request, service_id):
     This view shows the details of a service 
     '''
     service = get_object_or_404(Service,pk=service_id)
-    layer_list = service.layer_set.all()
+    layer_list = service.layers.all()
     service_list = service.service_set.all()
     service_paginator = Paginator(service_list, 25) # Show 25 services per page
     layer_paginator = Paginator(layer_list, 25) # Show 25 services per page

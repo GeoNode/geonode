@@ -56,15 +56,12 @@ class Service(models.Model, PermissionLevelMixin):
     uuid = models.CharField(max_length=36, null=True, blank=True)
     external_id = models.IntegerField(null=True, blank=True)
     parent = models.ForeignKey('services.Service', null=True, blank=True, related_name='service_set')
+    layers = models.ManyToManyField(Layer, through='ServiceLayer')
 
     # Supported Capabilities
 
     def __unicode__(self):
         return self.name
-
-    def layers(self):
-        """Return a list of all the child layers (resources) for this Service"""
-        pass
 
     @property
     def ptype(self):
@@ -111,11 +108,11 @@ class ServiceProfileRole(models.Model):
     role = models.ForeignKey(Role)
 
 class ServiceLayer(models.Model):
-    service = models.ForeignKey(Service, related_name="servicelayer_set")
+    service = models.ForeignKey(Service)
+    layer = models.ForeignKey(Layer, null=True)
     typename = models.CharField(_("Layer Name"), max_length=255)
     title = models.CharField(_("Layer Title"), max_length=512)
     description = models.TextField(_("Layer Description"), null=True)
-    layer = models.ForeignKey(Layer, null=True)
     styles = models.TextField(_("Layer Styles"), null=True)
 
 
@@ -133,7 +130,7 @@ def post_save_service(instance, sender, created, **kwargs):
         instance.set_default_permissions()
 
 def pre_delete_service(instance, sender, **kwargs):
-    for layer in instance.layer_set.all():
+    for layer in instance.layers.all():
         layer.delete()
     # if instance.method == 'H':
     #     gn = Layer.objects.gn_catalog
