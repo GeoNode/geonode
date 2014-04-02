@@ -59,21 +59,6 @@ logger = logging.getLogger('geonode.layers.utils')
 _separator = '\n' + ('-' * 100) + '\n'
 
 
-def layer_set_permissions(layer, perm_spec):
-    if "authenticated" in perm_spec:
-        layer.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
-    if "anonymous" in perm_spec:
-        layer.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-    if isinstance(perm_spec['users'], dict): perm_spec['users'] = perm_spec['users'].items()
-    users = [n[0] for n in perm_spec['users']]
-    excluded = users + [layer.owner]
-    existing = layer.get_user_levels().exclude(user__username__in=excluded)
-    existing.delete()
-    for username, level in perm_spec['users']:
-        user = User.objects.get(username=username)
-        layer.set_user_level(user, level)
-
-
 def layer_type(filename):
     """Finds out if a filename is a Feature or a Vector
        returns a gsconfig resource_type string
@@ -517,7 +502,7 @@ def save(layer, base_file, user, overwrite=True, title=None,
     logger.info('>>> Step 10. Setting default permissions for [%s]', name)
 
     if permissions is not None and len(permissions.keys()) > 0:
-        layer_set_permissions(saved_layer, permissions)
+        saved_layer.set_permissions(permissions)
     else:
         saved_layer.set_default_permissions()
 
