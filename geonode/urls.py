@@ -63,9 +63,6 @@ urlpatterns = patterns('',
     # Upload views
     (r'^upload/', include('geonode.upload.urls')),
 
-    # Services views
-    (r'^services/', include('geonode.contrib.services.urls')),
-
     # GeoServer Helper Views 
     (r'^gs/', include('geonode.geoserver.urls')),
 
@@ -102,6 +99,12 @@ if settings.DOCUMENTS_APP:
     urlpatterns += patterns('',
         (r'^documents/', include('geonode.documents.urls')),
     )
+
+if "geonode.contrib.services" in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+        (r'^services/', include('geonode.contrib.services.urls')),
+    )
+
 
 urlpatterns += geonode.proxy.urls.urlpatterns
 
