@@ -176,7 +176,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
     config = layer.attribute_config()
-    if layer.storeType == "remoteStore": 
+    if layer.storeType == "remoteStore" and "geonode.contrib.services" in settings.INSTALLED_APPS:
         from geonode.contrib.services.models import Service
         service = Service.objects.filter(layers__id=layer.id)[0] 
         source_params = {"ptype":service.ptype, "remote": True, "url": service.base_url, "name": service.name}
