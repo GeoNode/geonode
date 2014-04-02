@@ -98,7 +98,6 @@ class Layer(ResourceBase):
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     typename = models.CharField(max_length=128, unique=True)
-    #service = models.ForeignKey('services.Service', null=True, blank=True, related_name='layer_set')
 
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
@@ -176,7 +175,8 @@ class Layer(ResourceBase):
     @property
     def ows_url(self):
         if self.storeType == "remoteStore":
-            return self.service_set.all()[0].base_url
+            from geonode.contrib.services.models import ServiceLayer
+            return ServiceLayer.objects.filter(layer__id=self.id)[0].service.base_url
         else:
             return settings.OGC_SERVER['default']['LOCATION'] + "wms"
 
