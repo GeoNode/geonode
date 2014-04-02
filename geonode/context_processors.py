@@ -45,5 +45,6 @@ def resource_urls(request):
         PRINTNG_ENABLED = ogc_server_settings.PRINTNG_ENABLED,
         GS_SECURITY_ENABLED = ogc_server_settings.GEONODE_SECURITY_ENABLED,
         PROXY_URL = getattr(settings, 'PROXY_URL', '/proxy/?url='),
-        SOCIAL_BUTTONS = getattr(settings, 'SOCIAL_BUTTONS', True)
+        SOCIAL_BUTTONS = getattr(settings, 'SOCIAL_BUTTONS', True),
+        USE_SERVICES = 'geonode.contrib.services' in settings.INSTALLED_APPS
     )

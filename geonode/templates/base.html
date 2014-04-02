@@ -119,7 +119,11 @@
                   <li id="nav_maps">
                     <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
                   </li>
-    
+                  {% if USE_SERVICES %}
+                  <li id="nav_services">
+                    <a href="{% url "services" %}">{% trans "Services" %}</a>
+                  </li>
+                  {% endif %}
                   {% if DOCUMENTS_APP %}
                   <li id="nav_documents">
                     <a href="{% url "documents_browse" %}">{% trans "Documents" %}</a>
