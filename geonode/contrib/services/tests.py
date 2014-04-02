@@ -54,7 +54,7 @@ class ServicesTests(TestCase):
 
         try:
             service = Service.objects.get(id=service_dict['service_id'])
-            self.assertTrue(service.layer_set.all().count() > 0) #Harvested some layers
+            self.assertTrue(service.layers.count() > 0) #Harvested some layers
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "WMS")
             self.assertEqual(service.ptype, 'gxp_wmscsource')
@@ -78,7 +78,7 @@ class ServicesTests(TestCase):
 
         try:
             service = Service.objects.get(id=service_dict['service_id'])
-            self.assertTrue(service.layer_set.all().count() > 0) #Harvested some layers
+            self.assertTrue(service.layers.count() > 0) #Harvested some layers
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "REST")
             self.assertEqual(service.ptype, 'gxp_arcrestsource')
@@ -106,4 +106,4 @@ class ServicesTests(TestCase):
         self.assertEqual(service.base_url, 'http://demo.pycsw.org/cite/csw')
         #TODO: Use CSW or make mock CSW containing just a few small WMS & ESRI service records
         self.assertEquals(service.service_set.all().count(), 0) #No WMS/REST services
-        self.assertEquals(service.layer_set.all().count(),0)   # No Layers for this one
+        self.assertEquals(service.layers.count(),0)   # No Layers for this one
