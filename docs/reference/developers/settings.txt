@@ -22,12 +22,6 @@ Default: ``['doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip', 'jpg', 'jpeg', 'tif', 't
 
 A list of acceptable file extensions that can be uploaded to the Documents app.
 
-DOCUMENTS_APP
--------------
-Default: ``True``
-
-Enables the Documents app.
-
 MAX_DOCUMENT_SIZE
 -----------------
 Default: ``2``

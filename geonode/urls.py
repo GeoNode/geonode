@@ -95,7 +95,7 @@ urlpatterns = patterns('',
     )
 
 #Documents views
-if settings.DOCUMENTS_APP:
+if 'geonode.documents' in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
         (r'^documents/', include('geonode.documents.urls')),
     )
