@@ -19,6 +19,7 @@
 #########################################################################
 
 import json
+import sys, traceback
 
 from django.test import TestCase
 from django.test.client import Client
@@ -49,17 +50,16 @@ class ServicesTests(TestCase):
                 })
         self.assertEqual(response.status_code, 200)
         service_dict = json.loads(response.content)[0]
-
+        print service_dict
 
         try:
             service = Service.objects.get(id=service_dict['service_id'])
             self.assertTrue(service.layer_set.all().count() > 0) #Harvested some layers
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "WMS")
-            self.assertEqual(service.ptype(), 'gxp_wmscsource')
-
-
+            self.assertEqual(service.ptype, 'gxp_wmscsource')
         except Exception, e:
+            traceback.print_exc(file=sys.stdout)
             self.fail("Service not created: %s" % str(e))
 
     def test_register_arcrest(self):
@@ -81,7 +81,7 @@ class ServicesTests(TestCase):
             self.assertTrue(service.layer_set.all().count() > 0) #Harvested some layers
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "REST")
-            self.assertEqual(service.ptype(), 'gxp_arcrestsource')
+            self.assertEqual(service.ptype, 'gxp_arcrestsource')
         except Exception, e:
             self.fail("Service not created: %s" % str(e))
 
