@@ -31,6 +31,8 @@ from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, info, call_task
 from paver.easy import BuildFailure
 
+from geonode.settings import GEONODE_APPS
+
 try:
     from paver.path import pushd
 except ImportError:
@@ -320,7 +322,7 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    sh("python manage.py test geonode --noinput")
+    sh("python manage.py test %s.tests --noinput" % '.tests '.join(GEONODE_APPS)) 
 
 
 @task
