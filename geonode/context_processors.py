@@ -45,6 +45,6 @@ def resource_urls(request):
         GS_SECURITY_ENABLED = ogc_server_settings.GEONODE_SECURITY_ENABLED,
         PROXY_URL = getattr(settings, 'PROXY_URL', '/proxy/?url='),
         SOCIAL_BUTTONS = getattr(settings, 'SOCIAL_BUTTONS', True),
-        USE_SERVICES = 'geonode.contrib.services' in settings.INSTALLED_APPS
+        USE_SERVICES = 'geonode.contrib.services' in settings.INSTALLED_APPS,
         USE_DOCUMENTS = 'geonode.documents' in settings.INSTALLED_APPS
     )
