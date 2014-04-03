@@ -102,6 +102,7 @@ setup(name='GeoNode',
         "South==0.7.3",
         "django-downloadview==1.2",
         "django-tastypie==0.11.0",
+        "django-polymorphic==0.5.3",
         #catalogue
         "pycsw==1.6.4",
         # setup
