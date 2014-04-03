@@ -88,6 +88,9 @@ class FacetedModelResource(ModelResource):
 class CommonMetaApi:
     authorization = GeoNodeAuthorization()
     allowed_methods = ['get','post','delete','put']
+    filtering = {
+            'title': ALL,
+        }
 
 
 class ResourceBaseResource(FacetedModelResource):
@@ -97,9 +100,6 @@ class ResourceBaseResource(FacetedModelResource):
         queryset = ResourceBase.objects.all()
         resource_name = 'base'
         allowed_methods = ['get',]
-        filtering = {
-            'title': ALL
-        }
 
 
 class UserResource(FacetedModelResource):
