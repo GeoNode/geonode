@@ -36,7 +36,6 @@ def resource_urls(request):
         VERSION=get_version(),
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
-        DOCUMENTS_APP = settings.DOCUMENTS_APP,
         UPLOADER_URL = reverse('data_upload') if getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest') == 'geonode.importer' else reverse('layer_upload'),
         GEOGIT_ENABLED = ogc_server_settings.GEOGIT_ENABLED,
         TIME_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', False),
@@ -47,4 +46,5 @@ def resource_urls(request):
         PROXY_URL = getattr(settings, 'PROXY_URL', '/proxy/?url='),
         SOCIAL_BUTTONS = getattr(settings, 'SOCIAL_BUTTONS', True),
         USE_SERVICES = 'geonode.contrib.services' in settings.INSTALLED_APPS
+        USE_DOCUMENTS = 'geonode.documents' in settings.INSTALLED_APPS
     )
