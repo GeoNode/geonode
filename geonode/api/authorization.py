@@ -27,8 +27,11 @@ class GeoNodeAuthorization(DjangoAuthorization):
     """Object level API authorization based on GeoNode granular permission system"""
 
     def read_list(self, object_list, bundle):
-        return [i for i in object_list if bundle.request.user.has_perm(
-            perms[i.class_name]['view'], i)]
+        for obj in object_list:
+            if not bundle.request.user.has_perm(perms[obj.class_name]['view'], obj):
+                object_list = object_list.exclude(id__exact=obj.id)
+        
+        return object_list
 
     def read_detail(self, object_list, bundle):
         return bundle.request.user.has_perm(perms[bundle.obj.class_name]['view'], bundle.obj)
