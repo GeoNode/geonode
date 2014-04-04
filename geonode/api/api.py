@@ -60,8 +60,7 @@ class FacetedModelResource(ModelResource):
 
         Should return a HttpResponse (200 OK).
         """
-        # TODO: Uncached for now. Invalidation that works for everyone may be
-        #       impossible.
+
         base_bundle = self.build_bundle(request=request)
         objects = self.obj_get_list(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
         sorted_objects = self.apply_sorting(objects, options=request.GET)
@@ -87,7 +86,7 @@ class FacetedModelResource(ModelResource):
 
 class CommonMetaApi:
     authorization = GeoNodeAuthorization()
-    allowed_methods = ['get','post','delete','put']
+    allowed_methods = ['get',]
     filtering = {
             'title': ALL,
         }
@@ -99,7 +98,6 @@ class ResourceBaseResource(FacetedModelResource):
     class Meta(CommonMetaApi):
         queryset = ResourceBase.objects.all()
         resource_name = 'base'
-        allowed_methods = ['get',]
 
 
 class UserResource(FacetedModelResource):
