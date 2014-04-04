@@ -120,7 +120,7 @@
                     <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
                   </li>
     
-                  {% if DOCUMENTS_APP %}
+                  {% if USE_DOCUMENTS %}
                   <li id="nav_documents">
                     <a href="{% url "documents_browse" %}">{% trans "Documents" %}</a>
                   </li>
@@ -240,7 +240,7 @@
               limit: 10,
               sort: 'none',
               start: page,
-              q: term
+              q: term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
             }
           },
           results: function(data, page) {
@@ -254,6 +254,7 @@
           }          
         },
         createSearchChoice:function(term, data) { 
+            term = term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
             if ($(data).filter(function() { 
                 return this.text.localeCompare(term)===0; }).length===0) {
                     return {id:term, text:term};

@@ -49,7 +49,7 @@ ACT = 'source ' + GEONODEDIR + '/bin/activate'
 # Install GeoNode dependencies
 def install_depend():
     sudo('cd %s; virtualenv geonode --system-site-packages;' % INSTALLDIR)
-    sudo('apt-get install -y gcc python-pastescript python-dev libxml2-dev libxslt1-dev openjdk-6-jdk python-psycopg2')
+    sudo('apt-get install -y gcc python-pastescript python-dev libxml2-dev libxslt1-dev openjdk-6-jdk python-psycopg2 imagemagick')
     # Web server
     sudo('apt-get install -y apache2 tomcat6 libapache2-mod-wsgi maven2')
     sudo("a2enmod proxy_http")
