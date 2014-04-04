@@ -3,16 +3,46 @@ from django.contrib.auth.models import User
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, TopicCategory
+
+from taggit.models import Tag
 
 from tastypie.resources import ModelResource
 from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie import fields
 
 from .authorization import GeoNodeAuthorization
 
 
+class TagResource(ModelResource):
+    """Tags api"""
+
+    class Meta:
+        queryset = Tag.objects.all()
+        resource_name = 'keywords'
+        allowed_methods = ['get',]
+        filtering = {
+            'slug': ALL,
+        }
+
+
+class TopicCategoryResource(ModelResource):
+    """Category api"""
+
+    class Meta:
+        queryset = TopicCategory.objects.all()
+        resource_name = 'categories'
+        allowed_methods = ['get',]
+        filtering = {
+            'identifier': ALL,
+        }
+
+
 class FacetedModelResource(ModelResource):
+
+    keywords = fields.ToManyField(TagResource, 'keywords', full=True, null=True)
+    category = fields.ToOneField(TopicCategoryResource, 'category', full=True, null=True)
 
     def get_facets(self, results):
         facets = {
@@ -28,7 +58,6 @@ class FacetedModelResource(ModelResource):
         facets['vector'] = results.filter(Layer___storeType='dataStore').count()
         facets['layer'] = facets['raster'] + facets['vector']
         return facets
-
 
     def get_counts(self, results):
         tags = {}
@@ -89,6 +118,8 @@ class CommonMetaApi:
     allowed_methods = ['get',]
     filtering = {
             'title': ALL,
+            'keywords': ALL_WITH_RELATIONS,
+            'category': ALL_WITH_RELATIONS,
         }
 
 
