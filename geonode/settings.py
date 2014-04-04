@@ -79,7 +79,7 @@ LANGUAGES = (
     ('el', 'Ελληνικά'),
     ('id', 'Bahasa Indonesia'),
     ('zh-cn', '中文'),
-    ('ja', '日本人'),
+    ('ja', '日本語'),
     ('fa', 'Persian'),
     ('pt', 'Portuguese'),
     ('ru', 'Russian'),
@@ -146,8 +146,7 @@ SITE_ID = 1
 LOGIN_URL = '/account/login/'
 LOGOUT_URL = '/account/logout/'
 
-# Activate the Documents application
-DOCUMENTS_APP = True
+# Documents application
 ALLOWED_DOCUMENT_TYPES = [
     'doc', 'docx','gif', 'jpg', 'jpeg', 'ods', 'odt', 'pdf', 'png', 'ppt', 
     'rar', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 

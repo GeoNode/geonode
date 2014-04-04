@@ -32,7 +32,7 @@
         </a>
         <ul class="dropdown-menu">
           {% for link in links %}
-            <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
+            <li><a href="{{ link.url }}">{% trans link.name %} <i class="icon-chevron-right"></i></a></li>
           {% endfor %}
         </ul>
       </div>
@@ -120,15 +120,9 @@
             </table>
         {% endif %}
       </article>
-      <article id="share" class="tab-pane">
-        <!-- TODO: Move this to a reusable template snippet -->
-        <header>
-          <h3>{% trans "Share This Layer" %}</h3>
-        </header>
-          <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
-          <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
-        <!-- TODO: Add more sharing options -->
-      </article>
+      {% block social_links %}
+      {% include "social_links.html" %}
+      {% endblock %}
       <!--article id="flag" class="tab-pane">
         <p>Flag this Layer</p>
       </article-->

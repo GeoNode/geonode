@@ -29,6 +29,7 @@ from owslib.util import http_post
 import urllib
 from geonode import GeoNodeException
 from geonode.utils import ogc_server_settings
+from re import sub
 
 logger = logging.getLogger(__name__)
 
@@ -66,10 +67,16 @@ def wcs_links(wcs_url, identifier, bbox=None, crs=None, height=None, width=None,
         for f in formats:
             if exclude_formats and f in DEFAULT_EXCLUDE_FORMATS:
                 continue
-            url = wcs.getCoverage(identifier=coverage.id, format=f, bbox=bbox, crs=crs, 
-                height=height, width=width).geturl()
+            #roundabout, hacky way to accomplish getting a getCoverage url.
+            #nonetheless, it's better than having to load an entire large
+            #coverage just to generate a URL
+            fakeUrl = wcs.getCoverage(identifier=coverage.id, format=f,
+                                      bbox=bbox, crs=crs, height=20,
+                                      width=20).geturl()
+            url = sub(r'(height=)20(\&width=)20', r'\g<1>{0}\g<2>{1}',
+                         fakeUrl).format(height, width)
             # The outputs are: (ext, name, mime, url)
-            # FIXME(Ariel): Find a way to get proper ext, name and mime 
+            # FIXME(Ariel): Find a way to get proper ext, name and mime
             # using format as a default for all is not good enough
             output.append((f, f, f, url))
     return output
@@ -86,7 +93,7 @@ def _wfs_link(wfs_url, identifier, mime, extra_params):
     return wfs_url + urllib.urlencode(params)
 
 
-def wfs_links(wfs_url, identifier): 
+def wfs_links(wfs_url, identifier):
      types = [
             ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
             ("gml", _("GML 2.0"), "gml2", {}),
@@ -141,7 +148,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
                                'layer_name': 'geonode:%s' %  layer_name,
                                'field': field
                               })
-     
+
     response = http_post(url, request, timeout=ogc_server_settings.TIMEOUT)
 
     exml = etree.fromstring(response)
@@ -154,7 +161,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
             result[f] = fr.text
         else:
             result[f] = 'NA'
-   
+
     count = exml.find('Count')
     if count is not None:
         result['Count'] = int(count.text)
@@ -172,7 +179,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
 
         response = http_post(url, request, timeout=ogc_server_settings.TIMEOUT)
 
-        exml = etree.fromstring(response)    
+        exml = etree.fromstring(response)
 
         values = []
 
@@ -180,5 +187,5 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
             if value is not None:
                 values.append(value.text)
         result['unique_values'] = ','.join(values)
- 
+
     return result
