@@ -27,6 +27,7 @@ class GeoNodeAuthorization(DjangoAuthorization):
     """Object level API authorization based on GeoNode granular permission system"""
 
     def read_list(self, object_list, bundle):
+        # this applies permissions preserving the queryset for future use (faceting)
         for obj in object_list:
             if not bundle.request.user.has_perm(perms[obj.class_name]['view'], obj):
                 object_list = object_list.exclude(id__exact=obj.id)
@@ -37,18 +38,21 @@ class GeoNodeAuthorization(DjangoAuthorization):
         return bundle.request.user.has_perm(perms[bundle.obj.class_name]['view'], bundle.obj)
 
     def create_list(self, object_list, bundle):
+        # TODO implement if needed
         raise Unauthorized()
 
     def create_detail(self, object_list, bundle):
         return bundle.request.user.has_perm(perms[bundle.obj.class_name]['add'], bundle.obj)
 
     def update_list(self, object_list, bundle):
+        # TODO implement if needed
         raise Unauthorized()
 
     def update_detail(self, object_list, bundle):
         return bundle.request.user.has_perm(perms[bundle.obj.class_name]['change'], bundle.obj)
 
     def delete_list(self, object_list, bundle):
+        # TODO implement if needed
         raise Unauthorized()
 
     def delete_detail(self, object_list, bundle):
