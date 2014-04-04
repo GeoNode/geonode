@@ -39,10 +39,28 @@ class TopicCategoryResource(ModelResource):
         }
 
 
+class UserResource(ModelResource):
+    """User api"""
+
+    class Meta:
+        authorization = DjangoAuthorization()
+        queryset = User.objects.all()
+        resource_name = 'users'
+        allowed_methods = ['get',]
+        excludes = ['is_staff', 'password', 'is_superuser',
+             'is_active', 'date_joined', 'last_login']
+
+        filtering = {
+            'username': ALL,
+        }
+
+
 class FacetedModelResource(ModelResource):
 
     keywords = fields.ToManyField(TagResource, 'keywords', full=True, null=True)
     category = fields.ToOneField(TopicCategoryResource, 'category', full=True, null=True)
+    owner = fields.ToOneField(UserResource, 'owner', full=True)
+
 
     def get_facets(self, results):
         facets = {
@@ -120,6 +138,7 @@ class CommonMetaApi:
             'title': ALL,
             'keywords': ALL_WITH_RELATIONS,
             'category': ALL_WITH_RELATIONS,
+            'owner': ALL_WITH_RELATIONS,
         }
 
 
@@ -130,21 +149,6 @@ class ResourceBaseResource(FacetedModelResource):
         queryset = ResourceBase.objects.all()
         resource_name = 'base'
 
-
-class UserResource(FacetedModelResource):
-    """User api"""
-
-    class Meta(CommonMetaApi):
-        authorization = DjangoAuthorization()
-        queryset = User.objects.all()
-        resource_name = 'users'
-        allowed_methods = ['get',]
-        excludes = ['is_staff', 'password', 'is_superuser',
-             'is_active', 'date_joined', 'last_login']
-
-        filtering = {
-            'username': ALL,
-        }
 
 class LayerResource(FacetedModelResource):
     """Layer API"""
