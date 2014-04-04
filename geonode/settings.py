@@ -208,6 +208,7 @@ INSTALLED_APPS = (
     'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
+    'geonode.api',
 )
 
 LOGGING = {
