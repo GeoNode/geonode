@@ -388,9 +388,6 @@ NOSE_ARGS = [
 
 SITEURL = "http://localhost:8000/"
 
-# Default TopicCategory to be used for resources. Use the slug field here
-DEFAULT_TOPICCATEGORY = 'location'
-
 # Topic Categories list should not be modified (they are ISO). In case you 
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = False
