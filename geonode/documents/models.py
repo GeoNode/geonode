@@ -76,42 +76,45 @@ class Document(ResourceBase):
             logger.warn('Could not create thumbnail for %s' % self, e)
 
     def _render_thumbnail(self, spec):
+        from cStringIO import StringIO
+
         size = 200, 150
+
         try:
-            from cStringIO import StringIO
             from PIL import Image, ImageOps
-            if self.extension.lower() in IMGTYPES:
+        except: 
+            logger.error('%s: Pillow not installed, cannot generate thumbnails.' % e)
+            return None
+
+        try:
+            # if wand is installed, than use it for pdf thumbnailing
+            from wand import image
+        except:
+            wand_available = False
+        else:
+            wand_available = True
+
+        if wand_available and self.extension.lower() == 'pdf':
+            logger.debug('Generating a thumbnail for document: {0}'.format(self.title))
+            with image.Image(filename=self.doc_file.path) as img:
+                img.sample(*size)
+                return img.make_blob('png')
+        elif self.extension.lower() in IMGTYPES:
                 img = Image.open(self.doc_file.path)
                 img = ImageOps.fit(img, size, Image.ANTIALIAS)
+        else:
+            document_path = '%s/documents/static/documents/' % settings.PROJECT_ROOT
+            
+            filename = os.path.join(document_path, '%s-placeholder.png' % self.extension)
 
-            elif self.extension.lower() == 'pdf':
-                try:
-                    # if wand is installed, than use it for pdf thumbnailing
-                    from wand import image
+            if not os.path.exists(filename):
+               filename = os.path.join(document_path, 'generic-placeholder.png')
 
-                    logger.debug('Generating a thumbnail for document: {0}'.format(self.title))
-                    with image.Image(filename=self.doc_file.path) as img:
-                        img.sample(*size)
-                        return img.make_blob('png')
-                except:
-                    logger.debug('Wand not installed or invalid file, use the generic pdf placeholder.')
-                    img = Image.open('%s/documents/static/documents/%s' %
-                        (settings.PROJECT_ROOT, '{0}-placeholder.png'.format(self.extension)))
-            else:
-                filename = '%s-placeholder.png' % self.extension
-                try:
-                    img = Image.open('%s/documents/static/documents/%s' %
-                        (settings.PROJECT_ROOT, filename))
-                except IOError:
-                    img = Image.open(
-                        '%s/documents/static/documents/generic-placeholder.png' %
-                        settings.PROJECT_ROOT)
-            imgfile = StringIO()
-            img.save(imgfile, format='PNG')
-            return imgfile.getvalue()
-        except:
-            logger.error('Pillow not installed, cannot generate thumbnails.')
-            return None
+            img = Image.open(filename)
+
+        imgfile = StringIO()
+        img.save(imgfile, format='PNG')
+        return imgfile.getvalue()
 
     @property
     def class_name(self):
