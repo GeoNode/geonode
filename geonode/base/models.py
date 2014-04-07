@@ -145,6 +145,9 @@ class Thumbnail(models.Model):
         self._delete_thumb()
         super(Thumbnail,self).delete()
 
+    def __unicode__(self):
+        return self.thumb_file.name
+
 
 class ThumbnailMixin(object):
     """
