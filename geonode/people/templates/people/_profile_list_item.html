@@ -26,7 +26,7 @@
           <ul class="nav stats">
             <li><a href="/people/profile/{{ profile.o.user.username }}/?content=layers"><strong>{{ profile.layer_count }}</strong> {% trans "Layers" %}</a></li>
             <li><a href="/people/profile/{{ profile.o.user.username }}/?content=maps"><strong>{{ profile.map_count }}</strong> {% trans "Maps" %}</a></li>
-            {% if DOCUMENTS_APP %}
+            {% if USE_DOCUMENTS %}
             <li><a href="/people/profile/{{ profile.o.user.username }}/?content=documents"><strong>{{ profile.document_count }}</strong> {% trans "Documents" %}</a></li>
             {% endif %}
           </ul>
