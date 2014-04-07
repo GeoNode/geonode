@@ -564,10 +564,6 @@ MAP_BASELAYERS = [{
 
 }]
 
-LEAFLET_CONFIG = {
-    'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
-}
-
 SOCIAL_BUTTONS = True
 
 # Require users to authenticate before using Geonode
