@@ -8833,3 +8833,15 @@ ul.stats a:hover {
 .activity-timestamp {
   margin-top: -10px;
 }
+.helptext {
+  font-size: 11px;
+}
+body.documents form[id='upload_form'] label {
+  font-weight: bold;
+}
+body.documents form[id='upload_form'] .errorlist {
+  color: #b94a48;
+}
+.errorlist {
+  color: #b94a48;
+}

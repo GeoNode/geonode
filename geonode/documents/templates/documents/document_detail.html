@@ -57,12 +57,14 @@
   </div>
   <div class="span8">
    
-      {% if document.extension|lower in imgtypes %}
+      {% if document.extension|lower in imgtypes and document.doc_file %}
       <div id="embedded_map">
         <img src="{% url "document_download" document.id %}" width='100%' />
       </div>
-      {% else %}
+      {% elif document.doc_file %}
         <a href="{% url "document_download" document.id %}" target="_blank">Download the {{ document }} document</a>
+      {% elif  document.doc_url %}
+        <a href="{{ document.doc_url }}" target="_blank">Download the {{ document }} document.</a> <i>({% trans 'External Resource' %})</i>
       {%  endif %}
        
       <div class="map-actions">
