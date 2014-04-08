@@ -29,6 +29,7 @@ class LayersTest(TestCase):
         create_models('document')
         create_models('map')
         self.imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
+                                         '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
 
     def test_create_document_with_no_rel(self):
         """Tests the creation of a document with no relations"""
