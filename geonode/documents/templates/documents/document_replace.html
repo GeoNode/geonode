@@ -14,19 +14,18 @@
     <div class="block">
         <div class="span8">
           <h2 class="page-title">{% trans "Replace " %}{{ document.title }}</h2>
-
-          {% if errors %}
-            <div id="errors">
-              {% for error in errors %}
-                <div>{{ error }}</div>
-              {% endfor %}
-            </div>
-          {% endif %}
             <div id="upload_form">
                 <form method="post" enctype="multipart/form-data" action="{% url "document_replace" document.id %}">
-                    <label for="doc_file">{% trans "Choose a file" %}</label><input id="doc_file" name="file" type="file" />
                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-                    <div><input type="submit" value="Upload" /></div>
+                    {{ form.errors }}
+
+                    {% if document.doc_file %}
+                        {{ form.doc_file }}
+                    {% elif document.doc_url %}
+                        {{ form.doc_url }}
+                    {% endif %}
+                    <div><input class="btn" type="submit" value="Update" /></div>
+
                 </form>
             </div>
         </div>
