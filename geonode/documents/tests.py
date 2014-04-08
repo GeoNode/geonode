@@ -21,7 +21,6 @@ import geonode.documents.views
 import geonode.security
 from geonode.search.populate_search_test_data import create_models
 
-                                '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
 
 class LayersTest(TestCase):
     fixtures = ['intial_data.json', 'bobby']
