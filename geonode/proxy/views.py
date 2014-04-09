@@ -39,7 +39,6 @@ def proxy(request):
 
     raw_url = request.GET['url']
     url = urlsplit(raw_url)
-
     locator = url.path
     if url.query != "":
         locator += '?' + url.query
@@ -67,8 +66,21 @@ def proxy(request):
     else:
         conn = HTTPConnection(url.hostname, url.port)
     conn.request(request.method, locator, request.raw_post_data, headers)
+
     result = conn.getresponse()
-    response = HttpResponse(
+
+    # If we get a redirect, let's add a useful message.
+    if result.status in (301, 302, 303, 307):
+         response = HttpResponse(
+            ('This proxy does not support redirects. The server in "%s" '
+            'asked for a redirect to "%s"' % (url, result.getheader('Location'))),
+            status=result.status,
+            content_type=result.getheader("Content-Type", "text/plain")
+            )
+
+         response['Location']=result.getheader('Location')
+    else:
+        response = HttpResponse(
             result.read(),
             status=result.status,
             content_type=result.getheader("Content-Type", "text/plain")
