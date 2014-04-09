@@ -175,7 +175,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    maplayer = GXPLayer(name = layer.typename, ows_url = ogc_server_settings.public_url + "wms", layer_params=json.dumps( layer.attribute_config()))
+    ows_url = ogc_server_settings.public_url + "%s/%s/wms" % (layer.workspace, 
+        layer.name)
+    maplayer = GXPLayer(name = layer.name, ows_url = ows_url, layer_params=json.dumps( layer.attribute_config()))
 
     layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
 
@@ -188,8 +190,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
-    DEFAULT_BASE_LAYERS = default_map_config()[1]
-    
+    NON_WMS_BASE_LAYERS = [la for la in default_map_config()[1] if la.ows_url is None]
+
     if layer.storeType=='dataStore':
         links = layer.link_set.download().filter(
             name__in=settings.DOWNLOAD_FORMATS_VECTOR)
@@ -200,7 +202,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
     return render_to_response(template, RequestContext(request, {
         "layer": layer,
-        "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
+        "viewer": json.dumps(map_obj.viewer_json(* (NON_WMS_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
         "documents": get_related_documents(layer),
         "links": links,
