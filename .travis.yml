@@ -40,4 +40,4 @@ notifications:
       - "irc.freenode.org#geonode"
     use_notice: true
   email:
-#    - geonode-dev@opengeo.org
+    - geonode-dev@opengeo.org
