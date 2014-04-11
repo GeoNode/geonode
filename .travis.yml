@@ -21,8 +21,8 @@ install:
   - npm install -g grunt-cli 
   - pip install -e . --use-mirrors
 
-#before_script:
-#  - paver setup
+before_script:
+  - paver setup
 
 script:
   - python manage.py test geonode.tests.smoke
