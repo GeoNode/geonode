@@ -102,7 +102,6 @@ setup(name='GeoNode',
         "agon-ratings==0.2",
         "South==0.7.3",
         "django-downloadview==1.2",
-        "arcrest==10.2.2",
         #catalogue
         "pycsw==1.6.4",
         # setup
@@ -117,7 +116,7 @@ setup(name='GeoNode',
         # translation
         "transifex-client",
         # external services
-        "arcrest==10.2.2-beta",
+        "geonode-arcrest==10.2",
         ],
       zip_safe=False,
       )
