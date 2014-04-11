@@ -351,7 +351,7 @@ class Map(ResourceBase, GXPMapBase):
             map_layers.append(MapLayer(
                 map = self,
                 name = layer.typename,
-                ows_url = ogc_server_settings.public_url + "wms",
+                ows_url = layer.ows_url + "wms",
                 stack_order = index,
                 visibility = True
             ))
@@ -506,7 +506,6 @@ class MapLayer(models.Model, GXPLayerBase):
 
     def layer_config(self):
         cfg = GXPLayerBase.layer_config(self)
-
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
         if self.local:

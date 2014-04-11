@@ -171,6 +171,24 @@ GEONODE_APPS = (
     'geonode.contrib.groups',
 )
 
+GEONODE_APPS = (
+    # GeoNode internal apps
+    'geonode.people',
+    'geonode.base',
+    'geonode.layers',
+    'geonode.upload',
+    'geonode.maps',
+    'geonode.proxy',
+    'geonode.security',
+    'geonode.search',
+    'geonode.social',
+    'geonode.catalogue',
+    'geonode.documents',
+
+    # GeoNode Contrib Apps
+    'geonode.contrib.services',
+)
+
 INSTALLED_APPS = (
 
     # Apps bundled with Django
@@ -351,7 +369,7 @@ AGON_RATINGS_CATEGORY_CHOICES = {
 
 # Activity Stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment', 'documents.document'),
+    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment', 'documents.document', 'services.service'),
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': False,
     'USE_JSONFIELD': True,
@@ -390,6 +408,16 @@ NOSE_ARGS = [
 #
 
 SITEURL = "http://localhost:8000/"
+
+USE_QUEUE = False
+
+DEFAULT_WORKSPACE = 'geonode'
+CASCADE_WORKSPACE = 'geonode'
+
+OGP_URL = "http://geodata.tufts.edu/solr/select"
+
+# Default TopicCategory to be used for resources. Use the slug field here
+DEFAULT_TOPICCATEGORY = 'location'
 
 # Topic Categories list should not be modified (they are ISO). In case you 
 # absolutely need it set to True this variable
