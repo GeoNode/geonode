@@ -51,13 +51,13 @@ from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.layers.utils import save
-from geonode.layers.utils import layer_set_permissions
 from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import ogc_server_settings
 from geoserver.resource import FeatureType
+from geonode.contrib.groups.models import Group
 
 logger = logging.getLogger("geonode.layers.views")
 
@@ -195,8 +195,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
-    DEFAULT_BASE_LAYERS = default_map_config()[1]
-    
+    NON_WMS_BASE_LAYERS = [la for la in default_map_config()[1] if la.ows_url is None]
+
     if layer.storeType=='dataStore':
         links = layer.link_set.download().filter(
             name__in=settings.DOWNLOAD_FORMATS_VECTOR)
@@ -208,7 +208,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     return render_to_response(template, RequestContext(request, {
         "layer": layer,
-        "viewer": json.dumps(map_obj.viewer_json(* (DEFAULT_BASE_LAYERS + [maplayer]))),
+        "viewer": json.dumps(map_obj.viewer_json(* (NON_WMS_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
         "documents": get_related_documents(layer),
         "links": links,
@@ -576,40 +576,6 @@ def layer_batch_download(request):
         resp,content = http_client.request(url,'GET')
         return HttpResponse(content, status=resp.status)
 
-def layer_permissions(request, layername):
-    try:
-        layer = _resolve_layer(request, layername, 'layers.change_layer_permissions')
-    except PermissionDenied:
-        # we are handling this in a non-standard way
-        return HttpResponse(
-            'You are not allowed to change permissions for this layer',
-            status=401,
-            mimetype='text/plain')
-
-    if request.method == 'POST':
-        permission_spec = json.loads(request.raw_post_data)
-        layer_set_permissions(layer, permission_spec)
-
-        return HttpResponse(
-            json.dumps({'success': True}),
-            status=200,
-            mimetype='text/plain'
-        )
-
-    elif request.method == 'GET':
-        permission_spec = json.dumps(layer.get_all_level_info())
-        return HttpResponse(
-            json.dumps({'success': True, 'permissions': permission_spec}),
-            status=200,
-            mimetype='text/plain'
-        )
-    else:
-        return HttpResponse(
-            'No methods other than get and post are allowed',
-            status=401,
-            mimetype='text/plain')
-
-
 def resolve_user(request):
     user = None
     geoserver = False
@@ -677,8 +643,6 @@ def layer_acls(request):
             return HttpResponse(_("Bad HTTP Authorization Credentials."),
                                 status=401,
                                 mimetype="text/plain")
-
-
     all_readable = set()
     all_writable = set()
     for bck in get_auth_backends():

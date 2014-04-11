@@ -21,8 +21,6 @@ import geonode.documents.views
 import geonode.security
 from geonode.search.populate_search_test_data import create_models
 
-imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
-                                '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
 
 class LayersTest(TestCase):
     fixtures = ['intial_data.json', 'bobby']
@@ -30,10 +28,13 @@ class LayersTest(TestCase):
     def setUp(self):
         create_models('document')
         create_models('map')
+        self.imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
+                                         '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
 
     def test_create_document_with_no_rel(self):
         """Tests the creation of a document with no relations"""
-        f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
+
+        f = SimpleUploadedFile('test_img_file.gif', self.imgfile.read(), 'image/gif')
     
         superuser = User.objects.get(pk=2)
         c = Document.objects.create(doc_file=f,owner=superuser, title='theimg')
@@ -43,7 +44,7 @@ class LayersTest(TestCase):
 
     def test_create_document_with_rel(self):
         """Tests the creation of a document with no a map related"""
-        f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
+        f = SimpleUploadedFile('test_img_file.gif', self.imgfile.read(), 'image/gif')
     
         superuser = User.objects.get(pk=2)
         
@@ -80,7 +81,7 @@ class LayersTest(TestCase):
     def test_document_isuploaded(self):
         """/documents/upload -> Test uploading a document"""
 
-        f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
+        f = SimpleUploadedFile('test_img_file.gif', self.imgfile.read(), 'image/gif')
         m = Map.objects.all()[0]        
         c = Client()
         
@@ -117,14 +118,14 @@ class LayersTest(TestCase):
     def test_set_document_permissions(self):
         """Verify that the set_document_permissions view is behaving as expected
         """
-        f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
+        f = SimpleUploadedFile('test_img_file.gif', self.imgfile.read(), 'image/gif')
     
         superuser = User.objects.get(pk=2)
         # Get a document to work with
         document = Document.objects.all()[0]
        
         # Set the Permissions
-        geonode.documents.views.document_set_permissions(document, self.perm_spec)
+        document.set_permissions(self.perm_spec)
 
         # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
         self.assertEqual(document.get_gen_level(ANONYMOUS_USERS), document.LEVEL_NONE) 
@@ -146,7 +147,7 @@ class LayersTest(TestCase):
         """
     
         # Setup some document names to work with 
-        f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
+        f = SimpleUploadedFile('test_img_file.gif', self.imgfile.read(), 'image/gif')
     
         superuser = User.objects.get(pk=2)
         document = Document.objects.create(doc_file=f,owner=superuser, title='theimg')
@@ -157,19 +158,19 @@ class LayersTest(TestCase):
         c = Client()
 
         # Test that an invalid document is handled for properly
-        response = c.post(reverse('document_permissions', args=(invalid_document_id,)), 
+        response = c.post(reverse('resource_permissions', args=('document', invalid_document_id,)), 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 404) 
 
         # Test that GET returns permissions
-        response = c.get(reverse('document_permissions', args=(document_id,)))
+        response = c.get(reverse('resource_permissions', args=('document', document_id,)))
         assert('permissions' in response.content)
         
         # Test that a user is required to have documents.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post(reverse('document_permissions', args=(document_id,)), 
+        response = c.post(reverse('resource_permissions', args=('document', document_id,)), 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401) 
@@ -177,7 +178,7 @@ class LayersTest(TestCase):
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True) 
-        response = c.post(reverse('document_permissions', args=(document_id,)), 
+        response = c.post(reverse('resource_permissions', args=('document', document_id,)), 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401) 
@@ -185,7 +186,7 @@ class LayersTest(TestCase):
         # Login as a user with the proper permission and test the endpoint
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
-        response = c.post(reverse('document_permissions', args=(document_id,)), 
+        response = c.post(reverse('resource_permissions', args=('document', document_id,)), 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
 

@@ -132,6 +132,11 @@
                   <li id="nav_people">
                     <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
                   </li>
+                  {% if GROUPS_APP %}
+                  <li id="nav_groups">
+                    <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
+                  </li>
+                  {% endif %}
                   <li id="nav_search">
                     <a href="{% url "advanced_search" %}">{% trans "Search" %}</a>
                   </li>

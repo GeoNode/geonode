@@ -82,6 +82,8 @@ urlpatterns = patterns('',
                                        name='account_ajax_login'),
     url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup',
                                        name='account_ajax_lookup'),
+    url(r'^security/permissions/(?P<type>[^/]*)/(?P<resource_id>\d+)$', 'geonode.security.views.resource_permissions',
+                                       name='resource_permissions'),
 
     # Meta
     url(r'^lang\.js$', TemplateView.as_view(template_name='lang.js', content_type='text/javascript'), name='lang'),
@@ -100,10 +102,16 @@ if 'geonode.documents' in settings.INSTALLED_APPS:
         (r'^documents/', include('geonode.documents.urls')),
     )
 
+if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+        (r'^groups/', include('geonode.contrib.groups.urls')),
+    )
+
 if "geonode.contrib.services" in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
         (r'^services/', include('geonode.contrib.services.urls')),
     )
+
 
 
 urlpatterns += geonode.proxy.urls.urlpatterns
