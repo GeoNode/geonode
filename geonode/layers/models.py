@@ -163,7 +163,7 @@ class Layer(ResourceBase):
     @property
     def store_type(self):
         cat = Layer.objects.gs_catalog
-        res = cat.get_resource(self.name)
+        res= cat.get_resource(self.name, store=self.store, workspace=self.workspace)
         res.store.fetch()
         return res.store.dom.find('type').text
 
@@ -339,7 +339,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     url = ogc_server_settings.internal_rest
     try:
         gs_catalog = Catalog(url, _user, _password)
-        gs_resource = gs_catalog.get_resource(instance.name)
+        gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
     except (EnvironmentError, FailedRequestError) as e:
         gs_resource = None
         msg = ('Could not connect to geoserver at "%s"'
@@ -392,7 +392,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
        * Download links (WMS, WCS or WFS and KML)
        * Styles (SLD)
     """
-    gs_resource = gs_catalog.get_resource(instance.name)
+    gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
 
     bbox = gs_resource.latlon_bbox
 
@@ -419,7 +419,7 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     try:
         gs_catalog = Catalog(url, _user, _password)
-        gs_resource = gs_catalog.get_resource(instance.name)
+        gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
     except (FailedRequestError, EnvironmentError) as e:
         msg = ('Could not connect to geoserver at "%s"'
                'to save information for layer "%s"' % (
