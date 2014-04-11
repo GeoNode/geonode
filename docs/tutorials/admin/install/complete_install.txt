@@ -1,9 +1,11 @@
 .. _complete_install:
 
-===========================
-Complete Installation Guide
-===========================
+=========================
+Manual Installation Guide
+=========================
 
+Use this if you want to know how to manually deploy GeoNode or if you want to deploy it on a server
+which is not fresh. Otherwise please use the :ref:`quick_installation` .
 The manual installation is intended for those who are comfortable with Linux system administration.
 
 
