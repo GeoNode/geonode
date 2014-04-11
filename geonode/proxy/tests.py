@@ -24,7 +24,6 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
@@ -36,19 +35,20 @@ class ProxyTest(TestCase):
 
     def setUp(self):
         self.admin, created = User.objects.get_or_create(username='admin', password='admin', is_superuser=True)
+        self.url = 'http://www.google.com/'
 
     @override_settings(DEBUG=True, PROXY_ALLOWED_HOSTS=())
     def test_validate_host_disabled_in_debug(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is True, all hosts pass the proxy."""
         c = Client()
-        response = c.get('/proxy?url=http://www.google.com', follow=True)
+        response = c.get('/proxy?url=%s' % self.url, follow=True)
         self.assertEqual(response.status_code, 200)
 
     @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=())
     def test_validate_host_disabled_not_in_debug(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 403."""
         c = Client()
-        response = c.get('/proxy?url=http://www.google.com', follow=True)
+        response = c.get('/proxy?url=%s' % self.url, follow=True)
         self.assertEqual(response.status_code, 403)
 
 
@@ -56,9 +56,5 @@ class ProxyTest(TestCase):
     def test_proxy_allowed_host(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 403."""
         c = Client()
-        response = c.get('/proxy?url=http://www.google.com', follow=True)
+        response = c.get('/proxy?url=%s' % self.url, follow=True)
         self.assertEqual(response.status_code, 200)
-
-
-
-
