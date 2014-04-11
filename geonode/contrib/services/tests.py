@@ -50,7 +50,6 @@ class ServicesTests(TestCase):
                 })
         self.assertEqual(response.status_code, 200)
         service_dict = json.loads(response.content)[0]
-        print service_dict
 
         try:
             service = Service.objects.get(id=service_dict['service_id'])
