@@ -120,7 +120,7 @@ def update_static(options):
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
-    sh('pip install -e . --allow-external pyproj --allow-unverified pyproj')
+    sh('pip install -e .')
 
     info(('GeoNode development environment successfully set up.'
           'If you have not set up an administrative account,'
@@ -322,7 +322,7 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    sh("python manage.py test %s.tests --noinput" % '.tests '.join(GEONODE_APPS)) 
+    sh("python manage.py test %s.tests --noinput" % '.tests '.join(GEONODE_APPS))
 
 
 @task

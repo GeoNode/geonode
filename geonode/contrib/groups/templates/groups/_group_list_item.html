@@ -1,0 +1,40 @@
+{% load friendly_loader %}
+{% friendly_load avatar_tags %}
+{% friendly_load relationship_tags %}
+{% friendly_load activity_tags %}
+{% load i18n %}
+
+<article>
+  <div class="content">
+    <div class="item-header">
+      {% if group.o.logo %}
+        <div class="avatar"><img src="{{ group.o.logo.url }}" alt="{{ group.o.title }}" class="group-logo" /></div>
+      {% else %}
+          <div class="avatar"><div class="img-missing"></div></div>
+      {% endif %}
+      <h3><i class="icon-group"></i> <a href="{% url "group_detail" group.o.slug %}">{{ group.title }}</a>
+      {% comment %}
+      {% if user.is_authenticated %}
+        {% if  profile.o.user.email %}<a href="mailto:{{ profile.o.user.email }}"><i class="icon-envelope-alt icon-large"></i></a>{% endif %}
+      {% endif %}
+      </h3>
+    </div>
+    {% endcomment %}
+    <div class="details">
+      <div class="meta">
+        <p class="abstract">
+          {{ group.o.description}}
+        </p>
+          <ul class="nav stats" style="margin-left:0px">
+             {% with member_count=group.o.member_queryset.count %}
+            <li><a href="{% url "group_detail" group.o.slug %}"><strong>{{ member_count }}</strong> {% trans "Member" %}{{ member_count|pluralize }}</a></li>
+              {% endwith %}
+          {% with manager_count=group.o.get_managers.count %}
+            <li><a href="{% url "group_detail" group.o.slug %}"><strong>{{ manager_count }}</strong> {% trans "Manager" %}{{ manager_count|pluralize }}</a></li>
+              {% endwith %}
+          </ul>
+
+      </div> <!-- ./meta -->
+    </div> <!-- ./details -->
+  </div> <!-- ./content -->
+</article>

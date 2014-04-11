@@ -80,6 +80,7 @@ setup(name='GeoNode',
         "gsconfig==0.6.7",
         "OWSLib==0.7.2",
         "Django==1.5.5",
+        "gsimporter==0.1",
         # Django Apps
         "pinax-theme-bootstrap==3.0a11",
         "pinax-theme-bootstrap-account==1.0b2",
@@ -115,6 +116,8 @@ setup(name='GeoNode',
         "MultipartPostHandler",
         # translation
         "transifex-client",
+        # external services
+        "arcrest==10.2.2-beta",
         ],
       zip_safe=False,
       )

@@ -1,0 +1,43 @@
+{% extends "groups/group_base.html" %}
+{% load i18n %}
+
+{% block sidebar %}
+<div class="twocol">
+
+    <ul id="subnav" class="selfclear">
+      <li><a href="{% url "group_members" object.slug %}" class="current">{% trans "Members" %}</a></li>
+      <li><a href="{% url "group_detail" object.slug %}">{% trans "Maps &amp; Data" %}</a></li>
+    </ul>
+
+    <h2> {% trans "Members" %} </h2>
+    <div id="assets"></div>
+    {% for member in members %}
+        {{ member.user.username }} - {{ member.role }} - <a href='{% url "group_member_remove" object.slug member.user.username %}'>Remove</a><br/>
+    {% endfor %}
+
+    {% if invite_form %}
+        <h2>{% trans "Add members" %}</h2>
+        <form class="uniForm" method="POST" action="{% url "group_invite" object.slug %}">
+            {% csrf_token %}
+            {{ invite_form }}
+            <input type="submit" value="invite" />
+        </form>
+    {% endif %}
+
+    {% if member_form %}
+        <h2>{% trans "Add members" %}</h2>
+        <form class="uniForm" method="POST" action="{% url "group_members_add" object.slug %}">
+            {% csrf_token %}
+            {{ member_form }}<br/><br/>
+            <input type="submit" value="Add Group Members" />
+        </form>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_script %}
+{% with "none" as layer %}
+{% include "_permissions_form_js.html" %}
+{% endwith %}
+{% endblock extra_script %}

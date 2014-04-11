@@ -170,6 +170,7 @@ GEONODE_APPS = (
 
     # GeoNode Contrib Apps
     'geonode.contrib.services',
+    'geonode.contrib.groups',
 )
 
 INSTALLED_APPS = (
@@ -209,7 +210,7 @@ INSTALLED_APPS = (
     'notification',
     'announcements',
     'actstream',
-    'user_messages'
+    'user_messages',
 ) + GEONODE_APPS
 
 LOGGING = {
@@ -287,7 +288,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
     'account.context_processors.account',
-    'pinax_theme_bootstrap_account.context_processors.theme',
     # The context processor below adds things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
     'geonode.context_processors.resource_urls',
@@ -578,10 +578,6 @@ MAP_BASELAYERS = [{
     ]
 
 }]
-
-LEAFLET_CONFIG = {
-    'TILES_URL': 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
-}
 
 SOCIAL_BUTTONS = True
 
