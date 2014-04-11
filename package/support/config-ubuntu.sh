@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Location of the expanded GeoNode tarball
+# Location of the GeoNode source
 INSTALL_DIR=.
-# Location of the target filesystem, it may be blank
+# Location of the target directory, it may be blank
 # or something like $(CURDIR)/debian/geonode/
 TARGET_ROOT=''
 # Tomcat webapps directory
@@ -15,7 +15,7 @@ GEONODE_WWW=$TARGET_ROOT/var/www/geonode
 APACHE_SITES=$TARGET_ROOT/etc/apache2/sites-available
 # Path to preferred location of binaries (might be /usr/sbin for CentOS)
 GEONODE_BIN=$TARGET_ROOT/usr/sbin/
-# Path to place miscelaneous patches and scripts used during the install
+# Path to place miscellaneous patches and scripts used during the install
 GEONODE_SHARE=$TARGET_ROOT/usr/share/geonode
 # Path to GeoNode configuration and customization
 GEONODE_ETC=$TARGET_ROOT/etc/geonode

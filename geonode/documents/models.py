@@ -100,8 +100,9 @@ class Document(ResourceBase):
                 img.sample(*size)
                 return img.make_blob('png')
         elif self.extension.lower() in IMGTYPES:
-                img = Image.open(self.doc_file.path)
-                img = ImageOps.fit(img, size, Image.ANTIALIAS)
+            
+            img = Image.open(self.doc_file.path)
+            img = ImageOps.fit(img, size, Image.ANTIALIAS)
         else:
             document_path = '%s/documents/static/documents/' % settings.PROJECT_ROOT
             
