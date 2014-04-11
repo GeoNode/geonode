@@ -1,0 +1,2 @@
+git+git://github.com/boundlessgeo/gsimporter.git@5e3fded267219a8f89bbfdcd5b1113091d17515f#egg=gsimporter
+-e .

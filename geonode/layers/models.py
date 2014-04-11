@@ -49,6 +49,7 @@ from geonode.utils import ogc_server_settings
 
 from geoserver.catalog import Catalog, FailedRequestError
 from owslib.wcs import WebCoverageService
+from gsimporter import Client
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
@@ -72,6 +73,7 @@ class LayerManager(ResourceBaseManager):
         models.Manager.__init__(self)
         url = ogc_server_settings.rest
         self.gs_catalog = Catalog(url, _user, _password)
+        self.gs_uploader = Client(url, _user, _password)
 
 def add_bbox_query(q, bbox):
     '''modify the queryset q to limit to the provided bbox

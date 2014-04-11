@@ -19,7 +19,7 @@ install:
   - npm install -g bower
   - npm install -g less
   - npm install -g grunt-cli 
-  - pip install -e . --use-mirrors
+  - pip install -r requirements.txt --use-mirrors
 
 #before_script:
 #  - paver setup
