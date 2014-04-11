@@ -175,9 +175,14 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    ows_url = ogc_server_settings.public_url + "%s/%s/wms" % (layer.workspace, 
-        layer.name)
-    maplayer = GXPLayer(name = layer.name, ows_url = ows_url, layer_params=json.dumps( layer.attribute_config()))
+    config = layer.attribute_config()
+    if layer.storeType == "remoteStore" and "geonode.contrib.services" in settings.INSTALLED_APPS:
+        from geonode.contrib.services.models import Service
+        service = Service.objects.filter(layers__id=layer.id)[0] 
+        source_params = {"ptype":service.ptype, "remote": True, "url": service.base_url, "name": service.name}
+        maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config), source_params=json.dumps(source_params))
+    else:
+        maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config))
 
     layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
 
@@ -200,6 +205,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             name__in=settings.DOWNLOAD_FORMATS_RASTER)
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
+
     return render_to_response(template, RequestContext(request, {
         "layer": layer,
         "viewer": json.dumps(map_obj.viewer_json(* (NON_WMS_BASE_LAYERS + [maplayer]))),
