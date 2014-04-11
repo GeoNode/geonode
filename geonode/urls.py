@@ -107,6 +107,13 @@ if "geonode.contrib.groups" in settings.INSTALLED_APPS:
         (r'^groups/', include('geonode.contrib.groups.urls')),
     )
 
+if "geonode.contrib.services" in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+        (r'^services/', include('geonode.contrib.services.urls')),
+    )
+
+
+
 urlpatterns += geonode.proxy.urls.urlpatterns
 
 # Serve static files
