@@ -153,6 +153,23 @@ ALLOWED_DOCUMENT_TYPES = [
 ]
 MAX_DOCUMENT_SIZE = 2 # MB
 
+GEONODE_APPS = (
+    # GeoNode internal apps
+    'geonode.people',
+    'geonode.base',
+    'geonode.layers',
+    'geonode.upload',
+    'geonode.maps',
+    'geonode.proxy',
+    'geonode.security',
+    'geonode.search',
+    'geonode.social',
+    'geonode.catalogue',
+    'geonode.documents',
+
+    # GeoNode Contrib Apps
+    'geonode.contrib.groups',
+)
 
 INSTALLED_APPS = (
 
@@ -192,20 +209,7 @@ INSTALLED_APPS = (
     'announcements',
     'actstream',
     'user_messages',
-
-    # GeoNode internal apps
-    'geonode.people',
-    'geonode.base',
-    'geonode.layers',
-    'geonode.upload',
-    'geonode.maps',
-    'geonode.proxy',
-    'geonode.security',
-    'geonode.search',
-    'geonode.social',
-    'geonode.catalogue',
-    'geonode.documents',
-)
+) + GEONODE_APPS
 
 LOGGING = {
     'version': 1,

@@ -215,6 +215,10 @@ background-color: transparent;
   width: 15px;
 }
 
+.errorlist{
+  color: @errorText;
+}
+
 .navbar {
   .navbar-inner {
     background:@brown;
@@ -669,6 +673,7 @@ article.abstract {
   p {
     font-size: 12px;
   }
+  .item-header .img-missing,
   .item-header img {
     border: 1px solid @grayLight;
     display: block;
@@ -680,11 +685,21 @@ article.abstract {
     padding: 0;
     width: 100px;
   }
+
+  .item-header .img-missing{
+    background-color: @grayLight;
+    color: @grayDark;
+    border-radius: 4px;
+  }
+
+  .avatar .img-missing,
   .avatar img {
     border: 0;
     height: 50px;
     width: 50px;
   }
+
+
   .icon-placeholder {
     background: @grayLighter;
     border: 1px solid @grayLight;
@@ -1426,6 +1441,7 @@ body.data-list nav.back {
   display: none;
 }
 body.data #subnav-tabs,
+body.groups #subnav-tabs,
 body.maps #subnav-tabs,
 body.people #subnav-tabs,
 body.documents #subnav-tabs {
@@ -1459,6 +1475,9 @@ body.documents #subnav-tabs {
   }
 }
 body.search #subnav-tabs a.search,
+body.update #subnav-tabs a.update,
+body.remove #subnav-tabs a.remove,
+body.create #subnav-tabs a.create,
 body.upload #subnav-tabs a.upload,
 body.explore #subnav-tabs a.explore {
   background-color: @grayDark;
@@ -1648,6 +1667,12 @@ body.upload {
     .controls label {
       font-weight:normal;
     }
+  }
+}
+
+body.upload #permission_form{
+  .select2-container{
+    margin-top: 8px;
   }
 }
 
