@@ -117,7 +117,7 @@ setup(name='GeoNode',
         # translation
         "transifex-client",
         # external services
-        "arcrest 10.2.2-beta",
+        "arcrest==10.2.2-beta",
         ],
       zip_safe=False,
       )
