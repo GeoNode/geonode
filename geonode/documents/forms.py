@@ -1,9 +1,13 @@
+import json
+import os
 import taggit
 import re
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
+from django.forms import HiddenInput, TextInput
 
 from geonode.people.models import Profile
 from geonode.documents.models import Document
@@ -70,9 +74,99 @@ class DocumentForm(forms.ModelForm):
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext', 
                    'content_type', 'object_id', 'doc_file', 'extension', 
-                   'popular_count', 'share_count', 'thumbnail')
+                   'popular_count', 'share_count', 'thumbnail', 'doc_url')
 
 class DocumentDescriptionForm(forms.Form):
     title = forms.CharField(300)
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)
+
+class DocumentReplaceForm(forms.ModelForm):
+    """
+    The form used to replace a document.
+    """
+
+    class Meta:
+        model = Document
+        fields = ['doc_file', 'doc_url']
+
+    def clean(self):
+        """
+        Ensures the doc_file or the doc_url field is populated.
+        """
+        cleaned_data = super(DocumentReplaceForm, self).clean()
+        doc_file = self.cleaned_data.get('doc_file')
+        doc_url = self.cleaned_data.get('doc_url')
+
+        if not doc_file and not doc_url:
+            raise forms.ValidationError(_("Document must be a file or url."))
+
+        if doc_file and doc_url:
+            raise forms.ValidationError(_("A document cannot have both a file and a url."))
+
+        return cleaned_data
+
+    def clean_doc_file(self):
+        """
+        Ensures the doc_file is valid.
+        """
+        doc_file = self.cleaned_data.get('doc_file')
+
+        if doc_file and not os.path.splitext(doc_file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
+            raise forms.ValidationError(_("This file type is not allowed"))
+
+        return doc_file
+
+
+class DocumentCreateForm(forms.ModelForm):
+    """
+    The document upload form.
+    """
+    permissions = forms.CharField(widget=HiddenInput(attrs={'name': 'permissions', 'id': 'permissions'}), required=True)
+    resource = forms.CharField(required=False, label=_("Link to"), widget=TextInput(attrs={'name': 'q',
+                                                                                           'id': 'resource'}))
+
+    class Meta:
+        model = Document
+        fields = ['title', 'doc_file', 'doc_url']
+        widgets = {
+            'name': HiddenInput(attrs={'cols': 80, 'rows': 20}),
+        }
+
+    def clean_permissions(self):
+        """
+        Ensures the JSON field is JSON.
+        """
+        permissions = self.cleaned_data['permissions']
+
+        try:
+            return json.loads(permissions)
+        except ValueError:
+            raise forms.ValidationError(_("Permissions must be valid JSON."))
+
+    def clean(self):
+        """
+        Ensures the doc_file or the doc_url field is populated.
+        """
+        cleaned_data = super(DocumentCreateForm, self).clean()
+        doc_file = self.cleaned_data.get('doc_file')
+        doc_url = self.cleaned_data.get('doc_url')
+
+        if not doc_file and not doc_url:
+            raise forms.ValidationError(_("Document must be a file or url."))
+
+        if doc_file and doc_url:
+            raise forms.ValidationError(_("A document cannot have both a file and a url."))
+
+        return cleaned_data
+
+    def clean_doc_file(self):
+        """
+        Ensures the doc_file is valid.
+        """
+        doc_file = self.cleaned_data.get('doc_file')
+
+        if doc_file and not os.path.splitext(doc_file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
+            raise forms.ValidationError(_("This file type is not allowed"))
+
+        return doc_file
