@@ -573,7 +573,7 @@ define(function (require, exports) {
         this.displayErrors();
     };
 
-    LayerInfo.prototype.doGeoGitToggle = function () {
+    LayerInfo.prototype.doGeoGitToggle = function (event) {
         var target = event.target || event.srcElement;
         var id = target.id;
         var base_name = id.split(':')[0];
