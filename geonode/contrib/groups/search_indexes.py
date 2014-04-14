@@ -9,10 +9,10 @@ from geonode.contrib.groups.models import Group
 
 class GroupIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    title = indexes.CharField()
+    title = indexes.CharField(boost=2)
     #https://github.com/toastdriven/django-haystack/issues/569 - Necessary for sorting
     title_sortable = indexes.CharField(indexed=False)
-    description = indexes.CharField(model_attr='description')
+    description = indexes.CharField(model_attr='description',boost=1.5)
     iid = indexes.IntegerField(model_attr='id')
     type = indexes.CharField(faceted=True)
     json = indexes.CharField(indexed=False)
