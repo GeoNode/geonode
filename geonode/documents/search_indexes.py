@@ -5,7 +5,7 @@ from geonode.documents.models import Document
 
 class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    title = indexes.CharField(model_attr="title")
+    title = indexes.CharField(model_attr="title",boost=2)
     #https://github.com/toastdriven/django-haystack/issues/569 - Necessary for sorting
     title_sortable = indexes.CharField(indexed=False)
     iid = indexes.IntegerField(model_attr='id')
@@ -14,7 +14,7 @@ class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
     bbox_right = indexes.FloatField(model_attr="bbox_x1", null=True)
     bbox_top = indexes.FloatField(model_attr="bbox_y0", null=True)
     bbox_bottom = indexes.FloatField(model_attr="bbox_y1", null=True)
-    abstract = indexes.CharField(model_attr='abstract')
+    abstract = indexes.CharField(model_attr='abstract',boost=1.5)
     owner = indexes.CharField(model_attr="owner", faceted=True, null=True)
     modified = indexes.DateTimeField(model_attr="date")
     detail_url = indexes.CharField(model_attr="get_absolute_url")
