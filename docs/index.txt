@@ -6,6 +6,16 @@ Welcome to GeoNode's Documentation.
 
 GeoNode is an Open Source, Content Management System (CMS) for geospatial data. It is a web-based application and platform for developing geospatial information systems (GIS) and for deploying spatial data infrastructures (SDI). 
 
+First Steps
+===========
+
+The following sections give an overview of GeoNode from different perspectives, they are targeted at a non-technical audience and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation.
+
+ * :doc:`About GeoNode <organizational/about>`
+ * :doc:`Quick Installation Guide <tutorials/admin/install/quick_install>`
+ * :doc:`GeoNode Users Quickstart Manual <tutorials/users/quickstart/index>`
+
+
 How To Use The Documentation
 ============================
 
@@ -21,17 +31,6 @@ For organizational purposes, the documentation is also geared toward 3 distinct 
  #. **Users**: Are people who log into a GeoNode website and use its functionality. 
  #. **Administrators**: Are people who install and deploy GeoNode websites in production for their Users. 
  #. **Developers**:  Are people who write code to add functionality, integrate with other systems, fix bugs, and potentially help an Administrator setup a server and deploy a GeoNode instance for production. 
-
-First Steps
-===========
-
-The following sections give an overview of GeoNode from different perspectives, they are targeted at a non-technical audience and the quick installation guide at people who just want to get it installed and will come back later to the complete documentation.
-
- * :doc:`About GeoNode <organizational/about>`
- * :doc:`GeoNode Users Quickstart <tutorials/users/quickstart/index>`
- * :doc:`Quick Installation Guide <tutorials/admin/install/quick_install>`
- * :doc:`Complete Installation Guide <tutorials/admin/install/complete_install>`
- * :doc:`Developer Installation Guide <tutorials/devel/install_devmode/index>`
 
 Organizational
 ==============
