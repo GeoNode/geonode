@@ -58,7 +58,12 @@
                           {% endif %}
                           <li><a href="{% url "recent-activity" %}"><i class="icon-fire"></i> {% trans "Recent Activity" %}</a></li>
                           <li class="divider"></li>
-                          <li><a href="{% url "account_logout" %}"><i class="icon-off"></i> {% trans "Log out" %}</a></li>
+                          <li>
+                           <form action="{% url "account_logout" %}?next={{ request.path }}" id="logout_form"  method="post">
+                            {% csrf_token %}
+                            <a href="javascript:{}" onclick="document.getElementById('logout_form').submit();"><i class="icon-off"></i> {% trans "Log out" %}</a>
+                           </form>
+                          </li>
                         </ul>
                       </li> <!-- ./dropdown user -->
                       <li class="divider-v">|</li>
@@ -73,7 +78,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Sign in" %}</a>
                         <ul class="dropdown-menu">
                           <li>
-                            <form action="{% url "account_login" %}" method="post" class="sign-in">
+                            <form action="{% url "account_login" %}?next={{ request.path }}" method="post" class="sign-in">
                             {% csrf_token %}
                               <label for="id_username">{% trans "Username" %}:</label>
                               <input id="id_username" name="username" type="text" />
