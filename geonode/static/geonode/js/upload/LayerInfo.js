@@ -413,7 +413,18 @@ define(function (require, exports) {
                 if (jqXHR === null) {
                     self.markError("Unexpected Error");
                 } else {
-                    self.markError($.parseJSON(jqXHR.responseText).errormsgs);
+                    var parsed_errors = $.parseJSON(jqXHR.responseText)
+                    var error_message = 'No error message supplied';
+
+                    // Support the two different syntax used in GeoNode.
+                    // TODO(Ariel): Agree on one of those server side and
+                    // simplify this code. It can be either 'errormsgs' or 'error'.
+                    if(parsed_errors.hasOwnProperty("errormsgs")){
+                        error_message = parsed_errors.errormsgs;
+                    }else{
+                        error_message = parsed_errors.errors;
+                    } 
+                    self.markError(error_message);
                 }
             },
             success: function (resp, status) {
