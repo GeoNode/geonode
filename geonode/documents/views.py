@@ -6,23 +6,18 @@ from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.views.decorators.http import require_POST
 from django.core.exceptions import PermissionDenied
-
 from django_downloadview.response import DownloadResponse
-
+from django.views.generic.edit import UpdateView, CreateView
 from geonode.utils import resolve_object
 from geonode.maps.views import _perms_info
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.maps.models import Map
-from geonode.layers.models import Layer
 from geonode.people.forms import ProfileForm
 
 from geonode.documents.models import Document
-from geonode.documents.forms import DocumentForm
+from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
@@ -98,43 +93,33 @@ def document_download(request, docid):
                 _("You are not allowed to view this document.")})), status=401)
     return DownloadResponse(document.doc_file)
 
-@login_required
-def document_upload(request):
-    if request.method == 'GET':
-        return render_to_response('documents/document_upload.html',
-                                  RequestContext(request)
-        )
+class DocumentUploadView(CreateView):
+    template_name = 'documents/document_upload.html'
+    form_class = DocumentCreateForm
 
-    elif request.method == 'POST':
-        
-        try:
-            content_type = ContentType.objects.get(name=request.POST['type'])
-            object_id = request.POST['q']
-        except:
-            content_type = None
-            object_id = None
-        
-        title = request.POST['title']
-        try:
-            doc_file = request.FILES['file']
-        except:
-            return render(request,'documents/document_upload.html',{'errors':['Please select a file','']})
-        
-        if len(request.POST['title'])==0:
-            return render(request,'documents/document_upload.html',{'errors':['You need to provide a document title.','']})
-        if not os.path.splitext(doc_file.name)[1].lower()[1:] in ALLOWED_DOC_TYPES:
-            return render(request,'documents/document_upload.html',{'errors':['This file type is not allowed.','']})
-        if not doc_file.size < settings.MAX_DOCUMENT_SIZE * 1024 * 1024:
-            return render(request,'documents/document_upload.html',{'errors':['This file is too big.','']})
+    def form_valid(self, form):
+        """
+        If the form is valid, save the associated model.
+        """
+        self.object = form.save(commit=False)
+        self.object.owner = self.request.user
+        self.object.save()
+        self.object.set_permissions(form.cleaned_data['permissions'])
+        return HttpResponseRedirect(reverse('document_metadata', args=(self.object.id,)))
 
-        document = Document(content_type=content_type, object_id=object_id, title=title, doc_file=doc_file)
-        document.owner = request.user
-        document.save()
-        permissionsStr = request.POST['permissions']
-        permissions = json.loads(permissionsStr)
-        document_set_permissions(document, permissions)
+class DocumentUpdateView(UpdateView):
+    template_name = 'documents/document_replace.html'
+    pk_url_kwarg = 'docid'
+    form_class = DocumentReplaceForm
+    queryset = Document.objects.all()
+    context_object_name = 'document'
 
-        return HttpResponseRedirect(reverse('document_metadata', args=(document.id,)))
+    def form_valid(self, form):
+        """
+        If the form is valid, save the associated model.
+        """
+        self.object = form.save()
+        return HttpResponseRedirect(reverse('document_metadata', args=(self.object.id,)))
 
 @login_required
 def document_metadata(request, docid, template='documents/document_metadata.html'):
@@ -213,72 +198,6 @@ def document_search_page(request):
         'init_search': json.dumps(params or {}),
          "site" : settings.SITEURL
     }))
-
-def document_permissions(request, docid):
-    try:
-        document = _resolve_document(request, docid, 'documents.change_document_permissions')
-    except PermissionDenied:
-        # we are handling this in a non-standard way
-        return HttpResponse(
-            'You are not allowed to change permissions for this layer',
-            status=401,
-            mimetype='text/plain')
-
-    if request.method == 'POST':
-        permission_spec = json.loads(request.raw_post_data)
-        document_set_permissions(document, permission_spec)
-
-        return HttpResponse(
-            json.dumps({'success': True}),
-            status=200,
-            mimetype='text/plain'
-        )
-
-    elif request.method == 'GET':
-        permission_spec = json.dumps(document.get_all_level_info())
-        return HttpResponse(
-            json.dumps({'success': True, 'permissions': permission_spec}),
-            status=200,
-            mimetype='text/plain'
-        )
-    else:
-        return HttpResponse(
-            'No methods other than get and post are allowed',
-            status=401,
-            mimetype='text/plain')
-
-def document_set_permissions(document, perm_spec):
-    if "authenticated" in perm_spec:
-        document.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
-    if "anonymous" in perm_spec:
-        document.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-    users = [n[0] for n in perm_spec['users']]
-    excluded = users + [document.owner]
-    existing = document.get_user_levels().exclude(user__username__in=excluded)
-    existing.delete()
-    for username, level in perm_spec['users']:
-        user = User.objects.get(username=username)
-        document.set_user_level(user, level)
-
-@login_required
-def document_replace(request, docid, template='documents/document_replace.html'):
-    document = _resolve_document(request, docid, 'documents.change_document')
-
-    if request.method == 'GET':
-        return render_to_response(template, RequestContext(request, {
-            "document": document
-        }))
-    if request.method == 'POST':
-        if not os.path.splitext(request.FILES['file'].name)[1].lower()[1:] in ALLOWED_DOC_TYPES:
-            return HttpResponse('This file type is not allowed.')
-        if not request.FILES['file'].size < settings.MAX_DOCUMENT_SIZE * 1024 * 1024:
-            return HttpResponse('This file is too big.')
-
-        doc_file = request.FILES['file']
-        document.doc_file = doc_file
-        document.save()
-        document.update_thumbnail()
-        return HttpResponseRedirect(reverse('document_detail', args=(document.id,)))
 
 @login_required
 def document_remove(request, docid, template='documents/document_remove.html'):

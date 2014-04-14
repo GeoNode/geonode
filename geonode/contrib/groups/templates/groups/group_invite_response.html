@@ -1,0 +1,18 @@
+{% extends "groups/base.html" %}
+{% load i18n %}
+
+{% block body %}
+<div class="onecol">
+
+    <h2> {% trans "Members" %} </h2>
+    <div id="assets"></div>
+
+    <h2>{% trans "Membership Request" %}</h2>
+    <p>You have been invited to join the group {{ object.title }}. Would you like to join?
+    <form class="uniForm" method="POST" action="">
+        {% csrf_token %}
+        <button type="submit" value="decline" name="decline">{% trans "Don't Join" %}</button>
+        <button type="submit" value="accept" name="accept">{% trans "Join Group" %}</button>
+    </form>
+</div>
+{% endblock %}
