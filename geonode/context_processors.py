@@ -22,29 +22,32 @@ from geonode import get_version
 from geonode.catalogue import default_catalogue_backend
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
-from geonode.utils import ogc_server_settings
 
 def resource_urls(request):
     """Global values to pass to templates"""
     site = Site.objects.get_current()
-
-    return dict(
-        STATIC_URL=settings.STATIC_URL,
-        GEOSERVER_BASE_URL=ogc_server_settings.public_url,
+    defaults = dict(
+        STATIC_URL=settings.STATIC_URL,  
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
         REGISTRATION_OPEN=settings.REGISTRATION_OPEN,
         VERSION=get_version(),
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
         GROUPS_APP = True if "geonode.contrib.groups" in settings.INSTALLED_APPS else False,
-        UPLOADER_URL = reverse('data_upload') if getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest') == 'geonode.importer' else reverse('layer_upload'),
-        GEOGIT_ENABLED = ogc_server_settings.GEOGIT_ENABLED,
-        TIME_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', False),
         DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False),
-        MF_PRINT_ENABLED = ogc_server_settings.MAPFISH_PRINT_ENABLED,
-        PRINTNG_ENABLED = ogc_server_settings.PRINTNG_ENABLED,
-        GS_SECURITY_ENABLED = ogc_server_settings.GEONODE_SECURITY_ENABLED,
         PROXY_URL = getattr(settings, 'PROXY_URL', '/proxy/?url='),
         SOCIAL_BUTTONS = getattr(settings, 'SOCIAL_BUTTONS', True),
-        USE_DOCUMENTS = 'geonode.documents' in settings.INSTALLED_APPS
     )
+    
+    if any(settings.OGC_SERVER):
+        from geonode.utils import ogc_server_settings
+        defaults.update(dict(
+            GEOSERVER_BASE_URL=ogc_server_settings.public_url,
+            UPLOADER_URL = reverse('data_upload') if getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest') == 'geonode.importer' else reverse('layer_upload'),
+            MF_PRINT_ENABLED = ogc_server_settings.MAPFISH_PRINT_ENABLED,
+            PRINTNG_ENABLED = ogc_server_settings.PRINTNG_ENABLED,
+            GS_SECURITY_ENABLED = ogc_server_settings.GEONODE_SECURITY_ENABLED,
+            GEOGIT_ENABLED = ogc_server_settings.GEOGIT_ENABLED,
+            TIME_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', False),
+            ))
+    return defaults

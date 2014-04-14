@@ -50,6 +50,7 @@ from .utils import check_layer, get_web_page
 from geonode.maps.utils import *
 
 from geonode.geoserver.helpers import cascading_delete, fixup_style
+from geonode.geoserver.signals import gs_catalog
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
@@ -337,7 +338,7 @@ class GeoNodeMapTest(TestCase):
         # deleted as well as the resource itself?
         # There is already an explicit test for cascading delete
 
-        gs_cat = Layer.objects.gs_catalog
+        gs_cat = gs_catalog
 
         # Test Uploading then Deleting a Shapefile from GeoServer
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
@@ -359,7 +360,7 @@ class GeoNodeMapTest(TestCase):
         """Verify that the 'delete_layer' pre_delete hook is functioning
         """
 
-        gs_cat = Layer.objects.gs_catalog
+        gs_cat = gs_catalog
 
         # Upload a Shapefile Layer
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
@@ -399,7 +400,7 @@ class GeoNodeMapTest(TestCase):
     def test_cascading_delete(self):
         """Verify that the helpers.cascading_delete() method is working properly
         """
-        gs_cat = Layer.objects.gs_catalog
+        gs_cat = gs_catalog
 
         # Upload a Shapefile
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')

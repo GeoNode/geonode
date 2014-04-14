@@ -51,14 +51,19 @@ from geonode.upload import forms, upload, files
 from geonode.upload.forms import LayerUploadForm, UploadFileForm
 from geonode.upload.models import Upload, UploadFile
 from geonode.utils import json_response as do_json_response
-from geonode.utils import ogc_server_settings
 from httplib import BadStatusLine
 
 logger = logging.getLogger(__name__)
 
 _SESSION_KEY = 'geonode_upload_session'
-_ALLOW_TIME_STEP = getattr(settings, 'UPLOADER', False).get('OPTIONS', False).get('TIME_ENABLED', False)
-_ASYNC_UPLOAD = True if ogc_server_settings.DATASTORE else False
+_ALLOW_TIME_STEP = getattr(settings, 'UPLOADER', False)
+if _ALLOW_TIME_STEP:
+    _ALLOW_TIME_STEP = _ALLOW_TIME_STEP.get('OPTIONS', False).get('TIME_ENABLED', False)
+if any(settings.OGC_SERVER):
+    from geonode.utils import ogc_server_settings
+    _ASYNC_UPLOAD = True if ogc_server_settings and ogc_server_settings.DATASTORE else False
+else:
+    _ASYNC_UPLOAD = False
 
 # at the moment, the various time support transformations require the database
 if _ALLOW_TIME_STEP and not _ASYNC_UPLOAD:

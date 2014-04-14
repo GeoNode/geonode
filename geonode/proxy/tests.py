@@ -29,7 +29,6 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 from django.test.utils import override_settings, str_prefix
 from geonode.proxy.views import validate_host
-from geonode.utils import ogc_server_settings
 
 class ProxyTest(TestCase):
 

@@ -25,6 +25,7 @@ from geonode.geoserver.helpers import cascading_delete
 from geonode.layers.models import Layer
 from geonode.upload.models import Upload
 from geonode.upload.views import _ALLOW_TIME_STEP
+from geonode.geoserver.signals import gs_catalog
 from geonode.urls import include
 from geonode.urls import urlpatterns
 from geonode.utils import ogc_server_settings
@@ -264,7 +265,7 @@ class UploaderBase(TestCase):
             except:
                 print 'unable to delete layer', l
         # and destroy anything left dangling on geoserver
-        cat = Layer.objects.gs_catalog
+        cat = gs_catalog
         map(lambda name: cascading_delete(cat, name), [l.name for l in cat.get_layers()])
 
     def tearDown(self):

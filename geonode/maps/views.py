@@ -36,7 +36,6 @@ from django.utils.html import strip_tags
 from django.views.decorators.http import require_POST
 
 from geonode.views import _handleThumbNail
-from geonode.utils import http_client
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import forward_mercator
@@ -48,13 +47,10 @@ from geonode.maps.forms import MapForm
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
 from geonode.documents.models import get_related_documents
-from geonode.utils import ogc_server_settings
 from geonode.base.models import ContactRole
 from geonode.people.forms import ProfileForm, PocForm
 
 logger = logging.getLogger("geonode.maps.views")
-
-_user, _password = ogc_server_settings.credentials
 
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
@@ -125,7 +121,6 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         'layers': layers,
         'permissions_json': json.dumps(_perms_info(map_obj, MAP_LEV_NAMES)),
         "documents": get_related_documents(map_obj),
-        'ows': getattr(ogc_server_settings, 'ows', ''),
     }))
 
 @login_required
@@ -381,7 +376,7 @@ def new_map_config(request):
                 layers.append(MapLayer(
                     map = map_obj,
                     name = layer.typename,
-                    ows_url = ogc_server_settings.public_url + "wms",
+                    ows_url = layer.ows_url(),
                     layer_params=json.dumps( layer.attribute_config()),
                     visibility = True
                 ))
@@ -424,6 +419,8 @@ def map_download(request, mapid, template='maps/map_download.html'):
     XXX To do, remove layer status once progress id done
     This should be fix because
     """
+    from geonode.utils import http_client
+    from geonode.utils import ogc_server_settings
     mapObject = _resolve_map(request, mapid, 'maps.view_map')
 
     map_status = dict()
@@ -476,7 +473,6 @@ def map_download(request, mapid, template='maps/map_download.html'):
          "locked_layers": locked_layers,
          "remote_layers": remote_layers,
          "downloadable_layers": downloadable_layers,
-         "geoserver" : ogc_server_settings.public_url,
          "site" : settings.SITEURL
     }))
 
@@ -485,6 +481,8 @@ def map_download_check(request):
     """
     this is an endpoint for monitoring map downloads
     """
+    from geonode.utils import http_client
+    from geonode.utils import ogc_server_settings
     try:
         layer = request.session["map_status"]
         if type(layer) == dict:
@@ -520,7 +518,7 @@ def map_wms(request, mapid):
     GET: return endpoint information for group layer,
     PUT: update existing or create new group layer.
     """
-
+    from geonode.utils import ogc_server_settings
     mapObject = _resolve_map(request, mapid, 'maps.view_map')
 
     if request.method == 'PUT':
