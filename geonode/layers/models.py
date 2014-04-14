@@ -46,9 +46,9 @@ from geonode.layers.ows import wcs_links, wfs_links, wms_links, \
     wps_execute_layer_attribute_statistics
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.utils import ogc_server_settings
-
 from geoserver.catalog import Catalog, FailedRequestError
 from owslib.wcs import WebCoverageService
+from gsimporter import Client
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
@@ -72,6 +72,7 @@ class LayerManager(ResourceBaseManager):
         models.Manager.__init__(self)
         url = ogc_server_settings.rest
         self.gs_catalog = Catalog(url, _user, _password)
+        self.gs_uploader = Client(url, _user, _password)
 
 def add_bbox_query(q, bbox):
     '''modify the queryset q to limit to the provided bbox
@@ -161,7 +162,7 @@ class Layer(ResourceBase):
     @property
     def store_type(self):
         cat = Layer.objects.gs_catalog
-        res = cat.get_resource(self.name)
+        res= cat.get_resource(self.name, store=self.store, workspace=self.workspace)
         res.store.fetch()
         return res.store.dom.find('type').text
 
@@ -200,20 +201,6 @@ class Layer(ResourceBase):
     LEVEL_READ  = 'layer_readonly'
     LEVEL_WRITE = 'layer_readwrite'
     LEVEL_ADMIN = 'layer_admin'
-
-    def set_default_permissions(self):
-        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
-        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
-
-        # remove specific user permissions
-        current_perms =  self.get_all_level_info()
-        for username in current_perms['users'].keys():
-            user = User.objects.get(username=username)
-            self.set_user_level(user, self.LEVEL_NONE)
-
-        # assign owner admin privileges
-        if self.owner:
-            self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
     def tiles_url(self):
         return self.link_set.get(name='Tiles').url
@@ -337,7 +324,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     url = ogc_server_settings.internal_rest
     try:
         gs_catalog = Catalog(url, _user, _password)
-        gs_resource = gs_catalog.get_resource(instance.name)
+        gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
     except (EnvironmentError, FailedRequestError) as e:
         gs_resource = None
         msg = ('Could not connect to geoserver at "%s"'
@@ -390,7 +377,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
        * Download links (WMS, WCS or WFS and KML)
        * Styles (SLD)
     """
-    gs_resource = gs_catalog.get_resource(instance.name)
+    gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
 
     bbox = gs_resource.latlon_bbox
 
@@ -417,7 +404,7 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     try:
         gs_catalog = Catalog(url, _user, _password)
-        gs_resource = gs_catalog.get_resource(instance.name)
+        gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
     except (FailedRequestError, EnvironmentError) as e:
         msg = ('Could not connect to geoserver at "%s"'
                'to save information for layer "%s"' % (

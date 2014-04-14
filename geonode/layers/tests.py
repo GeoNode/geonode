@@ -125,7 +125,7 @@ class LayersTest(TestCase):
 
         # Set the Permissions
 
-        geonode.layers.utils.layer_set_permissions(layer, self.perm_spec)
+        layer.set_permissions(self.perm_spec)
 
         # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly
         self.assertEqual(layer.get_gen_level(ANONYMOUS_USERS), layer.LEVEL_NONE)
@@ -147,25 +147,25 @@ class LayersTest(TestCase):
         """
 
         # Setup some layer names to work with
-        valid_layer_typename = Layer.objects.all()[0].typename
-        invalid_layer_typename = "n0ch@nc3"
+        valid_layer_typename = Layer.objects.all()[0].id
+        invalid_layer_id = 9999999
 
         c = Client()
 
         # Test that an invalid layer.typename is handled for properly
-        response = c.post(reverse('layer_permissions', args=(invalid_layer_typename,)),
+        response = c.post(reverse('resource_permissions', args=('layer', invalid_layer_id,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 404)
 
         # Test that GET returns permissions
-        response = c.get(reverse('layer_permissions', args=(valid_layer_typename,)))
+        response = c.get(reverse('resource_permissions', args=('layer', valid_layer_typename,)))
         assert('permissions' in response.content)
 
         # Test that a user is required to have maps.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post(reverse('layer_permissions', args=(valid_layer_typename,)),
+        response = c.post(reverse('resource_permissions', args=('layer', valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401)
@@ -173,7 +173,7 @@ class LayersTest(TestCase):
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
-        response = c.post(reverse('layer_permissions', args=(valid_layer_typename,)),
+        response = c.post(reverse('resource_permissions', args=('layer', valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401)
@@ -182,7 +182,7 @@ class LayersTest(TestCase):
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
 
-        response = c.post(reverse('layer_permissions', args=(valid_layer_typename,)),
+        response = c.post(reverse('resource_permissions', args=('layer', valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
 

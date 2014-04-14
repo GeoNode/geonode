@@ -16,24 +16,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 import os
 import re
-import logging
-
+from django.conf import settings
+from geonode.layers.models import Layer
+from geonode.upload.files import _clean_string, SpatialFiles
+from geonode.utils import ogc_server_settings
+from geoserver.catalog import FailedRequestError
 from zipfile import ZipFile
 
-from django.conf import settings
-
-from geonode.geoserver.uploader.uploader import Uploader
-from geonode.layers.models import Layer
-from geonode.upload.files import _clean_string
-from geonode.utils import _user, _password
-from geoserver.catalog import FailedRequestError
-from geonode.utils import ogc_server_settings
-
-
-def gs_uploader():
-    return Uploader(ogc_server_settings.rest, _user, _password)
+logger = logging.getLogger(__name__)
 
 
 def get_upload_type(filename):
@@ -43,7 +36,7 @@ def get_upload_type(filename):
     base_name, extension = os.path.splitext(filename)
     extension = extension[1:].lower()
     
-    possible_types = set(('shp','csv','tif', 'kml'))
+    possible_types = set(('shp', 'csv', 'tif', 'kml'))
     
     if extension == 'zip':
         zf = ZipFile(filename, 'r')
@@ -61,15 +54,26 @@ def get_upload_type(filename):
 
 
 def find_file_re(base_file, regex):
-    '''case-insensitive filter the directory containing base_file w/ regex'''
+    """
+    Returns files in the same directory as the base_file that match the regular expression
+    """
+
     dirname = os.path.dirname(base_file)
-    return map(lambda f: os.path.join(dirname,f), 
+    return map(lambda f: os.path.join(dirname, f),
                filter(re.compile(regex, re.I).match, os.listdir(dirname)))
 
 
 def find_sld(base_file):
-    '''work around assumption in get_files that sld will be named the same'''
+    """
+    Returns files in same directory as base_file that end in .sld
+    """
+
+    if isinstance(base_file, SpatialFiles):
+        base_file = base_file.dirname
+        logger.debug(base_file)
+
     f = find_file_re(base_file, '.*\.sld')
+    logger.debug('slds: {}'.format(f))
     return f[0] if f else None
 
 
@@ -104,8 +108,8 @@ def rename_and_prepare(base_file):
             # if an sld is there, extract so it can be found
             if ext.lower() == '.sld':
                 zf.extract(f, dirname)
-        if not main_file: raise Exception(
-                'Could not locate a shapefile or tif file')
+        if not main_file:
+            raise Exception('Could not locate a shapefile or tif file')
         if rename:
             # dang, have to unpack and rename
             zf.extractall(dirname)
@@ -123,7 +127,6 @@ def rename_and_prepare(base_file):
         dirname,
         _clean_string(os.path.basename(base_file))
     )
-        
 
 def create_geoserver_db_featurestore(store_type=None, store_name=None):
     cat = Layer.objects.gs_catalog
@@ -140,10 +143,10 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
         else:
             return None
     except FailedRequestError:
-        if store_type == 'geogit' and hasattr(settings, 'GEOGIT_DATASTORE_NAME') and settings.GEOGIT_DATASTORE_NAME:
-            if store_name is None:
+        if store_type == 'geogit':
+            if store_name is None and hasattr(settings, 'GEOGIT_DATASTORE_NAME'):
                 store_name = settings.GEOGIT_DATASTORE_NAME
-            logging.info(
+            logger.info(
                 'Creating target datastore %s' % settings.GEOGIT_DATASTORE_NAME)
             ds = cat.create_datastore(store_name)
             ds.type = "GeoGIT"
@@ -159,13 +162,14 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
             ds = cat.create_datastore(dsname)
             db = ogc_server_settings.datastore_db
             ds.connection_parameters.update(
-                host = db['HOST'],
-                port = db['PORT'],
-                database = db['NAME'],
-                user = db['USER'],
-                passwd = db['PASSWORD'],
-                dbtype = store_type)
+                host=db['HOST'],
+                port=db['PORT'],
+                database=db['NAME'],
+                user=db['USER'],
+                passwd=db['PASSWORD'],
+                dbtype=store_type)
             cat.save(ds)
             ds = cat.get_store(dsname)
 
     return ds
+
