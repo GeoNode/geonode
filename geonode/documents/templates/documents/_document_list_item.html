@@ -3,9 +3,14 @@
 {% load agon_ratings_tags %}
 {% load documents_tags %}
 {% load base_tags %}
+{% load geonode_auth %}
 
 {% overall_rating document "document" as document_rating %}
 {% num_ratings document as num_votes %}
+
+{% has_obj_perm user document "documents.view_document" as can_view_document %}
+
+{% if can_view_document %}
 <article>
   <div class="content">
     <!-- <div class="abstract-placeholder">{{ document.abstract }}</div> -->
@@ -28,3 +33,25 @@
     </div>
   </div>
 </article>
+{% else %}
+<article>
+    <div class="content">
+        <div class="item-header">
+            <img class="thumb" src="{{  STATIC_URL }}/geonode/img/missing_thumb.png" />
+            <h3><i class="icon-file-text-alt"></i>{{ document.title }}</h3>
+        </div>
+        <div class="details">
+            <div class="meta">
+                <p>Doc {% trans 'from' %} <a href="{% url "profile_detail" document.owner.username %}">{{ document.owner }}</a>, {{ document.date|timesince }} {% trans 'ago' %}</p>
+                <p class="abstract">{%  trans "You do not have permission to view this document" %}</p>
+                <ul class="nav stats">
+                    <li><a><strong>{{ document.popular_count }}</strong> {% trans "view" %}{{ document.popular_count|pluralize }}</a></li>
+                    <li><a><strong><span class="overall_rating"></span></strong><span class="avg_rating" data-rating="{{ document_rating }}">{% trans "Average rating" %} ({{num_votes}} {% trans "votes" %})</span></a></li>
+                </ul>
+            </div>
+            <div class="tools">
+            </div>
+        </div>
+    </div>
+</article>
+{%  endif %}

@@ -10,15 +10,22 @@ from geonode.contrib.groups.models import Group
 class GroupIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField()
-
+    #https://github.com/toastdriven/django-haystack/issues/569 - Necessary for sorting
+    title_sortable = indexes.CharField(indexed=False)
+    description = indexes.CharField(model_attr='description')
+    iid = indexes.IntegerField(model_attr='id')
     type = indexes.CharField(faceted=True)
     json = indexes.CharField(indexed=False)
+    keywords = indexes.MultiValueField(model_attr="keyword_list", null=True)
 
     def get_model(self):
         return Group 
 
     def prepare_title(self, obj):
         return str(obj)
+
+    def prepare_title_sortable(self, obj):
+        return str(obj).lower()
 
     def prepare_type(self, obj):
         return "group"
