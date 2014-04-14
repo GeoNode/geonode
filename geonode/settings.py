@@ -579,8 +579,7 @@ if LOCKDOWN_GEONODE:
 PROXY_ALLOWED_HOSTS = ()
 
 # The proxy to use when making cross origin requests.
-PROXY_URL = '/proxy/?url='
-
+PROXY_URL = '/proxy/?url=' if DEBUG else None
 
 # Load more settings from a file called local_settings.py if it exists
 try:
