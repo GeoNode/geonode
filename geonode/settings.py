@@ -321,11 +321,6 @@ ABSOLUTE_URL_OVERRIDES = {
     'auth.user': get_user_url
 }
 
-# Redirects to home page after login
-# FIXME(Ariel): I do not know why this setting is needed,
-# it would be best to use the ?next= parameter
-LOGIN_REDIRECT_URL = "/"
-
 #
 # Settings for default search size
 #
