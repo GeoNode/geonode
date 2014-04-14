@@ -34,6 +34,9 @@
         <div id="slide-pane">
           <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
           {% with type='layer' %}
+          <div class="filter" style="display:none">
+              <ul id="types" ><li data-class="layer" class="active"></li></ul>
+          </div>
           {% include "search/_layertype_filters.html" %}
           {% include "search/_extent_filter.html" %}
           {% include "search/_general_filters.html" %}
