@@ -413,7 +413,7 @@ define(function (require, exports) {
                 if (jqXHR === null) {
                     self.markError("Unexpected Error");
                 } else {
-                    self.markError($.parseJSON(jqXHR.responseText).errors);
+                    self.markError($.parseJSON(jqXHR.responseText).errormsgs);
                 }
             },
             success: function (resp, status) {
