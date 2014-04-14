@@ -39,8 +39,10 @@ from urlparse import urlsplit
 class ServerDoesNotExist(Exception):
     pass
 
-if not (getattr(settings, 'OGC_SERVER', False) and getattr(settings, 'OGC_SERVER', dict()).get('default', False)):
-    raise ImproperlyConfigured("You must define an OGC_SERVER setting.")
+if hasattr(settings, 'OGC_SERVER'):
+    OGC_SERVER = {}
+else:
+    OGC_SERVER = settings.OGC_SERVER
 
 class OGC_Server(object):
     """
@@ -190,28 +192,50 @@ class OGC_Servers_Handler(object):
     def all(self):
         return [self[alias] for alias in self]
 
+if any(settings.OGC_SERVER):
+    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
 
-ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
+    _wms = None
+    _csw = None
+    _user, _password = ogc_server_settings.credentials
 
-_wms = None
-_csw = None
-_user, _password = ogc_server_settings.credentials
-
-http_client = httplib2.Http()
-http_client.add_credentials(_user, _password)
-http_client.add_credentials(_user, _password)
-_netloc = urlparse(ogc_server_settings.LOCATION).netloc
-http_client.authorizations.append(
-    httplib2.BasicAuthentication(
-        (_user, _password),
-        _netloc,
-        ogc_server_settings.LOCATION,
-        {},
-        None,
-        None,
-        http_client
+    http_client = httplib2.Http()
+    http_client.add_credentials(_user, _password)
+    http_client.add_credentials(_user, _password)
+    _netloc = urlparse(ogc_server_settings.LOCATION).netloc
+    http_client.authorizations.append(
+        httplib2.BasicAuthentication(
+            (_user, _password),
+            _netloc,
+            ogc_server_settings.LOCATION,
+            {},
+            None,
+            None,
+            http_client
+        )
     )
-)
+
+    def get_wms():
+        wms_url = ogc_server_settings.internal_ows + "?service=WMS&request=GetCapabilities&version=1.1.0"
+        netloc = urlparse(wms_url).netloc
+        http = httplib2.Http()
+        http.add_credentials(_user, _password)
+        http.authorizations.append(
+            httplib2.BasicAuthentication(
+                (_user, _password),
+                    netloc,
+                    wms_url,
+                    {},
+                    None,
+                    None,
+                    http
+                )
+            )
+        body = http.request(wms_url)[1]
+        _wms = WebMapService(wms_url, xml=body)
+        return _wms
+
+
 
 DEFAULT_TITLE=""
 DEFAULT_ABSTRACT=""
@@ -227,28 +251,6 @@ def check_geonode_is_up():
            'have started it.' % ogc_server_settings.LOCATION)
     assert resp['status'] == '200', msg
        
-
-def get_wms():
-    global _wms
-    wms_url = ogc_server_settings.internal_ows + "?service=WMS&request=GetCapabilities&version=1.1.0"
-    netloc = urlparse(wms_url).netloc
-    http = httplib2.Http()
-    http.add_credentials(_user, _password)
-    http.authorizations.append(
-        httplib2.BasicAuthentication(
-            (_user, _password),
-                netloc,
-                wms_url,
-                {},
-                None,
-                None,
-                http
-            )
-        )
-    body = http.request(wms_url)[1]
-    _wms = WebMapService(wms_url, xml=body)
-    return _wms
-
 
 def _get_basic_auth_info(request):
     """
@@ -546,11 +548,13 @@ class GXPMapBase(object):
             return cfg
 
         source_urls = [source['url'] for source in sources.values() if source.has_key('url')]
-        if not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
-            keys = sources.keys()
-            keys.sort()
-            settings.MAP_BASELAYERS[0]['source']['title'] = 'Local Geoserver'
-            sources[str(int(keys[-1])+1)] = settings.MAP_BASELAYERS[0]['source']
+        
+        if any(settings.OGC_SERVER):
+            if not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
+                keys = sources.keys()
+                keys.sort()
+                settings.MAP_BASELAYERS[0]['source']['title'] = 'Local Geoserver'
+                sources[str(int(keys[-1])+1)] = settings.MAP_BASELAYERS[0]['source']
 
         config = {
             'id': self.id,
@@ -567,9 +571,10 @@ class GXPMapBase(object):
                 'zoom': self.zoom
             }
         }
-
-        # Mark the last added layer as selected - important for data page
-        config["map"]["layers"][len(layers)-1]["selected"] = True
+        
+        if any(layers):
+            # Mark the last added layer as selected - important for data page
+            config["map"]["layers"][len(layers)-1]["selected"] = True
 
         config["map"].update(_get_viewer_projection_info(self.projection))
         return config
