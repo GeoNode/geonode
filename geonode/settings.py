@@ -321,11 +321,6 @@ ABSOLUTE_URL_OVERRIDES = {
     'auth.user': get_user_url
 }
 
-# Redirects to home page after login
-# FIXME(Ariel): I do not know why this setting is needed,
-# it would be best to use the ?next= parameter
-LOGIN_REDIRECT_URL = "/"
-
 #
 # Settings for default search size
 #
@@ -583,8 +578,7 @@ if LOCKDOWN_GEONODE:
 PROXY_ALLOWED_HOSTS = ()
 
 # The proxy to use when making cross origin requests.
-PROXY_URL = '/proxy/?url='
-
+PROXY_URL = '/proxy/?url=' if DEBUG else None
 
 # Load more settings from a file called local_settings.py if it exists
 try:
