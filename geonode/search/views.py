@@ -161,12 +161,6 @@ def _search_json(query, items, facets, time):
     if query.limit is not None and query.limit > 0:
         items = items[query.start:query.start + query.limit]
 
-    # unique item id for ext store (this could be done client side)
-    iid = query.start
-    for r in items:
-        r.iid = iid
-        iid += 1
-
     exclude = query.params.get('exclude')
     exclude = set(exclude.split(',')) if exclude else ()
     items = map(lambda r: r.as_dict(exclude), items)
@@ -502,15 +496,15 @@ def haystack_search_api(request, format="json", **kwargs):
         if "temporal_extent_end" in data and data["temporal_extent_end"] is not None:
             data["temporal_extent_end"] = data["temporal_extent_end"].strftime("%Y-%m-%dT%H:%M:%S.%f")
         if data['type'] == "map":
-            resource = MapNormalizer(Map.objects.get(pk=data['iid']))
+            resource = MapNormalizer(Map.objects.get(pk=data['id']))
         elif data['type'] == "layer":
-            resource = LayerNormalizer(Layer.objects.get(pk=data['iid']))
+            resource = LayerNormalizer(Layer.objects.get(pk=data['id']))
         elif data['type'] == "user":
-            resource = OwnerNormalizer(Profile.objects.get(pk=data['iid']))
+            resource = OwnerNormalizer(Profile.objects.get(pk=data['id']))
         elif data['type'] == "document":
-            resource = DocumentNormalizer(Document.objects.get(pk=data['iid']))
+            resource = DocumentNormalizer(Document.objects.get(pk=data['id']))
         elif data['type'] == "group" and "geonode.contrib.groups" in settings.INSTALLED_APPS:
-            resource = GroupNormalizer(Group.objects.get(pk=data['iid']))
+            resource = GroupNormalizer(Group.objects.get(pk=data['id']))
         if resource:
             resource.rating = data["rating"] if "rating" in data else 0
         results.append(data)

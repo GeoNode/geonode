@@ -4,6 +4,7 @@
 {{ object.purpose }}
 {{ object.name }}
 {{ object.supplemental_information }}
+{{ object.keywords }}
 
 
 

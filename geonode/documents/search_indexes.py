@@ -8,7 +8,7 @@ class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr="title",boost=2)
     #https://github.com/toastdriven/django-haystack/issues/569 - Necessary for sorting
     title_sortable = indexes.CharField(indexed=False)
-    iid = indexes.IntegerField(model_attr='id')
+    id = indexes.IntegerField(model_attr='id')
     type = indexes.CharField(faceted=True)
     bbox_left = indexes.FloatField(model_attr="bbox_x0", null=True)
     bbox_right = indexes.FloatField(model_attr="bbox_x1", null=True)
@@ -19,7 +19,7 @@ class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
     modified = indexes.DateTimeField(model_attr="date")
     detail_url = indexes.CharField(model_attr="get_absolute_url")
     popular_count = indexes.IntegerField(model_attr="popular_count", default=0)
-    keywords = indexes.MultiValueField(model_attr="keyword_list", null=True)
+    keywords = indexes.MultiValueField(model_attr="keyword_list", indexed=False, null=True)
 
     def get_model(self):
         return Document

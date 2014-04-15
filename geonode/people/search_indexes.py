@@ -16,7 +16,7 @@ class ProfileIndex(indexes.SearchIndex, indexes.Indexable):
     organization = indexes.CharField(model_attr='organization', null=True)
     position = indexes.CharField(model_attr='position', null=True)
     type = indexes.CharField(faceted=True)
-    iid = indexes.IntegerField(model_attr='id')
+    id = indexes.IntegerField(model_attr='id')
 
     def get_model(self):
         return Profile
