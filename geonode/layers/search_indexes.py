@@ -7,7 +7,7 @@ from geonode.maps.models import Layer
 
 class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    iid = indexes.IntegerField(model_attr='resourcebase_ptr_id')
+    id = indexes.IntegerField(model_attr='resourcebase_ptr_id')
     uuid = indexes.CharField(model_attr='uuid')
     type = indexes.CharField(faceted=True)
     subtype = indexes.CharField(faceted=True)

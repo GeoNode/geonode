@@ -3,3 +3,4 @@
 {{ object.abstract }}
 {{ object.purpose }}
 {{ object.supplemental_information }}
+{{ object.keywords }}

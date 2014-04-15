@@ -8,7 +8,7 @@ class MapIndex(indexes.SearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr="title", boost=2)
     #https://github.com/toastdriven/django-haystack/issues/569 - Necessary for sorting
     title_sortable = indexes.CharField(model_attr="title", indexed=False)
-    iid = indexes.IntegerField(model_attr='id')
+    id = indexes.IntegerField(model_attr='id')
     type = indexes.CharField(faceted=True)
     bbox_left = indexes.FloatField(model_attr="bbox_x0", null=True)
     bbox_right = indexes.FloatField(model_attr="bbox_x1", null=True)
