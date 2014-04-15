@@ -377,7 +377,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
        * Download links (WMS, WCS or WFS and KML)
        * Styles (SLD)
     """
-    gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
+    gs_resource= gs_catalog.get_resource(instance.name)
 
     bbox = gs_resource.latlon_bbox
 
@@ -404,7 +404,7 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     try:
         gs_catalog = Catalog(url, _user, _password)
-        gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
+        gs_resource= gs_catalog.get_resource(instance.name)
     except (FailedRequestError, EnvironmentError) as e:
         msg = ('Could not connect to geoserver at "%s"'
                'to save information for layer "%s"' % (
