@@ -49,8 +49,6 @@ import logging
 import zlib
 
 import xmlrpclib
-from haystack.inputs import AutoQuery, Raw, Exact
-from haystack.query import SearchQuerySet, SQ
 
 logger = logging.getLogger(__name__)
 
@@ -238,7 +236,7 @@ def author_list(req):
 def search_page(request, template='search/search.html', **kw):
     initial_query = request.REQUEST.get('q','')
 
-    if settings.HAYSTACK_SEARCH:
+    if settings.HAYSTACK_SEARCH and "haystack" in settings.INSTALLED_APPS:
         query = query_from_request(request, kw)
         search_response, results = haystack_search_api(request, format="html", **kw)
         facets = search_response['facets']
@@ -296,6 +294,8 @@ def haystack_search_api(request, format="json", **kwargs):
     """
     View that drives the search api
     """
+    from haystack.inputs import Raw
+    from haystack.query import SearchQuerySet, SQ
 
     # Retrieve Query Params
     id = request.REQUEST.get("id", None)
@@ -496,15 +496,15 @@ def haystack_search_api(request, format="json", **kwargs):
         if "temporal_extent_end" in data and data["temporal_extent_end"] is not None:
             data["temporal_extent_end"] = data["temporal_extent_end"].strftime("%Y-%m-%dT%H:%M:%S.%f")
         if data['type'] == "map":
-            resource = MapNormalizer(Map.objects.get(pk=data['id']))
+            resource = MapNormalizer(Map.objects.get(pk=data['oid']))
         elif data['type'] == "layer":
-            resource = LayerNormalizer(Layer.objects.get(pk=data['id']))
+            resource = LayerNormalizer(Layer.objects.get(pk=data['oid']))
         elif data['type'] == "user":
-            resource = OwnerNormalizer(Profile.objects.get(pk=data['id']))
+            resource = OwnerNormalizer(Profile.objects.get(pk=data['oid']))
         elif data['type'] == "document":
-            resource = DocumentNormalizer(Document.objects.get(pk=data['id']))
+            resource = DocumentNormalizer(Document.objects.get(pk=data['oid']))
         elif data['type'] == "group" and "geonode.contrib.groups" in settings.INSTALLED_APPS:
-            resource = GroupNormalizer(Group.objects.get(pk=data['id']))
+            resource = GroupNormalizer(Group.objects.get(pk=data['oid']))
         if resource:
             resource.rating = data["rating"] if "rating" in data else 0
         results.append(data)

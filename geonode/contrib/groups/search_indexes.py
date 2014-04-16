@@ -1,44 +1,45 @@
-import json
-
 from django.conf import settings
-from django.core.urlresolvers import reverse
 
-from haystack import indexes
+if "haystack" in settings.INSTALLED_APPS:
+    import json
+    from django.core.urlresolvers import reverse
 
-from geonode.contrib.groups.models import Group
+    from haystack import indexes
 
-class GroupIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
-    title = indexes.CharField(boost=2)
-    #https://github.com/toastdriven/django-haystack/issues/569 - Necessary for sorting
-    title_sortable = indexes.CharField(indexed=False)
-    description = indexes.CharField(model_attr='description',boost=1.5)
-    id = indexes.IntegerField(model_attr='id')
-    type = indexes.CharField(faceted=True)
-    json = indexes.CharField(indexed=False)
+    from geonode.contrib.groups.models import Group
 
-    def get_model(self):
-        return Group 
+    class GroupIndex(indexes.SearchIndex, indexes.Indexable):
+        text = indexes.CharField(document=True, use_template=True)
+        title = indexes.CharField(boost=2)
+        #https://github.com/toastdriven/django-haystack/issues/569 - Necessary for sorting
+        title_sortable = indexes.CharField(indexed=False)
+        description = indexes.CharField(model_attr='description',boost=1.5)
+        oid = indexes.IntegerField(model_attr='id')
+        type = indexes.CharField(faceted=True)
+        json = indexes.CharField(indexed=False)
 
-    def prepare_title(self, obj):
-        return str(obj)
+        def get_model(self):
+            return Group
 
-    def prepare_title_sortable(self, obj):
-        return str(obj).lower()
+        def prepare_title(self, obj):
+            return str(obj)
 
-    def prepare_type(self, obj):
-        return "group"
+        def prepare_title_sortable(self, obj):
+            return str(obj).lower()
 
-    def prepare_json(self, obj):
-        data = {
-            "_type": self.prepare_type(obj),
+        def prepare_type(self, obj):
+            return "group"
 
-            "title": obj.title,
-            "description": obj.description,
-	    "keywords": [keyword.name for keyword in obj.keywords.all()] if obj.keywords else [],
-            "thumb": settings.STATIC_URL + "static/img/contact.png",
-            "detail": None,
-        }
+        def prepare_json(self, obj):
+            data = {
+                "_type": self.prepare_type(obj),
 
-        return json.dumps(data)
+                "title": obj.title,
+                "description": obj.description,
+	            "keywords": [keyword.name for keyword in obj.keywords.all()] if obj.keywords else [],
+                "thumb": settings.STATIC_URL + "static/img/contact.png",
+                "detail": None,
+            }
+
+            return json.dumps(data)
                                          
