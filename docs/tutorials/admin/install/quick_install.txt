@@ -50,6 +50,142 @@ The easiest way to get the .deb is to install it using APT, the standard install
 
 Once the package is installed, please consult :ref:`configure_installation` to learn how to create an account for the admin user and tweak the settings to get more performance.
 
+
+Windows, OSX and others
+=======================
+
+
+Windows
+-------
+
+To install in Windows it is assumed you're familiar with python development and virtualenv on Windows and that you're familiar with the windows command prompt. You will need the follow prerequists installed:
+
+    * Java JDK
+    * Python 2.6+
+    * ant (bin directory must be on system PATH)
+    * maven2 (bin directory must be on system PATH)
+    * Python distutils (easy_install)
+    * git
+
+Install and configure from the windows command prompt, if you don't already have python virtualenv installed, then do it now::
+   
+   easy_install virtualenv
+
+Create virtualenv and activate it::
+    
+    cd <Directory to install the virtualenv & geonode into>
+    virtualenv venvvenv\scripts\activate
+
+Install Python native dependencies, this command will look for and install binary distributions (pip install will attempt to build and fail)::
+
+    easy_install PIL lxml==2.3
+    
+Clone GeoNode::
+    
+    git clone https://github.com/GeoNode/geonode.git
+    
+Install GeoNode in the local virtualenv::
+
+    pip install -e geonode --use-mirrors
+    cd geonode
+    
+Compile GeoServer::
+    
+    paver setup
+    
+Start the servers, this WON'T work on windows without changes to pavement.py, and a windows batch script for starting jetty::
+
+    paver start
+
+Once the package is installed, please consult :ref:`configure_installation` to learn how to create an account for the admin user and tweak the settings to get more performance.
+
+OSX
+---
+
+The recommended install method in these platforms is to use a virtualization solution, like `Virtual Box`_, install the latest `Ubuntu Linux`_ and then proceed with the steps mentioned above. Some GeoNode developers prefer to use `Vagrant`_ - a VirtualBox wrapper, the steps for this are detailed below. The Vagrant quickstart guide shows how to get a Linux VM configured in most operating systems. However, if you would like to develop natively on OSX please follow the following instructions.
+
+You may need brew install various dependencies::
+
+    mkdir -p ~/pyenv
+    virtualenv ~/pyenv/geonode    
+    source ~/pyenv/geonode/bin/activate
+    git clone https://github.com/GeoNode/geonode
+    cd geonode
+    pip install lxml
+    pip install pyproj
+    pip install nose
+    pip install httplib2
+    pip install shapely
+    pip install pillow
+    pip install paver
+
+Node and tools required for static development::
+
+    brew install node
+    npm install -g bower
+    npm install -g grunt-cli
+
+Install pip dependencies::
+
+    pip install -e .
+
+Paver handles dependencies for Geonode, first setup (this will download and update your python dependencies - ensure you're in a virtualenv)::
+
+    paver setup
+    paver start
+    
+Optional: To generate document thumbnails for PDFs and other ghostscripts file types, download ghostscript: https://www.macupdate.com/app/mac/9980/gpl-ghostscript::
+
+    sudo apt-get install imagemagick
+    brew install imagemagick
+    pip install Wand==0.3.5
+
+Once fully started, you should see a message indicating the address of your geonode.
+The default username and password are ``admin`` and ``admin``::
+  
+  Development GeoNode is running at http://localhost:8000/
+  The GeoNode is an unstoppable machine
+  Press CTRL-C to shut down
+
+Before starting GeoNode (paver start), you could test your installation by running tests::
+
+    paver test
+    paver test_integration
+    
+In case you want to build yourself the documentation, you need to install Sphinx and the run 'make html' from within the docs directory::
+
+    pip install Sphinx
+    cd docs
+    make html
+    
+You can eventually generate a pdf containing the whole documentation set. For this purpose, if using Ubuntu 12.4 you will need to install the texlive-full package::
+
+    sudo apt-get install texlive-full
+    make latexpdf
+
+.. note:: 
+
+  When running ``virtualenv venv`` the ``--system-site-packages`` option is
+  not required.  If not enabled, the bootstrap script will sandbox your virtual
+  environment from any packages that are installed in the system, useful if
+  you have incompatible versions of libraries such as Django installed
+  system-wide.  On the other hand, most of the times it is useful to use a version of
+  the Python Imaging Library provided by your operating system
+  vendor, or packaged other than on PyPI.  When in doubt, however, just leave
+  this option out.
+
+
+  Vagrant
+  -------
+
+http://docs.vagrantup.com/v2/getting-started/index.html
+
+.. _Virtual Box: http://virtualbox.org
+.. _Vagrant: http://vagrantup.com
+.. _Ubuntu Linux: http://www.ubuntu.com/download
+
+
+
 CentOS/RHEL and other \*nix distros
 -----------------------------------
 
@@ -57,16 +193,3 @@ We recommend you to download the latest release and modify the included ``instal
 
 Once the package is installed, please consult the :ref:`configure_installation` to learn how to create the admin user and tweak the settings to get more performance.
 
-
-Windows, OSX and others
-=======================
-
-The recommended install method in these platforms is to use a virtualization solution, like `Virtual Box`_, install the latest `Ubuntu Linux`_ and then proceed with the steps mentioned above.
-
-Some GeoNode developers prefer to use `Vagrant`_ - a VirtualBox wrapper. The Vagrant quickstart guide shows how to get a Linux VM configured in most operating systems.
-
-http://docs.vagrantup.com/v2/getting-started/index.html
-
-.. _Virtual Box: http://virtualbox.org
-.. _Vagrant: http://vagrantup.com
-.. _Ubuntu Linux: http://www.ubuntu.com/download
