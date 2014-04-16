@@ -10,7 +10,7 @@
       <div class="avatar"><a href="{% url "profile_detail" profile.o.user.username %}" >{% avatar profile.o.user 100 %}</a></div>
       <h3><i class="icon-user"></i> <a href="{% url "profile_detail" profile.o.user.username %}">{{ profile.title }}</a>
       {% if user.is_authenticated %}
-        {% if  profile.o.user.email %}<a href="mailto:{{ profile.o.user.email }}"><i class="icon-envelope-alt icon-large"></i></a>{% endif %}
+        {% if  profile.o.email %}<a href="mailto:{{ profile.o.email }}"><i class="icon-envelope-alt icon-large"></i></a>{% endif %}
       {% endif %}
       </h3>
     </div>
