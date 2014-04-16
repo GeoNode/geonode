@@ -56,3 +56,14 @@ Edit the Vagrantfile and activate the machine sharing with the host like::
 
 Start the machine up. Now you should be able to reach and use geonode on at the address http://localhost:4567 on your host machine.
 
+
+Setup a VirtualBox VM
+---------------------
+
+In setting up a virtualbox virtual machine, it is assumed that you'll be using Ubuntu 12.04. In this, please follow the quick instalation instructions.
+
+Once this is completed and your geonode is working within your VM, turn off the VM, go to the Network tab in VM settings and click the port forwarding button.
+
+In there add a rule which forwards the address and port which Geonode runs on (this is by default http://127.0.0.1:8000) and forward to a port that your native system isn't using. Such port could be http://127.0.0.1:4567.
+
+After this you should be able to access your Geonode running from a VirtualBox VM in your native environment's browser.
