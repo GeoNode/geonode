@@ -130,6 +130,10 @@ To allow new user registration:
 
 4. With the Django application running, set the domain name of the service properly through the admin interface as specified above in the Sitemaps section.  (This domain name is used in the account activation emails.).
 
+5. Restart apache::
+
+       $ sudo service apache2 restart
+       
 To register as a new user, click the ''Register'' link in the GeoNode index header.
 
 Additional Configuration
