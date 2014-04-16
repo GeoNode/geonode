@@ -177,10 +177,10 @@ def group_join(request, slug):
         raise Http404()
     
     if group.user_is_member(request.user):
-        return redirect("group_members", slug=group.slug)
+        return redirect("group_detail", slug=group.slug)
     else:
         group.join(request.user, role="member")
-        return redirect("group_members", slug=group.slug)
+        return redirect("group_detail", slug=group.slug)
 
 
 @require_POST
