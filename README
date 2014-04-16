@@ -167,7 +167,7 @@ Mac OSX Development Build Instructions::
     npm install -g bower
     npm install -g grunt-cli
 
-        #Install pip dependencies
+    #Install pip dependencies
     pip install -e .
 
     #Paver handles dependencies for Geonode, first setup (this will download and update your python dependencies - ensure you're in a virtualenv)
