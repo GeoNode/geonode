@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 import hashlib
+import logging
 
 from django.db import models
 from django.db.models import Q
@@ -19,8 +20,9 @@ from geonode.base.enumerations import ALL_LANGUAGES, \
 from geonode.utils import bbox_to_wkt
 from geonode.people.models import Profile, Role
 from geonode.security.models import PermissionLevelMixin
-
 from taggit.managers import TaggableManager
+
+logger = logging.getLogger(__name__)
 
 
 class ContactRole(models.Model):
@@ -229,10 +231,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ThumbnailMixin):
     # internal fields
     uuid = models.CharField(max_length=36)
     owner = models.ForeignKey(User, blank=True, null=True)
-
     contacts = models.ManyToManyField(Profile, through='ContactRole')
-
-    # section 1
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
     date = models.DateTimeField(_('date'), default = datetime.now, help_text=_('reference date for the cited resource')) # passing the method itself, not the result
 
@@ -498,6 +497,15 @@ def resourcebase_post_save(instance, sender, **kwargs):
                                            )
         resourcebase.metadata_author = ac
 
+    if hasattr(instance, 'set_default_permissions') and hasattr(instance, 'get_all_level_info'):
+        logger.debug('Checking for permissions.')
+
+        #  True if every key in the get_all_level_info dict is empty.
+        if all(map(lambda perm: not perm, instance.get_all_level_info().values())):
+            logger.debug('There are no permissions for this object, setting default perms.')
+            instance.set_default_permissions()
+
+
 def resourcebase_post_delete(instance, sender, **kwargs):
     """
     Since django signals are not propagated from child to parent classes we need to call this 
@@ -506,5 +514,3 @@ def resourcebase_post_delete(instance, sender, **kwargs):
     """
     if instance.thumbnail:
         instance.thumbnail.delete()
-        
-    

@@ -17,19 +17,25 @@
 #
 #########################################################################
 
+from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db import backend
 from django.db.models import Q
 
-from geonode.security.models import UserObjectRoleMapping, GenericObjectRoleMapping
+from geonode.security.models import UserObjectRoleMapping, \
+    GenericObjectRoleMapping
+if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+    from geonode.security.models import GroupObjectRoleMapping
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
 from geonode.base.models import TopicCategory, ResourceBase
+if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+    from geonode.contrib.groups.models import Group
 
 from geonode.search import extension
 from geonode.search.models import filter_by_period
@@ -73,6 +79,12 @@ def _filter_security(q, user, model, permission):
         security = security | Q(id__in=urm)
         # if the user is the owner, make sure these are included
         security = security | Q(owner=user)
+
+        if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+            # apply group security
+            for group in Group.groups_for_user(user): 
+                grm = GroupObjectRoleMapping.objects.filter(object_ct=ct, role__permissions__in=[p], group=group).values('object_id')
+                security = security | Q(id__in=grm)
 
     return q.filter(security)
 
@@ -269,6 +281,28 @@ def _get_layer_results(query):
 
     return q.distinct()
 
+
+def _get_group_results(query):
+    q = extension.group_query(query)
+
+    #q = _filter_security(q, query.user, Group, 'view_group')
+
+    if extension.exclude_patterns:
+        name_filter = reduce(operator.or_,[ Q(name__regex=f) for f in extension.exclude_patterns])
+        q = q.exclude(name_filter)
+
+    if query.kw:
+        q = q.filter(_build_kw_only_query(query.kw))
+
+    if query.exclude:
+        q = q.exclude(reduce(operator.or_, [Q(title__contains=ex) for ex in query.exclude]))
+
+    if query.added:
+        q = q.filter(last_modified__gte=query.added)
+
+    return q.distinct()
+
+
 def _get_document_results(query):
 
     q = extension.document_query(query)
@@ -318,7 +352,7 @@ def _get_document_results(query):
     return q.distinct()
 
 def combined_search_results(query):
-    facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'document', 'user')])
+    facets = dict([ (k,0) for k in ('map', 'layer', 'vector', 'raster', 'document', 'user', 'group')])
     results = {'facets' : facets}
 
     bytype = (None,) if u'all' in query.type else query.type
@@ -344,6 +378,12 @@ def combined_search_results(query):
         q = _get_document_results(query)
         facets['document'] = q.count()
         results['documents'] = q
+
+    if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+        if None in bytype or u'group' in bytype:
+            q = _get_group_results(query)
+            facets['group'] = q.count()
+            results['groups'] = q
 
     if query.categories and len(query.categories) == TopicCategory.objects.count() or not query.categories:
         if None in bytype or u'user' in bytype:

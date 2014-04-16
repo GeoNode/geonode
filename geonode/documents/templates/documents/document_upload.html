@@ -15,28 +15,15 @@
     <div class="block">
         <div class="span8">
           <h2 class="page-title">{% trans "Upload Documents" %}</h2>
-
-          {% if errors %}
-            <div id="errors">
-              {% for error in errors %}
-                <div style="color:#FF0000;">{{ error }}</div>
-              {% endfor %}
-            </div>
-          {% endif %}
             <div>
-                <form id="upload_form" method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
-                    <label for="title">{% trans "Type a title" %}</label><input id="titledoc" name="title" type="text" placeholder="Title" />
-                    <label for="resource">{% trans "Link to" %}</label><input id="resource" name="q" type="text" />
-                    <label for="doc_file">{% trans "Choose a file" %}</label><input id="doc_file" name="file" type="file" />
-                    <input type="hidden" name="permissions" id="permissions" value=""/>
+                <form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-                    <input type="hidden" name="type" id="resource_type" value="" />
-                    <div><input type="submit" value="Upload" /></div>
+                    {{ form.as_table }}
+                    <div><br/><input class="btn" type="submit" value="Upload" /></div>
                 </form>
             </div>
         </div>
     </div>
-
 {% endblock %}
 
 {% block sidebar %}

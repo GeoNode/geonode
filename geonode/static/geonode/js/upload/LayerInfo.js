@@ -363,6 +363,8 @@ define(function (require, exports) {
                         }
                     } else if (resp.redirect_to === '/upload/final') {
                         self.doFinal(resp);
+                    } else {
+                        window.location = resp.url;
                     }
                 }
             });
@@ -411,7 +413,18 @@ define(function (require, exports) {
                 if (jqXHR === null) {
                     self.markError("Unexpected Error");
                 } else {
-                    self.markError($.parseJSON(jqXHR.responseText).errors);
+                    var parsed_errors = $.parseJSON(jqXHR.responseText)
+                    var error_message = 'No error message supplied';
+
+                    // Support the two different syntax used in GeoNode.
+                    // TODO(Ariel): Agree on one of those server side and
+                    // simplify this code. It can be either 'errormsgs' or 'error'.
+                    if(parsed_errors.hasOwnProperty("errormsgs")){
+                        error_message = parsed_errors.errormsgs;
+                    }else{
+                        error_message = parsed_errors.errors;
+                    } 
+                    self.markError(error_message);
                 }
             },
             success: function (resp, status) {
@@ -571,7 +584,7 @@ define(function (require, exports) {
         this.displayErrors();
     };
 
-    LayerInfo.prototype.doGeoGitToggle = function () {
+    LayerInfo.prototype.doGeoGitToggle = function (event) {
         var target = event.target || event.srcElement;
         var id = target.id;
         var base_name = id.split(':')[0];
