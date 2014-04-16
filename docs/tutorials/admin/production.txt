@@ -27,7 +27,7 @@ Find the ``Proxy Base URL`` text field, put the complete address there::
 Configure the Printing Module
 -----------------------------
 
-This lives in the GeoServer Data dir ``/usr/share/geoserver/printing/config.yaml``, add your server's IP address or domain name to the list of exceptions. 
+This lives in the GeoServer Data dir ``/usr/share/geoserver/data/printing/config.yaml``, add your server's IP address or domain name to the list of exceptions. 
 Please refer to http://docs.geoserver.org/2.4.x/en/user/datadirectory/index.html for additional information on managing the geoserver data directory::
 
     hosts:
