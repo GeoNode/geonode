@@ -159,7 +159,7 @@ Mac OSX Development Build Instructions::
     pip install nose
     pip install httplib2
     pip install shapely
-    pip install PIL
+    pip install pillow
     pip install paver
 
     # Node and tools required for static development
@@ -167,9 +167,13 @@ Mac OSX Development Build Instructions::
     npm install -g bower
     npm install -g grunt-cli
 
+    #Install pip dependencies
+    pip install -e .
+
+    #Paver handles dependencies for Geonode, first setup (this will download and update your python dependencies - ensure you're in a virtualenv)
     paver setup
     paver start
-
+    
     # Optional: To generate document thumbnails for PDFs and other ghostscripts file types
     # Then download ghostscript: https://www.macupdate.com/app/mac/9980/gpl-ghostscript
     sudo apt-get install imagemagick
