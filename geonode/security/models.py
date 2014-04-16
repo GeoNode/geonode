@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from django.conf import settings
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
@@ -25,9 +26,11 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login
-
+if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+    from geonode.contrib.groups.models import Group
 from geonode.security.enumerations import GENERIC_GROUP_NAMES
-
+from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
+ 
 class ObjectRoleManager(models.Manager):
     def get_by_natural_key(self, codename, app_label, model):
         return self.get(
@@ -108,6 +111,33 @@ class GenericObjectRoleMapping(models.Model):
         unique_together = (('subject', 'object_ct', 'object_id', 'role'), )
 
 
+class GroupObjectRoleMapping(models.Model):
+    """
+    represents assignment of a role to a group 
+    in the context of a specific object.
+    """
+
+    if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+        group = models.ForeignKey(Group, related_name="role_mappings")
+    
+        object_ct = models.ForeignKey(ContentType)
+        object_id = models.PositiveIntegerField()
+        object = GenericForeignKey('object_ct', 'object_id')
+
+        role = models.ForeignKey(ObjectRole, related_name="group_mappings")
+
+        def __unicode__(self):
+            return u"%s | %s -> %s" % (
+                unicode(self.object),
+                unicode(self.group), 
+                unicode(self.role))
+
+        class Meta:
+            unique_together = (('group', 'object_ct', 'object_id', 'role'), )
+    else:
+        pass
+
+
 class PermissionLevelError(Exception):
     pass
 
@@ -165,6 +195,39 @@ class PermissionLevelMixin(object):
             # grant new level
             UserObjectRoleMapping.objects.create(user=user, object=self, role=role)
 
+    if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+        def get_group_level(self, group):
+            """
+            get the permission level (if any) specifically assigned to the given group.
+            Returns LEVEL_NONE to indicate no specific level has been assigned.
+            """
+            my_ct = ContentType.objects.get_for_model(self)
+            try:
+                mapping = GroupObjectRoleMapping.objects.get(group=group, object_id=self.id, object_ct=my_ct)
+                return mapping.role.codename
+            except GroupObjectRoleMapping.DoesNotExist:
+                return self.LEVEL_NONE
+
+        def set_group_level(self, group, level):
+            """
+            set the group's permission level to the level specified. if 
+            level is LEVEL_NONE, any existing level assignment is removed.
+            """
+        
+            my_ct = ContentType.objects.get_for_model(self)
+            if level == self.LEVEL_NONE:
+                GroupObjectRoleMapping.objects.filter(group=group, object_id=self.id, object_ct=my_ct).delete()
+            else:
+                # lookup new role...
+                try:
+                    role = ObjectRole.objects.get(codename=level, content_type=my_ct)
+                except ObjectRole.NotFound: 
+                    raise PermissionLevelError("Invalid Permission Level (%s)" % level)
+                # remove any existing mapping              
+                GroupObjectRoleMapping.objects.filter(group=group, object_id=self.id, object_ct=my_ct).delete()
+                # grant new level
+                GroupObjectRoleMapping.objects.create(group=group, object=self, role=role)
+
     def get_gen_level(self, gen_role):
         """
         get the permission level (if any) specifically assigned to the given generic
@@ -202,6 +265,11 @@ class PermissionLevelMixin(object):
         ct = ContentType.objects.get_for_model(self)
         return UserObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
 
+    if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+        def get_group_levels(self):
+            ct = ContentType.objects.get_for_model(self)
+            return GroupObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
+
     def get_generic_levels(self):
         ct = ContentType.objects.get_for_model(self)
         return GenericObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
@@ -237,7 +305,72 @@ class PermissionLevelMixin(object):
             levels[rm.subject] = rm.role.codename
         levels['users'] = user_levels
 
+        if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+            # get all group-specific permissions
+            group_levels = {}
+            for rm in GroupObjectRoleMapping.objects.filter(object_id=self.id, object_ct=my_ct).all():
+                group_levels[rm.group.slug] = rm.role.codename
+            levels['groups'] = group_levels
+
         return levels
+
+    def set_default_permissions(self):
+        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
+        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
+
+        # remove specific user permissions
+        current_perms = self.get_all_level_info()
+        for username in current_perms['users'].keys():
+            user = User.objects.get(username=username)
+            self.set_user_level(user, self.LEVEL_NONE)
+
+        # assign owner admin privileges
+        if self.owner:
+            self.set_user_level(self.owner, self.LEVEL_ADMIN)
+
+    def set_permissions(self, perm_spec):
+        """
+        Sets an object's the permission levels based on the perm_spec JSON.
+
+
+        the mapping looks like:
+        {
+            'anonymous': 'readonly',
+            'authenticated': 'readwrite',
+            'users': {
+                <username>: 'admin'
+                ...
+            }
+            'groups': [
+                    (<groupname>, <permission_level>),
+                    (<groupname2>, <permission_level>)
+                ]
+        }
+        """
+        if "authenticated" in perm_spec:
+            self.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+        if "anonymous" in perm_spec:
+            self.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
+        if isinstance(perm_spec['users'], dict): 
+            perm_spec['users'] = perm_spec['users'].items()
+        users = [n[0] for n in perm_spec['users']]
+        excluded = users + [self.owner]
+        existing = self.get_user_levels().exclude(user__username__in=excluded)
+        existing.delete()
+        for username, level in perm_spec['users']:
+            user = User.objects.get(username=username)
+            self.set_user_level(user, level)
+
+        if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+            #TODO: Should this run in a transaction?
+            excluded_groups = [g[0] for g in perm_spec.get('groups', list())]
+
+            # Delete all group levels that do not exist in perm_spec.
+            self.get_group_levels().exclude(group__slug__in=excluded_groups).delete()
+
+            for group, level in perm_spec.get('groups', list()):
+                group = Group.objects.get(slug=group)
+                self.set_group_level(group, level)
 
 # Logic to login a user automatically when it has successfully
 # activated an account:

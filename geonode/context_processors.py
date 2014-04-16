@@ -36,6 +36,7 @@ def resource_urls(request):
         VERSION=get_version(),
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
+        GROUPS_APP = True if "geonode.contrib.groups" in settings.INSTALLED_APPS else False,
         UPLOADER_URL = reverse('data_upload') if getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest') == 'geonode.importer' else reverse('layer_upload'),
         GEOGIT_ENABLED = ogc_server_settings.GEOGIT_ENABLED,
         TIME_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', False),

@@ -153,6 +153,24 @@ ALLOWED_DOCUMENT_TYPES = [
 ]
 MAX_DOCUMENT_SIZE = 2 # MB
 
+GEONODE_APPS = (
+    # GeoNode internal apps
+    'geonode.people',
+    'geonode.base',
+    'geonode.layers',
+    'geonode.upload',
+    'geonode.maps',
+    'geonode.proxy',
+    'geonode.security',
+    'geonode.search',
+    'geonode.social',
+    'geonode.catalogue',
+    'geonode.documents',
+    'geonode.api',
+
+    # GeoNode Contrib Apps
+    'geonode.contrib.groups',
+)
 
 INSTALLED_APPS = (
 
@@ -177,8 +195,6 @@ INSTALLED_APPS = (
     'friendlytagloader',
     'geoexplorer',
     'django_extensions',
-    'tastypie',
-    'polymorphic',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -194,21 +210,10 @@ INSTALLED_APPS = (
     'announcements',
     'actstream',
     'user_messages',
+    'tastypie',
+    'polymorphic',
 
-    # GeoNode internal apps
-    'geonode.people',
-    'geonode.base',
-    'geonode.layers',
-    'geonode.upload',
-    'geonode.maps',
-    'geonode.proxy',
-    'geonode.security',
-    'geonode.search',
-    'geonode.social',
-    'geonode.catalogue',
-    'geonode.documents',
-    'geonode.api',
-)
+) + GEONODE_APPS
 
 LOGGING = {
     'version': 1,
@@ -319,11 +324,6 @@ def get_user_url(u):
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': get_user_url
 }
-
-# Redirects to home page after login
-# FIXME(Ariel): I do not know why this setting is needed,
-# it would be best to use the ?next= parameter
-LOGIN_REDIRECT_URL = "/"
 
 #
 # Settings for default search size
@@ -582,8 +582,7 @@ if LOCKDOWN_GEONODE:
 PROXY_ALLOWED_HOSTS = ()
 
 # The proxy to use when making cross origin requests.
-PROXY_URL = '/proxy/?url='
-
+PROXY_URL = '/proxy/?url=' if DEBUG else None
 
 # Load more settings from a file called local_settings.py if it exists
 try:
@@ -603,6 +602,8 @@ DOWNLOAD_FORMATS_RASTER = [
     'JPEG', 'PDF', 'PNG', 'ArcGrid', 'GeoTIFF', 'Gtopo30', 'ImageMosaic', 'KML',
     'View in Google Earth', 'Tiles',
 ]
+
+ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = False
 
 TASTYPIE_DEFAULT_FORMATS = ['json']
 

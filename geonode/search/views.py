@@ -25,6 +25,8 @@ from django.template import RequestContext
 from django.contrib.auth.models import User
 from django.core.cache import cache
 
+if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+    from geonode.contrib.groups.models import Group
 from geonode.maps.views import default_map_config
 from geonode.maps.models import Layer
 from geonode.maps.models import Map
@@ -97,8 +99,11 @@ def _get_search_context():
         'vector' : Layer.objects.filter(storeType='dataStore').count(),
         'raster' : Layer.objects.filter(storeType='coverageStore').count(),
         'documents': Document.objects.count(),
-        'users' : Profile.objects.count()
+        'users' : Profile.objects.count(),
     }
+    if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+        counts['groups'] = Group.objects.count()
+
     topics = Layer.objects.all().values_list('topic_category',flat=True)
     topic_cnts = {}
     for t in topics: topic_cnts[t] = topic_cnts.get(t,0) + 1

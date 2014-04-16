@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes import generic
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
@@ -31,8 +32,17 @@ class Document(ResourceBase):
     object_id = models.PositiveIntegerField(blank=True, null=True)
     resource = generic.GenericForeignKey('content_type', 'object_id')
 
-    doc_file = models.FileField(upload_to='documents')
+    doc_file = models.FileField(upload_to='documents',
+                                null=True,
+                                blank=True,
+                                verbose_name=_('File'))
+
     extension = models.CharField(max_length=128, blank=True, null=True)
+
+    doc_url = models.URLField(blank=True,
+                              null=True,
+                              help_text=_('The URL of the document if it is external.'),
+                              verbose_name=_('URL'))
 
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
@@ -55,20 +65,6 @@ class Document(ResourceBase):
     LEVEL_WRITE = 'document_readwrite'
     LEVEL_ADMIN = 'document_admin'
     
-    def set_default_permissions(self):
-        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
-        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
-        
-        # remove specific user permissions
-        current_perms = self.get_all_level_info()
-        for username in current_perms['users'].keys():
-            user = User.objects.get(username=username)
-            self.set_user_level(user, self.LEVEL_NONE)
-        
-        # assign owner admin privileges
-        if self.owner:
-            self.set_user_level(self.owner, self.LEVEL_ADMIN)
-
     def update_thumbnail(self, save=True):
         try:
             self.save_thumbnail(None, save)
@@ -94,12 +90,12 @@ class Document(ResourceBase):
         else:
             wand_available = True
 
-        if wand_available and self.extension.lower() == 'pdf':
+        if wand_available and self.extension and self.extension.lower() == 'pdf' and self.doc_file:
             logger.debug('Generating a thumbnail for document: {0}'.format(self.title))
             with image.Image(filename=self.doc_file.path) as img:
                 img.sample(*size)
                 return img.make_blob('png')
-        elif self.extension.lower() in IMGTYPES:
+        elif self.extension and self.extension.lower() in IMGTYPES and self.doc_file:
             
             img = Image.open(self.doc_file.path)
             img = ImageOps.fit(img, size, Image.ANTIALIAS)
@@ -128,9 +124,15 @@ def get_related_documents(resource):
     else: return None
 
 def pre_save_document(instance, sender, **kwargs):
-    base_name, extension = os.path.splitext(instance.doc_file.name)
-    instance.extension=extension[1:]
-    
+    base_name, extension = None, None
+
+    if instance.doc_file:
+        base_name, extension = os.path.splitext(instance.doc_file.name)
+        instance.extension = extension[1:]
+    elif instance.doc_url:
+        if len(instance.doc_url) > 4 and instance.doc_url[-4] == '.':
+            instance.extension = instance.doc_url[-3:]
+
     if not instance.uuid:
         instance.uuid = str(uuid.uuid1())
     instance.csw_type = 'document'
