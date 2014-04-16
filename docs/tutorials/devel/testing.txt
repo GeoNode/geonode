@@ -34,7 +34,14 @@ It's possible to run just specific apps tests by using the django command::
 
     $ python manage.py test app/tests.py
 
-Where app can be maps, layers, or others.
+For example:
+
+    $ python manage.py test geonode.maps.tests
+
+To run a single testcase or method (omit the method name to run the whole class), for example:
+
+    $ python manage.py test geonode.maps.tests:MapsTest.test_maps_search
+
 These tests are based on the Python/django unit test suite.
 
 Integration Tests
@@ -48,8 +55,17 @@ To run the unit tests make sure you have the virtualenv active (if running
 To run the csw integration test run::
 
     $ paver test_integration -n geonode.tests.csw
-    
+
+Like the unit tests above, it is also possible to test specific modules, for example:
+
+    $ paver test_integration -n geonode.tests.integration:GeoNodeMapTest.test_search_result_detail
+
+To test with with coverage:
+
+    $ python manage.py test  geonode.maps.tests -- --with-coverage --cover-package=geonode.maps
+
 These tests are based on the Python/django unit test suite.
+
 
 Javascript Tests
 ----------------
