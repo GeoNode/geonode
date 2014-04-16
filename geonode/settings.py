@@ -194,7 +194,7 @@ INSTALLED_APPS = (
     'friendlytagloader',
     'geoexplorer',
     'django_extensions',
-    'haystack',
+    #'haystack',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -581,8 +581,14 @@ PROXY_ALLOWED_HOSTS = ()
 # The proxy to use when making cross origin requests.
 PROXY_URL = '/proxy/?url=' if DEBUG else None
 
+
+# Haystack Search Backend Configuration.  To enable, first install the following:
+# - pip install django-haystack
+# - pip install pyelasticsearch
+# Set HAYSTACK_SEARCH to True
+# Run "python manage.py rebuild_index"
+
 HAYSTACK_SEARCH= False
-# Haystack Search Backend Configuration
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
