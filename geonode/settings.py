@@ -599,4 +599,5 @@ DOWNLOAD_FORMATS_RASTER = [
     'View in Google Earth', 'Tiles',
 ]
 
+ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = False
 
