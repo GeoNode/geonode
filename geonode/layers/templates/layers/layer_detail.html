@@ -219,18 +219,25 @@
     {% endif %}
     <div class="well">
       <h2>{% trans "About" %}</h2>
-      <p>{% trans "Layer Owner" %}</p>
-      {% with layer.owner.profile as profile %}
-        {% include "people/_profile_about_item.html" %}
-      {% endwith %}
-      <p>{% trans "Point of Contact" %}</p>
-      {% with layer.poc as profile %}
-        {% include "people/_profile_about_item.html" %}
-      {% endwith %}
-      <p>{% trans "Metadata Author" %}</p>
-      {% with layer.metadata_author as profile %}
-        {% include "people/_profile_about_item.html" %}
-      {% endwith %}
+      {% if layer.owner.profile == layer.poc and layer.owner.profile == layer.metadata_author %}
+          <p>{% trans "Layer Owner, Point of Contact, Metadata Author" %}</p>
+          {% with layer.owner.profile as profile %}
+            {% include "people/_profile_about_item.html" %}
+          {% endwith %}
+      {% else %}
+          <p>{% trans "Layer Owner" %}</p>
+          {% with layer.owner.profile as profile %}
+            {% include "people/_profile_about_item.html" %}
+          {% endwith %}
+          <p>{% trans "Point of Contact" %}</p>
+          {% with layer.poc as profile %}
+            {% include "people/_profile_about_item.html" %}
+          {% endwith %}
+          <p>{% trans "Metadata Author" %}</p>
+          {% with layer.metadata_author as profile %}
+            {% include "people/_profile_about_item.html" %}
+          {% endwith %}
+      {% endif %}
     </div>
   </aside>
   {% if GS_SECURITY_ENABLED %}   
