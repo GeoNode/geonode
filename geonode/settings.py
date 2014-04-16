@@ -599,4 +599,9 @@ DOWNLOAD_FORMATS_RASTER = [
     'View in Google Earth', 'Tiles',
 ]
 
+ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = False
+
+# gravatar settings
+AUTO_GENERATE_AVATAR_SIZES = (20,32,80,100,140,200)
+
 
