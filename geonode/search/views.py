@@ -64,7 +64,59 @@ def _create_viewer_config():
 _viewer_config = _create_viewer_config()
 
 
+def search_page(request, template='search/search.html', **kw):
+    initial_query = request.REQUEST.get('q','')
 
+    if settings.HAYSTACK_SEARCH and "haystack" in settings.INSTALLED_APPS:
+        query = query_from_request(request, kw)
+        search_response, results = haystack_search_api(request, format="html", **kw)
+        facets = search_response['facets']
+
+        categories = {}
+        counts = search_response["categories"]
+        topics = TopicCategory.objects.all()
+        for topic in topics:
+            if topic.identifier in counts:
+                categories[topic] = counts[topic.identifier]
+            else:
+                categories[topic] = 0
+
+        total = search_response['total']
+
+        tags = {}
+
+        # get the keywords and their count
+        keywords = search_response["keywords"]
+        for keyword in keywords:
+            try:
+                tagged_item = TaggedItem.objects.filter(tag__name=keyword)[0]
+                tags[tagged_item.tag.slug] = tags.get(tagged_item.tag.slug,{})
+                tags[tagged_item.tag.slug]['slug'] = tagged_item.tag.name
+                tags[tagged_item.tag.slug]['name'] = tagged_item.tag.name
+                tags[tagged_item.tag.slug]['count'] = keywords[keyword]
+            except Exception, e:
+                logger.error("Could not find TaggedItem for keyword %s" % keyword)
+
+    else:
+        results, facets, query = search_api(request, format='html', **kw)
+        categories = {}
+        tags = {}
+
+        # get the keywords and their count
+        for item in results:
+            for tagged_item in item.o.tagged_items.all():
+                tags[tagged_item.tag.slug] = tags.get(tagged_item.tag.slug,{})
+                tags[tagged_item.tag.slug]['slug'] = tagged_item.tag.slug
+                tags[tagged_item.tag.slug]['name'] = tagged_item.tag.name
+                tags[tagged_item.tag.slug]['count'] = tags[tagged_item.tag.slug].get('count',0) + 1
+
+        total = 0
+        for val in facets.values(): total+=val
+        total -= facets['raster'] + facets['vector']
+
+    return render_to_response(template, RequestContext(request, {'object_list': results, 'total': total, "categories": categories,
+                                                                 'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': tags,
+                                                                 'initial_query': initial_query}))
 
 def advanced_search(request, **kw):
     ctx = {
@@ -121,6 +173,9 @@ def _get_all_keywords():
 
 
 def search_api(request, format='json', **kwargs):
+    if settings.HAYSTACK_SEARCH and "haystack" in settings.INSTALLED_APPS:
+        return haystack_search_api(request, format=format, **kwargs)
+
     if request.method not in ('GET','POST'):
         return HttpResponse(status=405)
     debug = logger.isEnabledFor(logging.DEBUG)
@@ -158,6 +213,12 @@ def _search_json(query, items, facets, time):
 
     if query.limit is not None and query.limit > 0:
         items = items[query.start:query.start + query.limit]
+
+    # unique item id for ext store (this could be done client side)
+    iid = query.start
+    for r in items:
+        r.iid = iid
+        iid += 1
 
     exclude = query.params.get('exclude')
     exclude = set(exclude.split(',')) if exclude else ()
@@ -232,63 +293,6 @@ def author_list(req):
         'names' : [ dict(name=v) for v in vals ]
     }
     return HttpResponse(json.dumps(results), mimetype="application/json")
-
-def search_page(request, template='search/search.html', **kw):
-    initial_query = request.REQUEST.get('q','')
-
-    if settings.HAYSTACK_SEARCH and "haystack" in settings.INSTALLED_APPS:
-        query = query_from_request(request, kw)
-        search_response, results = haystack_search_api(request, format="html", **kw)
-        facets = search_response['facets']
-
-        categories = {}
-        counts = search_response["categories"]
-        topics = TopicCategory.objects.all()
-        for topic in topics:
-            if topic.identifier in counts:
-                categories[topic] = counts[topic.identifier]
-            else:
-                categories[topic] = 0
-
-        total = search_response['total']
-
-        tags = {}
-
-        # get the keywords and their count
-        keywords = search_response["keywords"]
-        for keyword in keywords:
-                try:
-                    tagged_item = TaggedItem.objects.filter(tag__name=keyword)[0]
-                    tags[tagged_item.tag.slug] = tags.get(tagged_item.tag.slug,{})
-                    tags[tagged_item.tag.slug]['slug'] = tagged_item.tag.name
-                    tags[tagged_item.tag.slug]['name'] = tagged_item.tag.name
-                    tags[tagged_item.tag.slug]['count'] = keywords[keyword]
-                except Exception, e:
-                    logger.error("Could not find TaggedItem for keyword %s" % keyword)
-
-    else:
-        results, facets, query = search_api(request, format='html', **kw)
-        total = 0
-        for val in facets.values(): total+=val
-        total -= facets['raster'] + facets['vector']
-        categories = {}
-
-        tags = {}
-
-        # get the keywords and their count
-        for item in results:
-            for tagged_item in item.o.tagged_items.all():
-                tags[tagged_item.tag.slug] = tags.get(tagged_item.tag.slug,{})
-                tags[tagged_item.tag.slug]['slug'] = tagged_item.tag.slug
-                tags[tagged_item.tag.slug]['name'] = tagged_item.tag.name
-                tags[tagged_item.tag.slug]['count'] = tags[tagged_item.tag.slug].get('count',0) + 1
-
-
-
-    return render_to_response(template, RequestContext(request, {'object_list': results, 'total': total, "categories": categories,
-                                                                 'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': tags,
-                                                                 'initial_query': initial_query}))
-
 
 def haystack_search_api(request, format="json", **kwargs):
     """
