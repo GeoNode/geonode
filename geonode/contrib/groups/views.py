@@ -193,8 +193,8 @@ def group_invite(request, slug):
     form = GroupInviteForm(request.POST)
     
     if form.is_valid():
-        for user in form.cleaned_data["user_identifiers"]:
-            group.invite(user, request.user, role=form.cleaned_data["role"])
+        for user in form.cleaned_data["invite_user_identifiers"].split("\n"):
+            group.invite(user, request.user, role=form.cleaned_data["invite_role"])
     
     return redirect("group_members", slug=group.slug)
 
