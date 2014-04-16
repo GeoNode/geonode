@@ -45,4 +45,4 @@ Sharing with social media
 
    .. figure:: img/socialmedia.png
 
-#. Upon clicking on these icons you will be taken through the applications process for posting to the social networks as long as your permissions are set so *anyone* can view the layer for others to see it on social networks.
+#. Upon clicking on these icons you will be taken through the application's process for posting to the social network.  Ensure the permissions are set so *anyone* can view the layer if you want unauthenticated to be able to access it.
