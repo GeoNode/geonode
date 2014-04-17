@@ -263,8 +263,6 @@ class Attribute(models.Model):
 def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer
     """
-    ct = ContentType.objects.get_for_model(instance)
-    OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
     #cascading_delete should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
         cascading_delete(Layer.objects.gs_catalog, instance.typename)
@@ -290,6 +288,8 @@ def pre_delete_layer(instance, sender, **kwargs):
     Default style will be deleted in post_delete_layer
     """
     logger.debug("Going to delete the styles associated for [%s]", instance.typename.encode('utf-8'))
+    ct = ContentType.objects.get_for_model(instance)
+    OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
     default_style = instance.default_style
     for style in instance.styles.all():
         if style.layer_styles.all().count()==1:
