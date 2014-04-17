@@ -64,10 +64,10 @@ class PermissionsApiTests(ResourceTestCase):
         Test that if a layer is only visible by admin, then does not appear in the
         unauthenticated list nor in the list when logged is as bobby
         """
-        perm_spec = {"anonymous":"_none","authenticated":"_none","users":
-            [["admin","layer_readwrite"],["admin","layer_admin"]]}
+        perm_spec = {"anonymous":"_none","authenticated":"_none",
+            "users":[["admin","layer_readwrite"],["admin","layer_admin"]],"groups":[]}
         layer = Layer.objects.all()[0]
-        layer.set_permissions(self.perm_spec)
+        layer.set_permissions(perm_spec)
         resp = self.api_client.get(self.list_url)
         self.assertEquals(len(self.deserialize(resp)['objects']), 7)
 
@@ -96,4 +96,87 @@ class PermissionsApiTests(ResourceTestCase):
 class SearchApiTests(ResourceTestCase):
     """Test the search"""
 
-    pass
+    fixtures = ['initial_data.json', 'bobby']
+
+    def setUp(self):
+        super(SearchApiTests, self).setUp()
+
+        self.list_url = reverse('api_dispatch_list', kwargs={'api_name':'api', 'resource_name':'layers'})
+        create_models(type='layer')
+        all_public()
+
+    def test_category_filters(self):
+        """Test category filtering"""
+
+        filter_url = self.list_url + '?category__identifier=location'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 3)
+
+        filter_url = self.list_url + '?category__identifier__in=location&category__identifier__in=biota'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 5)
+
+    def test_tag_filters(self):
+        """Test keywords filtering"""
+
+        filter_url = self.list_url + '?keywords__slug=layertagunique'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+
+        filter_url = self.list_url + '?keywords__slug__in=layertagunique&keywords__slug__in=populartag'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
+    def test_owner_filters(self):
+        """Test owner filtering"""
+
+        filter_url = self.list_url + '?owner__username=user1'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 2)
+
+        filter_url = self.list_url + '?owner__username__in=user1&owner__username__in=foo'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 3)
+
+    def test_title_filter(self):
+        """Test title filtering"""
+
+        filter_url = self.list_url + '?title=layer2'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+
+
+    def test_date_filter(self):
+        """Test date filtering"""
+
+        filter_url = self.list_url + '?date__exact=1985-01-01'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+
+        filter_url = self.list_url + '?date__gte=1985-01-01'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 3)
+
+        filter_url = self.list_url + '?date__range=1950-01-01,1985-01-01'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 4)
