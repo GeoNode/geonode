@@ -46,7 +46,7 @@ from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
 from geonode.utils import forward_mercator
-from geonode.utils import http_client, ogc_server_settings
+from geonode.geoserver.signals import ogc_server_settings, http_client
 
 from geoserver.catalog import Catalog
 from geoserver.layer import Layer as GsLayer
@@ -54,8 +54,6 @@ from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
-
-_user, _password = ogc_server_settings.credentials
 
 class Map(ResourceBase, GXPMapBase):
     """
@@ -213,23 +211,12 @@ class Map(ResourceBase, GXPMapBase):
                 
 
     def _render_thumbnail(self, spec):
+        if not any(settings.OGC_SERVER):
+            return
         http = httplib2.Http()
         url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
-        hostname = urlparse(settings.SITEURL).hostname
-        params = dict(width=240, height=180, auth="%s,%s,%s" % (hostname, _user, _password))
+        params = dict(width=240, height=180)
         url = url + "?" + urllib.urlencode(params)
-        http.add_credentials(_user, _password)
-        netloc = urlparse(url).netloc
-        http.authorizations.append(
-        httplib2.BasicAuthentication(
-            (_user,_password),
-            netloc,
-            url,
-            {},
-            None,
-            None,
-            http
-        ))
         # @todo annoying but not critical
         # openlayers controls posted back contain a bad character. this seems
         # to come from a &minus; entity in the html, but it gets converted
@@ -243,7 +230,7 @@ class Map(ResourceBase, GXPMapBase):
             data = data.encode('ASCII','ignore')
         data = unicode(data, errors='ignore').encode('UTF-8')
         try:
-            resp, content = http.request(url,"POST",data,{
+            resp, content = http_client.request(url,"POST",data,{
                 'Content-type':'text/html'
             })
         except Exception:
@@ -277,8 +264,10 @@ class Map(ResourceBase, GXPMapBase):
         # commas and slashes in values get encoded and then cause trouble
         # with the WMS parser.
         p = "&".join("%s=%s"%item for item in params.items())
-
-        return '<img src="%s"/>' % (ogc_server_settings.public_url + "wms/reflect?" + p)
+        if any(settings.OGC_SERVER):
+            return '<img src="%s"/>' % (ogc_server_settings.public_url + "wms/reflect?" + p)
+        else:
+            return '<img src="" alt="No Thumbnail Available"/>'
 
     class Meta:
         # custom permissions,
@@ -351,7 +340,7 @@ class Map(ResourceBase, GXPMapBase):
             map_layers.append(MapLayer(
                 map = self,
                 name = layer.typename,
-                ows_url = ogc_server_settings.public_url + "wms",
+                ows_url = layer.ows_url(),
                 stack_order = index,
                 visibility = True
             ))
@@ -568,7 +557,9 @@ def pre_delete_map(instance, sender, **kwrargs):
 def pre_save_map(instance, sender, **kwargs):
     instance.update_thumbnail(save=False)
 
-signals.pre_save.connect(pre_save_maplayer, sender=MapLayer)
+if any(settings.OGC_SERVER):
+    signals.pre_save.connect(pre_save_maplayer, sender=MapLayer)
+
 signals.pre_delete.connect(pre_delete_map, sender=Map)
 signals.pre_save.connect(pre_save_map, sender=Map)
 signals.post_save.connect(resourcebase_post_save, sender=Map)

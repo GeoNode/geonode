@@ -41,17 +41,16 @@ from geonode.utils import check_geonode_is_up
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, Style
 from geonode.people.models import Profile
-from geonode.geoserver.helpers import cascading_delete, get_sld_for, delete_from_postgis
 from geonode.layers.metadata import set_metadata
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.base.models import SpatialRepresentationType, TopicCategory
-from geonode.utils import ogc_server_settings
 from geonode.upload.files import _clean_string, _rename_zip
 # Geoserver functionality
 import geoserver
 from geoserver.catalog import FailedRequestError, UploadError
 from geoserver.catalog import ConflictingDataError
 from geoserver.resource import FeatureType, Coverage
+from geonode.geoserver.signals import gs_catalog
 from zipfile import ZipFile
 
 logger = logging.getLogger('geonode.layers.utils')
@@ -208,7 +207,7 @@ def cleanup(name, uuid):
                'Django db.' % name)
         raise GeoNodeException(msg)
 
-    cat = Layer.objects.gs_catalog
+    cat = gs_catalog
     gs_store = None
     gs_layer = None
     gs_resource = None
@@ -263,6 +262,8 @@ def save(layer, base_file, user, overwrite=True, title=None,
        If specified, the layer given is overwritten, otherwise a new layer
        is created.
     """
+    from geonode.utils import ogc_server_settings
+    from geonode.geoserver.helpers import cascading_delete, get_sld_for, delete_from_postgis
     logger.info(_separator)
 
     # Step -1. Verify if the filename is in ascii format.
@@ -294,7 +295,7 @@ def save(layer, base_file, user, overwrite=True, title=None,
     the_layer_type = layer_type(base_file)
 
     # Get a short handle to the gsconfig geoserver catalog
-    cat = Layer.objects.gs_catalog
+    cat = gs_catalog
 
     # Check if the store exists in geoserver
     try:
@@ -523,15 +524,6 @@ def save(layer, base_file, user, overwrite=True, title=None,
         cleanup(name, layer_uuid)
         raise GeoNodeException(msg)
 
-    # Verify it is correctly linked to GeoServer and the catalogue
-    try:
-        # FIXME: Implement a verify method that makes sure it was
-        # saved in both Catalogue and GeoServer
-        saved_layer.verify()
-    except NotImplementedError, e:
-        logger.exception('>>> FIXME: Please, if you can write python code, '
-                         'implement "verify()" '
-                         'method in geonode.maps.models.Layer')
     except GeoNodeException, e:
         msg = ('The layer [%s] was not correctly saved to '
                'Catalogue/GeoServer. Error is: %s' % (layer, str(e)))
@@ -699,13 +691,13 @@ def upload(incoming, user=None, overwrite=False,
 
 
 def _create_featurestore(name, data, overwrite=False, charset="UTF-8"):
-    cat = Layer.objects.gs_catalog
+    cat = gs_catalog
     cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
     return cat.get_store(name), cat.get_resource(name)
 
 
 def _create_coveragestore(name, data, overwrite=False, charset="UTF-8"):
-    cat = Layer.objects.gs_catalog
+    cat = gs_catalog
     cat.create_coveragestore(name, data, overwrite=overwrite)
     return cat.get_store(name), cat.get_resource(name)
 
@@ -716,7 +708,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8"):
     If the import into the database fails then delete the store
     (and delete the PostGIS table for it).
     """
-    cat = Layer.objects.gs_catalog
+    cat = gs_catalog
     dsname = ogc_server_settings.DATASTORE
 
     try:
