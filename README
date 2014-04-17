@@ -214,6 +214,17 @@ You can eventually generate a pdf containing the whole documentation set. For th
   vendor, or packaged other than on PyPI.  When in doubt, however, just leave
   this option out.
 
+Development Roadmap
+===================
+
+Geonode's development roadmap is documented in a series of Geonode Improvement Projects (GNIPS). 
+They are documented here: https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals.
+GNIPS are considered to be large undertakings which will add a large amount of features to the project. 
+As such they are the topic of community dicussion and guidance.
+The community discusses these on the developer mailing list: https://groups.google.com/a/opengeo.org/forum/#!forum/geonode-dev
+Github issues tracks features and bugs, for new developers the tag 'easy-pick' indicates an 
+issue that should be relatively easy for new developers to understand and complete. Once you have completed an issue
+a pull request should be submitted. This will then be reviewed by the community.
 
 GPL License
 ===========
