@@ -60,7 +60,10 @@
           <!--li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li-->
           <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
           {% if GS_SECURITY_ENABLED %}
-          <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+            {% has_obj_perm user layer "layers.change_layer_permissions" as can_change_permissions %}
+            {% if can_change_permissions %}
+              <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+            {% endif %}
           {% endif %}
           <li><a href="{% url "layer_style_manage" layer.typename %}">{% trans "Manage Styles" %} <i class="icon-chevron-right"></i></a></li>
           <li><a class="style-edit" href="#">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>

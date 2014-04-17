@@ -29,7 +29,7 @@ from geonode.documents.models import Document
 from geonode.people.models import Profile
 from geonode.search import search
 from geonode.search import util
-from geonode.search.populate_search_test_data import create_models
+from geonode.search.populate_search_test_data import create_models, all_public
 from geonode.search.query import query_from_request
 from agon_ratings.models import OverallRating
 import json
@@ -37,15 +37,6 @@ import logging
 
 # quack
 MockRequest = lambda **kw: type('xyz',(object,),{'REQUEST':kw,'user':None})
-
-def all_public():
-    '''ensure all layers, maps and documents are publicly viewable'''
-    for l in Layer.objects.all():
-        l.set_default_permissions()
-    for m in Map.objects.all():
-        m.set_default_permissions()
-    for d in Document.objects.all():
-        d.set_default_permissions()
 
 class searchTest(TestCase):
 
