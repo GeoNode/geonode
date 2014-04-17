@@ -44,6 +44,15 @@ imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\
                                 '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
 f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
 
+def all_public():
+    '''ensure all layers, maps and documents are publicly viewable'''
+    for l in Layer.objects.all():
+        l.set_default_permissions()
+    for m in Map.objects.all():
+        m.set_default_permissions()
+    for d in Document.objects.all():
+        d.set_default_permissions()
+
 def create_fixtures():
     biota = TopicCategory.objects.get(identifier='biota')
     location = TopicCategory.objects.get(identifier='location')
