@@ -199,8 +199,8 @@ class LayersTest(TestCase):
         """
 
         # Test that HTTP_AUTHORIZATION in request.META is working properly
-        valid_uname_pw = "%s:%s" % (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
-        invalid_uname_pw = "%s:%s" % ("n0t", "v@l1d")
+        valid_uname_pw = '%s:%s' % ('bobby','bob')
+        invalid_uname_pw = '%s:%s' % ('n0t', 'v@l1d')
 
         valid_auth_headers = {
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw),
@@ -213,13 +213,20 @@ class LayersTest(TestCase):
         # Test that requesting when supplying the geoserver credentials returns the expected json
 
         expected_result = {
-            u'rw': [],
-            u'ro': [],
-            u'name': unicode(settings.OGC_SERVER['default']['USER']),
-            u'is_superuser': True,
-            u'is_anonymous': False
+             'email': 'bobby@bob.com',
+             'fullname': 'bobby',
+             'is_anonymous': False,
+             'is_superuser': False,
+             'name': 'bobby',
+             'ro': ['geonode:layer2',
+                    'geonode:mylayer',
+                    'geonode:foo',
+                    'geonode:whatever',
+                    'geonode:fooey',
+                    'geonode:quux',
+                    'geonode:fleem'],
+             'rw': ['base:CA']
         }
-
         c = Client()
         response = c.get(reverse('layer_acls'), **valid_auth_headers)
         response_json = json.loads(response.content)
@@ -244,8 +251,8 @@ class LayersTest(TestCase):
     def test_resolve_user(self):
         """Verify that the resolve_user view is behaving as expected
         """
-                # Test that HTTP_AUTHORIZATION in request.META is working properly
-        valid_uname_pw = "%s:%s" % (settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
+        # Test that HTTP_AUTHORIZATION in request.META is working properly
+        valid_uname_pw = "%s:%s" % ('admin', 'admin')
         invalid_uname_pw = "%s:%s" % ("n0t", "v@l1d")
 
         valid_auth_headers = {
@@ -259,7 +266,8 @@ class LayersTest(TestCase):
         c = Client()
         response = c.get(reverse('layer_resolve_user'), **valid_auth_headers)
         response_json = json.loads(response.content)
-        self.assertEquals({'superuser': True, 'user': None, 'geoserver': True}, response_json)
+        self.assertEquals({'geoserver': False, 'superuser': True, 'user': 'admin'}
+, response_json)
 
         # Test that requesting when supplying invalid credentials returns the appropriate error code
         response = c.get(reverse('layer_acls'), **invalid_auth_headers)

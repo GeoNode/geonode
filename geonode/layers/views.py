@@ -43,9 +43,10 @@ from django.db.models import signals
 
 from geoserver.catalog import FailedRequestError
 
-from geonode.utils import http_client, _get_basic_auth_info, json_response
+from geonode.utils import json_response, _get_basic_auth_info
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm, LayerStyleUploadForm
-from geonode.layers.models import Layer, Attribute, set_styles, geoserver_post_save, geoserver_pre_save
+from geonode.layers.models import Layer, Attribute
+
 from geonode.base.models import ContactRole
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
@@ -55,14 +56,13 @@ from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
-from geonode.utils import ogc_server_settings
 from geoserver.resource import FeatureType
 from geonode.contrib.groups.models import Group
 
+if any(settings.OGC_SERVER):
+    from geonode.geoserver.signals import set_styles, geoserver_post_save, geoserver_pre_save, http_client, ogc_server_settings, gs_catalog, gs_uploader
+
 logger = logging.getLogger("geonode.layers.views")
-
-
-_user, _password = ogc_server_settings.credentials
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
@@ -175,39 +175,38 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    ows_url = ogc_server_settings.public_url + "%s/%s/wms" % (layer.workspace, 
-        layer.name)
-    maplayer = GXPLayer(name = layer.name, ows_url = ows_url, layer_params=json.dumps( layer.attribute_config()))
+    maplayer = GXPLayer(name = layer.name, ows_url = layer.ows_url(), layer_params=json.dumps( layer.attribute_config()))
 
-    layer.srid_url = "http://www.spatialreference.org/ref/" + layer.srid.replace(':','/').lower() + "/"
-
-    signals.pre_save.disconnect(geoserver_pre_save, sender=Layer)
-    signals.post_save.disconnect(geoserver_post_save, sender=Layer)
-    layer.popular_count += 1
-    layer.save()
-    signals.pre_save.connect(geoserver_pre_save, sender=Layer)
-    signals.post_save.connect(geoserver_post_save, sender=Layer)
+    # Update count for popularity ranking.
+    Layer.objects.filter(id=layer.id).update(popular_count=layer.popular_count +1)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
     NON_WMS_BASE_LAYERS = [la for la in default_map_config()[1] if la.ows_url is None]
 
-    if layer.storeType=='dataStore':
-        links = layer.link_set.download().filter(
-            name__in=settings.DOWNLOAD_FORMATS_VECTOR)
-    else:
-        links = layer.link_set.download().filter(
-            name__in=settings.DOWNLOAD_FORMATS_RASTER)
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
-    return render_to_response(template, RequestContext(request, {
+
+    context_dict = {
         "layer": layer,
-        "viewer": json.dumps(map_obj.viewer_json(* (NON_WMS_BASE_LAYERS + [maplayer]))),
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
         "documents": get_related_documents(layer),
-        "links": links,
         "metadata": metadata,
-    }))
+    }
+
+    context_dict["viewer"] = json.dumps(map_obj.viewer_json(* (NON_WMS_BASE_LAYERS + [maplayer])))
+
+    if layer.storeType=='dataStore':
+        links = layer.link_set.download().filter(
+        name__in=settings.DOWNLOAD_FORMATS_VECTOR)
+    else:
+        links = layer.link_set.download().filter(
+        name__in=settings.DOWNLOAD_FORMATS_RASTER)
+
+
+    context_dict["links"] = links
+
+    return render_to_response(template, RequestContext(request, context_dict))
 
 
 @login_required
@@ -286,153 +285,6 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     }))
 
 
-@login_required
-@require_POST
-def layer_style(request, layername):
-    layer = _resolve_layer(request, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
-
-    style_name = request.POST.get('defaultStyle')
-
-    # would be nice to implement
-    # better handling of default style switching
-    # in layer model or deeper (gsconfig.py, REST API)
-
-    old_default = layer.default_style
-    if old_default.name == style_name:
-        return HttpResponse("Default style for %s remains %s" % (layer.name, style_name), status=200)
-
-    # This code assumes without checking
-    # that the new default style name is included
-    # in the list of possible styles.
-
-    new_style = (style for style in layer.styles if style.name == style_name).next()
-
-    # Does this change this in geoserver??
-    layer.default_style = new_style
-    layer.styles = [s for s in layer.styles if s.name != style_name] + [old_default]
-    layer.save()
-
-    return HttpResponse("Default style for %s changed to %s" % (layer.name, style_name),status=200)
-
-
-@login_required
-def layer_style_upload(req, layername):
-    def respond(*args,**kw):
-        kw['content_type'] = 'text/html'
-        return json_response(*args,**kw)
-    form = LayerStyleUploadForm(req.POST,req.FILES)
-    if not form.is_valid():
-        return respond(errors="Please provide an SLD file.")
-    
-    data = form.cleaned_data
-    layer = _resolve_layer(req, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
-    
-    sld = req.FILES['sld'].read()
-
-    try:
-        dom = etree.XML(sld)
-    except Exception,ex:
-        return respond(errors="The uploaded SLD file is not valid XML")
-    
-    el = dom.findall("{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
-    if len(el) == 0 and not data.get('name'):
-        return respond(errors="Please provide a name, unable to extract one from the SLD.")
-    name = data.get('name') or el[0].text
-    if data['update']:
-        match = None
-        styles = list(layer.styles) + [layer.default_style]
-        for style in styles:
-            if style.sld_name == name:
-                match = style; break
-        if match is None:
-            return respond(errors="Cannot locate style : " + name)
-        match.update_body(sld)
-    else:
-        try:
-            cat = Layer.objects.gs_catalog
-            cat.create_style(name, sld)
-            layer.styles = layer.styles + [ type('style',(object,),{'name' : name}) ]
-            cat.save(layer.publishing)
-        except ConflictingDataError,e:
-            return respond(errors="""A layer with this name exists. Select
-                                     the update option if you want to update.""")
-    return respond(body={'success':True,'style':name,'updated':data['update']})
-
-@login_required
-def layer_style_manage(req, layername):
-    layer = _resolve_layer(req, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
-    if req.method == 'GET':
-        try:
-            cat = Layer.objects.gs_catalog
-            # First update the layer style info from GS to GeoNode's DB
-            set_styles(layer, cat)
-
-            all_available_gs_styles = cat.get_styles()
-            gs_styles = []
-            for style in all_available_gs_styles:
-                gs_styles.append(style.name)
-
-            current_layer_styles = layer.styles.all()
-            layer_styles = []
-            for style in current_layer_styles:
-                layer_styles.append(style.name)
-
-            # Render the form
-            return render_to_response(
-                'layers/layer_style_manage.html',
-                RequestContext(req, {
-                    "layer": layer,
-                    "gs_styles": gs_styles,
-                    "layer_styles": layer_styles,
-                    "default_style": layer.default_style.name
-                    }
-                )
-            )
-        except (FailedRequestError, EnvironmentError) as e:
-            msg = ('Could not connect to geoserver at "%s"'
-               'to manage style information for layer "%s"' % (
-                ogc_server_settings.LOCATION, layer.name)
-            )
-            logger.warn(msg, e)
-            # If geoserver is not online, return an error
-            return render_to_response(
-                'layers/layer_style_manage.html',
-                RequestContext(req, {
-                    "layer": layer,
-                    "error": msg
-                    }
-                )
-            )
-    elif req.method == 'POST':
-        try:
-            selected_styles = req.POST.getlist('style-select')
-            default_style = req.POST['default_style']
-            # Save to GeoServer
-            cat = Layer.objects.gs_catalog
-            gs_layer = cat.get_layer(layer.name)
-            gs_layer.default_style = default_style
-            styles = []
-            for style in selected_styles:
-                styles.append(type('style',(object,),{'name' : style}))
-            gs_layer.styles = styles 
-            cat.save(gs_layer)
-
-            # Save to Django
-            layer = set_styles(layer, cat)
-            layer.save()
-            return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
-        except (FailedRequestError, EnvironmentError, MultiValueDictKeyError) as e:
-            msg = ('Error Saving Styles for Layer "%s"'  % (layer.name)
-            )
-            logger.warn(msg, e)
-            return render_to_response(
-                'layers/layer_style_manage.html',
-                RequestContext(req, {
-                    "layer": layer,
-                    "error": msg
-                    }
-                )
-            )
 
 @login_required
 def layer_change_poc(request, ids, template = 'layers/layer_change_poc.html'):
@@ -457,13 +309,9 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
     layer = _resolve_layer(request, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
 
     if request.method == 'GET':
-        cat = Layer.objects.gs_catalog
-        info = cat.get_resource(layer.name)
-        is_featuretype = info.resource_type == FeatureType.resource_type
-
         return render_to_response(template,
                                   RequestContext(request, {'layer': layer,
-                                                           'is_featuretype': is_featuretype}))
+                                                           'is_featuretype': layer.is_vector()}))
     elif request.method == 'POST':
 
         form = LayerUploadForm(request.POST, request.FILES)
@@ -527,6 +375,7 @@ def layer_batch_download(request):
     GET?id=<download_id> monitor status
     """
 
+    from geonode.utils import http_client, _get_basic_auth_info
     # currently this just piggy-backs on the map download backend
     # by specifying an ad hoc map that contains all layers requested
     # for download. assumes all layers are hosted locally.
@@ -602,6 +451,7 @@ def resolve_user(request):
 
 
 def layer_acls(request):
+    from geonode.utils import http_client, _get_basic_auth_info
     """
     returns json-encoded lists of layer identifiers that
     represent the sets of read-write and read-only layers
@@ -666,14 +516,3 @@ def layer_acls(request):
 
     return HttpResponse(json.dumps(result), mimetype="application/json")
 
-def feature_edit_check(request, layername):
-    """
-    If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
-    Otherwise, return a status of 401 (unauthorized).
-    """
-    layer = get_object_or_404(Layer, typename=layername)
-    feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or ogc_server_settings.DATASTORE 
-    if request.user.has_perm('layers.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
-        return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
-    else:
-        return HttpResponse(json.dumps({'authorized': False}), mimetype="application/json")
