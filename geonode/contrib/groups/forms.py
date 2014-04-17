@@ -90,14 +90,14 @@ class GroupMemberForm(forms.Form):
 
 class GroupInviteForm(forms.Form):
     
-    role = forms.ChoiceField(choices=[
+    invite_role = forms.ChoiceField(label="Role", choices=[
         ("member", "Member"),
         ("manager", "Manager"),
     ])
-    user_identifiers = forms.CharField(widget=forms.Textarea)
+    invite_user_identifiers = forms.CharField(label="E-mail addresses list", widget=forms.Textarea)
     
     def clean_user_identifiers(self):
-        value = self.cleaned_data["user_identifiers"]
+        value = self.cleaned_data["invite_user_identifiers"]
         invitees, errors = [], []
         
         for ui in value.split(","):
