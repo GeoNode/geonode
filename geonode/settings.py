@@ -166,6 +166,7 @@ GEONODE_APPS = (
     'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
+    'geonode.api',
 
     # GeoNode Contrib Apps
     'geonode.contrib.groups',
@@ -209,6 +210,9 @@ INSTALLED_APPS = (
     'announcements',
     'actstream',
     'user_messages',
+    'tastypie',
+    'polymorphic',
+
 ) + GEONODE_APPS
 
 LOGGING = {
@@ -601,7 +605,7 @@ DOWNLOAD_FORMATS_RASTER = [
 
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = False
 
+TASTYPIE_DEFAULT_FORMATS = ['json']
+
 # gravatar settings
 AUTO_GENERATE_AVATAR_SIZES = (20,32,80,100,140,200)
-
-
