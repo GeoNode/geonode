@@ -1,28 +1,29 @@
-# encoding: utf-8
-import datetime
+# -*- coding: utf-8 -*-
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
         # Adding field 'Document.doc_url'
-        db.add_column(u'documents_document', 'doc_url', self.gf('django.db.models.fields.URLField')(max_length=200, null=True, blank=True), keep_default=False)
+        db.add_column(u'documents_document', 'doc_url',
+                      self.gf('django.db.models.fields.URLField')(max_length=200, null=True, blank=True),
+                      keep_default=False)
+
 
         # Changing field 'Document.doc_file'
         db.alter_column(u'documents_document', 'doc_file', self.gf('django.db.models.fields.files.FileField')(max_length=100, null=True))
 
-
     def backwards(self, orm):
-        
         # Deleting field 'Document.doc_url'
         db.delete_column(u'documents_document', 'doc_url')
 
-        # User chose to not deal with backwards NULL issues for 'Document.doc_file'
-        raise RuntimeError("Cannot reverse this migration. 'Document.doc_file' and its values cannot be restored.")
 
+        # Changing field 'Document.doc_file'
+        db.alter_column(u'documents_document', 'doc_file', self.gf('django.db.models.fields.files.FileField')(default='', max_length=100))
 
     models = {
         u'actstream.action': {
@@ -37,7 +38,7 @@ class Migration(SchemaMigration):
             'public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'target_content_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
             'target_object_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 4, 11, 9, 58, 52, 786317)'}),
+            'timestamp': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'verb': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         u'auth.group': {
@@ -55,7 +56,7 @@ class Migration(SchemaMigration):
         },
         u'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 4, 11, 9, 58, 52, 784332)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -63,7 +64,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2014, 4, 11, 9, 58, 52, 783696)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -83,6 +84,16 @@ class Migration(SchemaMigration):
             'license_text': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'url': ('django.db.models.fields.URLField', [], {'max_length': '2000', 'null': 'True', 'blank': 'True'})
+        },
+        u'base.link': {
+            'Meta': {'object_name': 'Link'},
+            'extension': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'link_type': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'mime': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'resource': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.ResourceBase']"}),
+            'url': ('django.db.models.fields.TextField', [], {'max_length': '1000'})
         },
         u'base.region': {
             'Meta': {'ordering': "('name',)", 'object_name': 'Region'},
@@ -128,7 +139,7 @@ class Migration(SchemaMigration):
             'supplemental_information': ('django.db.models.fields.TextField', [], {'default': "u'No information provided'"}),
             'temporal_extent_end': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'temporal_extent_start': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'thumbnail': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.Thumbnail']", 'null': 'True', 'blank': 'True'}),
+            'thumbnail': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['base.Thumbnail']", 'null': 'True', 'on_delete': 'models.SET_NULL', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'uuid': ('django.db.models.fields.CharField', [], {'max_length': '36'})
         },
@@ -208,7 +219,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Tag'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'})
+            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '100'})
         },
         u'taggit.taggeditem': {
             'Meta': {'object_name': 'TaggedItem'},
@@ -219,4 +230,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['documents']
+    complete_apps = ['base', 'documents']
