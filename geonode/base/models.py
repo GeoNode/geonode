@@ -12,6 +12,8 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 
+from polymorphic import PolymorphicModel, PolymorphicManager
+
 from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
@@ -197,7 +199,7 @@ class ThumbnailMixin(object):
         return os.path.exists(self._thumbnail_path()) if thumb else False
 
 
-class ResourceBaseManager(models.Manager):
+class ResourceBaseManager(PolymorphicManager):
     def admin_contact(self):
         # this assumes there is at least one superuser
         superusers = User.objects.filter(is_superuser=True).order_by('id')
@@ -219,7 +221,7 @@ class License(models.Model):
         return self.name
 
 
-class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
+class ResourceBase(PolymorphicModel, PermissionLevelMixin, ThumbnailMixin):
     """
     Base Resource Object loosely based on ISO 19115:2003
     """
