@@ -4,19 +4,18 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCase
 
-from geonode.layers.utils import layer_set_permissions
 from geonode.search.populate_search_test_data import create_models, all_public
 from geonode.layers.models import Layer
 
-from .api import LayerResource, MapResource, DocumentResource, ResourceBaseResource
+from .resourcebase_api import LayerResource, MapResource, DocumentResource, ResourceBaseResource
 
 
-class LayerApiTests(ResourceTestCase):
+class PermissionsApiTests(ResourceTestCase):
 
     fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
-        super(LayerApiTests, self).setUp()
+        super(PermissionsApiTests, self).setUp()
 
         self.user = 'admin'
         self.passwd = 'admin'
@@ -41,7 +40,7 @@ class LayerApiTests(ResourceTestCase):
         client is not logged in
         """
         layer = Layer.objects.all()[0]
-        layer_set_permissions(layer, self.perm_spec)
+        layer.set_permissions(self.perm_spec)
 
         resp = self.api_client.get(self.list_url)
         self.assertValidJSONResponse(resp)
@@ -54,7 +53,7 @@ class LayerApiTests(ResourceTestCase):
         """
         self.api_client.client.login(username=self.user, password=self.passwd)
         layer = Layer.objects.all()[0]
-        layer_set_permissions(layer, self.perm_spec)
+        layer.set_permissions(self.perm_spec)
 
         resp = self.api_client.get(self.list_url)
         self.assertValidJSONResponse(resp)
@@ -68,7 +67,7 @@ class LayerApiTests(ResourceTestCase):
         perm_spec = {"anonymous":"_none","authenticated":"_none","users":
             [["admin","layer_readwrite"],["admin","layer_admin"]]}
         layer = Layer.objects.all()[0]
-        layer_set_permissions(layer, perm_spec)
+        layer.set_permissions(self.perm_spec)
         resp = self.api_client.get(self.list_url)
         self.assertEquals(len(self.deserialize(resp)['objects']), 7)
 
@@ -85,10 +84,16 @@ class LayerApiTests(ResourceTestCase):
         Test that layer detail gives 401 when not public and not logged in
         """
         layer = Layer.objects.all()[0]
-        layer_set_permissions(layer, self.perm_spec)
+        layer.set_permissions(self.perm_spec)
         self.assertHttpUnauthorized(self.api_client.get(
             self.list_url + str(layer.id) + '/'))
 
         self.api_client.client.login(username=self.user, password=self.passwd)
         resp = self.api_client.get(self.list_url + str(layer.id) +'/')
         self.assertValidJSONResponse(resp)
+
+
+class SearchApiTests(ResourceTestCase):
+    """Test the search"""
+
+    pass

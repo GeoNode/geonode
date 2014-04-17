@@ -2,8 +2,8 @@ from django.conf.urls import patterns, include, url
 
 from tastypie.api import Api
 
-from .api import LayerResource, MapResource, DocumentResource, UserResource, ResourceBaseResource, \
-    TagResource, TopicCategoryResource
+from .api import  UserResource, TagResource, TopicCategoryResource
+from .resourcebase_api import LayerResource, MapResource, DocumentResource, ResourceBaseResource
 
 api = Api(api_name='api')
 
