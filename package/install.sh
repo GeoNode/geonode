@@ -5,48 +5,50 @@
 #
 
 if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 1>&2
-   exit 1
+    echo "This script must be run as root" 1>&2
+    exit 1
 fi
 
 while getopts 's:' OPTION
 do
-  case $OPTION in
-  s)	stepflag=1
-		stepval="$OPTARG"
-		;;
-  ?)	printf "Usage: %s: [-s value] configfile\n" $(basename $0) >&2
-		exit 2
-		;;
-  esac
+    case $OPTION in
+    s)
+        stepflag=1
+        stepval="$OPTARG"
+        ;;
+    ?)
+        printf "Usage: %s: [-s value] configfile\n" $(basename $0) >&2
+        exit 2
+        ;;
+    esac
 done
 shift $(($OPTIND - 1))
 
 function setup_directories() {
-	mkdir -p $GEOSERVER_DATA_DIR
-	mkdir -p $GEONODE_WWW/static
-	mkdir -p $GEONODE_WWW/uploaded
-	mkdir -p $GEONODE_WWW/wsgi
-	mkdir -p $APACHE_SITES
-	mkdir -p $GEONODE_BIN
-	mkdir -p $GEONODE_ETC
-	mkdir -p $GEONODE_ETC/media
-	mkdir -p $GEONODE_ETC/templates
-	mkdir -p $GEONODE_SHARE
+    mkdir -p $GEOSERVER_DATA_DIR
+    mkdir -p $GEONODE_WWW/static
+    mkdir -p $GEONODE_WWW/uploaded
+    mkdir -p $GEONODE_WWW/wsgi
+    mkdir -p $APACHE_SITES
+    mkdir -p $GEONODE_BIN
+    mkdir -p $GEONODE_ETC
+    mkdir -p $GEONODE_ETC/media
+    mkdir -p $GEONODE_ETC/templates
+    mkdir -p $GEONODE_SHARE
 }
 
 function reorganize_configuration() {
-	cp -rp $INSTALL_DIR/support/geonode.apache $APACHE_SITES/geonode
-	cp -rp $INSTALL_DIR/support/geonode.wsgi $GEONODE_WWW/wsgi/
-	cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
-	cp -rp $INSTALL_DIR/GeoNode*.zip $GEONODE_SHARE
-	cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
-	cp -rp $INSTALL_DIR/support/geonode.updateip $GEONODE_BIN/geonode-updateip
-	cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
-	cp -rp $INSTALL_DIR/support/geonode.local_settings $GEONODE_ETC/local_settings.py
+    cp -rp $INSTALL_DIR/support/geonode.apache $APACHE_SITES/geonode
+    cp -rp $INSTALL_DIR/support/geonode.wsgi $GEONODE_WWW/wsgi/
+    cp -rp $INSTALL_DIR/support/geonode.robots $GEONODE_WWW/robots.txt
+    cp -rp $INSTALL_DIR/GeoNode*.zip $GEONODE_SHARE
+    cp -rp $INSTALL_DIR/support/geonode.binary $GEONODE_BIN/geonode
+    cp -rp $INSTALL_DIR/support/geonode.updateip $GEONODE_BIN/geonode-updateip
+    cp -rp $INSTALL_DIR/support/geonode.admin $GEONODE_SHARE/admin.json
+    cp -rp $INSTALL_DIR/support/geonode.local_settings $GEONODE_ETC/local_settings.py
 
-	chmod +x $GEONODE_BIN/geonode
-	chmod +x $GEONODE_BIN/geonode-updateip
+    chmod +x $GEONODE_BIN/geonode
+    chmod +x $GEONODE_BIN/geonode-updateip
 }
 
 function preinstall() {
@@ -55,7 +57,7 @@ function preinstall() {
 }
 
 function randpass() {
-  [ "$2" == "0" ] && CHAR="[:alnum:]" || CHAR="[:graph:]"
+    [ "$2" == "0" ] && CHAR="[:alnum:]" || CHAR="[:graph:]"
     cat /dev/urandom | tr -cd "$CHAR" | head -c ${1:-32}
     echo
 }
@@ -119,24 +121,24 @@ function setup_django_every_time() {
 }
 
 function setup_apache_once() {
-	chown www-data -R $GEONODE_WWW
-	a2enmod proxy_http
+    chown www-data -R $GEONODE_WWW
+    a2enmod proxy_http
         
-	sed -i '1d' $APACHE_SITES/geonode
-	sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2" $APACHE_SITES/geonode
+    sed -i '1d' $APACHE_SITES/geonode
+    sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2" $APACHE_SITES/geonode
 
-	#FIXME: This could be removed if setup_apache_every_time is called after setup_apache_once
-	$APACHE_SERVICE restart
+    #FIXME: This could be removed if setup_apache_every_time is called after setup_apache_once
+    $APACHE_SERVICE restart
 }
 
 function setup_apache_every_time() {
-	a2dissite default
+    a2dissite default
 
-	#FIXME: This could be removed if setup_apache_every_time is called after setup_apache_once
-	a2enmod proxy_http
+    #FIXME: This could be removed if setup_apache_every_time is called after setup_apache_once
+    a2enmod proxy_http
 
-	a2ensite geonode
-	$APACHE_SERVICE restart
+    a2ensite geonode
+    $APACHE_SERVICE restart
 }
 
 function one_time_setup() {
@@ -164,47 +166,47 @@ function once() {
 
 if [ $# -eq 1 ]
 then
-	printf "Sourcing %s as the configuration file\n" $1
-	source $1
+    printf "Sourcing %s as the configuration file\n" $1
+    source $1
 else
- 	printf "Usage: %s: [-s value] configfile\n" $(basename $0) >&2
+    printf "Usage: %s: [-s value] configfile\n" $(basename $0) >&2
         exit 2
 fi
 
 if [ "$stepflag" ]
 then
-	printf "\tStep: '$stepval specified\n"
+    printf "\tStep: '$stepval specified\n"
 else
-	stepval="all"
-	echo "heh"
+    stepval="all"
+    echo "heh"
 fi
 
-case $stepval in                                                                                                 
-	pre)
-		echo "Running GeoNode preinstall ..."
-		preinstall
-		;;
-        once)
-                echo "Running GeoNode initial configuration ..."
-                one_time_setup
-                ;;
-	post)
-		echo "Running GeoNode postinstall ..."
-		postinstall
-		;;
-        setup_apache_once)
-                echo "Configuring Apache ..."
-                setup_apache_once
+case $stepval in
+    pre)
+        echo "Running GeoNode preinstall ..."
+        preinstall
         ;;
-	all)
-		echo "Running GeoNode installation ..."
-		preinstall
-                one_time_setup
-		postinstall
-                setup_apache_once
-		;;
-	*)
-	        printf "\tValid values for step parameter are: 'pre', 'post','all'\n"
-		printf "\tDefault value for step is 'all'\n"
-		;;
+    once)
+        echo "Running GeoNode initial configuration ..."
+        one_time_setup
+        ;;
+    post)
+        echo "Running GeoNode postinstall ..."
+        postinstall
+        ;;
+    setup_apache_once)
+        echo "Configuring Apache ..."
+        setup_apache_once
+        ;;
+    all)
+        echo "Running GeoNode installation ..."
+        preinstall
+        one_time_setup
+        postinstall
+        setup_apache_once
+        ;;
+    *)
+        printf "\tValid values for step parameter are: 'pre', 'post','all'\n"
+        printf "\tDefault value for step is 'all'\n"
+        ;;
 esac
