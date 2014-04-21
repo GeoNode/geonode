@@ -37,6 +37,7 @@ def resource_urls(request):
         DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False),
         PROXY_URL = getattr(settings, 'PROXY_URL', '/proxy/?url='),
         SOCIAL_BUTTONS = getattr(settings, 'SOCIAL_BUTTONS', True),
+        USE_DOCUMENTS = 'geonode.documents' in settings.INSTALLED_APPS
     )
     
     if any(settings.OGC_SERVER):
