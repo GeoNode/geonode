@@ -15,7 +15,8 @@ from geonode.geoserver.ows import wcs_links, wfs_links, wms_links, \
 from geonode.utils import _user, _password, get_wms
 from geonode.utils import http_client
 from geonode.utils import ogc_server_settings
-from geonode.layers.models import Layer, Link, Attribute, Style
+from geonode.layers.models import Layer, Attribute, Style
+from geonode.base.models import Link
 
 from geonode.people.models import Profile
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
