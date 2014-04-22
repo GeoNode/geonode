@@ -17,30 +17,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from urlparse import urlparse, urljoin
-
-import httplib2
-import urllib
 import logging
 
 from datetime import datetime
-from lxml import etree
 
-from django.conf import settings
 from django.db import models
 from django.db.models import signals
-from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
-from geonode import GeoNodeException
-from geonode.base.models import ResourceBase, ResourceBaseManager, Link, \
+from geonode.base.models import ResourceBase, ResourceBaseManager, \
     resourcebase_post_save, resourcebase_post_delete
-from geonode.people.models import Profile
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
-from geonode.utils import http_client
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
