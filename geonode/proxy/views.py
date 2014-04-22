@@ -93,6 +93,7 @@ def proxy(request):
     return response
 
 def geoserver_rest_proxy(request, proxy_path, downstream_path):
+    from geonode.utils import ogc_server_settings
     if not request.user.is_authenticated():
         return HttpResponse(
             "You must be logged in to access GeoServer",
