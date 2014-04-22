@@ -21,7 +21,6 @@
 import os
 import logging
 import shutil
-from lxml import etree
 
 from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
@@ -34,20 +33,14 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import escape
-from django.views.decorators.http import require_POST
 from django.template.defaultfilters import slugify
 from django.shortcuts import get_object_or_404
 from django.forms.models import inlineformset_factory
-from django.utils.datastructures import MultiValueDictKeyError
-from django.db.models import signals
 
-from geoserver.catalog import FailedRequestError
-
-from geonode.utils import json_response, _get_basic_auth_info
-from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm, LayerStyleUploadForm
+from geonode.utils import _get_basic_auth_info
+from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.layers.models import Layer, Attribute
 
-from geonode.base.models import ContactRole
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -56,11 +49,7 @@ from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
-from geoserver.resource import FeatureType
-from geonode.contrib.groups.models import Group
 
-if any(settings.OGC_SERVER):
-    from geonode.geoserver.signals import set_styles, geoserver_post_save, geoserver_pre_save, http_client, ogc_server_settings, gs_catalog, gs_uploader
 
 logger = logging.getLogger("geonode.layers.views")
 
