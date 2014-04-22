@@ -40,6 +40,7 @@ from geonode.base.models import ResourceBase, ResourceBaseManager, Link, \
 from geonode.people.models import Profile
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.utils import http_client
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
@@ -99,41 +100,6 @@ class Layer(ResourceBase):
     def is_vector(self):
         return self.storeType == 'dataStore'
 
-    def update_thumbnail(self, save=True):
-        try:
-            self.save_thumbnail(self._thumbnail_url(width=200, height=150), save)
-        except RuntimeError, e:
-            logger.warn('Could not create thumbnail for %s' % self, e)
-
-    def _render_thumbnail(self, spec):
-        from geonode.geoserver.signals import http_client
-        resp, content = http_client.request(spec)
-        if 'ServiceException' in content or resp.status < 200 or resp.status > 299:
-            msg = 'Unable to obtain thumbnail: %s' % content
-            raise RuntimeError(msg)
-        return content
-
-
-    def _thumbnail_url(self, width=20, height=None):
-        from geonode.geoserver.signals import ogc_server_settings
-        """ Generate a URL representing thumbnail of the layer """
-
-        params = {
-            'layers': self.typename.encode('utf-8'),
-            'format': 'image/png8',
-            'width': width,
-        }
-        if height is not None:
-            params['height'] = height
-
-        # Avoid using urllib.urlencode here because it breaks the url.
-        # commas and slashes in values get encoded and then cause trouble
-        # with the WMS parser.
-        p = "&".join("%s=%s"%item for item in params.items())
-
-        return ogc_server_settings.LOCATION + "wms/reflect?" + p
-
-
     @property
     def display_type(self):
         return ({
@@ -182,13 +148,15 @@ class Layer(ResourceBase):
 
     def ows_url(self):
         ows_url = None
-
-        if any(settings.OGC_SERVER):
-            from geonode.geoserver.signals import ogc_server_settings
-            wms_path = '%s/%s/wms' % (self.workspace, self.name)
-            ows_url = urljoin(ogc_server_settings.public_url, wms_path)
-        
+        if self.link_set.filter(name='OWS').count() > 0:
+            ows_url = self.link_set.get(name='OWS').url
         return ows_url
+
+    def get_thumbnail_url(self):
+        try:
+            return self.thumbnail.thumb_file.url
+        except:
+            return None
 
     def maps(self):
         from geonode.maps.models import MapLayer
@@ -215,7 +183,7 @@ class Attribute(models.Model):
         Auxiliary model for storing layer attributes.
 
        This helps reduce the need for runtime lookups
-       to GeoServer, and lets users customize attribute titles,
+       to other servers, and lets users customize attribute titles,
        sort order, and visibility.
     """
     layer = models.ForeignKey(Layer, blank=False, null=False, unique=False, related_name='attribute_set')

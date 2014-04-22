@@ -14,7 +14,13 @@
 <article>
   <div class="content">
     <div class="item-header">
-      <a href="{% url "layer_detail" layer.typename %}"><img class="thumb" src="{{ layer.get_thumbnail_url }}" /></a>
+      <a href="{% url "layer_detail" layer.typename %}">
+      {% if layer.get_thumbnail_url %}
+      <img class="thumb" src="{{ layer.get_thumbnail_url }}" />
+      {% else %}
+      <img class="thumb" src="{{  STATIC_URL }}/geonode/img/missing_thumb.png" />
+      {% endif %}
+      </a>
       <h3><i class="icon-unchecked icon-rotate-45"></i> <a href="{% url "layer_detail" layer.typename %}">{{ layer.title }}</a></h3>   
     </div>
     <div class="details">
