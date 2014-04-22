@@ -20,6 +20,7 @@ from geonode.layers.models import Layer, Link, Attribute, Style
 from geonode.people.models import Profile
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.base.models import Thumbnail
 
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.conf import settings
@@ -122,8 +123,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
 
-    instance.update_thumbnail(save=False)
-
+    instance.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
 
 def geoserver_post_save(instance, sender, **kwargs):
     """Save keywords to GeoServer
@@ -277,6 +277,21 @@ def geoserver_post_save(instance, sender, **kwargs):
                         )
 
 
+    wms_path = '%s/%s/wms' % (instance.workspace, instance.name)
+    ows_url = urljoin(ogc_server_settings.public_url, wms_path)
+
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=ows_url,
+                        defaults=dict(
+                            extension='html',
+                            name=_("OWS"),
+                            url=ows_url,
+                            mime='text/html',
+                            link_type='OGC:WMS',
+                            )
+                        )
+
+
     html_link_url = '%s%s' % (settings.SITEURL[:-1], instance.get_absolute_url())
 
     Link.objects.get_or_create(resource= instance.resourcebase_ptr,
@@ -286,6 +301,56 @@ def geoserver_post_save(instance, sender, **kwargs):
                             name=instance.typename,
                             mime='text/html',
                             link_type='html',
+                            )
+                        )
+
+    params = {
+        'layers': instance.typename.encode('utf-8'),
+        'format': 'image/png8',
+        'width': 200,
+        'height': 150,
+    }
+
+    # Avoid using urllib.urlencode here because it breaks the url.
+    # commas and slashes in values get encoded and then cause trouble
+    # with the WMS parser.
+    p = "&".join("%s=%s"%item for item in params.items())
+
+    thumbnail_url = ogc_server_settings.LOCATION + "wms/reflect?" + p
+
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=thumbnail_url,
+                        defaults=dict(
+                            extension='png',
+                            name=_("Remote Thumbnail"),
+                            mime='image/png',
+                            link_type='image',
+                            )
+                        )
+
+    # Download thumbnail and save it locally.
+    resp, image = http_client.request(thumbnail_url)
+
+    if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
+        msg = 'Unable to obtain thumbnail: %s' % image
+        logger.debug(msg)
+        # Replace error message with None.
+        image = None
+
+    if image is not None:
+        #Clean any orphan Thumbnail before
+        Thumbnail.objects.filter(resourcebase__id=None).delete()
+        thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
+        thumbnail.thumb_spec = thumbnail_url
+        thumbnail.save_thumb(image, instance._thumbnail_path())
+
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=settings.SITEURL + instance._thumbnail_path(),
+                        defaults=dict(
+                            extension='png',
+                            name=_("Thumbnail"),
+                            mime='image/png',
+                            link_type='image',
                             )
                         )
 
