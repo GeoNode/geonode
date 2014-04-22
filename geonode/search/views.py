@@ -67,7 +67,7 @@ _viewer_config = _create_viewer_config()
 def search_page(request, template='search/search.html', **kw):
     initial_query = request.REQUEST.get('q','')
 
-    if settings.HAYSTACK_SEARCH and "haystack" in settings.INSTALLED_APPS:
+    if getattr(settings, 'HAYSTACK_SEARCH', False) and "haystack" in settings.INSTALLED_APPS:
         query = query_from_request(request, kw)
         search_response, results = haystack_search_api(request, format="html", **kw)
         facets = search_response['facets']
