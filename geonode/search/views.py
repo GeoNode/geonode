@@ -173,7 +173,7 @@ def _get_all_keywords():
 
 
 def search_api(request, format='json', **kwargs):
-    if settings.HAYSTACK_SEARCH and "haystack" in settings.INSTALLED_APPS:
+    if getattr(settings, 'HAYSTACK_SEARCH', False) and "haystack" in settings.INSTALLED_APPS:
         return haystack_search_api(request, format=format, **kwargs)
 
     if request.method not in ('GET','POST'):
