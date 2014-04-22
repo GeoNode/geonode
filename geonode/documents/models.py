@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes import generic
-from django.conf import settings
+from django.contrib.staticfiles import finders
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -100,12 +100,11 @@ class Document(ResourceBase):
             img = Image.open(self.doc_file.path)
             img = ImageOps.fit(img, size, Image.ANTIALIAS)
         else:
-            document_path = '%s/documents/static/documents/' % settings.PROJECT_ROOT
-            
-            filename = os.path.join(document_path, '%s-placeholder.png' % self.extension)
+            filename = finders.find('documents/{0}-placeholder.png'.format(self.extension), False) or \
+                       finders.find('documents/generic-placeholder.png', False)
 
-            if not os.path.exists(filename):
-               filename = os.path.join(document_path, 'generic-placeholder.png')
+            if not filename:
+                return None
 
             img = Image.open(filename)
 
