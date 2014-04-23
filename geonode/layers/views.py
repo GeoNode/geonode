@@ -135,8 +135,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         charset = form.cleaned_data["charset"],
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
-                        permissions = form.cleaned_data["permissions"],
                         )
+
             except Exception, e:
                 logger.exception(e)
                 out['success'] = False
@@ -144,6 +144,11 @@ def layer_upload(request, template='upload/layer_upload.html'):
             else:
                 out['success'] = True
                 out['url'] = reverse('layer_detail', args=[saved_layer.typename])
+
+                permissions = form.cleaned_data["permissions"],
+                if permissions is not None and len(permissions.keys()) > 0:
+                    saved_layer.set_permissions(permissions)
+
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
@@ -310,8 +315,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                saved_layer = save(layer, base_file, request.user, overwrite=True, 
-                    permissions=layer.get_all_level_info())
+                saved_layer = save(layer, base_file, request.user, overwrite=True)
             except Exception, e:
                 out['success'] = False
                 out['errors'] = str(e)
