@@ -24,6 +24,7 @@ import re
 import errno
 import uuid
 import datetime
+import geoserver
 
 from itertools import cycle, izip
 from lxml import etree
@@ -38,10 +39,15 @@ from agon_ratings.models import OverallRating
 
 from gsimporter import Client
 
-from geoserver.catalog import Catalog, FailedRequestError
 from geoserver.store import CoverageStore, DataStore
 from geoserver.workspace import Workspace
+from geoserver.catalog import Catalog
+from geoserver.catalog import FailedRequestError, UploadError
+from geoserver.catalog import ConflictingDataError
+from geoserver.resource import FeatureType, Coverage
 
+from geonode import GeoNodeException
+from geonode.layers.utils import layer_type, get_files
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.geoserver.ows import wps_execute_layer_attribute_statistics
@@ -602,3 +608,315 @@ def get_coverage_grid_extent(instance):
     grid = wcs.contents[instance.workspace + ':' + instance.name].grid
     return [(int(h) - int(l) + 1) for
             h, l in zip(grid.highlimits, grid.lowlimits)]
+
+
+GEOSERVER_LAYER_TYPES = {
+               'vector': FeatureType.resource_type,
+               'raster': Coverage.resource_type,
+               }
+
+def geoserver_layer_type(filename):
+    the_type = layer_type(filename)
+    return GEOSERVER_LAYER_TYPES[the_type]
+
+
+
+def cleanup(name, uuid):
+    """Deletes GeoServer and Catalogue records for a given name.
+
+       Useful to clean the mess when something goes terribly wrong.
+       It also verifies if the Django record existed, in which case
+       it performs no action.
+    """
+    try:
+        Layer.objects.get(name=name)
+    except Layer.DoesNotExist, e:
+        pass
+    else:
+        msg = ('Not doing any cleanup because the layer %s exists in the '
+               'Django db.' % name)
+        raise GeoNodeException(msg)
+
+    cat = gs_catalog
+    gs_store = None
+    gs_layer = None
+    gs_resource = None
+    # FIXME: Could this lead to someone deleting for example a postgis db
+    # with the same name of the uploaded file?.
+    try:
+        gs_store = cat.get_store(name)
+        if gs_store is not None:
+            gs_layer = cat.get_layer(name)
+            if gs_layer is not None:
+                gs_resource = gs_layer.resource
+        else:
+            gs_layer = None
+            gs_resource = None
+    except FailedRequestError, e:
+        msg = ('Couldn\'t connect to GeoServer while cleaning up layer '
+               '[%s] !!', str(e))
+        logger.warning(msg)
+
+    if gs_layer is not None:
+        try:
+            cat.delete(gs_layer)
+        except:
+            logger.warning("Couldn't delete GeoServer layer during cleanup()")
+    if gs_resource is not None:
+        try:
+            cat.delete(gs_resource)
+        except:
+            msg = 'Couldn\'t delete GeoServer resource during cleanup()'
+            logger.warning(msg)
+    if gs_store is not None:
+        try:
+            cat.delete(gs_store)
+        except:
+            logger.warning("Couldn't delete GeoServer store during cleanup()")
+
+    logger.warning('Deleting dangling Catalogue record for [%s] '
+                   '(no Django record to match)', name)
+
+    if 'geonode.catalogue' in settings.INSTALLED_APPS:
+        from geonode.catalogue import get_catalogue
+        catalogue = get_catalogue()
+        catalogue.remove_record(uuid)
+        logger.warning('Finished cleanup after failed Catalogue/Django '
+                       'import for layer: %s', name)
+
+def _create_featurestore(name, data, overwrite=False, charset="UTF-8"):
+    cat = gs_catalog
+    cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
+    return cat.get_store(name), cat.get_resource(name)
+
+
+def _create_coveragestore(name, data, overwrite=False, charset="UTF-8"):
+    cat = gs_catalog
+    cat.create_coveragestore(name, data, overwrite=overwrite)
+    return cat.get_store(name), cat.get_resource(name)
+
+
+def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8"):
+    """Create a database store then use it to import a shapefile.
+
+    If the import into the database fails then delete the store
+    (and delete the PostGIS table for it).
+    """
+    cat = gs_catalog
+    dsname = ogc_server_settings.DATASTORE
+
+    try:
+        ds = cat.get_store(dsname)
+    except FailedRequestError:
+        ds = cat.create_datastore(dsname)
+        db = ogc_server_settings.datastore_db
+        db_engine = 'postgis' if \
+            'postgis' in db['ENGINE'] else db['ENGINE']
+        ds.connection_parameters.update(
+            host = db['HOST'],
+            port = db['PORT'],
+            database = db['NAME'],
+            user = db['USER'],
+            passwd = db['PASSWORD'],
+            dbtype = db_engine
+            )
+        cat.save(ds)
+        ds = cat.get_store(dsname)
+
+    try:
+        cat.add_data_to_store(ds, name, data,
+                              overwrite=overwrite,
+                              charset=charset)
+        return ds, cat.get_resource(name, store=ds)
+    except Exception:
+        # FIXME(Ariel): This is not a good idea, today there was a problem 
+        # accessing postgis that caused add_data_to_store to fail,
+        # for the same reasons the call to delete_from_postgis below failed too
+        # I am commenting it out and filing it as issue #1058
+        #delete_from_postgis(name)
+        raise
+
+def geoserver_upload(layer, base_file, user, name, overwrite=True, title=None,
+             abstract=None, permissions=None, keywords=(), charset='UTF-8'):
+
+    # Step 2. Check that it is uploading to the same resource type as
+    # the existing resource
+    logger.info('>>> Step 2. Make sure we are not trying to overwrite a '
+                'existing resource named [%s] with the wrong type', name)
+    the_layer_type = geoserver_layer_type(base_file)
+
+    # Get a short handle to the gsconfig geoserver catalog
+    cat = gs_catalog
+
+    # Check if the store exists in geoserver
+    try:
+        store = cat.get_store(name)
+    except geoserver.catalog.FailedRequestError, e:
+        # There is no store, ergo the road is clear
+        pass
+    else:
+        # If we get a store, we do the following:
+        resources = store.get_resources()
+
+        # If the store is empty, we just delete it.
+        if len(resources) == 0:
+            cat.delete(store)
+        else:
+            # If our resource is already configured in the store it needs
+            # to have the right resource type
+            for resource in resources:
+                if resource.name == name:
+                    msg = 'Name already in use and overwrite is False'
+                    assert overwrite, msg
+                    existing_type = resource.resource_type
+                    if existing_type != the_layer_type:
+                        msg = ('Type of uploaded file %s (%s) '
+                               'does not match type of existing '
+                               'resource type '
+                               '%s' % (name, the_layer_type, existing_type))
+                        logger.info(msg)
+                        raise GeoNodeException(msg)
+
+    # Step 3. Identify whether it is vector or raster and which extra files
+    # are needed.
+    logger.info('>>> Step 3. Identifying if [%s] is vector or raster and '
+                'gathering extra files', name)
+    if the_layer_type == FeatureType.resource_type:
+        logger.debug('Uploading vector layer: [%s]', base_file)
+        if ogc_server_settings.DATASTORE:
+            create_store_and_resource = _create_db_featurestore
+        else:
+            create_store_and_resource = _create_featurestore
+    elif the_layer_type == Coverage.resource_type:
+        logger.debug("Uploading raster layer: [%s]", base_file)
+        create_store_and_resource = _create_coveragestore
+    else:
+        msg = ('The layer type for name %s is %s. It should be '
+               '%s or %s,' % (name,
+                              the_layer_type,
+                              FeatureType.resource_type,
+                              Coverage.resource_type))
+        logger.warn(msg)
+        raise GeoNodeException(msg)
+
+    # Step 4. Create the store in GeoServer
+    logger.info('>>> Step 4. Starting upload of [%s] to GeoServer...', name)
+
+    # Get the helper files if they exist
+    files = get_files(base_file)
+
+    data = files
+
+    #FIXME: DONT DO THIS
+    #-------------------
+    if 'shp' not in files:
+        if files['base'][-4:] == ".zip":
+            _rename_zip(files['base'], name)
+        main_file = files['base']
+        data = main_file
+    # ------------------
+
+    try:
+        store, gs_resource = create_store_and_resource(name,
+                                                       data,
+                                                       charset=charset,
+                                                       overwrite=overwrite)
+    except UploadError, e:
+        msg = ('Could not save the layer %s, there was an upload '
+               'error: %s' % (name, str(e)))
+        logger.warn(msg)
+        e.args = (msg,)
+        raise
+    except ConflictingDataError, e:
+        # A datastore of this name already exists
+        msg = ('GeoServer reported a conflict creating a store with name %s: '
+               '"%s". This should never happen because a brand new name '
+               'should have been generated. But since it happened, '
+               'try renaming the file or deleting the store in '
+               'GeoServer.' % (name, str(e)))
+        logger.warn(msg)
+        e.args = (msg,)
+        raise
+    else:
+        logger.debug('Finished upload of [%s] to GeoServer without '
+                     'errors.', name)
+
+    # Step 5. Create the resource in GeoServer
+    logger.info('>>> Step 5. Generating the metadata for [%s] after '
+                'successful import to GeoSever', name)
+
+    # Verify the resource was created
+    if gs_resource is not None:
+        assert gs_resource.name == name
+    else:
+        msg = ('GeoNode encountered problems when creating layer %s.'
+               'It cannot find the Layer that matches this Workspace.'
+               'try renaming your files.' % name)
+        logger.warn(msg)
+        raise GeoNodeException(msg)
+
+    # Step 6. Make sure our data always has a valid projection
+    # FIXME: Put this in gsconfig.py
+    logger.info('>>> Step 6. Making sure [%s] has a valid projection' % name)
+    if gs_resource.latlon_bbox is None:
+        box = gs_resource.native_bbox[:4]
+        minx, maxx, miny, maxy = [float(a) for a in box]
+        if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
+           -90 <= miny <= 90 and -90 <= maxy <= 90:
+            logger.info('GeoServer failed to detect the projection for layer '
+                        '[%s]. Guessing EPSG:4326', name)
+            # If GeoServer couldn't figure out the projection, we just
+            # assume it's lat/lon to avoid a bad GeoServer configuration
+
+            gs_resource.latlon_bbox = gs_resource.native_bbox
+            gs_resource.projection = "EPSG:4326"
+            cat.save(gs_resource)
+        else:
+            msg = ('GeoServer failed to detect the projection for layer '
+                   '[%s]. It doesn\'t look like EPSG:4326, so backing out '
+                   'the layer.')
+            logger.info(msg, name)
+            cascading_delete(cat, name)
+            raise GeoNodeException(msg % name)
+
+    # Step 7. Create the style and assign it to the created resource
+    # FIXME: Put this in gsconfig.py
+    logger.info('>>> Step 7. Creating style for [%s]' % name)
+    publishing = cat.get_layer(name)
+
+    if 'sld' in files:
+        f = open(files['sld'], 'r')
+        sld = f.read()
+        f.close()
+    else:
+        sld = get_sld_for(publishing)
+
+    if sld is not None:
+        try:
+            cat.create_style(name, sld)
+        except geoserver.catalog.ConflictingDataError, e:
+            msg = ('There was already a style named %s in GeoServer, '
+                   'cannot overwrite: "%s"' % (name, str(e)))
+            logger.warn(msg)
+            e.args = (msg,)
+
+        #FIXME: Should we use the fully qualified typename?
+        publishing.default_style = cat.get_style(name)
+        cat.save(publishing)
+
+    # Step 10. Create the Django record for the layer
+    logger.info('>>> Step 10. Creating Django record for [%s]', name)
+    # FIXME: Do this inside the layer object
+    typename = gs_resource.store.workspace.name + ':' + gs_resource.name
+    layer_uuid = str(uuid.uuid1())
+    defaults = dict(store=gs_resource.store.name,
+                    storeType=gs_resource.store.resource_type,
+                    typename=typename,
+                    title=title or gs_resource.title,
+                    uuid=layer_uuid,
+                    abstract=abstract or gs_resource.abstract or '',
+                    owner=user)
+
+    workspace = gs_resource.store.workspace.name
+
+    return name, workspace, defaults

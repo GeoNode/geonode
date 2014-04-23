@@ -51,7 +51,6 @@ from geonode.base.models import TopicCategory
 from geonode.search.populate_search_test_data import create_models
 from .populate_layers_data import create_layer_data
 
-from geoserver.resource import FeatureType, Coverage
 
 class LayersTest(TestCase):
     """Tests geonode.layers app/module
@@ -516,21 +515,21 @@ class LayersTest(TestCase):
 
 
     def test_layer_type(self):
-        self.assertEquals(layer_type('foo.shp'), FeatureType.resource_type)
-        self.assertEquals(layer_type('foo.SHP'), FeatureType.resource_type)
-        self.assertEquals(layer_type('foo.sHp'), FeatureType.resource_type)
-        self.assertEquals(layer_type('foo.tif'), Coverage.resource_type)
-        self.assertEquals(layer_type('foo.TIF'), Coverage.resource_type)
-        self.assertEquals(layer_type('foo.TiF'), Coverage.resource_type)
-        self.assertEquals(layer_type('foo.geotif'), Coverage.resource_type)
-        self.assertEquals(layer_type('foo.GEOTIF'), Coverage.resource_type)
-        self.assertEquals(layer_type('foo.gEoTiF'), Coverage.resource_type)
-        self.assertEquals(layer_type('foo.tiff'), Coverage.resource_type)
-        self.assertEquals(layer_type('foo.TIFF'), Coverage.resource_type)
-        self.assertEquals(layer_type('foo.TiFf'), Coverage.resource_type)
-        self.assertEquals(layer_type('foo.geotiff'), Coverage.resource_type)
-        self.assertEquals(layer_type('foo.GEOTIFF'), Coverage.resource_type)
-        self.assertEquals(layer_type('foo.gEoTiFf'), Coverage.resource_type)
+        self.assertEquals(layer_type('foo.shp'), 'vector')
+        self.assertEquals(layer_type('foo.SHP'), 'vector')
+        self.assertEquals(layer_type('foo.sHp'), 'vector')
+        self.assertEquals(layer_type('foo.tif'), 'raster')
+        self.assertEquals(layer_type('foo.TIF'), 'raster')
+        self.assertEquals(layer_type('foo.TiF'), 'raster')
+        self.assertEquals(layer_type('foo.geotif'), 'raster')
+        self.assertEquals(layer_type('foo.GEOTIF'), 'raster')
+        self.assertEquals(layer_type('foo.gEoTiF'), 'raster')
+        self.assertEquals(layer_type('foo.tiff'), 'raster')
+        self.assertEquals(layer_type('foo.TIFF'), 'raster')
+        self.assertEquals(layer_type('foo.TiFf'), 'raster')
+        self.assertEquals(layer_type('foo.geotiff'), 'raster')
+        self.assertEquals(layer_type('foo.GEOTIFF'), 'raster')
+        self.assertEquals(layer_type('foo.gEoTiFf'), 'raster')
 
         # basically anything else should produce a GeoNodeException
         self.assertRaises(GeoNodeException, lambda: layer_type('foo.gml'))
