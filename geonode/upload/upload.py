@@ -31,7 +31,6 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
-from geonode.geoserver.helpers import get_sld_for
 from geonode.base.models import SpatialRepresentationType
 from geonode.layers.utils import get_valid_layer_name
 from geonode.layers.utils import layer_type
@@ -44,7 +43,7 @@ from geonode.upload.models import Upload
 from geonode.upload import signals
 from geonode.upload.utils import create_geoserver_db_featurestore
 from geonode.upload.utils import find_file_re
-from geonode.utils import ogc_server_settings
+from geonode.geoserver.helpers import gs_catalog, gs_uploader
 
 import geoserver
 from geoserver.resource import Coverage
@@ -196,7 +195,7 @@ def save_step(user, layer, spatial_files, overwrite=True):
 
     # Check if the store exists in geoserver
     try:
-        store = Layer.objects.gs_catalog.get_store(name)
+        store = gs_catalog.get_store(name)
     except geoserver.catalog.FailedRequestError, e:
         # There is no store, ergo the road is clear
         pass
@@ -246,7 +245,7 @@ def save_step(user, layer, spatial_files, overwrite=True):
 
         # @todo settings for use_url or auto detection if geoserver is
         # on same host
-        import_session = Layer.objects.gs_uploader.upload_files(
+        import_session = gs_uploader.upload_files(
             spatial_files.all_files(), use_url=False, import_id=next_id, mosaic=len(spatial_files) > 1)
 
         upload.import_id = import_session.id
@@ -297,8 +296,9 @@ def run_import(upload_session, async):
 
     Returns the target datastore.
     """
+    from geonode.utils import ogc_server_settings
     import_session = upload_session.import_session
-    import_session = Layer.objects.gs_uploader.get_session(import_session.id)
+    import_session = gs_uploader.get_session(import_session.id)
     task = import_session.tasks[0]
     if import_session.state == 'INCOMPLETE':
         if task.state != 'ERROR':
@@ -456,6 +456,7 @@ def srs_step(upload_session, srs):
 
 
 def final_step(upload_session, user):
+    from geonode.geoserver.helpers import get_sld_for
     import_session = upload_session.import_session
     _log('Reloading session %s to check validity', import_session.id)
     import_session = import_session.reload()
@@ -466,7 +467,7 @@ def final_step(upload_session, user):
     # when the same data is uploaded a second time and the default name is
     # chosen
 
-    cat = Layer.objects.gs_catalog
+    cat = gs_catalog
     cat._cache.clear()
 
     # Create the style and assign it to the created resource

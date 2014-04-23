@@ -167,6 +167,7 @@ GEONODE_APPS = (
     'geonode.catalogue',
     'geonode.documents',
     'geonode.api',
+    'geonode.geoserver',
 
     # GeoNode Contrib Apps
     'geonode.contrib.groups',
@@ -195,6 +196,7 @@ INSTALLED_APPS = (
     'friendlytagloader',
     'geoexplorer',
     'django_extensions',
+    #'haystack',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -400,6 +402,7 @@ MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
 CACHE_TIME=0
 
 # OGC (WMS/WFS/WCS) Server Settings
+# OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
     'default' : {
         'BACKEND' : 'geonode.geoserver',
@@ -511,10 +514,10 @@ DEFAULT_MAP_ZOOM = 0
 MAP_BASELAYERS = [{
     "source": {
         "ptype": "gxp_wmscsource",
-        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms" if OGC_SERVER and any(OGC_SERVER) else 'http://localhost:8080/geoserver/wms',
         "restUrl": "/gs/rest"
-     }
-  },{
+    }
+    },{
     "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
@@ -546,24 +549,6 @@ MAP_BASELAYERS = [{
     "group":"background"
   },{
     "source": {"ptype": "gxp_mapboxsource"},
-  }, {
-    "source": {"ptype": "gxp_olsource"},
-    "type":"OpenLayers.Layer.WMS",
-    "group":"background",
-    "visibility": False,
-    "fixed": True,
-    "args":[
-      "bluemarble",
-      "http://maps.opengeo.org/geowebcache/service/wms",
-      {
-        "layers":["bluemarble"],
-        "format":"image/png",
-        "tiled": True,
-        "tilesOrigin": [-20037508.34, -20037508.34]
-      },
-      {"buffer": 0}
-    ]
-
 }]
 
 SOCIAL_BUTTONS = True
@@ -583,6 +568,24 @@ PROXY_ALLOWED_HOSTS = ()
 
 # The proxy to use when making cross origin requests.
 PROXY_URL = '/proxy/?url=' if DEBUG else None
+
+
+# Haystack Search Backend Configuration.  To enable, first install the following:
+# - pip install django-haystack
+# - pip install pyelasticsearch
+# Set HAYSTACK_SEARCH to True
+# Run "python manage.py rebuild_index"
+
+HAYSTACK_SEARCH = False
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'geonode',
+        },
+    }
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 20
 
 # Load more settings from a file called local_settings.py if it exists
 try:

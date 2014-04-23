@@ -83,7 +83,7 @@
                   <li><a href="{% url "recent-activity" %}"><i class="icon-fire"></i> {% trans "Recent Activity" %}</a></li>
                   <li class="divider"></li>
                   <li>
-                    <form action="{% url "account_logout" %}?next={{ request.path }}" id="logout_form" method="post">
+                    <form action="{% url "account_logout" %}" id="logout_form" method="post">
                       {% csrf_token %}
                       <a class="navbar-logout" href="javascript:{}" onclick="document.getElementById('logout_form').submit();"><i class="icon-off"></i> {% trans "Log out" %}</a>
                     </form>
@@ -95,7 +95,7 @@
                 <a href="#" class="dropdown-toggle login" data-toggle="dropdown">Sign in <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li>
-                    <form action="{% url "account_login" %}" method="post" class="sign-in">
+                    <form action="{% url "account_login" %}?next={{ request.path }}" method="post" class="sign-in">
                     {% csrf_token %}
                       <label for="id_username">{% trans "Username" %}:</label>
                       <input id="id_username" name="username" type="text" />
