@@ -129,7 +129,6 @@ class Normalizer:
             if self.o._deferred:
                 self.o = getattr(type(self.o),'objects').get(pk = self.o.pk)
             self.dict = self.populate(self.data or {}, exclude)
-            self.dict['iid'] = self.iid
             self.dict['relevance'] = getattr(self.o, 'relevance', 0)
             if hasattr(self,'views'):
                 self.dict['views'] = self.views

@@ -25,10 +25,14 @@ import httplib2
 from django.conf import settings
 from django.utils.http import is_safe_url
 from django.http.request import validate_host
-from geonode.utils import ogc_server_settings
 
 def proxy(request):
-    PROXY_ALLOWED_HOSTS = (ogc_server_settings.hostname,) + getattr(settings, 'PROXY_ALLOWED_HOSTS', ())
+    PROXY_ALLOWED_HOSTS = getattr(settings, 'PROXY_ALLOWED_HOSTS', ())
+
+    if any(settings.OGC_SERVER):
+        from geonode.utils import ogc_server_settings
+        hostname = (ogc_server_settings.hostname,) if ogc_server_settings else ()
+        PROXY_ALLOWED_HOSTS += hostname
 
     if 'url' not in request.GET:
         return HttpResponse(
@@ -89,6 +93,7 @@ def proxy(request):
     return response
 
 def geoserver_rest_proxy(request, proxy_path, downstream_path):
+    from geonode.utils import ogc_server_settings
     if not request.user.is_authenticated():
         return HttpResponse(
             "You must be logged in to access GeoServer",

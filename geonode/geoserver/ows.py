@@ -28,7 +28,6 @@ from owslib.coverage.wcsBase import ServiceException
 from owslib.util import http_post
 import urllib
 from geonode import GeoNodeException
-from geonode.utils import ogc_server_settings
 from re import sub
 
 logger = logging.getLogger(__name__)
@@ -136,6 +135,7 @@ def wms_links(wms_url, identifier, bbox, srid, height, width):
 def wps_execute_layer_attribute_statistics(layer_name, field):
     """Derive aggregate statistics from WPS endpoint"""
 
+    from geonode.utils import ogc_server_settings
     # generate statistics using WPS
     url = '%s/ows' % (ogc_server_settings.LOCATION)
 

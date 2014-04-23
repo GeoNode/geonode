@@ -26,7 +26,8 @@ from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.db.models import Q
 from django.template import RequestContext
-from geonode.utils import resolve_object, ogc_server_settings
+from geonode.utils import resolve_object
+
 if "geonode.contrib.groups" in settings.INSTALLED_APPS:
     from geonode.contrib.groups.models import Group
 
@@ -128,6 +129,7 @@ def _handleThumbNail(req, obj):
 def _fixup_ows_url(thumb_spec):
     #@HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
     # so rendering of thumbnails fails - replace those uri's with full geoserver URL
+    from geonode.utils import ogc_server_settings
     import re
     gspath = '"' + ogc_server_settings.public_url # this should be in img src attributes
     repl = '"' + ogc_server_settings.LOCATION

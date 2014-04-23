@@ -3,14 +3,24 @@
 {% load agon_ratings_tags %}
 {% load layers_tags %}
 {% load base_tags %}
+{% load geonode_auth %}
 
 {% overall_rating layer "layer" as layer_rating %}
 {% num_ratings layer as num_votes %}
 
+{% has_obj_perm user layer "layers.view_layer" as can_view_layer %}
+
+{% if can_view_layer %}
 <article>
   <div class="content">
     <div class="item-header">
-      <a href="{% url "layer_detail" layer.typename %}"><img class="thumb" src="{{ layer.get_thumbnail_url }}" /></a>
+      <a href="{% url "layer_detail" layer.typename %}">
+      {% if layer.get_thumbnail_url %}
+      <img class="thumb" src="{{ layer.get_thumbnail_url }}" />
+      {% else %}
+      <img class="thumb" src="{{  STATIC_URL }}/geonode/img/missing_thumb.png" />
+      {% endif %}
+      </a>
       <h3><i class="icon-unchecked icon-rotate-45"></i> <a href="{% url "layer_detail" layer.typename %}">{{ layer.title }}</a></h3>   
     </div>
     <div class="details">
@@ -62,3 +72,25 @@
     </div>
   </div>
 </article>
+{%  else %}
+<article>
+    <div class="content">
+        <div class="item-header">
+            <img class="thumb" src="{{  STATIC_URL }}/geonode/img/missing_thumb.png" />
+            <h3><i class="icon-unchecked icon-rotate-45"></i> {{ layer.title }}</h3>
+        </div>
+        <div class="details">
+            <div class="meta">
+                <p>Layer {% trans 'from' %} <a href="{% url "profile_detail" layer.owner.username %}">{{ layer.owner }}</a>, {{ layer.date|timesince }} {% trans 'ago' %}</p>
+                <p class="abstract">{%  trans "You do not have permission to view this layer" %}</p>
+                <ul class="nav stats">
+                    <li><a><strong>{{ layer.popular_count }}</strong> {% trans "view" %}{{ layer.popular_count|pluralize }}</a></li>
+                    <li><a><strong><span class="avg_rating" data-rating="{{ layer_rating }}"> <span class="overall_rating"></span></span></strong> {% trans "Average rating" %} ({{num_votes}} {% trans "votes" %})</a></li>
+                </ul>
+            </div> <!-- /.meta -->
+            <div class="tools">
+            </div>
+        </div> <!-- /.details -->
+    </div> <!-- /.content -->
+</article>
+{%  endif %}

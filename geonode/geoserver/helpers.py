@@ -17,29 +17,43 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import sys, os
+import urllib
 import logging
 import re
 import errno
 import uuid
 import datetime
-from itertools import cycle, izip
 
-from django.conf import settings
+from itertools import cycle, izip
+from lxml import etree
+
+from owslib.wcs import WebCoverageService
+
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_delete
 
-from geonode.utils import _user, _password, ogc_server_settings
+from dialogos.models import Comment
+from agon_ratings.models import OverallRating
+
+from gsimporter import Client
 
 from geoserver.catalog import Catalog, FailedRequestError
 from geoserver.store import CoverageStore, DataStore
 from geoserver.workspace import Workspace
 
-from dialogos.models import Comment
-from agon_ratings.models import OverallRating
+from geonode.layers.models import Layer, Attribute, Style
+from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.geoserver.ows import wps_execute_layer_attribute_statistics
+from geonode.utils import _user, _password, ogc_server_settings
+from geonode.utils import http_client
 
 logger = logging.getLogger(__name__)
+
+
+url = ogc_server_settings.rest
+gs_catalog = Catalog(url, _user, _password)
+gs_uploader = Client(url, _user, _password)
 
 _punc = re.compile(r"[\.:]") #regex for punctuation that confuses restconfig
 _foregrounds = ["#ffbbbb", "#bbffbb", "#bbbbff", "#ffffbb", "#bbffff", "#ffbbff"]
@@ -256,10 +270,6 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
        It returns a list of dictionaries with the name of the layer,
        the result of the operation and the errors and traceback if it failed.
     """
-
-    # avoid circular import problem
-    from geonode.layers.models import set_attributes
-
     if console is None:
         console = open(os.devnull, 'w')
 
@@ -322,8 +332,6 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
         store = resource.store
         workspace = store.workspace
         try:
-            # Avoid circular import problem
-            from geonode.layers.models import Layer
             layer, created = Layer.objects.get_or_create(name=name, defaults = {
                 "workspace": workspace.name,
                 "store": store.name,
@@ -368,7 +376,6 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
             print >> console, msg
     
     if remove_deleted:
-        from geonode.layers.models import Layer
         q = Layer.objects.filter()
         if workspace_for_delete_compare is not None:
             if isinstance(workspace_for_delete_compare, Workspace): q = q.filter(workspace__exact=workspace_for_delete_compare.name)
@@ -404,7 +411,8 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
         for i, layer in enumerate(deleted_layers):
             logger.debug("GeoNode Layer to delete: name: %s, workspace: %s, store: %s", layer.name, layer.workspace, layer.store)
             try:
-                from geonode.layers.models import geoserver_pre_delete
+                # Avoid circular imports
+                from geonode.layers.signals import geoserver_pre_delete
                 #delete ratings, comments, and taggit tags:
                 ct = ContentType.objects.get_for_model(layer)
                 OverallRating.objects.filter(content_type = ct, object_id = layer.id).delete()
@@ -448,3 +456,149 @@ def get_stores(store_type = None):
         elif store_type is None:
             store_list.append({'name':store.name, 'type': stype})
     return store_list
+
+
+def set_attributes(layer, overwrite=False):
+    """
+    Retrieve layer attribute names & types from Geoserver,
+    then store in GeoNode database using Attribute model
+    """
+    attribute_map = []
+    if layer.storeType == "dataStore":
+        dft_url = ogc_server_settings.LOCATION + "wfs?" + urllib.urlencode({
+            "service": "wfs",
+            "version": "1.0.0",
+            "request": "DescribeFeatureType",
+            "typename": layer.typename.encode('utf-8'),
+            })
+        # The code below will fail if http_client cannot be imported
+        body = http_client.request(dft_url)[1]
+        doc = etree.fromstring(body)
+        path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
+        attribute_map = [[n.attrib["name"],n.attrib["type"]] for n in doc.findall(path)]
+
+    elif layer.storeType == "coverageStore":
+        dc_url = ogc_server_settings.LOCATION + "wcs?" + urllib.urlencode({
+            "service": "wcs",
+            "version": "1.1.0",
+            "request": "DescribeCoverage",
+            "identifiers": layer.typename.encode('utf-8')
+        })
+        try:
+            response, body = http.request(dc_url)
+            doc = etree.fromstring(body)
+            path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
+            attribute_map = [[n.text,"raster"] for n in doc.findall(path)]
+        except Exception:
+            attribute_map = []
+
+    attributes = layer.attribute_set.all()
+    # Delete existing attributes if they no longer exist in an updated layer
+    for la in attributes:
+        lafound = False
+        for field, ftype in attribute_map:
+            if field == la.attribute:
+                lafound = True
+        if overwrite or not lafound:
+            logger.debug("Going to delete [%s] for [%s]", la.attribute, layer.name.encode('utf-8'))
+            la.delete()
+
+    # Add new layer attributes if they don't already exist
+    if attribute_map is not None:
+        iter = len(Attribute.objects.filter(layer=layer)) + 1
+        for field, ftype in attribute_map:
+            if field is not None:
+                la, created = Attribute.objects.get_or_create(layer=layer, attribute=field, attribute_type=ftype)
+                if created:
+                    if is_layer_attribute_aggregable(layer.storeType, field, ftype):
+                        logger.debug("Generating layer attribute statistics")
+                        result = get_attribute_statistics(layer.name, field)
+                        if result is not None:
+                            la.count = result['Count']
+                            la.min = result['Min']
+                            la.max = result['Max']
+                            la.average = result['Average']
+                            la.median = result['Median']
+                            la.stddev = result['StandardDeviation']
+                            la.sum = result['Sum']
+                            la.unique_values = result['unique_values']
+                            la.last_stats_updated = datetime.datetime.now()
+                    la.attribute_label = field.title()
+                    la.visible = ftype.find("gml:") != 0
+                    la.display_order = iter
+                    la.save()
+                    iter += 1
+                    logger.debug("Created [%s] attribute for [%s]", field, layer.name.encode('utf-8'))
+    else:
+        logger.debug("No attributes found")
+
+
+def set_styles(layer, gs_catalog):
+    style_set = []
+    gs_layer = gs_catalog.get_layer(layer.name)
+    default_style = gs_layer.default_style
+    layer.default_style = save_style(default_style)
+    style_set.append(layer.default_style)
+
+    alt_styles = gs_layer.styles
+
+    for alt_style in alt_styles:
+        style_set.append(save_style(alt_style))
+
+    layer.styles = style_set
+    return layer
+
+
+def save_style(gs_style):
+    style, created = Style.objects.get_or_create(name = gs_style.sld_name)
+    style.sld_title = gs_style.sld_title
+    style.sld_body = gs_style.sld_body
+    style.sld_url = gs_style.body_href()
+    style.save()
+    return style
+
+
+def is_layer_attribute_aggregable(store_type, field_name, field_type):
+    """
+    Decipher whether layer attribute is suitable for statistical derivation
+    """
+
+    # must be vector layer
+    if store_type != 'dataStore':
+        return False
+    # must be a numeric data type
+    if field_type not in LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES:
+        return False
+    # must not be an identifier type field
+    if field_name.lower() in ['id', 'identifier']:
+        return False
+
+    return True
+
+
+def get_attribute_statistics(layer_name, field):
+    """
+    Generate statistics (range, mean, median, standard deviation, unique values)
+    for layer attribute
+    """
+
+    logger.debug('Deriving aggregate statistics for attribute %s', field)
+
+    if not ogc_server_settings.WPS_ENABLED:
+        return None
+    try:
+        return wps_execute_layer_attribute_statistics(layer_name, field)
+    except Exception:
+        logger.exception('Error generating layer aggregate statistics')
+
+
+def get_coverage_grid_extent(instance):
+    """
+        Returns a list of integers with the size of the coverage
+        extent in pixels
+    """
+
+    wcs = WebCoverageService(ogc_server_settings.public_url + 'wcs', '1.0.0')
+    grid = wcs.contents[instance.workspace + ':' + instance.name].grid
+    return [(int(h) - int(l) + 1) for
+            h, l in zip(grid.highlimits, grid.lowlimits)]
