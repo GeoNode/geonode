@@ -611,16 +611,6 @@ def final_step(upload_session, user):
         # cleanup(name, layer_uuid)
         raise GeoNodeException(msg)
 
-    # Verify it is correctly linked to GeoServer
-    logger.info('Verifying layer in geoserver [%s]', (i+1))
-    try:
-        saved_layer.verify()
-    except GeoNodeException, e:
-        msg = ('The layer [%s] was not correctly saved to GeoServer. Error is: %s' % (name, str(e)))
-        logger.exception(msg)
-        saved_layer.delete()
-        raise
-
     if upload_session.tempdir and os.path.exists(upload_session.tempdir):
         shutil.rmtree(upload_session.tempdir)
 
