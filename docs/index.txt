@@ -38,12 +38,22 @@ Table of contents
 Tutorials
 ---------
 
-The :doc:`Tutorials <tutorials/index>` section contains step-by-step workshops that are oriented around performing particular sets of tasks, like adding data or publishing maps, setting up and maintaining a server, or setting up a project to extend from geonode. These tutorials are written in a workshop like format and are broken into three groups Users, Administrators and Developers. 
+The :doc:`Tutorials <tutorials/index>` section contains step-by-step workshops that are oriented around performing particular sets of tasks, like adding data or publishing maps, setting up and maintaining a server, or setting up a project to extend from geonode. These tutorials are written in a workshop like format and are broken into three groups Users, Administrators and Developers.
+
+.. toctree::
+    :maxdepth: 5
+
+    tutorials/index 
 
 Reference
 ---------
 
 The :doc:`Reference <reference/index>` section provides details about the internals of the GeoNode project. It has background information about components that make up GeoNode, the security system, APIs and much more.
+
+.. toctree::
+    :maxdepth: 5
+
+    reference/index
 
 
 Organizational
@@ -51,7 +61,10 @@ Organizational
 
 The :doc:`Organizational <organizational/index>` section contains information about the GeoNode project itself, how to contribute, learn about the community, helpful links, about the patch review process, the project road map and other administrative items.
 
+.. toctree::
+    :maxdepth: 5
 
+    organizational/index
 
 Need Help?
 ==========
@@ -75,6 +88,6 @@ Having trouble? Cant find what you are looking for? We'd like to help!
 .. toctree::
    :maxdepth: 4
 
-   organizational/index
-   tutorials/index
-   reference/index
+   organizational
+   tutorials
+   reference

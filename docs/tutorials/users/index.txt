@@ -1,5 +1,6 @@
 .. _users:
 
+==============
 Users Workshop
 ==============
 
@@ -28,7 +29,7 @@ Welcome to the GeoNode Users Workshop! This workshop will teach how to use the `
 
 .. toctree::
    :hidden:
-   :maxdepth: 3
+   :maxdepth: 5
 
    intro/index
    quickstart/index

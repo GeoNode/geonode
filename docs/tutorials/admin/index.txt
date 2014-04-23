@@ -1,11 +1,13 @@
 .. _admin:
 
+=======================
 Administrators Workshop
 =======================
 
 Welcome to the GeoNode Administrators Workshop! This workshop will teach how to install and manage a deployment of the `GeoNode <http://geonode.org>`_ software application.
 
 .. toctree::
+   :maxdepth: 5
    :hidden:
 
    intro_admin/index
