@@ -9,7 +9,7 @@ dist
 .idea/
 # supporting stuff pulled in by paver script
 geonode/development.db
-geoserver
+/geoserver/
 downloaded
 
 docs/i18n/pot/
