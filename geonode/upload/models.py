@@ -25,7 +25,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
 from geonode.layers.models import Layer
-from geonode.geoserver.signals import gs_catalog
+from geonode.geoserver.helpers import gs_catalog
 from gsimporter import NotFound
 from os import path
 
