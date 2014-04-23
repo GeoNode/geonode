@@ -43,7 +43,7 @@ from geonode.upload.models import Upload
 from geonode.upload import signals
 from geonode.upload.utils import create_geoserver_db_featurestore
 from geonode.upload.utils import find_file_re
-from geonode.geoserver.signals import gs_catalog, gs_uploader
+from geonode.geoserver.helpers import gs_catalog, gs_uploader
 
 import geoserver
 from geoserver.resource import Coverage

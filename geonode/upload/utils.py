@@ -23,7 +23,7 @@ from django.conf import settings
 from geonode.layers.models import Layer
 from geonode.upload.files import _clean_string, SpatialFiles
 from geoserver.catalog import FailedRequestError
-from geonode.geoserver.signals import ogc_server_settings, gs_catalog, gs_uploader
+from geonode.geoserver.helpers import ogc_server_settings, gs_catalog, gs_uploader
 from zipfile import ZipFile
 
 logger = logging.getLogger(__name__)
