@@ -25,14 +25,24 @@ import errno
 import uuid
 import datetime
 import geoserver
+import httplib2
+
+from urlparse import urlparse
+from urlparse import urlsplit
+from threading import local
+from collections import namedtuple
 
 from itertools import cycle, izip
 from lxml import etree
 
 from owslib.wcs import WebCoverageService
+from owslib.util import http_post
 
+from django.core.exceptions import PermissionDenied, ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_delete
+from django.template.loader import render_to_string
+from django.conf import settings
 
 from dialogos.models import Comment
 from agon_ratings.models import OverallRating
@@ -50,23 +60,28 @@ from geonode import GeoNodeException
 from geonode.layers.utils import layer_type, get_files
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
-from geonode.geoserver.ows import wps_execute_layer_attribute_statistics
-from geonode.utils import _user, _password, ogc_server_settings
-from geonode.utils import http_client
 
 logger = logging.getLogger(__name__)
 
+if not hasattr(settings, 'OGC_SERVER'):
+    msg = ('Please configure OGC_SERVER when enabling geonode.geoserver.'
+           ' More info can be found at '
+           'http://docs.geonode.org/en/master/reference/developers/settings.html#ogc-server'
+          )
+    raise ImproperlyConfigured(msg)
 
-url = ogc_server_settings.rest
-gs_catalog = Catalog(url, _user, _password)
-gs_uploader = Client(url, _user, _password)
 
-_punc = re.compile(r"[\.:]") #regex for punctuation that confuses restconfig
-_foregrounds = ["#ffbbbb", "#bbffbb", "#bbbbff", "#ffffbb", "#bbffff", "#ffbbff"]
-_backgrounds = ["#880000", "#008800", "#000088", "#888800", "#008888", "#880088"]
-_marks = ["square", "circle", "cross", "x", "triangle"]
-_style_contexts = izip(cycle(_foregrounds), cycle(_backgrounds), cycle(_marks))
-_default_style_names = ["point", "line", "polygon", "raster"]
+
+def check_geoserver_is_up():
+    """Verifies all geoserver is running,
+       this is needed to be able to upload.
+    """
+    url = "%sweb/" % ogc_server_settings.LOCATION
+    resp, content = http_client.request(url, "GET")
+    msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
+           'have started it.' % ogc_server_settings.LOCATION)
+    assert resp['status'] == '200', msg
+ 
 
 def _add_sld_boilerplate(symbolizer):
     """
@@ -598,16 +613,33 @@ def get_attribute_statistics(layer_name, field):
         logger.exception('Error generating layer aggregate statistics')
 
 
+def get_wcs_record(instance, retry=True):
+    wcs = WebCoverageService(ogc_server_settings.public_url + 'wcs', '1.0.0')
+    key = instance.workspace + ':' + instance.name
+    if key in wcs.contents:
+        return wcs.contents[key]
+    else:
+        msg = ("Layer '%s' was not found in WCS service at %s." %
+               (key, ogc_server_settings.public_url)
+              )
+        if retry:
+            import time
+            logger.debug(msg + ' Waiting a couple of seconds before trying again.')
+            time.sleep(2)
+            return get_wcs_record(instance, retry=False)
+        else:
+            raise GeoNodeException(msg)
+
+
 def get_coverage_grid_extent(instance):
     """
         Returns a list of integers with the size of the coverage
         extent in pixels
     """
-
-    wcs = WebCoverageService(ogc_server_settings.public_url + 'wcs', '1.0.0')
-    grid = wcs.contents[instance.workspace + ':' + instance.name].grid
+    instance_wcs = get_wcs_record(instance)
+    grid = instance_wcs.grid
     return [(int(h) - int(l) + 1) for
-            h, l in zip(grid.highlimits, grid.lowlimits)]
+        h, l in zip(grid.highlimits, grid.lowlimits)]
 
 
 GEOSERVER_LAYER_TYPES = {
@@ -920,3 +952,263 @@ def geoserver_upload(layer, base_file, user, name, overwrite=True, title=None,
     workspace = gs_resource.store.workspace.name
 
     return name, workspace, defaults
+
+class ServerDoesNotExist(Exception):
+    pass
+
+
+class OGC_Server(object):
+    """
+    OGC Server object.
+    """
+    def __init__(self, ogc_server, alias):
+        self.alias = alias
+        self.server = ogc_server
+
+    def __getattr__(self, item):
+        return self.server.get(item)
+
+    @property
+    def credentials(self):
+        """
+        Returns a tuple of the server's credentials.
+        """
+        creds = namedtuple('OGC_SERVER_CREDENTIALS', ['username', 'password'])
+        return creds(username=self.USER, password=self.PASSWORD)
+
+    @property
+    def datastore_db(self):
+        """
+        Returns the server's datastore dict or None.
+        """
+        if self.DATASTORE and settings.DATABASES.get(self.DATASTORE, None):
+            return settings.DATABASES.get(self.DATASTORE, dict())
+        else:
+            return dict()
+
+    @property
+    def ows(self):
+        """
+        The Open Web Service url for the server.
+        """
+        location = self.PUBLIC_LOCATION if self.PUBLIC_LOCATION else self.LOCATION
+        return self.OWS_LOCATION if self.OWS_LOCATION else location + 'ows'
+
+    @property
+    def rest(self):
+        """
+        The REST endpoint for the server.
+        """
+        return self.LOCATION + 'rest' if not self.REST_LOCATION else self.REST_LOCATION
+    
+    @property
+    def public_url(self):
+        """
+        The global public endpoint for the server.
+        """
+        return self.LOCATION if not self.PUBLIC_LOCATION else self.PUBLIC_LOCATION
+
+    @property
+    def internal_ows(self):
+        """
+        The Open Web Service url for the server used by GeoNode internally.
+        """
+        location = self.LOCATION
+        return location + 'ows'
+
+    @property
+    def internal_rest(self):
+        """
+        The internal REST endpoint for the server.
+        """
+        return self.LOCATION + 'rest'
+
+    @property
+    def hostname(self):
+        return urlsplit(self.LOCATION).hostname
+
+    @property
+    def netloc(self):
+        return urlsplit(self.LOCATION).netloc
+
+    def __str__(self):
+        return self.alias
+
+
+class OGC_Servers_Handler(object):
+    """
+    OGC Server Settings Convenience dict.
+    """
+    def __init__(self, ogc_server_dict):
+        self.servers = ogc_server_dict
+        #FIXME(Ariel): Are there better ways to do this without involving local?
+        self._servers = local()
+
+    def ensure_valid_configuration(self, alias):
+        """
+        Ensures the settings are valid.
+        """
+        try:
+            server = self.servers[alias]
+        except KeyError:
+            raise ServerDoesNotExist("The server %s doesn't exist" % alias)
+
+        datastore = server.get('DATASTORE')
+        uploader_backend = getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest')
+
+        if uploader_backend == 'geonode.importer' and datastore and not settings.DATABASES.get(datastore):
+            raise ImproperlyConfigured('The OGC_SERVER setting specifies a datastore '
+                                       'but no connection parameters are present.')
+
+        if uploader_backend == 'geonode.importer' and not datastore:
+            raise ImproperlyConfigured('The UPLOADER BACKEND is set to geonode.importer but no DATASTORE is specified.')
+
+
+    def ensure_defaults(self, alias):
+        """
+        Puts the defaults into the settings dictionary for a given connection where no settings is provided.
+        """
+        try:
+            server = self.servers[alias]
+        except KeyError:
+            raise ServerDoesNotExist("The server %s doesn't exist" % alias)
+
+        server.setdefault('BACKEND', 'geonode.geoserver')
+        server.setdefault('LOCATION', 'http://localhost:8080/geoserver/')
+        server.setdefault('USER', 'admin')
+        server.setdefault('PASSWORD', 'geoserver')
+        server.setdefault('DATASTORE', str())
+        server.setdefault('GEOGIT_DATASTORE_DIR', str())
+
+        for option in ['MAPFISH_PRINT_ENABLED', 'PRINTING_ENABLED', 'GEONODE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:
+            server.setdefault(option, True)
+
+        for option in ['GEOGIT_ENABLED', 'WMST_ENABLED', 'WPS_ENABLED']:
+            server.setdefault(option, False)
+
+    def __getitem__(self, alias):
+        if hasattr(self._servers, alias):
+            return getattr(self._servers, alias)
+
+        self.ensure_defaults(alias)
+        self.ensure_valid_configuration(alias)
+        server = self.servers[alias]
+        server = OGC_Server(alias=alias, ogc_server=server)
+        setattr(self._servers, alias, server)
+        return server
+
+    def __setitem__(self, key, value):
+        setattr(self._servers, key, value)
+
+    def __iter__(self):
+        return iter(self.servers)
+
+    def all(self):
+        return [self[alias] for alias in self]
+
+def get_wms():
+    wms_url = ogc_server_settings.internal_ows + "?service=WMS&request=GetCapabilities&version=1.1.0"
+    netloc = urlparse(wms_url).netloc
+    http = httplib2.Http()
+    http.add_credentials(_user, _password)
+    http.authorizations.append(
+        httplib2.BasicAuthentication(
+            (_user, _password),
+                netloc,
+                wms_url,
+                {},
+                None,
+                None,
+                http
+            )
+        )
+    body = http.request(wms_url)[1]
+    _wms = WebMapService(wms_url, xml=body)
+    return _wms
+
+
+def wps_execute_layer_attribute_statistics(layer_name, field):
+    """Derive aggregate statistics from WPS endpoint"""
+
+    # generate statistics using WPS
+    url = '%s/ows' % (ogc_server_settings.LOCATION)
+
+    # TODO: use owslib.wps.WebProcessingService for WPS interaction
+    # this requires GeoServer's WPS gs:Aggregate function to
+    # return a proper wps:ExecuteResponse
+
+
+    request = render_to_string('layers/wps_execute_gs_aggregate.xml', {
+                               'layer_name': 'geonode:%s' %  layer_name,
+                               'field': field
+                              })
+
+    response = http_post(url, request, timeout=ogc_server_settings.TIMEOUT)
+
+    exml = etree.fromstring(response)
+
+    result = {}
+
+    for f in ['Min', 'Max', 'Average', 'Median', 'StandardDeviation', 'Sum']:
+        fr = exml.find(f)
+        if fr is not None:
+            result[f] = fr.text
+        else:
+            result[f] = 'NA'
+
+    count = exml.find('Count')
+    if count is not None:
+        result['Count'] = int(count.text)
+    else:
+        result['Count'] = 0
+
+    result['unique_values'] = 'NA'
+
+    # TODO: find way of figuring out threshold better
+    if result['Count'] < 10000:
+        request = render_to_string('layers/wps_execute_gs_unique.xml', {
+                                   'layer_name': 'geonode:%s' %  layer_name,
+                                   'field': field
+                                  })
+
+        response = http_post(url, request, timeout=ogc_server_settings.TIMEOUT)
+
+        exml = etree.fromstring(response)
+
+        values = []
+
+
+ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
+
+_wms = None
+_csw = None
+_user, _password = ogc_server_settings.credentials
+
+http_client = httplib2.Http()
+http_client.add_credentials(_user, _password)
+http_client.add_credentials(_user, _password)
+_netloc = urlparse(ogc_server_settings.LOCATION).netloc
+http_client.authorizations.append(
+    httplib2.BasicAuthentication(
+        (_user, _password),
+        _netloc,
+        ogc_server_settings.LOCATION,
+        {},
+        None,
+        None,
+        http_client
+    )
+)
+
+
+
+url = ogc_server_settings.rest
+gs_catalog = Catalog(url, _user, _password)
+gs_uploader = Client(url, _user, _password)
+
+_punc = re.compile(r"[\.:]") #regex for punctuation that confuses restconfig
+_foregrounds = ["#ffbbbb", "#bbffbb", "#bbbbff", "#ffffbb", "#bbffff", "#ffbbff"]
+_backgrounds = ["#880000", "#008800", "#000088", "#888800", "#008888", "#880088"]
+_marks = ["square", "circle", "cross", "x", "triangle"]
+_style_contexts = izip(cycle(_foregrounds), cycle(_backgrounds), cycle(_marks))
+_default_style_names = ["point", "line", "polygon", "raster"]
