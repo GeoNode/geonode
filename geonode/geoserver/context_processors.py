@@ -22,7 +22,7 @@ from geonode import get_version
 from geonode.catalogue import default_catalogue_backend
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
-from geonode.utils import ogc_server_settings
+from geonode.geoserver.helpers import ogc_server_settings
 
 def geoserver_urls(request):
     """Global values to pass to templates"""

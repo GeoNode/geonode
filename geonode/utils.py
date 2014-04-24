@@ -22,7 +22,6 @@ import base64
 import re
 import math
 
-from threading import local
 from urlparse import urlparse
 from collections import namedtuple
 from django.conf import settings
@@ -31,226 +30,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
-from owslib.wms import WebMapService
 from django.http import HttpResponse
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS, INVALID_PERMISSION_MESSAGE
 from urlparse import urlsplit
 
-class ServerDoesNotExist(Exception):
-    pass
-
-if hasattr(settings, 'OGC_SERVER'):
-    OGC_SERVER = {}
-else:
-    OGC_SERVER = settings.OGC_SERVER
-
-class OGC_Server(object):
-    """
-    OGC Server object.
-    """
-    def __init__(self, ogc_server, alias):
-        self.alias = alias
-        self.server = ogc_server
-
-    def __getattr__(self, item):
-        return self.server.get(item)
-
-    @property
-    def credentials(self):
-        """
-        Returns a tuple of the server's credentials.
-        """
-        creds = namedtuple('OGC_SERVER_CREDENTIALS', ['username', 'password'])
-        return creds(username=self.USER, password=self.PASSWORD)
-
-    @property
-    def datastore_db(self):
-        """
-        Returns the server's datastore dict or None.
-        """
-        if self.DATASTORE and settings.DATABASES.get(self.DATASTORE, None):
-            return settings.DATABASES.get(self.DATASTORE, dict())
-        else:
-            return dict()
-
-    @property
-    def ows(self):
-        """
-        The Open Web Service url for the server.
-        """
-        location = self.PUBLIC_LOCATION if self.PUBLIC_LOCATION else self.LOCATION
-        return self.OWS_LOCATION if self.OWS_LOCATION else location + 'ows'
-
-    @property
-    def rest(self):
-        """
-        The REST endpoint for the server.
-        """
-        return self.LOCATION + 'rest' if not self.REST_LOCATION else self.REST_LOCATION
-    
-    @property
-    def public_url(self):
-        """
-        The global public endpoint for the server.
-        """
-        return self.LOCATION if not self.PUBLIC_LOCATION else self.PUBLIC_LOCATION
-
-    @property
-    def internal_ows(self):
-        """
-        The Open Web Service url for the server used by GeoNode internally.
-        """
-        location = self.LOCATION
-        return location + 'ows'
-
-    @property
-    def internal_rest(self):
-        """
-        The internal REST endpoint for the server.
-        """
-        return self.LOCATION + 'rest'
-
-    @property
-    def hostname(self):
-        return urlsplit(self.LOCATION).hostname
-
-    @property
-    def netloc(self):
-        return urlsplit(self.LOCATION).netloc
-
-    def __str__(self):
-        return self.alias
-
-class OGC_Servers_Handler(object):
-    """
-    OGC Server Settings Convenience dict.
-    """
-    def __init__(self, ogc_server_dict):
-        self.servers = ogc_server_dict
-        self._servers = local()
-
-    def ensure_valid_configuration(self, alias):
-        """
-        Ensures the settings are valid.
-        """
-        try:
-            server = self.servers[alias]
-        except KeyError:
-            raise ServerDoesNotExist("The server %s doesn't exist" % alias)
-
-        datastore = server.get('DATASTORE')
-        uploader_backend = getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest')
-
-        if uploader_backend == 'geonode.importer' and datastore and not settings.DATABASES.get(datastore):
-            raise ImproperlyConfigured('The OGC_SERVER setting specifies a datastore '
-                                       'but no connection parameters are present.')
-
-        if uploader_backend == 'geonode.importer' and not datastore:
-            raise ImproperlyConfigured('The UPLOADER BACKEND is set to geonode.importer but no DATASTORE is specified.')
-
-
-    def ensure_defaults(self, alias):
-        """
-        Puts the defaults into the settings dictionary for a given connection
-        where no settings is provided.
-        """
-        try:
-            server = self.servers[alias]
-        except KeyError:
-            raise ServerDoesNotExist("The server %s doesn't exist" % alias)
-
-        server.setdefault('BACKEND', 'geonode.geoserver')
-        server.setdefault('LOCATION', 'http://localhost:8080/geoserver/')
-        server.setdefault('USER', 'admin')
-        server.setdefault('PASSWORD', 'geoserver')
-        server.setdefault('DATASTORE', str())
-        server.setdefault('GEOGIT_DATASTORE_DIR', str())
-
-        for option in ['MAPFISH_PRINT_ENABLED', 'PRINTING_ENABLED', 'GEONODE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:
-            server.setdefault(option, True)
-
-        for option in ['GEOGIT_ENABLED', 'WMST_ENABLED', 'WPS_ENABLED']:
-            server.setdefault(option, False)
-
-    def __getitem__(self, alias):
-        if hasattr(self._servers, alias):
-            return getattr(self._servers, alias)
-
-        self.ensure_defaults(alias)
-        self.ensure_valid_configuration(alias)
-        server = self.servers[alias]
-        server = OGC_Server(alias=alias, ogc_server=server)
-        setattr(self._servers, alias, server)
-        return server
-
-    def __setitem__(self, key, value):
-        setattr(self._servers, key, value)
-
-    def __iter__(self):
-        return iter(self.servers)
-
-    def all(self):
-        return [self[alias] for alias in self]
-
-if any(settings.OGC_SERVER):
-    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
-
-    _wms = None
-    _csw = None
-    _user, _password = ogc_server_settings.credentials
-
-    http_client = httplib2.Http()
-    http_client.add_credentials(_user, _password)
-    http_client.add_credentials(_user, _password)
-    _netloc = urlparse(ogc_server_settings.LOCATION).netloc
-    http_client.authorizations.append(
-        httplib2.BasicAuthentication(
-            (_user, _password),
-            _netloc,
-            ogc_server_settings.LOCATION,
-            {},
-            None,
-            None,
-            http_client
-        )
-    )
-
-    def get_wms():
-        wms_url = ogc_server_settings.internal_ows + "?service=WMS&request=GetCapabilities&version=1.1.0"
-        netloc = urlparse(wms_url).netloc
-        http = httplib2.Http()
-        http.add_credentials(_user, _password)
-        http.authorizations.append(
-            httplib2.BasicAuthentication(
-                (_user, _password),
-                    netloc,
-                    wms_url,
-                    {},
-                    None,
-                    None,
-                    http
-                )
-            )
-        body = http.request(wms_url)[1]
-        _wms = WebMapService(wms_url, xml=body)
-        return _wms
-
-
-
 DEFAULT_TITLE=""
 DEFAULT_ABSTRACT=""
 
-
-def check_geonode_is_up():
-    """Verifies all geoserver is running,
-       this is needed to be able to upload.
-    """
-    url = "%sweb/" % ogc_server_settings.LOCATION
-    resp, content = http_client.request(url, "GET")
-    msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-           'have started it.' % ogc_server_settings.LOCATION)
-    assert resp['status'] == '200', msg
-       
+http_client = httplib2.Http()
 
 def _get_basic_auth_info(request):
     """
@@ -548,8 +335,8 @@ class GXPMapBase(object):
             return cfg
 
         source_urls = [source['url'] for source in sources.values() if source.has_key('url')]
-        
-        if any(settings.OGC_SERVER):
+       
+        if 'geonode.geoserver' in settings.INSTALLED_APPS:
             if not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
                 keys = sources.keys()
                 keys.sort()
