@@ -8,17 +8,17 @@ from django.conf import settings
 
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes
-from geonode.utils import _user, _password
+from geonode.geoserver.helpers import _user, _password
+from geonode.geoserver.helpers import set_styles, gs_catalog, get_coverage_grid_extent
+from geonode.geoserver.helpers import ogc_server_settings
 from geonode.utils import http_client
-from geonode.utils import ogc_server_settings
 from geonode.base.models import Link
-
+from geonode.base.models import Thumbnail
 from geonode.people.models import Profile
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.base.models import Thumbnail
 
-from geonode.geoserver.helpers import set_styles, gs_catalog, get_coverage_grid_extent
 from geoserver.catalog import FailedRequestError
+from geoserver.layer import Layer as GsLayer
 
 logger = logging.getLogger("geonode.geoserver.signals")
 
@@ -114,6 +114,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     instance.bbox_y1 = bbox[3]
 
     instance.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
+
 
 def geoserver_post_save(instance, sender, **kwargs):
     """Save keywords to GeoServer
@@ -393,3 +394,77 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     #Save layer styles
     set_styles(instance, gs_catalog)
+
+
+def geoserver_pre_save_maplayer(instance, sender, **kwargs):
+    # If this object was saved via fixtures,
+    # do not do post processing.
+    if kwargs.get('raw', False):
+        return
+
+    try:
+        instance.local = isinstance(gs_catalog.get_layer(instance.name),GsLayer)
+    except EnvironmentError, e:
+        if e.errno == errno.ECONNREFUSED:
+            msg = 'Could not connect to catalog to verify if layer %s was local' % instance.name
+            logger.warn(msg, e)
+        else:
+            raise e
+
+
+def geoserver_post_save_map(instance, sender, **kwargs):
+
+    local_layers = []
+    for layer in instance.layers:
+        if layer.local:
+            local_layers.append(Layer.objects.get(typename=layer.name).typename)
+
+    params = {
+        'layers': ",".join(local_layers).encode('utf-8'),
+        'format': 'image/png8',
+        'width': 200,
+        'height': 150,
+    }
+
+    # Avoid using urllib.urlencode here because it breaks the url.
+    # commas and slashes in values get encoded and then cause trouble
+    # with the WMS parser.
+    p = "&".join("%s=%s"%item for item in params.items())
+
+    thumbnail_url = ogc_server_settings.LOCATION + "wms/reflect?" + p
+
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=thumbnail_url,
+                        defaults=dict(
+                            extension='png',
+                            name=_("Remote Thumbnail"),
+                            mime='image/png',
+                            link_type='image',
+                            )
+                        )
+
+    # Download thumbnail and save it locally.
+    resp, image = http_client.request(thumbnail_url)
+
+    if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
+        msg = 'Unable to obtain thumbnail: %s' % image
+        logger.debug(msg)
+        # Replace error message with None.
+        image = None
+
+    if image is not None:
+        #Clean any orphan Thumbnail before
+        Thumbnail.objects.filter(resourcebase__id=None).delete()
+        thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
+        thumbnail.thumb_spec = thumbnail_url
+        thumbnail.save_thumb(image, instance._thumbnail_path())
+
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=settings.SITEURL + instance._thumbnail_path(),
+                        defaults=dict(
+                            extension='png',
+                            name=_("Thumbnail"),
+                            mime='image/png',
+                            link_type='image',
+                            )
+                        )

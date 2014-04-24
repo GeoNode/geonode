@@ -334,11 +334,11 @@ class LayersTest(TestCase):
         c = Client()
 
         # Test redirection to login form when not logged in
-        response = c.get(reverse('data_upload'))
+        response = c.get(reverse('layer_upload'))
         self.assertEquals(response.status_code,302)
         # Test return of upload form when logged in
         c.login(username="bobby", password="bob")
-        response = c.get(reverse('data_upload'))
+        response = c.get(reverse('layer_upload'))
         self.assertEquals(response.status_code,200)
 
     def test_describe_data(self):
@@ -721,54 +721,6 @@ class LayersTest(TestCase):
 
         # text which is not JSON should fail
         self.assertRaises(ValidationError, lambda: field.clean('<users></users>'))
-
-    def test_feature_edit_check(self):
-        """Verify that the feature_edit_check view is behaving as expected
-        """
-
-        # Setup some layer names to work with
-        valid_layer_typename = Layer.objects.all()[0].typename
-        invalid_layer_typename = "n0ch@nc3"
-
-        c = Client()
-
-        # Test that an invalid layer.typename is handled for properly
-        response = c.post(reverse('feature_edit_check', args=(invalid_layer_typename,)))
-        self.assertEquals(response.status_code, 404)
-
-
-        # First test un-authenticated
-        response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
-        response_json = json.loads(response.content)
-        self.assertEquals(response_json['authorized'], False)
-
-        # Next Test with a user that does NOT have the proper perms
-        logged_in = c.login(username='bobby', password='bob')
-        self.assertEquals(logged_in, True)
-        response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
-        response_json = json.loads(response.content)
-        self.assertEquals(response_json['authorized'], False)
-
-        # Login as a user with the proper permission and test the endpoint
-        logged_in = c.login(username='admin', password='admin')
-        self.assertEquals(logged_in, True)
-
-        response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
-
-        # Test that the method returns 401 because it's not a datastore
-        response_json = json.loads(response.content)
-        self.assertEquals(response_json['authorized'], False)
-
-        layer = Layer.objects.all()[0]
-        layer.storeType = "dataStore"
-        layer.save()
-
-        # Test that the method returns authorized=True if it's a datastore
-        if settings.OGC_SERVER['default']['DATASTORE']:
-            # The check was moved from the template into the view
-            response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
-            response_json = json.loads(response.content)
-            self.assertEquals(response_json['authorized'], True)
 
     def test_rating_layer_remove(self):
         """ Test layer rating is removed on layer remove

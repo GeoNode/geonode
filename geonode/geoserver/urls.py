@@ -20,10 +20,16 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('geonode.geoserver.views',
     url(r'^rest/stores/(?P<store_type>\w+)/$', 'stores', name="stores"),
+    (r'^rest/styles', 'geoserver_rest_proxy', dict(
+            proxy_path='/gs/rest/styles', downstream_path='rest/styles')),
+            (r'^/rest/layers', 'geoserver_rest_proxy', dict(
+            proxy_path='/gs/rest/layers', downstream_path='rest/layers')),
     url(r'^updatelayers/$', 'updatelayers', name="updatelayers"),
     url(r'^(?P<layername>[^/]*)/style$', 'layer_style', name="layer_style"),
     url(r'^(?P<layername>[^/]*)/style/upload$','layer_style_upload',name='layer_style_upload'),
     url(r'^(?P<layername>[^/]*)/style/manage$','layer_style_manage',name='layer_style_manage'),
     url(r'^(?P<layername>[^/]*)/edit-check?$', 'feature_edit_check',
-        name="feature_edit_check")
+        name="feature_edit_check"),
+
+
 )
