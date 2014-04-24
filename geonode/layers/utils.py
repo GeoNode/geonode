@@ -37,7 +37,6 @@ from django.conf import settings
 
 # Geonode functionality
 from geonode import GeoNodeException
-from geonode.utils import check_geonode_is_up
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, Style
 from geonode.people.models import Profile
@@ -280,9 +279,6 @@ def file_upload(filename, user=None, title=None,
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
-    # Do not do attempt to do anything unless geonode is running
-    check_geonode_is_up()
-
     # Get a valid user
     theuser = get_valid_user(user)
 
@@ -318,7 +314,6 @@ def upload(incoming, user=None, overwrite=False,
     """
     if verbosity > 1:
         print >> console, "Verifying that GeoNode is running ..."
-    check_geonode_is_up()
 
     if console is None:
         console = open(os.devnull, 'w')

@@ -24,9 +24,10 @@ from datetime import timedelta
 from django.core.serializers import serialize
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import settings
 from geonode.layers.models import Layer
 from geonode.base.models import TopicCategory
-from geonode.maps.models import Map
+from geonode.maps.models import Map, MapLayer
 from geonode.documents.models import Document
 from geonode.people.models import Profile
 from itertools import cycle
@@ -35,6 +36,13 @@ from taggit.models import TaggedItem
 from uuid import uuid4
 import os.path
 
+
+if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    from django.db.models import signals
+    from geonode.geoserver.signals import geoserver_pre_save_maplayer
+    from geonode.geoserver.signals import geoserver_post_save_map
+    signals.pre_save.disconnect(geoserver_pre_save_maplayer, sender=MapLayer)
+    signals.post_save.disconnect(geoserver_post_save_map, sender=Map)
 
 # This is used to populate the database with the search fixture data. This is
 # primarily used as a first step to generate the json data for the fixture using
