@@ -166,7 +166,6 @@ GEONODE_APPS = (
     'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
-    'geonode.api',
     'geonode.geoserver',
 
     # GeoNode Contrib Apps
