@@ -15,7 +15,7 @@ from geonode.geoserver.signals import gs_catalog
 
 from .helpers import get_stores
 from .helpers import gs_slurp
-from .signals import ogc_server_settings
+from .helpers import ogc_server_settings
 
 def stores(request, store_type=None):
     stores = get_stores(store_type)
@@ -197,3 +197,45 @@ def feature_edit_check(request, layername):
         return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
     else:
         return HttpResponse(json.dumps({'authorized': False}), mimetype="application/json")
+
+
+def geoserver_rest_proxy(request, proxy_path, downstream_path):
+
+    if not request.user.is_authenticated():
+        return HttpResponse(
+            "You must be logged in to access GeoServer",
+            mimetype="text/plain",
+            status=401)
+
+    def strip_prefix(path, prefix):
+        assert path.startswith(prefix)
+        return path[len(prefix):]
+
+    path = strip_prefix(request.get_full_path(), proxy_path)
+    url = "".join([ogc_server_settings.LOCATION, downstream_path, path])
+
+    http = httplib2.Http()
+    http.add_credentials(*(ogc_server_settings.credentials))
+    headers = dict()
+
+    if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
+        headers["Content-Type"] = request.META["CONTENT_TYPE"]
+
+    response, content = http.request(
+        url, request.method,
+        body=request.raw_post_data or None,
+        headers=headers)
+        
+    # we need to sync django here
+    # we should remove this geonode dependency calling layers.views straight
+    # from GXP, bypassing the proxy
+    if downstream_path == 'rest/styles' and len(request.raw_post_data)>0:
+        # for some reason sometime gxp sends a put with empty request
+        # need to figure out with Bart
+        from geonode.layers import utils
+        utils.style_update(request, url)
+
+    return HttpResponse(
+        content=content,
+        status=response.status,
+        mimetype=response.get("content-type", "text/plain"))

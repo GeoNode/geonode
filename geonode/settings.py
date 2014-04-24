@@ -512,12 +512,6 @@ DEFAULT_MAP_CENTER = (0, 0)
 DEFAULT_MAP_ZOOM = 0
 
 MAP_BASELAYERS = [{
-    "source": {
-        "ptype": "gxp_wmscsource",
-        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms" if OGC_SERVER and any(OGC_SERVER) else 'http://localhost:8080/geoserver/wms',
-        "restUrl": "/gs/rest"
-    }
-    },{
     "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
@@ -550,6 +544,20 @@ MAP_BASELAYERS = [{
   },{
     "source": {"ptype": "gxp_mapboxsource"},
 }]
+
+if 'geonode.geoserver' in INSTALLED_APPS:
+    LOCAL_GEOSERVER = {
+        "source": {
+            "ptype": "gxp_wmscsource",
+            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+            "restUrl": "/gs/rest"
+        }
+    }
+    baselayers = MAP_BASELAYERS
+    MAP_BASELAYERS = [LOCAL_GEOSERVER]
+    MAP_BASELAYERS.extend(baselayers)
+
+
 
 SOCIAL_BUTTONS = True
 
