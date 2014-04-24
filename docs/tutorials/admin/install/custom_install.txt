@@ -107,9 +107,10 @@ Please choose between one of the two methods to finish the installation-configur
 
         $ cd package					                               # change into the folder called "package"
         $ sudo ./install.sh support/config-ubuntu.sh			       	       # run the install.sh with the ubuntu config.sh
+        $ cd ..
+        $ geonode createsuperuser                           # call geonode binary django-admin.py create django super user
         $ sudo cp downloaded/geoserver.war /var/lib/tomcat7/webapps		       # copy geoserver.war into tomcat webapps directory
         $ sudo geonode-updateip youraddress					       # create the IP address to your address
-        $ geonode createsuperuser					               # call geonode binary django-admin.py create django super user
 
     GeoNode can now be accessed at http://localhost
 
