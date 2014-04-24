@@ -145,7 +145,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 out['success'] = True
                 out['url'] = reverse('layer_detail', args=[saved_layer.typename])
 
-                permissions = form.cleaned_data["permissions"],
+                permissions = form.cleaned_data["permissions"]
                 if permissions is not None and len(permissions.keys()) > 0:
                     saved_layer.set_permissions(permissions)
 
