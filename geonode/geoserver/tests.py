@@ -22,6 +22,17 @@ class LayerTests(TestCase):
         create_models(type='layer')
         create_layer_data()
 
+    def test_style_manager(self):
+        """
+        Ensures the layer_style_manage route returns a 200.
+        """
+        layer = Layer.objects.all()[0]
+        c = Client()
+        logged_in = c.login(username='bobby', password='bob')
+        self.assertEquals(logged_in, True)
+        response = c.get(reverse('layer_style_manage', args=(layer.typename,)))
+        self.assertEqual(response.status_code, 200)
+
     def test_feature_edit_check(self):
         """Verify that the feature_edit_check view is behaving as expected
         """
@@ -69,7 +80,6 @@ class LayerTests(TestCase):
             response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
             response_json = json.loads(response.content)
             self.assertEquals(response_json['authorized'], True)
-
 
 
 class UtilsTests(TestCase):

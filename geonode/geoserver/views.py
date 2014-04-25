@@ -1,21 +1,29 @@
 import json
+import logging
 
 from django.utils import simplejson
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 from django.conf import settings
-
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.template import RequestContext
+from django.utils.datastructures import MultiValueDictKeyError
 
+from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer
+from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 from geonode.geoserver.signals import gs_catalog
+from geonode.utils import json_response
+from geoserver.catalog import FailedRequestError, ConflictingDataError
 
-from .helpers import get_stores
-from .helpers import gs_slurp
-from .helpers import ogc_server_settings
+from lxml import etree
+from .helpers import get_stores, gs_slurp, ogc_server_settings, set_styles
+
+logger = logging.getLogger(__name__)
 
 def stores(request, store_type=None):
     stores = get_stores(store_type)
@@ -29,8 +37,8 @@ def updatelayers(request):
     owner = params.get('owner', None)
     owner = User.objects.get(username=owner) if owner is not None else request.user
     workspace = params.get('workspace', None)
-    store = params.get('store',None)
-    filter = params.get('filter',None)
+    store = params.get('store', None)
+    filter = params.get('filter', None)
 
     output = gs_slurp(ignore_errors=False, owner=owner, workspace=workspace, store=store, filter=filter)
     return HttpResponse(simplejson.dumps(output))
@@ -39,7 +47,7 @@ def updatelayers(request):
 @login_required
 @require_POST
 def layer_style(request, layername):
-    layer = _resolve_layer(request, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_MODIFY)
 
     style_name = request.POST.get('defaultStyle')
 
@@ -69,19 +77,19 @@ def layer_style(request, layername):
 def layer_style_upload(req, layername):
     def respond(*args,**kw):
         kw['content_type'] = 'text/html'
-        return json_response(*args,**kw)
-    form = LayerStyleUploadForm(req.POST,req.FILES)
+        return json_response(*args, **kw)
+    form = LayerStyleUploadForm(req.POST, req.FILES)
     if not form.is_valid():
         return respond(errors="Please provide an SLD file.")
     
     data = form.cleaned_data
-    layer = _resolve_layer(req, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(req, layername, 'layers.change_layer', _PERMISSION_MSG_MODIFY)
     
     sld = req.FILES['sld'].read()
 
     try:
         dom = etree.XML(sld)
-    except Exception,ex:
+    except Exception, ex:
         return respond(errors="The uploaded SLD file is not valid XML")
     
     el = dom.findall("{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
@@ -101,21 +109,26 @@ def layer_style_upload(req, layername):
         try:
             cat = gs_catalog
             cat.create_style(name, sld)
-            layer.styles = layer.styles + [ type('style',(object,),{'name' : name}) ]
+            layer.styles = layer.styles + [type('style', (object,), {'name': name})]
             cat.save(layer.publishing)
-        except ConflictingDataError,e:
+        except ConflictingDataError, e:
             return respond(errors="""A layer with this name exists. Select
                                      the update option if you want to update.""")
-    return respond(body={'success':True,'style':name,'updated':data['update']})
+    return respond(body={'success': True, 'style': name, 'updated': data['update']})
 
 @login_required
 def layer_style_manage(req, layername):
-    layer = _resolve_layer(req, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(req, layername, 'layers.change_layer', _PERMISSION_MSG_MODIFY)
     if req.method == 'GET':
         try:
             cat = gs_catalog
+
             # First update the layer style info from GS to GeoNode's DB
-            set_styles(layer, cat)
+            # The try/except is
+            try:
+                set_styles(layer, cat)
+            except AttributeError:
+                logger.warn('Unable to set the default style.  Ensure Geoserver is running and that this layer exists.')
 
             all_available_gs_styles = cat.get_styles()
             gs_styles = []
@@ -172,7 +185,7 @@ def layer_style_manage(req, layername):
             layer.save()
             return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
         except (FailedRequestError, EnvironmentError, MultiValueDictKeyError) as e:
-            msg = ('Error Saving Styles for Layer "%s"'  % (layer.name)
+            msg = ('Error Saving Styles for Layer "%s"' % (layer.name)
             )
             logger.warn(msg, e)
             return render_to_response(
@@ -229,7 +242,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
     # we need to sync django here
     # we should remove this geonode dependency calling layers.views straight
     # from GXP, bypassing the proxy
-    if downstream_path == 'rest/styles' and len(request.raw_post_data)>0:
+    if downstream_path == 'rest/styles' and len(request.raw_post_data) > 0:
         # for some reason sometime gxp sends a put with empty request
         # need to figure out with Bart
         from geonode.layers import utils
