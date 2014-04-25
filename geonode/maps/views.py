@@ -35,7 +35,6 @@ from django.utils import simplejson as json
 from django.utils.html import strip_tags
 from django.views.decorators.http import require_POST
 
-from geonode.views import _handleThumbNail
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import forward_mercator
@@ -43,12 +42,19 @@ from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
 from geonode.utils import resolve_object
+from geonode.utils import http_client
 from geonode.maps.forms import MapForm
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
 from geonode.documents.models import get_related_documents
 from geonode.base.models import ContactRole
 from geonode.people.forms import ProfileForm, PocForm
+
+if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    #FIXME: The post service providing the map_status object
+    # should be moved to geonode.geoserver.
+    from geonode.geoserver.helpers import ogc_server_settings
+ 
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -68,6 +74,25 @@ _PERMISSION_MSG_LOGIN = _("You must be logged in to save this map")
 _PERMISSION_MSG_METADATA = _("You are not allowed to modify this map's metadata.")
 _PERMISSION_MSG_VIEW = _("You are not allowed to view this map.")
 
+
+def _handleThumbNail(req, obj):
+    # object will either be a map or a layer, one or the other permission must apply
+    if not req.user.has_perm('maps.change_map', obj=obj) and not req.user.has_perm('maps.change_layer', obj=obj):
+        return HttpResponse(loader.render_to_string('401.html',
+            RequestContext(req, {'error_message':
+                _("You are not permitted to modify this object")})), status=401)
+    if req.method == 'GET':
+        return HttpResponseRedirect(obj.get_thumbnail_url())
+    elif req.method == 'POST':
+        try:
+            obj.save_thumbnail(req.raw_post_data)
+            return HttpResponseRedirect(obj.get_thumbnail_url())
+        except:
+            return HttpResponse(
+                content='error saving thumbnail',
+                status=500,
+                mimetype='text/plain'
+            )
 
 def _resolve_map(request, id, permission='maps.change_map',
                  msg=_PERMISSION_MSG_GENERIC, **kwargs):
@@ -419,8 +444,6 @@ def map_download(request, mapid, template='maps/map_download.html'):
     XXX To do, remove layer status once progress id done
     This should be fix because
     """
-    from geonode.utils import http_client
-    from geonode.utils import ogc_server_settings
     mapObject = _resolve_map(request, mapid, 'maps.view_map')
 
     map_status = dict()
@@ -481,8 +504,6 @@ def map_download_check(request):
     """
     this is an endpoint for monitoring map downloads
     """
-    from geonode.utils import http_client
-    from geonode.utils import ogc_server_settings
     try:
         layer = request.session["map_status"]
         if type(layer) == dict:
@@ -518,7 +539,6 @@ def map_wms(request, mapid):
     GET: return endpoint information for group layer,
     PUT: update existing or create new group layer.
     """
-    from geonode.utils import ogc_server_settings
     mapObject = _resolve_map(request, mapid, 'maps.view_map')
 
     if request.method == 'PUT':

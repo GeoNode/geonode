@@ -311,7 +311,7 @@ MIDDLEWARE_CLASSES = (
     # the permissions to view them.
     # It sets temporary the involved layers as public before restoring the permissions.
     # Beware that for few seconds the involved layers are public there could be risks.
-    #'geonode.middleware.PrintProxyMiddleware',
+    #'geonode.geoserver.middleware.PrintProxyMiddleware',
 )
 
 
