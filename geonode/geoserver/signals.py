@@ -14,6 +14,7 @@ from geonode.geoserver.helpers import ogc_server_settings
 from geonode.utils import http_client
 from geonode.base.models import Link
 from geonode.base.models import Thumbnail
+from geonode.layers.models import Layer
 from geonode.people.models import Profile
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
