@@ -43,7 +43,7 @@ from geonode.upload.models import Upload
 from geonode.upload import signals
 from geonode.upload.utils import create_geoserver_db_featurestore
 from geonode.upload.utils import find_file_re
-from geonode.geoserver.helpers import gs_catalog, gs_uploader
+from geonode.geoserver.helpers import gs_catalog, gs_uploader, ogc_server_settings
 
 import geoserver
 from geoserver.resource import Coverage
@@ -296,7 +296,6 @@ def run_import(upload_session, async):
 
     Returns the target datastore.
     """
-    from geonode.utils import ogc_server_settings
     import_session = upload_session.import_session
     import_session = gs_uploader.get_session(import_session.id)
     task = import_session.tasks[0]
