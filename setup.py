@@ -79,7 +79,7 @@ setup(name='GeoNode',
         # python dependencies
         "gsconfig==0.6.9",
         "OWSLib==0.7.2",
-        "Django==1.5.5",
+        "Django==1.5.6",
         "gsimporter==0.1",
         # Django Apps
         "pinax-theme-bootstrap==3.0a11",
