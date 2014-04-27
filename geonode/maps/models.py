@@ -200,12 +200,6 @@ class Map(ResourceBase, GXPMapBase):
         return reverse('geonode.maps.views.map_detail', None, [str(self.id)])
 
 
-    def get_thumbnail_url(self):
-        try:
-            return self.thumbnail.thumb_file.url
-        except:
-            return None
-
     class Meta:
         # custom permissions,
         # change and delete are standard in django
