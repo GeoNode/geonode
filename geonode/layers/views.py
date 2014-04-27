@@ -40,6 +40,7 @@ from django.forms.models import inlineformset_factory
 from geonode.utils import _get_basic_auth_info
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.layers.models import Layer, Attribute
+from geonode.base.enumerations import CHARSETS
 
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
@@ -104,8 +105,11 @@ def layer_tag(request, slug, template='layers/layer_list.html'):
 @login_required
 def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
+        ctx = {  
+            'charsets': CHARSETS
+        }
         return render_to_response(template,
-                                  RequestContext(request, {}))
+                                  RequestContext(request, ctx))
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None

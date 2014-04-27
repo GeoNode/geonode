@@ -21,6 +21,7 @@ import sys, os
 import urllib
 import logging
 import re
+import time
 import errno
 import uuid
 import datetime
@@ -34,6 +35,7 @@ from collections import namedtuple
 
 from itertools import cycle, izip
 from lxml import etree
+import xml.etree.ElementTree as ET
 
 from owslib.wcs import WebCoverageService
 from owslib.util import http_post
@@ -432,15 +434,12 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
         for i, layer in enumerate(deleted_layers):
             logger.debug("GeoNode Layer to delete: name: %s, workspace: %s, store: %s", layer.name, layer.workspace, layer.store)
             try:
-                # Avoid circular imports
-                from geonode.layers.signals import geoserver_pre_delete
                 #delete ratings, comments, and taggit tags:
                 ct = ContentType.objects.get_for_model(layer)
                 OverallRating.objects.filter(content_type = ct, object_id = layer.id).delete()
                 Comment.objects.filter(content_type = ct, object_id = layer.id).delete()
                 layer.keywords.clear()
                 
-                pre_delete.disconnect(geoserver_pre_delete, sender=Layer)
                 layer.delete()
                 output['stats']['deleted']+=1
                 status = "delete_succeeded"
@@ -623,7 +622,6 @@ def get_wcs_record(instance, retry=True):
                (key, ogc_server_settings.public_url)
               )
         if retry:
-            import time
             logger.debug(msg + ' Waiting a couple of seconds before trying again.')
             time.sleep(2)
             return get_wcs_record(instance, retry=False)
@@ -1177,6 +1175,47 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
 
         values = []
 
+
+def style_update(request, url):
+    """
+    Sync style stuff from GS to GN.
+    Ideally we should call this from a view straight from GXP, and we should use
+    gsConfig, that at this time does not support styles updates. Before gsConfig
+    is updated, for now we need to parse xml.
+    In case of a DELETE, we need to query request.path to get the style name,
+    and then remove it.
+    In case of a POST or PUT, we need to parse the xml from
+    request.raw_post_data, which is in this format:
+    """
+    if request.method in ('POST', 'PUT'): # we need to parse xml
+        tree = ET.ElementTree(ET.fromstring(request.raw_post_data))
+        elm_namedlayer_name=tree.findall('.//{http://www.opengis.net/sld}Name')[0]
+        elm_user_style_name=tree.findall('.//{http://www.opengis.net/sld}Name')[1]
+        elm_user_style_title=tree.find('.//{http://www.opengis.net/sld}Title')
+        if not elm_user_style_title:
+            elm_user_style_title = elm_user_style_name
+        layer_name=elm_namedlayer_name.text
+        style_name=elm_user_style_name.text
+        sld_body='<?xml version="1.0" encoding="UTF-8"?>%s' % request.raw_post_data
+        if request.method == 'POST': # add style in GN and associate it to layer
+            style = Style(name=style_name, sld_body=sld_body, sld_url=url)
+            style.save()
+            layer = Layer.objects.all().filter(typename=layer_name)[0]
+            style.layer_styles.add(layer)
+            style.save()
+        if request.method == 'PUT': # update style in GN
+            style = Style.objects.all().filter(name=style_name)[0]
+            style.sld_body=sld_body
+            style.sld_url=url
+            if len(elm_user_style_title.text)>0:
+                style.sld_title = elm_user_style_title.text
+            style.save()
+            for layer in style.layer_styles.all():
+                layer.save()
+    if request.method == 'DELETE': # delete style from GN
+        style_name = os.path.basename(request.path)
+        style = Style.objects.all().filter(name=style_name)[0]
+        style.delete()
 
 ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
 

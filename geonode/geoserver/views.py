@@ -1,5 +1,6 @@
 import json
 import logging
+import httplib2
 
 from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
@@ -21,7 +22,7 @@ from geonode.utils import json_response
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 
 from lxml import etree
-from .helpers import get_stores, gs_slurp, ogc_server_settings, set_styles
+from .helpers import get_stores, gs_slurp, ogc_server_settings, set_styles, style_update
 
 logger = logging.getLogger(__name__)
 
@@ -245,8 +246,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
     if downstream_path == 'rest/styles' and len(request.raw_post_data) > 0:
         # for some reason sometime gxp sends a put with empty request
         # need to figure out with Bart
-        from geonode.layers import utils
-        utils.style_update(request, url)
+        style_update(request, url)
 
     return HttpResponse(
         content=content,
