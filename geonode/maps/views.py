@@ -401,7 +401,7 @@ def new_map_config(request):
                 layers.append(MapLayer(
                     map = map_obj,
                     name = layer.typename,
-                    ows_url = layer.ows_url(),
+                    ows_url = layer.get_ows_url(),
                     layer_params=json.dumps( layer.attribute_config()),
                     visibility = True
                 ))

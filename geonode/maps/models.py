@@ -277,7 +277,7 @@ class Map(ResourceBase, GXPMapBase):
             map_layers.append(MapLayer(
                 map = self,
                 name = layer.typename,
-                ows_url = layer.ows_url(),
+                ows_url = layer.get_ows_url(),
                 stack_order = index,
                 visibility = True
             ))

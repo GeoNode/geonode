@@ -27,7 +27,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
-from geonode.base.models import ResourceBase, ResourceBaseManager, \
+from geonode.base.models import ResourceBase, ResourceBaseManager, Link, \
     resourcebase_post_save, resourcebase_post_delete
 from agon_ratings.models import OverallRating
 
@@ -131,20 +131,6 @@ class Layer(ResourceBase):
     LEVEL_WRITE = 'layer_readwrite'
     LEVEL_ADMIN = 'layer_admin'
 
-    def tiles_url(self):
-        return self.link_set.get(name='Tiles').url
-
-    def ows_url(self):
-        ows_url = None
-        if self.link_set.filter(name='OWS').count() > 0:
-            ows_url = self.link_set.get(name='OWS').url
-        return ows_url
-
-    def get_thumbnail_url(self):
-        try:
-            return self.thumbnail.thumb_file.url
-        except:
-            return None
 
     def maps(self):
         from geonode.maps.models import MapLayer
