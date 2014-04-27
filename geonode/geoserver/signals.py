@@ -431,21 +431,25 @@ def geoserver_post_save_map(instance, sender, **kwargs):
         if layer.local:
             local_layers.append(Layer.objects.get(typename=layer.name).typename)
 
-    params = {
-        'layers': ",".join(local_layers).encode('utf-8'),
-        'format': 'image/png8',
-        'width': 200,
-        'height': 150,
-    }
+    image = None
 
-    # Avoid using urllib.urlencode here because it breaks the url.
-    # commas and slashes in values get encoded and then cause trouble
-    # with the WMS parser.
-    p = "&".join("%s=%s"%item for item in params.items())
+    # If the map does not have any local layers, do not create the thumbnail.
+    if len(local_layers) > 0:
+        params = {
+            'layers': ",".join(local_layers).encode('utf-8'),
+            'format': 'image/png8',
+            'width': 200,
+            'height': 150,
+        }
 
-    thumbnail_remote_url = ogc_server_settings.LOCATION + "wms/reflect?" + p
+        # Avoid using urllib.urlencode here because it breaks the url.
+        # commas and slashes in values get encoded and then cause trouble
+        # with the WMS parser.
+        p = "&".join("%s=%s"%item for item in params.items())
 
-    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+        thumbnail_remote_url = ogc_server_settings.LOCATION + "wms/reflect?" + p
+
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                         url=thumbnail_remote_url,
                         defaults=dict(
                             extension='png',
@@ -455,15 +459,14 @@ def geoserver_post_save_map(instance, sender, **kwargs):
                             )
                         )
 
-    # Download thumbnail and save it locally.
-    resp, image = http_client.request(thumbnail_remote_url)
+        # Download thumbnail and save it locally.
+        resp, image = http_client.request(thumbnail_remote_url)
 
-    if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
-        msg = 'Unable to obtain thumbnail: %s' % image
-        logger.debug(msg)
-        # Replace error message with None.
-        image = None
-
+        if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
+            msg = 'Unable to obtain thumbnail: %s' % image
+            logger.debug(msg)
+            # Replace error message with None.
+            image = None
 
     if image is not None:
         if instance.has_thumbnail():
