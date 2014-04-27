@@ -33,11 +33,13 @@ from django.core.management import call_command
 from django.test import Client
 from django.test import LiveServerTestCase as TestCase
 from django.core.urlresolvers import reverse
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from geoserver.catalog import FailedRequestError
 
 from geonode.security.models import *
 from geonode.layers.models import Layer
+from geonode.maps.models import Map
 from geonode import GeoNodeException
 from geonode.layers.utils import (
     upload,
@@ -520,6 +522,61 @@ class GeoNodeMapTest(TestCase):
                                 'prj_file': layer_prj
                                 })
         self.assertEquals(response.status_code, 302)
+
+
+class GeoNodeThumbnailTest(TestCase):
+    """Tests thumbnails behavior for layers and maps.
+    """
+    def setUp(self):
+        call_command('loaddata', 'people_data', verbosity=0)
+
+    def tearDown(self):
+        pass
+
+    def test_layer_thumbnail(self):
+        """Test the layer save method generates a thumbnail link
+        """
+
+        client = Client()
+        client.login(username='norman', password='norman')
+
+        #TODO: Would be nice to ensure the name is available before
+        #running the test...
+        norman = User.objects.get(username="norman")
+        saved_layer = save("san_andres_y_providencia_poi_by_norman",
+             os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
+             norman,
+             overwrite=True,
+        )
+
+        thumbnail_url = saved_layer.get_thumbnail_url()
+
+        assert thumbnail_url != staticfiles.static(settings.MISSING_THUMBNAIL)
+
+
+    def test_map_thumbnail(self):
+        """Test the map save method generates a thumbnail link
+        """
+        client = Client()
+        client.login(username='norman', password='norman')
+
+        #TODO: Would be nice to ensure the name is available before
+        #running the test...
+        norman = User.objects.get(username="norman")
+        saved_layer = save("san_andres_y_providencia_poi_by_norman",
+             os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
+             norman,
+             overwrite=True,
+        )
+
+        map_obj = Map(owner=norman, zoom=0,
+                      center_x=0, center_y=0)
+        map_obj.create_from_layer_list(norman, [saved_layer], 'title','')
+
+        thumbnail_url = map_obj.get_thumbnail_url()
+
+        assert thumbnail_url != staticfiles.static(settings.MISSING_THUMBNAIL)
+
 
 class GeoNodeMapPrintTest(TestCase):
     """Tests geonode.maps print

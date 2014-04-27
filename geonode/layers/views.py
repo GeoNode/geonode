@@ -169,7 +169,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    maplayer = GXPLayer(name = layer.name, ows_url = layer.ows_url(), layer_params=json.dumps( layer.attribute_config()))
+    maplayer = GXPLayer(name = layer.name, ows_url = layer.get_ows_url(), layer_params=json.dumps( layer.attribute_config()))
 
     # Update count for popularity ranking.
     Layer.objects.filter(id=layer.id).update(popular_count=layer.popular_count +1)

@@ -4,6 +4,7 @@ import logging
 from urlparse import urlparse, urljoin
 
 from django.utils.translation import ugettext, ugettext_lazy as _
+from django.core.files.base import ContentFile
 from django.conf import settings
 
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
@@ -302,15 +303,22 @@ def geoserver_post_save(instance, sender, **kwargs):
         'height': 150,
     }
 
-    # Avoid using urllib.urlencode here because it breaks the url.
-    # commas and slashes in values get encoded and then cause trouble
-    # with the WMS parser.
-    p = "&".join("%s=%s"%item for item in params.items())
+    #Check if the bbox is invalid
+    valid_x = (float(instance.bbox_x0) - float(instance.bbox_x1))**2 > 0
+    valid_y = (float(instance.bbox_y1) - float(instance.bbox_y0))**2 > 0
 
-    thumbnail_url = ogc_server_settings.LOCATION + "wms/reflect?" + p
+    image = None
 
-    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=thumbnail_url,
+    if valid_x and valid_y:
+        # Avoid using urllib.urlencode here because it breaks the url.
+        # commas and slashes in values get encoded and then cause trouble
+        # with the WMS parser.
+        p = "&".join("%s=%s"%item for item in params.items())
+
+        thumbnail_remote_url = ogc_server_settings.LOCATION + "wms/reflect?" + p
+
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=thumbnail_remote_url,
                         defaults=dict(
                             extension='png',
                             name=_("Remote Thumbnail"),
@@ -319,27 +327,30 @@ def geoserver_post_save(instance, sender, **kwargs):
                             )
                         )
 
-    # Download thumbnail and save it locally.
-    resp, image = http_client.request(thumbnail_url)
+        # Download thumbnail and save it locally.
+        resp, image = http_client.request(thumbnail_remote_url)
 
-    if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
-        msg = 'Unable to obtain thumbnail: %s' % image
-        logger.debug(msg)
-        # Replace error message with None.
-        image = None
+        if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
+            msg = 'Unable to obtain thumbnail: %s' % image
+            logger.debug(msg)
+            # Replace error message with None.
+            image = None
 
     if image is not None:
-        #Clean any orphan Thumbnail before
-        Thumbnail.objects.filter(resourcebase__id=None).delete()
-        thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
-        thumbnail.thumb_spec = thumbnail_url
-        thumbnail.save_thumb(image, instance._thumbnail_path())
+        if instance.has_thumbnail():
+            instance.thumbnail.thumb_file.delete()
+
+        instance.thumbnail.thumb_file.save('layer-%s-thumb.png' % instance.id, ContentFile(image))
+        instance.thumbnail.thumb_spec = thumbnail_remote_url
+        instance.thumbnail.save()
+
+        thumbnail_url = urljoin(settings.SITEURL, instance.thumbnail.thumb_file.url)
 
         Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=settings.SITEURL + instance._thumbnail_path(),
+                        url=thumbnail_url,
                         defaults=dict(
+                            name=_('Thumbnail'),
                             extension='png',
-                            name=_("Thumbnail"),
                             mime='image/png',
                             link_type='image',
                             )

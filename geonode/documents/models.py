@@ -8,13 +8,14 @@ from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.core.files.base import ContentFile
 from django.contrib.contenttypes import generic
 from django.contrib.staticfiles import finders
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save
+from geonode.base.models import ResourceBase, Thumbnail, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 
@@ -64,14 +65,9 @@ class Document(ResourceBase):
     LEVEL_READ  = 'document_readonly'
     LEVEL_WRITE = 'document_readwrite'
     LEVEL_ADMIN = 'document_admin'
-    
-    def update_thumbnail(self, save=True):
-        try:
-            self.save_thumbnail(None, save)
-        except RuntimeError, e:
-            logger.warn('Could not create thumbnail for %s' % self, e)
 
-    def _render_thumbnail(self, spec):
+
+    def _render_thumbnail(self):
         from cStringIO import StringIO
 
         size = 200, 150
@@ -156,8 +152,19 @@ def pre_save_document(instance, sender, **kwargs):
 
 
 def create_thumbnail(sender, instance, created, **kwargs):
-    if created:
-        instance.update_thumbnail(save=False)
+    if not created:
+        return
+
+    if instance.has_thumbnail():
+        instance.thumbnail.thumb_file.delete()
+    else:
+        instance.thumbnail = Thumbnail()
+
+    image = instance._render_thumbnail()
+     
+    instance.thumbnail.thumb_file.save('doc-%s-thumb.png' % instance.id, ContentFile(image))
+    instance.thumbnail.thumb_spec = 'Rendered'
+    instance.thumbnail.save()
 
 
 def update_documents_extent(sender, **kwargs):

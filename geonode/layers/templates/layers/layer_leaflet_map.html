@@ -15,6 +15,6 @@
 
     function preview_mapInit(map, bounds) {
         zoom_to_box(map, [{{ layer.bbox_string }}]);
-        L.tileLayer("{{ layer.tiles_url|safe }}",{}).addTo(map);
+        L.tileLayer("{{ layer.get_tiles_url|safe }}",{}).addTo(map);
    }
 </script>

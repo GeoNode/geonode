@@ -125,6 +125,7 @@ class RestrictionCodeType(models.Model):
         ordering = ("identifier",)
         verbose_name_plural = 'Metadata Restriction Code Types'
 
+
 class Thumbnail(models.Model):
 
     thumb_file = models.FileField(upload_to='thumbs')
@@ -153,52 +154,6 @@ class Thumbnail(models.Model):
         return self.thumb_file.name
 
 
-class ThumbnailMixin(object):
-    """
-    Add Thumbnail management behavior. The model must declared a field
-    named thumbnail.
-    """
-
-    def save_thumbnail(self, spec, save=True):
-        """
-        Generic support for saving. `render` implementation must exist
-        and return image as bytes of a png image (for now)
-        """
-        render = getattr(self, '_render_thumbnail', None)
-        if render is None:
-            raise Exception('Must have _render_thumbnail(spec) function')
-        image = render(spec)
-
-        if not image:
-            return
-
-        #Clean any orphan Thumbnail before
-        Thumbnail.objects.filter(resourcebase__id=None).delete()
-        
-        self.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=self.id)
-        path = self._thumbnail_path()
-        self.thumbnail.thumb_spec = spec
-        self.thumbnail.save_thumb(image, path)
-        # have to save the thumb ref if new but also trigger XML regeneration
-        if save:
-            self.save()
-
-    def _thumbnail_path(self):
-        return '%s-%s' % (self._meta.object_name, self.pk)
-
-    def _get_default_thumbnail(self):
-        return getattr(self, "_missing_thumbnail", staticfiles.static(settings.MISSING_THUMBNAIL))
-
-    def get_thumbnail_url(self):
-        thumb = self.thumbnail
-        return thumb == None and self._get_default_thumbnail() or thumb.thumb_file.url
- 
-    def has_thumbnail(self):
-        '''Determine if the thumbnail object exists and an image exists'''
-        thumb = self.thumbnail
-        return os.path.exists(self._thumbnail_path()) if thumb else False
-
-
 class ResourceBaseManager(PolymorphicManager):
     def admin_contact(self):
         # this assumes there is at least one superuser
@@ -221,7 +176,7 @@ class License(models.Model):
         return self.name
 
 
-class ResourceBase(PolymorphicModel, PermissionLevelMixin, ThumbnailMixin):
+class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     """
     Base Resource Object loosely based on ISO 19115:2003
     """
@@ -394,7 +349,63 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ThumbnailMixin):
                 description = '%s (%s Format)' % (self.title, url.name)
                 links.append((self.title, description, 'WWW:DOWNLOAD-1.0-http--download', url.url))
         return links
+
     
+    def get_tiles_url(self):
+        """Return URL for Z/Y/X mapping clients or None if it does not exist.
+        """
+        try:
+            tiles_link = self.link_set.get(name='Tiles')
+        except Link.DoesNotExist, e:
+            return None
+        else:
+            return tiles_link.url
+
+    def get_ows_url(self):
+        """Return URL for OGC WMS server None if it does not exist.
+        """
+        try:
+            ows_link = self.link_set.get(name='OWS')
+        except Link.DoesNotExist, e:
+            return None
+        else:
+            return ows_link.url
+
+
+    def get_thumbnail_url(self):
+        """Return a thumbnail url.
+
+           It could be a local one if it exists, a remote one (WMS GetImage) for example
+           or a 'Missing Thumbnail' one.
+        """
+        try:
+            local_thumbnail = self.link_set.get(name='Thumbnail')
+        except Link.DoesNotExist, e:
+            pass
+        else:
+            return local_thumbnail.url
+
+        try:
+            remote_thumbnail = self.link_set.get(name='Remote Thumbnail')
+        except Link.DoesNotExist, e:
+            pass
+        else:
+            return remote_thumbnail.url
+
+        return staticfiles.static(settings.MISSING_THUMBNAIL)
+
+
+    def has_thumbnail(self):
+        '''Determine if the thumbnail object exists and an image exists'''
+        if self.thumbnail is None:
+            return False
+
+        if not hasattr(self.thumbnail.thumb_file, 'path'):
+            return False
+
+        return os.path.exists(self.thumbnail.thumb_file.path)
+
+
     def maintenance_frequency_title(self):
         return [v for i, v in enumerate(UPDATE_FREQUENCIES) if v[0] == self.maintenance_frequency][0][1].title()
         
