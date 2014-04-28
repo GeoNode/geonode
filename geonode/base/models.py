@@ -378,19 +378,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
            It could be a local one if it exists, a remote one (WMS GetImage) for example
            or a 'Missing Thumbnail' one.
         """
-        try:
-            local_thumbnail = self.link_set.get(name='Thumbnail')
-        except Link.DoesNotExist, e:
-            pass
-        else:
-            return local_thumbnail.url
+        local_thumbnails = self.link_set.filter(name='Thumbnail')
+        if local_thumbnails.count() > 0:
+            return local_thumbnails[0]
 
-        try:
-            remote_thumbnail = self.link_set.get(name='Remote Thumbnail')
-        except Link.DoesNotExist, e:
-            pass
-        else:
-            return remote_thumbnail.url
+        remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
+        if remote_thumbnails.count() > 0:
+            return remote_thumbnails[0]
 
         return staticfiles.static(settings.MISSING_THUMBNAIL)
 
