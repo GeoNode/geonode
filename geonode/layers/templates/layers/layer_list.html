@@ -40,6 +40,7 @@
         </div>
       </div>
       <div class="tab-content" id="search-content">
+        {% include 'search/resourcebase_snippet.html' %}
       </div>
     </div>
   </div>
@@ -47,7 +48,11 @@
 
 {% block extra_script %}
   <script type="text/javascript">
-  var default_type = 'layer';
+    var module = angular.module('search', ['main_search']);
+    module.constant('Configs', {
+      url: '{% url 'api_dispatch_list' api_name='api' resource_name='layers' %}'
+    });
+    angular.bootstrap($('#search-content'), ['search']);
   </script>
   {% with include_spatial='true' %}
   {% include 'search_scripts.html' %}
