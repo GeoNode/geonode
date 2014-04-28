@@ -38,11 +38,7 @@ from geonode.people.forms import ForgotUsernameForm
 
 
 def profile_list(request, template='people/profile_list.html'):
-    from geonode.search.views import search_page
-    post = request.POST.copy()
-    post.update({'type': 'user'})
-    request.POST = post
-    return search_page(request, template=template)
+  return render_to_response(template, RequestContext(request))
 
 @login_required
 def profile_edit(request, username=None):

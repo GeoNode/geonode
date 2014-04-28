@@ -1,7 +1,6 @@
 {% extends "layers/layer_base.html" %}
 {% load i18n %}
 {% load layers_tags %}
-{% load pagination_tags %}
 {% load taggit_extras %}
 {% load staticfiles %}
 {% load url from future %}
@@ -40,8 +39,7 @@
           {% endwith %}
         </div>
       </div>
-      <div class="tab-content paginate paginate-auto" id="search-content">
-        {% include 'search/search_content.html' %}     
+      <div class="tab-content" id="search-content">
       </div>
     </div>
   </div>

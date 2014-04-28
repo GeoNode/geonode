@@ -1,5 +1,4 @@
 {% extends "groups/group_base.html" %}
-{% load pagination_tags %}
 {% load i18n %}
 {% load staticfiles %}
 
@@ -35,8 +34,7 @@
             {% endwith %}
           </div>
         </div>
-        <div class="tab-content span8 paginate paginate-auto" id="search-content">
-          {% include 'search/search_content.html' %}
+        <div class="tab-content span8" id="search-content">
         </div>
       </div>
     </div>

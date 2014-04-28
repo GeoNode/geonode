@@ -30,13 +30,6 @@ from geonode.utils import resolve_object, ogc_server_settings
 if "geonode.contrib.groups" in settings.INSTALLED_APPS:
     from geonode.contrib.groups.models import Group
 
-def index(request, template='index.html'):
-    from geonode.search.views import search_page
-    post = request.POST.copy()
-    post.update({'type': 'layer'})
-    request.POST = post
-    return search_page(request, template=template)
-
 class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
     username = forms.CharField()
