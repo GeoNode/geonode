@@ -177,8 +177,8 @@ def layer_style_manage(req, layername):
             gs_layer.default_style = default_style
             styles = []
             for style in selected_styles:
-                styles.append(type('style',(object,),{'name' : style}))
-            gs_layer.styles = styles 
+                styles.append(style)
+            gs_layer.styles = styles
             cat.save(gs_layer)
 
             # Save to Django
