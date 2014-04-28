@@ -36,15 +36,9 @@
   <div class="row">
     <div class="span8">
       <section class="widget list">
-        <h2>{% trans "Latest Layers" %}</h2>
-        <div class="content" id="latest-layers">
-          {% verbatim %}
-          <div ng-controller="MainSearch">
-            <div ng-repeat="layer in results">
-              {{ layer.title }}
-            </div
-          </div>
-          {% endverbatim %}
+        <h2>{% trans "Latest Contributions" %}</h2>
+        <div class="content" id="latest-contributions">
+          {% include 'search/resourcebase_snippet.html' %}
         </div>
       </section>
     </div>
@@ -66,19 +60,6 @@
           </section>
         </div>
       {% endif %}
-      <div class="well">
-        <h2>{% trans "Latest Maps" %}</h2>
-        <div class="content" id="latest-maps">
-          {% verbatim %}
-          <div ng-controller="MainSearch">
-            <div ng-repeat="map in results">
-              {{ map.title }}
-            </div
-          </div>
-          {% endverbatim %}
-        </div>
-        </section>
-      </div>
     </aside>
   </div>
   {% endblock %}
@@ -87,17 +68,10 @@
 
 {% block extra_script %}
     <script type="text/javascript">
-      var module = angular.module('search_layers', ['main_search']);
+      var module = angular.module('search', ['main_search']);
       module.constant('Configs', {
-        url: '{% url 'api_dispatch_list' api_name='api' resource_name='layers' %}'
+        url: '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}'
       });
-      angular.bootstrap($('#latest-layers'), ['search_layers']);
-    </script>
-    <script type="text/javascript">
-      var module = angular.module('search_maps', ['main_search']);
-      module.constant('Configs', {
-        url: '{% url 'api_dispatch_list' api_name='api' resource_name='maps' %}'
-      });
-      angular.bootstrap($('#latest-maps'), ['search_maps']);
+      angular.bootstrap($('#latest-contributions'), ['search']);
     </script>
 {% endblock extra_script %}
