@@ -8,18 +8,13 @@ from django.contrib.auth.decorators import login_required
 
 from geonode.layers.models import Layer 
 from geonode.maps.models import Map
-from geonode.search.normalizers import apply_normalizers
 from geonode.contrib.groups.forms import GroupInviteForm, GroupForm, GroupUpdateForm, GroupMemberForm
 from geonode.contrib.groups.models import Group, GroupInvitation, GroupMember
 from django.views.generic import ListView
 
 
 def group_list(request, template='groups/group_list.html'):
-    from geonode.search.views import search_page
-    post = request.POST.copy()
-    post.update({'type': 'group'})
-    request.POST = post
-    return search_page(request, template=template)
+    return render_to_response(template, RequestContext(request))
 
 @login_required
 def group_create(request):

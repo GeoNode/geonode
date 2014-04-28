@@ -1,10 +1,7 @@
 {% extends "site_base.html" %}
 {% load i18n %}
-{% load maps_tags %}
 {% load layers_tags %}
-{% load pagination_tags %}
 {% load staticfiles %}
-{% load url from future %}
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
@@ -38,10 +35,16 @@
   {% block mainbody %}
   <div class="row">
     <div class="span8">
-      <section class="widget list paginate-contents">
+      <section class="widget list">
         <h2>{% trans "Latest Layers" %}</h2>
-        <div class="paginate paginate-auto" id="search-content">
-          {% include 'search/search_content.html' %}
+        <div class="content" id="latest-layers">
+          {% verbatim %}
+          <div ng-controller="MainSearch">
+            <div ng-repeat="layer in results">
+              {{ layer.title }}
+            </div
+          </div>
+          {% endverbatim %}
         </div>
       </section>
     </div>
@@ -65,11 +68,15 @@
       {% endif %}
       <div class="well">
         <h2>{% trans "Latest Maps" %}</h2>
-        <section class="article-list latest-maps">
-          {% featured_maps as featured_maps %}
-          {% for map in featured_maps %}
-            {% include "maps/_map_list_item.html" %}
-          {% endfor %}
+        <div class="content" id="latest-maps">
+          {% verbatim %}
+          <div ng-controller="MainSearch">
+            <div ng-repeat="map in results">
+              {{ map.title }}
+            </div
+          </div>
+          {% endverbatim %}
+        </div>
         </section>
       </div>
     </aside>
@@ -78,6 +85,19 @@
 </div>
 {% endblock %}
 
-{% block extra_script %}  
-  {% include 'search_scripts.html' %}
+{% block extra_script %}
+    <script type="text/javascript">
+      var module = angular.module('search_layers', ['main_search']);
+      module.constant('Configs', {
+        url: '{% url 'api_dispatch_list' api_name='api' resource_name='layers' %}'
+      });
+      angular.bootstrap($('#latest-layers'), ['search_layers']);
+    </script>
+    <script type="text/javascript">
+      var module = angular.module('search_maps', ['main_search']);
+      module.constant('Configs', {
+        url: '{% url 'api_dispatch_list' api_name='api' resource_name='maps' %}'
+      });
+      angular.bootstrap($('#latest-maps'), ['search_maps']);
+    </script>
 {% endblock extra_script %}

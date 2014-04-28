@@ -117,7 +117,8 @@ module.exports = function(grunt) {
             'requirejs/require.js',
             'requirejs-text/text.js',
             'underscore/underscore.js',
-            'qunit/qunit/qunit.js'
+            'qunit/qunit/qunit.js',
+            'angular/angular.min.js'
           ]
         }]
       }

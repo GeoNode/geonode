@@ -89,11 +89,8 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 #### BASIC MAP VIEWS ####
 
 def map_list(request, template='maps/map_list.html'):
-    from geonode.search.views import search_page
-    post = request.POST.copy()
-    post.update({'type': 'map'})
-    request.POST = post
-    return search_page(request, template=template)
+
+    return render_to_response(template, RequestContext(request))
 
 def maps_tag(request, slug, template='maps/map_list.html'):
     map_list = Map.objects.filter(keywords__slug__in=[slug])

@@ -44,11 +44,7 @@ def _resolve_document(request, docid, permission='layers.change_layer',
                           permission = permission, permission_msg=msg, **kwargs)
 
 def document_list(request, template='documents/document_list.html'):
-    from geonode.search.views import search_page
-    post = request.POST.copy()
-    post.update({'type': 'document'})
-    request.POST = post
-    return search_page(request, template=template)
+    return render_to_response(template, RequestContext(request))
 
 def document_tag(request, slug, template='documents/document_list.html'):
     document_list = Document.objects.filter(keywords__slug__in=[slug])

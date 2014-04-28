@@ -1,6 +1,5 @@
 {% extends "documents/document_base.html" %}
 {% load i18n %}
-{% load pagination_tags %}
 {% load staticfiles %}
 {% load url from future %}
 
@@ -37,8 +36,7 @@
             {% endwith %}
           </div>
         </div>
-        <div class="tab-content span8 paginate paginate-auto" id="search-content">
-          {% include 'search/search_content.html' %}
+        <div class="tab-content span8" id="search-content">
         </div>
       </div>
     </div>

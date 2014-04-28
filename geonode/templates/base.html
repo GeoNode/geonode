@@ -54,10 +54,7 @@
               </li>
               {% endif %}
             </ul>
-            <form class="input-append pull-left" action="{% url "search" %}" method="GET">
-              {# csrf_token #}
-              <input id="search" type="text" name="q"/>
-            </form>
+            <span id="search"></span>
             <ul class="nav pull-right">
               {% if user.is_authenticated %}
               <li class="user-avatar">
@@ -193,18 +190,20 @@
     <script src="{{ STATIC_URL }}lib/js/json2.js"></script>
     <script src="{{ STATIC_URL }}lib/js/select2.js"></script>
     <script src="{{ STATIC_URL }}lib/js/waypoints.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/angular.min.js"></script>
     {% else %}
     <script src="{{ STATIC_URL }}lib/js/assets.min.js"></script>
     {% endif %}
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/search/search.js"></script>
     <script>
       $("#search").select2({
         minimumInputLength: 1,
         placeholder: 'Search...',
         width: 'element',     
         ajax: {
-          url: '{% url "search_api" %}',
+          url: '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}',
           data: function(term,page){
             page = (page - 1) * 10;
             return {
