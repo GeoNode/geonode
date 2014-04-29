@@ -6,7 +6,7 @@ from urlparse import urlparse, urljoin
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.core.files.base import ContentFile
 from django.conf import settings
-
+from django.core.exceptions import MultipleObjectsReturned
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes
 from geonode.geoserver.helpers import _user, _password
@@ -115,13 +115,10 @@ def geoserver_pre_save(instance, sender, **kwargs):
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
 
-    thumbnails = Thumbnail.objects.filter(resourcebase__id=instance.id)
-
-    if thumbnails.count() > 0:
-        instance.thumbnail = thumbnails[0]
-    else:
-        instance.thumbnail = Thumbnail.objects.create(resourcebase__id=instance.id)
-
+    try:
+        instance.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
+    except MultipleObjectsReturned:
+        instance.thumbnail = Thumbnail.objects.filter(resourcebase__id=instance.id)[0]
 
 def geoserver_post_save(instance, sender, **kwargs):
     """Save keywords to GeoServer
