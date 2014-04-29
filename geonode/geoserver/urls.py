@@ -22,7 +22,7 @@ urlpatterns = patterns('geonode.geoserver.views',
     url(r'^rest/stores/(?P<store_type>\w+)/$', 'stores', name="stores"),
     (r'^rest/styles', 'geoserver_rest_proxy', dict(
             proxy_path='/gs/rest/styles', downstream_path='rest/styles')),
-            (r'^/rest/layers', 'geoserver_rest_proxy', dict(
+    (r'^rest/layers', 'geoserver_rest_proxy', dict(
             proxy_path='/gs/rest/layers', downstream_path='rest/layers')),
     url(r'^updatelayers/$', 'updatelayers', name="updatelayers"),
     url(r'^(?P<layername>[^/]*)/style$', 'layer_style', name="layer_style"),
