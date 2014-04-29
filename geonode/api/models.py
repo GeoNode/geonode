@@ -15,20 +15,37 @@ class FacetedModelResource(ModelResource):
 
 
     def get_facets(self, results):
-        facets = {
-            'map': 0,
-            'document': 0,
-            'layer': 0,
-            'raster': 0,
-            'vector': 0 
-        }
-        facets['document'] = results.instance_of(Document).count()
-        facets['map'] = results.instance_of(Map).count()
+        facets = {}
+
+        if results.instance_of(Document).count() > 0:
+            facets['document'] = {
+                'count': results.instance_of(Document).count(),
+                'slug': 'documents'
+            }
+
+        if results.instance_of(Map).count() > 0:
+            facets['map'] = {
+                'count': results.instance_of(Map).count(),
+                'slug': 'maps'
+            }
+
         layers = results.instance_of(Layer)
         if layers.count() > 0:
-            facets['raster'] = layers.filter(Layer___storeType='coverageStore').count()
-            facets['vector'] = layers.filter(Layer___storeType='dataStore').count()
-            facets['layer'] = facets['raster'] + facets['vector']
+            facets['layer'] = {
+                'slug': 'layers',
+                'count': layers.filter(Layer___storeType='coverageStore').count() + layers.filter(Layer___storeType='dataStore').count(),
+                'subtypes': {
+                    'raster': {
+                        'slug': 'rasters',
+                        'count': layers.filter(Layer___storeType='coverageStore').count()
+                    },
+                    'vector': {
+                        'slug': 'vectors',
+                        'count': layers.filter(Layer___storeType='dataStore').count()
+                    }
+                }
+            }
+
         return facets
 
     def get_counts(self, results):
