@@ -108,14 +108,19 @@ def geoserver_pre_save(instance, sender, **kwargs):
     #self.srid = gs_resource.src
 
     instance.srid_url = "http://www.spatialreference.org/ref/" + instance.srid.replace(':','/').lower() + "/"
-    # Set bounding box values
 
+    # Set bounding box values
     instance.bbox_x0 = bbox[0]
     instance.bbox_x1 = bbox[1]
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
 
-    instance.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
+    thumbnails = Thumbnail.objects.filter(resourcebase__id=instance.id)
+
+    if thumbnails.count() > 0:
+        instance.thumbnail = thumbnails[0]
+    else:
+        instance.thumbnail = Thumbnail.objects.create(resourcebase__id=instance.id)
 
 
 def geoserver_post_save(instance, sender, **kwargs):
