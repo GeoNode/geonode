@@ -42,9 +42,9 @@
 
 {% block extra_script %}
   <script type="text/javascript">
-  var default_type = 'group';
+  SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='groups' %}'
   </script>
   {% with include_spatial='false' %}
-  {% include 'search_scripts.html' %}
+  {% include 'search/search_scripts.html' %}
   {% endwith %}
 {% endblock extra_script %}

@@ -45,13 +45,9 @@
 
 {% block extra_script %}
   <script type="text/javascript">
-    var module = angular.module('search', ['main_search']);
-    module.constant('Configs', {
-      url: '{% url 'api_dispatch_list' api_name='api' resource_name='maps' %}'
-    });
-    angular.bootstrap($('#search-content'), ['search']);
+    SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='maps' %}'
   </script>
   {% with include_spatial='true' %}
-  {% include 'search_scripts.html' %}
+  {% include 'search/search_scripts.html' %}
   {% endwith %}
 {% endblock extra_script %}

@@ -36,13 +36,17 @@
           </div>
         </div>
         <div class="tab-content span8" id="search-content">
+          {% include 'search/resourcebase_snippet.html' %}
         </div>
       </div>
     </div>
 {% endblock %}
 
 {% block extra_script %}
+  <script type="text/javascript">
+    SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}'
+  </script>
   {% with include_spatial='true' %}
-  {% include 'search_scripts.html' %}
+  {% include 'search/search_scripts.html' %}
   {% endwith %}
 {% endblock extra_script %}
