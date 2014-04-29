@@ -21,7 +21,7 @@ the following are the *bare minimum* system requirements:
 
 * 6GB of RAM, including swap space.
 * 2.2GHz processor.  (Additional processing power may be required for multiple
-  * concurrent styling renderings)
+  concurrent styling renderings)
 * 1 GB software disk usage.
 * Additional disk space for any data hosted with GeoNode and tiles cached with
   GeoWebCache.
@@ -139,10 +139,14 @@ Step 3 Configure
 
 Complete steps to configure Geonode include the stack:
 
-* *Servlet Container*: Apache Tomcat for Geoserver
-* *Static File Server*: Apache httpd
-* *Python/WSGI Container*: mod_wsgi
-* *Django Database*: PostgresQL
+Servlet Container
+    Apache Tomcat for Geoserver
+Static File Server
+    Apache httpd
+Python/WSGI Container
+    mod_wsgi
+Django Database
+    PostgresQL
 
 Please choose between one of the two methods to finish the
 installation-configuration of GeoNode:
@@ -204,13 +208,14 @@ Configure Manually
 Configure Postgresql and Postgis
 ````````````````````````````````
 
-Until now GeoNode uses sqlite3 as the default db.
-The following steps will show you how to make geonode to use postgresql and postgis.
+At this point, GeoNode uses *sqlite3* as the default db.
+The following steps will show you how to make geonode to use *postgresql* and
+*postgis*.
 
 **Create geonode user and database**
 
-First of all a user called *geonode* (with password *geonode*),
-as well as a database called *geonode* has to be created.
+First of all a user called ``geonode`` (with password ``geonode``),
+as well as a database called ``geonode`` has to be created.
 
 To create the user:
 
@@ -219,8 +224,8 @@ To create the user:
     $ sudo -u postgres createuser -P geonode
 
 Now you will be asked to enter a password.
-This must be *geonode* (you can change it if you want to, but be aware that you
-have to edit the local_settings.py if you do so!)
+This must be ``geonode`` (you can change it if you want to, but be aware that you
+have to edit the ``local_settings.py`` if you do so!)
 
 To create the databases (the geonode one and the spatial for shapefile imports):
 
@@ -276,8 +281,8 @@ To restart the ``postgresql`` server type
 
 Additional entry::
 
-    #Type   DATABASE    USER    ADDRESS     METHOD
-    host    geonode     geonode 127.0.0.1/32    md5
+    #Type   DATABASE    USER       ADDRESS         METHOD
+    host    geonode     geonode    127.0.0.1/32    md5
 
 **Setup local settings**
 
@@ -337,7 +342,7 @@ A new django superuser has to be created
 
     $ python manage.py createsuperuser
 
-You will be asked to enter a username, an email adress and a password.
+You will be asked to enter a username, an email address and a password.
 
 **Create local static files**
 
