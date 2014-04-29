@@ -1,3 +1,4 @@
+import base64
 import json
 
 from django.core.exceptions import ImproperlyConfigured
@@ -6,7 +7,6 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.test.utils import override_settings
-from geonode.base.models import ResourceBase
 from geonode.geoserver.helpers import OGC_Servers_Handler
 from geonode.search.populate_search_test_data import create_models
 from geonode.layers.populate_layers_data import create_layer_data
@@ -80,6 +80,96 @@ class LayerTests(TestCase):
             response = c.post(reverse('feature_edit_check', args=(valid_layer_typename,)))
             response_json = json.loads(response.content)
             self.assertEquals(response_json['authorized'], True)
+
+    def test_layer_acls(self):
+        """ Verify that the layer_acls view is behaving as expected
+        """
+
+        # Test that HTTP_AUTHORIZATION in request.META is working properly
+        valid_uname_pw = '%s:%s' % ('bobby','bob')
+        invalid_uname_pw = '%s:%s' % ('n0t', 'v@l1d')
+
+        valid_auth_headers = {
+            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw),
+        }
+
+        invalid_auth_headers = {
+            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
+        }
+
+        # Test that requesting when supplying the geoserver credentials returns the expected json
+
+        expected_result = {
+             'email': 'bobby@bob.com',
+             'fullname': 'bobby',
+             'is_anonymous': False,
+             'is_superuser': False,
+             'name': 'bobby',
+             'ro': ['geonode:layer2',
+                    'geonode:mylayer',
+                    'geonode:foo',
+                    'geonode:whatever',
+                    'geonode:fooey',
+                    'geonode:quux',
+                    'geonode:fleem'],
+             'rw': ['base:CA']
+        }
+        c = Client()
+        response = c.get(reverse('layer_acls'), **valid_auth_headers)
+        response_json = json.loads(response.content)
+        self.assertEquals(expected_result, response_json)
+
+        # Test that requesting when supplying invalid credentials returns the appropriate error code
+        response = c.get(reverse('layer_acls'), **invalid_auth_headers)
+        self.assertEquals(response.status_code, 401)
+
+        # Test logging in using Djangos normal auth system
+        c.login(username='admin', password='admin')
+
+        # Basic check that the returned content is at least valid json
+        response = c.get(reverse('layer_acls'))
+        response_json = json.loads(response.content)
+
+        self.assertEquals('admin', response_json['fullname'])
+        self.assertEquals('', response_json['email'])
+
+        # TODO Lots more to do here once jj0hns0n understands the ACL system better
+
+    def test_resolve_user(self):
+        """Verify that the resolve_user view is behaving as expected
+        """
+        # Test that HTTP_AUTHORIZATION in request.META is working properly
+        valid_uname_pw = "%s:%s" % ('admin', 'admin')
+        invalid_uname_pw = "%s:%s" % ("n0t", "v@l1d")
+
+        valid_auth_headers = {
+            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(valid_uname_pw),
+        }
+
+        invalid_auth_headers = {
+            'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
+        }
+
+        c = Client()
+        response = c.get(reverse('layer_resolve_user'), **valid_auth_headers)
+        response_json = json.loads(response.content)
+        self.assertEquals({'geoserver': False, 'superuser': True, 'user': 'admin'}
+, response_json)
+
+        # Test that requesting when supplying invalid credentials returns the appropriate error code
+        response = c.get(reverse('layer_acls'), **invalid_auth_headers)
+        self.assertEquals(response.status_code, 401)
+
+        # Test logging in using Djangos normal auth system
+        c.login(username='admin', password='admin')
+
+        # Basic check that the returned content is at least valid json
+        response = c.get(reverse('layer_resolve_user'))
+        response_json = json.loads(response.content)
+
+        self.assertEquals('admin', response_json['user'])
+        self.assertEquals('admin', response_json['fullname'])
+        self.assertEquals('', response_json['email'])
 
 
 class UtilsTests(TestCase):

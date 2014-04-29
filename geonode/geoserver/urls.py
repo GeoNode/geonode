@@ -26,10 +26,10 @@ urlpatterns = patterns('geonode.geoserver.views',
             proxy_path='/gs/rest/layers', downstream_path='rest/layers')),
     url(r'^updatelayers/$', 'updatelayers', name="updatelayers"),
     url(r'^(?P<layername>[^/]*)/style$', 'layer_style', name="layer_style"),
-    url(r'^(?P<layername>[^/]*)/style/upload$','layer_style_upload',name='layer_style_upload'),
-    url(r'^(?P<layername>[^/]*)/style/manage$','layer_style_manage',name='layer_style_manage'),
-    url(r'^(?P<layername>[^/]*)/edit-check?$', 'feature_edit_check',
-        name="feature_edit_check"),
-
-
+    url(r'^(?P<layername>[^/]*)/style/upload$', 'layer_style_upload', name='layer_style_upload'),
+    url(r'^(?P<layername>[^/]*)/style/manage$', 'layer_style_manage', name='layer_style_manage'),
+    url(r'^(?P<layername>[^/]*)/edit-check?$', 'feature_edit_check', name="feature_edit_check"),
+    url(r'^acls/?$', 'layer_acls', name='layer_acls'),
+    url(r'^resolve_user/?$', 'resolve_user', name='layer_resolve_user'),
+    url(r'^download$', 'layer_batch_download', name='layer_batch_download'),
 )
