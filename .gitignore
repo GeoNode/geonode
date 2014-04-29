@@ -49,6 +49,7 @@ geonode/static/lib/js/text.js
 geonode/static/lib/js/underscore.js
 geonode/static/lib/js/waypoints.js
 geonode/static/lib/js/angular.min.js
+geonode/static/lib/js/angular.min.js.map
 
 # Uploaded files
 geonode/uploaded

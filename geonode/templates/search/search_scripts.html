@@ -1,8 +1,17 @@
 {% if DEBUG_STATIC %}
 <script src="{{ STATIC_URL }}lib/js/bootstrap-datepicker.js" type="text/javascript"></script>
 <script src="{{ STATIC_URL }}lib/js/jquery.tinysort.js"></script>
+<script src="{{ STATIC_URL }}lib/js/angular.min.js"></script>
 {% endif %}
 <script src="{{ STATIC_URL }}geonode/js/search/explore.js"></script>
+<script src="{{ STATIC_URL }}geonode/js/search/search.js"></script>
+<script type="text/javascript">
+  var module = angular.module('search', ['main_search']);
+  module.constant('Configs', {
+    url: SEARCH_URL
+  });
+  angular.bootstrap(document, ['search']);
+</script>
 
 {% if include_spatial == 'true' %}
 
