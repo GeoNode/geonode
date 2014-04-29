@@ -26,8 +26,12 @@
 <nav class="filter">
   <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-right"></i> {% trans "Keywords" %}</a></h2>
   <ul class="nav hide" id="keywords">
-    {% for tag in tags.values %}
-      <li><a data-class="{{ tag.slug }}" class="trigger-query">{{ tag.name }} <span class="badge pull-right">{{ tag.count }}</span></a></li>
-    {% endfor %}
+    {% verbatim %}
+      <li ng-repeat="tag in results_meta.tags">
+        <a data-class="{{ tag.slug }}" class="trigger-query">{{ tag.name }} 
+          <span class="badge pull-right">{{ tag.count }}</span>
+        </a>
+      </li>
+    {% endverbatim %}
   </ul>
 </nav>
