@@ -380,11 +380,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         """
         local_thumbnails = self.link_set.filter(name='Thumbnail')
         if local_thumbnails.count() > 0:
-            return local_thumbnails[0]
+            return local_thumbnails[0].url
 
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
         if remote_thumbnails.count() > 0:
-            return remote_thumbnails[0]
+            return remote_thumbnails[0].url
 
         return staticfiles.static(settings.MISSING_THUMBNAIL)
 
