@@ -254,6 +254,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True, on_delete=models.SET_NULL)
 
+    def save(self, *args, **kwargs):
+        super(ResourceBase, self).save(*args, **kwargs)
+        resourcebase_post_save(self)
+
+
+    def delete(self, *args, **kwargs):
+        super(ResourceBase, self).delete(*args, **kwargs)
+        resourcebase_post_delete(self)
+
     def __unicode__(self):
         return self.title
         
@@ -479,43 +488,35 @@ class Link(models.Model):
 
     objects = LinkManager()
 
-def resourcebase_post_save(instance, sender, **kwargs):
-    """
-    Since django signals are not propagated from child to parent classes we need to call this 
-    from the children.
-    TODO: once the django will support signal propagation we need to attach a single signal here
-    """
-    resourcebase = instance.resourcebase_ptr
-    if resourcebase.owner:
-        user = resourcebase.owner
+
+def resourcebase_post_save(instance):
+
+    logger.debug('Checking for permissions.')
+    #  True if every key in the get_all_level_info dict is empty.
+    no_custom_permissions = all(map(lambda perm: not perm, instance.get_all_level_info().values()))
+
+    if no_custom_permissions:
+        logger.debug('There are no permissions for this object, setting default perms.')
+        instance.set_default_permissions()
+
+
+    if instance.owner:
+        user = instance.owner
     else:
         user = ResourceBase.objects.admin_contact().user
-        
-    if resourcebase.poc is None:
+
+    if instance.poc is None:
         pc, __ = Profile.objects.get_or_create(user=user,
                                            defaults={"name": user.username}
                                            )
-        resourcebase.poc = pc
-    if resourcebase.metadata_author is None:  
+        instance.poc = pc
+    if instance.metadata_author is None:  
         ac, __ = Profile.objects.get_or_create(user=user,
                                            defaults={"name": user.username}
                                            )
-        resourcebase.metadata_author = ac
-
-    if hasattr(instance, 'set_default_permissions') and hasattr(instance, 'get_all_level_info'):
-        logger.debug('Checking for permissions.')
-
-        #  True if every key in the get_all_level_info dict is empty.
-        if all(map(lambda perm: not perm, instance.get_all_level_info().values())):
-            logger.debug('There are no permissions for this object, setting default perms.')
-            instance.set_default_permissions()
+        instance.metadata_author = ac
 
 
-def resourcebase_post_delete(instance, sender, **kwargs):
-    """
-    Since django signals are not propagated from child to parent classes we need to call this 
-    from the children.
-    TODO: once the django will support signal propagation we need to attach a single signal here
-    """
-    if instance.thumbnail:
+def resourcebase_post_delete(instance):
+    if instance.thumbnail is not None:
         instance.thumbnail.delete()

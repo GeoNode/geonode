@@ -27,8 +27,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
-from geonode.base.models import ResourceBase, ResourceBaseManager, Link, \
-    resourcebase_post_save, resourcebase_post_delete
+from geonode.base.models import ResourceBase, ResourceBaseManager, Link
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
@@ -233,5 +232,3 @@ def post_delete_layer(instance, sender, **kwargs):
 signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)
-signals.post_save.connect(resourcebase_post_save, sender=Layer)
-signals.post_delete.connect(resourcebase_post_delete, sender=Layer)

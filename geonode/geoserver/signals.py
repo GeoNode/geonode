@@ -427,7 +427,6 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 
 
 def geoserver_post_save_map(instance, sender, **kwargs):
-
     local_layers = []
     for layer in instance.layers:
         if layer.local:
