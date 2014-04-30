@@ -435,24 +435,24 @@ This file should include the following, but don´t forget to adjust the paths!
 
     </VirtualHost>
 
-        **Enable the new site**
+**Enable the new site**
 
-        .. code-block:: console
+.. code-block:: console
 
-                $ sudo a2ensite geonode
+    $ sudo a2ensite geonode
 
-        This command will create a file *geonode* in the folder *sites-enabled*.
+This command will create a file *geonode* in the folder *sites-enabled*.
 
-        **Now reload apache**
+**Now reload apache**
 
-        .. code-block:: console
+.. code-block:: console
 
-                $ sudo service apache2 reload
+    $ sudo service apache2 reload
 
-If you now type localhost into your webbrowser, the geonode webpage will appear.
+If you now type ``localhost`` into your webbrowser, the geonode webpage will appear.
 You can now login with your newly created superuser account.
-But if you try to attend the django admin interface,
-you will only see the content of this webpage but without any design.
+But if you visit the django admin interface,
+you will only see the content of this webpage without any design.
 To change this, you have to change the following entry in our geonode
 configuration file:
 
@@ -528,8 +528,8 @@ You will now see the geoserver homepage:
 .. figure:: img/geoserver_webpage.PNG
 
 .. warning:: Geoserver is not a Vanilla Geoserver install, please use the
-        geoserver.war that comes with geonode. In the future we might use a Vanilla
-        Geoserver, it is in discussion.
+        geoserver.war that comes with geonode.
+        In the future we might use a Vanilla Geoserver, it is being discussed.
 
 GeoNode's GeoServer integration requires some specific extensions to help
 GeoNode in managing GeoServer layers.
