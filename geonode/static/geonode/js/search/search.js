@@ -11,17 +11,20 @@
 
   module.controller('MainController', function($scope, $location, $http, Configs){
     $scope.query = $location.search();
-
+    
     // Keep in sync the page location with the query object
     $scope.$watch('query', function(){
       $location.search($scope.query);
     }, true);
       
     //Get data from apis and make them available to the page
-    $http.get(Configs.url).success(function(data){
-      $scope.results = data.objects;
-      $scope.results_meta = data.meta;
-    });
+    function query_api(data){
+      $http.get(Configs.url, {params: data || {}}).success(function(data){
+        $scope.results = data.objects;
+        $scope.results_meta = data.meta;
+      })
+    };
+    query_api();
 
     /*
     * Add the selection behavior to the element, it adds/removes the 'active' class
@@ -69,6 +72,7 @@
       if(query_entry.length == 0){
         delete($scope.query[data_class]);
       }
+      query_api($scope.query);
     }
   });
   
