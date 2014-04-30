@@ -629,7 +629,6 @@ class GeoNodeMapPrintTest(TestCase):
             map_obj = Map(owner=norman, zoom=0,
                       center_x=0, center_y=0)
             map_obj.create_from_layer_list(norman, [saved_layer], 'title','')
-            map_obj.set_default_permissions()
 
             # STEP 3: Print the map
 
