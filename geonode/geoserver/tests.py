@@ -153,7 +153,7 @@ class LayerTests(TestCase):
         c = Client()
         response = c.get(reverse('layer_resolve_user'), **valid_auth_headers)
         response_json = json.loads(response.content)
-        self.assertEquals({'geoserver': False, 'superuser': True, 'user': 'admin'}
+        self.assertEquals({'geoserver': False, 'superuser': True, 'user': 'admin', 'fullname': 'admin', 'email': ''}
 , response_json)
 
         # Test that requesting when supplying invalid credentials returns the appropriate error code

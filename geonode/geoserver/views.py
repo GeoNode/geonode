@@ -312,6 +312,7 @@ def resolve_user(request):
     user = None
     geoserver = False
     superuser = False
+    acl_user = request.user
     if 'HTTP_AUTHORIZATION' in request.META:
         username, password = _get_basic_auth_info(request)
         acl_user = authenticate(username=username, password=password)
@@ -325,17 +326,20 @@ def resolve_user(request):
             return HttpResponse(_("Bad HTTP Authorization Credentials."),
                                 status=401,
                                 mimetype="text/plain")
+
     if not any([user, geoserver, superuser]) and not request.user.is_anonymous():
         user = request.user.username
         superuser = request.user.is_superuser
+
     resp = {
-        'user' : user,
-        'geoserver' : geoserver,
-        'superuser' : superuser,
+        'user': user,
+        'geoserver': geoserver,
+        'superuser': superuser,
     }
-    if request.user.is_authenticated():
-        resp['fullname'] = request.user.profile.name
-        resp['email'] = request.user.profile.email
+
+    if acl_user and acl_user.is_authenticated():
+        resp['fullname'] = acl_user.profile.name
+        resp['email'] = acl_user.profile.email
     return HttpResponse(json.dumps(resp))
 
 
