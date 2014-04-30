@@ -33,17 +33,17 @@
     $scope.multiple_choice_listener = function($event){    
       var element = $($event.target);
       var query_entry = [];
-      var data_class = element.attr('data-class');
+      var data_filter = element.attr('data-filter');
 
       // If the query object has the record then grab it 
-      if ($scope.query.hasOwnProperty(data_class)){
+      if ($scope.query.hasOwnProperty(data_filter)){
 
         // When in the location are passed two filters of the same
         // type then they are put in an array otherwise is a single string
-        if ($scope.query[data_class] instanceof Array){
-          query_entry = $scope.query[data_class];
+        if ($scope.query[data_filter] instanceof Array){
+          query_entry = $scope.query[data_filter];
         }else{
-          query_entry.push($scope.query[data_class]);
+          query_entry.push($scope.query[data_filter]);
         }     
       }
 
@@ -66,11 +66,11 @@
       }
 
       //save back the new query entry to the scope query
-      $scope.query[data_class] = query_entry;
+      $scope.query[data_filter] = query_entry;
 
       //if the entry is empty then delete the property from the query
       if(query_entry.length == 0){
-        delete($scope.query[data_class]);
+        delete($scope.query[data_filter]);
       }
       query_api($scope.query);
     }

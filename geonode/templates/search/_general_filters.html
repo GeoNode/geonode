@@ -5,7 +5,7 @@
     <li><a data-class="category" value="all" class="active">{% trans "All Categories" %}</a></li>
     {% verbatim %}
       <li ng-repeat="category in results_meta.categories">
-        <a value="{{ category.identifier }}" data-class="category__identifier__in" 
+        <a value="{{ category.identifier }}" data-filter="category__identifier__in" 
          ng-click="multiple_choice_listener($event)">{{ category.gn_description }}
         <span class="badge pull-right">{{ category.count }}</span>
         </a>
@@ -29,7 +29,7 @@
   <ul class="nav hide" id="keywords">
     {% verbatim %}
       <li ng-repeat="tag in results_meta.tags">
-        <a value="{{ tag.slug }}" data-class="keywords__slug__in" ng-click="multiple_choice_listener($event)">{{ tag.name }} 
+        <a value="{{ tag.slug }}" data-filter="keywords__slug__in" ng-click="multiple_choice_listener($event)">{{ tag.name }} 
           <span class="badge pull-right">{{ tag.count }}</span>
         </a>
       </li>
