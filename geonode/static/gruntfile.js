@@ -118,8 +118,7 @@ module.exports = function(grunt) {
             'requirejs-text/text.js',
             'underscore/underscore.js',
             'qunit/qunit/qunit.js',
-            'angular/angular.min.js',
-            'angular/angular.min.js.map'
+            'angular/angular.js'
           ]
         }]
       }

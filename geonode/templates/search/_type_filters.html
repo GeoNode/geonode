@@ -4,7 +4,7 @@
   <ul class="nav" id="types">
     {% verbatim %}
     <li ng-repeat="facet in results_meta.facets">
-        <a data-class="{{facet.slug}}" class="active trigger-query">{{ facet.slug }} 
+        <a data-class="{{facet.slug}}" class="query">{{ facet.slug }} 
             <span class="badge pull-right">{{ facet.count }}</span>
         </a>
     </li>
