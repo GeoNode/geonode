@@ -307,9 +307,11 @@ def geoserver_post_save(instance, sender, **kwargs):
         'height': 150,
     }
 
+    BBOX_DIFFERENCE_THRESHOLD = 1e-5
+
     #Check if the bbox is invalid
-    valid_x = (float(instance.bbox_x0) - float(instance.bbox_x1))**2 > 0
-    valid_y = (float(instance.bbox_y1) - float(instance.bbox_y0))**2 > 0
+    valid_x = (float(instance.bbox_x0) - float(instance.bbox_x1))**2 > BBOX_DIFFERENCE_THRESHOLD
+    valid_y = (float(instance.bbox_y1) - float(instance.bbox_y0))**2 > BBOX_DIFFERENCE_THRESHOLD
 
     image = None
 
