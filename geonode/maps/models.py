@@ -247,11 +247,24 @@ class Map(ResourceBase, GXPMapBase):
                 bbox[2] = min(bbox[2], layer_bbox[2])
                 bbox[3] = max(bbox[3], layer_bbox[3])
 
-        if bbox is not None:
-            self.bbox_x0 = bbox[0]
-            self.bbox_x1 = bbox[1]
-            self.bbox_y0 = bbox[2]
-            self.bbox_y1 = bbox[3]
+        self.bbox_x0 = bbox[0]
+        self.bbox_x1 = bbox[1]
+        self.bbox_y0 = bbox[2]
+        self.bbox_y1 = bbox[3]
+
+        minx, miny, maxx, maxy = [float(c) for c in bbox]
+        x = (minx + maxx) / 2
+        y = (miny + maxy) / 2
+        (center_x, center_y) = forward_mercator((x,y))
+
+        width_zoom = math.log(360 / (maxx - minx), 2)
+        height_zoom = math.log(360 / (maxy - miny), 2)
+
+        zoom = math.ceil(min(width_zoom, height_zoom))
+
+        self.zoom = zoom
+        self.center_x = center_x
+        self.center_y = center_y
 
         return bbox
 
@@ -263,13 +276,15 @@ class Map(ResourceBase, GXPMapBase):
         self.zoom = 0
         self.center_x = 0
         self.center_y = 0
-        layer_objects = []
         map_layers = []
         bbox = None
         index = 0
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
 
+        # Save the map in order to create an id in the database
+        # used below for the maplayers.
+        self.save()
 
         for layer in layers:
             if not isinstance(layer, Layer):
@@ -281,36 +296,22 @@ class Map(ResourceBase, GXPMapBase):
             if not user.has_perm('maps.view_layer', obj=layer):
                 # invisible layer, skip inclusion or raise Exception?
                 raise GeoNodeError('User %s tried to create a map with layer %s without having premissions' % (user, layer))
-            layer_objects.append(layer)
-
-            map_layers.append(MapLayer(
+            MapLayer.objects.create(
                 map = self,
                 name = layer.typename,
                 ows_url = layer.get_ows_url(),
                 stack_order = index,
                 visibility = True
-            ))
+            )
 
             index += 1
 
         # Set bounding box based on all layers extents.
-        bbox = self.set_bounds_from_layers(layer_objects)
+        bbox = self.set_bounds_from_layers(self.local_layers)
 
-        if bbox is not None:
-            minx, miny, maxx, maxy = [float(c) for c in bbox]
-            x = (minx + maxx) / 2
-            y = (miny + maxy) / 2
-            (center_x, center_y) = forward_mercator((x,y))
 
-            width_zoom = math.log(360 / (maxx - minx), 2)
-            height_zoom = math.log(360 / (maxy - miny), 2)
-
-            zoom = math.ceil(min(width_zoom, height_zoom))
-
-            # Update the map object without triggering signals.
-            Map.objects.filter(id=self.id).update(zoom=zoom, center_x=center_x, center_y=center_y)
-
-        # Trigger an update and any signals that come with it
+        # Save again to persist the zoom and bbox changes and
+        # to generate the thumbnail.
         self.save()
 
     @property
