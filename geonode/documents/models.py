@@ -15,7 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, Thumbnail
+from geonode.base.models import ResourceBase, Thumbnail, Link
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 
@@ -164,6 +164,14 @@ def create_thumbnail(sender, instance, created, **kwargs):
     instance.thumbnail.thumb_file.save('doc-%s-thumb.png' % instance.id, ContentFile(image))
     instance.thumbnail.thumb_spec = 'Rendered'
     instance.thumbnail.save()
+    Link.objects.get_or_create(
+        resource=instance.resourcebase_ptr,
+        url=instance.thumbnail.thumb_file.url,
+        defaults=dict(
+            name=('Thumbnail'),
+            extension='png',
+            mime='image/png',
+            link_type='image',))
 
 
 def update_documents_extent(sender, **kwargs):
