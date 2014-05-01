@@ -154,6 +154,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     map_obj = _resolve_map(request, mapid, msg=_PERMISSION_MSG_METADATA)
 
     poc = map_obj.poc
+
     metadata_author = map_obj.metadata_author
 
     if request.method == "POST":
@@ -197,19 +198,25 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
 
             return HttpResponseRedirect(reverse('map_detail', args=(map_obj.id,)))
 
-    if poc.user is None:
-        poc_form = ProfileForm(instance=poc, prefix="poc")
+    if poc is None:
+        poc_form = ProfileForm(request.POST, prefix="poc")
     else:
-        map_form.fields['poc'].initial = poc.id
-        poc_form = ProfileForm(prefix="poc")
-        poc_form.hidden=True
+        if poc.user is None:
+            poc_form = ProfileForm(instance=poc, prefix="poc")
+        else:
+            map_form.fields['poc'].initial = poc.id
+            poc_form = ProfileForm(prefix="poc")
+            poc_form.hidden=True
 
-    if metadata_author.user is None:
-        author_form = ProfileForm(instance=metadata_author, prefix="author")
+    if metadata_author is None:
+            author_form = ProfileForm(request.POST, prefix="author")
     else:
-        map_form.fields['metadata_author'].initial = metadata_author.id
-        author_form = ProfileForm(prefix="author")
-        author_form.hidden=True
+        if metadata_author.user is None:
+            author_form = ProfileForm(instance=metadata_author, prefix="author")
+        else:
+            map_form.fields['metadata_author'].initial = metadata_author.id
+            author_form = ProfileForm(prefix="author")
+            author_form.hidden=True
 
     return render_to_response(template, RequestContext(request, {
         "map": map_obj,

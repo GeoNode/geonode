@@ -126,6 +126,8 @@ def geoserver_post_save(instance, sender, **kwargs):
        The way keywords are implemented requires the layer
        to be saved to the database before accessing them.
     """
+    instance.set_missing_info()
+
     url = ogc_server_settings.internal_rest
 
     try:
@@ -427,6 +429,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 
 
 def geoserver_post_save_map(instance, sender, **kwargs):
+    instance.set_missing_info()
     local_layers = []
     for layer in instance.layers:
         if layer.local:
