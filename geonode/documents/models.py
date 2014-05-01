@@ -150,7 +150,6 @@ def pre_save_document(instance, sender, **kwargs):
         instance.bbox_y0 = -90
         instance.bbox_y1 = 90
 
-
 def create_thumbnail(sender, instance, created, **kwargs):
     if not created:
         return
@@ -173,6 +172,14 @@ def update_documents_extent(sender, **kwargs):
     for document in Document.objects.filter(content_type=ctype, object_id=sender.id):
         document.save()
 
+def set_missing_info(sender, instance, created, **kwargs):
+    """
+    Executes mandatory post-save logic on the Document.
+    """
+
+    instance.set_missing_info()
+
 signals.pre_save.connect(pre_save_document, sender=Document)
 signals.post_save.connect(create_thumbnail, sender=Document)
+signals.post_save.connect(set_missing_info, sender=Document)
 map_changed_signal.connect(update_documents_extent)
