@@ -21,6 +21,7 @@ import httplib2
 import base64
 import re
 import math
+import copy
 
 from urlparse import urlparse
 from collections import namedtuple
@@ -343,6 +344,16 @@ class GXPMapBase(object):
                 settings.MAP_BASELAYERS[0]['source']['title'] = 'Local Geoserver'
                 sources[str(int(keys[-1])+1)] = settings.MAP_BASELAYERS[0]['source']
 
+        def _base_source(source):
+            base_source = copy.deepcopy(source)
+            for key in ["id", "baseParams", "title"]:
+                if key in base_source: del base_source[key]
+            return base_source
+
+        for idx, lyr in enumerate(settings.MAP_BASELAYERS):
+            if _base_source(lyr["source"]) not in map(_base_source, sources.values()):
+                sources[str(int(max(sources.keys(), key=int)) +1)] = lyr["source"]
+                
         config = {
             'id': self.id,
             'about': {
