@@ -1,4 +1,5 @@
-from datetime import datetime
+import datetime
+import math
 import os
 import hashlib
 import logging
@@ -18,6 +19,7 @@ from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
 from geonode.utils import bbox_to_wkt
+from geonode.utils import forward_mercator, inverse_mercator
 from geonode.people.models import Profile, Role
 from geonode.security.models import PermissionLevelMixin
 from taggit.managers import TaggableManager
@@ -188,7 +190,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     owner = models.ForeignKey(User, blank=True, null=True)
     contacts = models.ManyToManyField(Profile, through='ContactRole')
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
-    date = models.DateTimeField(_('date'), default = datetime.now, help_text=_('reference date for the cited resource')) # passing the method itself, not the result
+    date = models.DateTimeField(_('date'), default = datetime.datetime.now, help_text=_('reference date for the cited resource')) # passing the method itself, not the result
 
     date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication', help_text=_('identification of when a given event occurred'))
 
@@ -339,6 +341,39 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         self.bbox_x1 = box[1]
         self.bbox_y0 = box[2]
         self.bbox_y1 = box[3]
+
+
+    def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
+        """
+        Calculate zoom level and center coordinates in mercator.
+        """
+        self.center_x = center_x
+        self.center_y = center_y
+        self.zoom = zoom
+
+        #FIXME(Ariel): How do we set the bbox with this information?
+
+
+    def set_bounds_from_bbox(self, bbox):
+        """
+        Calculate zoom level and center coordinates in mercator.
+        """
+        self.set_latlon_bounds(bbox)
+
+        minx, miny, maxx, maxy = [float(c) for c in bbox]
+        x = (minx + maxx) / 2
+        y = (miny + maxy) / 2
+        (center_x, center_y) = forward_mercator((x,y))
+
+        width_zoom = math.log(360 / (maxx - minx), 2)
+        height_zoom = math.log(360 / (maxy - miny), 2)
+
+        zoom = math.ceil(min(width_zoom, height_zoom))
+
+        self.zoom = zoom
+        self.center_x = center_x
+        self.center_y = center_y
+
 
     def download_links(self):
         """assemble download links for pycsw"""

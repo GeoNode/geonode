@@ -19,7 +19,6 @@
 #########################################################################
 
 import logging
-import math
 import errno
 import uuid
 import httplib2
@@ -45,7 +44,6 @@ from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
-from geonode.utils import forward_mercator
 
 from agon_ratings.models import OverallRating
 
@@ -242,42 +240,6 @@ class Map(ResourceBase, GXPMapBase):
                 bbox[3] = max(bbox[3], layer_bbox[3])
         
         return bbox
-
-
-    def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
-        """
-        Calculate zoom level and center coordinates in mercator.
-        """
-        self.center_x = center_x
-        self.center_y = center_y
-        self.zoom = zoom
-
-        #FIXME(Ariel): How do we set the bbox with this information?
-
-
-    def set_bounds_from_bbox(self, bbox):
-        """
-        Calculate zoom level and center coordinates in mercator.
-        """
-
-        self.bbox_x0 = bbox[0]
-        self.bbox_x1 = bbox[1]
-        self.bbox_y0 = bbox[2]
-        self.bbox_y1 = bbox[3]
-
-        minx, miny, maxx, maxy = [float(c) for c in bbox]
-        x = (minx + maxx) / 2
-        y = (miny + maxy) / 2
-        (center_x, center_y) = forward_mercator((x,y))
-
-        width_zoom = math.log(360 / (maxx - minx), 2)
-        height_zoom = math.log(360 / (maxy - miny), 2)
-
-        zoom = math.ceil(min(width_zoom, height_zoom))
-
-        self.zoom = zoom
-        self.center_x = center_x
-        self.center_y = center_y
 
 
     def create_from_layer_list(self, user, layers, title, abstract):
