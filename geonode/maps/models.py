@@ -219,11 +219,6 @@ class Map(ResourceBase, GXPMapBase):
         if self.owner:
             self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
-    def get_extent(self):
-        """Generate minx/miny/maxx/maxy of map extent"""
-
-        return self.bbox
-
     def get_bbox_from_layers(self, layers):
         """
         Calculate the bbox from a given list of Layer objects

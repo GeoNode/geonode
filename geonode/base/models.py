@@ -296,11 +296,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     def geographic_bounding_box(self):
         return bbox_to_wkt(self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, srid=self.srid )
 
-    def get_extent(self):
-        """Generate minx/miny/maxx/maxy of map extent"""
-
-        return self.bbox
-
     @property
     def poc_role(self):
         role = Role.objects.get(value='pointOfContact')
