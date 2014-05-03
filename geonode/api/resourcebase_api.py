@@ -5,7 +5,7 @@ from geonode.base.models import ResourceBase
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
-from .models import FacetedModelResource
+from tastypie.resources import ModelResource
 from .authorization import GeoNodeAuthorization
 
 
@@ -21,7 +21,7 @@ class CommonMetaApi:
         }
 
 
-class ResourceBaseResource(FacetedModelResource):
+class ResourceBaseResource(ModelResource):
     """ResourceBase api"""
 
     class Meta(CommonMetaApi):
@@ -29,7 +29,7 @@ class ResourceBaseResource(FacetedModelResource):
         resource_name = 'base'
 
 
-class LayerResource(FacetedModelResource):
+class LayerResource(ModelResource):
     """Layer API"""
 
     class Meta(CommonMetaApi):
@@ -37,7 +37,7 @@ class LayerResource(FacetedModelResource):
         resource_name = 'layers'
 
 
-class MapResource(FacetedModelResource):
+class MapResource(ModelResource):
     """Maps API"""
 
     class Meta(CommonMetaApi):
@@ -45,7 +45,7 @@ class MapResource(FacetedModelResource):
         resource_name = 'maps'
 
 
-class DocumentResource(FacetedModelResource):
+class DocumentResource(ModelResource):
     """Maps API"""
 
     class Meta(CommonMetaApi):
