@@ -34,6 +34,7 @@ class ProxyTest(TestCase):
 
     def setUp(self):
         self.admin, created = User.objects.get_or_create(username='admin', password='admin', is_superuser=True)
+        # FIXME(Ariel): These tests do not work when the computer is offline.
         self.url = 'http://www.google.com/'
 
     @override_settings(DEBUG=True, PROXY_ALLOWED_HOSTS=())
