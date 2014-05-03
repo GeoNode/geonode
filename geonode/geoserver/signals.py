@@ -446,8 +446,11 @@ def geoserver_post_save_map(instance, sender, **kwargs):
             'format': 'image/png8',
             'width': 200,
             'height': 150,
-            'bbox': instance.bbox_string,
         }
+
+        # Add the bbox param only if the bbox is different to [None, None, None, None]
+        if None not in instance.bbox:
+            params['bbox'] = instance.bbox_string
 
         # Avoid using urllib.urlencode here because it breaks the url.
         # commas and slashes in values get encoded and then cause trouble
