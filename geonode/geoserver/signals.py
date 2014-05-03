@@ -446,6 +446,7 @@ def geoserver_post_save_map(instance, sender, **kwargs):
             'format': 'image/png8',
             'width': 200,
             'height': 150,
+            'bbox': instance.bbox_string,
         }
 
         # Avoid using urllib.urlencode here because it breaks the url.
