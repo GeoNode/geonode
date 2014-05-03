@@ -9,6 +9,12 @@
       angular.element("a").prop("target", "_self");
     });
 
+  module.run(function($http, $rootScope){
+    $http.get('/api/categories/').success(function(data){
+      $rootScope.categories = data.objects;
+    });
+  });
+
   module.controller('MainController', function($scope, $location, $http, Configs){
     $scope.query = $location.search();
     

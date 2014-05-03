@@ -4,7 +4,7 @@
   <ul class="nav hide" id="categories">
     <li><a data-class="category" value="all" class="active">{% trans "All Categories" %}</a></li>
     {% verbatim %}
-      <li ng-repeat="category in results_meta.categories">
+      <li ng-repeat="category in categories">
         <a value="{{ category.identifier }}" data-filter="category__identifier__in" 
          ng-click="multiple_choice_listener($event)">{{ category.gn_description }}
         <span class="badge pull-right">{{ category.count }}</span>
