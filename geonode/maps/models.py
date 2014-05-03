@@ -155,10 +155,7 @@ class Map(ResourceBase, GXPMapBase):
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
 
-        self.zoom = conf['map']['zoom']
-
-        self.center_x = conf['map']['center'][0]
-        self.center_y = conf['map']['center'][1]
+        self.set_bounds_from_center_and_zoom(conf['map']['center'][0], conf['map']['center'][1], conf['map']['zoom'])
 
         self.projection = conf['map']['projection']
 
@@ -181,8 +178,6 @@ class Map(ResourceBase, GXPMapBase):
                 layer_from_viewer_config(
                     MapLayer, layer, source_for(layer), ordering
             ))
-
-        self.set_bounds_from_layers(self.local_layers)
 
         self.save()
 
@@ -231,9 +226,9 @@ class Map(ResourceBase, GXPMapBase):
 
         return self.bbox
 
-    def set_bounds_from_layers(self, layers):
+    def get_bbox_from_layers(self, layers):
         """
-        Calculate the bounds from a given list of Layer objects
+        Calculate the bbox from a given list of Layer objects
         """
         bbox = None
         for layer in layers:
@@ -245,9 +240,26 @@ class Map(ResourceBase, GXPMapBase):
                 bbox[1] = max(bbox[1], layer_bbox[1])
                 bbox[2] = min(bbox[2], layer_bbox[2])
                 bbox[3] = max(bbox[3], layer_bbox[3])
-        else:
-            return None
         
+        return bbox
+
+
+    def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
+        """
+        Calculate zoom level and center coordinates in mercator.
+        """
+        self.center_x = center_x
+        self.center_y = center_y
+        self.zoom = zoom
+
+        #FIXME(Ariel): How do we set the bbox with this information?
+
+
+    def set_bounds_from_bbox(self, bbox):
+        """
+        Calculate zoom level and center coordinates in mercator.
+        """
+
         self.bbox_x0 = bbox[0]
         self.bbox_x1 = bbox[1]
         self.bbox_y0 = bbox[2]
@@ -267,7 +279,6 @@ class Map(ResourceBase, GXPMapBase):
         self.center_x = center_x
         self.center_y = center_y
 
-        return bbox
 
     def create_from_layer_list(self, user, layers, title, abstract):
         self.owner = user
@@ -308,7 +319,9 @@ class Map(ResourceBase, GXPMapBase):
             index += 1
 
         # Set bounding box based on all layers extents.
-        bbox = self.set_bounds_from_layers(self.local_layers)
+        bbox = self.get_bbox_from_layers(self.local_layers)
+
+        self.set_bounds_from_bbox(bbox)
 
         self.set_missing_info()
 
