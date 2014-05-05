@@ -837,14 +837,8 @@ def geoserver_upload(layer, base_file, user, name, overwrite=True, title=None,
 
     data = files
 
-    #FIXME: DONT DO THIS
-    #-------------------
     if 'shp' not in files:
-        if files['base'][-4:] == ".zip":
-            _rename_zip(files['base'], name)
-        main_file = files['base']
-        data = main_file
-    # ------------------
+        data = base_file
 
     try:
         store, gs_resource = create_store_and_resource(name,
