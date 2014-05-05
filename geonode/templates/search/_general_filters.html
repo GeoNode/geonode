@@ -28,7 +28,7 @@
   <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-right"></i> {% trans "Keywords" %}</a></h2>
   <ul class="nav hide" id="keywords">
     {% verbatim %}
-      <li ng-repeat="keyword in keywords">
+      <li ng-repeat="keyword in keywords" ng-if="keyword.count > 0">
         <a value="{{ keyword.slug }}" data-filter="keywords__slug__in" ng-click="multiple_choice_listener($event)">{{ keyword.name }} 
           <span class="badge pull-right">{{ keyword.count }}</span>
         </a>
