@@ -10,8 +10,13 @@
     });
 
   module.run(function($http, $rootScope){
-    $http.get('/api/categories/').success(function(data){
+    var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+    $http.get(CATEGORIES_ENDPOINT, {params: params}).success(function(data){
       $rootScope.categories = data.objects;
+    });
+
+    $http.get(KEYWORDS_ENDPOINT, {params: params}).success(function(data){
+      $rootScope.keywords = data.objects;
     });
   });
 
@@ -28,7 +33,7 @@
       $http.get(Configs.url, {params: data || {}}).success(function(data){
         $scope.results = data.objects;
         $scope.results_meta = data.meta;
-      })
+      });
     };
     query_api();
 

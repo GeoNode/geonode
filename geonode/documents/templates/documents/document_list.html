@@ -42,7 +42,8 @@
 
 {% block extra_script %}
   <script type="text/javascript">
-    SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='documents' %}'
+    SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='documents' %}';
+    FILTER_TYPE = 'document';
   </script>
   {% with include_spatial='true' %}
   {% include 'search/search_scripts.html' %}
