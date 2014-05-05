@@ -577,7 +577,6 @@ PROXY_ALLOWED_HOSTS = ()
 # The proxy to use when making cross origin requests.
 PROXY_URL = '/proxy/?url=' if DEBUG else None
 
-
 # Haystack Search Backend Configuration.  To enable, first install the following:
 # - pip install django-haystack
 # - pip install pyelasticsearch
@@ -594,12 +593,6 @@ HAYSTACK_CONNECTIONS = {
     }
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 20
-
-# Load more settings from a file called local_settings.py if it exists
-try:
-    from local_settings import *
-except ImportError:
-    pass
 
 # Available download formats
 DOWNLOAD_FORMATS_METADATA = [
@@ -620,3 +613,9 @@ TASTYPIE_DEFAULT_FORMATS = ['json']
 
 # gravatar settings
 AUTO_GENERATE_AVATAR_SIZES = (20,32,80,100,140,200)
+
+# Load more settings from a file called local_settings.py if it exists
+try:
+    from local_settings import *
+except ImportError:
+    pass
