@@ -43,6 +43,11 @@
 {% endwith %}
 
 <script type="text/javascript">
+    $('#id_doc_file').on('change', function(){
+        if($('#id_title').val() == ''){
+            $('#id_title').val($('#id_doc_file').val());
+        }
+    });
     $("#resource").select2({
         minimumInputLength: 1,
         placeholder: 'Select layer, map or empty',

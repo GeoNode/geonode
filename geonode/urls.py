@@ -62,9 +62,6 @@ urlpatterns = patterns('',
     # Search views
     (r'^search/', include('geonode.search.urls')),
 
-    # Upload views
-    (r'^upload/', include('geonode.upload.urls')),
-
     # Social views
     (r"^account/", include("account.urls")),
     (r'^people/', include('geonode.people.urls')),
@@ -106,9 +103,11 @@ if "geonode.contrib.groups" in settings.INSTALLED_APPS:
         (r'^groups/', include('geonode.contrib.groups.urls')),
     )
 
-if any(settings.OGC_SERVER):
+if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # GeoServer Helper Views
     urlpatterns += patterns('', 
+        # Upload views
+        (r'^upload/', include('geonode.upload.urls')),
         (r'^gs/', include('geonode.geoserver.urls')),
     )
 

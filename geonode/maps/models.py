@@ -19,7 +19,6 @@
 #########################################################################
 
 import logging
-import math
 import errno
 import uuid
 import httplib2
@@ -38,19 +37,14 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save, resourcebase_post_delete
+from geonode.base.models import ResourceBase
 from geonode.maps.signals import map_changed_signal
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
-from geonode.utils import forward_mercator
-from geonode.geoserver.signals import ogc_server_settings, http_client
 
-from geoserver.catalog import Catalog
-from geoserver.layer import Layer as GsLayer
-from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
@@ -98,7 +92,7 @@ class Map(ResourceBase, GXPMapBase):
     @property
     def layers(self):
         layers = MapLayer.objects.filter(map=self.id)
-        return  [layer for layer in layers]
+        return [layer for layer in layers]
 
     @property
     def local_layers(self):
@@ -159,10 +153,7 @@ class Map(ResourceBase, GXPMapBase):
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
 
-        self.zoom = conf['map']['zoom']
-
-        self.center_x = conf['map']['center'][0]
-        self.center_y = conf['map']['center'][1]
+        self.set_bounds_from_center_and_zoom(conf['map']['center'][0], conf['map']['center'][1], conf['map']['zoom'])
 
         self.projection = conf['map']['projection']
 
@@ -186,8 +177,6 @@ class Map(ResourceBase, GXPMapBase):
                     MapLayer, layer, source_for(layer), ordering
             ))
 
-        self.set_bounds_from_layers(self.local_layers)
-
         self.save()
 
         if layer_names != set([l.typename for l in self.local_layers]):
@@ -203,71 +192,6 @@ class Map(ResourceBase, GXPMapBase):
     def get_absolute_url(self):
         return reverse('geonode.maps.views.map_detail', None, [str(self.id)])
 
-    def update_thumbnail(self, save=True):
-        if len(self.layers) == 0:
-            return
-        if self.thumbnail == None:
-            self.save_thumbnail(self._thumbnail_url(width=240, height=180), save)
-                
-
-    def _render_thumbnail(self, spec):
-        if not any(settings.OGC_SERVER):
-            return
-        http = httplib2.Http()
-        url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
-        params = dict(width=240, height=180)
-        url = url + "?" + urllib.urlencode(params)
-        # @todo annoying but not critical
-        # openlayers controls posted back contain a bad character. this seems
-        # to come from a &minus; entity in the html, but it gets converted
-        # to a unicode en-dash but is not uncoded properly during transmission
-        # 'ignore' the error for now as controls are not being rendered...
-        data = spec 
-        if type(data) == unicode:
-            # make sure any stored bad values are wiped out
-            # don't use keyword for errors - 2.6 compat
-            # though unicode accepts them (as seen below)
-            data = data.encode('ASCII','ignore')
-        data = unicode(data, errors='ignore').encode('UTF-8')
-        try:
-            resp, content = http_client.request(url,"POST",data,{
-                'Content-type':'text/html'
-            })
-        except Exception:
-            logging.warning('Error generating thumbnail')
-            return 
-        if resp.status < 200 or resp.status > 299:
-            logging.warning('Error generating thumbnail %s',content)
-            return 
-        if len(content) == 0:
-            logging.warning('Empty thumb content %s',content)
-            return
-        return content
-
-    def _thumbnail_url(self, width=20, height=None):
-        """ Generate a URL representing thumbnail of the layer """
-
-        local_layers = []
-        for layer in self.layers:
-            if layer.local:
-                local_layers.append(Layer.objects.get(typename=layer.name).typename)
-
-        params = {
-            'layers': ",".join(local_layers),
-            'format': 'image/png8',
-            'width': width,
-        }
-        if height is not None:
-            params['height'] = height
-
-        # Avoid using urllib.urlencode here because it breaks the url.
-        # commas and slashes in values get encoded and then cause trouble
-        # with the WMS parser.
-        p = "&".join("%s=%s"%item for item in params.items())
-        if any(settings.OGC_SERVER):
-            return '<img src="%s"/>' % (ogc_server_settings.public_url + "wms/reflect?" + p)
-        else:
-            return '<img src="" alt="No Thumbnail Available"/>'
 
     class Meta:
         # custom permissions,
@@ -281,18 +205,26 @@ class Map(ResourceBase, GXPMapBase):
     LEVEL_WRITE = 'map_readwrite'
     LEVEL_ADMIN = 'map_admin'
 
-    def get_extent(self):
-        """Generate minx/miny/maxx/maxy of map extent"""
+    def set_default_permissions(self):
+        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
+        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
 
-        return self.bbox
+        # remove specific user permissions
+        current_perms = self.get_all_level_info()
+        for username in current_perms['users'].keys():
+            user = User.objects.get(username=username)
+            self.set_user_level(user, self.LEVEL_NONE)
 
-    def set_bounds_from_layers(self, layers):
+        # assign owner admin privs
+        if self.owner:
+            self.set_user_level(self.owner, self.LEVEL_ADMIN)
+
+    def get_bbox_from_layers(self, layers):
         """
-        Calculate the bounds from a given list of Layer objects
+        Calculate the bbox from a given list of Layer objects
         """
         bbox = None
         for layer in layers:
-
             layer_bbox = layer.bbox
             if bbox is None:
                 bbox = list(layer_bbox[0:4])
@@ -301,14 +233,9 @@ class Map(ResourceBase, GXPMapBase):
                 bbox[1] = max(bbox[1], layer_bbox[1])
                 bbox[2] = min(bbox[2], layer_bbox[2])
                 bbox[3] = max(bbox[3], layer_bbox[3])
-
-        if bbox is not None:
-            self.bbox_x0 = bbox[0]
-            self.bbox_x1 = bbox[1]
-            self.bbox_y0 = bbox[2]
-            self.bbox_y1 = bbox[3]
-
+        
         return bbox
+
 
     def create_from_layer_list(self, user, layers, title, abstract):
         self.owner = user
@@ -324,51 +251,41 @@ class Map(ResourceBase, GXPMapBase):
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
 
-        layer_objects = []
+        # Save the map in order to create an id in the database
+        # used below for the maplayers.
+        self.save()
+
         for layer in layers:
-            try:
-                layer = Layer.objects.get(typename=layer)
-            except ObjectDoesNotExist:
-                continue # Raise exception?
+            if not isinstance(layer, Layer):
+                try:
+                    layer = Layer.objects.get(typename=layer)
+                except ObjectDoesNotExist:
+                    raise GeoNodeError('Could not find layer with name %s' % layer)
 
             if not user.has_perm('maps.view_layer', obj=layer):
                 # invisible layer, skip inclusion or raise Exception?
-                continue # Raise Exception
-
-            layer_objects.append(layer)
-
-            map_layers.append(MapLayer(
+                raise GeoNodeError('User %s tried to create a map with layer %s without having premissions' % (user, layer))
+            MapLayer.objects.create(
                 map = self,
                 name = layer.typename,
-                ows_url = layer.ows_url(),
+                ows_url = layer.get_ows_url(),
                 stack_order = index,
                 visibility = True
-            ))
+            )
 
-            bbox = self.set_bounds_from_layers(layer_objects)
-
-            if bbox is not None:
-                minx, miny, maxx, maxy = [float(c) for c in bbox]
-                x = (minx + maxx) / 2
-                y = (miny + maxy) / 2
-                (self.center_x,self.center_y) = forward_mercator((x,y))
-
-                width_zoom = math.log(360 / (maxx - minx), 2)
-                height_zoom = math.log(360 / (maxy - miny), 2)
-
-                self.zoom = math.ceil(min(width_zoom, height_zoom))
             index += 1
 
+        # Set bounding box based on all layers extents.
+        bbox = self.get_bbox_from_layers(self.local_layers)
+
+        self.set_bounds_from_bbox(bbox)
+
+        self.set_missing_info()
+
+        # Save again to persist the zoom and bbox changes and
+        # to generate the thumbnail.
         self.save()
-        for bl in DEFAULT_BASE_LAYERS:
-            bl.map = self
-            #bl.save()
-
-        for ml in map_layers:
-            ml.map = self # update map_id after saving map
-            ml.save()
-
-        self.set_default_permissions()
+        
 
     @property
     def class_name(self):
@@ -387,14 +304,23 @@ class Map(ResourceBase, GXPMapBase):
         """
         Returns layer group name from local OWS for this map instance.
         """
-        cat = Catalog(ogc_server_settings.rest, _user, _password)
-        lg_name = '%s_%d' % (slugify(self.title), self.id)
-        return cat.get_layergroup(lg_name)
- 
+        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+            from geonode.geoserver.helpers import gs_catalog
+            lg_name = '%s_%d' % (slugify(self.title), self.id)
+            return gs_catalog.get_layergroup(lg_name)
+        else:
+            return None
+
     def publish_layer_group(self):
         """
         Publishes local map layers as WMS layer group on local OWS.
         """
+        if 'geonode.geoserver' not in settings.INSTALLED_APPS:
+            from geonode.geoserver.helpers import gs_catalog
+            from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
+        else:
+            raise Exception('Cannot publish layer group if geonode.geoserver is not in INSTALLED_APPS')
+
         # temporary permission workaround: 
         # only allow public maps to be published
         if not self.is_public:
@@ -418,13 +344,12 @@ class Map(ResourceBase, GXPMapBase):
         lg_name = '%s_%d' % (slugify(self.title), self.id)
 
         # Update existing or add new group layer
-        cat = Catalog(ogc_server_settings.rest, _user, _password)
         lg = self.layer_group
         if lg is None:
-            lg = GsUnsavedLayerGroup(cat, lg_name, lg_layers, lg_styles, lg_bounds)
+            lg = GsUnsavedLayerGroup(gs_catalog, lg_name, lg_layers, lg_styles, lg_bounds)
         else:
             lg.layers, lg.styles, lg.bounds = lg_layers, lg_styles, lg_bounds
-        cat.save(lg)
+        gs_catalog.save(lg)
         return lg_name
 
 
@@ -534,33 +459,11 @@ class MapLayer(models.Model, GXPLayerBase):
     def __unicode__(self):
         return '%s?layers=%s' % (self.ows_url, self.name)
 
-def pre_save_maplayer(instance, sender, **kwargs):
-    # If this object was saved via fixtures,
-    # do not do post processing.
-    if kwargs.get('raw', False):
-        return
-
-    try:
-        c = Catalog(ogc_server_settings.internal_rest, _user, _password)
-        instance.local = isinstance(c.get_layer(instance.name),GsLayer)
-    except EnvironmentError, e:
-        if e.errno == errno.ECONNREFUSED:
-            msg = 'Could not connect to catalog to verify if layer %s was local' % instance.name
-            logger.warn(msg, e)
-        else:
-            raise e
 
 def pre_delete_map(instance, sender, **kwrargs):
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
 
-def pre_save_map(instance, sender, **kwargs):
-    instance.update_thumbnail(save=False)
 
-if any(settings.OGC_SERVER):
-    signals.pre_save.connect(pre_save_maplayer, sender=MapLayer)
 
 signals.pre_delete.connect(pre_delete_map, sender=Map)
-signals.pre_save.connect(pre_save_map, sender=Map)
-signals.post_save.connect(resourcebase_post_save, sender=Map)
-signals.post_delete.connect(resourcebase_post_delete, sender=Map)
