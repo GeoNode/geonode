@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import uuid
 import logging
 
 from datetime import datetime
@@ -24,10 +25,14 @@ from datetime import datetime
 from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
 from geonode.base.models import ResourceBase, ResourceBaseManager, Link
+from geonode.base.models import SpatialRepresentationType, TopicCategory
+from geonode.people.utils import get_valid_user
+from geonode.layers.metadata import set_metadata
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
@@ -76,13 +81,15 @@ class Layer(ResourceBase):
     store = models.CharField(max_length=128)
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
-    typename = models.CharField(max_length=128, unique=True)
+    typename = models.CharField(max_length=128, unique=True, null=True, blank=True)
 
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
     default_style = models.ForeignKey(Style, related_name='layer_default_style', null=True, blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')
+
+    charset = models.CharField(max_length=255, default='UTF-8')
 
     def is_vector(self):
         return self.storeType == 'dataStore'
@@ -116,7 +123,13 @@ class Layer(ResourceBase):
             return cfg
 
     def __str__(self):
-        return "%s Layer" % self.typename.encode('utf-8')
+        if self.typename is not None:
+            return "%s Layer" % self.typename.encode('utf-8')
+        elif self.name is not None:
+            return "%s Layer" % self.name
+        else:
+            return "Unamed Layer"
+
 
     class Meta:
         # custom permissions,
@@ -142,6 +155,30 @@ class Layer(ResourceBase):
 class Layer_Styles(models.Model):
     layer = models.ForeignKey(Layer)
     style = models.ForeignKey(Style)
+
+
+class UploadSession(models.Model):
+    """Helper class to keep track of uploads.
+    """
+    date = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User)
+    processed = models.BooleanField(default=False)
+    error = models.TextField(blank=True, null=True)
+    traceback = models.TextField(blank=True, null=True)
+
+    def successful(self):
+        return self.processed and self.errors is None
+
+
+class LayerFile(models.Model):
+    """Helper class to store original files.
+    """
+    upload_session = models.ForeignKey(UploadSession)
+    layer = models.ForeignKey(Layer, blank=True, null=True)
+    name = models.CharField(max_length=255)
+    base = models.BooleanField(default=False)
+    file = models.FileField(upload_to='layers', max_length=255)
+
 
 class AttributeManager(models.Manager):
     """Helper class to access filtered attributes
@@ -201,6 +238,35 @@ def pre_save_layer(instance, sender, **kwargs):
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 
+    xml_files = instance.layerfile_set.filter(name='xml')
+
+    # Set a default user for accountstream to work correctly.
+    if instance.owner is None:
+        instance.owner = get_valid_user()
+
+    if instance.uuid == '':
+        instance.uuid = str(uuid.uuid1())
+
+
+    # If an XML metadata document is uploaded,
+    # parse the XML metadata and update uuid and URLs as per the content model
+    if xml_files.count() > 0:
+        logger.info('Processing uploaded XML metadata')
+        instance.metadata_uploaded   = True
+        # get model properties from XML
+        vals, keywords = set_metadata(xml_files[0].file.read())
+
+        # set model properties
+        for key, value in vals.items():
+            if key == 'spatial_representation_type':
+                value = SpatialRepresentationType(identifier=value)
+            elif key == 'topic_category':
+                category, created = TopicCategory.objects.get_or_create(identifier=value.lower(), gn_description=value)
+                instance.category = category
+            else:
+                setattr(instance, key, value)
+
+
 def pre_delete_layer(instance, sender, **kwargs):
     """
     Remove any associated style to the layer, if it is not used by other layers.
@@ -229,6 +295,13 @@ def post_delete_layer(instance, sender, **kwargs):
         instance.default_style.delete()
 
 
+def post_save_layer(instance, sender, **kwards):
+    """Set missing default values.
+    """
+    instance.set_missing_info()
+
+
 signals.pre_save.connect(pre_save_layer, sender=Layer)
+signals.post_save.connect(post_save_layer, sender=Layer)
 signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)
