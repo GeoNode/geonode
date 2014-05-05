@@ -238,8 +238,6 @@ def pre_save_layer(instance, sender, **kwargs):
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 
-    xml_files = instance.layerfile_set.filter(name='xml')
-
     # Set a default user for accountstream to work correctly.
     if instance.owner is None:
         instance.owner = get_valid_user()
@@ -247,6 +245,7 @@ def pre_save_layer(instance, sender, **kwargs):
     if instance.uuid == '':
         instance.uuid = str(uuid.uuid1())
 
+    xml_files = instance.layerfile_set.filter(name='xml')
 
     # If an XML metadata document is uploaded,
     # parse the XML metadata and update uuid and URLs as per the content model
@@ -300,6 +299,18 @@ def post_save_layer(instance, sender, **kwards):
     """
     instance.set_missing_info()
 
+    xml_files = instance.layerfile_set.filter(name='xml')
+
+    # If an XML metadata document is uploaded,
+    # parse the XML metadata and update uuid and URLs as per the content model
+    if xml_files.count() > 0:
+        logger.info('Processing uploaded XML metadata')
+        instance.metadata_uploaded   = True
+        # get model properties from XML
+        vals, keywords = set_metadata(xml_files[0].file.read())
+
+        # add keywords
+        instance.keywords.add(*keywords)
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)
