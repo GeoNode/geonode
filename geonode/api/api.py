@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-from django.db.models import Count
 
 from geonode.base.models import TopicCategory
 from geonode.layers.models import Layer
