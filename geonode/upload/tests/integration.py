@@ -28,7 +28,7 @@ from geonode.upload.views import _ALLOW_TIME_STEP
 from geonode.geoserver.signals import gs_catalog
 from geonode.urls import include
 from geonode.urls import urlpatterns
-from geonode.utils import ogc_server_settings
+from geonode.geoserver.helpers import ogc_server_settings
 from geoserver.catalog import Catalog
 from gisdata import BAD_DATA
 from gisdata import GOOD_DATA

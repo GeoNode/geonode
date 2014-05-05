@@ -106,34 +106,6 @@ def ajax_lookup(request):
         mimetype='text/plain'
     )
 
-def _handleThumbNail(req, obj):
-    # object will either be a map or a layer, one or the other permission must apply
-    if not req.user.has_perm('maps.change_map', obj=obj) and not req.user.has_perm('maps.change_layer', obj=obj):
-        return HttpResponse(loader.render_to_string('401.html',
-            RequestContext(req, {'error_message':
-                _("You are not permitted to modify this object")})), status=401)
-    if req.method == 'GET':
-        return HttpResponseRedirect(obj.get_thumbnail_url())
-    elif req.method == 'POST':
-        try:
-            spec = _fixup_ows_url(req.raw_post_data)
-            obj.save_thumbnail(spec)
-            return HttpResponseRedirect(obj.get_thumbnail_url())
-        except:
-            return HttpResponse(
-                content='error saving thumbnail',
-                status=500,
-                mimetype='text/plain'
-            )
-
-def _fixup_ows_url(thumb_spec):
-    #@HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
-    # so rendering of thumbnails fails - replace those uri's with full geoserver URL
-    from geonode.utils import ogc_server_settings
-    import re
-    gspath = '"' + ogc_server_settings.public_url # this should be in img src attributes
-    repl = '"' + ogc_server_settings.LOCATION
-    return re.sub(gspath, repl, thumb_spec)
 
 def err403(request):
     return HttpResponseRedirect(reverse('account_login') + '?next=' + request.get_full_path())

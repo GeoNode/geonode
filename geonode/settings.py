@@ -166,7 +166,6 @@ GEONODE_APPS = (
     'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
-    'geonode.api',
     'geonode.geoserver',
 
     # GeoNode Contrib Apps
@@ -196,6 +195,7 @@ INSTALLED_APPS = (
     'friendlytagloader',
     'geoexplorer',
     'django_extensions',
+    #'haystack',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -294,6 +294,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     # The context processor below adds things like SITEURL
     # and GEOSERVER_BASE_URL to all pages that use a RequestContext
     'geonode.context_processors.resource_urls',
+    'geonode.geoserver.context_processors.geoserver_urls',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -310,7 +311,7 @@ MIDDLEWARE_CLASSES = (
     # the permissions to view them.
     # It sets temporary the involved layers as public before restoring the permissions.
     # Beware that for few seconds the involved layers are public there could be risks.
-    #'geonode.middleware.PrintProxyMiddleware',
+    #'geonode.geoserver.middleware.PrintProxyMiddleware',
 )
 
 
@@ -511,12 +512,6 @@ DEFAULT_MAP_CENTER = (0, 0)
 DEFAULT_MAP_ZOOM = 0
 
 MAP_BASELAYERS = [{
-    "source": {
-        "ptype": "gxp_wmscsource",
-        "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms" if OGC_SERVER and any(OGC_SERVER) else 'http://localhost:8080/geoserver/wms',
-        "restUrl": "/gs/rest"
-    }
-    },{
     "source": {"ptype": "gxp_olsource"},
     "type":"OpenLayers.Layer",
     "args":["No background"],
@@ -550,6 +545,20 @@ MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_mapboxsource"},
 }]
 
+if 'geonode.geoserver' in INSTALLED_APPS:
+    LOCAL_GEOSERVER = {
+        "source": {
+            "ptype": "gxp_wmscsource",
+            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+            "restUrl": "/gs/rest"
+        }
+    }
+    baselayers = MAP_BASELAYERS
+    MAP_BASELAYERS = [LOCAL_GEOSERVER]
+    MAP_BASELAYERS.extend(baselayers)
+
+
+
 SOCIAL_BUTTONS = True
 
 # Require users to authenticate before using Geonode
@@ -567,6 +576,23 @@ PROXY_ALLOWED_HOSTS = ()
 
 # The proxy to use when making cross origin requests.
 PROXY_URL = '/proxy/?url=' if DEBUG else None
+
+# Haystack Search Backend Configuration.  To enable, first install the following:
+# - pip install django-haystack
+# - pip install pyelasticsearch
+# Set HAYSTACK_SEARCH to True
+# Run "python manage.py rebuild_index"
+
+HAYSTACK_SEARCH = False
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'geonode',
+        },
+    }
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 20
 
 # Available download formats
 DOWNLOAD_FORMATS_METADATA = [

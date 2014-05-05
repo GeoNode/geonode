@@ -1,6 +1,5 @@
-from django.db.models import signals
-
-from geonode.maps.models import Map, MapLayer, pre_save_maplayer
+from geonode.maps.models import Map, MapLayer
+from django.conf import settings
 
 maplayers = [
     {
@@ -68,7 +67,14 @@ maplayers = [
 
 def create_maplayers():
 
-    signals.pre_save.disconnect(pre_save_maplayer, sender=MapLayer)
+    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        from django.db.models import signals
+        from geonode.geoserver.signals import geoserver_pre_save_maplayer
+        from geonode.geoserver.signals import geoserver_post_save_map
+        signals.pre_save.disconnect(geoserver_pre_save_maplayer, sender=MapLayer)
+        signals.post_save.disconnect(geoserver_post_save_map, sender=Map)
+
+
     for ml in maplayers:
         MapLayer.objects.create(
             fixed = ml['fixed'],

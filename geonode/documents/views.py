@@ -163,19 +163,25 @@ def document_metadata(request, docid, template='documents/document_metadata.html
             the_document.save()
             return HttpResponseRedirect(reverse('document_detail', args=(document.id,)))
 
-    if poc.user is None:
-        poc_form = ProfileForm(instance=poc, prefix="poc")
+    if poc is None:
+        poc_form = ProfileForm(request.POST, prefix="poc")
     else:
-        document_form.fields['poc'].initial = poc.id
-        poc_form = ProfileForm(prefix="poc")
-        poc_form.hidden=True
+        if poc.user is None:
+            poc_form = ProfileForm(instance=poc, prefix="poc")
+        else:
+            document_form.fields['poc'].initial = poc.id
+            poc_form = ProfileForm(prefix="poc")
+            poc_form.hidden = True
 
-    if metadata_author.user is None:
-        author_form = ProfileForm(instance=metadata_author, prefix="author")
+    if metadata_author is None:
+            author_form = ProfileForm(request.POST, prefix="author")
     else:
-        document_form.fields['metadata_author'].initial = metadata_author.id
-        author_form = ProfileForm(prefix="author")
-        author_form.hidden=True
+        if metadata_author.user is None:
+            author_form = ProfileForm(instance=metadata_author, prefix="author")
+        else:
+            document_form.fields['metadata_author'].initial = metadata_author.id
+            author_form = ProfileForm(prefix="author")
+            author_form.hidden = True
 
     return render_to_response(template, RequestContext(request, {
         "document": document,

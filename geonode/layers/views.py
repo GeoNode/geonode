@@ -21,9 +21,7 @@
 import os
 import logging
 import shutil
-from lxml import etree
 
-from django.contrib.auth import authenticate, get_backends as get_auth_backends
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
@@ -34,20 +32,13 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import escape
-from django.views.decorators.http import require_POST
 from django.template.defaultfilters import slugify
-from django.shortcuts import get_object_or_404
 from django.forms.models import inlineformset_factory
-from django.utils.datastructures import MultiValueDictKeyError
-from django.db.models import signals
 
-from geoserver.catalog import FailedRequestError
-
-from geonode.utils import json_response, _get_basic_auth_info
-from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm, LayerStyleUploadForm
+from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.layers.models import Layer, Attribute
+from geonode.base.enumerations import CHARSETS
 
-from geonode.base.models import ContactRole
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -56,11 +47,7 @@ from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
-from geoserver.resource import FeatureType
-from geonode.contrib.groups.models import Group
 
-if any(settings.OGC_SERVER):
-    from geonode.geoserver.signals import set_styles, geoserver_post_save, geoserver_pre_save, http_client, ogc_server_settings, gs_catalog, gs_uploader
 
 logger = logging.getLogger("geonode.layers.views")
 
@@ -115,8 +102,11 @@ def layer_tag(request, slug, template='layers/layer_list.html'):
 @login_required
 def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
+        ctx = {  
+            'charsets': CHARSETS
+        }
         return render_to_response(template,
-                                  RequestContext(request, {}))
+                                  RequestContext(request, ctx))
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
@@ -146,8 +136,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         charset = form.cleaned_data["charset"],
                         abstract = form.cleaned_data["abstract"],
                         title = form.cleaned_data["layer_title"],
-                        permissions = form.cleaned_data["permissions"],
                         )
+
             except Exception, e:
                 logger.exception(e)
                 out['success'] = False
@@ -155,6 +145,11 @@ def layer_upload(request, template='upload/layer_upload.html'):
             else:
                 out['success'] = True
                 out['url'] = reverse('layer_detail', args=[saved_layer.typename])
+
+                permissions = form.cleaned_data["permissions"]
+                if permissions is not None and len(permissions.keys()) > 0:
+                    saved_layer.set_permissions(permissions)
+
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
@@ -175,7 +170,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    maplayer = GXPLayer(name = layer.name, ows_url = layer.ows_url(), layer_params=json.dumps( layer.attribute_config()))
+    maplayer = GXPLayer(name = layer.name, ows_url = layer.get_ows_url(), layer_params=json.dumps( layer.attribute_config()))
 
     # Update count for popularity ranking.
     Layer.objects.filter(id=layer.id).update(popular_count=layer.popular_count +1)
@@ -321,8 +316,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                saved_layer = save(layer, base_file, request.user, overwrite=True, 
-                    permissions=layer.get_all_level_info())
+                saved_layer = save(layer, base_file, request.user, overwrite=True)
             except Exception, e:
                 out['success'] = False
                 out['errors'] = str(e)
@@ -367,152 +361,5 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
                 status=401
         )
 
-def layer_batch_download(request):
-    """
-    batch download a set of layers
 
-    POST - begin download
-    GET?id=<download_id> monitor status
-    """
-
-    from geonode.utils import http_client, _get_basic_auth_info
-    # currently this just piggy-backs on the map download backend
-    # by specifying an ad hoc map that contains all layers requested
-    # for download. assumes all layers are hosted locally.
-    # status monitoring is handled slightly differently.
-
-    if request.method == 'POST':
-        layers = request.POST.getlist("layer")
-        layers = Layer.objects.filter(typename__in=list(layers))
-
-        def layer_son(layer):
-            return {
-                "name" : layer.typename,
-                "service" : layer.service_type,
-                "metadataURL" : "",
-                "serviceURL" : ""
-            }
-
-        readme = """This data is provided by GeoNode.\n\nContents:"""
-        def list_item(lyr):
-            return "%s - %s.*" % (lyr.title, lyr.name)
-
-        readme = "\n".join([readme] + [list_item(l) for l in layers])
-
-        fake_map = {
-            "map": { "readme": readme },
-            "layers" : [layer_son(lyr) for lyr in layers]
-        }
-
-        url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        resp, content = http_client.request(url,'POST',body=json.dumps(fake_map))
-        return HttpResponse(content, status=resp.status)
-
-
-    if request.method == 'GET':
-        # essentially, this just proxies back to geoserver
-        download_id = request.GET.get('id', None)
-        if download_id is None:
-            return HttpResponse(status=404)
-
-        url = "%srest/process/batchDownload/status/%s" % (ogc_server_settings.LOCATION, download_id)
-        resp,content = http_client.request(url,'GET')
-        return HttpResponse(content, status=resp.status)
-
-def resolve_user(request):
-    user = None
-    geoserver = False
-    superuser = False
-    if 'HTTP_AUTHORIZATION' in request.META:
-        username, password = _get_basic_auth_info(request)
-        acl_user = authenticate(username=username, password=password)
-        if acl_user:
-            user = acl_user.username
-            superuser = acl_user.is_superuser
-        elif _get_basic_auth_info(request) == ogc_server_settings.credentials:
-            geoserver = True
-            superuser = True
-        else:
-            return HttpResponse(_("Bad HTTP Authorization Credentials."),
-                                status=401,
-                                mimetype="text/plain")
-    if not any([user, geoserver, superuser]) and not request.user.is_anonymous():
-        user = request.user.username
-        superuser = request.user.is_superuser
-    resp = {
-        'user' : user,
-        'geoserver' : geoserver,
-        'superuser' : superuser,
-    }
-    if request.user.is_authenticated():
-        resp['fullname'] = request.user.profile.name
-        resp['email'] = request.user.profile.email
-    return HttpResponse(json.dumps(resp))
-
-
-def layer_acls(request):
-    from geonode.utils import http_client, _get_basic_auth_info
-    """
-    returns json-encoded lists of layer identifiers that
-    represent the sets of read-write and read-only layers
-    for the currently authenticated user.
-    """
-
-    # the layer_acls view supports basic auth, and a special
-    # user which represents the geoserver administrator that
-    # is not present in django.
-    acl_user = request.user
-    if 'HTTP_AUTHORIZATION' in request.META:
-        try:
-            username, password = _get_basic_auth_info(request)
-            acl_user = authenticate(username=username, password=password)
-
-            # Nope, is it the special geoserver user?
-            if (acl_user is None and
-                username == ogc_server_settings.USER and
-                password == ogc_server_settings.PASSWORD):
-                # great, tell geoserver it's an admin.
-                result = {
-                   'rw': [],
-                   'ro': [],
-                   'name': username,
-                   'is_superuser':  True,
-                   'is_anonymous': False
-                }
-                return HttpResponse(json.dumps(result), mimetype="application/json")
-        except Exception:
-            pass
-
-        if acl_user is None:
-            return HttpResponse(_("Bad HTTP Authorization Credentials."),
-                                status=401,
-                                mimetype="text/plain")
-    all_readable = set()
-    all_writable = set()
-    for bck in get_auth_backends():
-        if hasattr(bck, 'objects_with_perm'):
-            all_readable.update(bck.objects_with_perm(acl_user,
-                                                      'layers.view_layer',
-                                                      Layer))
-            all_writable.update(bck.objects_with_perm(acl_user,
-                                                      'layers.change_layer',
-                                                      Layer))
-    read_only = [x for x in all_readable if x not in all_writable]
-    read_write = [x for x in all_writable if x in all_readable]
-
-    read_only = [x[0] for x in Layer.objects.filter(id__in=read_only).values_list('typename').all()]
-    read_write = [x[0] for x in Layer.objects.filter(id__in=read_write).values_list('typename').all()]
-
-    result = {
-        'rw': read_write,
-        'ro': read_only,
-        'name': acl_user.username,
-        'is_superuser':  acl_user.is_superuser,
-        'is_anonymous': acl_user.is_anonymous(),
-    }
-    if acl_user.is_authenticated():
-        result['fullname'] = acl_user.profile.name
-        result['email'] = acl_user.profile.email
-
-    return HttpResponse(json.dumps(result), mimetype="application/json")
 
