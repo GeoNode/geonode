@@ -158,7 +158,6 @@ GEONODE_APPS = (
     'geonode.people',
     'geonode.base',
     'geonode.layers',
-    'geonode.upload',
     'geonode.maps',
     'geonode.proxy',
     'geonode.security',
@@ -166,7 +165,10 @@ GEONODE_APPS = (
     'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
+
+    # GeoServer Apps
     'geonode.geoserver',
+    'geonode.upload',
 
     # GeoNode Contrib Apps
     'geonode.contrib.groups',
