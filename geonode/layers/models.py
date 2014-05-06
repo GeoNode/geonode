@@ -247,6 +247,9 @@ def pre_save_layer(instance, sender, **kwargs):
 
     xml_files = instance.layerfile_set.filter(name='xml')
 
+    # Set a sensible default for the typename
+    instance.typename = 'geonode:%s' % instance.name
+
     # If an XML metadata document is uploaded,
     # parse the XML metadata and update uuid and URLs as per the content model
     if xml_files.count() > 0:
