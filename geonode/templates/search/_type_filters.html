@@ -7,7 +7,7 @@
     {% for facet, count in facets.items %}
     {% if count > 0 %}
     <li> 
-      <a data-class="{{ facet }}">{{ facet|capfirst }} 
+      <a data-value="{{ facet }}" data-filter="type__in" ng-click="multiple_choice_listener($event)">{{ facet|capfirst }} 
           <span class="badge pull-right">{{ count }}</span>
       </a>
     </li>
