@@ -498,7 +498,9 @@ def set_attributes(layer, overwrite=False):
         body = http_client.request(dft_url)[1]
         doc = etree.fromstring(body)
         path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
-        attribute_map = [[n.attrib["name"],n.attrib["type"]] for n in doc.findall(path)]
+
+        attribute_map = [[n.attrib["name"], n.attrib["type"]] for n in doc.findall(path)
+                         if n.attrib.get("name") and n.attrib.get("type")]
 
     elif layer.storeType == "coverageStore":
         dc_url = ogc_server_settings.LOCATION + "wcs?" + urllib.urlencode({
