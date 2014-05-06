@@ -93,7 +93,7 @@ def create_fixtures():
             ]
 
     layer_data = [
-            ('CA', 'abstract1', 'CA', 'base:CA', [-180, 180, -90, 90], '19850101', ('populartag','here'), elevation),
+            ('CA', 'abstract1', 'CA', 'geonode:CA', [-180, 180, -90, 90], '19850101', ('populartag','here'), elevation),
             ('layer2', 'abstract2', 'layer2', 'geonode:layer2', [-180, 180, -90, 90], '19800501', ('populartag',), elevation),
             ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', [-180, 180, -90, 90], '19901001', ('populartag',), elevation),
             ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', [-180, 180, -90, 90], '19000603', ('populartag', 'layertagunique'), location),

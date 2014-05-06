@@ -224,16 +224,16 @@ class LayersTest(TestCase):
         self.failUnlessEqual(response.status_code, 200)
 
     def test_describe_data_2(self):
-        '''/data/base:CA/metadata -> Test accessing the description of a layer '''
+        '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(7, User.objects.all().count())
         c = Client()
-        response = c.get(reverse('layer_metadata', args=('base:CA',)))
+        response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
         c.login(username='admin', password='admin')
         # ... all should be good
-        response = c.get(reverse('layer_metadata', args=('base:CA',)))
+        response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
     # Layer Tests
@@ -251,16 +251,16 @@ class LayersTest(TestCase):
         self.assertEquals(response.status_code,200)
 
     def test_describe_data(self):
-        '''/data/base:CA/metadata -> Test accessing the description of a layer '''
+        '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(7, User.objects.all().count())
         c = Client()
-        response = c.get(reverse('layer_metadata', args=('base:CA',)))
+        response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
         c.login(username='admin', password='admin')
         # ... all should be good
-        response = c.get(reverse('layer_metadata', args=('base:CA',)))
+        response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_layer_attributes(self):
