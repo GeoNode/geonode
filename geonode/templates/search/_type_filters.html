@@ -1,13 +1,17 @@
 {% load i18n %}
+{% load base_tags %}
 <nav class="filter">
   <h2><a href="#" class="toggle toggle-nav"><i class="icon-chevron-down"></i>{% trans "Type" %}</a></h2>
   <ul class="nav" id="types">
-    {% verbatim %}
-    <li ng-repeat="facet in results_meta.facets">
-        <a data-class="{{ facet.slug }}">{{ facet.slug }} 
-            <span class="badge pull-right">{{ facet.count }}</span>
-        </a>
+    {% facets as facets %}
+    {% for facet, count in facets.items %}
+    {% if count > 0 %}
+    <li> 
+      <a data-class="{{ facet }}">{{ facet|capfirst }} 
+          <span class="badge pull-right">{{ count }}</span>
+      </a>
     </li>
-    {% endverbatim %}
+    {% endif %}
+    {% endfor %}
   </ul>
 </nav>
