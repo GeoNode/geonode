@@ -43,20 +43,14 @@ from geonode.people.models import Profile
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.base.models import SpatialRepresentationType, TopicCategory
 from geonode.upload.files import _clean_string, _rename_zip
+from geonode.layers.models import shp_exts, csv_exts, kml_exts, vec_exts, cov_exts
+
 
 from zipfile import ZipFile
 
 logger = logging.getLogger('geonode.layers.utils')
 
 _separator = '\n' + ('-' * 100) + '\n'
-
-shp_exts = ['.shp',]
-csv_exts = ['.csv']
-kml_exts = ['.kml']
-vec_exts = shp_exts + csv_exts + kml_exts
-
-cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
-
 
 
 def get_files(filename):
