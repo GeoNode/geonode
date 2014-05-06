@@ -50,7 +50,7 @@ from dialogos.models import Comment
 from agon_ratings.models import OverallRating
 
 from gsimporter import Client
-
+from owslib.wms import WebMapService
 from geoserver.store import CoverageStore, DataStore
 from geoserver.workspace import Workspace
 from geoserver.catalog import Catalog
@@ -62,6 +62,8 @@ from geonode import GeoNodeException
 from geonode.layers.utils import layer_type, get_files
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.upload.files import _rename_zip
+
 
 logger = logging.getLogger(__name__)
 
@@ -446,6 +448,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
             except Exception, e:
                 status = "delete_failed"
             finally:
+                from .signals import geoserver_pre_delete
                 pre_delete.connect(geoserver_pre_delete, sender=Layer)
             
             msg = "[%s] Layer %s (%d/%d)" % (status, layer.name, i+1, number_deleted)
