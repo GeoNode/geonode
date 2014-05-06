@@ -34,7 +34,7 @@
         $scope.results = data.objects;
       });
     };
-    query_api();
+    query_api($scope.query);
 
     /*
     * Add the selection behavior to the element, it adds/removes the 'active' class
