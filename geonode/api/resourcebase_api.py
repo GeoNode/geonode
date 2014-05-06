@@ -9,8 +9,12 @@ from tastypie.resources import ModelResource
 from tastypie import fields
 from .authorization import GeoNodeAuthorization
 
-from .api import TagResource, TopicCategoryResource, UserResource
+from .api import TagResource, TopicCategoryResource, UserResource, FILTER_TYPES
 
+FILTER_TYPES.update({
+    'vector': 'dataStore',
+    'raster': 'coverageStore'
+})
 
 class CommonMetaApi:
     authorization = GeoNodeAuthorization()
@@ -29,71 +33,37 @@ class CommonModelApi(ModelResource):
     owner = fields.ToOneField(UserResource, 'owner')
 
 
-    def get_facets(self, results):
-        facets = {}
-
-        documents = results.instance_of(Document)
-        if documents.count() > 0:
-            facets['document'] = {
-                'count': documents.count(),
-                'slug': 'Documents'
-            }
-
-        maps = results.instance_of(Map)
-        if maps.count() > 0:
-            facets['map'] = {
-                'count': maps.count(),
-                'slug': 'Maps'
-            }
-
-        layers = results.instance_of(Layer)
-        if layers.count() > 0:
-            facets['raster'] = {
-                'slug': 'Rasters',
-                'count': layers.filter(Layer___storeType='coverageStore').count()
-            }
-            facets['vector'] = {
-                'slug': 'Vectors',
-                'count': layers.filter(Layer___storeType='dataStore').count()
-            }
-
-        return facets
-
-
-    def get_list(self, request, **kwargs):
-        """
-        Returns a serialized list of resources.
-
-        Calls ``obj_get_list`` to provide the data, then handles that result
-        set and serializes it.
-
-        Should return a HttpResponse (200 OK).
-        """
-
-        base_bundle = self.build_bundle(request=request)
-        objects = self.obj_get_list(bundle=base_bundle, **self.remove_api_resource_names(kwargs)).distinct()
-        sorted_objects = self.apply_sorting(objects, options=request.GET)
-        
-        paginator = self._meta.paginator_class(request.GET, sorted_objects, resource_uri=self.get_resource_uri(), limit=self._meta.limit, max_limit=self._meta.max_limit, collection_name=self._meta.collection_name)
-        to_be_serialized = paginator.page()
-
-        # Dehydrate the bundles in preparation for serialization.
-        bundles = []
-
-        for obj in to_be_serialized[self._meta.collection_name]:
-            bundle = self.build_bundle(obj=obj, request=request)
-            bundles.append(self.full_dehydrate(bundle, for_list=True))
-
-        to_be_serialized['meta']['facets'] = self.get_facets(objects)
-
-        to_be_serialized[self._meta.collection_name] = bundles
-        to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
-        
-        return self.create_response(request, to_be_serialized)
-
-
 class ResourceBaseResource(CommonModelApi):
     """ResourceBase api"""
+
+    count = fields.IntegerField()
+
+    def build_filters(self, filters={}):
+        orm_filters = super(ResourceBaseResource, self).build_filters(filters)
+        if 'type__in' in filters and filters['type__in'] in FILTER_TYPES.keys():
+            orm_filters.update({'type': filters.getlist('type__in')})
+        return orm_filters
+
+    def apply_filters(self, request, applicable_filters):
+        types = applicable_filters.pop('type', None)
+        semi_filtered = super(ResourceBaseResource, self).apply_filters(request, applicable_filters)
+        filtered = None
+        if types:
+            for the_type in types:
+                if the_type == 'vector' or the_type == 'raster':
+                    if filtered:
+                        filtered = filtered | semi_filtered.filter(Layer___storeType=FILTER_TYPES[the_type])
+                    else:
+                        filtered = semi_filtered.filter(Layer___storeType=FILTER_TYPES[the_type])
+                else:
+                    if filtered:
+                        filtered = filtered | semi_filtered.instance_of(FILTER_TYPES[the_type])
+                    else:
+                        filtered = semi_filtered.instance_of(FILTER_TYPES[the_type])
+        else:
+            filtered = semi_filtered
+        return filtered
+
 
     class Meta(CommonMetaApi):
         queryset = ResourceBase.objects.all()

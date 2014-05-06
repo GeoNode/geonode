@@ -32,7 +32,6 @@
     function query_api(data){
       $http.get(Configs.url, {params: data || {}}).success(function(data){
         $scope.results = data.objects;
-        $scope.results_meta = data.meta;
       });
     };
     query_api();
@@ -45,6 +44,7 @@
       var element = $($event.target);
       var query_entry = [];
       var data_filter = element.attr('data-filter');
+      var value = element.attr('data-value');
 
       // If the query object has the record then grab it 
       if ($scope.query.hasOwnProperty(data_filter)){
@@ -64,14 +64,14 @@
         element.removeClass('active');
 
         // Remove the entry from the correct query in scope
-        var value = element.val();
+        
         query_entry.splice(query_entry.indexOf(value), 1);
       }
       // if is not active then activate it
       else if(!element.hasClass('active')){
         // Add the entry in the correct query
-        if (query_entry.indexOf(element.val()) == -1){
-          query_entry.push(element.val());  
+        if (query_entry.indexOf(value) == -1){
+          query_entry.push(value);  
         }         
         element.addClass('active');
       }
