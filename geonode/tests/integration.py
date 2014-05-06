@@ -44,7 +44,6 @@ from geonode import GeoNodeException
 from geonode.layers.utils import (
     upload,
     file_upload,
-    save
 )
 from geonode.utils import http_client
 from .utils import check_layer, get_web_page
@@ -110,9 +109,10 @@ class NormalUserTest(TestCase):
         #TODO: Would be nice to ensure the name is available before
         #running the test...
         norman = User.objects.get(username="norman")
-        saved_layer = save("san_andres_y_providencia_poi_by_norman",
+        saved_layer = file_upload(
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
-             norman,
+             name="san_andres_y_providencia_poi_by_norman",
+             user=norman,
              overwrite=True,
         )
 
@@ -543,9 +543,10 @@ class GeoNodeThumbnailTest(TestCase):
         #TODO: Would be nice to ensure the name is available before
         #running the test...
         norman = User.objects.get(username="norman")
-        saved_layer = save("san_andres_y_providencia_poi_by_norman",
+        saved_layer = file_upload(
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
-             norman,
+             name="san_andres_y_providencia_poi_by_norman",
+             user=norman,
              overwrite=True,
         )
 
@@ -563,9 +564,10 @@ class GeoNodeThumbnailTest(TestCase):
         #TODO: Would be nice to ensure the name is available before
         #running the test...
         norman = User.objects.get(username="norman")
-        saved_layer = save("san_andres_y_providencia_poi_by_norman",
+        saved_layer = file_upload(
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
-             norman,
+             name="san_andres_y_providencia_poi_by_norman",
+             user=norman,
              overwrite=True,
         )
 
@@ -605,9 +607,10 @@ class GeoNodeMapPrintTest(TestCase):
             #TODO: Would be nice to ensure the name is available before
             #running the test...
             norman = User.objects.get(username="norman")
-            saved_layer = save("san_andres_y_providencia_poi_by_norman",
+            saved_layer = file_upload(
                  os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
-                 norman,
+                 name="san_andres_y_providencia_poi_by_norman",
+                 user=norman,
                  overwrite=True,
             )
             # Set the layer private

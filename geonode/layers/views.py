@@ -42,7 +42,7 @@ from geonode.base.enumerations import CHARSETS
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
-from geonode.layers.utils import save
+from geonode.layers.utils import file_upload
 from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
@@ -131,7 +131,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 # exceptions when unicode characters are present.
                 # This should be followed up in upstream Django.
                 tempdir, base_file = form.write_files()
-                saved_layer = save(name, base_file, request.user,
+                saved_layer = file_upload(base_file,
+                        name=name,
+                        user=request.user,
                         overwrite = False,
                         charset = form.cleaned_data["charset"],
                         abstract = form.cleaned_data["abstract"],
@@ -316,7 +318,8 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                saved_layer = save(layer, base_file, request.user, overwrite=True)
+                saved_layer = file_upload(base_file, name=layer.name,
+                                          user=request.user, overwrite=True)
             except Exception, e:
                 out['success'] = False
                 out['errors'] = str(e)
