@@ -26,6 +26,8 @@ class CommonMetaApi:
             'owner': ALL_WITH_RELATIONS,
             'date': ALL,
         }
+    ordering = ['date',]
+
 
 class CommonModelApi(ModelResource):
     keywords = fields.ToManyField(TagResource, 'keywords', null=True)
@@ -66,7 +68,7 @@ class ResourceBaseResource(CommonModelApi):
 
 
     class Meta(CommonMetaApi):
-        queryset = ResourceBase.objects.all()
+        queryset = ResourceBase.objects.all().order_by('-date')
         resource_name = 'base'
 
 
@@ -75,7 +77,7 @@ class LayerResource(CommonModelApi):
 
 
     class Meta(CommonMetaApi):
-        queryset = Layer.objects.all()
+        queryset = Layer.objects.all().order_by('-date')
         resource_name = 'layers'
 
 
@@ -83,7 +85,7 @@ class MapResource(CommonModelApi):
     """Maps API"""
 
     class Meta(CommonMetaApi):
-        queryset = Map.objects.all()
+        queryset = Map.objects.all().order_by('-date')
         resource_name = 'maps'
 
 
@@ -91,5 +93,5 @@ class DocumentResource(CommonModelApi):
     """Maps API"""
 
     class Meta(CommonMetaApi):
-        queryset = Document.objects.all()
+        queryset = Document.objects.all().order_by('-date')
         resource_name = 'documents'
