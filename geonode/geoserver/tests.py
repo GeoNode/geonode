@@ -114,7 +114,7 @@ class LayerTests(TestCase):
                     'geonode:fooey',
                     'geonode:quux',
                     'geonode:fleem'],
-             'rw': ['base:CA']
+             'rw': ['geonode:CA']
         }
         c = Client()
         response = c.get(reverse('layer_acls'), **valid_auth_headers)
