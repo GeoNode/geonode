@@ -35,8 +35,6 @@ from django.utils import simplejson as json
 from django.utils.html import strip_tags
 from django.views.decorators.http import require_POST
 
-from geonode.views import _handleThumbNail
-from geonode.utils import http_client
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import forward_mercator
@@ -44,17 +42,21 @@ from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
 from geonode.utils import resolve_object
+from geonode.utils import http_client
 from geonode.maps.forms import MapForm
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info
 from geonode.documents.models import get_related_documents
-from geonode.utils import ogc_server_settings
 from geonode.base.models import ContactRole
 from geonode.people.forms import ProfileForm, PocForm
 
-logger = logging.getLogger("geonode.maps.views")
+if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    #FIXME: The post service providing the map_status object
+    # should be moved to geonode.geoserver.
+    from geonode.geoserver.helpers import ogc_server_settings
+ 
 
-_user, _password = ogc_server_settings.credentials
+logger = logging.getLogger("geonode.maps.views")
 
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
@@ -72,6 +74,25 @@ _PERMISSION_MSG_LOGIN = _("You must be logged in to save this map")
 _PERMISSION_MSG_METADATA = _("You are not allowed to modify this map's metadata.")
 _PERMISSION_MSG_VIEW = _("You are not allowed to view this map.")
 
+
+def _handleThumbNail(req, obj):
+    # object will either be a map or a layer, one or the other permission must apply
+    if not req.user.has_perm('maps.change_map', obj=obj) and not req.user.has_perm('maps.change_layer', obj=obj):
+        return HttpResponse(loader.render_to_string('401.html',
+            RequestContext(req, {'error_message':
+                _("You are not permitted to modify this object")})), status=401)
+    if req.method == 'GET':
+        return HttpResponseRedirect(obj.get_thumbnail_url())
+    elif req.method == 'POST':
+        try:
+            obj.save_thumbnail(req.raw_post_data)
+            return HttpResponseRedirect(obj.get_thumbnail_url())
+        except:
+            return HttpResponse(
+                content='error saving thumbnail',
+                status=500,
+                mimetype='text/plain'
+            )
 
 def _resolve_map(request, id, permission='maps.change_map',
                  msg=_PERMISSION_MSG_GENERIC, **kwargs):
@@ -122,7 +143,6 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         'layers': layers,
         'permissions_json': json.dumps(_perms_info(map_obj, MAP_LEV_NAMES)),
         "documents": get_related_documents(map_obj),
-        'ows': getattr(ogc_server_settings, 'ows', ''),
     }))
 
 @login_required
@@ -131,6 +151,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     map_obj = _resolve_map(request, mapid, msg=_PERMISSION_MSG_METADATA)
 
     poc = map_obj.poc
+
     metadata_author = map_obj.metadata_author
 
     if request.method == "POST":
@@ -174,19 +195,25 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
 
             return HttpResponseRedirect(reverse('map_detail', args=(map_obj.id,)))
 
-    if poc.user is None:
-        poc_form = ProfileForm(instance=poc, prefix="poc")
+    if poc is None:
+        poc_form = ProfileForm(request.POST, prefix="poc")
     else:
-        map_form.fields['poc'].initial = poc.id
-        poc_form = ProfileForm(prefix="poc")
-        poc_form.hidden=True
+        if poc.user is None:
+            poc_form = ProfileForm(instance=poc, prefix="poc")
+        else:
+            map_form.fields['poc'].initial = poc.id
+            poc_form = ProfileForm(prefix="poc")
+            poc_form.hidden=True
 
-    if metadata_author.user is None:
-        author_form = ProfileForm(instance=metadata_author, prefix="author")
+    if metadata_author is None:
+            author_form = ProfileForm(request.POST, prefix="author")
     else:
-        map_form.fields['metadata_author'].initial = metadata_author.id
-        author_form = ProfileForm(prefix="author")
-        author_form.hidden=True
+        if metadata_author.user is None:
+            author_form = ProfileForm(instance=metadata_author, prefix="author")
+        else:
+            map_form.fields['metadata_author'].initial = metadata_author.id
+            author_form = ProfileForm(prefix="author")
+            author_form.hidden=True
 
     return render_to_response(template, RequestContext(request, {
         "map": map_obj,
@@ -378,7 +405,7 @@ def new_map_config(request):
                 layers.append(MapLayer(
                     map = map_obj,
                     name = layer.typename,
-                    ows_url = ogc_server_settings.public_url + "wms",
+                    ows_url = layer.get_ows_url(),
                     layer_params=json.dumps( layer.attribute_config()),
                     visibility = True
                 ))
@@ -473,7 +500,6 @@ def map_download(request, mapid, template='maps/map_download.html'):
          "locked_layers": locked_layers,
          "remote_layers": remote_layers,
          "downloadable_layers": downloadable_layers,
-         "geoserver" : ogc_server_settings.public_url,
          "site" : settings.SITEURL
     }))
 
@@ -517,7 +543,6 @@ def map_wms(request, mapid):
     GET: return endpoint information for group layer,
     PUT: update existing or create new group layer.
     """
-
     mapObject = _resolve_map(request, mapid, 'maps.view_map')
 
     if request.method == 'PUT':

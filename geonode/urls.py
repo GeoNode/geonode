@@ -62,12 +62,6 @@ urlpatterns = patterns('',
     # Search views
     url(r'^search/$', TemplateView.as_view(template_name='search/search.html'), name='search'),
 
-    # Upload views
-    (r'^upload/', include('geonode.upload.urls')),
-
-    # GeoServer Helper Views 
-    (r'^gs/', include('geonode.geoserver.urls')),
-
     # Social views
     (r"^account/", include("account.urls")),
     (r'^people/', include('geonode.people.urls')),
@@ -109,7 +103,17 @@ if "geonode.contrib.groups" in settings.INSTALLED_APPS:
         (r'^groups/', include('geonode.contrib.groups.urls')),
     )
 
+if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    # GeoServer Helper Views
+    urlpatterns += patterns('', 
+        # Upload views
+        (r'^upload/', include('geonode.upload.urls')),
+        (r'^gs/', include('geonode.geoserver.urls')),
+    )
+
+# Set up proxy
 urlpatterns += geonode.proxy.urls.urlpatterns
+
 
 # Serve static files
 urlpatterns += staticfiles_urlpatterns()

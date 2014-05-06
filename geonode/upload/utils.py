@@ -22,8 +22,8 @@ import re
 from django.conf import settings
 from geonode.layers.models import Layer
 from geonode.upload.files import _clean_string, SpatialFiles
-from geonode.utils import ogc_server_settings
 from geoserver.catalog import FailedRequestError
+from geonode.geoserver.helpers import ogc_server_settings, gs_catalog, gs_uploader
 from zipfile import ZipFile
 
 logger = logging.getLogger(__name__)
@@ -129,7 +129,7 @@ def rename_and_prepare(base_file):
     )
 
 def create_geoserver_db_featurestore(store_type=None, store_name=None):
-    cat = Layer.objects.gs_catalog
+    cat = gs_catalog
     dsname = ogc_server_settings.DATASTORE
     # get or create datastore
     try:
