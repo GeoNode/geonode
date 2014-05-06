@@ -11,6 +11,8 @@ from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
+from .authorization import perms
+
 
 FILTER_TYPES = {
     'layer': Layer,
@@ -38,6 +40,10 @@ class TypeFilteredResource(ModelResource):
             self.type_filter = None
         return orm_filters
 
+    def filter_security(self, obj, user):
+        """ Used to check whether the item should be included in the counts or not"""
+        return user.has_perm(perms[obj.class_name]['view'], obj)
+
 
 class TagResource(TypeFilteredResource):
     """Tags api"""
@@ -46,7 +52,8 @@ class TagResource(TypeFilteredResource):
         count = 0
         if self.type_filter:
             for tagged in bundle.obj.taggit_taggeditem_items.all():
-                if tagged.content_type.model_class() == self.type_filter:
+                if tagged.content_object and tagged.content_type.model_class() == self.type_filter and \
+                    self.filter_security(tagged.content_object, bundle.request.user):
                     count += 1
         else:
              count = bundle.obj.taggit_taggeditem_items.count()
@@ -67,10 +74,13 @@ class TopicCategoryResource(TypeFilteredResource):
 
     def dehydrate_count(self, bundle):
         count = 0
-        if self.type_filter:
-            count = bundle.obj.resourcebase_set.instance_of(self.type_filter).count() 
-        else:
-            count = bundle.obj.resourcebase_set.count()
+        resources = bundle.obj.resourcebase_set.instance_of(self.type_filter) if \
+            self.type_filter else bundle.obj.resourcebase_set.all()
+
+        for resource in resources:
+            if self.filter_security(resource, bundle.request.user):
+                count += 1
+
         return count
 
     class Meta:
