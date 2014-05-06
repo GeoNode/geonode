@@ -128,13 +128,13 @@ class GeoNodeUtilsTests(TestCase):
         def blowup():
             raise Exception("BOOM")
 
-        with patch('geonode.maps.models.Layer.objects.gs_catalog') as mock_gs:
+        with patch('geonode.maps.models.gs_catalog') as mock_gs:
             mock_gs.get_workspaces.side_effect = blowup
 
             self.assertRaises(GeoNodeException, check_geonode_is_up)
 
         with nested(
-            patch('geonode.maps.models.Layer.objects.gs_catalog'),
+            patch('geonode.maps.models.gs_catalog'),
             patch('geonode.maps.models.Layer.objects.geonetwork')
         ) as (mock_gs, mock_gn):
             mock_gn.login.side_effect = blowup
@@ -142,7 +142,7 @@ class GeoNodeUtilsTests(TestCase):
             self.assertTrue(mock_gs.get_workspaces.called)
 
         with nested(
-            patch('geonode.maps.models.Layer.objects.gs_catalog'),
+            patch('geonode.maps.models.gs_catalog'),
             patch('geonode.maps.models.Layer.objects.geonetwork')
         ) as (mock_gs, mock_gn):
             # no assertion, this should just run without error

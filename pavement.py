@@ -378,6 +378,7 @@ def reset():
 
 def _reset():
     sh("rm -rf geonode/development.db")
+    sh("rm -rf geonode/uploaded/*")
     _install_data_dir()
 
 

@@ -132,22 +132,28 @@ settings.py
 ~~~~~~~~~~~
 
 :file:`settings.py` is the primary settings file for your project. It is quite
-common to put all sensible defaults here and keep deployment specific configuration
+common to put all sensible defaults here and keep deployment-specific configuration
 in the :file:`local_settings.py` file. All of the possible settings values and
 their meanings are detailed in the Django documentation.
 
 A common paradigm for handing 'local settings' (and in other areas where some
-python module may not be available) is:
+Python module may not be available) is:
 
-  .. code-block: python
-  
-  try:
-      from local_settings import *
-  except:
-      pass
+.. code-block:: python
+
+    try:
+        from local_settings import *
+    except:
+        pass
 
 This is not required and there are many other solutions to handling varying
 deployment configuration requirements.
+
+.. note:: If you define something in :file:`local_settings.py`, 
+    take note of any dependent configuration. For example,
+    ``settings.MAP_BASELAYERS`` makes use of ``settings.OGC_SERVER``. 
+    If you redefine ``OGC_SERVER`` in :file:`local_settings.py`, 
+    ``MAP_BASELAYERS`` may need to be updated as well.
 
 urls.py
 ~~~~~~~
