@@ -17,7 +17,6 @@ from geonode.utils import http_client
 from geonode.base.models import Link
 from geonode.base.models import Thumbnail
 from geonode.layers.models import Layer
-from geonode.layers.utils import cov_exts, vec_exts
 from geonode.people.models import Profile
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
@@ -47,20 +46,14 @@ def geoserver_pre_save(instance, sender, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    base_exts = [x.replace('.','') for x in cov_exts + vec_exts]
-    base_files = instance.layerfile_set.filter(name__in=base_exts)
+    base_file = instance.get_base_file()
 
     # Abort processing if there are no files.
-    if base_files.count() == 0:
+    if base_file is None:
         return
 
-    msg = "There should only be one vector or raster main file, found %s" % base_files.count()
-    assert base_files.count() == 1, msg
-
-    base_file = base_files[0].file.path
-
     gs_name, workspace, values = geoserver_upload(instance,
-                                                    base_file,
+                                                    base_file.file.path,
                                                     instance.owner,
                                                     instance.name,
                                                     overwrite=True,
@@ -159,11 +152,7 @@ def geoserver_post_save(instance, sender, **kwargs):
        The way keywords are implemented requires the layer
        to be saved to the database before accessing them.
     """
-    base_exts = [x.replace('.','') for x in cov_exts + vec_exts]
-    base_files = instance.layerfile_set.filter(name__in=base_exts)
-
-    # Abort processing if there are no files.
-    if base_files.count() == 0:
+    if instance.get_base_file() is None:
         return
 
     url = ogc_server_settings.internal_rest

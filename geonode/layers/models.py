@@ -37,6 +37,13 @@ from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
 
+shp_exts = ['.shp',]
+csv_exts = ['.csv']
+kml_exts = ['.kml']
+vec_exts = shp_exts + csv_exts + kml_exts
+
+cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
+
 
 class Style(models.Model):
     """Model for storing styles.
@@ -107,6 +114,21 @@ class Layer(ResourceBase):
             return "WCS"
         if self.storeType == 'dataStore':
             return "WFS"
+
+    def get_base_file(self):
+        base_exts = [x.replace('.','') for x in cov_exts + vec_exts]
+        base_files = self.layerfile_set.filter(name__in=base_exts)
+
+        base_files_count = base_files.count()
+
+        if base_files_count == 0:
+            return None
+
+        msg = 'There should only be one main file (.shp or .geotiff), found %s'  % base_files_count
+        assert base_files_count == 1, msg
+
+        return base_files.get()
+
 
     def get_absolute_url(self):
         return reverse('layer_detail', args=(self.typename,))
