@@ -32,21 +32,15 @@ class CommonModelApi(ModelResource):
     category = fields.ToOneField(TopicCategoryResource, 'category', null=True)
     owner = fields.ToOneField(UserResource, 'owner')
 
-
-class ResourceBaseResource(CommonModelApi):
-    """ResourceBase api"""
-
-    count = fields.IntegerField()
-
     def build_filters(self, filters={}):
-        orm_filters = super(ResourceBaseResource, self).build_filters(filters)
+        orm_filters = super(CommonModelApi, self).build_filters(filters)
         if 'type__in' in filters and filters['type__in'] in FILTER_TYPES.keys():
             orm_filters.update({'type': filters.getlist('type__in')})
         return orm_filters
 
     def apply_filters(self, request, applicable_filters):
         types = applicable_filters.pop('type', None)
-        semi_filtered = super(ResourceBaseResource, self).apply_filters(request, applicable_filters)
+        semi_filtered = super(CommonModelApi, self).apply_filters(request, applicable_filters)
         filtered = None
         if types:
             for the_type in types:
@@ -65,6 +59,12 @@ class ResourceBaseResource(CommonModelApi):
         return filtered
 
 
+class ResourceBaseResource(CommonModelApi):
+    """ResourceBase api"""
+
+    count = fields.IntegerField()
+
+
     class Meta(CommonMetaApi):
         queryset = ResourceBase.objects.all()
         resource_name = 'base'
@@ -72,6 +72,7 @@ class ResourceBaseResource(CommonModelApi):
 
 class LayerResource(CommonModelApi):
     """Layer API"""
+
 
     class Meta(CommonMetaApi):
         queryset = Layer.objects.all()
