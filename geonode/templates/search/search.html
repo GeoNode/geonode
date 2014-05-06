@@ -11,34 +11,9 @@
     <div class="span12">
       <h2 class="page-title">{% trans "Search" %}</h2>
     </div>
-    <div class="span8 filter">      
-      {% include "search/_sort_filters.html" %}
-    </div>
-    <div class="span4">
-      <div class="pull-right" data-viewby="list">
-        {% include "_viewby.html" %}
-      </div>
-    </div>
-    <div class="span12">
-      <div class="row" id="contain-slider">
-        <div class="span4">
-          <div class="selections">
-            <h4>
-              {% trans "Your selections" %}
-              <a href="." id="clear-search" class="pull-right">Clear all</a>
-            </h4>
-          </div>
-          <div id="slide-pane">
-            {% include "search/_type_filters.html" %}
-	          {% include "search/_extent_filter.html" %}
-            {% include "search/_general_filters.html" %}
-          </div>
-        </div>
-        <div class="tab-content span8" id="search-content">
-          {% include 'search/resourcebase_snippet.html' %}
-        </div>
-      </div>
-    </div>
+    {% with include_type_filter='true' %}
+    {% include "search/_search_content.html" %}
+    {% endwith %}
 {% endblock %}
 
 {% block extra_script %}
