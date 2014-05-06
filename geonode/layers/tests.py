@@ -456,7 +456,7 @@ class LayersTest(TestCase):
 
             gotten_files = get_files(os.path.join(d, "foo.shp"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
-            self.assertEquals(gotten_files, dict(base="foo.shp", shp="foo.shp", shx="foo.shx",
+            self.assertEquals(gotten_files, dict(shp="foo.shp", shx="foo.shx",
                 prj="foo.prj", dbf="foo.dbf"))
         finally:
             if d is not None:
@@ -487,7 +487,7 @@ class LayersTest(TestCase):
 
             gotten_files = get_files(os.path.join(d, "foo.shp"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
-            self.assertEquals(gotten_files, dict(base="foo.shp", shp="foo.shp", shx="foo.shx",
+            self.assertEquals(gotten_files, dict(shp="foo.shp", shx="foo.shx",
                 prj="foo.prj", dbf="foo.dbf", sld="foo.sld"))
         finally:
             if d is not None:
@@ -504,7 +504,7 @@ class LayersTest(TestCase):
 
             gotten_files = get_files(os.path.join(d, "foo.SHP"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
-            self.assertEquals(gotten_files, dict(base="foo.SHP", shp="foo.SHP", shx="foo.SHX",
+            self.assertEquals(gotten_files, dict(shp="foo.SHP", shx="foo.SHX",
                 prj="foo.PRJ", dbf="foo.DBF"))
         finally:
             if d is not None:
@@ -521,7 +521,7 @@ class LayersTest(TestCase):
 
             gotten_files = get_files(os.path.join(d, "foo.SHP"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
-            self.assertEquals(gotten_files, dict(base="foo.SHP", shp="foo.SHP", shx="foo.shx",
+            self.assertEquals(gotten_files, dict(shp="foo.SHP", shx="foo.shx",
                 prj="foo.pRJ", dbf="foo.DBF"))
         finally:
             if d is not None:
