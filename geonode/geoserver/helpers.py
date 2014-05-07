@@ -515,7 +515,7 @@ def set_attributes(layer, overwrite=False):
             "identifiers": layer.typename.encode('utf-8')
         })
         try:
-            response, body = http.request(dc_url)
+            response, body = http_client.request(dc_url)
             doc = etree.fromstring(body)
             path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
             attribute_map = [[n.text,"raster"] for n in doc.findall(path)]

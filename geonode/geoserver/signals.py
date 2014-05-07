@@ -1,5 +1,6 @@
-import urllib
+import errno
 import logging
+import urllib
 
 from urlparse import urlparse, urljoin
 
