@@ -14,7 +14,7 @@
   */
   module.run(function($http, $rootScope, $location){
 
-    // Used to et the class of the filters based on the url parameters
+    // Used to set the class of the filters based on the url parameters
     function set_initial_filters_from_query(data, url_query, filter_param){
       for(var i=0;i<data.length;i++){
         if( url_query == data[i][filter_param] || url_query.indexOf(data[i][filter_param] ) != -1){
@@ -45,6 +45,26 @@
       }
       $rootScope.keywords = data.objects;
     });
+
+    // Activate the type filters if in the url
+    if($location.search().hasOwnProperty('type__in')){
+      var types = $location.search()['type__in'];
+      if(types instanceof Array){
+        for(var i=0;i<types.length;i++){
+          $('body').find("[data-filter='type__in'][data-value="+types[i]+"]").addClass('active');
+        }
+      }else{
+        $('body').find("[data-filter='type__in'][data-value="+types+"]").addClass('active');
+      }
+    }
+
+    // Activate the sort filter if in the url
+    if($location.search().hasOwnProperty('order_by')){
+      var sort = $location.search()['order_by'];
+      $('body').find("[data-filter='order_by']").removeClass('selected');
+      $('body').find("[data-filter='order_by'][data-value="+sort+"]").addClass('selected');
+    }
+
   });
 
   /*
