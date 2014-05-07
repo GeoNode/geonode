@@ -76,9 +76,7 @@
     $scope.query = $location.search();
     $scope.query.limit = $scope.query.limit || 10;
     $scope.query.offset = $scope.query.offset || 0;
-    $scope.page = 1;
-    $scope.numpages = 1;
-    $scope.total_counts = 0;
+    $scope.page = Math.round(($scope.query.offset / $scope.query.limit) + 1);
     
     //Get data from apis and make them available to the page
     function query_api(data){
@@ -98,13 +96,13 @@
       $scope.numpages = Math.round(
         ($scope.total_counts / $scope.query.limit) + 0.49
       );
-      $scope.page = Math.round(($scope.query.offset / $scope.query.limit) + 1);
 
       // In case the user is viewing a page > 1 and a 
       // subsequent query returns less pages, then 
       // reset the page to one and search again.
       if($scope.numpages < $scope.page){
         $scope.page = 1;
+        $scope.query.offset = 0;
         query_api($scope.query);
       }
 
