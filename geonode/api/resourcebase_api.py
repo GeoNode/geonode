@@ -26,7 +26,7 @@ class CommonMetaApi:
             'owner': ALL_WITH_RELATIONS,
             'date': ALL,
         }
-    ordering = ['date',]
+    ordering = ['date', 'title']
 
 
 class CommonModelApi(ModelResource):
