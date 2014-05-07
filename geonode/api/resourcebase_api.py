@@ -27,6 +27,7 @@ class CommonMetaApi:
             'date': ALL,
         }
     ordering = ['date', 'title']
+    max_limit = None
 
 
 class CommonModelApi(ModelResource):

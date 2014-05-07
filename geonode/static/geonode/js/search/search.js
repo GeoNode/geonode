@@ -74,7 +74,7 @@
   */
   module.controller('MainController', function($scope, $location, $http, Configs){
     $scope.query = $location.search();
-    $scope.query.limit = $scope.query.limit || 10;
+    $scope.query.limit = $scope.query.limit || CLIENT_RESULTS_LIMIT;
     $scope.query.offset = $scope.query.offset || 0;
     $scope.page = Math.round(($scope.query.offset / $scope.query.limit) + 1);
     
