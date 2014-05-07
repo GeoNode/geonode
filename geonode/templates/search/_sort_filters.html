@@ -1,10 +1,9 @@
 {% load i18n %}
 
 <ul class="nav nav-pills filter" id="sort">
-  <li><a data-class="newest" class="query selected">{% trans "Most recent" %}</a></li>
-  <li><a data-class="oldest" class="query">{% trans "Less recent" %}</a></li>
-  <li><a data-class="alphaaz" class="query">{% trans "A - Z" %}</a></li>
-  <li><a data-class="alphaza" class="query">{% trans "Z - A" %}</a></li>
-  <li><a data-class="popularity" class="uery">{% trans "Most popular" %}</a></li>
-  <li><a data-class="rel" class="query">{% trans "Relevance" %}</a></li>
+  <li><a data-value="-date" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{% trans "Most recent" %}</a></li>
+  <li><a data-value="date" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Less recent" %}</a></li>
+  <li><a data-value="title" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "A - Z" %}</a></li>
+  <li><a data-value="-title" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Z - A" %}</a></li>
+  <li><a data-value="-date" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Most popular" %}</a></li>
 </ul>
