@@ -73,8 +73,9 @@
   * Syncs the browser url with the selections
   */
   module.controller('MainController', function($scope, $location, $http, Configs){
-    var results_per_page = 10;
     $scope.query = $location.search();
+    $scope.query.limit = $scope.query.limit || 10;
+    $scope.query.offset = $scope.query.offset || 0;
     $scope.page = 1;
     $scope.numpages = 1;
     $scope.total_counts = 0;
@@ -88,11 +89,16 @@
     };
     query_api($scope.query);
 
+
+    /*
+    * Pagination logic
+    */
     // Control what happens when the total results change
-    $scope.$watch('search_total_counts', function(){
+    $scope.$watch('total_counts', function(){
       $scope.numpages = Math.round(
-        ($scope.total_counts / $scope.results_per_page) + 0.49
+        ($scope.total_counts / $scope.query.limit) + 0.49
       );
+      $scope.page = Math.round(($scope.query.offset / $scope.query.limit) + 1);
 
       // In case the user is viewing a page > 1 and a 
       // subsequent query returns less pages, then 
@@ -109,7 +115,7 @@
     $scope.paginate_down = function(){
       if($scope.page > 1){
         $scope.page -= 1;
-        $scope.query.update({'limit': results_per_page, 'offset': $scope.results_limit * ($scope.page - 1)});
+        $scope.query.offset =  $scope.query.limit * ($scope.page - 1);
         query_api($scope.query);
       }   
     }
@@ -117,7 +123,7 @@
     $scope.paginate_up = function(){
       if($scope.numpages > $scope.page){
         $scope.page += 1;
-        $scope.query.update({'limit': results_per_page, 'offset': $scope.results_limit * ($scope.page - 1)});
+        $scope.query.offset = $scope.query.limit * ($scope.page - 1);
         query_api($scope.query);
       }
     }
