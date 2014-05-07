@@ -7,8 +7,9 @@
 <script src="{{ STATIC_URL }}geonode/js/search/search.js"></script>
 <script type="text/javascript">
   $("body").attr('ng-controller', 'MainController');
-  CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}'
-  KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='keywords' %}'
+  CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';
+  KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='keywords' %}';
+  CLIENT_RESULTS_LIMIT = {{ CLIENT_RESULTS_LIMIT }};
   var module = angular.module('search', ['main_search']);
   module.constant('Configs', {
     url: SEARCH_URL

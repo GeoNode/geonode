@@ -616,6 +616,12 @@ TASTYPIE_DEFAULT_FORMATS = ['json']
 # gravatar settings
 AUTO_GENERATE_AVATAR_SIZES = (20,32,80,100,140,200)
 
+# Number of results per page listed in the GeoNode search pages
+CLIENT_RESULTS_LIMIT = 10;
+
+# Number of items returned by the apis 0 equals no limit
+API_LIMIT_PER_PAGE = 0
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *

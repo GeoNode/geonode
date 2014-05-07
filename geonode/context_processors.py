@@ -40,6 +40,7 @@ def resource_urls(request):
         SOCIAL_BUTTONS=getattr(settings, 'SOCIAL_BUTTONS', True),
         USE_DOCUMENTS='geonode.documents' in settings.INSTALLED_APPS,
         HAYSTACK_SEARCH=getattr(settings, 'HAYSTACK_SEARCH', False),
+        CLIENT_RESULTS_LIMIT=getattr(settings, 'CLIENT_RESULTS_LIMIT', 10)
     )
     
     return defaults
