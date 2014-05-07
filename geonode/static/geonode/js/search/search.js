@@ -9,17 +9,40 @@
       angular.element("a").prop("target", "_self");
     });
 
-
   /*
   * Load categories and keywords
   */
-  module.run(function($http, $rootScope){
+  module.run(function($http, $rootScope, $location){
+
+    // Used to et the class of the filters based on the url parameters
+    function set_initial_filters_from_query(data, url_query, filter_param){
+      for(var i=0;i<data.length;i++){
+        if( url_query == data[i][filter_param] || url_query.indexOf(data[i][filter_param] ) != -1){
+          data[i].active = 'active';
+        }else{
+          data[i].active = '';
+        }
+     }
+     return data;
+    }
+
+    /*
+    * Load categories and keywords and set active class if needed
+    */
     var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
     $http.get(CATEGORIES_ENDPOINT, {params: params}).success(function(data){
-      $rootScope.categories = data.objects;
+      if($location.search().hasOwnProperty('category__identifier__in')){
+        data.objects = set_initial_filters_from_query(data.objects, 
+          $location.search()['category__identifier__in'], 'identifier');
+      }   
+      $rootScope.categories = data.objects;            
     });
 
     $http.get(KEYWORDS_ENDPOINT, {params: params}).success(function(data){
+      if($location.search().hasOwnProperty('keywords__slug__in')){
+        data.objects = set_initial_filters_from_query(data.objects, 
+          $location.search()['keywords__slug__in'], 'slug');
+      }
       $rootScope.keywords = data.objects;
     });
   });
