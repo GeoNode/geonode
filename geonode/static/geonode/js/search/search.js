@@ -73,20 +73,60 @@
   * Syncs the browser url with the selections
   */
   module.controller('MainController', function($scope, $location, $http, Configs){
+    var results_per_page = 10;
     $scope.query = $location.search();
+    $scope.page = 1;
+    $scope.numpages = 1;
+    $scope.total_counts = 0;
     
-    // Keep in sync the page location with the query object
-    $scope.$watch('query', function(){
-      $location.search($scope.query);
-    }, true);
-      
     //Get data from apis and make them available to the page
     function query_api(data){
       $http.get(Configs.url, {params: data || {}}).success(function(data){
         $scope.results = data.objects;
+        $scope.total_counts = data.meta.total_count;
       });
     };
     query_api($scope.query);
+
+    // Control what happens when the total results change
+    $scope.$watch('search_total_counts', function(){
+      $scope.numpages = Math.round(
+        ($scope.total_counts / $scope.results_per_page) + 0.49
+      );
+
+      // In case the user is viewing a page > 1 and a 
+      // subsequent query returns less pages, then 
+      // reset the page to one and search again.
+      if($scope.numpages < $scope.page){
+        $scope.page = 1;
+        query_api($scope.query);
+      }
+
+      // In case of no results, the number of pages is one.
+      if($scope.numpages == 0){$scope.numpages = 1};
+    });
+
+    $scope.paginate_down = function(){
+      if($scope.page > 1){
+        $scope.page -= 1;
+        $scope.query.update({'limit': results_per_page, 'offset': $scope.results_limit * ($scope.page - 1)});
+        query_api($scope.query);
+      }   
+    }
+
+    $scope.paginate_up = function(){
+      if($scope.numpages > $scope.page){
+        $scope.page += 1;
+        $scope.query.update({'limit': results_per_page, 'offset': $scope.results_limit * ($scope.page - 1)});
+        query_api($scope.query);
+      }
+    }
+
+
+    // Keep in sync the page location with the query object
+    $scope.$watch('query', function(){
+      $location.search($scope.query);
+    }, true);
 
     /*
     * Add the selection behavior to the element, it adds/removes the 'active' class
