@@ -25,7 +25,9 @@
         </div>
       </div>
       <div class="tab-content" id="search-content">
-        <div class="pager">
+        <div>
+          <span>Total: </span>
+          <span ng-bind="total_counts"></span>
           <a href><strong ng-click="paginate_down()"><<</strong></a>
           <span>page </span>
           <span ng-model="page" ng-bind="page"></span>
