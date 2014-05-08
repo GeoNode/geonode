@@ -12,8 +12,10 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
+from django.contrib.contenttypes.models import ContentType
 
 from polymorphic import PolymorphicModel, PolymorphicManager
+from agon_ratings.models import OverallRating
 
 from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
@@ -256,6 +258,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True, on_delete=models.SET_NULL)
 
+    popular_count = models.IntegerField(default=0)
+    share_count = models.IntegerField(default=0)
+
 
     def delete(self, *args, **kwargs):
         super(ResourceBase, self).delete(*args, **kwargs)
@@ -263,26 +268,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     def __unicode__(self):
         return self.title
-        
+    
     @property
-    def geonode_type(self):
-        gn_type = ''
+    def rating(self):
         try:
-            self.layer
-            gn_type = 'layer'
-        except:
-            pass
-        try:
-            self.map
-            gn_type = 'map'
-        except:
-            pass
-        try:
-            self.document
-            gn_type = 'document'
-        except:
-            pass
-        return gn_type
+            rating = float(OverallRating.objects.get(
+                content_type=ContentType.objects.get_for_model(self), 
+                object_id=self.pk
+            ).rating)
+        except OverallRating.DoesNotExist:
+            rating = None
+
+        return rating 
 
     @property
     def bbox(self):
