@@ -138,7 +138,8 @@ class ProfileResource(ModelResource):
         return bundle.obj.user.resourcebase_set.instance_of(Document).count()
 
     def dehydrate_avatar_100(self, bundle):
-        return bundle.obj.user.avatar_set.filter(primary=True)[0].avatar_url(100)
+        avatars = bundle.obj.user.avatar_set.filter(primary=True)
+        return avatars[0].avatar_url(100) if avatars.count() > 0 else ''
 
     def dehydrate_profile_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
