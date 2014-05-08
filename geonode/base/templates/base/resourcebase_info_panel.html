@@ -9,6 +9,22 @@
     </li>
   {% endif %}
 
+  {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resourcebase.license %}
+    <li>
+      <strong>{% trans "License" %}:</strong>
+      {{ resourcebase.license.name_long }}
+      <strong><a href="#license-more" data-toggle="collapse" data-target=".license-more">?</a></strong>
+      <div style="margin-left:20px;" class="license-more collapse">
+      {% for bullet in resourcebase.license.description_bullets %}
+        {{ bullet }}<br/><br/>
+      {% endfor %}
+      {% if resourcebase.license.url %}
+        + For more info see <a href="{{ resourcebase.license.url }}">{{ resourcebase.license.url }}</a>.
+      {% endif %}
+      </div>
+    </li>
+  {% endif %}
+
   {% if resourcebase.abstract %}
     <li>
       <strong>{% trans "Abstract" %}:</strong>
@@ -53,13 +69,6 @@
     </li>
   {% endif %}
   
-  {% if resourcebase.license %}
-    <li>
-      <strong>{% trans "License" %}:</strong>
-      {{ resourcebase.license.name }}
-    </li>
-  {% endif %}
-          
   {% if resourcebase.owner %}
     <li>
       <strong>{% trans "Owner" %}:</strong>
@@ -79,6 +88,23 @@
 
   <div class="more collapse"> 
     <ul class="unstyled wide">
+
+    {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resourcebase.license %}
+      <li>
+        <strong>{% trans "License" %}:</strong>
+        {{ resourcebase.license.name_long }}
+        <strong><a href="#license-more" data-toggle="collapse" data-target=".license-more">?</a></strong>
+        <div style="margin-left:20px;" class="license-more collapse">
+        {% for bullet in resourcebase.license.description_bullets %}
+          {{ bullet }}<br/><br/>
+        {% endfor %}
+        {% if resourcebase.license.url %}
+          + For more info see <a href="{{ resourcebase.license.url }}">{{ resourcebase.license.url }}</a>.
+        {% endif %}
+        </div>
+      </li>
+    {% endif %}
+
     {% if resourcebase.maintenance_frequency %}
       <li>
         <strong>{% trans "Maintenance Frequency" %}:</strong>

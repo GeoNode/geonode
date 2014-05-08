@@ -563,6 +563,17 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 
 SOCIAL_BUTTONS = True
 
+#Enabled Licenses User Interface
+#Regardless, license field is stil exists as a field in the Resourcebase model.
+#Display and Search Options: above, below, never
+#Metadata Options: verbose, light, never
+LICENSES = {
+    'ENABLED': True,
+    'DETAIL': 'above',
+    'SEARCH': 'never',
+    'METADATA': 'verbose',
+}
+
 # Require users to authenticate before using Geonode
 LOCKDOWN_GEONODE = False
 

@@ -30,9 +30,15 @@
           </div>
           <div id="slide-pane">
             <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
+            {% if LICENSES_ENABLED and LICENSES_SEARCH == 'above' %}
+               {% include "search/_license_filter.html" %}
+            {% endif %}
             {% include "search/_type_filters.html" %}
-	          {% include "search/_extent_filter.html" %}
+            {% include "search/_extent_filter.html" %}
             {% include "search/_general_filters.html" %}
+            {% if LICENSES_ENABLED and LICENSES_SEARCH == 'below' %}
+               {% include "search/_license_filter.html" %}
+            {% endif %}
           </div>
         </div>
         <div class="tab-content span8 paginate paginate-auto" id="search-content">

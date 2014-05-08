@@ -38,7 +38,7 @@ from geonode.search.util import resolve_extension
 from geonode.search.normalizers import apply_normalizers, MapNormalizer, LayerNormalizer, DocumentNormalizer, OwnerNormalizer, GroupNormalizer
 from geonode.search.query import query_from_request
 from geonode.search.query import BadQuery
-from geonode.base.models import TopicCategory
+from geonode.base.models import TopicCategory, License
 
 from datetime import datetime
 from time import time
@@ -100,6 +100,7 @@ def search_page(request, template='search/search.html', **kw):
     else:
         results, facets, query = search_api(request, format='html', **kw)
         categories = {}
+        licenses = {}
         tags = {}
 
         # get the keywords and their count
@@ -114,13 +115,12 @@ def search_page(request, template='search/search.html', **kw):
         for val in facets.values(): total+=val
         total -= facets['raster'] + facets['vector']
 
-    return render_to_response(template, RequestContext(request, {'object_list': results, 'total': total, "categories": categories,
-                                                                 'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': tags,
-                                                                 'initial_query': initial_query}))
+    return render_to_response(template, RequestContext(request, {'object_list': results, 'total': total, "categories": categories, "licenses": licenses, 'facets': facets, 'query': json.dumps(query.get_query_response()), 'tags': tags, 'initial_query': initial_query}))
 
 def advanced_search(request, **kw):
     ctx = {
         'category_list': TopicCategory.objects.all(),
+        'license_list': License.objects.all(),
     }
     
     return render_to_response('search/advanced_search.html', RequestContext(request, ctx))
@@ -305,6 +305,7 @@ def haystack_search_api(request, format="json", **kwargs):
     id = request.REQUEST.get("id", None)
     query = request.REQUEST.get('q',None)
     category = request.REQUEST.get("category", None)
+    license = request.REQUEST.get("license", None)
     limit = int(request.REQUEST.get("limit", getattr(settings, "HAYSTACK_SEARCH_RESULTS_PER_PAGE", 20)))
     startIndex = int(request.REQUEST.get("startIndex", 0))
     sort = request.REQUEST.get("sort", "relevance")
@@ -391,6 +392,10 @@ def haystack_search_api(request, format="json", **kwargs):
     # filter by cateory
     if category:
         sqs = sqs.narrow('category:%s' % category)
+
+    # filter by cateory
+    if license:
+        sqs = sqs.narrow('license:%s' % license)
 
     #filter by keyword
     if keyword:
@@ -520,6 +525,8 @@ def haystack_search_api(request, format="json", **kwargs):
 
     sqs = sqs.facet('category')
 
+    sqs = sqs.facet('license')
+
     sqs = sqs.facet('keywords')
 
     sqs = sqs.facet('service')
@@ -542,6 +549,7 @@ def haystack_search_api(request, format="json", **kwargs):
         "results": results,
         "facets": dict(facet_counts.get("fields")['type']+facet_counts.get('fields')['subtype']) if sqs.count() > 0 else [],
         "categories": {facet[0]:facet[1] for facet in facet_counts.get('fields')['category']} if sqs.count() > 0 else {},
+        "licenses": {facet[0]:facet[1] for facet in facet_counts.get('fields')['license']} if sqs.count() > 0 else {},
         "keywords": {facet[0]:facet[1] for facet in facet_counts.get('fields')['keywords']} if sqs.count() > 0 else {},
     }
 
