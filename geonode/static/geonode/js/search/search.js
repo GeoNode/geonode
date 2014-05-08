@@ -34,7 +34,7 @@
       if($location.search().hasOwnProperty('category__identifier__in')){
         data.objects = set_initial_filters_from_query(data.objects, 
           $location.search()['category__identifier__in'], 'identifier');
-      }   
+      }  
       $rootScope.categories = data.objects;            
     });
 
