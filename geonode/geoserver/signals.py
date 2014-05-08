@@ -321,7 +321,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         # with the WMS parser.
         p = "&".join("%s=%s"%item for item in params.items())
 
-        thumbnail_remote_url = ogc_server_settings.LOCATION + "wms/reflect?" + p
+        thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + "wms/reflect?" + p
 
         Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                         url=thumbnail_remote_url,
