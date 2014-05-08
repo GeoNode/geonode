@@ -1,12 +1,12 @@
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie.resources import ModelResource
+from tastypie import fields
+
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 
-from tastypie.constants import ALL, ALL_WITH_RELATIONS
-
-from tastypie.resources import ModelResource
-from tastypie import fields
 from .authorization import GeoNodeAuthorization
 
 from .api import TagResource, TopicCategoryResource, UserResource, FILTER_TYPES
@@ -26,7 +26,7 @@ class CommonMetaApi:
             'owner': ALL_WITH_RELATIONS,
             'date': ALL,
         }
-    ordering = ['date', 'title']
+    ordering = ['date', 'title', 'popular_count']
     max_limit = None
 
 
@@ -34,6 +34,11 @@ class CommonModelApi(ModelResource):
     keywords = fields.ToManyField(TagResource, 'keywords', null=True)
     category = fields.ToOneField(TopicCategoryResource, 'category', null=True)
     owner = fields.ToOneField(UserResource, 'owner')
+    absolute__url = fields.CharField()
+    rating = fields.FloatField(attribute='rating', null = True)    
+
+    def dehydrate_absolute__url(self, bundle):
+        return bundle.obj.get_absolute_url()
 
     def build_filters(self, filters={}):
         orm_filters = super(CommonModelApi, self).build_filters(filters)

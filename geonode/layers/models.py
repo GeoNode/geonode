@@ -90,9 +90,6 @@ class Layer(ResourceBase):
     name = models.CharField(max_length=128)
     typename = models.CharField(max_length=128, unique=True, null=True, blank=True)
 
-    popular_count = models.IntegerField(default=0)
-    share_count = models.IntegerField(default=0)
-
     default_style = models.ForeignKey(Style, related_name='layer_default_style', null=True, blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')
 

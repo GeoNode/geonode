@@ -45,9 +45,6 @@ class Document(ResourceBase):
                               help_text=_('The URL of the document if it is external.'),
                               verbose_name=_('URL'))
 
-    popular_count = models.IntegerField(default=0)
-    share_count = models.IntegerField(default=0)
-
     def __unicode__(self):  
         return self.title
         
