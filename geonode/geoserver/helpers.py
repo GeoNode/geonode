@@ -262,6 +262,11 @@ def cascading_delete(cat, layer_name):
             
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
             delete_from_postgis(resource_name)
+
+        # Prevent the entire store from being removed when the store is a GeoGIT repository.
+        if store.type and store.type.lower() == 'geogit':
+            return
+
         else:
             try:
                 cat.delete(store, recurse=True)
@@ -510,7 +515,7 @@ def set_attributes(layer, overwrite=False):
             "identifiers": layer.typename.encode('utf-8')
         })
         try:
-            response, body = http.request(dc_url)
+            response, body = http_client.request(dc_url)
             doc = etree.fromstring(body)
             path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
             attribute_map = [[n.text,"raster"] for n in doc.findall(path)]
