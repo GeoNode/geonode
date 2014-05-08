@@ -4,7 +4,7 @@
 <article>
   <div class="content">
     <div class="item-header">
-      <div class="avatar"><a href="{{ profile.profile_detail_url }}" ><img src="{{ profile.avatar_100 }}"/></a></div>
+      <div class="avatar"><a href="{{ profile.profile_detail_url }}" ><img ng-src="{{ profile.avatar_100 }}"/></a></div>
       <h3><i class="icon-user"></i> <a href="{{ profile.profile_detail_url }}">{{ profile.name }}</a>
         <a href="mailto:{{ profile.email }}" ng-if="profile.email != ''"><i class="icon-envelope-alt icon-large"></i></a>
       </h3>
