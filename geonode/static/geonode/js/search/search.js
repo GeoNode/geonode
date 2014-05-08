@@ -89,7 +89,7 @@
 
 
     /*
-    * Pagination logic
+    * Pagination 
     */
     // Control what happens when the total results change
     $scope.$watch('total_counts', function(){
@@ -125,8 +125,11 @@
         query_api($scope.query);
       }
     }
+    /*
+    * End pagination
+    */
 
-
+    
     // Keep in sync the page location with the query object
     $scope.$watch('query', function(){
       $location.search($scope.query);

@@ -1,9 +1,12 @@
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.contrib.contenttypes.models import ContentType
 
 from geonode.base.models import TopicCategory
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
+from geonode.people.models import Profile
 
 from taggit.models import Tag
 
@@ -107,4 +110,49 @@ class UserResource(ModelResource):
         }
 
 
+class ProfileResource(ModelResource):
+    """Profile api"""
+    user = fields.ToOneField(UserResource, 'user')
+    avatar_100 = fields.CharField(null=True)
+    profile_detail_url = fields.CharField()
+    email = fields.CharField(default='')
+    layers_count = fields.IntegerField(default=0)
+    maps_count = fields.IntegerField(default=0)
+    documents_count = fields.IntegerField(default=0)
+    current_user = fields.BooleanField(default=False)
+    activity_stream_url = fields.CharField(null=True)
 
+    def dehydrate_email(self, bundle):
+        email = ''
+        if bundle.request.user.is_authenticated():
+            email = bundle.obj.email
+        return email
+
+    def dehydrate_layers_count(self, bundle):
+        return bundle.obj.user.resourcebase_set.instance_of(Layer).count()
+
+    def dehydrate_maps_count(self, bundle):
+        return bundle.obj.user.resourcebase_set.instance_of(Map).count()
+
+    def dehydrate_documents_count(self, bundle):
+        return bundle.obj.user.resourcebase_set.instance_of(Document).count()
+
+    def dehydrate_avatar_100(self, bundle):
+        return bundle.obj.user.avatar_set.filter(primary=True)[0].avatar_url(100)
+
+    def dehydrate_profile_detail_url(self, bundle):
+        return bundle.obj.get_absolute_url()
+
+    def dehydrate_current_user(self, bundle):
+        return bundle.request.user.username == bundle.obj.user.username
+
+    def dehydrate_activity_stream_url(self, bundle):
+        return reverse('actstream_actor', kwargs={
+            'content_type_id': ContentType.objects.get_for_model(bundle.obj.user).pk, 
+            'object_id': bundle.obj.user.pk})
+
+    class Meta:
+        queryset = Profile.objects.all()
+        resource_name = 'profiles'
+        allowed_methods = ['get',]
+        
