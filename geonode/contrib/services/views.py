@@ -884,14 +884,17 @@ def _process_arcgis_folder(folder, services=[], owner=None, parent=None):
     Iterate through folders and services in an ArcGIS REST service folder
     """
     for service in folder.services:
-        if  isinstance(service,ArcMapService) and service.spatialReference.wkid in [102100,3857,900913]:
-            print "Base URL is %s" % service.url
-            result_json = _process_arcgis_service(service, owner, parent=parent)
-            services.append(result_json)
+        return_dict = {}
+        if  not isinstance(service,ArcMapService):
+            return_dict['msg'] = 'Service could not be identified as an ArcMapService, URL: %s' % service.url
         else:
-            return_dict = {}
-            return_dict['msg'] =  _("Could not find any layers in a compatible projection:") + service.url
-            services.append(return_dict)
+            if service.spatialReference.wkid in [102100,3857,900913]:
+                return_dict = _process_arcgis_service(service, owner, parent=parent)
+            else:
+                return_dict['msg'] =  _("Could not find any layers in a compatible projection: The spatial id was: %s and the url %s" % (service.spatialReference.wkid, service.url))
+
+        services.append(return_dict)
+
     for subfolder in folder.folders:
         _process_arcgis_folder(subfolder, services, owner)
     return services
