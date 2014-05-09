@@ -25,6 +25,7 @@ from datetime import datetime
 from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
@@ -136,8 +137,6 @@ class Layer(ResourceBase):
         assert base_files_count == 1, msg
 
         return base_files.get()
-
->>>>>>> 29fba2f8c8bf51d0707a300392e1f60fc9ec9c69
 
     def get_absolute_url(self):
         return reverse('layer_detail', args=(self.typename,))
