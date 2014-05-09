@@ -15,21 +15,21 @@
         {{ member.user.username }} - {{ member.role }} - <a href='{% url "group_member_remove" object.slug member.user.username %}'>Remove</a><br/>
     {% endfor %}
 
-    {% if invite_form %}
-        <h2>{% trans "Add members" %}</h2>
-        <form class="uniForm" method="POST" action="{% url "group_invite" object.slug %}">
-            {% csrf_token %}
-            {{ invite_form }}
-            <input type="submit" value="invite" />
-        </form>
-    {% endif %}
-
     {% if member_form %}
         <h2>{% trans "Add members" %}</h2>
         <form class="uniForm" method="POST" action="{% url "group_members_add" object.slug %}">
             {% csrf_token %}
             {{ member_form }}<br/><br/>
             <input type="submit" value="Add Group Members" />
+        </form>
+    {% endif %}
+
+    {% if invite_form %}
+        <h2>{% trans "Invite people" %}</h2>
+        <form class="uniForm" method="POST" action="{% url "group_invite" object.slug %}">
+            {% csrf_token %}
+            {{ invite_form }}
+            <input type="submit" value="invite" />
         </form>
     {% endif %}
 

@@ -24,9 +24,10 @@ from datetime import timedelta
 from django.core.serializers import serialize
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import settings
 from geonode.layers.models import Layer
 from geonode.base.models import TopicCategory
-from geonode.maps.models import Map
+from geonode.maps.models import Map, MapLayer
 from geonode.documents.models import Document
 from geonode.people.models import Profile
 from itertools import cycle
@@ -36,6 +37,13 @@ from uuid import uuid4
 import os.path
 
 
+if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    from django.db.models import signals
+    from geonode.geoserver.signals import geoserver_pre_save_maplayer
+    from geonode.geoserver.signals import geoserver_post_save_map
+    signals.pre_save.disconnect(geoserver_pre_save_maplayer, sender=MapLayer)
+    signals.post_save.disconnect(geoserver_post_save_map, sender=Map)
+
 # This is used to populate the database with the search fixture data. This is
 # primarily used as a first step to generate the json data for the fixture using
 # django's dumpdata
@@ -43,6 +51,15 @@ import os.path
 imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
                                 '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
 f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
+
+def all_public():
+    '''ensure all layers, maps and documents are publicly viewable'''
+    for l in Layer.objects.all():
+        l.set_default_permissions()
+    for m in Map.objects.all():
+        m.set_default_permissions()
+    for d in Document.objects.all():
+        d.set_default_permissions()
 
 def create_fixtures():
     biota = TopicCategory.objects.get(identifier='biota')
@@ -76,7 +93,7 @@ def create_fixtures():
             ]
 
     layer_data = [
-            ('CA', 'abstract1', 'CA', 'base:CA', [-180, 180, -90, 90], '19850101', ('populartag','here'), elevation),
+            ('CA', 'abstract1', 'CA', 'geonode:CA', [-180, 180, -90, 90], '19850101', ('populartag','here'), elevation),
             ('layer2', 'abstract2', 'layer2', 'geonode:layer2', [-180, 180, -90, 90], '19800501', ('populartag',), elevation),
             ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', [-180, 180, -90, 90], '19901001', ('populartag',), elevation),
             ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', [-180, 180, -90, 90], '19000603', ('populartag', 'layertagunique'), location),

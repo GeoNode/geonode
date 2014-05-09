@@ -20,7 +20,8 @@ GNIPS_  GeoNode Improvement Proposals
 
 
 Contributing
-------------
+============
+
 Helping out the GeoNode project is great and by contributing we all benefit and here is how.
 
 :ref:`contrib`  is the best way to help out and here we show you how.
@@ -38,7 +39,6 @@ Helping out the GeoNode project is great and by contributing we all benefit and 
 :ref:`contribute_to_doc_translation` describes how to translate the documentation.
 
 .. toctree::
-    :hidden:
     :maxdepth: 3
 
     about

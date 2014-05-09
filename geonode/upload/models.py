@@ -25,7 +25,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
 from geonode.layers.models import Layer
-from geonode.utils import ogc_server_settings
+from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 from gsimporter import NotFound
 from os import path
 
@@ -98,7 +98,7 @@ class Upload(models.Model):
         models.Model.delete(self)
         if cascade:
             try:
-                session = Layer.objects.gs_uploader.get_session(self.import_id)
+                session = gs_uploader.get_session(self.import_id)
             except NotFound:
                 session = None
             if session:

@@ -14,6 +14,8 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 
+from .forms import DocumentCreateForm
+
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
@@ -55,6 +57,89 @@ class LayersTest(TestCase):
             title='theimg', content_type=ctype, object_id=m.id)
 
         self.assertEquals(Document.objects.get(pk=c.id).title, 'theimg')
+
+    def test_create_document_url(self):
+        """Tests creating an external document instead of a file."""
+
+        superuser = User.objects.get(pk=2)
+        c = Document.objects.create(doc_url="http://geonode.org/map.pdf",
+                                    owner=superuser,
+                                    title="GeoNode Map",
+                                    )
+        doc = Document.objects.get(pk=c.id)
+        self.assertEquals(doc.title, "GeoNode Map")
+        self.assertEquals(doc.extension, "pdf")
+
+    def test_create_document_url_view(self):
+        """
+        Tests creating and updating external documents.
+        """
+        superuser = User.objects.get(pk=2)
+
+        c = Client()
+        c.login(username='admin', password='admin')
+        form_data = {'title': 'GeoNode Map',
+                     'permissions': '{"anonymous":"document_readonly","authenticated":"document_readwrite","users":[]}',
+                     'doc_url': 'http://www.geonode.org/map.pdf'
+                     }
+
+        response = c.post(reverse('document_upload'), data=form_data)
+        self.assertEqual(response.status_code, 302)
+
+        d = Document.objects.get(title='GeoNode Map')
+        self.assertEqual(d.doc_url, 'http://www.geonode.org/map.pdf')
+
+        form_data['doc_url'] = 'http://www.geonode.org/mapz.pdf'
+        response = c.post(reverse('document_replace', args=[d.id]), data=form_data)
+        self.assertEqual(response.status_code, 302)
+
+        d = Document.objects.get(title='GeoNode Map')
+        self.assertEqual(d.doc_url, 'http://www.geonode.org/mapz.pdf')
+
+    def test_upload_document_form(self):
+        """
+        Tests the Upload form.
+        """
+        form_data = dict()
+        form = DocumentCreateForm(data=form_data)
+        self.assertFalse(form.is_valid())
+
+        # title is required
+        self.assertTrue('title' in form.errors)
+
+        # permissions are required
+        self.assertTrue('permissions' in form.errors)
+
+        # since neither a doc_file nor a doc_url are included __all__ should be in form.errors.
+        self.assertTrue('__all__' in form.errors)
+
+        form_data = {'title': 'GeoNode Map',
+                     'permissions': '{"anonymous":"document_readonly","authenticated":"document_readwrite","users":[]}',
+                     'doc_url': 'http://www.geonode.org/map.pdf'
+                     }
+
+        form = DocumentCreateForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+        self.assertTrue(isinstance(form.cleaned_data['permissions'], dict))
+
+        # if permissions are not JSON serializable, the field should be in form.errors.
+        form_data['permissions'] = 'non-json string'
+        self.assertTrue('permissions' in DocumentCreateForm(data=form_data).errors)
+
+        form_data = {'title': 'GeoNode Map',
+                     'permissions': '{"anonymous":"document_readonly","authenticated":"document_readwrite","users":[]}',
+                     }
+
+        file_data = {'doc_file': SimpleUploadedFile('test_img_file.gif', self.imgfile.read(), 'image/gif')}
+        form = DocumentCreateForm(form_data, file_data)
+        self.assertTrue(form.is_valid())
+
+        # The form should raise a validation error when a url and file is present.
+        form_data['doc_url'] = 'http://www.geonode.org/map.pdf'
+        form = DocumentCreateForm(form_data, file_data)
+        self.assertFalse(form.is_valid())
+        self.assertTrue('__all__' in form.errors)
 
     def test_document_details(self):
         """/documents/1 -> Test accessing the detail view of a document"""

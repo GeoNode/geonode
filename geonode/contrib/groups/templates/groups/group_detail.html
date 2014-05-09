@@ -63,13 +63,19 @@
             {% endblocktrans %}
               {% if object.access == "public" %}
                   {% trans "Anyone may join this group." %}
+        			<form class="uniForm" method="POST" action="{% url "group_join" object.slug %}">
+            			{% csrf_token %}
+            			<input type="submit" value="Join Group" />
+        			</form>
               {% else %} {% if object.access == "public-invite" %}
                   {% trans "Anyone may view this group but membership is by invitation only." %}
               {% else %} {% if object.access == "private" %}
                   {% trans "Membership is by invitation only." %}
               {% endif %} {% endif %} {% endif %}
         </p>
+
     </div>
+
     <div class="well">
       <h2>{% trans "Managers" %}</h2>
       {% for manager in object.get_managers %}

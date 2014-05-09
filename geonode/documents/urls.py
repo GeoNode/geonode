@@ -18,8 +18,9 @@
 #
 #########################################################################
 
+from django.contrib.auth.decorators import login_required
 from django.conf.urls.defaults import patterns, url
-
+from .views import DocumentUploadView, DocumentUpdateView
 js_info_dict = {
     'packages': ('geonode.documents',),
 }
@@ -29,11 +30,9 @@ urlpatterns = patterns('geonode.documents.views',
     url(r'^tag/(?P<slug>[-\w]+?)/$', 'document_tag', name='document_browse_tag'),
     url(r'^(?P<docid>\d+)/?$', 'document_detail', name='document_detail'),
     url(r'^(?P<docid>\d+)/download/?$', 'document_download', name='document_download'),
-    url(r'^(?P<docid>\d+)/replace$', 'document_replace',
-        name="document_replace"),
-    url(r'^(?P<docid>\d+)/remove$', 'document_remove',
-        name="document_remove"),
-    url(r'^upload/?$', 'document_upload', name='document_upload'),
+    url(r'^(?P<docid>\d+)/replace$', login_required(DocumentUpdateView.as_view()), name="document_replace"),
+    url(r'^(?P<docid>\d+)/remove$', 'document_remove', name="document_remove"),
+    url(r'^upload/?$', login_required(DocumentUploadView.as_view()), name='document_upload'),
     url(r'^search/?$', 'document_search_page', name='document_search_page'),
     url(r'^(?P<docid>\d+)/metadata$', 'document_metadata', name='document_metadata'),
 )

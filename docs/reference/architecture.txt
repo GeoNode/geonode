@@ -88,7 +88,7 @@ The latter is not suggested for production.
 GeoNode and pycsw
 -----------------
 
-GeoNode is built with pycsw embedded as the default CSW server component.
+GeoNode is built with `pycsw <http://pycsw.org>`_ embedded as the default CSW server component.
 
 Publishing
 ..........

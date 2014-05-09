@@ -26,6 +26,8 @@ from django.views.generic import TemplateView
 
 import geonode.proxy.urls
 
+from geonode.api.urls import api
+
 # Setup Django Admin
 from django.contrib import admin
 admin.autodiscover()
@@ -60,12 +62,6 @@ urlpatterns = patterns('',
     # Search views
     (r'^search/', include('geonode.search.urls')),
 
-    # Upload views
-    (r'^upload/', include('geonode.upload.urls')),
-
-    # GeoServer Helper Views 
-    (r'^gs/', include('geonode.geoserver.urls')),
-
     # Social views
     (r"^account/", include("account.urls")),
     (r'^people/', include('geonode.people.urls')),
@@ -93,7 +89,7 @@ urlpatterns = patterns('',
                                   {'sitemaps': sitemaps}, name='sitemap'),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
-
+    url(r'', include(api.urls)),
     )
 
 #Documents views
@@ -113,8 +109,17 @@ if "geonode.contrib.services" in settings.INSTALLED_APPS:
     )
 
 
+if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    # GeoServer Helper Views
+    urlpatterns += patterns('', 
+        # Upload views
+        (r'^upload/', include('geonode.upload.urls')),
+        (r'^gs/', include('geonode.geoserver.urls')),
+    )
 
+# Set up proxy
 urlpatterns += geonode.proxy.urls.urlpatterns
+
 
 # Serve static files
 urlpatterns += staticfiles_urlpatterns()

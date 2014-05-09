@@ -186,7 +186,7 @@ community."
         def is_wms_layer(x):
             return cfg['sources'][x['source']]['ptype'] == 'gxp_wmscsource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
-        self.assertEquals(layernames, ['base:CA',])
+        self.assertEquals(layernames, ['geonode:CA',])
 
     def test_map_to_wmc(self):
         """ /maps/1/wmc -> Test map WMC export
