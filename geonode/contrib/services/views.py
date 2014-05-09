@@ -55,7 +55,7 @@ from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.contrib.services.forms import CreateServiceForm, ServiceLayerFormSet, ServiceForm
 from geonode.utils import llbbox_to_mercator, mercator_to_llbbox
 from django.db import transaction
-from geonode.layers.models import set_attributes
+from geonode.geoserver.helpers import set_attributes
 
 logger = logging.getLogger("geonode.core.layers.views")
 
