@@ -177,10 +177,10 @@ def group_join(request, slug):
         raise Http404()
     
     if group.user_is_member(request.user):
-        return redirect("group_members", slug=group.slug)
+        return redirect("group_detail", slug=group.slug)
     else:
         group.join(request.user, role="member")
-        return redirect("group_members", slug=group.slug)
+        return redirect("group_detail", slug=group.slug)
 
 
 @require_POST
@@ -193,8 +193,8 @@ def group_invite(request, slug):
     form = GroupInviteForm(request.POST)
     
     if form.is_valid():
-        for user in form.cleaned_data["user_identifiers"]:
-            group.invite(user, request.user, role=form.cleaned_data["role"])
+        for user in form.cleaned_data["invite_user_identifiers"].split("\n"):
+            group.invite(user, request.user, role=form.cleaned_data["invite_role"])
     
     return redirect("group_members", slug=group.slug)
 

@@ -25,10 +25,17 @@ import httplib2
 from django.conf import settings
 from django.utils.http import is_safe_url
 from django.http.request import validate_host
-from geonode.utils import ogc_server_settings
 
 def proxy(request):
-    PROXY_ALLOWED_HOSTS = (ogc_server_settings.hostname,) + getattr(settings, 'PROXY_ALLOWED_HOSTS', ())
+    PROXY_ALLOWED_HOSTS = getattr(settings, 'PROXY_ALLOWED_HOSTS', ())
+
+    host = None
+
+    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        from geonode.geoserver.helpers import ogc_server_settings
+        hostname = (ogc_server_settings.hostname,) if ogc_server_settings else ()
+        PROXY_ALLOWED_HOSTS += hostname
+        host = ogc_server_settings.netloc
 
     if 'url' not in request.GET:
         return HttpResponse(
@@ -55,7 +62,7 @@ def proxy(request):
                     )
     headers = {}
 
-    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(url=raw_url, host=ogc_server_settings.netloc):
+    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(url=raw_url, host=host):
         headers["Cookie"] = request.META["HTTP_COOKIE"]
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
@@ -87,43 +94,3 @@ def proxy(request):
             )
 
     return response
-
-def geoserver_rest_proxy(request, proxy_path, downstream_path):
-    if not request.user.is_authenticated():
-        return HttpResponse(
-            "You must be logged in to access GeoServer",
-            mimetype="text/plain",
-            status=401)
-
-    def strip_prefix(path, prefix):
-        assert path.startswith(prefix)
-        return path[len(prefix):]
-
-    path = strip_prefix(request.get_full_path(), proxy_path)
-    url = "".join([ogc_server_settings.LOCATION, downstream_path, path])
-
-    http = httplib2.Http()
-    http.add_credentials(*(ogc_server_settings.credentials))
-    headers = dict()
-
-    if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
-        headers["Content-Type"] = request.META["CONTENT_TYPE"]
-
-    response, content = http.request(
-        url, request.method,
-        body=request.raw_post_data or None,
-        headers=headers)
-        
-    # we need to sync django here
-    # we should remove this geonode dependency calling layers.views straight
-    # from GXP, bypassing the proxy
-    if downstream_path == 'rest/styles' and len(request.raw_post_data)>0:
-        # for some reason sometime gxp sends a put with empty request
-        # need to figure out with Bart
-        from geonode.layers import utils
-        utils.style_update(request, url)
-
-    return HttpResponse(
-        content=content,
-        status=response.status,
-        mimetype=response.get("content-type", "text/plain"))

@@ -249,6 +249,90 @@
             "description": "scene from a video recording"
         }
     },
+    {
+        "pk": 1,
+        "model": "base.license",
+        "fields": {
+            "identifier": "not_specified",
+            "name":"Not Specified",
+            "abbreviation":"",
+            "description":"The original author did not specify a license.",
+            "url":"",
+            "license_text":"Not applicable"
+        }
+    },
+{
+        "pk": 2,
+        "model": "base.license",
+        "fields": {
+            "identifier":"varied_original",
+            "name":"Varied / Original",
+            "abbreviation":"",
+            "description":"This item is either licensed under multiple licenses.  See the item's abstract for more information or contact the distributor.",
+            "url":"",
+            "license_text":"Not applicable"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "base.license",
+        "fields": {
+            "identifier":"varied_derived",
+            "name":"Varied / Derived",
+            "abbreviation":"",
+            "description":"The constituent parts of this item have different licenses.  Go to each part to see license information.",
+            "url":"",
+            "license_text":"Not applicable"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "base.license",
+        "fields": {
+            "identifier":"public_domain",
+            "name":"Public Domain",
+            "abbreviation":"PD",
+            "description":"Works in the public domain may be used freely without the permission of the former copyright owner.",
+            "url":"http://www.copyright.gov/help/faq/faq-definitions.html",
+            "license_text":"The public domain is not a place. A work of authorship is in the “public domain” if it is no longer under copyright protection or if it failed to meet the requirements for copyright protection. Works in the public domain may be used freely without the permission of the former copyright owner."
+        }
+    },
+    {
+        "pk": 5,
+        "model": "base.license",
+        "fields": {
+            "identifier":"public_domain_usg",
+            "name":"Public Domain / USG",
+            "abbreviation":"PD/USG",
+            "description":"This project constitutes a work of the United States Government and is not subject to domestic copyright protection under 17 USC § 105.",
+            "url":"https://raw.githubusercontent.com/state-hiu/cybergis-licenses/master/licenses/PUBLICDOMAIN-LICENSE-RAW.txt",
+            "license_text":"This project constitutes a work of the United States Government and is not subject to domestic copyright protection under 17 USC § 105."
+        }
+    },
+    {
+        "pk": 6,
+        "model": "base.license",
+        "fields": {
+            "identifier":"odbl",
+            "name":"Open Data Commons Open Database License / OSM",
+            "abbreviation":"ODbL/OSM",
+            "description":"You are free to copy, distribute, transmit and adapt our data, as long as you credit OpenStreetMap and its contributors\nIf you alter or build upon our data, you may distribute the result only under the same licence.",
+            "url":"http://www.openstreetmap.org/copyright",
+            "license_text":""
+        }
+    },
+    {
+        "pk": 7,
+        "model": "base.license",
+        "fields": {
+            "identifier":"nextview",
+            "name":"NextView",
+            "abbreviation":"NV",
+            "description":"This data is licensed for use by the US Government (USG) under the NextView (NV) license and copyrighted by Digital Globe or GeoEye. The NV license allows the USG to share the imagery and Literal Imagery Derived Products (LIDP) with entities outside the USG when that entity is working directly with the USG, for the USG, or in a manner that is directly beneficial to the USG. The party receiving the data can only use the imagery or LIDP for the original purpose or only as otherwise agreed to by the USG. The party receiving the data cannot share the imagery or LIDP with a third party without express permission from the USG. At no time should this imagery or LIDP be used for other than USG-related purposes and must not be used for commercial gain. The copyright information should be maintained at all times. Your acceptance of these license terms is implied by your use.\nIn other words, you may only use NextView imagery linked from this site for digitizing OpenStreetMap data for humanitarian purposes.",
+            "url":"https://raw.githubusercontent.com/state-hiu/cybergis-licenses/master/licenses/NEXTVIEW-LICENSE-RAW.txt",
+            "license_text":""
+        }
+    },
      {
         "pk": 1, 
         "model": "base.restrictioncodetype", 

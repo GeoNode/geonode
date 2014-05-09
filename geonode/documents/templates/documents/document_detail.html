@@ -22,13 +22,8 @@
     <h2 class="page-title">{{ document.title }}</h2>
   </div>
   <div class="span6 action-group">
-    <!-- <div class="pull-right">
-      <div class="btn-group">
-      </div>
-      <div class="btn-group">
-      </div>
-    </div> -->
 	<div class="btn-group pull-right">
+        <div class="btn-group">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
           {% trans "Download Metadata" %}
           <span class="caret"></span>
@@ -41,7 +36,7 @@
      </div>
     {% has_obj_perm user document "documents.change_document" as can_edit_document %}
     {% if can_edit_document %}
-    <div class="btn-group pull-right">
+    <div class="btn-group">
       <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
         {% trans "Edit Document" %}
         <span class="caret"></span>
@@ -54,15 +49,18 @@
       </ul>
     </div>
     {% endif %}
+    </div>
   </div>
   <div class="span8">
    
-      {% if document.extension|lower in imgtypes %}
+      {% if document.extension|lower in imgtypes and document.doc_file %}
       <div id="embedded_map">
         <img src="{% url "document_download" document.id %}" width='100%' />
       </div>
-      {% else %}
+      {% elif document.doc_file %}
         <a href="{% url "document_download" document.id %}" target="_blank">Download the {{ document }} document</a>
+      {% elif  document.doc_url %}
+        <a href="{{ document.doc_url }}" target="_blank">Download the {{ document }} document.</a> <i>({% trans 'External Resource' %})</i>
       {%  endif %}
        
       <div class="map-actions">

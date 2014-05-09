@@ -1,4 +1,5 @@
-from datetime import datetime
+import datetime
+import math
 import os
 import hashlib
 import logging
@@ -12,10 +13,13 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 
+from polymorphic import PolymorphicModel, PolymorphicManager
+
 from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
 from geonode.utils import bbox_to_wkt
+from geonode.utils import forward_mercator, inverse_mercator
 from geonode.people.models import Profile, Role
 from geonode.security.models import PermissionLevelMixin
 from taggit.managers import TaggableManager
@@ -123,6 +127,7 @@ class RestrictionCodeType(models.Model):
         ordering = ("identifier",)
         verbose_name_plural = 'Metadata Restriction Code Types'
 
+
 class Thumbnail(models.Model):
 
     thumb_file = models.FileField(upload_to='thumbs')
@@ -151,53 +156,7 @@ class Thumbnail(models.Model):
         return self.thumb_file.name
 
 
-class ThumbnailMixin(object):
-    """
-    Add Thumbnail management behavior. The model must declared a field
-    named thumbnail.
-    """
-
-    def save_thumbnail(self, spec, save=True):
-        """
-        Generic support for saving. `render` implementation must exist
-        and return image as bytes of a png image (for now)
-        """
-        render = getattr(self, '_render_thumbnail', None)
-        if render is None:
-            raise Exception('Must have _render_thumbnail(spec) function')
-        image = render(spec)
-
-        if not image:
-            return
-
-        #Clean any orphan Thumbnail before
-        Thumbnail.objects.filter(resourcebase__id=None).delete()
-        
-        self.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=self.id)
-        path = self._thumbnail_path()
-        self.thumbnail.thumb_spec = spec
-        self.thumbnail.save_thumb(image, path)
-        # have to save the thumb ref if new but also trigger XML regeneration
-        if save:
-            self.save()
-
-    def _thumbnail_path(self):
-        return '%s-%s' % (self._meta.object_name, self.pk)
-
-    def _get_default_thumbnail(self):
-        return getattr(self, "_missing_thumbnail", staticfiles.static(settings.MISSING_THUMBNAIL))
-
-    def get_thumbnail_url(self):
-        thumb = self.thumbnail
-        return thumb == None and self._get_default_thumbnail() or thumb.thumb_file.url
- 
-    def has_thumbnail(self):
-        '''Determine if the thumbnail object exists and an image exists'''
-        thumb = self.thumbnail
-        return os.path.exists(self._thumbnail_path()) if thumb else False
-
-
-class ResourceBaseManager(models.Manager):
+class ResourceBaseManager(PolymorphicManager):
     def admin_contact(self):
         # this assumes there is at least one superuser
         superusers = User.objects.filter(is_superuser=True).order_by('id')
@@ -210,7 +169,9 @@ class ResourceBaseManager(models.Manager):
 
 
 class License(models.Model):
+    identifier = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=100)
+    abbreviation = models.CharField(max_length=20, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     url = models.URLField(max_length=2000, null=True, blank=True)
     license_text = models.TextField(null=True, blank=True)
@@ -218,8 +179,30 @@ class License(models.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def name_long(self):
+        if self.abbreviation is None or len(self.abbreviation)==0:
+            return self.name
+        else:
+            return self.name+" ("+self.abbreviation+")"
 
-class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
+    @property
+    def description_bullets(self):
+        if self.description is None or len(self.description)==0:
+            return ""
+        else:
+            bullets = []
+            lines = self.description.split("\n")
+            for line in lines:
+                bullets.append("+ "+line)
+            return bullets
+
+    class Meta:
+        ordering = ("name",)
+        verbose_name_plural = 'Licenses'
+
+
+class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     """
     Base Resource Object loosely based on ISO 19115:2003
     """
@@ -231,7 +214,7 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     owner = models.ForeignKey(User, blank=True, null=True)
     contacts = models.ManyToManyField(Profile, through='ContactRole')
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
-    date = models.DateTimeField(_('date'), default = datetime.now, help_text=_('reference date for the cited resource')) # passing the method itself, not the result
+    date = models.DateTimeField(_('date'), default = datetime.datetime.now, help_text=_('reference date for the cited resource')) # passing the method itself, not the result
 
     date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication', help_text=_('identification of when a given event occurred'))
 
@@ -297,6 +280,11 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
 
     thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True, on_delete=models.SET_NULL)
 
+
+    def delete(self, *args, **kwargs):
+        super(ResourceBase, self).delete(*args, **kwargs)
+        resourcebase_post_delete(self)
+
     def __unicode__(self):
         return self.title
         
@@ -332,10 +320,25 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
     def geographic_bounding_box(self):
         return bbox_to_wkt(self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, srid=self.srid )
 
-    def get_extent(self):
-        """Generate minx/miny/maxx/maxy of map extent"""
+    @property
+    def license_light(self):
+        a = []
+        if (not (self.license.name is None)) and (len(self.license.name) > 0):
+            a.append(self.license.name)
+        if (not (self.license.url is None)) and (len(self.license.url) > 0):
+            a.append("("+self.license.url+")")
+        return " ".join(a)
 
-        return self.bbox
+    @property
+    def license_verbose(self):
+        a = []
+        if (not (self.license.name_long is None)) and (len(self.license.name_long) > 0):
+            a.append(self.license.name_long+":")
+        if (not (self.license.description is None)) and (len(self.license.description) > 0):
+            a.append(self.license.description)
+        if (not (self.license.url is None)) and (len(self.license.url) > 0):
+                a.append("("+self.license.url+")")
+        return " ".join(a)
 
     @property
     def poc_role(self):
@@ -378,6 +381,39 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
         self.bbox_y0 = box[2]
         self.bbox_y1 = box[3]
 
+
+    def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
+        """
+        Calculate zoom level and center coordinates in mercator.
+        """
+        self.center_x = center_x
+        self.center_y = center_y
+        self.zoom = zoom
+
+        #FIXME(Ariel): How do we set the bbox with this information?
+
+
+    def set_bounds_from_bbox(self, bbox):
+        """
+        Calculate zoom level and center coordinates in mercator.
+        """
+        self.set_latlon_bounds(bbox)
+
+        minx, miny, maxx, maxy = [float(c) for c in bbox]
+        x = (minx + maxx) / 2
+        y = (miny + maxy) / 2
+        (center_x, center_y) = forward_mercator((x,y))
+
+        width_zoom = math.log(360 / (maxx - minx), 2)
+        height_zoom = math.log(360 / (maxy - miny), 2)
+
+        zoom = math.ceil(min(width_zoom, height_zoom))
+
+        self.zoom = zoom
+        self.center_x = center_x
+        self.center_y = center_y
+
+
     def download_links(self):
         """assemble download links for pycsw"""
         links = []
@@ -392,7 +428,87 @@ class ResourceBase(models.Model, PermissionLevelMixin, ThumbnailMixin):
                 description = '%s (%s Format)' % (self.title, url.name)
                 links.append((self.title, description, 'WWW:DOWNLOAD-1.0-http--download', url.url))
         return links
+
     
+    def get_tiles_url(self):
+        """Return URL for Z/Y/X mapping clients or None if it does not exist.
+        """
+        try:
+            tiles_link = self.link_set.get(name='Tiles')
+        except Link.DoesNotExist, e:
+            return None
+        else:
+            return tiles_link.url
+
+    def get_ows_url(self):
+        """Return URL for OGC WMS server None if it does not exist.
+        """
+        try:
+            ows_link = self.link_set.get(name='OWS')
+        except Link.DoesNotExist, e:
+            return None
+        else:
+            return ows_link.url
+
+
+    def get_thumbnail_url(self):
+        """Return a thumbnail url.
+
+           It could be a local one if it exists, a remote one (WMS GetImage) for example
+           or a 'Missing Thumbnail' one.
+        """
+        local_thumbnails = self.link_set.filter(name='Thumbnail')
+        if local_thumbnails.count() > 0:
+            return local_thumbnails[0].url
+
+        remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
+        if remote_thumbnails.count() > 0:
+            return remote_thumbnails[0].url
+
+        return staticfiles.static(settings.MISSING_THUMBNAIL)
+
+
+    def has_thumbnail(self):
+        '''Determine if the thumbnail object exists and an image exists'''
+        if self.thumbnail is None:
+            return False
+
+        if not hasattr(self.thumbnail.thumb_file, 'path'):
+            return False
+
+        return os.path.exists(self.thumbnail.thumb_file.path)
+
+
+    def set_missing_info(self):
+        """Set default permissions and point of contacts.
+
+           It is mandatory to call it from descendant classes
+           but hard to enforce technically via signals or save overriding.
+        """
+        logger.debug('Checking for permissions.')
+        #  True if every key in the get_all_level_info dict is empty.
+        no_custom_permissions = all(map(lambda perm: not perm, self.get_all_level_info().values()))
+
+        if no_custom_permissions:
+            logger.debug('There are no permissions for this object, setting default perms.')
+            self.set_default_permissions()
+
+        if self.owner:
+            user = self.owner
+        else:
+            user = ResourceBase.objects.admin_contact().user
+
+        if self.poc is None:
+            pc, __ = Profile.objects.get_or_create(user=user,
+                                           defaults={"name": user.username}
+                                           )
+            self.poc = pc
+        if self.metadata_author is None:  
+            ac, __ = Profile.objects.get_or_create(user=user,
+                                           defaults={"name": user.username}
+                                           )
+            self.metadata_author = ac
+
     def maintenance_frequency_title(self):
         return [v for i, v in enumerate(UPDATE_FREQUENCIES) if v[0] == self.maintenance_frequency][0][1].title()
         
@@ -472,43 +588,8 @@ class Link(models.Model):
 
     objects = LinkManager()
 
-def resourcebase_post_save(instance, sender, **kwargs):
-    """
-    Since django signals are not propagated from child to parent classes we need to call this 
-    from the children.
-    TODO: once the django will support signal propagation we need to attach a single signal here
-    """
-    resourcebase = instance.resourcebase_ptr
-    if resourcebase.owner:
-        user = resourcebase.owner
-    else:
-        user = ResourceBase.objects.admin_contact().user
-        
-    if resourcebase.poc is None:
-        pc, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": user.username}
-                                           )
-        resourcebase.poc = pc
-    if resourcebase.metadata_author is None:  
-        ac, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": user.username}
-                                           )
-        resourcebase.metadata_author = ac
-
-    if hasattr(instance, 'set_default_permissions') and hasattr(instance, 'get_all_level_info'):
-        logger.debug('Checking for permissions.')
-
-        #  True if every key in the get_all_level_info dict is empty.
-        if all(map(lambda perm: not perm, instance.get_all_level_info().values())):
-            logger.debug('There are no permissions for this object, setting default perms.')
-            instance.set_default_permissions()
 
 
-def resourcebase_post_delete(instance, sender, **kwargs):
-    """
-    Since django signals are not propagated from child to parent classes we need to call this 
-    from the children.
-    TODO: once the django will support signal propagation we need to attach a single signal here
-    """
-    if instance.thumbnail:
+def resourcebase_post_delete(instance):
+    if instance.thumbnail is not None:
         instance.thumbnail.delete()

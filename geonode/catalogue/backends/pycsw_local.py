@@ -18,6 +18,7 @@
 #########################################################################
 
 import os
+import sys
 from lxml import etree
 from django.conf import settings
 from ConfigParser import SafeConfigParser
@@ -25,6 +26,7 @@ from owslib.iso import MD_Metadata
 from pycsw import server
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
 from geonode.catalogue.backends.generic import METADATA_FORMATS
+from shapely.geometry.base import ReadingError
 
 # pycsw settings that the user shouldn't have to worry about
 CONFIGURATION = {
@@ -148,6 +150,12 @@ class CatalogueBackend(GenericCatalogueBackend):
                 'id': [identifier],
                 'outputschema': 'http://www.isotc211.org/2005/gmd',
             }
-            response = csw.getrecordbyid()
-    
+            #FIXME(Ariel): Remove this try/except block when pycsw deals with
+            # empty geometry fields better.
+            # https://gist.github.com/ingenieroariel/717bb720a201030e9b3a
+            try:
+                response = csw.getrecordbyid()
+            except ReadingError:
+                return []
+
         return etree.tostring(response)

@@ -29,12 +29,12 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 from django.test.utils import override_settings, str_prefix
 from geonode.proxy.views import validate_host
-from geonode.utils import ogc_server_settings
 
 class ProxyTest(TestCase):
 
     def setUp(self):
         self.admin, created = User.objects.get_or_create(username='admin', password='admin', is_superuser=True)
+        # FIXME(Ariel): These tests do not work when the computer is offline.
         self.url = 'http://www.google.com/'
 
     @override_settings(DEBUG=True, PROXY_ALLOWED_HOSTS=())

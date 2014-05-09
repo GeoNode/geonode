@@ -1,6 +1,5 @@
-from django.db.models import signals
-
-from geonode.maps.models import Map, MapLayer, pre_save_maplayer
+from geonode.maps.models import Map, MapLayer
+from django.conf import settings
 
 maplayers = [
     {
@@ -8,7 +7,7 @@ maplayers = [
         "group": "background",
         "layer_params": "",
         "map": 1,
-        "name": "base:CA",
+        "name": "geonode:CA",
         "ows_url": "http://localhost:8080/geoserver/wms",
         "source_params": "",
         "transparent": False,
@@ -31,7 +30,7 @@ maplayers = [
     {
         "fixed": True,
         "group": "background",
-        "layer_params": "{\"args\": [\"base:CA\", \"http://localhost:8080/geoserver/wms\", {\"layers\": [\"base:CA\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
+        "layer_params": "{\"args\": [\"geonode:CA\", \"http://localhost:8080/geoserver/wms\", {\"layers\": [\"geonode:CA\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
         "map": 1,
         "name": None,
         "opacity": 1,
@@ -68,7 +67,14 @@ maplayers = [
 
 def create_maplayers():
 
-    signals.pre_save.disconnect(pre_save_maplayer, sender=MapLayer)
+    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        from django.db.models import signals
+        from geonode.geoserver.signals import geoserver_pre_save_maplayer
+        from geonode.geoserver.signals import geoserver_post_save_map
+        signals.pre_save.disconnect(geoserver_pre_save_maplayer, sender=MapLayer)
+        signals.post_save.disconnect(geoserver_post_save_map, sender=Map)
+
+
     for ml in maplayers:
         MapLayer.objects.create(
             fixed = ml['fixed'],

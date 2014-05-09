@@ -25,7 +25,7 @@ from django.db.models import signals
 from geonode.layers.models import Layer
 from geonode.documents.models import Document
 from geonode.catalogue import get_catalogue
-from geonode.base.models import Link
+from geonode.base.models import Link, ResourceBase
 
 
 LOGGER = logging.getLogger(__name__)
@@ -73,38 +73,37 @@ def catalogue_post_save(instance, sender, **kwargs):
                 )
             )
 
-    # generate and save CSW specific fields
-    signals.post_save.disconnect(catalogue_post_save, sender=Layer)
-    signals.post_save.disconnect(catalogue_post_save, sender=Document)
     # generate an XML document (GeoNode's default is ISO)
     md_doc = catalogue.catalogue.csw_gen_xml(instance,
              'catalogue/full_metadata.xml')
-    instance.metadata_xml = md_doc
-    instance.csw_anytext = \
-        catalogue.catalogue.csw_gen_anytext(instance.metadata_xml)
 
-    instance.csw_wkt_geometry = instance.geographic_bounding_box.split(';')[-1]
+    csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
 
-    instance.save()
+    csw_wkt_geometry = instance.geographic_bounding_box.split(';')[-1]
 
-    signals.post_save.connect(catalogue_post_save, sender=Layer)
-    signals.post_save.connect(catalogue_post_save, sender=Document)
+    resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
+
+    resources.update(metadata_xml=md_doc)
+    resources.update(csw_wkt_geometry=csw_wkt_geometry)
+    resources.update(csw_anytext=csw_anytext)
+    
 
 
 def catalogue_pre_save(instance, sender, **kwargs):
     """Send information to catalogue
     """
     record = None
+
+    # if the layer is in the catalogue, try to get the distribution urls
+    # that cannot be precalculated.
     try:
         catalogue = get_catalogue()
         record = catalogue.get_record(instance.uuid)
     except EnvironmentError, err:
         msg = 'Could not connect to catalogue' \
                'to save information for layer "%s"' % (instance.name)
-        if err.reason.errno == errno.ECONNREFUSED:
-            LOGGER.warn(msg, err)
-        else:
-            raise err
+        LOGGER.warn(msg, err)
+        raise err
 
     if record is None:
         return
@@ -126,6 +125,7 @@ def catalogue_pre_save(instance, sender, **kwargs):
             instance.distribution_url = durl
             instance.distribution_description = \
             'Online link to the \'%s\' description on GeoNode ' % instance.title
+
 
 if 'geonode.catalogue' in settings.INSTALLED_APPS:
     signals.pre_save.connect(catalogue_pre_save, sender=Layer)
