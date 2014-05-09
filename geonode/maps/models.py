@@ -420,7 +420,6 @@ class MapLayer(models.Model, GXPLayerBase):
 
     def layer_config(self):
         cfg = GXPLayerBase.layer_config(self)
-
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
         if self.local:
@@ -463,7 +462,6 @@ class MapLayer(models.Model, GXPLayerBase):
 def pre_delete_map(instance, sender, **kwrargs):
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
-
 
 
 signals.pre_delete.connect(pre_delete_map, sender=Map)
