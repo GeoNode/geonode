@@ -153,6 +153,7 @@ ALLOWED_DOCUMENT_TYPES = [
 ]
 MAX_DOCUMENT_SIZE = 2 # MB
 
+
 GEONODE_APPS = (
     # GeoNode internal apps
     'geonode.people',
@@ -171,6 +172,7 @@ GEONODE_APPS = (
     'geonode.upload',
 
     # GeoNode Contrib Apps
+    'geonode.contrib.services',
     'geonode.contrib.groups',
 )
 
@@ -354,7 +356,7 @@ AGON_RATINGS_CATEGORY_CHOICES = {
 
 # Activity Stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment', 'documents.document'),
+    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment', 'documents.document', 'services.service'),
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': False,
     'USE_JSONFIELD': True,
@@ -393,6 +395,16 @@ NOSE_ARGS = [
 #
 
 SITEURL = "http://localhost:8000/"
+
+USE_QUEUE = False
+
+DEFAULT_WORKSPACE = 'geonode'
+CASCADE_WORKSPACE = 'geonode'
+
+OGP_URL = "http://geodata.tufts.edu/solr/select"
+
+# Default TopicCategory to be used for resources. Use the slug field here
+DEFAULT_TOPICCATEGORY = 'location'
 
 # Topic Categories list should not be modified (they are ISO). In case you 
 # absolutely need it set to True this variable
@@ -562,6 +574,16 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 
 
 SOCIAL_BUTTONS = True
+
+#Enable Licenses User Interface
+#Regardless of selection, license field stil exists as a field in the Resourcebase model.
+#Detail Display: above, below, never
+#Metadata Options: verbose, light, never
+LICENSES = {
+    'ENABLED': True,
+    'DETAIL': 'above',
+    'METADATA': 'verbose',
+}
 
 # Require users to authenticate before using Geonode
 LOCKDOWN_GEONODE = False
