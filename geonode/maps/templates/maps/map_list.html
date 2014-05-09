@@ -33,8 +33,14 @@
           <div id="slide-pane">
             <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
             {% with type='map' %}
+            {% if LICENSES_ENABLED and LICENSES_SEARCH == 'above' %}
+              {% include "search/_license_filter.html" %}
+            {% endif %}
             {% include "search/_extent_filter.html" %}
             {% include "search/_general_filters.html" %}
+            {% if LICENSES_ENABLED and LICENSES_SEARCH == 'below' %}
+              {% include "search/_license_filter.html" %}
+            {% endif %}
             {% endwith %}
           </div>
         </div>

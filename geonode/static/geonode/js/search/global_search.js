@@ -7,11 +7,12 @@ $(function(){
         var params = {
             types: [],
             categories: [],
+            licenses: [],
             keywords: [],
             date_start: [],
             date_end: [],
             sort: [],
-			extent:[],
+            extent:[],
             q: initial_query
         };
         
@@ -34,17 +35,23 @@ $(function(){
             params.categories.shift();
         }
 
-		var extentval = $('#extent').val();
+        //from the client we don't use the all key for the licenses
+        if(params.licenses[0] === 'all'){
+            params.licenses.shift();
+        }
+
+        var extentval = $('#extent').val();
 
         var data = {
             'type': params.types.join(','),
             'category': params.categories.join(','),
+            'license': params.licenses.join(','),
             'kw': params.keywords.join(','),
             'start_date': params.date_start[0],
             'end_date': params.date_end[0],
             'sort': params.sort[0],
             'q': params.q,
-			'extent': extentval
+            'extent': extentval
         };
         
         if (typeof default_type != 'undefined' && data.type == ''){
@@ -102,6 +109,20 @@ $(function(){
             } 
         }
         else if ($(element).parents('ul').attr('id') === 'categories'){
+            $('a[data-class="all"]').removeClass('active');
+        }
+
+        // logic to make sure that clicking on the all licenses it also
+        // activate/deactivate all other licenses
+        if ($(element).parents('ul').attr('id') === 'licenses' && $(element).attr('data-class') === 'all'){
+            if ($(element).hasClass('active')){
+                $('#licenses').find('a').each(function(){
+                    $(this).removeClass('active');
+                });
+                $(element).addClass('active');
+            }
+        }
+        else if ($(element).parents('ul').attr('id') === 'licenses'){
             $('a[data-class="all"]').removeClass('active');
         }
     }

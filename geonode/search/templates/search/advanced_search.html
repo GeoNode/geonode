@@ -46,13 +46,21 @@
               </div>
               <div class="control-group">
                 <label for="id_category">{% trans 'Category' %}</label>
-
-                  <select name="category">
-                    <option value="">{% trans 'Search All Categories' %}</option>
-                  {% for category in category_list %}
-                    <option value="{{ category.identifier }}">{{ category }}</option>
-                  {% endfor %}
-                  </select>
+                <select name="category">
+                  <option value="">{% trans 'Search All Categories' %}</option>
+                {% for category in category_list %}
+                  <option value="{{ category.identifier }}">{{ category }}</option>
+                {% endfor %}
+                </select>
+              </div>
+              <div class="control-group">
+                <label for="id_license">{% trans 'License' %}</label>
+                <select name="license">
+                  <option value="">{% trans 'Search All Licenses' %}</option>
+                {% for license in license_list %}
+                  <option value="{{ license.identifier }}">{{ license }}</option>
+                {% endfor %}
+                </select>
               </div>
             </div>
           </fieldset>

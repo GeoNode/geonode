@@ -33,7 +33,7 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
-from geonode.base.models import TopicCategory, ResourceBase
+from geonode.base.models import TopicCategory, License, ResourceBase
 if "geonode.contrib.groups" in settings.INSTALLED_APPS:
     from geonode.contrib.groups.models import Group
 
@@ -98,6 +98,17 @@ def _filter_category(q, categories):
             pass
 
     return q.filter(category__in=_categories)
+
+def _filter_license(q, licenses):
+    _licenses = []
+    for license in licenses:
+        try:
+            _licenses.append(License.objects.get(identifier=license))
+        except License.DoesNotExist:
+            # FIXME Do something here
+            pass
+
+    return q.filter(license__in=_licenses)
 
 def _add_relevance(query, rank_rules):
     eq = """CASE WHEN %s = '%s' THEN %s ELSE 0 END"""
@@ -221,6 +232,9 @@ def _get_map_results(query):
     if query.categories:
         q = _filter_category(q, query.categories)
 
+    if query.licenses:
+        q = _filter_license(q, query.licenses)
+
     if query.query:
         q = _build_map_layer_text_query(q, query, query_keywords=True)
         rules = _rank_rules(ResourceBase,
@@ -262,6 +276,9 @@ def _get_layer_results(query):
 
     if query.categories:
         q = _filter_category(q, query.categories)
+
+    if query.licenses:
+        q = _filter_license(q, query.licenses)
 
     # this is a special optimization for pre-fetching results when requesting
     # all records via search
@@ -333,6 +350,9 @@ def _get_document_results(query):
 
     if query.categories:
         q = _filter_category(q, query.categories)
+
+    if query.licenses:
+        q = _filter_license(q, query.licenses)
 
     # this is a special optimization for pre-fetching results when requesting
     # all records via search

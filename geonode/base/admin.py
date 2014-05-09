@@ -5,8 +5,9 @@ from geonode.base.models import (TopicCategory, SpatialRepresentationType,
     Region, RestrictionCodeType, ContactRole, ResourceBase, Link, License, Thumbnail)
 
 class LicenseAdmin(admin.ModelAdmin):
+    model = License
     list_display = ('id', 'name')
-    list_display = ('name',)	
+    list_display_links = ('name',)	
 
 class ResourceBaseAdmin(admin.ModelAdmin):
     list_display = ('id','title', 'date', 'category')
