@@ -1,0 +1,36 @@
+{% extends "services/services_base.html" %}
+{% load i18n %}
+
+{% block title %} Services -- {{ block.super }} {% endblock %}
+
+{% block body %}
+<div class="twocol">
+{% if services %}
+<table>
+    <tr>
+        <th>Title</th><th>URL</th>
+    </tr>
+
+{% for service in services %}
+<tr>
+<td><a href='{% url "service_detail" service.id %}'>{{ service.title }}</a></td>
+<td><a href='{% url "service_detail" service.id %}'>{{ service.base_url }}</a></td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<h3>No services registered</h3>
+{% endif %}
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<div id="sidebar" class="threecol">
+
+    <h3>{% trans "Manage" %}</h3>
+    <ul>
+        <li><a href="{% url "register_service" %}">{% trans "Register a new Service" %}</a></li>
+    </ul>
+
+</div>
+{% endblock %}

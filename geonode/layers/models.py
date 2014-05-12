@@ -25,6 +25,7 @@ from datetime import datetime
 from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
@@ -112,6 +113,14 @@ class Layer(ResourceBase):
         if self.storeType == 'dataStore':
             return "WFS"
 
+    @property
+    def ows_url(self):
+        if self.storeType == "remoteStore" and "geonode.contrib.services" in settings.INSTALLED_APPS:
+            from geonode.contrib.services.models import ServiceLayer
+            return ServiceLayer.objects.filter(layer__id=self.id)[0].service.base_url
+        else:
+            return settings.OGC_SERVER['default']['LOCATION'] + "wms"
+
     def get_base_file(self):
         base_exts = [x.replace('.','') for x in cov_exts + vec_exts]
         base_files = self.layerfile_set.filter(name__in=base_exts)
@@ -125,7 +134,6 @@ class Layer(ResourceBase):
         assert base_files_count == 1, msg
 
         return base_files.get()
-
 
     def get_absolute_url(self):
         return reverse('layer_detail', args=(self.typename,))
