@@ -109,22 +109,6 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 
 #### BASIC MAP VIEWS ####
 
-def map_list(request, template='maps/map_list.html'):
-
-    return render_to_response(template, RequestContext(request))
-
-def maps_tag(request, slug, template='maps/map_list.html'):
-    map_list = Map.objects.filter(keywords__slug__in=[slug])
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "object_list": map_list,
-            "map_tag": slug
-            }
-        )
-    )
-
-
 def map_detail(request, mapid, template='maps/map_detail.html'):
     '''
     The view that show details of each map

@@ -43,20 +43,6 @@ def _resolve_document(request, docid, permission='layers.change_layer',
     return resolve_object(request, Document, {'pk':docid},
                           permission = permission, permission_msg=msg, **kwargs)
 
-def document_list(request, template='documents/document_list.html'):
-    return render_to_response(template, RequestContext(request))
-
-def document_tag(request, slug, template='documents/document_list.html'):
-    document_list = Document.objects.filter(keywords__slug__in=[slug])
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "object_list": document_list,
-            "document_tag": slug
-            }
-        )
-    )
-
 def document_detail(request, docid):
     """
     The view that show details of each document
