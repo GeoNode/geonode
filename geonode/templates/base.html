@@ -57,7 +57,6 @@
                 <a href="{% url "search" %}">{% trans "Search" %}</a>
               </li>
             </ul>
-            <span id="search"></span>
             <ul class="nav pull-right">
               {% if user.is_authenticated %}
               <li class="user-avatar">
@@ -198,50 +197,6 @@
     {% endif %}
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
-    <script>
-      $("#search").select2({
-        minimumInputLength: 1,
-        placeholder: 'Search...',
-        width: 'element',     
-        ajax: {
-          url: '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}',
-          data: function(term,page){
-            page = (page - 1) * 10;
-            return {
-              type: 'all',
-              limit: 10,
-              sort: 'none',
-              start: page,
-              q: term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
-            }
-          },
-          results: function(data, page) {
-            var more = (page * 10) < data.total;
-            return {
-              results: $.map(data.results,function(object){
-                return {id: object.id, text: object.title, url: object.detail };
-              }),
-              more: more
-            }
-          }          
-        },
-        createSearchChoice:function(term, data) { 
-            term = term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
-            if ($(data).filter(function() { 
-                return this.text.localeCompare(term)===0; }).length===0) {
-                    return {id:term, text:term};
-                    } 
-        },
-        formatSelection: function(item){
-          if(item.url != undefined) {
-            window.location.href = item.url;
-          } else {
-            $('#search').val(item.text);
-            $('#search').parent().submit();
-          };
-        }
-      });
-    </script>
 
     {% block extra_script %}{% endblock extra_script %}
 
