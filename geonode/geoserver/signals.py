@@ -18,6 +18,7 @@ from geonode.utils import http_client
 from geonode.base.models import Link
 from geonode.base.models import Thumbnail
 from geonode.layers.models import Layer
+from geonode.layers.utils import create_thumbnail
 from geonode.people.models import Profile
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
@@ -142,10 +143,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
 
-    try:
-        instance.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
-    except MultipleObjectsReturned:
-        instance.thumbnail = Thumbnail.objects.filter(resourcebase__id=instance.id)[0]
+
 
 def geoserver_post_save(instance, sender, **kwargs):
     """Save keywords to GeoServer
@@ -335,60 +333,14 @@ def geoserver_post_save(instance, sender, **kwargs):
         'height': 150,
     }
 
-    BBOX_DIFFERENCE_THRESHOLD = 1e-5
+    # Avoid using urllib.urlencode here because it breaks the url.
+    # commas and slashes in values get encoded and then cause trouble
+    # with the WMS parser.
+    p = "&".join("%s=%s"%item for item in params.items())
 
-    #Check if the bbox is invalid
-    valid_x = (float(instance.bbox_x0) - float(instance.bbox_x1))**2 > BBOX_DIFFERENCE_THRESHOLD
-    valid_y = (float(instance.bbox_y1) - float(instance.bbox_y0))**2 > BBOX_DIFFERENCE_THRESHOLD
+    thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + "wms/reflect?" + p
 
-    image = None
-
-    if valid_x and valid_y:
-        # Avoid using urllib.urlencode here because it breaks the url.
-        # commas and slashes in values get encoded and then cause trouble
-        # with the WMS parser.
-        p = "&".join("%s=%s"%item for item in params.items())
-
-        thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + "wms/reflect?" + p
-
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=thumbnail_remote_url,
-                        defaults=dict(
-                            extension='png',
-                            name=_("Remote Thumbnail"),
-                            mime='image/png',
-                            link_type='image',
-                            )
-                        )
-
-        # Download thumbnail and save it locally.
-        resp, image = http_client.request(thumbnail_remote_url)
-
-        if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
-            msg = 'Unable to obtain thumbnail: %s' % image
-            logger.debug(msg)
-            # Replace error message with None.
-            image = None
-
-    if image is not None:
-        if instance.has_thumbnail():
-            instance.thumbnail.thumb_file.delete()
-
-        instance.thumbnail.thumb_file.save('layer-%s-thumb.png' % instance.id, ContentFile(image))
-        instance.thumbnail.thumb_spec = thumbnail_remote_url
-        instance.thumbnail.save()
-
-        thumbnail_url = urljoin(settings.SITEURL, instance.thumbnail.thumb_file.url)
-
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=thumbnail_url,
-                        defaults=dict(
-                            name=_('Thumbnail'),
-                            extension='png',
-                            mime='image/png',
-                            link_type='image',
-                            )
-                        )
+    create_thumbnail(instance, thumbnail_remote_url)
 
     ogc_wms_url = ogc_server_settings.public_url + 'wms?'
     Link.objects.get_or_create(resource= instance.resourcebase_ptr,
