@@ -223,6 +223,9 @@
           lat: 5.6,
           lng: 3.9,
           zoom: 1
+        },
+        defaults: {
+          zoomControl: false
         }
       });
 
