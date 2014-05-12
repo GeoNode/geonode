@@ -57,6 +57,7 @@ from geonode.utils import llbbox_to_mercator, mercator_to_llbbox, http_client
 from geonode.layers.utils import create_thumbnail
 from django.db import transaction
 from geonode.geoserver.helpers import set_attributes
+from geonode.base.models import Link
 
 logger = logging.getLogger("geonode.core.layers.views")
 
@@ -1206,6 +1207,19 @@ def ajax_service_permissions(request, service_id):
         mimetype='text/plain')
 
 def create_arcgis_thumbnail(instance):
+    legend_url = instance.ows_url + 'legend?p=json'
+
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=legend_url,
+                        defaults=dict(
+                            extension='json',
+                            name=_('Legend'),
+                            url=legend_url,
+                            mime='application/json',
+                            link_type='json',
+                        )
+                    )
+
 
     mercator_bbox = llbbox_to_mercator(instance.bbox)
 
