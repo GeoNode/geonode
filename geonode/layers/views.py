@@ -81,20 +81,6 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 
 #### Basic Layer Views ####
 
-def layer_list(request, template='layers/layer_list.html'):
-    
-    return render_to_response(template, RequestContext(request))
-
-def layer_tag(request, slug, template='layers/layer_list.html'):
-    layer_list = Layer.objects.filter(keywords__slug__in=[slug])
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "object_list": layer_list,
-            "layer_tag": slug
-            }
-        )
-    )
 
 @login_required
 def layer_upload(request, template='upload/layer_upload.html'):
