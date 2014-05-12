@@ -76,13 +76,13 @@ class CommonModelApi(ModelResource):
     def filter_bbox(self, queryset, bbox):
         '''modify the queryset q to limit to the provided bbox
 
-        bbox - 4 tuple of floats representing x0,x1,y0,y1
+        bbox - 4 tuple of floats representing 'southwest_lng,southwest_lat,northeast_lng,northeast_lat'
         returns the modified query
         '''
         bbox = map(str, bbox) # 2.6 compat - float to decimal conversion
         queryset = queryset.filter(bbox_x0__gte=bbox[0])
-        queryset = queryset.filter(bbox_x1__lte=bbox[1])
-        queryset = queryset.filter(bbox_y0__gte=bbox[2])
+        queryset = queryset.filter(bbox_y0__gte=bbox[1])
+        queryset = queryset.filter(bbox_x1__lte=bbox[2])
         return queryset.filter(bbox_y1__lte=bbox[3])
 
 

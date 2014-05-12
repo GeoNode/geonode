@@ -74,7 +74,7 @@
   * Load data from api and defines the multiple and single choice handlers
   * Syncs the browser url with the selections
   */
-  module.controller('MainController', function($scope, $location, $http, Configs){
+  module.controller('MainController', function($scope, $location, $http, Configs, leafletData){
     $scope.query = $location.search();
     $scope.query.limit = $scope.query.limit || CLIENT_RESULTS_LIMIT;
     $scope.query.offset = $scope.query.offset || 0;
@@ -221,8 +221,18 @@
       map_center: {
         lat: 5.6,
         lng: 3.9,
-        zoom: 2
+        zoom: 1
       }
     });
+
+    var map = leafletData.getMap();
+
+    map.then(function(map){
+      map.on('moveend', function(){
+        $scope.query['extent'] = map.getBounds().toBBoxString();
+        query_api($scope.query);
+      });
+    });
+
   });
 })();
