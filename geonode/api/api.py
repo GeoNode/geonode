@@ -162,9 +162,7 @@ class ProfileResource(ModelResource):
     def apply_filters(self, request, applicable_filters):
         """filter by group if applicable by group functionality"""
 
-        if 'group' in applicable_filters:
-            group = applicable_filters.pop('group')
-        else: group = None
+        group = applicable_filters.pop('group'. None)
 
         semi_filtered = super(ProfileResource, self).apply_filters(request, applicable_filters)
 

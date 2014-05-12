@@ -44,10 +44,13 @@ class CommonModelApi(ModelResource):
         orm_filters = super(CommonModelApi, self).build_filters(filters)
         if 'type__in' in filters and filters['type__in'] in FILTER_TYPES.keys():
             orm_filters.update({'type': filters.getlist('type__in')})
+        if 'extent' in filters:
+            orm_filters.update({'extent': filters['extent'].split(',')})
         return orm_filters
 
     def apply_filters(self, request, applicable_filters):
         types = applicable_filters.pop('type', None)
+        extent = applicable_filters.pop('extent', None)
         semi_filtered = super(CommonModelApi, self).apply_filters(request, applicable_filters)
         filtered = None
         if types:
@@ -64,7 +67,23 @@ class CommonModelApi(ModelResource):
                         filtered = semi_filtered.instance_of(FILTER_TYPES[the_type])
         else:
             filtered = semi_filtered
+
+        if extent:
+            filtered = self.filter_bbox(filtered, extent)
+
         return filtered
+
+    def filter_bbox(self, queryset, bbox):
+        '''modify the queryset q to limit to the provided bbox
+
+        bbox - 4 tuple of floats representing x0,x1,y0,y1
+        returns the modified query
+        '''
+        bbox = map(str, bbox) # 2.6 compat - float to decimal conversion
+        queryset = queryset.filter(bbox_x0__gte=bbox[0])
+        queryset = queryset.filter(bbox_x1__lte=bbox[1])
+        queryset = queryset.filter(bbox_y0__gte=bbox[2])
+        return queryset.filter(bbox_y1__lte=bbox[3])
 
 
 class ResourceBaseResource(CommonModelApi):
