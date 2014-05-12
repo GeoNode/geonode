@@ -217,22 +217,23 @@
     /*
     * Spatial search
     */
-    angular.extend($scope, {
-      map_center: {
-        lat: 5.6,
-        lng: 3.9,
-        zoom: 1
-      }
-    });
-
-    var map = leafletData.getMap();
-
-    map.then(function(map){
-      map.on('moveend', function(){
-        $scope.query['extent'] = map.getBounds().toBBoxString();
-        query_api($scope.query);
+    if($('.leaflet_map').length > 0){
+      angular.extend($scope, {
+        map_center: {
+          lat: 5.6,
+          lng: 3.9,
+          zoom: 1
+        }
       });
-    });
 
+      var map = leafletData.getMap();
+
+      map.then(function(map){
+        map.on('moveend', function(){
+          $scope.query['extent'] = map.getBounds().toBBoxString();
+          query_api($scope.query);
+        });
+      });
+    }
   });
 })();
