@@ -171,13 +171,37 @@ class ResourceBaseManager(PolymorphicManager):
 
 
 class License(models.Model):
+    identifier = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=100)
+    abbreviation = models.CharField(max_length=20, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     url = models.URLField(max_length=2000, null=True, blank=True)
     license_text = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name
+
+    @property
+    def name_long(self):
+        if self.abbreviation is None or len(self.abbreviation)==0:
+            return self.name
+        else:
+            return self.name+" ("+self.abbreviation+")"
+
+    @property
+    def description_bullets(self):
+        if self.description is None or len(self.description)==0:
+            return ""
+        else:
+            bullets = []
+            lines = self.description.split("\n")
+            for line in lines:
+                bullets.append("+ "+line)
+            return bullets
+
+    class Meta:
+        ordering = ("name",)
+        verbose_name_plural = 'Licenses'
 
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin):
@@ -292,6 +316,26 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     @property
     def geographic_bounding_box(self):
         return bbox_to_wkt(self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, srid=self.srid )
+
+    @property
+    def license_light(self):
+        a = []
+        if (not (self.license.name is None)) and (len(self.license.name) > 0):
+            a.append(self.license.name)
+        if (not (self.license.url is None)) and (len(self.license.url) > 0):
+            a.append("("+self.license.url+")")
+        return " ".join(a)
+
+    @property
+    def license_verbose(self):
+        a = []
+        if (not (self.license.name_long is None)) and (len(self.license.name_long) > 0):
+            a.append(self.license.name_long+":")
+        if (not (self.license.description is None)) and (len(self.license.description) > 0):
+            a.append(self.license.description)
+        if (not (self.license.url is None)) and (len(self.license.url) > 0):
+                a.append("("+self.license.url+")")
+        return " ".join(a)
 
     @property
     def poc_role(self):

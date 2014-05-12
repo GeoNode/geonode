@@ -39,8 +39,12 @@ def resource_urls(request):
         PROXY_URL=getattr(settings, 'PROXY_URL', '/proxy/?url='),
         SOCIAL_BUTTONS=getattr(settings, 'SOCIAL_BUTTONS', True),
         USE_DOCUMENTS='geonode.documents' in settings.INSTALLED_APPS,
+        USE_SERVICES = 'geonode.contrib.services' in settings.INSTALLED_APPS,
         HAYSTACK_SEARCH=getattr(settings, 'HAYSTACK_SEARCH', False),
         CLIENT_RESULTS_LIMIT=getattr(settings, 'CLIENT_RESULTS_LIMIT', 10)
+        LICENSES_ENABLED = getattr(settings, 'LICENSES', dict()).get('ENABLED', False),
+        LICENSES_DETAIL = getattr(settings, 'LICENSES', dict()).get('DETAIL', 'never'),
+        LICENSES_METADATA = getattr(settings, 'LICENSES', dict()).get('METADATA', 'never'),
     )
     
     return defaults
