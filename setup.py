@@ -78,11 +78,11 @@ setup(name='GeoNode',
         "lxml",
         # python dependencies
         "gsconfig==0.6.9",
-        "OWSLib==0.7.2",
+        "OWSLib==0.8.6",
         "Django==1.5.5",
         # Django Apps
         "pinax-theme-bootstrap==3.0a11",
-        "pinax-theme-bootstrap-account==1.0b2",
+        "pinax-theme-bootstrap-account==1.0b3",
         "django-user-accounts==1.0b14",
         "django-forms-bootstrap==2.0.3.post1",
         "django-pagination==1.0.7",
@@ -102,7 +102,7 @@ setup(name='GeoNode',
         "South==0.7.3",
         "django-downloadview==1.2",
         #catalogue
-        "pycsw==1.6.4",
+        "pycsw==1.8.0",
         # setup
         "Paver",
         # sample and test data / metadata
