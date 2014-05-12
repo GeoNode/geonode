@@ -30,7 +30,7 @@
     * Load categories and keywords if the filter is available in the page
     * and set active class if needed
     */
-    if (typeof $('body').attr('category__identifier__in') == 'undefined'){
+    if ($('#categories').length > 0){
       var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
       $http.get(CATEGORIES_ENDPOINT, {params: params}).success(function(data){
         if($location.search().hasOwnProperty('category__identifier__in')){
