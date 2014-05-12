@@ -198,6 +198,7 @@ INSTALLED_APPS = (
     'south',
     'friendlytagloader',
     'geoexplorer',
+    'leaflet',
     'django_extensions',
     #'haystack',
 
