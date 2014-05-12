@@ -23,6 +23,7 @@
     "multi-select": "https://github.com/lou/multi-select.git",
     "jquery-ajaxprogress": "https://github.com/kpozin/jquery-ajaxprogress.git",
     "jquery.ajaxQueue": "https://github.com/gnarf/jquery-ajaxQueue.git",
-    "angular": "1.2.6"
+    "angular": "1.2.6",
+    "angular-leaflet-directive": "~0.7.3"
   }
 }

@@ -2,7 +2,7 @@
 
 (function(){
 
-  var module = angular.module('main_search', [], function($locationProvider) {
+  var module = angular.module('main_search', ['leaflet-directive'], function($locationProvider) {
       $locationProvider.html5Mode(true);
 
       // make sure that angular doesn't intercept the page links
@@ -214,5 +214,15 @@
       }     
     }
 
+    /*
+    * Spatial search
+    */
+    angular.extend($scope, {
+      map_center: {
+        lat: 5.6,
+        lng: 3.9,
+        zoom: 2
+      }
+    });
   });
 })();

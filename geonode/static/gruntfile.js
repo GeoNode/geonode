@@ -118,7 +118,8 @@ module.exports = function(grunt) {
             'requirejs-text/text.js',
             'underscore/underscore.js',
             'qunit/qunit/qunit.js',
-            'angular/angular.js'
+            'angular/angular.js',
+            'angular-leaflet-directive/dist/angular-leaflet-directive.min.js'
           ]
         }]
       }
@@ -199,7 +200,8 @@ module.exports = function(grunt) {
             'lib/js/json2.js',
             'lib/js/select2.js',
             'lib/js/bootstrap.js',
-            'lib/js/angular.js'
+            'lib/js/angular.js',
+            'lib/js/angular-leaflet-directive.min.js'
           ],
           'lib/js/require.js': ['lib/js/require.js'],
           'lib/js/text.js': ['lib/js/text.js'],
