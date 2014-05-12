@@ -8,10 +8,13 @@
         <header>
             <h3>Share This Map</h3>
         </header>
-        <div><g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone></div>
-        <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
-        <div><a onclick="window.open('https://twitter.com/intent/tweet?text={{ request.get_host }}{{request.get_full_path}}&url={{ request.get_host }}{{request.get_full_path}}&via=geonode', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');" class="tweetbutton">Tweet</a>
-        </div>
+        <div>
+              <ul class="social">
+                  <li><a href="http://www.facebook.com/sharer.php?u=http://{{ request.get_host }}{{ request.get_full_path }}" class="fb">facebook</a></li>
+                  <li><a href="https://twitter.com/share?url=http://{{ request.get_host }}{{ request.get_full_path }}" class="tw">twitter</a></li>
+                  <li><a href="https://plusone.google.com/_/1/confirm?hl=en&url=http://{{ request.get_host }}{{ request.get_full_path }}" class="gp">google+</a></li>
+              </ul>
+         </div>
         <!-- TODO: Add more sharing options -->
     </article>
 {% endblock %}
