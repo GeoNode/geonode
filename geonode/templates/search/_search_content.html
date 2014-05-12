@@ -24,18 +24,11 @@
           {% include "search/_extent_filter.html" %}
         </div>
       </div>
+      {% include 'search/_pagination.html' %}
       <div class="tab-content" id="search-content">
-        <div>
-          <span>Total: </span>
-          <span ng-bind="total_counts"></span>
-          <a href><strong ng-click="paginate_down()"><<</strong></a>
-          <span>page </span>
-          <span ng-model="page" ng-bind="page"></span>
-          <span> of </span>
-          <span ng-bind="numpages"></span>
-          <a href><strong ng-click="paginate_up()">>></strong></a>
-        </div>
+        <div class="tab-pane active list">
         {% include 'base/_resourcebase_snippet.html' %}
+        </div>
       </div>
     </div>
   </div>
