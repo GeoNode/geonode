@@ -53,7 +53,8 @@ from geonode.security.views import _perms_info
 from geonode.utils import bbox_to_wkt, json_response
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.contrib.services.forms import CreateServiceForm, ServiceLayerFormSet, ServiceForm
-from geonode.utils import llbbox_to_mercator, mercator_to_llbbox
+from geonode.utils import llbbox_to_mercator, mercator_to_llbbox, http_client
+from geonode.layers.utils import create_thumbnail
 from django.db import transaction
 from geonode.geoserver.helpers import set_attributes
 
@@ -833,6 +834,7 @@ def _register_arcgis_layers(service, arc=None):
             saved_layer.set_default_permissions()
             saved_layer.save()
 
+
             service_layer, created = ServiceLayer.objects.get_or_create(
                 service=service,
                 typename=layer.id
@@ -842,6 +844,8 @@ def _register_arcgis_layers(service, arc=None):
             service_layer.description=saved_layer.abstract,
             service_layer.styles=None
             service_layer.save()
+
+            create_arcgis_thumbnail(saved_layer)
         count += 1
     message = "%d Layers Registered" % count
     return_dict = {'status': 'ok', 'msg': message }
@@ -1200,3 +1204,14 @@ def ajax_service_permissions(request, service_id):
         "Permissions updated",
         status=200,
         mimetype='text/plain')
+
+def create_arcgis_thumbnail(instance):
+
+    mercator_bbox = llbbox_to_mercator(instance.bbox)
+
+    #FIXME(Ariel): Construct the bbox parameter from the above object.
+    # Hardcoding it for now.
+    bbox = '0%2C0%2C10018754.17%2C10018754.17'
+
+    thumbnail_remote_url = instance.ows_url + 'export?LAYERS=show%3A0&TRANSPARENT=true&FORMAT=png&BBOX=' + bbox + '&SIZE=200%2C150&F=image&BBOXSR=900913&IMAGESR=900913'
+    create_thumbnail(instance, thumbnail_remote_url)
