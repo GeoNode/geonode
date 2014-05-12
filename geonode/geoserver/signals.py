@@ -342,6 +342,19 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     create_thumbnail(instance, thumbnail_remote_url)
 
+    legend_url = ogc_server_settings.PUBLIC_LOCATION +'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER='+instance.typename+'&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=legend_url,
+                        defaults=dict(
+                            extension='png',
+                            name=_('Legend'),
+                            url=legend_url,
+                            mime='image/png',
+                            link_type='image',
+                        )
+                    )
+
     ogc_wms_url = ogc_server_settings.public_url + 'wms?'
     Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                         url=ogc_wms_url,
