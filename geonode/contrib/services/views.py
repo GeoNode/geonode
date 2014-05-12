@@ -811,6 +811,8 @@ def _register_arcgis_layers(service, arc=None):
         except Layer.DoesNotExist:
             pass
 
+        llbbox = mercator_to_llbbox(bbox)
+
         if existing_layer is None:
             # Need to check if layer already exists??
             saved_layer, created = Layer.objects.get_or_create(
@@ -825,10 +827,10 @@ def _register_arcgis_layers(service, arc=None):
                     uuid=layer_uuid,
                     owner=None,
                     srid="EPSG:%s" % layer.extent.spatialReference.wkid,
-                    bbox_x0 = bbox[0],
-                    bbox_x1 = bbox[1],
-                    bbox_y0 = bbox[2],
-                    bbox_y1 = bbox[3],
+                    bbox_x0 = llbbox[0],
+                    bbox_x1 = llbbox[1],
+                    bbox_y0 = llbbox[2],
+                    bbox_y1 = llbbox[3],
                 )
             )
 
