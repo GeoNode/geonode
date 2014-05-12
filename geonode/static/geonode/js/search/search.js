@@ -27,25 +27,27 @@
     }
 
     /*
-    * Load categories and keywords and set active class if needed
+    * Load categories and keywords if the filter is available in the page
+    * and set active class if needed
     */
-    var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
-    $http.get(CATEGORIES_ENDPOINT, {params: params}).success(function(data){
-      if($location.search().hasOwnProperty('category__identifier__in')){
-        data.objects = set_initial_filters_from_query(data.objects, 
-          $location.search()['category__identifier__in'], 'identifier');
-      }  
-      $rootScope.categories = data.objects;            
-    });
+    if (typeof $('body').attr('category__identifier__in') == 'undefined'){
+      var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+      $http.get(CATEGORIES_ENDPOINT, {params: params}).success(function(data){
+        if($location.search().hasOwnProperty('category__identifier__in')){
+          data.objects = set_initial_filters_from_query(data.objects, 
+            $location.search()['category__identifier__in'], 'identifier');
+        }  
+        $rootScope.categories = data.objects;            
+      });
 
-    $http.get(KEYWORDS_ENDPOINT, {params: params}).success(function(data){
-      if($location.search().hasOwnProperty('keywords__slug__in')){
-        data.objects = set_initial_filters_from_query(data.objects, 
-          $location.search()['keywords__slug__in'], 'slug');
-      }
-      $rootScope.keywords = data.objects;
-    });
-
+      $http.get(KEYWORDS_ENDPOINT, {params: params}).success(function(data){
+        if($location.search().hasOwnProperty('keywords__slug__in')){
+          data.objects = set_initial_filters_from_query(data.objects, 
+            $location.search()['keywords__slug__in'], 'slug');
+        }
+        $rootScope.keywords = data.objects;
+      });
+    }
     // Activate the type filters if in the url
     if($location.search().hasOwnProperty('type__in')){
       var types = $location.search()['type__in'];
