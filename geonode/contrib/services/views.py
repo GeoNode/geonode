@@ -846,7 +846,8 @@ def _register_arcgis_layers(service, arc=None):
             service_layer.styles=None
             service_layer.save()
 
-            create_arcgis_thumbnail(saved_layer)
+            create_arcgis_links(saved_layer)
+
         count += 1
     message = "%d Layers Registered" % count
     return_dict = {'status': 'ok', 'msg': message }
@@ -1206,7 +1207,21 @@ def ajax_service_permissions(request, service_id):
         status=200,
         mimetype='text/plain')
 
-def create_arcgis_thumbnail(instance):
+def create_arcgis_links(instance):
+    kmz_link = instance.ows_url + '?f=kmz'
+
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=kmz_link,
+                        defaults=dict(
+                            extension='kml',
+                            name="View in Google Earth",
+                            mime='text/xml',
+                            link_type='data',
+                        )
+                    )
+
+
+    # Create legend.
     legend_url = instance.ows_url + 'legend?f=json'
 
     Link.objects.get_or_create(resource= instance.resourcebase_ptr,
@@ -1221,7 +1236,11 @@ def create_arcgis_thumbnail(instance):
                     )
 
 
+
     mercator_bbox = llbbox_to_mercator(instance.bbox)
+
+
+    # Create thumbnails.
 
     #FIXME(Ariel): Construct the bbox parameter from the above object.
     # Hardcoding it for now.
