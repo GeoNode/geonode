@@ -418,18 +418,25 @@ def new_map_config(request):
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
 
-                center = forward_mercator((x, y))
+                center = list(forward_mercator((x, y)))
                 if center[1] == float('-inf'):
                     center[1] = 0
 
-                if maxx == minx:
+                BBOX_DIFFERENCE_THRESHOLD = 1e-5
+
+                #Check if the bbox is invalid
+                valid_x = (maxx - minx)**2 > BBOX_DIFFERENCE_THRESHOLD
+                valid_y = (maxy - miny)**2 > BBOX_DIFFERENCE_THRESHOLD
+
+                if valid_x:
+                    width_zoom = math.log(360 / abs(maxx - minx), 2)
+                else:
                     width_zoom = 15
+
+                if valid_y:
+                    height_zoom = math.log(360 / abs(maxy - miny), 2)
                 else:
-                    width_zoom = math.log(360 / (maxx - minx), 2)
-                if maxy == miny:
                     height_zoom = 15
-                else:
-                    height_zoom = math.log(360 / (maxy - miny), 2)
 
                 map_obj.center_x = center[0]
                 map_obj.center_y = center[1]
