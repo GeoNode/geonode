@@ -1,7 +1,7 @@
 {% load i18n %}
 
 {% verbatim %}
-<article>
+<article ng-repeat="profile in results">
   <div class="content">
     <div class="item-header">
       <div class="avatar"><a href="{{ profile.profile_detail_url }}" ><img ng-src="{{ profile.avatar_100 }}"/></a></div>

@@ -7,6 +7,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.people.models import Profile
+from geonode.contrib.groups.models import Group
 
 from taggit.models import Tag
 
@@ -110,6 +111,32 @@ class UserResource(ModelResource):
         }
 
 
+class GroupResource(ModelResource):
+    """Groups api"""
+
+    detail_url = fields.CharField()
+    member_count = fields.IntegerField()
+    manager_count = fields.IntegerField()
+
+    def dehydrate_member_count(self, bundle):
+        return bundle.obj.member_queryset().count()
+
+    def dehydrate_manager_count(self, bundle):
+        return bundle.obj.get_managers().count()
+
+    def dehydrate_detail_url(self, bundle):
+        return reverse('group_detail',  args=[bundle.obj.slug,]) 
+
+    class Meta:
+        queryset = Group.objects.all()
+        resource_name = 'groups'
+        allowed_methods = ['get',]
+        filtering = {
+            'name': ALL
+        }
+        ordering = ['title', 'last_modified',]
+
+
 class ProfileResource(ModelResource):
     """Profile api"""
     user = fields.ToOneField(UserResource, 'user')
@@ -121,6 +148,30 @@ class ProfileResource(ModelResource):
     documents_count = fields.IntegerField(default=0)
     current_user = fields.BooleanField(default=False)
     activity_stream_url = fields.CharField(null=True)
+
+    def build_filters(self, filters={}):
+        """adds filtering by group functionality"""
+
+        orm_filters = super(ProfileResource, self).build_filters(filters)
+        
+        if 'group' in filters:
+            orm_filters['group'] = filters['group']
+
+        return orm_filters
+
+    def apply_filters(self, request, applicable_filters):
+        """filter by group if applicable by group functionality"""
+
+        if 'group' in applicable_filters:
+            group = applicable_filters.pop('group')
+        else: group = None
+
+        semi_filtered = super(ProfileResource, self).apply_filters(request, applicable_filters)
+
+        if group is not None:
+            semi_filtered = semi_filtered.filter(user__groupmember__group__slug=group)
+            
+        return semi_filtered
 
     def dehydrate_email(self, bundle):
         email = ''
@@ -151,7 +202,6 @@ class ProfileResource(ModelResource):
         return reverse('actstream_actor', kwargs={
             'content_type_id': ContentType.objects.get_for_model(bundle.obj.user).pk, 
             'object_id': bundle.obj.user.pk})
-
 
     class Meta:
         queryset = Profile.objects.all()
