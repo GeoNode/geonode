@@ -76,6 +76,7 @@
                   <li><a href="{% url "messages_inbox" %}"><i class="icon-inbox"></i> {% trans "Inbox" %}</a></li>
                   {% if user.is_staff %}
                   <li><a href="{% url "admin:index" %}"><i class="icon-cog"></i> {% trans "Admin" %}</a></li>
+                  <li><a href="{% url "services" %}"><i class="icon-globe"></i> {% trans "Remote Services" %}</a></li>
                   {% endif %}
                   {% if perms.announcements.can_manage %}
                   <li><a href="{% url "announcements_list" %}"><i class="icon-bullhorn"></i> {% trans "Announcements" %}</a></li>
