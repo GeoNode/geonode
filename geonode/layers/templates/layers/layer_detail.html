@@ -11,7 +11,14 @@
 
 {% block head %}
 {% include "layers/layer_map.html" %}
-
+<style>
+.arcgis-legend > li{
+  text-align:right;
+}
+.arcgis-legend > li > img {
+    padding-right: 25px;
+}
+</style>
 {{ block.super }}
 {% endblock %}
 
@@ -163,9 +170,8 @@
     {% if layer.get_legend.link_type == 'image' %}
 	<p><img src="{{ layer.get_legend.url }}"></p>
     {% else %}
-    <p>
-    {{ layer.get_legend_url }}
-    </p>
+    <div id='legend_placeholder'>
+    </div>
     {% endif %}
     </div>
     {% endif %}
@@ -289,8 +295,25 @@
               }
             });
             return false;
-          });        
-    </script>
+          });
+
+    {% if layer.get_legend.link_type == 'json' %}
+    $.getJSON('{{layer.get_legend_url}}', function (data) {
+        var legend = data.layers[0].legend;
+        var items = [];
+        $.each(legend, function (key, dvalue) {
+            items.push('<li><img src="data:image/png;base64,' + dvalue.imageData + '">'+dvalue.label+'</li>');
+        });
+
+        $('<ul/>', {
+            'class': 'arcgis-legend',
+            html: items.join('')
+
+        }).appendTo('#legend_placeholder');
+
+    });
+    {% endif %}
+        </script>
     {% if GS_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
     {% endif %}

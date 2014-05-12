@@ -1207,7 +1207,7 @@ def ajax_service_permissions(request, service_id):
         mimetype='text/plain')
 
 def create_arcgis_thumbnail(instance):
-    legend_url = instance.ows_url + 'legend?p=json'
+    legend_url = instance.ows_url + 'legend?f=json'
 
     Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                         url=legend_url,
