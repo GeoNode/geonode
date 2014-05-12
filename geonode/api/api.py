@@ -152,8 +152,10 @@ class ProfileResource(ModelResource):
             'content_type_id': ContentType.objects.get_for_model(bundle.obj.user).pk, 
             'object_id': bundle.obj.user.pk})
 
+
     class Meta:
         queryset = Profile.objects.all()
         resource_name = 'profiles'
         allowed_methods = ['get',]
+        ordering = ['user','name']
         
