@@ -31,8 +31,10 @@ import sys
 
 # Django functionality
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.core.files import File
+from django.core.files.base import ContentFile
 from django.conf import settings
 
 # Geonode functionality
@@ -42,9 +44,12 @@ from geonode.layers.models import Layer, Style, LayerFile, UploadSession
 from geonode.people.models import Profile
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.base.models import SpatialRepresentationType, TopicCategory
+from geonode.base.models import Link, Thumbnail
 from geonode.upload.files import _clean_string, _rename_zip
 from geonode.layers.models import shp_exts, csv_exts, kml_exts, vec_exts, cov_exts
+from geonode.utils import http_client
 
+from urlparse import urlsplit, urlunsplit, urljoin
 
 from zipfile import ZipFile
 
@@ -372,3 +377,53 @@ def upload(incoming, user=None, overwrite=False,
         if verbosity > 0:
             print >> console, msg
     return output
+
+
+def create_thumbnail(instance, thumbnail_remote_url):
+    BBOX_DIFFERENCE_THRESHOLD = 1e-5
+
+    #Check if the bbox is invalid
+    valid_x = (float(instance.bbox_x0) - float(instance.bbox_x1))**2 > BBOX_DIFFERENCE_THRESHOLD
+    valid_y = (float(instance.bbox_y1) - float(instance.bbox_y0))**2 > BBOX_DIFFERENCE_THRESHOLD
+
+    image = None
+
+    if valid_x and valid_y:
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=thumbnail_remote_url,
+                        defaults=dict(
+                            extension='png',
+                            name=_("Remote Thumbnail"),
+                            mime='image/png',
+                            link_type='image',
+                            )
+                        )
+
+        # Download thumbnail and save it locally.
+        resp, image = http_client.request(thumbnail_remote_url)
+
+        if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
+            msg = 'Unable to obtain thumbnail: %s' % image
+            logger.debug(msg)
+            # Replace error message with None.
+            image = None
+
+    if image is not None:
+        if instance.has_thumbnail():
+            instance.thumbnail.thumb_file.delete()
+
+        instance.thumbnail.thumb_file.save('layer-%s-thumb.png' % instance.id, ContentFile(image))
+        instance.thumbnail.thumb_spec = thumbnail_remote_url
+        instance.thumbnail.save()
+
+        thumbnail_url = urljoin(settings.SITEURL, instance.thumbnail.thumb_file.url)
+
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=thumbnail_url,
+                        defaults=dict(
+                            name=_('Thumbnail'),
+                            extension='png',
+                            mime='image/png',
+                            link_type='image',
+                            )
+                        )
