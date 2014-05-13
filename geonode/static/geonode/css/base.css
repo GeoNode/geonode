@@ -1,1 +1,1 @@
-@import "../font/lato_font.css";@import "../css/font-awesome.css";body{font-family:Lato,"Helvetica Neue",Helvetica,Arial,sans-serif}a{color:#379ea9}.navbar-inverse{background-color:#333;border-radius:0}
+@import "../font/lato_font.css";@import "../css/font-awesome.css";body{font-family:Lato,"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px}a{color:#379ea9}h1,h2,h3,h4,h5,h6{font-weight:700}.navbar-inverse{background-color:#333;border-radius:0}

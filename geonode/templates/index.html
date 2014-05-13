@@ -6,42 +6,36 @@
 
 {% block body_class %}home{% endblock %}
 
-{% block body_outer %}
-<div class="span12">
+{% block middle %}
+
   {% block hero %}
-  <div class="hero-unit">
-    <h1>{% trans "Welcome" %}</h1>
-    <div class="hero-unit-content">
-      <div class="intro">
-        <p>
-          {% blocktrans %}
-            GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.
-          {% endblocktrans %}
-        </p>
-        <span>{% trans 'Need help' %} <a href="http://docs.geonode.org/en/latest/tutorials/users/quickstart/index.html">{% trans 'Getting Started?' %}</a></span>
-      </div>
-      <div class="btns">
-        <a class="btn btn-large" href="{% url "layer_browse" %}">
-          {% trans "Explore Layers" %}
-        </a>
-        <a class="btn btn-large" href="{% url "maps_browse" %}">
-          {% trans "Explore Maps" %}
-        </a>
-      </div>
+  <div class="jumbotron">
+    <div class="container">
+      <h1>{% trans "Welcome" %}</h1>
+      <p>
+        {% blocktrans %}
+        GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.
+        {% endblocktrans %}
+      </p>
+      <span>{% trans 'Need help?' %} <a href="http://docs.geonode.org/en/latest/tutorials/users/quickstart/index.html">{% trans 'Getting Started' %}</a></span>
+      <p><a class="btn btn-large" role="button" href="{% url "layer_browse" %}">{% trans "Explore Layers" %}</a></p>
+      <p><a class="btn btn-large" role="button" href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></p>
     </div>
   </div>
   {% endblock %}
+
   {% block mainbody %}
-  <div class="row">
-    <div class="span8">
-      <section class="widget list">
-        <h2>{% trans "Latest Contributions" %}</h2>
-        <div class="content" id="latest-contributions">
-          {% include 'base/_resourcebase_snippet.html' %}
-        </div>
-      </section>
-    </div>
-    <aside class="span4">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+        <section class="widget list">
+          <h2>{% trans "Latest Contributions" %}</h2>
+          <div class="content" id="latest-contributions">
+            {% include 'base/_resourcebase_snippet.html' %}
+          </div>
+        </section>
+      </div>
+      <div class="col-md-4">
       {% if request.user.is_authenticated %}
         <div class="well">
           <section>
@@ -59,10 +53,11 @@
           </section>
         </div>
       {% endif %}
-    </aside>
+      </div>
+    </div>
   </div>
   {% endblock %}
-</div>
+  
 {% endblock %}
 
 {% block extra_script %}

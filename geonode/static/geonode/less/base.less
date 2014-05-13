@@ -3,11 +3,11 @@
 
 /* Variables
 ----------------------- */
-@brand-primary: #379ea9; //#428bca;
-@brand-secondary: #f05a24; //#5cb85c;
-@brand-info:    #5bc0de;
-@brand-warning: #f0ad4e;
-@brand-danger:  #d9534f;
+@brand-primary:   #379ea9;
+@brand-secondary: #f05a24;
+@brand-info:      #5bc0de;
+@brand-warning:   #f0ad4e;
+@brand-danger:    #d9534f;
 
 @gray-darker:  lighten(#000, 13.5%); // #222
 @gray-dark:    lighten(#000, 20%);   // #333
@@ -26,8 +26,6 @@
 @font-family-base:        @font-family-sans-serif;
 
 @font-size-base:          14px;
-@font-size-large:         ceil((@font-size-base * 1.25)); // ~18px
-@font-size-small:         ceil((@font-size-base * 0.85)); // ~12px
 
 @font-size-h1:            floor((@font-size-base * 2.6)); // ~36px
 @font-size-h2:            floor((@font-size-base * 2.15)); // ~30px
@@ -40,7 +38,7 @@
 @line-height-computed:    floor((@font-size-base * @line-height-base)); // ~20px
 
 @headings-font-family:    inherit;
-@headings-font-weight:    500;
+@headings-font-weight:    700;
 @headings-line-height:    1.1;
 @headings-color:          inherit;
 
@@ -48,9 +46,13 @@
 ----------------------- */
 body {
   font-family: @font-family-sans-serif;
+  font-size: @font-size-base;
 }
 a {
   color: @brand-primary;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-weight: @headings-font-weight;
 }
 
 /* Header
