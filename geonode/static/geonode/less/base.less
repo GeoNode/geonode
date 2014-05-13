@@ -68,6 +68,14 @@ h1, h2, h3, h4, h5, h6 {
   background-color: @gray-dark;
   border-radius: 0;
 }
+.navbar-brand {
+  background: url(../img/logo.png) no-repeat;
+  margin-top: 10px;
+  overflow: hidden;
+  text-indent: -9999em;
+  width: 140px;
+  height: 30px;
+}
 form#search {
   margin-top: 8px;
   .fa {
@@ -90,16 +98,23 @@ form#search {
 }
 /* Search
 ----------------------- */
-nav.filter h4 {
-  background: @gray;
-  font-size: 14px;
-  font-weight: 300;
-  padding: 6px 0;
-  text-transform: uppercase;
-  a {
-    color: white;
+nav.filter {
+  h4 {
+    background: @gray;
+    font-size: 14px;
+    font-weight: 300;
+    padding: 10px 0;
+    text-transform: uppercase;
+    a {
+      color: white;
+    }
+    i {
+      margin-left: 8px;
+    }
   }
-  i {
-    margin-left: 8px;
+  li a {
+    border-bottom: 1px solid @gray-lighter;
+    cursor: pointer;
+    padding: 5px 10px;
   }
 }
