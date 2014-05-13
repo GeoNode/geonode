@@ -54,7 +54,7 @@
             </li>
             {% endif %}
           </ul>
-          <form class="col-md-2">
+          <form class="col-md-3" id="search">
             <div class="input-group">
               <input type="text" placeholder="Search" class="form-control">
               <span class="input-group-btn">
@@ -267,27 +267,29 @@
     {% block footer %}
     <footer class="footer">
       <div class="container">
-        <div class="pull-left">
-          {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
-          <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
-          <a href="{% url "about" %}">{% trans "About" %}</a>
-        </div>
-        <div class="pull-right">
-        {% if csrf_token != "NOTPROVIDED" %}
-          {% get_current_language as LANGUAGE %}
-          <form class="form-inline" action="/i18n/setlang/" method="post">
-          {% csrf_token %}
+        <div class="row">
+          <div class="col-md-8">
+            {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
+            <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
+            <a href="{% url "about" %}">{% trans "About" %}</a>
+          </div>
+          <div class="col-md-4 pull-right">
             <label>{% trans "Language" %}</label>
-            <select class="input span2" name="language" onchange="javascript:form.submit()">
-              {% for lang in LANGUAGES %}
-              <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
-                {{ lang.1 }}
-              </option>
-              {% endfor %}
-            </select>
-          </form>
-        {% endif %}
-        </div> <!-- /.pull-right -->
+            {% if csrf_token != "NOTPROVIDED" %}
+            {% get_current_language as LANGUAGE %}
+            <form class="form-inline" action="/i18n/setlang/" method="post">
+            {% csrf_token %}
+              <select name="language" onchange="javascript:form.submit()">
+                {% for lang in LANGUAGES %}
+                <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                  {{ lang.1 }}
+                </option>
+                {% endfor %}
+              </select>
+            </form>
+          {% endif %}
+          </div> <!-- /.pull-right -->
+        </div>
       </div> <!-- /.container -->
     </footer>
     {% endblock footer %}
@@ -311,8 +313,8 @@
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
 
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script> -->
 
     {% block extra_script %}{% endblock extra_script %}
 

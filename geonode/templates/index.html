@@ -12,11 +12,8 @@
   <div class="jumbotron">
     <div class="container">
       <h1>{% trans "Welcome" %}</h1>
-      <p>
-        {% blocktrans %}
-        GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.
-        {% endblocktrans %}
-      </p>
+      <p>{% blocktrans %}GeoNode is an open source platform for sharing geospatial data and maps.{% endblocktrans %}</p>
+      <p>{% blocktrans %}If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.{% endblocktrans %}</p>
       <span>{% trans 'Need help?' %} <a href="http://docs.geonode.org/en/latest/tutorials/users/quickstart/index.html">{% trans 'Getting Started' %}</a></span>
       <p><a class="btn btn-large" role="button" href="{% url "layer_browse" %}">{% trans "Explore Layers" %}</a></p>
       <p><a class="btn btn-large" role="button" href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></p>
