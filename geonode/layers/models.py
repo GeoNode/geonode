@@ -22,6 +22,7 @@ import logging
 
 from datetime import datetime
 
+
 from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
@@ -175,7 +176,6 @@ class Layer(ResourceBase):
     LEVEL_WRITE = 'layer_readwrite'
     LEVEL_ADMIN = 'layer_admin'
 
-
     def maps(self):
         from geonode.maps.models import MapLayer
         return  MapLayer.objects.filter(name=self.typename)
@@ -283,6 +283,18 @@ def pre_save_layer(instance, sender, **kwargs):
         # Set a sensible default for the typename
         instance.typename = 'geonode:%s' % instance.name
 
+    base_file = instance.get_base_file()
+
+    if base_file is not None:
+        extension = '.%s' % base_file.name
+        if extension in vec_exts:
+            instance.storeType = 'dataStore'
+        elif extension in cov_exts:
+            instance.storeType = 'coverageStore'
+
+    bbox = [instance.bbox_x0, instance.bbox_x1, instance.bbox_y0, instance.bbox_y1]
+    instance.set_bounds_from_bbox(bbox)
+
     # If an XML metadata document is uploaded,
     # parse the XML metadata and update uuid and URLs as per the content model
     if xml_files.count() > 0:
@@ -335,7 +347,7 @@ def post_delete_layer(instance, sender, **kwargs):
         instance.default_style.delete()
 
 
-def post_save_layer(instance, sender, **kwards):
+def post_save_layer(instance, sender, **kwargs):
     """Set missing default values.
     """
     instance.set_missing_info()
