@@ -29,9 +29,11 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+from django.core.exceptions import MultipleObjectsReturned
 
 from geonode.base.models import ResourceBase, ResourceBaseManager, Link
 from geonode.base.models import SpatialRepresentationType, TopicCategory
+from geonode.base.models import Thumbnail
 from geonode.people.utils import get_valid_user
 from geonode.layers.metadata import set_metadata
 from agon_ratings.models import OverallRating
@@ -261,8 +263,9 @@ def pre_save_layer(instance, sender, **kwargs):
 
     xml_files = instance.layerfile_set.filter(name='xml')
 
-    # Set a sensible default for the typename
-    instance.typename = 'geonode:%s' % instance.name
+    if instance.typename is None:
+        # Set a sensible default for the typename
+        instance.typename = 'geonode:%s' % instance.name
 
     # If an XML metadata document is uploaded,
     # parse the XML metadata and update uuid and URLs as per the content model
@@ -281,6 +284,11 @@ def pre_save_layer(instance, sender, **kwargs):
                 instance.category = category
             else:
                 setattr(instance, key, value)
+
+    try:
+        instance.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
+    except MultipleObjectsReturned:
+        instance.thumbnail = Thumbnail.objects.filter(resourcebase__id=instance.id)[0]
 
 
 def pre_delete_layer(instance, sender, **kwargs):
