@@ -48,9 +48,9 @@ def profile_list(request, template='people/profile_list.html'):
 def profile_edit(request, username=None):
     if username is None:
         try:
-            profile = request.user.profile_detail
+            profile = request.user.profile
         except Profile.DoesNotExist:
-            return redirect("profile_create")
+            return redirect("profile_browse")
     else:
         profile = get_object_or_404(Profile, user__username=username)
 
