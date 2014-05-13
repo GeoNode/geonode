@@ -61,11 +61,33 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Header
 ----------------------- */
+.navbar {
+  margin-bottom: 0;
+}
 .navbar-inverse {
   background-color: @gray-dark;
   border-radius: 0;
 }
-
+form#search {
+  margin-top: 8px;
+  .fa {
+    margin-right: 0;
+  }
+}
+/* Home
+----------------------- */
+.jumbotron {
+  background: @brand-primary;
+  color: white;
+  padding: 20px 0;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  a {
+    color: @brand-secondary;
+  }
+  p {
+    margin-bottom: 0;
+  }
+}
 /* Search
 ----------------------- */
 nav.filter h4 {
@@ -73,6 +95,7 @@ nav.filter h4 {
   font-size: 14px;
   font-weight: 300;
   padding: 6px 0;
+  text-transform: uppercase;
   a {
     color: white;
   }
