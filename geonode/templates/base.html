@@ -84,6 +84,7 @@
                   {% if user.is_superuser %}
                   <li><a href="{% url "services" %}"><i class="icon-globe"></i> {% trans "Remote Services" %}</a></li>
                   <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="icon-globe"></i> {% trans "GeoServer" %}</a></li>
+                  <li><a href="{% url "account_invite_user" %}"><i class="icon-fire"></i> {% trans "Invite User" %}</a></li>
                   {% endif %}
                   <li><a href="{% url "recent-activity" %}"><i class="icon-fire"></i> {% trans "Recent Activity" %}</a></li>
                   <li><a title="Help" rel="tooltip" href="/help/">
