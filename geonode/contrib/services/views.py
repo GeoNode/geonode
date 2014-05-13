@@ -50,12 +50,14 @@ from geoserver.catalog import Catalog, FailedRequestError
 
 from geonode.contrib.services.models import Service, Layer, ServiceLayer, WebServiceHarvestLayersJob, WebServiceRegistrationJob
 from geonode.security.views import _perms_info
-from geonode.utils import bbox_to_wkt
+from geonode.utils import bbox_to_wkt, json_response
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.contrib.services.forms import CreateServiceForm, ServiceLayerFormSet, ServiceForm
-from geonode.utils import llbbox_to_mercator, mercator_to_llbbox
+from geonode.utils import llbbox_to_mercator, mercator_to_llbbox, http_client
+from geonode.layers.utils import create_thumbnail
 from django.db import transaction
 from geonode.geoserver.helpers import set_attributes
+from geonode.base.models import Link
 
 logger = logging.getLogger("geonode.core.layers.views")
 
@@ -108,42 +110,38 @@ def register_service(request):
         # Register a new Service
         service_form = CreateServiceForm(request.POST)
         if service_form.is_valid():
-            try:
-                url = _clean_url(service_form.cleaned_data['url'])
+            url = _clean_url(service_form.cleaned_data['url'])
 
-            # method = request.POST.get('method')
-            # type = request.POST.get('type')
-            # name = slugify(request.POST.get('name'))
+        # method = request.POST.get('method')
+        # type = request.POST.get('type')
+        # name = slugify(request.POST.get('name'))
 
 
-                type = service_form.cleaned_data["type"]
-                server = None
-                if type == "AUTO":
-                    type, server = _verify_service_type(url)
+            type = service_form.cleaned_data["type"]
+            server = None
+            if type == "AUTO":
+                type, server = _verify_service_type(url)
 
-                if type is None:
-                    return HttpResponse('Could not determine server type', status = 400)
+            if type is None:
+                return HttpResponse('Could not determine server type', status = 400)
 
-                if "user" in request.POST and "password" in request.POST:
-                    user = request.POST.get('user')
-                    password = request.POST.get('password')
-                else:
-                    user = None
-                    password = None
+            if "user" in request.POST and "password" in request.POST:
+                user = request.POST.get('user')
+                password = request.POST.get('password')
+            else:
+                user = None
+                password = None
 
-                if type in ["WMS","OWS"]:
-                    return _process_wms_service(url, type, user, password, wms=server, owner=request.user)
-                elif type == "REST":
-                    return _register_arcgis_url(url, user, password, owner=request.user)
-                elif type == "CSW":
-                    return _register_harvested_service(url, user, password, owner=request.user)
-                elif type == "OGP":
-                    return _register_ogp_service(url, owner=request.user)
-                else:
-                    return HttpResponse('Not Implemented (Yet)', status=501)
-            except Exception, e:
-                logger.error("Unexpected Error", exc_info=1)
-                return HttpResponse('Unexpected Error: %s' % e, status=500)
+            if type in ["WMS","OWS"]:
+                return _process_wms_service(url, type, user, password, wms=server, owner=request.user)
+            elif type == "REST":
+                return _register_arcgis_url(url, user, password, owner=request.user)
+            elif type == "CSW":
+                return _register_harvested_service(url, user, password, owner=request.user)
+            elif type == "OGP":
+                return _register_ogp_service(url, owner=request.user)
+            else:
+                return HttpResponse('Not Implemented (Yet)', status=501)
     elif request.method == 'PUT':
         # Update a previously registered Service
         return HttpResponse('Not Implemented (Yet)', status=501)
@@ -160,27 +158,26 @@ def register_service_by_type(request):
     url = request.POST.get("url")
     type = request.POST.get("type")
 
-    try:
-        url = _clean_url(url)
-        service = Service.objects.get(base_url=url)
-        return
-    except:
-        type, server = _verify_service_type(url, type)
+    url = _clean_url(url)
 
-        if type == "WMS" or type == "OWS":
-            return _process_wms_service(url, type, None, None, wms=server)
-        elif type == "REST":
-            return _register_arcgis_url(url, None, None)
+    services = Service.objects.filter(base_url=url)
+
+    if services.count() > 0:
+        return
+
+    type, server = _verify_service_type(url, type)
+
+    if type == "WMS" or type == "OWS":
+        return _process_wms_service(url, type, None, None, wms=server)
+    elif type == "REST":
+        return _register_arcgis_url(url, None, None)
 
 def _is_unique(url):
     """
     Determine if a service is already registered based on matching url
     """
-    try:
-        service = Service.objects.get(base_url=url)
-        return False
-    except Service.DoesNotExist:
-        return True
+    return Service.objects.filter(base_url=url).count() == 0
+
 
 def _clean_url(base_url):
     """
@@ -206,47 +203,62 @@ def _get_valid_name(proposed_name):
         iter+=1
     return name
 
-def _verify_service_type(base_url, type=None):
+def _verify_service_type(base_url, service_type=None):
     """
     Try to determine service type by process of elimination
     """
+    exceptions = []
 
-    if type in ["WMS", "OWS", None]:
+    if service_type in ['WMS', 'OWS', None]:
         try:
             service = WebMapService(base_url)
-            service_type = 'WMS'
-            try:
-                servicewfs = WebFeatureService(base_url)
-                service_type = 'OWS'
-            except:
-                pass
-            return [service_type, service]
         except:
             pass
-    if type in ["TMS",None]:
+        else:
+            return ['WMS', service]
+
+    if service_type in ['WFS', 'OWS', None]:
+        try:
+            servicewfs = WebFeatureService(base_url)
+        except:
+            pass
+        else:
+            return ['WFS', servicewfs]
+
+    if service_type in ['TMS', None]:
         try:
             service = TileMapService(base_url)
-            return ["TMS", service]
         except:
             pass
-    if type in ["REST", None]:
+        else:
+            return ['TMS', service]
+
+
+    if service_type in ['REST', None]:
         try:
             service = ArcFolder(base_url)
-            service.services
-            return ["REST", service]
         except:
             pass
-    if type in ["CSW", None]:
+        else:
+            service.services
+            return ['REST', service]
+
+
+    if service_type in ['CSW', None]:
         try:
             service = CatalogueServiceWeb(base_url)
-            return ["CSW", service]
-        except Exception, e:
-            pass
-    if type in ["OGP", None]:
+        except:
+            raise
+        else:
+            return ['CSW', service]
+
+    if service_type in ['OGP', None]:
         #Just use a specific OGP URL for now
         if base_url == settings.OGP_URL:
             return ["OGP", None]
+
     return [None, None]
+
 
 def _process_wms_service(url, type, username, password, wms=None, owner=None, parent=None):
     """
@@ -765,7 +777,6 @@ def _register_arcgis_url(url,username, password, owner=None, parent=None):
     Register an ArcGIS REST service URL
     """
     #http://maps1.arcgisonline.com/ArcGIS/rest/services
-
     baseurl = _clean_url(url)
     if re.search("\/MapServer\/*(f=json)*", baseurl):
         #This is a MapService
@@ -787,31 +798,45 @@ def _register_arcgis_layers(service, arc=None):
     """
     arc = arc or ArcMapService(service.base_url)
     for layer in arc.layers:
+        valid_name = slugify(layer.name)
         count = 0
         layer_uuid = str(uuid.uuid1())
         bbox = [layer.extent.xmin, layer.extent.ymin, layer.extent.xmax, layer.extent.ymax]
-        # Need to check if layer already exists??
-        saved_layer, created = Layer.objects.get_or_create(
-            typename=str(layer.id),
-            defaults=dict(
-                name=str(layer.id),
-                store=service.name, #??
-                storeType="remoteStore",
-                workspace="remoteWorkspace",
-                title=layer.name,
-                abstract=layer._json_struct['description'],
-                uuid=layer_uuid,
-                owner=None,
-                srid="EPSG:%s" % layer.extent.spatialReference.wkid,
-                bbox_x0 = bbox[0],
-                bbox_x1 = bbox[1],
-                bbox_y0 = bbox[2],
-                bbox_y1 = bbox[3]
+        typename = '%s:%s' % (service.name, valid_name)
+
+        existing_layer = None
+
+        try:
+            existing_layer = Layer.objects.get(typename=typename)
+        except Layer.DoesNotExist:
+            pass
+
+        llbbox = mercator_to_llbbox(bbox)
+
+        if existing_layer is None:
+            # Need to check if layer already exists??
+            saved_layer, created = Layer.objects.get_or_create(
+                typename=typename,
+                defaults=dict(
+                    name=valid_name,
+                    store=service.name, #??
+                    storeType="remoteStore",
+                    workspace="remoteWorkspace",
+                    title=layer.name,
+                    abstract=layer._json_struct['description'],
+                    uuid=layer_uuid,
+                    owner=None,
+                    srid="EPSG:%s" % layer.extent.spatialReference.wkid,
+                    bbox_x0 = llbbox[0],
+                    bbox_x1 = llbbox[1],
+                    bbox_y0 = llbbox[2],
+                    bbox_y1 = llbbox[3],
+                )
             )
-        )
-        if created:
+
             saved_layer.set_default_permissions()
             saved_layer.save()
+
 
             service_layer, created = ServiceLayer.objects.get_or_create(
                 service=service,
@@ -822,20 +847,23 @@ def _register_arcgis_layers(service, arc=None):
             service_layer.description=saved_layer.abstract,
             service_layer.styles=None
             service_layer.save()
+
+            create_arcgis_links(saved_layer)
+
         count += 1
     message = "%d Layers Registered" % count
     return_dict = {'status': 'ok', 'msg': message }
-    return HttpResponse(json.dumps(return_dict),
-                        mimetype='application/json',
-                        status=200)
+    return return_dict
 
 def _process_arcgis_service(arcserver, owner=None, parent=None):
     """
     Create a Service model instance for an ArcGIS REST service
     """
     arc_url = _clean_url(arcserver.url)
-    try:
-        service = Service.objects.get(base_url=arc_url)
+    services = Service.objects.filter(base_url=arc_url)
+
+    if services.count() > 0:
+        service = services[0]
         return_dict = [{
             'status' : 'ok',
             'service_id' : service.pk,
@@ -843,11 +871,7 @@ def _process_arcgis_service(arcserver, owner=None, parent=None):
             'service_title': service.title,
             'msg' : 'This is an existing Service'
         }]
-        return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
-                            status=200)
-    except:
-        pass
+        return return_dict
 
     name = _get_valid_name(arcserver.mapName or arc_url)
     service = Service.objects.create(base_url = arc_url, name=name,
@@ -903,8 +927,10 @@ def _register_ogp_service(url, owner=None):
     """
     Register OpenGeoPortal as a service
     """
-    try:
-        service = Service.objects.get(base_url=url)
+    services = Service.objects.filter(base_url=url)
+
+    if services.count() > 0:
+        service = services[0]
         return_dict = [{
             'status' : 'ok',
             'service_id' : service.pk,
@@ -912,12 +938,7 @@ def _register_ogp_service(url, owner=None):
             'service_title': service.title,
             'msg' : 'This is an existing Service'
         }]
-        return HttpResponse(json.dumps(return_dict),
-                            mimetype='application/json',
-                            status=200)
-    except:
-        pass
-
+        return return_dict
 
 
     service = Service.objects.create(base_url = url,
@@ -1187,3 +1208,45 @@ def ajax_service_permissions(request, service_id):
         "Permissions updated",
         status=200,
         mimetype='text/plain')
+
+def create_arcgis_links(instance):
+    kmz_link = instance.ows_url + '?f=kmz'
+
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=kmz_link,
+                        defaults=dict(
+                            extension='kml',
+                            name="View in Google Earth",
+                            mime='text/xml',
+                            link_type='data',
+                        )
+                    )
+
+
+    # Create legend.
+    legend_url = instance.ows_url + 'legend?f=json'
+
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=legend_url,
+                        defaults=dict(
+                            extension='json',
+                            name=_('Legend'),
+                            url=legend_url,
+                            mime='application/json',
+                            link_type='json',
+                        )
+                    )
+
+
+
+    mercator_bbox = llbbox_to_mercator(instance.bbox)
+
+
+    # Create thumbnails.
+
+    #FIXME(Ariel): Construct the bbox parameter from the above object.
+    # Hardcoding it for now.
+    bbox = '0%2C0%2C10018754.17%2C10018754.17'
+
+    thumbnail_remote_url = instance.ows_url + 'export?LAYERS=show%3A0&TRANSPARENT=true&FORMAT=png&BBOX=' + bbox + '&SIZE=200%2C150&F=image&BBOXSR=900913&IMAGESR=900913'
+    create_thumbnail(instance, thumbnail_remote_url)

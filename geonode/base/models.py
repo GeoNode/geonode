@@ -437,6 +437,31 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         else:
             return tiles_link.url
 
+    def get_legend(self):
+        """Return Link for legend or None if it does not exist.
+        """
+        try:
+            legends_link = self.link_set.get(name='Legend')
+        except Link.DoesNotExist, e:
+            return None
+        else:
+            return legends_link
+
+
+    def get_legend_url(self):
+        """Return URL for legend or None if it does not exist.
+
+           The legend can be either an image (for Geoserver's WMS)
+           or a JSON object for ArcGIS.
+        """
+        legend = self.get_legend()
+
+        if legend is None:
+            return None
+
+        return legend.url
+
+
     def get_ows_url(self):
         """Return URL for OGC WMS server None if it does not exist.
         """
