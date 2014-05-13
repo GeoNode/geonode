@@ -5,8 +5,9 @@
     <meta charset="utf-8">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
+      <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
-      <link href='{{ STATIC_URL }}geonode/font/lato_font.css' rel='stylesheet' type='text/css' />
+      <!-- <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"> -->
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       {% if DEBUG_STATIC %}
       <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css" rel="stylesheet" />
@@ -25,15 +26,74 @@
   <body class="{% block body_class %}{% endblock %}">
 
     {% block header %}
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-inverse" role="navigation">
+      <div class="container">
+        <div class="navbar-header col-md-2">
+          <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li id="nav_data">
+              <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
+            </li>
+            <li id="nav_maps">
+              <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
+            </li>
+            {% if USE_DOCUMENTS %}
+            <li id="nav_documents">
+              <a href="{% url "documents_browse" %}">{% trans "Documents" %}</a>
+            </li>
+            {% endif %}
+            <li id="nav_people">
+              <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
+            </li>
+            {% if GROUPS_APP %}
+            <li id="nav_groups">
+              <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
+            </li>
+            {% endif %}
+          </ul>
+          <form class="navbar-form navbar-left">
+            <div class="form-group">
+              <input type="text" placeholder="Search" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sign in <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li>
+                  <form action="{% url "account_login" %}?next={{ request.path }}" method="post" class="sign-in">
+                  {% csrf_token %}
+                    <label for="id_username">{% trans "Username" %}:</label>
+                    <input id="id_username" name="username" type="text" />
+                    <label for="id_password">{% trans "Password" %}:</label>
+                    <input id="id_password" name="password" type="password" />
+                    <label class="checkbox">
+                      <input type="checkbox" />
+                      {% trans "Remember Me" %}
+                    </label>
+                    <button type="submit" class="btn pull-right">{% trans "Sign in" %}</button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+          </ul>
+            {% if REGISTRATION_OPEN %}
+            <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
+            {% endif %}
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    
+    <!-- <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
           <a href="{% url "home" %}"><span class="nav-logo"></span></a>
           <div class="nav-collapse">
             <ul class="nav">
-              <!-- <li id="nav_home">
-                <a href="{% url "home" %}">{% trans "Home" %}</a>
-              </li> -->
               <li id="nav_data">
                 <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
               </li>
@@ -110,21 +170,20 @@
                 </ul>
               </li>
               {% if REGISTRATION_OPEN %}
-              <!-- <li class="navbar-text">{% trans "or" %}</li> -->
               <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
               {% endif %}
               {% endif %}
             </ul>
             
-          </div><!--/.nav-collapse -->
+          </div>
         </div>
       </div>
-    </div>
+    </div> -->
     {% endblock header %}
 
     {% block middle %}
     {% announcements as site_wide_announcements %}
-    <div class="content-wrap">
+    <div class="container">
       {% if site_wide_announcements %}
       <div id="site_wide_announcements">
         {% for announcement in site_wide_announcements %}
@@ -140,10 +199,10 @@
       <div class="container">
         <div class="row">
         {% block body_outer %}
-          <div class="span8">
+          <div class="col-md-8">
           {% block body %}{% endblock %}
           </div>
-          <div class="span4">
+          <div class="col-md-4">
           {% block sidebar %}{% endblock %}
           </div>
         {% endblock %}
@@ -198,14 +257,16 @@
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
 
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script> -->
+
     {% block extra_script %}{% endblock extra_script %}
 
     <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
     <script type="text/javascript" src="{% url "lang" %}"></script>
-    <style type="text/css">
-      .select2-drop{
-        color: black;
-      }
+    
+    
+
     </style>
   </body>
 </html>
