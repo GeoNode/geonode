@@ -195,7 +195,6 @@ INSTALLED_APPS = (
     'pagination',
     'taggit',
     'taggit_templatetags',
-    'south',
     'friendlytagloader',
     'geoexplorer',
     'leaflet',
@@ -271,10 +270,6 @@ LOGGING = {
             "level": "ERROR",
         },
         "pycsw": {
-            "handlers": ["console"],
-            "level": "ERROR",
-        },
-        'south': {
             "handlers": ["console"],
             "level": "ERROR",
         },
@@ -363,12 +358,6 @@ ACTSTREAM_SETTINGS = {
     'USE_JSONFIELD': True,
     'GFK_FETCH_DEPTH': 1,
 }
-
-# For South migrations
-SOUTH_MIGRATION_MODULES = {
-    'avatar': 'geonode.migrations.avatar',
-}
-SOUTH_TESTS_MIGRATE=False
 
 # Settings for Social Apps
 AUTH_PROFILE_MODULE = 'people.Profile'
