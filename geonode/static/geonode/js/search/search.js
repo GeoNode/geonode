@@ -227,7 +227,7 @@
               url: 'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
               layerOptions: {
                 subdomains: ['a', 'b', 'c'],
-                attribution: '© OpenStreetMap contributors',
+                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>',
                 continuousWorld: true
               }
             }
