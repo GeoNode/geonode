@@ -8,12 +8,12 @@
 {% block body_class %}search{% endblock %}
 
 {% block body_outer %}
-    <div class="span12">
-      <h2 class="page-title">{% trans "Search" %}</h2>
-    </div>
-    {% with include_type_filter='true' %}
-    {% include "search/_search_content.html" %}
-    {% endwith %}
+  <div class="col-md-12">
+    <h2 class="page-title">{% trans "Search" %}</h2>
+  </div>
+  {% with include_type_filter='true' %}
+  {% include "search/_search_content.html" %}
+  {% endwith %}
 {% endblock %}
 
 {% block extra_script %}
