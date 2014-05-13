@@ -3,11 +3,12 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
       <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
-      <!-- <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"> -->
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       {% if DEBUG_STATIC %}
       <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css" rel="stylesheet" />
@@ -53,28 +54,34 @@
             </li>
             {% endif %}
           </ul>
-          <form class="navbar-form navbar-left">
-            <div class="form-group">
+          <form class="col-md-2">
+            <div class="input-group">
               <input type="text" placeholder="Search" class="form-control">
+              <span class="input-group-btn">
+                <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+              </span>
             </div>
-            <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
           </form>
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sign in <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li>
-                  <form action="{% url "account_login" %}?next={{ request.path }}" method="post" class="sign-in">
+                  <form role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
                   {% csrf_token %}
-                    <label for="id_username">{% trans "Username" %}:</label>
-                    <input id="id_username" name="username" type="text" />
-                    <label for="id_password">{% trans "Password" %}:</label>
-                    <input id="id_password" name="password" type="password" />
+                    <div class="form-group">
+                      <label for="id_username">{% trans "Username" %}:</label>
+                      <input id="id_username" name="username" type="text" />
+                    </div>
+                    <div class="form-group">
+                      <label for="id_password">{% trans "Password" %}:</label>
+                      <input id="id_password" name="password" type="password" />
+                    </div>
                     <label class="checkbox">
                       <input type="checkbox" />
                       {% trans "Remember Me" %}
                     </label>
-                    <button type="submit" class="btn pull-right">{% trans "Sign in" %}</button>
+                    <button type="submit" class="btn btn-warning pull-right">{% trans "Sign in" %}</button>
                   </form>
                 </li>
               </ul>
