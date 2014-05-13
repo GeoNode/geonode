@@ -219,6 +219,20 @@
     */
     if($('.leaflet_map').length > 0){
       angular.extend($scope, {
+        layers: {
+          baselayers: {
+            stamen: {
+              name: 'Toner Lite',
+              type: 'xyz',
+              url: 'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
+              layerOptions: {
+                subdomains: ['a', 'b', 'c'],
+                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>',
+                continuousWorld: true
+              }
+            }
+          }
+        },
         map_center: {
           lat: 5.6,
           lng: 3.9,
