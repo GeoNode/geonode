@@ -277,8 +277,6 @@ def pre_save_layer(instance, sender, **kwargs):
     if instance.uuid == '':
         instance.uuid = str(uuid.uuid1())
 
-    xml_files = instance.layerfile_set.filter(name='xml')
-
     if instance.typename is None:
         # Set a sensible default for the typename
         instance.typename = 'geonode:%s' % instance.name
@@ -294,24 +292,6 @@ def pre_save_layer(instance, sender, **kwargs):
 
     bbox = [instance.bbox_x0, instance.bbox_x1, instance.bbox_y0, instance.bbox_y1]
     instance.set_bounds_from_bbox(bbox)
-
-    # If an XML metadata document is uploaded,
-    # parse the XML metadata and update uuid and URLs as per the content model
-    if xml_files.count() > 0:
-        logger.info('Processing uploaded XML metadata')
-        instance.metadata_uploaded   = True
-        # get model properties from XML
-        vals, keywords = set_metadata(xml_files[0].file.read())
-
-        # set model properties
-        for key, value in vals.items():
-            if key == 'spatial_representation_type':
-                value = SpatialRepresentationType(identifier=value)
-            elif key == 'topic_category':
-                category, created = TopicCategory.objects.get_or_create(identifier=value.lower(), gn_description=value)
-                instance.category = category
-            else:
-                setattr(instance, key, value)
 
     try:
         instance.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
@@ -352,18 +332,6 @@ def post_save_layer(instance, sender, **kwargs):
     """
     instance.set_missing_info()
 
-    xml_files = instance.layerfile_set.filter(name='xml')
-
-    # If an XML metadata document is uploaded,
-    # parse the XML metadata and update uuid and URLs as per the content model
-    if xml_files.count() > 0:
-        logger.info('Processing uploaded XML metadata')
-        instance.metadata_uploaded   = True
-        # get model properties from XML
-        vals, keywords = set_metadata(xml_files[0].file.read())
-
-        # add keywords
-        instance.keywords.add(*keywords)
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)
