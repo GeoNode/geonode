@@ -42,10 +42,11 @@ from django.conf import settings
 # Geonode functionality
 from geonode import GeoNodeException
 from geonode.people.utils import get_valid_user
-from geonode.layers.models import Layer, UploadSession
+from geonode.layers.models import Layer, UploadSession, SpatialRepresentationType, TopicCategory
 from geonode.base.models import Link
 from geonode.layers.models import shp_exts, csv_exts, kml_exts, vec_exts, cov_exts
 from geonode.utils import http_client
+from geonode.layers.metadata import set_metadata
 
 from urlparse import urljoin
 
@@ -284,7 +285,7 @@ def get_bbox(filename):
 
 
 def file_upload(filename, name=None, user=None, title=None, abstract=None,
-                skip=True, overwrite=False, keywords=(), charset='UTF-8'):
+                skip=True, overwrite=False, keywords=[], charset='UTF-8'):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -319,6 +320,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     # Get a bounding box
     bbox_x0, bbox_x1, bbox_y0, bbox_y1 = get_bbox(filename)
 
+
     defaults = {
                 'title': title,
                 'abstract': abstract,
@@ -330,6 +332,23 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
                 'bbox_y1' : bbox_y1,
     }
 
+
+    # set metadata
+    if 'xml' in files:
+        xml_file = open(files['xml'])
+        defaults['metadata_uploaded'] = True
+        # get model properties from XML
+        vals, keywords = set_metadata(xml_file.read())
+
+        for key, value in vals.items():
+            if key == 'spatial_representation_type':
+                value = SpatialRepresentationType(identifier=value)
+            elif key == 'topic_category':
+                value, created = TopicCategory.objects.get_or_create(identifier=value.lower(), gn_description=value)
+                key = 'category'
+            else:
+                defaults[key] = value
+
     # If it is a vector file, create the layer in postgis.
     table_name = None
     if is_vector(filename):
@@ -337,7 +356,6 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
     # If it is a raster file, get the resolution.
     if is_raster(filename):
-        defaults['resolution'] = get_resolution(filename)
         defaults['storeType'] = 'coverageStore'
 
     # Create a Django object.
@@ -355,7 +373,8 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     upload_session.layerfile_set.all().update(layer=layer)
 
     # Assign the keywords (needs to be done after saving)
-    layer.keywords.add(*keywords)
+    if len(keywords) > 0: 
+        layer.keywords.add(*keywords)
 
     return layer
 
