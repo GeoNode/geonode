@@ -3,10 +3,12 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
+      <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
-      <link href='{{ STATIC_URL }}geonode/font/lato_font.css' rel='stylesheet' type='text/css' />
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       {% if DEBUG_STATIC %}
       <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css" rel="stylesheet" />
@@ -25,15 +27,120 @@
   <body class="{% block body_class %}{% endblock %}">
 
     {% block header %}
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-inverse" role="navigation">
+      <div class="container">
+        <div class="navbar-header col-md-2">
+          <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li id="nav_data">
+              <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
+            </li>
+            <li id="nav_maps">
+              <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
+            </li>
+            {% if USE_DOCUMENTS %}
+            <li id="nav_documents">
+              <a href="{% url "documents_browse" %}">{% trans "Documents" %}</a>
+            </li>
+            {% endif %}
+            <li id="nav_people">
+              <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
+            </li>
+            {% if GROUPS_APP %}
+            <li id="nav_groups">
+              <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
+            </li>
+            {% endif %}
+          </ul>
+          <form class="col-md-3" id="search">
+            <div class="input-group">
+              <input type="text" placeholder="Search" class="form-control">
+              <span class="input-group-btn">
+                <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+              </span>
+            </div>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              {% if user.is_authenticated %}
+              <li class="user-avatar">
+                {% avatar user 30 %}
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  {{ user.username }}
+                  <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload Layers" %}</a></li>
+                  <li class="divider"></li>
+                  <li><a href="{{ user.get_profile.get_absolute_url }}"><i class="fa fa-user"></i> {% trans "Profile" %}</a></li>
+                  <li><a href="{% url "recent-activity" %}"><i class="fa fa-fire"></i> {% trans "Recent Activity" %}</a></li>
+                  <li><a href="{% url "messages_inbox" %}"><i class="fa fa-inbox"></i> {% trans "Inbox" %}</a></li>
+                  {% if perms.announcements.can_manage %}
+                  <li><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>
+                  {% endif %}
+                  {% if user.is_superuser %}
+                  <li><a href="{% url "services" %}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
+                  <li><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
+                  <li class="divider"></li>
+                  <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
+                  {% endif %}
+                  {% if user.is_staff %}
+                  <li><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
+                  {% endif %}
+                  <li class="divider"></li>
+                  <li><a title="Help" rel="tooltip" href="/help/"><i class="fa fa-question-circle"></i> {% trans "Help" %}</a></li>
+                  <li class="divider"></li>
+                  <li>
+                    <form action="{% url "account_logout" %}" id="logout_form" method="post">
+                      {% csrf_token %}
+                      <a class="navbar-logout" href="javascript:{}" onclick="document.getElementById('logout_form').submit();"><i class="fa fa-sign-out"></i> {% trans "Log out" %}</a>
+                    </form>
+                  </li>
+                </ul>
+              </li>
+              {% else %}
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sign in <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li>
+                  <form role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
+                  {% csrf_token %}
+                    <div class="form-group">
+                      <label for="id_username">{% trans "Username" %}:</label>
+                      <input id="id_username" name="username" type="text" />
+                    </div>
+                    <div class="form-group">
+                      <label for="id_password">{% trans "Password" %}:</label>
+                      <input id="id_password" name="password" type="password" />
+                    </div>
+                    <label class="checkbox">
+                      <input type="checkbox" />
+                      {% trans "Remember Me" %}
+                    </label>
+                    <button type="submit" class="btn btn-warning pull-right">{% trans "Sign in" %}</button>
+                  </form>
+                </li>
+              </ul>
+              {% endif %}
+            </li>
+          </ul>
+            {% if REGISTRATION_OPEN %}
+            <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
+            {% endif %}
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    
+    <!-- <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
           <a href="{% url "home" %}"><span class="nav-logo"></span></a>
           <div class="nav-collapse">
             <ul class="nav">
-              <!-- <li id="nav_home">
-                <a href="{% url "home" %}">{% trans "Home" %}</a>
-              </li> -->
               <li id="nav_data">
                 <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
               </li>
@@ -116,21 +223,20 @@
                 </ul>
               </li>
               {% if REGISTRATION_OPEN %}
-              <!-- <li class="navbar-text">{% trans "or" %}</li> -->
               <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
               {% endif %}
               {% endif %}
             </ul>
             
-          </div><!--/.nav-collapse -->
+          </div>
         </div>
       </div>
-    </div>
+    </div> -->
     {% endblock header %}
 
     {% block middle %}
     {% announcements as site_wide_announcements %}
-    <div class="content-wrap">
+    <div class="container">
       {% if site_wide_announcements %}
       <div id="site_wide_announcements">
         {% for announcement in site_wide_announcements %}
@@ -146,10 +252,10 @@
       <div class="container">
         <div class="row">
         {% block body_outer %}
-          <div class="span8">
+          <div class="col-md-8">
           {% block body %}{% endblock %}
           </div>
-          <div class="span4">
+          <div class="col-md-4">
           {% block sidebar %}{% endblock %}
           </div>
         {% endblock %}
@@ -161,27 +267,29 @@
     {% block footer %}
     <footer class="footer">
       <div class="container">
-        <div class="pull-left">
-          {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
-          <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
-          <a href="{% url "about" %}">{% trans "About" %}</a>
-        </div>
-        <div class="pull-right">
-        {% if csrf_token != "NOTPROVIDED" %}
-          {% get_current_language as LANGUAGE %}
-          <form class="form-inline" action="/i18n/setlang/" method="post">
-          {% csrf_token %}
+        <div class="row">
+          <div class="col-md-8">
+            {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
+            <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
+            <a href="{% url "about" %}">{% trans "About" %}</a>
+          </div>
+          <div class="col-md-4 pull-right">
             <label>{% trans "Language" %}</label>
-            <select class="input span2" name="language" onchange="javascript:form.submit()">
-              {% for lang in LANGUAGES %}
-              <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
-                {{ lang.1 }}
-              </option>
-              {% endfor %}
-            </select>
-          </form>
-        {% endif %}
-        </div> <!-- /.pull-right -->
+            {% if csrf_token != "NOTPROVIDED" %}
+            {% get_current_language as LANGUAGE %}
+            <form class="form-inline" action="/i18n/setlang/" method="post">
+            {% csrf_token %}
+              <select name="language" onchange="javascript:form.submit()">
+                {% for lang in LANGUAGES %}
+                <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                  {{ lang.1 }}
+                </option>
+                {% endfor %}
+              </select>
+            </form>
+          {% endif %}
+          </div> <!-- /.pull-right -->
+        </div>
       </div> <!-- /.container -->
     </footer>
     {% endblock footer %}
@@ -194,7 +302,8 @@
     <script src="{{ STATIC_URL }}lib/js/jquery.ajaxQueue.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery-ui.custom.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.raty.js"></script>
-    <script src="{{ STATIC_URL }}lib/js/bootstrap.js"></script>
+    <!-- <script src="{{ STATIC_URL }}lib/js/bootstrap.js"></script> -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="{{ STATIC_URL }}lib/js/json2.js"></script>
     <script src="{{ STATIC_URL }}lib/js/select2.js"></script>
     <script src="{{ STATIC_URL }}lib/js/waypoints.js"></script>
@@ -204,14 +313,16 @@
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script> -->
+
     {% block extra_script %}{% endblock extra_script %}
 
     <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
     <script type="text/javascript" src="{% url "lang" %}"></script>
-    <style type="text/css">
-      .select2-drop{
-        color: black;
-      }
+    
+    
+
     </style>
   </body>
 </html>
