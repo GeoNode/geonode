@@ -102,11 +102,6 @@ def _resolve_map(request, id, permission='maps.change_map',
     return resolve_object(request, Map, {'pk':id}, permission = permission,
                           permission_msg=msg, **kwargs)
 
-
-def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
-    return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
-
-
 #### BASIC MAP VIEWS ####
 
 def map_detail(request, mapid, template='maps/map_detail.html'):
