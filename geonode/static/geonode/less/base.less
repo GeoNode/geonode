@@ -3,10 +3,10 @@
 
 /* Variables
 ----------------------- */
-@brand-primary:   #379ea9;
+@brand-primary:   rgb(2, 139, 175);
 @brand-secondary: #f05a24;
 @brand-info:      #5bc0de;
-@brand-warning:   #f0ad4e;
+@brand-warning:   rgb(158, 179, 67); // #f0ad4e;
 @brand-danger:    #d9534f;
 
 @gray-darker:  lighten(#000, 13.5%); // #222
@@ -82,6 +82,9 @@ form#search {
     margin-right: 0;
   }
 }
+.user-avatar {
+  margin-top: 10px;
+}
 /* Home
 ----------------------- */
 .jumbotron {
@@ -90,7 +93,7 @@ form#search {
   padding: 20px 0;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
   a {
-    color: @brand-secondary;
+    color: @brand-warning;
   }
   p {
     margin-bottom: 0;
@@ -111,6 +114,9 @@ nav.filter {
     i {
       margin-left: 8px;
     }
+  }
+  .closed {
+    display: none;
   }
   li a {
     border-bottom: 1px solid @gray-lighter;
