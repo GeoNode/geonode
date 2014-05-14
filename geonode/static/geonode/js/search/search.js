@@ -215,6 +215,36 @@
     }
 
     /*
+    * Date management
+    */
+
+    $scope.date_query = {
+      'date__gte': '',
+      'date__lte': ''
+    };
+
+    $scope.$watch('date_query', function(){
+      if($scope.date_query.date__gte != '' && $scope.date_query.date__lte != ''){
+        $scope.query['date__range'] = $scope.date_query.date__gte + ',' + $scope.date_query.date__lte;
+        delete $scope.query['date__gte'];
+        delete $scope.query['date__lte'];
+      }else if ($scope.date_query.date__gte != ''){
+        $scope.query['date__gte'] = $scope.date_query.date__gte;
+        delete $scope.query['date__range'];
+        delete $scope.query['date__lte'];
+      }else if ($scope.date_query.date__lte != ''){
+        $scope.query['date__lte'] = $scope.date_query.date__lte;
+        delete $scope.query['date__range'];
+        delete $scope.query['date__gte'];
+      }else{
+        delete $scope.query['date__range'];
+        delete $scope.query['date__gte'];
+        delete $scope.query['date__lte'];
+      }
+      query_api($scope.query);
+    }, true);
+
+    /*
     * Spatial search
     */
     if($('.leaflet_map').length > 0){
