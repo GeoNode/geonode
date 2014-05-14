@@ -322,6 +322,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
 
     defaults = {
+                'upload_session': upload_session,
                 'title': title,
                 'abstract': abstract,
                 'owner': user,
@@ -366,17 +367,19 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
     # Delete the old layers if overwrite is true
     # and the layer was not just created
+    # process the layer again after that by
+    # doing a layer.save()
     if not created and overwrite:
-        layer.layerfile_set.all().delete()
-
-    # Assign the uploaded files to this layer.
-    upload_session.layerfile_set.all().update(layer=layer)
+        layer.upload_session.layerfile_set.all().delete()
+        layer.upload_session = upload_session
+        layer.save()
 
     # Assign the keywords (needs to be done after saving)
     if len(keywords) > 0: 
         layer.keywords.add(*keywords)
 
     return layer
+
 
 def upload(incoming, user=None, overwrite=False,
            keywords=(), skip=True, ignore_errors=True,

@@ -102,6 +102,8 @@ class Layer(ResourceBase):
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
+    upload_session = models.ForeignKey('UploadSession', blank=True, null=True)
+
     def is_vector(self):
         return self.storeType == 'dataStore'
 
@@ -128,11 +130,17 @@ class Layer(ResourceBase):
             return settings.OGC_SERVER['default']['LOCATION'] + "wms"
 
     def get_base_file(self):
-        base_exts = [x.replace('.','') for x in cov_exts + vec_exts]
-        base_files = self.layerfile_set.filter(name__in=base_exts)
+        """Get the shp or geotiff file for this layer.
+        """
+        # If there was no upload_session return None
+        if self.upload_session is None:
+            return None
 
+        base_exts = [x.replace('.','') for x in cov_exts + vec_exts]
+        base_files = self.upload_session.layerfile_set.filter(name__in=base_exts)
         base_files_count = base_files.count()
 
+        # If there are no files in the upload_session return None
         if base_files_count == 0:
             return None
 
@@ -141,8 +149,10 @@ class Layer(ResourceBase):
 
         return base_files.get()
 
+
     def get_absolute_url(self):
         return reverse('layer_detail', args=(self.typename,))
+
 
     def attribute_config(self):
         #Get custom attribute sort order and labels if any
@@ -206,7 +216,6 @@ class LayerFile(models.Model):
     """Helper class to store original files.
     """
     upload_session = models.ForeignKey(UploadSession)
-    layer = models.ForeignKey(Layer, blank=True, null=True)
     name = models.CharField(max_length=255)
     base = models.BooleanField(default=False)
     file = models.FileField(upload_to='layers', max_length=255)
