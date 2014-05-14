@@ -1,5 +1,11 @@
 {% verbatim %}
-    <article ng-repeat="item in results">
-      <a href="{{ item.absolute__url }}">{{ item.title }}</a>
-    </article>
+  <article ng-repeat="item in results">
+    <div class="content">
+      <div class="item-header">
+        <a href="{{ item.absolute__url }}">{{ item.title }}
+          <img class="thumb" src="{{ item.thumbnail_url }}" />
+        </a>
+      </div>
+    </div>
+  </article>
 {% endverbatim %}

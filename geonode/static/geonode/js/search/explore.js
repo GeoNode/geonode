@@ -1,4 +1,7 @@
 $(function() {
+
+    $( ".datepicker" ).datepicker();
+    
     $("[data-viewby]").each(function() {
         $(this).find("nav.viewby a."+$(this).data("viewby")).addClass("active");
     });

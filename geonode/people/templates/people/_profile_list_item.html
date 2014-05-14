@@ -18,9 +18,9 @@
           {{ profile.profile != '' ?  profile.profile : '' }}
         </p>
           <ul class="nav stats">
-            <li><a href="{{ profile.profile_detail_url }}/?content=layers"><strong>{{ profile.layers_count }}</strong>Layers</a></li>
-            <li><a href="{{ profile.profile_detail_url }}/?content=maps"><strong>{{ profile.maps_count }}</strong>Maps</a></li>
-            <li><a href="{{ profile.profile_detail_url }}/?content=documents"><strong>{{ profile.documents_count }}</strong>Documents</a></li>
+            <li><a href="{{ profile.profile_detail_url }}?content=layers"><strong>{{ profile.layers_count }}</strong>Layers</a></li>
+            <li><a href="{{ profile.profile_detail_url }}?content=maps"><strong>{{ profile.maps_count }}</strong>Maps</a></li>
+            <li><a href="{{ profile.profile_detail_url }}?content=documents"><strong>{{ profile.documents_count }}</strong>Documents</a></li>
           </ul>
       </div> <!-- ./meta -->
 
