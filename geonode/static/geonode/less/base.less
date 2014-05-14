@@ -55,7 +55,10 @@ a {
 h1, h2, h3, h4, h5, h6 {
   font-weight: @headings-font-weight;
 }
-.container {width: 970px !important;}
+.container {
+  width: 970px !important;
+}
+
 .fa {
   margin-right: 8px;
 }
@@ -129,7 +132,18 @@ nav.filter {
   h5 {
     font-weight: 400;
   }
-.thumb {
-  float: left;
+  .thumb {
+    float: left;
+  }
 }
+
+/* Etc
+----------------------- */
+.rotate-45 {
+  -webkit-transform: rotate(45deg);
+     -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+       -o-transform: rotate(45deg);
+          transform: rotate(45deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
 }
