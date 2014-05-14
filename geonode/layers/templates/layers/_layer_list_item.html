@@ -45,7 +45,7 @@
   <div class="modal custom hide" id="download-{{layer.id}}">
     <div class="modal-header">
       <button class="close" data-dismiss="modal">×</button>
-      <h2><i class="icon-download-alt"></i>  {% trans "Download Layer" %} "{{layer.title}}"</h2>
+      <h2><i class="fa fa-cloud-download"></i>  {% trans "Download Layer" %} "{{layer.title}}"</h2>
     </div>
     <div class="modal-body">
     </div>
@@ -53,7 +53,7 @@
       {% if layer.link_set.download|length > 0 %}
         {% for link in layer.link_set.download %}
         {% if forloop.counter0 == 0 %}
-        <div class="span2 offset1">
+        <div class="col-md-2 col-md-offset-1">
           <ul class="unstyled">
             <li><a href="{{ link.url }}">{{ link.name }}</a></li>
         {% elif forloop.counter0 >= forloop.revcounter0 and forloop.revcounter0|add:1 >= forloop.counter0 %}
