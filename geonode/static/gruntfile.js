@@ -199,7 +199,7 @@ module.exports = function(grunt) {
             'lib/js/bootstrap-datepicker.js',
             'lib/js/json2.js',
             'lib/js/select2.js',
-            'lib/js/bootstrap.js',
+            //'lib/js/bootstrap.min.js',
             'lib/js/angular.js',
             'lib/js/angular-leaflet-directive.min.js'
           ],
