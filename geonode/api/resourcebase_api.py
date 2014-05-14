@@ -35,7 +35,11 @@ class CommonModelApi(ModelResource):
     category = fields.ToOneField(TopicCategoryResource, 'category', null=True)
     owner = fields.ToOneField(UserResource, 'owner')
     absolute__url = fields.CharField()
-    rating = fields.FloatField(attribute='rating', null = True)    
+    rating = fields.FloatField(attribute='rating', null = True)
+    thumbnail_url = fields.CharField(null=True)
+
+    def dehydrate_thumbnail_url(self, bundle):
+        return bundle.obj.get_thumbnail_url()    
 
     def dehydrate_absolute__url(self, bundle):
         return bundle.obj.get_absolute_url()
