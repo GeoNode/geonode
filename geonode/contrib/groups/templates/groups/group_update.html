@@ -6,12 +6,12 @@
 
 {% block body %}
      <div class="block">
-        <div class="span10">
+        <div class="col-md-10">
           <h2 class="page-title">{% trans "Update Group" %}</h2>
           {% if errors %}
             <div id="errors">
               {% for error in errors %}
-                <div style="color:#FF0000;">{{ error }}</div>
+                <div>{{ error }}</div>
               {% endfor %}
             </div>
           {% endif %}
