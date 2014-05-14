@@ -1,20 +1,20 @@
 {% load i18n %}
-  <div class="span8 filter">      
+  <div class="col-md-8 filter">      
     {% include "search/_sort_filters.html" %}
   </div>
-  <div class="span4">
+  <div class="col-md-4">
     <div class="pull-right" data-viewby="list">
     {% include "_viewby.html" %}
     </div>
   </div>
-  <div class="span12">
+  <div class="col-md-12">
     <div class="row" id="contain-slider">
-      <div class="span4">
+      <div class="col-md-3">
         <div class="selections">
-          <h4>
+          <h5>
             {% trans "Your selections" %}
             <a href="." id="clear-search" class="pull-right">Clear all filters</a>
-          </h4>
+          </h5>
         </div>
         <div id="slide-pane">
           {% if include_type_filter == 'true' %}
@@ -24,7 +24,9 @@
           {% include "search/_extent_filter.html" %}
         </div>
       </div>
+      <div class="col-md-9">
       {% include 'search/_pagination.html' %}
+      </div>
       <div class="tab-content" id="search-content">
         <div class="tab-pane active list">
         {% include 'base/_resourcebase_snippet.html' %}
