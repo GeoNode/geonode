@@ -47,12 +47,16 @@
 body {
   font-family: @font-family-sans-serif;
   font-size: @font-size-base;
+  padding-top: 50px;
 }
 a {
   color: @brand-primary;
 }
 h1, h2, h3, h4, h5, h6 {
   font-weight: @headings-font-weight;
+}
+.container {
+  width: 970px !important;
 }
 
 .fa {
@@ -84,6 +88,28 @@ form#search {
 }
 .user-avatar {
   margin-top: 10px;
+}
+.dropdown-menu form {
+  padding: 10px;
+}
+
+.navbar-active {
+  color: white;
+}
+body.layers li#nav_layers a {
+  .navbar-active
+}
+body.maps li#nav_maps a {
+  .navbar-active
+}
+body.documents li#nav_documents a {
+  .navbar-active
+}
+body.people li#nav_people a {
+  .navbar-active
+}
+body.groups li#nav_groups a {
+  .navbar-active
 }
 /* Home
 ----------------------- */
@@ -123,4 +149,23 @@ nav.filter {
     cursor: pointer;
     padding: 5px 10px;
   }
+}
+.selections {
+  h5 {
+    font-weight: 400;
+  }
+  .thumb {
+    float: left;
+  }
+}
+
+/* Etc
+----------------------- */
+.rotate-45 {
+  -webkit-transform: rotate(45deg);
+     -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+       -o-transform: rotate(45deg);
+          transform: rotate(45deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
 }

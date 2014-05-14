@@ -18,12 +18,12 @@
 {% block body_class %}documents{% endblock %}
 
 {% block body_outer %}
-  <div class="span6">
+  <div class="col-md-6">
     <h2 class="page-title">{{ document.title }}</h2>
   </div>
-  <div class="span6 action-group">
-	<div class="btn-group pull-right">
-        <div class="btn-group">
+  <div class="col-md-6 action-group">
+	  <div class="btn-group pull-right">
+      <div class="btn-group">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
           {% trans "Download Metadata" %}
           <span class="caret"></span>
@@ -33,7 +33,7 @@
             <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
           {% endfor %}
         </ul>
-     </div>
+      </div>
     {% has_obj_perm user document "documents.change_document" as can_edit_document %}
     {% if can_edit_document %}
     <div class="btn-group">
@@ -51,7 +51,7 @@
     {% endif %}
     </div>
   </div>
-  <div class="span8">
+  <div class="col-md-8">
    
       {% if document.extension|lower in imgtypes and document.doc_file %}
       <div id="embedded_map">
@@ -104,7 +104,7 @@
         </article>
       </div>
   </div>
-  <aside class="span4">
+  <aside class="col-md-4">
     <div class="well">
         <h2>{% trans "Resource using this document" %}</h2>
         {% if layer.maps %}
