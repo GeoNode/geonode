@@ -22,6 +22,7 @@ import logging
 
 from datetime import datetime
 
+
 from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
@@ -101,6 +102,8 @@ class Layer(ResourceBase):
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
+    upload_session = models.ForeignKey('UploadSession', blank=True, null=True)
+
     def is_vector(self):
         return self.storeType == 'dataStore'
 
@@ -127,11 +130,17 @@ class Layer(ResourceBase):
             return settings.OGC_SERVER['default']['LOCATION'] + "wms"
 
     def get_base_file(self):
-        base_exts = [x.replace('.','') for x in cov_exts + vec_exts]
-        base_files = self.layerfile_set.filter(name__in=base_exts)
+        """Get the shp or geotiff file for this layer.
+        """
+        # If there was no upload_session return None
+        if self.upload_session is None:
+            return None
 
+        base_exts = [x.replace('.','') for x in cov_exts + vec_exts]
+        base_files = self.upload_session.layerfile_set.filter(name__in=base_exts)
         base_files_count = base_files.count()
 
+        # If there are no files in the upload_session return None
         if base_files_count == 0:
             return None
 
@@ -140,8 +149,10 @@ class Layer(ResourceBase):
 
         return base_files.get()
 
+
     def get_absolute_url(self):
         return reverse('layer_detail', args=(self.typename,))
+
 
     def attribute_config(self):
         #Get custom attribute sort order and labels if any
@@ -175,7 +186,6 @@ class Layer(ResourceBase):
     LEVEL_WRITE = 'layer_readwrite'
     LEVEL_ADMIN = 'layer_admin'
 
-
     def maps(self):
         from geonode.maps.models import MapLayer
         return  MapLayer.objects.filter(name=self.typename)
@@ -206,7 +216,6 @@ class LayerFile(models.Model):
     """Helper class to store original files.
     """
     upload_session = models.ForeignKey(UploadSession)
-    layer = models.ForeignKey(Layer, blank=True, null=True)
     name = models.CharField(max_length=255)
     base = models.BooleanField(default=False)
     file = models.FileField(upload_to='layers', max_length=255)
@@ -277,29 +286,21 @@ def pre_save_layer(instance, sender, **kwargs):
     if instance.uuid == '':
         instance.uuid = str(uuid.uuid1())
 
-    xml_files = instance.layerfile_set.filter(name='xml')
-
     if instance.typename is None:
         # Set a sensible default for the typename
         instance.typename = 'geonode:%s' % instance.name
 
-    # If an XML metadata document is uploaded,
-    # parse the XML metadata and update uuid and URLs as per the content model
-    if xml_files.count() > 0:
-        logger.info('Processing uploaded XML metadata')
-        instance.metadata_uploaded   = True
-        # get model properties from XML
-        vals, keywords = set_metadata(xml_files[0].file.read())
+    base_file = instance.get_base_file()
 
-        # set model properties
-        for key, value in vals.items():
-            if key == 'spatial_representation_type':
-                value = SpatialRepresentationType(identifier=value)
-            elif key == 'topic_category':
-                category, created = TopicCategory.objects.get_or_create(identifier=value.lower(), gn_description=value)
-                instance.category = category
-            else:
-                setattr(instance, key, value)
+    if base_file is not None:
+        extension = '.%s' % base_file.name
+        if extension in vec_exts:
+            instance.storeType = 'dataStore'
+        elif extension in cov_exts:
+            instance.storeType = 'coverageStore'
+
+    bbox = [instance.bbox_x0, instance.bbox_x1, instance.bbox_y0, instance.bbox_y1]
+    instance.set_bounds_from_bbox(bbox)
 
     try:
         instance.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
@@ -335,23 +336,11 @@ def post_delete_layer(instance, sender, **kwargs):
         instance.default_style.delete()
 
 
-def post_save_layer(instance, sender, **kwards):
+def post_save_layer(instance, sender, **kwargs):
     """Set missing default values.
     """
     instance.set_missing_info()
 
-    xml_files = instance.layerfile_set.filter(name='xml')
-
-    # If an XML metadata document is uploaded,
-    # parse the XML metadata and update uuid and URLs as per the content model
-    if xml_files.count() > 0:
-        logger.info('Processing uploaded XML metadata')
-        instance.metadata_uploaded   = True
-        # get model properties from XML
-        vals, keywords = set_metadata(xml_files[0].file.read())
-
-        # add keywords
-        instance.keywords.add(*keywords)
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)
