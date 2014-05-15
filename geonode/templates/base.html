@@ -8,12 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"> -->
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
-      <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       {% if DEBUG_STATIC %}
       <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}lib/css/select2.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/jquery-ui.css" rel="stylesheet"/>
       {% else %}
       <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
       {% endif %}
