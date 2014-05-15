@@ -79,8 +79,8 @@ module.exports = function(grunt) {
             'datatables/media/css/jquery.dataTables.css',
             'select2/select2.css', 
             'multi-select/css/multi-select.css',
-            'qunit/qunit/qunit.css',
-            'jquery-ui/themes/smoothness/jquery-ui.css'
+            'jquery-ui/themes/smoothness/jquery-ui.css',
+            'bootstrap/dist/css/bootstrap.min.css'
           ]
         }, {
           expand: true,
@@ -101,7 +101,7 @@ module.exports = function(grunt) {
           cwd: '.components',
           dest: 'lib/js',
           src: [
-            'jquery/jquery.js',
+            'jquery/dist/jquery.min.js',
             'datatables/media/js/jquery.dataTables.js',
             'jquery-timeago/jquery.timeago.js',
             'tinysort/src/jquery.tinysort.js',
@@ -119,7 +119,8 @@ module.exports = function(grunt) {
             'underscore/underscore.js',
             'qunit/qunit/qunit.js',
             'angular/angular.js',
-            'angular-leaflet-directive/dist/angular-leaflet-directive.min.js'
+            'angular-leaflet-directive/dist/angular-leaflet-directive.min.js',
+            'bootstrap/dist/js/bootstrap.min.js'
           ]
         }]
       }
@@ -172,7 +173,8 @@ module.exports = function(grunt) {
             'lib/css/jquery.dataTables.css',
             'lib/css/select2.css',
             'lib/css/multi-select.css',
-            'lib/css/jquery-ui.css'
+            'lib/css/jquery-ui.css',
+            'lib/css/bootstrap.min.css'
           ]
         }
       }
@@ -186,7 +188,7 @@ module.exports = function(grunt) {
       production: {
         files: {
           'lib/js/assets.min.js': [
-            'lib/js/jquery.js',
+            'lib/js/jquery.min.js',
             'lib/js/jquery.dataTables.js',
             'lib/js/jquery.timeago.js',
             'lib/js/jquery.tinysort.js',
@@ -199,7 +201,7 @@ module.exports = function(grunt) {
             'lib/js/bootstrap-datepicker.js',
             'lib/js/json2.js',
             'lib/js/select2.js',
-            //'lib/js/bootstrap.min.js',
+            'lib/js/bootstrap.min.js',
             'lib/js/angular.js',
             'lib/js/angular-leaflet-directive.min.js'
           ],
