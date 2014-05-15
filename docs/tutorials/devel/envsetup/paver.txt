@@ -118,9 +118,9 @@ sync
 
 Synchronizes the database according the GeoNode models and loads the GeoNode sample data.
 
-update_static
+static
 -------------
-```paver update_static```
+```paver static```
 
 .. note:: This task requires the `Node Package Manager <https://npmjs.org/>`_ to be installed.
 
