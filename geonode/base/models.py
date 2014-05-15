@@ -401,10 +401,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         y = (miny + maxy) / 2
         (center_x, center_y) = forward_mercator((x,y))
 
-        width_zoom = math.log(360 / (maxx - minx), 2)
-        height_zoom = math.log(360 / (maxy - miny), 2)
+        xdiff = maxx - minx
+        ydiff = maxy - miny
 
-        zoom = math.ceil(min(width_zoom, height_zoom))
+        zoom = 0
+
+        if xdiff > 0 and ydiff >0:
+            width_zoom = math.log(360 / xdiff, 2)
+            height_zoom = math.log(360 / ydiff, 2)
+            zoom = math.ceil(min(width_zoom, height_zoom))
 
         self.zoom = zoom
         self.center_x = center_x
