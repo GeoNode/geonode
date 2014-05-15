@@ -1,10 +1,238 @@
-{% extends "site_base.html" %}
-{% load i18n %}
+{% load i18n avatar_tags announcements_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Disabling responsiveness
+    <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+    {% block head %}
+      <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
+      {% if DEBUG_STATIC %}
+      <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}lib/css/select2.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/jquery-ui.css" rel="stylesheet"/>
+      {% endif %}
+      {% block extra_head %}
+      {% endblock %}
+    {% endblock %}
+    <!--[if lt IE 9]>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body class="{% block body_class %}{% endblock %}">
 
-{% block body %}
-  <div id="description"><h3>{% trans "There was a problem loading this page" %}</h3></div>
-  {% blocktrans %}
-      Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).
-      If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href="http://github.com/GeoNode/geonode/issues">GeoNode's issue tracker</a>
-  {% endblocktrans %}
-{% endblock %}
+    {% block header %}
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header col-md-2">
+          <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li id="nav_layers">
+              <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
+            </li>
+            <li id="nav_maps">
+              <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
+            </li>
+            {% if USE_DOCUMENTS %}
+            <li id="nav_documents">
+              <a href="{% url "documents_browse" %}">{% trans "Documents" %}</a>
+            </li>
+            {% endif %}
+            <li id="nav_people">
+              <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
+            </li>
+            {% if GROUPS_APP %}
+            <li id="nav_groups">
+              <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
+            </li>
+            {% endif %}
+          </ul>
+          <form class="col-md-3" id="search" action="{% url "search" %}">
+            <div class="input-group">
+              <input type="text" placeholder="Search" class="form-control" name="title__contains">
+              <span class="input-group-btn">
+                <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+              </span>
+            </div>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              {% if user.is_authenticated %}
+              <li class="user-avatar">
+                {% avatar user 30 %}
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  {{ user.username }}
+                  <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload Layers" %}</a></li>
+                  <li class="divider"></li>
+                  <li><a href="{{ user.get_profile.get_absolute_url }}"><i class="fa fa-user"></i> {% trans "Profile" %}</a></li>
+                  <li><a href="{% url "recent-activity" %}"><i class="fa fa-fire"></i> {% trans "Recent Activity" %}</a></li>
+                  <li><a href="{% url "messages_inbox" %}"><i class="fa fa-inbox"></i> {% trans "Inbox" %}</a></li>
+                  {% if perms.announcements.can_manage %}
+                  <li><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>
+                  {% endif %}
+                  {% if user.is_superuser %}
+                  <li><a href="{% url "services" %}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
+                  <li><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
+                  <li class="divider"></li>
+                  <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
+                  {% endif %}
+                  {% if user.is_staff %}
+                  <li><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
+                  {% endif %}
+                  <li class="divider"></li>
+                  <li><a title="Help" rel="tooltip" href="/help/"><i class="fa fa-question-circle"></i> {% trans "Help" %}</a></li>
+                  <li class="divider"></li>
+                  <li>
+                    <form action="{% url "account_logout" %}" id="logout_form" method="post">
+                      {% csrf_token %}
+                      <a class="navbar-logout" href="javascript:{}" onclick="document.getElementById('logout_form').submit();"><i class="fa fa-sign-out"></i> {% trans "Log out" %}</a>
+                    </form>
+                  </li>
+                </ul>
+              </li>
+              {% else %}
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sign in <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li>
+                  <form role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
+                  {% csrf_token %}
+                    <div class="form-group">
+                      <label for="id_username">{% trans "Username" %}:</label>
+                      <input id="id_username" name="username" type="text" />
+                    </div>
+                    <div class="form-group">
+                      <label for="id_password">{% trans "Password" %}:</label>
+                      <input id="id_password" name="password" type="password" />
+                    </div>
+                    <label class="checkbox">
+                      <input type="checkbox" />
+                      {% trans "Remember Me" %}
+                    </label>
+                    <button type="submit" class="btn btn-warning pull-right">{% trans "Sign in" %}</button>
+                  </form>
+                </li>
+              </ul>
+              {% endif %}
+            </li>
+          </ul>
+            {% if REGISTRATION_OPEN %}
+            <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
+            {% endif %}
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    {% endblock header %}
+
+
+  <div id="wrap">
+    {% block middle %}
+    {% announcements as site_wide_announcements %}
+    <div class="container">
+      {% if site_wide_announcements %}
+      <div id="site_wide_announcements">
+        {% for announcement in site_wide_announcements %}
+        <div class="alert alert-block announcement">
+          <a type="button" class="close" data-dismiss="alert" data-dismiss-url="{% url "announcements_dismiss" announcement.pk %}" href="#">×</a>
+          <h4><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a></h4>
+          <p><small><em>{{ announcement.creation_date }}</em></small></p>
+          <div>{{ announcement.content }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div class="container">
+        <div class="row">
+        {% block body_outer %}
+          <div class="col-md-8">
+          {% block body %}
+          <div id="description">
+            <h3>{% trans "There was a problem loading this page" %}</h3>
+          </div>
+          {% blocktrans %}
+          Please contact your GeoNode administrator (he may have received an email automatically if he configured it properly).
+          If you are the site administrator, enable debug mode to see the actual error and fix it or file an issue in <a href="http://github.com/GeoNode/geonode/issues">GeoNode's issue tracker</a>
+          {% endblocktrans %}
+          {% endblock %}
+          </div>
+          <div class="col-md-4">
+          {% block sidebar %}{% endblock %}
+          </div>
+        {% endblock %}
+        </div>
+      </div> <!-- /.container -->
+    </div>
+    {% endblock middle %}
+  </div>
+    
+    {% block footer %}
+    <footer class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8">
+            {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
+            <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
+            <a href="{% url "about" %}">{% trans "About" %}</a>
+          </div>
+          <div class="col-md-4 pull-right">
+            <label>{% trans "Language" %}</label>
+            {% if csrf_token != "NOTPROVIDED" %}
+            {% get_current_language as LANGUAGE %}
+            <form class="form-inline" action="/i18n/setlang/" method="post">
+            {% csrf_token %}
+              <select name="language" onchange="javascript:form.submit()">
+                {% for lang in LANGUAGES %}
+                <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                  {{ lang.1 }}
+                </option>
+                {% endfor %}
+              </select>
+            </form>
+          {% endif %}
+          </div> <!-- /.pull-right -->
+        </div>
+      </div> <!-- /.container -->
+    </footer>
+    {% endblock footer %}
+    
+    {% if DEBUG_STATIC %}
+    <script src="{{ STATIC_URL }}lib/js/jquery.min.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.dataTables.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.timeago.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.ajaxprogress.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.ajaxQueue.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery-ui.custom.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.raty.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/json2.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/select2.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/waypoints.js"></script>
+    {% else %}
+    <script src="{{ STATIC_URL }}lib/js/assets.min.js"></script>
+    {% endif %}
+    <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
+
+    {% block extra_script %}{% endblock extra_script %}
+
+    <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
+    <script type="text/javascript" src="{% url "lang" %}"></script>
+    
+    
+
+    </style>
+  </body>
+</html>
