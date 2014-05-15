@@ -4,17 +4,16 @@
   "main": "geonode/css/base.css",
   "componentsDirectory": ".components",
   "dependencies": {
-    "bootstrap": "3.1.1",
     "datatables": "1.9.4",
     "select2": "3.2.0",
     "jquery": "1.11.0",
     "jquery-timeago": "0.11.4",
-    "jquery-ui": "1.10.1",
+    "jquery-ui": "1.10.4",
     "requirejs": "2.1.2",
     "requirejs-text": "2.0.3",
     "underscore": "1.4.2",
     "jquery-waypoints": "1.1.7",
-    "qunit": "1.11.0",
+    "bootstrap": "3.1.1",
     "bootstrap-datepicker": "2edb8c5cc4d1aacf8a5d8a6fbe5bf8775f9e9824",
     "raty": "2.5.2",
     "json2": "43d7836c8ec9b31a02a31ae0c400bdae04d3650d",
@@ -25,8 +24,5 @@
     "jquery.ajaxQueue": "https://github.com/gnarf/jquery-ajaxQueue.git",
     "angular": "1.2.6",
     "angular-leaflet-directive": "~0.7.3"
-  },
-  "resolutions": {
-    "jquery": "1.11.0"
   }
 }

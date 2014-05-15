@@ -296,7 +296,7 @@
     {% endblock footer %}
     
     {% if DEBUG_STATIC %}
-    <script src="{{ STATIC_URL }}lib/js/jquery.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.min.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.dataTables.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.timeago.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.ajaxprogress.js"></script>
@@ -312,8 +312,6 @@
     {% endif %}
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
     {% block extra_script %}{% endblock extra_script %}
 
