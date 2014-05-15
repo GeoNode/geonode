@@ -32,8 +32,8 @@ class CommonMetaApi:
 
 class CommonModelApi(ModelResource):
     keywords = fields.ToManyField(TagResource, 'keywords', null=True)
-    category = fields.ToOneField(TopicCategoryResource, 'category', null=True)
-    owner = fields.ToOneField(UserResource, 'owner')
+    category = fields.ToOneField(TopicCategoryResource, 'category', null=True, full=True)
+    owner = fields.ToOneField(UserResource, 'owner', full=True)
     absolute__url = fields.CharField()
     rating = fields.FloatField(attribute='rating', null = True)
     thumbnail_url = fields.CharField(null=True)
