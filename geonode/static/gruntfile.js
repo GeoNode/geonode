@@ -79,7 +79,6 @@ module.exports = function(grunt) {
             'datatables/media/css/jquery.dataTables.css',
             'select2/select2.css', 
             'multi-select/css/multi-select.css',
-            'qunit/qunit/qunit.css',
             'jquery-ui/themes/smoothness/jquery-ui.css',
             'bootstrap/dist/css/bootstrap.min.css'
           ]
