@@ -9,7 +9,7 @@ from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.layers.views import LAYER_LEV_NAMES
 from geonode.maps.models import Map
-from geonode.search.populate_search_test_data import create_models
+from geonode.base.populate_test_data import create_models
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.security.views import _perms_info
 
@@ -135,7 +135,7 @@ class SmokeTest(TestCase):
         objects = layer, document, map_obj
 
         for obj in objects:
-            response = c.get(reverse('resource_permissions', kwargs=dict(type=obj.geonode_type, resource_id=obj.id)))
+            response = c.get(reverse('resource_permissions', kwargs=dict(type=obj.polymorphic_ctype.model, resource_id=obj.id)))
             self.assertEqual(response.status_code, 200)
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
@@ -151,12 +151,12 @@ class SmokeTest(TestCase):
                            "groups": [[self.bar.slug, obj.LEVEL_WRITE]]}
 
             # Give the bar group permissions
-            response = c.post(reverse('resource_permissions', kwargs=dict(type=obj.geonode_type, resource_id=obj.id)),
+            response = c.post(reverse('resource_permissions', kwargs=dict(type=obj.polymorphic_ctype.model, resource_id=obj.id)),
                               data=json.dumps(permissions), content_type="application/json")
 
             self.assertEqual(response.status_code, 200)
 
-            response = c.get(reverse('resource_permissions', kwargs=dict(type=obj.geonode_type, resource_id=obj.id)))
+            response = c.get(reverse('resource_permissions', kwargs=dict(type=obj.polymorphic_ctype.model, resource_id=obj.id)))
 
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
@@ -172,12 +172,12 @@ class SmokeTest(TestCase):
                            "groups": {}}
 
             # Update the object's permissions to remove the bar group
-            response = c.post(reverse('resource_permissions', kwargs=dict(type=obj.geonode_type, resource_id=obj.id)),
+            response = c.post(reverse('resource_permissions', kwargs=dict(type=obj.polymorphic_ctype.model, resource_id=obj.id)),
                               data=json.dumps(permissions), content_type="application/json")
 
             self.assertEqual(response.status_code, 200)
 
-            response = c.get(reverse('resource_permissions', kwargs=dict(type=obj.geonode_type, resource_id=obj.id)))
+            response = c.get(reverse('resource_permissions', kwargs=dict(type=obj.polymorphic_ctype.model, resource_id=obj.id)))
 
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())

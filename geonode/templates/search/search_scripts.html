@@ -1,0 +1,30 @@
+{% if DEBUG_STATIC %}
+<script src="{{ STATIC_URL }}lib/js/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}lib/js/angular.js"></script>
+<script src="{{ STATIC_URL }}lib/js/angular-leaflet-directive.min.js"></script>
+{% endif %}
+
+{% if include_spatial == 'true' %}
+<style>
+  .leaflet-container {  /* all maps */
+    height: 300px;
+  }
+</style>
+
+{% include 'search/_spatial_tags.html' %}
+
+{% endif %}
+<script src="{{ STATIC_URL }}geonode/js/search/explore.js"></script>
+<script src="{{ STATIC_URL }}geonode/js/search/search.js"></script>
+<script type="text/javascript">
+  $("body").attr('ng-controller', 'MainController');
+  CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';
+  KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='keywords' %}';
+  CLIENT_RESULTS_LIMIT = {{ CLIENT_RESULTS_LIMIT }};
+  var module = angular.module('search', ['main_search']);
+  module.constant('Configs', {
+    url: SEARCH_URL
+  });
+
+  angular.bootstrap(document, ['search']);
+</script>

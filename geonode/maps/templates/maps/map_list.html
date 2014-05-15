@@ -1,7 +1,5 @@
 {% extends "maps/map_base.html" %}
 {% load i18n %}
-{% load maps_tags %}
-{% load pagination_tags %}
 {% load taggit_extras %}
 {% load staticfiles %}
 {% load url from future %}
@@ -9,47 +7,19 @@
 {% block body_class %}maps explore{% endblock %}
 
 {% block body %}
-    <div class="span12">
-      <a href="{% url "new_map" %}" class="btn btn-large btn-primary pull-right strong">{% trans "Create a New Map" %}</a>
-      <h2 class="page-title">{% trans "Explore Maps" %}</h2>
-    </div>
-    <div class="span8 filter">      
-      {% include "search/_sort_filters.html" %}
-    </div>
-    <div class="span4">
-      <div class="pull-right" data-viewby="list">
-        {% include "_viewby.html" %}
-      </div>
-    </div>
-    <div class="span12">
-      <div class="row" id="contain-slider">
-        <div class="span4">
-          <div class="selections">
-            <h4>
-              {% trans "Your selections" %}
-              <a href="." id="clear-search" class="pull-right">{% trans "Clear all" %}</a>
-            </h4>
-          </div>
-          <div id="slide-pane">
-            <a href="#" class="toggle toggle-pane"><i class="icon-chevron-left"></i></a>
-            {% with type='map' %}
-            {% include "search/_extent_filter.html" %}
-            {% include "search/_general_filters.html" %}
-            {% endwith %}
-          </div>
-        </div>
-        <div class="tab-content span8 paginate paginate-auto" id="search-content">
-          {% include 'search/search_content.html' %}
-        </div>
-      </div>
-    </div>
+  <div class="col-md-12">
+    <a href="{% url "new_map" %}" class="btn btn-primary pull-right">{% trans "Create a New Map" %}</a>
+    <h2 class="page-title">{% trans "Explore Maps" %}</h2>
+  </div>
+  {% include "search/_search_content.html" %}
 {% endblock %}
 
 {% block extra_script %}
   <script type="text/javascript">
-  var default_type = 'map';
+    SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='maps' %}';
+    FILTER_TYPE = 'map';
   </script>
   {% with include_spatial='true' %}
-  {% include 'search_scripts.html' %}
+  {% include 'search/search_scripts.html' %}
   {% endwith %}
 {% endblock extra_script %}

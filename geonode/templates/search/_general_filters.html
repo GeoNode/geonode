@@ -1,0 +1,37 @@
+{% load i18n %}
+<nav class="filter">
+  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>{% trans "Categories" %}</a></h4>
+  <ul class="nav closed" id="categories">
+    {% verbatim %}
+      <li ng-repeat="category in categories">
+        <a data-value="{{ category.identifier }}" data-filter="category__identifier__in" 
+         ng-click="multiple_choice_listener($event)" class="{{category.active}}">{{ category.gn_description }}
+          <span class="badge pull-right">{{ category.count }}</span>
+        </a>
+      </li>
+    {% endverbatim %}
+  </ul>
+</nav>
+<nav class="filter">
+  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i> {% trans "Keywords" %}</a></h4>
+  <ul class="nav closed" id="keywords">
+    {% verbatim %}
+      <li ng-repeat="keyword in keywords" ng-if="keyword.count > 0">
+        <a data-value="{{ keyword.slug }}" data-filter="keywords__slug__in" ng-click="multiple_choice_listener($event)" class="{{keyword.active}}">{{ keyword.name }} 
+          <span class="badge pull-right">{{ keyword.count }}</span>
+        </a>
+      </li>
+    {% endverbatim %}
+  </ul>
+</nav>
+<nav class="filter">
+  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>{% trans "Date" %}</a></h4>
+  <ul class="nav closed" id="date_start">
+    <label>Date begins after:</label>
+    <li><input value="yyyy-mm-dd" data-date-format="yyyy-mm-dd" type="text" class="datepicker" placeholder="yyyy-mm-dd" ng-model="date_query.date__gte" /></li>
+  </ul>
+  <ul class="nav closed" id="date_end">
+    <label>Date ends before:</label>
+    <li><input value="yyyy-mm-dd" data-date-format="yyyy-mm-dd" type="text" class="datepicker" placeholder="yyyy-mm-dd" ng-model="date_query.date__lte" /></li>
+  </ul>
+</nav>

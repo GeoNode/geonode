@@ -12,7 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.utils.translation import ugettext as _
 from geonode.layers.populate_layers_data import create_layer_data
-from geonode.search.populate_search_test_data import create_models
+from geonode.base.populate_test_data import create_models
 from geonode.social.templatetags.social_tags import activity_item
 from geonode.layers.models import Layer
 

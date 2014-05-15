@@ -104,25 +104,6 @@ def _resolve_map(request, id, permission='maps.change_map',
 
 #### BASIC MAP VIEWS ####
 
-def map_list(request, template='maps/map_list.html'):
-    from geonode.search.views import search_page
-    post = request.POST.copy()
-    post.update({'type': 'map'})
-    request.POST = post
-    return search_page(request, template=template)
-
-def maps_tag(request, slug, template='maps/map_list.html'):
-    map_list = Map.objects.filter(keywords__slug__in=[slug])
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "object_list": map_list,
-            "map_tag": slug
-            }
-        )
-    )
-
-
 def map_detail(request, mapid, template='maps/map_detail.html'):
     '''
     The view that show details of each map

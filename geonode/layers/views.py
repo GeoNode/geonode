@@ -81,23 +81,6 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 
 #### Basic Layer Views ####
 
-def layer_list(request, template='layers/layer_list.html'):
-    from geonode.search.views import search_page
-    post = request.POST.copy()
-    post.update({'type': 'layer'})
-    request.POST = post
-    return search_page(request, template=template)
-
-def layer_tag(request, slug, template='layers/layer_list.html'):
-    layer_list = Layer.objects.filter(keywords__slug__in=[slug])
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "object_list": layer_list,
-            "layer_tag": slug
-            }
-        )
-    )
 
 @login_required
 def layer_upload(request, template='upload/layer_upload.html'):

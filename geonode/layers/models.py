@@ -67,19 +67,6 @@ class LayerManager(ResourceBaseManager):
     def __init__(self):
         models.Manager.__init__(self)
 
-        
-def add_bbox_query(q, bbox):
-    '''modify the queryset q to limit to the provided bbox
-
-    bbox - 4 tuple of floats representing x0,x1,y0,y1
-    returns the modified query
-    '''
-    bbox = map(str, bbox) # 2.6 compat - float to decimal conversion
-    q = q.filter(bbox_x0__gte=bbox[0])
-    q = q.filter(bbox_x1__lte=bbox[1])
-    q = q.filter(bbox_y0__gte=bbox[2])
-    return q.filter(bbox_y1__lte=bbox[3])
-
 
 class Layer(ResourceBase):
     """
@@ -93,9 +80,6 @@ class Layer(ResourceBase):
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     typename = models.CharField(max_length=128, unique=True, null=True, blank=True)
-
-    popular_count = models.IntegerField(default=0)
-    share_count = models.IntegerField(default=0)
 
     default_style = models.ForeignKey(Style, related_name='layer_default_style', null=True, blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')

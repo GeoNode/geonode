@@ -98,7 +98,7 @@ class ThumbnailAdmin(admin.ModelAdmin):
     
     def get_geonode_type(self, obj):
         rb = obj.resourcebase_set.all()[0] # should be always just one!
-        return rb.geonode_type
+        return rb.class_name
     get_geonode_type.short_description = 'Type'
 
 admin.site.register(TopicCategory, TopicCategoryAdmin)

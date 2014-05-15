@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.test.utils import override_settings
 from geonode.geoserver.helpers import OGC_Servers_Handler
-from geonode.search.populate_search_test_data import create_models
+from geonode.base.populate_test_data import create_models
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.layers.models import Layer
 

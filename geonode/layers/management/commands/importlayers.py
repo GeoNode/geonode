@@ -64,6 +64,7 @@ class Command(BaseCommand):
             skip = True
 
         keywords = options.get('keywords').split(',')
+        if len(keywords) == 1 and keywords[0] == '': keywords = []
         start = datetime.datetime.now()
         output = []
         for path in args:
