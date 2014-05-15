@@ -131,12 +131,21 @@ body.groups li#nav_groups a {
     margin-bottom: 0;
   }
 }
-/* Footer
+/* Items
 ----------------------- */
-footer {
-  border-top: 1px solid @gray-light;
-  padding: 20px;
+.items-list {
+  border-bottom: 1px solid @gray-lighter;
+  border-top: 1px solid @gray-lighter;
+  margin-bottom: 10px;
+  h4 {
+    font-weight: 300;
+  }
+  .abstract {
+    color: @gray-light;
+    font-weight: 300;
+  }
 }
+
 /* Search
 ----------------------- */
 nav.filter {
@@ -169,6 +178,12 @@ nav.filter {
   .thumb {
     float: left;
   }
+}
+/* Footer
+----------------------- */
+footer {
+  border-top: 1px solid @gray-light;
+  padding: 20px;
 }
 
 /* Etc
