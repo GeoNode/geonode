@@ -93,13 +93,19 @@ class CommonModelApi(ModelResource):
 class ResourceBaseResource(CommonModelApi):
     """ResourceBase api"""
 
-    count = fields.IntegerField()
-
 
     class Meta(CommonMetaApi):
         queryset = ResourceBase.objects.all().order_by('-date')
         resource_name = 'base'
 
+
+class FeaturedResourceBaseResource(CommonModelApi):
+    """Only the featured resourcebases"""
+
+    class Meta(CommonMetaApi):
+        queryset = ResourceBase.objects.filter(featured=True).order_by('-date')
+        resource_name = 'featured'
+        
 
 class LayerResource(CommonModelApi):
     """Layer API"""
