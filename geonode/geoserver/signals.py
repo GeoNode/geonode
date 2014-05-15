@@ -3,6 +3,7 @@ import logging
 import urllib
 
 from urlparse import urlparse, urljoin
+from socket import error as socket_error
 
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.core.files.base import ContentFile
@@ -50,7 +51,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     """
     base_file = instance.get_base_file()
 
-    # Abort processing if there are no files.
+    # There is no need to process it if there is not file.
     if base_file is None:
         return
 
@@ -61,7 +62,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
                                                     overwrite=True,
                                                     title=instance.title,
                                                     abstract=instance.abstract,
-                                                    keywords=instance.keywords,
+                                     #               keywords=instance.keywords,
                                                     charset=instance.charset)
 
 
@@ -74,26 +75,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
         setattr(instance, key, values[key])
 
     url = ogc_server_settings.internal_rest
-    try:
-        gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
-    except (EnvironmentError, FailedRequestError) as e:
-        gs_resource = None
-        msg = ('Could not connect to geoserver at "%s"'
-               'to save information for layer "%s"' % (
-                ogc_server_settings.LOCATION, instance.name.encode('utf-8'))
-              )
-        logger.warn(msg, e)
-        # If geoserver is not online, there is no need to continue
-        return
-
-    # If there is no resource returned it could mean one of two things:
-    # a) There is a synchronization problem in geoserver
-    # b) The unit tests are running and another geoserver is running in the
-    # background.
-    # For both cases it is sensible to stop processing the layer
-    if gs_resource is None:
-        logger.warn('Could not get geoserver resource for %s' % instance)
-        return
+    gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
 
     gs_resource.title = instance.title
     gs_resource.abstract = instance.abstract
@@ -151,29 +133,15 @@ def geoserver_post_save(instance, sender, **kwargs):
        The way keywords are implemented requires the layer
        to be saved to the database before accessing them.
     """
-    if instance.get_base_file() is None:
-        return
-
     url = ogc_server_settings.internal_rest
 
     try:
         gs_resource= gs_catalog.get_resource(instance.name)
-    except (FailedRequestError, EnvironmentError) as e:
-        msg = ('Could not connect to geoserver at "%s"'
-               'to save information for layer "%s"' % (
-                ogc_server_settings.LOCATION, instance.name.encode('utf-8'))
-              )
-        logger.warn(msg, e)
-        # If geoserver is not online, there is no need to continue
-        return
-
-    # If there is no resource returned it could mean one of two things:
-    # a) There is a synchronization problem in geoserver
-    # b) The unit tests are running and another geoserver is running in the
-    # background.
-    # For both cases it is sensible to stop processing the layer
-    if gs_resource is None:
-        logger.warn('Could not get geoserver resource for %s' % instance)
+    except socket_error as serr:
+        if serr.errno != errno.ECONNREFUSED:
+            # Not the error we are looking for, re-raise
+            raise serr
+        # If the connection is refused, take it easy.
         return
 
     gs_resource.keywords = instance.keyword_list()
@@ -248,7 +216,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                     link_type='data',
                                 )
                             )
-                    
+
         instance.set_gen_level(ANONYMOUS_USERS,permissions['anonymous'])
         instance.set_gen_level(AUTHENTICATED_USERS,permissions['authenticated'])
 
