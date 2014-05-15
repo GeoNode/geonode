@@ -76,16 +76,12 @@
   */
   module.controller('MainController', function($scope, $location, $http, Configs, leafletData){
     $scope.query = $location.search();
-    
-    var limit = CLIENT_RESULTS_LIMIT;
-    var offset = 0;
-    $scope.page = Math.round((offset / limit) + 1);
+    $scope.query.limit = $scope.query.limit || CLIENT_RESULTS_LIMIT;
+    $scope.query.offset = $scope.query.offset || 0;
+    $scope.page = Math.round(($scope.query.offset / $scope.query.limit) + 1);
     
     //Get data from apis and make them available to the page
     function query_api(data){
-      var data = jQuery.extend(true, {}, data);
-      if(!data.hasOwnProperty('limit')){$.extend(data, {limit: limit})};
-      if(!data.hasOwnProperty('offset')){$.extend(data, {offset: offset})};
       $http.get(Configs.url, {params: data || {}}).success(function(data){
         $scope.results = data.objects;
         $scope.total_counts = data.meta.total_count;
@@ -100,7 +96,7 @@
     // Control what happens when the total results change
     $scope.$watch('total_counts', function(){
       $scope.numpages = Math.round(
-        ($scope.total_counts / limit) + 0.49
+        ($scope.total_counts / $scope.query.limit) + 0.49
       );
 
       // In case the user is viewing a page > 1 and a 
@@ -108,7 +104,7 @@
       // reset the page to one and search again.
       if($scope.numpages < $scope.page){
         $scope.page = 1;
-        offset = 0;
+        $scope.query.offset = 0;
         query_api($scope.query);
       }
 
@@ -119,7 +115,7 @@
     $scope.paginate_down = function(){
       if($scope.page > 1){
         $scope.page -= 1;
-        offset =  limit * ($scope.page - 1);
+        $scope.query.offset =  $scope.query.limit * ($scope.page - 1);
         query_api($scope.query);
       }   
     }
@@ -127,7 +123,7 @@
     $scope.paginate_up = function(){
       if($scope.numpages > $scope.page){
         $scope.page += 1;
-        offset = limit * ($scope.page - 1);
+        $scope.query.offset = $scope.query.limit * ($scope.page - 1);
         query_api($scope.query);
       }
     }
