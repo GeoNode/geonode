@@ -1,22 +1,7 @@
 $(function() {
 
     $(".datepicker").datepicker();
-    
-    $("[data-viewby]").each(function() {
-        $(this).find("nav.viewby a."+$(this).data("viewby")).addClass("active");
-    });
-    $(".viewby a").click(function(e) {
-        e.preventDefault();
-        if ($(this).not(".active").size()) {
-            $(".tab-content .tab-pane").addClass(
-                $(this).attr("class")
-            ).removeClass(
-                $(this).siblings("a").removeClass("active").attr("class")
-            );
-        }
-        $(this).addClass("active");
-        setContentWidth();
-    });
+  
     $("#slide-pane a.toggle-pane").click(function(e) {
         e.preventDefault();
         var span$ = $("#slide-pane").parents(".col-md-3");
