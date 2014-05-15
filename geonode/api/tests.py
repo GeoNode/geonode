@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCase
 
-from geonode.search.populate_search_test_data import create_models, all_public
+from geonode.base.populate_test_data import create_models, all_public
 from geonode.layers.models import Layer
 
 from .resourcebase_api import LayerResource, MapResource, DocumentResource, ResourceBaseResource

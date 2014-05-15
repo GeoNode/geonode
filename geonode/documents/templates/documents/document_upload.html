@@ -13,7 +13,7 @@
 
 {% block body %}
     <div class="block">
-        <div class="span8">
+        <div class="col-md-8">
           <h2 class="page-title">{% trans "Upload Documents" %}</h2>
             <div>
                 <form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
@@ -53,7 +53,7 @@
         placeholder: 'Select layer, map or empty',
         width: 'element',
         ajax: {
-          url: '{% url "search_api" %}',
+          url: '',
           data: function(term,page){
             return {
               type: 'layer,map',

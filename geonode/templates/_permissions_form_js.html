@@ -273,7 +273,7 @@
       }
     };
 
-    $("input.asset-selector").live("change", toggle_buttons);
+    $("input.asset-selector").on("change", toggle_buttons);
     toggle_buttons();
 
     var perms_submit = function() {

@@ -75,9 +75,6 @@ class Map(ResourceBase, GXPMapBase):
     last_modified = models.DateTimeField(auto_now_add=True)
     # The last time the map was modified.
 
-    popular_count = models.IntegerField(default=0)
-    share_count = models.IntegerField(default=0)
-
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
 

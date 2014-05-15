@@ -26,10 +26,10 @@
 {% block body_class %}data{% endblock %}
 
 {% block body_outer %}
-  <div class="span5">
+  <div class="col-md-5">
     <h2 class="page-title">{{ layer.title|default:layer.typename }}</h2>
   </div>
-  <div class="span7 action-group">
+  <div class="col-md-7 action-group">
     <div class="btn-group pull-right">
       <!-- download layer -->
       <div class="btn-group">
@@ -83,12 +83,12 @@
       {% endif %}
     </div>
   </div>
-  <div class="span12">
+  <div class="col-md-12">
     <div id="embedded_map" class="mrg-btm">
         <div id="preview_map"></div>
     </div>
   </div>
-  <div class="span8">
+  <div class="col-md-8">
     <div class="layer-actions">
       {% include "layers/_actions.html" %}
     </div>
@@ -159,7 +159,7 @@
       </article>
     </div>
   </div>
-  <aside class="span4">
+  <div class="col-md-4">
     
     {% if layer.get_legend %}
 <div class="well">

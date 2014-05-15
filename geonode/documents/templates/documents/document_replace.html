@@ -12,7 +12,7 @@
 
 {% block body %}
     <div class="block">
-        <div class="span8">
+        <div class="col-md-8">
           <h2 class="page-title">{% trans "Replace " %}{{ document.title }}</h2>
             <div id="upload_form">
                 <form method="post" enctype="multipart/form-data" action="{% url "document_replace" document.id %}">

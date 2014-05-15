@@ -1,34 +1,39 @@
 {% extends "people/profile_base.html" %}
-{% load friendly_loader %}
 {% load i18n %}
-{% friendly_load avatar_tags %}
-{% friendly_load relationship_tags %}
 
 {% block body_class %}people people-list explore{% endblock %}
 
 {% block body %}
-    <div class="span12">
+    <div class="col-md-12">
       <h2 class="page-title">{% trans "Explore People" %}</h2>
     </div>
-    <div class="span8 filter">      
-      {% include "search/_sort_filters.html" %}
+    <div class="col-md-8 filter">      
+      <ul class="nav nav-pills filter" id="sort">
+        <li><a data-value="-user__date_joined" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{% trans "Most recent" %}</a></li>
+        <li><a data-value="user__date_joined" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Less recent" %}</a></li>
+        <li><a data-value="name" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "A - Z" %}</a></li>
+        <li><a data-value="-name" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Z - A" %}</a></li>
+      </ul>
     </div>
-    <div class="span4">
+    <div class="col-md-4">
       <div class="pull-right" data-viewby="list">
         {% include "_viewby.html" %}
       </div>
     </div>
-    <div class="span12">
+    <div class="col-md-12">
       <div class="row">
-        <div class="tab-content span12 paginate paginate-auto" id="search-content">
-          {% include 'search/search_content.html' %}
+        <div class="tab-content col-md-12" id="search-content" ng-repeat="profile in results">
+          {% include "people/_profile_list_item.html" %}
         </div>
       </div>
     </div>
 {% endblock %}
+
 {% block extra_script %}
 <script type="text/javascript">
-  var default_type = 'user';
+  SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='profiles' %}';
 </script>
-  {% include 'search_scripts.html' %}
+  {% with include_spatial='false' %}
+  {% include 'search/search_scripts.html' %}
+  {% endwith %}
 {% endblock extra_script %}

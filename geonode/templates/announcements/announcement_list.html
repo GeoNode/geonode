@@ -8,23 +8,23 @@
 {% block body_class %}maps{% endblock %}
 
 {% block body_outer %}
-  <div class="span12">
+  <div class="col-md-12">
     <ul class="nav nav-tabs" id="subnav-tabs">
           <li><a href="{% url "announcements_create" %}" class="explore">{% trans 'Announcements' %}</a></li>
     </ul>
   </div>
 
 {% block body %}
-    <div class="span12">
+    <div class="col-md-12">
       <a href="{% url "announcements_create" %}" class="btn btn-large btn-primary pull-right strong">{% trans "New Announcement" %}</a>
       <h2 class="page-title">{% trans "Announcements" %}</h2>
     </div>
-    <div class="span8 filter">
+    <div class="col-md-8 filter">
       <br/>
     </div>
-    <div class="span12">
+    <div class="col-md-12">
       <div class="row" id="contain-slider">
-        <div class="tab-content span10 paginate paginate-auto" id="search-content">
+        <div class="tab-content col-md-10 paginate paginate-auto" id="search-content">
            <table class="table">
            <thead>
                <td><b>{% trans "Title" %}</b></td>
