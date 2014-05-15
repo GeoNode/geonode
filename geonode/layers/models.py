@@ -99,6 +99,22 @@ class Layer(ResourceBase):
         }).get(self.storeType, "Data")
 
     @property
+    def data_model(self):
+        if hasattr(self, 'modeldescription_set'):
+            lmd = self.modeldescription_set.all()
+            if lmd.exists():
+                return lmd.get().get_django_model()
+
+        return None
+
+    @property
+    def data_objects(self):
+        if self.data_model is not None:
+            return self.data_model.objects.using('datastore')
+
+        return None
+
+    @property
     def service_type(self):
         if self.storeType == 'coverageStore':
             return "WCS"
