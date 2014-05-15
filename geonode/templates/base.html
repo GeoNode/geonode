@@ -8,14 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"> -->
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
-      <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+      <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       {% if DEBUG_STATIC %}
       <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}lib/css/select2.css" rel="stylesheet"/>
-      {% else %}
-      <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/jquery-ui.css" rel="stylesheet"/>
       {% endif %}
       {% block extra_head %}
       {% endblock %}
@@ -55,9 +55,9 @@
             </li>
             {% endif %}
           </ul>
-          <form class="col-md-3" id="search">
+          <form class="col-md-3" id="search" action="{% url "search" %}">
             <div class="input-group">
-              <input type="text" placeholder="Search" class="form-control">
+              <input type="text" placeholder="Search" class="form-control" name="title__contains">
               <span class="input-group-btn">
                 <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
               </span>
@@ -201,7 +201,7 @@
     {% endblock footer %}
     
     {% if DEBUG_STATIC %}
-    <script src="{{ STATIC_URL }}lib/js/jquery.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/jquery.min.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.dataTables.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.timeago.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.ajaxprogress.js"></script>
@@ -217,8 +217,6 @@
     {% endif %}
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
     {% block extra_script %}{% endblock extra_script %}
 
