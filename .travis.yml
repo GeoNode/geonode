@@ -12,7 +12,7 @@ branches:
 
 install:
   - sudo apt-get update
-  - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2
+  - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 python-gdal
   - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
   - sudo apt-get install -y gettext
   - sudo apt-get install nodejs
@@ -21,14 +21,14 @@ install:
   - npm install -g grunt-cli 
   - pip install -e . --use-mirrors
 
-#before_script:
-#  - paver setup
+before_script:
+  - paver setup
 
 script:
   - python manage.py test geonode.tests.smoke
   - paver test
-#  - paver test_integration
-#  - paver test_integration -n geonode.tests.csw
+  - paver test_integration
+  - paver test_integration -n geonode.tests.csw
 #  - paver test_javascript
 
 after_script:
@@ -40,4 +40,4 @@ notifications:
       - "irc.freenode.org#geonode"
     use_notice: true
   email:
-#    - geonode-dev@opengeo.org
+    - geonode-dev@opengeo.org

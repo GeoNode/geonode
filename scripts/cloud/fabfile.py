@@ -49,7 +49,7 @@ ACT = 'source ' + GEONODEDIR + '/bin/activate'
 # Install GeoNode dependencies
 def install_depend():
     sudo('cd %s; virtualenv geonode --system-site-packages;' % INSTALLDIR)
-    sudo('apt-get install -y gcc python-pastescript python-dev libxml2-dev libxslt1-dev openjdk-6-jdk python-psycopg2')
+    sudo('apt-get install -y gcc python-pastescript python-dev libxml2-dev libxslt1-dev openjdk-6-jdk python-psycopg2 imagemagick')
     # Web server
     sudo('apt-get install -y apache2 tomcat6 libapache2-mod-wsgi maven2')
     sudo("a2enmod proxy_http")
@@ -261,7 +261,7 @@ def build_geonode_ami():
     print "AMI %s Ready for Use" % (ami_id)
 
 def install_sample_data():
-    run('geonode importlayers `python -c "import gisdata; print gisdata.GOOD_DATA"` -v 3')
     run('geonode loaddata sample_admin.json')
+    run('geonode importlayers `python -c "import gisdata; print gisdata.GOOD_DATA"` -v 3')
     # Fix permissions issue on the newly created thumbs dir
     sudo('chmod -R 7777 /var/www/geonode/uploaded/thumbs/')

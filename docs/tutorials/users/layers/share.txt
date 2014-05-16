@@ -3,7 +3,7 @@
 Sharing layers
 ==============
 
-GeoNode has the ability to restrict or allow other users to access a layer.
+GeoNode has the ability to restrict or allow other users to access a layer and share on social media.
 
 Anonymous access
 ----------------
@@ -32,9 +32,17 @@ Anonymous access
 
       *Unable to view this protected layer*
 
-.. todo:: How to change this?
+#. To stop this process from happening, you need to ensure that your permissions are set so *anyone* can view the layer for others to see it on social networks. 
 
-Sharing with other users
-------------------------
-   
-.. todo:: Set permissions, share on Twitter.
+.. figure:: img/map_permissions.png
+
+#. This is done by selecting *anyone* in the layer permissions tab, be aware this now means your layer is public!
+
+Sharing with social media
+-------------------------
+
+#. On the taskbar below your username and profile picture there are three links to social media services, Twitter, Google Plus and Facebook.
+
+   .. figure:: img/socialmedia.png
+
+#. Upon clicking on these icons you will be taken through the application's process for posting to the social network.  Ensure the permissions are set so *anyone* can view the layer if you want unauthenticated to be able to access it.

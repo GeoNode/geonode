@@ -4,17 +4,29 @@
 {% leaflet_css %}
 
 {% leaflet_map "preview_map" creatediv=False %}
+<style>
+  .leaflet-container {  /* all maps */
+    height: 400px;
+  }
+</style>
 <script type="text/javascript">
+    window.addEventListener("map:init", function (e) {
+        var detail = e.detail;
+
+        {% if layer.bbox_string %}
+            zoom_to_box(detail.map, [{{ layer.bbox_string }}]);
+        {% endif %}
+
+        {% if layer.get_tiles_url %}
+        L.tileLayer("{{ layer.get_tiles_url|safe }}",{}).addTo(detail.map);
+        {% endif %}
+
+    });
     function zoom_to_box(map, bbox){
         var bounds = [
-            [bbox[2], bbox[0]],
-            [bbox[3], bbox[1]]
+            [bbox[1], bbox[0]],
+            [bbox[3], bbox[2]]
         ];
         map.fitBounds(bounds);
     }
-
-    function preview_mapInit(map, bounds) {
-        zoom_to_box(map, [{{ layer.bbox_string }}]);
-        L.tileLayer("{{ layer.tiles_url|safe }}",{}).addTo(map);
-   }
 </script>

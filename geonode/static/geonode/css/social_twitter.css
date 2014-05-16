@@ -1,0 +1,34 @@
+.tweetbutton {
+  inherit: none;
+  height: 16px;
+  display: inline-block;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  /* gradient background -- thanks http://ie.microsoft.com/testdrive/graphics/cssgradientbackgroundmaker/ */
+background: url('https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png') no-repeat 2px 1px, -ms-linear-gradient(top, #FEFEFE 0%, #DFDFDF 100%);
+background: url('https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png') no-repeat 2px 1px, -moz-linear-gradient(top, #FEFEFE 0%, #DFDFDF 100%);
+background: url('https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png') no-repeat 2px 1px, -o-linear-gradient(top, #FEFEFE 0%, #DFDFDF 100%);
+background: url('https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png') no-repeat 2px 1px, -webkit-gradient(linear, left top, left bottom, color-stop(0, #FEFEFE), color-stop(1, #DFDFDF));
+background: url('https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png') no-repeat 2px 1px, -webkit-linear-gradient(top, #FEFEFE 0%, #DFDFDF 100%);
+ 
+  border: 1px solid #cccccc;
+  padding-left: 22px;
+  padding-right: 4px;
+  padding-top: 2px;
+  
+  font-weight: bold;
+  font-size: 0.7em;
+  font-family: Arial;
+  
+  color: #333333;
+  text-decoration: none;
+}
+ 
+.tweetbutton:hover {
+	background: url('https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png') no-repeat 2px 1px, -ms-linear-gradient(top, #f7f7f7 0%, #d9d9d9 100%);
+background: url('https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png') no-repeat 2px 1px, -moz-linear-gradient(top, #f7f7f7 0%, #d9d9d9 100%);
+background: url('https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png') no-repeat 2px 1px, -o-linear-gradient(top, #f7f7f7 0%, #d9d9d9 100%);
+background: url('https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png') no-repeat 2px 1px, -webkit-gradient(linear, left top, left bottom, color-stop(0, #f7f7f7), color-stop(1, #d9d9d9));
+background: url('https://si0.twimg.com/images/dev/cms/intents/bird/bird_blue/bird_16_blue.png') no-repeat 2px 1px, -webkit-linear-gradient(top, #f7f7f7 0%, #d9d9d9 100%);
+}

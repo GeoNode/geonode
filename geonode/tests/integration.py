@@ -33,17 +33,17 @@ from django.core.management import call_command
 from django.test import Client
 from django.test import LiveServerTestCase as TestCase
 from django.core.urlresolvers import reverse
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from geoserver.catalog import FailedRequestError
 
 from geonode.security.models import *
 from geonode.layers.models import Layer
-from geonode.layers.views import layer_set_permissions
+from geonode.maps.models import Map
 from geonode import GeoNodeException
 from geonode.layers.utils import (
     upload,
     file_upload,
-    save
 )
 from geonode.utils import http_client
 from .utils import check_layer, get_web_page
@@ -51,6 +51,7 @@ from .utils import check_layer, get_web_page
 from geonode.maps.utils import *
 
 from geonode.geoserver.helpers import cascading_delete, fixup_style
+from geonode.geoserver.signals import gs_catalog
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
@@ -108,9 +109,10 @@ class NormalUserTest(TestCase):
         #TODO: Would be nice to ensure the name is available before
         #running the test...
         norman = User.objects.get(username="norman")
-        saved_layer = save("san_andres_y_providencia_poi_by_norman",
+        saved_layer = file_upload(
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
-             norman,
+             name="san_andres_y_providencia_poi_by_norman",
+             user=norman,
              overwrite=True,
         )
 
@@ -338,7 +340,7 @@ class GeoNodeMapTest(TestCase):
         # deleted as well as the resource itself?
         # There is already an explicit test for cascading delete
 
-        gs_cat = Layer.objects.gs_catalog
+        gs_cat = gs_catalog
 
         # Test Uploading then Deleting a Shapefile from GeoServer
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
@@ -360,7 +362,7 @@ class GeoNodeMapTest(TestCase):
         """Verify that the 'delete_layer' pre_delete hook is functioning
         """
 
-        gs_cat = Layer.objects.gs_catalog
+        gs_cat = gs_catalog
 
         # Upload a Shapefile Layer
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
@@ -400,7 +402,7 @@ class GeoNodeMapTest(TestCase):
     def test_cascading_delete(self):
         """Verify that the helpers.cascading_delete() method is working properly
         """
-        gs_cat = Layer.objects.gs_catalog
+        gs_cat = gs_catalog
 
         # Upload a Shapefile
         shp_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
@@ -521,6 +523,63 @@ class GeoNodeMapTest(TestCase):
                                 })
         self.assertEquals(response.status_code, 302)
 
+
+class GeoNodeThumbnailTest(TestCase):
+    """Tests thumbnails behavior for layers and maps.
+    """
+    def setUp(self):
+        call_command('loaddata', 'people_data', verbosity=0)
+
+    def tearDown(self):
+        pass
+
+    def test_layer_thumbnail(self):
+        """Test the layer save method generates a thumbnail link
+        """
+
+        client = Client()
+        client.login(username='norman', password='norman')
+
+        #TODO: Would be nice to ensure the name is available before
+        #running the test...
+        norman = User.objects.get(username="norman")
+        saved_layer = file_upload(
+             os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
+             name="san_andres_y_providencia_poi_by_norman",
+             user=norman,
+             overwrite=True,
+        )
+
+        thumbnail_url = saved_layer.get_thumbnail_url()
+
+        assert thumbnail_url != staticfiles.static(settings.MISSING_THUMBNAIL)
+
+
+    def test_map_thumbnail(self):
+        """Test the map save method generates a thumbnail link
+        """
+        client = Client()
+        client.login(username='norman', password='norman')
+
+        #TODO: Would be nice to ensure the name is available before
+        #running the test...
+        norman = User.objects.get(username="norman")
+        saved_layer = file_upload(
+             os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
+             name="san_andres_y_providencia_poi_by_norman",
+             user=norman,
+             overwrite=True,
+        )
+
+        map_obj = Map(owner=norman, zoom=0,
+                      center_x=0, center_y=0)
+        map_obj.create_from_layer_list(norman, [saved_layer], 'title','')
+
+        thumbnail_url = map_obj.get_thumbnail_url()
+
+        assert thumbnail_url != staticfiles.static(settings.MISSING_THUMBNAIL)
+
+
 class GeoNodeMapPrintTest(TestCase):
     """Tests geonode.maps print
     """
@@ -548,9 +607,10 @@ class GeoNodeMapPrintTest(TestCase):
             #TODO: Would be nice to ensure the name is available before
             #running the test...
             norman = User.objects.get(username="norman")
-            saved_layer = save("san_andres_y_providencia_poi_by_norman",
+            saved_layer = file_upload(
                  os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
-                 norman,
+                 name="san_andres_y_providencia_poi_by_norman",
+                 user=norman,
                  overwrite=True,
             )
             # Set the layer private
@@ -572,7 +632,6 @@ class GeoNodeMapPrintTest(TestCase):
             map_obj = Map(owner=norman, zoom=0,
                       center_x=0, center_y=0)
             map_obj.create_from_layer_list(norman, [saved_layer], 'title','')
-            map_obj.set_default_permissions()
 
             # STEP 3: Print the map
 

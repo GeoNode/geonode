@@ -23,6 +23,12 @@ from django.utils.translation import ugettext_lazy as _
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 
 from django.utils import simplejson as json
+from django.core.exceptions import PermissionDenied
+from geonode.utils import resolve_object
+from django.http import HttpResponse, HttpResponseRedirect
+from geonode.layers.models import Layer
+from geonode.maps.models import Map
+from geonode.documents.models import Document
 
 def _view_perms_context(obj, level_names):
 
@@ -54,3 +60,46 @@ def _perms_info(obj, level_names):
 
 def _perms_info_json(obj, level_names):
     return json.dumps(_perms_info(obj, level_names))
+
+def resource_permissions(request, type, resource_id):
+    try:
+        if type == "layer":
+            resource = resolve_object(request, Layer, {'id':resource_id}, 'layers.change_layer_permissions')
+        elif type == "map":
+            resource = resolve_object(request, Map, {'id':resource_id}, 'maps.change_map_permissions')
+        elif type == "document":
+            resource = resolve_object(request, Document, {'id':resource_id}, 'documents.change_document_permissions')
+        else:
+            return HttpResponse(
+                'Invalid resource type',
+                status=401,
+                mimetype='text/plain')
+    except PermissionDenied:
+        # we are handling this in a non-standard way
+        return HttpResponse(
+            'You are not allowed to change permissions for this resource',
+            status=401,
+            mimetype='text/plain')
+
+    if request.method == 'POST':
+        permission_spec = json.loads(request.raw_post_data)
+        resource.set_permissions(permission_spec)
+
+        return HttpResponse(
+            json.dumps({'success': True}),
+            status=200,
+            mimetype='text/plain'
+        )
+
+    elif request.method == 'GET':
+        permission_spec = json.dumps(resource.get_all_level_info())
+        return HttpResponse(
+            json.dumps({'success': True, 'permissions': permission_spec}),
+            status=200,
+            mimetype='text/plain'
+        )
+    else:
+        return HttpResponse(
+            'No methods other than get and post are allowed',
+            status=401,
+            mimetype='text/plain')

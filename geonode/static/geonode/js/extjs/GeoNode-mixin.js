@@ -41,7 +41,7 @@ GeoNode.ComposerMixin = {
                     layer.url.indexOf(app.localGeoServerBaseUrl.replace(app.urlPortRegEx, "$1/")) === 0)) {
                 Ext.Ajax.request({
                     /* TODO: use a template variable here if possible */
-                    url:"/layers/" + layer.params.LAYERS + "/edit-check",
+                    url:"/gs/" + layer.params.LAYERS + "/edit-check",
                     method:"POST",
                     success:function (response) {
                         var result = Ext.decode(response.responseText);

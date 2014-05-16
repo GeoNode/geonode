@@ -1,3 +1,136 @@
+geonode (2.0.0+thefinal7) precise; urgency=high
+
+  * UNRELEASED
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 04 Apr 2014 10:52:20 +0000
+
+geonode (2.0.0+thefinal6) precise; urgency=high
+
+  [ capooti ]
+  * [b5be94] Added a geonode_type property in resourcebase and refactored some code.
+  * [5e8a67] Removed a reference from doc to the ACCOUNT_ACTIVATION_DAYS setting, as we use django-user-acconts now an not django-registration anymore.
+  * [6bacae] This fixes #1348.
+  * [a2749c] Fixed #1339 for maps.
+  * [f07d54] Fixed #1339 for documents.
+  * [7de68a] Setting the sort order for profiles.
+
+  [ mikefedak ]
+  * [878f7d] Update geonode.updateip
+
+  [ capooti ]
+  * [66b4fb] Now the search text box works as expected. Fixes #1334.
+  * [8917f3] Add configurations to let the GeoNode admin to select which data and metadata formats are available for donwload.
+  * [fb7b45] Importing the settings from correct location and removing an unused import.
+
+  [ Tom Kralidis ]
+  * [a43952] s/geopython.github.com/geopython.github.io/
+  * [261ead] s/geopython.github.com/geopython.github.io/
+
+  [ Tyler Garner ]
+  * [75f7b8] Default a new GeoGit repository's branch to master.
+
+  [ capooti ]
+  * [bc358a] Fixed some broken link in help page.
+
+  [ Tom Kralidis ]
+  * [4f29c6] Update setup.py
+
+  [ capooti ]
+  * [a1b248] Fixed the DOWNLOAD_FORMATS_RASTER setting.
+  * [13826c] Now it is possible to add multiple keywords when using importlayers. Fixes #1361.
+  * [2b8817] This fixes #1360.
+
+  [ Tom Kralidis ]
+  * [c28333] safeguard if value is None (#1260)
+  * [68ce38] fix CSW SpatialRepresentationType output given model changes (#1362)
+  * [4593e8] Update full_metadata.xml
+
+  [ Brylie Oxley ]
+  * [1212f1] Updated docs to include Geoserver default credentials.
+
+  [ mwengren ]
+  * [eb8df8] Change advertised property test in gs_slurp to account for various default values in different gsconfig versions
+
+  [ Simone Dalmasso ]
+  * [e8582c] fix the padding in search pages and make collapsed the spatial filter
+
+  [ Vivien Deparday ]
+  * [d7e211] Add comment for DEBUG_STATIC to avoid missing dependencies error
+
+  [ Benjamin Adams ]
+  * [a37ccd] Altered WCS link generation method width/height
+
+  [ Michael Diener ]
+  * [ab5784] added some web links
+
+  [ Tyler Garner ]
+  * [11424f] Ensure proper configuration when using the geonode.importer backend.
+
+  [ Simone Dalmasso ]
+  * [b8a368] Add comments on DEBUG and DEBUG_STATIC in the local_settings.py
+
+  [ capooti ]
+  * [28753b] Updatelayers -w option nows correctly skip any layer if the workspace does not exist.
+  * [13cc84] This fixes #1378. We should refactor the whole thing, but for now it works.
+  * [7d8131] Removed a small typo.
+  * [5ad645] Enable resource link selection in document metadata form.
+  * [4458c8] Added South Sudan to base COUNTRIES enumerator.
+  * [f3d822] Now using GeoExplorer 4.0.2 and added back the MousePosition control. Thanks Ariel for packaging!
+  * [d1b504] Manage the previously unhandled case of a document with unlinked contents.
+
+  [ Daniel Kastl ]
+  * [abcafa] 'Japanese' was wrongly translated as 'person' instead of 'language'
+
+  [ Tom Kralidis ]
+  * [e950e7] update pycsw
+  * [5a1e86] bump pycsw
+
+  [ Tyler Garner ]
+  * [7edea2] Generate thumbnails for documents.
+
+  [ Simone Dalmasso ]
+  * [24ef97] make search extent map show up when not url params are present
+  * [5ee5ea] include spatial search in every list page but the home
+  * [8071ae] don't include the ext css in the spatial search
+
+  [ Vikas ]
+  * [92d52d] Add Tweet button Under share this layer
+  * [7b1398] Created a new template social_links.html and incuded it in layer_detail, map_detail and document_detail
+  * [7e1490] Added a template at /avatar/add/ which gives correct message when a avatar of size >1Mb is uploaded
+  * [82fc69] Added a check whether user has uploaded a file or not before clicking on uploading and also improved the errors page to redirect them to the error div in documents_upload.html
+  * [b5f691] Fixed download link at document_list.html so that now it points to the correct download link
+  * [e9850b] Removed tweet button which used javascript, added new tweet button which does not use javascript
+
+  [ capooti ]
+  * [46a63c] Removing the import to geomodels search (using geodjango) for now, as it is breaking search.
+  * [2b517e] Refuse from previous commit.
+  * [26f0c3] Reverting last commits, as it is breaking things (sorry!).
+  * [1981e5] Changing map position coordinates in map composer to 4326.
+  * [6d08d0] Fixes #1338. Drawback: requires a small schema migration (included).
+
+  [ Simone Dalmasso ]
+  * [af2ef4] quick fix to avoid xss in the search widget
+  * [b76e4a] clean search term in other select2 widgets
+
+  [ Matt Bertrand ]
+  * [71562f] Security fix for map composer title,abstract
+
+  [ Tom Kralidis ]
+  * [720ecc] bump pycsw
+
+  [ npmiller ]
+  * [2b9e9e] Fix inifinite redirection when trying to remove something without perms.
+
+  [ state-hiu ]
+  * [fd114a] changed show/hide to more info in response to issue 1399
+
+  [ capooti ]
+  * [6f3302] Removed the DOCUMENTS_APP setting. If documents is installed it will be used by geonode, no neet to set any setting.
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 04 Apr 2014 07:10:55 +0000
+
 geonode (2.0.0+thefinal5) precise; urgency=high
 
   * UNRELEASED

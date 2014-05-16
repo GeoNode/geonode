@@ -1,0 +1,56 @@
+[
+    {
+        "pk": 1,
+        "model": "auth.group",
+        "fields": {
+            "name": "group1",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 2,
+        "model": "auth.group",
+        "fields": {
+            "name": "group2",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "bobby", 
+            "first_name": "", 
+            "last_name": "", 
+            "is_active": true, 
+            "is_superuser": false, 
+            "is_staff": false, 
+            "last_login": "2010-06-10 16:59:13", 
+            "groups": [], 
+            "user_permissions": [], 
+            "password": "sha1$8d019$a84eea3f5093eed93bc68bf62fe400f14042ab06", 
+            "email": "bobby@bob.com", 
+            "date_joined": "2010-06-10 16:58:18"
+        }
+    },
+    {
+        "pk": 11, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "robert", 
+            "first_name": "", 
+            "last_name": "", 
+            "is_active": true, 
+            "is_superuser": false, 
+            "is_staff": false, 
+            "last_login": "2010-06-10 16:59:13", 
+            "groups": [
+            	2
+            ], 
+            "user_permissions": [], 
+            "password": "sha1$8d019$a84eea3f5093eed93bc68bf62fe400f14042ab06", 
+            "email": "robert@bob.com", 
+            "date_joined": "2010-06-10 16:58:18"
+        }
+    }
+]

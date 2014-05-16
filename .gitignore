@@ -9,7 +9,7 @@ dist
 .idea/
 # supporting stuff pulled in by paver script
 geonode/development.db
-geoserver
+/geoserver/
 downloaded
 
 docs/i18n/pot/
@@ -48,6 +48,8 @@ geonode/static/lib/js/select2.js
 geonode/static/lib/js/text.js
 geonode/static/lib/js/underscore.js
 geonode/static/lib/js/waypoints.js
+geonode/static/lib/js/angular.min.js
+geonode/static/lib/js/angular.min.js.map
 
 # Uploaded files
 geonode/uploaded
@@ -73,3 +75,8 @@ docs/_build
 # ec2.py
 scripts/cloud/.gnec2.cfg
 jquery.raty.js
+angular.js
+angular-leaflet-directive.min.js
+bootstrap.min.js
+jquery.min.js
+bootstrap.min.css

@@ -19,6 +19,8 @@
 #########################################################################
 
 from django.conf.urls import patterns, url
+from django.conf import settings
+from django.views.generic import TemplateView
 
 js_info_dict = {
     'packages': ('geonode.layers',),
@@ -26,26 +28,29 @@ js_info_dict = {
 
 urlpatterns = patterns(
     'geonode.layers.views',
-    url(r'^$', 'layer_list', name='layer_browse'),
-    url(r'^tag/(?P<slug>[-\w]+?)/$', 'layer_tag', name='layer_browse_tag'),
-    url(r'^acls/?$', 'layer_acls', name='layer_acls'),
-    url(r'^resolve_user/?$', 'resolve_user', name='layer_resolve_user'),
+    url(r'^$', TemplateView.as_view(template_name='layers/layer_list.html'), name='layer_browse'),
     url(r'^upload$', 'layer_upload', name='layer_upload'),
-    url(r'^download$', 'layer_batch_download', name='layer_batch_download'),
     url(r'^(?P<layername>[^/]*)$', 'layer_detail', name="layer_detail"),
     url(r'^(?P<layername>[^/]*)/metadata$', 'layer_metadata',
         name="layer_metadata"),
     url(r'^(?P<layername>[^/]*)/remove$', 'layer_remove', name="layer_remove"),
     url(r'^(?P<layername>[^/]*)/replace$', 'layer_replace',
         name="layer_replace"),
-    url(r'^(?P<layername>[^/]*)/style$', 'layer_style', name="layer_style"),
-    url(r'^(?P<layername>[^/]*)/style/upload$','layer_style_upload',name='layer_style_upload'),
-    url(r'^(?P<layername>[^/]*)/style/manage$','layer_style_manage',name='layer_style_manage'),
-    url(r'^(?P<layername>[^/]*)/permissions$', 'layer_permissions',
-        name='layer_permissions'),
-    url(r'^(?P<layername>[^/]*)/edit-check?$', 'feature_edit_check',
-        name="feature_edit_check")
     #url(r'^api/batch_permissions/?$', 'batch_permissions',
     #    name='batch_permssions'),
     #url(r'^api/batch_delete/?$', 'batch_delete', name='batch_delete'),
 )
+
+# -- Deprecated url routes for Geoserver authentication -- remove after GeoNode 2.1
+# -- Use /gs/acls, gs/resolve_user/, gs/download instead
+if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    urlpatterns = patterns('geonode.geoserver.views',
+        url(r'^acls/?$', 'layer_acls', name='layer_acls_dep'),
+        url(r'^resolve_user/?$', 'resolve_user', name='layer_resolve_user_dep'),
+        url(r'^download$', 'layer_batch_download', name='layer_batch_download_dep'),
+    ) + urlpatterns
+
+
+
+
+

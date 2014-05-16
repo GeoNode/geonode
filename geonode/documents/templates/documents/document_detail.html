@@ -18,17 +18,12 @@
 {% block body_class %}documents{% endblock %}
 
 {% block body_outer %}
-  <div class="span6">
+  <div class="col-md-6">
     <h2 class="page-title">{{ document.title }}</h2>
   </div>
-  <div class="span6 action-group">
-    <!-- <div class="pull-right">
+  <div class="col-md-6 action-group">
+	  <div class="btn-group pull-right">
       <div class="btn-group">
-      </div>
-      <div class="btn-group">
-      </div>
-    </div> -->
-	<div class="btn-group pull-right">
         <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
           {% trans "Download Metadata" %}
           <span class="caret"></span>
@@ -38,10 +33,10 @@
             <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
           {% endfor %}
         </ul>
-     </div>
+      </div>
     {% has_obj_perm user document "documents.change_document" as can_edit_document %}
     {% if can_edit_document %}
-    <div class="btn-group pull-right">
+    <div class="btn-group">
       <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
         {% trans "Edit Document" %}
         <span class="caret"></span>
@@ -54,15 +49,18 @@
       </ul>
     </div>
     {% endif %}
+    </div>
   </div>
-  <div class="span8">
+  <div class="col-md-8">
    
-      {% if document.extension|lower in imgtypes %}
+      {% if document.extension|lower in imgtypes and document.doc_file %}
       <div id="embedded_map">
         <img src="{% url "document_download" document.id %}" width='100%' />
       </div>
-      {% else %}
+      {% elif document.doc_file %}
         <a href="{% url "document_download" document.id %}" target="_blank">Download the {{ document }} document</a>
+      {% elif  document.doc_url %}
+        <a href="{{ document.doc_url }}" target="_blank">Download the {{ document }} document.</a> <i>({% trans 'External Resource' %})</i>
       {%  endif %}
        
       <div class="map-actions">
@@ -77,15 +75,9 @@
       <div class="tab-content">
         {% include "base/resourcebase_info_panel.html" with resourcebase=document %}
 
-        <article id="share" class="tab-pane">
-          <!-- TODO: Move this to a reusable template snippet -->
-          <header>
-              <h3>{% trans "Share This Document" %}</h3>
-          </header>
-          <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
-          <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
-          <!-- TODO: Add more sharing options -->
-        </article>
+        {% block social_links %}
+        {% include "social_links.html" %}
+        {% endblock %}
 
         <!--article id="flag" class="tab-pane">
           <p>Flag this Layer</p>
@@ -112,7 +104,7 @@
         </article>
       </div>
   </div>
-  <aside class="span4">
+  <aside class="col-md-4">
     <div class="well">
         <h2>{% trans "Resource using this document" %}</h2>
         {% if layer.maps %}

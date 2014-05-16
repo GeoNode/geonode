@@ -77,32 +77,37 @@ setup(name='GeoNode',
         "pillow",
         "lxml",
         # python dependencies
-        "gsconfig==0.6.7",
+        "gsconfig==0.6.9",
         "OWSLib==0.7.2",
-        "Django==1.6.2",
+        #"OWSLib==0.8.6",
+        "Django==1.5.6",
+        "gsimporter==0.1",
         # Django Apps
         "pinax-theme-bootstrap==3.0a11",
         "pinax-theme-bootstrap-account==1.0b2",
-        "django-user-accounts==1.0b14",
+        "geonode-user-accounts==1.0.1",
         "django-forms-bootstrap==2.0.3.post1",
         "django-pagination==1.0.7",
         "django-jsonfield==0.9.10",
         "django-friendly-tag-loader==1.1",
-        "django-taggit==0.11.2",
+        "django-taggit==0.10a1",
         "django-taggit-templatetags",
-        "django-geoexplorer==3.0.5",
+        "django-geoexplorer==4.0.2",
         "django-notification==1.0",
         "django-announcements==1.0.2",
-        "django-activity-stream==0.4.5beta1",
+        "django-activity-stream==0.4.4",
         "django-extensions",
         "user-messages==0.1.1",
         "geonode-avatar==2.1.1",
-        "dialogos==0.4",
+        "dialogos==0.2",
         "agon-ratings==0.2",
-        "South==0.7.3",
         "django-downloadview==1.2",
+        "django-tastypie==0.11.0",
+        "django-polymorphic==0.5.3",
+        "django-leaflet==0.13.2",
         #catalogue
-        "pycsw==1.6.1",
+        "pycsw==1.6.4",
+        #"pycsw==1.8.0",
         # setup
         "Paver",
         # sample and test data / metadata
@@ -114,6 +119,14 @@ setup(name='GeoNode',
         "MultipartPostHandler",
         # translation
         "transifex-client",
+        # external services
+        "geonode-arcrest==10.2",
+        # For dynamic models, uncomment to use
+        #"psycopg2",
+
+        #haystack/elasticsearch, uncomment to use
+        #"django-haystack==2.1.0",
+        #"pyelasticsearch==0.6.1"
         ],
       zip_safe=False,
       )
