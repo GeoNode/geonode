@@ -8,10 +8,11 @@
 {% block body_class %}documents documents-list explore{% endblock %}
 
 {% block body %}
-    <div class="col-md-12">
-      <h2 class="page-title">{% trans "Explore Documents" %}</h2>
-    </div>
-    {% include "search/_search_content.html" %}
+  <div class="col-md-12">
+    <a href="{% url "document_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Documents" %}</a>
+    <h2 class="page-title">{% trans "Explore Documents" %}</h2>
+  </div>
+  {% include "search/_search_content.html" %}
 {% endblock %}
 
 {% block extra_script %}
