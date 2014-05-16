@@ -144,10 +144,12 @@ def geoserver_post_save(instance, sender, **kwargs):
         # If the connection is refused, take it easy.
         return
 
-    gs_resource.keywords = instance.keyword_list()
-    #gs_resource should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
-    if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
-        gs_catalog.save(gs_resource)
+    if any(instance.keyword_list()):
+        gs_resource.keywords = instance.keyword_list()
+
+        #gs_resource should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
+        if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
+            gs_catalog.save(gs_resource)
 
     bbox = gs_resource.latlon_bbox
     dx = float(bbox[1]) - float(bbox[0])

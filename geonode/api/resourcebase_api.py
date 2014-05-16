@@ -93,12 +93,18 @@ class CommonModelApi(ModelResource):
 class ResourceBaseResource(CommonModelApi):
     """ResourceBase api"""
 
-    count = fields.IntegerField()
-
 
     class Meta(CommonMetaApi):
-        queryset = ResourceBase.objects.all().order_by('-date')
+        queryset = ResourceBase.objects.distinct().order_by('-date')
         resource_name = 'base'
+
+
+class FeaturedResourceBaseResource(CommonModelApi):
+    """Only the featured resourcebases"""
+
+    class Meta(CommonMetaApi):
+        queryset = ResourceBase.objects.filter(featured=True).order_by('-date')
+        resource_name = 'featured'
 
 
 class LayerResource(CommonModelApi):
@@ -106,7 +112,7 @@ class LayerResource(CommonModelApi):
 
 
     class Meta(CommonMetaApi):
-        queryset = Layer.objects.all().order_by('-date')
+        queryset = Layer.objects.distinct().order_by('-date')
         resource_name = 'layers'
 
 
@@ -114,7 +120,7 @@ class MapResource(CommonModelApi):
     """Maps API"""
 
     class Meta(CommonMetaApi):
-        queryset = Map.objects.all().order_by('-date')
+        queryset = Map.objects.distinct().order_by('-date')
         resource_name = 'maps'
 
 
@@ -122,5 +128,5 @@ class DocumentResource(CommonModelApi):
     """Maps API"""
 
     class Meta(CommonMetaApi):
-        queryset = Document.objects.all().order_by('-date')
+        queryset = Document.objects.distinct().order_by('-date')
         resource_name = 'documents'

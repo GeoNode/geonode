@@ -121,6 +121,9 @@ setup(name='GeoNode',
         "transifex-client",
         # external services
         "geonode-arcrest==10.2",
+        # For dynamic models, uncomment to use
+        #"psycopg2",
+
         #haystack/elasticsearch, uncomment to use
         #"django-haystack==2.1.0",
         #"pyelasticsearch==0.6.1"
