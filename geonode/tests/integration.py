@@ -133,6 +133,16 @@ class GeoNodeMapTest(TestCase):
 
     # geonode.maps.utils
 
+    def test_raster_upload(self):
+        """Test that the wcs links are correctly created for a raster"""
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        uploaded = file_upload(filename)
+        wcs_link = False
+        for link in uploaded.link_set.all():
+            if link.mime == 'GeoTIFF':
+                wcs_link = True
+        self.assertTrue(wcs_link)
+
     def test_layer_upload(self):
         """Test that layers can be uploaded to running GeoNode/GeoServer
         """
