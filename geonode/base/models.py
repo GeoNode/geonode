@@ -285,6 +285,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
+    featured = models.BooleanField(default=False)
+
 
     def delete(self, *args, **kwargs):
         super(ResourceBase, self).delete(*args, **kwargs)

@@ -165,14 +165,18 @@ GEONODE_APPS = (
     'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
-
-    # GeoServer Apps
-    'geonode.geoserver',
-    'geonode.upload',
+    'geonode.api',
 
     # GeoNode Contrib Apps
     'geonode.contrib.services',
     'geonode.contrib.groups',
+    #'geonode.contrib.dynamic',
+
+    # GeoServer Apps
+    # Geoserver needs to come last because
+    # it's signals may rely on other apps' signals.
+    'geonode.geoserver',
+    'geonode.upload',
 )
 
 INSTALLED_APPS = (
@@ -187,6 +191,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.messages',
     'django.contrib.humanize',
+    'django.contrib.gis',
 
     # Third party apps
 
@@ -632,6 +637,16 @@ CLIENT_RESULTS_LIMIT = 10
 
 # Number of items returned by the apis 0 equals no limit
 API_LIMIT_PER_PAGE = 0
+
+LEAFLET_CONFIG = {
+'TILES': [
+    # Find tiles at:
+    # http://leaflet-extras.github.io/leaflet-providers/preview/
+
+    # Stamen toner lite.
+    ('Toner Lite', 'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png', 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
+]
+}
 
 # Load more settings from a file called local_settings.py if it exists
 try:

@@ -108,6 +108,10 @@ if "geonode.contrib.services" in settings.INSTALLED_APPS:
         (r'^services/', include('geonode.contrib.services.urls')),
     )
 
+if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+        (r'^dynamic/', include('geonode.contrib.dynamic.urls')),
+    )
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # GeoServer Helper Views
