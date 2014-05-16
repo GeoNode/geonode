@@ -32,7 +32,7 @@ import geonode.maps.models
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.utils import default_map_config
-from geonode.search.populate_search_test_data import create_models
+from geonode.base.populate_test_data import create_models
 from geonode.maps.populate_maplayers import create_maplayers
 
 
@@ -186,7 +186,7 @@ community."
         def is_wms_layer(x):
             return cfg['sources'][x['source']]['ptype'] == 'gxp_wmscsource'
         layernames = [x['name'] for x in cfg['map']['layers'] if is_wms_layer(x)]
-        self.assertEquals(layernames, ['base:CA',])
+        self.assertEquals(layernames, ['geonode:CA',])
 
     def test_map_to_wmc(self):
         """ /maps/1/wmc -> Test map WMC export
@@ -251,7 +251,7 @@ community."
 
         c = Client()
 
-        url = lambda id: reverse('map_permissions',args=[id])
+        url = lambda id: reverse('resource_permissions',args=['map', id])
 
         # Test that an invalid layer.typename is handled for properly
         response = c.post(url(invalid_mapid),

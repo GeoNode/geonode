@@ -5,8 +5,9 @@ from geonode.base.models import (TopicCategory, SpatialRepresentationType,
     Region, RestrictionCodeType, ContactRole, ResourceBase, Link, License, Thumbnail)
 
 class LicenseAdmin(admin.ModelAdmin):
+    model = License
     list_display = ('id', 'name')
-    list_display = ('name',)	
+    list_display_links = ('name',)
 
 class ResourceBaseAdmin(admin.ModelAdmin):
     list_display = ('id','title', 'date', 'category')
@@ -97,7 +98,7 @@ class ThumbnailAdmin(admin.ModelAdmin):
     
     def get_geonode_type(self, obj):
         rb = obj.resourcebase_set.all()[0] # should be always just one!
-        return rb.geonode_type
+        return rb.class_name
     get_geonode_type.short_description = 'Type'
 
 admin.site.register(TopicCategory, TopicCategoryAdmin)

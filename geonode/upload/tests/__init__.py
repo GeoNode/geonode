@@ -16,15 +16,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import geonode.upload.files as files
-from geonode.upload.utils import rename_and_prepare
-
 import contextlib
 import os
 import shutil
 import tempfile
-import unittest
 import zipfile
+import geonode.upload.files as files
+from django.test import TestCase
+from geonode.upload.utils import rename_and_prepare
+from geonode.upload.files import SpatialFiles, scan_file
 
 @contextlib.contextmanager
 def create_files(names, zipped=False):
@@ -44,7 +44,8 @@ def create_files(names, zipped=False):
     yield names
     shutil.rmtree(tmpdir)
 
-class FilesTests(unittest.TestCase):
+
+class FilesTests(TestCase):
 
     def test_types(self):
         for t in files.types:
@@ -70,6 +71,41 @@ class FilesTests(unittest.TestCase):
             self.assertTrue(os.path.exists(os.path.join(path, '_109029_23.shx')))
             self.assertTrue(os.path.exists(os.path.join(path, '_109029_23.dbf')))
             self.assertTrue(os.path.exists(os.path.join(path, '_109029_23.prj')))
+
+    def test_scan_file(self):
+        """
+        Tests the scan_file function.
+        """
+        exts = ('.shp', '.shx', '.sld', '.xml', '.prj', '.dbf')
+
+        with create_files(map(lambda s: 'san_andres_y_providencia_location{0}'.format(s), exts)) as tests:
+            shp = filter(lambda s: s.endswith('.shp'), tests)[0]
+            spatial_files = scan_file(shp)
+            self.assertTrue(isinstance(spatial_files, SpatialFiles))
+
+            spatial_file = spatial_files[0]
+            self.assertEqual(shp, spatial_file.base_file)
+            self.assertTrue(spatial_file.file_type.matches('shp'))
+            self.assertEqual(len(spatial_file.auxillary_files), 3)
+            self.assertEqual(len(spatial_file.xml_files), 1)
+            self.assertTrue(all(map(lambda s: s.endswith('xml'), spatial_file.xml_files)))
+            self.assertEqual(len(spatial_file.sld_files), 1)
+            self.assertTrue(all(map(lambda s: s.endswith('sld'), spatial_file.sld_files)))
+
+        #  Test the scan_file function with a zipped spatial file that needs to be renamed.
+        with create_files(['109029_23.shp', '109029_23.shx', '109029_23.dbf',
+                           '109029_23.prj', '109029_23.xml'], zipped=True) as tests:
+            spatial_files = scan_file(tests[0])
+            self.assertTrue(isinstance(spatial_files, SpatialFiles))
+
+            spatial_file = spatial_files[0]
+            self.assertTrue(spatial_file.file_type.matches('shp'))
+            self.assertEqual(len(spatial_file.auxillary_files), 3)
+            self.assertEqual(len(spatial_file.xml_files), 1)
+            self.assertEqual(len(spatial_file.sld_files), 0)
+            self.assertTrue(all(map(lambda s: s.endswith('xml'), spatial_file.xml_files)))
+
+
 
 
 

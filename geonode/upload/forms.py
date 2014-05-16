@@ -16,14 +16,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
+import files
+import tempfile
 from django import forms
 from django.conf import settings
 from geonode.layers.forms import JSONField
 from geonode.upload.models import UploadFile 
-from geonode.utils import ogc_server_settings
-import os
-import tempfile
-import files
+from geonode.geoserver.helpers import ogc_server_settings
 
 class UploadFileForm(forms.ModelForm):
     class Meta:

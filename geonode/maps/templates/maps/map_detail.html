@@ -98,16 +98,10 @@
         <div class="overall_rating" style="float:left" data-rating="{{ map_rating }}"></div> ({{num_votes}})
         <!-- TODO: Add display of who gave what rating based -->
       </article>
-      <article class="tab-pane" id="share">
-        <!-- TODO: Move this to a reusable template snippet -->
-        <header>
-            <h3>{% trans "Share This Map" %}</h3>
-        </header>
-        <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
-        <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
-        <!-- TODO: Add more sharing options -->
-      </article>
-      <!--article class="tab-pane" id="flag">
+      {% block social_links %}
+      {% include "social_links.html" %}
+      {% endblock %}
+        <!--article class="tab-pane" id="flag">
         <h2>{% trans "Flag" %}</h2>
       </article-->
     </div>
@@ -158,7 +152,7 @@
       <h2>{% trans "Map WMS" %}</h2>
       <dl>{% if map.layer_group %}
         <dt>{% trans "WMS layer group for local map layers" %}:</dt>
-        <dd><em>{{ map.layer_group.name }}</em> ({% trans "on" %} <a href="{{ ows }}?request=GetCapabilities">{% trans "local OWS" %}</a>)</dd>
+        <dd><em>{{ map.layer_group.name }}</em> ({% trans "on" %} <a href="{{ ows }}?service=WMS&request=GetCapabilities">{% trans "local OWS" %}</a>)</dd>
       {% endif %}</dl>
       {% if can_edit_map %}
       <p>{% trans "Publish local map layers as WMS layer group" %}</p>

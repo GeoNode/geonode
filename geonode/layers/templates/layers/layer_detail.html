@@ -11,7 +11,14 @@
 
 {% block head %}
 {% include "layers/layer_map.html" %}
-
+<style>
+.arcgis-legend > li{
+  text-align:right;
+}
+.arcgis-legend > li > img {
+    padding-right: 25px;
+}
+</style>
 {{ block.super }}
 {% endblock %}
 
@@ -19,10 +26,10 @@
 {% block body_class %}data{% endblock %}
 
 {% block body_outer %}
-  <div class="span5">
+  <div class="col-md-5">
     <h2 class="page-title">{{ layer.title|default:layer.typename }}</h2>
   </div>
-  <div class="span7 action-group">
+  <div class="col-md-7 action-group">
     <div class="btn-group pull-right">
       <!-- download layer -->
       <div class="btn-group">
@@ -32,7 +39,7 @@
         </a>
         <ul class="dropdown-menu">
           {% for link in links %}
-            <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
+            <li><a href="{{ link.url }}">{% trans link.name %} <i class="icon-chevron-right"></i></a></li>
           {% endfor %}
         </ul>
       </div>
@@ -60,23 +67,28 @@
           <!--li><a href="">Edit Layer Data <i class="icon-chevron-right"></i></a></li-->
           <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
           {% if GS_SECURITY_ENABLED %}
-          <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+            {% has_obj_perm user layer "layers.change_layer_permissions" as can_change_permissions %}
+            {% if can_change_permissions %}
+              <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
+            {% endif %}
           {% endif %}
+          {% if GEOSERVER_BASE_URL %}
           <li><a href="{% url "layer_style_manage" layer.typename %}">{% trans "Manage Styles" %} <i class="icon-chevron-right"></i></a></li>
           <li><a class="style-edit" href="#">{% trans "Edit Styles" %} <i class="icon-chevron-right"></i></a></li>
           <li><a href="{% url "layer_replace" layer.typename %}">{% trans "Replace this Layer" %} <i class="icon-chevron-right"></i></a></li>
           <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %} <i class="icon-chevron-right"></i></a></li>
+          {% endif %}
         </ul>
       </div>
       {% endif %}
     </div>
   </div>
-  <div class="span12">
+  <div class="col-md-12">
     <div id="embedded_map" class="mrg-btm">
         <div id="preview_map"></div>
     </div>
   </div>
-  <div class="span8">
+  <div class="col-md-8">
     <div class="layer-actions">
       {% include "layers/_actions.html" %}
     </div>
@@ -120,15 +132,9 @@
             </table>
         {% endif %}
       </article>
-      <article id="share" class="tab-pane">
-        <!-- TODO: Move this to a reusable template snippet -->
-        <header>
-          <h3>{% trans "Share This Layer" %}</h3>
-        </header>
-          <g:plusone size="small" href="http://{{ request.get_host }}{{ request.get_full_path }}"></g:plusone>
-          <div class="fb-like" data-href="http://{{ request.get_host }}{{ request.get_full_path }}" data-send="false" data-width="50" data-layout="button_count" data-show-faces="false"></div>
-        <!-- TODO: Add more sharing options -->
-      </article>
+      {% block social_links %}
+      {% include "social_links.html" %}
+      {% endblock %}
       <!--article id="flag" class="tab-pane">
         <p>Flag this Layer</p>
       </article-->
@@ -153,16 +159,23 @@
       </article>
     </div>
   </div>
-  <aside class="span4">
+  <div class="col-md-4">
     
+    {% if layer.get_legend %}
 <div class="well">
 	<!-- Need to make this based on a listener -->
-	
+
 	<h2>{%trans "Legend" %}</h2>
 	<p>{{ style.sld_title }}</p>
-	<p><img src="{{ GEOSERVER_BASE_URL }}/wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=
-{{ WORKSPACE }}:{{ layer.name }}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on"></p>
+    {% if layer.get_legend.link_type == 'image' %}
+	<p><img src="{{ layer.get_legend.url }}"></p>
+    {% else %}
+    <div id='legend_placeholder'>
     </div>
+    {% endif %}
+    </div>
+    {% endif %}
+
     <div class="well">
         <h2>{% trans "Maps using this layer" %}</h2>
         {% if layer.maps %}
@@ -225,18 +238,25 @@
     {% endif %}
     <div class="well">
       <h2>{% trans "About" %}</h2>
-      <p>{% trans "Layer Owner" %}</p>
-      {% with layer.owner.profile as profile %}
-        {% include "people/_profile_about_item.html" %}
-      {% endwith %}
-      <p>{% trans "Point of Contact" %}</p>
-      {% with layer.poc as profile %}
-        {% include "people/_profile_about_item.html" %}
-      {% endwith %}
-      <p>{% trans "Metadata Author" %}</p>
-      {% with layer.metadata_author as profile %}
-        {% include "people/_profile_about_item.html" %}
-      {% endwith %}
+      {% if layer.owner.profile == layer.poc and layer.owner.profile == layer.metadata_author %}
+          <p>{% trans "Layer Owner, Point of Contact, Metadata Author" %}</p>
+          {% with layer.owner.profile as profile %}
+            {% include "people/_profile_about_item.html" %}
+          {% endwith %}
+      {% else %}
+          <p>{% trans "Layer Owner" %}</p>
+          {% with layer.owner.profile as profile %}
+            {% include "people/_profile_about_item.html" %}
+          {% endwith %}
+          <p>{% trans "Point of Contact" %}</p>
+          {% with layer.poc as profile %}
+            {% include "people/_profile_about_item.html" %}
+          {% endwith %}
+          <p>{% trans "Metadata Author" %}</p>
+          {% with layer.metadata_author as profile %}
+            {% include "people/_profile_about_item.html" %}
+          {% endwith %}
+      {% endif %}
     </div>
   </aside>
   {% if GS_SECURITY_ENABLED %}   
@@ -244,18 +264,6 @@
   {% endif %}
 {% endblock %}
 {% block extra_script %}
-{% if SOCIAL_BUTTONS %}
-<div id="fb-root"></div>
-<script>
-(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) {return;}
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-{% endif %}
-
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user layer "layer" %}
     {% else %}
@@ -275,14 +283,7 @@
         var activeTab = $('[href=' + location.hash + ']');
         activeTab && activeTab.tab('show');
     });
-    {% if SOCIAL_BUTTONS %}
-        (function() {
-            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-            po.src = 'https://apis.google.com/js/plusone.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-        })();
-    {% endif %}
-        $("#comment_submit_btn").click(function(event) {
+       $("#comment_submit_btn").click(function(event) {
             $.ajax({
               type: "POST",
               url: $("#form_post_comment").attr('action'),
@@ -294,8 +295,25 @@
               }
             });
             return false;
-          });        
-    </script>
+          });
+
+    {% if layer.get_legend.link_type == 'json' %}
+    $.getJSON('{{layer.get_legend_url}}', function (data) {
+        var legend = data.layers[0].legend;
+        var items = [];
+        $.each(legend, function (key, dvalue) {
+            items.push('<li><img src="data:image/png;base64,' + dvalue.imageData + '">'+dvalue.label+'</li>');
+        });
+
+        $('<ul/>', {
+            'class': 'arcgis-legend',
+            html: items.join('')
+
+        }).appendTo('#legend_placeholder');
+
+    });
+    {% endif %}
+        </script>
     {% if GS_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
     {% endif %}

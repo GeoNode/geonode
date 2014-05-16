@@ -14,7 +14,9 @@
                     actionTarget: "main.tbar",
                     outputConfig: {width: 400, height: 200, panIn: false}
                 }],
-                proxy: "{{ PROXY_URL }}",
+                {% if PROXY_URL %}
+                proxy: '{{ PROXY_URL }}',
+                {% endif %}
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
                 authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
 

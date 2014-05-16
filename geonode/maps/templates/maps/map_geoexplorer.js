@@ -27,7 +27,9 @@ Ext.onReady(function() {
     GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
     var config = Ext.apply({
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
+        {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
+        {% endif %}
         {% if PRINTNG_ENABLED %}
         listeners: {
             'save': function(obj_id) {
@@ -55,6 +57,13 @@ Ext.onReady(function() {
 
 
     app = new GeoNode.Composer(config);
+    app.mapPanel.map.addControl(
+        new OpenLayers.Control.MousePosition(
+            { numDigits: 2,
+              displayProjection: new OpenLayers.Projection("EPSG:4326")}
+        )
+    );
+
 {% endautoescape %}
 });
 </script>

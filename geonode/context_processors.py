@@ -22,28 +22,29 @@ from geonode import get_version
 from geonode.catalogue import default_catalogue_backend
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
-from geonode.utils import ogc_server_settings
+
 
 def resource_urls(request):
     """Global values to pass to templates"""
     site = Site.objects.get_current()
-
-    return dict(
-        STATIC_URL=settings.STATIC_URL,
-        GEOSERVER_BASE_URL=ogc_server_settings.public_url,
+    defaults = dict(
+        STATIC_URL=settings.STATIC_URL,  
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
         REGISTRATION_OPEN=settings.REGISTRATION_OPEN,
         VERSION=get_version(),
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
-        DOCUMENTS_APP = settings.DOCUMENTS_APP,
-        UPLOADER_URL = reverse('data_upload') if getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest') == 'geonode.importer' else reverse('layer_upload'),
-        GEOGIT_ENABLED = ogc_server_settings.GEOGIT_ENABLED,
-        TIME_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', False),
-        DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False),
-        MF_PRINT_ENABLED = ogc_server_settings.MAPFISH_PRINT_ENABLED,
-        PRINTNG_ENABLED = ogc_server_settings.PRINTNG_ENABLED,
-        GS_SECURITY_ENABLED = ogc_server_settings.GEONODE_SECURITY_ENABLED,
-        PROXY_URL = getattr(settings, 'PROXY_URL', '/proxy/?url='),
-        SOCIAL_BUTTONS = getattr(settings, 'SOCIAL_BUTTONS', True)
+        GROUPS_APP=True if "geonode.contrib.groups" in settings.INSTALLED_APPS else False,
+        DEBUG_STATIC=getattr(settings, "DEBUG_STATIC", False),
+        PROXY_URL=getattr(settings, 'PROXY_URL', '/proxy/?url='),
+        SOCIAL_BUTTONS=getattr(settings, 'SOCIAL_BUTTONS', True),
+        USE_DOCUMENTS='geonode.documents' in settings.INSTALLED_APPS,
+        USE_SERVICES = 'geonode.contrib.services' in settings.INSTALLED_APPS,
+        HAYSTACK_SEARCH=getattr(settings, 'HAYSTACK_SEARCH', False),
+        CLIENT_RESULTS_LIMIT=getattr(settings, 'CLIENT_RESULTS_LIMIT', 10),
+        LICENSES_ENABLED = getattr(settings, 'LICENSES', dict()).get('ENABLED', False),
+        LICENSES_DETAIL = getattr(settings, 'LICENSES', dict()).get('DETAIL', 'never'),
+        LICENSES_METADATA = getattr(settings, 'LICENSES', dict()).get('METADATA', 'never'),
     )
+    
+    return defaults

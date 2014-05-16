@@ -14,12 +14,10 @@ Ext.onReady(function() {
             outputConfig: {width: 400, height: 200, panIn: false}
         }],
         useToolbar: true,
+        {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
-        {% if MF_PRINT_ENABLED %}
-        printService: "{{GEOSERVER_BASE_URL}}pdf/",
-        {% else %}
-        printService: "",
         {% endif %}
+        printService: "",
         rest: "/maps/",
 
         // tell the map viewer where and how to be rendered

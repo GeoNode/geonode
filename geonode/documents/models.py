@@ -1,4 +1,6 @@
+import logging
 import os
+import sys
 import uuid
 
 from django.db import models
@@ -6,14 +8,20 @@ from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.core.files.base import ContentFile
 from django.contrib.contenttypes import generic
+from django.contrib.staticfiles import finders
+from django.utils.translation import ugettext_lazy as _
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save
+from geonode.base.models import ResourceBase, Thumbnail, Link
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
-from geonode.people.models import Profile
+
+IMGTYPES = ['jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif']
+
+logger = logging.getLogger(__name__)
 
 class Document(ResourceBase):
     """
@@ -21,15 +29,21 @@ class Document(ResourceBase):
     """
 
     # Relation to the resource model
-    content_type = models.ForeignKey(ContentType,blank=True,null=True)
-    object_id = models.PositiveIntegerField(blank=True,null=True)
+    content_type = models.ForeignKey(ContentType, blank=True, null=True)
+    object_id = models.PositiveIntegerField(blank=True, null=True)
     resource = generic.GenericForeignKey('content_type', 'object_id')
 
-    doc_file = models.FileField(upload_to='documents')
-    extension = models.CharField(max_length=128,blank=True,null=True)
+    doc_file = models.FileField(upload_to='documents',
+                                null=True,
+                                blank=True,
+                                verbose_name=_('File'))
 
-    popular_count = models.IntegerField(default=0)
-    share_count = models.IntegerField(default=0)
+    extension = models.CharField(max_length=128, blank=True, null=True)
+
+    doc_url = models.URLField(blank=True,
+                              null=True,
+                              help_text=_('The URL of the document if it is external.'),
+                              verbose_name=_('URL'))
 
     def __unicode__(self):  
         return self.title
@@ -48,20 +62,48 @@ class Document(ResourceBase):
     LEVEL_READ  = 'document_readonly'
     LEVEL_WRITE = 'document_readwrite'
     LEVEL_ADMIN = 'document_admin'
-    
-    def set_default_permissions(self):
-        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
-        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
-        
-        # remove specific user permissions
-        current_perms =  self.get_all_level_info()
-        for username in current_perms['users'].keys():
-            user = User.objects.get(username=username)
-            self.set_user_level(user, self.LEVEL_NONE)
-        
-        # assign owner admin privileges
-        if self.owner:
-            self.set_user_level(self.owner, self.LEVEL_ADMIN)
+
+
+    def _render_thumbnail(self):
+        from cStringIO import StringIO
+
+        size = 200, 150
+
+        try:
+            from PIL import Image, ImageOps
+        except: 
+            logger.error('%s: Pillow not installed, cannot generate thumbnails.' % e)
+            return None
+
+        try:
+            # if wand is installed, than use it for pdf thumbnailing
+            from wand import image
+        except:
+            wand_available = False
+        else:
+            wand_available = True
+
+        if wand_available and self.extension and self.extension.lower() == 'pdf' and self.doc_file:
+            logger.debug('Generating a thumbnail for document: {0}'.format(self.title))
+            with image.Image(filename=self.doc_file.path) as img:
+                img.sample(*size)
+                return img.make_blob('png')
+        elif self.extension and self.extension.lower() in IMGTYPES and self.doc_file:
+            
+            img = Image.open(self.doc_file.path)
+            img = ImageOps.fit(img, size, Image.ANTIALIAS)
+        else:
+            filename = finders.find('documents/{0}-placeholder.png'.format(self.extension), False) or \
+                       finders.find('documents/generic-placeholder.png', False)
+
+            if not filename:
+                return None
+
+            img = Image.open(filename)
+
+        imgfile = StringIO()
+        img.save(imgfile, format='PNG')
+        return imgfile.getvalue()
 
     @property
     def class_name(self):
@@ -74,9 +116,15 @@ def get_related_documents(resource):
     else: return None
 
 def pre_save_document(instance, sender, **kwargs):
-    base_name, extension = os.path.splitext(instance.doc_file.name)
-    instance.extension=extension[1:]
-    
+    base_name, extension = None, None
+
+    if instance.doc_file:
+        base_name, extension = os.path.splitext(instance.doc_file.name)
+        instance.extension = extension[1:]
+    elif instance.doc_url:
+        if len(instance.doc_url) > 4 and instance.doc_url[-4] == '.':
+            instance.extension = instance.doc_url[-3:]
+
     if not instance.uuid:
         instance.uuid = str(uuid.uuid1())
     instance.csw_type = 'document'
@@ -99,12 +147,44 @@ def pre_save_document(instance, sender, **kwargs):
         instance.bbox_y0 = -90
         instance.bbox_y1 = 90
 
+def create_thumbnail(sender, instance, created, **kwargs):
+    if not created:
+        return
+
+    if instance.has_thumbnail():
+        instance.thumbnail.thumb_file.delete()
+    else:
+        instance.thumbnail = Thumbnail()
+
+    image = instance._render_thumbnail()
+     
+    instance.thumbnail.thumb_file.save('doc-%s-thumb.png' % instance.id, ContentFile(image))
+    instance.thumbnail.thumb_spec = 'Rendered'
+    instance.thumbnail.save()
+    Link.objects.get_or_create(
+        resource=instance.resourcebase_ptr,
+        url=instance.thumbnail.thumb_file.url,
+        defaults=dict(
+            name=('Thumbnail'),
+            extension='png',
+            mime='image/png',
+            link_type='image',))
+
+
 def update_documents_extent(sender, **kwargs):
     model = 'map' if isinstance(sender, Map) else 'layer'
     ctype = ContentType.objects.get(model= model)
     for document in Document.objects.filter(content_type=ctype, object_id=sender.id):
         document.save()
 
+def set_missing_info(sender, instance, created, **kwargs):
+    """
+    Executes mandatory post-save logic on the Document.
+    """
+
+    instance.set_missing_info()
+
 signals.pre_save.connect(pre_save_document, sender=Document)
-signals.post_save.connect(resourcebase_post_save, sender=Document)
+signals.post_save.connect(create_thumbnail, sender=Document)
+signals.post_save.connect(set_missing_info, sender=Document)
 map_changed_signal.connect(update_documents_extent)

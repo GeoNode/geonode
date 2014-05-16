@@ -94,7 +94,7 @@ and now you can create the extension
 
 .. code-block:: console
 
-	$ create extension postigs;
+	$ create extension postgis;
 
 .. warning:: Do not forget the semicolon at the end! Otherwise this statement will have no effect!
 

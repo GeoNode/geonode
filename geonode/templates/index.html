@@ -1,83 +1,75 @@
 {% extends "site_base.html" %}
 {% load i18n %}
-{% load maps_tags %}
-{% load layers_tags %}
-{% load pagination_tags %}
 {% load staticfiles %}
-{% load url from future %}
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}home{% endblock %}
 
-{% block body_outer %}
-<div class="span12">
+{% block middle %}
+
   {% block hero %}
-  <div class="hero-unit">
-    <h1>{% trans "Welcome" %}</h1>
-    <div class="hero-unit-content">
-      <div class="intro">
-        <p>
-          {% blocktrans %}
-            GeoNode is an open source platform for sharing geospatial data and maps.  If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.
-          {% endblocktrans %}
-        </p>
-        <span>{% trans 'Need help' %} <a href="http://docs.geonode.org/en/latest/tutorials/users/quickstart/index.html">{% trans 'Getting Started?' %}</a></span>
-      </div>
-      <div class="btns">
-        <a class="btn btn-large" href="{% url "layer_browse" %}">
-          {% trans "Explore Layers" %}
-        </a>
-        <a class="btn btn-large" href="{% url "maps_browse" %}">
-          {% trans "Explore Maps" %}
-        </a>
-      </div>
+  <div class="jumbotron">
+    <div class="container">
+      <h1>{% trans "Welcome" %}</h1>
+      <p>{% blocktrans %}GeoNode is an open source platform for sharing geospatial data and maps.{% endblocktrans %}</p>
+      <p>{% blocktrans %}If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.{% endblocktrans %}</p>
+      <span>{% trans 'Need help?' %} <a href="http://docs.geonode.org/en/latest/tutorials/users/quickstart/index.html">{% trans 'Getting Started' %}</a></span>
+      <p><a class="btn btn-large" role="button" href="{% url "layer_browse" %}">{% trans "Explore Layers" %}</a></p>
+      <p><a class="btn btn-large" role="button" href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></p>
     </div>
   </div>
   {% endblock %}
+
   {% block mainbody %}
-  <div class="row">
-    <div class="span8">
-      <section class="widget list paginate-contents">
-        <h2>{% trans "Latest Layers" %}</h2>
-        <div class="paginate paginate-auto" id="search-content">
-          {% include 'search/search_content.html' %}
-        </div>
-      </section>
-    </div>
-    <aside class="span4">
-      {% if request.user.is_authenticated %}
-        <div class="well">
-          <section>
-            <h2>{% trans "Contribute" %}</h2>
-            <p class="main-actions">
-            {% blocktrans %}
-              GeoNode enables you to upload, manage, and browse data layers. Search for data that is valuable to you, or upload your own data. 
-            {% endblocktrans %}
-              <a href="{% url "data_upload" %}" class="btn btn-large">{% trans 'Upload Layers' %}</a>
-            {% blocktrans %}
-              GeoNode enables you to compose and share maps. Create a map with our cartography tool, or explore maps shared by others. 
-            {% endblocktrans %}
-              <a href="{% url "new_map" %}" class="btn btn-large">{% trans 'Create a Map' %}</a>
-            </p>
-          </section>
-        </div>
-      {% endif %}
-      <div class="well">
-        <h2>{% trans "Latest Maps" %}</h2>
-        <section class="article-list latest-maps">
-          {% featured_maps as featured_maps %}
-          {% for map in featured_maps %}
-            {% include "maps/_map_list_item.html" %}
-          {% endfor %}
-        </section>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <p class="text-center"><i class="fa fa-square-o fa-5x rotate-45"></i></p>
+        <h2 class="text-center">Explore Layers</h2>
+        <p class="text-center">Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna.</p>
+        <p class="text-center"><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
       </div>
-    </aside>
+      <div class="col-md-4">
+        <p class="text-center"><i class="fa fa-map-marker fa-5x"></i></p>
+        <h2 class="text-center">Create Maps</h2>
+        <p class="text-center">Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh.</p>
+        <p class="text-center"><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+      </div>
+      <div class="col-md-4">
+        <p class="text-center"><i class="fa fa-cloud-upload fa-5x"></i></p>
+        <h2 class="text-center">Share Data</h2>
+        <p class="text-center">Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+        <p class="text-center"><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+      </div>
+    </div>
   </div>
+  {% verbatim %}
+  <div ng-app="featured">
+    <div ng-repeat="item in featured">
+      <!--{{ item.title }}-->
+    </div>
+  </div>
+  {% endverbatim %}
   {% endblock %}
-</div>
+  
 {% endblock %}
 
-{% block extra_script %}  
-  {% include 'search_scripts.html' %}
+{% block extra_script %}
+{% if DEBUG_STATIC %}
+<script src="{{ STATIC_URL }}lib/js/angular.js"></script>
+{% endif %}
+  <script type="text/javascript">
+    FEATURED_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='featured' %}'
+    'use strict';
+    (function(){  
+      var module = angular.module('featured', []);
+      module.run(function($http, $rootScope){
+        $http.get(FEATURED_URL).success(function(data){
+          $rootScope.featured = data.objects;
+        });
+      });
+    })(); 
+  </script>
+
 {% endblock extra_script %}

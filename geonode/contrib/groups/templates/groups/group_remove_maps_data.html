@@ -1,0 +1,18 @@
+{% extends "groups/group_base.html" %}
+{% load i18n %}
+
+{% block sidebar %}
+<div class="col-md-2">
+    <h2>{% trans "Remove Maps/Data from Group" %}</h2>
+    <form method="POST" action="">
+    {% csrf_token %}
+    <ul>
+    {{ map_form.as_ul }}
+    </ul>
+    <ul>
+    {{ layer_form.as_ul }}
+    </ul>
+    <input type="submit" value="{% trans "Remove selected maps/data" %}" />
+    </form>
+</div>
+{% endblock %}
