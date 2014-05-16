@@ -9,6 +9,9 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.core.exceptions import MultipleObjectsReturned
+
+
+from geonode import GeoNodeException
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes
 from geonode.geoserver.helpers import _user, _password
@@ -201,15 +204,22 @@ def geoserver_post_save(instance, sender, **kwargs):
         permissions['authenticated'] = instance.get_gen_level(AUTHENTICATED_USERS)
         instance.set_gen_level(ANONYMOUS_USERS,'layer_readonly')
 
-        #Potentially 3 dimensions can be returned by the grid if there is a z
-        #axis.  Since we only want width/height, slice to the second dimension
-        covWidth, covHeight = get_coverage_grid_extent(instance)[:2]
-        links = wcs_links(ogc_server_settings.public_url + 'wcs?', instance.typename.encode('utf-8'),
+        try:
+            #Potentially 3 dimensions can be returned by the grid if there is a z
+            #axis.  Since we only want width/height, slice to the second dimension
+            covWidth, covHeight = get_coverage_grid_extent(instance)[:2]
+        except GeoNodeException, e:
+            msg = _('Could not create a download link for layer.')
+            logger.warn(msg, e)
+        else:
+
+            links = wcs_links(ogc_server_settings.public_url + 'wcs?', instance.typename.encode('utf-8'),
                           bbox=gs_resource.native_bbox[:-1],
                           crs=gs_resource.native_bbox[-1],
                           height=str(covHeight), width=str(covWidth))
-        for ext, name, mime, wcs_url in links:
-            Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+
+            for ext, name, mime, wcs_url in links:
+                Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                                 url=wcs_url,
                                 defaults=dict(
                                     extension=ext,
