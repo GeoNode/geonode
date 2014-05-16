@@ -1201,7 +1201,7 @@ def ajax_service_permissions(request, service_id):
             mimetype='text/plain'
         )
 
-    spec = json.loads(request.raw_post_data)
+    spec = json.loads(request.body)
     set_service_permissions(service, spec)
 
     return HttpResponse(

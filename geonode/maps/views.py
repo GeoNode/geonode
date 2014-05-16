@@ -85,7 +85,7 @@ def _handleThumbNail(req, obj):
         return HttpResponseRedirect(obj.get_thumbnail_url())
     elif req.method == 'POST':
         try:
-            obj.save_thumbnail(req.raw_post_data)
+            obj.save_thumbnail(req.body)
             return HttpResponseRedirect(obj.get_thumbnail_url())
         except:
             return HttpResponse(
@@ -274,7 +274,7 @@ def map_json(request, mapid):
             )
         map_obj = _resolve_map(request, mapid, 'maps.change_map')
         try:
-            map_obj.update_from_viewer(request.raw_post_data)
+            map_obj.update_from_viewer(request.body)
             return HttpResponse(json.dumps(map_obj.viewer_json()))
         except ValueError, e:
             return HttpResponse(
@@ -316,7 +316,7 @@ def new_map_json(request):
         map_obj.save()
         map_obj.set_default_permissions()
         try:
-            map_obj.update_from_viewer(request.raw_post_data)
+            map_obj.update_from_viewer(request.body)
         except ValueError, e:
             return HttpResponse(str(e), status=400)
         else:

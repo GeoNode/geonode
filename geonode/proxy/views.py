@@ -72,7 +72,7 @@ def proxy(request):
         conn = HTTPSConnection(url.hostname, url.port)
     else:
         conn = HTTPConnection(url.hostname, url.port)
-    conn.request(request.method, locator, request.raw_post_data, headers)
+    conn.request(request.method, locator, request.body, headers)
 
     result = conn.getresponse()
 
