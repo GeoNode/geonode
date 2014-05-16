@@ -4,17 +4,11 @@
   	  <div class="col-md-4">
   	    <img class="thumb" ng-src="{{ item.thumbnail_url }}" />
   	  </div>
-      <div class="col-md-6">
-        <h4><a href="{{ item.absolute__url }}">{{ item.title }}</a></h4>
-        <p class="abstract">{{ item.abstract }}</p>
-      </div>
-      <div class="col-md-2">
-      	<p>{{ item.owner }}</p>
-        <p>{{ item.category }}</p>
-        <p>{{ date_type }} {{ item.date|date:'d MMM y' }}</p>
-        <p>{{ item.popular_count }}</p>
-        <p>{{ item.share_count }}</p>
-        <p>{{ item.rating }}</p>
+      <div class="col-md-8">
+        <h4><a href="{{ item.absolute__url }}">{{ item.title }}</a> <span class="owner">{{ item.owner.username }}</span></h4>
+        <p>{{ item.category.gn_description }}</p>
+        <p class="abstract">{{ item.abstract|limitTo:250 }}...</p>
+        <p><i class="fa fa-calendar-o"></i>{{ item.date|date:'d MMM y' }} | <i class="fa fa-eye"></i>{{ item.popular_count }} | <i class="fa fa-share"></i>{{ item.share_count }} | <i class="fa fa-star"></i>{{ item.rating }}</p>
       </div>
     </div>
   </article>

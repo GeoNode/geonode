@@ -4,7 +4,7 @@
 /* Variables
 ----------------------- */
 @brand-primary:   rgb(2, 139, 175);
-@brand-secondary: #f05a24;
+@brand-alternate: #f05a24;
 @brand-info:      #5bc0de;
 @brand-warning:   rgb(158, 179, 67); // #f0ad4e;
 @brand-danger:    #d9534f;
@@ -144,6 +144,17 @@ body.groups li#nav_groups a {
     color: @gray-light;
     font-weight: 300;
   }
+}
+/* Layers
+----------------------- */
+.well {
+  background: @body-bg;
+}
+.arcgis-legend > li {
+  text-align:right;
+}
+.arcgis-legend > li > img {
+    padding-right: 25px;
 }
 
 /* Search
