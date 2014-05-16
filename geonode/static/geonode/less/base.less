@@ -139,10 +139,24 @@ body.groups li#nav_groups a {
   margin-bottom: 10px;
   h4 {
     font-weight: 300;
+    .owner {
+      color: @gray-light;
+      font-size: 14px;
+    }
   }
   .abstract {
     color: @gray-light;
     font-weight: 300;
+  }
+  .actions {
+    color: @gray-light;
+    a {
+      color: @gray-light;
+      &:hover {
+        color: @gray;
+        text-decoration: none;
+      };
+    }
   }
 }
 /* Layers
