@@ -4,6 +4,7 @@ from django.db.models import Count
 
 from agon_ratings.models import Rating
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -31,7 +32,7 @@ def facets(context):
         'map': 0,
         'document': 0,
     }
-    
+
     if facet_type in ['layers', 'all']:
         for layer in Layer.objects.all():
             if request.user.has_perm('layers.view_layer', layer):
@@ -48,6 +49,10 @@ def facets(context):
         for doc in Document.objects.all():
             if request.user.has_perm('document.view_document', doc):
                 facets['document'] += 1        
+
+    facets['user'] = User.objects.count()
+
+    facets['layer'] = facets['raster'] + facets['vector']
 
     return facets
 
