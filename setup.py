@@ -80,7 +80,7 @@ setup(name='GeoNode',
         "gsconfig==0.6.9",
         "OWSLib==0.7.2",
         #"OWSLib==0.8.6",
-        "Django==1.6.5",
+        "Django >=1.6.1, <=1.6.5",
         "gsimporter==0.1",
         # Django Apps
         "pinax-theme-bootstrap==3.0a11",
