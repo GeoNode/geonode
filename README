@@ -18,11 +18,11 @@ If instead, you are interested in doing development on the source code, here are
     sudo apt-get update
 
     # Essential build tools and libraries
-    sudo apt-get install -y build-essential libxml2-dev libxslt1-dev libjpeg-dev gettext git
+    sudo apt-get install -y build-essential libxml2-dev libxslt1-dev libjpeg-dev gettext git python-dev python-pip
 
-    # Python dependencies with official packages
-    sudo apt-get install -y python-dev python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-pip python-software-properties python-gdal python-django
-
+    # Python and Django dependencies with official packages
+    sudo apt-get install python-pillow python-lxml python-psycopg2 python-django python-bs4 python-multipartposthandler transifex-client python-paver python-nose python-django-nose python-gdal python-django-pagination python-django-jsonfield python-django-extensions python-django-taggit python-httplib2
+    
     # Java dependencies
     sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
 

@@ -73,58 +73,63 @@ setup(name='GeoNode',
       packages=packages,
       data_files=data_files,
       install_requires=[
+        ## The commented name next to the package
+        ## is the Ubuntu 14.04 package that provides it.
+
+        ## Apps with official Ubuntu 14.04 packages
+
         # native dependencies
-        "pillow",
-        "lxml",
-        # python dependencies
-        "gsconfig==0.6.9",
-        "OWSLib==0.7.2",
-        #"OWSLib==0.8.6",
-        "Django >=1.6.1, <=1.6.5",
-        "gsimporter==0.1",
+        "pillow", # python-pillow
+        "lxml", # python-lxml
+        "psycopg2==2.4.5", # python-psycopg2
+        "Django >=1.6.1, <=1.6.5", # python-django
+
+        # Other
+        "beautifulsoup4==4.2.1", # python-bs4
+        "MultipartPostHandler==0.1.0", # python-multipartposthandler
+        "httplib2==0.8", # python-httplib2
+        "transifex-client==0.10", # transifex-client
+        "Paver==1.2.1", # python-paver
+        "nose <=1.0, <=1.3.1", # python-nose
+        "django-nose==1.2", # python-django-nose
+
         # Django Apps
+        "django-pagination >=1.0.5, <=1.0.7", # python-django-pagination
+        "django-jsonfield==0.9.12", # python-django-jsonfield
+        "django-extensions==1.2.5", # python-django-extensions
+        "django-taggit==0.12", # python-django-taggit
+
+        ## Apps with packages provided in GeoNode's PPA on Launchpad.
         "pinax-theme-bootstrap==3.0a11",
         "pinax-theme-bootstrap-account==1.0b2",
-        "geonode-user-accounts==1.0.1",
         "django-forms-bootstrap==2.0.3.post1",
-        "django-pagination==1.0.7",
-        "django-jsonfield==0.9.10",
         "django-friendly-tag-loader==1.1",
-        "django-taggit==0.12",
-        "django-taggit-templatetags",
-        "django-geoexplorer==4.0.2",
+        "django-taggit-templatetags==0.4.6dev",
         "django-notification==1.0",
-        "geonode-announcements==1.0.2",
         "django-activity-stream==0.4.5beta1",
-        "django-extensions",
-        "geonode-user-messages==0.1",
-        "geonode-avatar==2.1.2",
         "dialogos==0.4",
-        "geonode-agon-ratings==0.3.1",
         "django-downloadview==1.2",
         "django-tastypie==0.11.0",
         "django-polymorphic==0.5.3",
         "django-leaflet==0.13.2",
-        #catalogue
-        "pycsw==1.6.4",
-        #"pycsw==1.8.0",
-        # setup
-        "Paver",
-        # sample and test data / metadata
-        "gisdata==0.5.4",
-        # testing
-        "django-nose",
-        "nose>=1.0",
-        "beautifulsoup4",
-        "MultipartPostHandler",
-        # translation
-        "transifex-client",
-        # external services
-        "geonode-arcrest==10.2",
-        # For dynamic models, uncomment to use
-        #"psycopg2",
 
-        #haystack/elasticsearch, uncomment to use
+        # GeoNode org maintained apps.
+        "django-geoexplorer==4.0.2",
+        "geonode-user-messages==0.1",
+        "geonode-avatar==2.1.2",
+        "geonode-announcements==1.0.2",
+        "geonode-agon-ratings==0.3.1",
+        "geonode-user-accounts==1.0.1",
+        "geonode-arcrest==10.2",
+        "gsconfig==0.6.9",
+        "gsimporter==0.1",
+        "gisdata==0.5.4",
+
+        # GeoPython dependencies
+        "OWSLib >=0.7.2, <=0.8.6",
+        "pycsw >=1.6.4, <=1.8.0",
+
+        # haystack/elasticsearch, uncomment to use
         #"django-haystack==2.1.0",
         #"pyelasticsearch==0.6.1"
         ],
