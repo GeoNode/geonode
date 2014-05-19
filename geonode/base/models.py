@@ -285,7 +285,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
-    featured = models.BooleanField(default=False)
+    featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
 
 
     def delete(self, *args, **kwargs):
