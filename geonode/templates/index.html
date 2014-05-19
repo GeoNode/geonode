@@ -1,6 +1,7 @@
 {% extends "site_base.html" %}
 {% load i18n %}
 {% load staticfiles %}
+{% load base_tags %}
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
@@ -17,6 +18,23 @@
       <span>{% trans 'Need help?' %} <a href="http://docs.geonode.org/en/latest/tutorials/users/quickstart/index.html">{% trans 'Getting Started' %}</a></span>
       <p><a class="btn btn-large" role="button" href="{% url "layer_browse" %}">{% trans "Explore Layers" %}</a></p>
       <p><a class="btn btn-large" role="button" href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></p>
+    </div>
+  </div>
+  <div class="container">
+     <div class="row">
+     {% facets as facets %}
+      <div class="col-md-3">
+        <p class="text-center"><a href="{% url "layer_browse" %}">{% trans "Layers" %} <span class="count">{{ facets.layer }}</span></a></p>
+      </div>
+      <div class="col-md-3">
+         <p class="text-center"><a href="{% url "maps_browse" %}">{% trans "Maps" %} <span class="count">{{ facets.map }}</span></a></p>
+      </div>
+      <div class="col-md-3">
+        <p class="text-center"><a href="{% url "documents_browse" %}">{% trans "Documents" %} <span class="count">{{ facets.document }}</span></a></p>
+      </div>
+      <div class="col-md-3">
+         <p class="text-center"><a href="{% url "profile_browse" %}">{% trans "Users" %} <span class="count">{{ facets.user }}</span></a></p>
+      </div>
     </div>
   </div>
   {% endblock %}
