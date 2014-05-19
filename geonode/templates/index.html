@@ -16,25 +16,6 @@
       <p>{% blocktrans %}GeoNode is an open source platform for sharing geospatial data and maps.{% endblocktrans %}</p>
       <p>{% blocktrans %}If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.{% endblocktrans %}</p>
       <span>{% trans 'Need help?' %} <a href="http://docs.geonode.org/en/latest/tutorials/users/quickstart/index.html">{% trans 'Getting Started' %}</a></span>
-      <p><a class="btn btn-large" role="button" href="{% url "layer_browse" %}">{% trans "Explore Layers" %}</a></p>
-      <p><a class="btn btn-large" role="button" href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></p>
-    </div>
-  </div>
-  <div class="container">
-     <div class="row">
-     {% facets as facets %}
-      <div class="col-md-3">
-        <p class="text-center"><a href="{% url "layer_browse" %}">{% trans "Layers" %} <span class="count">{{ facets.layer }}</span></a></p>
-      </div>
-      <div class="col-md-3">
-         <p class="text-center"><a href="{% url "maps_browse" %}">{% trans "Maps" %} <span class="count">{{ facets.map }}</span></a></p>
-      </div>
-      <div class="col-md-3">
-        <p class="text-center"><a href="{% url "documents_browse" %}">{% trans "Documents" %} <span class="count">{{ facets.document }}</span></a></p>
-      </div>
-      <div class="col-md-3">
-         <p class="text-center"><a href="{% url "profile_browse" %}">{% trans "Users" %} <span class="count">{{ facets.user }}</span></a></p>
-      </div>
     </div>
   </div>
   {% endblock %}
@@ -42,23 +23,25 @@
   {% block mainbody %}
   <div class="container">
     <div class="row">
+     {% facets as facets %}
       <div class="col-md-4">
         <p class="text-center"><i class="fa fa-square-o fa-5x rotate-45"></i></p>
-        <h2 class="text-center">Explore Layers</h2>
-        <p>{% trans "Click to search for geospatial data published by other users, organizations and public sources." %}</p>
-        <p class="text-center"><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        <h2 class="text-center">{{ facets.layer|default:"No" }} Layer{{ facets.layer|pluralize }}</h2>
+
+        <p class="text-center">{% trans "Click to search for geospatial data published by other users, organizations and public sources. Download data in standard formats." %}</p> 
+        <p class="text-center"><a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Explore Layers" %} &raquo;</a></p>
       </div>
       <div class="col-md-4">
         <p class="text-center"><i class="fa fa-map-marker fa-5x"></i></p>
-        <h2 class="text-center">Create Maps</h2>
+        <h2 class="text-center">{{ facets.map|default:"No" }} Map{{ facets.map|pluralize }}</h2>
         <p class="text-center">{% trans "Data is available for browsing, aggregating and styling to generate maps which can be shared publicly or restricted to specific users only." %}</p>
-        <p class="text-center"><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        <p class="text-center"><a class="btn btn-default" href="{% url "maps_browse" %}" role="button">{% trans "Create maps" %} &raquo;</a></p>
       </div>
       <div class="col-md-4">
         <p class="text-center"><i class="fa fa-cloud-upload fa-5x"></i></p>
-        <h2 class="text-center">Share Data</h2>
-				<p class="text-center">{% trans "GeoNode allows registered users fo easily upload geospatial data in several formats including shapefile and GeoTiff." %}</p>
-        <p class="text-center"><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        <h2 class="text-center">{{ facets.user|default:"No" }} User{{ facets.user|pluralize }}</h2>
+        <p class="text-center">{% trans "GeoNode allows registered users fo easily upload geospatial data in several formats including shapefile and GeoTiff." %}</p>
+        <p class="text-center"><a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Share data" %} &raquo;</a></p>
       </div>
     </div>
   </div>
