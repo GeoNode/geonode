@@ -37,7 +37,7 @@ Ext.onReady(function() {
             }
         },
         {% endif %}
-        {% if MF_PRINT_ENABLED %}
+        {% if MAPFISH_PRINT_ENABLED %}
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
         {% else %}
         printService: "",
