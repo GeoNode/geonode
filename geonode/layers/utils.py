@@ -24,26 +24,31 @@
 # Standard Modules
 import logging
 import re
-import uuid
 import os
 import glob
 import sys
 
+from osgeo import gdal
+
 # Django functionality
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
+from django.core.files import File
+from django.core.files.base import ContentFile
+from django.contrib.gis.gdal import DataSource
 from django.conf import settings
-
 
 # Geonode functionality
 from geonode import GeoNodeException
 from geonode.people.utils import get_valid_user
-from geonode.layers.models import Layer, Style
-from geonode.people.models import Profile
+from geonode.layers.models import Layer, UploadSession, SpatialRepresentationType, TopicCategory
+from geonode.base.models import Link
+from geonode.layers.models import shp_exts, csv_exts, kml_exts, vec_exts, cov_exts
+from geonode.utils import http_client
 from geonode.layers.metadata import set_metadata
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.base.models import SpatialRepresentationType, TopicCategory
-from geonode.upload.files import _clean_string, _rename_zip
+
+from urlparse import urljoin
 
 from zipfile import ZipFile
 
@@ -52,11 +57,37 @@ logger = logging.getLogger('geonode.layers.utils')
 _separator = '\n' + ('-' * 100) + '\n'
 
 
+def _clean_string(str, regex=r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)", replace="_"):
+    """
+    Replaces a string that matches the regex with the replacement.
+    """
+    regex = re.compile(regex)
+
+    if str[0].isdigit():
+        str = replace + str
+
+    return regex.sub(replace, str)
+
+
 def get_files(filename):
     """Converts the data to Shapefiles or Geotiffs and returns
        a dictionary with all the required files
     """
-    files = {'base': filename}
+    files = {}
+
+    # Verify if the filename is in ascii format.
+    try:
+        filename.decode('ascii')
+    except UnicodeEncodeError:
+        msg = "Please use only characters from the english alphabet for the filename. '%s' is not yet supported." % os.path.basename(filename).encode('UTF-8')
+        raise GeoNodeException(msg)
+
+    # Make sure the file exists.
+    if not os.path.exists(filename):
+        msg = ('Could not open %s. Make sure you are using a '
+               'valid file' % filename)
+        logger.warn(msg)
+        raise GeoNodeException(msg)
 
     base_name, extension = os.path.splitext(filename)
     #Replace special characters in filenames - []{}()
@@ -88,6 +119,9 @@ def get_files(filename):
                    'distinct by spelling and not just case.') % filename
             raise GeoNodeException(msg)
 
+    elif extension.lower() in cov_exts:
+        files[extension.lower().replace('.','')] = filename
+
     matches = glob.glob(glob_name + ".[sS][lL][dD]")
     if len(matches) == 1:
         files['sld'] = matches[0]
@@ -113,19 +147,12 @@ def get_files(filename):
     return files
 
 
-
-
 def layer_type(filename):
     """Finds out if a filename is a Feature or a Vector
        returns a gsconfig resource_type string
        that can be either 'featureType' or 'coverage'
     """
     base_name, extension = os.path.splitext(filename)
-
-    shp_exts = ['.shp',]
-    cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
-    csv_exts = ['.csv']
-    kml_exts = ['.kml']
 
     if extension.lower() == '.zip':
         zf = ZipFile(filename)
@@ -138,7 +165,7 @@ def layer_type(filename):
         finally:
             zf.close()
 
-    if extension.lower() in shp_exts + csv_exts + kml_exts:
+    if extension.lower() in vec_exts:
          return 'vector'
     elif extension.lower() in cov_exts:
          return 'raster'
@@ -184,84 +211,6 @@ def get_valid_layer_name(layer, overwrite):
         return get_valid_name(layer_name)
 
 
-
-
-def save(layer, base_file, user, overwrite=True, title=None,
-         abstract=None, keywords=(), charset='UTF-8'):
-    """Upload layer data to Geoserver and registers it with Geonode.
-
-       If specified, the layer given is overwritten, otherwise a new layer
-       is created.
-    """
-    logger.info(_separator)
-
-    # Step 1. Verify if the filename is in ascii format.
-    logger.info('>>> Step 1. Check for non ascii characters')
-    try:
-        base_file.decode('ascii')
-    except UnicodeEncodeError:
-        msg = "Please use only characters from the english alphabet for the filename. '%s' is not yet supported." % os.path.basename(base_file).encode('UTF-8')
-        raise GeoNodeException(msg)
-
-    logger.info('Uploading layer: [%s], base filename: [%s]', layer, base_file)
-
-    # Step 2. Verify the file exists
-    logger.info('>>> Step 2. Verify if the file %s exists so we can create '
-                'the layer [%s]' % (base_file, layer))
-
-    if not os.path.exists(base_file):
-        msg = ('Could not open %s to save %s. Make sure you are using a '
-               'valid file' % (base_file, layer))
-        logger.warn(msg)
-        raise GeoNodeException(msg)
-
-    # Step 3. Figure out a name for the new layer, the one passed might not
-    # be valid or being used.
-    logger.info('>>> Step 3. Figure out a name for %s', layer)
-    name = get_valid_layer_name(layer, overwrite)
-
-
-    # Step 4. Upload the layer to GeoServer
-    # avoid circular imports
-    logger.info('>>> Step 4. Upload to GeoServer')
-    from geonode.geoserver.helpers import geoserver_upload
-    gs_name, workspace, defaults = geoserver_upload(layer, base_file, user, name,
-                                                    overwrite=overwrite, title=title,
-                                                    abstract=abstract, keywords=keywords,
-                                                    charset=charset)
-
-
-    files = get_files(base_file)
-
-    # Step 5. If an XML metadata document is uploaded,
-    # parse the XML metadata and update uuid and URLs as per the content model
-    logger.info('>>> Step 5. Processing XML metadata (if available)')
-    if 'xml' in files:
-        defaults['metadata_uploaded'] = True
-        # get model properties from XML
-        vals, keywords = set_metadata(open(files['xml']).read())
-
-        # set model properties
-        for (key, value) in vals.items():
-            if key == 'spatial_representation_type':
-                value = SpatialRepresentationType(identifier=value)
-            elif key == 'topic_category':
-                category, created = TopicCategory.objects.get_or_create(identifier=value.lower(), gn_description=value)
-                defaults[category] = category
-            else:
-                defaults[key] = value
-
-    saved_layer, created = Layer.objects.get_or_create(name=gs_name,
-                                                       workspace=workspace,
-                                                       defaults=defaults)
-
-    logger.info('>>> Step 6. Save the keywords')
-    saved_layer.keywords.add(*keywords)
-
-    # Return the created layer object
-    return saved_layer
-
-
 def get_default_user():
     """Create a default user
     """
@@ -274,33 +223,163 @@ def get_default_user():
                                'before importing data. '
                                'Try: django-admin.py createsuperuser')
 
-def file_upload(filename, user=None, title=None,
-                skip=True, overwrite=False, keywords=()):
+
+def is_vector(filename):
+    __, extension = os.path.splitext(filename)
+
+    if extension in vec_exts:
+        return True
+    else:
+        return False 
+
+def is_raster(filename):
+    __, extension = os.path.splitext(filename)
+
+    if extension in cov_exts:
+        return True
+    else:
+        return False 
+
+def get_resolution(filename):
+    gtif = gdal.Open(filename)
+    gt= gtif.GetGeoTransform()
+    __, resx, __, __, __, resy = gt
+    resolution = '%s %s' % (resx, resy)
+    return resolution
+
+
+def get_bbox(filename):
+    bbox_x0, bbox_y0, bbox_x1, bbox_y1 = None, None, None, None
+
+    if is_vector(filename):
+        datasource = DataSource(filename)
+        layer = datasource[0]
+        bbox_x0, bbox_y0, bbox_x1, bbox_y1 = layer.extent.tuple
+
+    elif is_raster(filename):
+        gtif = gdal.Open(filename)
+        gt= gtif.GetGeoTransform()
+        cols = gtif.RasterXSize
+        rows = gtif.RasterYSize
+
+        ext=[]
+        xarr=[0,cols]
+        yarr=[0,rows]
+
+        # Get the extent.
+        for px in xarr:
+            for py in yarr:
+                x=gt[0]+(px*gt[1])+(py*gt[2])
+                y=gt[3]+(px*gt[4])+(py*gt[5])
+                ext.append([x,y])
+
+            yarr.reverse()
+
+        # ext has four corner points, get a bbox from them.
+        bbox_x0 = ext[0][0]
+        bbox_y0 = ext[0][1]
+        bbox_x1 = ext[2][0]
+        bbox_y1 = ext[2][1]
+
+    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1]
+
+
+def file_upload(filename, name=None, user=None, title=None, abstract=None,
+                skip=True, overwrite=False, keywords=[], charset='UTF-8'):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
     # Get a valid user
     theuser = get_valid_user(user)
 
+    # Create a new upload session
+    upload_session = UploadSession.objects.create(user=theuser)
+
+    # Get all the files uploaded with the layer
+    files = get_files(filename)
+
+    # Add them to the upload session (new file fields are created).
+    for type_name, fn in files.items():
+        f = open(fn)
+        us = upload_session.layerfile_set.create(name=type_name,
+                                                file=File(f),
+                                                )
+
     # Set a default title that looks nice ...
     if title is None:
         basename = os.path.splitext(os.path.basename(filename))[0]
         title = basename.title().replace('_', ' ')
 
-    # ... and use a url friendly version of that title for the name
-    name = get_valid_layer_name(slugify(title).replace('-', '_'), overwrite)
+    # Create a name from the title if it is not passed.
+    if name is None:
+        name = slugify(title).replace('-', '_')
 
-    # Note that this will replace any existing layer that has the same name
-    # with the data that is being passed.
-    try:
-        layer = Layer.objects.get(name=name)
-    except Layer.DoesNotExist:
-        layer = name
+    # Generate a name that is not taken if overwrite is False.
+    valid_name = get_valid_layer_name(name, overwrite)
 
-    new_layer = save(layer, filename, theuser, overwrite,
-                     keywords=keywords, title=title)
+    # Get a bounding box
+    bbox_x0, bbox_x1, bbox_y0, bbox_y1 = get_bbox(filename)
 
-    return new_layer
+
+    defaults = {
+                'upload_session': upload_session,
+                'title': title,
+                'abstract': abstract,
+                'owner': user,
+                'charset': charset,
+                'bbox_x0' : bbox_x0,
+                'bbox_x1' : bbox_x1,
+                'bbox_y0' : bbox_y0,
+                'bbox_y1' : bbox_y1,
+    }
+
+
+    # set metadata
+    if 'xml' in files:
+        xml_file = open(files['xml'])
+        defaults['metadata_uploaded'] = True
+        # get model properties from XML
+        vals, keywords = set_metadata(xml_file.read())
+
+        for key, value in vals.items():
+            if key == 'spatial_representation_type':
+                value = SpatialRepresentationType(identifier=value)
+            elif key == 'topic_category':
+                value, created = TopicCategory.objects.get_or_create(identifier=value.lower(), gn_description=value)
+                key = 'category'
+            else:
+                defaults[key] = value
+
+    # If it is a vector file, create the layer in postgis.
+    table_name = None
+    if is_vector(filename):
+        defaults['storeType'] =  'dataStore'
+
+    # If it is a raster file, get the resolution.
+    if is_raster(filename):
+        defaults['storeType'] = 'coverageStore'
+
+    # Create a Django object.
+    layer, created = Layer.objects.get_or_create(
+                         name=valid_name,
+                         defaults=defaults
+                     )
+
+    # Delete the old layers if overwrite is true
+    # and the layer was not just created
+    # process the layer again after that by
+    # doing a layer.save()
+    if not created and overwrite:
+        layer.upload_session.layerfile_set.all().delete()
+        layer.upload_session = upload_session
+        layer.save()
+
+    # Assign the keywords (needs to be done after saving)
+    if len(keywords) > 0: 
+        layer.keywords.add(*keywords)
+
+    return layer
+
 
 def upload(incoming, user=None, overwrite=False,
            keywords=(), skip=True, ignore_errors=True,
@@ -377,11 +456,12 @@ def upload(incoming, user=None, overwrite=False,
                                     user=user,
                                     overwrite=overwrite,
                                     keywords=keywords,
-                                    )
+                                )
                 if not existed:
                     status = 'created'
                 else:
                     status = 'updated'
+
             except Exception, e:
                 if ignore_errors:
                     status = 'failed'
@@ -408,3 +488,53 @@ def upload(incoming, user=None, overwrite=False,
         if verbosity > 0:
             print >> console, msg
     return output
+
+
+def create_thumbnail(instance, thumbnail_remote_url):
+    BBOX_DIFFERENCE_THRESHOLD = 1e-5
+
+    #Check if the bbox is invalid
+    valid_x = (float(instance.bbox_x0) - float(instance.bbox_x1))**2 > BBOX_DIFFERENCE_THRESHOLD
+    valid_y = (float(instance.bbox_y1) - float(instance.bbox_y0))**2 > BBOX_DIFFERENCE_THRESHOLD
+
+    image = None
+
+    if valid_x and valid_y:
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=thumbnail_remote_url,
+                        defaults=dict(
+                            extension='png',
+                            name=_("Remote Thumbnail"),
+                            mime='image/png',
+                            link_type='image',
+                            )
+                        )
+
+        # Download thumbnail and save it locally.
+        resp, image = http_client.request(thumbnail_remote_url)
+
+        if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
+            msg = 'Unable to obtain thumbnail: %s' % image
+            logger.debug(msg)
+            # Replace error message with None.
+            image = None
+
+    if image is not None:
+        if instance.has_thumbnail():
+            instance.thumbnail.thumb_file.delete()
+
+        instance.thumbnail.thumb_file.save('layer-%s-thumb.png' % instance.id, ContentFile(image))
+        instance.thumbnail.thumb_spec = thumbnail_remote_url
+        instance.thumbnail.save()
+
+        thumbnail_url = urljoin(settings.SITEURL, instance.thumbnail.thumb_file.url)
+
+        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=thumbnail_url,
+                        defaults=dict(
+                            name=_('Thumbnail'),
+                            extension='png',
+                            mime='image/png',
+                            link_type='image',
+                            )
+                        )

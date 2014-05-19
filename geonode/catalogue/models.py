@@ -93,16 +93,17 @@ def catalogue_pre_save(instance, sender, **kwargs):
     """Send information to catalogue
     """
     record = None
+
+    # if the layer is in the catalogue, try to get the distribution urls
+    # that cannot be precalculated.
     try:
         catalogue = get_catalogue()
         record = catalogue.get_record(instance.uuid)
     except EnvironmentError, err:
         msg = 'Could not connect to catalogue' \
                'to save information for layer "%s"' % (instance.name)
-        if err.reason.errno == errno.ECONNREFUSED:
-            LOGGER.warn(msg, err)
-        else:
-            raise err
+        LOGGER.warn(msg, err)
+        raise err
 
     if record is None:
         return
@@ -124,6 +125,7 @@ def catalogue_pre_save(instance, sender, **kwargs):
             instance.distribution_url = durl
             instance.distribution_description = \
             'Online link to the \'%s\' description on GeoNode ' % instance.title
+
 
 if 'geonode.catalogue' in settings.INSTALLED_APPS:
     signals.pre_save.connect(catalogue_pre_save, sender=Layer)

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.http import HttpResponse
 from django.utils import simplejson as json
 
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -13,8 +14,8 @@ class PrintProxyMiddleware(object):
 
 def print_map(request):
     from django.conf import settings
-    from proxy.views import proxy
-    from layers.models import Layer
+    from geonode.proxy.views import proxy
+    from geonode.layers.models import Layer
 
     permissions = {}
     params = json.loads(request.body)

@@ -17,20 +17,36 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import uuid
 import logging
 
 from datetime import datetime
 
+
 from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+from django.core.exceptions import MultipleObjectsReturned
 
 from geonode.base.models import ResourceBase, ResourceBaseManager, Link
+from geonode.base.models import SpatialRepresentationType, TopicCategory
+from geonode.base.models import Thumbnail
+from geonode.people.utils import get_valid_user
+from geonode.layers.metadata import set_metadata
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.layers.models")
+
+shp_exts = ['.shp',]
+csv_exts = ['.csv']
+kml_exts = ['.kml']
+vec_exts = shp_exts + csv_exts + kml_exts
+
+cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
 
 
 class Style(models.Model):
@@ -51,19 +67,6 @@ class LayerManager(ResourceBaseManager):
     def __init__(self):
         models.Manager.__init__(self)
 
-        
-def add_bbox_query(q, bbox):
-    '''modify the queryset q to limit to the provided bbox
-
-    bbox - 4 tuple of floats representing x0,x1,y0,y1
-    returns the modified query
-    '''
-    bbox = map(str, bbox) # 2.6 compat - float to decimal conversion
-    q = q.filter(bbox_x0__gte=bbox[0])
-    q = q.filter(bbox_x1__lte=bbox[1])
-    q = q.filter(bbox_y0__gte=bbox[2])
-    return q.filter(bbox_y1__lte=bbox[3])
-
 
 class Layer(ResourceBase):
     """
@@ -76,13 +79,14 @@ class Layer(ResourceBase):
     store = models.CharField(max_length=128)
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
-    typename = models.CharField(max_length=128, unique=True)
-
-    popular_count = models.IntegerField(default=0)
-    share_count = models.IntegerField(default=0)
+    typename = models.CharField(max_length=128, unique=True, null=True, blank=True)
 
     default_style = models.ForeignKey(Style, related_name='layer_default_style', null=True, blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')
+
+    charset = models.CharField(max_length=255, default='UTF-8')
+
+    upload_session = models.ForeignKey('UploadSession', blank=True, null=True)
 
     def is_vector(self):
         return self.storeType == 'dataStore'
@@ -95,14 +99,60 @@ class Layer(ResourceBase):
         }).get(self.storeType, "Data")
 
     @property
+    def data_model(self):
+        if hasattr(self, 'modeldescription_set'):
+            lmd = self.modeldescription_set.all()
+            if lmd.exists():
+                return lmd.get().get_django_model()
+
+        return None
+
+    @property
+    def data_objects(self):
+        if self.data_model is not None:
+            return self.data_model.objects.using('datastore')
+
+        return None
+
+    @property
     def service_type(self):
         if self.storeType == 'coverageStore':
             return "WCS"
         if self.storeType == 'dataStore':
             return "WFS"
 
+    @property
+    def ows_url(self):
+        if self.storeType == "remoteStore" and "geonode.contrib.services" in settings.INSTALLED_APPS:
+            from geonode.contrib.services.models import ServiceLayer
+            return ServiceLayer.objects.filter(layer__id=self.id)[0].service.base_url
+        else:
+            return settings.OGC_SERVER['default']['LOCATION'] + "wms"
+
+    def get_base_file(self):
+        """Get the shp or geotiff file for this layer.
+        """
+        # If there was no upload_session return None
+        if self.upload_session is None:
+            return None
+
+        base_exts = [x.replace('.','') for x in cov_exts + vec_exts]
+        base_files = self.upload_session.layerfile_set.filter(name__in=base_exts)
+        base_files_count = base_files.count()
+
+        # If there are no files in the upload_session return None
+        if base_files_count == 0:
+            return None
+
+        msg = 'There should only be one main file (.shp or .geotiff), found %s'  % base_files_count
+        assert base_files_count == 1, msg
+
+        return base_files.get()
+
+
     def get_absolute_url(self):
         return reverse('layer_detail', args=(self.typename,))
+
 
     def attribute_config(self):
         #Get custom attribute sort order and labels if any
@@ -116,7 +166,13 @@ class Layer(ResourceBase):
             return cfg
 
     def __str__(self):
-        return "%s Layer" % self.typename.encode('utf-8')
+        if self.typename is not None:
+            return "%s Layer" % self.typename.encode('utf-8')
+        elif self.name is not None:
+            return "%s Layer" % self.name
+        else:
+            return "Unamed Layer"
+
 
     class Meta:
         # custom permissions,
@@ -130,7 +186,6 @@ class Layer(ResourceBase):
     LEVEL_WRITE = 'layer_readwrite'
     LEVEL_ADMIN = 'layer_admin'
 
-
     def maps(self):
         from geonode.maps.models import MapLayer
         return  MapLayer.objects.filter(name=self.typename)
@@ -142,6 +197,29 @@ class Layer(ResourceBase):
 class Layer_Styles(models.Model):
     layer = models.ForeignKey(Layer)
     style = models.ForeignKey(Style)
+
+
+class UploadSession(models.Model):
+    """Helper class to keep track of uploads.
+    """
+    date = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User)
+    processed = models.BooleanField(default=False)
+    error = models.TextField(blank=True, null=True)
+    traceback = models.TextField(blank=True, null=True)
+
+    def successful(self):
+        return self.processed and self.errors is None
+
+
+class LayerFile(models.Model):
+    """Helper class to store original files.
+    """
+    upload_session = models.ForeignKey(UploadSession)
+    name = models.CharField(max_length=255)
+    base = models.BooleanField(default=False)
+    file = models.FileField(upload_to='layers', max_length=255)
+
 
 class AttributeManager(models.Manager):
     """Helper class to access filtered attributes
@@ -201,6 +279,49 @@ def pre_save_layer(instance, sender, **kwargs):
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 
+    # Set a default user for accountstream to work correctly.
+    if instance.owner is None:
+        instance.owner = get_valid_user()
+
+    if instance.uuid == '':
+        instance.uuid = str(uuid.uuid1())
+
+    if instance.typename is None:
+        # Set a sensible default for the typename
+        instance.typename = 'geonode:%s' % instance.name
+
+    base_file = instance.get_base_file()
+
+    if base_file is not None:
+        extension = '.%s' % base_file.name
+        if extension in vec_exts:
+            instance.storeType = 'dataStore'
+        elif extension in cov_exts:
+            instance.storeType = 'coverageStore'
+
+    # Set sane defaults for None in bbox fields.
+    if instance.bbox_x0 is None:
+        instance.bbox_x0 = -180
+
+    if instance.bbox_x1 is None:
+        instance.bbox_x1 = 180
+
+    if instance.bbox_y0 is None:
+        instance.bbox_y0 = -90
+
+    if instance.bbox_y1 is None:
+        instance.bbox_y1 = 90
+
+    bbox = [instance.bbox_x0, instance.bbox_x1, instance.bbox_y0, instance.bbox_y1]
+
+    instance.set_bounds_from_bbox(bbox)
+
+    try:
+        instance.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
+    except MultipleObjectsReturned:
+        instance.thumbnail = Thumbnail.objects.filter(resourcebase__id=instance.id)[0]
+
+
 def pre_delete_layer(instance, sender, **kwargs):
     """
     Remove any associated style to the layer, if it is not used by other layers.
@@ -229,6 +350,13 @@ def post_delete_layer(instance, sender, **kwargs):
         instance.default_style.delete()
 
 
+def post_save_layer(instance, sender, **kwargs):
+    """Set missing default values.
+    """
+    instance.set_missing_info()
+
+
 signals.pre_save.connect(pre_save_layer, sender=Layer)
+signals.post_save.connect(post_save_layer, sender=Layer)
 signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)

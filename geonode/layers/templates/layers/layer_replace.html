@@ -15,19 +15,19 @@
 
 {% block body %}
   <div class="block">
-    <div class="span8">
+    <div class="col-md-8">
       <h2 class="page-title">{% trans "Replace Layer: " %}{{ layer.title }}</h2>
 
         {% if incomplete %}
         <section class="widget" id="incomplete-download-list">
-          <h2>{% trans "Incomplete Uploads" %}</h2>
+          <h3>{% trans "Incomplete Uploads" %}</h3>
           <p>{% trans "You have the following incomplete uploads" %}:</p>
           {% for u in incomplete %}
           <div class="clearfix uip" id="incomplete-{{ u.import_id }}">
             <div class="pull-left">{{ u.name }}, {% trans "last updated on" %} {{ u.date }}</div>
             <div class="upload_actions pull-right">
               <a class="btn btn-mini" href="#" id="resume-{{ u.import_id }}">{% trans "Resume" %}</a>
-              <a class="btn btn-mini" href="#" id="delete-{{ u.import_id }}"><i class="icon-trash"></i> {% trans "Delete" %}</a>
+              <a class="btn btn-mini" href="#" id="delete-{{ u.import_id }}"><i class="fa fa-trash-o"></i> {% trans "Delete" %}</a>
             </div>
           </div>
           {% endfor %}
@@ -53,7 +53,7 @@
         {% endif %}
 
         <section id="drop-zone">
-          <h2><i class="icon-upload-alt"></i><br />{% trans "Drop files here" %}</h2>
+          <h3><i class="icon-upload-alt"></i><br />{% trans "Drop files here" %}</h3>
         </section>
 
         <p>{% trans " or select them one by one:" %}</p>
@@ -82,7 +82,7 @@
 <h3>{% trans "Permissions"  %}</h3>
 <div>
   <form id="permission_form">
-        {% include "_permissions.html" %}
+    {% include "_permissions.html" %}
   </form>
 </div>
 {% endblock %}

@@ -50,7 +50,7 @@ from dialogos.models import Comment
 from agon_ratings.models import OverallRating
 
 from gsimporter import Client
-
+from owslib.wms import WebMapService
 from geoserver.store import CoverageStore, DataStore
 from geoserver.workspace import Workspace
 from geoserver.catalog import Catalog
@@ -62,6 +62,8 @@ from geonode import GeoNodeException
 from geonode.layers.utils import layer_type, get_files
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.upload.files import _rename_zip
+
 
 logger = logging.getLogger(__name__)
 
@@ -260,6 +262,11 @@ def cascading_delete(cat, layer_name):
             
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
             delete_from_postgis(resource_name)
+
+        # Prevent the entire store from being removed when the store is a GeoGIT repository.
+        if store.type and store.type.lower() == 'geogit':
+            return
+
         else:
             try:
                 cat.delete(store, recurse=True)
@@ -446,6 +453,7 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
             except Exception, e:
                 status = "delete_failed"
             finally:
+                from .signals import geoserver_pre_delete
                 pre_delete.connect(geoserver_pre_delete, sender=Layer)
             
             msg = "[%s] Layer %s (%d/%d)" % (status, layer.name, i+1, number_deleted)
@@ -495,7 +503,9 @@ def set_attributes(layer, overwrite=False):
         body = http_client.request(dft_url)[1]
         doc = etree.fromstring(body)
         path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(xsd="{http://www.w3.org/2001/XMLSchema}")
-        attribute_map = [[n.attrib["name"],n.attrib["type"]] for n in doc.findall(path)]
+
+        attribute_map = [[n.attrib["name"], n.attrib["type"]] for n in doc.findall(path)
+                         if n.attrib.get("name") and n.attrib.get("type")]
 
     elif layer.storeType == "coverageStore":
         dc_url = ogc_server_settings.LOCATION + "wcs?" + urllib.urlencode({
@@ -505,7 +515,7 @@ def set_attributes(layer, overwrite=False):
             "identifiers": layer.typename.encode('utf-8')
         })
         try:
-            response, body = http.request(dc_url)
+            response, body = http_client.request(dc_url)
             doc = etree.fromstring(body)
             path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(wcs="{http://www.opengis.net/wcs/1.1.1}")
             attribute_map = [[n.text,"raster"] for n in doc.findall(path)]
@@ -837,14 +847,8 @@ def geoserver_upload(layer, base_file, user, name, overwrite=True, title=None,
 
     data = files
 
-    #FIXME: DONT DO THIS
-    #-------------------
     if 'shp' not in files:
-        if files['base'][-4:] == ".zip":
-            _rename_zip(files['base'], name)
-        main_file = files['base']
-        data = main_file
-    # ------------------
+        data = base_file
 
     try:
         store, gs_resource = create_store_and_resource(name,
@@ -1185,10 +1189,10 @@ def style_update(request, url):
     In case of a DELETE, we need to query request.path to get the style name,
     and then remove it.
     In case of a POST or PUT, we need to parse the xml from
-    request.raw_post_data, which is in this format:
+    request.body, which is in this format:
     """
     if request.method in ('POST', 'PUT'): # we need to parse xml
-        tree = ET.ElementTree(ET.fromstring(request.raw_post_data))
+        tree = ET.ElementTree(ET.fromstring(request.body))
         elm_namedlayer_name=tree.findall('.//{http://www.opengis.net/sld}Name')[0]
         elm_user_style_name=tree.findall('.//{http://www.opengis.net/sld}Name')[1]
         elm_user_style_title=tree.find('.//{http://www.opengis.net/sld}Title')
@@ -1196,7 +1200,7 @@ def style_update(request, url):
             elm_user_style_title = elm_user_style_name
         layer_name=elm_namedlayer_name.text
         style_name=elm_user_style_name.text
-        sld_body='<?xml version="1.0" encoding="UTF-8"?>%s' % request.raw_post_data
+        sld_body='<?xml version="1.0" encoding="UTF-8"?>%s' % request.body
         if request.method == 'POST': # add style in GN and associate it to layer
             style = Style(name=style_name, sld_body=sld_body, sld_url=url)
             style.save()

@@ -44,7 +44,6 @@ from geonode import GeoNodeException
 from geonode.layers.utils import (
     upload,
     file_upload,
-    save
 )
 from geonode.utils import http_client
 from .utils import check_layer, get_web_page
@@ -110,9 +109,10 @@ class NormalUserTest(TestCase):
         #TODO: Would be nice to ensure the name is available before
         #running the test...
         norman = User.objects.get(username="norman")
-        saved_layer = save("san_andres_y_providencia_poi_by_norman",
+        saved_layer = file_upload(
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
-             norman,
+             name="san_andres_y_providencia_poi_by_norman",
+             user=norman,
              overwrite=True,
         )
 
@@ -132,6 +132,16 @@ class GeoNodeMapTest(TestCase):
         pass
 
     # geonode.maps.utils
+
+    def test_raster_upload(self):
+        """Test that the wcs links are correctly created for a raster"""
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        uploaded = file_upload(filename)
+        wcs_link = False
+        for link in uploaded.link_set.all():
+            if link.mime == 'GeoTIFF':
+                wcs_link = True
+        self.assertTrue(wcs_link)
 
     def test_layer_upload(self):
         """Test that layers can be uploaded to running GeoNode/GeoServer
@@ -543,9 +553,10 @@ class GeoNodeThumbnailTest(TestCase):
         #TODO: Would be nice to ensure the name is available before
         #running the test...
         norman = User.objects.get(username="norman")
-        saved_layer = save("san_andres_y_providencia_poi_by_norman",
+        saved_layer = file_upload(
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
-             norman,
+             name="san_andres_y_providencia_poi_by_norman",
+             user=norman,
              overwrite=True,
         )
 
@@ -563,9 +574,10 @@ class GeoNodeThumbnailTest(TestCase):
         #TODO: Would be nice to ensure the name is available before
         #running the test...
         norman = User.objects.get(username="norman")
-        saved_layer = save("san_andres_y_providencia_poi_by_norman",
+        saved_layer = file_upload(
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
-             norman,
+             name="san_andres_y_providencia_poi_by_norman",
+             user=norman,
              overwrite=True,
         )
 
@@ -605,9 +617,10 @@ class GeoNodeMapPrintTest(TestCase):
             #TODO: Would be nice to ensure the name is available before
             #running the test...
             norman = User.objects.get(username="norman")
-            saved_layer = save("san_andres_y_providencia_poi_by_norman",
+            saved_layer = file_upload(
                  os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
-                 norman,
+                 name="san_andres_y_providencia_poi_by_norman",
+                 user=norman,
                  overwrite=True,
             )
             # Set the layer private

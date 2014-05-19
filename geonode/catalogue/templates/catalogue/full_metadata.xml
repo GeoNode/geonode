@@ -201,14 +201,26 @@
          </gmd:MD_Keywords>
        </gmd:descriptiveKeywords>
        {% endfor %}
-       {% if layer.license %}
+       {% if LICENSES_METADATA == 'light' and layer.license %}
        <gmd:resourceConstraints>
          <gmd:MD_LegalConstraints>
            <gmd:useConstraints>
              <gmd:MD_RestrictionCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license">license</gmd:MD_RestrictionCode>
            </gmd:useConstraints>
            <gmd:otherConstraints>
-             <gco:CharacterString>{{layer.license.name}} ({{layer.license.url}})</gco:CharacterString>
+             <gco:CharacterString>{{layer.license_light}}</gco:CharacterString>
+           </gmd:otherConstraints>
+         </gmd:MD_LegalConstraints>
+       </gmd:resourceConstraints>
+       {% endif %}
+       {% if LICENSES_METADATA == 'verbose' and layer.license %}
+       <gmd:resourceConstraints>
+         <gmd:MD_LegalConstraints>
+           <gmd:useConstraints>
+             <gmd:MD_RestrictionCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license">license</gmd:MD_RestrictionCode>
+           </gmd:useConstraints>
+           <gmd:otherConstraints>
+             <gco:CharacterString>{{layer.license_verbose}}</gco:CharacterString>
            </gmd:otherConstraints>
          </gmd:MD_LegalConstraints>
        </gmd:resourceConstraints>

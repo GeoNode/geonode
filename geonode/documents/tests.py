@@ -21,7 +21,7 @@ from geonode.documents.models import Document
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 import geonode.documents.views
 import geonode.security
-from geonode.search.populate_search_test_data import create_models
+from geonode.base.populate_test_data import create_models
 
 
 class LayersTest(TestCase):

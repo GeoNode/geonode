@@ -85,7 +85,7 @@ def _handleThumbNail(req, obj):
         return HttpResponseRedirect(obj.get_thumbnail_url())
     elif req.method == 'POST':
         try:
-            obj.save_thumbnail(req.raw_post_data)
+            obj.save_thumbnail(req.body)
             return HttpResponseRedirect(obj.get_thumbnail_url())
         except:
             return HttpResponse(
@@ -102,31 +102,7 @@ def _resolve_map(request, id, permission='maps.change_map',
     return resolve_object(request, Map, {'pk':id}, permission = permission,
                           permission_msg=msg, **kwargs)
 
-
-def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
-    return 'SRID='+srid+';POLYGON(('+x0+' '+y0+','+x0+' '+y1+','+x1+' '+y1+','+x1+' '+y0+','+x0+' '+y0+'))'
-
-
 #### BASIC MAP VIEWS ####
-
-def map_list(request, template='maps/map_list.html'):
-    from geonode.search.views import search_page
-    post = request.POST.copy()
-    post.update({'type': 'map'})
-    request.POST = post
-    return search_page(request, template=template)
-
-def maps_tag(request, slug, template='maps/map_list.html'):
-    map_list = Map.objects.filter(keywords__slug__in=[slug])
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "object_list": map_list,
-            "map_tag": slug
-            }
-        )
-    )
-
 
 def map_detail(request, mapid, template='maps/map_detail.html'):
     '''
@@ -298,7 +274,7 @@ def map_json(request, mapid):
             )
         map_obj = _resolve_map(request, mapid, 'maps.change_map')
         try:
-            map_obj.update_from_viewer(request.raw_post_data)
+            map_obj.update_from_viewer(request.body)
             return HttpResponse(json.dumps(map_obj.viewer_json()))
         except ValueError, e:
             return HttpResponse(
@@ -340,7 +316,7 @@ def new_map_json(request):
         map_obj.save()
         map_obj.set_default_permissions()
         try:
-            map_obj.update_from_viewer(request.raw_post_data)
+            map_obj.update_from_viewer(request.body)
         except ValueError, e:
             return HttpResponse(str(e), status=400)
         else:
@@ -418,18 +394,25 @@ def new_map_config(request):
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
 
-                center = forward_mercator((x, y))
+                center = list(forward_mercator((x, y)))
                 if center[1] == float('-inf'):
                     center[1] = 0
 
-                if maxx == minx:
+                BBOX_DIFFERENCE_THRESHOLD = 1e-5
+
+                #Check if the bbox is invalid
+                valid_x = (maxx - minx)**2 > BBOX_DIFFERENCE_THRESHOLD
+                valid_y = (maxy - miny)**2 > BBOX_DIFFERENCE_THRESHOLD
+
+                if valid_x:
+                    width_zoom = math.log(360 / abs(maxx - minx), 2)
+                else:
                     width_zoom = 15
+
+                if valid_y:
+                    height_zoom = math.log(360 / abs(maxy - miny), 2)
                 else:
-                    width_zoom = math.log(360 / (maxx - minx), 2)
-                if maxy == miny:
                     height_zoom = 15
-                else:
-                    height_zoom = math.log(360 / (maxy - miny), 2)
 
                 map_obj.center_x = center[0]
                 map_obj.center_y = center[1]

@@ -11,7 +11,14 @@
 
 {% block head %}
 {% include "layers/layer_map.html" %}
-
+<style>
+.arcgis-legend > li{
+  text-align:right;
+}
+.arcgis-legend > li > img {
+    padding-right: 25px;
+}
+</style>
 {{ block.super }}
 {% endblock %}
 
@@ -19,10 +26,10 @@
 {% block body_class %}data{% endblock %}
 
 {% block body_outer %}
-  <div class="span5">
+  <div class="col-md-5">
     <h2 class="page-title">{{ layer.title|default:layer.typename }}</h2>
   </div>
-  <div class="span7 action-group">
+  <div class="col-md-7 action-group">
     <div class="btn-group pull-right">
       <!-- download layer -->
       <div class="btn-group">
@@ -76,12 +83,12 @@
       {% endif %}
     </div>
   </div>
-  <div class="span12">
+  <div class="col-md-12">
     <div id="embedded_map" class="mrg-btm">
         <div id="preview_map"></div>
     </div>
   </div>
-  <div class="span8">
+  <div class="col-md-8">
     <div class="layer-actions">
       {% include "layers/_actions.html" %}
     </div>
@@ -152,16 +159,23 @@
       </article>
     </div>
   </div>
-  <aside class="span4">
+  <div class="col-md-4">
     
+    {% if layer.get_legend %}
 <div class="well">
 	<!-- Need to make this based on a listener -->
-	
+
 	<h2>{%trans "Legend" %}</h2>
 	<p>{{ style.sld_title }}</p>
-	<p><img src="{{ GEOSERVER_BASE_URL }}/wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=
-{{ WORKSPACE }}:{{ layer.name }}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on"></p>
+    {% if layer.get_legend.link_type == 'image' %}
+	<p><img src="{{ layer.get_legend.url }}"></p>
+    {% else %}
+    <div id='legend_placeholder'>
     </div>
+    {% endif %}
+    </div>
+    {% endif %}
+
     <div class="well">
         <h2>{% trans "Maps using this layer" %}</h2>
         {% if layer.maps %}
@@ -250,18 +264,6 @@
   {% endif %}
 {% endblock %}
 {% block extra_script %}
-{% if SOCIAL_BUTTONS %}
-<div id="fb-root"></div>
-<script>
-(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) {return;}
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-{% endif %}
-
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user layer "layer" %}
     {% else %}
@@ -281,14 +283,7 @@
         var activeTab = $('[href=' + location.hash + ']');
         activeTab && activeTab.tab('show');
     });
-    {% if SOCIAL_BUTTONS %}
-        (function() {
-            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-            po.src = 'https://apis.google.com/js/plusone.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-        })();
-    {% endif %}
-        $("#comment_submit_btn").click(function(event) {
+       $("#comment_submit_btn").click(function(event) {
             $.ajax({
               type: "POST",
               url: $("#form_post_comment").attr('action'),
@@ -300,8 +295,25 @@
               }
             });
             return false;
-          });        
-    </script>
+          });
+
+    {% if layer.get_legend.link_type == 'json' %}
+    $.getJSON('{{layer.get_legend_url}}', function (data) {
+        var legend = data.layers[0].legend;
+        var items = [];
+        $.each(legend, function (key, dvalue) {
+            items.push('<li><img src="data:image/png;base64,' + dvalue.imageData + '">'+dvalue.label+'</li>');
+        });
+
+        $('<ul/>', {
+            'class': 'arcgis-legend',
+            html: items.join('')
+
+        }).appendTo('#legend_placeholder');
+
+    });
+    {% endif %}
+        </script>
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
     {% endif %}
