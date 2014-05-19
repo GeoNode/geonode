@@ -297,9 +297,9 @@ def getExternalServiceResults(place_name, services):
         if service == "google":
             google = getGoogleResults(place_name)
             results.extend(google)
-        elif service == "yahoo":
-            yahoo = getYahooResults(place_name)
-            results.extend(yahoo)
+        elif service == "nominatim":
+            nominatim = getNominatimResults(place_name)
+            results.extend(nominatim)
         elif service == "geonames":
             geonames = getGeonamesResults(place_name)
             results.extend(geonames)
@@ -319,13 +319,13 @@ def getGoogleResults(place_name):
         return []
 
 
-def getYahooResults(place_name):
-    g = geocoders.Yahoo(settings.YAHOO_API_KEY)
+def getNominatimResults(place_name):
+    g = geocoders.Nominatim()
     try:
-        results = g.geocode(place_name, False)
+        results = g.geocode(place_name, False,timeout=5)
         formatted_results = []
         for result in results:
-            formatted_results.append(formatExternalGeocode('Yahoo', result))
+            formatted_results.append(formatExternalGeocode('Nominatim', result))
         return formatted_results
     except:
         return []
@@ -340,7 +340,7 @@ def getConnection():
         settings.DATABASES[settings.GAZETTEER_DB_ALIAS]['HOST'] + "'")
 
 def getGeonamesResults(place_name):
-    g = geocoders.GeoNames()
+    g = geocoders.GeoNames(username=settings.GEONAMES_USER)
     try:
         results = g.geocode(place_name, False)
         formatted_results = []
