@@ -17,9 +17,60 @@
 
 {% block body_outer %}
   {% overall_rating map "map" as map_rating %}
-  <div class="span6">
-    <h2 class="page-title">{{ map.title }}</h2>
+  <div class="row">
+    <div class="col-md-12">
+      <h2 class="page-title">{{ map.title }}</h2>
+    </div>
   </div>
+
+  <div class="row">
+    <div class="col-md-8">
+
+      <div id="embedded_map">
+        <div id="the_map"></div>
+      </div>
+
+      <div class="map-actions">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#info" data-toggle="tab"><i class="icon-info-sign"></i>{% trans "Info" %}</a></li>
+          <li><a href="#share" data-toggle="tab"><i class="icon-share"></i>{% trans "Share" %}</a></li>
+          <li><a href="#rate" data-toggle="tab"><i class="icon-star"></i>{% trans "Ratings" %}</a></li>
+          <li><a href="#comments" data-toggle="tab"><i class="icon-comment"></i> {% trans "Comments" %}</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        {% include "base/resourcebase_info_panel.html" with resourcebase=map %}
+        <article class="tab-pane" id="comments">
+        {% with map as obj %}
+          {% include "_comments.html" %}
+        {% endwith %}
+        </article>
+        <article class="tab-pane" id="rate">
+        <!-- TODO: Move this to a reusable template snippet -->
+          {% if request.user.is_authenticated %}
+          <h3>{% trans "Rate this Map" %}</h3>
+          {% user_rating request.user map "map" as user_map_rating %}
+          <div id="user_rating" class="category-map"></div>
+          {% endif %}
+          <h3>{% trans 'Average Rating' %}</h3>
+          {% overall_rating map "map" as map_rating %}
+          {% num_ratings map as num_votes %}
+          <div class="overall_rating" style="float:left" data-rating="{{ map_rating }}"></div> ({{num_votes}})
+        </article>
+        {% block social_links %}
+        {% include "social_links.html" %}
+        {% endblock %}
+      </div>
+
+    </div>
+
+    <div class="col-md-4">
+      
+    </div>
+
+  </div>
+
   <div class="span6 action-group pull-right">
     <div class="btn-group pull-right">
       <div class="btn-group">
@@ -60,52 +111,8 @@
       {% endcomment %}
     </div>
   </div>
-  <div class="span12">
-	  <div id="embedded_map" class="mrg-btm">
-        <div id="the_map" width='100%'></div>
-    </div>
-  </div>
+  
 
-  <div class="span8">
-    <div class="map-actions">
-      <ul class="nav nav-tabs">
-        <li class="active"><a href="#info" data-toggle="tab"><i class="icon-info-sign"></i>{% trans "Info" %}</a></li>
-        <li><a href="#share" data-toggle="tab"><i class="icon-share"></i>{% trans "Share" %}</a></li>
-        <li><a href="#rate" data-toggle="tab"><i class="icon-star"></i>{% trans "Ratings" %}</a></li>
-        <li><a href="#comments" data-toggle="tab"><i class="icon-comment"></i> {% trans "Comments" %}</a></li>
-        <!-- li><a href="#flag" data-toggle="tab"><i class="icon-flag"></i>{% trans "Flag" %}</a></li -->
-      </ul>
-    </div>
-    <div class="tab-content">
-
-      {% include "base/resourcebase_info_panel.html" with resourcebase=map %}
-
-      <article class="tab-pane" id="comments">
-    	{% with map as obj %}
-      	{% include "_comments.html" %}
-    	{% endwith %}
-      </article>
-      <article class="tab-pane" id="rate">
-        <!-- TODO: Move this to a reusable template snippet -->
-        {% if request.user.is_authenticated %}
-        <h3>{% trans "Rate this Map" %}</h3>
-        {% user_rating request.user map "map" as user_map_rating %}
-        <div id="user_rating" class="category-map"></div>
-        {% endif %}
-        <h3>{% trans 'Average Rating' %}</h3>
-        {% overall_rating map "map" as map_rating %}
-        {% num_ratings map as num_votes %}
-        <div class="overall_rating" style="float:left" data-rating="{{ map_rating }}"></div> ({{num_votes}})
-        <!-- TODO: Add display of who gave what rating based -->
-      </article>
-      {% block social_links %}
-      {% include "social_links.html" %}
-      {% endblock %}
-        <!--article class="tab-pane" id="flag">
-        <h2>{% trans "Flag" %}</h2>
-      </article-->
-    </div>
-  </div>
   <aside class="span4">
     <div class='well'>
         <h2>{% trans "Map Layers" %}</h2>
