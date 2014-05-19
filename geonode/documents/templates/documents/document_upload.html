@@ -12,26 +12,27 @@
 {% endblock %}
 
 {% block body %}
-    <div class="block">
-        <div class="col-md-8">
-          <h2 class="page-title">{% trans "Upload Documents" %}</h2>
-            <div>
-                <form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
+
+<div class="col-md-12">
+  <h2 class="page-title">{% trans "Upload Documents" %}</h2>
+<div>
+
+<div class="col-md-8">
+<form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
                     {{ form.as_table }}
                     <div><br/><input class="btn" type="submit" value="Upload" /></div>
                 </form>
             </div>
         </div>
-    </div>
 {% endblock %}
 
 {% block sidebar %}
 
-<h3>{% trans "Permissions"  %}</h3>
-<div>
+<div class="col-md-4">
+  <h3>{% trans "Permissions"  %}</h3>
   <form id="permission_form">
-        {% include "_permissions.html" %}
+    {% include "_permissions.html" %}
   </form>
 </div>
 
