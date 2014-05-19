@@ -23,10 +23,7 @@ def num_ratings(obj):
 @register.assignment_tag(takes_context=True)
 def facets(context):
     request = context['request']
-    try: 
-        facet_type = context['facet_type']
-    except:
-        facet_type = 'all'
+    facet_type = context['facet_type'] if 'facet_type' in context else 'all'
 
     facets = {
         'raster': 0,
