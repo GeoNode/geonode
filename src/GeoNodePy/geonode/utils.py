@@ -1,8 +1,11 @@
+import re
 from UserDict import DictMixin
 from ConfigParser import ConfigParser, NoOptionError
 import datetime
 import os
 import subprocess
+from unidecode import unidecode
+
 
 class ConfigMap(DictMixin):
 
@@ -143,3 +146,10 @@ class WorldmapDatabaseRouter(object):
             return False
         return None
 
+def slugify(text, delim=u'-'):
+    """Generates an ASCII-only slug."""
+    punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.:]+')
+    result = []
+    for word in punct_re.split(text.lower()):
+        result.extend(unidecode(word).split())
+    return unicode(delim.join(result))

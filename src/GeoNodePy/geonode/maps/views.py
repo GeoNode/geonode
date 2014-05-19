@@ -778,7 +778,7 @@ def view(request, mapid, snapshot=None):
     if 'layer' in request.GET:
         addedlayers, groups, bbox = additional_layers(request,map_obj, request.GET.getlist('layer'))
         config = map_obj.viewer_json(request.user, *addedlayers)
-        for group in groups:             
+        for group in groups:
             if group not in json.dumps(config['map']['groups']):
                 config['map']['groups'].append({"expanded":"true", "group":group})
     elif snapshot is None:
@@ -940,8 +940,7 @@ def tweetview(request):
 
 def embed(request, mapid=None, snapshot=None):
     if mapid is None:
-        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
-        config = DEFAULT_MAP_CONFIG
+        config = json.loads(newmap_config(request))
     else:
         if mapid.isdigit():
             map_obj = get_object_or_404(Map,pk=mapid)
@@ -2572,7 +2571,8 @@ def _create_new_user(user_email, map_layer_title, map_layer_url, map_layer_owner
 
     new_user = RegistrationProfile.objects.create_inactive_user(username=user_name, email=user_email, password=random_password, site = settings.SITE_ID, send_email=False)
     if new_user:
-        new_profile = Contact(user=new_user, name=new_user.username, email=new_user.email)
+        #new_profile = Contact(user=new_user, name=new_user.username, email=new_user.email)
+        new_profile = new_user.get_profile()
         if settings.USE_CUSTOM_ORG_AUTHORIZATION and new_user.email.endswith(settings.CUSTOM_GROUP_EMAIL_SUFFIX):
             new_profile.is_org_member = True
             new_profile.member_expiration_dt = datetime.today() + timedelta(days=365)
