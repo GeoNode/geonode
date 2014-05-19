@@ -54,13 +54,8 @@
               <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
             </li>
             {% endif %}
-            {% if USE_SERVICES %}
-            <li id="nav_services">
-              <a href="{% url "services" %}">{% trans "Services" %}</a>
-            </li>
-            {% endif %}
           </ul>
-          <form class="col-md-2" id="search" action="{% url "search" %}">
+          <form class="col-md-3" id="search" action="{% url "search" %}">
             <div class="input-group">
               <input type="text" placeholder="Search" class="form-control" name="title__contains">
               <span class="input-group-btn">
