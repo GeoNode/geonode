@@ -54,7 +54,7 @@
         placeholder: 'Select layer, map or empty',
         width: 'element',
         ajax: {
-          url: '',
+          url: '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}',
           data: function(term,page){
             return {
               type: 'layer,map',
