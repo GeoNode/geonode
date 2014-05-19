@@ -1,12 +1,12 @@
 import datetime
 import itertools
+import hashlib
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.db import models, IntegrityError
 from django.template.loader import render_to_string
-from django.utils.hashcompat import sha_constructor
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -109,7 +109,7 @@ class Group(models.Model):
             str(datetime.datetime.now()),
             settings.SECRET_KEY
         ]
-        params["token"] = sha_constructor("".join(bits)).hexdigest()
+        params["token"] = hashlib.sha1("".join(bits)).hexdigest()
         
         # If an invitation already exists, re-use it.
         try:

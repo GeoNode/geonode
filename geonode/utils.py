@@ -59,7 +59,7 @@ def batch_permissions(request):
     if request.method != "POST":
         return HttpResponse("Permissions API requires POST requests", status=405)
 
-    spec = json.loads(request.raw_post_data)
+    spec = json.loads(request.body)
 
     if "layers" in spec:
         lyrs = Layer.objects.filter(pk__in = spec['layers'])
@@ -124,7 +124,7 @@ def batch_delete(request):
     if request.method != "POST":
         return HttpResponse("Delete API requires POST requests", status=405)
 
-    spec = json.loads(request.raw_post_data)
+    spec = json.loads(request.body)
 
     if "layers" in spec:
         lyrs = Layer.objects.filter(pk__in = spec['layers'])

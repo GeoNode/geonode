@@ -1,5 +1,5 @@
 from django import forms
-from django.core.validators import email_re
+from django.core.validators import validate_email, ValidationError
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
@@ -69,12 +69,13 @@ class GroupMemberForm(forms.Form):
         for ui in value.split(","):
             ui = ui.strip()
             
-            if email_re.match(ui):
+            try: 
+                validate_email(ui)
                 try:
                     new_members.append(User.objects.get(email=ui))
                 except User.DoesNotExist:
                     new_members.append(ui)
-            else:
+            except ValidationError:
                 try:
                     new_members.append(User.objects.get(username=ui))
                 except User.DoesNotExist:

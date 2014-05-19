@@ -299,7 +299,21 @@ def pre_save_layer(instance, sender, **kwargs):
         elif extension in cov_exts:
             instance.storeType = 'coverageStore'
 
+    # Set sane defaults for None in bbox fields.
+    if instance.bbox_x0 is None:
+        instance.bbox_x0 = -180
+
+    if instance.bbox_x1 is None:
+        instance.bbox_x1 = 180
+
+    if instance.bbox_y0 is None:
+        instance.bbox_y0 = -90
+
+    if instance.bbox_y1 is None:
+        instance.bbox_y1 = 90
+
     bbox = [instance.bbox_x0, instance.bbox_x1, instance.bbox_y0, instance.bbox_y1]
+
     instance.set_bounds_from_bbox(bbox)
 
     try:
