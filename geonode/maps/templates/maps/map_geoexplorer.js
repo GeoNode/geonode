@@ -30,7 +30,7 @@ Ext.onReady(function() {
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
         {% endif %}
-        {% if PRINTNG_ENABLED %}
+        {% if PRINTING_ENABLED %}
         listeners: {
             'save': function(obj_id) {
                 createMapThumbnail(obj_id);
