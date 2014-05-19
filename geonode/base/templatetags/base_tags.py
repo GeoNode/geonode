@@ -23,7 +23,8 @@ def num_ratings(obj):
 @register.assignment_tag(takes_context=True)
 def facets(context):
     request = context['request']
-    path = request.path
+    facet_type = context['facet_type'] if 'facet_type' in context else 'all'
+
     facets = {
         'raster': 0,
         'vector': 0,
@@ -31,7 +32,7 @@ def facets(context):
         'document': 0,
     }
     
-    if 'layers' in path or 'search' in path:
+    if facet_type in ['layers', 'all']:
         for layer in Layer.objects.all():
             if request.user.has_perm('layers.view_layer', layer):
                 if layer.storeType == 'coverageStore':
@@ -39,7 +40,7 @@ def facets(context):
                 else:
                     facets['vector'] +=1
 
-    if 'search' in path:                
+    if 'facet_type' == 'all':                
         for the_map in Map.objects.all():
             if request.user.has_perm('maps.view_map', the_map):
                 facets['map'] +=1

@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 from geonode.upload.views import UploadFileCreateView, UploadFileDeleteView
 
 urlpatterns = patterns('geonode.upload.views',
