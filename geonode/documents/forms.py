@@ -44,7 +44,7 @@ class DocumentForm(forms.ModelForm):
             type_id = ContentType.objects.get_for_model(obj.__class__).id
             obj_id = obj.id
             form_value = "type:%s-id:%s" % (type_id, obj_id)
-            display_text = '%s (%s)' % (obj.title, obj.geonode_type)
+            display_text = '%s (%s)' % (obj.title, obj.polymorphic_ctype.model)
             rbases_choices.append([form_value, display_text])
         self.fields['resource'].choices = rbases_choices
         if self.instance.content_type:

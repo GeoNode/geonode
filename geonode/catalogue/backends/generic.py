@@ -142,7 +142,8 @@ class Catalogue(CatalogueServiceWeb):
         ctx = Context({
             'layer': layer,
             'SITEURL': settings.SITEURL[:-1],
-            'id_pname': id_pname
+            'id_pname': id_pname,
+            'LICENSES_METADATA': getattr(settings, 'LICENSES', dict()).get('METADATA', 'never')
         })
         md_doc = tpl.render(ctx)
         return md_doc

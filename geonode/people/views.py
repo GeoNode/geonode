@@ -35,22 +35,18 @@ from itertools import chain
 from geonode.people.models import Profile
 from geonode.people.forms import ProfileForm
 from geonode.people.forms import ForgotUsernameForm
+from geonode.layers.models import Layer
+from geonode.maps.models import Map
+from geonode.documents.models import Document
 
-
-def profile_list(request, template='people/profile_list.html'):
-    from geonode.search.views import search_page
-    post = request.POST.copy()
-    post.update({'type': 'user'})
-    request.POST = post
-    return search_page(request, template=template)
 
 @login_required
 def profile_edit(request, username=None):
     if username is None:
         try:
-            profile = request.user.profile_detail
+            profile = request.user.profile
         except Profile.DoesNotExist:
-            return redirect("profile_create")
+            return redirect("profile_browse")
     else:
         profile = get_object_or_404(Profile, user__username=username)
 
@@ -67,57 +63,39 @@ def profile_edit(request, username=None):
         "form": form,
     })
 
-def _get_user_objects(profile):
-    qs_layers = []
-    qs_maps = []
-    qs_docs = []
-
-    for obj in profile.user.resourcebase_set.all():
-        if obj.geonode_type == 'layer':
-            qs_layers.append(obj.layer)
-        if obj.geonode_type == 'map':
-            qs_maps.append(obj.map)
-        if obj.geonode_type == 'document':
-            qs_docs.append(obj.document)
-            
-    # chain objects
-    return qs_layers, qs_maps, qs_docs
-
 def profile_detail(request, username):
     profile = get_object_or_404(Profile, user__username=username)
     # combined queryset from each model content type
-    qs_layers, qs_maps, qs_docs = _get_user_objects(profile)
-    object_list = []
+    user_objects = profile.user.resourcebase_set.all()
+
     content_filter = 'all'
-    sortby_field = 'date'
+
     if ('content' in request.GET):
       content = request.GET['content']
       if content != 'all':
           if (content == 'layers'):
               content_filter = 'layers'
-              object_list = qs_layers
+              user_objects = user_objects.instance_of(Layer)
           if (content == 'maps'):
               content_filter = 'maps'
-              object_list = qs_maps
+              user_objects = user_objects.instance_of(Map)
           if (content == 'documents'):
               content_filter = 'documents'
-              object_list = qs_docs
-    if content_filter == 'all':       
-        object_list = list(chain(qs_layers,qs_maps,qs_docs))
+              user_objects = user_objects.instance_of(Document)
 
     sortby_field = 'date'
     if ('sortby' in request.GET):
         sortby_field = request.GET['sortby']
     if sortby_field == 'title':
-        object_list.sort(key=lambda x: x.title, reverse=False)
+        user_objects = user_objects.order_by('title')
     else:
-        object_list.sort(key=lambda x: x.date, reverse=True)
+        user_objects = user_objects.order_by('-date')
     
     return render(request, "people/profile_detail.html", {
         "profile": profile,
         "sortby_field": sortby_field,
         "content_filter": content_filter,
-        "object_list": object_list,
+        "object_list": user_objects,
     })
 
 def forgot_username(request):

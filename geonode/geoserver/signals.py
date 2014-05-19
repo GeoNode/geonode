@@ -1,21 +1,28 @@
-import urllib
+import errno
 import logging
+import urllib
 
 from urlparse import urlparse, urljoin
+from socket import error as socket_error
 
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.core.exceptions import MultipleObjectsReturned
+
+
+from geonode import GeoNodeException
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes
 from geonode.geoserver.helpers import _user, _password
 from geonode.geoserver.helpers import set_styles, gs_catalog, get_coverage_grid_extent
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.geoserver.helpers import geoserver_upload
 from geonode.utils import http_client
 from geonode.base.models import Link
 from geonode.base.models import Thumbnail
 from geonode.layers.models import Layer
+from geonode.layers.utils import create_thumbnail
 from geonode.people.models import Profile
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
@@ -45,27 +52,33 @@ def geoserver_pre_save(instance, sender, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    url = ogc_server_settings.internal_rest
-    try:
-        gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
-    except (EnvironmentError, FailedRequestError) as e:
-        gs_resource = None
-        msg = ('Could not connect to geoserver at "%s"'
-               'to save information for layer "%s"' % (
-                ogc_server_settings.LOCATION, instance.name.encode('utf-8'))
-              )
-        logger.warn(msg, e)
-        # If geoserver is not online, there is no need to continue
+    base_file = instance.get_base_file()
+
+    # There is no need to process it if there is not file.
+    if base_file is None:
         return
 
-    # If there is no resource returned it could mean one of two things:
-    # a) There is a synchronization problem in geoserver
-    # b) The unit tests are running and another geoserver is running in the
-    # background.
-    # For both cases it is sensible to stop processing the layer
-    if gs_resource is None:
-        logger.warn('Could not get geoserver resource for %s' % instance)
-        return
+    gs_name, workspace, values = geoserver_upload(instance,
+                                                    base_file.file.path,
+                                                    instance.owner,
+                                                    instance.name,
+                                                    overwrite=True,
+                                                    title=instance.title,
+                                                    abstract=instance.abstract,
+                                     #               keywords=instance.keywords,
+                                                    charset=instance.charset)
+
+
+    # Set fields obtained via the geoserver upload.
+    instance.name = gs_name
+    instance.workspace = workspace
+
+    # Iterate over values from geoserver.
+    for key in ['typename', 'store', 'storeType']:
+        setattr(instance, key, values[key])
+
+    url = ogc_server_settings.internal_rest
+    gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
 
     gs_resource.title = instance.title
     gs_resource.abstract = instance.abstract
@@ -115,10 +128,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
 
-    try:
-        instance.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
-    except MultipleObjectsReturned:
-        instance.thumbnail = Thumbnail.objects.filter(resourcebase__id=instance.id)[0]
+
 
 def geoserver_post_save(instance, sender, **kwargs):
     """Save keywords to GeoServer
@@ -126,34 +136,23 @@ def geoserver_post_save(instance, sender, **kwargs):
        The way keywords are implemented requires the layer
        to be saved to the database before accessing them.
     """
-    instance.set_missing_info()
-
     url = ogc_server_settings.internal_rest
 
     try:
         gs_resource= gs_catalog.get_resource(instance.name)
-    except (FailedRequestError, EnvironmentError) as e:
-        msg = ('Could not connect to geoserver at "%s"'
-               'to save information for layer "%s"' % (
-                ogc_server_settings.LOCATION, instance.name.encode('utf-8'))
-              )
-        logger.warn(msg, e)
-        # If geoserver is not online, there is no need to continue
+    except socket_error as serr:
+        if serr.errno != errno.ECONNREFUSED:
+            # Not the error we are looking for, re-raise
+            raise serr
+        # If the connection is refused, take it easy.
         return
 
-    # If there is no resource returned it could mean one of two things:
-    # a) There is a synchronization problem in geoserver
-    # b) The unit tests are running and another geoserver is running in the
-    # background.
-    # For both cases it is sensible to stop processing the layer
-    if gs_resource is None:
-        logger.warn('Could not get geoserver resource for %s' % instance)
-        return
+    if any(instance.keyword_list()):
+        gs_resource.keywords = instance.keyword_list()
 
-    gs_resource.keywords = instance.keyword_list()
-    #gs_resource should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
-    if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
-        gs_catalog.save(gs_resource)
+        #gs_resource should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
+        if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
+            gs_catalog.save(gs_resource)
 
     bbox = gs_resource.latlon_bbox
     dx = float(bbox[1]) - float(bbox[0])
@@ -205,15 +204,22 @@ def geoserver_post_save(instance, sender, **kwargs):
         permissions['authenticated'] = instance.get_gen_level(AUTHENTICATED_USERS)
         instance.set_gen_level(ANONYMOUS_USERS,'layer_readonly')
 
-        #Potentially 3 dimensions can be returned by the grid if there is a z
-        #axis.  Since we only want width/height, slice to the second dimension
-        covWidth, covHeight = get_coverage_grid_extent(instance)[:2]
-        links = wcs_links(ogc_server_settings.public_url + 'wcs?', instance.typename.encode('utf-8'),
+        try:
+            #Potentially 3 dimensions can be returned by the grid if there is a z
+            #axis.  Since we only want width/height, slice to the second dimension
+            covWidth, covHeight = get_coverage_grid_extent(instance)[:2]
+        except GeoNodeException, e:
+            msg = _('Could not create a download link for layer.')
+            logger.warn(msg, e)
+        else:
+
+            links = wcs_links(ogc_server_settings.public_url + 'wcs?', instance.typename.encode('utf-8'),
                           bbox=gs_resource.native_bbox[:-1],
                           crs=gs_resource.native_bbox[-1],
                           height=str(covHeight), width=str(covWidth))
-        for ext, name, mime, wcs_url in links:
-            Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+
+            for ext, name, mime, wcs_url in links:
+                Link.objects.get_or_create(resource= instance.resourcebase_ptr,
                                 url=wcs_url,
                                 defaults=dict(
                                     extension=ext,
@@ -222,7 +228,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                     link_type='data',
                                 )
                             )
-                    
+
         instance.set_gen_level(ANONYMOUS_USERS,permissions['anonymous'])
         instance.set_gen_level(AUTHENTICATED_USERS,permissions['authenticated'])
 
@@ -307,60 +313,27 @@ def geoserver_post_save(instance, sender, **kwargs):
         'height': 150,
     }
 
-    BBOX_DIFFERENCE_THRESHOLD = 1e-5
+    # Avoid using urllib.urlencode here because it breaks the url.
+    # commas and slashes in values get encoded and then cause trouble
+    # with the WMS parser.
+    p = "&".join("%s=%s"%item for item in params.items())
 
-    #Check if the bbox is invalid
-    valid_x = (float(instance.bbox_x0) - float(instance.bbox_x1))**2 > BBOX_DIFFERENCE_THRESHOLD
-    valid_y = (float(instance.bbox_y1) - float(instance.bbox_y0))**2 > BBOX_DIFFERENCE_THRESHOLD
+    thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + "wms/reflect?" + p
 
-    image = None
+    create_thumbnail(instance, thumbnail_remote_url)
 
-    if valid_x and valid_y:
-        # Avoid using urllib.urlencode here because it breaks the url.
-        # commas and slashes in values get encoded and then cause trouble
-        # with the WMS parser.
-        p = "&".join("%s=%s"%item for item in params.items())
+    legend_url = ogc_server_settings.PUBLIC_LOCATION +'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER='+instance.typename+'&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
-        thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + "wms/reflect?" + p
-
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=thumbnail_remote_url,
+    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+                        url=legend_url,
                         defaults=dict(
                             extension='png',
-                            name=_("Remote Thumbnail"),
+                            name=_('Legend'),
+                            url=legend_url,
                             mime='image/png',
                             link_type='image',
-                            )
                         )
-
-        # Download thumbnail and save it locally.
-        resp, image = http_client.request(thumbnail_remote_url)
-
-        if 'ServiceException' in image or resp.status < 200 or resp.status > 299:
-            msg = 'Unable to obtain thumbnail: %s' % image
-            logger.debug(msg)
-            # Replace error message with None.
-            image = None
-
-    if image is not None:
-        if instance.has_thumbnail():
-            instance.thumbnail.thumb_file.delete()
-
-        instance.thumbnail.thumb_file.save('layer-%s-thumb.png' % instance.id, ContentFile(image))
-        instance.thumbnail.thumb_spec = thumbnail_remote_url
-        instance.thumbnail.save()
-
-        thumbnail_url = urljoin(settings.SITEURL, instance.thumbnail.thumb_file.url)
-
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=thumbnail_url,
-                        defaults=dict(
-                            name=_('Thumbnail'),
-                            extension='png',
-                            mime='image/png',
-                            link_type='image',
-                            )
-                        )
+                    )
 
     ogc_wms_url = ogc_server_settings.public_url + 'wms?'
     Link.objects.get_or_create(resource= instance.resourcebase_ptr,

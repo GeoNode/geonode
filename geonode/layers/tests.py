@@ -47,7 +47,7 @@ from geonode.layers.utils import layer_type, get_files, get_valid_name, \
 from geonode.people.utils import get_valid_user
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.base.models import TopicCategory
-from geonode.search.populate_search_test_data import create_models
+from geonode.base.populate_test_data import create_models
 from .populate_layers_data import create_layer_data
 
 
@@ -224,16 +224,16 @@ class LayersTest(TestCase):
         self.failUnlessEqual(response.status_code, 200)
 
     def test_describe_data_2(self):
-        '''/data/base:CA/metadata -> Test accessing the description of a layer '''
+        '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(7, User.objects.all().count())
         c = Client()
-        response = c.get(reverse('layer_metadata', args=('base:CA',)))
+        response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
         c.login(username='admin', password='admin')
         # ... all should be good
-        response = c.get(reverse('layer_metadata', args=('base:CA',)))
+        response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
     # Layer Tests
@@ -251,16 +251,16 @@ class LayersTest(TestCase):
         self.assertEquals(response.status_code,200)
 
     def test_describe_data(self):
-        '''/data/base:CA/metadata -> Test accessing the description of a layer '''
+        '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(7, User.objects.all().count())
         c = Client()
-        response = c.get(reverse('layer_metadata', args=('base:CA',)))
+        response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
         self.failUnlessEqual(response.status_code, 302)
         # but if we log in ...
         c.login(username='admin', password='admin')
         # ... all should be good
-        response = c.get(reverse('layer_metadata', args=('base:CA',)))
+        response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_layer_attributes(self):
@@ -456,7 +456,7 @@ class LayersTest(TestCase):
 
             gotten_files = get_files(os.path.join(d, "foo.shp"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
-            self.assertEquals(gotten_files, dict(base="foo.shp", shp="foo.shp", shx="foo.shx",
+            self.assertEquals(gotten_files, dict(shp="foo.shp", shx="foo.shx",
                 prj="foo.prj", dbf="foo.dbf"))
         finally:
             if d is not None:
@@ -487,7 +487,7 @@ class LayersTest(TestCase):
 
             gotten_files = get_files(os.path.join(d, "foo.shp"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
-            self.assertEquals(gotten_files, dict(base="foo.shp", shp="foo.shp", shx="foo.shx",
+            self.assertEquals(gotten_files, dict(shp="foo.shp", shx="foo.shx",
                 prj="foo.prj", dbf="foo.dbf", sld="foo.sld"))
         finally:
             if d is not None:
@@ -504,7 +504,7 @@ class LayersTest(TestCase):
 
             gotten_files = get_files(os.path.join(d, "foo.SHP"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
-            self.assertEquals(gotten_files, dict(base="foo.SHP", shp="foo.SHP", shx="foo.SHX",
+            self.assertEquals(gotten_files, dict(shp="foo.SHP", shx="foo.SHX",
                 prj="foo.PRJ", dbf="foo.DBF"))
         finally:
             if d is not None:
@@ -521,7 +521,7 @@ class LayersTest(TestCase):
 
             gotten_files = get_files(os.path.join(d, "foo.SHP"))
             gotten_files = dict((k, v[len(d) + 1:]) for k, v in gotten_files.iteritems())
-            self.assertEquals(gotten_files, dict(base="foo.SHP", shp="foo.SHP", shx="foo.shx",
+            self.assertEquals(gotten_files, dict(shp="foo.SHP", shx="foo.shx",
                 prj="foo.pRJ", dbf="foo.DBF"))
         finally:
             if d is not None:

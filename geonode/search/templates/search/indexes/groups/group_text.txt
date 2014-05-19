@@ -1,4 +1,0 @@
-{{ object.content }}
-{{ object.title }}
-{{ object.description }}
-{{ object.keywords }}

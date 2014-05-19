@@ -1,0 +1,10 @@
+{% verbatim %}
+  <article ng-repeat="item in results">
+  	<img class="thumb" ng-src="{{ item.thumbnail_url }}" />
+    <div class="item-header">
+      <a href="{{ item.absolute__url }}">{{ item.title }}</a>
+      <p>{{ item.abstract }}</p>
+      <p>{{ item.date | date : 'd MMM y'}}</p>
+    </div>
+  </article>
+{% endverbatim %}

@@ -12,8 +12,10 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
+from django.contrib.contenttypes.models import ContentType
 
 from polymorphic import PolymorphicModel, PolymorphicManager
+from agon_ratings.models import OverallRating
 
 from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
@@ -169,13 +171,37 @@ class ResourceBaseManager(PolymorphicManager):
 
 
 class License(models.Model):
+    identifier = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=100)
+    abbreviation = models.CharField(max_length=20, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     url = models.URLField(max_length=2000, null=True, blank=True)
     license_text = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name
+
+    @property
+    def name_long(self):
+        if self.abbreviation is None or len(self.abbreviation)==0:
+            return self.name
+        else:
+            return self.name+" ("+self.abbreviation+")"
+
+    @property
+    def description_bullets(self):
+        if self.description is None or len(self.description)==0:
+            return ""
+        else:
+            bullets = []
+            lines = self.description.split("\n")
+            for line in lines:
+                bullets.append("+ "+line)
+            return bullets
+
+    class Meta:
+        ordering = ("name",)
+        verbose_name_plural = 'Licenses'
 
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin):
@@ -256,6 +282,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True, on_delete=models.SET_NULL)
 
+    popular_count = models.IntegerField(default=0)
+    share_count = models.IntegerField(default=0)
+
+    featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
+
 
     def delete(self, *args, **kwargs):
         super(ResourceBase, self).delete(*args, **kwargs)
@@ -263,26 +294,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     def __unicode__(self):
         return self.title
-        
+    
     @property
-    def geonode_type(self):
-        gn_type = ''
+    def rating(self):
         try:
-            self.layer
-            gn_type = 'layer'
-        except:
-            pass
-        try:
-            self.map
-            gn_type = 'map'
-        except:
-            pass
-        try:
-            self.document
-            gn_type = 'document'
-        except:
-            pass
-        return gn_type
+            rating = float(OverallRating.objects.get(
+                content_type=ContentType.objects.get_for_model(self), 
+                object_id=self.pk
+            ).rating)
+        except OverallRating.DoesNotExist:
+            rating = None
+
+        return rating 
 
     @property
     def bbox(self):
@@ -295,6 +318,26 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     @property
     def geographic_bounding_box(self):
         return bbox_to_wkt(self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, srid=self.srid )
+
+    @property
+    def license_light(self):
+        a = []
+        if (not (self.license.name is None)) and (len(self.license.name) > 0):
+            a.append(self.license.name)
+        if (not (self.license.url is None)) and (len(self.license.url) > 0):
+            a.append("("+self.license.url+")")
+        return " ".join(a)
+
+    @property
+    def license_verbose(self):
+        a = []
+        if (not (self.license.name_long is None)) and (len(self.license.name_long) > 0):
+            a.append(self.license.name_long+":")
+        if (not (self.license.description is None)) and (len(self.license.description) > 0):
+            a.append(self.license.description)
+        if (not (self.license.url is None)) and (len(self.license.url) > 0):
+                a.append("("+self.license.url+")")
+        return " ".join(a)
 
     @property
     def poc_role(self):
@@ -360,10 +403,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         y = (miny + maxy) / 2
         (center_x, center_y) = forward_mercator((x,y))
 
-        width_zoom = math.log(360 / (maxx - minx), 2)
-        height_zoom = math.log(360 / (maxy - miny), 2)
+        xdiff = maxx - minx
+        ydiff = maxy - miny
 
-        zoom = math.ceil(min(width_zoom, height_zoom))
+        zoom = 0
+
+        if xdiff > 0 and ydiff >0:
+            width_zoom = math.log(360 / xdiff, 2)
+            height_zoom = math.log(360 / ydiff, 2)
+            zoom = math.ceil(min(width_zoom, height_zoom))
 
         self.zoom = zoom
         self.center_x = center_x
@@ -395,6 +443,31 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
             return None
         else:
             return tiles_link.url
+
+    def get_legend(self):
+        """Return Link for legend or None if it does not exist.
+        """
+        try:
+            legends_link = self.link_set.get(name='Legend')
+        except Link.DoesNotExist, e:
+            return None
+        else:
+            return legends_link
+
+
+    def get_legend_url(self):
+        """Return URL for legend or None if it does not exist.
+
+           The legend can be either an image (for Geoserver's WMS)
+           or a JSON object for ArcGIS.
+        """
+        legend = self.get_legend()
+
+        if legend is None:
+            return None
+
+        return legend.url
+
 
     def get_ows_url(self):
         """Return URL for OGC WMS server None if it does not exist.

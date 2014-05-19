@@ -42,7 +42,7 @@ from geonode.base.enumerations import CHARSETS
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
-from geonode.layers.utils import save
+from geonode.layers.utils import file_upload
 from geonode.utils import resolve_object
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
@@ -81,23 +81,6 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
 
 #### Basic Layer Views ####
 
-def layer_list(request, template='layers/layer_list.html'):
-    from geonode.search.views import search_page
-    post = request.POST.copy()
-    post.update({'type': 'layer'})
-    request.POST = post
-    return search_page(request, template=template)
-
-def layer_tag(request, slug, template='layers/layer_list.html'):
-    layer_list = Layer.objects.filter(keywords__slug__in=[slug])
-    return render_to_response(
-        template,
-        RequestContext(request, {
-            "object_list": layer_list,
-            "layer_tag": slug
-            }
-        )
-    )
 
 @login_required
 def layer_upload(request, template='upload/layer_upload.html'):
@@ -131,7 +114,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 # exceptions when unicode characters are present.
                 # This should be followed up in upstream Django.
                 tempdir, base_file = form.write_files()
-                saved_layer = save(name, base_file, request.user,
+                saved_layer = file_upload(base_file,
+                        name=name,
+                        user=request.user,
                         overwrite = False,
                         charset = form.cleaned_data["charset"],
                         abstract = form.cleaned_data["abstract"],
@@ -170,7 +155,14 @@ def layer_upload(request, template='upload/layer_upload.html'):
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
-    maplayer = GXPLayer(name = layer.name, ows_url = layer.get_ows_url(), layer_params=json.dumps( layer.attribute_config()))
+    config = layer.attribute_config()
+    if layer.storeType == "remoteStore" and "geonode.contrib.services" in settings.INSTALLED_APPS:
+        from geonode.contrib.services.models import Service
+        service = Service.objects.filter(layers__id=layer.id)[0] 
+        source_params = {"ptype":service.ptype, "remote": True, "url": service.base_url, "name": service.name}
+        maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config), source_params=json.dumps(source_params))
+    else:
+        maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config))
 
     # Update count for popularity ranking.
     Layer.objects.filter(id=layer.id).update(popular_count=layer.popular_count +1)
@@ -316,7 +308,8 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                saved_layer = save(layer, base_file, request.user, overwrite=True)
+                saved_layer = file_upload(base_file, name=layer.name,
+                                          user=request.user, overwrite=True)
             except Exception, e:
                 out['success'] = False
                 out['errors'] = str(e)

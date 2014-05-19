@@ -12,8 +12,6 @@ $(function() {
     
 });
 
-//define(['jquery'], function($) {
-
 $(function(){
   $(document).ajaxSend(function(event, xhr, settings) {
     function getCookie(name) {

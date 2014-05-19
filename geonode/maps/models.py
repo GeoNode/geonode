@@ -75,9 +75,6 @@ class Map(ResourceBase, GXPMapBase):
     last_modified = models.DateTimeField(auto_now_add=True)
     # The last time the map was modified.
 
-    popular_count = models.IntegerField(default=0)
-    share_count = models.IntegerField(default=0)
-
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
 
@@ -384,7 +381,7 @@ class MapLayer(models.Model, GXPLayerBase):
     styles = models.CharField(_('styles'), null=True,max_length=200, blank=True)
     # The name of the style to use for this layer (only useful for WMS layers.)
 
-    transparent = models.BooleanField(_('transparent'))
+    transparent = models.BooleanField(_('transparent'), default=False)
     # A boolean value, true if we should request tiles with a transparent background.
 
     fixed = models.BooleanField(_('fixed'), default=False)
@@ -420,7 +417,6 @@ class MapLayer(models.Model, GXPLayerBase):
 
     def layer_config(self):
         cfg = GXPLayerBase.layer_config(self)
-
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
         if self.local:
@@ -463,7 +459,6 @@ class MapLayer(models.Model, GXPLayerBase):
 def pre_delete_map(instance, sender, **kwrargs):
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
-
 
 
 signals.pre_delete.connect(pre_delete_map, sender=Map)

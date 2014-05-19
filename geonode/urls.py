@@ -45,7 +45,7 @@ sitemaps = {
 urlpatterns = patterns('',
 
     # Static pages
-    url(r'^$', 'geonode.views.index', name='home'),
+    url(r'^/?$', TemplateView.as_view(template_name='index.html'), name='home'),
     url(r'^help/$', TemplateView.as_view(template_name='help.html'), name='help'),
     url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
     url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
@@ -60,7 +60,7 @@ urlpatterns = patterns('',
     (r'^catalogue/', include('geonode.catalogue.urls')),
 
     # Search views
-    (r'^search/', include('geonode.search.urls')),
+    url(r'^search/$', TemplateView.as_view(template_name='search/search.html'), name='search'),
 
     # Social views
     (r"^account/", include("account.urls")),
@@ -101,6 +101,16 @@ if 'geonode.documents' in settings.INSTALLED_APPS:
 if "geonode.contrib.groups" in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
         (r'^groups/', include('geonode.contrib.groups.urls')),
+    )
+
+if "geonode.contrib.services" in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+        (r'^services/', include('geonode.contrib.services.urls')),
+    )
+
+if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+        (r'^dynamic/', include('geonode.contrib.dynamic.urls')),
     )
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:

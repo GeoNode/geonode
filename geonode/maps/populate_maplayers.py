@@ -7,7 +7,7 @@ maplayers = [
         "group": "background",
         "layer_params": "",
         "map": 1,
-        "name": "base:CA",
+        "name": "geonode:CA",
         "ows_url": "http://localhost:8080/geoserver/wms",
         "source_params": "",
         "transparent": False,
@@ -30,7 +30,7 @@ maplayers = [
     {
         "fixed": True,
         "group": "background",
-        "layer_params": "{\"args\": [\"base:CA\", \"http://localhost:8080/geoserver/wms\", {\"layers\": [\"base:CA\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
+        "layer_params": "{\"args\": [\"geonode:CA\", \"http://localhost:8080/geoserver/wms\", {\"layers\": [\"geonode:CA\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
         "map": 1,
         "name": None,
         "opacity": 1,
