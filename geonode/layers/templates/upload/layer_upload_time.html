@@ -7,54 +7,9 @@
 {% block title %} {% trans "Upload Layer Step 2" %} - {{ block.super }} {% endblock %}
 
 {% block head %}
-<!-- TODO Move this to site-wide css or remove -->
-<style type="text/css">
-    /* bootstrap workaround */
-    #timeForm label {
-        display: inline;
-    }
-    .formSection {
-        margin-bottom: 1em;
-    }
-    .right input, .right select {
-    }
-    .left input {
-        line-height: 2em;
-    }
-    form input, form select {
-        font-size: small;
-    }
-    form label {
-        line-height: 2em;
-    }
-    .clearfix:after {
-      content: ".";
-      display: block;
-      height: 0;
-      clear: both;
-      visibility: hidden;
-    }
-    .clearfix {
-      display: inline-block;
-    }
-    * html .clearfix {
-      height: 1%;
-    } /* Hides from IE-mac \*/
-    .clearfix {
-      display: block;
-    }
-    #format_input input {
-        width:8em;
-    }
-    #timehelp p {
-        color: black !important;
-    }
-    #timehelp code {
-        background: lightgray;
-    }
-</style>
 {{ block.super }}
 {% endblock %}
+
 {% block body %}
 <div class="span7">
   <h2> {% trans "Editing details for " %} {{ layer_name }} </h2>

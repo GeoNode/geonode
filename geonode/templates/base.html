@@ -154,18 +154,16 @@
         {% endfor %}
       </div>
       {% endif %}
-      <div class="container">
-        <div class="row">
-        {% block body_outer %}
-          <div class="col-md-8">
-          {% block body %}{% endblock %}
-          </div>
-          <div class="col-md-4">
-          {% block sidebar %}{% endblock %}
-          </div>
-        {% endblock %}
+      {% block body_outer %}
+      <div class="row">
+        <div class="col-md-8">
+        {% block body %}{% endblock %}
         </div>
-      </div> <!-- /.container -->
+        <div class="col-md-4">
+        {% block sidebar %}{% endblock %}
+        </div>
+      </div>
+      {% endblock %}
     </div>
     {% endblock middle %}
   </div>
