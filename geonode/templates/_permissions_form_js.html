@@ -8,28 +8,14 @@
     }
     var data = form.serializeObject();
 
-    if (type == "maps") {
-      levels = {
-          'readonly': 'map_readonly',
-          'readwrite': 'map_readwrite',
-          'admin': 'map_admin',
-          'none': '_none'
-      };
-    } else if (type == "layers"){
-      levels = {
-          'admin': 'layer_admin',
-          'readwrite': 'layer_readwrite',
-          'readonly': 'layer_readonly',
-          'none': '_none'
-      };
-    } else if (type == "documents"){
-      levels = {
-          'admin': 'document_admin',
-          'readwrite': 'document_readwrite',
-          'readonly': 'document_readonly',
-          'none': '_none'
-      };
-    }
+    
+  levels = {
+      'readonly': 'resourcebase_readonly',
+      'readwrite': 'resourcebase_readwrite',
+      'admin': 'resourcebase_admin',
+      'none': '_none'
+  };
+   
 
     if (data["viewmode"] === "ANYONE") {
       anonymousPermissions = levels['readonly'];

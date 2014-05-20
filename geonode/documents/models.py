@@ -50,18 +50,6 @@ class Document(ResourceBase):
         
     def get_absolute_url(self):
         return reverse('document_detail', args=(self.id,))
-        
-    class Meta:
-        # custom permissions,
-        # change and delete are standard in django
-        permissions = (
-            ('view_document', 'Can view'), 
-            ('change_document_permissions', "Can change permissions"),
-        )
-
-    LEVEL_READ  = 'document_readonly'
-    LEVEL_WRITE = 'document_readwrite'
-    LEVEL_ADMIN = 'document_admin'
 
 
     def _render_thumbnail(self):

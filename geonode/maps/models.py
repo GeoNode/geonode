@@ -190,18 +190,6 @@ class Map(ResourceBase, GXPMapBase):
         return reverse('geonode.maps.views.map_detail', None, [str(self.id)])
 
 
-    class Meta:
-        # custom permissions,
-        # change and delete are standard in django
-        permissions = (('view_map', 'Can view'),
-                       ('change_map_permissions', "Can change permissions"), )
-
-    # Permission Level Constants
-    # LEVEL_NONE inherited
-    LEVEL_READ  = 'map_readonly'
-    LEVEL_WRITE = 'map_readwrite'
-    LEVEL_ADMIN = 'map_admin'
-
     def set_default_permissions(self):
         self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
         self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)

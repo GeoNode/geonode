@@ -221,6 +221,7 @@ INSTALLED_APPS = (
     'user_messages',
     'tastypie',
     'polymorphic',
+    'guardian',
 
 ) + GEONODE_APPS
 
@@ -321,7 +322,9 @@ MIDDLEWARE_CLASSES = (
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
-AUTHENTICATION_BACKENDS = ('geonode.security.auth.GranularBackend',)
+AUTHENTICATION_BACKENDS = ('geonode.security.auth.GranularBackend','guardian.backends.ObjectPermissionBackend',)
+
+ANONYMOUS_USER_ID = -1
 
 def get_user_url(u):
     return u.profile.get_absolute_url()
