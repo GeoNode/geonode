@@ -74,7 +74,7 @@ class LayersTest(TestCase):
 
     # Layer
     # - LEVEL_READ = layer_read
-    # - LEVEL_WRITE = layer_readwrite
+    # - LEVEL_WRITE = resourcebase_readwrite
     # - LEVEL_ADMIN = layer_admin
 
     # Map
@@ -89,7 +89,7 @@ class LayersTest(TestCase):
     # If anonymous and/or authenticated are not specified,
     # should set_layer_permissions remove any existing perms granted??
 
-    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","layer_readwrite"]]}
+    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","resourcebase_readwrite"]]}
     def test_layer_set_default_permissions(self):
         """Verify that Layer.set_default_permissions is behaving as expected
         """
@@ -151,19 +151,19 @@ class LayersTest(TestCase):
         c = Client()
 
         # Test that an invalid layer.typename is handled for properly
-        response = c.post(reverse('resource_permissions', args=('layer', invalid_layer_id,)),
+        response = c.post(reverse('resource_permissions', args=(invalid_layer_id,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 404)
 
         # Test that GET returns permissions
-        response = c.get(reverse('resource_permissions', args=('layer', valid_layer_typename,)))
+        response = c.get(reverse('resource_permissions', args=(valid_layer_typename,)))
         assert('permissions' in response.content)
 
         # Test that a user is required to have maps.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post(reverse('resource_permissions', args=('layer', valid_layer_typename,)),
+        response = c.post(reverse('resource_permissions', args=(valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401)
@@ -171,7 +171,7 @@ class LayersTest(TestCase):
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
-        response = c.post(reverse('resource_permissions', args=('layer', valid_layer_typename,)),
+        response = c.post(reverse('resource_permissions', args=(valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401)
@@ -180,7 +180,7 @@ class LayersTest(TestCase):
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
 
-        response = c.post(reverse('resource_permissions', args=('layer', valid_layer_typename,)),
+        response = c.post(reverse('resource_permissions', args=(valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
 
@@ -208,7 +208,7 @@ class LayersTest(TestCase):
         self.assertEqual(info['users'], sorted(layer_info['users'].items()))
 
         # Test that layer owner can edit layer
-        self.assertTrue(layer.owner.has_perm(set([u'layers.change_layer']), layer))
+        self.assertTrue(layer.owner.has_perm(set([u'base.change_resourcebase']), layer.resourcebase_ptr))
 
         # TODO Much more to do here once jj0hns0n understands the ACL system better
 
@@ -225,7 +225,7 @@ class LayersTest(TestCase):
 
     def test_describe_data_2(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
-        self.assertEqual(7, User.objects.all().count())
+        self.assertEqual(8, User.objects.all().count())
         c = Client()
         response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
@@ -252,7 +252,7 @@ class LayersTest(TestCase):
 
     def test_describe_data(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
-        self.assertEqual(7, User.objects.all().count())
+        self.assertEqual(8, User.objects.all().count())
         c = Client()
         response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
@@ -770,11 +770,11 @@ class LayersTest(TestCase):
         layer = Layer.objects.all()[0]
 
         #set layer permissions to registered read/write
-        layer.set_gen_level(AUTHENTICATED_USERS,'layer_readwrite')
+        layer.set_gen_level(AUTHENTICATED_USERS,'resourcebase_readwrite')
 
         #verify bobby has view/change permissions on it
-        self.assertTrue(bob.has_perm('layers.view_layer',layer))
-        self.assertTrue(bob.has_perm('layers.change_layer',layer))
+        self.assertTrue(bob.has_perm('base.view_resourcebase',layer.resourcebase_ptr))
+        self.assertTrue(bob.has_perm('base.change_resourcebase',layer.resourcebase_ptr))
 
         #verify that bobby can access the layer data page
         c = Client()

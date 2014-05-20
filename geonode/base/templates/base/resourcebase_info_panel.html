@@ -2,84 +2,84 @@
 
 <article class="description tab-pane active" id="info">
   <ul class="unstyled wide">
-  {% if resourcebase.title%}
+  {% if resource.title%}
     <li>
       <strong>{% trans "Title" %}:</strong>
-      {{ resourcebase.title|truncatechars:80 }}
+      {{ resource.title|truncatechars:80 }}
     </li>
   {% endif %}
 
-  {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resourcebase.license %}
+  {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resource.license %}
     <li>
       <strong>{% trans "License" %}:</strong>
-      {{ resourcebase.license.name_long }}
+      {{ resource.license.name_long }}
       <strong><a href="#license-more" data-toggle="collapse" data-target=".license-more">?</a></strong>
       <div style="margin-left:20px;" class="license-more collapse">
-      {% for bullet in resourcebase.license.description_bullets %}
+      {% for bullet in resource.license.description_bullets %}
         {{ bullet }}<br/><br/>
       {% endfor %}
-      {% if resourcebase.license.url %}
-        + For more info see <a href="{{ resourcebase.license.url }}">{{ resourcebase.license.url }}</a>.
+      {% if resource.license.url %}
+        + For more info see <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
       {% endif %}
       </div>
     </li>
   {% endif %}
 
-  {% if resourcebase.abstract %}
+  {% if resource.abstract %}
     <li>
       <strong>{% trans "Abstract" %}:</strong>
-      {{ resourcebase.abstract|escape|urlize|linebreaks|safe|truncatechars:160 }}
+      {{ resource.abstract|escape|urlize|linebreaks|safe|truncatechars:160 }}
     </li>
   {% endif %}
 
-  {% if resourcebase.date %}
+  {% if resource.date %}
     <li>
-      <strong>{% trans resourcebase.date_type|title %} {% trans "Date" %}:</strong>
-      {{ resourcebase.date }}
+      <strong>{% trans resource.date_type|title %} {% trans "Date" %}:</strong>
+      {{ resource.date }}
     </li>
   {% endif %}
 
-  {% if resourcebase.display_type %}
+  {% if resource.display_type %}
     <li>
       <strong>{% trans "Type" %}:</strong>
-      {{ resourcebase.display_type }}
+      {{ resource.display_type }}
     </li>
   {% endif %}
 
-  {% if resourcebase.keyword_list %}
+  {% if resource.keyword_list %}
     <li>
       <strong>{% trans "Keywords" %}:</strong>
-      {% for keyword in resourcebase.keyword_list %}
+      {% for keyword in resource.keyword_list %}
         {{ keyword }}
       {% endfor %}
     </li>
   {% endif %}
           
-  {% if resourcebase.category %}
+  {% if resource.category %}
     <li>
       <strong>{% trans "Category" %}:</strong>
-      {{ resourcebase.category }}
+      {{ resource.category }}
     </li>
   {% endif %}
   
-  {% if resourcebase.regions.all %}
+  {% if resource.regions.all %}
    <li>
       <strong>{% trans "Regions" %}:</strong>
-        {{ resourcebase.regions.all|join:", " }}
+        {{ resource.regions.all|join:", " }}
     </li>
   {% endif %}
   
-  {% if resourcebase.owner %}
+  {% if resource.owner %}
     <li>
       <strong>{% trans "Owner" %}:</strong>
-      <a href="{{ resourcebase.owner.get_profile.get_absolute_url }}">{{ resourcebase.owner.username }}</a>
+      <a href="{{ resource.owner.get_profile.get_absolute_url }}">{{ resource.owner.username }}</a>
     </li>
   {% endif %}
 
-  {% if resourcebase.poc.user %}
+  {% if resource.poc.user %}
     <li>
       <strong>{% trans "Point of Contact" %}:</strong>
-      <a href="{{ resourcebase.poc.user.get_profile.get_absolute_url }}"> {{ resourcebase.poc.user.username }} </a>
+      <a href="{{ resource.poc.user.get_profile.get_absolute_url }}"> {{ resource.poc.user.username }} </a>
     <li>
   {% endif %}
   </ul>
@@ -89,86 +89,86 @@
   <div class="more collapse"> 
     <ul class="unstyled wide">
 
-    {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resourcebase.license %}
+    {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resource.license %}
       <li>
         <strong>{% trans "License" %}:</strong>
-        {{ resourcebase.license.name_long }}
+        {{ resource.license.name_long }}
         <strong><a href="#license-more" data-toggle="collapse" data-target=".license-more">?</a></strong>
         <div style="margin-left:20px;" class="license-more collapse">
-        {% for bullet in resourcebase.license.description_bullets %}
+        {% for bullet in resource.license.description_bullets %}
           {{ bullet }}<br/><br/>
         {% endfor %}
-        {% if resourcebase.license.url %}
-          + For more info see <a href="{{ resourcebase.license.url }}">{{ resourcebase.license.url }}</a>.
+        {% if resource.license.url %}
+          + For more info see <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
         {% endif %}
         </div>
       </li>
     {% endif %}
 
-    {% if resourcebase.maintenance_frequency %}
+    {% if resource.maintenance_frequency %}
       <li>
         <strong>{% trans "Maintenance Frequency" %}:</strong>
-        {{ resourcebase.maintenance_frequency_title }}
+        {{ resource.maintenance_frequency_title }}
       </li>
     {% endif %}
     
-    {% if resourcebase.restriction_code_type or resourcebase.constraints_other %}
+    {% if resource.restriction_code_type or resource.constraints_other %}
       <li>
         <strong>{% trans "Restrictions" %}:</strong>
-        {% if resourcebase.constraints_other %}
-            {{ resourcebase.constraints_other }}
+        {% if resource.constraints_other %}
+            {{ resource.constraints_other }}
         {% else %}
-            {{ resourcebase.restriction_code_type }}
+            {{ resource.restriction_code_type }}
         {% endif %}
       </li>
     {% endif %}
           
-    {% if resourcebase.edition %}
+    {% if resource.edition %}
       <li>
         <strong>{% trans "Edition" %}:</strong>
-        {{ resourcebase.edition}}
+        {{ resource.edition}}
       </li>
     {% endif %}
 
-    {% if resourcebase.purpose %}
+    {% if resource.purpose %}
       <li>
         <strong>{% trans "Purpose" %}:</strong>
-        {{ resourcebase.purpose|escape|urlize|linebreaks|safe|truncatechars:160 }}
+        {{ resource.purpose|escape|urlize|linebreaks|safe|truncatechars:160 }}
       </li>
     {% endif %}
 
-    {% if resourcebase.language %}
+    {% if resource.language %}
       <li>
         <strong>{% trans "Language" %}:</strong>
-        {{ resourcebase.language_title }}
+        {{ resource.language_title }}
       </li>
     {% endif %}
 
-    {% if resourcebase.temporal_extent_start and resourcebase.temporal_extent_end %}
+    {% if resource.temporal_extent_start and resource.temporal_extent_end %}
       <li>
         <strong>{% trans "Temporal Extent" %}:</strong>
-        {{ resourcebase.temporal_extent_start }} - {{ resourcebase.temporal_extent_end }}
+        {{ resource.temporal_extent_start }} - {{ resource.temporal_extent_end }}
       </li>
     {% endif %}
 
-    {% if resourcebase.data_quality_statement %}
+    {% if resource.data_quality_statement %}
       <li>
         <strong>{% trans "Data Quality" %}:</strong>
-        {{ resourcebase.data_quality_statement }}
+        {{ resource.data_quality_statement }}
       </li>
     {% endif %}
 
-    {% if resourcebase.supplemental_information %}
+    {% if resource.supplemental_information %}
       <li>
         <strong>{% trans "Supplemental Information" %}:</strong> 
-        {{ resourcebase.supplemental_information|truncatechars:160|escape|urlize|linebreaks|safe }}
+        {{ resource.supplemental_information|truncatechars:160|escape|urlize|linebreaks|safe }}
       </li>
     {% endif %}
 
-    {% if resourcebase.spatial_representation_type %}
+    {% if resource.spatial_representation_type %}
       <li>
         <strong>{% trans "Spatial Representation Type" %}:</strong>
-        {{ resourcebase.spatial_representation_type }}
+        {{ resource.spatial_representation_type }}
       </li>
     {% endif %}
     </ul>

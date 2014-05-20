@@ -77,7 +77,7 @@ _PERMISSION_MSG_VIEW = _("You are not allowed to view this map.")
 
 def _handleThumbNail(req, obj):
     # object will either be a map or a layer, one or the other permission must apply
-    if not req.user.has_perm('maps.change_map', obj=obj) and not req.user.has_perm('maps.change_layer', obj=obj):
+    if not req.user.has_perm('base.change_resourcebase', obj=obj.resourcebase_ptr):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(req, {'error_message':
                 _("You are not permitted to modify this object")})), status=401)
@@ -94,7 +94,7 @@ def _handleThumbNail(req, obj):
                 mimetype='text/plain'
             )
 
-def _resolve_map(request, id, permission='maps.change_map',
+def _resolve_map(request, id, permission='base.change_resourcebase',
                  msg=_PERMISSION_MSG_GENERIC, **kwargs):
     '''
     Resolve the Map by the provided typename and check the optional permission.
@@ -108,7 +108,7 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
     '''
     The view that show details of each map
     '''
-    map_obj = _resolve_map(request, mapid, 'maps.view_map', _PERMISSION_MSG_VIEW)
+    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
     map_obj.popular_count += 1
     map_obj.save()
@@ -118,7 +118,7 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
     layers = MapLayer.objects.filter(map=map_obj.id)
     return render_to_response(template, RequestContext(request, {
         'config': config,
-        'map': map_obj,
+        'resource': map_obj,
         'layers': layers,
         'permissions_json': json.dumps(_perms_info(map_obj, MAP_LEV_NAMES)),
         "documents": get_related_documents(map_obj),
@@ -205,7 +205,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
 def map_remove(request, mapid, template='maps/map_remove.html'):
     ''' Delete a map, and its constituent layers. '''
     try:
-        map_obj = _resolve_map(request, mapid, 'maps.delete_map',
+        map_obj = _resolve_map(request, mapid, 'base.delete_resourcebase',
                                _PERMISSION_MSG_DELETE, permission_required=True)
 
         if request.method == 'GET':
@@ -232,7 +232,7 @@ def map_embed(request, mapid=None, template='maps/map_embed.html'):
     if mapid is None:
         config = default_map_config()[0]
     else:
-        map_obj = _resolve_map(request, mapid, 'maps.view_map')
+        map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
         config = map_obj.viewer_json()
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config)
@@ -247,7 +247,7 @@ def map_view(request, mapid, template='maps/map_view.html'):
     The view that returns the map composer opened to
     the map with the given map ID.
     """
-    map_obj = _resolve_map(request, mapid, 'maps.view_map', _PERMISSION_MSG_VIEW)
+    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
     config = map_obj.viewer_json()
     return render_to_response(template, RequestContext(request, {
@@ -257,13 +257,13 @@ def map_view(request, mapid, template='maps/map_view.html'):
 
 
 def map_view_js(request, mapid):
-    map_obj = _resolve_map(request, mapid, 'maps.view_map')
+    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
     config = map_obj.viewer_json()
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 def map_json(request, mapid):
     if request.method == 'GET':
-        map_obj = _resolve_map(request, mapid, 'maps.view_map')
+        map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
         return HttpResponse(json.dumps(map_obj.viewer_json()))
     elif request.method == 'PUT':
         if not request.user.is_authenticated():
@@ -272,7 +272,7 @@ def map_json(request, mapid):
                 status=401,
                 mimetype="text/plain"
             )
-        map_obj = _resolve_map(request, mapid, 'maps.change_map')
+        map_obj = _resolve_map(request, mapid, 'base.change_resourcebase')
         try:
             map_obj.update_from_viewer(request.body)
             return HttpResponse(json.dumps(map_obj.viewer_json()))
@@ -341,7 +341,7 @@ def new_map_config(request):
 
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
-        map_obj = _resolve_map(request, mapid, 'maps.view_map')
+        map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
 
         map_obj.abstract = DEFAULT_ABSTRACT
         map_obj.title = DEFAULT_TITLE
@@ -367,7 +367,7 @@ def new_map_config(request):
                     # bad layer, skip
                     continue
 
-                if not request.user.has_perm('layers.view_layer', obj=layer):
+                if not request.user.has_perm('base.view_resourcebase', obj=layer.resourcebase_ptr):
                     # invisible layer, skip inclusion
                     continue
 
@@ -434,14 +434,14 @@ def map_download(request, mapid, template='maps/map_download.html'):
     XXX To do, remove layer status once progress id done
     This should be fix because
     """
-    mapObject = _resolve_map(request, mapid, 'maps.view_map')
+    mapObject = _resolve_map(request, mapid, 'base.view_resourcebase')
 
     map_status = dict()
     if request.method == 'POST':
         url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
 
         def perm_filter(layer):
-            return request.user.has_perm('layers.view_layer', obj=layer)
+            return request.user.has_perm('base.view_resourcebase', obj=layer.resourcebase_ptr)
 
         mapJson = mapObject.json(perm_filter)
 
@@ -473,7 +473,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 remote_layers.append(lyr)
             else:
                 ownable_layer = Layer.objects.get(typename=lyr.name)
-                if not request.user.has_perm('layers.view_layer', obj=ownable_layer):
+                if not request.user.has_perm('base.view_resourcebase', obj=ownable_layer.resourcebase_ptr):
                     locked_layers.append(lyr)
                 else:
                     # we need to add the layer only once
@@ -513,7 +513,7 @@ def map_download_check(request):
 def map_wmc(request, mapid, template="maps/wmc.xml"):
     """Serialize an OGC Web Map Context Document (WMC) 1.1"""
 
-    mapObject = _resolve_map(request, mapid, 'maps.view_map')
+    mapObject = _resolve_map(request, mapid, 'base.view_resourcebase')
 
     return render_to_response(template, RequestContext(request, {
         'map': mapObject,
@@ -529,7 +529,7 @@ def map_wms(request, mapid):
     GET: return endpoint information for group layer,
     PUT: update existing or create new group layer.
     """
-    mapObject = _resolve_map(request, mapid, 'maps.view_map')
+    mapObject = _resolve_map(request, mapid, 'base.view_resourcebase')
 
     if request.method == 'PUT':
         try:

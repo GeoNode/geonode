@@ -49,7 +49,7 @@ def updatelayers(request):
 @login_required
 @require_POST
 def layer_style(request, layername):
-    layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(request, layername, 'base.change_resourcebase', _PERMISSION_MSG_MODIFY)
 
     style_name = request.POST.get('defaultStyle')
 
@@ -85,7 +85,7 @@ def layer_style_upload(req, layername):
         return respond(errors="Please provide an SLD file.")
     
     data = form.cleaned_data
-    layer = _resolve_layer(req, layername, 'layers.change_layer', _PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(req, layername, 'base.change_resourcebase', _PERMISSION_MSG_MODIFY)
     
     sld = req.FILES['sld'].read()
 
@@ -120,7 +120,7 @@ def layer_style_upload(req, layername):
 
 @login_required
 def layer_style_manage(req, layername):
-    layer = _resolve_layer(req, layername, 'layers.change_layer', _PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(req, layername, 'base.change_resourcebase', _PERMISSION_MSG_MODIFY)
     if req.method == 'GET':
         try:
             cat = gs_catalog
@@ -208,7 +208,7 @@ def feature_edit_check(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     datastore = ogc_server_settings.DATASTORE
     feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or datastore
-    if request.user.has_perm('layers.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
+    if request.user.has_perm('base.change_resourcebase', obj=layer.resourcebase_ptr) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
     else:
         return HttpResponse(json.dumps({'authorized': False}), mimetype="application/json")
