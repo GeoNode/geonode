@@ -70,7 +70,7 @@ def batch_permissions(request):
     if "maps" in spec:
         map_query = Map.objects.filter(pk__in = spec['maps'])
         for m in map_query:
-            if not request.user.has_perm("maps.change_map_permissions", obj=m):
+            if not request.user.has_perm("base.change_resourcebase_permissions", obj=m):
                 return HttpResponse("User not authorized to change map permissions", status=403)
 
     anon_level = spec['permissions'].get("anonymous")
@@ -135,7 +135,7 @@ def batch_delete(request):
     if "maps" in spec:
         map_query = Map.objects.filter(pk__in = spec['maps'])
         for m in map_query:
-            if not request.user.has_perm("maps.delete_map", obj=m):
+            if not request.user.has_perm("base.delete_resourcebase", obj=m):
                 return HttpResponse("User not authorized to delete map", status=403)
 
     if "layers" in spec:
@@ -528,7 +528,7 @@ def resolve_object(request, model, query, permission=None,
     allowed = True
     if permission:
         if permission_required or request.method != 'GET':
-            allowed = request.user.has_perm(permission, obj=obj)
+            allowed = request.user.has_perm(permission, obj=obj.resourcebase_ptr)
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)

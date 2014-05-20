@@ -8,7 +8,7 @@
 {% overall_rating document "document" as document_rating %}
 {% num_ratings document as num_votes %}
 
-{% has_obj_perm user document "documents.view_document" as can_view_document %}
+{% has_obj_perm user document "base.view_resourcebase" as can_view_document %}
 
 {% if can_view_document %}
 <article>

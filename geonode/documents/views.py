@@ -22,20 +22,13 @@ from geonode.documents.models import IMGTYPES
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
-DOCUMENT_LEV_NAMES = {
-    Document.LEVEL_NONE  : _('No Permissions'),
-    Document.LEVEL_READ  : _('Read Only'),
-    Document.LEVEL_WRITE : _('Read/Write'),
-    Document.LEVEL_ADMIN : _('Administrative')
-}
-
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this document")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this document.')
 _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this document")
 _PERMISSION_MSG_METADATA = _("You are not permitted to modify this document's metadata")
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this document")
 
-def _resolve_document(request, docid, permission='layers.change_layer',
+def _resolve_document(request, docid, permission='base.change_resourcebase',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
     '''
     Resolve the layer by the provided typename and check the optional permission.
@@ -48,7 +41,7 @@ def document_detail(request, docid):
     The view that show details of each document
     """
     document = get_object_or_404(Document, pk=docid)
-    if not request.user.has_perm('documents.view_document', obj=document):
+    if not request.user.has_perm('base.view_resourcebase', obj=document):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
                 _("You are not allowed to view this document.")})), status=403)
@@ -62,14 +55,14 @@ def document_detail(request, docid):
 
     return render_to_response("documents/document_detail.html", RequestContext(request, {
         'permissions_json': json.dumps(_perms_info(document, DOCUMENT_LEV_NAMES)),
-        'document': document,
+        'resource': document,
         'imgtypes': IMGTYPES,
         'related': related
     }))
 
 def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)
-    if not request.user.has_perm('documents.view_document', obj=document):
+    if not request.user.has_perm('base.view_resourcebase', obj=document):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
                 _("You are not allowed to view this document.")})), status=401)
@@ -190,7 +183,7 @@ def document_search_page(request):
 @login_required
 def document_remove(request, docid, template='documents/document_remove.html'):
     try:
-        document = _resolve_document(request, docid, 'documents.delete_document',
+        document = _resolve_document(request, docid, 'base.delete_resourcebase',
                                _PERMISSION_MSG_DELETE)
 
         if request.method == 'GET':

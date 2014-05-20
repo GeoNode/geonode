@@ -42,8 +42,8 @@ class SmokeTest(TestCase):
         self.assertEqual(layer.get_gen_level(AUTHENTICATED_USERS), layer.LEVEL_READ)
 
         # Test that the default perms give Norman view permissions but not write permissions
-        read_perms = backend.objects_with_perm(self.norman, 'layers.view_layer', Layer)
-        write_perms = backend.objects_with_perm(self.norman, 'layers.change_layer', Layer)
+        read_perms = backend.objects_with_perm(self.norman, 'base.view_resourcebase', Layer)
+        write_perms = backend.objects_with_perm(self.norman, 'base.change_resourcebase', Layer)
         self.assertTrue(layer.id in read_perms)
         self.assertTrue(layer.id not in write_perms)
 
@@ -57,21 +57,21 @@ class SmokeTest(TestCase):
         self.assertTrue(self.bar.user_is_member(self.norman))
 
         # Test that the bar group has default permissions on the layer
-        bar_read_perms = backend.objects_with_perm(self.bar, 'layers.view_layer', Layer)
-        bar_write_perms = backend.objects_with_perm(self.bar, 'layers.change_layer', Layer)
+        bar_read_perms = backend.objects_with_perm(self.bar, 'base.view_resourcebase', Layer)
+        bar_write_perms = backend.objects_with_perm(self.bar, 'base.change_resourcebase', Layer)
         self.assertTrue(layer.id in bar_read_perms)
         self.assertTrue(layer.id not in bar_write_perms)
 
         # Give the bar group permissions to change the layer.
         layer.set_group_level(self.bar, Layer.LEVEL_WRITE)
-        bar_read_perms = backend.objects_with_perm(self.bar, 'layers.view_layer', Layer)
-        bar_write_perms = backend.objects_with_perm(self.bar, 'layers.change_layer', Layer)
+        bar_read_perms = backend.objects_with_perm(self.bar, 'base.view_resourcebase', Layer)
+        bar_write_perms = backend.objects_with_perm(self.bar, 'base.change_resourcebase', Layer)
         self.assertTrue(layer.id in bar_read_perms)
         self.assertTrue(layer.id in bar_write_perms)
 
         # Test that the bar group perms give Norman view and change permissions
-        read_perms = backend.objects_with_perm(self.norman, 'layers.view_layer', Layer)
-        write_perms = backend.objects_with_perm(self.norman, 'layers.change_layer', Layer)
+        read_perms = backend.objects_with_perm(self.norman, 'base.view_resourcebase', Layer)
+        write_perms = backend.objects_with_perm(self.norman, 'base.change_resourcebase', Layer)
         self.assertTrue(layer.id in read_perms)
         self.assertTrue(layer.id in write_perms)
 

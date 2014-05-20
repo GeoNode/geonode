@@ -247,7 +247,7 @@ class Map(ResourceBase, GXPMapBase):
                 except ObjectDoesNotExist:
                     raise GeoNodeError('Could not find layer with name %s' % layer)
 
-            if not user.has_perm('maps.view_layer', obj=layer):
+            if not user.has_perm('base.view_resourcebase', obj=layer.resourcebase_ptr):
                 # invisible layer, skip inclusion or raise Exception?
                 raise GeoNodeError('User %s tried to create a map with layer %s without having premissions' % (user, layer))
             MapLayer.objects.create(
@@ -282,7 +282,7 @@ class Map(ResourceBase, GXPMapBase):
         Returns True if anonymous (public) user can view map.
         """
         user = AnonymousUser()
-        return user.has_perm('maps.view_map', obj=self)
+        return user.has_perm('base.view_resourcebase', obj=self.resourcebase_ptr)
 
     @property
     def layer_group(self):

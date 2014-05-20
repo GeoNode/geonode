@@ -31,7 +31,7 @@ def facets(context):
     }
 
     for layer in Layer.objects.all():
-        if request.user.has_perm('layers.view_layer', layer):
+        if request.user.has_perm('base.view_resourcebase', layer.resourcebase_ptr):
             if layer.storeType == 'coverageStore':
                 facets['raster'] += 1
             else:
@@ -45,12 +45,12 @@ def facets(context):
 
     facets['map'] = 0
     for the_map in Map.objects.all():
-        if request.user.has_perm('maps.view_map', the_map):
+        if request.user.has_perm('base.view_resourcebase', the_map.resourcebase_ptr):
             facets['map'] +=1
 
     facets['document'] = 0
     for doc in Document.objects.all():
-        if request.user.has_perm('document.view_document', doc):
+        if request.user.has_perm('base.view_resourcebase', doc.resourcebase_ptr):
             facets['document'] += 1
 
     if facet_type == 'home':

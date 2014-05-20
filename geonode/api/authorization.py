@@ -3,22 +3,22 @@ from tastypie.exceptions import Unauthorized
 
 perms = {
     'Layer': {
-        'view': 'layers.view_layer',
+        'view': 'base.view_resourcebase',
         'add': 'layers.add_layer',
-        'change': 'layers.change_layer',
-        'delete': 'layers.delete_layer',
+        'change': 'base.change_resourcebase',
+        'delete': 'base.delete_resourcebase',
     },
     'Map': {
         'view': 'maps.view_map',
         'add': 'maps.add_map',
-        'change': 'maps.change_map',
-        'delete': 'maps.delete_map',
+        'change': 'base.change_resourcebase',
+        'delete': 'base.delete_resourcebase',
     },
     'Document': {
-        'view': 'documents.view_document',
+        'view': 'base.view_resourcebase',
         'add': 'documents.add_document',
-        'change': 'documents.change_document',
-        'delete': 'documents.delete_document',
+        'change': 'base.change_resourcebase',
+        'delete': 'base.delete_resourcebase',
     }
 }
 

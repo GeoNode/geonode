@@ -161,7 +161,7 @@ class PermissionLevelMixin(object):
         A list of available levels in order.
         """
         levels = [self.LEVEL_NONE]
-        content_type = ContentType.objects.get_for_model(self)
+        content_type = get_contenttype_for_object(self)
         for role in ObjectRole.objects.filter(content_type=content_type).order_by('list_order'):
             levels.append(role.codename)
         return levels
@@ -172,7 +172,7 @@ class PermissionLevelMixin(object):
         Returns LEVEL_NONE to indicate no specific level has been assigned.
         """
         try:
-            my_ct = ContentType.objects.get_for_model(self)
+            my_ct = get_contenttype_for_object(self)
             mapping = UserObjectRoleMapping.objects.get(user=user, object_id=self.id, object_ct=my_ct)
             return mapping.role.codename
         except Exception:
@@ -184,10 +184,7 @@ class PermissionLevelMixin(object):
         level is LEVEL_NONE, any existing level assignment is removed.
         """
 
-        if self.class_name in ['Layer', 'Map', 'Document']:
-            my_ct = ContentType.objects.get(model='resourcebase')
-        else:
-            my_ct = ContentType.objects.get_for_model(self)
+        my_ct = get_contenttype_for_object(self)
         if level == self.LEVEL_NONE:
             UserObjectRoleMapping.objects.filter(user=user, object_id=self.id, object_ct=my_ct).delete()
         else:
@@ -199,7 +196,7 @@ class PermissionLevelMixin(object):
             # remove any existing mapping
             UserObjectRoleMapping.objects.filter(user=user, object_id=self.id, object_ct=my_ct).delete()
             # grant new level
-            UserObjectRoleMapping.objects.create(user=user, object=self, role=role)
+            UserObjectRoleMapping.objects.create(user=user, object_id=self.id, object_ct=my_ct, role=role)
 
     if "geonode.contrib.groups" in settings.INSTALLED_APPS:
         def get_group_level(self, group):
@@ -207,7 +204,7 @@ class PermissionLevelMixin(object):
             get the permission level (if any) specifically assigned to the given group.
             Returns LEVEL_NONE to indicate no specific level has been assigned.
             """
-            my_ct = ContentType.objects.get_for_model(self)
+            my_ct = get_contenttype_for_object(self)
             try:
                 mapping = GroupObjectRoleMapping.objects.get(group=group, object_id=self.id, object_ct=my_ct)
                 return mapping.role.codename
@@ -220,7 +217,7 @@ class PermissionLevelMixin(object):
             level is LEVEL_NONE, any existing level assignment is removed.
             """
         
-            my_ct = ContentType.objects.get_for_model(self)
+            my_ct = get_contenttype_for_object(self)
             if level == self.LEVEL_NONE:
                 GroupObjectRoleMapping.objects.filter(group=group, object_id=self.id, object_ct=my_ct).delete()
             else:
@@ -232,7 +229,7 @@ class PermissionLevelMixin(object):
                 # remove any existing mapping              
                 GroupObjectRoleMapping.objects.filter(group=group, object_id=self.id, object_ct=my_ct).delete()
                 # grant new level
-                GroupObjectRoleMapping.objects.create(group=group, object=self, role=role)
+                GroupObjectRoleMapping.objects.create(group=group, object_id=self.id, object_ct=my_ct, role=role)
 
     def get_gen_level(self, gen_role):
         """
@@ -241,7 +238,7 @@ class PermissionLevelMixin(object):
         """
 
         try:
-            my_ct = ContentType.objects.get_for_model(self)
+            my_ct = get_contenttype_for_object(self)
             mapping = GenericObjectRoleMapping.objects.get(subject=gen_role, object_id=self.id, object_ct=my_ct)
             return mapping.role.codename
         except Exception:
@@ -254,10 +251,7 @@ class PermissionLevelMixin(object):
         removed.
         """
 
-        if self.class_name in ['Layer', 'Map', 'Document']:
-            my_ct = ContentType.objects.get(model='resourcebase')
-        else:
-            my_ct = ContentType.objects.get_for_model(self)
+        my_ct = get_contenttype_for_object(self)
 
         if level == self.LEVEL_NONE:
             GenericObjectRoleMapping.objects.filter(subject=gen_role, object_id=self.id, object_ct=my_ct).delete()
@@ -303,7 +297,7 @@ class PermissionLevelMixin(object):
             }
         }
         """
-        my_ct = ContentType.objects.get_for_model(self)
+        my_ct = get_contenttype_for_object(self)
 
         # get all user-specific permissions
         user_levels = {}
@@ -381,6 +375,15 @@ class PermissionLevelMixin(object):
             for group, level in perm_spec.get('groups', list()):
                 group = Group.objects.get(slug=group)
                 self.set_group_level(group, level)
+
+
+def get_contenttype_for_object(obj):
+    if obj.class_name in ['Layer', 'Map', 'Document']:
+        my_ct = ContentType.objects.get(model='resourcebase')
+    else:
+        my_ct = ContentType.objects.get_for_model(obj)
+    return my_ct
+
 
 # Logic to login a user automatically when it has successfully
 # activated an account:
