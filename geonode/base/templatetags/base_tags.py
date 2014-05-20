@@ -37,9 +37,9 @@ def facets(context):
             else:
                 facets['vector'] +=1
 
-
+    facet_type = context['facet_type'] if 'facet_type' in context else 'all'     
     # Break early if only_layers is set.
-    if 'facet_type' in context and context['facet_type'] == 'layers':
+    if facet_type == 'layers':
         return facets
 
 
@@ -53,9 +53,10 @@ def facets(context):
         if request.user.has_perm('document.view_document', doc):
             facets['document'] += 1
 
-    facets['user'] = User.objects.count()
+    if facet_type == 'home':
+        facets['user'] = User.objects.count()
 
-    facets['layer'] = facets['raster'] + facets['vector']
+        facets['layer'] = facets['raster'] + facets['vector']
 
     return facets
 

@@ -23,6 +23,7 @@
   {% block mainbody %}
   <div class="container">
     <div class="row">
+    {% with facet_type='home' %}
      {% facets as facets %}
       <div class="col-md-4">
         <p class="text-center"><i class="fa fa-square-o fa-5x rotate-45"></i></p>
@@ -43,6 +44,7 @@
         <p class="text-center">{% trans "GeoNode allows registered users fo easily upload geospatial data in several formats including shapefile and GeoTiff." %}</p>
         <p class="text-center"><a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Share data" %} &raquo;</a></p>
       </div>
+    {% endwith %}
     </div>
   </div>
   {% verbatim %}
