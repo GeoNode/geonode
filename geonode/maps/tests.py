@@ -117,7 +117,7 @@ community."
     }
     """
 
-    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","map_readwrite"]]}
+    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","resourcebase_readwrite"]]}
 
     def test_map_json(self):
         c = Client()
@@ -251,7 +251,7 @@ community."
 
         c = Client()
 
-        url = lambda id: reverse('resource_permissions',args=['map', id])
+        url = lambda id: reverse('resource_permissions',args=[id])
 
         # Test that an invalid layer.typename is handled for properly
         response = c.post(url(invalid_mapid),

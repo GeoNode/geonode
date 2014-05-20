@@ -79,7 +79,7 @@ class LayersTest(TestCase):
         c = Client()
         c.login(username='admin', password='admin')
         form_data = {'title': 'GeoNode Map',
-                     'permissions': '{"anonymous":"document_readonly","authenticated":"document_readwrite","users":[]}',
+                     'permissions': '{"anonymous":"resourcebase_readonly","authenticated":"resourcebase_readwrite","users":[]}',
                      'doc_url': 'http://www.geonode.org/map.pdf'
                      }
 
@@ -114,7 +114,7 @@ class LayersTest(TestCase):
         self.assertTrue('__all__' in form.errors)
 
         form_data = {'title': 'GeoNode Map',
-                     'permissions': '{"anonymous":"document_readonly","authenticated":"document_readwrite","users":[]}',
+                     'permissions': '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
                      'doc_url': 'http://www.geonode.org/map.pdf'
                      }
 
@@ -128,7 +128,7 @@ class LayersTest(TestCase):
         self.assertTrue('permissions' in DocumentCreateForm(data=form_data).errors)
 
         form_data = {'title': 'GeoNode Map',
-                     'permissions': '{"anonymous":"document_readonly","authenticated":"document_readwrite","users":[]}',
+                     'permissions': '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
                      }
 
         file_data = {'doc_file': SimpleUploadedFile('test_img_file.gif', self.imgfile.read(), 'image/gif')}
@@ -188,7 +188,7 @@ class LayersTest(TestCase):
 
     # Layer
     # - LEVEL_READ = document_read
-    # - LEVEL_WRITE = document_readwrite
+    # - LEVEL_WRITE = resourcebase_readwrite
     # - LEVEL_ADMIN = document_admin
     
 
@@ -198,7 +198,7 @@ class LayersTest(TestCase):
     # If anonymous and/or authenticated are not specified, 
     # should set_layer_permissions remove any existing perms granted??
     
-    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","document_readwrite"]]}
+    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","resourcebase_readwrite"]]}
     
     def test_set_document_permissions(self):
         """Verify that the set_document_permissions view is behaving as expected
@@ -243,19 +243,19 @@ class LayersTest(TestCase):
         c = Client()
 
         # Test that an invalid document is handled for properly
-        response = c.post(reverse('resource_permissions', args=('document', invalid_document_id,)), 
+        response = c.post(reverse('resource_permissions', args=(invalid_document_id,)), 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 404) 
 
         # Test that GET returns permissions
-        response = c.get(reverse('resource_permissions', args=('document', document_id,)))
+        response = c.get(reverse('resource_permissions', args=(document_id,)))
         assert('permissions' in response.content)
         
         # Test that a user is required to have documents.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post(reverse('resource_permissions', args=('document', document_id,)), 
+        response = c.post(reverse('resource_permissions', args=(document_id,)), 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401) 
@@ -263,7 +263,7 @@ class LayersTest(TestCase):
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True) 
-        response = c.post(reverse('resource_permissions', args=('document', document_id,)), 
+        response = c.post(reverse('resource_permissions', args=(document_id,)), 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401) 
@@ -271,7 +271,7 @@ class LayersTest(TestCase):
         # Login as a user with the proper permission and test the endpoint
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
-        response = c.post(reverse('resource_permissions', args=('document', document_id,)), 
+        response = c.post(reverse('resource_permissions', args=(document_id,)), 
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
 

@@ -15,8 +15,6 @@ from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
-from .authorization import perms
-
 
 FILTER_TYPES = {
     'layer': Layer,
@@ -46,7 +44,7 @@ class TypeFilteredResource(ModelResource):
 
     def filter_security(self, obj, user):
         """ Used to check whether the item should be included in the counts or not"""
-        return user.has_perm(perms[obj.class_name]['view'], obj)
+        return user.has_perm('base.view_resourcebase', obj.resourcebase_ptr)
 
 
 class TagResource(TypeFilteredResource):
