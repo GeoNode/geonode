@@ -51,12 +51,12 @@
           {% if request.user.is_authenticated %}
           <h3>{% trans "Rate this Map" %}</h3>
           {% user_rating request.user map "map" as user_map_rating %}
-          <div id="user_rating" class="category-map"></div>
+          <div id="user_rating" class="category-map" data-score="{{ user_map_rating }}"></div>
           {% endif %}
           <h3>{% trans 'Average Rating' %}</h3>
           {% overall_rating map "map" as map_rating %}
           {% num_ratings map as num_votes %}
-          <div class="overall_rating" style="float:left" data-rating="{{ map_rating }}"></div> ({{num_votes}})
+          <div class="overall_rating" style="float:left" data-score="{{ map_rating }}"></div> ({{num_votes}})
         </article>
         {% block social_links %}
         {% include "social_links.html" %}
@@ -204,18 +204,9 @@
       {% overall_rating map "map" as the_map_rating %}
 {% endif %}
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/thumbnail/map_thumbnail.js"></script>
+{% include 'rating.html' %}
 <script type="text/javascript">
  $(function() {
-   $('.overall_rating').raty({
-     half: true,
-     readOnly: true,
-     start: $('div.overall_rating').data('rating'),
-     path: "{{ STATIC_URL }}lib/img/"
-     {% if not request.user.is_authenticated %},
-     score: {{ the_map_rating }}
-     {% endif %}
-   });
-   $("#rate-map").raty();
 
   {% verbatim %}
   // Publish layer group
