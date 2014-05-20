@@ -97,6 +97,10 @@ class Document(ResourceBase):
     def class_name(self):
         return self.__class__.__name__
 
+    class Meta(ResourceBase.Meta):
+        pass
+        
+
 def get_related_documents(resource):
     if isinstance(resource, Layer) or isinstance(resource, Map):
         ct = ContentType.objects.get_for_model(resource)

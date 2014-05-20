@@ -70,7 +70,7 @@ _PERMISSION_MSG_METADATA = _("You are not permitted to modify this layer's metad
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 
-def _resolve_layer(request, typename, permission='layers.change_layer',
+def _resolve_layer(request, typename, permission='base.change_resourcebase',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
     """
     Resolve the layer by the provided typename and check the optional permission.
@@ -175,7 +175,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
     context_dict = {
-        "layer": layer,
+        "resource": layer,
         "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
         "documents": get_related_documents(layer),
         "metadata": metadata,
@@ -198,7 +198,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
 @login_required
 def layer_metadata(request, layername, template='layers/layer_metadata.html'):
-    layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA)
+    layer = _resolve_layer(request, layername, 'base.change_resourcebase', _PERMISSION_MSG_METADATA)
     layer_attribute_set = inlineformset_factory(Layer, Attribute, extra=0, form=LayerAttributeForm, )
 
     poc = layer.poc
@@ -293,7 +293,7 @@ def layer_change_poc(request, ids, template = 'layers/layer_change_poc.html'):
 
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
-    layer = _resolve_layer(request, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(request, layername, 'base.change_resourcebase',_PERMISSION_MSG_MODIFY)
 
     if request.method == 'GET':
         return render_to_response(template,
@@ -335,7 +335,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 @login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
     try:
-        layer = _resolve_layer(request, layername, 'layers.delete_layer',
+        layer = _resolve_layer(request, layername, 'base.delete_resourcebase',
                                _PERMISSION_MSG_DELETE)
 
         if (request.method == 'GET'):

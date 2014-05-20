@@ -116,7 +116,7 @@
 
 </script>
 {% if GS_SECURITY_ENABLED %}
-{% with "none" as layer %}
+{% with resource=layer %}
 {% include "_permissions_form_js.html" %}
 {% endwith %}
 {% endif %}

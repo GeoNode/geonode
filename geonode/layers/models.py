@@ -182,6 +182,9 @@ class Layer(ResourceBase):
     def class_name(self):
         return self.__class__.__name__
 
+    class Meta(ResourceBase.Meta):
+        pass
+
 class Layer_Styles(models.Model):
     layer = models.ForeignKey(Layer)
     style = models.ForeignKey(Style)

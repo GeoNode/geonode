@@ -337,6 +337,9 @@ class Map(ResourceBase, GXPMapBase):
         gs_catalog.save(lg)
         return lg_name
 
+    class Meta(ResourceBase.Meta):
+        pass
+
 
 class MapLayer(models.Model, GXPLayerBase):
     """
