@@ -1,4 +1,48 @@
 [
+    {
+        "pk": 1,
+        "model": "security.objectrole",
+        "fields": {
+            "codename": "resourcebase_readonly",
+            "title": "Read Only",
+            "list_order": 0,
+            "permissions": [ 
+                ["view_resourcebase", "base", "resourcebase"]
+            ],
+            "content_type": ["base", "resourcebase"]
+        }
+    },
+    {
+        "pk": 2,
+        "model": "security.objectrole",
+        "fields": {
+            "codename": "resourcebase_readwrite",
+            "title": "Read/Write",
+            "list_order": 1,
+            "permissions": [ 
+                ["view_resourcebase", "base", "resourcebase"],
+                ["change_resourcebase", "base", "resourcebase"]
+            ],
+            "content_type": ["base", "resourcebase"]
+        }
+    },
+
+    {
+        "pk": 3,
+        "model": "security.objectrole",
+        "fields": {
+            "codename": "resourcebase_admin",
+            "title": "Administrative",
+            "list_order": 2,
+            "permissions": [ 
+                ["view_resourcebase", "base", "resourcebase"],
+                ["change_resourcebase", "base", "resourcebase"],
+                ["delete_resourcebase", "base", "resourcebase"],
+                ["change_resourcebase_permissions", "base", "resourcebase"]
+            ],
+            "content_type": ["base", "resourcebase"]
+        }
+    },
   {
         "pk": 13, 
         "model": "base.topiccategory", 

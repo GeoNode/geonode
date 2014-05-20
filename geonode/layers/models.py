@@ -174,18 +174,6 @@ class Layer(ResourceBase):
             return "Unamed Layer"
 
 
-    class Meta:
-        # custom permissions,
-        # change and delete are standard in django
-        permissions = (('view_layer', 'Can view'),
-                       ('change_layer_permissions', "Can change permissions"), )
-
-    # Permission Level Constants
-    # LEVEL_NONE inherited
-    LEVEL_READ  = 'layer_readonly'
-    LEVEL_WRITE = 'layer_readwrite'
-    LEVEL_ADMIN = 'layer_admin'
-
     def maps(self):
         from geonode.maps.models import MapLayer
         return  MapLayer.objects.filter(name=self.typename)

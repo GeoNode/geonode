@@ -153,7 +153,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
-    layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
+    layer = _resolve_layer(request, layername, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
     config = layer.attribute_config()
     if layer.storeType == "remoteStore" and "geonode.contrib.services" in settings.INSTALLED_APPS:

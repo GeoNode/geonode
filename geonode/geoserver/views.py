@@ -383,10 +383,10 @@ def layer_acls(request):
     for bck in get_auth_backends():
         if hasattr(bck, 'objects_with_perm'):
             all_readable.update(bck.objects_with_perm(acl_user,
-                                                      'layers.view_layer',
+                                                      'base.view_resourcebase',
                                                       Layer))
             all_writable.update(bck.objects_with_perm(acl_user,
-                                                      'layers.change_layer',
+                                                      'base.change_resourcebase',
                                                       Layer))
     read_only = [x for x in all_readable if x not in all_writable]
     read_write = [x for x in all_writable if x in all_readable]

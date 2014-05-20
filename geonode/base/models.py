@@ -577,6 +577,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     objects = ResourceBaseManager()
 
+    class Meta:
+        # custom permissions,
+        # change and delete are standard in django
+        permissions = (('view_resourcebase', 'Can view'),
+                       ('change_resourcebase_permissions', "Can change permissions"), )
+
+    # Permission Level Constants
+    # LEVEL_NONE inherited
+    LEVEL_READ  = 'resourcebase_readonly'
+    LEVEL_WRITE = 'resourcebase_readwrite'
+    LEVEL_ADMIN = 'resourcebase_admin'
+
 class LinkManager(models.Manager):
     """Helper class to access links grouped by type
     """

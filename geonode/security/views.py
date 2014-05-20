@@ -64,11 +64,11 @@ def _perms_info_json(obj, level_names):
 def resource_permissions(request, type, resource_id):
     try:
         if type == "layer":
-            resource = resolve_object(request, Layer, {'id':resource_id}, 'layers.change_layer_permissions')
+            resource = resolve_object(request, Layer, {'id':resource_id}, 'base.change_resourcebase_permissions')
         elif type == "map":
-            resource = resolve_object(request, Map, {'id':resource_id}, 'maps.change_map_permissions')
+            resource = resolve_object(request, Map, {'id':resource_id}, 'base.change_resourcebase_permissions')
         elif type == "document":
-            resource = resolve_object(request, Document, {'id':resource_id}, 'documents.change_document_permissions')
+            resource = resolve_object(request, Document, {'id':resource_id}, 'base.change_resourcebase_permissions')
         else:
             return HttpResponse(
                 'Invalid resource type',
