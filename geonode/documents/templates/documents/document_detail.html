@@ -94,12 +94,12 @@
           {% if request.user.is_authenticated %}
           <h3>{% trans "Rate this document" %}</h3>
           {% user_rating request.user document "document" as user_document_rating %}
-          <div id="user_rating" class="category-layer"></div>
+          <div id="user_rating" class="category-layer" data-score="{{user_document_rating}}"></div>
           {% endif %}
           <h3>{% trans 'Average Rating' %}</h3>
           {% overall_rating document "document" as document_rating %}
           {% num_ratings document as num_votes %}
-          <div class="overall_rating" style="float:left" data-rating="{{ document_rating }}"></div> ({{num_votes}})
+          <div class="overall_rating" style="float:left" data-score="{{ document_rating }}"></div> ({{num_votes}})
           <!-- TODO: Add display of who gave what rating based -->
         </article>
       </div>
@@ -161,20 +161,8 @@
     {% else %}
         {% overall_rating document "document" as the_doc_rating %}
     {% endif %}
+    {% include 'rating.html' %}
     <script type="text/javascript">
-    $(function() {
-        $('div.overall_rating').raty({
-            half: true,
-            readOnly: true,
-            start: $('div.overall_rating').data('rating'),
-            path: "{{ STATIC_URL }}lib/img/"
-            {% if not request.user.is_authenticated %},
-            score: {{ the_doc_rating }}
-            {% endif %}
-        });
-        var activeTab = $('[href=' + location.hash + ']');
-        activeTab && activeTab.tab('show');
-    });
         {% if SOCIAL_BUTTONS %}
         (function() {
             var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;

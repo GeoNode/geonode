@@ -92,12 +92,12 @@
         {% if request.user.is_authenticated %}
         <h3>{% trans "Rate this layer" %}</h3>
         {% user_rating request.user layer "layer" as user_layer_rating %}
-        <div id="user_rating" class="category-layer"></div>
+        <div id="user_rating" class="category-layer" data-score="{{ user_layer_rating }}"></div>
         {% endif %}
         <h3>{% trans 'Average Rating' %}</h3>
         {% overall_rating layer "layer" as layer_rating %}
         {% num_ratings layer as num_votes %}
-        <div class="overall_rating" style="float:left" data-rating="{{ layer_rating }}"></div> ({{num_votes}})
+        <div class="overall_rating" style="float:left" data-score="{{ layer_rating }}"></div> ({{num_votes}})
       </article>
 
     </div>
@@ -307,17 +307,10 @@
     {% else %}
       {% overall_rating layer 'layer' as the_layer_rating %}
     {% endif %}
+    {% include 'rating.html' %}
     <script type="text/javascript">
     $(function() {
-        $('div.overall_rating').raty({
-            half: true,
-            readOnly: true,
-            start: $('div.overall_rating').data('rating'),
-            path: "{{ STATIC_URL }}lib/img/"
-            {% if not request.user.is_authenticated %},
-            score: {{ the_layer_rating }}
-            {% endif %}
-        });
+  
         var activeTab = $('[href=' + location.hash + ']');
         activeTab && activeTab.tab('show');
     });
