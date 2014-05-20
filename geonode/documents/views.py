@@ -22,6 +22,13 @@ from geonode.documents.models import IMGTYPES
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
+DOCUMENT_LEV_NAMES = {
+    Document.LEVEL_NONE  : _('No Permissions'),
+    Document.LEVEL_READ  : _('Read Only'),
+    Document.LEVEL_WRITE : _('Read/Write'),
+    Document.LEVEL_ADMIN : _('Administrative')
+}
+
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this document")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this document.')
 _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this document")
@@ -41,7 +48,7 @@ def document_detail(request, docid):
     The view that show details of each document
     """
     document = get_object_or_404(Document, pk=docid)
-    if not request.user.has_perm('base.view_resourcebase', obj=document):
+    if not request.user.has_perm('base.view_resourcebase', obj=document.resourcebase_ptr):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
                 _("You are not allowed to view this document.")})), status=403)
@@ -62,7 +69,7 @@ def document_detail(request, docid):
 
 def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)
-    if not request.user.has_perm('base.view_resourcebase', obj=document):
+    if not request.user.has_perm('base.view_resourcebase', obj=document.resourcebase_ptr):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
                 _("You are not allowed to view this document.")})), status=401)
