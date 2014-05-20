@@ -127,7 +127,7 @@ setup(name='GeoNode',
 
         # GeoPython dependencies
         "OWSLib >=0.7.2, <=0.8.6",
-        "pycsw >=1.6.4, <=1.8.0",
+        "pycsw >=1.6.4, <=1.8.1",
 
         # haystack/elasticsearch, uncomment to use
         #"django-haystack==2.1.0",
