@@ -1,4 +1,5 @@
 {% extends "documents/document_base.html" %}
+{% load bootstrap_tags %}
 {% load i18n %}
 
 {% block title %} {% trans "Upload Document" %} - {{ block.super }} {% endblock %}
@@ -18,13 +19,15 @@
 <div>
 
 <div class="col-md-8">
-<form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-                    {{ form.as_table }}
-                    <div><br/><input class="btn" type="submit" value="Upload" /></div>
-                </form>
-            </div>
-        </div>
+
+  <form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+    {{ form|as_bootstrap }}
+    <div><br/><input class="btn" type="submit" value="Upload" /></div>
+  </form>
+
+</div>
+
 {% endblock %}
 
 {% block sidebar %}
