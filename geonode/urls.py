@@ -78,7 +78,7 @@ urlpatterns = patterns('',
                                        name='account_ajax_login'),
     url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup',
                                        name='account_ajax_lookup'),
-    url(r'^security/permissions/(?P<type>[^/]*)/(?P<resource_id>\d+)$', 'geonode.security.views.resource_permissions',
+    url(r'^security/permissions/(?P<resource_id>\d+)$', 'geonode.security.views.resource_permissions',
                                        name='resource_permissions'),
 
     # Meta

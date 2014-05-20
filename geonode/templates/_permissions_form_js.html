@@ -92,9 +92,9 @@
   $(function() {
 
     $('#permissions-body').ready(function(){
-      {% if layer != "none" and document != "none" %}
+      {% if resource %}
       $.ajax(
-        "{% if layer %}{% url "resource_permissions" 'layer' layer.id %}{% elif map %}{% url "resource_permissions" 'map' map.id %}{% elif document %}{% url "resource_permissions" 'document' document.id %}{% endif %}",
+        "{% url "resource_permissions" resource.id %}",
         {
           success: function(data){
             var perms = $.parseJSON($.parseJSON(data).permissions);
@@ -266,7 +266,7 @@
       var form = $(this);
       var action = form.attr("action");
 
-      var permissions = permissionsString(form, {% if layer %}'layers'{% elif map %}'maps'{% elif document %}'documents'{% endif %});
+      var permissions = permissionsString(form, 'base');
       $.ajax(
         {
           type: "POST",
@@ -283,8 +283,8 @@
     $("#perms_submit").click(function(){
         $("#permission_form").submit();
     });
-    {% if layer or map or document %}
-    $("#permission_form").submit({% if layer or map or document %}perms_submit{% else %}batch_perms_submit{% endif %});
+    {% if resource %}
+    $("#permission_form").submit(perms_submit);
     {% endif %}
   });
 </script>

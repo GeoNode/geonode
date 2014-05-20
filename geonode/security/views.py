@@ -29,6 +29,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
+from geonode.base.models import ResourceBase
 
 def _view_perms_context(obj, level_names):
 
@@ -61,19 +62,10 @@ def _perms_info(obj, level_names):
 def _perms_info_json(obj, level_names):
     return json.dumps(_perms_info(obj, level_names))
 
-def resource_permissions(request, type, resource_id):
+def resource_permissions(request, resource_id):
     try:
-        if type == "layer":
-            resource = resolve_object(request, Layer, {'id':resource_id}, 'base.change_resourcebase_permissions')
-        elif type == "map":
-            resource = resolve_object(request, Map, {'id':resource_id}, 'base.change_resourcebase_permissions')
-        elif type == "document":
-            resource = resolve_object(request, Document, {'id':resource_id}, 'base.change_resourcebase_permissions')
-        else:
-            return HttpResponse(
-                'Invalid resource type',
-                status=401,
-                mimetype='text/plain')
+        resource = resolve_object(request, ResourceBase, {'id':resource_id}, 'base.change_resourcebase_permissions')
+
     except PermissionDenied:
         # we are handling this in a non-standard way
         return HttpResponse(
