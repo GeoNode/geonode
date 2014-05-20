@@ -219,7 +219,6 @@
           {% endfor %}
         </ul>
     </li>
-
     <li class="list-group-item">
       <h4>{% trans "Create a map using this layer" %}</h4>
       <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>
@@ -266,7 +265,7 @@
     <li class="list-group-item">
       <h4>{% trans "Permissions" %}</h4>
       <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
-      <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#_permissions">{% trans "Change Layer Permissions" %}</button>
+      <p><a href="#modal_perms" data-toggle="modal" class="btn btn-default btn-block">{% trans "Change Layer Permissions" %}</a></p>
     </li>
     {% endif %}
     {% endif %}
