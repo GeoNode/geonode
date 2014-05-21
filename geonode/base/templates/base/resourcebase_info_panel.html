@@ -1,176 +1,140 @@
 {% load i18n %}
 
 <article class="description tab-pane active" id="info">
-  <ul class="unstyled wide">
-  {% if resourcebase.title%}
-    <li>
-      <strong>{% trans "Title" %}:</strong>
-      {{ resourcebase.title|truncatechars:80 }}
-    </li>
-  {% endif %}
+  <dl class="dl-horizontal">
+    {% if resourcebase.title %}
+    <dt>{% trans "Title" %}</dt>
+    <dd>{{ resourcebase.title|truncatechars:80 }}</dd>
+    {% endif %}
 
-  {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resourcebase.license %}
-    <li>
-      <strong>{% trans "License" %}:</strong>
-      {{ resourcebase.license.name_long }}
-      <strong><a href="#license-more" data-toggle="collapse" data-target=".license-more">?</a></strong>
-      <div style="margin-left:20px;" class="license-more collapse">
+    {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resourcebase.license %}
+    <dt>{% trans "License" %}</dt>
+    <dd>{{ resourcebase.license.name_long }} <a href="#license-more" data-toggle="collapse" data-target=".license-more"><i class="fa fa-info-circle"></i></a></dd>
+    {% endif %}
+    <div class="license-more collapse">
       {% for bullet in resourcebase.license.description_bullets %}
-        {{ bullet }}<br/><br/>
+        {{ bullet }}
       {% endfor %}
       {% if resourcebase.license.url %}
         + For more info see <a href="{{ resourcebase.license.url }}">{{ resourcebase.license.url }}</a>.
       {% endif %}
-      </div>
-    </li>
-  {% endif %}
+    </div>
 
-  {% if resourcebase.abstract %}
-    <li>
-      <strong>{% trans "Abstract" %}:</strong>
-      {{ resourcebase.abstract|escape|urlize|linebreaks|safe|truncatechars:160 }}
-    </li>
-  {% endif %}
+    {% if resourcebase.abstract %}
+    <dt>{% trans "Abstract" %}</dt>
+    <dd>{{ resourcebase.abstract|escape|urlize|linebreaks|safe|truncatechars:500 }}</dd>
+    {% endif %}
+    
+    {% if resourcebase.date %}
+    <dt>{% trans resourcebase.date_type|title %} {% trans "Date" %}</dt>
+    <dd>{{ resourcebase.date }}</dd>
+    {% endif %}
 
-  {% if resourcebase.date %}
-    <li>
-      <strong>{% trans resourcebase.date_type|title %} {% trans "Date" %}:</strong>
-      {{ resourcebase.date }}
-    </li>
-  {% endif %}
+    {% if resourcebase.display_type %}
+    <dt>{% trans "Type" %}</dt>
+    <dd>{{ resourcebase.display_type }}</dd>
+    {% endif %}
 
-  {% if resourcebase.display_type %}
-    <li>
-      <strong>{% trans "Type" %}:</strong>
-      {{ resourcebase.display_type }}
-    </li>
-  {% endif %}
-
-  {% if resourcebase.keyword_list %}
-    <li>
-      <strong>{% trans "Keywords" %}:</strong>
-      {% for keyword in resourcebase.keyword_list %}
+    {% if resourcebase.keyword_list %}
+    <dt>{% trans "Keywords" %}</dt>
+    <dd>{% for keyword in resourcebase.keyword_list %}
         {{ keyword }}
-      {% endfor %}
-    </li>
-  {% endif %}
+        {% endfor %}</dd>
+    {% endif %}
           
-  {% if resourcebase.category %}
-    <li>
-      <strong>{% trans "Category" %}:</strong>
-      {{ resourcebase.category }}
-    </li>
-  {% endif %}
+    {% if resourcebase.category %}
+    <dt>{% trans "Category" %}</dt>
+    <dd>{{ resourcebase.category }}</dd>
+    {% endif %}
   
-  {% if resourcebase.regions.all %}
-   <li>
-      <strong>{% trans "Regions" %}:</strong>
-        {{ resourcebase.regions.all|join:", " }}
-    </li>
-  {% endif %}
+    {% if resourcebase.regions.all %}
+    <dt>{% trans "Regions" %}</dt>
+    <dd>{{ resourcebase.regions.all|join:", " }}</dd>
+    {% endif %}
   
-  {% if resourcebase.owner %}
-    <li>
-      <strong>{% trans "Owner" %}:</strong>
-      <a href="{{ resourcebase.owner.get_profile.get_absolute_url }}">{{ resourcebase.owner.username }}</a>
-    </li>
-  {% endif %}
+    {% if resourcebase.owner %}
+    <dt>{% trans "Owner" %}</dt>
+    <dd><a href="{{ resourcebase.owner.get_profile.get_absolute_url }}">{{ resourcebase.owner.username }}</a></dd>
+    {% endif %}
 
-  {% if resourcebase.poc.user %}
-    <li>
-      <strong>{% trans "Point of Contact" %}:</strong>
-      <a href="{{ resourcebase.poc.user.get_profile.get_absolute_url }}"> {{ resourcebase.poc.user.username }} </a>
-    <li>
-  {% endif %}
-  </ul>
+    {% if resourcebase.poc.user %}
+    <dt>{% trans "Point of Contact" %}</dt>
+    <dd><a href="{{ resourcebase.poc.user.get_profile.get_absolute_url }}">{{ resourcebase.poc.user.username }}</a></dd>
+    {% endif %}
+  </dl>
 
-  <a href="#more" data-toggle="collapse" data-target=".more">More info</a>
+  <dl class="dl-horizontal">
+    <dt><a href="#more" data-toggle="collapse" data-target=".more">More info</a></dt>
+    <dd>-</dd>
+  </dl>
 
-  <div class="more collapse"> 
-    <ul class="unstyled wide">
+  <dl class="dl-horizontal">
+    <div class="more collapse">
 
     {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resourcebase.license %}
-      <li>
-        <strong>{% trans "License" %}:</strong>
-        {{ resourcebase.license.name_long }}
-        <strong><a href="#license-more" data-toggle="collapse" data-target=".license-more">?</a></strong>
-        <div style="margin-left:20px;" class="license-more collapse">
+    <dt>{% trans "License" %}</dt>
+    <dd>{{ resourcebase.license.name_long }} <a href="#license-more" data-toggle="collapse" data-target=".license-more"><i class="fa fa-info-circle"></i></a></dd>
+      <div class="license-more collapse">
         {% for bullet in resourcebase.license.description_bullets %}
           {{ bullet }}<br/><br/>
         {% endfor %}
         {% if resourcebase.license.url %}
           + For more info see <a href="{{ resourcebase.license.url }}">{{ resourcebase.license.url }}</a>.
         {% endif %}
-        </div>
-      </li>
+      </div>
     {% endif %}
 
     {% if resourcebase.maintenance_frequency %}
-      <li>
-        <strong>{% trans "Maintenance Frequency" %}:</strong>
-        {{ resourcebase.maintenance_frequency_title }}
-      </li>
+    <dt>{% trans "Maintenance Frequency" %}</dt>
+    <dd>{{ resourcebase.maintenance_frequency_title }}</dd>
     {% endif %}
     
     {% if resourcebase.restriction_code_type or resourcebase.constraints_other %}
-      <li>
-        <strong>{% trans "Restrictions" %}:</strong>
-        {% if resourcebase.constraints_other %}
+    <dt>{% trans "Restrictions" %}</dt>
+    <dd>{% if resourcebase.constraints_other %}
             {{ resourcebase.constraints_other }}
         {% else %}
             {{ resourcebase.restriction_code_type }}
-        {% endif %}
-      </li>
+        {% endif %}</dd>
     {% endif %}
           
     {% if resourcebase.edition %}
-      <li>
-        <strong>{% trans "Edition" %}:</strong>
-        {{ resourcebase.edition}}
-      </li>
+    <dt>{% trans "Edition" %}</dt>
+    <dd>{{ resourcebase.edition}}</dd>
     {% endif %}
 
     {% if resourcebase.purpose %}
-      <li>
-        <strong>{% trans "Purpose" %}:</strong>
-        {{ resourcebase.purpose|escape|urlize|linebreaks|safe|truncatechars:160 }}
-      </li>
+    <dt>{% trans "Purpose" %}</dt>
+    <dd>{{ resourcebase.purpose|escape|urlize|linebreaks|safe|truncatechars:160 }}</dd>
     {% endif %}
 
     {% if resourcebase.language %}
-      <li>
-        <strong>{% trans "Language" %}:</strong>
-        {{ resourcebase.language_title }}
-      </li>
+    <dt>{% trans "Language" %}</dt>
+    <dd>{{ resourcebase.language_title }}</dd>
     {% endif %}
 
     {% if resourcebase.temporal_extent_start and resourcebase.temporal_extent_end %}
-      <li>
-        <strong>{% trans "Temporal Extent" %}:</strong>
-        {{ resourcebase.temporal_extent_start }} - {{ resourcebase.temporal_extent_end }}
-      </li>
+    <dt>{% trans "Temporal Extent" %}</dt>
+    <dd>{{ resourcebase.temporal_extent_start }} - {{ resourcebase.temporal_extent_end }}</dd>
     {% endif %}
 
     {% if resourcebase.data_quality_statement %}
-      <li>
-        <strong>{% trans "Data Quality" %}:</strong>
-        {{ resourcebase.data_quality_statement }}
-      </li>
+    <dt>{% trans "Data Quality" %}</dt>
+        {{ resourcebase.data_quality_statement }}</dd>
     {% endif %}
 
     {% if resourcebase.supplemental_information %}
-      <li>
-        <strong>{% trans "Supplemental Information" %}:</strong> 
-        {{ resourcebase.supplemental_information|truncatechars:160|escape|urlize|linebreaks|safe }}
-      </li>
+    <dt>{% trans "Supplemental Information" %}</dt>
+    <dd>{{ resourcebase.supplemental_information|truncatechars:160|escape|urlize|linebreaks|safe }}</dd>
     {% endif %}
 
     {% if resourcebase.spatial_representation_type %}
-      <li>
-        <strong>{% trans "Spatial Representation Type" %}:</strong>
-        {{ resourcebase.spatial_representation_type }}
-      </li>
+    <dt>{% trans "Spatial Representation Type" %}</dt>
+    <dd>{{ resourcebase.spatial_representation_type }}</dd>
     {% endif %}
-    </ul>
+
   </div>
+
+  </dl>
+
 </article>

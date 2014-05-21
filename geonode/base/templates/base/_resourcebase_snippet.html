@@ -1,10 +1,19 @@
 {% verbatim %}
   <article ng-repeat="item in results">
-  	<img class="thumb" ng-src="{{ item.thumbnail_url }}" />
-    <div class="item-header">
-      <a href="{{ item.absolute__url }}">{{ item.title }}</a>
-      <p>{{ item.abstract }}</p>
-      <p>{{ item.date | date : 'd MMM y'}}</p>
+  	<div class="row items-list">
+  	  <div class="col-md-4">
+  	    <a href="{{ item.absolute__url }}"><img class="thumb" ng-src="{{ item.thumbnail_url }}" /></a>
+  	  </div>
+      <div class="col-md-8">
+        <h4><a href="{{ item.absolute__url }}">{{ item.title }}</a> <span class="owner">{{ item.owner.username }}</span></h4>
+        <p>{{ item.category.gn_description }}</p>
+        <p class="abstract">{{ item.abstract|limitTo:250 }}...</p>
+        <p class="actions">
+          <a href="#"><i class="fa fa-calendar-o"></i>{{ item.date|date:'d MMM y' }}</a> | 
+          <a href="#"><i class="fa fa-eye"></i>{{ item.popular_count }}</a> | 
+          <a href="#"><i class="fa fa-share"></i>{{ item.share_count }}</a> | 
+          <a href="#"><i class="fa fa-star"></i>{{ item.rating }}</a></p>
+      </div>
     </div>
   </article>
 {% endverbatim %}

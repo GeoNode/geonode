@@ -1,10 +1,10 @@
-@import "../font/lato_font.css";
+@import "../fonts/lato_font.css";
 @import "../css/font-awesome.css";
 
 /* Variables
 ----------------------- */
 @brand-primary:   rgb(2, 139, 175);
-@brand-secondary: #f05a24;
+@brand-alternate: #f05a24;
 @brand-info:      #5bc0de;
 @brand-warning:   rgb(158, 179, 67); // #f0ad4e;
 @brand-danger:    #d9534f;
@@ -56,6 +56,12 @@ a {
 h1, h2, h3, h4, h5, h6 {
   font-weight: @headings-font-weight;
 }
+.dl-horizontal dt {
+  text-overflow: clip;
+  white-space: normal;
+  overflow: hidden;
+}
+
 #wrap {
   background: @body-bg;
   padding-bottom: 40px;
@@ -68,7 +74,9 @@ h1, h2, h3, h4, h5, h6 {
 .fa {
   margin-right: 8px;
 }
-
+article.tab-pane {
+  padding: 20px 0;
+}
 /* Header
 ----------------------- */
 .navbar {
@@ -123,7 +131,7 @@ body.groups li#nav_groups a {
   background: @brand-primary;
   color: white;
   padding: 20px 0;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
   a {
     color: @brand-warning;
   }
@@ -131,14 +139,63 @@ body.groups li#nav_groups a {
     margin-bottom: 0;
   }
 }
-/* Footer
+/* Items
 ----------------------- */
-footer {
-  border-top: 1px solid @gray-light;
-  padding: 20px;
+.items-list {
+  border-bottom: 1px solid @gray-lighter;
+  border-top: 1px solid @gray-lighter;
+  margin-bottom: 10px;
+  h4 {
+    font-weight: 300;
+    .owner {
+      color: @gray-light;
+      font-size: 14px;
+    }
+  }
+  .abstract {
+    color: @gray-light;
+    font-weight: 300;
+  }
+  .actions {
+    color: @gray-light;
+    a {
+      color: @gray-light;
+      &:hover {
+        color: @gray;
+        text-decoration: none;
+      };
+    }
+  }
 }
-/* Search
+/* Layers
 ----------------------- */
+.layer-actions {
+  margin-top: 20px;
+}
+.arcgis-legend > li {
+  text-align:right;
+}
+.arcgis-legend > li > img {
+    padding-right: 25px;
+}
+
+/* Maps
+----------------------- */
+.map-actions {
+  margin-top: 20px;
+}
+/* Documents
+----------------------- */
+.documents-actions {
+  margin-top: 20px;
+}
+/* Documents
+----------------------- */
+/* People
+----------------------- */
+.profile-details {
+  margin-left: -140px;
+}
 nav.filter {
   h4 {
     background: @gray;
@@ -151,6 +208,12 @@ nav.filter {
     }
     i {
       margin-left: 8px;
+    }
+  }
+  .active {
+    color: @brand-alternate;
+    .badge {
+      background: @brand-alternate;
     }
   }
   .closed {
@@ -169,6 +232,76 @@ nav.filter {
   .thumb {
     float: left;
   }
+}
+/* Upload Layers
+----------------------- */
+
+#drop-zone {
+  background: @gray-lighter;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 2px dashed @gray-light;
+  h3 {
+    color: @gray-light;
+    margin: 20px 0;
+    text-align: center;
+    i {
+      font-size: 3em;
+    }
+  }
+}
+#clear-button, #upload-button {
+  margin-top: 20px;
+}
+/* Upload Time
+----------------------- */
+/*#timeForm label {
+  display: inline;
+  }
+.formSection {
+  margin-bottom: 1em;
+ }
+    .right input, .right select {
+    }
+    .left input {
+        line-height: 2em;
+    }
+    form input, form select {
+        font-size: small;
+    }
+    form label {
+        line-height: 2em;
+    }
+    .clearfix:after {
+      content: ".";
+      display: block;
+      height: 0;
+      clear: both;
+      visibility: hidden;
+    }
+    .clearfix {
+      display: inline-block;
+    }
+    * html .clearfix {
+      height: 1%;
+    } /* Hides from IE-mac \*/
+    /*.clearfix {
+      display: block;
+    }
+    #format_input input {
+        width:8em;
+    }
+    #timehelp p {
+        color: black !important;
+    }
+    #timehelp code {
+        background: @gray-light;
+    }*/
+/* Footer
+----------------------- */
+footer {
+  border-top: 1px solid @gray-light;
+  padding: 20px;
 }
 
 /* Etc
