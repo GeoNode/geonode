@@ -30,14 +30,14 @@ Ext.onReady(function() {
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
         {% endif %}
-        {% if PRINTNG_ENABLED %}
+        {% if PRINT_NG_ENABLED %}
         listeners: {
             'save': function(obj_id) {
                 createMapThumbnail(obj_id);
             }
         },
         {% endif %}
-        {% if MF_PRINT_ENABLED %}
+        {% if MAPFISH_PRINT_ENABLED %}
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
         {% else %}
         printService: "",

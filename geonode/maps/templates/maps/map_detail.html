@@ -106,7 +106,7 @@
               <div class="modal-body">
                 <ul>
                   <li><a href="{% url "map_metadata" map.id %}">{% trans "Edit Map Metadata" %}</a></li>
-                  {% if PRINTNG_ENABLED %}
+                  {% if PRINT_NG_ENABLED %}
                   <li><a href="#" id="set_thumbnail">{% trans "Set Map Thumbnail" %}</a></li>
                   {% endif %}
                   <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Map Permissions" %}</a></li>
@@ -294,7 +294,7 @@
     return false;
   });
 
-{% if PRINTNG_ENABLED %}
+{% if PRINT_NG_ENABLED %}
   $('#set_thumbnail').click(function(){
     return createMapThumbnail();
   });
