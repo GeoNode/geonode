@@ -18,9 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Opencarto.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from django import db
-from django.db import connections
 from django.db.utils import DatabaseError
 from django.contrib.gis.gdal import DataSource, SpatialReference, OGRGeometry
 from django.contrib.gis.utils import LayerMapping
@@ -211,10 +209,7 @@ def execute(sql):
     """Turns out running plain SQL within Django is very hard.
        The following code is really weak but gets the job done.
     """
-    from django import db
-    db.close_connection()
-    from django.db import connections
-    cursor = connections['datastore'].cursor()
+    cursor = db.connections['datastore'].cursor()
     try:
         cursor.execute(sql)
     except:
