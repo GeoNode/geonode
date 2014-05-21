@@ -544,7 +544,9 @@ Configure GeoServer with the location of the GeoNode site, used for
 authentication (so that GeoServer can recognize logins from the main site).
 This setting defaults to http://localhost:8000/, so if you are running the
 GeoNode Django application on a different port, or on a different server from
-the one running GeoServer, then you will need to change this by adding a block
+the one running GeoServer, then you will need to change this in two places.
+
+Firstly, by adding a block
 of XML to ``WEB-INF/web.xml`` within the unpacked application directory, like
 so:
 
@@ -557,6 +559,19 @@ so:
 
 The ``<param-value>`` tag should enclose the URL to the Django application
 homepage.
+
+And secondly, update the value of the ``baseUrl`` tag in 
+``data/security/auth/geonodeAuthProvider/config.xml``:
+
+.. code-block:: xml
+
+    <org.geonode.security.GeoNodeAuthProviderConfig>
+      <id>-54fbcd7b:1402c24f6bc:-7fe9</id>
+      <name>geonodeAuthProvider</name>
+      <className>org.geonode.security.GeoNodeAuthenticationProvider</className>
+      <baseUrl>http://localhost/</baseUrl>
+    </org.geonode.security.GeoNodeAuthProviderConfig>
+
 
 .. note:: While we intend to provide a detailed, accurate explanation of the
         installation process, if you run into problems with the process

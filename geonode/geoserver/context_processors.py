@@ -29,9 +29,9 @@ def geoserver_urls(request):
     defaults = dict(
             GEOSERVER_BASE_URL=ogc_server_settings.public_url,
             UPLOADER_URL=reverse('data_upload') if getattr(settings, 'UPLOADER', dict()).get('BACKEND', 'geonode.rest') == 'geonode.importer' else reverse('layer_upload'),
-            MF_PRINT_ENABLED=ogc_server_settings.MAPFISH_PRINT_ENABLED,
-            PRINTNG_ENABLED=ogc_server_settings.PRINTNG_ENABLED,
-            GS_SECURITY_ENABLED=ogc_server_settings.GEONODE_SECURITY_ENABLED,
+            MAPFISH_PRINT_ENABLED=ogc_server_settings.MAPFISH_PRINT_ENABLED,
+            PRINT_NG_ENABLED=ogc_server_settings.PRINT_NG_ENABLED,
+            GEONODE_SECURITY_ENABLED=ogc_server_settings.GEONODE_SECURITY_ENABLED,
             GEOGIT_ENABLED=ogc_server_settings.GEOGIT_ENABLED,
             TIME_ENABLED=getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', False),
             )
