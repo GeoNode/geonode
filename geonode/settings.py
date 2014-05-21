@@ -322,7 +322,7 @@ MIDDLEWARE_CLASSES = (
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
-AUTHENTICATION_BACKENDS = ('geonode.security.auth.GranularBackend','guardian.backends.ObjectPermissionBackend',)
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend','guardian.backends.ObjectPermissionBackend',)
 
 ANONYMOUS_USER_ID = -1
 

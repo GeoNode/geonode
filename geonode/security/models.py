@@ -26,6 +26,9 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login
+
+from guardian.shortcuts import get_perms
+
 if "geonode.contrib.groups" in settings.INSTALLED_APPS:
     from geonode.contrib.groups.models import Group
 from geonode.security.enumerations import GENERIC_GROUP_NAMES
@@ -83,59 +86,6 @@ class UserObjectRoleMapping(models.Model):
 
     class Meta:
         unique_together = (('user', 'object_ct', 'object_id', 'role'), )
-
-
-class GenericObjectRoleMapping(models.Model):
-    """
-    represents assignment of a role to an arbitrary implicitly
-    defined group of users (groups without explicit database representation)
-    in the context of a specific object. eg 'all authenticated users'
-    'anonymous users', 'users <as defined by some other service>'
-    """
-
-    subject = models.CharField(max_length=100, choices=sorted(GENERIC_GROUP_NAMES.items()))
-
-    object_ct = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    object = GenericForeignKey('object_ct', 'object_id')
-
-    role = models.ForeignKey(ObjectRole, related_name="generic_mappings")
-
-    def __unicode__(self):
-        return u"%s | %s -> %s" % (
-            unicode(self.object),
-            unicode(GENERIC_GROUP_NAMES[self.subject]),
-            unicode(self.role))
-
-    class Meta:
-        unique_together = (('subject', 'object_ct', 'object_id', 'role'), )
-
-
-class GroupObjectRoleMapping(models.Model):
-    """
-    represents assignment of a role to a group 
-    in the context of a specific object.
-    """
-
-    if "geonode.contrib.groups" in settings.INSTALLED_APPS:
-        group = models.ForeignKey(Group, related_name="role_mappings")
-    
-        object_ct = models.ForeignKey(ContentType)
-        object_id = models.PositiveIntegerField()
-        object = GenericForeignKey('object_ct', 'object_id')
-
-        role = models.ForeignKey(ObjectRole, related_name="group_mappings")
-
-        def __unicode__(self):
-            return u"%s | %s -> %s" % (
-                unicode(self.object),
-                unicode(self.group), 
-                unicode(self.role))
-
-        class Meta:
-            unique_together = (('group', 'object_ct', 'object_id', 'role'), )
-    else:
-        pass
 
 
 class PermissionLevelError(Exception):
@@ -266,16 +216,16 @@ class PermissionLevelMixin(object):
             GenericObjectRoleMapping.objects.create(subject=gen_role, object_ct=my_ct, object_id=self.id, role=role)
 
     def get_user_levels(self):
-        ct = ContentType.objects.get_for_model(self)
+        ct = get_contenttype_for_object(self)
         return UserObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
 
     if "geonode.contrib.groups" in settings.INSTALLED_APPS:
         def get_group_levels(self):
-            ct = ContentType.objects.get_for_model(self)
+            ct = get_contenttype_for_object(self)
             return GroupObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
 
     def get_generic_levels(self):
-        ct = ContentType.objects.get_for_model(self)
+        ct = get_contenttype_for_object(self)
         return GenericObjectRoleMapping.objects.filter(object_id = self.id, object_ct = ct)
 
     def get_all_level_info(self):
@@ -378,7 +328,9 @@ class PermissionLevelMixin(object):
 
 
 def get_contenttype_for_object(obj):
-    if obj.class_name in ['Layer', 'Map', 'Document']:
+    """If the passed object is a child of ResourceBase, then return the ResourceBase contentType"""
+    from geonode.base.models import ResourceBase
+    if isinstance(obj, ResourceBase):
         my_ct = ContentType.objects.get(model='resourcebase')
     else:
         my_ct = ContentType.objects.get_for_model(obj)

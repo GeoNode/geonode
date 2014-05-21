@@ -75,8 +75,8 @@ class GroupDetailView(ListView):
     def get_context_data(self, **kwargs):
         context = super(GroupDetailView, self).get_context_data(**kwargs)
         context['object'] = self.group
-        context['maps'] = self.group.resources(resource_type=Map)
-        context['layers'] = self.group.resources(resource_type=Layer)
+        context['maps'] = self.group.resources(resource_type='Map')
+        context['layers'] = self.group.resources(resource_type='Layer')
         context['is_member'] = self.group.user_is_member(self.request.user)
         context['is_manager'] = self.group.user_is_role(self.request.user, "manager")
         return context

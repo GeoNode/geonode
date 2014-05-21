@@ -16,9 +16,12 @@ from django.template import RequestContext
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 
+from guardian.shortcuts import get_objects_for_user
+
 from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
+from geonode.base.models import ResourceBase
 from geonode.geoserver.signals import gs_catalog
 from geonode.utils import json_response, _get_basic_auth_info
 from geoserver.catalog import FailedRequestError, ConflictingDataError
@@ -378,16 +381,10 @@ def layer_acls(request):
             return HttpResponse(_("Bad HTTP Authorization Credentials."),
                                 status=401,
                                 mimetype="text/plain")
-    all_readable = set()
-    all_writable = set()
-    for bck in get_auth_backends():
-        if hasattr(bck, 'objects_with_perm'):
-            all_readable.update(bck.objects_with_perm(acl_user,
-                                                      'base.view_resourcebase',
-                                                      Layer))
-            all_writable.update(bck.objects_with_perm(acl_user,
-                                                      'base.change_resourcebase',
-                                                      Layer))
+
+    all_readable = get_objects_for_user(acl_user, 'base.view_resourcebase')
+    all_writable = get_objects_for_user(acl_user, 'base.change_resourcebase')
+  
     read_only = [x for x in all_readable if x not in all_writable]
     read_write = [x for x in all_writable if x in all_readable]
 
