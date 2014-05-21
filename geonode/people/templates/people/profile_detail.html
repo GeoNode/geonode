@@ -6,73 +6,83 @@
 
 {% block title %} {% trans "Profile of " %}{{ profile.name|default_if_none:profile.user.username }}{% endblock %}
 
-{% block body_class %}people people-list explore{% endblock %}
+{% block body_class %}people explore{% endblock %}
 
 {% block body %}
-  <div class="span12">
-    <div class="avatar pull-left span2">{% avatar profile.user 140 %}
-      {% if_has_tag actor_url %}
-      <p class="clearfix"><a href="{% actor_url profile.user %}" class="btn btn-primary btn-block" type="button">{% trans "My Activities" %}</a></p>
-    {% endif_has_tag %}
-    </div>
-    <h2 class="page-title span6">{{ profile.name|default_if_none:profile.user.username }}</h2>
-    <div class="profile-info span6">
-      <dl class="dl-horizontal meta">
-        <dt><i class="icon-user"></i></dt>
-        <dd>{{ profile.user.username }}<br />
-        {% if profile.position %}{{ profile.position }}{% endif %}
-        {{ profile.organization|default_if_none:"Organization N/A" }}
+<div class="row">
+  <div class="col-md-12">
+    <h2 class="page-title">{{ profile.name|default_if_none:profile.user.username }}</h2>
+  </div>
+  <div class="col-md-2">
+    {% avatar profile.user 140 %}
+  </div>
+  <div class="col-md-6">
+    <dl class="dl-horizontal profile-details">
+      <dt><i class="fa fa-user"></i></dt>
+      <dd>{{ profile.user.username }}
+        {% if profile.position %} | {{ profile.position }}{% endif %}
+        {% if profile.organization %} @ {{ profile.organization }}{% endif %}
         {% if profile.profile %}<br />{{ profile.profile }}{% endif %}</dd>
-        <dt><i class="icon-map-marker"></i></dt>
-        <dd>{% if profile.profile %}{{ profile.delivery }}<br />{% endif %}
+        <dt><i class="fa fa-map-marker"></i></dt>
+        <dd>{% if profile.delivery %}{{ profile.delivery }}, {% endif %}
           {% if profile.profile %}{{ profile.zipcode }} {% endif %}
-          {{ profile.city|default_if_none:"Location N/A" }} 
-          {% if profile.area %}{{ profile.area }}{% endif %}
-          {% if profile.country %}<br />{{ profile.country|default_if_none:"not available" }}{% endif %}</dd>
+          {% if profile.city %}{{ profile.city }} {% endif %}
+          {% if profile.area %}{{ profile.area }} {% endif %}
+          {{ profile.country|default_if_none:"not available" }}</dd>
         {% if user.is_authenticated %}
-          {% if profile.voice %}
-          <dt><i class="icon-phone"></i></dt>
-          <dd>{{ profile.voice }}</dd>
-          {% endif %}
-          {% if profile.fax %}
-          <dt><i class="icon-print"></i></dt>
-          <dd>{{ profile.fax }}</dd>
-          {% endif %}
+        {% if profile.voice %}
+        <dt><i class="fa fa-phone"></i></dt>
+        <dd>{{ profile.voice }}</dd>
         {% endif %}
-        <dt></dt>
+        {% if profile.fax %}
+        <dt><i class="fa fa-print"></i></dt>
+        <dd>{{ profile.fax }}</dd>
+        {% endif %}
+        {% endif %}
+        <dt><i class="fa fa-tag"></i></dt>
         <dd>{% for tag in profile.keywords.all %}
               {{ tag.name }}
-            {% endfor %}</dd>
+            {% endfor %}
+        </dd>
       </dl>
-    </div>
-    <div class="span4" style="margin-left: 0">
+  </div>
+
+  <div class="col-md-4">
+    
     {% if user == profile.user %}
-      <ul class="nav nav-list">
-        <li><a href="{% url "profile_edit" user.username %}">{% trans "Edit profile information" %}</a></li>
-        <li><a href="{% url "account_settings" %}">{% trans "Account Settings" %}</a></li>
-        <li><a href="{% url "account_password" %}">{% trans "Change password" %}</a></li>
-        <li><a href="{% url "layer_upload" %}">{% trans "Upload new layers" %}</a></li>
-        <li><a href="{% url "new_map" %}">{% trans "Create a new map" %}</a></li>
-      </ul>
+    <ul class="list-group">
+      <li class="list-group-item"><a href="{% url "profile_edit" user.username %}">{% trans "Edit profile" %}</a></li>
+      <li class="list-group-item"><a href="{% url "account_settings" %}">{% trans "Account Settings" %}</a></li>
+      <li class="list-group-item"><a href="{% url "account_password" %}">{% trans "Change password" %}</a></li>
+      <li class="list-group-item"><a href="{% url "layer_upload" %}">{% trans "Upload new layers" %}</a></li>
+      <li class="list-group-item"><a href="{% url "new_map" %}">{% trans "Create a new map" %}</a></li>
+      {% if_has_tag actor_url %}
+      <li class="list-group-item"><a href="{% actor_url profile.user %}">{% trans "My Activities" %}</a></li>
+      {% endif_has_tag %}
+    </ul>
       {% if_has_tag if_relationship %}
         {% include "relationships/_manage_connections.html" %}
       {% endif_has_tag %}
     {% else %}
       {% if_has_tag if_relationship %}
-          {% include "relationships/_profile_follow.html" %}
+        {% include "relationships/_profile_follow.html" %}
       {% endif_has_tag %}
     {% endif %}
+
     {% if_has_tag if_relationship %}
       {% include "relationships/_list_connections.html" %}
     {% endif_has_tag %}
-    </div>
+
   </div>
-  <div class="span12"> <h2>Resources</h2></div>
-<div class="span8 filter">
+
+</div>
+
+<div class="col-md-8">
+  <h3>Resources</h3>
   {% include "people/_profile_filters.html" %}
 </div>
-<div class="row">
-  <div class="span12">
+
+<div class="col-md-8">
     <div class="tab-content span12 paginate paginate-auto">
       {% if object_list|length > 0 %}
       <div class="tab-pane active list paginate-contents" id="all">
@@ -84,15 +94,15 @@
                 <div class="item-header">
                 {% if obj.class_name = 'Map' %}
                 <img class="thumb" src="/uploaded/{{ obj.thumbnail.thumb_file }}" />
-                <h3><i class="icon-map-marker"></i>
+                <h3><i class="fa fa-map-marker"></i>
                 {% endif %}
                 {% if obj.class_name = 'Layer' %}
                 <img class="thumb" src="/uploaded/{{ obj.thumbnail.thumb_file }}" />
-                <h3><i class="icon-unchecked icon-rotate-45"></i>
+                <h3><i class="fa fa-square-o rotate-45"></i>
                 {% endif %}
                 {% if obj.class_name = 'Document' %}
                 <div class="icon-placeholder"><i class="icon-file-text-alt"></i></div>
-                <h3><i class="icon-file-text-alt"></i>
+                <h3><i class="fa fa-file-text-alt"></i>
                 {% endif %}
                   <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
                 </h3>
@@ -120,6 +130,7 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
 
 
