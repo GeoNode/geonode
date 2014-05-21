@@ -256,7 +256,7 @@
     </li>
     {% endif %}
 
-    {% if GS_SECURITY_ENABLED %}
+    {% if GEONODE_SECURITY_ENABLED %}
     {% has_obj_perm user layer "layers.change_layer_permissions" as can_change_permissions %}
     {% if can_change_permissions %}
     <li class="list-group-item">
@@ -292,7 +292,7 @@
   </ul>
 
 
-  {% if GS_SECURITY_ENABLED %}   
+  {% if GEONODE_SECURITY_ENABLED %}   
   {% include "_permissions_form.html" %}
   {% endif %}
 {% endblock %}
@@ -340,7 +340,7 @@
     });
     {% endif %}
         </script>
-    {% if GS_SECURITY_ENABLED %}
+    {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
     {% endif %}
 {% endblock extra_script %}
