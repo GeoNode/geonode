@@ -300,6 +300,8 @@ class GeoNodeMapTest(TestCase):
             uploaded = file_upload(thefile, overwrite=True)
         except UploadError, e:
             pass
+        except GeoNodeException, e:
+            pass
         except Exception, e:
             raise
             # msg = ('Was expecting a %s, got %s instead.' %
