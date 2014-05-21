@@ -114,7 +114,7 @@ class LayerResource(CommonModelApi):
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')
         resource_name = 'layers'
-
+        excludes = ['csw_anytext', 'metadata_xml']
 
 class MapResource(CommonModelApi):
     """Maps API"""
