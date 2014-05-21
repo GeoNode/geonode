@@ -1,32 +1,27 @@
 {% verbatim %}
 <article ng-repeat="group in results">
-  <div class="content">
-    <div class="item-header">
-
-      <div ng-if="group.logo != ''" class="avatar"><img ng-src="{{ group.logo }}" alt="{{ group.title }}" class="group-logo" /></div>
-
-      <div class="avatar"><div class="img-missing"></div></div>
-      
-      <h3><i class="fa fa-group"></i> <a href="{{ group.detail_url }}">{{ group.title }}</a></h3>
-    </div>
-    <div class="details">
-      <div class="meta">
-        <p class="abstract">
-          {{ group.description}}
-        </p>
-          <ul class="nav stats">
-            <li><a href="{{ group.detail_url }}">
-              <strong>{{ group.member_count }}</strong>
-              <ng-pluralize count="group.member_count" when="{'1': 'Member', 'other': 'Members'}">
-              </ng-pluralize>
-            </a></li>
-            <li><a href="{{ group.detail_url }}"><strong>{{ group.manager_count }}</strong>
-              <ng-pluralize count="group.manager_count" when="{'1': 'Manager', 'other': 'Managers'}">
-              </ng-pluralize>
-            </a></li>
-          </ul>
-      </div> <!-- ./meta -->
-    </div> <!-- ./details -->
-  </div> <!-- ./content -->
+  <div class="row">
+  <div ng-if="group.logo != ''" class="col-md-3">
+    <img ng-src="{{ group.logo }}" alt="{{ group.title }}" class="group-logo" />
+  </div>
+  <div class="col-md-9">
+    <h5><i class="fa fa-group"></i> <a href="{{ group.detail_url }}">{{ group.title }}</a></h5>
+    <p>{{ group.description}}</p>
+    <ul class="list-inline">
+      <li>
+        <a href="{{ group.detail_url }}">
+          <strong>{{ group.member_count }}</strong>
+          <ng-pluralize count="group.member_count" when="{'1': 'Member', 'other': 'Members'}"></ng-pluralize>
+        </a>
+      </li>
+      <li>
+        <a href="{{ group.detail_url }}">
+          <strong>{{ group.manager_count }}</strong>
+          <ng-pluralize count="group.manager_count" when="{'1': 'Manager', 'other': 'Managers'}"></ng-pluralize>
+        </a>
+      </li>
+    </ul>
+  </div>
+  </div>
 </article>
 {% endverbatim %}
