@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 
+from avatar.templatetags.avatar_tags import avatar_url
+
 from geonode.base.models import TopicCategory
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -187,8 +189,7 @@ class ProfileResource(ModelResource):
         return bundle.obj.user.resourcebase_set.instance_of(Document).count()
 
     def dehydrate_avatar_100(self, bundle):
-        avatars = bundle.obj.user.avatar_set.filter(primary=True)
-        return avatars[0].avatar_url(100) if avatars.count() > 0 else ''
+        return avatar_url(bundle.obj.user, 100)
 
     def dehydrate_profile_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
