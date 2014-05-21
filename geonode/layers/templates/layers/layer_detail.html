@@ -175,12 +175,13 @@
           </div>
           <div class="modal-body">
             <ul>
-            {% if GEOSERVER_BASE_URL %}
+              <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %}</a></li>            
+              {% if GEOSERVER_BASE_URL %}
               <li><a href="{% url "layer_style_manage" layer.typename %}">{% trans "Manage Styles" %}</a></li>
               <li><a class="style-edit" href="#">{% trans "Edit Styles" %}</a></li>
+              {% endif %}
               <li><a href="{% url "layer_replace" layer.typename %}">{% trans "Replace this Layer" %}</a></li>
               <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %}</a></li>
-            {% endif %}
             <ul>
           </div>
           <div class="modal-footer">
