@@ -90,14 +90,14 @@
       <article id="rate" class="tab-pane">
         <!-- TODO: Move this to a reusable template snippet -->
         {% if request.user.is_authenticated %}
-        <h3>{% trans "Rate this layer" %}</h3>
+        <h4>{% trans "Rate this layer" %}</h4>
         {% user_rating request.user layer "layer" as user_layer_rating %}
         <div id="user_rating" class="category-layer" data-score="{{ user_layer_rating }}"></div>
         {% endif %}
-        <h3>{% trans 'Average Rating' %}</h3>
+        <h4>{% trans 'Average Rating' %}</h4>
         {% overall_rating layer "layer" as layer_rating %}
         {% num_ratings layer as num_votes %}
-        <div class="overall_rating" style="float:left" data-score="{{ layer_rating }}"></div> ({{num_votes}})
+        <div class="overall_rating" data-score="{{ layer_rating }}"></div> ({{num_votes}})
       </article>
 
     </div>
@@ -107,10 +107,9 @@
   <div class="col-md-4">
 
     <ul class="list-group">
+
       <li class="list-group-item">
-
-    <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
-
+        <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
       </li>
 
     <div class="modal fade" id="download-layer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -123,7 +122,7 @@
           <div class="modal-body">
             <ul>
               {% for link in links %}
-              <li><a href="{{ link.url }}">{% trans link.name %} <i class="icon-chevron-right"></i></a></li>
+              <li><a href="{{ link.url }}">{% trans link.name %}</a></li>
               {% endfor %}
             <ul>
           </div>
@@ -135,10 +134,8 @@
     </div>
 
     <li class="list-group-item">
-  
-    <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-metadata">{% trans "Download Metadata" %}</button>
-
-  </li>
+      <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-metadata">{% trans "Download Metadata" %}</button>
+    </li>
 
     <div class="modal fade" id="download-metadata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -150,7 +147,7 @@
           <div class="modal-body">
             <ul>
               {% for link in metadata %}
-                <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
+                <li><a href="{{ link.url }}">{{ link.name }}</a></li>
               {% endfor %}
             <ul>
           </div>
@@ -193,8 +190,6 @@
       </div>
     </div>
     {% endif %}
-  
-  <!-- <ul class="list-group"> -->
 
     {% if layer.get_legend %}
     <li class="list-group-item">
@@ -261,13 +256,13 @@
     </li>
     {% endif %}
 
-    {% if GS_SECURITY_ENABLED %}
+    {% if GEONODE_SECURITY_ENABLED %}
     {% has_obj_perm user layer "layers.change_layer_permissions" as can_change_permissions %}
     {% if can_change_permissions %}
     <li class="list-group-item">
       <h4>{% trans "Permissions" %}</h4>
       <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
-      <p><a href="#modal_perms" data-toggle="modal" class="btn btn-default btn-block">{% trans "Change Layer Permissions" %}</a></p>
+      <p><a href="#modal_perms" data-toggle="modal" class="btn btn-default btn-block" data-target="#_permissions">{% trans "Change Layer Permissions" %}</a></p>
     </li>
     {% endif %}
     {% endif %}
@@ -297,7 +292,7 @@
   </ul>
 
 
-  {% if GS_SECURITY_ENABLED %}   
+  {% if GEONODE_SECURITY_ENABLED %}   
   {% include "_permissions_form.html" %}
   {% endif %}
 {% endblock %}
@@ -345,7 +340,7 @@
     });
     {% endif %}
         </script>
-    {% if GS_SECURITY_ENABLED %}
+    {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
     {% endif %}
 {% endblock extra_script %}

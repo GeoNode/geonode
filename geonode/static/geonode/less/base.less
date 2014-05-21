@@ -56,6 +56,12 @@ a {
 h1, h2, h3, h4, h5, h6 {
   font-weight: @headings-font-weight;
 }
+.dl-horizontal dt {
+  text-overflow: clip;
+  white-space: normal;
+  overflow: hidden;
+}
+
 #wrap {
   background: @body-bg;
   padding-bottom: 40px;
@@ -68,7 +74,9 @@ h1, h2, h3, h4, h5, h6 {
 .fa {
   margin-right: 8px;
 }
-
+article.tab-pane {
+  padding: 20px 0;
+}
 /* Header
 ----------------------- */
 .navbar {
@@ -176,8 +184,18 @@ body.groups li#nav_groups a {
 .map-actions {
   margin-top: 20px;
 }
-/* Search
+/* Documents
 ----------------------- */
+.documents-actions {
+  margin-top: 20px;
+}
+/* Documents
+----------------------- */
+/* People
+----------------------- */
+.profile-details {
+  margin-left: -140px;
+}
 nav.filter {
   h4 {
     background: @gray;
@@ -190,6 +208,12 @@ nav.filter {
     }
     i {
       margin-left: 8px;
+    }
+  }
+  .active {
+    color: @brand-alternate;
+    .badge {
+      background: @brand-alternate;
     }
   }
   .closed {
@@ -208,6 +232,11 @@ nav.filter {
   .thumb {
     float: left;
   }
+}
+/* Groups
+----------------------- */
+.group-logo {
+  width: 100%;
 }
 /* Upload Layers
 ----------------------- */

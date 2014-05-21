@@ -18,99 +18,127 @@
 {% block body_class %}documents{% endblock %}
 
 {% block body_outer %}
-  <div class="col-md-6">
+
+<div class="row">
+  <div class="col-md-12">
     <h2 class="page-title">{{ document.title }}</h2>
   </div>
-  <div class="col-md-6 action-group">
-	  <div class="btn-group pull-right">
-      <div class="btn-group">
-        <a class="btn btn-large btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
-          {% trans "Download Metadata" %}
-          <span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-          {% for link in document.link_set.metadata %}
-            <li><a href="{{ link.url }}">{{ link.name }} <i class="icon-chevron-right"></i></a></li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% has_obj_perm user document "documents.change_document" as can_edit_document %}
-    {% if can_edit_document %}
-    <div class="btn-group">
-      <a class="btn btn-large btn-info dropdown-toggle" data-toggle="dropdown" href="#">
-        {% trans "Edit Document" %}
-        <span class="caret"></span>
-      </a>
-      <ul class="dropdown-menu">
-        <li><a href="{% url "document_metadata" document.id %}">{% trans "Edit Metadata" %} <i class="icon-chevron-right"></i></a></li>
-        <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Permissions" %} <i class="icon-chevron-right"></i></a></li>
-        <li><a href="{% url "document_replace" document.id %}">{% trans "Replace this Document" %} <i class="icon-chevron-right"></i></a></li>
-        <li><a href="{% url "document_remove" document.id %}">{% trans "Remove this Document" %} <i class="icon-chevron-right"></i></a></li>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+
+    {% if document.extension|lower in imgtypes and document.doc_file %}
+    <div id="embedded_map">
+      <img src="{% url "document_download" document.id %}" width='100%' />
+    </div>
+    {% elif document.doc_file %}
+    <p><a href="{% url "document_download" document.id %}" target="_blank">Download the {{ document }} document</a></p>
+    {% elif  document.doc_url %}
+    <p><a href="{{ document.doc_url }}" target="_blank">Download the {{ document }} document.</a> <small>({% trans 'External Resource' %})</small></p>
+    {%  endif %}
+       
+    <div class="documents-actions">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#info" data-toggle="tab"><i class="fa fa-info-circle"></i>{% trans "Info" %}</a></li>
+        {% if SOCIAL_BUTTONS %}
+        <li><a href="#share" data-toggle="tab"><i class="fa fa-share"></i>{% trans "Share" %}</a></li>
+        {% endif %}
+        <li><a href="#rate" data-toggle="tab"><i class="fa fa-star"></i>{% trans "Ratings" %}</a></li>
+        <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
       </ul>
     </div>
-    {% endif %}
+
+    <div class="tab-content">
+      {% include "base/resourcebase_info_panel.html" with resourcebase=document %}
+
+      {% block social_links %}
+        {% include "social_links.html" %}
+      {% endblock %}
+        
+      <article id="comments" class="tab-pane">
+        {% with document as obj %}
+          {% include "_comments.html" %}
+        {% endwith %}
+      </article>
+        
+      <article id="rate" class="tab-pane">
+        <!-- TODO: Move this to a reusable template snippet -->
+        {% if request.user.is_authenticated %}
+        <h4>{% trans "Rate this document" %}</h4>
+        {% user_rating request.user document "document" as user_document_rating %}
+        <div id="user_rating" class="category-layer" data-score="{{user_document_rating}}"></div>
+        {% endif %}
+        <h4>{% trans 'Average Rating' %}</h4>
+        {% overall_rating document "document" as document_rating %}
+        {% num_ratings document as num_votes %}
+        <div class="overall_rating" style="float:left" data-score="{{ document_rating }}"></div> ({{num_votes}})
+        <!-- TODO: Add display of who gave what rating based -->
+      </article>
     </div>
   </div>
-  <div class="col-md-8">
-   
-      {% if document.extension|lower in imgtypes and document.doc_file %}
-      <div id="embedded_map">
-        <img src="{% url "document_download" document.id %}" width='100%' />
-      </div>
-      {% elif document.doc_file %}
-        <a href="{% url "document_download" document.id %}" target="_blank">Download the {{ document }} document</a>
-      {% elif  document.doc_url %}
-        <a href="{{ document.doc_url }}" target="_blank">Download the {{ document }} document.</a> <i>({% trans 'External Resource' %})</i>
-      {%  endif %}
-       
-      <div class="map-actions">
-        <ul class="nav nav-tabs">
-          <li class="active"><a href="#info" data-toggle="tab"><i class="icon-info-sign"></i>{% trans "Info" %}</a></li>
-          <li><a href="#comments" data-toggle="tab"><i class="icon-comment"></i> {% trans "Comments" %}</a></li>
-          <li><a href="#rate" data-toggle="tab"><i class="icon-star"></i>{% trans "Ratings" %}</a></li>
-          <li><a href="#share" data-toggle="tab"><i class="icon-share"></i>{% trans "Share" %}</a></li>
-          <!-- li><a href="#flag" data-toggle="tab"><i class="icon-flag"></i>{% trans "Flag" %}</a></li -->
-        </ul>
-      </div>
-      <div class="tab-content">
-        {% include "base/resourcebase_info_panel.html" with resourcebase=document %}
 
-        {% block social_links %}
-        {% include "social_links.html" %}
-        {% endblock %}
+  <div class="col-md-4">
 
-        <!--article id="flag" class="tab-pane">
-          <p>Flag this Layer</p>
-        </article-->
-        
-        <article id="comments" class="tab-pane">
-          {% with document as obj %}
-            {% include "_comments.html" %}
-          {% endwith %}
-        </article>
-        
-        <article id="rate" class="tab-pane">
-          <!-- TODO: Move this to a reusable template snippet -->
-          {% if request.user.is_authenticated %}
-          <h3>{% trans "Rate this document" %}</h3>
-          {% user_rating request.user document "document" as user_document_rating %}
-          <div id="user_rating" class="category-layer" data-score="{{user_document_rating}}"></div>
-          {% endif %}
-          <h3>{% trans 'Average Rating' %}</h3>
-          {% overall_rating document "document" as document_rating %}
-          {% num_ratings document as num_votes %}
-          <div class="overall_rating" style="float:left" data-score="{{ document_rating }}"></div> ({{num_votes}})
-          <!-- TODO: Add display of who gave what rating based -->
-        </article>
+    <ul class="list-group">
+
+      <li class="list-group-item">
+        <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-metadata">{% trans "Download Metadata" %}</button>
+      </li>
+      <div class="modal fade" id="download-metadata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title" id="myModalLabel">{% trans "Download Layer" %}</h4>
+            </div>
+            <div class="modal-body">
+              <ul>
+                {% for link in document.link_set.metadata %}
+                <li><a href="{{ link.url }}">{{ link.name }}</a></li>
+                {% endfor %}
+              <ul>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
       </div>
-  </div>
-  <aside class="col-md-4">
-    <div class="well">
-        <h2>{% trans "Resource using this document" %}</h2>
+
+      {% has_obj_perm user document "documents.change_document" as can_edit_document %}
+      {% if can_edit_document %}
+      <li class="list-group-item">
+        <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#edit-document">{% trans "Edit Document" %}</button>
+      </li>
+      <div class="modal fade" id="edit-document" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title" id="myModalLabel">{% trans "Download Layer" %}</h4>
+            </div>
+            <div class="modal-body">
+              <ul>
+                <li><a href="{% url "document_metadata" document.id %}">{% trans "Edit Metadata" %}</a></li>
+                <li><a href="{% url "document_replace" document.id %}">{% trans "Replace this Document" %}</a></li>
+                <li><a href="{% url "document_remove" document.id %}">{% trans "Remove this Document" %}</a></li>
+              <ul>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <li class="list-group-item">
+        <h4>{% trans "Resource using this document" %}</h4>
         {% if layer.maps %}
         <p>{% trans "List of resources using this document:" %}</p>
         {% endif %}
-        <ul class="unstyled space">
+        <ul class="list-unstyled">
           {% if related.title %}
           <p>{% trans "This document is related to a " %} {{ document.content_type.name }}</p>
           <a href='{{ related.get_absolute_url }}'>{{ related.title }}</a>
@@ -118,33 +146,39 @@
           <p>{% trans "This document is not related to any maps or layers" %}</p>
           {% endif %}
         </ul>
-    </div>
-    {% has_obj_perm user document "documents.change_document_permissions" as can_change_permissions %}
-    {% if can_change_permissions %}
-    <div class="well">
-        <h2>{% trans "Permissions" %}</h2>
+      </li>
+
+      {% has_obj_perm user document "documents.change_document_permissions" as can_change_permissions %}
+      {% if can_change_permissions %}
+      <li class="list-group-item">
+        <h4>{% trans "Permissions" %}</h4>
         <p>{% trans "Click the button below to change the permissions of this document." %}</p>
-        <p><a href="#modal_perms" data-toggle="modal" class="btn btn-large">{% trans "Change Document Permissions" %}</a></p>
-    </div>
-    {% endif %}
-    <div class="well">
-      <h2>{% trans "About" %}</h2>
-      <p>{% trans "Document Owner" %}</p>
-      {% with document.owner.profile as profile %}
-        {% include "people/_profile_about_item.html" %}
-      {% endwith %}
-      <p>{% trans "Point of Contact" %}</p>
-      {% with document.poc as profile %}
-        {% include "people/_profile_about_item.html" %}
-      {% endwith %}
-      <p>{% trans "Metadata Author" %}</p>
-      {% with document.metadata_author as profile %}
-        {% include "people/_profile_about_item.html" %}
-      {% endwith %}
-    </div>
-  </aside>
-  {% include "_permissions_form.html" %}
+        <p><a href="#modal_perms" data-toggle="modal" class="btn btn-default btn-block" data-target="#_permissions">{% trans "Change Document Permissions" %}</a></p>
+      </li>
+      {% include "_permissions_form.html" %}
+      {% endif %}
+
+      <li class="list-group-item">
+        <h4>{% trans "About" %}</h4>
+        <p>{% trans "Document Owner" %}</p>
+        {% with document.owner.profile as profile %}
+          {% include "people/_profile_about_item.html" %}
+        {% endwith %}
+        <p>{% trans "Point of Contact" %}</p>
+        {% with document.poc as profile %}
+          {% include "people/_profile_about_item.html" %}
+        {% endwith %}
+        <p>{% trans "Metadata Author" %}</p>
+        {% with document.metadata_author as profile %}
+          {% include "people/_profile_about_item.html" %}
+        {% endwith %}
+      </li>
+
+    </ul>
+  </div>
+
 {% endblock %}
+
 {% block extra_script %}
 {% if SOCIAL_BUTTONS %}
 <div id="fb-root"></div>
