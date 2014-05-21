@@ -9,6 +9,7 @@ from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.layers.views import LAYER_LEV_NAMES
 from geonode.maps.models import Map
+from geonode.base.models import ResourceBase
 from geonode.base.populate_test_data import create_models
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.security.views import _perms_info
@@ -42,8 +43,8 @@ class SmokeTest(TestCase):
         self.assertEqual(layer.get_gen_level(AUTHENTICATED_USERS), layer.LEVEL_READ)
 
         # Test that the default perms give Norman view permissions but not write permissions
-        read_perms = backend.objects_with_perm(self.norman, 'base.view_resourcebase', Layer)
-        write_perms = backend.objects_with_perm(self.norman, 'base.change_resourcebase', Layer)
+        read_perms = backend.objects_with_perm(self.norman, 'base.view_resourcebase', ResourceBase)
+        write_perms = backend.objects_with_perm(self.norman, 'base.change_resourcebase', ResourceBase)
         self.assertTrue(layer.id in read_perms)
         self.assertTrue(layer.id not in write_perms)
 
@@ -57,21 +58,21 @@ class SmokeTest(TestCase):
         self.assertTrue(self.bar.user_is_member(self.norman))
 
         # Test that the bar group has default permissions on the layer
-        bar_read_perms = backend.objects_with_perm(self.bar, 'base.view_resourcebase', Layer)
-        bar_write_perms = backend.objects_with_perm(self.bar, 'base.change_resourcebase', Layer)
+        bar_read_perms = backend.objects_with_perm(self.bar, 'base.view_resourcebase', ResourceBase)
+        bar_write_perms = backend.objects_with_perm(self.bar, 'base.change_resourcebase', ResourceBase)
         self.assertTrue(layer.id in bar_read_perms)
         self.assertTrue(layer.id not in bar_write_perms)
 
         # Give the bar group permissions to change the layer.
         layer.set_group_level(self.bar, Layer.LEVEL_WRITE)
-        bar_read_perms = backend.objects_with_perm(self.bar, 'base.view_resourcebase', Layer)
-        bar_write_perms = backend.objects_with_perm(self.bar, 'base.change_resourcebase', Layer)
+        bar_read_perms = backend.objects_with_perm(self.bar, 'base.view_resourcebase', ResourceBase)
+        bar_write_perms = backend.objects_with_perm(self.bar, 'base.change_resourcebase', ResourceBase)
         self.assertTrue(layer.id in bar_read_perms)
         self.assertTrue(layer.id in bar_write_perms)
 
         # Test that the bar group perms give Norman view and change permissions
-        read_perms = backend.objects_with_perm(self.norman, 'base.view_resourcebase', Layer)
-        write_perms = backend.objects_with_perm(self.norman, 'base.change_resourcebase', Layer)
+        read_perms = backend.objects_with_perm(self.norman, 'base.view_resourcebase', ResourceBase)
+        write_perms = backend.objects_with_perm(self.norman, 'base.change_resourcebase', ResourceBase)
         self.assertTrue(layer.id in read_perms)
         self.assertTrue(layer.id in write_perms)
 
@@ -93,8 +94,8 @@ class SmokeTest(TestCase):
         self.assertTrue(map in self.bar.resources())
 
         # Test the resource filter
-        self.assertTrue(layer in self.bar.resources(resource_type=Layer))
-        self.assertTrue(map not in self.bar.resources(resource_type=Layer))
+        self.assertTrue(layer in self.bar.resources(resource_type='Layer'))
+        self.assertTrue(map not in self.bar.resources(resource_type='Layer'))
 
         # Revoke permissions on the layer from the self.bar group
         layer.set_group_level(self.bar, Layer.LEVEL_NONE)
@@ -119,7 +120,7 @@ class SmokeTest(TestCase):
         perms_info = _perms_info(layer, LAYER_LEV_NAMES)
 
         # Ensure foo is in the perms_info output
-        self.assertDictEqual(perms_info['groups'], {u'bar': u'layer_readonly'})
+        self.assertDictEqual(perms_info['groups'], {u'bar': u'resourcebase_readonly'})
 
     def test_resource_permissions(self):
         """
@@ -135,7 +136,7 @@ class SmokeTest(TestCase):
         objects = layer, document, map_obj
 
         for obj in objects:
-            response = c.get(reverse('resource_permissions', kwargs=dict(type=obj.polymorphic_ctype.model, resource_id=obj.id)))
+            response = c.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
             self.assertEqual(response.status_code, 200)
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
@@ -151,12 +152,12 @@ class SmokeTest(TestCase):
                            "groups": [[self.bar.slug, obj.LEVEL_WRITE]]}
 
             # Give the bar group permissions
-            response = c.post(reverse('resource_permissions', kwargs=dict(type=obj.polymorphic_ctype.model, resource_id=obj.id)),
+            response = c.post(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)),
                               data=json.dumps(permissions), content_type="application/json")
 
             self.assertEqual(response.status_code, 200)
 
-            response = c.get(reverse('resource_permissions', kwargs=dict(type=obj.polymorphic_ctype.model, resource_id=obj.id)))
+            response = c.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
 
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
@@ -172,12 +173,12 @@ class SmokeTest(TestCase):
                            "groups": {}}
 
             # Update the object's permissions to remove the bar group
-            response = c.post(reverse('resource_permissions', kwargs=dict(type=obj.polymorphic_ctype.model, resource_id=obj.id)),
+            response = c.post(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)),
                               data=json.dumps(permissions), content_type="application/json")
 
             self.assertEqual(response.status_code, 200)
 
-            response = c.get(reverse('resource_permissions', kwargs=dict(type=obj.polymorphic_ctype.model, resource_id=obj.id)))
+            response = c.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
 
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())

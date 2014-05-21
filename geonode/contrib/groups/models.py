@@ -57,7 +57,7 @@ class Group(models.Model):
         queryset = GroupObjectRoleMapping.objects.filter(group=self)
 
         if resource_type:
-            queryset = queryset.filter(object_ct=ContentType.objects.get_for_model(resource_type))
+            queryset = [item for item in queryset if item.object.class_name==resource_type]
 
         for resource in queryset:
             yield resource.object
