@@ -855,7 +855,7 @@ msgstr ""
 # b46bc8c6b54a4db488658cd5c46d38fa
 #: ../../reference/developers/django-apps.txt:228
 #: ../../reference/developers/settings.txt:249
-msgid "PRINTNG_ENABLED"
+msgid "PRINT_NG_ENABLED"
 msgstr ""
 
 # c6f02419b3f7470b899fbb4b3ab671e5

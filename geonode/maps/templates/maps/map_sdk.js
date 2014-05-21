@@ -13,7 +13,7 @@ Ext.onReady(function() {
     var config = Ext.apply({
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
         proxy: '{{ PROXY_URL }}',
-        {% if MF_PRINT_ENABLED %}
+        {% if MAPFISH_PRINT_ENABLED %}
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
         {% else %}
         printService: "",

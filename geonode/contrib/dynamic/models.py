@@ -248,10 +248,6 @@ def generate_model(model_description, mapping, db_key=''):
                     Setting.objects.get_or_create(field=field, name=name, value=value)
 
 
-    # This method may not close the transaction correctly.
-    # The following line will force it.
-    db.close_connection()
-
 
 def normalize_col_name(col_name, used_column_names, is_relation):
     """
