@@ -15,6 +15,7 @@ css:
 	less geonode/less/grayscale.less >> geonode/css/grayscale.css
 
 js:
+	bower install
 	grunt copy
 
 .PHONY: all clean

@@ -184,7 +184,7 @@ class UtilsTests(TestCase):
                     'USER': 'admin',
                     'PASSWORD': 'geoserver',
                     'MAPFISH_PRINT_ENABLED': True,
-                    'PRINTING_ENABLED': True,
+                    'PRINT_NG_ENABLED': True,
                     'GEONODE_SECURITY_ENABLED': True,
                     'GEOGIT_ENABLED': False,
                     'WMST_ENABLED': False,
@@ -221,7 +221,7 @@ class UtilsTests(TestCase):
             self.assertEqual(ogc_settings.DATASTORE, str())
             self.assertEqual(ogc_settings.credentials, ('admin', 'geoserver'))
             self.assertTrue(ogc_settings.MAPFISH_PRINT_ENABLED)
-            self.assertTrue(ogc_settings.PRINTING_ENABLED)
+            self.assertTrue(ogc_settings.PRINT_NG_ENABLED)
             self.assertTrue(ogc_settings.GEONODE_SECURITY_ENABLED)
             self.assertFalse(ogc_settings.GEOGIT_ENABLED)
             self.assertFalse(ogc_settings.WMST_ENABLED)

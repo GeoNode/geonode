@@ -35,7 +35,7 @@ from django.test import LiveServerTestCase as TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags import staticfiles
 
-from geoserver.catalog import FailedRequestError
+from geoserver.catalog import FailedRequestError, UploadError
 
 from geonode.security.models import *
 from geonode.layers.models import Layer
@@ -298,6 +298,8 @@ class GeoNodeMapTest(TestCase):
         thefile = os.path.join(gisdata.BAD_DATA, 'points_epsg2249_no_prj.shp')
         try:
             uploaded = file_upload(thefile, overwrite=True)
+        except UploadError, e:
+            pass
         except GeoNodeException, e:
             pass
         except Exception, e:

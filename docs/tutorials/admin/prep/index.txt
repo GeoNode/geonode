@@ -32,18 +32,18 @@ Edit the local_settings file::
 
 Edit the DATABASE_PASSWORD with another one and the SECRET_KEY with something of your choice. 
 
-Edit the SITEURL directive to "http://localhost:4567/"
-Then restart apache.
-
 Edit the geonode role's password in postgres using the same used in the local_settings::
 
     $ sudo su postgres
     $ psql -c "alter role geonode with password 'yourpassword';"
     $ exit
 
-Launch the commands::
+Launch the command to change the SITEURL directive in local_setting.py to http://localhost:4567 and restart apache among other things.
 
-    $ sudo geonode-updateip localhost
+    $ sudo geonode-updateip localhost:4567
+    
+Launch the Geonode command to create a new superuser account within Django for GeoNode
+
     $ geonode createsuperuser
 
 Then exit the machine and shut it down with::

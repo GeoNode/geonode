@@ -95,7 +95,7 @@ class ResourceBaseResource(CommonModelApi):
 
 
     class Meta(CommonMetaApi):
-        queryset = ResourceBase.objects.distinct().order_by('-date')
+        queryset = ResourceBase.objects.polymorphic_queryset().distinct().order_by('-date')
         resource_name = 'base'
 
 
@@ -114,7 +114,7 @@ class LayerResource(CommonModelApi):
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')
         resource_name = 'layers'
-
+        excludes = ['csw_anytext', 'metadata_xml']
 
 class MapResource(CommonModelApi):
     """Maps API"""
