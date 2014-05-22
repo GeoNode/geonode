@@ -158,21 +158,6 @@ class Thumbnail(models.Model):
         return self.thumb_file.name
 
 
-class ResourceBaseManager(PolymorphicManager):
-    def admin_contact(self):
-        # this assumes there is at least one superuser
-        superusers = User.objects.filter(is_superuser=True).order_by('id')
-        if superusers.count() == 0:
-            raise RuntimeError('GeoNode needs at least one admin/superuser set')
-
-        contact = Profile.objects.get_or_create(user=superusers[0],
-                                                defaults={"name": "Geonode Admin"})[0]
-        return contact
-
-    def get_queryset(self):
-        return super(ResourceBaseManager, self).get_queryset().non_polymorphic()
-
-
 class License(models.Model):
     identifier = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=100)
@@ -205,6 +190,24 @@ class License(models.Model):
     class Meta:
         ordering = ("name",)
         verbose_name_plural = 'Licenses'
+
+
+class ResourceBaseManager(PolymorphicManager):
+    def admin_contact(self):
+        # this assumes there is at least one superuser
+        superusers = User.objects.filter(is_superuser=True).order_by('id')
+        if superusers.count() == 0:
+            raise RuntimeError('GeoNode needs at least one admin/superuser set')
+
+        contact = Profile.objects.get_or_create(user=superusers[0],
+                                                defaults={"name": "Geonode Admin"})[0]
+        return contact
+
+    def get_queryset(self):
+        return super(ResourceBaseManager, self).get_queryset().non_polymorphic()
+
+    def polymorphic_queryset(self):
+        return super(ResourceBaseManager, self).get_queryset()
 
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin):
