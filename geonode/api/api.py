@@ -57,7 +57,7 @@ class TagResource(TypeFilteredResource):
     def dehydrate_count(self, bundle):
         count = 0
         if self.type_filter:
-            for tagged in bundle.obj.taggit_taggeditem_items.all():
+            for tagged in bundle.obj.taggit_taggeditem_items.polymorphic_queryset():
                 if tagged.content_object and tagged.content_type.model_class() == self.type_filter and \
                     self.filter_security(tagged.content_object, bundle.request.user):
                     count += 1
@@ -80,8 +80,8 @@ class TopicCategoryResource(TypeFilteredResource):
 
     def dehydrate_count(self, bundle):
         count = 0
-        resources = bundle.obj.resourcebase_set.instance_of(self.type_filter) if \
-            self.type_filter else bundle.obj.resourcebase_set.all()
+        resources = bundle.obj.resourcebase_set.polymorphic_queryset().instance_of(self.type_filter) if \
+            self.type_filter else bundle.obj.resourcebase_set.polymorphic_queryset()
 
         for resource in resources:
             if self.filter_security(resource, bundle.request.user):
