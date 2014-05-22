@@ -24,5 +24,8 @@
     "jquery.ajaxQueue": "https://github.com/gnarf/jquery-ajaxQueue.git",
     "angular": "1.2.6",
     "angular-leaflet-directive": "~0.7.3"
+  },
+  "resolutions": {
+    "jquery": ">= 1.7.1"
   }
 }
