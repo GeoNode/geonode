@@ -169,6 +169,9 @@ class ResourceBaseManager(PolymorphicManager):
                                                 defaults={"name": "Geonode Admin"})[0]
         return contact
 
+    def get_queryset(self):
+        return super(ResourceBaseManager, self).get_queryset().non_polymorphic()
+
 
 class License(models.Model):
     identifier = models.CharField(max_length=255, editable=False)
