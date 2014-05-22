@@ -4,9 +4,9 @@
   "main": "geonode/css/base.css",
   "componentsDirectory": ".components",
   "dependencies": {
-    "datatables": "1.9.4",
+    "datatables": "1.10",
     "select2": "3.2.0",
-    "jquery": "1.11.0",
+    "jquery": ">=1.8.0",
     "jquery-timeago": "0.11.4",
     "jquery-ui": "1.10.4",
     "requirejs": "2.1.2",
