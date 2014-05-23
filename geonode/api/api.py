@@ -80,7 +80,7 @@ class TopicCategoryResource(TypeFilteredResource):
 
     def dehydrate_count(self, bundle):
         count = 0
-        resources = bundle.obj.resourcebase_set.instance_of(self.type_filter) if \
+        resources = bundle.obj.resourcebase_set.instance_of(self.type_filter).get_real_instances() if \
             self.type_filter else bundle.obj.resourcebase_set.get_real_instances()
 
         for resource in resources:
