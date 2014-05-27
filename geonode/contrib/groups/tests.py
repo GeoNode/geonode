@@ -75,6 +75,26 @@ class SmokeTest(TestCase):
         self.assertTrue(layer.id in read_perms)
         self.assertTrue(layer.id in write_perms)
 
+    def test_permissions_for_public_groups(self):
+        """
+        If layer is restricted to public groups, only members of the public group should see the object.
+        """
+        bar = self.bar
+        norman = self.norman
+        layer = Layer.objects.all()[0]
+        self.assertFalse(bar.user_is_member(norman))
+        perms = layer.get_all_level_info()
+        perms['authenticated'] = layer.LEVEL_NONE
+        perms['anonymous'] = layer.LEVEL_NONE
+        perms['groups'] = [(bar.slug, layer.LEVEL_WRITE)]
+        layer.set_permissions(perms)
+        bck = get_backends()[0]
+        layers = bck.objects_with_perm(norman, 'layers.view_layer', Layer)
+        self.assertTrue(layer.id not in layers)
+
+        bar.join(norman)
+        layers = bck.objects_with_perm(norman, 'layers.view_layer', Layer)
+        self.assertTrue(layer.id in layers)
 
     def test_group_resource(self):
         """
