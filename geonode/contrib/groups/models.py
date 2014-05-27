@@ -30,12 +30,14 @@ class Group(models.Model):
     
     @classmethod
     def groups_for_user(cls, user):
+        """
+        Returns the groups that user is a member of.  If the user is a superuser, all groups are returned.
+        """
         if user.is_authenticated():
             if user.is_superuser:
                 return cls.objects.all()
-            return cls.objects.exclude(access="private") | cls.objects.filter(groupmember__user=user)
-        else:
-            return cls.objects.exclude(access="private")
+            return cls.objects.filter(groupmember__user=user)
+        return []
     
     def __unicode__(self):
         return self.title
