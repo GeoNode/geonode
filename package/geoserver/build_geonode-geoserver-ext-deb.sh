@@ -54,11 +54,11 @@ cp target/geonode-geoserver-ext-*-geoserver-plugin.zip $DL_ROOT/$GIT_REV/.
 cp target/*data.zip $DL_ROOT/$GIT_REV/data.zip
 
 # Remove all but last 4 builds to stop disk from filling up
-(ls -t|tail -n 3)|sort|uniq -u | xargs rm -rf
+#(ls -t|tail -n 3)|sort|uniq -u | xargs rm -rf
 
 # Cleanup
-rm -rf $DL_ROOT/latest
-ln -sf $DL_ROOT/$GIT_REV $DL_ROOT/latest
+#rm -rf $DL_ROOT/latest
+#ln -sf $DL_ROOT/$GIT_REV $DL_ROOT/latest
 #rm ../geoserver-geonode*
 
 popd
