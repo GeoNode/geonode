@@ -85,7 +85,8 @@ class ServicesTests(TestCase):
             self.fail("Service not created: %s" % str(e))
 
 
-    def test_register_csw(self):
+    # Disabled the test below because it uses an external service and fails randomly.
+    def dont_test_register_csw(self):
         c = Client()
         c.login(username='admin', password='admin')
         response = c.post(reverse('register_service'),
