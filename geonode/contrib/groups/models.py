@@ -8,7 +8,7 @@ from django.core.mail import send_mail
 from django.db import models, IntegrityError
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group as DjangoGroup
 from django.contrib.sites.models import Site
 from taggit.managers import TaggableManager
 
@@ -27,7 +27,13 @@ class Group(models.Model):
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
     access = models.CharField(max_length=15, default="public'", choices=GROUP_CHOICES)
     last_modified = models.DateTimeField(auto_now=True)
+    django_group = models.OneToOneField(DjangoGroup)
     
+
+    def save(self):
+        self.django_group, __ = DjangoGroup.objects.get_or_create(name=self.slug)
+        super(Group, self).save()
+
     @classmethod
     def groups_for_user(cls, user):
         if user.is_authenticated():
