@@ -120,7 +120,22 @@ class CommonModelApi(ModelResource):
             bundle = self.full_dehydrate(bundle)
             objects.append(bundle)
 
+        if page.has_previous():
+            previous_page = page.previous_page_number()
+        else:
+            previous_page = 1
+        if page.has_next():
+            next_page = page.next_page_number()
+        else:
+            next_page = 1
         object_list = {
+           "meta": {
+                "limit": 100,
+                "next": next_page, 
+                "offset": int(request.GET.get('offset')),
+                "previous": previous_page, 
+                "total_count": sqs.count(), 
+            },
             'objects': objects,
         }
 
