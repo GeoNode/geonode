@@ -5,6 +5,7 @@ from tastypie.utils import trailing_slash
 
 from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
+from django.http import Http404
 
 from haystack.query import SearchQuerySet
 
@@ -55,7 +56,7 @@ class CommonModelApi(ModelResource):
         if 'type__in' in filters and filters['type__in'] in FILTER_TYPES.keys():
             orm_filters.update({'type': filters.getlist('type__in')})
         if 'extent' in filters:
-            orm_filters.update({'extent': filters['extent'].split(',')})
+            orm_filters.update({'extent': filters['extent']})
         return orm_filters
 
     def apply_filters(self, request, applicable_filters):
@@ -78,14 +79,12 @@ class CommonModelApi(ModelResource):
         else:
             filtered = semi_filtered
 
-        if extent:
-            filtered = self.filter_bbox(filtered, extent)
-
+        #if extent:
+        #    filtered = self.filter_bbox(filtered, extent)
         return filtered
 
     def filter_bbox(self, queryset, bbox):
         '''modify the queryset q to limit to the provided bbox
-
         bbox - 4 tuple of floats representing 'southwest_lng,southwest_lat,northeast_lng,northeast_lat'
         returns the modified query
         '''
@@ -100,23 +99,26 @@ class CommonModelApi(ModelResource):
         self.is_authenticated(request)
         self.throttle_check(request)
 
+        # TODO Make sure the filters are being applied properly
+        #filters = self.build_filters(request.GET)
+        #orm_objects = self.apply_filters(request, filters)
+
         # Do the query.
-        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('title__contains', ''))
-        paginator = Paginator(sqs, 20)
+        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', ''))
+        paginator = Paginator(sqs, request.GET.get('limit'))
 
         try:
-            page = paginator.page(int(request.GET.get('page', 1)))
+            page = paginator.page(int(request.GET.get('offset')) / int(request.GET.get('limit'), 0) + 1)
         except InvalidPage:
             raise Http404("Sorry, no results on that page.")
 
         objects = []
-
+        
         for result in page.object_list:
+            #if result.object in orm_objects:
             bundle = self.build_bundle(obj=result.object, request=request)
             bundle = self.full_dehydrate(bundle)
             objects.append(bundle)
-
-        # TODO Make sure the filters are being applied properly
 
         object_list = {
             'objects': objects,
