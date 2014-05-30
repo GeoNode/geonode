@@ -101,7 +101,7 @@ class CommonModelApi(ModelResource):
         self.throttle_check(request)
 
         # Do the query.
-        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', ''))
+        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('title__contains', ''))
         paginator = Paginator(sqs, 20)
 
         try:
@@ -115,6 +115,8 @@ class CommonModelApi(ModelResource):
             bundle = self.build_bundle(obj=result.object, request=request)
             bundle = self.full_dehydrate(bundle)
             objects.append(bundle)
+
+        # TODO Make sure the filters are being applied properly
 
         object_list = {
             'objects': objects,
