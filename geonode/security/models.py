@@ -29,13 +29,14 @@ from django.contrib.auth import login
 if "geonode.contrib.groups" in settings.INSTALLED_APPS:
     from geonode.contrib.groups.models import Group
 
-from guardian.shortcuts import assign_perm, get_perms, remove_perm
+from guardian.shortcuts import assign_perm, get_perms, remove_perm, \
+    get_groups_with_perms, get_users_with_perms
 from guardian.utils import get_anonymous_user
 
 from geonode.security.enumerations import GENERIC_GROUP_NAMES
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
-
+ 
 class PermissionLevelError(Exception):
     pass
 
@@ -47,10 +48,22 @@ class PermissionLevelMixin(object):
     user has exactly one assigned role with respect to
     an object representing an "access level"
     """
+    
+    LEVEL_NONE = "_none"
 
 
     def set_default_permissions(self):
-        pass
+        for user, perms in get_users_with_perms(self.resourcebase_ptr, attach_perms=True).iteritems():
+            for perm in perms:
+                remove_perm(perm, user, self.resourcebase_ptr)
+
+
+        for group, perms in get_groups_with_perms(self.resourcebase_ptr, attach_perms=True).iteritems():
+            for perm in perms:
+                remove_perm(perm, group, self.resourcebase_ptr)
+
+        assign_perm('view_resourcebase', get_anonymous_user(), self.resourcebase_ptr)
+
 
     def set_permissions(self, perm_spec):
         """
