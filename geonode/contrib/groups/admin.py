@@ -7,9 +7,12 @@ class GroupMemberInline(admin.TabularInline):
     model = geonode.contrib.groups.models.GroupMember
 
 
-admin.site.register(geonode.contrib.groups.models.Group,
+class GroupAdmin(admin.ModelAdmin):
     inlines = [
         GroupMemberInline
     ]
-)
+    exclude = ('django_group',)
+
+admin.site.register(geonode.contrib.groups.models.Group, GroupAdmin)
+
 admin.site.register(geonode.contrib.groups.models.GroupInvitation)
