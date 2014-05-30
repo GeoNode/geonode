@@ -95,18 +95,13 @@ class CommonModelApi(ModelResource):
         queryset = queryset.filter(bbox_x1__lte=bbox[2])
         return queryset.filter(bbox_y1__lte=bbox[3])
 
-    def prepend_urls(self):
-        return [
-            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
-        ]
- 
     def get_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         self.is_authenticated(request)
         self.throttle_check(request)
 
         # Do the query.
-        sqs = SearchQuerySet().models(ResourceBase).load_all().auto_query(request.GET.get('q', ''))
+        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', ''))
         paginator = Paginator(sqs, 20)
 
         try:
@@ -131,11 +126,14 @@ class CommonModelApi(ModelResource):
 class ResourceBaseResource(CommonModelApi):
     """ResourceBase api"""
 
-
     class Meta(CommonMetaApi):
         queryset = ResourceBase.objects.polymorphic_queryset().distinct().order_by('-date')
         resource_name = 'base'
 
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
+        ]
 
 class FeaturedResourceBaseResource(CommonModelApi):
     """Only the featured resourcebases"""
@@ -143,7 +141,6 @@ class FeaturedResourceBaseResource(CommonModelApi):
     class Meta(CommonMetaApi):
         queryset = ResourceBase.objects.filter(featured=True).order_by('-date')
         resource_name = 'featured'
-
 
 class LayerResource(CommonModelApi):
     """Layer API"""
@@ -161,11 +158,9 @@ class MapResource(CommonModelApi):
         queryset = Map.objects.distinct().order_by('-date')
         resource_name = 'maps'
 
-
 class DocumentResource(CommonModelApi):
     """Maps API"""
 
     class Meta(CommonMetaApi):
         queryset = Document.objects.distinct().order_by('-date')
         resource_name = 'documents'
-
