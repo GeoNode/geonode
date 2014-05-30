@@ -23,6 +23,7 @@ install:
 
 before_script:
   - paver setup
+  - paver static
 
 script:
   - python manage.py test geonode.tests.smoke
@@ -43,3 +44,4 @@ notifications:
     use_notice: true
   email:
     - geonode-dev@opengeo.org
+    - ingenieroariel@gmail.com
