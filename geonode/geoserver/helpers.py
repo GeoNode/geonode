@@ -269,10 +269,12 @@ def cascading_delete(cat, layer_name):
 
         else:
             try:
-                cat.delete(store, recurse=True)
+                if not store.get_resources():
+                    cat.delete(store, recurse=True)
+                else:
+                    return
             except FailedRequestError as e:
-                # Trying to delete a shared store will fail 
-                # We'll catch the exception and log it.
+                # Catch the exception and log it.
                 logger.debug(e) 
 
 
