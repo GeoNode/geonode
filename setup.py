@@ -114,7 +114,7 @@ setup(name='GeoNode',
         "django-leaflet==0.13.2",
 
         # GeoNode org maintained apps.
-        "django-geoexplorer==4.0.3",
+        "django-geoexplorer==4.0.4",
         "geonode-user-messages==0.1",
         "geonode-avatar==2.1.2",
         "geonode-announcements==1.0.2",
@@ -126,8 +126,8 @@ setup(name='GeoNode',
         "gisdata==0.5.4",
 
         # GeoPython dependencies
-        "OWSLib >=0.7.2, <=0.8.6",
-        "pycsw >=1.6.4, <=1.8.1",
+        "OWSLib >=0.7.2, <=0.8.7",
+        "pycsw >=1.6.4, <=1.8.2",
 
         # haystack/elasticsearch, uncomment to use
         #"django-haystack==2.1.0",
