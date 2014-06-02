@@ -15,22 +15,17 @@ install:
   - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 python-gdal
   - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
   - sudo apt-get install -y gettext
-  - sudo apt-get install nodejs
-  - npm install -g bower
-  - npm install -g less
-  - npm install -g grunt-cli 
   - pip install -e . --use-mirrors
 
 before_script:
   - paver setup
+  - paver static
 
 script:
   - python manage.py test geonode.tests.smoke
   - paver test
   - paver test_integration
-# Disabling CSW tests until this has been fixed:
-# https://gist.github.com/ingenieroariel/1b4dae7235e4caea8242
-# #  - paver test_integration -n geonode.tests.csw
+  - paver test_integration -n geonode.tests.csw
 #  - paver test_javascript
 
 after_script:
@@ -43,3 +38,4 @@ notifications:
     use_notice: true
   email:
     - geonode-dev@opengeo.org
+    - ingenieroariel@gmail.com
