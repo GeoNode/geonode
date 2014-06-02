@@ -262,17 +262,13 @@ def cascading_delete(cat, layer_name):
             
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
             delete_from_postgis(resource_name)
-
-        # Prevent the entire store from being removed when the store is a GeoGIT repository.
-        if store.type and store.type.lower() == 'geogit':
+        elif store.type and store.type.lower() == 'geogit':
+            # Prevent the entire store from being removed when the store is a GeoGIT repository.
             return
-
         else:
             try:
                 if not store.get_resources():
                     cat.delete(store, recurse=True)
-                else:
-                    return
             except FailedRequestError as e:
                 # Catch the exception and log it.
                 logger.debug(e) 
