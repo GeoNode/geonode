@@ -32,6 +32,7 @@ if "geonode.contrib.groups" in settings.INSTALLED_APPS:
 from guardian.shortcuts import assign_perm, get_perms, remove_perm, \
     get_groups_with_perms, get_users_with_perms
 from guardian.utils import get_anonymous_user
+from guardian.models import UserObjectPermission, GroupObjectPermission
 
 from geonode.security.enumerations import GENERIC_GROUP_NAMES
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
@@ -51,6 +52,13 @@ class PermissionLevelMixin(object):
     
     LEVEL_NONE = "_none"
 
+    def get_all_level_info(self):
+        resource = self.get_self_resource()
+        info = {
+            'users': get_users_with_perms(resource, attach_perms=True, with_superusers=True),
+            'groups': get_groups_with_perms(resource, attach_perms=True)
+        }
+        return info
 
     def get_self_resource(self):
         return self.resourcebase_ptr if hasattr(self, 'resourcebase_ptr') else self
