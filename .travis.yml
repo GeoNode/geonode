@@ -15,7 +15,7 @@ install:
   # This update should come after python-gdal is installed to avoid
   # trouble in Ubuntu 12.04.
   - sudo apt-get -qq -y update
-  - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
+  - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 libjai-imageio-core-java --no-install-recommends
   - pip install -e . --use-mirrors
 
 before_script:
