@@ -53,7 +53,7 @@ class PermissionLevelMixin(object):
 
 
     def get_self_resource(self):
-        return self.resourcebase_ptr if self.resourcebase_ptr else self
+        return self.resourcebase_ptr if hasattr(self, 'resourcebase_ptr') else self
 
     def set_default_permissions(self):
         for user, perms in get_users_with_perms(self.get_self_resource(), attach_perms=True).iteritems():
