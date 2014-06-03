@@ -27,7 +27,7 @@ class Group(models.Model):
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
     access = models.CharField(max_length=15, default="public'", choices=GROUP_CHOICES)
     last_modified = models.DateTimeField(auto_now=True)
-    django_group = models.OneToOneField(DjangoGroup)
+    django_group = models.OneToOneField(DjangoGroup, blank=True, null=True)
     
 
     def save(self):
