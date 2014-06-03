@@ -127,9 +127,10 @@ Now if you like to see if all is working so far type:
     $ sudo paver stop
 
 
-This will start GeoNode at http://localhost:8000/.
-But until now, GeoNode is running with the default configurations,
-e.g. it uses Jetty as servlet container and sqlite3 as database.
+This will start GeoNode at http://localhost:8000/ with the default configurations, using Jetty as the servlet container and sqlite3 as the database.
+
+.. note:: If running the paver start command produces an "Address already in use" exception for port 8080, try running the paver stop command and then paver start again.  If the exception still occurs then another web server is already bound to that port.  If this is a fresh Ubuntu install then Tomcat was automatically started when you installed the package and you can safely stop it with ``sudo service tomcat7 stop``.
+
 Also GeoNode won't start without using the command above.
 To change this, the following configurations of the used components have to be done.
 
