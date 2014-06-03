@@ -19,7 +19,7 @@
 #########################################################################
 
 from django.conf import settings
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User, Permission, Group as DjangoGroup
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
@@ -36,7 +36,7 @@ from guardian.utils import get_anonymous_user
 from geonode.security.enumerations import GENERIC_GROUP_NAMES
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
- 
+
 class PermissionLevelError(Exception):
     pass
 
@@ -52,17 +52,21 @@ class PermissionLevelMixin(object):
     LEVEL_NONE = "_none"
 
 
+    def get_self_resource(self):
+        return self.resourcebase_ptr if self.resourcebase_ptr else self
+
     def set_default_permissions(self):
-        for user, perms in get_users_with_perms(self.resourcebase_ptr, attach_perms=True).iteritems():
+        for user, perms in get_users_with_perms(self.get_self_resource(), attach_perms=True).iteritems():
+            if not self.owner == user:
+                for perm in perms:
+                    remove_perm(perm, user, self.get_self_resource())
+
+
+        for group, perms in get_groups_with_perms(self.get_self_resource(), attach_perms=True).iteritems():
             for perm in perms:
-                remove_perm(perm, user, self.resourcebase_ptr)
+                remove_perm(perm, group, self.get_self_resource())
 
-
-        for group, perms in get_groups_with_perms(self.resourcebase_ptr, attach_perms=True).iteritems():
-            for perm in perms:
-                remove_perm(perm, group, self.resourcebase_ptr)
-
-        assign_perm('view_resourcebase', get_anonymous_user(), self.resourcebase_ptr)
+        assign_perm('view_resourcebase', get_anonymous_user(), self.get_self_resource())
 
 
     def set_permissions(self, perm_spec):
@@ -85,7 +89,11 @@ class PermissionLevelMixin(object):
         }
         """
         if "authenticated" in perm_spec:
-            self.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
+            try:
+                authenticated_group = DjangoGroup.objects.get(name='authenticated')
+            except Group.DoesNotExist:
+                raise 'The authenticated groups was not found in the database'
+            assign_perm(perm_spec['authenticated'], authenticated_group, self.get_self_resource())
         if "anonymous" in perm_spec:
             self.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
         if isinstance(perm_spec['users'], dict): 
