@@ -385,9 +385,9 @@ def layer_acls(request):
     all_readable = get_objects_for_user(acl_user, 'base.view_resourcebase')
     all_writable = get_objects_for_user(acl_user, 'base.change_resourcebase')
   
-    read_only = [x for x in all_readable if x not in all_writable]
-    read_write = [x for x in all_writable if x in all_readable]
-
+    read_only = [x.id for x in all_readable if x not in all_writable]
+    read_write = [x.id for x in all_writable if x in all_readable]
+    
     read_only = [x[0] for x in Layer.objects.filter(id__in=read_only).values_list('typename').all()]
     read_write = [x[0] for x in Layer.objects.filter(id__in=read_write).values_list('typename').all()]
 
