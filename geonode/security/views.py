@@ -31,7 +31,7 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 
-def _view_perms_context(obj, level_names):
+def _view_perms_context(obj):
 
     ctx =  obj.get_all_level_info()
     def lname(l):
@@ -47,20 +47,18 @@ def _view_perms_context(obj, level_names):
 
     return ctx
 
-def _perms_info(obj, level_names):
+def _perms_info(obj):
     info = obj.get_all_level_info()
-    # these are always specified even if none
-    info[ANONYMOUS_USERS] = info.get(ANONYMOUS_USERS, obj.LEVEL_NONE)
-    info[AUTHENTICATED_USERS] = info.get(AUTHENTICATED_USERS, obj.LEVEL_NONE)
-    info['users'] = sorted(info['users'].items())
-    info['levels'] = [(i, level_names[i]) for i in obj.permission_levels]
-    if hasattr(obj, 'owner') and obj.owner is not None:
-        info['owner'] = obj.owner.username
+    
     return info
 
 
-def _perms_info_json(obj, level_names):
-    return json.dumps(_perms_info(obj, level_names))
+def _perms_info_json(obj):
+    info = _perms_info(obj)
+    info['users'] = dict([(u.username, perms) for u, perms in info['users'].items()])
+    info['groups'] = dict([(g.name, perms) for g, perms in info['groups'].items()])
+
+    return json.dumps(info)
 
 def resource_permissions(request, resource_id):
     try:

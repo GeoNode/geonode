@@ -176,7 +176,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     context_dict = {
         "resource": layer,
-        "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
+        "permissions_json": _perms_info_json(layer),
         "documents": get_related_documents(layer),
         "metadata": metadata,
     }
