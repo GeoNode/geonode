@@ -48,7 +48,12 @@ The easiest way to get the .deb is to install it using APT, the standard install
     sudo apt-get update
     sudo apt-get install geonode
 
-Once the package is installed, please consult :ref:`configure_installation` to learn how to create an account for the admin user and tweak the settings to get more performance.
+3. Set the IP address and create a superuser
+    a) $ sudo geonode-updateip 127.0.0.1
+    b) $ geonode createsuperuser
+    
+4. Read the Admin Docs
+    http://docs.geonode.org/en/master/#for-administrators
 
 
 Windows, OSX and others
