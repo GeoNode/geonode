@@ -11,9 +11,8 @@ branches:
     - master 
 
 install:
-  - "sudo apt-get update -qq -y "
-  - "sudo apt-get install -qq -y libgdal-dev gdal-bin python-gdal python-pip python-numpy build-essential git python-dev"
   - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2
+  - sudo apt-get install python-gdal
   - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 --no-install-recommends
   - sudo apt-get install -y gettext
   - pip install -e . --use-mirrors
@@ -38,5 +37,5 @@ notifications:
       - "irc.freenode.org#geonode"
     use_notice: true
   email:
-    - geonode-dev@opengeo.org
+#    - geonode-dev@opengeo.org
     - ingenieroariel@gmail.com
