@@ -528,7 +528,7 @@ def resolve_object(request, model, query, permission=None,
     allowed = True
     if permission:
         if permission_required or request.method != 'GET':
-            allowed = request.user.has_perm(permission, obj=obj.resourcebase_ptr)
+            allowed = request.user.has_perm(permission, obj=obj)
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)
