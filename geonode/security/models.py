@@ -19,7 +19,7 @@
 #########################################################################
 
 from django.conf import settings
-from django.contrib.auth.models import User, Permission, Group as DjangoGroup
+from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
@@ -63,7 +63,10 @@ class PermissionLevelMixin(object):
     def get_self_resource(self):
         return self.resourcebase_ptr if hasattr(self, 'resourcebase_ptr') else self
 
-    def set_default_permissions(self):
+    def remove_all_permissions(self):
+        """
+        Remove all the permissions for users and groups except for the resource owner
+        """
         for user, perms in get_users_with_perms(self.get_self_resource(), attach_perms=True).iteritems():
             if not self.owner == user:
                 for perm in perms:
@@ -73,6 +76,13 @@ class PermissionLevelMixin(object):
         for group, perms in get_groups_with_perms(self.get_self_resource(), attach_perms=True).iteritems():
             for perm in perms:
                 remove_perm(perm, group, self.get_self_resource())
+
+    def set_default_permissions(self):
+        """
+        Remove all the permissions except for the owner and assign the
+        view permission to the anonymous user
+        """
+        self.remove_all_permissions()
 
         assign_perm('view_resourcebase', get_anonymous_user(), self.get_self_resource())
 
@@ -84,46 +94,35 @@ class PermissionLevelMixin(object):
 
         the mapping looks like:
         {
-            'anonymous': 'readonly',
-            'authenticated': 'readwrite',
             'users': {
-                <username>: 'admin'
+                'anonymous': ['perm1','perm2','perm3'],
+                <username>: ['perm1','perm2','perm3'],
+                <username2>: ['perm1','perm2','perm3']
                 ...
             }
             'groups': [
-                    (<groupname>, <permission_level>),
-                    (<groupname2>, <permission_level>)
+                <groupname>: ['perm1','perm2','perm3'],
+                <groupname2>: ['perm1','perm2','perm3'],
+                ...
                 ]
         }
         """
-        if "authenticated" in perm_spec:
-            try:
-                authenticated_group = DjangoGroup.objects.get(name='authenticated')
-            except Group.DoesNotExist:
-                raise 'The authenticated groups was not found in the database'
-            assign_perm(perm_spec['authenticated'], authenticated_group, self.get_self_resource())
-        if "anonymous" in perm_spec:
-            self.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-        if isinstance(perm_spec['users'], dict): 
-            perm_spec['users'] = perm_spec['users'].items()
-        users = [n[0] for n in perm_spec['users']]
-        excluded = users + [self.owner]
-        existing = self.get_user_levels().exclude(user__username__in=excluded)
-        existing.delete()
-        for username, level in perm_spec['users']:
-            user = User.objects.get(username=username)
-            self.set_user_level(user, level)
+        self.remove_all_permissions()
+
+        for user, perms in perm_spec['users'].items():
+            if user == "anonymous":
+                user = get_anonymous_user()
+            else:
+                user = User.objects.get(username=user)
+            for perm in perms:
+                assign_perm(perm, user, self.get_self_resource())
 
         if "geonode.contrib.groups" in settings.INSTALLED_APPS:
-            #TODO: Should this run in a transaction?
-            excluded_groups = [g[0] for g in perm_spec.get('groups', list())]
+            for group, perms in perm_spec['groups'].items():           
+                group = Group.objects.get(slug=user)
+                for perm in perms:
+                    assign_perm(perm, group, self.get_self_resource())
 
-            # Delete all group levels that do not exist in perm_spec.
-            self.get_group_levels().exclude(group__slug__in=excluded_groups).delete()
-
-            for group, level in perm_spec.get('groups', list()):
-                group = Group.objects.get(slug=group)
-                self.set_group_level(group, level)
 
 # Logic to login a user automatically when it has successfully
 # activated an account:

@@ -82,7 +82,7 @@ def resource_permissions(request, resource_id):
         )
 
     elif request.method == 'GET':
-        permission_spec = json.dumps(resource.get_all_level_info())
+        permission_spec = _perms_info_json(resource)
         return HttpResponse(
             json.dumps({'success': True, 'permissions': permission_spec}),
             status=200,
