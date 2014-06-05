@@ -262,17 +262,15 @@ def cascading_delete(cat, layer_name):
             
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and store.connection_parameters['dbtype'] == 'postgis':
             delete_from_postgis(resource_name)
-
-        # Prevent the entire store from being removed when the store is a GeoGIT repository.
-        if store.type and store.type.lower() == 'geogit':
+        elif store.type and store.type.lower() == 'geogit':
+            # Prevent the entire store from being removed when the store is a GeoGIT repository.
             return
-
         else:
             try:
-                cat.delete(store, recurse=True)
+                if not store.get_resources():
+                    cat.delete(store, recurse=True)
             except FailedRequestError as e:
-                # Trying to delete a shared store will fail 
-                # We'll catch the exception and log it.
+                # Catch the exception and log it.
                 logger.debug(e) 
 
 
@@ -372,6 +370,10 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
                 "owner": owner,
                 "uuid": str(uuid.uuid4())
             })
+            layer.bbox_x0 = float(resource.native_bbox[0])
+            layer.bbox_x1 = float(resource.native_bbox[1])
+            layer.bbox_y0 = float(resource.native_bbox[2])
+            layer.bbox_y1 = float(resource.native_bbox[3])
             layer.save()
             # recalculate the layer statistics
             set_attributes(layer, overwrite=True)

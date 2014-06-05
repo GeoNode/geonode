@@ -75,7 +75,7 @@ def iso2dict(exml):
     keywords = []
 
     mdata = MD_Metadata(exml)
-    vals['language'] = mdata.language
+    vals['language'] = mdata.language or mdata.languagecode or 'eng'
     vals['spatial_representation_type'] = mdata.hierarchy
     vals['date'] = sniff_date(mdata.datestamp)
 

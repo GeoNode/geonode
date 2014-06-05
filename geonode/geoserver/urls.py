@@ -24,6 +24,8 @@ urlpatterns = patterns('geonode.geoserver.views',
             proxy_path='/gs/rest/styles', downstream_path='rest/styles')),
     (r'^rest/layers', 'geoserver_rest_proxy', dict(
             proxy_path='/gs/rest/layers', downstream_path='rest/layers')),
+    (r'^rest/sldservice', 'geoserver_rest_proxy', dict(
+        proxy_path='/gs/rest/sldservice', downstream_path='rest/sldservice')),
     url(r'^updatelayers/$', 'updatelayers', name="updatelayers"),
     url(r'^(?P<layername>[^/]*)/style$', 'layer_style', name="layer_style"),
     url(r'^(?P<layername>[^/]*)/style/upload$', 'layer_style_upload', name='layer_style_upload'),
