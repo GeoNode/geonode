@@ -32,11 +32,16 @@ if "geonode.contrib.groups" in settings.INSTALLED_APPS:
 from guardian.shortcuts import assign_perm, get_perms, remove_perm, \
     get_groups_with_perms, get_users_with_perms
 from guardian.utils import get_anonymous_user
-from guardian.models import UserObjectPermission, GroupObjectPermission
 
 from geonode.security.enumerations import GENERIC_GROUP_NAMES
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
+ADMIN_PERMISSIONS = [
+    'view_resourcebase',
+    'change_resourcebase',
+    'delete_resourcebase',
+    'change_resourcebase_permissions'
+]
 
 class PermissionLevelError(Exception):
     pass
@@ -85,6 +90,8 @@ class PermissionLevelMixin(object):
         self.remove_all_permissions()
 
         assign_perm('view_resourcebase', get_anonymous_user(), self.get_self_resource())
+        for perm in ADMIN_PERMISSIONS:
+            assign_perm(perm, self.owner, self.get_self_resource())
 
 
     def set_permissions(self, perm_spec):

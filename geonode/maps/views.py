@@ -61,13 +61,6 @@ logger = logging.getLogger("geonode.maps.views")
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
 
-MAP_LEV_NAMES = {
-    Map.LEVEL_NONE  : _('No Permissions'),
-    Map.LEVEL_READ  : _('Read Only'),
-    Map.LEVEL_WRITE : _('Read/Write'),
-    Map.LEVEL_ADMIN : _('Administrative')
-}
-
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this map.")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this map.')
 _PERMISSION_MSG_LOGIN = _("You must be logged in to save this map")
@@ -551,20 +544,6 @@ def map_wms(request, mapid):
 
     return HttpResponseNotAllowed(['PUT', 'GET'])
 
-def _map_fix_perms_for_editor(info):
-    perms = {
-        Map.LEVEL_READ: Layer.LEVEL_READ,
-        Map.LEVEL_WRITE: Layer.LEVEL_WRITE,
-        Map.LEVEL_ADMIN: Layer.LEVEL_ADMIN,
-    }
-
-    def fix(x): return perms.get(x, "_none")
-
-    info[ANONYMOUS_USERS] = fix(info[ANONYMOUS_USERS])
-    info[AUTHENTICATED_USERS] = fix(info[AUTHENTICATED_USERS])
-    info['users'] = [(u, fix(level)) for u, level in info['users']]
-
-    return info
 
 def map_thumbnail(request, mapid):
     return _handleThumbNail(request, _resolve_map(request, mapid))
