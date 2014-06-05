@@ -56,13 +56,6 @@ MAX_SEARCH_BATCH_SIZE = 25
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
-LAYER_LEV_NAMES = {
-    Layer.LEVEL_NONE  : _('No Permissions'),
-    Layer.LEVEL_READ  : _('Read Only'),
-    Layer.LEVEL_WRITE : _('Read/Write'),
-    Layer.LEVEL_ADMIN : _('Administrative')
-}
-
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
 _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this layer")

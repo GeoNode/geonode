@@ -34,6 +34,8 @@ from django.core.urlresolvers import reverse
 from django.db.models import Count
 from agon_ratings.models import OverallRating
 
+from guardian.shortcuts import get_anonymous_user, assign_perm
+
 import geonode.layers.utils
 import geonode.layers.views
 import geonode.layers.models
@@ -62,6 +64,7 @@ class LayersTest(TestCase):
         self.passwd = 'admin'
         create_models(type='layer')
         create_layer_data()
+        self.anonymous_user = get_anonymous_user()
 
     # Permissions Tests
 
@@ -89,28 +92,30 @@ class LayersTest(TestCase):
     # If anonymous and/or authenticated are not specified,
     # should set_layer_permissions remove any existing perms granted??
 
-    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","resourcebase_readwrite"]]}
+    perm_spec = {
+        "users":{
+            "admin": ["change_resourcebase", "change_resourcebase_permissions","view_resourcebase"]
+        },
+        "groups": {}  
+    }
     def test_layer_set_default_permissions(self):
         """Verify that Layer.set_default_permissions is behaving as expected
         """
 
         # Get a Layer object to work with
         layer = Layer.objects.all()[0]
-
         # Set the default permissions
         layer.set_default_permissions()
 
         # Save the layers Current Permissions
         current_perms = layer.get_all_level_info()
 
-        # Test that LEVEL_READ is set for ANONYMOUS_USERS and AUTHENTICATED_USERS
-        self.assertEqual(layer.get_gen_level(ANONYMOUS_USERS), layer.LEVEL_READ)
-        self.assertEqual(layer.get_gen_level(AUTHENTICATED_USERS), layer.LEVEL_READ)
+        # Test that the anonymous user can read
+        self.assertTrue(self.anonymous_user.has_perm('view_resourcebase', layer.get_self_resource()))
 
-        admin_perms = current_perms['users'][layer.owner.username]
-
-        # Test that the owner was assigned LEVEL_ADMIN
-        self.assertEqual(admin_perms, layer.LEVEL_ADMIN)
+        # Test that the owner can manage the layer
+        self.assertTrue(layer.owner.has_perm('change_resourcebase_permissions', layer.get_self_resource()))
+        self.assertTrue(layer.owner.has_perm('change_resourcebase', layer.get_self_resource()))
 
     def test_set_layer_permissions(self):
         """Verify that the set_layer_permissions view is behaving as expected
@@ -125,20 +130,18 @@ class LayersTest(TestCase):
 
         layer.set_permissions(self.perm_spec)
 
-        # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly
-        self.assertEqual(layer.get_gen_level(ANONYMOUS_USERS), layer.LEVEL_NONE)
-        self.assertEqual(layer.get_gen_level(AUTHENTICATED_USERS), layer.LEVEL_NONE)
+        # Test that the Permissions for anonymous user is are set
+        self.assertFalse(self.anonymous_user.has_perm('view_resourcebase', layer.get_self_resource()))
 
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
-        users = [n[0] for n in self.perm_spec['users']]
-        levels = layer.get_user_levels().exclude(user__username__in = users + [layer.owner])
-        self.assertEqual(len(levels), 0)
+        current_perms = layer.get_all_level_info()
+        self.assertEqual(len(current_perms['users'].keys()), 2)
 
         # Test that the User permissions specified in the perm_spec were applied properly
-        for username, level in self.perm_spec['users']:
-            user = geonode.maps.models.User.objects.get(username=username)
-            self.assertEqual(layer.get_user_level(user), level)
+        for username, perm in self.perm_spec['users'].items():
+            user = User.objects.get(username=username)
+            self.assertTrue(user.has_perm(perm, layer.get_self_resource()))
 
     def test_ajax_layer_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
@@ -198,17 +201,12 @@ class LayersTest(TestCase):
 
         # Test with a Layer object
         layer = Layer.objects.all()[0]
-        layer_info = layer.get_all_level_info()
-        info = geonode.security.views._perms_info(layer, geonode.layers.views.LAYER_LEV_NAMES)
 
-        # Test that ANONYMOUS_USERS and AUTHENTICATED_USERS are set properly
-        self.assertEqual(info[ANONYMOUS_USERS], layer.LEVEL_READ)
-        self.assertEqual(info[AUTHENTICATED_USERS], layer.LEVEL_READ)
-
-        self.assertEqual(info['users'], sorted(layer_info['users'].items()))
+        # Test that the anonymous user can read
+        self.assertTrue(self.anonymous_user.has_perm('view_resourcebase', layer.get_self_resource()))
 
         # Test that layer owner can edit layer
-        self.assertTrue(layer.owner.has_perm(set([u'base.change_resourcebase']), layer.resourcebase_ptr))
+        self.assertTrue(layer.owner.has_perm('change_resourcebase', layer.get_self_resource()))
 
         # TODO Much more to do here once jj0hns0n understands the ACL system better
 
@@ -769,12 +767,13 @@ class LayersTest(TestCase):
         #grab a layer
         layer = Layer.objects.all()[0]
 
-        #set layer permissions to registered read/write
-        layer.set_gen_level(AUTHENTICATED_USERS,'resourcebase_readwrite')
+        assign_perm('view_resourcebase', bob, layer.get_self_resource())
+        assign_perm('change_resourcebase', bob, layer.get_self_resource())
 
-        #verify bobby has view/change permissions on it
-        self.assertTrue(bob.has_perm('base.view_resourcebase',layer.resourcebase_ptr))
-        self.assertTrue(bob.has_perm('base.change_resourcebase',layer.resourcebase_ptr))
+        #verify bobby has view/change permissions on it but not manage
+        self.assertTrue(bob.has_perm('view_resourcebase',layer.get_self_resource()))
+        self.assertTrue(bob.has_perm('change_resourcebase',layer.get_self_resource()))
+        self.assertFalse(bob.has_perm('change_resourcebase_permissions',layer.get_self_resource()))
 
         #verify that bobby can access the layer data page
         c = Client()

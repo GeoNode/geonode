@@ -29,12 +29,14 @@ from django.conf import settings
 from django.db import models
 from django.db.models import signals
 from django.utils import simplejson as json
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
+
+from guardian.shortcuts import get_anonymous_user
 
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
@@ -189,21 +191,6 @@ class Map(ResourceBase, GXPMapBase):
     def get_absolute_url(self):
         return reverse('geonode.maps.views.map_detail', None, [str(self.id)])
 
-
-    def set_default_permissions(self):
-        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
-        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
-
-        # remove specific user permissions
-        current_perms = self.get_all_level_info()
-        for username in current_perms['users'].keys():
-            user = User.objects.get(username=username)
-            self.set_user_level(user, self.LEVEL_NONE)
-
-        # assign owner admin privs
-        if self.owner:
-            self.set_user_level(self.owner, self.LEVEL_ADMIN)
-
     def get_bbox_from_layers(self, layers):
         """
         Calculate the bbox from a given list of Layer objects
@@ -220,7 +207,6 @@ class Map(ResourceBase, GXPMapBase):
                 bbox[3] = max(bbox[3], layer_bbox[3])
         
         return bbox
-
 
     def create_from_layer_list(self, user, layers, title, abstract):
         self.owner = user
@@ -281,7 +267,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         Returns True if anonymous (public) user can view map.
         """
-        user = AnonymousUser()
+        user = get_anonymous_user()
         return user.has_perm('base.view_resourcebase', obj=self.resourcebase_ptr)
 
     @property

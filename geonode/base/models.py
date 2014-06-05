@@ -15,7 +15,6 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 
 from guardian.shortcuts import get_perms
-from guardian.models import UserObjectPermission
 
 from polymorphic import PolymorphicModel, PolymorphicManager
 from agon_ratings.models import OverallRating
@@ -523,6 +522,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
            It is mandatory to call it from descendant classes
            but hard to enforce technically via signals or save overriding.
         """
+        from guardian.models import UserObjectPermission
         logger.debug('Checking for permissions.')
         #  True if every key in the get_all_level_info dict is empty.
         no_custom_permissions = UserObjectPermission.objects.filter(
