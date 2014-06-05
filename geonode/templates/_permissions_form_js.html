@@ -23,7 +23,6 @@
     * Cycle through permissions to map the form structure perm = ['user1',',user2'] to
     * the geonode user = ['perm1','perm2'], optionally also for groups
     */
-    console.log(data);
     for(var perm in data){
       if(data[perm][0] !== ''){
         for (var i=0;i<data[perm][0].split(',').length;i++){

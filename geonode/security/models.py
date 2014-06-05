@@ -95,7 +95,7 @@ class PermissionLevelMixin(object):
         the mapping looks like:
         {
             'users': {
-                'anonymous': ['perm1','perm2','perm3'],
+                'AnonymousUser': ['perm1','perm2','perm3'],
                 <username>: ['perm1','perm2','perm3'],
                 <username2>: ['perm1','perm2','perm3']
                 ...
@@ -110,7 +110,7 @@ class PermissionLevelMixin(object):
         self.remove_all_permissions()
 
         for user, perms in perm_spec['users'].items():
-            if user == "anonymous":
+            if user == "AnonymousUser":
                 user = get_anonymous_user()
             else:
                 user = User.objects.get(username=user)
