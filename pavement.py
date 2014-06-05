@@ -114,7 +114,6 @@ def static(options):
 @task
 @needs([
     'setup_geoserver',
-    'static',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""

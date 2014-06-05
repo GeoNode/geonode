@@ -28,7 +28,7 @@ GIT_REV=$(git log -1 --pretty=format:%h)
 
 DEB_VERSION=2.0+$(date +"%Y%m%d%H%M")
 
-mvn clean install war:war -DskipTests
+mvn clean install war:war
 
 # Build for launchpad
 #git-dch --spawn-editor=snapshot --new-version=$DEB_VERSION --git-author --id-length=6 --ignore-branch  --auto --release
