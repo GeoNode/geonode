@@ -390,8 +390,8 @@ def layer_acls(request):
     all_writable = (get_objects_for_user(acl_user, 'base.change_resourcebase') |
         get_objects_for_user(anonymous_user,  'base.change_resourcebase')).distinct()
 
-    read_only = [x.layer.typename for x in all_readable if x not in all_writable]
-    read_write = [x.layer.typename for x in all_writable if x in all_readable]
+    read_only = [x.layer.typename for x in all_readable if x not in all_writable and hasattr(x, 'layer')]
+    read_write = [x.layer.typename for x in all_writable if x in all_readable and hasattr(x, 'layer')]
 
     result = {
         'rw': read_write,

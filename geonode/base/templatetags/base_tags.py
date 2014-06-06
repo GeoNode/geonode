@@ -46,12 +46,12 @@ def facets(context):
 
     facets['map'] = 0
     for the_map in Map.objects.all():
-        if filter_security('view_resourcebase', the_map):
+        if filter_security(request.user, 'view_resourcebase', the_map):
             facets['map'] +=1
 
     facets['document'] = 0
     for doc in Document.objects.all():
-        if filter_security('view_resourcebase', doc):
+        if filter_security(request.user, 'view_resourcebase', doc):
             facets['document'] += 1
 
     if facet_type == 'home':
