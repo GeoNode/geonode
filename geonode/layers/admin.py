@@ -24,6 +24,8 @@ from django.core.urlresolvers import reverse
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
 
+import autocomplete_light
+
 class AttributeInline(admin.TabularInline):
     model = Attribute
 
@@ -38,6 +40,7 @@ class LayerAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')
     inlines = [AttributeInline]
+    form = autocomplete_light.modelform_factory(Layer)
 
 class AttributeAdmin(admin.ModelAdmin):
     model = Attribute

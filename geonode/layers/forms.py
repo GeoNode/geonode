@@ -29,6 +29,7 @@ from django.utils.translation import ugettext_lazy as _
 from geonode.layers.models import Layer, Attribute
 from geonode.people.models import Profile 
 
+import autocomplete_light
 
 class JSONField(forms.CharField):
     def clean(self, text):
@@ -48,13 +49,18 @@ class LayerForm(forms.ModelForm):
 
     poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                  label = "Point Of Contact", required=False,
-                                 queryset = Profile.objects.exclude(user=None))
+                                 queryset = Profile.objects.exclude(user=None),
+                                 widget=autocomplete_light.ChoiceWidget('UserAutocomplete'))
 
     metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                              label = "Metadata Author", required=False,
-                                             queryset = Profile.objects.exclude(user=None))
+                                             queryset = Profile.objects.exclude(user=None),
+                                 widget=autocomplete_light.ChoiceWidget('UserAutocomplete'))
+
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
+
+
     class Meta:
         model = Layer
         exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename',
@@ -62,6 +68,7 @@ class LayerForm(forms.ModelForm):
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext',
                    'popular_count', 'share_count', 'thumbnail', 'default_style', 'styles')
+        widgets = autocomplete_light.get_widgets_dict(Layer)
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
