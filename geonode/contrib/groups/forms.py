@@ -22,16 +22,16 @@ class GroupForm(forms.ModelForm):
             raise forms.ValidationError(_("A group already exists with that slug."))
         return self.cleaned_data["slug"].lower()
     
-    def clean_title(self):
-        if Group.objects.filter(title__iexact=self.cleaned_data["title"]).count() > 0:
-            raise forms.ValidationError(_("A group already exists with that title."))
-        return self.cleaned_data["title"]
+    def clean_name(self):
+        if Group.objects.filter(name__iexact=self.cleaned_data["name"]).count() > 0:
+            raise forms.ValidationError(_("A group already exists with that name."))
+        return self.cleaned_data["name"]
     
     def clean(self):
         cleaned_data = self.cleaned_data
         
-        title = cleaned_data.get("title")
-        slug = slugify(title)
+        name = cleaned_data.get("name")
+        slug = slugify(name)
         
         cleaned_data["slug"] = slug
         
@@ -39,17 +39,18 @@ class GroupForm(forms.ModelForm):
         
     class Meta:
         model = Group
+        exclude = ['django_group', 'permissions']
 
 
 class GroupUpdateForm(forms.ModelForm):
     
-    def clean_title(self):
-        if Group.objects.filter(title__iexact=self.cleaned_data["title"]).count() > 0:
-            if self.cleaned_data["title"] == self.instance.title:
+    def clean_name(self):
+        if Group.objects.filter(name__iexact=self.cleaned_data["name"]).count() > 0:
+            if self.cleaned_data["name"] == self.instance.name:
                 pass  # same instance
             else:
-                raise forms.ValidationError(_("A group already exists with that title."))
-        return self.cleaned_data["title"]
+                raise forms.ValidationError(_("A group already exists with that name."))
+        return self.cleaned_data["name"]
     
     class Meta:
         model = Group

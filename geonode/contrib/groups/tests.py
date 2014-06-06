@@ -1,18 +1,19 @@
 import json
-from django.contrib.auth import get_backends
 from django.contrib.auth.models import User, AnonymousUser
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
+
+from guardian.shortcuts import get_anonymous_user, assign_perm
+
 from geonode.contrib.groups.models import Group, GroupInvitation
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
-from geonode.layers.views import LAYER_LEV_NAMES
 from geonode.maps.models import Map
 from geonode.base.models import ResourceBase
 from geonode.base.populate_test_data import create_models
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
-from geonode.security.views import _perms_info
+from geonode.security.views import _perms_info, filter_object_security
 
 
 class SmokeTest(TestCase):
@@ -26,6 +27,7 @@ class SmokeTest(TestCase):
         create_models(type='document')
         self.norman = User.objects.get(username="norman")
         self.bar = Group.objects.get(slug='bar')
+        self.anonymous_user = get_anonymous_user()
 
     def test_group_permissions_extend_to_user(self):
         """
@@ -34,19 +36,15 @@ class SmokeTest(TestCase):
         """
 
         layer = Layer.objects.all()[0]
-        backend = get_backends()[0]
         # Set the default permissions
         layer.set_default_permissions()
 
-        # Test that LEVEL_READ is set for ANONYMOUS_USERS and AUTHENTICATED_USERS
-        self.assertEqual(layer.get_gen_level(ANONYMOUS_USERS), layer.LEVEL_READ)
-        self.assertEqual(layer.get_gen_level(AUTHENTICATED_USERS), layer.LEVEL_READ)
+        # Test that the anonymous user can read
+        self.assertTrue(self.anonymous_user.has_perm('view_resourcebase', layer.get_self_resource()))
 
         # Test that the default perms give Norman view permissions but not write permissions
-        read_perms = backend.objects_with_perm(self.norman, 'base.view_resourcebase', ResourceBase)
-        write_perms = backend.objects_with_perm(self.norman, 'base.change_resourcebase', ResourceBase)
-        self.assertTrue(layer.id in read_perms)
-        self.assertTrue(layer.id not in write_perms)
+        self.assertTrue(filter_object_security(self.norman, 'view_resourcebase', layer))
+        self.assertFalse(filter_object_security(self.norman, 'change_resourcebase', layer))
 
         # Make sure Norman is not in the bar group.
         self.assertFalse(self.bar.user_is_member(self.norman))
@@ -57,24 +55,13 @@ class SmokeTest(TestCase):
         # Ensure Norman is in the bar group.
         self.assertTrue(self.bar.user_is_member(self.norman))
 
-        # Test that the bar group has default permissions on the layer
-        bar_read_perms = backend.objects_with_perm(self.bar, 'base.view_resourcebase', ResourceBase)
-        bar_write_perms = backend.objects_with_perm(self.bar, 'base.change_resourcebase', ResourceBase)
-        self.assertTrue(layer.id in bar_read_perms)
-        self.assertTrue(layer.id not in bar_write_perms)
 
         # Give the bar group permissions to change the layer.
-        layer.set_group_level(self.bar, Layer.LEVEL_WRITE)
-        bar_read_perms = backend.objects_with_perm(self.bar, 'base.view_resourcebase', ResourceBase)
-        bar_write_perms = backend.objects_with_perm(self.bar, 'base.change_resourcebase', ResourceBase)
-        self.assertTrue(layer.id in bar_read_perms)
-        self.assertTrue(layer.id in bar_write_perms)
+        assign_perm('change_resourcebase', self.bar, layer.get_self_resource())
+        self.assertTrue(filter_object_security(self.norman, 'view_resourcebase', layer))
+        # check that now norman can change the layer
+        self.assertTrue(filter_object_security(self.norman, 'change_resourcebase', layer))
 
-        # Test that the bar group perms give Norman view and change permissions
-        read_perms = backend.objects_with_perm(self.norman, 'base.view_resourcebase', ResourceBase)
-        write_perms = backend.objects_with_perm(self.norman, 'base.change_resourcebase', ResourceBase)
-        self.assertTrue(layer.id in read_perms)
-        self.assertTrue(layer.id in write_perms)
 
     def test_permissions_for_public_groups(self):
         """
