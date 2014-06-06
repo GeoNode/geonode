@@ -102,19 +102,19 @@ class LayerTests(TestCase):
         # Test that requesting when supplying the geoserver credentials returns the expected json
 
         expected_result = {
-             'email': 'bobby@bob.com',
-             'fullname': 'bobby',
-             'is_anonymous': False,
-             'is_superuser': False,
-             'name': 'bobby',
-             'ro': ['geonode:layer2',
-                    'geonode:mylayer',
-                    'geonode:foo',
-                    'geonode:whatever',
-                    'geonode:fooey',
-                    'geonode:quux',
-                    'geonode:fleem'],
-             'rw': ['geonode:CA']
+             u'email': u'bobby@bob.com',
+             u'fullname': u'bobby',
+             u'is_anonymous': False,
+             u'is_superuser': False,
+             u'name': u'bobby',
+             u'ro': [u'geonode:layer2',
+                    u'geonode:mylayer',
+                    u'geonode:foo',
+                    u'geonode:whatever',
+                    u'geonode:fooey',
+                    u'geonode:quux',
+                    u'geonode:fleem'],
+             u'rw': [u'geonode:CA']
         }
         c = Client()
         response = c.get(reverse('layer_acls'), **valid_auth_headers)

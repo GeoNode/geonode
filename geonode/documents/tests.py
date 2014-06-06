@@ -14,24 +14,32 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 
+from guardian.shortcuts import get_anonymous_user, assign_perm
+
 from .forms import DocumentCreateForm
 
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
-import geonode.documents.views
-import geonode.security
 from geonode.base.populate_test_data import create_models
 
 
 class LayersTest(TestCase):
     fixtures = ['intial_data.json', 'bobby']
+
+    perm_spec = {
+        "users":{
+            "admin": ["change_resourcebase", "change_resourcebase_permissions","view_resourcebase"]
+        },
+        "groups": {}  
+    }
     
     def setUp(self):
         create_models('document')
         create_models('map')
         self.imgfile = StringIO.StringIO('GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
                                          '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
+        self.anonymous_user = get_anonymous_user()
 
     def test_create_document_with_no_rel(self):
         """Tests the creation of a document with no relations"""
@@ -79,7 +87,7 @@ class LayersTest(TestCase):
         c = Client()
         c.login(username='admin', password='admin')
         form_data = {'title': 'GeoNode Map',
-                     'permissions': '{"anonymous":"resourcebase_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+                     'permissions': '{"users":{"AnonymousUser": ["view_resourcebase"]},"groups":{}}',
                      'doc_url': 'http://www.geonode.org/map.pdf'
                      }
 
@@ -172,33 +180,12 @@ class LayersTest(TestCase):
         
         c.login(username='admin', password='admin')
         response = c.post(reverse('document_upload'), data={'file': f, 'title': 'uploaded_document', 'q': m.id, 'type': 'map', 
-            'permissions': '{"anonymous":"document_readonly","users":[]}'},
+            'permissions': '{"users":{"AnonymousUser": ["view_resourcebase"]}}'},
                           follow=True)
         self.assertEquals(response.status_code, 200)
 
         
     # Permissions Tests
-
-    # Users
-    # - admin (pk=2)
-    # - bobby (pk=1)
-
-    # Inherited
-    # - LEVEL_NONE = _none
-
-    # Layer
-    # - LEVEL_READ = document_read
-    # - LEVEL_WRITE = resourcebase_readwrite
-    # - LEVEL_ADMIN = document_admin
-    
-
-    # FIXME: Add a comprehensive set of permissions specifications that allow us 
-    # to test as many conditions as is possible/necessary
-    
-    # If anonymous and/or authenticated are not specified, 
-    # should set_layer_permissions remove any existing perms granted??
-    
-    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","resourcebase_readwrite"]]}
     
     def test_set_document_permissions(self):
         """Verify that the set_document_permissions view is behaving as expected
@@ -212,20 +199,18 @@ class LayersTest(TestCase):
         # Set the Permissions
         document.set_permissions(self.perm_spec)
 
-        # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly        
-        self.assertEqual(document.get_gen_level(ANONYMOUS_USERS), document.LEVEL_NONE) 
-        self.assertEqual(document.get_gen_level(AUTHENTICATED_USERS), document.LEVEL_NONE)
+        # Test that the Permissions for anonympus user are set correctly        
+        self.assertFalse(self.anonymous_user.has_perm('view_resourcebase', document.get_self_resource())) 
 
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the document owner) were removed
-        users = [n for (n, p) in self.perm_spec['users']]
-        levels = document.get_user_levels().exclude(user__username__in = users + [document.owner])
-        self.assertEqual(len(levels), 0)
+        current_perms = document.get_all_level_info()
+        self.assertEqual(len(current_perms['users'].keys()), 2)
        
         # Test that the User permissions specified in the perm_spec were applied properly
-        for username, level in self.perm_spec['users']:
-            user = geonode.maps.models.User.objects.get(username=username)
-            self.assertEqual(document.get_user_level(user), level)    
+        for username, perm in self.perm_spec['users'].items():
+            user = User.objects.get(username=username)
+            self.assertTrue(user.has_perm(perm, document.get_self_resource()))    
 
     def test_ajax_document_permissions(self):
         """Verify that the ajax_document_permissions view is behaving as expected

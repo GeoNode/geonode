@@ -28,7 +28,6 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
 
-import geonode.maps.models
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.utils import default_map_config
@@ -117,7 +116,12 @@ community."
     }
     """
 
-    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","resourcebase_readwrite"]]}
+    perm_spec = {
+        "users":{
+            "admin": ["change_resourcebase", "change_resourcebase_permissions","view_resourcebase"]
+        },
+        "groups": {}  
+    }
 
     def test_map_json(self):
         c = Client()
