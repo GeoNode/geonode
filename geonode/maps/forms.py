@@ -20,10 +20,13 @@
 
 import taggit
 from django import forms
+
+from mptt.forms import TreeNodeMultipleChoiceField
+
 from geonode.maps.models import Map
 from geonode.people.models import Profile
 from django.utils.translation import ugettext_lazy as _
-
+from geonode.base.models import Region
 
 class MapForm(forms.ModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
@@ -40,6 +43,10 @@ class MapForm(forms.ModelForm):
                                              queryset = Profile.objects.exclude(user=None))
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
+
+    regions = TreeNodeMultipleChoiceField(queryset=Region.objects.all(), level_indicator=u'___') 
+    regions.widget.attrs = {"size":20}
+
     class Meta:
         model = Map
         exclude = ('contacts', 'zoom', 'projection', 'center_x', 'center_y', 'uuid',
