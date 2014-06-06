@@ -1,12 +1,19 @@
-[
+[   {
+      "pk": 1, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "foo", 
+        "permissions": []
+      }
+    },
     {
         "fields": {
             "access": "public", 
             "description": "baz", 
             "logo": "people_peoplegroup/cactuar_1.jpg", 
             "slug": "bar", 
-            "title": "foo",
-            "last_modified": "2011-06-09 15:45:34"
+            "last_modified": "2011-06-09 15:45:34", 
+            "permissions": []
         }, 
         "model": "groups.group", 
         "pk": 1

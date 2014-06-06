@@ -13,26 +13,19 @@ from django.contrib.sites.models import Site
 from taggit.managers import TaggableManager
 
 
-class Group(models.Model):
+class Group(DjangoGroup):
     GROUP_CHOICES = [
         ("public", _("Public")),
         ("public-invite", _("Public (invite-only))")),
         ("private", _("Private")),
     ]
 
-    title = models.CharField(max_length=50)
     slug = models.SlugField(unique=True)
     logo = models.FileField(upload_to="people_peoplegroup", blank=True)
     description = models.TextField()
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
     access = models.CharField(max_length=15, default="public'", choices=GROUP_CHOICES)
-    last_modified = models.DateTimeField(auto_now=True)
-    django_group = models.OneToOneField(DjangoGroup, blank=True, null=True)
-    
-
-    def save(self):
-        self.django_group, __ = DjangoGroup.objects.get_or_create(name=self.slug)
-        super(Group, self).save()
+    last_modified = models.DateTimeField(auto_now=True)    
 
     @classmethod
     def groups_for_user(cls, user):
@@ -46,7 +39,7 @@ class Group(models.Model):
         return []
     
     def __unicode__(self):
-        return self.title
+        return self.name
 
     def keyword_list(self):
         """
@@ -102,7 +95,7 @@ class Group(models.Model):
         return self.user_is_role(user, "manager")
     
     def join(self, user, **kwargs):
-        GroupMember(group=self, user=user, **kwargs).save()
+        self.user_set.add(user)
     
     def invite(self, user, from_user, role="member", send=True):
         params = dict(role=role, from_user=from_user)
@@ -171,7 +164,7 @@ class GroupInvitation(models.Model):
     created = models.DateTimeField(default=datetime.datetime.now)
     
     def __unicode__(self):
-        return "%s to %s" % (self.email, self.group.title)
+        return "%s to %s" % (self.email, self.group.name)
 
     class Meta:
         unique_together = [("group", "email")]
