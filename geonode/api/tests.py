@@ -22,7 +22,7 @@ class PermissionsApiTests(ResourceTestCase):
         self.list_url = reverse('api_dispatch_list', kwargs={'api_name':'api', 'resource_name':'layers'})
         create_models(type='layer')
         all_public()
-        self.perm_spec = {"anonymous":"_none","authenticated":"resourcebase_readwrite","users":[]}
+        self.perm_spec = {"users": {}, "groups": {}}
 
     def test_layer_get_list_unauth_all_public(self):
         """ 
@@ -64,8 +64,9 @@ class PermissionsApiTests(ResourceTestCase):
         Test that if a layer is only visible by admin, then does not appear in the
         unauthenticated list nor in the list when logged is as bobby
         """
-        perm_spec = {"anonymous":"_none","authenticated":"_none",
-            "users":[["admin","resourcebase_readwrite"],["admin","resourcebase_admin"]],"groups":[]}
+        perm_spec = {"users":{
+                "admin": ['view_resourcebase']
+            }, "groups":{}}
         layer = Layer.objects.all()[0]
         layer.set_permissions(perm_spec)
         resp = self.api_client.get(self.list_url)

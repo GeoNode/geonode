@@ -9,6 +9,9 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.test.utils import override_settings
+
+from guardian.shortcuts import assign_perm
+
 from geonode.geoserver.helpers import OGC_Servers_Handler
 from geonode.base.populate_test_data import create_models
 from geonode.layers.populate_layers_data import create_layer_data
@@ -29,6 +32,10 @@ class LayerTests(TestCase):
         Ensures the layer_style_manage route returns a 200.
         """
         layer = Layer.objects.all()[0]
+
+        bob = User.objects.get(username='bobby')
+        assign_perm('change_resourcebase', bob, layer.get_self_resource())
+
         c = Client()
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
@@ -98,6 +105,10 @@ class LayerTests(TestCase):
         invalid_auth_headers = {
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
         }
+
+        bob = User.objects.get(username='bobby')
+        layer_ca = Layer.objects.get(typename='geonode:CA')
+        assign_perm('change_resourcebase', bob, layer_ca.get_self_resource())
 
         # Test that requesting when supplying the geoserver credentials returns the expected json
 
