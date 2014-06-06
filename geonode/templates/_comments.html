@@ -9,7 +9,7 @@
 {% load i18n %}
 <div id="comments_section" class="comments paginate paginate-manual">
   <header>
-    <h3>{% trans 'Comments' %} <span class="total">({% comment_count obj %} total)</span></h3>
+    <h3>{% trans 'Comments' %} <span class="total">({% comment_count resource %} total)</span></h3>
   </header>
 
   {% if user.is_authenticated %}
@@ -22,7 +22,7 @@
   </div>
   {% endif %}
   <div class="paginate-contents">
-  {% comments obj as comment_list %}
+  {% comments resource as comment_list %}
   {% autopaginate comment_list 5 %}
   {% for comment in comment_list %}      
     <article>
@@ -49,8 +49,8 @@
         <h3>{% trans 'Add a Comment' %}</h3>
     </div>
     <div class="modal-body">
-        {% comment_form obj as form %}
-        <form action="{% comment_target obj %}" method="POST" id="form_post_comment">
+        {% comment_form resource as form %}
+        <form action="{% comment_target resource %}" method="POST" id="form_post_comment">
         {% csrf_token %}
         {{ form }}
     </div>

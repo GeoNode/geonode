@@ -17,6 +17,8 @@ from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
+from .authorization import filter_security
+
 
 FILTER_TYPES = {
     'layer': Layer,
@@ -44,10 +46,6 @@ class TypeFilteredResource(ModelResource):
             self.type_filter = None
         return orm_filters
 
-    def filter_security(self, obj, user):
-        """ Used to check whether the item should be included in the counts or not"""
-        return user.has_perm('base.view_resourcebase', obj.resourcebase_ptr)
-
 
 class TagResource(TypeFilteredResource):
     """Tags api"""
@@ -57,7 +55,7 @@ class TagResource(TypeFilteredResource):
         if self.type_filter:
             for tagged in bundle.obj.taggit_taggeditem_items.all():
                 if tagged.content_object and tagged.content_type.model_class() == self.type_filter and \
-                    self.filter_security(tagged.content_object, bundle.request.user):
+                    filter_security(bundle.request.user, 'view_resourcebase', tagged.content_object):
                     count += 1
         else:
              count = bundle.obj.taggit_taggeditem_items.count()
@@ -82,7 +80,7 @@ class TopicCategoryResource(TypeFilteredResource):
             self.type_filter else bundle.obj.resourcebase_set.get_real_instances()
 
         for resource in resources:
-            if self.filter_security(resource, bundle.request.user):
+            if filter_security(bundle.request.user, 'view_resourcebase', resource):
                 count += 1
 
         return count

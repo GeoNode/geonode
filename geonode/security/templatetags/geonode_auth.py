@@ -32,7 +32,7 @@ class HasObjPermNode(template.Node):
     def render(self, context):
         user = self.user.resolve(context)
         obj = self.obj.resolve(context)
-        context[self.varname] = user.has_perm(self.perm, obj=obj.resourcebase_ptr)
+        context[self.varname] = user.has_perm(self.perm, obj=obj.get_self_resource())
         return ''
 
 def _check_quoted(string):

@@ -36,10 +36,6 @@ from agon_ratings.models import OverallRating
 
 from guardian.shortcuts import get_anonymous_user, assign_perm
 
-import geonode.layers.utils
-import geonode.layers.views
-import geonode.layers.models
-
 from geonode import GeoNodeException
 
 from geonode.layers.models import Layer, Style

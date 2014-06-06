@@ -16,7 +16,7 @@ from django.template import RequestContext
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 
-from guardian.shortcuts import get_objects_for_user
+from guardian.shortcuts import get_objects_for_user, get_anonymous_user
 
 from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer
@@ -382,14 +382,16 @@ def layer_acls(request):
                                 status=401,
                                 mimetype="text/plain")
 
-    all_readable = get_objects_for_user(acl_user, 'base.view_resourcebase')
-    all_writable = get_objects_for_user(acl_user, 'base.change_resourcebase')
-  
-    read_only = [x.id for x in all_readable if x not in all_writable]
-    read_write = [x.id for x in all_writable if x in all_readable]
-    
-    read_only = [x[0] for x in Layer.objects.filter(id__in=read_only).values_list('typename').all()]
-    read_write = [x[0] for x in Layer.objects.filter(id__in=read_write).values_list('typename').all()]
+    # Include permissions on the anonymous user
+    anonymous_user = get_anonymous_user()
+    all_readable = (get_objects_for_user(acl_user, 'base.view_resourcebase') |
+        get_objects_for_user(anonymous_user,  'base.view_resourcebase')).distinct()
+
+    all_writable = (get_objects_for_user(acl_user, 'base.change_resourcebase') |
+        get_objects_for_user(anonymous_user,  'base.change_resourcebase')).distinct()
+
+    read_only = [x.layer.typename for x in all_readable if x not in all_writable]
+    read_write = [x.layer.typename for x in all_writable if x in all_readable]
 
     result = {
         'rw': read_write,

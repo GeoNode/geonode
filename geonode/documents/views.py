@@ -12,7 +12,7 @@ from django.core.exceptions import PermissionDenied
 from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
 from geonode.utils import resolve_object
-from geonode.maps.views import _perms_info
+from geonode.security.views import _perms_info_json
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.people.forms import ProfileForm
 
@@ -21,13 +21,6 @@ from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentRe
 from geonode.documents.models import IMGTYPES
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
-
-DOCUMENT_LEV_NAMES = {
-    Document.LEVEL_NONE  : _('No Permissions'),
-    Document.LEVEL_READ  : _('Read Only'),
-    Document.LEVEL_WRITE : _('Read/Write'),
-    Document.LEVEL_ADMIN : _('Administrative')
-}
 
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this document")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this document.')
@@ -48,7 +41,7 @@ def document_detail(request, docid):
     The view that show details of each document
     """
     document = get_object_or_404(Document, pk=docid)
-    if not request.user.has_perm('base.view_resourcebase', obj=document.resourcebase_ptr):
+    if not request.user.has_perm('view_resourcebase', obj=document.get_self_resource()):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(request, {'error_message':
                 _("You are not allowed to view this document.")})), status=403)
@@ -61,7 +54,7 @@ def document_detail(request, docid):
     document.save()
 
     return render_to_response("documents/document_detail.html", RequestContext(request, {
-        'permissions_json': json.dumps(_perms_info(document, DOCUMENT_LEV_NAMES)),
+        'permissions_json': _perms_info_json(document),
         'resource': document,
         'imgtypes': IMGTYPES,
         'related': related

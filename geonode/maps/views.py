@@ -45,7 +45,7 @@ from geonode.utils import resolve_object
 from geonode.utils import http_client
 from geonode.maps.forms import MapForm
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.security.views import _perms_info
+from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.base.models import ContactRole
 from geonode.people.forms import ProfileForm, PocForm
@@ -70,7 +70,7 @@ _PERMISSION_MSG_VIEW = _("You are not allowed to view this map.")
 
 def _handleThumbNail(req, obj):
     # object will either be a map or a layer, one or the other permission must apply
-    if not req.user.has_perm('base.change_resourcebase', obj=obj.resourcebase_ptr):
+    if not req.user.has_perm('change_resourcebase', obj=obj.get_self_resource()):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(req, {'error_message':
                 _("You are not permitted to modify this object")})), status=401)
@@ -113,7 +113,7 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         'config': config,
         'resource': map_obj,
         'layers': layers,
-        'permissions_json': json.dumps(_perms_info(map_obj, MAP_LEV_NAMES)),
+        'permissions_json': _perms_info_json(map_obj),
         "documents": get_related_documents(map_obj),
     }))
 
@@ -250,13 +250,13 @@ def map_view(request, mapid, template='maps/map_view.html'):
 
 
 def map_view_js(request, mapid):
-    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
+    map_obj = _resolve_map(request, mapid, 'view_resourcebase')
     config = map_obj.viewer_json()
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 def map_json(request, mapid):
     if request.method == 'GET':
-        map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
+        map_obj = _resolve_map(request, mapid, 'view_resourcebase')
         return HttpResponse(json.dumps(map_obj.viewer_json()))
     elif request.method == 'PUT':
         if not request.user.is_authenticated():
@@ -265,7 +265,7 @@ def map_json(request, mapid):
                 status=401,
                 mimetype="text/plain"
             )
-        map_obj = _resolve_map(request, mapid, 'base.change_resourcebase')
+        map_obj = _resolve_map(request, mapid, 'change_resourcebase')
         try:
             map_obj.update_from_viewer(request.body)
             return HttpResponse(json.dumps(map_obj.viewer_json()))
@@ -360,7 +360,7 @@ def new_map_config(request):
                     # bad layer, skip
                     continue
 
-                if not request.user.has_perm('base.view_resourcebase', obj=layer.resourcebase_ptr):
+                if not request.user.has_perm('view_resourcebase', obj=layer.get_self_resource()):
                     # invisible layer, skip inclusion
                     continue
 
@@ -434,7 +434,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
         url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
 
         def perm_filter(layer):
-            return request.user.has_perm('base.view_resourcebase', obj=layer.resourcebase_ptr)
+            return request.user.has_perm('base.view_resourcebase', obj=layer.get_self_resource())
 
         mapJson = mapObject.json(perm_filter)
 
@@ -466,7 +466,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 remote_layers.append(lyr)
             else:
                 ownable_layer = Layer.objects.get(typename=lyr.name)
-                if not request.user.has_perm('base.view_resourcebase', obj=ownable_layer.resourcebase_ptr):
+                if not request.user.has_perm('view_resourcebase', obj=ownable_layer.get_self_resource()):
                     locked_layers.append(lyr)
                 else:
                     # we need to add the layer only once
