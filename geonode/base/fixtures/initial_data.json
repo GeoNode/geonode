@@ -1,6 +1,6 @@
 [
   {
-        "pk": 13, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "flora and/or fauna in natural environment. Examples: wildlife, vegetation, biological sciences, ecology, wilderness, sealife, wetlands, habitat", 
@@ -10,7 +10,7 @@
         }
     }, 
     {
-        "pk": 6, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "legal land descriptions. Examples: political and administrative boundaries", 
@@ -20,7 +20,7 @@
         }
     }, 
     {
-        "pk": 19, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "processes and phenomena of the atmosphere. Examples: cloud cover, weather, climate, atmospheric conditions, climate change, precipitation", 
@@ -30,7 +30,7 @@
         }
     }, 
     {
-        "pk": 11, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "economic activities, conditions and employment. Examples: production, labour, revenue, commerce, industry, tourism and ecotourism, forestry, fisheries, commercial or subsistence hunting, exploration and exploitation of resources such as minerals, oil and gas", 
@@ -40,7 +40,7 @@
         }
     }, 
     {
-        "pk": 3, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "height above or below sea level. Examples: altitude, bathymetry, digital elevation models, slope, derived products", 
@@ -50,7 +50,7 @@
         }
     }, 
     {
-        "pk": 9, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "environmental resources, protection and conservation. Examples: environmental pollution, waste storage and treatment, environmental impact assessment, monitoring environmental risk, nature reserves, landscape", 
@@ -60,7 +60,7 @@
         }
     }, 
     {
-        "pk": 2, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "rearing of animals and/or cultivation of plants. Examples: agriculture, irrigation, aquaculture, plantations, herding, pests and diseases affecting crops and livestock", 
@@ -70,7 +70,7 @@
         }
     }, 
     {
-        "pk": 1, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "information pertaining to earth sciences. Examples: geophysical features and processes, geology, minerals, sciences dealing with the composition, structure and origin of the earth s rocks, risks of earthquakes, volcanic activity, landslides, gravity information, soils, permafrost, hydrogeology, erosion", 
@@ -80,7 +80,7 @@
         }
     }, 
     {
-        "pk": 14, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "health, health services, human ecology, and safety. Examples: disease and illness, factors affecting health, hygiene, substance abuse, mental and physical health, health services", 
@@ -90,7 +90,7 @@
         }
     }, 
     {
-        "pk": 15, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "base maps. Examples: land cover, topographic maps, imagery, unclassified images, annotations", 
@@ -100,7 +100,7 @@
         }
     }, 
     {
-        "pk": 7, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "inland water features, drainage systems and their characteristics. Examples: rivers and glaciers, salt lakes, water utilization plans, dams, currents, floods, water quality, hydrographic charts", 
@@ -110,7 +110,7 @@
         }
     }, 
     {
-        "pk": 8, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "military bases, structures, activities. Examples: barracks, training grounds, military transportation, information collection", 
@@ -120,7 +120,7 @@
         }
     }, 
     {
-        "pk": 5, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "features and characteristics of salt water bodies (excluding inland waters). Examples: tides, tidal waves, coastal information, reefs", 
@@ -130,7 +130,7 @@
         }
     }, 
     {
-        "pk": 10, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "positional information and services. Examples: addresses, geodetic networks, control points, postal zones and services, place names", 
@@ -140,7 +140,7 @@
         }
     }, 
     {
-        "pk": 12, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "information used for appropriate actions for future use of the land. Examples: land use maps, zoning maps, cadastral surveys, land ownership", 
@@ -150,7 +150,7 @@
         }
     }, 
     {
-        "pk": 17, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "characteristics of society and cultures. Examples: settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information", 
@@ -160,7 +160,7 @@
         }
     }, 
     {
-        "pk": 18, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "man-made construction. Examples: buildings, museums, churches, factories, housing, monuments, shops, towers", 
@@ -170,7 +170,7 @@
         }
     }, 
     {
-        "pk": 16, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways", 
@@ -180,7 +180,7 @@
         }
     }, 
     {
-        "pk": 4, 
+        "pk": null, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "energy, water and waste systems and communications infrastructure and services. Examples: hydroelectricity, geothermal, solar and nuclear sources of energy, water purification and distribution, sewage collection and disposal, electricity and gas distribution, data communication, telecommunication, radio, communication networks", 
@@ -190,7 +190,7 @@
         }
     },
     {
-        "pk": 2, 
+        "pk": null, 
         "model": "base.spatialrepresentationtype", 
         "fields": {
             "is_choice": true, 
@@ -200,7 +200,7 @@
         }
     }, 
     {
-        "pk": 5, 
+        "pk": null, 
         "model": "base.spatialrepresentationtype", 
         "fields": {
             "is_choice": true, 
@@ -210,7 +210,7 @@
         }
     }, 
     {
-        "pk": 3, 
+        "pk": null, 
         "model": "base.spatialrepresentationtype", 
         "fields": {
             "is_choice": true, 
@@ -220,7 +220,7 @@
         }
     }, 
     {
-        "pk": 4, 
+        "pk": null, 
         "model": "base.spatialrepresentationtype", 
         "fields": {
             "is_choice": true, 
@@ -230,7 +230,7 @@
         }
     }, 
     {
-        "pk": 1, 
+        "pk": null, 
         "model": "base.spatialrepresentationtype", 
         "fields": {
             "is_choice": true, 
@@ -240,7 +240,7 @@
         }
     }, 
     {
-        "pk": 6, 
+        "pk": null, 
         "model": "base.spatialrepresentationtype", 
         "fields": {
             "is_choice": true, 
@@ -250,7 +250,7 @@
         }
     },
     {
-        "pk": 1,
+        "pk": null,
         "model": "base.license",
         "fields": {
             "identifier": "not_specified",
@@ -262,7 +262,7 @@
         }
     },
 {
-        "pk": 2,
+        "pk": null,
         "model": "base.license",
         "fields": {
             "identifier":"varied_original",
@@ -274,7 +274,7 @@
         }
     },
     {
-        "pk": 3,
+        "pk": null,
         "model": "base.license",
         "fields": {
             "identifier":"varied_derived",
@@ -286,7 +286,7 @@
         }
     },
     {
-        "pk": 4,
+        "pk": null,
         "model": "base.license",
         "fields": {
             "identifier":"public_domain",
@@ -298,7 +298,7 @@
         }
     },
     {
-        "pk": 5,
+        "pk": null,
         "model": "base.license",
         "fields": {
             "identifier":"public_domain_usg",
@@ -310,7 +310,7 @@
         }
     },
     {
-        "pk": 6,
+        "pk": null,
         "model": "base.license",
         "fields": {
             "identifier":"odbl",
@@ -322,7 +322,7 @@
         }
     },
     {
-        "pk": 7,
+        "pk": null,
         "model": "base.license",
         "fields": {
             "identifier":"nextview",
@@ -334,7 +334,7 @@
         }
     },
      {
-        "pk": 1, 
+        "pk": null, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -344,7 +344,7 @@
         }
     }, 
     {
-        "pk": 6, 
+        "pk": null, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -354,7 +354,7 @@
         }
     }, 
     {
-        "pk": 5, 
+        "pk": null, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -364,7 +364,7 @@
         }
     }, 
     {
-        "pk": 8, 
+        "pk": null, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -374,7 +374,7 @@
         }
     }, 
     {
-        "pk": 2, 
+        "pk": null, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -384,7 +384,7 @@
         }
     }, 
     {
-        "pk": 3, 
+        "pk": null, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -394,7 +394,7 @@
         }
     }, 
     {
-        "pk": 7, 
+        "pk": null, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -404,7 +404,7 @@
         }
     }, 
     {
-        "pk": 4, 
+        "pk": null, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -414,7 +414,7 @@
         }
     },
     {
-        "pk": 1, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "AFG", 
@@ -422,7 +422,7 @@
         }
     }, 
     {
-        "pk": 2, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ALA", 
@@ -430,7 +430,7 @@
         }
     }, 
     {
-        "pk": 3, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ALB", 
@@ -438,7 +438,7 @@
         }
     }, 
     {
-        "pk": 4, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "DZA", 
@@ -446,7 +446,7 @@
         }
     }, 
     {
-        "pk": 5, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ASM", 
@@ -454,7 +454,7 @@
         }
     }, 
     {
-        "pk": 6, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "AND", 
@@ -462,7 +462,7 @@
         }
     }, 
     {
-        "pk": 7, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "AGO", 
@@ -470,7 +470,7 @@
         }
     }, 
     {
-        "pk": 8, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "AIA", 
@@ -478,7 +478,7 @@
         }
     }, 
     {
-        "pk": 9, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ATG", 
@@ -486,7 +486,7 @@
         }
     }, 
     {
-        "pk": 10, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ARG", 
@@ -494,7 +494,7 @@
         }
     }, 
     {
-        "pk": 11, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ARM", 
@@ -502,7 +502,7 @@
         }
     }, 
     {
-        "pk": 12, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ABW", 
@@ -510,7 +510,7 @@
         }
     }, 
     {
-        "pk": 13, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "AUS", 
@@ -518,7 +518,7 @@
         }
     }, 
     {
-        "pk": 14, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "AUT", 
@@ -526,7 +526,7 @@
         }
     }, 
     {
-        "pk": 15, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "AZE", 
@@ -534,7 +534,7 @@
         }
     }, 
     {
-        "pk": 16, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BHS", 
@@ -542,7 +542,7 @@
         }
     }, 
     {
-        "pk": 17, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BHR", 
@@ -550,7 +550,7 @@
         }
     }, 
     {
-        "pk": 18, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BGD", 
@@ -558,7 +558,7 @@
         }
     }, 
     {
-        "pk": 19, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BRB", 
@@ -566,7 +566,7 @@
         }
     }, 
     {
-        "pk": 20, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BLR", 
@@ -574,7 +574,7 @@
         }
     }, 
     {
-        "pk": 21, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BEL", 
@@ -582,7 +582,7 @@
         }
     }, 
     {
-        "pk": 22, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BLZ", 
@@ -590,7 +590,7 @@
         }
     }, 
     {
-        "pk": 23, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BEN", 
@@ -598,7 +598,7 @@
         }
     }, 
     {
-        "pk": 24, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BMU", 
@@ -606,7 +606,7 @@
         }
     }, 
     {
-        "pk": 25, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BTN", 
@@ -614,7 +614,7 @@
         }
     }, 
     {
-        "pk": 26, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BOL", 
@@ -622,7 +622,7 @@
         }
     }, 
     {
-        "pk": 27, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BIH", 
@@ -630,7 +630,7 @@
         }
     }, 
     {
-        "pk": 28, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BWA", 
@@ -638,7 +638,7 @@
         }
     }, 
     {
-        "pk": 29, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BRA", 
@@ -646,7 +646,7 @@
         }
     }, 
     {
-        "pk": 30, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "VGB", 
@@ -654,7 +654,7 @@
         }
     }, 
     {
-        "pk": 31, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BRN", 
@@ -662,7 +662,7 @@
         }
     }, 
     {
-        "pk": 32, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BGR", 
@@ -670,7 +670,7 @@
         }
     }, 
     {
-        "pk": 33, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BFA", 
@@ -678,7 +678,7 @@
         }
     }, 
     {
-        "pk": 34, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BDI", 
@@ -686,7 +686,7 @@
         }
     }, 
     {
-        "pk": 35, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "KHM", 
@@ -694,7 +694,7 @@
         }
     }, 
     {
-        "pk": 36, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CMR", 
@@ -702,7 +702,7 @@
         }
     }, 
     {
-        "pk": 37, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CAN", 
@@ -710,7 +710,7 @@
         }
     }, 
     {
-        "pk": 38, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CPV", 
@@ -718,7 +718,7 @@
         }
     }, 
     {
-        "pk": 39, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CYM", 
@@ -726,7 +726,7 @@
         }
     }, 
     {
-        "pk": 40, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CAF", 
@@ -734,7 +734,7 @@
         }
     }, 
     {
-        "pk": 41, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TCD", 
@@ -742,7 +742,7 @@
         }
     }, 
     {
-        "pk": 42, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CIL", 
@@ -750,7 +750,7 @@
         }
     }, 
     {
-        "pk": 43, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CHL", 
@@ -758,7 +758,7 @@
         }
     }, 
     {
-        "pk": 44, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CHN", 
@@ -766,7 +766,7 @@
         }
     }, 
     {
-        "pk": 45, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "HKG", 
@@ -774,7 +774,7 @@
         }
     }, 
     {
-        "pk": 46, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MAC", 
@@ -782,7 +782,7 @@
         }
     }, 
     {
-        "pk": 47, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "COL", 
@@ -790,7 +790,7 @@
         }
     }, 
     {
-        "pk": 48, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "COM", 
@@ -798,7 +798,7 @@
         }
     }, 
     {
-        "pk": 49, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "COG", 
@@ -806,7 +806,7 @@
         }
     }, 
     {
-        "pk": 50, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "COK", 
@@ -814,7 +814,7 @@
         }
     }, 
     {
-        "pk": 51, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CRI", 
@@ -822,7 +822,7 @@
         }
     }, 
     {
-        "pk": 52, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CIV", 
@@ -830,7 +830,7 @@
         }
     }, 
     {
-        "pk": 53, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "HRV", 
@@ -838,7 +838,7 @@
         }
     }, 
     {
-        "pk": 54, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CUB", 
@@ -846,7 +846,7 @@
         }
     }, 
     {
-        "pk": 55, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CYP", 
@@ -854,7 +854,7 @@
         }
     }, 
     {
-        "pk": 56, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CZE", 
@@ -862,7 +862,7 @@
         }
     }, 
     {
-        "pk": 57, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PRK", 
@@ -870,7 +870,7 @@
         }
     }, 
     {
-        "pk": 58, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "COD", 
@@ -878,7 +878,7 @@
         }
     }, 
     {
-        "pk": 59, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "DNK", 
@@ -886,7 +886,7 @@
         }
     }, 
     {
-        "pk": 60, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "DJI", 
@@ -894,7 +894,7 @@
         }
     }, 
     {
-        "pk": 61, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "DMA", 
@@ -902,7 +902,7 @@
         }
     }, 
     {
-        "pk": 62, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "DOM", 
@@ -910,7 +910,7 @@
         }
     }, 
     {
-        "pk": 63, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ECU", 
@@ -918,7 +918,7 @@
         }
     }, 
     {
-        "pk": 64, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "EGY", 
@@ -926,7 +926,7 @@
         }
     }, 
     {
-        "pk": 65, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SLV", 
@@ -934,7 +934,7 @@
         }
     }, 
     {
-        "pk": 66, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GNQ", 
@@ -942,7 +942,7 @@
         }
     }, 
     {
-        "pk": 67, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ERI", 
@@ -950,7 +950,7 @@
         }
     }, 
     {
-        "pk": 68, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "EST", 
@@ -958,7 +958,7 @@
         }
     }, 
     {
-        "pk": 69, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ETH", 
@@ -966,7 +966,7 @@
         }
     }, 
     {
-        "pk": 70, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "FRO", 
@@ -974,7 +974,7 @@
         }
     }, 
     {
-        "pk": 71, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "FLK", 
@@ -982,7 +982,7 @@
         }
     }, 
     {
-        "pk": 72, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "FJI", 
@@ -990,7 +990,7 @@
         }
     }, 
     {
-        "pk": 73, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "FIN", 
@@ -998,7 +998,7 @@
         }
     }, 
     {
-        "pk": 74, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "FRA", 
@@ -1006,7 +1006,7 @@
         }
     }, 
     {
-        "pk": 75, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GUF", 
@@ -1014,7 +1014,7 @@
         }
     }, 
     {
-        "pk": 76, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PYF", 
@@ -1022,7 +1022,7 @@
         }
     }, 
     {
-        "pk": 77, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GAB", 
@@ -1030,7 +1030,7 @@
         }
     }, 
     {
-        "pk": 78, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GMB", 
@@ -1038,7 +1038,7 @@
         }
     }, 
     {
-        "pk": 79, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GEO", 
@@ -1046,7 +1046,7 @@
         }
     }, 
     {
-        "pk": 80, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "DEU", 
@@ -1054,7 +1054,7 @@
         }
     }, 
     {
-        "pk": 81, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GHA", 
@@ -1062,7 +1062,7 @@
         }
     }, 
     {
-        "pk": 82, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GIB", 
@@ -1070,7 +1070,7 @@
         }
     }, 
     {
-        "pk": 83, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GRC", 
@@ -1078,7 +1078,7 @@
         }
     }, 
     {
-        "pk": 84, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GRL", 
@@ -1086,7 +1086,7 @@
         }
     }, 
     {
-        "pk": 85, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GRD", 
@@ -1094,7 +1094,7 @@
         }
     }, 
     {
-        "pk": 86, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GLP", 
@@ -1102,7 +1102,7 @@
         }
     }, 
     {
-        "pk": 87, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GUM", 
@@ -1110,7 +1110,7 @@
         }
     }, 
     {
-        "pk": 88, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GTM", 
@@ -1118,7 +1118,7 @@
         }
     }, 
     {
-        "pk": 89, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GGY", 
@@ -1126,7 +1126,7 @@
         }
     }, 
     {
-        "pk": 90, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GIN", 
@@ -1134,7 +1134,7 @@
         }
     }, 
     {
-        "pk": 91, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GNB", 
@@ -1142,7 +1142,7 @@
         }
     }, 
     {
-        "pk": 92, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GUY", 
@@ -1150,7 +1150,7 @@
         }
     }, 
     {
-        "pk": 93, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "HTI", 
@@ -1158,7 +1158,7 @@
         }
     }, 
     {
-        "pk": 94, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "VAT", 
@@ -1166,7 +1166,7 @@
         }
     }, 
     {
-        "pk": 95, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "HND", 
@@ -1174,7 +1174,7 @@
         }
     }, 
     {
-        "pk": 96, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "HUN", 
@@ -1182,7 +1182,7 @@
         }
     }, 
     {
-        "pk": 97, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ISL", 
@@ -1190,7 +1190,7 @@
         }
     }, 
     {
-        "pk": 98, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "IND", 
@@ -1198,7 +1198,7 @@
         }
     }, 
     {
-        "pk": 99, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "IDN", 
@@ -1206,7 +1206,7 @@
         }
     }, 
     {
-        "pk": 100, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "IRN", 
@@ -1214,7 +1214,7 @@
         }
     }, 
     {
-        "pk": 101, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "IRQ", 
@@ -1222,7 +1222,7 @@
         }
     }, 
     {
-        "pk": 102, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "IRL", 
@@ -1230,7 +1230,7 @@
         }
     }, 
     {
-        "pk": 103, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "IMN", 
@@ -1238,7 +1238,7 @@
         }
     }, 
     {
-        "pk": 104, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ISR", 
@@ -1246,7 +1246,7 @@
         }
     }, 
     {
-        "pk": 105, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ITA", 
@@ -1254,7 +1254,7 @@
         }
     }, 
     {
-        "pk": 106, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "JAM", 
@@ -1262,7 +1262,7 @@
         }
     }, 
     {
-        "pk": 107, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "JPN", 
@@ -1270,7 +1270,7 @@
         }
     }, 
     {
-        "pk": 108, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "JEY", 
@@ -1278,7 +1278,7 @@
         }
     }, 
     {
-        "pk": 109, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "JOR", 
@@ -1286,7 +1286,7 @@
         }
     }, 
     {
-        "pk": 110, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "KAZ", 
@@ -1294,7 +1294,7 @@
         }
     }, 
     {
-        "pk": 111, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "KEN", 
@@ -1302,7 +1302,7 @@
         }
     }, 
     {
-        "pk": 112, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "KIR", 
@@ -1310,7 +1310,7 @@
         }
     }, 
     {
-        "pk": 113, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "KWT", 
@@ -1318,7 +1318,7 @@
         }
     }, 
     {
-        "pk": 114, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "KGZ", 
@@ -1326,7 +1326,7 @@
         }
     }, 
     {
-        "pk": 115, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "LAO", 
@@ -1334,7 +1334,7 @@
         }
     }, 
     {
-        "pk": 116, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "LVA", 
@@ -1342,7 +1342,7 @@
         }
     }, 
     {
-        "pk": 117, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "LBN", 
@@ -1350,7 +1350,7 @@
         }
     }, 
     {
-        "pk": 118, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "LSO", 
@@ -1358,7 +1358,7 @@
         }
     }, 
     {
-        "pk": 119, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "LBR", 
@@ -1366,7 +1366,7 @@
         }
     }, 
     {
-        "pk": 120, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "LBY", 
@@ -1374,7 +1374,7 @@
         }
     }, 
     {
-        "pk": 121, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "LIE", 
@@ -1382,7 +1382,7 @@
         }
     }, 
     {
-        "pk": 122, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "LTU", 
@@ -1390,7 +1390,7 @@
         }
     }, 
     {
-        "pk": 123, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "LUX", 
@@ -1398,7 +1398,7 @@
         }
     }, 
     {
-        "pk": 124, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MKD", 
@@ -1406,7 +1406,7 @@
         }
     }, 
     {
-        "pk": 125, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MDG", 
@@ -1414,7 +1414,7 @@
         }
     }, 
     {
-        "pk": 126, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MWI", 
@@ -1422,7 +1422,7 @@
         }
     }, 
     {
-        "pk": 127, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MYS", 
@@ -1430,7 +1430,7 @@
         }
     }, 
     {
-        "pk": 128, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MDV", 
@@ -1438,7 +1438,7 @@
         }
     }, 
     {
-        "pk": 129, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MLI", 
@@ -1446,7 +1446,7 @@
         }
     }, 
     {
-        "pk": 130, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MLT", 
@@ -1454,7 +1454,7 @@
         }
     }, 
     {
-        "pk": 131, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MHL", 
@@ -1462,7 +1462,7 @@
         }
     }, 
     {
-        "pk": 132, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MTQ", 
@@ -1470,7 +1470,7 @@
         }
     }, 
     {
-        "pk": 133, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MRT", 
@@ -1478,7 +1478,7 @@
         }
     }, 
     {
-        "pk": 134, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MUS", 
@@ -1486,7 +1486,7 @@
         }
     }, 
     {
-        "pk": 135, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MYT", 
@@ -1494,7 +1494,7 @@
         }
     }, 
     {
-        "pk": 136, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MEX", 
@@ -1502,7 +1502,7 @@
         }
     }, 
     {
-        "pk": 137, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "FSM", 
@@ -1510,7 +1510,7 @@
         }
     }, 
     {
-        "pk": 138, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MCO", 
@@ -1518,7 +1518,7 @@
         }
     }, 
     {
-        "pk": 139, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MNG", 
@@ -1526,7 +1526,7 @@
         }
     }, 
     {
-        "pk": 140, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MNE", 
@@ -1534,7 +1534,7 @@
         }
     }, 
     {
-        "pk": 141, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MSR", 
@@ -1542,7 +1542,7 @@
         }
     }, 
     {
-        "pk": 142, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MAR", 
@@ -1550,7 +1550,7 @@
         }
     }, 
     {
-        "pk": 143, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MOZ", 
@@ -1558,7 +1558,7 @@
         }
     }, 
     {
-        "pk": 144, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MMR", 
@@ -1566,7 +1566,7 @@
         }
     }, 
     {
-        "pk": 145, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "NAM", 
@@ -1574,7 +1574,7 @@
         }
     }, 
     {
-        "pk": 146, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "NRU", 
@@ -1582,7 +1582,7 @@
         }
     }, 
     {
-        "pk": 147, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "NPL", 
@@ -1590,7 +1590,7 @@
         }
     }, 
     {
-        "pk": 148, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "NLD", 
@@ -1598,7 +1598,7 @@
         }
     }, 
     {
-        "pk": 149, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ANT", 
@@ -1606,7 +1606,7 @@
         }
     }, 
     {
-        "pk": 150, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "NCL", 
@@ -1614,7 +1614,7 @@
         }
     }, 
     {
-        "pk": 151, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "NZL", 
@@ -1622,7 +1622,7 @@
         }
     }, 
     {
-        "pk": 152, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "NIC", 
@@ -1630,7 +1630,7 @@
         }
     }, 
     {
-        "pk": 153, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "NER", 
@@ -1638,7 +1638,7 @@
         }
     }, 
     {
-        "pk": 154, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "NGA", 
@@ -1646,7 +1646,7 @@
         }
     }, 
     {
-        "pk": 155, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "NIU", 
@@ -1654,7 +1654,7 @@
         }
     }, 
     {
-        "pk": 156, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "NFK", 
@@ -1662,7 +1662,7 @@
         }
     }, 
     {
-        "pk": 157, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MNP", 
@@ -1670,7 +1670,7 @@
         }
     }, 
     {
-        "pk": 158, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "NOR", 
@@ -1678,7 +1678,7 @@
         }
     }, 
     {
-        "pk": 159, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PSE", 
@@ -1686,7 +1686,7 @@
         }
     }, 
     {
-        "pk": 160, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "OMN", 
@@ -1694,7 +1694,7 @@
         }
     }, 
     {
-        "pk": 161, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PAK", 
@@ -1702,7 +1702,7 @@
         }
     }, 
     {
-        "pk": 162, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PLW", 
@@ -1710,7 +1710,7 @@
         }
     }, 
     {
-        "pk": 163, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PAN", 
@@ -1718,7 +1718,7 @@
         }
     }, 
     {
-        "pk": 164, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PNG", 
@@ -1726,7 +1726,7 @@
         }
     }, 
     {
-        "pk": 165, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PRY", 
@@ -1734,7 +1734,7 @@
         }
     }, 
     {
-        "pk": 166, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PER", 
@@ -1742,7 +1742,7 @@
         }
     }, 
     {
-        "pk": 167, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PHL", 
@@ -1750,7 +1750,7 @@
         }
     }, 
     {
-        "pk": 168, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PCN", 
@@ -1758,7 +1758,7 @@
         }
     }, 
     {
-        "pk": 169, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "POL", 
@@ -1766,7 +1766,7 @@
         }
     }, 
     {
-        "pk": 170, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PRT", 
@@ -1774,7 +1774,7 @@
         }
     }, 
     {
-        "pk": 171, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "PRI", 
@@ -1782,7 +1782,7 @@
         }
     }, 
     {
-        "pk": 172, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "QAT", 
@@ -1790,7 +1790,7 @@
         }
     }, 
     {
-        "pk": 173, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "KOR", 
@@ -1798,7 +1798,7 @@
         }
     }, 
     {
-        "pk": 174, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MDA", 
@@ -1806,7 +1806,7 @@
         }
     }, 
     {
-        "pk": 175, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "REU", 
@@ -1814,7 +1814,7 @@
         }
     }, 
     {
-        "pk": 176, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ROU", 
@@ -1822,7 +1822,7 @@
         }
     }, 
     {
-        "pk": 177, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "RUS", 
@@ -1830,7 +1830,7 @@
         }
     }, 
     {
-        "pk": 178, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "RWA", 
@@ -1838,7 +1838,7 @@
         }
     }, 
     {
-        "pk": 180, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SHN", 
@@ -1846,7 +1846,7 @@
         }
     }, 
     {
-        "pk": 181, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "KNA", 
@@ -1854,7 +1854,7 @@
         }
     }, 
     {
-        "pk": 182, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "LCA", 
@@ -1862,7 +1862,7 @@
         }
     }, 
     {
-        "pk": 184, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SPM", 
@@ -1870,7 +1870,7 @@
         }
     }, 
     {
-        "pk": 185, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "VCT", 
@@ -1878,7 +1878,7 @@
         }
     }, 
     {
-        "pk": 179, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "BLM", 
@@ -1886,7 +1886,7 @@
         }
     }, 
     {
-        "pk": 183, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "MAF", 
@@ -1894,7 +1894,7 @@
         }
     }, 
     {
-        "pk": 186, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "WSM", 
@@ -1902,7 +1902,7 @@
         }
     }, 
     {
-        "pk": 187, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SMR", 
@@ -1910,7 +1910,7 @@
         }
     }, 
     {
-        "pk": 188, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "STP", 
@@ -1918,7 +1918,7 @@
         }
     }, 
     {
-        "pk": 189, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SAU", 
@@ -1926,7 +1926,7 @@
         }
     }, 
     {
-        "pk": 190, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SEN", 
@@ -1934,7 +1934,7 @@
         }
     }, 
     {
-        "pk": 191, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SRB", 
@@ -1942,7 +1942,7 @@
         }
     }, 
     {
-        "pk": 192, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SYC", 
@@ -1950,7 +1950,7 @@
         }
     }, 
     {
-        "pk": 193, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SLE", 
@@ -1958,7 +1958,7 @@
         }
     }, 
     {
-        "pk": 194, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SGP", 
@@ -1966,7 +1966,7 @@
         }
     }, 
     {
-        "pk": 195, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SVK", 
@@ -1974,7 +1974,7 @@
         }
     }, 
     {
-        "pk": 196, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SVN", 
@@ -1982,7 +1982,7 @@
         }
     }, 
     {
-        "pk": 197, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SLB", 
@@ -1990,7 +1990,7 @@
         }
     }, 
     {
-        "pk": 198, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SOM", 
@@ -1998,7 +1998,7 @@
         }
     }, 
     {
-        "pk": 199, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ZAF", 
@@ -2006,7 +2006,7 @@
         }
     }, 
     {
-        "pk": 200, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ESP", 
@@ -2014,7 +2014,7 @@
         }
     }, 
     {
-        "pk": 201, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "LKA", 
@@ -2022,7 +2022,7 @@
         }
     }, 
     {
-        "pk": 202, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SDN", 
@@ -2030,7 +2030,7 @@
         }
     }, 
     {
-        "pk": 203, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SUR", 
@@ -2038,7 +2038,7 @@
         }
     }, 
     {
-        "pk": 204, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SJM", 
@@ -2046,7 +2046,7 @@
         }
     }, 
     {
-        "pk": 205, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SWZ", 
@@ -2054,7 +2054,7 @@
         }
     }, 
     {
-        "pk": 206, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SWE", 
@@ -2062,7 +2062,7 @@
         }
     }, 
     {
-        "pk": 207, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "CHE", 
@@ -2070,7 +2070,7 @@
         }
     }, 
     {
-        "pk": 208, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "SYR", 
@@ -2078,7 +2078,7 @@
         }
     }, 
     {
-        "pk": 209, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TJK", 
@@ -2086,7 +2086,7 @@
         }
     }, 
     {
-        "pk": 210, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "THA", 
@@ -2094,7 +2094,7 @@
         }
     }, 
     {
-        "pk": 211, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TLS", 
@@ -2102,7 +2102,7 @@
         }
     }, 
     {
-        "pk": 212, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TGO", 
@@ -2110,7 +2110,7 @@
         }
     }, 
     {
-        "pk": 213, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TKL", 
@@ -2118,7 +2118,7 @@
         }
     }, 
     {
-        "pk": 214, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TON", 
@@ -2126,7 +2126,7 @@
         }
     }, 
     {
-        "pk": 215, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TTO", 
@@ -2134,7 +2134,7 @@
         }
     }, 
     {
-        "pk": 216, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TUN", 
@@ -2142,7 +2142,7 @@
         }
     }, 
     {
-        "pk": 217, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TUR", 
@@ -2150,7 +2150,7 @@
         }
     }, 
     {
-        "pk": 218, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TKM", 
@@ -2158,7 +2158,7 @@
         }
     }, 
     {
-        "pk": 219, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TCA", 
@@ -2166,7 +2166,7 @@
         }
     }, 
     {
-        "pk": 220, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TUV", 
@@ -2174,7 +2174,7 @@
         }
     }, 
     {
-        "pk": 221, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "UGA", 
@@ -2182,7 +2182,7 @@
         }
     }, 
     {
-        "pk": 222, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "UKR", 
@@ -2190,7 +2190,7 @@
         }
     }, 
     {
-        "pk": 223, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ARE", 
@@ -2198,7 +2198,7 @@
         }
     }, 
     {
-        "pk": 224, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "GBR", 
@@ -2206,7 +2206,7 @@
         }
     }, 
     {
-        "pk": 225, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "TZA", 
@@ -2214,7 +2214,7 @@
         }
     }, 
     {
-        "pk": 227, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "VIR", 
@@ -2222,7 +2222,7 @@
         }
     }, 
     {
-        "pk": 226, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "USA", 
@@ -2230,7 +2230,7 @@
         }
     }, 
     {
-        "pk": 228, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "URY", 
@@ -2238,7 +2238,7 @@
         }
     }, 
     {
-        "pk": 229, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "UZB", 
@@ -2246,7 +2246,7 @@
         }
     }, 
     {
-        "pk": 230, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "VUT", 
@@ -2254,7 +2254,7 @@
         }
     }, 
     {
-        "pk": 231, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "VEN", 
@@ -2262,7 +2262,7 @@
         }
     }, 
     {
-        "pk": 232, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "VNM", 
@@ -2270,7 +2270,7 @@
         }
     }, 
     {
-        "pk": 233, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "WLF", 
@@ -2278,7 +2278,7 @@
         }
     }, 
     {
-        "pk": 234, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ESH", 
@@ -2286,7 +2286,7 @@
         }
     }, 
     {
-        "pk": 235, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "YEM", 
@@ -2294,7 +2294,7 @@
         }
     }, 
     {
-        "pk": 236, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ZMB", 
@@ -2302,7 +2302,7 @@
         }
     }, 
     {
-        "pk": 237, 
+        "pk": null, 
         "model": "base.region", 
         "fields": {
             "code": "ZWE", 
