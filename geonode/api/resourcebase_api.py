@@ -104,7 +104,8 @@ class CommonModelApi(ModelResource):
         #orm_objects = self.apply_filters(request, filters)
 
         # Do the query.
-        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', ''))
+        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', '')).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
+        print sqs.facet_counts()
         paginator = Paginator(sqs, request.GET.get('limit'))
 
         try:
@@ -134,7 +135,7 @@ class CommonModelApi(ModelResource):
                 "next": next_page, 
                 "offset": int(request.GET.get('offset')),
                 "previous": previous_page, 
-                "total_count": sqs.count(), 
+                "total_count": sqs.count(),
             },
             'objects': objects,
         }
