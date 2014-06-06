@@ -177,12 +177,10 @@
         {% if map.is_public and can_edit_map or map.layer_group %}
         <li class="list-group-item">
           <h4>{% trans "Map WMS" %}</h4>
-          {% comment %}
           <dl>{% if map.layer_group %}
             <dt>{% trans "WMS layer group for local map layers" %}:</dt>
             <dd><em>{{ map.layer_group.name }}</em> ({% trans "on" %} <a href="{{ ows }}?service=WMS&request=GetCapabilities">{% trans "local OWS" %}</a>)</dd>
             {% endif %}</dl>
-            {% endcomment %}
           {% if can_edit_map %}
           <p>{% trans "Publish local map layers as WMS layer group" %}</p>
           <a href="{%url "map_wms" map.id %}" class="btn btn-default btn-md btn-block">{% trans "Publish Map WMS" %}</a>
