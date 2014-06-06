@@ -105,7 +105,11 @@ class CommonModelApi(ModelResource):
 
         # Do the query.
         sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', '')).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
-        print sqs.facet_counts()
+        facets = {}
+        for facet in sqs.facet_counts()['fields']:
+            facets[facet] = {} 
+            for item in sqs.facet_counts()['fields'][facet]:
+                facets[facet][item[0]] = item[1]
         paginator = Paginator(sqs, request.GET.get('limit'))
 
         try:
@@ -136,6 +140,7 @@ class CommonModelApi(ModelResource):
                 "offset": int(request.GET.get('offset')),
                 "previous": previous_page, 
                 "total_count": sqs.count(),
+                "facets" : facets,
             },
             'objects': objects,
         }
@@ -149,6 +154,7 @@ class ResourceBaseResource(CommonModelApi):
     class Meta(CommonMetaApi):
         queryset = ResourceBase.objects.polymorphic_queryset().distinct().order_by('-date')
         resource_name = 'base'
+        excludes = ['csw_anytext', 'metadata_xml']
 
     def prepend_urls(self):
         return [
