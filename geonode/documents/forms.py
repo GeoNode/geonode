@@ -9,10 +9,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.forms import HiddenInput, TextInput
 
+from mptt.forms import TreeNodeMultipleChoiceField
+
 from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
+from geonode.base.models import Region
 
 class DocumentForm(forms.ModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
@@ -32,6 +35,9 @@ class DocumentForm(forms.ModelForm):
                                              queryset = Profile.objects.exclude(user=None))
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
+
+    regions = TreeNodeMultipleChoiceField(queryset=Region.objects.all(), level_indicator=u'___')
+    regions.widget.attrs = {"size":20}
     
     def __init__(self, *args, **kwargs):
         super(DocumentForm, self).__init__(*args, **kwargs)
