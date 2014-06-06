@@ -523,12 +523,12 @@ def resolve_object(request, model, query, permission=None,
     permission_required - if False, allow get methods to proceed
     permission_msg - optional message to use in 403
     """
-
+    from geonode.security.views import filter_object_security
     obj = get_object_or_404(model, **query)
     allowed = True
     if permission:
         if permission_required or request.method != 'GET':
-            allowed = request.user.has_perm(permission, obj=obj.get_self_resource())
+            allowed = filter_object_security(request.user, permission, obj.get_self_resource())
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)

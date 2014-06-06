@@ -17,7 +17,7 @@ from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
-from .authorization import filter_security
+from geonode.security.views import filter_object_security
 
 
 FILTER_TYPES = {
@@ -55,7 +55,7 @@ class TagResource(TypeFilteredResource):
         if self.type_filter:
             for tagged in bundle.obj.taggit_taggeditem_items.all():
                 if tagged.content_object and tagged.content_type.model_class() == self.type_filter and \
-                    filter_security(bundle.request.user, 'view_resourcebase', tagged.content_object):
+                    filter_object_security(bundle.request.user, 'view_resourcebase', tagged.content_object):
                     count += 1
         else:
              count = bundle.obj.taggit_taggeditem_items.count()
@@ -80,7 +80,7 @@ class TopicCategoryResource(TypeFilteredResource):
             self.type_filter else bundle.obj.resourcebase_set.get_real_instances()
 
         for resource in resources:
-            if filter_security(bundle.request.user, 'view_resourcebase', resource):
+            if filter_object_security(bundle.request.user, 'view_resourcebase', resource):
                 count += 1
 
         return count
