@@ -204,6 +204,7 @@ INSTALLED_APPS = (
     'leaflet',
     'django_extensions',
     #'haystack',
+    'autocomplete_light',
 
     # Theme
     "pinax_theme_bootstrap_account",
