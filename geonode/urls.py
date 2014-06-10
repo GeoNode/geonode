@@ -90,6 +90,7 @@ urlpatterns = patterns('',
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
     url(r'', include(api.urls)),
+    (r'^services/', include('geonode.contrib.services.urls')),
     )
 
 #Documents views
@@ -103,10 +104,6 @@ if "geonode.contrib.groups" in settings.INSTALLED_APPS:
         (r'^groups/', include('geonode.contrib.groups.urls')),
     )
 
-if "geonode.contrib.services" in settings.INSTALLED_APPS:
-    urlpatterns += patterns('',
-        (r'^services/', include('geonode.contrib.services.urls')),
-    )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
