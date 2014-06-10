@@ -88,8 +88,8 @@ class PermissionLevelMixin(object):
         view permission to the anonymous user
         """
         self.remove_all_permissions()
-
-        assign_perm('view_resourcebase', get_anonymous_user(), self.get_self_resource())
+        for user in User.objects.all():
+            assign_perm('view_resourcebase', user, self.get_self_resource())
         for perm in ADMIN_PERMISSIONS:
             assign_perm(perm, self.owner, self.get_self_resource())
 
@@ -102,7 +102,7 @@ class PermissionLevelMixin(object):
         the mapping looks like:
         {
             'users': {
-                'AnonymousUser': ['perm1','perm2','perm3'],
+                'AnonymousUser': ['view'],
                 <username>: ['perm1','perm2','perm3'],
                 <username2>: ['perm1','perm2','perm3']
                 ...
@@ -116,15 +116,17 @@ class PermissionLevelMixin(object):
         """
         self.remove_all_permissions()
 
-        for user, perms in perm_spec['users'].items():
-            if user == "AnonymousUser":
-                user = get_anonymous_user()
-            else:
-                user = User.objects.get(username=user)
-            for perm in perms:
-                assign_perm(perm, user, self.get_self_resource())
+        if "AnonymousUser" in perm_spec['users']:
+            for user in User.objects.all():
+                assign_perm('view_resourcebase', user, self.get_self_resource())
 
-        if "geonode.contrib.groups" in settings.INSTALLED_APPS:
+        else:
+            for user, perms in perm_spec['users'].items():
+                user = User.objects.get(username=user)
+                for perm in perms:
+                    assign_perm(perm, user, self.get_self_resource())
+
+        if hasattr(perm_spec, 'groups'):
             for group, perms in perm_spec['groups'].items():           
                 group = Group.objects.get(slug=user)
                 for perm in perms:

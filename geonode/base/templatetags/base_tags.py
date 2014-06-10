@@ -9,7 +9,6 @@ from django.contrib.auth.models import User
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
-from geonode.security.views import filter_object_security
 
 register = template.Library()
 
@@ -32,7 +31,7 @@ def facets(context):
     }
 
     for layer in Layer.objects.all():
-        if filter_object_security(request.user, 'view_resourcebase', layer):
+        if request.user.has_perm('view_resourcebase', layer):
             if layer.storeType == 'coverageStore':
                 facets['raster'] += 1
             else:
@@ -46,12 +45,12 @@ def facets(context):
 
     facets['map'] = 0
     for the_map in Map.objects.all():
-        if filter_object_security(request.user, 'view_resourcebase', the_map):
+        if request.user.has_perm('view_resourcebase', the_map):
             facets['map'] +=1
 
     facets['document'] = 0
     for doc in Document.objects.all():
-        if filter_object_security(request.user, 'view_resourcebase', doc):
+        if request.user.has_perm('view_resourcebase', doc):
             facets['document'] += 1
 
     if facet_type == 'home':

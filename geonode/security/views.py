@@ -27,50 +27,11 @@ from django.core.exceptions import PermissionDenied
 from geonode.utils import resolve_object
 from django.http import HttpResponse, HttpResponseRedirect
 
-from guardian.shortcuts import get_objects_for_user, get_anonymous_user
-
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 
-anonymous_user = get_anonymous_user()
-def filter_object_security(user, perm, obj):
-    """
-    Check whether a user has permissions or if the anonymous user has permission on an object
-    """    
-    return user.has_perm(perm, obj.get_self_resource()) or anonymous_user.has_perm(perm, obj.get_self_resource())
-
-def filter_queryset_security(user, perm, queryset):
-    """
-    Check whether a user has permissions or if the anonymous user has permission on a queryset
-    """
-    # uses the django guardian to check permissions, then uses the id's to filter the queryset
-    # The permissions cannot be checked directly on the queryset because it's polymorphic and
-    # guardian does not allow to mix permissions and models
-
-    # TODO: improve this
-    permitted_ids = (get_objects_for_user(user, perm).values_list('id') | 
-            get_objects_for_user(anonymous_user,perm).values_list('id')).distinct()
-    permitted_ids_list = [val[0] for val in permitted_ids]
-        
-    return queryset.filter(id__in=permitted_ids_list)
-
-def _view_perms_context(obj):
-
-    ctx =  obj.get_all_level_info()
-    def lname(l):
-        return level_names.get(l, _("???"))
-    ctx[ANONYMOUS_USERS] = lname(ctx.get(ANONYMOUS_USERS, obj.LEVEL_NONE))
-    ctx[AUTHENTICATED_USERS] = lname(ctx.get(AUTHENTICATED_USERS, obj.LEVEL_NONE))
-
-    ulevs = []
-    for u, l in ctx['users'].items():
-        ulevs.append([u, lname(l)])
-    ulevs.sort()
-    ctx['users'] = ulevs
-
-    return ctx
 
 def _perms_info(obj):
     info = obj.get_all_level_info()
