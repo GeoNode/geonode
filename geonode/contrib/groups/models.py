@@ -25,7 +25,8 @@ class Group(DjangoGroup):
     description = models.TextField()
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
     access = models.CharField(max_length=15, default="public'", choices=GROUP_CHOICES)
-    last_modified = models.DateTimeField(auto_now=True)    
+    last_modified = models.DateTimeField(auto_now=True)
+    users = models.ManyToManyField(User, through='GroupMember')   
 
     @classmethod
     def groups_for_user(cls, user):
