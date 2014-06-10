@@ -104,6 +104,14 @@ def _resolve_map(request, id, permission='maps.change_map',
     return resolve_object(request, Map, {'pk':id}, permission = permission,
                           permission_msg=msg, **kwargs)
 
+def _resolve_map_custom(request, id, fieldname, permission='maps.change_map',
+                 msg=_PERMISSION_MSG_GENERIC, **kwargs):
+    '''
+    Resolve the Map by the provided typename and check the optional permission.
+    '''
+    return resolve_object(request, Map, {fieldname:id}, permission = permission,
+                          permission_msg=msg, **kwargs)
+
 #### BASIC MAP VIEWS ####
 
 def map_detail(request, mapid, snapshot = None, template='maps/map_detail.html'):
@@ -639,8 +647,8 @@ def snapshot_config(snapshot, map_obj, user):
 
 def get_suffix_if_custom(map):
     if map.use_custom_template:
-        if map.officialurl:
-            return map.officialurl
+        if map.featuredurl:
+            return map.featuredurl
         elif map.urlsuffix:
             return map.urlsuffix
         else:
@@ -648,6 +656,22 @@ def get_suffix_if_custom(map):
     else:
         return None
 
+def featured_map(request, site):
+    """
+    The view that returns the map composer opened to
+    the map with the given official site url.
+    """
+    map_obj = _resolve_map_custom(request, site, 'featuredurl', 'maps.view_map', _PERMISSION_MSG_VIEW)
+    return map_view(request, str(map_obj.id))
+
+
+def featured_map_info(request, site):
+    '''
+    main view for map resources, dispatches to correct
+    view based on method and query args.
+    '''
+    map_obj = _resolve_map_custom(request, site, 'featuredurl', 'maps.view_map', _PERMISSION_MSG_VIEW)
+    return map_detail(request, str(map_obj.id))
 
 def snapshot_create(request):
     """

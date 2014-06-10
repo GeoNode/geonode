@@ -76,6 +76,13 @@ class Map(ResourceBase, GXPMapBase):
     last_modified = models.DateTimeField(auto_now_add=True)
     # The last time the map was modified.
 
+    urlsuffix = models.CharField(_('Site URL'), max_length=255, blank=True)
+    # Alphanumeric alternative to referencing maps by id, appended to end of 
+    # URL instead of id, ie http://domain/maps/someview
+
+    featuredurl = models.CharField(_('Featured Map URL'), max_length=255, blank=True)
+    # Full URL for featured map view, ie http://domain/someview
+
     def __unicode__(self):
         return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
 
