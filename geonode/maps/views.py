@@ -126,7 +126,12 @@ def map_detail(request, mapid, snapshot = None, template='maps/map_detail.html')
     map_obj.popular_count += 1
     map_obj.save()
 
-    config = map_obj.viewer_json()
+
+    if snapshot is None:
+        config = map_obj.viewer_json()
+    else:
+        config = snapshot_config(snapshot, map_obj, request.user)
+
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
     return render_to_response(template, RequestContext(request, {
@@ -253,7 +258,12 @@ def map_embed(request, mapid=None, snapshot = None, template='maps/map_embed.htm
             map_obj = _resolve_map_custom(request, mapid, 'urlsuffix', 'maps.view_map', _PERMISSION_MSG_VIEW)
         else:
             map_obj = _resolve_map(request, mapid, 'maps.view_map', _PERMISSION_MSG_VIEW)
-        config = map_obj.viewer_json()
+
+        if snapshot is None:
+            config = map_obj.viewer_json()
+        else:
+            config = snapshot_config(snapshot, map_obj, request.user)
+
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config)
     }))
