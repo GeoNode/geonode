@@ -381,13 +381,25 @@ def new_map_config(request):
                     bbox[2] = min(bbox[2], layer_bbox[2])
                     bbox[3] = max(bbox[3], layer_bbox[3])
 
-                layers.append(MapLayer(
+                # gxp_wmscsource needs at least bbox and title for lazy loading
+                # layer_params = layer.attribute_config()
+                # layer_params["bbox"] = list(layer.bbox_string)
+                # layer_params["title"] = layer.title
+                # layer_params["srs"] = layer.srid
+
+                maplayer =  MapLayer(
                     map = map_obj,
                     name = layer.typename,
                     ows_url = layer.get_ows_url(),
-                    layer_params=json.dumps( layer.attribute_config()),
-                    visibility = True
-                ))
+                    layer_params=json.dumps(layer.attribute_config()),
+                    visibility = True,
+                )
+
+                # if layer.storeType == "remote":
+                #     maplayer.source_params = json.dumps({"ptype":layer.ptype, "remote": (layer.storeType == "remoteStore"),
+                #                                 "url": layer.ows_url})
+
+                layers.append(maplayer)
 
             if bbox is not None:
                 minx, miny, maxx, maxy = [float(c) for c in bbox]

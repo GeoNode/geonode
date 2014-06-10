@@ -79,7 +79,7 @@ class Layer(ResourceBase):
     store = models.CharField(max_length=128)
     storeType = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
-    typename = models.CharField(max_length=128, unique=True, null=True, blank=True)
+    typename = models.CharField(max_length=128, null=True, blank=True)
 
     default_style = models.ForeignKey(Style, related_name='layer_default_style', null=True, blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')
@@ -87,6 +87,8 @@ class Layer(ResourceBase):
     charset = models.CharField(max_length=255, default='UTF-8')
 
     upload_session = models.ForeignKey('UploadSession', blank=True, null=True)
+
+    service = models.ForeignKey('services.Service', null=True, blank=True, related_name='layer_set')
 
     def is_vector(self):
         return self.storeType == 'dataStore'
@@ -123,11 +125,19 @@ class Layer(ResourceBase):
 
     @property
     def ows_url(self):
-        if self.storeType == "remoteStore" and "geonode.contrib.services" in settings.INSTALLED_APPS:
-            from geonode.contrib.services.models import ServiceLayer
-            return ServiceLayer.objects.filter(layer__id=self.id)[0].service.base_url
+        if self.storeType == "remoteStore":
+            return self.service.base_url
         else:
             return settings.OGC_SERVER['default']['LOCATION'] + "wms"
+
+
+    @property
+    def ptype(self):
+        if self.storeType == "remoteStore":
+            return self.service.ptype
+        else:
+            return "gxp_wmscsource"
+
 
     def get_base_file(self):
         """Get the shp or geotiff file for this layer.
@@ -263,7 +273,6 @@ class Attribute(models.Model):
 
     def unique_values_as_list(self):
         return self.unique_values.split(',')
-
 
 def pre_save_layer(instance, sender, **kwargs):
     if kwargs.get('raw', False):
