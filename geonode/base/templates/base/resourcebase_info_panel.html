@@ -54,12 +54,12 @@
   
     {% if resource.owner %}
     <dt>{% trans "Owner" %}</dt>
-    <dd><a href="{{ resource.owner.get_profile.get_absolute_url }}">{{ resource.owner.username }}</a></dd>
+    <dd><a href="{{ resource.owner.get_absolute_url }}">{{ resource.owner.username }}</a></dd>
     {% endif %}
 
     {% if resource.poc.user %}
     <dt>{% trans "Point of Contact" %}</dt>
-    <dd><a href="{{ resource.poc.user.get_profile.get_absolute_url }}">{{ resource.poc.user.username }}</a></dd>
+    <dd><a href="{{ resource.poc.user.get_absolute_url }}">{{ resource.poc.user.username }}</a></dd>
     {% endif %}
   </dl>
 
