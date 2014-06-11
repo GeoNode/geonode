@@ -398,7 +398,7 @@ def layer_acls(request):
         'is_anonymous': acl_user.is_anonymous(),
     }
     if acl_user.is_authenticated():
-        result['fullname'] = acl_user.profile.name
-        result['email'] = acl_user.profile.email
+        result['fullname'] = acl_user.first_name
+        result['email'] = acl_user.email
 
     return HttpResponse(json.dumps(result), mimetype="application/json")

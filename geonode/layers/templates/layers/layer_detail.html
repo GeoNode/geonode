@@ -1,11 +1,13 @@
 {% extends "layers/layer_base.html" %}
-{% load geonode_auth %}
 {% load i18n %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load url from future %}
 {% load base_tags %}
+{% load guardian_tags %}
+
+{% get_obj_perms request.user for resource as "resource_perms" %}
 
 {% block title %}{{ resource.title|default:resource.typename }} — {{ block.super }}{% endblock %}
 
@@ -160,8 +162,7 @@
 
     <li class="list-group-item">
 
-    {% has_obj_perm user resource "base.change_resourcebase" as can_edit_layer %}
-    {% if can_edit_layer %}
+    {% if "change_resourcebase" in resource_perms %}
     <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#edit-layer">{% trans "Edit Layer" %}</button>
 
   </li>
@@ -258,8 +259,7 @@
     {% endif %}
 
     {% if GEONODE_SECURITY_ENABLED %}
-    {% has_obj_perm user resource "base.change_resourcebase_permissions" as can_change_permissions %}
-    {% if can_change_permissions %}
+    {% if "change_resourcebase_permissions" in resource_perms %}
     <li class="list-group-item">
       <h4>{% trans "Permissions" %}</h4>
       <p>{% trans "Click the button below to change the permissions of this layer." %}</p>

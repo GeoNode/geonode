@@ -349,16 +349,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                 a.append("("+self.license.url+")")
         return " ".join(a)
 
-    @property
-    def poc_role(self):
-        role = Role.objects.get(value='pointOfContact')
-        return role
-
-    @property
-    def metadata_author_role(self):
-        role = Role.objects.get(value='author')
-        return role
-
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 
@@ -541,16 +531,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         else:
             user = ResourceBase.objects.admin_contact().user
 
-        if self.poc is None:
-            pc, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": user.username}
-                                           )
-            self.poc = pc
+        if self.poc is None:    
+            self.poc = user
         if self.metadata_author is None:  
-            ac, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": user.username}
-                                           )
-            self.metadata_author = ac
+            self.metadata_author = user
 
     def maintenance_frequency_title(self):
         return [v for i, v in enumerate(UPDATE_FREQUENCIES) if v[0] == self.maintenance_frequency][0][1].title()
@@ -560,13 +544,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     
     def _set_poc(self, poc):
         # reset any poc assignation to this resource
-        ContactRole.objects.filter(role=self.poc_role, resource=self).delete()
+        ContactRole.objects.filter(role='pointOfContact', resource=self).delete()
         #create the new assignation
-        ContactRole.objects.create(role=self.poc_role, resource=self, contact=poc)
+        ContactRole.objects.create(role='pointOfContact', resource=self, contact=poc)
 
     def _get_poc(self):
         try:
-            the_poc = ContactRole.objects.get(role=self.poc_role, resource=self).contact
+            the_poc = ContactRole.objects.get(role='pointOfContact', resource=self).contact
         except ContactRole.DoesNotExist:
             the_poc = None
         return the_poc
@@ -575,14 +559,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     def _set_metadata_author(self, metadata_author):
         # reset any metadata_author assignation to this resource
-        ContactRole.objects.filter(role=self.metadata_author_role, resource=self).delete()
+        ContactRole.objects.filter(role='author', resource=self).delete()
         #create the new assignation
-        ContactRole.objects.create(role=self.metadata_author_role,
+        ContactRole.objects.create(role='author',
                                                   resource=self, contact=metadata_author)
 
     def _get_metadata_author(self):
         try:
-            the_ma = ContactRole.objects.get(role=self.metadata_author_role, resource=self).contact
+            the_ma = ContactRole.objects.get(role='author', resource=self).contact
         except ContactRole.DoesNotExist:
             the_ma = None
         return the_ma
