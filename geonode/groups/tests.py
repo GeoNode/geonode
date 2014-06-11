@@ -1,5 +1,5 @@
 import json
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
@@ -25,7 +25,7 @@ class SmokeTest(TestCase):
         create_models(type='layer')
         create_models(type='map')
         create_models(type='document')
-        self.norman = User.objects.get(username="norman")
+        self.norman = get_user_model().objects.get(username="norman")
         self.bar = Group.objects.get(slug='bar')
         self.anonymous_user = get_anonymous_user()
 
@@ -231,8 +231,8 @@ class SmokeTest(TestCase):
         """
         Tests the get_managers method.
         """
-        norman = User.objects.get(username="norman")
-        admin = User.objects.get(username='admin')
+        norman = get_user_model().objects.get(username="norman")
+        admin = get_user_model(.objects.get(username='admin')
 
         # Make sure norman is not a user
         self.assertFalse(self.bar.user_is_member(norman))
@@ -308,8 +308,8 @@ class MembershipTest(TestCase):
     def test_group_is_member(self):
         "Test checking group membership"
 
-        anon = AnonymousUser()
-        normal = User.objects.get(username="norman")
+        anon = get_anonymous_user()
+        normal = get_user_model().objects.get(username="norman")
         group = Group.objects.get(slug="bar")
 
         self.assert_(not group.user_is_member(anon))
@@ -318,8 +318,8 @@ class MembershipTest(TestCase):
     def test_group_add_member(self):
         "Test adding a user to a group"
 
-        anon = AnonymousUser()
-        normal = User.objects.get(username="norman")
+        anon = get_anonymous_user()
+        normal = get_user_model().objects.get(username="norman")
         group = Group.objects.get(slug="bar")
         group.join(normal)
         self.assert_(group.user_is_member(normal))
@@ -334,9 +334,9 @@ class InvitationTest(TestCase):
     def test_invite_user(self):
         "Test inviting a registered user"
 
-        anon = AnonymousUser()
-        normal = User.objects.get(username="norman")
-        admin = User.objects.get(username="admin")
+        anon = get_anonymous_user()
+        normal = get_user_model().objects.get(username="norman")
+        admin = get_user_model().objects.get(username="admin")
         group = Group.objects.get(slug="bar")
         group.invite(normal, admin, role="member", send=False)
 
@@ -355,9 +355,9 @@ class InvitationTest(TestCase):
     def test_accept_invitation(self):
         "Test accepting an invitation"
 
-        anon = AnonymousUser()
-        normal = User.objects.get(username="norman")
-        admin = User.objects.get(username="admin")
+        anon = get_anonymous_user()
+        normal = get_user_model().objects.get(username="norman")
+        admin = get_user_model().objects.get(username="admin")
         group = Group.objects.get(slug="bar")
         group.invite(normal, admin, role="member", send=False)
 
@@ -373,9 +373,9 @@ class InvitationTest(TestCase):
     def test_decline_invitation(self):
         "Test declining an invitation"
 
-        anon = AnonymousUser()
-        normal = User.objects.get(username="norman")
-        admin = User.objects.get(username="admin")
+        anon = get_anonymous_user()
+        normal = get_user_model().objects.get(username="norman")
+        admin = get_user_model().objects.get(username="admin")
         group = Group.objects.get(slug="bar")
         group.invite(normal, admin, role="member", send=False)
 

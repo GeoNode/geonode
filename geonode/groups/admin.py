@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from geonode.groups.models import GroupMember, Group, GroupInvitation
+from geonode.groups.models import GroupMember, GroupProfile, GroupInvitation
 
 
 class GroupMemberInline(admin.TabularInline):
@@ -12,6 +12,6 @@ class GroupAdmin(admin.ModelAdmin):
         GroupMemberInline
     ]
 
-admin.site.register(Group, GroupAdmin)
+admin.site.register(GroupProfile, GroupAdmin)
 
 admin.site.register(GroupInvitation)

@@ -6,13 +6,13 @@ import logging
 
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth import get_user_model
 
 from guardian.shortcuts import get_perms
 
@@ -24,20 +24,22 @@ from geonode.base.enumerations import ALL_LANGUAGES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
 from geonode.utils import bbox_to_wkt
 from geonode.utils import forward_mercator, inverse_mercator
-from geonode.people.models import Profile, Role
 from geonode.security.models import PermissionLevelMixin
 from taggit.managers import TaggableManager
+
+from geonode.people.models import Profile
+from geonode.people.enumerations import ROLE_VALUES
 
 logger = logging.getLogger(__name__)
 
 
 class ContactRole(models.Model):
     """
-    ContactRole is an intermediate abstract model to bind Profiles as Contacts to Layers and apply roles.
+    ContactRole is an intermediate model to bind Profiles as Contacts to Resources and apply roles.
     """
     resource = models.ForeignKey('ResourceBase')
-    contact = models.ForeignKey(Profile)
-    role = models.ForeignKey(Role)
+    contact = models.ForeignKey(settings.AUTH_USER_MODEL)
+    role = models.CharField('Role', choices=ROLE_VALUES, max_length=255, unique=True, help_text=_('function performed by the responsible party'))
 
     def clean(self):
         """
@@ -197,7 +199,7 @@ class License(models.Model):
 class ResourceBaseManager(PolymorphicManager):
     def admin_contact(self):
         # this assumes there is at least one superuser
-        superusers = User.objects.filter(is_superuser=True).order_by('id')
+        superusers = get_user_model().objects.filter(is_superuser=True).order_by('id')
         if superusers.count() == 0:
             raise RuntimeError('GeoNode needs at least one admin/superuser set')
 
@@ -221,8 +223,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     # internal fields
     uuid = models.CharField(max_length=36)
-    owner = models.ForeignKey(User, blank=True, null=True)
-    contacts = models.ManyToManyField(Profile, through='ContactRole')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_resource')
+    contacts = models.ManyToManyField(settings.AUTH_USER_MODEL, through='ContactRole')
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
     date = models.DateTimeField(_('date'), default = datetime.datetime.now, help_text=_('reference date for the cited resource')) # passing the method itself, not the result
 

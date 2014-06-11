@@ -25,7 +25,6 @@ import tempfile
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
-from django.contrib.auth.models import User, AnonymousUser
 from django.utils import simplejson as json
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
@@ -136,7 +135,7 @@ class LayersTest(TestCase):
 
         # Test that the User permissions specified in the perm_spec were applied properly
         for username, perm in self.perm_spec['users'].items():
-            user = User.objects.get(username=username)
+            user = get_user_model().objects.get(username=username)
             self.assertTrue(user.has_perm(perm, layer.get_self_resource()))
 
     def test_ajax_layer_permissions(self):
@@ -219,7 +218,7 @@ class LayersTest(TestCase):
 
     def test_describe_data_2(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
-        self.assertEqual(8, User.objects.all().count())
+        self.assertEqual(8, get_user_model().objects.all().count())
         c = Client()
         response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
@@ -246,7 +245,7 @@ class LayersTest(TestCase):
 
     def test_describe_data(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
-        self.assertEqual(8, User.objects.all().count())
+        self.assertEqual(8, get_user_model().objects.all().count())
         c = Client()
         response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
@@ -305,7 +304,7 @@ class LayersTest(TestCase):
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
-        adminuser = User.objects.get(is_superuser=True)
+        adminuser = get_user_model().objects.get(is_superuser=True)
         valid_user = get_valid_user(adminuser)
         msg = ('Passed in a valid admin user "%s" but got "%s" in return'
                 % (adminuser, valid_user))
@@ -314,9 +313,9 @@ class LayersTest(TestCase):
         # Verify it returns a valid user after receiving None
         valid_user = get_valid_user(None)
         msg = ('Expected valid user after passing None, got "%s"' % valid_user)
-        assert isinstance(valid_user, User), msg
+        assert isinstance(valid_user, get_user_model()), msg
 
-        newuser = User.objects.create(username='arieluser')
+        newuser = get_user_model().objects.create(username='arieluser')
         valid_user = get_valid_user(newuser)
         msg = ('Passed in a valid user "%s" but got "%s" in return'
                 % (newuser, valid_user))
@@ -327,7 +326,7 @@ class LayersTest(TestCase):
                ' "%s" in return' % ('arieluser', valid_user))
         assert valid_user.username == 'arieluser', msg
 
-        nn = AnonymousUser()
+        nn = get_anonymous_user()
         self.assertRaises(GeoNodeException, get_valid_user, nn)
 
     def testShapefileValidation(self):
@@ -758,7 +757,7 @@ class LayersTest(TestCase):
 
     def test_not_superuser_permissions(self):
         #grab bobby
-        bob = User.objects.get(username='bobby')
+        bob = get_user_model().objects.get(username='bobby')
 
         #grab a layer
         layer = Layer.objects.all()[0]

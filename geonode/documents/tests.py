@@ -10,7 +10,7 @@ from django.test import TestCase
 from django.conf import settings
 from django.test.client import Client
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 
@@ -46,7 +46,7 @@ class LayersTest(TestCase):
 
         f = SimpleUploadedFile('test_img_file.gif', self.imgfile.read(), 'image/gif')
     
-        superuser = User.objects.get(pk=2)
+        superuser = get_user_model().objects.get(pk=2)
         c = Document.objects.create(doc_file=f,owner=superuser, title='theimg')
         c.set_default_permissions()
         document = Document.objects.get(pk=c.id)
@@ -56,7 +56,7 @@ class LayersTest(TestCase):
         """Tests the creation of a document with no a map related"""
         f = SimpleUploadedFile('test_img_file.gif', self.imgfile.read(), 'image/gif')
     
-        superuser = User.objects.get(pk=2)
+        superuser = get_user_model().objects.get(pk=2)
         
         m = Map.objects.all()[0]
         ctype = ContentType.objects.get_for_model(m)
@@ -69,7 +69,7 @@ class LayersTest(TestCase):
     def test_create_document_url(self):
         """Tests creating an external document instead of a file."""
 
-        superuser = User.objects.get(pk=2)
+        superuser = get_user_model().objects.get(pk=2)
         c = Document.objects.create(doc_url="http://geonode.org/map.pdf",
                                     owner=superuser,
                                     title="GeoNode Map",
@@ -82,7 +82,7 @@ class LayersTest(TestCase):
         """
         Tests creating and updating external documents.
         """
-        superuser = User.objects.get(pk=2)
+        superuser = get_user_model().objects.get(pk=2)
 
         c = Client()
         c.login(username='admin', password='admin')
@@ -153,7 +153,7 @@ class LayersTest(TestCase):
         """/documents/1 -> Test accessing the detail view of a document"""
 
     
-        superuser = User.objects.get(pk=2)
+        superuser = get_user_model().objects.get(pk=2)
         d = Document.objects.get(pk=1)
         d.set_default_permissions()
 
@@ -192,7 +192,7 @@ class LayersTest(TestCase):
         """
         f = SimpleUploadedFile('test_img_file.gif', self.imgfile.read(), 'image/gif')
     
-        superuser = User.objects.get(pk=2)
+        superuser = get_user_model()().objects.get(pk=2)
         # Get a document to work with
         document = Document.objects.all()[0]
        
@@ -209,7 +209,7 @@ class LayersTest(TestCase):
        
         # Test that the User permissions specified in the perm_spec were applied properly
         for username, perm in self.perm_spec['users'].items():
-            user = User.objects.get(username=username)
+            user = get_user_model().objects.get(username=username)
             self.assertTrue(user.has_perm(perm, document.get_self_resource()))    
 
     def test_ajax_document_permissions(self):
@@ -219,7 +219,7 @@ class LayersTest(TestCase):
         # Setup some document names to work with 
         f = SimpleUploadedFile('test_img_file.gif', self.imgfile.read(), 'image/gif')
     
-        superuser = User.objects.get(pk=2)
+        superuser = get_user_model().objects.get(pk=2)
         document = Document.objects.create(doc_file=f,owner=superuser, title='theimg')
         document.set_default_permissions()
         document_id = document.id

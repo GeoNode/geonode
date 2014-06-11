@@ -28,7 +28,7 @@ from collections import namedtuple
 from django.conf import settings
 from django.core.exceptions import PermissionDenied, ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from django.http import HttpResponse
@@ -181,7 +181,7 @@ def _handle_perms_edit(request, obj):
         obj.set_gen_level(AUTHENTICATED_USERS, all_auth_level)
 
         for username, level in ulevs.items():
-            user = User.objects.get(username=username)
+            user = get_user_model().objects.get(username=username)
             obj.set_user_level(user, level)
 
     return errors
