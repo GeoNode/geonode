@@ -1,6 +1,6 @@
 [
-  {
-        "pk": null, 
+{
+        "pk": 13, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "flora and/or fauna in natural environment. Examples: wildlife, vegetation, biological sciences, ecology, wilderness, sealife, wetlands, habitat", 
@@ -10,7 +10,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 6, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "legal land descriptions. Examples: political and administrative boundaries", 
@@ -20,7 +20,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 19, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "processes and phenomena of the atmosphere. Examples: cloud cover, weather, climate, atmospheric conditions, climate change, precipitation", 
@@ -30,7 +30,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 11, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "economic activities, conditions and employment. Examples: production, labour, revenue, commerce, industry, tourism and ecotourism, forestry, fisheries, commercial or subsistence hunting, exploration and exploitation of resources such as minerals, oil and gas", 
@@ -40,7 +40,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 3, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "height above or below sea level. Examples: altitude, bathymetry, digital elevation models, slope, derived products", 
@@ -50,7 +50,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 9, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "environmental resources, protection and conservation. Examples: environmental pollution, waste storage and treatment, environmental impact assessment, monitoring environmental risk, nature reserves, landscape", 
@@ -60,7 +60,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 2, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "rearing of animals and/or cultivation of plants. Examples: agriculture, irrigation, aquaculture, plantations, herding, pests and diseases affecting crops and livestock", 
@@ -70,7 +70,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 1, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "information pertaining to earth sciences. Examples: geophysical features and processes, geology, minerals, sciences dealing with the composition, structure and origin of the earth s rocks, risks of earthquakes, volcanic activity, landslides, gravity information, soils, permafrost, hydrogeology, erosion", 
@@ -80,7 +80,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 14, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "health, health services, human ecology, and safety. Examples: disease and illness, factors affecting health, hygiene, substance abuse, mental and physical health, health services", 
@@ -90,7 +90,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 15, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "base maps. Examples: land cover, topographic maps, imagery, unclassified images, annotations", 
@@ -100,7 +100,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 7, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "inland water features, drainage systems and their characteristics. Examples: rivers and glaciers, salt lakes, water utilization plans, dams, currents, floods, water quality, hydrographic charts", 
@@ -110,7 +110,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 8, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "military bases, structures, activities. Examples: barracks, training grounds, military transportation, information collection", 
@@ -120,7 +120,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 5, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "features and characteristics of salt water bodies (excluding inland waters). Examples: tides, tidal waves, coastal information, reefs", 
@@ -130,7 +130,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 10, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "positional information and services. Examples: addresses, geodetic networks, control points, postal zones and services, place names", 
@@ -140,7 +140,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 12, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "information used for appropriate actions for future use of the land. Examples: land use maps, zoning maps, cadastral surveys, land ownership", 
@@ -150,7 +150,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 17, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "characteristics of society and cultures. Examples: settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information", 
@@ -160,7 +160,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 18, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "man-made construction. Examples: buildings, museums, churches, factories, housing, monuments, shops, towers", 
@@ -170,7 +170,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 16, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways", 
@@ -180,7 +180,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 4, 
         "model": "base.topiccategory", 
         "fields": {
             "description": "energy, water and waste systems and communications infrastructure and services. Examples: hydroelectricity, geothermal, solar and nuclear sources of energy, water purification and distribution, sewage collection and disposal, electricity and gas distribution, data communication, telecommunication, radio, communication networks", 
@@ -190,7 +190,7 @@
         }
     },
     {
-        "pk": null, 
+        "pk": 2, 
         "model": "base.spatialrepresentationtype", 
         "fields": {
             "is_choice": true, 
@@ -200,7 +200,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 5, 
         "model": "base.spatialrepresentationtype", 
         "fields": {
             "is_choice": true, 
@@ -210,7 +210,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 3, 
         "model": "base.spatialrepresentationtype", 
         "fields": {
             "is_choice": true, 
@@ -220,7 +220,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 4, 
         "model": "base.spatialrepresentationtype", 
         "fields": {
             "is_choice": true, 
@@ -230,7 +230,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 1, 
         "model": "base.spatialrepresentationtype", 
         "fields": {
             "is_choice": true, 
@@ -240,7 +240,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 6, 
         "model": "base.spatialrepresentationtype", 
         "fields": {
             "is_choice": true, 
@@ -250,7 +250,7 @@
         }
     },
     {
-        "pk": null,
+        "pk": 1,
         "model": "base.license",
         "fields": {
             "identifier": "not_specified",
@@ -262,7 +262,7 @@
         }
     },
 {
-        "pk": null,
+        "pk": 2,
         "model": "base.license",
         "fields": {
             "identifier":"varied_original",
@@ -274,7 +274,7 @@
         }
     },
     {
-        "pk": null,
+        "pk": 3,
         "model": "base.license",
         "fields": {
             "identifier":"varied_derived",
@@ -286,7 +286,7 @@
         }
     },
     {
-        "pk": null,
+        "pk": 4,
         "model": "base.license",
         "fields": {
             "identifier":"public_domain",
@@ -298,7 +298,7 @@
         }
     },
     {
-        "pk": null,
+        "pk": 5,
         "model": "base.license",
         "fields": {
             "identifier":"public_domain_usg",
@@ -310,7 +310,7 @@
         }
     },
     {
-        "pk": null,
+        "pk": 6,
         "model": "base.license",
         "fields": {
             "identifier":"odbl",
@@ -322,7 +322,7 @@
         }
     },
     {
-        "pk": null,
+        "pk": 7,
         "model": "base.license",
         "fields": {
             "identifier":"nextview",
@@ -334,7 +334,7 @@
         }
     },
      {
-        "pk": null, 
+        "pk": 1, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -344,7 +344,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 6, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -354,7 +354,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 5, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -364,7 +364,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 8, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -374,7 +374,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 2, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -384,7 +384,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 3, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -394,7 +394,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 7, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
@@ -404,7 +404,7 @@
         }
     }, 
     {
-        "pk": null, 
+        "pk": 4, 
         "model": "base.restrictioncodetype", 
         "fields": {
             "is_choice": true, 
