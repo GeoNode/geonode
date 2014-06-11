@@ -19,20 +19,20 @@
 #########################################################################
 
 from django.conf import settings
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth import get_user_model
+
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login
-if "geonode.contrib.groups" in settings.INSTALLED_APPS:
-    from geonode.contrib.groups.models import Group
 
 from guardian.shortcuts import assign_perm, get_perms, remove_perm, \
     get_groups_with_perms, get_users_with_perms
 from guardian.utils import get_anonymous_user
 
+from geonode.groups.models import Group
 from geonode.security.enumerations import GENERIC_GROUP_NAMES
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
@@ -88,7 +88,7 @@ class PermissionLevelMixin(object):
         view permission to the anonymous user
         """
         self.remove_all_permissions()
-        for user in User.objects.all():
+        for user in get_user_model().objects.all():
             assign_perm('view_resourcebase', user, self.get_self_resource())
         for perm in ADMIN_PERMISSIONS:
             assign_perm(perm, self.owner, self.get_self_resource())
@@ -116,21 +116,22 @@ class PermissionLevelMixin(object):
         """
         self.remove_all_permissions()
 
-        if "AnonymousUser" in perm_spec['users']:
-            for user in User.objects.all():
+        if hasattr(perm_spec, 'users') and "AnonymousUser" in perm_spec['users']:
+            for user in get_user_model().objects.all():
                 assign_perm('view_resourcebase', user, self.get_self_resource())
 
-        else:
+        elif hasattr(perm_spec, 'users'):
             for user, perms in perm_spec['users'].items():
-                user = User.objects.get(username=user)
+                user = get_user_model().objects.get(username=user)
                 for perm in perms:
                     assign_perm(perm, user, self.get_self_resource())
 
         if hasattr(perm_spec, 'groups'):
             for group, perms in perm_spec['groups'].items():           
-                group = Group.objects.get(slug=user)
-                for perm in perms:
-                    assign_perm(perm, group, self.get_self_resource())
+                group = Group.objects.get(slug=group)
+                for member in group.member_queryset.all():
+                    for perm in perms:
+                        assign_perm(perm, member.user, self.get_self_resource())
 
 
 # Logic to login a user automatically when it has successfully

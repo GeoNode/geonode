@@ -1,6 +1,5 @@
 import logging
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.db import models
 from geoserver.catalog import FailedRequestError
 from taggit.managers import TaggableManager
@@ -8,9 +7,10 @@ from geonode.security.models import PermissionLevelMixin
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.contrib.services.enumerations import SERVICE_TYPES, SERVICE_METHODS, GXP_PTYPES
 from geonode.layers.models import Layer 
-from geonode.people.models import Profile, Role
+from geonode.people.models import Profile
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import signals
+from geonode.people.enumerations import ROLE_VALUES
 
 STATUS_VALUES = [
     'pending',
@@ -48,7 +48,7 @@ class Service(models.Model, PermissionLevelMixin):
     store_ref = models.URLField(null=True, blank=True)
     resources_ref = models.URLField(null = True, blank = True)
     profiles = models.ManyToManyField(Profile, through='ServiceProfileRole')
-    owner = models.ForeignKey(User, blank=True, null=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_service')
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     first_noanswer = models.DateTimeField(null=True, blank=True)
@@ -103,9 +103,9 @@ class ServiceProfileRole(models.Model):
     """
     ServiceProfileRole is an intermediate model to bind Profiles and Services and apply roles.
     """
-    profiles = models.ForeignKey(Profile)
+    profiles = models.ForeignKey(settings.AUTH_USER_MODEL)
     service = models.ForeignKey(Service)
-    role = models.ForeignKey(Role)
+    role = models.CharField('Role', choices=ROLE_VALUES, max_length=255, unique=True, help_text=_('function performed by the responsible party'))
 
 class ServiceLayer(models.Model):
     service = models.ForeignKey(Service)

@@ -27,7 +27,6 @@ from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.core.exceptions import MultipleObjectsReturned
@@ -194,7 +193,7 @@ class UploadSession(models.Model):
     """Helper class to keep track of uploads.
     """
     date = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     processed = models.BooleanField(default=False)
     error = models.TextField(blank=True, null=True)
     traceback = models.TextField(blank=True, null=True)

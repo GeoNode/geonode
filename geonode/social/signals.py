@@ -26,7 +26,7 @@ from collections import defaultdict
 from dialogos.models import Comment
 from django.conf import settings
 from django.db.models import signals
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -118,7 +118,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
 
 def notification_post_save_layer(instance, sender, created, **kwargs):
     if created:
-        superusers = User.objects.filter(is_superuser=True)
+        superusers = get_user_model().objects.filter(is_superuser=True)
         notification.queue(superusers, "layer_uploaded", {"from_user": instance.owner})
     else:
         # Notification if existing layer is updated

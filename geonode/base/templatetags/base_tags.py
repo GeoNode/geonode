@@ -4,7 +4,7 @@ from django.db.models import Count
 
 from agon_ratings.models import Rating
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -54,7 +54,7 @@ def facets(context):
             facets['document'] += 1
 
     if facet_type == 'home':
-        facets['user'] = User.objects.count()
+        facets['user'] = get_user_model().objects.count()
 
         facets['layer'] = facets['raster'] + facets['vector']
 

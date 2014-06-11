@@ -4,6 +4,7 @@ import hashlib
 
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.db import models, IntegrityError
@@ -72,7 +73,7 @@ class GroupProfile(models.Model):
         """
         Returns a queryset of the group's managers.
         """
-        return User.objects.filter(id__in=self.member_queryset().filter(role='manager')
+        return get_user_model().objects.filter(id__in=self.member_queryset().filter(role='manager')
                                                 .values_list("user", flat=True))
 
     def user_is_member(self, user):
@@ -101,7 +102,7 @@ class GroupProfile(models.Model):
     
     def invite(self, user, from_user, role="member", send=True):
         params = dict(role=role, from_user=from_user)
-        if isinstance(user, User):
+        if isinstance(user, get_user_model()):
             params["user"] = user
             params["email"] = user.email
         else:

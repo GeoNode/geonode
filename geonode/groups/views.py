@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect, HttpResponseNotAllowed
 from django.shortcuts import render_to_response, get_object_or_404, redirect
@@ -60,7 +60,7 @@ class GroupDetailView(ListView):
     Mixes a detail view (the group) with a ListView (the members).
     """
 
-    model = User
+    model = get_user_model()
     template_name = "groups/group_detail.html"
     paginate_by = None
     group = None
@@ -131,7 +131,7 @@ def group_members_add(request, slug):
 @login_required
 def group_member_remove(request, slug, username):
     group = get_object_or_404(Group, slug=slug)
-    user = get_object_or_404(User, username=username)
+    user = get_object_or_404(get_user_model(), username=username)
     
     if not group.user_is_role(request.user, role="manager"):
         return HttpResponseForbidden()

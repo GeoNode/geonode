@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 
@@ -9,7 +9,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.people.models import Profile
-from geonode.contrib.groups.models import Group
+from geonode.groups.models import Group
 
 from taggit.models import Tag
 
@@ -96,7 +96,7 @@ class UserResource(ModelResource):
     """User api"""
 
     class Meta:
-        queryset = User.objects.all()
+        queryset = get_user_model().objects.all()
         resource_name = 'users'
         allowed_methods = ['get',]
         excludes = ['is_staff', 'password', 'is_superuser',

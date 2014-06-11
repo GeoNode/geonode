@@ -73,7 +73,7 @@
                 <ul class="dropdown-menu">
                   <li><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload Layers" %}</a></li>
                   <li class="divider"></li>
-                  <li><a href="{{ user.get_profile.get_absolute_url }}"><i class="fa fa-user"></i> {% trans "Profile" %}</a></li>
+                  <li><a href="{{ user.get_absolute_url }}"><i class="fa fa-user"></i> {% trans "Profile" %}</a></li>
                   <li><a href="{% url "recent-activity" %}"><i class="fa fa-fire"></i> {% trans "Recent Activity" %}</a></li>
                   <li><a href="{% url "messages_inbox" %}"><i class="fa fa-inbox"></i> {% trans "Inbox" %}</a></li>
                   {% if perms.announcements.can_manage %}

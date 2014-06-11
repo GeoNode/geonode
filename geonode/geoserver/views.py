@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404, render_to_response
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
@@ -40,7 +40,7 @@ def updatelayers(request):
     params = request.REQUEST
     #Get the owner specified in the request if any, otherwise used the logged user
     owner = params.get('owner', None)
-    owner = User.objects.get(username=owner) if owner is not None else request.user
+    owner = get_user_model().objects.get(username=owner) if owner is not None else request.user
     workspace = params.get('workspace', None)
     store = params.get('store', None)
     filter = params.get('filter', None)

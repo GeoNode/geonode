@@ -1,7 +1,7 @@
 import base64
 import json
 
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.test.utils import override_settings
 
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_anonymous_user
 
 from geonode.geoserver.helpers import OGC_Servers_Handler
 from geonode.base.populate_test_data import create_models
@@ -33,7 +33,7 @@ class LayerTests(TestCase):
         """
         layer = Layer.objects.all()[0]
 
-        bob = User.objects.get(username='bobby')
+        bob = get_user_model().objects.get(username='bobby')
         assign_perm('change_resourcebase', bob, layer.get_self_resource())
 
         c = Client()
@@ -106,7 +106,7 @@ class LayerTests(TestCase):
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
         }
 
-        bob = User.objects.get(username='bobby')
+        bob = get_user_model().objects.get(username='bobby')
         layer_ca = Layer.objects.get(typename='geonode:CA')
         assign_perm('change_resourcebase', bob, layer_ca.get_self_resource())
 
@@ -296,7 +296,7 @@ class SecurityTest(TestCase):
     """
 
     def setUp(self):
-        self.admin, created = User.objects.get_or_create(username='admin', password='admin', is_superuser=True)
+        self.admin, created = get_user_model().objects.get_or_create(username='admin', password='admin', is_superuser=True)
 
 
     def test_login_middleware(self):
@@ -327,7 +327,7 @@ class SecurityTest(TestCase):
                       ]
 
         request = HttpRequest()
-        request.user = AnonymousUser()
+        request.user = get_anonymous_user()
 
         # Requests should be redirected to the the `redirected_to` path when un-authenticated user attempts to visit
         # a black-listed url.

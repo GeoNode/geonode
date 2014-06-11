@@ -3,7 +3,7 @@ from django.core.validators import validate_email, ValidationError
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from geonode.groups.models import Group
 
@@ -71,13 +71,13 @@ class GroupMemberForm(forms.Form):
             try: 
                 validate_email(ui)
                 try:
-                    new_members.append(User.objects.get(email=ui))
-                except User.DoesNotExist:
+                    new_members.append(get_user_model().objects.get(email=ui))
+                except get_user_model().DoesNotExist:
                     new_members.append(ui)
             except ValidationError:
                 try:
-                    new_members.append(User.objects.get(username=ui))
-                except User.DoesNotExist:
+                    new_members.append(get_user_model().objects.get(username=ui))
+                except get_user_model().DoesNotExist:
                     errors.append(ui)
         
         if errors:
@@ -105,13 +105,13 @@ class GroupInviteForm(forms.Form):
             
             if email_re.match(ui):
                 try:
-                    invitees.append(User.objects.get(email=ui))
-                except User.DoesNotExist:
+                    invitees.append(get_user_model().objects.get(email=ui))
+                except get_user_model().DoesNotExist:
                     invitees.append(ui)
             else:
                 try:
-                    invitees.append(User.objects.get(username=ui))
-                except User.DoesNotExist:
+                    invitees.append(get_user_model().objects.get(username=ui))
+                except get_user_model().DoesNotExist:
                     errors.append(ui)
         
         if errors:

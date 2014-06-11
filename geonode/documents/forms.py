@@ -25,11 +25,11 @@ class DocumentForm(forms.ModelForm):
 
     poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                  label = "Point Of Contact", required=False,
-                                 queryset = Profile.objects.exclude(user=None))
+                                 queryset = Profile.objects.all())
 
     metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                              label = "Metadata Author", required=False,
-                                             queryset = Profile.objects.exclude(user=None))
+                                             queryset = Profile.objects.all())
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
     
