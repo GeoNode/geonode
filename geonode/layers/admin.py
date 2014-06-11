@@ -21,13 +21,14 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from modeltranslation.admin import TranslationAdmin
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
 
 class AttributeInline(admin.TabularInline):
     model = Attribute
 
-class LayerAdmin(admin.ModelAdmin):
+class LayerAdmin(TranslationAdmin):
     list_display = ('id', 'typename','service_type','title', 'date', 'category')
     list_display_links = ('id',)
     list_editable = ('title', 'category')
@@ -38,6 +39,16 @@ class LayerAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')
     inlines = [AttributeInline]
+
+    class Media:
+        js = (
+            'modeltranslation/js/force_jquery.js',
+            'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js',
+            'modeltranslation/js/tabbed_translation_fields.js',
+        )
+        css = {
+            'screen': ('modeltranslation/css/tabbed_translation_fields.css',),
+        }
 
 class AttributeAdmin(admin.ModelAdmin):
     model = Attribute
