@@ -26,9 +26,11 @@ from django import forms
 from django.utils import simplejson as json
 from django.utils.translation import ugettext_lazy as _
 
+from mptt.forms import TreeNodeMultipleChoiceField 
+
 from geonode.layers.models import Layer, Attribute
 from geonode.people.models import Profile 
-
+from geonode.base.models import Region
 
 class JSONField(forms.CharField):
     def clean(self, text):
@@ -55,6 +57,10 @@ class LayerForm(forms.ModelForm):
                                              queryset = Profile.objects.exclude(user=None))
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
+
+    regions = TreeNodeMultipleChoiceField(queryset=Region.objects.all(), level_indicator=u'___') 
+    regions.widget.attrs = {"size":20}
+
     class Meta:
         model = Layer
         exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename',
