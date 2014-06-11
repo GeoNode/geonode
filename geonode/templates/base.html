@@ -57,7 +57,7 @@
           </ul>
           <form class="col-md-3" id="search" action="{% url "search" %}">
             <div class="input-group">
-              <input type="text" placeholder="Search" class="form-control" name="title__contains">
+              <input id="search_input" type="text" placeholder="Search" class="form-control" name="title__contains">
               <span class="input-group-btn">
                 <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
               </span>
@@ -218,11 +218,21 @@
     {% include 'autocomplete_light/static.html' %}
 
     {% block extra_script %}{% endblock extra_script %}
-
+    <script type="text/javascript">
+        var autocomplete = $('#search_input').yourlabsAutocomplete({
+            url: '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}',
+            choiceSelector: 'span',
+            hideAfter: 200,
+            minimumCharacters: 1,
+            placeholder: '{% trans 'Type your search here ...' %}',
+            appendAutocomplete: $('#search_input'),
+        });
+        $('#search_input').bind('selectChoice', function(e, choice, autocomplete) {
+            $('#search_input').val(choice[0].innerHTML);
+        });
+    </script>
     <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
     <script type="text/javascript" src="{% url "lang" %}"></script>
-    
-    
 
     </style>
   </body>
