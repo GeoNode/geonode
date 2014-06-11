@@ -6,7 +6,7 @@ from django.test.client import Client
 
 from guardian.shortcuts import get_anonymous_user, assign_perm
 
-from geonode.contrib.groups.models import Group, GroupInvitation
+from geonode.groups.models import Group, GroupInvitation
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -57,32 +57,11 @@ class SmokeTest(TestCase):
 
 
         # Give the bar group permissions to change the layer.
-        assign_perm('change_resourcebase', self.bar, layer.get_self_resource())
+        layer.set_permissions("{'groups':{'bar': ['view_resourcebase', 'change_resourcebase']}}")
         self.assertTrue(filter_object_security(self.norman, 'view_resourcebase', layer))
         # check that now norman can change the layer
         self.assertTrue(filter_object_security(self.norman, 'change_resourcebase', layer))
 
-
-    def test_permissions_for_public_groups(self):
-        """
-        If layer is restricted to public groups, only members of the public group should see the object.
-        """
-        bar = self.bar
-        norman = self.norman
-        layer = Layer.objects.all()[0]
-        self.assertFalse(bar.user_is_member(norman))
-        perms = layer.get_all_level_info()
-        perms['authenticated'] = layer.LEVEL_NONE
-        perms['anonymous'] = layer.LEVEL_NONE
-        perms['groups'] = [(bar.slug, layer.LEVEL_WRITE)]
-        layer.set_permissions(perms)
-        bck = get_backends()[0]
-        layers = bck.objects_with_perm(norman, 'layers.view_layer', Layer)
-        self.assertTrue(layer.id not in layers)
-
-        bar.join(norman)
-        layers = bck.objects_with_perm(norman, 'layers.view_layer', Layer)
-        self.assertTrue(layer.id in layers)
 
     def test_group_resource(self):
         """
@@ -92,9 +71,10 @@ class SmokeTest(TestCase):
         layer = Layer.objects.all()[0]
         map = Map.objects.all()[0]
 
+        perm_spec = "{'groups': {'bar': ['change_resourcebase']}}"
         # Give the self.bar group write perms on the layer
-        layer.set_group_level(self.bar, Layer.LEVEL_WRITE)
-        map.set_group_level(self.bar, Map.LEVEL_WRITE)
+        layer.set_permissions(perm_spec)
+        map.set_permissions(perm_spec)
 
         # Ensure the layer is returned in the group's resources
         self.assertTrue(layer in self.bar.resources())
@@ -105,7 +85,7 @@ class SmokeTest(TestCase):
         self.assertTrue(map not in self.bar.resources(resource_type='Layer'))
 
         # Revoke permissions on the layer from the self.bar group
-        layer.set_group_level(self.bar, Layer.LEVEL_NONE)
+        layer.set_permissions("{}")
 
         # Ensure the layer is no longer returned in the groups resources
         self.assertFalse(layer in self.bar.resources())
@@ -321,7 +301,7 @@ class SmokeTest(TestCase):
  
 
 class MembershipTest(TestCase):
-    "Tests membership logic in the geonode.contrib.groups models"
+    "Tests membership logic in the geonode.groups models"
 
     fixtures = ["group_test_data"]
 
@@ -347,7 +327,7 @@ class MembershipTest(TestCase):
 
 
 class InvitationTest(TestCase):
-    "Tests invitation logic in geonode.contrib.groups models"
+    "Tests invitation logic in geonode.groups models"
 
     fixtures = ["group_test_data"]
 

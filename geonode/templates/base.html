@@ -41,19 +41,15 @@
             <li id="nav_maps">
               <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
             </li>
-            {% if USE_DOCUMENTS %}
             <li id="nav_documents">
               <a href="{% url "documents_browse" %}">{% trans "Documents" %}</a>
             </li>
-            {% endif %}
             <li id="nav_people">
               <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
             </li>
-            {% if GROUPS_APP %}
             <li id="nav_groups">
               <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
             </li>
-            {% endif %}
           </ul>
           <form class="col-md-3" id="search" action="{% url "search" %}">
             <div class="input-group">

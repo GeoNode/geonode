@@ -9,8 +9,8 @@ from django.views.generic import ListView
 
 from geonode.layers.models import Layer 
 from geonode.maps.models import Map
-from geonode.contrib.groups.forms import GroupInviteForm, GroupForm, GroupUpdateForm, GroupMemberForm
-from geonode.contrib.groups.models import Group, GroupInvitation, GroupMember
+from geonode.groups.forms import GroupInviteForm, GroupForm, GroupUpdateForm, GroupMemberForm
+from geonode.groups.models import Group, GroupInvitation, GroupMember
 from geonode.people.models import Profile
 
 
