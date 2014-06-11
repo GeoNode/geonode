@@ -11,7 +11,7 @@ branches:
     - master 
 
 install:
-  - sudo add-apt-repository ppa:osgeolive/nightly
+  - sudo add-apt-repository -y ppa:osgeolive/nightly
   - sudo apt-get -qq -y update
   - sudo apt-get install -y python-gdal python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext
   - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 libjai-imageio-core-java --no-install-recommends
