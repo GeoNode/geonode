@@ -19,13 +19,13 @@
 #########################################################################
 
 from geonode.maps.models import Map, MapLayer
-from modeltranslation.admin import TranslationAdmin
+from geonode.utils import MediaTranslationAdmin
 from django.contrib import admin
 
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
 
-class MapAdmin(TranslationAdmin):
+class MapAdmin(MediaTranslationAdmin):
     inlines = [MapLayerInline,]
     list_display_links = ('title',)
     list_display = ('id','title', 'owner')
