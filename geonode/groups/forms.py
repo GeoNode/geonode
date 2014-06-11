@@ -5,9 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 
-from geonode.contrib.groups.models import Group
-from geonode.maps.models import Map, Layer
-
+from geonode.groups.models import Group
 
 class GroupForm(forms.ModelForm):
     

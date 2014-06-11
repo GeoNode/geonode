@@ -89,18 +89,9 @@ urlpatterns = patterns('',
                                   {'sitemaps': sitemaps}, name='sitemap'),
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
+    (r'^groups/', include('geonode.groups.urls')),
+    (r'^documents/', include('geonode.documents.urls')),
     url(r'', include(api.urls)),
-    )
-
-#Documents views
-if 'geonode.documents' in settings.INSTALLED_APPS:
-    urlpatterns += patterns('',
-        (r'^documents/', include('geonode.documents.urls')),
-    )
-
-if "geonode.contrib.groups" in settings.INSTALLED_APPS:
-    urlpatterns += patterns('',
-        (r'^groups/', include('geonode.contrib.groups.urls')),
     )
 
 if "geonode.contrib.services" in settings.INSTALLED_APPS:
