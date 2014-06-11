@@ -69,6 +69,15 @@ class LayerForm(forms.ModelForm):
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext',
                    'popular_count', 'share_count', 'thumbnail', 'default_style', 'styles')
 
+    def __init__(self, *args, **kwargs):
+        super(LayerForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            help_text = self.fields[field].help_text
+            self.fields[field].help_text = None
+            if help_text != '':
+                self.fields[field].widget.attrs.update({'class':'has-popover', 'data-content':help_text, 'data-placement':'right', 'data-container':'body', 'data-html':'true'})
+
+
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
     dbf_file = forms.FileField(required=False)
