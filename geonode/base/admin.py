@@ -14,16 +14,6 @@ class ResourceBaseAdmin(TranslationAdmin):
     list_display = ('id','title', 'date', 'category')
     list_display_links = ('id',)
 
-    class Media:
-        js = (
-            'modeltranslation/js/force_jquery.js',
-            'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js',
-            'modeltranslation/js/tabbed_translation_fields.js',
-        )
-        css = {
-            'screen': ('modeltranslation/css/tabbed_translation_fields.css',),
-        }
-
 class TopicCategoryAdmin(TranslationAdmin):
     model = TopicCategory
     list_display_links = ('identifier',)
@@ -52,16 +42,6 @@ class RegionAdmin(TranslationAdmin):
     search_fields = ('code', 'name',)
     group_fieldsets = True
 
-    class Media:
-        js = (
-            'modeltranslation/js/force_jquery.js',
-            'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js',
-            'modeltranslation/js/tabbed_translation_fields.js',
-        )
-        css = {
-            'screen': ('modeltranslation/css/tabbed_translation_fields.css',),
-        }
-    
 class SpatialRepresentationTypeAdmin(TranslationAdmin):
     model = SpatialRepresentationType
     list_display_links = ('identifier',)
