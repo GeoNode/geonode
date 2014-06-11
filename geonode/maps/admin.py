@@ -19,17 +19,28 @@
 #########################################################################
 
 from geonode.maps.models import Map, MapLayer
+from modeltranslation.admin import TranslationAdmin
 from django.contrib import admin
 
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
 
-class MapAdmin(admin.ModelAdmin):
+class MapAdmin(TranslationAdmin):
     inlines = [MapLayerInline,]
     list_display_links = ('title',)
     list_display = ('id','title', 'owner')
     list_filter = ('owner', 'category',)
     search_fields = ('title', 'abstract', 'purpose', 'owner__profile__name',)
+
+    class Media:
+        js = (
+            'http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
+            'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js',
+            'modeltranslation/js/tabbed_translation_fields.js',
+        )
+        css = {
+            'screen': ('modeltranslation/css/tabbed_translation_fields.css',),
+        }
     
 class MapLayerAdmin(admin.ModelAdmin):
     list_display = ('id','map', 'name')
