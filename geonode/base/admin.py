@@ -1,20 +1,20 @@
 from django.contrib import admin
 from django.conf import settings
-from modeltranslation.admin import TranslationAdmin
+from geonode.utils import MediaTranslationAdmin
 
 from geonode.base.models import (TopicCategory, SpatialRepresentationType,
     Region, RestrictionCodeType, ContactRole, ResourceBase, Link, License, Thumbnail)
 
-class LicenseAdmin(TranslationAdmin):
+class LicenseAdmin(MediaTranslationAdmin):
     model = License
     list_display = ('id', 'name')
     list_display_links = ('name',)
 
-class ResourceBaseAdmin(TranslationAdmin):
+class ResourceBaseAdmin(MediaTranslationAdmin):
     list_display = ('id','title', 'date', 'category')
     list_display_links = ('id',)
 
-class TopicCategoryAdmin(TranslationAdmin):
+class TopicCategoryAdmin(MediaTranslationAdmin):
     model = TopicCategory
     list_display_links = ('identifier',)
     list_display = ('identifier', 'description', 'gn_description', 'is_choice')
@@ -35,14 +35,14 @@ class TopicCategoryAdmin(TranslationAdmin):
         else:
             return False
     
-class RegionAdmin(TranslationAdmin):
+class RegionAdmin(MediaTranslationAdmin):
     model = Region
     list_display_links = ('name',)
     list_display = ('code', 'name', 'parent')
     search_fields = ('code', 'name',)
     group_fieldsets = True
 
-class SpatialRepresentationTypeAdmin(TranslationAdmin):
+class SpatialRepresentationTypeAdmin(MediaTranslationAdmin):
     model = SpatialRepresentationType
     list_display_links = ('identifier',)
     list_display = ('identifier', 'description', 'gn_description', 'is_choice')
@@ -55,7 +55,7 @@ class SpatialRepresentationTypeAdmin(TranslationAdmin):
         # the records are from the standard TC 211 list, so no way to remove
         return False
         
-class RestrictionCodeTypeAdmin(TranslationAdmin):
+class RestrictionCodeTypeAdmin(MediaTranslationAdmin):
     model = RestrictionCodeType
     list_display_links = ('identifier',)
     list_display = ('identifier', 'description', 'gn_description', 'is_choice')
