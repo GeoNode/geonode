@@ -205,6 +205,7 @@ INSTALLED_APPS = (
     'django_extensions',
     #'haystack',
     'autocomplete_light',
+    'mptt',
 
     # Theme
     "pinax_theme_bootstrap_account",
