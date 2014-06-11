@@ -50,6 +50,12 @@ class DocumentForm(forms.ModelForm):
         if self.instance.content_type:
             self.fields['resource'].initial = 'type:%s-id:%s' % (
                 self.instance.content_type.id, self.instance.object_id)
+
+        for field in self.fields:
+            help_text = self.fields[field].help_text
+            self.fields[field].help_text = None
+            if help_text != '':
+                self.fields[field].widget.attrs.update({'class':'has-popover', 'data-content':help_text, 'data-placement':'right', 'data-container':'body', 'data-html':'true'})
     
     def save(self, *args, **kwargs):
         contenttype_id = None
