@@ -41,7 +41,7 @@ class TopicCategoryAdmin(admin.ModelAdmin):
 class RegionAdmin(admin.ModelAdmin):
     model = Region
     list_display_links = ('name',)
-    list_display = ('code', 'name')
+    list_display = ('code', 'name', 'parent')
     search_fields = ('code', 'name',)
     
 class SpatialRepresentationTypeAdmin(admin.ModelAdmin):
