@@ -58,4 +58,11 @@ class MapForm(forms.ModelForm):
             'abstract': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super(MapForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            help_text = self.fields[field].help_text
+            self.fields[field].help_text = None
+            if help_text != '':
+                self.fields[field].widget.attrs.update({'class':'has-popover', 'data-content':help_text, 'data-placement':'right', 'data-container':'body', 'data-html':'true'})
 
