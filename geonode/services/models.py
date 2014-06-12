@@ -6,7 +6,7 @@ from geoserver.catalog import FailedRequestError, Catalog
 from taggit.managers import TaggableManager
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
-from geonode.contrib.services.enumerations import SERVICE_TYPES, SERVICE_METHODS, GXP_PTYPES
+from geonode.services.enumerations import SERVICE_TYPES, SERVICE_METHODS, GXP_PTYPES
 from geonode.layers.models import Layer 
 from geonode.people.models import Profile, Role
 from django.utils.translation import ugettext_lazy as _
@@ -18,10 +18,10 @@ STATUS_VALUES = [
     'process'
 ]
 
-logger = logging.getLogger("geonode.contrib.services")
+logger = logging.getLogger("geonode.services")
 
 """
-geonode.contrib.services
+geonode.services
 """
 class Service(models.Model, PermissionLevelMixin):
     """

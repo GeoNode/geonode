@@ -90,7 +90,7 @@ urlpatterns = patterns('',
     (r'^i18n/', include('django.conf.urls.i18n')),
     (r'^admin/', include(admin.site.urls)),
     url(r'', include(api.urls)),
-    (r'^services/', include('geonode.contrib.services.urls')),
+    (r'^services/', include('geonode.services.urls')),
     )
 
 #Documents views

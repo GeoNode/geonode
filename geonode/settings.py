@@ -168,7 +168,7 @@ GEONODE_APPS = (
     'geonode.api',
 
     # GeoNode Contrib Apps
-    'geonode.contrib.services',
+    'geonode.services',
     'geonode.contrib.groups',
     #'geonode.contrib.dynamic',
 

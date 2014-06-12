@@ -34,6 +34,7 @@ from django.utils import simplejson as json
 from django.utils.html import escape
 from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
+from geonode.services.models import Service
 
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.layers.models import Layer, Attribute
@@ -73,9 +74,16 @@ _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 def _resolve_layer(request, typename, permission='layers.change_layer',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
     """
-    Resolve the layer by the provided typename and check the optional permission.
+    Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
-    return resolve_object(request, Layer, {'typename':typename},
+    service_typename = typename.split(":")
+    service = Service.objects.filter(name=service_typename[0])
+
+    if service.count() > 0 and service[0].method != "C":
+        return resolve_object(request, Layer, {'service': service[0], 'typename':service_typename[1]},
+                              permission = permission, permission_msg=msg, **kwargs)
+    else:
+        return resolve_object(request, Layer, {'typename':typename},
                           permission = permission, permission_msg=msg, **kwargs)
 
 
@@ -129,7 +137,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 out['errors'] = str(e)
             else:
                 out['success'] = True
-                out['url'] = reverse('layer_detail', args=[saved_layer.typename])
+                out['url'] = reverse('layer_detail', args=[saved_layer.service_typename])
 
                 permissions = form.cleaned_data["permissions"]
                 if permissions is not None and len(permissions.keys()) > 0:
@@ -154,8 +162,12 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
-
+    layer_bbox = layer.bbox
+    # assert False, str(layer_bbox)
+    bbox = list(layer_bbox[0:4])
     config = layer.attribute_config()
+    config["srs"] = layer.srid
+
     if layer.storeType == "remoteStore":
         service = layer.service
         source_params = {"ptype":service.ptype, "remote": True, "url": service.base_url, "name": service.name}
@@ -247,7 +259,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             the_layer.metadata_author = new_author
             the_layer.keywords.clear()
             the_layer.keywords.add(*new_keywords)
-            return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
+            return HttpResponseRedirect(reverse('layer_detail', args=(layer.service_typename,)))
 
     if poc.user is None:
         poc_form = ProfileForm(instance=poc, prefix="poc")
@@ -315,7 +327,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 out['errors'] = str(e)
             else:
                 out['success'] = True
-                out['url'] = reverse('layer_detail', args=[saved_layer.typename])
+                out['url'] = reverse('layer_detail', args=[saved_layer.service_typename])
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
