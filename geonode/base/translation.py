@@ -16,12 +16,8 @@ class RestrictionCodeTypeTranslationOptions(TranslationOptions):
 class LicenseTranslationOptions(TranslationOptions):
     fields = ('name', 'description', 'license_text',)
 
-class ResourceBaseTranslationOptions(TranslationOptions):
-    fields = ('title', 'abstract', 'purpose', 'constraints_other', 'supplemental_information', 'distribution_description', 'data_quality_statement', )
-
 translator.register(TopicCategory, TopicCategoryTranslationOptions)
 translator.register(SpatialRepresentationType, SpatialRepresentationTypeTranslationOptions)
 translator.register(Region, RegionTranslationOptions)
 translator.register(RestrictionCodeType, RestrictionCodeTypeTranslationOptions)
 translator.register(License, LicenseTranslationOptions)
-translator.register(ResourceBase, ResourceBaseTranslationOptions)

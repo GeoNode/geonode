@@ -1,16 +1,28 @@
 from django.contrib import admin
 from django.conf import settings
-from geonode.utils import MediaTranslationAdmin
+
+from modeltranslation.admin import TranslationAdmin
 
 from geonode.base.models import (TopicCategory, SpatialRepresentationType,
     Region, RestrictionCodeType, ContactRole, ResourceBase, Link, License, Thumbnail)
+
+class MediaTranslationAdmin(TranslationAdmin):
+    class Media: 
+        js = (
+            'http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
+            'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js',
+            'modeltranslation/js/tabbed_translation_fields.js',
+        )
+        css = {
+            'screen': ('modeltranslation/css/tabbed_translation_fields.css',),
+        }
 
 class LicenseAdmin(MediaTranslationAdmin):
     model = License
     list_display = ('id', 'name')
     list_display_links = ('name',)
 
-class ResourceBaseAdmin(MediaTranslationAdmin):
+class ResourceBaseAdmin(admin.ModelAdmin):
     list_display = ('id','title', 'date', 'category')
     list_display_links = ('id',)
 
