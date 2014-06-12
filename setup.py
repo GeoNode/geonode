@@ -98,6 +98,7 @@ setup(name='GeoNode',
         "django-jsonfield==0.9.12", # python-django-jsonfield
         "django-extensions==1.2.5", # python-django-extensions
         "django-taggit==0.12", # python-django-taggit
+        "django-mptt==0.6.1", # django-mptt
 
         ## Apps with packages provided in GeoNode's PPA on Launchpad.
         "pinax-theme-bootstrap==3.0a11",
@@ -112,6 +113,7 @@ setup(name='GeoNode',
         "django-tastypie==0.11.0",
         "django-polymorphic==0.5.3",
         "django-leaflet==0.13.2",
+        "django-modeltranslation==0.7.3",
 
         # GeoNode org maintained apps.
         "django-geoexplorer==4.0.4",
