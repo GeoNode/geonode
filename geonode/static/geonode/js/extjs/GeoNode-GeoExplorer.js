@@ -351,7 +351,6 @@ GeoNode.plugins.LayerInfo = Ext.extend(gxp.plugins.Tool, {
                 if (this.link) {
                     window.open(this.link);
                 }
-
             },
             scope: this
         }]);
