@@ -26,9 +26,11 @@ from mptt.forms import TreeNodeMultipleChoiceField
 from geonode.maps.models import Map
 from geonode.people.models import Profile
 from django.utils.translation import ugettext_lazy as _
+from modeltranslation.forms import TranslationModelForm
+
 from geonode.base.models import Region
 
-class MapForm(forms.ModelForm):
+class MapForm(TranslationModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}
     date.widget.widgets[1].attrs = {"class":"time"}
@@ -65,4 +67,3 @@ class MapForm(forms.ModelForm):
             self.fields[field].help_text = None
             if help_text != '':
                 self.fields[field].widget.attrs.update({'class':'has-popover', 'data-content':help_text, 'data-placement':'right', 'data-container':'body', 'data-html':'true'})
-
