@@ -2,11 +2,23 @@ from django.contrib import admin
 from django.conf import settings
 
 import autocomplete_light
+from modeltranslation.admin import TranslationAdmin
 
 from geonode.base.models import (TopicCategory, SpatialRepresentationType,
     Region, RestrictionCodeType, ContactRole, ResourceBase, Link, License, Thumbnail)
 
-class LicenseAdmin(admin.ModelAdmin):
+class MediaTranslationAdmin(TranslationAdmin):
+    class Media: 
+        js = (
+            'http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
+            'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js',
+            'modeltranslation/js/tabbed_translation_fields.js',
+        )
+        css = {
+            'screen': ('modeltranslation/css/tabbed_translation_fields.css',),
+        }
+
+class LicenseAdmin(MediaTranslationAdmin):
     model = License
     list_display = ('id', 'name')
     list_display_links = ('name',)
@@ -17,7 +29,7 @@ class ResourceBaseAdmin(admin.ModelAdmin):
 
     form = autocomplete_light.modelform_factory(ResourceBase)
 
-class TopicCategoryAdmin(admin.ModelAdmin):
+class TopicCategoryAdmin(MediaTranslationAdmin):
     model = TopicCategory
     list_display_links = ('identifier',)
     list_display = ('identifier', 'description', 'gn_description', 'is_choice')
@@ -38,13 +50,14 @@ class TopicCategoryAdmin(admin.ModelAdmin):
         else:
             return False
     
-class RegionAdmin(admin.ModelAdmin):
+class RegionAdmin(MediaTranslationAdmin):
     model = Region
     list_display_links = ('name',)
     list_display = ('code', 'name', 'parent')
     search_fields = ('code', 'name',)
-    
-class SpatialRepresentationTypeAdmin(admin.ModelAdmin):
+    group_fieldsets = True
+
+class SpatialRepresentationTypeAdmin(MediaTranslationAdmin):
     model = SpatialRepresentationType
     list_display_links = ('identifier',)
     list_display = ('identifier', 'description', 'gn_description', 'is_choice')
@@ -57,7 +70,7 @@ class SpatialRepresentationTypeAdmin(admin.ModelAdmin):
         # the records are from the standard TC 211 list, so no way to remove
         return False
         
-class RestrictionCodeTypeAdmin(admin.ModelAdmin):
+class RestrictionCodeTypeAdmin(MediaTranslationAdmin):
     model = RestrictionCodeType
     list_display_links = ('identifier',)
     list_display = ('identifier', 'description', 'gn_description', 'is_choice')
