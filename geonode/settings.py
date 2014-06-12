@@ -329,14 +329,6 @@ AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend','guardian
 ANONYMOUS_USER_ID = -1
 GUARDIAN_GET_INIT_ANONYMOUS_USER = 'geonode.people.models.get_anonymous_user_instance'
 
-def get_user_url(u):
-    return u.profile.get_absolute_url()
-
-
-ABSOLUTE_URL_OVERRIDES = {
-    'auth.user': get_user_url
-}
-
 #
 # Settings for default search size
 #

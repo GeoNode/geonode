@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth import get_user_model
 
-from geonode.groups.models import Group
+from geonode.groups.models import GroupProfile
 
 class GroupForm(forms.ModelForm):
     
@@ -16,19 +16,19 @@ class GroupForm(forms.ModelForm):
         )
             
     def clean_slug(self):
-        if Group.objects.filter(slug__iexact=self.cleaned_data["slug"]).count() > 0:
+        if GroupProfile.objects.filter(slug__iexact=self.cleaned_data["slug"]).count() > 0:
             raise forms.ValidationError(_("A group already exists with that slug."))
         return self.cleaned_data["slug"].lower()
     
-    def clean_name(self):
-        if Group.objects.filter(name__iexact=self.cleaned_data["name"]).count() > 0:
+    def clean_title(self):
+        if GroupProfile.objects.filter(title__iexact=self.cleaned_data["title"]).count() > 0:
             raise forms.ValidationError(_("A group already exists with that name."))
-        return self.cleaned_data["name"]
+        return self.cleaned_data["title"]
     
     def clean(self):
         cleaned_data = self.cleaned_data
         
-        name = cleaned_data.get("name")
+        name = cleaned_data.get("title")
         slug = slugify(name)
         
         cleaned_data["slug"] = slug
@@ -36,22 +36,22 @@ class GroupForm(forms.ModelForm):
         return cleaned_data
         
     class Meta:
-        model = Group
-        exclude = ['django_group', 'permissions']
+        model = GroupProfile
+        exclude = ['group']
 
 
 class GroupUpdateForm(forms.ModelForm):
     
     def clean_name(self):
-        if Group.objects.filter(name__iexact=self.cleaned_data["name"]).count() > 0:
-            if self.cleaned_data["name"] == self.instance.name:
+        if GroupProfile.objects.filter(name__iexact=self.cleaned_data["title"]).count() > 0:
+            if self.cleaned_data["title"] == self.instance.name:
                 pass  # same instance
             else:
                 raise forms.ValidationError(_("A group already exists with that name."))
-        return self.cleaned_data["name"]
+        return self.cleaned_data["title"]
     
     class Meta:
-        model = Group
+        model = GroupProfile
 
 
 class GroupMemberForm(forms.Form):
