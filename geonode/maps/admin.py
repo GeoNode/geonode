@@ -19,6 +19,7 @@
 #########################################################################
 
 from geonode.maps.models import Map, MapLayer
+from geonode.base.admin import MediaTranslationAdmin
 from django.contrib import admin
 
 import autocomplete_light
@@ -26,7 +27,7 @@ import autocomplete_light
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
 
-class MapAdmin(admin.ModelAdmin):
+class MapAdmin(MediaTranslationAdmin):
     inlines = [MapLayerInline,]
     list_display_links = ('title',)
     list_display = ('id','title', 'owner')

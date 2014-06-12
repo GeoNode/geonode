@@ -92,6 +92,14 @@ LANGUAGES = (
 # to load the internationalization machinery.
 USE_I18N = True
 
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
+
+MODELTRANSLATION_LANGUAGES = (
+    ('en', 'English'),
+    ('es', 'Español'),
+)
+    
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, "uploaded")
@@ -206,6 +214,7 @@ INSTALLED_APPS = (
     #'haystack',
     'autocomplete_light',
     'mptt',
+    'modeltranslation',
 
     # Theme
     "pinax_theme_bootstrap_account",

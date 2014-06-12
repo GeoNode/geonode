@@ -25,6 +25,7 @@ import taggit
 from django import forms
 from django.utils import simplejson as json
 from django.utils.translation import ugettext_lazy as _
+from modeltranslation.forms import TranslationModelForm
 
 from mptt.forms import TreeNodeMultipleChoiceField 
 
@@ -43,7 +44,7 @@ class JSONField(forms.CharField):
             raise forms.ValidationError("this field must be valid JSON")
 
 
-class LayerForm(forms.ModelForm):
+class LayerForm(TranslationModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}
     date.widget.widgets[1].attrs = {"class":"time"}

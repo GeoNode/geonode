@@ -21,6 +21,7 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from geonode.base.admin import MediaTranslationAdmin
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
 
@@ -29,7 +30,7 @@ import autocomplete_light
 class AttributeInline(admin.TabularInline):
     model = Attribute
 
-class LayerAdmin(admin.ModelAdmin):
+class LayerAdmin(MediaTranslationAdmin):
     list_display = ('id', 'typename','service_type','title', 'date', 'category')
     list_display_links = ('id',)
     list_editable = ('title', 'category')
