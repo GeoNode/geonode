@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.forms import HiddenInput, TextInput
+from modeltranslation.forms import TranslationModelForm
 
 from mptt.forms import TreeNodeMultipleChoiceField
 
@@ -17,7 +18,7 @@ from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.models import Region
 
-class DocumentForm(forms.ModelForm):
+class DocumentForm(TranslationModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}
     date.widget.widgets[1].attrs = {"class":"time"}
@@ -130,7 +131,7 @@ class DocumentReplaceForm(forms.ModelForm):
         return doc_file
 
 
-class DocumentCreateForm(forms.ModelForm):
+class DocumentCreateForm(TranslationModelForm):
     """
     The document upload form.
     """
