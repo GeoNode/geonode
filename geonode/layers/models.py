@@ -138,6 +138,12 @@ class Layer(ResourceBase):
         else:
             return "gxp_wmscsource"
 
+    @property
+    def service_typename(self):
+        if self.storeType == "remoteStore":
+            return "%s:%s" % (self.service.name, self.typename)
+        else:
+            return self.typename
 
     def get_base_file(self):
         """Get the shp or geotiff file for this layer.
@@ -161,7 +167,7 @@ class Layer(ResourceBase):
 
 
     def get_absolute_url(self):
-        return reverse('layer_detail', args=(self.typename,))
+        return reverse('layer_detail', args=(self.service_typename,))
 
 
     def attribute_config(self):
@@ -177,7 +183,7 @@ class Layer(ResourceBase):
 
     def __str__(self):
         if self.typename is not None:
-            return "%s Layer" % self.typename.encode('utf-8')
+            return "%s Layer" % self.service_typename.encode('utf-8')
         elif self.name is not None:
             return "%s Layer" % self.name
         else:
@@ -336,6 +342,8 @@ def pre_delete_layer(instance, sender, **kwargs):
     Remove any associated style to the layer, if it is not used by other layers.
     Default style will be deleted in post_delete_layer
     """
+    if instance.service:
+        return
     logger.debug("Going to delete the styles associated for [%s]", instance.typename.encode('utf-8'))
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
@@ -352,7 +360,10 @@ def post_delete_layer(instance, sender, **kwargs):
     """
     from geonode.maps.models import MapLayer
     logger.debug("Going to delete associated maplayers for [%s]", instance.typename.encode('utf-8'))
-    MapLayer.objects.filter(name=instance.typename).delete()
+    MapLayer.objects.filter(name=instance.typename,ows_url=instance.ows_url).delete()
+
+    if instance.service:
+        return
     logger.debug("Going to delete the default style for [%s]", instance.typename.encode('utf-8'))
 
     if instance.default_style and Layer.objects.filter(default_style__id=instance.default_style.id).count() == 0:

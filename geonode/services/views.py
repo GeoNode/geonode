@@ -48,11 +48,11 @@ from arcrest import Folder as ArcFolder, MapService as ArcMapService
 
 from geoserver.catalog import Catalog, FailedRequestError
 
-from geonode.contrib.services.models import Service, Layer, ServiceLayer, WebServiceHarvestLayersJob, WebServiceRegistrationJob
+from geonode.services.models import Service, Layer, ServiceLayer, WebServiceHarvestLayersJob, WebServiceRegistrationJob
 from geonode.security.views import _perms_info
 from geonode.utils import bbox_to_wkt, json_response
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.contrib.services.forms import CreateServiceForm, ServiceLayerFormSet, ServiceForm
+from geonode.services.forms import CreateServiceForm, ServiceLayerFormSet, ServiceForm
 from geonode.utils import llbbox_to_mercator, mercator_to_llbbox, http_client
 from geonode.layers.utils import create_thumbnail
 from django.db import transaction
@@ -343,21 +343,20 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
         # Register the Service with GeoServer to be cascaded
         cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", 
                         _user , _password)
-        try:
-            cascade_ws = cat.get_workspace(name)
-        except FailedRequestError:
+        cascade_ws = cat.get_workspace(name)
+        if cascade_ws is None:
             cascade_ws = cat.create_workspace(name, "http://geonode.org/cascade")
 
         #TODO: Make sure there isn't an existing store with that name, and deal with it if there is
 
         try:
-            ws = cat.get_store(name, cascade_ws)
+            cascade_store = cat.get_store(name, cascade_ws)
         except:
-            ws = cat.create_wmsstore(name,cascade_ws, username, password)
-            ws.capabilitiesURL = url
-            ws.type = "WMS"
-            cat.save(ws)
-        available_resources = ws.get_resources(available=True)
+            cascade_store = cat.create_wmsstore(name,cascade_ws, username, password)
+            cascade_store.capabilitiesURL = url
+            cascade_store.type = "WMS"
+            cat.save(cascade_store)
+        available_resources = cascade_store.get_resources(available=True)
 
 
     elif type == 'WFS':
@@ -443,6 +442,7 @@ def _register_cascaded_layers(service, owner=None):
             store = cat.get_store(service.name,cascade_ws)
         except Exception:
             store = cat.create_wmsstore(service.name, cascade_ws)
+            cat.save(store)
         wms = WebMapService(service.base_url)
         layers = list(wms.contents)
 

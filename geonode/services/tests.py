@@ -28,7 +28,7 @@ from .models import Service
 
 
 class ServicesTests(TestCase):
-    """Tests geonode.contrib.services app/module
+    """Tests geonode.services app/module
     """
 
     fixtures = ['initial_data.json', 'bobby.json', 'people_data.json']
@@ -53,7 +53,7 @@ class ServicesTests(TestCase):
 
         try:
             service = Service.objects.get(id=service_dict['service_id'])
-            self.assertTrue(service.layers.count() > 0) #Harvested some layers
+            self.assertTrue(service.layer_set.count() > 0) #Harvested some layers
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "WMS")
             self.assertEqual(service.ptype, 'gxp_wmscsource')
@@ -77,7 +77,7 @@ class ServicesTests(TestCase):
 
         try:
             service = Service.objects.get(id=service_dict['service_id'])
-            self.assertTrue(service.layers.count() > 0) #Harvested some layers
+            self.assertTrue(service.layer_set.count() > 0) #Harvested some layers
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "REST")
             self.assertEqual(service.ptype, 'gxp_arcrestsource')

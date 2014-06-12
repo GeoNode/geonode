@@ -36,6 +36,7 @@ from django.utils.html import strip_tags
 from django.views.decorators.http import require_POST
 
 from geonode.layers.models import Layer
+from geonode.layers.views import _resolve_layer
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import forward_mercator
 from geonode.utils import DEFAULT_TITLE
@@ -362,7 +363,7 @@ def new_map_config(request):
             layers = []
             for layer_name in params.getlist('layer'):
                 try:
-                    layer = Layer.objects.get(typename=layer_name)
+                    layer = _resolve_layer(request, layer_name, permission=None)
                 except ObjectDoesNotExist:
                     # bad layer, skip
                     continue
@@ -381,23 +382,26 @@ def new_map_config(request):
                     bbox[2] = min(bbox[2], layer_bbox[2])
                     bbox[3] = max(bbox[3], layer_bbox[3])
 
-                # gxp_wmscsource needs at least bbox and title for lazy loading
-                # layer_params = layer.attribute_config()
-                # layer_params["bbox"] = list(layer.bbox_string)
-                # layer_params["title"] = layer.title
-                # layer_params["srs"] = layer.srid
-
-                maplayer =  MapLayer(
+                if layer.storeType == "remoteStore":
+                    service = layer.service
+                    maplayer = MapLayer(map = map_obj,
+                                        name = layer.typename,
+                                        ows_url = layer.ows_url,
+                                        layer_params=json.dumps( layer.attribute_config()),
+                                        visibility=True,
+                                        source_params=json.dumps({
+                                            "ptype":service.ptype,
+                                            "remote": True,
+                                            "url": service.base_url,
+                                            "name": service.name}))
+                else:
+                    maplayer = MapLayer(
                     map = map_obj,
                     name = layer.typename,
-                    ows_url = layer.get_ows_url(),
+                    ows_url = layer.ows_url,
                     layer_params=json.dumps(layer.attribute_config()),
-                    visibility = True,
+                    visibility = True
                 )
-
-                # if layer.storeType == "remote":
-                #     maplayer.source_params = json.dumps({"ptype":layer.ptype, "remote": (layer.storeType == "remoteStore"),
-                #                                 "url": layer.ows_url})
 
                 layers.append(maplayer)
 
