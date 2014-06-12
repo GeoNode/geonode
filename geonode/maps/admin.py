@@ -19,7 +19,7 @@
 #########################################################################
 
 from geonode.maps.models import Map, MapLayer
-from geonode.utils import MediaTranslationAdmin
+from geonode.base.admin import MediaTranslationAdmin
 from django.contrib import admin
 
 class MapLayerInline(admin.TabularInline):
