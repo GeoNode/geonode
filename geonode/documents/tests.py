@@ -192,7 +192,7 @@ class LayersTest(TestCase):
         """
         f = SimpleUploadedFile('test_img_file.gif', self.imgfile.read(), 'image/gif')
     
-        superuser = get_user_model()().objects.get(pk=2)
+        superuser = get_user_model().objects.get(pk=2)
         # Get a document to work with
         document = Document.objects.all()[0]
        

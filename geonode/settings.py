@@ -327,6 +327,7 @@ MIDDLEWARE_CLASSES = (
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend','guardian.backends.ObjectPermissionBackend',)
 
 ANONYMOUS_USER_ID = -1
+GUARDIAN_GET_INIT_ANONYMOUS_USER = 'geonode.people.models.get_anonymous_user_instance'
 
 def get_user_url(u):
     return u.profile.get_absolute_url()

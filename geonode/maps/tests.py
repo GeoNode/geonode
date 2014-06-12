@@ -26,6 +26,7 @@ from django.test.client import Client
 from django.utils import simplejson as json
 from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
+from django.contrib.auth import get_user_model
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map

@@ -39,7 +39,7 @@ class ContactRole(models.Model):
     """
     resource = models.ForeignKey('ResourceBase')
     contact = models.ForeignKey(settings.AUTH_USER_MODEL)
-    role = models.CharField('Role', choices=ROLE_VALUES, max_length=255, unique=True, help_text=_('function performed by the responsible party'))
+    role = models.CharField(choices=ROLE_VALUES, max_length=255, help_text=_('function performed by the responsible party'))
 
     def clean(self):
         """

@@ -105,7 +105,7 @@ class ServiceProfileRole(models.Model):
     """
     profiles = models.ForeignKey(settings.AUTH_USER_MODEL)
     service = models.ForeignKey(Service)
-    role = models.CharField('Role', choices=ROLE_VALUES, max_length=255, unique=True, help_text=_('function performed by the responsible party'))
+    role = models.CharField(choices=ROLE_VALUES, max_length=255, help_text=_('function performed by the responsible party'))
 
 class ServiceLayer(models.Model):
     service = models.ForeignKey(Service)
