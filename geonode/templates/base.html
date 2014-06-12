@@ -228,7 +228,9 @@
             appendAutocomplete: $('#search_input'),
         });
         $('#search_input').bind('selectChoice', function(e, choice, autocomplete) {
-            $('#search_input').val(choice[0].innerHTML);
+            if(choice[0].children[0] == undefined) {
+                $('#search_input').val(choice[0].innerHTML);
+            }
         });
     </script>
     <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
