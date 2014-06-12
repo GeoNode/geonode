@@ -10,7 +10,7 @@ from django.views.generic import ListView
 from geonode.layers.models import Layer 
 from geonode.maps.models import Map
 from geonode.groups.forms import GroupInviteForm, GroupForm, GroupUpdateForm, GroupMemberForm
-from geonode.groups.models import Group, GroupInvitation, GroupMember
+from geonode.groups.models import GroupProfile, GroupInvitation, GroupMember
 from geonode.people.models import Profile
 
 
@@ -35,7 +35,7 @@ def group_create(request):
 
 @login_required
 def group_update(request, slug):
-    group = Group.objects.get(slug=slug)
+    group = GroupProfile.objects.get(slug=slug)
     if not group.user_is_role(request.user, role="manager"):
         return HttpResponseForbidden()
     
@@ -69,21 +69,21 @@ class GroupDetailView(ListView):
         return self.group.member_queryset()
 
     def get(self, request, *args, **kwargs):
-        self.group = get_object_or_404(Group, slug=kwargs.get('slug'))
+        self.group = get_object_or_404(GroupProfile, slug=kwargs.get('slug'))
         return super(GroupDetailView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(GroupDetailView, self).get_context_data(**kwargs)
         context['object'] = self.group
-        context['maps'] = self.group.resources(resource_type='Map')
-        context['layers'] = self.group.resources(resource_type='Layer')
+        context['maps'] = self.group.resources(resource_type='map')
+        context['layers'] = self.group.resources(resource_type='layer')
         context['is_member'] = self.group.user_is_member(self.request.user)
         context['is_manager'] = self.group.user_is_role(self.request.user, "manager")
         return context
 
 
 def group_members(request, slug):
-    group = get_object_or_404(Group, slug=slug)
+    group = get_object_or_404(GroupProfile, slug=slug)
     ctx = {}
     
     if not group.can_view(request.user):
@@ -107,7 +107,7 @@ def group_members(request, slug):
 @require_POST
 @login_required
 def group_members_add(request, slug):
-    group = get_object_or_404(Group, slug=slug)
+    group = get_object_or_404(GroupProfile, slug=slug)
     
     if not group.user_is_role(request.user, role="manager"): 
         return HttpResponseForbidden()
@@ -130,19 +130,20 @@ def group_members_add(request, slug):
 
 @login_required
 def group_member_remove(request, slug, username):
-    group = get_object_or_404(Group, slug=slug)
+    group = get_object_or_404(GroupProfile, slug=slug)
     user = get_object_or_404(get_user_model(), username=username)
     
     if not group.user_is_role(request.user, role="manager"):
         return HttpResponseForbidden()
     else:
         GroupMember.objects.get(group=group, user=user).delete()
+        user.groups.remove(group.group)
         return redirect("group_detail", slug=group.slug)
         
 @require_POST
 @login_required
 def group_join(request, slug):
-    group = get_object_or_404(Group, slug=slug)
+    group = get_object_or_404(GroupProfile, slug=slug)
     
     if group.access == "private":
         raise Http404()
@@ -156,7 +157,7 @@ def group_join(request, slug):
 
 @require_POST
 def group_invite(request, slug):
-    group = get_object_or_404(Group, slug=slug)
+    group = get_object_or_404(GroupProfile, slug=slug)
     
     if not group.can_invite(request.user):
         raise Http404()
@@ -193,7 +194,7 @@ def group_invite_response(request, token):
 
 @login_required
 def group_remove(request, slug):
-    group = get_object_or_404(Group, slug=slug)
+    group = get_object_or_404(GroupProfile, slug=slug)
     if request.method == 'GET':
         return render_to_response("groups/group_remove.html", RequestContext(request, {
             "group": group

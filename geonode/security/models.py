@@ -27,12 +27,12 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login
+from django.contrib.auth.models import Group
 
 from guardian.shortcuts import assign_perm, get_perms, remove_perm, \
     get_groups_with_perms, get_users_with_perms
 from guardian.utils import get_anonymous_user
 
-from geonode.groups.models import Group
 from geonode.security.enumerations import GENERIC_GROUP_NAMES
 from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
@@ -128,10 +128,9 @@ class PermissionLevelMixin(object):
 
         if 'groups' in perm_spec:
             for group, perms in perm_spec['groups'].items():           
-                group = Group.objects.get(slug=group)
-                for member in group.member_queryset.all():
-                    for perm in perms:
-                        assign_perm(perm, member.user, self.get_self_resource())
+                group = Group.objects.get(name=group)
+                for perm in perms:
+                    assign_perm(perm, group, self.get_self_resource())
 
 
 # Logic to login a user automatically when it has successfully

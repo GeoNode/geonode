@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.sites.models import Site
 from taggit.managers import TaggableManager
 
+from guardian.shortcuts import get_objects_for_group
 
 class GroupProfile(models.Model):
     GROUP_CHOICES = [
@@ -22,13 +23,17 @@ class GroupProfile(models.Model):
     ]
 
     group = models.OneToOneField(Group)
+    title = models.CharField(max_length=50)
     slug = models.SlugField(unique=True)
-    logo = models.FileField(upload_to="people_peoplegroup", blank=True)
+    logo = models.FileField(upload_to="people_group", blank=True)
     description = models.TextField()
     keywords = TaggableManager(_('keywords'), help_text=_("A space or comma-separated list of keywords"), blank=True)
     access = models.CharField(max_length=15, default="public'", choices=GROUP_CHOICES)
     last_modified = models.DateTimeField(auto_now=True)
     
+    def save(self, *args, **kwargs):
+        self.group = Group.objects.create(name=self.slug)
+        super(GroupProfile, self).save(*args, **kwargs)
 
     @classmethod
     def groups_for_user(cls, user):
@@ -42,7 +47,7 @@ class GroupProfile(models.Model):
         return []
     
     def __unicode__(self):
-        return self.name
+        return self.title
 
     def keyword_list(self):
         """
@@ -57,14 +62,13 @@ class GroupProfile(models.Model):
         :param resource_type: Filter's the queryset to objects with the same type.
         """
 
-        from geonode.security.models import GroupObjectRoleMapping
-        queryset = GroupObjectRoleMapping.objects.filter(group=self)
+        queryset = get_objects_for_group(self.group, ['base.view_resourcebase', 'base.change_resourcebase'], any_perm=True)
 
         if resource_type:
-            queryset = [item for item in queryset if item.object.class_name==resource_type]
+            queryset = [item for item in queryset if hasattr(item,resource_type)]
 
         for resource in queryset:
-            yield resource.object
+            yield resource
 
     def member_queryset(self):
         return self.groupmember_set.all()
@@ -98,7 +102,10 @@ class GroupProfile(models.Model):
         return self.user_is_role(user, "manager")
     
     def join(self, user, **kwargs):
-        self.user_set.add(user)
+        if user == user.get_anonymous():
+            raise ValueError("The invited user cannot be anonymous")
+        GroupMember(group=self, user=user, **kwargs).save()
+        user.groups.add(self.group)
     
     def invite(self, user, from_user, role="member", send=True):
         params = dict(role=role, from_user=from_user)
@@ -135,7 +142,7 @@ class GroupProfile(models.Model):
 
 class GroupMember(models.Model):
     
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(GroupProfile)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     role = models.CharField(max_length=10, choices=[
         ("manager", _("Manager")),
@@ -146,7 +153,7 @@ class GroupMember(models.Model):
 
 class GroupInvitation(models.Model):
     
-    group = models.ForeignKey(Group, related_name="invitations")
+    group = models.ForeignKey(GroupProfile, related_name="invitations")
     token = models.CharField(max_length=40)
     email = models.EmailField()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, related_name="pg_invitations_received")
@@ -167,7 +174,7 @@ class GroupInvitation(models.Model):
     created = models.DateTimeField(default=datetime.datetime.now)
     
     def __unicode__(self):
-        return "%s to %s" % (self.email, self.group.name)
+        return "%s to %s" % (self.email, self.group.title)
 
     class Meta:
         unique_together = [("group", "email")]
@@ -187,7 +194,7 @@ class GroupInvitation(models.Model):
         #send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
     
     def accept(self, user):
-        if not user.is_authenticated():
+        if not user.is_authenticated() or user == user.get_anonymous():
             raise ValueError("You must log in to accept invitations")
         if not user.email == self.email:
             raise ValueError("You can't accept an invitation that wasn't for you")
@@ -197,7 +204,7 @@ class GroupInvitation(models.Model):
         self.save()
     
     def decline(self, user):
-        if not user.is_authenticated():
+        if not user.is_authenticated() or user == user.get_anonymous():
             raise ValueError("You must log in to decline invitations")
         if not user.email == self.email:
             raise ValueError("You can't decline an invitation that wasn't for you")
