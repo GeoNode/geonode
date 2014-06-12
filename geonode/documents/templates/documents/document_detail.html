@@ -1,11 +1,13 @@
 {% extends "documents/document_base.html" %}
-{% load geonode_auth %}
 {% load i18n %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load url from future %}
 {% load base_tags %}
+{% load guardian_tags %}
+
+{% get_obj_perms request.user for resource as "resource_perms" %}
 
 {% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
@@ -88,7 +90,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title" id="myModalLabel">{% trans "Download Layer" %}</h4>
+              <h4 class="modal-title" id="myModalLabel">{% trans "Download Document" %}</h4>
             </div>
             <div class="modal-body">
               <ul>
@@ -104,8 +106,7 @@
         </div>
       </div>
 
-      {% has_obj_perm user resource.get_self_resource "change_resourcebase" as can_edit_document %}
-      {% if can_edit_document %}
+      {% if "change_resourcebase" in resource_perms %}
       <li class="list-group-item">
         <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#edit-document">{% trans "Edit Document" %}</button>
       </li>
@@ -114,7 +115,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title" id="myModalLabel">{% trans "Download Layer" %}</h4>
+              <h4 class="modal-title" id="myModalLabel">{% trans "Download Document" %}</h4>
             </div>
             <div class="modal-body">
               <ul>
@@ -146,8 +147,7 @@
         </ul>
       </li>
 
-      {% has_obj_perm user resource.get_self_resource "change_resourcebase_permissions" as can_change_permissions %}
-      {% if can_change_permissions %}
+      {% if "change_resourcebase_permissions" in resource_perms %}
       <li class="list-group-item">
         <h4>{% trans "Permissions" %}</h4>
         <p>{% trans "Click the button below to change the permissions of this document." %}</p>

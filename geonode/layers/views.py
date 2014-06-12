@@ -242,14 +242,14 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             the_layer.keywords.add(*new_keywords)
             return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
 
-    if poc.user is None:
+    if poc is None:
         poc_form = ProfileForm(instance=poc, prefix="poc")
     else:
         layer_form.fields['poc'].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
         poc_form.hidden=True
 
-    if metadata_author.user is None:
+    if metadata_author is None:
         author_form = ProfileForm(instance=metadata_author, prefix="author")
     else:
         layer_form.fields['metadata_author'].initial = metadata_author.id

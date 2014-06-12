@@ -42,7 +42,7 @@ def get_valid_user(user=None):
         theuser = get_default_user()
     elif isinstance(user, basestring):
         theuser = get_user_model().objects.get(username=user)
-    elif user.is_anonymous():
+    elif user == user.get_anonymous():
         raise GeoNodeException('The user uploading files must not '
                                'be anonymous')
     else:

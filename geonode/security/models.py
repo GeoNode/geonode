@@ -116,17 +116,17 @@ class PermissionLevelMixin(object):
         """
         self.remove_all_permissions()
 
-        if hasattr(perm_spec, 'users') and "AnonymousUser" in perm_spec['users']:
+        if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
             for user in get_user_model().objects.all():
                 assign_perm('view_resourcebase', user, self.get_self_resource())
 
-        elif hasattr(perm_spec, 'users'):
+        elif 'users' in perm_spec:
             for user, perms in perm_spec['users'].items():
                 user = get_user_model().objects.get(username=user)
                 for perm in perms:
                     assign_perm(perm, user, self.get_self_resource())
 
-        if hasattr(perm_spec, 'groups'):
+        if 'groups' in perm_spec:
             for group, perms in perm_spec['groups'].items():           
                 group = Group.objects.get(slug=group)
                 for member in group.member_queryset.all():

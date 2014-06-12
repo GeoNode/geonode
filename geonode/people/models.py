@@ -53,7 +53,12 @@ class Profile(AbstractUser):
         return reverse('profile_detail', args=[self.username,])
 
     def __unicode__(self):
-        return u"%s (%s)" % (self.first_name, self.organization)
+        return u"%s" % (self.username)
 
     def class_name(value): 
         return value.__class__.__name__
+
+    USERNAME_FIELD = 'username'
+
+def get_anonymous_user_instance(Profile):
+    return Profile(username='AnonymousUser')
