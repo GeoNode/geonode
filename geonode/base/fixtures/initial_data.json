@@ -1,5 +1,5 @@
 [
-  {
+{
         "pk": 13, 
         "model": "base.topiccategory", 
         "fields": {
@@ -413,1900 +413,3358 @@
             "description": "a name, symbol, or other device identifying a product, officially registered and legally restricted to the use of the owner or manufacturer"
         }
     },
-    {
-        "pk": 1, 
-        "model": "base.region", 
-        "fields": {
-            "code": "AFG", 
-            "name": "Afghanistan"
-        }
-    }, 
-    {
-        "pk": 2, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ALA", 
-            "name": "Aland Islands"
-        }
-    }, 
-    {
-        "pk": 3, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ALB", 
-            "name": "Albania"
-        }
-    }, 
-    {
-        "pk": 4, 
-        "model": "base.region", 
-        "fields": {
-            "code": "DZA", 
-            "name": "Algeria"
-        }
-    }, 
-    {
-        "pk": 5, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ASM", 
-            "name": "American Samoa"
-        }
-    }, 
-    {
-        "pk": 6, 
-        "model": "base.region", 
-        "fields": {
-            "code": "AND", 
-            "name": "Andorra"
-        }
-    }, 
-    {
-        "pk": 7, 
-        "model": "base.region", 
-        "fields": {
-            "code": "AGO", 
-            "name": "Angola"
-        }
-    }, 
-    {
-        "pk": 8, 
-        "model": "base.region", 
-        "fields": {
-            "code": "AIA", 
-            "name": "Anguilla"
-        }
-    }, 
-    {
-        "pk": 9, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ATG", 
-            "name": "Antigua and Barbuda"
-        }
-    }, 
-    {
-        "pk": 10, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ARG", 
-            "name": "Argentina"
-        }
-    }, 
-    {
-        "pk": 11, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ARM", 
-            "name": "Armenia"
-        }
-    }, 
-    {
-        "pk": 12, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ABW", 
-            "name": "Aruba"
-        }
-    }, 
-    {
-        "pk": 13, 
-        "model": "base.region", 
-        "fields": {
-            "code": "AUS", 
-            "name": "Australia"
-        }
-    }, 
-    {
-        "pk": 14, 
-        "model": "base.region", 
-        "fields": {
-            "code": "AUT", 
-            "name": "Austria"
-        }
-    }, 
-    {
-        "pk": 15, 
-        "model": "base.region", 
-        "fields": {
-            "code": "AZE", 
-            "name": "Azerbaijan"
-        }
-    }, 
-    {
-        "pk": 16, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BHS", 
-            "name": "Bahamas"
-        }
-    }, 
-    {
-        "pk": 17, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BHR", 
-            "name": "Bahrain"
-        }
-    }, 
-    {
-        "pk": 18, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BGD", 
-            "name": "Bangladesh"
-        }
-    }, 
-    {
-        "pk": 19, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BRB", 
-            "name": "Barbados"
-        }
-    }, 
-    {
-        "pk": 20, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BLR", 
-            "name": "Belarus"
-        }
-    }, 
-    {
-        "pk": 21, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BEL", 
-            "name": "Belgium"
-        }
-    }, 
-    {
-        "pk": 22, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BLZ", 
-            "name": "Belize"
-        }
-    }, 
-    {
-        "pk": 23, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BEN", 
-            "name": "Benin"
-        }
-    }, 
-    {
-        "pk": 24, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BMU", 
-            "name": "Bermuda"
-        }
-    }, 
-    {
-        "pk": 25, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BTN", 
-            "name": "Bhutan"
-        }
-    }, 
-    {
-        "pk": 26, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BOL", 
-            "name": "Bolivia"
-        }
-    }, 
-    {
-        "pk": 27, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BIH", 
-            "name": "Bosnia and Herzegovina"
-        }
-    }, 
-    {
-        "pk": 28, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BWA", 
-            "name": "Botswana"
-        }
-    }, 
-    {
-        "pk": 29, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BRA", 
-            "name": "Brazil"
-        }
-    }, 
-    {
-        "pk": 30, 
-        "model": "base.region", 
-        "fields": {
-            "code": "VGB", 
-            "name": "British Virgin Islands"
-        }
-    }, 
-    {
-        "pk": 31, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BRN", 
-            "name": "Brunei Darussalam"
-        }
-    }, 
-    {
-        "pk": 32, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BGR", 
-            "name": "Bulgaria"
-        }
-    }, 
-    {
-        "pk": 33, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BFA", 
-            "name": "Burkina Faso"
-        }
-    }, 
-    {
-        "pk": 34, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BDI", 
-            "name": "Burundi"
-        }
-    }, 
-    {
-        "pk": 35, 
-        "model": "base.region", 
-        "fields": {
-            "code": "KHM", 
-            "name": "Cambodia"
-        }
-    }, 
-    {
-        "pk": 36, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CMR", 
-            "name": "Cameroon"
-        }
-    }, 
-    {
-        "pk": 37, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CAN", 
-            "name": "Canada"
-        }
-    }, 
-    {
-        "pk": 38, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CPV", 
-            "name": "Cape Verde"
-        }
-    }, 
-    {
-        "pk": 39, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CYM", 
-            "name": "Cayman Islands"
-        }
-    }, 
-    {
-        "pk": 40, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CAF", 
-            "name": "Central African Republic"
-        }
-    }, 
-    {
-        "pk": 41, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TCD", 
-            "name": "Chad"
-        }
-    }, 
-    {
-        "pk": 42, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CIL", 
-            "name": "Channel Islands"
-        }
-    }, 
-    {
-        "pk": 43, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CHL", 
-            "name": "Chile"
-        }
-    }, 
-    {
-        "pk": 44, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CHN", 
-            "name": "China"
-        }
-    }, 
-    {
-        "pk": 45, 
-        "model": "base.region", 
-        "fields": {
-            "code": "HKG", 
-            "name": "China - Hong Kong"
-        }
-    }, 
-    {
-        "pk": 46, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MAC", 
-            "name": "China - Macao"
-        }
-    }, 
-    {
-        "pk": 47, 
-        "model": "base.region", 
-        "fields": {
-            "code": "COL", 
-            "name": "Colombia"
-        }
-    }, 
-    {
-        "pk": 48, 
-        "model": "base.region", 
-        "fields": {
-            "code": "COM", 
-            "name": "Comoros"
-        }
-    }, 
-    {
-        "pk": 49, 
-        "model": "base.region", 
-        "fields": {
-            "code": "COG", 
-            "name": "Congo"
-        }
-    }, 
-    {
-        "pk": 50, 
-        "model": "base.region", 
-        "fields": {
-            "code": "COK", 
-            "name": "Cook Islands"
-        }
-    }, 
-    {
-        "pk": 51, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CRI", 
-            "name": "Costa Rica"
-        }
-    }, 
-    {
-        "pk": 52, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CIV", 
-            "name": "Cote d'Ivoire"
-        }
-    }, 
-    {
-        "pk": 53, 
-        "model": "base.region", 
-        "fields": {
-            "code": "HRV", 
-            "name": "Croatia"
-        }
-    }, 
-    {
-        "pk": 54, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CUB", 
-            "name": "Cuba"
-        }
-    }, 
-    {
-        "pk": 55, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CYP", 
-            "name": "Cyprus"
-        }
-    }, 
-    {
-        "pk": 56, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CZE", 
-            "name": "Czech Republic"
-        }
-    }, 
-    {
-        "pk": 57, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PRK", 
-            "name": "Democratic People's Republic of Korea"
-        }
-    }, 
-    {
-        "pk": 58, 
-        "model": "base.region", 
-        "fields": {
-            "code": "COD", 
-            "name": "Democratic Republic of the Congo"
-        }
-    }, 
-    {
-        "pk": 59, 
-        "model": "base.region", 
-        "fields": {
-            "code": "DNK", 
-            "name": "Denmark"
-        }
-    }, 
-    {
-        "pk": 60, 
-        "model": "base.region", 
-        "fields": {
-            "code": "DJI", 
-            "name": "Djibouti"
-        }
-    }, 
-    {
-        "pk": 61, 
-        "model": "base.region", 
-        "fields": {
-            "code": "DMA", 
-            "name": "Dominica"
-        }
-    }, 
-    {
-        "pk": 62, 
-        "model": "base.region", 
-        "fields": {
-            "code": "DOM", 
-            "name": "Dominican Republic"
-        }
-    }, 
-    {
-        "pk": 63, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ECU", 
-            "name": "Ecuador"
-        }
-    }, 
-    {
-        "pk": 64, 
-        "model": "base.region", 
-        "fields": {
-            "code": "EGY", 
-            "name": "Egypt"
-        }
-    }, 
-    {
-        "pk": 65, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SLV", 
-            "name": "El Salvador"
-        }
-    }, 
-    {
-        "pk": 66, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GNQ", 
-            "name": "Equatorial Guinea"
-        }
-    }, 
-    {
-        "pk": 67, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ERI", 
-            "name": "Eritrea"
-        }
-    }, 
-    {
-        "pk": 68, 
-        "model": "base.region", 
-        "fields": {
-            "code": "EST", 
-            "name": "Estonia"
-        }
-    }, 
-    {
-        "pk": 69, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ETH", 
-            "name": "Ethiopia"
-        }
-    }, 
-    {
-        "pk": 70, 
-        "model": "base.region", 
-        "fields": {
-            "code": "FRO", 
-            "name": "Faeroe Islands"
-        }
-    }, 
-    {
-        "pk": 71, 
-        "model": "base.region", 
-        "fields": {
-            "code": "FLK", 
-            "name": "Falkland Islands (Malvinas)"
-        }
-    }, 
-    {
-        "pk": 72, 
-        "model": "base.region", 
-        "fields": {
-            "code": "FJI", 
-            "name": "Fiji"
-        }
-    }, 
-    {
-        "pk": 73, 
-        "model": "base.region", 
-        "fields": {
-            "code": "FIN", 
-            "name": "Finland"
-        }
-    }, 
-    {
-        "pk": 74, 
-        "model": "base.region", 
-        "fields": {
-            "code": "FRA", 
-            "name": "France"
-        }
-    }, 
-    {
-        "pk": 75, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GUF", 
-            "name": "French Guiana"
-        }
-    }, 
-    {
-        "pk": 76, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PYF", 
-            "name": "French Polynesia"
-        }
-    }, 
-    {
-        "pk": 77, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GAB", 
-            "name": "Gabon"
-        }
-    }, 
-    {
-        "pk": 78, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GMB", 
-            "name": "Gambia"
-        }
-    }, 
-    {
-        "pk": 79, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GEO", 
-            "name": "Georgia"
-        }
-    }, 
-    {
-        "pk": 80, 
-        "model": "base.region", 
-        "fields": {
-            "code": "DEU", 
-            "name": "Germany"
-        }
-    }, 
-    {
-        "pk": 81, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GHA", 
-            "name": "Ghana"
-        }
-    }, 
-    {
-        "pk": 82, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GIB", 
-            "name": "Gibraltar"
-        }
-    }, 
-    {
-        "pk": 83, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GRC", 
-            "name": "Greece"
-        }
-    }, 
-    {
-        "pk": 84, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GRL", 
-            "name": "Greenland"
-        }
-    }, 
-    {
-        "pk": 85, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GRD", 
-            "name": "Grenada"
-        }
-    }, 
-    {
-        "pk": 86, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GLP", 
-            "name": "Guadeloupe"
-        }
-    }, 
-    {
-        "pk": 87, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GUM", 
-            "name": "Guam"
-        }
-    }, 
-    {
-        "pk": 88, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GTM", 
-            "name": "Guatemala"
-        }
-    }, 
-    {
-        "pk": 89, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GGY", 
-            "name": "Guernsey"
-        }
-    }, 
-    {
-        "pk": 90, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GIN", 
-            "name": "Guinea"
-        }
-    }, 
-    {
-        "pk": 91, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GNB", 
-            "name": "Guinea-Bissau"
-        }
-    }, 
-    {
-        "pk": 92, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GUY", 
-            "name": "Guyana"
-        }
-    }, 
-    {
-        "pk": 93, 
-        "model": "base.region", 
-        "fields": {
-            "code": "HTI", 
-            "name": "Haiti"
-        }
-    }, 
-    {
-        "pk": 94, 
-        "model": "base.region", 
-        "fields": {
-            "code": "VAT", 
-            "name": "Holy See (Vatican City)"
-        }
-    }, 
-    {
-        "pk": 95, 
-        "model": "base.region", 
-        "fields": {
-            "code": "HND", 
-            "name": "Honduras"
-        }
-    }, 
-    {
-        "pk": 96, 
-        "model": "base.region", 
-        "fields": {
-            "code": "HUN", 
-            "name": "Hungary"
-        }
-    }, 
-    {
-        "pk": 97, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ISL", 
-            "name": "Iceland"
-        }
-    }, 
-    {
-        "pk": 98, 
-        "model": "base.region", 
-        "fields": {
-            "code": "IND", 
-            "name": "India"
-        }
-    }, 
-    {
-        "pk": 99, 
-        "model": "base.region", 
-        "fields": {
-            "code": "IDN", 
-            "name": "Indonesia"
-        }
-    }, 
-    {
-        "pk": 100, 
-        "model": "base.region", 
-        "fields": {
-            "code": "IRN", 
-            "name": "Iran"
-        }
-    }, 
-    {
-        "pk": 101, 
-        "model": "base.region", 
-        "fields": {
-            "code": "IRQ", 
-            "name": "Iraq"
-        }
-    }, 
-    {
-        "pk": 102, 
-        "model": "base.region", 
-        "fields": {
-            "code": "IRL", 
-            "name": "Ireland"
-        }
-    }, 
-    {
-        "pk": 103, 
-        "model": "base.region", 
-        "fields": {
-            "code": "IMN", 
-            "name": "Isle of Man"
-        }
-    }, 
-    {
-        "pk": 104, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ISR", 
-            "name": "Israel"
-        }
-    }, 
-    {
-        "pk": 105, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ITA", 
-            "name": "Italy"
-        }
-    }, 
-    {
-        "pk": 106, 
-        "model": "base.region", 
-        "fields": {
-            "code": "JAM", 
-            "name": "Jamaica"
-        }
-    }, 
-    {
-        "pk": 107, 
-        "model": "base.region", 
-        "fields": {
-            "code": "JPN", 
-            "name": "Japan"
-        }
-    }, 
-    {
-        "pk": 108, 
-        "model": "base.region", 
-        "fields": {
-            "code": "JEY", 
-            "name": "Jersey"
-        }
-    }, 
-    {
-        "pk": 109, 
-        "model": "base.region", 
-        "fields": {
-            "code": "JOR", 
-            "name": "Jordan"
-        }
-    }, 
-    {
-        "pk": 110, 
-        "model": "base.region", 
-        "fields": {
-            "code": "KAZ", 
-            "name": "Kazakhstan"
-        }
-    }, 
-    {
-        "pk": 111, 
-        "model": "base.region", 
-        "fields": {
-            "code": "KEN", 
-            "name": "Kenya"
-        }
-    }, 
-    {
-        "pk": 112, 
-        "model": "base.region", 
-        "fields": {
-            "code": "KIR", 
-            "name": "Kiribati"
-        }
-    }, 
-    {
-        "pk": 113, 
-        "model": "base.region", 
-        "fields": {
-            "code": "KWT", 
-            "name": "Kuwait"
-        }
-    }, 
-    {
-        "pk": 114, 
-        "model": "base.region", 
-        "fields": {
-            "code": "KGZ", 
-            "name": "Kyrgyzstan"
-        }
-    }, 
-    {
-        "pk": 115, 
-        "model": "base.region", 
-        "fields": {
-            "code": "LAO", 
-            "name": "Lao People's Democratic Republic"
-        }
-    }, 
-    {
-        "pk": 116, 
-        "model": "base.region", 
-        "fields": {
-            "code": "LVA", 
-            "name": "Latvia"
-        }
-    }, 
-    {
-        "pk": 117, 
-        "model": "base.region", 
-        "fields": {
-            "code": "LBN", 
-            "name": "Lebanon"
-        }
-    }, 
-    {
-        "pk": 118, 
-        "model": "base.region", 
-        "fields": {
-            "code": "LSO", 
-            "name": "Lesotho"
-        }
-    }, 
-    {
-        "pk": 119, 
-        "model": "base.region", 
-        "fields": {
-            "code": "LBR", 
-            "name": "Liberia"
-        }
-    }, 
-    {
-        "pk": 120, 
-        "model": "base.region", 
-        "fields": {
-            "code": "LBY", 
-            "name": "Libyan Arab Jamahiriya"
-        }
-    }, 
-    {
-        "pk": 121, 
-        "model": "base.region", 
-        "fields": {
-            "code": "LIE", 
-            "name": "Liechtenstein"
-        }
-    }, 
-    {
-        "pk": 122, 
-        "model": "base.region", 
-        "fields": {
-            "code": "LTU", 
-            "name": "Lithuania"
-        }
-    }, 
-    {
-        "pk": 123, 
-        "model": "base.region", 
-        "fields": {
-            "code": "LUX", 
-            "name": "Luxembourg"
-        }
-    }, 
-    {
-        "pk": 124, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MKD", 
-            "name": "Macedonia"
-        }
-    }, 
-    {
-        "pk": 125, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MDG", 
-            "name": "Madagascar"
-        }
-    }, 
-    {
-        "pk": 126, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MWI", 
-            "name": "Malawi"
-        }
-    }, 
-    {
-        "pk": 127, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MYS", 
-            "name": "Malaysia"
-        }
-    }, 
-    {
-        "pk": 128, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MDV", 
-            "name": "Maldives"
-        }
-    }, 
-    {
-        "pk": 129, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MLI", 
-            "name": "Mali"
-        }
-    }, 
-    {
-        "pk": 130, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MLT", 
-            "name": "Malta"
-        }
-    }, 
-    {
-        "pk": 131, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MHL", 
-            "name": "Marshall Islands"
-        }
-    }, 
-    {
-        "pk": 132, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MTQ", 
-            "name": "Martinique"
-        }
-    }, 
-    {
-        "pk": 133, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MRT", 
-            "name": "Mauritania"
-        }
-    }, 
-    {
-        "pk": 134, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MUS", 
-            "name": "Mauritius"
-        }
-    }, 
-    {
-        "pk": 135, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MYT", 
-            "name": "Mayotte"
-        }
-    }, 
-    {
-        "pk": 136, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MEX", 
-            "name": "Mexico"
-        }
-    }, 
-    {
-        "pk": 137, 
-        "model": "base.region", 
-        "fields": {
-            "code": "FSM", 
-            "name": "Micronesia, Federated States of"
-        }
-    }, 
-    {
-        "pk": 138, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MCO", 
-            "name": "Monaco"
-        }
-    }, 
-    {
-        "pk": 139, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MNG", 
-            "name": "Mongolia"
-        }
-    }, 
-    {
-        "pk": 140, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MNE", 
-            "name": "Montenegro"
-        }
-    }, 
-    {
-        "pk": 141, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MSR", 
-            "name": "Montserrat"
-        }
-    }, 
-    {
-        "pk": 142, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MAR", 
-            "name": "Morocco"
-        }
-    }, 
-    {
-        "pk": 143, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MOZ", 
-            "name": "Mozambique"
-        }
-    }, 
-    {
-        "pk": 144, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MMR", 
-            "name": "Myanmar"
-        }
-    }, 
-    {
-        "pk": 145, 
-        "model": "base.region", 
-        "fields": {
-            "code": "NAM", 
-            "name": "Namibia"
-        }
-    }, 
-    {
-        "pk": 146, 
-        "model": "base.region", 
-        "fields": {
-            "code": "NRU", 
-            "name": "Nauru"
-        }
-    }, 
-    {
-        "pk": 147, 
-        "model": "base.region", 
-        "fields": {
-            "code": "NPL", 
-            "name": "Nepal"
-        }
-    }, 
-    {
-        "pk": 148, 
-        "model": "base.region", 
-        "fields": {
-            "code": "NLD", 
-            "name": "Netherlands"
-        }
-    }, 
-    {
-        "pk": 149, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ANT", 
-            "name": "Netherlands Antilles"
-        }
-    }, 
-    {
-        "pk": 150, 
-        "model": "base.region", 
-        "fields": {
-            "code": "NCL", 
-            "name": "New Caledonia"
-        }
-    }, 
-    {
-        "pk": 151, 
-        "model": "base.region", 
-        "fields": {
-            "code": "NZL", 
-            "name": "New Zealand"
-        }
-    }, 
-    {
-        "pk": 152, 
-        "model": "base.region", 
-        "fields": {
-            "code": "NIC", 
-            "name": "Nicaragua"
-        }
-    }, 
-    {
-        "pk": 153, 
-        "model": "base.region", 
-        "fields": {
-            "code": "NER", 
-            "name": "Niger"
-        }
-    }, 
-    {
-        "pk": 154, 
-        "model": "base.region", 
-        "fields": {
-            "code": "NGA", 
-            "name": "Nigeria"
-        }
-    }, 
-    {
-        "pk": 155, 
-        "model": "base.region", 
-        "fields": {
-            "code": "NIU", 
-            "name": "Niue"
-        }
-    }, 
-    {
-        "pk": 156, 
-        "model": "base.region", 
-        "fields": {
-            "code": "NFK", 
-            "name": "Norfolk Island"
-        }
-    }, 
-    {
-        "pk": 157, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MNP", 
-            "name": "Northern Mariana Islands"
-        }
-    }, 
-    {
-        "pk": 158, 
-        "model": "base.region", 
-        "fields": {
-            "code": "NOR", 
-            "name": "Norway"
-        }
-    }, 
-    {
-        "pk": 159, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PSE", 
-            "name": "Occupied Palestinian Territory"
-        }
-    }, 
-    {
-        "pk": 160, 
-        "model": "base.region", 
-        "fields": {
-            "code": "OMN", 
-            "name": "Oman"
-        }
-    }, 
-    {
-        "pk": 161, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PAK", 
-            "name": "Pakistan"
-        }
-    }, 
-    {
-        "pk": 162, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PLW", 
-            "name": "Palau"
-        }
-    }, 
-    {
-        "pk": 163, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PAN", 
-            "name": "Panama"
-        }
-    }, 
-    {
-        "pk": 164, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PNG", 
-            "name": "Papua New Guinea"
-        }
-    }, 
-    {
-        "pk": 165, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PRY", 
-            "name": "Paraguay"
-        }
-    }, 
-    {
-        "pk": 166, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PER", 
-            "name": "Peru"
-        }
-    }, 
-    {
-        "pk": 167, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PHL", 
-            "name": "Philippines"
-        }
-    }, 
-    {
-        "pk": 168, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PCN", 
-            "name": "Pitcairn"
-        }
-    }, 
-    {
-        "pk": 169, 
-        "model": "base.region", 
-        "fields": {
-            "code": "POL", 
-            "name": "Poland"
-        }
-    }, 
-    {
-        "pk": 170, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PRT", 
-            "name": "Portugal"
-        }
-    }, 
-    {
-        "pk": 171, 
-        "model": "base.region", 
-        "fields": {
-            "code": "PRI", 
-            "name": "Puerto Rico"
-        }
-    }, 
-    {
-        "pk": 172, 
-        "model": "base.region", 
-        "fields": {
-            "code": "QAT", 
-            "name": "Qatar"
-        }
-    }, 
-    {
-        "pk": 173, 
-        "model": "base.region", 
-        "fields": {
-            "code": "KOR", 
-            "name": "Republic of Korea"
-        }
-    }, 
-    {
-        "pk": 174, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MDA", 
-            "name": "Republic of Moldova"
-        }
-    }, 
-    {
-        "pk": 175, 
-        "model": "base.region", 
-        "fields": {
-            "code": "REU", 
-            "name": "Reunion"
-        }
-    }, 
-    {
-        "pk": 176, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ROU", 
-            "name": "Romania"
-        }
-    }, 
-    {
-        "pk": 177, 
-        "model": "base.region", 
-        "fields": {
-            "code": "RUS", 
-            "name": "Russian Federation"
-        }
-    }, 
-    {
-        "pk": 178, 
-        "model": "base.region", 
-        "fields": {
-            "code": "RWA", 
-            "name": "Rwanda"
-        }
-    }, 
-    {
-        "pk": 180, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SHN", 
-            "name": "Saint Helena"
-        }
-    }, 
-    {
-        "pk": 181, 
-        "model": "base.region", 
-        "fields": {
-            "code": "KNA", 
-            "name": "Saint Kitts and Nevis"
-        }
-    }, 
-    {
-        "pk": 182, 
-        "model": "base.region", 
-        "fields": {
-            "code": "LCA", 
-            "name": "Saint Lucia"
-        }
-    }, 
-    {
-        "pk": 184, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SPM", 
-            "name": "Saint Pierre and Miquelon"
-        }
-    }, 
-    {
-        "pk": 185, 
-        "model": "base.region", 
-        "fields": {
-            "code": "VCT", 
-            "name": "Saint Vincent and the Grenadines"
-        }
-    }, 
-    {
-        "pk": 179, 
-        "model": "base.region", 
-        "fields": {
-            "code": "BLM", 
-            "name": "Saint-Barthelemy"
-        }
-    }, 
-    {
-        "pk": 183, 
-        "model": "base.region", 
-        "fields": {
-            "code": "MAF", 
-            "name": "Saint-Martin (French part)"
-        }
-    }, 
-    {
-        "pk": 186, 
-        "model": "base.region", 
-        "fields": {
-            "code": "WSM", 
-            "name": "Samoa"
-        }
-    }, 
-    {
-        "pk": 187, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SMR", 
-            "name": "San Marino"
-        }
-    }, 
-    {
-        "pk": 188, 
-        "model": "base.region", 
-        "fields": {
-            "code": "STP", 
-            "name": "Sao Tome and Principe"
-        }
-    }, 
-    {
-        "pk": 189, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SAU", 
-            "name": "Saudi Arabia"
-        }
-    }, 
-    {
-        "pk": 190, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SEN", 
-            "name": "Senegal"
-        }
-    }, 
-    {
-        "pk": 191, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SRB", 
-            "name": "Serbia"
-        }
-    }, 
-    {
-        "pk": 192, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SYC", 
-            "name": "Seychelles"
-        }
-    }, 
-    {
-        "pk": 193, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SLE", 
-            "name": "Sierra Leone"
-        }
-    }, 
-    {
-        "pk": 194, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SGP", 
-            "name": "Singapore"
-        }
-    }, 
-    {
-        "pk": 195, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SVK", 
-            "name": "Slovakia"
-        }
-    }, 
-    {
-        "pk": 196, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SVN", 
-            "name": "Slovenia"
-        }
-    }, 
-    {
-        "pk": 197, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SLB", 
-            "name": "Solomon Islands"
-        }
-    }, 
-    {
-        "pk": 198, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SOM", 
-            "name": "Somalia"
-        }
-    }, 
-    {
-        "pk": 199, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ZAF", 
-            "name": "South Africa"
-        }
-    }, 
-    {
-        "pk": 200, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ESP", 
-            "name": "Spain"
-        }
-    }, 
-    {
-        "pk": 201, 
-        "model": "base.region", 
-        "fields": {
-            "code": "LKA", 
-            "name": "Sri Lanka"
-        }
-    }, 
-    {
-        "pk": 202, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SDN", 
-            "name": "Sudan"
-        }
-    }, 
-    {
-        "pk": 203, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SUR", 
-            "name": "Suriname"
-        }
-    }, 
-    {
-        "pk": 204, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SJM", 
-            "name": "Svalbard and Jan Mayen Islands"
-        }
-    }, 
-    {
-        "pk": 205, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SWZ", 
-            "name": "Swaziland"
-        }
-    }, 
-    {
-        "pk": 206, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SWE", 
-            "name": "Sweden"
-        }
-    }, 
-    {
-        "pk": 207, 
-        "model": "base.region", 
-        "fields": {
-            "code": "CHE", 
-            "name": "Switzerland"
-        }
-    }, 
-    {
-        "pk": 208, 
-        "model": "base.region", 
-        "fields": {
-            "code": "SYR", 
-            "name": "Syrian Arab Republic"
-        }
-    }, 
-    {
-        "pk": 209, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TJK", 
-            "name": "Tajikistan"
-        }
-    }, 
-    {
-        "pk": 210, 
-        "model": "base.region", 
-        "fields": {
-            "code": "THA", 
-            "name": "Thailand"
-        }
-    }, 
-    {
-        "pk": 211, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TLS", 
-            "name": "Timor-Leste"
-        }
-    }, 
-    {
-        "pk": 212, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TGO", 
-            "name": "Togo"
-        }
-    }, 
-    {
-        "pk": 213, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TKL", 
-            "name": "Tokelau"
-        }
-    }, 
-    {
-        "pk": 214, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TON", 
-            "name": "Tonga"
-        }
-    }, 
-    {
-        "pk": 215, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TTO", 
-            "name": "Trinidad and Tobago"
-        }
-    }, 
-    {
-        "pk": 216, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TUN", 
-            "name": "Tunisia"
-        }
-    }, 
-    {
-        "pk": 217, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TUR", 
-            "name": "Turkey"
-        }
-    }, 
-    {
-        "pk": 218, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TKM", 
-            "name": "Turkmenistan"
-        }
-    }, 
-    {
-        "pk": 219, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TCA", 
-            "name": "Turks and Caicos Islands"
-        }
-    }, 
-    {
-        "pk": 220, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TUV", 
-            "name": "Tuvalu"
-        }
-    }, 
-    {
-        "pk": 221, 
-        "model": "base.region", 
-        "fields": {
-            "code": "UGA", 
-            "name": "Uganda"
-        }
-    }, 
-    {
-        "pk": 222, 
-        "model": "base.region", 
-        "fields": {
-            "code": "UKR", 
-            "name": "Ukraine"
-        }
-    }, 
-    {
-        "pk": 223, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ARE", 
-            "name": "United Arab Emirates"
-        }
-    }, 
-    {
-        "pk": 224, 
-        "model": "base.region", 
-        "fields": {
-            "code": "GBR", 
-            "name": "United Kingdom"
-        }
-    }, 
-    {
-        "pk": 225, 
-        "model": "base.region", 
-        "fields": {
-            "code": "TZA", 
-            "name": "United Republic of Tanzania"
-        }
-    }, 
-    {
-        "pk": 227, 
-        "model": "base.region", 
-        "fields": {
-            "code": "VIR", 
-            "name": "United States Virgin Islands"
-        }
-    }, 
-    {
-        "pk": 226, 
-        "model": "base.region", 
-        "fields": {
-            "code": "USA", 
-            "name": "United States of America"
-        }
-    }, 
-    {
-        "pk": 228, 
-        "model": "base.region", 
-        "fields": {
-            "code": "URY", 
-            "name": "Uruguay"
-        }
-    }, 
-    {
-        "pk": 229, 
-        "model": "base.region", 
-        "fields": {
-            "code": "UZB", 
-            "name": "Uzbekistan"
-        }
-    }, 
-    {
-        "pk": 230, 
-        "model": "base.region", 
-        "fields": {
-            "code": "VUT", 
-            "name": "Vanuatu"
-        }
-    }, 
-    {
-        "pk": 231, 
-        "model": "base.region", 
-        "fields": {
-            "code": "VEN", 
-            "name": "Venezuela (Bolivarian Republic of)"
-        }
-    }, 
-    {
-        "pk": 232, 
-        "model": "base.region", 
-        "fields": {
-            "code": "VNM", 
-            "name": "Viet Nam"
-        }
-    }, 
-    {
-        "pk": 233, 
-        "model": "base.region", 
-        "fields": {
-            "code": "WLF", 
-            "name": "Wallis and Futuna Islands"
-        }
-    }, 
-    {
-        "pk": 234, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ESH", 
-            "name": "Western Sahara"
-        }
-    }, 
-    {
-        "pk": 235, 
-        "model": "base.region", 
-        "fields": {
-            "code": "YEM", 
-            "name": "Yemen"
-        }
-    }, 
-    {
-        "pk": 236, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ZMB", 
-            "name": "Zambia"
-        }
-    }, 
-    {
-        "pk": 237, 
-        "model": "base.region", 
-        "fields": {
-            "code": "ZWE", 
-            "name": "Zimbabwe"
-        }
+  {
+    "pk": 1,
+    "model": "base.region",
+    "fields": {
+      "rght": 516,
+      "code": "GLO",
+      "name": "Global",
+      "parent": null,
+      "level": 0,
+      "lft": 1,
+      "tree_id": 90
     }
+  },
+  {
+    "pk": 2,
+    "model": "base.region",
+    "fields": {
+      "rght": 212,
+      "code": "NAM",
+      "name": "North America",
+      "parent": 254,
+      "level": 2,
+      "lft": 203,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 3,
+    "model": "base.region",
+    "fields": {
+      "rght": 202,
+      "code": "CAM",
+      "name": "Central America",
+      "parent": 254,
+      "level": 2,
+      "lft": 187,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 4,
+    "model": "base.region",
+    "fields": {
+      "rght": 242,
+      "code": "SAM",
+      "name": "South America",
+      "parent": 254,
+      "level": 2,
+      "lft": 213,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 5,
+    "model": "base.region",
+    "fields": {
+      "rght": 433,
+      "code": "EUR",
+      "name": "Europe",
+      "parent": 1,
+      "level": 1,
+      "lft": 318,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 6,
+    "model": "base.region",
+    "fields": {
+      "rght": 317,
+      "code": "ASI",
+      "name": "Asia",
+      "parent": 1,
+      "level": 1,
+      "lft": 246,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 7,
+    "model": "base.region",
+    "fields": {
+      "rght": 316,
+      "code": "SEA",
+      "name": "Southeast Asia",
+      "parent": 6,
+      "level": 2,
+      "lft": 293,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 8,
+    "model": "base.region",
+    "fields": {
+      "rght": 260,
+      "code": "CTA",
+      "name": "Central Asia",
+      "parent": 6,
+      "level": 2,
+      "lft": 247,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 9,
+    "model": "base.region",
+    "fields": {
+      "rght": 292,
+      "code": "SAS",
+      "name": "South Asia",
+      "parent": 6,
+      "level": 2,
+      "lft": 277,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 10,
+    "model": "base.region",
+    "fields": {
+      "rght": 127,
+      "code": "AFR",
+      "name": "Africa",
+      "parent": 1,
+      "level": 1,
+      "lft": 2,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 11,
+    "model": "base.region",
+    "fields": {
+      "rght": 64,
+      "code": "NAF",
+      "name": "North Africa",
+      "parent": 10,
+      "level": 2,
+      "lft": 49,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 12,
+    "model": "base.region",
+    "fields": {
+      "rght": 48,
+      "code": "EAF",
+      "name": "East Africa",
+      "parent": 10,
+      "level": 2,
+      "lft": 13,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 13,
+    "model": "base.region",
+    "fields": {
+      "rght": 126,
+      "code": "WAF",
+      "name": "West Africa",
+      "parent": 10,
+      "level": 2,
+      "lft": 83,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 14,
+    "model": "base.region",
+    "fields": {
+      "rght": 82,
+      "code": "SAF",
+      "name": "Southern Africa",
+      "parent": 10,
+      "level": 2,
+      "lft": 65,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 15,
+    "model": "base.region",
+    "fields": {
+      "rght": 463,
+      "code": "MES",
+      "name": "Middle East",
+      "parent": 1,
+      "level": 1,
+      "lft": 434,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 16,
+    "model": "base.region",
+    "fields": {
+      "rght": 245,
+      "code": "ANT",
+      "name": "Antarctica",
+      "parent": 1,
+      "level": 1,
+      "lft": 244,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 17,
+    "model": "base.region",
+    "fields": {
+      "rght": 249,
+      "code": "AFG",
+      "name": "Afghanistan",
+      "parent": 8,
+      "level": 3,
+      "lft": 248,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 18,
+    "model": "base.region",
+    "fields": {
+      "rght": 320,
+      "code": "ALA",
+      "name": "Aland Islands",
+      "parent": 5,
+      "level": 2,
+      "lft": 319,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 19,
+    "model": "base.region",
+    "fields": {
+      "rght": 322,
+      "code": "ALB",
+      "name": "Albania",
+      "parent": 5,
+      "level": 2,
+      "lft": 321,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 20,
+    "model": "base.region",
+    "fields": {
+      "rght": 51,
+      "code": "DZA",
+      "name": "Algeria",
+      "parent": 11,
+      "level": 3,
+      "lft": 50,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 21,
+    "model": "base.region",
+    "fields": {
+      "rght": 466,
+      "code": "ASM",
+      "name": "American Samoa",
+      "parent": 256,
+      "level": 2,
+      "lft": 465,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 22,
+    "model": "base.region",
+    "fields": {
+      "rght": 324,
+      "code": "AND",
+      "name": "Andorra",
+      "parent": 5,
+      "level": 2,
+      "lft": 323,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 23,
+    "model": "base.region",
+    "fields": {
+      "rght": 85,
+      "code": "AGO",
+      "name": "Angola",
+      "parent": 13,
+      "level": 3,
+      "lft": 84,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 24,
+    "model": "base.region",
+    "fields": {
+      "rght": 131,
+      "code": "AIA",
+      "name": "Anguilla",
+      "parent": 255,
+      "level": 3,
+      "lft": 130,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 25,
+    "model": "base.region",
+    "fields": {
+      "rght": 133,
+      "code": "ATG",
+      "name": "Antigua and Barbuda",
+      "parent": 255,
+      "level": 3,
+      "lft": 132,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 26,
+    "model": "base.region",
+    "fields": {
+      "rght": 215,
+      "code": "ARG",
+      "name": "Argentina",
+      "parent": 4,
+      "level": 3,
+      "lft": 214,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 27,
+    "model": "base.region",
+    "fields": {
+      "rght": 326,
+      "code": "ARM",
+      "name": "Armenia",
+      "parent": 5,
+      "level": 2,
+      "lft": 325,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 28,
+    "model": "base.region",
+    "fields": {
+      "rght": 135,
+      "code": "ABW",
+      "name": "Aruba",
+      "parent": 255,
+      "level": 3,
+      "lft": 134,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 29,
+    "model": "base.region",
+    "fields": {
+      "rght": 468,
+      "code": "AUS",
+      "name": "Australia",
+      "parent": 256,
+      "level": 2,
+      "lft": 467,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 30,
+    "model": "base.region",
+    "fields": {
+      "rght": 328,
+      "code": "AUT",
+      "name": "Austria",
+      "parent": 5,
+      "level": 2,
+      "lft": 327,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 31,
+    "model": "base.region",
+    "fields": {
+      "rght": 330,
+      "code": "AZE",
+      "name": "Azerbaijan",
+      "parent": 5,
+      "level": 2,
+      "lft": 329,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 32,
+    "model": "base.region",
+    "fields": {
+      "rght": 137,
+      "code": "BHS",
+      "name": "Bahamas",
+      "parent": 255,
+      "level": 3,
+      "lft": 136,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 33,
+    "model": "base.region",
+    "fields": {
+      "rght": 436,
+      "code": "BHR",
+      "name": "Bahrain",
+      "parent": 15,
+      "level": 2,
+      "lft": 435,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 34,
+    "model": "base.region",
+    "fields": {
+      "rght": 279,
+      "code": "BGD",
+      "name": "Bangladesh",
+      "parent": 9,
+      "level": 3,
+      "lft": 278,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 35,
+    "model": "base.region",
+    "fields": {
+      "rght": 139,
+      "code": "BRB",
+      "name": "Barbados",
+      "parent": 255,
+      "level": 3,
+      "lft": 138,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 36,
+    "model": "base.region",
+    "fields": {
+      "rght": 332,
+      "code": "BLR",
+      "name": "Belarus",
+      "parent": 5,
+      "level": 2,
+      "lft": 331,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 37,
+    "model": "base.region",
+    "fields": {
+      "rght": 334,
+      "code": "BEL",
+      "name": "Belgium",
+      "parent": 5,
+      "level": 2,
+      "lft": 333,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 38,
+    "model": "base.region",
+    "fields": {
+      "rght": 189,
+      "code": "BLZ",
+      "name": "Belize",
+      "parent": 3,
+      "level": 3,
+      "lft": 188,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 39,
+    "model": "base.region",
+    "fields": {
+      "rght": 87,
+      "code": "BEN",
+      "name": "Benin",
+      "parent": 13,
+      "level": 3,
+      "lft": 86,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 40,
+    "model": "base.region",
+    "fields": {
+      "rght": 141,
+      "code": "BMU",
+      "name": "Bermuda",
+      "parent": 255,
+      "level": 3,
+      "lft": 140,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 41,
+    "model": "base.region",
+    "fields": {
+      "rght": 281,
+      "code": "BTN",
+      "name": "Bhutan",
+      "parent": 9,
+      "level": 3,
+      "lft": 280,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 42,
+    "model": "base.region",
+    "fields": {
+      "rght": 217,
+      "code": "BOL",
+      "name": "Bolivia",
+      "parent": 4,
+      "level": 3,
+      "lft": 216,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 43,
+    "model": "base.region",
+    "fields": {
+      "rght": 336,
+      "code": "BIH",
+      "name": "Bosnia and Herzegovina",
+      "parent": 5,
+      "level": 2,
+      "lft": 335,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 44,
+    "model": "base.region",
+    "fields": {
+      "rght": 67,
+      "code": "BWA",
+      "name": "Botswana",
+      "parent": 14,
+      "level": 3,
+      "lft": 66,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 45,
+    "model": "base.region",
+    "fields": {
+      "rght": 219,
+      "code": "BRA",
+      "name": "Brazil",
+      "parent": 4,
+      "level": 3,
+      "lft": 218,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 46,
+    "model": "base.region",
+    "fields": {
+      "rght": 143,
+      "code": "VGB",
+      "name": "British Virgin Islands",
+      "parent": 255,
+      "level": 3,
+      "lft": 142,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 47,
+    "model": "base.region",
+    "fields": {
+      "rght": 295,
+      "code": "BRN",
+      "name": "Brunei Darussalam",
+      "parent": 7,
+      "level": 3,
+      "lft": 294,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 48,
+    "model": "base.region",
+    "fields": {
+      "rght": 338,
+      "code": "BGR",
+      "name": "Bulgaria",
+      "parent": 5,
+      "level": 2,
+      "lft": 337,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 49,
+    "model": "base.region",
+    "fields": {
+      "rght": 89,
+      "code": "BFA",
+      "name": "Burkina Faso",
+      "parent": 13,
+      "level": 3,
+      "lft": 88,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 50,
+    "model": "base.region",
+    "fields": {
+      "rght": 15,
+      "code": "BDI",
+      "name": "Burundi",
+      "parent": 12,
+      "level": 3,
+      "lft": 14,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 51,
+    "model": "base.region",
+    "fields": {
+      "rght": 297,
+      "code": "KHM",
+      "name": "Cambodia",
+      "parent": 7,
+      "level": 3,
+      "lft": 296,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 52,
+    "model": "base.region",
+    "fields": {
+      "rght": 91,
+      "code": "CMR",
+      "name": "Cameroon",
+      "parent": 13,
+      "level": 3,
+      "lft": 90,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 53,
+    "model": "base.region",
+    "fields": {
+      "rght": 205,
+      "code": "CAN",
+      "name": "Canada",
+      "parent": 2,
+      "level": 3,
+      "lft": 204,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 54,
+    "model": "base.region",
+    "fields": {
+      "rght": 93,
+      "code": "CPV",
+      "name": "Cape Verde",
+      "parent": 13,
+      "level": 3,
+      "lft": 92,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 55,
+    "model": "base.region",
+    "fields": {
+      "rght": 145,
+      "code": "CYM",
+      "name": "Cayman Islands",
+      "parent": 255,
+      "level": 3,
+      "lft": 144,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 56,
+    "model": "base.region",
+    "fields": {
+      "rght": 5,
+      "code": "CAF",
+      "name": "Central African Republic",
+      "parent": 257,
+      "level": 3,
+      "lft": 4,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 57,
+    "model": "base.region",
+    "fields": {
+      "rght": 7,
+      "code": "TCD",
+      "name": "Chad",
+      "parent": 257,
+      "level": 3,
+      "lft": 6,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 58,
+    "model": "base.region",
+    "fields": {
+      "rght": 340,
+      "code": "CIL",
+      "name": "Channel Islands",
+      "parent": 5,
+      "level": 2,
+      "lft": 339,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 59,
+    "model": "base.region",
+    "fields": {
+      "rght": 221,
+      "code": "CHL",
+      "name": "Chile",
+      "parent": 4,
+      "level": 3,
+      "lft": 220,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 60,
+    "model": "base.region",
+    "fields": {
+      "rght": 263,
+      "code": "CHN",
+      "name": "China",
+      "parent": 258,
+      "level": 3,
+      "lft": 262,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 61,
+    "model": "base.region",
+    "fields": {
+      "rght": 265,
+      "code": "HKG",
+      "name": "China - Hong Kong",
+      "parent": 258,
+      "level": 3,
+      "lft": 264,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 62,
+    "model": "base.region",
+    "fields": {
+      "rght": 267,
+      "code": "MAC",
+      "name": "China - Macao",
+      "parent": 258,
+      "level": 3,
+      "lft": 266,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 63,
+    "model": "base.region",
+    "fields": {
+      "rght": 223,
+      "code": "COL",
+      "name": "Colombia",
+      "parent": 4,
+      "level": 3,
+      "lft": 222,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 64,
+    "model": "base.region",
+    "fields": {
+      "rght": 17,
+      "code": "COM",
+      "name": "Comoros",
+      "parent": 12,
+      "level": 3,
+      "lft": 16,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 65,
+    "model": "base.region",
+    "fields": {
+      "rght": 9,
+      "code": "COG",
+      "name": "Congo",
+      "parent": 257,
+      "level": 3,
+      "lft": 8,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 66,
+    "model": "base.region",
+    "fields": {
+      "rght": 470,
+      "code": "COK",
+      "name": "Cook Islands",
+      "parent": 256,
+      "level": 2,
+      "lft": 469,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 67,
+    "model": "base.region",
+    "fields": {
+      "rght": 191,
+      "code": "CRI",
+      "name": "Costa Rica",
+      "parent": 3,
+      "level": 3,
+      "lft": 190,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 68,
+    "model": "base.region",
+    "fields": {
+      "rght": 95,
+      "code": "CIV",
+      "name": "Cote d'Ivoire",
+      "parent": 13,
+      "level": 3,
+      "lft": 94,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 69,
+    "model": "base.region",
+    "fields": {
+      "rght": 342,
+      "code": "HRV",
+      "name": "Croatia",
+      "parent": 5,
+      "level": 2,
+      "lft": 341,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 70,
+    "model": "base.region",
+    "fields": {
+      "rght": 147,
+      "code": "CUB",
+      "name": "Cuba",
+      "parent": 255,
+      "level": 3,
+      "lft": 146,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 71,
+    "model": "base.region",
+    "fields": {
+      "rght": 344,
+      "code": "CYP",
+      "name": "Cyprus",
+      "parent": 5,
+      "level": 2,
+      "lft": 343,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 72,
+    "model": "base.region",
+    "fields": {
+      "rght": 346,
+      "code": "CZE",
+      "name": "Czech Republic",
+      "parent": 5,
+      "level": 2,
+      "lft": 345,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 73,
+    "model": "base.region",
+    "fields": {
+      "rght": 269,
+      "code": "PRK",
+      "name": "Democratic People's Republic of Korea",
+      "parent": 258,
+      "level": 3,
+      "lft": 268,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 74,
+    "model": "base.region",
+    "fields": {
+      "rght": 11,
+      "code": "COD",
+      "name": "Democratic Republic of the Congo",
+      "parent": 257,
+      "level": 3,
+      "lft": 10,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 75,
+    "model": "base.region",
+    "fields": {
+      "rght": 348,
+      "code": "DNK",
+      "name": "Denmark",
+      "parent": 5,
+      "level": 2,
+      "lft": 347,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 76,
+    "model": "base.region",
+    "fields": {
+      "rght": 19,
+      "code": "DJI",
+      "name": "Djibouti",
+      "parent": 12,
+      "level": 3,
+      "lft": 18,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 77,
+    "model": "base.region",
+    "fields": {
+      "rght": 149,
+      "code": "DMA",
+      "name": "Dominica",
+      "parent": 255,
+      "level": 3,
+      "lft": 148,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 78,
+    "model": "base.region",
+    "fields": {
+      "rght": 151,
+      "code": "DOM",
+      "name": "Dominican Republic",
+      "parent": 255,
+      "level": 3,
+      "lft": 150,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 79,
+    "model": "base.region",
+    "fields": {
+      "rght": 225,
+      "code": "ECU",
+      "name": "Ecuador",
+      "parent": 4,
+      "level": 3,
+      "lft": 224,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 80,
+    "model": "base.region",
+    "fields": {
+      "rght": 53,
+      "code": "EGY",
+      "name": "Egypt",
+      "parent": 11,
+      "level": 3,
+      "lft": 52,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 81,
+    "model": "base.region",
+    "fields": {
+      "rght": 193,
+      "code": "SLV",
+      "name": "El Salvador",
+      "parent": 3,
+      "level": 3,
+      "lft": 192,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 82,
+    "model": "base.region",
+    "fields": {
+      "rght": 97,
+      "code": "GNQ",
+      "name": "Equatorial Guinea",
+      "parent": 13,
+      "level": 3,
+      "lft": 96,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 83,
+    "model": "base.region",
+    "fields": {
+      "rght": 21,
+      "code": "ERI",
+      "name": "Eritrea",
+      "parent": 12,
+      "level": 3,
+      "lft": 20,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 84,
+    "model": "base.region",
+    "fields": {
+      "rght": 350,
+      "code": "EST",
+      "name": "Estonia",
+      "parent": 5,
+      "level": 2,
+      "lft": 349,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 85,
+    "model": "base.region",
+    "fields": {
+      "rght": 23,
+      "code": "ETH",
+      "name": "Ethiopia",
+      "parent": 12,
+      "level": 3,
+      "lft": 22,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 86,
+    "model": "base.region",
+    "fields": {
+      "rght": 352,
+      "code": "FRO",
+      "name": "Faeroe Islands",
+      "parent": 5,
+      "level": 2,
+      "lft": 351,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 87,
+    "model": "base.region",
+    "fields": {
+      "rght": 227,
+      "code": "FLK",
+      "name": "Falkland Islands (Malvinas)",
+      "parent": 4,
+      "level": 3,
+      "lft": 226,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 88,
+    "model": "base.region",
+    "fields": {
+      "rght": 472,
+      "code": "FJI",
+      "name": "Fiji",
+      "parent": 256,
+      "level": 2,
+      "lft": 471,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 89,
+    "model": "base.region",
+    "fields": {
+      "rght": 354,
+      "code": "FIN",
+      "name": "Finland",
+      "parent": 5,
+      "level": 2,
+      "lft": 353,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 90,
+    "model": "base.region",
+    "fields": {
+      "rght": 356,
+      "code": "FRA",
+      "name": "France",
+      "parent": 5,
+      "level": 2,
+      "lft": 355,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 91,
+    "model": "base.region",
+    "fields": {
+      "rght": 229,
+      "code": "GUF",
+      "name": "French Guiana",
+      "parent": 4,
+      "level": 3,
+      "lft": 228,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 92,
+    "model": "base.region",
+    "fields": {
+      "rght": 474,
+      "code": "PYF",
+      "name": "French Polynesia",
+      "parent": 256,
+      "level": 2,
+      "lft": 473,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 93,
+    "model": "base.region",
+    "fields": {
+      "rght": 99,
+      "code": "GAB",
+      "name": "Gabon",
+      "parent": 13,
+      "level": 3,
+      "lft": 98,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 94,
+    "model": "base.region",
+    "fields": {
+      "rght": 101,
+      "code": "GMB",
+      "name": "Gambia",
+      "parent": 13,
+      "level": 3,
+      "lft": 100,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 95,
+    "model": "base.region",
+    "fields": {
+      "rght": 358,
+      "code": "GEO",
+      "name": "Georgia",
+      "parent": 5,
+      "level": 2,
+      "lft": 357,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 96,
+    "model": "base.region",
+    "fields": {
+      "rght": 360,
+      "code": "DEU",
+      "name": "Germany",
+      "parent": 5,
+      "level": 2,
+      "lft": 359,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 97,
+    "model": "base.region",
+    "fields": {
+      "rght": 103,
+      "code": "GHA",
+      "name": "Ghana",
+      "parent": 13,
+      "level": 3,
+      "lft": 102,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 98,
+    "model": "base.region",
+    "fields": {
+      "rght": 362,
+      "code": "GIB",
+      "name": "Gibraltar",
+      "parent": 5,
+      "level": 2,
+      "lft": 361,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 99,
+    "model": "base.region",
+    "fields": {
+      "rght": 364,
+      "code": "GRC",
+      "name": "Greece",
+      "parent": 5,
+      "level": 2,
+      "lft": 363,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 100,
+    "model": "base.region",
+    "fields": {
+      "rght": 207,
+      "code": "GRL",
+      "name": "Greenland",
+      "parent": 2,
+      "level": 3,
+      "lft": 206,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 101,
+    "model": "base.region",
+    "fields": {
+      "rght": 153,
+      "code": "GRD",
+      "name": "Grenada",
+      "parent": 255,
+      "level": 3,
+      "lft": 152,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 102,
+    "model": "base.region",
+    "fields": {
+      "rght": 155,
+      "code": "GLP",
+      "name": "Guadeloupe",
+      "parent": 255,
+      "level": 3,
+      "lft": 154,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 103,
+    "model": "base.region",
+    "fields": {
+      "rght": 476,
+      "code": "GUM",
+      "name": "Guam",
+      "parent": 256,
+      "level": 2,
+      "lft": 475,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 104,
+    "model": "base.region",
+    "fields": {
+      "rght": 195,
+      "code": "GTM",
+      "name": "Guatemala",
+      "parent": 3,
+      "level": 3,
+      "lft": 194,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 105,
+    "model": "base.region",
+    "fields": {
+      "rght": 366,
+      "code": "GGY",
+      "name": "Guernsey",
+      "parent": 5,
+      "level": 2,
+      "lft": 365,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 106,
+    "model": "base.region",
+    "fields": {
+      "rght": 105,
+      "code": "GIN",
+      "name": "Guinea",
+      "parent": 13,
+      "level": 3,
+      "lft": 104,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 107,
+    "model": "base.region",
+    "fields": {
+      "rght": 107,
+      "code": "GNB",
+      "name": "Guinea-Bissau",
+      "parent": 13,
+      "level": 3,
+      "lft": 106,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 108,
+    "model": "base.region",
+    "fields": {
+      "rght": 231,
+      "code": "GUY",
+      "name": "Guyana",
+      "parent": 4,
+      "level": 3,
+      "lft": 230,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 109,
+    "model": "base.region",
+    "fields": {
+      "rght": 157,
+      "code": "HTI",
+      "name": "Haiti",
+      "parent": 255,
+      "level": 3,
+      "lft": 156,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 110,
+    "model": "base.region",
+    "fields": {
+      "rght": 368,
+      "code": "VAT",
+      "name": "Holy See (Vatican City)",
+      "parent": 5,
+      "level": 2,
+      "lft": 367,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 111,
+    "model": "base.region",
+    "fields": {
+      "rght": 197,
+      "code": "HND",
+      "name": "Honduras",
+      "parent": 3,
+      "level": 3,
+      "lft": 196,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 112,
+    "model": "base.region",
+    "fields": {
+      "rght": 370,
+      "code": "HUN",
+      "name": "Hungary",
+      "parent": 5,
+      "level": 2,
+      "lft": 369,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 113,
+    "model": "base.region",
+    "fields": {
+      "rght": 372,
+      "code": "ISL",
+      "name": "Iceland",
+      "parent": 5,
+      "level": 2,
+      "lft": 371,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 114,
+    "model": "base.region",
+    "fields": {
+      "rght": 283,
+      "code": "IND",
+      "name": "India",
+      "parent": 9,
+      "level": 3,
+      "lft": 282,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 115,
+    "model": "base.region",
+    "fields": {
+      "rght": 299,
+      "code": "IDN",
+      "name": "Indonesia",
+      "parent": 7,
+      "level": 3,
+      "lft": 298,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 116,
+    "model": "base.region",
+    "fields": {
+      "rght": 438,
+      "code": "IRN",
+      "name": "Iran",
+      "parent": 15,
+      "level": 2,
+      "lft": 437,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 117,
+    "model": "base.region",
+    "fields": {
+      "rght": 440,
+      "code": "IRQ",
+      "name": "Iraq",
+      "parent": 15,
+      "level": 2,
+      "lft": 439,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 118,
+    "model": "base.region",
+    "fields": {
+      "rght": 374,
+      "code": "IRL",
+      "name": "Ireland",
+      "parent": 5,
+      "level": 2,
+      "lft": 373,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 119,
+    "model": "base.region",
+    "fields": {
+      "rght": 376,
+      "code": "IMN",
+      "name": "Isle of Man",
+      "parent": 5,
+      "level": 2,
+      "lft": 375,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 120,
+    "model": "base.region",
+    "fields": {
+      "rght": 442,
+      "code": "ISR",
+      "name": "Israel",
+      "parent": 15,
+      "level": 2,
+      "lft": 441,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 121,
+    "model": "base.region",
+    "fields": {
+      "rght": 378,
+      "code": "ITA",
+      "name": "Italy",
+      "parent": 5,
+      "level": 2,
+      "lft": 377,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 122,
+    "model": "base.region",
+    "fields": {
+      "rght": 159,
+      "code": "JAM",
+      "name": "Jamaica",
+      "parent": 255,
+      "level": 3,
+      "lft": 158,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 123,
+    "model": "base.region",
+    "fields": {
+      "rght": 271,
+      "code": "JPN",
+      "name": "Japan",
+      "parent": 258,
+      "level": 3,
+      "lft": 270,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 124,
+    "model": "base.region",
+    "fields": {
+      "rght": 380,
+      "code": "JEY",
+      "name": "Jersey",
+      "parent": 5,
+      "level": 2,
+      "lft": 379,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 125,
+    "model": "base.region",
+    "fields": {
+      "rght": 444,
+      "code": "JOR",
+      "name": "Jordan",
+      "parent": 15,
+      "level": 2,
+      "lft": 443,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 126,
+    "model": "base.region",
+    "fields": {
+      "rght": 251,
+      "code": "KAZ",
+      "name": "Kazakhstan",
+      "parent": 8,
+      "level": 3,
+      "lft": 250,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 127,
+    "model": "base.region",
+    "fields": {
+      "rght": 25,
+      "code": "KEN",
+      "name": "Kenya",
+      "parent": 12,
+      "level": 3,
+      "lft": 24,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 128,
+    "model": "base.region",
+    "fields": {
+      "rght": 478,
+      "code": "KIR",
+      "name": "Kiribati",
+      "parent": 256,
+      "level": 2,
+      "lft": 477,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 129,
+    "model": "base.region",
+    "fields": {
+      "rght": 446,
+      "code": "KWT",
+      "name": "Kuwait",
+      "parent": 15,
+      "level": 2,
+      "lft": 445,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 130,
+    "model": "base.region",
+    "fields": {
+      "rght": 253,
+      "code": "KGZ",
+      "name": "Kyrgyzstan",
+      "parent": 8,
+      "level": 3,
+      "lft": 252,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 131,
+    "model": "base.region",
+    "fields": {
+      "rght": 301,
+      "code": "LAO",
+      "name": "Lao People's Democratic Republic",
+      "parent": 7,
+      "level": 3,
+      "lft": 300,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 132,
+    "model": "base.region",
+    "fields": {
+      "rght": 382,
+      "code": "LVA",
+      "name": "Latvia",
+      "parent": 5,
+      "level": 2,
+      "lft": 381,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 133,
+    "model": "base.region",
+    "fields": {
+      "rght": 448,
+      "code": "LBN",
+      "name": "Lebanon",
+      "parent": 15,
+      "level": 2,
+      "lft": 447,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 134,
+    "model": "base.region",
+    "fields": {
+      "rght": 69,
+      "code": "LSO",
+      "name": "Lesotho",
+      "parent": 14,
+      "level": 3,
+      "lft": 68,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 135,
+    "model": "base.region",
+    "fields": {
+      "rght": 109,
+      "code": "LBR",
+      "name": "Liberia",
+      "parent": 13,
+      "level": 3,
+      "lft": 108,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 136,
+    "model": "base.region",
+    "fields": {
+      "rght": 55,
+      "code": "LBY",
+      "name": "Libyan Arab Jamahiriya",
+      "parent": 11,
+      "level": 3,
+      "lft": 54,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 137,
+    "model": "base.region",
+    "fields": {
+      "rght": 384,
+      "code": "LIE",
+      "name": "Liechtenstein",
+      "parent": 5,
+      "level": 2,
+      "lft": 383,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 138,
+    "model": "base.region",
+    "fields": {
+      "rght": 386,
+      "code": "LTU",
+      "name": "Lithuania",
+      "parent": 5,
+      "level": 2,
+      "lft": 385,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 139,
+    "model": "base.region",
+    "fields": {
+      "rght": 388,
+      "code": "LUX",
+      "name": "Luxembourg",
+      "parent": 5,
+      "level": 2,
+      "lft": 387,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 140,
+    "model": "base.region",
+    "fields": {
+      "rght": 390,
+      "code": "MKD",
+      "name": "Macedonia",
+      "parent": 5,
+      "level": 2,
+      "lft": 389,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 141,
+    "model": "base.region",
+    "fields": {
+      "rght": 27,
+      "code": "MDG",
+      "name": "Madagascar",
+      "parent": 12,
+      "level": 3,
+      "lft": 26,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 142,
+    "model": "base.region",
+    "fields": {
+      "rght": 29,
+      "code": "MWI",
+      "name": "Malawi",
+      "parent": 12,
+      "level": 3,
+      "lft": 28,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 143,
+    "model": "base.region",
+    "fields": {
+      "rght": 303,
+      "code": "MYS",
+      "name": "Malaysia",
+      "parent": 7,
+      "level": 3,
+      "lft": 302,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 144,
+    "model": "base.region",
+    "fields": {
+      "rght": 285,
+      "code": "MDV",
+      "name": "Maldives",
+      "parent": 9,
+      "level": 3,
+      "lft": 284,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 145,
+    "model": "base.region",
+    "fields": {
+      "rght": 111,
+      "code": "MLI",
+      "name": "Mali",
+      "parent": 13,
+      "level": 3,
+      "lft": 110,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 146,
+    "model": "base.region",
+    "fields": {
+      "rght": 392,
+      "code": "MLT",
+      "name": "Malta",
+      "parent": 5,
+      "level": 2,
+      "lft": 391,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 147,
+    "model": "base.region",
+    "fields": {
+      "rght": 480,
+      "code": "MHL",
+      "name": "Marshall Islands",
+      "parent": 256,
+      "level": 2,
+      "lft": 479,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 148,
+    "model": "base.region",
+    "fields": {
+      "rght": 161,
+      "code": "MTQ",
+      "name": "Martinique",
+      "parent": 255,
+      "level": 3,
+      "lft": 160,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 149,
+    "model": "base.region",
+    "fields": {
+      "rght": 113,
+      "code": "MRT",
+      "name": "Mauritania",
+      "parent": 13,
+      "level": 3,
+      "lft": 112,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 150,
+    "model": "base.region",
+    "fields": {
+      "rght": 31,
+      "code": "MUS",
+      "name": "Mauritius",
+      "parent": 12,
+      "level": 3,
+      "lft": 30,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 151,
+    "model": "base.region",
+    "fields": {
+      "rght": 33,
+      "code": "MYT",
+      "name": "Mayotte",
+      "parent": 12,
+      "level": 3,
+      "lft": 32,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 152,
+    "model": "base.region",
+    "fields": {
+      "rght": 209,
+      "code": "MEX",
+      "name": "Mexico",
+      "parent": 2,
+      "level": 3,
+      "lft": 208,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 153,
+    "model": "base.region",
+    "fields": {
+      "rght": 482,
+      "code": "FSM",
+      "name": "Micronesia, Federated States of",
+      "parent": 256,
+      "level": 2,
+      "lft": 481,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 154,
+    "model": "base.region",
+    "fields": {
+      "rght": 394,
+      "code": "MCO",
+      "name": "Monaco",
+      "parent": 5,
+      "level": 2,
+      "lft": 393,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 155,
+    "model": "base.region",
+    "fields": {
+      "rght": 273,
+      "code": "MNG",
+      "name": "Mongolia",
+      "parent": 258,
+      "level": 3,
+      "lft": 272,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 156,
+    "model": "base.region",
+    "fields": {
+      "rght": 396,
+      "code": "MNE",
+      "name": "Montenegro",
+      "parent": 5,
+      "level": 2,
+      "lft": 395,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 157,
+    "model": "base.region",
+    "fields": {
+      "rght": 163,
+      "code": "MSR",
+      "name": "Montserrat",
+      "parent": 255,
+      "level": 3,
+      "lft": 162,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 158,
+    "model": "base.region",
+    "fields": {
+      "rght": 57,
+      "code": "MAR",
+      "name": "Morocco",
+      "parent": 11,
+      "level": 3,
+      "lft": 56,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 159,
+    "model": "base.region",
+    "fields": {
+      "rght": 35,
+      "code": "MOZ",
+      "name": "Mozambique",
+      "parent": 12,
+      "level": 3,
+      "lft": 34,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 160,
+    "model": "base.region",
+    "fields": {
+      "rght": 305,
+      "code": "MMR",
+      "name": "Myanmar",
+      "parent": 7,
+      "level": 3,
+      "lft": 304,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 161,
+    "model": "base.region",
+    "fields": {
+      "rght": 71,
+      "code": "NMB",
+      "name": "Namibia",
+      "parent": 14,
+      "level": 3,
+      "lft": 70,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 162,
+    "model": "base.region",
+    "fields": {
+      "rght": 484,
+      "code": "NRU",
+      "name": "Nauru",
+      "parent": 256,
+      "level": 2,
+      "lft": 483,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 163,
+    "model": "base.region",
+    "fields": {
+      "rght": 287,
+      "code": "NPL",
+      "name": "Nepal",
+      "parent": 9,
+      "level": 3,
+      "lft": 286,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 164,
+    "model": "base.region",
+    "fields": {
+      "rght": 398,
+      "code": "NLD",
+      "name": "Netherlands",
+      "parent": 5,
+      "level": 2,
+      "lft": 397,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 165,
+    "model": "base.region",
+    "fields": {
+      "rght": 165,
+      "code": "NAN",
+      "name": "Netherlands Antilles",
+      "parent": 255,
+      "level": 3,
+      "lft": 164,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 166,
+    "model": "base.region",
+    "fields": {
+      "rght": 486,
+      "code": "NCL",
+      "name": "New Caledonia",
+      "parent": 256,
+      "level": 2,
+      "lft": 485,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 167,
+    "model": "base.region",
+    "fields": {
+      "rght": 488,
+      "code": "NZL",
+      "name": "New Zealand",
+      "parent": 256,
+      "level": 2,
+      "lft": 487,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 168,
+    "model": "base.region",
+    "fields": {
+      "rght": 199,
+      "code": "NIC",
+      "name": "Nicaragua",
+      "parent": 3,
+      "level": 3,
+      "lft": 198,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 169,
+    "model": "base.region",
+    "fields": {
+      "rght": 115,
+      "code": "NER",
+      "name": "Niger",
+      "parent": 13,
+      "level": 3,
+      "lft": 114,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 170,
+    "model": "base.region",
+    "fields": {
+      "rght": 117,
+      "code": "NGA",
+      "name": "Nigeria",
+      "parent": 13,
+      "level": 3,
+      "lft": 116,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 171,
+    "model": "base.region",
+    "fields": {
+      "rght": 490,
+      "code": "NIU",
+      "name": "Niue",
+      "parent": 256,
+      "level": 2,
+      "lft": 489,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 172,
+    "model": "base.region",
+    "fields": {
+      "rght": 492,
+      "code": "NFK",
+      "name": "Norfolk Island",
+      "parent": 256,
+      "level": 2,
+      "lft": 491,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 173,
+    "model": "base.region",
+    "fields": {
+      "rght": 494,
+      "code": "MNP",
+      "name": "Northern Mariana Islands",
+      "parent": 256,
+      "level": 2,
+      "lft": 493,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 174,
+    "model": "base.region",
+    "fields": {
+      "rght": 400,
+      "code": "NOR",
+      "name": "Norway",
+      "parent": 5,
+      "level": 2,
+      "lft": 399,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 175,
+    "model": "base.region",
+    "fields": {
+      "rght": 450,
+      "code": "PSE",
+      "name": "Occupied Palestinian Territory",
+      "parent": 15,
+      "level": 2,
+      "lft": 449,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 176,
+    "model": "base.region",
+    "fields": {
+      "rght": 452,
+      "code": "OMN",
+      "name": "Oman",
+      "parent": 15,
+      "level": 2,
+      "lft": 451,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 177,
+    "model": "base.region",
+    "fields": {
+      "rght": 289,
+      "code": "PAK",
+      "name": "Pakistan",
+      "parent": 9,
+      "level": 3,
+      "lft": 288,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 178,
+    "model": "base.region",
+    "fields": {
+      "rght": 496,
+      "code": "PLW",
+      "name": "Palau",
+      "parent": 256,
+      "level": 2,
+      "lft": 495,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 179,
+    "model": "base.region",
+    "fields": {
+      "rght": 201,
+      "code": "PAN",
+      "name": "Panama",
+      "parent": 3,
+      "level": 3,
+      "lft": 200,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 180,
+    "model": "base.region",
+    "fields": {
+      "rght": 498,
+      "code": "PNG",
+      "name": "Papua New Guinea",
+      "parent": 256,
+      "level": 2,
+      "lft": 497,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 181,
+    "model": "base.region",
+    "fields": {
+      "rght": 233,
+      "code": "PRY",
+      "name": "Paraguay",
+      "parent": 4,
+      "level": 3,
+      "lft": 232,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 182,
+    "model": "base.region",
+    "fields": {
+      "rght": 235,
+      "code": "PER",
+      "name": "Peru",
+      "parent": 4,
+      "level": 3,
+      "lft": 234,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 183,
+    "model": "base.region",
+    "fields": {
+      "rght": 307,
+      "code": "PHL",
+      "name": "Philippines",
+      "parent": 7,
+      "level": 3,
+      "lft": 306,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 184,
+    "model": "base.region",
+    "fields": {
+      "rght": 500,
+      "code": "PCN",
+      "name": "Pitcairn",
+      "parent": 256,
+      "level": 2,
+      "lft": 499,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 185,
+    "model": "base.region",
+    "fields": {
+      "rght": 402,
+      "code": "POL",
+      "name": "Poland",
+      "parent": 5,
+      "level": 2,
+      "lft": 401,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 186,
+    "model": "base.region",
+    "fields": {
+      "rght": 404,
+      "code": "PRT",
+      "name": "Portugal",
+      "parent": 5,
+      "level": 2,
+      "lft": 403,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 187,
+    "model": "base.region",
+    "fields": {
+      "rght": 167,
+      "code": "PRI",
+      "name": "Puerto Rico",
+      "parent": 255,
+      "level": 3,
+      "lft": 166,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 188,
+    "model": "base.region",
+    "fields": {
+      "rght": 454,
+      "code": "QAT",
+      "name": "Qatar",
+      "parent": 15,
+      "level": 2,
+      "lft": 453,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 189,
+    "model": "base.region",
+    "fields": {
+      "rght": 275,
+      "code": "KOR",
+      "name": "Republic of Korea",
+      "parent": 258,
+      "level": 3,
+      "lft": 274,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 190,
+    "model": "base.region",
+    "fields": {
+      "rght": 406,
+      "code": "MDA",
+      "name": "Republic of Moldova",
+      "parent": 5,
+      "level": 2,
+      "lft": 405,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 191,
+    "model": "base.region",
+    "fields": {
+      "rght": 37,
+      "code": "REU",
+      "name": "Reunion",
+      "parent": 12,
+      "level": 3,
+      "lft": 36,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 192,
+    "model": "base.region",
+    "fields": {
+      "rght": 408,
+      "code": "ROU",
+      "name": "Romania",
+      "parent": 5,
+      "level": 2,
+      "lft": 407,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 193,
+    "model": "base.region",
+    "fields": {
+      "rght": 410,
+      "code": "RUS",
+      "name": "Russian Federation",
+      "parent": 5,
+      "level": 2,
+      "lft": 409,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 194,
+    "model": "base.region",
+    "fields": {
+      "rght": 39,
+      "code": "RWA",
+      "name": "Rwanda",
+      "parent": 12,
+      "level": 3,
+      "lft": 38,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 195,
+    "model": "base.region",
+    "fields": {
+      "rght": 73,
+      "code": "SHN",
+      "name": "Saint Helena",
+      "parent": 14,
+      "level": 3,
+      "lft": 72,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 196,
+    "model": "base.region",
+    "fields": {
+      "rght": 169,
+      "code": "KNA",
+      "name": "Saint Kitts and Nevis",
+      "parent": 255,
+      "level": 3,
+      "lft": 168,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 197,
+    "model": "base.region",
+    "fields": {
+      "rght": 171,
+      "code": "LCA",
+      "name": "Saint Lucia",
+      "parent": 255,
+      "level": 3,
+      "lft": 170,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 198,
+    "model": "base.region",
+    "fields": {
+      "rght": 173,
+      "code": "SPM",
+      "name": "Saint Pierre and Miquelon",
+      "parent": 255,
+      "level": 3,
+      "lft": 172,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 199,
+    "model": "base.region",
+    "fields": {
+      "rght": 175,
+      "code": "VCT",
+      "name": "Saint Vincent and the Grenadines",
+      "parent": 255,
+      "level": 3,
+      "lft": 174,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 200,
+    "model": "base.region",
+    "fields": {
+      "rght": 177,
+      "code": "BLM",
+      "name": "Saint-Barthelemy",
+      "parent": 255,
+      "level": 3,
+      "lft": 176,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 201,
+    "model": "base.region",
+    "fields": {
+      "rght": 179,
+      "code": "MAF",
+      "name": "Saint-Martin (French part)",
+      "parent": 255,
+      "level": 3,
+      "lft": 178,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 202,
+    "model": "base.region",
+    "fields": {
+      "rght": 502,
+      "code": "WSM",
+      "name": "Samoa",
+      "parent": 256,
+      "level": 2,
+      "lft": 501,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 203,
+    "model": "base.region",
+    "fields": {
+      "rght": 412,
+      "code": "SMR",
+      "name": "San Marino",
+      "parent": 5,
+      "level": 2,
+      "lft": 411,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 204,
+    "model": "base.region",
+    "fields": {
+      "rght": 119,
+      "code": "STP",
+      "name": "Sao Tome and Principe",
+      "parent": 13,
+      "level": 3,
+      "lft": 118,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 205,
+    "model": "base.region",
+    "fields": {
+      "rght": 456,
+      "code": "SAU",
+      "name": "Saudi Arabia",
+      "parent": 15,
+      "level": 2,
+      "lft": 455,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 206,
+    "model": "base.region",
+    "fields": {
+      "rght": 121,
+      "code": "SEN",
+      "name": "Senegal",
+      "parent": 13,
+      "level": 3,
+      "lft": 120,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 207,
+    "model": "base.region",
+    "fields": {
+      "rght": 414,
+      "code": "SRB",
+      "name": "Serbia",
+      "parent": 5,
+      "level": 2,
+      "lft": 413,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 208,
+    "model": "base.region",
+    "fields": {
+      "rght": 41,
+      "code": "SYC",
+      "name": "Seychelles",
+      "parent": 12,
+      "level": 3,
+      "lft": 40,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 209,
+    "model": "base.region",
+    "fields": {
+      "rght": 123,
+      "code": "SLE",
+      "name": "Sierra Leone",
+      "parent": 13,
+      "level": 3,
+      "lft": 122,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 210,
+    "model": "base.region",
+    "fields": {
+      "rght": 309,
+      "code": "SGP",
+      "name": "Singapore",
+      "parent": 7,
+      "level": 3,
+      "lft": 308,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 211,
+    "model": "base.region",
+    "fields": {
+      "rght": 416,
+      "code": "SVK",
+      "name": "Slovakia",
+      "parent": 5,
+      "level": 2,
+      "lft": 415,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 212,
+    "model": "base.region",
+    "fields": {
+      "rght": 418,
+      "code": "SVN",
+      "name": "Slovenia",
+      "parent": 5,
+      "level": 2,
+      "lft": 417,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 213,
+    "model": "base.region",
+    "fields": {
+      "rght": 504,
+      "code": "SLB",
+      "name": "Solomon Islands",
+      "parent": 256,
+      "level": 2,
+      "lft": 503,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 214,
+    "model": "base.region",
+    "fields": {
+      "rght": 43,
+      "code": "SOM",
+      "name": "Somalia",
+      "parent": 12,
+      "level": 3,
+      "lft": 42,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 215,
+    "model": "base.region",
+    "fields": {
+      "rght": 75,
+      "code": "ZAF",
+      "name": "South Africa",
+      "parent": 14,
+      "level": 3,
+      "lft": 74,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 216,
+    "model": "base.region",
+    "fields": {
+      "rght": 420,
+      "code": "ESP",
+      "name": "Spain",
+      "parent": 5,
+      "level": 2,
+      "lft": 419,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 217,
+    "model": "base.region",
+    "fields": {
+      "rght": 291,
+      "code": "LKA",
+      "name": "Sri Lanka",
+      "parent": 9,
+      "level": 3,
+      "lft": 290,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 218,
+    "model": "base.region",
+    "fields": {
+      "rght": 59,
+      "code": "SDN",
+      "name": "Sudan",
+      "parent": 11,
+      "level": 3,
+      "lft": 58,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 219,
+    "model": "base.region",
+    "fields": {
+      "rght": 237,
+      "code": "SUR",
+      "name": "Suriname",
+      "parent": 4,
+      "level": 3,
+      "lft": 236,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 220,
+    "model": "base.region",
+    "fields": {
+      "rght": 422,
+      "code": "SJM",
+      "name": "Svalbard and Jan Mayen Islands",
+      "parent": 5,
+      "level": 2,
+      "lft": 421,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 221,
+    "model": "base.region",
+    "fields": {
+      "rght": 77,
+      "code": "SWZ",
+      "name": "Swaziland",
+      "parent": 14,
+      "level": 3,
+      "lft": 76,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 222,
+    "model": "base.region",
+    "fields": {
+      "rght": 424,
+      "code": "SWE",
+      "name": "Sweden",
+      "parent": 5,
+      "level": 2,
+      "lft": 423,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 223,
+    "model": "base.region",
+    "fields": {
+      "rght": 426,
+      "code": "CHE",
+      "name": "Switzerland",
+      "parent": 5,
+      "level": 2,
+      "lft": 425,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 224,
+    "model": "base.region",
+    "fields": {
+      "rght": 458,
+      "code": "SYR",
+      "name": "Syrian Arab Republic",
+      "parent": 15,
+      "level": 2,
+      "lft": 457,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 225,
+    "model": "base.region",
+    "fields": {
+      "rght": 255,
+      "code": "TJK",
+      "name": "Tajikistan",
+      "parent": 8,
+      "level": 3,
+      "lft": 254,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 226,
+    "model": "base.region",
+    "fields": {
+      "rght": 311,
+      "code": "THA",
+      "name": "Thailand",
+      "parent": 7,
+      "level": 3,
+      "lft": 310,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 227,
+    "model": "base.region",
+    "fields": {
+      "rght": 313,
+      "code": "TLS",
+      "name": "Timor-Leste",
+      "parent": 7,
+      "level": 3,
+      "lft": 312,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 228,
+    "model": "base.region",
+    "fields": {
+      "rght": 125,
+      "code": "TGO",
+      "name": "Togo",
+      "parent": 13,
+      "level": 3,
+      "lft": 124,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 229,
+    "model": "base.region",
+    "fields": {
+      "rght": 506,
+      "code": "TKL",
+      "name": "Tokelau",
+      "parent": 256,
+      "level": 2,
+      "lft": 505,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 230,
+    "model": "base.region",
+    "fields": {
+      "rght": 508,
+      "code": "TON",
+      "name": "Tonga",
+      "parent": 256,
+      "level": 2,
+      "lft": 507,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 231,
+    "model": "base.region",
+    "fields": {
+      "rght": 181,
+      "code": "TTO",
+      "name": "Trinidad and Tobago",
+      "parent": 255,
+      "level": 3,
+      "lft": 180,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 232,
+    "model": "base.region",
+    "fields": {
+      "rght": 61,
+      "code": "TUN",
+      "name": "Tunisia",
+      "parent": 11,
+      "level": 3,
+      "lft": 60,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 233,
+    "model": "base.region",
+    "fields": {
+      "rght": 428,
+      "code": "TUR",
+      "name": "Turkey",
+      "parent": 5,
+      "level": 2,
+      "lft": 427,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 234,
+    "model": "base.region",
+    "fields": {
+      "rght": 257,
+      "code": "TKM",
+      "name": "Turkmenistan",
+      "parent": 8,
+      "level": 3,
+      "lft": 256,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 235,
+    "model": "base.region",
+    "fields": {
+      "rght": 183,
+      "code": "TCA",
+      "name": "Turks and Caicos Islands",
+      "parent": 255,
+      "level": 3,
+      "lft": 182,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 236,
+    "model": "base.region",
+    "fields": {
+      "rght": 510,
+      "code": "TUV",
+      "name": "Tuvalu",
+      "parent": 256,
+      "level": 2,
+      "lft": 509,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 237,
+    "model": "base.region",
+    "fields": {
+      "rght": 45,
+      "code": "UGA",
+      "name": "Uganda",
+      "parent": 12,
+      "level": 3,
+      "lft": 44,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 238,
+    "model": "base.region",
+    "fields": {
+      "rght": 430,
+      "code": "UKR",
+      "name": "Ukraine",
+      "parent": 5,
+      "level": 2,
+      "lft": 429,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 239,
+    "model": "base.region",
+    "fields": {
+      "rght": 460,
+      "code": "ARE",
+      "name": "United Arab Emirates",
+      "parent": 15,
+      "level": 2,
+      "lft": 459,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 240,
+    "model": "base.region",
+    "fields": {
+      "rght": 432,
+      "code": "GBR",
+      "name": "United Kingdom",
+      "parent": 5,
+      "level": 2,
+      "lft": 431,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 241,
+    "model": "base.region",
+    "fields": {
+      "rght": 47,
+      "code": "TZA",
+      "name": "United Republic of Tanzania",
+      "parent": 12,
+      "level": 3,
+      "lft": 46,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 242,
+    "model": "base.region",
+    "fields": {
+      "rght": 185,
+      "code": "VIR",
+      "name": "United States Virgin Islands",
+      "parent": 255,
+      "level": 3,
+      "lft": 184,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 243,
+    "model": "base.region",
+    "fields": {
+      "rght": 211,
+      "code": "USA",
+      "name": "United States of America",
+      "parent": 2,
+      "level": 3,
+      "lft": 210,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 244,
+    "model": "base.region",
+    "fields": {
+      "rght": 239,
+      "code": "URY",
+      "name": "Uruguay",
+      "parent": 4,
+      "level": 3,
+      "lft": 238,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 245,
+    "model": "base.region",
+    "fields": {
+      "rght": 259,
+      "code": "UZB",
+      "name": "Uzbekistan",
+      "parent": 8,
+      "level": 3,
+      "lft": 258,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 246,
+    "model": "base.region",
+    "fields": {
+      "rght": 512,
+      "code": "VUT",
+      "name": "Vanuatu",
+      "parent": 256,
+      "level": 2,
+      "lft": 511,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 247,
+    "model": "base.region",
+    "fields": {
+      "rght": 241,
+      "code": "VEN",
+      "name": "Venezuela (Bolivarian Republic of)",
+      "parent": 4,
+      "level": 3,
+      "lft": 240,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 248,
+    "model": "base.region",
+    "fields": {
+      "rght": 315,
+      "code": "VNM",
+      "name": "Viet Nam",
+      "parent": 7,
+      "level": 3,
+      "lft": 314,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 249,
+    "model": "base.region",
+    "fields": {
+      "rght": 514,
+      "code": "WLF",
+      "name": "Wallis and Futuna Islands",
+      "parent": 256,
+      "level": 2,
+      "lft": 513,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 250,
+    "model": "base.region",
+    "fields": {
+      "rght": 63,
+      "code": "ESH",
+      "name": "Western Sahara",
+      "parent": 11,
+      "level": 3,
+      "lft": 62,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 251,
+    "model": "base.region",
+    "fields": {
+      "rght": 462,
+      "code": "YEM",
+      "name": "Yemen",
+      "parent": 15,
+      "level": 2,
+      "lft": 461,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 252,
+    "model": "base.region",
+    "fields": {
+      "rght": 79,
+      "code": "ZMB",
+      "name": "Zambia",
+      "parent": 14,
+      "level": 3,
+      "lft": 78,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 253,
+    "model": "base.region",
+    "fields": {
+      "rght": 81,
+      "code": "ZWE",
+      "name": "Zimbabwe",
+      "parent": 14,
+      "level": 3,
+      "lft": 80,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 254,
+    "model": "base.region",
+    "fields": {
+      "rght": 243,
+      "code": "AME",
+      "name": "Americas",
+      "parent": 1,
+      "level": 1,
+      "lft": 128,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 255,
+    "model": "base.region",
+    "fields": {
+      "rght": 186,
+      "code": "CRB",
+      "name": "Caribbean",
+      "parent": 254,
+      "level": 2,
+      "lft": 129,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 256,
+    "model": "base.region",
+    "fields": {
+      "rght": 515,
+      "code": "PAC",
+      "name": "Pacific",
+      "parent": 1,
+      "level": 1,
+      "lft": 464,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 257,
+    "model": "base.region",
+    "fields": {
+      "rght": 12,
+      "code": "CFR",
+      "name": "Central Africa",
+      "parent": 10,
+      "level": 2,
+      "lft": 3,
+      "tree_id": 90
+    }
+  },
+  {
+    "pk": 258,
+    "model": "base.region",
+    "fields": {
+      "rght": 276,
+      "code": "EAS",
+      "name": "East Asia",
+      "parent": 6,
+      "level": 2,
+      "lft": 261,
+      "tree_id": 90
+    }
+  }
 ]

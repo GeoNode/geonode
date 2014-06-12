@@ -20,12 +20,17 @@
 
 import taggit
 from django import forms
+
+from mptt.forms import TreeNodeMultipleChoiceField
+
 from geonode.maps.models import Map
 from geonode.people.models import Profile
 from django.utils.translation import ugettext_lazy as _
+from modeltranslation.forms import TranslationModelForm
 
+from geonode.base.models import Region
 
-class MapForm(forms.ModelForm):
+class MapForm(TranslationModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}
     date.widget.widgets[1].attrs = {"class":"time"}
@@ -40,6 +45,10 @@ class MapForm(forms.ModelForm):
                                              queryset = Profile.objects.exclude(user=None))
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
+
+    regions = TreeNodeMultipleChoiceField(queryset=Region.objects.all(), level_indicator=u'___') 
+    regions.widget.attrs = {"size":20}
+
     class Meta:
         model = Map
         exclude = ('contacts', 'zoom', 'projection', 'center_x', 'center_y', 'uuid',
@@ -51,4 +60,10 @@ class MapForm(forms.ModelForm):
             'abstract': forms.Textarea(attrs={'cols': 40, 'rows': 10}),
         }
 
-
+    def __init__(self, *args, **kwargs):
+        super(MapForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            help_text = self.fields[field].help_text
+            self.fields[field].help_text = None
+            if help_text != '':
+                self.fields[field].widget.attrs.update({'class':'has-popover', 'data-content':help_text, 'data-placement':'right', 'data-container':'body', 'data-html':'true'})

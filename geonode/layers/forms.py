@@ -25,10 +25,13 @@ import taggit
 from django import forms
 from django.utils import simplejson as json
 from django.utils.translation import ugettext_lazy as _
+from modeltranslation.forms import TranslationModelForm
+
+from mptt.forms import TreeNodeMultipleChoiceField 
 
 from geonode.layers.models import Layer, Attribute
 from geonode.people.models import Profile 
-
+from geonode.base.models import Region
 
 class JSONField(forms.CharField):
     def clean(self, text):
@@ -39,7 +42,7 @@ class JSONField(forms.CharField):
             raise forms.ValidationError("this field must be valid JSON")
 
 
-class LayerForm(forms.ModelForm):
+class LayerForm(TranslationModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}
     date.widget.widgets[1].attrs = {"class":"time"}
@@ -55,6 +58,10 @@ class LayerForm(forms.ModelForm):
                                              queryset = Profile.objects.exclude(user=None))
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
+
+    regions = TreeNodeMultipleChoiceField(queryset=Region.objects.all(), level_indicator=u'___') 
+    regions.widget.attrs = {"size":20}
+
     class Meta:
         model = Layer
         exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename',
@@ -62,6 +69,15 @@ class LayerForm(forms.ModelForm):
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext',
                    'popular_count', 'share_count', 'thumbnail', 'default_style', 'styles')
+
+    def __init__(self, *args, **kwargs):
+        super(LayerForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            help_text = self.fields[field].help_text
+            self.fields[field].help_text = None
+            if help_text != '':
+                self.fields[field].widget.attrs.update({'class':'has-popover', 'data-content':help_text, 'data-placement':'right', 'data-container':'body', 'data-html':'true'})
+
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()
