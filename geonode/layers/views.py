@@ -40,7 +40,7 @@ from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm,
 from geonode.layers.models import Layer, Attribute
 from geonode.base.enumerations import CHARSETS
 
-from geonode.utils import default_map_config
+from geonode.utils import default_map_config, llbbox_to_mercator
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.layers.utils import file_upload
@@ -167,6 +167,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     bbox = list(layer_bbox[0:4])
     config = layer.attribute_config()
     config["srs"] = layer.srid
+    config["title"] = layer.title
+    config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
 
     if layer.storeType == "remoteStore":
         service = layer.service

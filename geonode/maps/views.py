@@ -38,7 +38,7 @@ from django.views.decorators.http import require_POST
 from geonode.layers.models import Layer
 from geonode.layers.views import _resolve_layer
 from geonode.maps.models import Map, MapLayer
-from geonode.utils import forward_mercator
+from geonode.utils import forward_mercator, llbbox_to_mercator
 from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
@@ -382,12 +382,17 @@ def new_map_config(request):
                     bbox[2] = min(bbox[2], layer_bbox[2])
                     bbox[3] = max(bbox[3], layer_bbox[3])
 
+                config = layer.attribute_config()
+                config["srs"] = layer.srid
+                config["title"] = layer.title
+                config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
+
                 if layer.storeType == "remoteStore":
                     service = layer.service
                     maplayer = MapLayer(map = map_obj,
                                         name = layer.typename,
                                         ows_url = layer.ows_url,
-                                        layer_params=json.dumps( layer.attribute_config()),
+                                        layer_params=json.dumps( config),
                                         visibility=True,
                                         source_params=json.dumps({
                                             "ptype":service.ptype,
@@ -399,7 +404,7 @@ def new_map_config(request):
                     map = map_obj,
                     name = layer.typename,
                     ows_url = layer.ows_url,
-                    layer_params=json.dumps(layer.attribute_config()),
+                    layer_params=json.dumps(config),
                     visibility = True
                 )
 

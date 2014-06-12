@@ -32,7 +32,7 @@
         {%  elif layer.ptype == "gxp_arcrestsource" %}
             tile_layer = L.esri.dynamicMapLayer('{{ layer.ows_url|safe }}', {
                 layers: '{{ layer.typename }}',
-                format: 'image/png',
+                format: 'png',
                 transparent: true,
                 'opacity':0.8
             });
