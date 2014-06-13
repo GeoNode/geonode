@@ -450,3 +450,4 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
    if not isinstance(body, basestring):
        body = json.dumps(body)
    return HttpResponse(body, content_type=content_type, status=status)
+

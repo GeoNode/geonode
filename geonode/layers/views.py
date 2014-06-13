@@ -210,7 +210,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         new_keywords = layer_form.cleaned_data['keywords']
 
         if new_poc is None:
-            if poc.user is None:
+            if poc is None:
                 poc_form = ProfileForm(request.POST, prefix="poc", instance=poc)
             else:
                 poc_form = ProfileForm(request.POST, prefix="poc")
@@ -218,7 +218,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                 new_poc = poc_form.save()
 
         if new_author is None:
-            if metadata_author.user is None:
+            if metadata_author is None:
                 author_form = ProfileForm(request.POST, prefix="author", 
                     instance=metadata_author)
             else:
