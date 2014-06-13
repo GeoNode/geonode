@@ -68,19 +68,6 @@ class LayersTest(TestCase):
     # - admin (pk=2)
     # - bobby (pk=1)
 
-    # Inherited
-    # - LEVEL_NONE = _none
-
-    # Layer
-    # - LEVEL_READ = layer_read
-    # - LEVEL_WRITE = resourcebase_readwrite
-    # - LEVEL_ADMIN = layer_admin
-
-    # Map
-    # - LEVEL_READ = map_read
-    # - LEVEL_WRITE = map_readwrite
-    # - LEVEL_ADMIN = map_admin
-
 
     # FIXME: Add a comprehensive set of permissions specifications that allow us
     # to test as many conditions as is possible/necessary
