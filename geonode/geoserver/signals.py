@@ -95,9 +95,9 @@ def geoserver_pre_save(instance, sender, **kwargs):
 
     gs_layer = gs_catalog.get_layer(instance.name)
 
-    if instance.poc and instance.poc.user:
-        gs_layer.attribution = str(instance.poc.user)
-        profile = Profile.objects.get(user=instance.poc.user)
+    if instance.poc and instance.poc:
+        gs_layer.attribution = str(instance.poc)
+        profile = Profile.objects.get(username=instance.poc.username)
         gs_layer.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
         #gs_layer should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
