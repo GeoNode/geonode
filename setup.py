@@ -99,6 +99,7 @@ setup(name='GeoNode',
         "django-extensions==1.2.5", # python-django-extensions
         "django-taggit==0.12", # python-django-taggit
         "django-mptt==0.6.1", # django-mptt
+        "django-guardian==1.2.0", #django-guardian
 
         ## Apps with packages provided in GeoNode's PPA on Launchpad.
         "pinax-theme-bootstrap==3.0a11",
