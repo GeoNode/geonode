@@ -20,7 +20,7 @@
 
 from django.conf.urls import patterns, url
 
-urlpatterns = patterns('geonode.contrib.services.views',
+urlpatterns = patterns('geonode.services.views',
     url(r'^$', 'services', name='services'),
     url(r'^register/$', 'register_service', name="register_service"),
     (r'^registerbytype/$', 'register_service_by_type'),

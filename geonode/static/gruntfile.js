@@ -120,7 +120,8 @@ module.exports = function(grunt) {
             'qunit/qunit/qunit.js',
             'angular/angular.js',
             'angular-leaflet-directive/dist/angular-leaflet-directive.min.js',
-            'bootstrap/dist/js/bootstrap.min.js'
+            'bootstrap/dist/js/bootstrap.min.js',
+            'esri-leaflet/dist/esri-leaflet.js'
           ]
         }]
       }
@@ -203,7 +204,8 @@ module.exports = function(grunt) {
             'lib/js/select2.js',
             'lib/js/bootstrap.min.js',
             'lib/js/angular.js',
-            'lib/js/angular-leaflet-directive.min.js'
+            'lib/js/angular-leaflet-directive.min.js',
+            'lib/js/esri-leaflet.js'
           ],
           'lib/js/require.js': ['lib/js/require.js'],
           'lib/js/text.js': ['lib/js/text.js'],
