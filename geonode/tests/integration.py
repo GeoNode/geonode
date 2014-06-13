@@ -101,14 +101,14 @@ class NormalUserTest(TestCase):
         his own layer despite not being a site administrator.
         """
 
-        from django.contrib.auth.models import User
+        from django.contrib.auth import get_user_model
 
         client = Client()
         client.login(username='norman', password='norman')
 
         #TODO: Would be nice to ensure the name is available before
         #running the test...
-        norman = User.objects.get(username="norman")
+        norman = get_user_model().objects.get(username="norman")
         saved_layer = file_upload(
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
              name="san_andres_y_providencia_poi_by_norman",

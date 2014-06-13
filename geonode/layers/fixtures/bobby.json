@@ -4,7 +4,7 @@
     "model": "people.Profile",
     "fields": {
        "username": "bobby",
-        "first_name": "",
+        "first_name": "bobby",
         "last_name": "",
         "is_active": true,
         "is_superuser": false,

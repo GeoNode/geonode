@@ -47,7 +47,7 @@ class SimpleTest(TestCase):
         # Test the  activity_item template tag
         template_tag = activity_item(Action.objects.all()[0])
 
-        self.assertEqual(template_tag.get('username'), action.actor.profile.name or action.actor.username)
+        self.assertEqual(template_tag.get('username'), action.actor.username)
         self.assertEqual(template_tag.get('object_name'), layer.name)
         self.assertEqual(template_tag.get('actor'), action.actor)
         self.assertEqual(template_tag.get('verb'), _('uploaded'))

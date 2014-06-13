@@ -120,7 +120,7 @@ def create_fixtures():
 def create_models(type = None):
     map_data, user_data, people_data, layer_data, document_data = create_fixtures()
     
-    u, _ = get_user_model().objects.get_or_create(username='admin',is_superuser=True)
+    u, _ = get_user_model().objects.get_or_create(username='admin',is_superuser=True, first_name='admin')
     u.set_password('admin')
     u.save()
     users = []

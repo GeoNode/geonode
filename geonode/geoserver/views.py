@@ -341,8 +341,8 @@ def resolve_user(request):
     }
 
     if acl_user and acl_user.is_authenticated():
-        resp['fullname'] = acl_user.profile.name
-        resp['email'] = acl_user.profile.email
+        resp['fullname'] = acl_user.first_name
+        resp['email'] = acl_user.email
     return HttpResponse(json.dumps(resp))
 
 
