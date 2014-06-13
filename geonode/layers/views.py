@@ -76,7 +76,7 @@ def _resolve_layer(request, typename, permission='layers.change_layer',
     """
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
-    service_typename = typename.split(":")
+    service_typename = typename.split(":",1)
     service = Service.objects.filter(name=service_typename[0])
 
     if service.count() > 0 and service[0].method != "C":
