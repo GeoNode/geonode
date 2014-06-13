@@ -1,5 +1,4 @@
 from django import template
-from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
@@ -24,7 +23,7 @@ def activity_item(action, **kwargs):
     actor = action.actor
     activity_class = 'activity'
     verb = action.verb
-    username = actor.profile.name or actor.username
+    username = actor.username
     target = action.target
     object_type = None
     object = action.action_object
