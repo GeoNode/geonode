@@ -1,0 +1,4 @@
+-e git://github.com/GeoNode/geonode-notification@41b1b9acbb4ba9f621c1adcdceef692144959b51#egg=django_notification-dev
+-e git://github.com/GeoNode/geonode-dialogos.git@5ab4b9cc81cfb61df29fe9787bef2c7e937f4c16#egg=dialogos-dev
+-e git://github.com/GeoNode/geonode-avatar.git@37df2fa2d79dbf25a89195561aa937164469f1ff#egg=geonode_avatar-dev
+-e git://github.com/GeoNode/geonode-user-messages.git@8faeaaf1954366bd2017b52ba1df33f08f800706#egg=geonode_user_messages-dev
