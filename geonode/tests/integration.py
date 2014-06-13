@@ -34,6 +34,7 @@ from django.test import Client
 from django.test import LiveServerTestCase as TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags import staticfiles
+from django.contrib.auth import get_user_model
 
 from geoserver.catalog import FailedRequestError, UploadError
 
@@ -53,7 +54,6 @@ from geonode.maps.utils import *
 from geonode.geoserver.helpers import cascading_delete, fixup_style
 from geonode.geoserver.signals import gs_catalog
 
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
 import gisdata
 
@@ -100,8 +100,6 @@ class NormalUserTest(TestCase):
         """ Try uploading a layer and verify that the user can administrate
         his own layer despite not being a site administrator.
         """
-
-        from django.contrib.auth import get_user_model
 
         client = Client()
         client.login(username='norman', password='norman')
@@ -554,7 +552,7 @@ class GeoNodeThumbnailTest(TestCase):
 
         #TODO: Would be nice to ensure the name is available before
         #running the test...
-        norman = User.objects.get(username="norman")
+        norman = get_user_model().objects.get(username="norman")
         saved_layer = file_upload(
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
              name="san_andres_y_providencia_poi_by_norman",
@@ -575,7 +573,7 @@ class GeoNodeThumbnailTest(TestCase):
 
         #TODO: Would be nice to ensure the name is available before
         #running the test...
-        norman = User.objects.get(username="norman")
+        norman = get_user_model().objects.get(username="norman")
         saved_layer = file_upload(
              os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
              name="san_andres_y_providencia_poi_by_norman",
@@ -610,7 +608,6 @@ class GeoNodeMapPrintTest(TestCase):
         
         if 'geonode.middleware.PrintProxyMiddleware' in settings.MIDDLEWARE_CLASSES:
             # STEP 1: Import a layer
-            from django.contrib.auth.models import User
             from geonode.maps.models import Map
 
             client = Client()
@@ -618,7 +615,7 @@ class GeoNodeMapPrintTest(TestCase):
 
             #TODO: Would be nice to ensure the name is available before
             #running the test...
-            norman = User.objects.get(username="norman")
+            norman = get_user_model().objects.get(username="norman")
             saved_layer = file_upload(
                  os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_poi.shp"),
                  name="san_andres_y_providencia_poi_by_norman",
@@ -626,7 +623,7 @@ class GeoNodeMapPrintTest(TestCase):
                  overwrite=True,
             )
             # Set the layer private
-            saved_layer.set_gen_level(ANONYMOUS_USERS, saved_layer.LEVEL_NONE)
+            saved_layer.set_permissions({'users': {'AnonymousUser': ['view_resourcebase']}})
 
             url = reverse('layer_metadata', args=[saved_layer.typename])
 
