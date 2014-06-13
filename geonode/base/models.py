@@ -16,6 +16,8 @@ from django.contrib.auth import get_user_model
 
 from guardian.shortcuts import get_perms
 
+from mptt.models import MPTTModel, TreeForeignKey
+
 from polymorphic import PolymorphicModel, PolymorphicManager
 from agon_ratings.models import OverallRating
 
@@ -101,11 +103,18 @@ class SpatialRepresentationType(models.Model):
     class Meta:
         ordering = ("identifier",)
         verbose_name_plural = 'Metadata Spatial Representation Types'
-        
-class Region(models.Model):
+       
 
-    code = models.CharField(max_length=50)
+class RegionManager(models.Manager):
+    def get_by_natural_key(self, code):
+        return self.get(code=code)
+ 
+class Region(MPTTModel):
+    #objects = RegionManager()
+
+    code = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=255)
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 
     def __unicode__(self):
         return self.name
@@ -113,6 +122,9 @@ class Region(models.Model):
     class Meta:
         ordering = ("name",)
         verbose_name_plural = 'Metadata Regions'
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
         
 class RestrictionCodeType(models.Model):
     """

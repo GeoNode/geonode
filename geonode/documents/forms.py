@@ -8,13 +8,17 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.forms import HiddenInput, TextInput
+from modeltranslation.forms import TranslationModelForm
+
+from mptt.forms import TreeNodeMultipleChoiceField
 
 from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
+from geonode.base.models import Region
 
-class DocumentForm(forms.ModelForm):
+class DocumentForm(TranslationModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
     date.widget.widgets[0].attrs = {"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}
     date.widget.widgets[1].attrs = {"class":"time"}
@@ -25,13 +29,17 @@ class DocumentForm(forms.ModelForm):
 
     poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                  label = "Point Of Contact", required=False,
-                                 queryset = Profile.objects.all())
+                                 queryset = Profile.objects.exclude(username='AnonymousUser'))
 
     metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                              label = "Metadata Author", required=False,
-                                             queryset = Profile.objects.all())
+                                             queryset = Profile.objects.exclude(username='AnonymousUser'))
+
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
+
+    regions = TreeNodeMultipleChoiceField(queryset=Region.objects.all(), level_indicator=u'___')
+    regions.widget.attrs = {"size":20}
     
     def __init__(self, *args, **kwargs):
         super(DocumentForm, self).__init__(*args, **kwargs)
@@ -50,6 +58,12 @@ class DocumentForm(forms.ModelForm):
         if self.instance.content_type:
             self.fields['resource'].initial = 'type:%s-id:%s' % (
                 self.instance.content_type.id, self.instance.object_id)
+
+        for field in self.fields:
+            help_text = self.fields[field].help_text
+            self.fields[field].help_text = None
+            if help_text != '':
+                self.fields[field].widget.attrs.update({'class':'has-popover', 'data-content':help_text, 'data-placement':'right', 'data-container':'body', 'data-html':'true'})
     
     def save(self, *args, **kwargs):
         contenttype_id = None
@@ -74,7 +88,7 @@ class DocumentForm(forms.ModelForm):
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext', 
                    'content_type', 'object_id', 'doc_file', 'extension', 
-                   'popular_count', 'share_count', 'thumbnail', 'doc_url')
+                   'popular_count', 'share_count', 'thumbnail', 'doc_url'),
 
 class DocumentDescriptionForm(forms.Form):
     title = forms.CharField(300)
@@ -118,7 +132,7 @@ class DocumentReplaceForm(forms.ModelForm):
         return doc_file
 
 
-class DocumentCreateForm(forms.ModelForm):
+class DocumentCreateForm(TranslationModelForm):
     """
     The document upload form.
     """

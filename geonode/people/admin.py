@@ -22,12 +22,16 @@ from django.contrib import admin
 from geonode.people.models import Profile
 from geonode.base.models import ContactRole
 
+import autocomplete_light
+
 class ContactRoleInline(admin.TabularInline):
     model = ContactRole
+    form = autocomplete_light.modelform_factory(ContactRole)
 
 class ProfileAdmin(admin.ModelAdmin):
     inlines = [ContactRoleInline]
     list_display = ('id', 'username', 'organization',)
     search_fields = ('username','organization', 'profile', )
+    autocomplete_light.modelform_factory(Profile)
 
 admin.site.register(Profile, ProfileAdmin)
