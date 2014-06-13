@@ -26,6 +26,19 @@
 </div>
 
 <div class="row">
+    <div class="col-md-8">
+        {% if layer.storeType == "remoteStore" %}
+            <h4>{% trans "External service layer" %}</h4>
+            <ul>
+                <li>{% trans "Source:" %}<a href="/services/{{layer.service.id}}">{{ layer.service.title }}</a></li>
+                <li>{% trans "Type:" %}{{ layer.service.type }}</li>
+            </ul>
+        {% endif %}
+    </div>
+</div>
+
+
+<div class="row">
   <div class="col-md-8">
 
     <div id="embedded_map" class="mrg-btm">
@@ -107,11 +120,11 @@
   <div class="col-md-4">
 
     <ul class="list-group">
-
+      {% if layer.storeType != "remoteStore" %}
       <li class="list-group-item">
         <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
       </li>
-
+      {% endif %}
     <div class="modal fade" id="download-layer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -175,13 +188,13 @@
           </div>
           <div class="modal-body">
             <ul>
-              <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %}</a></li>            
+              <li><a href="{% url "layer_metadata" layer.service_typename %}">{% trans "Edit Metadata" %}</a></li>
               {% if GEOSERVER_BASE_URL %}
-              <li><a href="{% url "layer_style_manage" layer.typename %}">{% trans "Manage Styles" %}</a></li>
+              <li><a href="{% url "layer_style_manage" layer.service_typename %}">{% trans "Manage Styles" %}</a></li>
               <li><a class="style-edit" href="#">{% trans "Edit Styles" %}</a></li>
               {% endif %}
-              <li><a href="{% url "layer_replace" layer.typename %}">{% trans "Replace this Layer" %}</a></li>
-              <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %}</a></li>
+              <li><a href="{% url "layer_replace" layer.service_typename %}">{% trans "Replace this Layer" %}</a></li>
+              <li><a href="{% url "layer_remove" layer.service_typename %}">{% trans "Remove this Layer" %}</a></li>
             <ul>
           </div>
           <div class="modal-footer">
@@ -220,7 +233,7 @@
     <li class="list-group-item">
       <h4>{% trans "Create a map using this layer" %}</h4>
       <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>
-        <a href="{% url "new_map" %}?layer={{layer.typename}}" class="btn btn-default btn-block">{% trans "Create a Map" %}</a>
+        <a href="{% url "new_map" %}?layer={{layer.service_typename}}" class="btn btn-default btn-block">{% trans "Create a Map" %}</a>
     </li>
 
     {% if documents.count > 0 %}
