@@ -3,7 +3,7 @@ from django.conf import settings
 from django.db import models
 from geoserver.catalog import FailedRequestError
 from taggit.managers import TaggableManager
-from geonode.security.models import PermissionLevelMixin
+from geonode.base.models import ResourceBase
 from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.contrib.services.enumerations import SERVICE_TYPES, SERVICE_METHODS, GXP_PTYPES
 from geonode.layers.models import Layer 
@@ -23,7 +23,7 @@ logger = logging.getLogger("geonode.contrib.services")
 """
 geonode.contrib.services
 """
-class Service(models.Model, PermissionLevelMixin):
+class Service(ResourceBase):
     """
     Service Class to represent remote Geo Web Services
     """
@@ -33,10 +33,7 @@ class Service(models.Model, PermissionLevelMixin):
     base_url = models.URLField(unique=True,db_index=True) # with service, version and request etc stripped off
     version = models.CharField(max_length=10, null=True, blank=True)
     name = models.CharField(max_length=255, unique=True,db_index=True) #Should force to slug?
-    title = models.CharField(max_length=255, null=True, blank=True)
     description = models.CharField(max_length=255, null=True, blank=True)
-    abstract = models.TextField(null=True, blank=True)
-    keywords = TaggableManager(_('keywords'), blank=True)
     online_resource = models.URLField(False, null=True, blank=True)
     fees = models.CharField(max_length=1000, null=True, blank=True)
     access_contraints = models.CharField(max_length=255, null=True, blank=True)
@@ -47,13 +44,11 @@ class Service(models.Model, PermissionLevelMixin):
     workspace_ref = models.URLField(False, null=True, blank=True)
     store_ref = models.URLField(null=True, blank=True)
     resources_ref = models.URLField(null = True, blank = True)
-    profiles = models.ManyToManyField(Profile, through='ServiceProfileRole')
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_service')
+    profiles = models.ManyToManyField(settings.AUTH_USER_MODEL, through='ServiceProfileRole')
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     first_noanswer = models.DateTimeField(null=True, blank=True)
     noanswer_retries = models.PositiveIntegerField(null=True, blank=True)
-    uuid = models.CharField(max_length=36, null=True, blank=True)
     external_id = models.IntegerField(null=True, blank=True)
     parent = models.ForeignKey('services.Service', null=True, blank=True, related_name='service_set')
     layers = models.ManyToManyField(Layer, through='ServiceLayer')
@@ -71,33 +66,9 @@ class Service(models.Model, PermissionLevelMixin):
     def get_absolute_url(self):
         return '/services/%i' % self.id
 
-    class Meta:
-        # custom permissions,
-        # change and delete are standard in django
-        permissions = (('view_service', 'Can view'),
-                       ('change_service_permissions', "Can change permissions"), )
+    class Meta(ResourceBase.Meta):
+        pass
 
-    # Permission Level Constants
-    # LEVEL_NONE inherited
-    LEVEL_READ  = 'service_readonly'
-    LEVEL_WRITE = 'service_readwrite'
-    LEVEL_ADMIN = 'service_admin'
-
-
-    def set_default_permissions(self):
-        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
-        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
-        #self.set_gen_level(CUSTOM_GROUP_USERS, self.LEVEL_READ)
-
-        # remove specific user permissions
-        current_perms =  self.get_all_level_info()
-        for username in current_perms['users'].keys():
-            user = User.objects.get(username=username)
-            self.set_user_level(user, self.LEVEL_NONE)
-
-        # assign owner admin privs
-        if self.owner:
-            self.set_user_level(self.owner, self.LEVEL_ADMIN)
 
 class ServiceProfileRole(models.Model):
     """
