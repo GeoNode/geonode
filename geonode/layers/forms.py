@@ -22,8 +22,6 @@ import os
 import tempfile
 import taggit
 
-from re import escape
-
 from django import forms
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
@@ -34,30 +32,8 @@ from mptt.forms import TreeNodeMultipleChoiceField
 from geonode.layers.models import Layer, Attribute
 from geonode.people.models import Profile 
 from geonode.base.models import Region
-from geonode.base.models import TopicCategory
 
 import autocomplete_light
-
-class LayerCategoryChoiceField(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" data-content="' + obj.description + '" trigger="hover">' +  obj.gn_description + '</span>' 
-
-
-class LayerCategoryForm(forms.Form):
-    category_choice_field = LayerCategoryChoiceField(required=False, label = '*' + _('Category'), empty_label=None,
-        queryset = TopicCategory.objects.extra(order_by = ['description']))
-
-    def clean(self):
-        cleaned_data = self.data
-        ccf_data = cleaned_data.get("category_choice_field")
-
-
-        if not ccf_data:
-            msg = _("Category is required.")
-            self._errors = self.error_class([msg])
-
-        # Always return the full collection of cleaned data.
-        return cleaned_data
 
 class JSONField(forms.CharField):
     def clean(self, text):
