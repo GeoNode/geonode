@@ -43,7 +43,6 @@ from geonode.layers.forms import JSONField, LayerUploadForm
 from geonode.layers.utils import layer_type, get_files, get_valid_name, \
                                 get_valid_layer_name
 from geonode.people.utils import get_valid_user
-from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.base.models import TopicCategory
 from geonode.base.populate_test_data import create_models
 from .populate_layers_data import create_layer_data

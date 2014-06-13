@@ -37,7 +37,6 @@ def resource_urls(request):
         DEBUG_STATIC=getattr(settings, "DEBUG_STATIC", False),
         PROXY_URL=getattr(settings, 'PROXY_URL', '/proxy/?url='),
         SOCIAL_BUTTONS=getattr(settings, 'SOCIAL_BUTTONS', True),
-        USE_SERVICES = 'geonode.contrib.services' in settings.INSTALLED_APPS,
         HAYSTACK_SEARCH=getattr(settings, 'HAYSTACK_SEARCH', False),
         CLIENT_RESULTS_LIMIT=getattr(settings, 'CLIENT_RESULTS_LIMIT', 10),
         LICENSES_ENABLED = getattr(settings, 'LICENSES', dict()).get('ENABLED', False),

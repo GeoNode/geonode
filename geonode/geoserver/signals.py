@@ -24,7 +24,6 @@ from geonode.base.models import Thumbnail
 from geonode.layers.models import Layer
 from geonode.layers.utils import create_thumbnail
 from geonode.people.models import Profile
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 
 from geoserver.catalog import FailedRequestError
 from geoserver.layer import Layer as GsLayer
@@ -199,10 +198,9 @@ def geoserver_post_save(instance, sender, **kwargs):
     elif instance.storeType == 'coverageStore':
         #FIXME(Ariel): This works for public layers, does it work for restricted too?
         # would those end up with no geotiff links, like, forever?
-        permissions = {}
-        permissions['anonymous'] = instance.get_gen_level(ANONYMOUS_USERS)
-        permissions['authenticated'] = instance.get_gen_level(AUTHENTICATED_USERS)
-        instance.set_gen_level(ANONYMOUS_USERS,'layer_readonly')
+        permissions = instance.get_all_level_info()
+       
+        instance.set_permissions({'users':{'AnonymousUser': ['view_resourcebase']}})
 
         try:
             #Potentially 3 dimensions can be returned by the grid if there is a z
@@ -229,8 +227,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                 )
                             )
 
-        instance.set_gen_level(ANONYMOUS_USERS,permissions['anonymous'])
-        instance.set_gen_level(AUTHENTICATED_USERS,permissions['authenticated'])
+        instance.set_permissions(permissions)
 
     kml_reflector_link_download = ogc_server_settings.public_url + "wms/kml?" + urllib.urlencode({
         'layers': instance.typename.encode('utf-8'),

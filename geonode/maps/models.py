@@ -40,7 +40,6 @@ from guardian.shortcuts import get_anonymous_user
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
 from geonode.maps.signals import map_changed_signal
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config

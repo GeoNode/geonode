@@ -28,7 +28,7 @@ from .models import Service
 
 
 class ServicesTests(TestCase):
-    """Tests geonode.contrib.services app/module
+    """Tests geonode.services app/module
     """
 
     fixtures = ['initial_data.json', 'bobby.json', 'people_data.json']

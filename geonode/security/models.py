@@ -33,9 +33,6 @@ from guardian.shortcuts import assign_perm, get_perms, remove_perm, \
     get_groups_with_perms, get_users_with_perms
 from guardian.utils import get_anonymous_user
 
-from geonode.security.enumerations import GENERIC_GROUP_NAMES
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
-
 ADMIN_PERMISSIONS = [
     'view_resourcebase',
     'change_resourcebase',

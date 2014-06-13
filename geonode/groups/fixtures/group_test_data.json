@@ -33,7 +33,7 @@
         "fields": {
             "date_joined": "2011-06-09 15:15:27", 
             "email": "ad@m.in", 
-            "first_name": "", 
+            "first_name": "admin", 
             "groups": [], 
             "is_active": true, 
             "is_staff": true, 

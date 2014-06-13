@@ -12,7 +12,6 @@ from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.people.forms import ProfileForm
 
 from geonode.documents.models import Document

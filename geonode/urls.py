@@ -91,12 +91,8 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^groups/', include('geonode.groups.urls')),
     (r'^documents/', include('geonode.documents.urls')),
+    (r'^services/', include('geonode.services.urls')),
     url(r'', include(api.urls)),
-    )
-
-if "geonode.contrib.services" in settings.INSTALLED_APPS:
-    urlpatterns += patterns('',
-        (r'^services/', include('geonode.contrib.services.urls')),
     )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:

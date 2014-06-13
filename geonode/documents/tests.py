@@ -20,7 +20,6 @@ from .forms import DocumentCreateForm
 
 from geonode.maps.models import Map
 from geonode.documents.models import Document
-from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.base.populate_test_data import create_models
 
 

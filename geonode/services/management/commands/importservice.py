@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from optparse import make_option
-from geonode.contrib.services.models import Service
-from geonode.contrib.services.views import _register_cascaded_service, _register_indexed_service, \
+from geonode.services.models import Service
+from geonode.services.views import _register_cascaded_service, _register_indexed_service, \
     _register_harvested_service,_register_cascaded_layers,_register_indexed_layers
 import json
 from geonode.people.utils import get_valid_user
