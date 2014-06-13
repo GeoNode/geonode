@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.conf import settings
 
+import autocomplete_light
 from modeltranslation.admin import TranslationAdmin
 
 from geonode.base.models import (TopicCategory, SpatialRepresentationType,
@@ -25,6 +26,8 @@ class LicenseAdmin(MediaTranslationAdmin):
 class ResourceBaseAdmin(admin.ModelAdmin):
     list_display = ('id','title', 'date', 'category')
     list_display_links = ('id',)
+
+    form = autocomplete_light.modelform_factory(ResourceBase)
 
 class TopicCategoryAdmin(MediaTranslationAdmin):
     model = TopicCategory
@@ -85,6 +88,7 @@ class ContactRoleAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     list_display = ('id','contact', 'resource', 'role')
     list_editable = ('contact', 'resource', 'role')
+    form = autocomplete_light.modelform_factory(ContactRole)
 
 class LinkAdmin(admin.ModelAdmin):
     model = Link
@@ -92,11 +96,13 @@ class LinkAdmin(admin.ModelAdmin):
     list_display = ('id', 'resource', 'extension', 'link_type', 'name', 'mime')
     list_filter = ('resource', 'extension', 'link_type', 'mime')
     search_fields = ('name', 'resource__title',)
+    form = autocomplete_light.modelform_factory(Link)
     
 class ThumbnailAdmin(admin.ModelAdmin):
     model = Thumbnail
     list_display = ('get_title', 'get_geonode_type', 'thumb_file', 'get_thumb_url',)
     search_fields = ('resourcebase__title',)
+    form = autocomplete_light.modelform_factory(Thumbnail)
     
     def get_title(self, obj):
         rb = obj.resourcebase_set.all()[0] # should be always just one!

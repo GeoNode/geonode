@@ -34,6 +34,7 @@ class DocumentForm(TranslationModelForm):
     metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                              label = "Metadata Author", required=False,
                                              queryset = Profile.objects.exclude(user=None))
+
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
 
@@ -87,7 +88,7 @@ class DocumentForm(TranslationModelForm):
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext', 
                    'content_type', 'object_id', 'doc_file', 'extension', 
-                   'popular_count', 'share_count', 'thumbnail', 'doc_url')
+                   'popular_count', 'share_count', 'thumbnail', 'doc_url'),
 
 class DocumentDescriptionForm(forms.Form):
     title = forms.CharField(300)

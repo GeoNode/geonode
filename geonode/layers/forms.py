@@ -33,6 +33,8 @@ from geonode.layers.models import Layer, Attribute
 from geonode.people.models import Profile 
 from geonode.base.models import Region
 
+import autocomplete_light
+
 class JSONField(forms.CharField):
     def clean(self, text):
         text = super(JSONField, self).clean(text)
@@ -51,11 +53,14 @@ class LayerForm(TranslationModelForm):
 
     poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                  label = "Point Of Contact", required=False,
-                                 queryset = Profile.objects.exclude(user=None))
+                                 queryset = Profile.objects.exclude(user=None),
+                                 widget=autocomplete_light.ChoiceWidget('UserAutocomplete'))
 
     metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                              label = "Metadata Author", required=False,
-                                             queryset = Profile.objects.exclude(user=None))
+                                             queryset = Profile.objects.exclude(user=None),
+                                 widget=autocomplete_light.ChoiceWidget('UserAutocomplete'))
+
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
 
@@ -69,6 +74,7 @@ class LayerForm(TranslationModelForm):
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext',
                    'popular_count', 'share_count', 'thumbnail', 'default_style', 'styles')
+        widgets = autocomplete_light.get_widgets_dict(Layer)
 
     def __init__(self, *args, **kwargs):
         super(LayerForm, self).__init__(*args, **kwargs)
