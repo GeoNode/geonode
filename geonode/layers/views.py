@@ -36,7 +36,8 @@ from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
 from geonode.services.models import Service
 
-from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm, LayerCategoryForm
+from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
+from geonode.base.forms import CategoryForm
 from geonode.layers.models import Layer, Attribute
 from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
@@ -226,12 +227,12 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     if request.method == "POST":
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(request.POST, instance=layer, prefix="layer_attribute_set", queryset=Attribute.objects.order_by('display_order'))
-        category_form = LayerCategoryForm(request.POST,prefix="category_choice_field",
+        category_form = CategoryForm(request.POST,prefix="category_choice_field",
             initial=int(request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(instance=layer, prefix="layer_attribute_set", queryset=Attribute.objects.order_by('display_order'))
-        category_form = LayerCategoryForm(prefix="category_choice_field", initial=topic_category.id if topic_category else None)
+        category_form = CategoryForm(prefix="category_choice_field", initial=topic_category.id if topic_category else None)
 
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid() and category_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']
