@@ -166,9 +166,12 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # assert False, str(layer_bbox)
     bbox = list(layer_bbox[0:4])
     config = layer.attribute_config()
+
+    #Add required parameters for GXP lazy-loading
     config["srs"] = layer.srid
     config["title"] = layer.title
-    config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
+    config["bbox"] =  [float(coord) for coord in bbox] \
+        if layer.srid == "EPSG:4326" else llbbox_to_mercator([float(coord) for coord in bbox])
 
     if layer.storeType == "remoteStore":
         service = layer.service

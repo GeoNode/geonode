@@ -456,6 +456,7 @@ def _register_cascaded_layers(service, owner=None):
                     resource = cat.create_wfslayer(cascade_ws, store, layer)
 
                 if resource:
+                    bbox = resource.latlon_bbox
                     cascaded_layer, created = Layer.objects.get_or_create(
                         typename = "%s:%s" % (cascade_ws.name, resource.name),
                         service = service,
@@ -467,7 +468,11 @@ def _register_cascaded_layers(service, owner=None):
                             "title": resource.title or 'No title provided',
                             "abstract": resource.abstract or 'No abstract provided',
                             "owner": None,
-                            "uuid": str(uuid.uuid4())
+                            "uuid": str(uuid.uuid4()),
+                            "bbox_x0": bbox[0],
+                            "bbox_x1": bbox[1],
+                            "bbox_y0": bbox[2],
+                            "bbox_y1": bbox[3],
                         })
 
 

@@ -16,7 +16,7 @@
     <ul class="form">
         {{ create_service_form.as_ul }}
     </ul>
-    <div align="center"><p><input type="submit" class="submit_btn" value="{% trans "Create" %}" /></p></div>
+    <div align="center"><p><input type="submit" class="submit_btn" id="submit_button" value="{% trans "Create" %}" /></p></div>
     </form>
 
     <div id="responseDiv" style="display:none;">
@@ -36,21 +36,31 @@
 <script type="text/javascript">
     $( document ).ready(function() {
         $("#service_register_form").submit(function(e) {
-            $("#responseDiv").hide();
+            $("#responseDiv").html("Importing service, please wait...").show();
             $(".result").remove();
             $("#tableDiv").hide();
             $("#dataTable").html("");
             $(".error").html("");
-
+            $("#submit_button").prop("disabled",true);
             e.preventDefault();
             var url = $("#service_register_form").attr( "action" );
+
             $.ajax({
                 type: "POST",
                 url: url,
                 dataType: "json",
                 data: $("#service_register_form").serialize(), // serializes the form's elements.
+                progress: function(jqXHR, progressEvent) {
+                    if (progressEvent.lengthComputable) {
+                        console.log("Importing service and layers - " + (Math.round(progressEvent.loaded / progressEvent.total * 100)) + "%");
+                    } else {
+                        console.log("Importing service and layers...");
+                    }
+                },
                 success: function(data)
                 {
+                    $("#submit_button").prop("disabled",false);
+                    $("#responseDiv").html("");
                     for (var item in data) {
                         if (data[item].available_layers) {
                             $.each(data[item].available_layers,function(i,row){
@@ -71,9 +81,9 @@
                         }
                         $("#responseDiv").show();
                     }
-
                 },
                 error: function(data) {
+                    $("#submit_button").prop("disabled",true);
                     $(".error").html(data.responseText);
                     $(".error").show();
                 }
