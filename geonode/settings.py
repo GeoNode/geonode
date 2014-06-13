@@ -212,6 +212,7 @@ INSTALLED_APPS = (
     'leaflet',
     'django_extensions',
     #'haystack',
+    'autocomplete_light',
     'mptt',
     'modeltranslation',
 
