@@ -154,21 +154,7 @@
       {% include "_permissions_form.html" %}
       {% endif %}
 
-      <li class="list-group-item">
-        <h4>{% trans "About" %}</h4>
-        <p>{% trans "Document Owner" %}</p>
-        {% with resource.owner.profile as profile %}
-          {% include "people/_profile_about_item.html" %}
-        {% endwith %}
-        <p>{% trans "Point of Contact" %}</p>
-        {% with resource.poc as profile %}
-          {% include "people/_profile_about_item.html" %}
-        {% endwith %}
-        <p>{% trans "Metadata Author" %}</p>
-        {% with resource.metadata_author as profile %}
-          {% include "people/_profile_about_item.html" %}
-        {% endwith %}
-      </li>
+      {% include "base/_resourcebase_contact_snippet.html" %}
 
     </ul>
   </div>
