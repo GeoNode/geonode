@@ -1,8 +1,8 @@
 from celery.schedules import crontab
 from celery.task import task, periodic_task
 from django.conf import settings
-from geonode.contrib.services.models import WebServiceHarvestLayersJob, WebServiceRegistrationJob
-from geonode.contrib.services.views import update_layers, register_service_by_type, _register_indexed_layers
+from geonode.services.models import WebServiceHarvestLayersJob, WebServiceRegistrationJob
+from geonode.services.views import update_layers, register_service_by_type, _register_indexed_layers
 from django.core.mail import send_mail
 
 @periodic_task(run_every=crontab(minute=settings.SERVICE_UPDATE_INTERVAL))

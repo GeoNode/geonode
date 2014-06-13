@@ -16,7 +16,7 @@ Ext.onReady(function() {
 {% if can_change_permissions %}
        new GeoNode.WorldMapPermissionsEditor({
                 renderTo: "permissions_form",
-                submitTo: "{% url "geonode.contrib.services.views.ajax_service_permissions" service.id %}",
+                submitTo: "{% url "geonode.services.views.ajax_service_permissions" service.id %}",
                 userLookup: "{% url "geonode.views.ajax_lookup" %}",
                 customGroup: "{{ customGroup }}",
                 permissions: {{ permissions_json }},
@@ -28,7 +28,7 @@ Ext.onReady(function() {
         },
         listeners: {
             updated: function(perms) {
-                var submitTo = "{% url "geonode.contrib.services.views.ajax_service_permissions" service.id %}";
+                var submitTo = "{% url "geonode.services.views.ajax_service_permissions" service.id %}";
                 Ext.Ajax.request({ url: submitTo, jsonData: perms.writePermissions() });
             }
         }

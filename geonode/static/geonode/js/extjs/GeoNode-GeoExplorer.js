@@ -348,16 +348,38 @@ GeoNode.plugins.LayerInfo = Ext.extend(gxp.plugins.Tool, {
             iconCls: this.iconCls,
             disabled: true,
             handler: function() {
-                // TODO is there a way to get this from a template variable?
-                var url = "/layers/" + this.target.selectedLayer.get("name");
-                window.open(url);
+                if (this.link) {
+                    window.open(this.link);
+                }
             },
             scope: this
         }]);
         var layerInfoAction = actions[0];
 
         this.target.on("layerselectionchange", function(record) {
-            layerInfoAction.setDisabled(!record || !record.get('restUrl'));
+            var remote=null;
+            if (record) {
+                if (record.get("source_params")) {
+                    remote = record.get("source_params").name;
+                }
+                else {
+                    var store = this.target.sources[record.get("source")];
+                    if (store && store["name"]){
+                        remote = store["name"];
+                    }
+                }
+                // TODO is there a way to get this from a template variable?
+                var layerid = (remote? remote + ":" : "") + this.target.selectedLayer.get("name");
+                if (record && record.getLayer() instanceof OpenLayers.Layer.ArcGIS93Rest) {
+                    layerid = layerid.replace("show:","");
+                }
+
+                this.link =  "/layers/" + layerid;
+            }
+
+            layerInfoAction.setDisabled(!record || (!record.get('restUrl') && !remote));
+
+
         }, this);
         return actions;
     }

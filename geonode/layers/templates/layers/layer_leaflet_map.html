@@ -12,20 +12,34 @@
 <script type="text/javascript">
     window.addEventListener("map:init", function (e) {
         var map = e.detail.map;
-
         {% if layer.bbox_string %}
         zoom_to_box(map, [{{ layer.bbox_string }}]);
         {% endif %}
 
         {% if layer.get_tiles_url %}
-        var tile_layer = L.tileLayer("{{ layer.get_tiles_url|safe }}",
+        tile_layer = L.tileLayer("{{ layer.get_tiles_url|safe }}",
         {
          'opacity':0.8
         });
-        map.layerscontrol.addOverlay(tile_layer,"{{ layer.title }}"); 
-        map.addLayer(tile_layer);
+        {%  elif layer.ptype == "gxp_wmscsource"  %}
+            tile_layer = L.tileLayer.wms('{{ layer.ows_url|safe }}', {
+                layers: '{{ layer.typename }}',
+                format: 'image/png',
+                transparent: true,
+                'opacity':0.8
+            });
+        {%  elif layer.ptype == "gxp_arcrestsource" %}
+            tile_layer = L.esri.dynamicMapLayer('{{ layer.ows_url|safe }}', {
+                layers: '{{ layer.typename }}',
+                format: 'png',
+                transparent: true,
+                'opacity':0.8
+            });
         {% endif %}
-
+        if (tile_layer != null) {
+            map.layerscontrol.addOverlay(tile_layer,"{{ layer.title }}");
+            map.addLayer(tile_layer);
+        }
     });
     function zoom_to_box(map, bbox){
         var bounds = [
