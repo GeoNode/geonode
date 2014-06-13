@@ -43,7 +43,6 @@ from geonode.utils import default_map_config
 from geonode.utils import resolve_object
 from geonode.utils import http_client
 from geonode.maps.forms import MapForm
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.base.models import ContactRole

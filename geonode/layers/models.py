@@ -122,8 +122,8 @@ class Layer(ResourceBase):
 
     @property
     def ows_url(self):
-        if self.storeType == "remoteStore" and "geonode.contrib.services" in settings.INSTALLED_APPS:
-            from geonode.contrib.services.models import ServiceLayer
+        if self.storeType == "remoteStore":
+            from geonode.services.models import ServiceLayer
             return ServiceLayer.objects.filter(layer__id=self.id)[0].service.base_url
         else:
             return settings.OGC_SERVER['default']['LOCATION'] + "wms"

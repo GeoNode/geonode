@@ -48,11 +48,10 @@ from arcrest import Folder as ArcFolder, MapService as ArcMapService
 
 from geoserver.catalog import Catalog, FailedRequestError
 
-from geonode.contrib.services.models import Service, Layer, ServiceLayer, WebServiceHarvestLayersJob, WebServiceRegistrationJob
+from geonode.services.models import Service, Layer, ServiceLayer, WebServiceHarvestLayersJob, WebServiceRegistrationJob
 from geonode.security.views import _perms_info
 from geonode.utils import bbox_to_wkt, json_response
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.contrib.services.forms import CreateServiceForm, ServiceLayerFormSet, ServiceForm
+from geonode.services.forms import CreateServiceForm, ServiceLayerFormSet, ServiceForm
 from geonode.utils import llbbox_to_mercator, mercator_to_llbbox, http_client
 from geonode.layers.utils import create_thumbnail
 from django.db import transaction

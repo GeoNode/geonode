@@ -12,7 +12,6 @@ from django.contrib.contenttypes import generic
 from django.contrib.staticfiles import finders
 from django.utils.translation import ugettext_lazy as _
 
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, Thumbnail, Link
 from geonode.maps.signals import map_changed_signal

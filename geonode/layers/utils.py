@@ -500,7 +500,7 @@ def create_thumbnail(instance, thumbnail_remote_url):
     image = None
 
     if valid_x and valid_y:
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+        Link.objects.get_or_create(resource= instance.get_self_resource(),
                         url=thumbnail_remote_url,
                         defaults=dict(
                             extension='png',

@@ -169,9 +169,10 @@ GEONODE_APPS = (
     'geonode.documents',
     'geonode.api',
     'geonode.groups',
+    'geonode.services',
 
     # GeoNode Contrib Apps
-    'geonode.contrib.services',
+    
     #'geonode.contrib.dynamic',
 
     # GeoServer Apps
@@ -314,11 +315,6 @@ MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # This middleware allows to print private layers for the users that have 
-    # the permissions to view them.
-    # It sets temporary the involved layers as public before restoring the permissions.
-    # Beware that for few seconds the involved layers are public there could be risks.
-    #'geonode.geoserver.middleware.PrintProxyMiddleware',
 )
 
 
