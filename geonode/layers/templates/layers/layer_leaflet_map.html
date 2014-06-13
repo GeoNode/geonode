@@ -12,7 +12,6 @@
 <script type="text/javascript">
     window.addEventListener("map:init", function (e) {
         var map = e.detail.map;
-        var tile_layer = null;
         {% if layer.bbox_string %}
         zoom_to_box(map, [{{ layer.bbox_string }}]);
         {% endif %}
