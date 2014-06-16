@@ -386,7 +386,7 @@ def _get_viewer_projection_info(srid):
     return _viewer_projection_lookup.get(srid, {})
 
 
-def resolve_object(request, model, query, permission=None,
+def resolve_object(request, model, query, permission='base.view_resourcebase',
                    permission_required=True, permission_msg=None):
     """Resolve an object using the provided query and check the optional
     permission. Model views should wrap this function as a shortcut.

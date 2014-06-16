@@ -34,12 +34,13 @@ from django.utils import simplejson as json
 from django.utils.html import escape
 from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
+from geonode.services.models import Service
 
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.layers.models import Layer, Attribute
 from geonode.base.enumerations import CHARSETS
 
-from geonode.utils import default_map_config
+from geonode.utils import default_map_config, llbbox_to_mercator
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.layers.utils import file_upload
@@ -63,12 +64,19 @@ _PERMISSION_MSG_METADATA = _("You are not permitted to modify this layer's metad
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 
-def _resolve_layer(request, typename, permission='base.change_resourcebase',
+def _resolve_layer(request, typename, permission='base.view_resourcebase',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
     """
-    Resolve the layer by the provided typename and check the optional permission.
+    Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
-    return resolve_object(request, Layer, {'typename':typename},
+    service_typename = typename.split(":",1)
+    service = Service.objects.filter(name=service_typename[0])
+
+    if service.count() > 0 and service[0].method != "C":
+        return resolve_object(request, Layer, {'service': service[0], 'typename':service_typename[1]},
+                              permission = permission, permission_msg=msg, **kwargs)
+    else:
+        return resolve_object(request, Layer, {'typename':typename},
                           permission = permission, permission_msg=msg, **kwargs)
 
 
@@ -122,7 +130,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 out['errors'] = str(e)
             else:
                 out['success'] = True
-                out['url'] = reverse('layer_detail', args=[saved_layer.typename])
+                out['url'] = reverse('layer_detail', args=[saved_layer.service_typename])
 
                 permissions = form.cleaned_data["permissions"]
                 if permissions is not None and len(permissions.keys()) > 0:
@@ -146,14 +154,24 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
-    layer = _resolve_layer(request, layername, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
+    layer = _resolve_layer(request, layername, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+    layer_bbox = layer.bbox
+    # assert False, str(layer_bbox)
+    bbox = list(layer_bbox[0:4])
     config = layer.attribute_config()
+
+    #Add required parameters for GXP lazy-loading
+    config["srs"] = layer.srid
+    config["title"] = layer.title
+    config["bbox"] =  [float(coord) for coord in bbox] \
+        if layer.srid == "EPSG:4326" else llbbox_to_mercator([float(coord) for coord in bbox])
+
     if layer.storeType == "remoteStore":
-        from geonode.services.models import Service
-        service = Service.objects.filter(layers__id=layer.id)[0] 
+        service = layer.service
         source_params = {"ptype":service.ptype, "remote": True, "url": service.base_url, "name": service.name}
-        maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config), source_params=json.dumps(source_params))
+        maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config),
+                            source_params=json.dumps(source_params))
     else:
         maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config))
 
@@ -240,7 +258,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             the_layer.metadata_author = new_author
             the_layer.keywords.clear()
             the_layer.keywords.add(*new_keywords)
-            return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
+            return HttpResponseRedirect(reverse('layer_detail', args=(layer.service_typename,)))
 
     if poc is None:
         poc_form = ProfileForm(instance=poc, prefix="poc")
@@ -308,7 +326,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 out['errors'] = str(e)
             else:
                 out['success'] = True
-                out['url'] = reverse('layer_detail', args=[saved_layer.typename])
+                out['url'] = reverse('layer_detail', args=[saved_layer.service_typename])
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)

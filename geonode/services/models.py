@@ -1,8 +1,9 @@
 import logging
 from django.conf import settings
 from django.db import models
-from geoserver.catalog import FailedRequestError
+from geoserver.catalog import FailedRequestError, Catalog
 from taggit.managers import TaggableManager
+
 from geonode.base.models import ResourceBase
 from geonode.services.enumerations import SERVICE_TYPES, SERVICE_METHODS, GXP_PTYPES
 from geonode.layers.models import Layer 
@@ -50,7 +51,6 @@ class Service(ResourceBase):
     noanswer_retries = models.PositiveIntegerField(null=True, blank=True)
     external_id = models.IntegerField(null=True, blank=True)
     parent = models.ForeignKey('services.Service', null=True, blank=True, related_name='service_set')
-    layers = models.ManyToManyField(Layer, through='ServiceLayer')
 
     # Supported Capabilities
 
@@ -100,7 +100,7 @@ def post_save_service(instance, sender, created, **kwargs):
         instance.set_default_permissions()
 
 def pre_delete_service(instance, sender, **kwargs):
-    for layer in instance.layers.all():
+    for layer in instance.layer_set.all():
         layer.delete()
     # if instance.method == 'H':
     #     gn = Layer.objects.gn_catalog
@@ -108,7 +108,10 @@ def pre_delete_service(instance, sender, **kwargs):
     #     gn.control_harvesting_task('remove', [instance.external_id])
     if instance.method == 'C':
         try:
-            gs = Layer.objects.gs_catalog
+            _user = settings.OGC_SERVER['default']['USER']
+            _password = settings.OGC_SERVER['default']['PASSWORD']
+            gs = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest",
+                          _user , _password)
             cascade_store = gs.get_store(instance.name, settings.CASCADE_WORKSPACE)
             gs.delete(cascade_store, recurse=True)
         except FailedRequestError:

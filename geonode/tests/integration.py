@@ -114,7 +114,7 @@ class NormalUserTest(TestCase):
              overwrite=True,
         )
 
-        url = reverse('layer_metadata', args=[saved_layer.typename])
+        url = reverse('layer_metadata', args=[saved_layer.service_typename])
         resp = client.get(url)
         self.assertEquals(resp.status_code, 200)
 
@@ -477,13 +477,13 @@ class GeoNodeMapTest(TestCase):
         c.login(username='admin', password='admin')
 
         #test the program can determine the original layer in raster type
-        raster_replace_url = reverse('layer_replace', args=[raster_layer.typename])
+        raster_replace_url = reverse('layer_replace', args=[raster_layer.service_typename])
         response = c.get(raster_replace_url)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.context['is_featuretype'], False)
 
         #test the program can determine the original layer in vector type
-        vector_replace_url = reverse('layer_replace', args=[vector_layer.typename])
+        vector_replace_url = reverse('layer_replace', args=[vector_layer.service_typename])
         response = c.get(vector_replace_url)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.context['is_featuretype'], True)
@@ -625,7 +625,7 @@ class GeoNodeMapPrintTest(TestCase):
             # Set the layer private
             saved_layer.set_permissions({'users': {'AnonymousUser': ['view_resourcebase']}})
 
-            url = reverse('layer_metadata', args=[saved_layer.typename])
+            url = reverse('layer_metadata', args=[saved_layer.service_typename])
 
             # check is accessible while logged in
             resp = client.get(url)
@@ -656,7 +656,7 @@ class GeoNodeMapPrintTest(TestCase):
                             'TILED': True,
                             'TRANSPARENT': True
                         },
-                        'layers': [saved_layer.typename],
+                        'layers': [saved_layer.service_typename],
                         'opacity': 1,
                         'singleTile': False,
                         'type': 'WMS'

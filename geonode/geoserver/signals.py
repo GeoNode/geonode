@@ -135,15 +135,23 @@ def geoserver_post_save(instance, sender, **kwargs):
        The way keywords are implemented requires the layer
        to be saved to the database before accessing them.
     """
+
+    if instance.storeType == "remoteStore":
+        return
+
+
     url = ogc_server_settings.internal_rest
 
     try:
-        gs_resource= gs_catalog.get_resource(instance.name)
+        gs_resource= gs_catalog.get_resource(instance.name, store=instance.store, workspace=instance.workspace)
     except socket_error as serr:
         if serr.errno != errno.ECONNREFUSED:
             # Not the error we are looking for, re-raise
             raise serr
         # If the connection is refused, take it easy.
+        return
+
+    if gs_resource is None:
         return
 
     if any(instance.keyword_list()):

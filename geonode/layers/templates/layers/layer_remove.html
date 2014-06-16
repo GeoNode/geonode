@@ -6,14 +6,14 @@
 {% block body %}
 <div class="row">
   <div class="col-md-8">
-    <form action="{% url "layer_remove" layer.typename %}" method="POST">
+    <form action="{% url "layer_remove" layer.service_typename %}" method="POST">
       <h2>
         {% blocktrans with layer.typename as layer_title %}
           Are you sure you want to remove {{ layer_title }}?
         {% endblocktrans %}
       </h2>
       {% csrf_token %}
-      <input type="hidden" value="{{ layer.typename }}" /> 
+      <input type="hidden" value="{{ layer.service_typename }}" />
       <div class="form-actions">
         <input type="submit" value="{% trans "Yes, I am sure" %}" class="btn btn-danger" />
         <a href="{{ layer.get_absolute_url }}" class="btn btn-info">{% trans "No, don't remove it" %}</a>

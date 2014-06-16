@@ -80,7 +80,7 @@ class Command(BaseCommand):
 
         if service and register_layers:
             layers=[]
-            for layer in service.servicelayer_set.all():
+            for layer in service.layer_set.all():
                 layers.append(layer.typename)
             if service.method == 'C':
                 response = _register_cascaded_layers(user, service, layers, perm_spec)

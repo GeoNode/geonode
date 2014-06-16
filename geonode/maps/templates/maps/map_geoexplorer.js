@@ -63,7 +63,6 @@ Ext.onReady(function() {
               displayProjection: new OpenLayers.Projection("EPSG:4326")}
         )
     );
-
 {% endautoescape %}
 });
 </script>
