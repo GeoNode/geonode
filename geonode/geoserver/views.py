@@ -188,7 +188,7 @@ def layer_style_manage(req, layername):
             # Save to Django
             layer = set_styles(layer, cat)
             layer.save()
-            return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
+            return HttpResponseRedirect(reverse('layer_detail', args=(layer.service_typename,)))
         except (FailedRequestError, EnvironmentError, MultiValueDictKeyError) as e:
             msg = ('Error Saving Styles for Layer "%s"' % (layer.name)
             )

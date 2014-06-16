@@ -335,21 +335,20 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
         # Register the Service with GeoServer to be cascaded
         cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", 
                         _user , _password)
-        try:
-            cascade_ws = cat.get_workspace(settings.CASCADE_WORKSPACE)
-        except FailedRequestError:
-            cascade_ws = cat.create_workspace(settings.CASCADE_WORKSPACE, "http://geonode.org/cascade")
+        cascade_ws = cat.get_workspace(name)
+        if cascade_ws is None:
+            cascade_ws = cat.create_workspace(name, "http://geonode.org/cascade")
 
         #TODO: Make sure there isn't an existing store with that name, and deal with it if there is
 
         try:
-            ws = cat.get_store(name, cascade_ws)
+            cascade_store = cat.get_store(name, cascade_ws)
         except:
-            ws = cat.create_wmsstore(name,cascade_ws, username, password)
-            ws.capabilitiesURL = url
-            ws.type = "WMS"
-            cat.save(ws)
-        available_resources = ws.get_resources(available=True)
+            cascade_store = cat.create_wmsstore(name,cascade_ws, username, password)
+            cascade_store.capabilitiesURL = url
+            cascade_store.type = "WMS"
+            cat.save(cascade_store)
+        available_resources = cascade_store.get_resources(available=True)
 
 
     elif type == 'WFS':
@@ -428,13 +427,14 @@ def _register_cascaded_layers(service, owner=None):
                         _user , _password)
         # Can we always assume that it is geonode?
         # Should cascading layers have a separate workspace?
-        cascade_ws = cat.get_workspace(settings.CASCADE_WORKSPACE)
+        cascade_ws = cat.get_workspace(service.name)
         if cascade_ws is None:
-            cascade_ws = cat.create_workspace(settings.CASCADE_WORKSPACE, 'cascade')
+            cascade_ws = cat.create_workspace(service.name, 'cascade')
         try:
             store = cat.get_store(service.name,cascade_ws)
         except Exception:
             store = cat.create_wmsstore(service.name, cascade_ws)
+            cat.save(store)
         wms = WebMapService(service.base_url)
         layers = list(wms.contents)
 
@@ -448,8 +448,10 @@ def _register_cascaded_layers(service, owner=None):
                     resource = cat.create_wfslayer(cascade_ws, store, layer)
 
                 if resource:
+                    bbox = resource.latlon_bbox
                     cascaded_layer, created = Layer.objects.get_or_create(
                         typename = "%s:%s" % (cascade_ws.name, resource.name),
+                        service = service,
                         defaults = {
                             "name": resource.name,
                             "workspace": cascade_ws.name,
@@ -458,7 +460,11 @@ def _register_cascaded_layers(service, owner=None):
                             "title": resource.title or 'No title provided',
                             "abstract": resource.abstract or 'No abstract provided',
                             "owner": None,
-                            "uuid": str(uuid.uuid4())
+                            "uuid": str(uuid.uuid4()),
+                            "bbox_x0": bbox[0],
+                            "bbox_x1": bbox[1],
+                            "bbox_y0": bbox[2],
+                            "bbox_y1": bbox[3],
                         })
 
 
@@ -603,9 +609,9 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
             bbox = list(wms_layer.boundingBoxWGS84)
 
             # Need to check if layer already exists??
-            bbox = list(wms_layer.boundingBoxWGS84)
             saved_layer, created = Layer.objects.get_or_create(
                 typename=wms_layer.name,
+                service=service,
                 defaults=dict(
                     name=wms_layer.name,
                     store=service.name, #??
@@ -794,7 +800,7 @@ def _register_arcgis_layers(service, arc=None):
         count = 0
         layer_uuid = str(uuid.uuid1())
         bbox = [layer.extent.xmin, layer.extent.ymin, layer.extent.xmax, layer.extent.ymax]
-        typename = '%s:%s' % (service.name, valid_name)
+        typename = layer.id
 
         existing_layer = None
 
@@ -809,6 +815,7 @@ def _register_arcgis_layers(service, arc=None):
             # Need to check if layer already exists??
             saved_layer, created = Layer.objects.get_or_create(
                 typename=typename,
+                service=service,
                 defaults=dict(
                     name=valid_name,
                     store=service.name, #??
@@ -1043,6 +1050,7 @@ def process_ogp_results(ogp, result_json, owner=None):
 
                 layer_uuid = str(uuid.uuid1())
                 saved_layer, created = Layer.objects.get_or_create(typename=typename,
+                    service=service,
                     defaults=dict(
                     name=doc["Name"],
                     uuid=layer_uuid,
@@ -1073,7 +1081,7 @@ def service_detail(request, service_id):
     This view shows the details of a service 
     '''
     service = get_object_or_404(Service,pk=service_id)
-    layer_list = service.layers.all()
+    layer_list = service.layer_set.all()
     service_list = service.service_set.all()
     service_paginator = Paginator(service_list, 25) # Show 25 services per page
     layer_paginator = Paginator(layer_list, 25) # Show 25 services per page
