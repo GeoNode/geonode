@@ -1,83 +1,10 @@
 [
 {
-    "pk": 4,
-    "model": "security.objectrole",
-    "fields": {
-        "codename": "layer_readonly",
-        "title": "Read Only",
-        "list_order": 0,
-        "permissions": [ 
-            ["view_layer", "layers", "layer"]
-        ],
-        "content_type": ["layers", "layer"]
-    }
-},
-{
-    "pk": 5,
-    "model": "security.objectrole",
-    "fields": {
-        "codename": "layer_readwrite",
-        "title": "Read/Write",
-        "list_order": 1,
-        "permissions": [ 
-            ["view_layer", "layers", "layer"],
-            ["change_layer", "layers", "layer"]
-        ],
-        "content_type": ["layers", "layer"]
-    }
-},
-{
-    "pk": 6,
-    "model": "security.objectrole",
-    "fields": {
-        "codename": "layer_admin",
-        "title": "Administrative",
-        "list_order": 2,
-        "permissions": [ 
-            ["view_layer", "layers", "layer"],
-            ["change_layer", "layers", "layer"],
-            ["delete_layer", "layers", "layer"],
-            ["change_layer_permissions", "layers", "layer"]
-        ],
-        "content_type": ["layers", "layer"]
-    }
-},
-{
-    "fields": {
-        "subject": "anonymous",
-        "object_ct": ["layers", "layer"],
-        "object_id": 1,
-        "role": ["layer_readonly", "layers", "layer"]
-    },
-    "model": "security.genericobjectrolemapping",
-    "pk": 3
-},
-{
-    "fields": {
-        "subject": "authenticated",
-        "object_ct": ["layers", "layer"],
-        "object_id": 1,
-        "role": ["layer_readonly", "layers", "layer"]
-    },
-    "model": "security.genericobjectrolemapping",
-    "pk": 4
-},
-{
-    "fields": {
-        "user": 1,
-        "object_ct": ["layers", "layer"],
-        "object_id": 1,
-        "role": ["layer_readwrite", "layers", "layer"]
-    },
-    "model": "security.userobjectrolemapping",
-    "pk": 1
-},
-{
     "pk": 1,
-    "model": "auth.user",
+    "model": "people.Profile",
     "fields": {
        "username": "bobby",
-        "first_name": "",
+        "first_name": "bobby",
         "last_name": "",
         "is_active": true,
         "is_superuser": false,

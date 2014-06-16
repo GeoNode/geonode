@@ -19,17 +19,14 @@
 
 from django import forms
 from django.conf import settings
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, get_user_model
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.db.models import Q
 from django.template import RequestContext
 from geonode.utils import resolve_object
-
-if "geonode.contrib.groups" in settings.INSTALLED_APPS:
-    from geonode.contrib.groups.models import Group
+from geonode.groups.models import Group
 
 class AjaxLoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -82,18 +79,17 @@ def ajax_lookup(request):
             mimetype='text/plain'
         )
     keyword = request.POST['query']
-    users = User.objects.filter(Q(username__startswith=keyword) |
+    users = get_user_model().objects.filter(Q(username__startswith=keyword) |
         Q(profile__name__contains=keyword) | 
         Q(profile__organization__contains=keyword))
-    if "geonode.contrib.groups" in settings.INSTALLED_APPS:
-        groups = Group.objects.filter(Q(title__startswith=keyword) |
-            Q(description__contains=keyword))
+    groups = Group.objects.filter(Q(title__startswith=keyword) |
+        Q(description__contains=keyword))
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),
     }
-    if "geonode.contrib.groups" in settings.INSTALLED_APPS:
-        json_dict['groups'] = [({'name': g.slug}) for g in groups]
+    
+    json_dict['groups'] = [({'name': g.slug}) for g in groups]
     return HttpResponse(
         content=json.dumps(json_dict),
         mimetype='text/plain'

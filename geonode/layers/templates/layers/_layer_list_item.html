@@ -8,7 +8,7 @@
 {% overall_rating layer "layer" as layer_rating %}
 {% num_ratings layer as num_votes %}
 
-{% has_obj_perm user layer "layers.view_layer" as can_view_layer %}
+{% has_obj_perm user layer "base.view_resourcebase" as can_view_layer %}
 
 {% if can_view_layer %}
 <article>

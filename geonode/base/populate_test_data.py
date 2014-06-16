@@ -22,7 +22,7 @@ import StringIO
 from datetime import datetime
 from datetime import timedelta
 from django.core.serializers import serialize
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 from geonode.layers.models import Layer
@@ -120,7 +120,7 @@ def create_fixtures():
 def create_models(type = None):
     map_data, user_data, people_data, layer_data, document_data = create_fixtures()
     
-    u, _ = User.objects.get_or_create(username='admin',is_superuser=True)
+    u, _ = get_user_model().objects.get_or_create(username='admin',is_superuser=True, first_name='admin')
     u.set_password('admin')
     u.save()
     users = []
@@ -129,14 +129,11 @@ def create_models(type = None):
     for ud, pd in zip(user_data, cycle(people_data)):
         user_name, password, first_name, last_name = ud
         profile = pd[0]
-        u,created = User.objects.get_or_create(username = user_name)
+        u,created = get_user_model().objects.get_or_create(username = user_name)
         if created:
             u.first_name = first_name
             u.last_name = last_name
             u.save()
-            contact = Profile.objects.get(user=u)
-            contact.profile = profile
-            contact.save()
         users.append(u)
 
     if not type or type == 'map':

@@ -3,11 +3,9 @@ from django.core.validators import validate_email, ValidationError
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
-from geonode.contrib.groups.models import Group
-from geonode.maps.models import Map, Layer
-
+from geonode.groups.models import GroupProfile
 
 class GroupForm(forms.ModelForm):
     
@@ -18,41 +16,42 @@ class GroupForm(forms.ModelForm):
         )
             
     def clean_slug(self):
-        if Group.objects.filter(slug__iexact=self.cleaned_data["slug"]).count() > 0:
+        if GroupProfile.objects.filter(slug__iexact=self.cleaned_data["slug"]).count() > 0:
             raise forms.ValidationError(_("A group already exists with that slug."))
         return self.cleaned_data["slug"].lower()
     
     def clean_title(self):
-        if Group.objects.filter(title__iexact=self.cleaned_data["title"]).count() > 0:
-            raise forms.ValidationError(_("A group already exists with that title."))
+        if GroupProfile.objects.filter(title__iexact=self.cleaned_data["title"]).count() > 0:
+            raise forms.ValidationError(_("A group already exists with that name."))
         return self.cleaned_data["title"]
     
     def clean(self):
         cleaned_data = self.cleaned_data
         
-        title = cleaned_data.get("title")
-        slug = slugify(title)
+        name = cleaned_data.get("title")
+        slug = slugify(name)
         
         cleaned_data["slug"] = slug
         
         return cleaned_data
         
     class Meta:
-        model = Group
+        model = GroupProfile
+        exclude = ['group']
 
 
 class GroupUpdateForm(forms.ModelForm):
     
-    def clean_title(self):
-        if Group.objects.filter(title__iexact=self.cleaned_data["title"]).count() > 0:
-            if self.cleaned_data["title"] == self.instance.title:
+    def clean_name(self):
+        if GroupProfile.objects.filter(name__iexact=self.cleaned_data["title"]).count() > 0:
+            if self.cleaned_data["title"] == self.instance.name:
                 pass  # same instance
             else:
-                raise forms.ValidationError(_("A group already exists with that title."))
+                raise forms.ValidationError(_("A group already exists with that name."))
         return self.cleaned_data["title"]
     
     class Meta:
-        model = Group
+        model = GroupProfile
 
 
 class GroupMemberForm(forms.Form):
@@ -72,13 +71,13 @@ class GroupMemberForm(forms.Form):
             try: 
                 validate_email(ui)
                 try:
-                    new_members.append(User.objects.get(email=ui))
-                except User.DoesNotExist:
+                    new_members.append(get_user_model().objects.get(email=ui))
+                except get_user_model().DoesNotExist:
                     new_members.append(ui)
             except ValidationError:
                 try:
-                    new_members.append(User.objects.get(username=ui))
-                except User.DoesNotExist:
+                    new_members.append(get_user_model().objects.get(username=ui))
+                except get_user_model().DoesNotExist:
                     errors.append(ui)
         
         if errors:
@@ -106,13 +105,13 @@ class GroupInviteForm(forms.Form):
             
             if email_re.match(ui):
                 try:
-                    invitees.append(User.objects.get(email=ui))
-                except User.DoesNotExist:
+                    invitees.append(get_user_model().objects.get(email=ui))
+                except get_user_model().DoesNotExist:
                     invitees.append(ui)
             else:
                 try:
-                    invitees.append(User.objects.get(username=ui))
-                except User.DoesNotExist:
+                    invitees.append(get_user_model().objects.get(username=ui))
+                except get_user_model().DoesNotExist:
                     errors.append(ui)
         
         if errors:

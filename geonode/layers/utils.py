@@ -31,7 +31,7 @@ import sys
 from osgeo import gdal
 
 # Django functionality
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.core.files import File
@@ -214,7 +214,7 @@ def get_valid_layer_name(layer, overwrite):
 def get_default_user():
     """Create a default user
     """
-    superusers = User.objects.filter(is_superuser=True).order_by('id')
+    superusers = get_user_model().objects.filter(is_superuser=True).order_by('id')
     if superusers.count() > 0:
         # Return the first created superuser
         return superusers[0]
@@ -500,7 +500,7 @@ def create_thumbnail(instance, thumbnail_remote_url):
     image = None
 
     if valid_x and valid_y:
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+        Link.objects.get_or_create(resource= instance.get_self_resource(),
                         url=thumbnail_remote_url,
                         defaults=dict(
                             extension='png',

@@ -99,6 +99,7 @@ setup(name='GeoNode',
         "django-extensions==1.2.5", # python-django-extensions
         "django-taggit==0.12", # python-django-taggit
         "django-mptt==0.6.1", # django-mptt
+        "django-guardian==1.2.0", #django-guardian
 
         ## Apps with packages provided in GeoNode's PPA on Launchpad.
         "pinax-theme-bootstrap==3.0a11",
@@ -106,9 +107,7 @@ setup(name='GeoNode',
         "django-forms-bootstrap==2.0.3.post1",
         "django-friendly-tag-loader==1.1",
         "django-taggit-templatetags==0.4.6dev",
-        "django-notification==1.0",
         "django-activity-stream==0.4.5beta1",
-        "dialogos==0.4",
         "django-downloadview==1.2",
         "django-tastypie==0.11.0",
         "django-polymorphic==0.5.3",
@@ -118,12 +117,14 @@ setup(name='GeoNode',
 
         # GeoNode org maintained apps.
         "django-geoexplorer==4.0.4",
-        "geonode-user-messages==0.1",
-        "geonode-avatar==2.1.2",
+        "geonode-user-messages==0.1.1",
+        "geonode-avatar==2.1.3",
         "geonode-announcements==1.0.2",
         "geonode-agon-ratings==0.3.1",
         "geonode-user-accounts==1.0.1",
         "geonode-arcrest==10.2",
+        "geonode-notification==1.1.1",
+        "geonode-dialogos==0.4",
         "gsconfig==0.6.9",
         "gsimporter==0.1",
         "gisdata==0.5.4",

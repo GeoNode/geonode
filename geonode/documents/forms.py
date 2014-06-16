@@ -29,16 +29,16 @@ class DocumentForm(TranslationModelForm):
 
     poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                  label = "Point Of Contact", required=False,
-                                 queryset = Profile.objects.exclude(user=None))
+                                 queryset = Profile.objects.exclude(username='AnonymousUser'))
 
     metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
                                              label = "Metadata Author", required=False,
-                                             queryset = Profile.objects.exclude(user=None))
+                                             queryset = Profile.objects.exclude(username='AnonymousUser'))
 
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
 
-    regions = TreeNodeMultipleChoiceField(queryset=Region.objects.all(), level_indicator=u'___')
+    regions = TreeNodeMultipleChoiceField(required=False, queryset=Region.objects.all(), level_indicator=u'___')
     regions.widget.attrs = {"size":20}
     
     def __init__(self, *args, **kwargs):
