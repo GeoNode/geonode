@@ -49,4 +49,4 @@ class ProfileForm(forms.ModelForm):
                                      help_text=_("A space or comma-separated list of keywords"))
     class Meta:
         model = Profile
-        exclude = ('user',)
+        exclude = ('user','password', 'last_login', 'groups', 'user_permissions', 'username', 'is_staff', 'is_superuser', 'is_active', 'date_joined')
