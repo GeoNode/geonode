@@ -4,7 +4,7 @@ from django.db.models import Count
 
 from agon_ratings.models import Rating
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -29,9 +29,8 @@ def facets(context):
         'raster': 0,
         'vector': 0,
     }
-
     for layer in Layer.objects.all():
-        if request.user.has_perm('layers.view_layer', layer):
+        if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
             if layer.storeType == 'coverageStore':
                 facets['raster'] += 1
             else:
@@ -45,16 +44,16 @@ def facets(context):
 
     facets['map'] = 0
     for the_map in Map.objects.all():
-        if request.user.has_perm('maps.view_map', the_map):
+        if request.user.has_perm('view_resourcebase', the_map.get_self_resource()):
             facets['map'] +=1
 
     facets['document'] = 0
     for doc in Document.objects.all():
-        if request.user.has_perm('document.view_document', doc):
+        if request.user.has_perm('view_resourcebase', doc.get_self_resource()):
             facets['document'] += 1
 
     if facet_type == 'home':
-        facets['user'] = User.objects.count()
+        facets['user'] = get_user_model().objects.count()
 
         facets['layer'] = facets['raster'] + facets['vector']
 

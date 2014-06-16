@@ -88,6 +88,8 @@ LANGUAGES = (
     
 )
 
+AUTH_USER_MODEL = 'people.Profile'
+
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
@@ -174,10 +176,11 @@ GEONODE_APPS = (
     'geonode.catalogue',
     'geonode.documents',
     'geonode.api',
+    'geonode.groups',
+    'geonode.services',
 
     # GeoNode Contrib Apps
-    'geonode.services',
-    'geonode.contrib.groups',
+    
     #'geonode.contrib.dynamic',
 
     # GeoServer Apps
@@ -232,6 +235,7 @@ INSTALLED_APPS = (
     'user_messages',
     'tastypie',
     'polymorphic',
+    'guardian',
 
 ) + GEONODE_APPS
 
@@ -322,25 +326,15 @@ MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # This middleware allows to print private layers for the users that have 
-    # the permissions to view them.
-    # It sets temporary the involved layers as public before restoring the permissions.
-    # Beware that for few seconds the involved layers are public there could be risks.
-    #'geonode.geoserver.middleware.PrintProxyMiddleware',
 )
 
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
-AUTHENTICATION_BACKENDS = ('geonode.security.auth.GranularBackend',)
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend','guardian.backends.ObjectPermissionBackend',)
 
-def get_user_url(u):
-    return u.profile.get_absolute_url()
-
-
-ABSOLUTE_URL_OVERRIDES = {
-    'auth.user': get_user_url
-}
+ANONYMOUS_USER_ID = -1
+GUARDIAN_GET_INIT_ANONYMOUS_USER = 'geonode.people.models.get_anonymous_user_instance'
 
 #
 # Settings for default search size
@@ -367,7 +361,7 @@ AGON_RATINGS_CATEGORY_CHOICES = {
 
 # Activity Stream
 ACTSTREAM_SETTINGS = {
-    'MODELS': ('auth.user', 'layers.layer', 'maps.map', 'dialogos.comment', 'documents.document', 'services.service'),
+    'MODELS': ('people.Profile', 'layers.layer', 'maps.map', 'dialogos.comment', 'documents.document', 'services.service'),
     'FETCH_RELATIONS': True,
     'USE_PREFETCH': False,
     'USE_JSONFIELD': True,

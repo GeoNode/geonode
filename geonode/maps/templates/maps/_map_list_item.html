@@ -7,7 +7,7 @@
 {% overall_rating map "map" as map_rating %}
 {% num_ratings map as num_votes %}
 
-{% has_obj_perm user map "maps.view_map" as can_view_map %}
+{% has_obj_perm user map "base.view_resourcebase" as can_view_map %}
 
 {% if can_view_map %}
 <article>

@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from haystack import indexes
 
-from geonode.contrib.groups.models import Group
+from geonode.groups.models import Group
 
 class GroupIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)

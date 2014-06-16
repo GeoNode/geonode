@@ -26,7 +26,7 @@ import re
 from urlparse import urlsplit, urlunsplit
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
 from django.forms.models import modelformset_factory
@@ -51,7 +51,6 @@ from geoserver.catalog import Catalog, FailedRequestError
 from geonode.services.models import Service, Layer, ServiceLayer, WebServiceHarvestLayersJob, WebServiceRegistrationJob
 from geonode.security.views import _perms_info
 from geonode.utils import bbox_to_wkt, json_response
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.services.forms import CreateServiceForm, ServiceLayerFormSet, ServiceForm
 from geonode.utils import llbbox_to_mercator, mercator_to_llbbox, http_client
 from geonode.layers.utils import create_thumbnail
@@ -65,13 +64,6 @@ logger = logging.getLogger("geonode.core.layers.views")
 
 _user = settings.OGC_SERVER['default']['USER']
 _password = settings.OGC_SERVER['default']['PASSWORD']
-
-SERVICE_LEV_NAMES = {
-    Service.LEVEL_NONE  : _('No Service Permissions'),
-    Service.LEVEL_READ  : _('Read Only'),
-    Service.LEVEL_WRITE : _('Read/Write'),
-    Service.LEVEL_ADMIN : _('Administrative')
-}
 
 OGP_ABSTRACT = _("""
 The Open Geoportal is a consortium comprised of contributions of several universities and organizations to help
@@ -1181,16 +1173,6 @@ def remove_service(request, service_id):
         service_obj.delete()
         return HttpResponseRedirect(reverse("services"))
 
-def set_service_permissions(service, perm_spec):
-    if "authenticated" in perm_spec:
-        service.set_gen_level(AUTHENTICATED_USERS, perm_spec['authenticated'])
-    if "anonymous" in perm_spec:
-        service.set_gen_level(ANONYMOUS_USERS, perm_spec['anonymous'])
-    users = [n for (n, p) in perm_spec['users']]
-    service.get_user_levels().exclude(user__username__in = users + [service.owner]).delete()
-    for username, level in perm_spec['users']:
-        user = User.objects.get(username=username)
-        service.set_user_level(user, level)
 
 @login_required
 def ajax_service_permissions(request, service_id):
@@ -1210,7 +1192,7 @@ def ajax_service_permissions(request, service_id):
         )
 
     spec = json.loads(request.body)
-    set_service_permissions(service, spec)
+    service.set_permissions(spec)
 
     return HttpResponse(
         "Permissions updated",
@@ -1220,7 +1202,7 @@ def ajax_service_permissions(request, service_id):
 def create_arcgis_links(instance):
     kmz_link = instance.ows_url + '?f=kmz'
 
-    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+    Link.objects.get_or_create(resource= instance.get_self_resource(),
                         url=kmz_link,
                         defaults=dict(
                             extension='kml',
@@ -1234,7 +1216,7 @@ def create_arcgis_links(instance):
     # Create legend.
     legend_url = instance.ows_url + 'legend?f=json'
 
-    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+    Link.objects.get_or_create(resource= instance.get_self_resource(),
                         url=legend_url,
                         defaults=dict(
                             extension='json',

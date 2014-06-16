@@ -1,7 +1,7 @@
 from django.core.management.base import NoArgsCommand
 import unittest
 
-from geonode.contrib.services.tests import ServicesTests
+from geonode.services.tests import ServicesTests
  
 class Command(NoArgsCommand):
     help = """

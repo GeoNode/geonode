@@ -59,13 +59,6 @@ MAX_SEARCH_BATCH_SIZE = 25
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
-LAYER_LEV_NAMES = {
-    Layer.LEVEL_NONE  : _('No Permissions'),
-    Layer.LEVEL_READ  : _('Read Only'),
-    Layer.LEVEL_WRITE : _('Read/Write'),
-    Layer.LEVEL_ADMIN : _('Administrative')
-}
-
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
 _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this layer")
@@ -73,7 +66,7 @@ _PERMISSION_MSG_METADATA = _("You are not permitted to modify this layer's metad
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 
-def _resolve_layer(request, typename, permission='layers.change_layer',
+def _resolve_layer(request, typename, permission='base.view_resourcebase',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
     """
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
@@ -163,7 +156,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
-    layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
+
+    layer = _resolve_layer(request, layername, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
     layer_bbox = layer.bbox
     # assert False, str(layer_bbox)
     bbox = list(layer_bbox[0:4])
@@ -194,8 +188,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
     context_dict = {
-        "layer": layer,
-        "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
+        "resource": layer,
+        "permissions_json": _perms_info_json(layer),
         "documents": get_related_documents(layer),
         "metadata": metadata,
     }
@@ -217,7 +211,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
 @login_required
 def layer_metadata(request, layername, template='layers/layer_metadata.html'):
-    layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA)
+    layer = _resolve_layer(request, layername, 'base.change_resourcebase', _PERMISSION_MSG_METADATA)
     layer_attribute_set = inlineformset_factory(Layer, Attribute, extra=0, form=LayerAttributeForm, )
     topic_category = layer.category
 
@@ -240,7 +234,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         new_keywords = layer_form.cleaned_data['keywords']
 
         if new_poc is None:
-            if poc.user is None:
+            if poc is None:
                 poc_form = ProfileForm(request.POST, prefix="poc", instance=poc)
             else:
                 poc_form = ProfileForm(request.POST, prefix="poc")
@@ -248,7 +242,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                 new_poc = poc_form.save()
 
         if new_author is None:
-            if metadata_author.user is None:
+            if metadata_author is None:
                 author_form = ProfileForm(request.POST, prefix="author", 
                     instance=metadata_author)
             else:
@@ -276,14 +270,14 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             the_layer.save()
             return HttpResponseRedirect(reverse('layer_detail', args=(layer.service_typename,)))
 
-    if poc.user is None:
+    if poc is None:
         poc_form = ProfileForm(instance=poc, prefix="poc")
     else:
         layer_form.fields['poc'].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
         poc_form.hidden=True
 
-    if metadata_author.user is None:
+    if metadata_author is None:
         author_form = ProfileForm(instance=metadata_author, prefix="author")
     else:
         layer_form.fields['metadata_author'].initial = metadata_author.id
@@ -321,7 +315,7 @@ def layer_change_poc(request, ids, template = 'layers/layer_change_poc.html'):
 
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
-    layer = _resolve_layer(request, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(request, layername, 'base.change_resourcebase',_PERMISSION_MSG_MODIFY)
 
     if request.method == 'GET':
         return render_to_response(template,
@@ -363,7 +357,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 @login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
     try:
-        layer = _resolve_layer(request, layername, 'layers.delete_layer',
+        layer = _resolve_layer(request, layername, 'base.delete_resourcebase',
                                _PERMISSION_MSG_DELETE)
 
         if (request.method == 'GET'):

@@ -7,7 +7,7 @@ Replace this with more appropriate tests for your application.
 
 from actstream.models import Action, actor_stream
 from dialogos.models import Comment
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.utils.translation import ugettext as _
@@ -23,7 +23,7 @@ class SimpleTest(TestCase):
     def setUp(self):
         create_models(type='layer')
         create_layer_data()
-        self.user = User.objects.filter(username='admin')[0]
+        self.user = get_user_model().objects.filter(username='admin')[0]
 
     def test_layer_activity(self):
         """
@@ -47,7 +47,7 @@ class SimpleTest(TestCase):
         # Test the  activity_item template tag
         template_tag = activity_item(Action.objects.all()[0])
 
-        self.assertEqual(template_tag.get('username'), action.actor.profile.name or action.actor.username)
+        self.assertEqual(template_tag.get('username'), action.actor.username)
         self.assertEqual(template_tag.get('object_name'), layer.name)
         self.assertEqual(template_tag.get('actor'), action.actor)
         self.assertEqual(template_tag.get('verb'), _('uploaded'))

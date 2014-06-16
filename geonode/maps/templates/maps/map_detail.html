@@ -1,12 +1,12 @@
 {% extends "maps/map_base.html" %}
-{% load geonode_auth %}
 {% load i18n %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
 {% load url from future %}
 {% load base_tags %}
+{% load guardian_tags %}
 
-{% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
+{% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
 {% block head %}
 {% include "maps/map_include.html" %}
@@ -16,10 +16,10 @@
 {% block body_class %}maps{% endblock %}
 
 {% block body_outer %}
-  {% overall_rating map "map" as map_rating %}
+  {% overall_rating resource "map" as map_rating %}
   <div class="row">
     <div class="col-md-12">
-      <h2 class="page-title">{{ map.title }}</h2>
+      <h2 class="page-title">{{ resource.title }}</h2>
     </div>
   </div>
 
@@ -40,22 +40,20 @@
       </div>
 
       <div class="tab-content">
-        {% include "base/resourcebase_info_panel.html" with resourcebase=map %}
+        {% include "base/resourcebase_info_panel.html" %}
         <article class="tab-pane" id="comments">
-          {% with map as obj %}
-            {% include "_comments.html" %}
-          {% endwith %}
+        {% include "_comments.html" %}
         </article>
         <article class="tab-pane" id="rate">
         <!-- TODO: Move this to a reusable template snippet -->
           {% if request.user.is_authenticated %}
           <h3>{% trans "Rate this Map" %}</h3>
-          {% user_rating request.user map "map" as user_map_rating %}
+          {% user_rating request.user resource "map" as user_map_rating %}
           <div id="user_rating" class="category-map" data-score="{{ user_map_rating }}"></div>
           {% endif %}
           <h3>{% trans 'Average Rating' %}</h3>
-          {% overall_rating map "map" as map_rating %}
-          {% num_ratings map as num_votes %}
+          {% overall_rating resource "map" as map_rating %}
+          {% num_ratings resource as num_votes %}
           <div class="overall_rating" style="float:left" data-score="{{ map_rating }}"></div> ({{num_votes}})
         </article>
         {% block social_links %}
@@ -80,8 +78,8 @@
               </div>
               <div class="modal-body">
                 <ul>
-                  <li><a href="{% url "map_download" map.pk %}">{% trans "Download Data Layers" %}</a></li>
-                  <li><a href="{% url "map_wmc" map.pk %}" target="_new">{% trans "Download Web Map Context" %}</a></li>
+                  <li><a href="{% url "map_download" resource.pk %}">{% trans "Download Data Layers" %}</a></li>
+                  <li><a href="{% url "map_wmc" resource.pk %}" target="_new">{% trans "Download Web Map Context" %}</a></li>
                 <ul>
               </div>
               <div class="modal-footer">
@@ -90,9 +88,8 @@
             </div>
           </div>
         </div>
-
-        {% has_obj_perm user map "maps.change_map" as can_edit_map %}
-        {% if can_edit_map %}
+        {% get_obj_perms request.user for resource.get_self_resource as "resource_perms" %}
+        {% if "change_resourcebase" in resource_perms %}
         <li class="list-group-item">
           <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#edit-map">{% trans "Edit Map" %}</button>
         </li>
@@ -105,12 +102,12 @@
               </div>
               <div class="modal-body">
                 <ul>
-                  <li><a href="{% url "map_metadata" map.id %}">{% trans "Edit Map Metadata" %}</a></li>
+                  <li><a href="{% url "map_metadata" resource.id %}">{% trans "Edit Map Metadata" %}</a></li>
                   {% if PRINT_NG_ENABLED %}
                   <li><a href="#" id="set_thumbnail">{% trans "Set Map Thumbnail" %}</a></li>
                   {% endif %}
                   <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Map Permissions" %}</a></li>
-                  <li><a href="{% url "map_remove" map.id %}">{% trans "Remove this Map" %}</a></li>
+                  <li><a href="{% url "map_remove" resource.id %}">{% trans "Remove this Map" %}</a></li>
                 <ul>
               </div>
               <div class="modal-footer">
@@ -122,7 +119,7 @@
         {% endif %}
 
         <li class="list-group-item">
-          <a href="{% url "map_view" map.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
+          <a href="{% url "map_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
         </li>
         {% comment %}
         <li class="list-group-item">
@@ -134,7 +131,7 @@
           <h4 class="list-group-item-heading">{% trans "Map Layers" %}</h4>
           <p>{% trans "This map uses the following layers:" %}</p>
           <ul class="list-unstyled">
-            {% for layer in map.layer_set.all %}
+            {% for layer in resource.layer_set.all %}
             {% ifnotequal layer.group 'background' %}
               {% if layer.local %}
               <li><a href="{% url "layer_detail" layer.name %}">{{ layer.layer_title }}</a></li>
@@ -158,8 +155,7 @@
         </li>
         {% endif %}
 
-        {% has_obj_perm user map "maps.change_map_permissions" as can_change_permissions %}
-        {% if can_change_permissions %}
+        {% if "change_resourcebase_permissions" in resource_perms %}
         <li class="list-group-item">
           <h4>{% trans "Permissions" %}</h4>
           <p>{% trans "Specify which users can view or modify this map" %}</p>
@@ -171,38 +167,24 @@
         <li class="list-group-item">
           <h4>{% trans "Copy this map" %}</h4>
           <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
-          <a href="{% url "new_map" %}?copy={{ map.id }}" class="btn btn-default btn-md btn-block">{% trans "Create a New Map" %}</a>
+          <a href="{% url "new_map" %}?copy={{ resource.id }}" class="btn btn-default btn-md btn-block">{% trans "Create a New Map" %}</a>
         </li>
 
-        {% if map.is_public and can_edit_map or map.layer_group %}
+        {% if resource.is_public and "change_resourcebase" in resource_perms or resource.layer_group %}
         <li class="list-group-item">
           <h4>{% trans "Map WMS" %}</h4>
-          <dl>{% if map.layer_group %}
+          <dl>{% if resource.layer_group %}
             <dt>{% trans "WMS layer group for local map layers" %}:</dt>
-            <dd><em>{{ map.layer_group.name }}</em> ({% trans "on" %} <a href="{{ ows }}?service=WMS&request=GetCapabilities">{% trans "local OWS" %}</a>)</dd>
+            <dd><em>{{ resource.layer_group.name }}</em> ({% trans "on" %} <a href="{{ ows }}?service=WMS&request=GetCapabilities">{% trans "local OWS" %}</a>)</dd>
             {% endif %}</dl>
           {% if can_edit_map %}
           <p>{% trans "Publish local map layers as WMS layer group" %}</p>
-          <a href="{%url "map_wms" map.id %}" class="btn btn-default btn-md btn-block">{% trans "Publish Map WMS" %}</a>
+          <a href="{%url "map_wms" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "Publish Map WMS" %}</a>
           {% endif %}
         </li>
         {% endif %}
 
-        <li class="list-group-item">
-          <h4>{% trans "About" %}</h4>
-          <p>{% trans "Map Owner" %}</p>
-          {% with map.owner.profile as profile %}
-            {% include "people/_profile_about_item.html" %} 
-          {% endwith %}
-          <p>{% trans "Point of Contact" %}</p>
-          {% with map.poc as profile %}
-            {% include "people/_profile_about_item.html" %}
-          {% endwith %}
-          <p>{% trans "Metadata Author" %}</p>
-          {% with map.metadata_author as profile %}
-            {% include "people/_profile_about_item.html" %}
-          {% endwith %}
-        </li>
+        {% include "base/_resourcebase_contact_snippet.html" %}
     
       </ul>
       
@@ -224,9 +206,9 @@
 }(document, 'script', 'facebook-jssdk'));</script>
 {% endif %}
 {% if request.user.is_authenticated %}
-      {% user_rating_js request.user map "map" %}
+      {% user_rating_js request.user resource "map" %}
 {% else %}
-      {% overall_rating map "map" as the_map_rating %}
+      {% overall_rating resource "map" as the_map_rating %}
 {% endif %}
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/thumbnail/map_thumbnail.js"></script>
 {% include 'rating.html' %}

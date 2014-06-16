@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 
 from .views import GroupDetailView
 
-urlpatterns = patterns('geonode.contrib.groups.views',
+urlpatterns = patterns('geonode.groups.views',
     url(r'^$', TemplateView.as_view(template_name='groups/group_list.html'), name="group_list"),
     url(r'^create/$', 'group_create', name="group_create"),
     url(r'^group/(?P<slug>[-\w]+)/$', GroupDetailView.as_view(), name='group_detail'),
