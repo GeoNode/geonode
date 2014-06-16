@@ -64,7 +64,7 @@ class LayerForm(TranslationModelForm):
     keywords = taggit.forms.TagField(required=False,
                                      help_text=_("A space or comma-separated list of keywords"))
 
-    regions = TreeNodeMultipleChoiceField(queryset=Region.objects.all(), level_indicator=u'___') 
+    regions = TreeNodeMultipleChoiceField(required=False, queryset=Region.objects.all(), level_indicator=u'___') 
     regions.widget.attrs = {"size":20}
 
     class Meta:
