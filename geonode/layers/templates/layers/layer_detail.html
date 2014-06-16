@@ -296,11 +296,6 @@
     {% endif %}
     {% include 'rating.html' %}
     <script type="text/javascript">
-    $(function() {
-  
-        var activeTab = $('[href=' + location.hash + ']');
-        activeTab && activeTab.tab('show');
-    });
        $("#comment_submit_btn").click(function(event) {
             $.ajax({
               type: "POST",
