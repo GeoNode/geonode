@@ -8,7 +8,7 @@
     </div>
     <div class="col-md-10">
       <h5>
-        <i class="fa fa-user"></i> <a href="{{ profile.profile_detail_url }}">{{ profile.name }}</a>
+        <i class="fa fa-user"></i> <a href="{{ profile.profile_detail_url }}">{{ profile.username }}</a>
         <a href="mailto:{{ profile.email }}" ng-if="profile.email != ''"><i class="fa fa-envelope-o"></i></a>
       </h5>
       <p>{{ profile.organization != '' ?  profile.organization : "No Organization Info" }}</p>

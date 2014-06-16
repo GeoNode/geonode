@@ -20,7 +20,7 @@
 from django.test import TestCase
 from django.test.client import Client
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.core import mail
 from django.contrib.sites.models import Site
@@ -44,7 +44,7 @@ class PeopleTest(TestCase):
         })
         #self.assertContains(response, "No user could be found with that email address.")
 
-        admin = User.objects.get(username='bobby')
+        admin = get_user_model().objects.get(username='bobby')
         response = c.post(url,data={
             'email' : admin.email
         })

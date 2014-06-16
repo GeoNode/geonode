@@ -1,7 +1,7 @@
 import base64
 import json
 
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
@@ -9,6 +9,9 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.test.utils import override_settings
+
+from guardian.shortcuts import assign_perm, get_anonymous_user
+
 from geonode.geoserver.helpers import OGC_Servers_Handler
 from geonode.base.populate_test_data import create_models
 from geonode.layers.populate_layers_data import create_layer_data
@@ -29,6 +32,10 @@ class LayerTests(TestCase):
         Ensures the layer_style_manage route returns a 200.
         """
         layer = Layer.objects.all()[0]
+
+        bob = get_user_model().objects.get(username='bobby')
+        assign_perm('change_resourcebase', bob, layer.get_self_resource())
+
         c = Client()
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
@@ -99,22 +106,26 @@ class LayerTests(TestCase):
             'HTTP_AUTHORIZATION': 'basic ' + base64.b64encode(invalid_uname_pw),
         }
 
+        bob = get_user_model().objects.get(username='bobby')
+        layer_ca = Layer.objects.get(typename='geonode:CA')
+        assign_perm('change_resourcebase', bob, layer_ca.get_self_resource())
+
         # Test that requesting when supplying the geoserver credentials returns the expected json
 
         expected_result = {
-             'email': 'bobby@bob.com',
-             'fullname': 'bobby',
-             'is_anonymous': False,
-             'is_superuser': False,
-             'name': 'bobby',
-             'ro': ['geonode:layer2',
-                    'geonode:mylayer',
-                    'geonode:foo',
-                    'geonode:whatever',
-                    'geonode:fooey',
-                    'geonode:quux',
-                    'geonode:fleem'],
-             'rw': ['geonode:CA']
+             u'email': u'bobby@bob.com',
+             u'fullname': u'bobby',
+             u'is_anonymous': False,
+             u'is_superuser': False,
+             u'name': u'bobby',
+             u'ro': [u'geonode:layer2',
+                    u'geonode:mylayer',
+                    u'geonode:foo',
+                    u'geonode:whatever',
+                    u'geonode:fooey',
+                    u'geonode:quux',
+                    u'geonode:fleem'],
+             u'rw': [u'geonode:CA']
         }
         c = Client()
         response = c.get(reverse('layer_acls'), **valid_auth_headers)
@@ -285,7 +296,7 @@ class SecurityTest(TestCase):
     """
 
     def setUp(self):
-        self.admin, created = User.objects.get_or_create(username='admin', password='admin', is_superuser=True)
+        self.admin, created = get_user_model().objects.get_or_create(username='admin', password='admin', is_superuser=True)
 
 
     def test_login_middleware(self):
@@ -316,7 +327,7 @@ class SecurityTest(TestCase):
                       ]
 
         request = HttpRequest()
-        request.user = AnonymousUser()
+        request.user = get_anonymous_user()
 
         # Requests should be redirected to the the `redirected_to` path when un-authenticated user attempts to visit
         # a black-listed url.

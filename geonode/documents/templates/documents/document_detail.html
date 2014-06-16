@@ -1,13 +1,13 @@
 {% extends "documents/document_base.html" %}
-{% load geonode_auth %}
 {% load i18n %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load url from future %}
 {% load base_tags %}
+{% load guardian_tags %}
 
-{% block title %}{{ document.title }} — {{ block.super }}{% endblock %}
+{% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
 {% block head %}
 
@@ -21,21 +21,21 @@
 
 <div class="row">
   <div class="col-md-12">
-    <h2 class="page-title">{{ document.title }}</h2>
+    <h2 class="page-title">{{ resource.title }}</h2>
   </div>
 </div>
 
 <div class="row">
   <div class="col-md-8">
 
-    {% if document.extension|lower in imgtypes and document.doc_file %}
+    {% if resource.extension|lower in imgtypes and resource.doc_file %}
     <div id="embedded_map">
-      <img src="{% url "document_download" document.id %}" width='100%' />
+      <img src="{% url "document_download" resource.id %}" width='100%' />
     </div>
-    {% elif document.doc_file %}
-    <p><a href="{% url "document_download" document.id %}" target="_blank">Download the {{ document }} document</a></p>
-    {% elif  document.doc_url %}
-    <p><a href="{{ document.doc_url }}" target="_blank">Download the {{ document }} document.</a> <small>({% trans 'External Resource' %})</small></p>
+    {% elif resource.doc_file %}
+    <p><a href="{% url "document_download" resource.id %}" target="_blank">Download the {{ resource }} document</a></p>
+    {% elif  resource.doc_url %}
+    <p><a href="{{ resource.doc_url }}" target="_blank">Download the {{ resource }} document.</a> <small>({% trans 'External Resource' %})</small></p>
     {%  endif %}
        
     <div class="documents-actions">
@@ -50,28 +50,26 @@
     </div>
 
     <div class="tab-content">
-      {% include "base/resourcebase_info_panel.html" with resourcebase=document %}
+      {% include "base/resourcebase_info_panel.html" %}
 
       {% block social_links %}
         {% include "social_links.html" %}
       {% endblock %}
         
       <article id="comments" class="tab-pane">
-        {% with document as obj %}
-          {% include "_comments.html" %}
-        {% endwith %}
+      {% include "_comments.html" %}
       </article>
         
       <article id="rate" class="tab-pane">
         <!-- TODO: Move this to a reusable template snippet -->
         {% if request.user.is_authenticated %}
         <h4>{% trans "Rate this document" %}</h4>
-        {% user_rating request.user document "document" as user_document_rating %}
+        {% user_rating request.user resource "document" as user_document_rating %}
         <div id="user_rating" class="category-layer" data-score="{{user_document_rating}}"></div>
         {% endif %}
         <h4>{% trans 'Average Rating' %}</h4>
-        {% overall_rating document "document" as document_rating %}
-        {% num_ratings document as num_votes %}
+        {% overall_rating resource "document" as document_rating %}
+        {% num_ratings resource as num_votes %}
         <div class="overall_rating" style="float:left" data-score="{{ document_rating }}"></div> ({{num_votes}})
         <!-- TODO: Add display of who gave what rating based -->
       </article>
@@ -90,11 +88,11 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title" id="myModalLabel">{% trans "Download Layer" %}</h4>
+              <h4 class="modal-title" id="myModalLabel">{% trans "Download Document" %}</h4>
             </div>
             <div class="modal-body">
               <ul>
-                {% for link in document.link_set.metadata %}
+                {% for link in resource.link_set.metadata %}
                 <li><a href="{{ link.url }}">{{ link.name }}</a></li>
                 {% endfor %}
               <ul>
@@ -105,9 +103,8 @@
           </div>
         </div>
       </div>
-
-      {% has_obj_perm user document "documents.change_document" as can_edit_document %}
-      {% if can_edit_document %}
+      {% get_obj_perms request.user for resource.get_self_resource as "resource_perms" %}
+      {% if "change_resourcebase" in resource_perms %}
       <li class="list-group-item">
         <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#edit-document">{% trans "Edit Document" %}</button>
       </li>
@@ -116,13 +113,13 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title" id="myModalLabel">{% trans "Download Layer" %}</h4>
+              <h4 class="modal-title" id="myModalLabel">{% trans "Download Document" %}</h4>
             </div>
             <div class="modal-body">
               <ul>
-                <li><a href="{% url "document_metadata" document.id %}">{% trans "Edit Metadata" %}</a></li>
-                <li><a href="{% url "document_replace" document.id %}">{% trans "Replace this Document" %}</a></li>
-                <li><a href="{% url "document_remove" document.id %}">{% trans "Remove this Document" %}</a></li>
+                <li><a href="{% url "document_metadata" resource.id %}">{% trans "Edit Metadata" %}</a></li>
+                <li><a href="{% url "document_replace" resource.id %}">{% trans "Replace this Document" %}</a></li>
+                <li><a href="{% url "document_remove" resource.id %}">{% trans "Remove this Document" %}</a></li>
               <ul>
             </div>
             <div class="modal-footer">
@@ -140,7 +137,7 @@
         {% endif %}
         <ul class="list-unstyled">
           {% if related.title %}
-          <p>{% trans "This document is related to a " %} {{ document.content_type.name }}</p>
+          <p>{% trans "This document is related to a " %} {{ resource.content_type.name }}</p>
           <a href='{{ related.get_absolute_url }}'>{{ related.title }}</a>
           {% else %}
           <p>{% trans "This document is not related to any maps or layers" %}</p>
@@ -148,8 +145,7 @@
         </ul>
       </li>
 
-      {% has_obj_perm user document "documents.change_document_permissions" as can_change_permissions %}
-      {% if can_change_permissions %}
+      {% if "change_resourcebase_permissions" in resource_perms %}
       <li class="list-group-item">
         <h4>{% trans "Permissions" %}</h4>
         <p>{% trans "Click the button below to change the permissions of this document." %}</p>
@@ -158,21 +154,7 @@
       {% include "_permissions_form.html" %}
       {% endif %}
 
-      <li class="list-group-item">
-        <h4>{% trans "About" %}</h4>
-        <p>{% trans "Document Owner" %}</p>
-        {% with document.owner.profile as profile %}
-          {% include "people/_profile_about_item.html" %}
-        {% endwith %}
-        <p>{% trans "Point of Contact" %}</p>
-        {% with document.poc as profile %}
-          {% include "people/_profile_about_item.html" %}
-        {% endwith %}
-        <p>{% trans "Metadata Author" %}</p>
-        {% with document.metadata_author as profile %}
-          {% include "people/_profile_about_item.html" %}
-        {% endwith %}
-      </li>
+      {% include "base/_resourcebase_contact_snippet.html" %}
 
     </ul>
   </div>
@@ -191,9 +173,9 @@
 }(document, 'script', 'facebook-jssdk'));</script>
 {% endif %}
     {% if request.user.is_authenticated %}
-        {% user_rating_js request.user document "document" %}
+        {% user_rating_js request.user resource "document" %}
     {% else %}
-        {% overall_rating document "document" as the_doc_rating %}
+        {% overall_rating resource "document" as the_doc_rating %}
     {% endif %}
     {% include 'rating.html' %}
     <script type="text/javascript">

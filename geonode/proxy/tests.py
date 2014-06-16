@@ -24,7 +24,7 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 from django.test.utils import override_settings, str_prefix
@@ -37,7 +37,7 @@ TEST_URL='https://help%s/' % TEST_DOMAIN
 class ProxyTest(TestCase):
 
     def setUp(self):
-        self.admin, created = User.objects.get_or_create(username='admin', password='admin', is_superuser=True)
+        self.admin, created = get_user_model().objects.get_or_create(username='admin', password='admin', is_superuser=True)
         # FIXME(Ariel): These tests do not work when the computer is offline.
         self.url = TEST_URL
 

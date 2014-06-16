@@ -4,22 +4,22 @@
 {% friendly_load i18n avatar_tags relationship_tags activity_tags %}
 {% load pagination_tags %}
 
-{% block title %} {% trans "Profile of " %}{{ profile.name|default_if_none:profile.user.username }}{% endblock %}
+{% block title %} {% trans "Profile of " %}{{ profile.first_name|default_if_none:profile.username }}{% endblock %}
 
 {% block body_class %}people explore{% endblock %}
 
 {% block body %}
 <div class="row">
   <div class="col-md-12">
-    <h2 class="page-title">{{ profile.name|default_if_none:profile.user.username }}</h2>
+    <h2 class="page-title">{{ profile.first_name|default_if_none:profile.username }}</h2>
   </div>
   <div class="col-md-2">
-    {% avatar profile.user 140 %}
+    {% avatar profile 140 %}
   </div>
   <div class="col-md-6">
     <dl class="dl-horizontal profile-details">
       <dt><i class="fa fa-user"></i></dt>
-      <dd>{{ profile.user.username }}
+      <dd>{{ profile.username }}
         {% if profile.position %} | {{ profile.position }}{% endif %}
         {% if profile.organization %} @ {{ profile.organization }}{% endif %}
         {% if profile.profile %}<br />{{ profile.profile }}{% endif %}</dd>
@@ -49,7 +49,7 @@
 
   <div class="col-md-4">
     
-    {% if user == profile.user %}
+    {% if user == profile %}
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "profile_edit" user.username %}">{% trans "Edit profile" %}</a></li>
       <li class="list-group-item"><a href="{% url "account_settings" %}">{% trans "Account Settings" %}</a></li>
@@ -57,7 +57,7 @@
       <li class="list-group-item"><a href="{% url "layer_upload" %}">{% trans "Upload new layers" %}</a></li>
       <li class="list-group-item"><a href="{% url "new_map" %}">{% trans "Create a new map" %}</a></li>
       {% if_has_tag actor_url %}
-      <li class="list-group-item"><a href="{% actor_url profile.user %}">{% trans "My Activities" %}</a></li>
+      <li class="list-group-item"><a href="{% actor_url profile %}">{% trans "My Activities" %}</a></li>
       {% endif_has_tag %}
     </ul>
       {% if_has_tag if_relationship %}

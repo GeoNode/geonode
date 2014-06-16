@@ -24,11 +24,10 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 from django.utils import simplejson as json
-from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
+from django.contrib.auth import get_user_model
 
-import geonode.maps.models
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.utils import default_map_config
@@ -117,7 +116,12 @@ community."
     }
     """
 
-    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","map_readwrite"]]}
+    perm_spec = {
+        "users":{
+            "admin": ["change_resourcebase", "change_resourcebase_permissions","view_resourcebase"]
+        },
+        "groups": {}  
+    }
 
     def test_map_json(self):
         c = Client()
@@ -251,7 +255,7 @@ community."
 
         c = Client()
 
-        url = lambda id: reverse('resource_permissions',args=['map', id])
+        url = lambda id: reverse('resource_permissions',args=[id])
 
         # Test that an invalid layer.typename is handled for properly
         response = c.post(url(invalid_mapid),
@@ -469,7 +473,7 @@ community."
 
         # Test successful new map creation
         m = Map()
-        admin_user = User.objects.get(username='admin')
+        admin_user = get_user_model().objects.get(username='admin')
         layer_name = Layer.objects.all()[0].typename
         m.create_from_layer_list(admin_user, [layer_name], "title", "abstract")
         map_id = m.id

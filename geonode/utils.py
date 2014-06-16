@@ -28,15 +28,16 @@ from collections import namedtuple
 from django.conf import settings
 from django.core.exceptions import PermissionDenied, ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from django.http import HttpResponse
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS, INVALID_PERMISSION_MESSAGE
 from urlparse import urlsplit
 
 DEFAULT_TITLE=""
 DEFAULT_ABSTRACT=""
+
+INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
 
 http_client = httplib2.Http()
 
@@ -52,140 +53,12 @@ def _get_basic_auth_info(request):
 
 
 def batch_permissions(request):
-    """
-    if not request.user.is_authenticated:
-        return HttpResponse("You must log in to change permissions", status=401)
-
-    if request.method != "POST":
-        return HttpResponse("Permissions API requires POST requests", status=405)
-
-    spec = json.loads(request.body)
-
-    if "layers" in spec:
-        lyrs = Layer.objects.filter(pk__in = spec['layers'])
-        for lyr in lyrs:
-            if not request.user.has_perm("maps.change_layer_permissions", obj=lyr):
-                return HttpResponse("User not authorized to change layer permissions", status=403)
-
-    if "maps" in spec:
-        map_query = Map.objects.filter(pk__in = spec['maps'])
-        for m in map_query:
-            if not request.user.has_perm("maps.change_map_permissions", obj=m):
-                return HttpResponse("User not authorized to change map permissions", status=403)
-
-    anon_level = spec['permissions'].get("anonymous")
-    auth_level = spec['permissions'].get("authenticated")
-    users = spec['permissions'].get('users', [])
-    user_names = [x[0] for x in users]
-
-    if "layers" in spec:
-        lyrs = Layer.objects.filter(pk__in = spec['layers'])
-        valid_perms = ['layer_readwrite', 'layer_readonly']
-        if anon_level not in valid_perms:
-            anon_level = "_none"
-        if auth_level not in valid_perms:
-            auth_level = "_none"
-        for lyr in lyrs:
-            lyr.get_user_levels().exclude(user__username__in = user_names + [lyr.owner.username]).delete()
-            lyr.set_gen_level(ANONYMOUS_USERS, anon_level)
-            lyr.set_gen_level(AUTHENTICATED_USERS, auth_level)
-            for user, user_level in users:
-                if user_level not in valid_perms:
-                    user_level = "_none"
-                lyr.set_user_level(user, user_level)
-
-    if "maps" in spec:
-        map_query = Map.objects.filter(pk__in = spec['maps'])
-        valid_perms = ['layer_readwrite', 'layer_readonly']
-        if anon_level not in valid_perms:
-            anon_level = "_none"
-        if auth_level not in valid_perms:
-            auth_level = "_none"
-        anon_level = anon_level.replace("layer", "map")
-        auth_level = auth_level.replace("layer", "map")
-
-        for m in map_query:
-            m.get_user_levels().exclude(user__username__in = user_names + [m.owner.username]).delete()
-            m.set_gen_level(ANONYMOUS_USERS, anon_level)
-            m.set_gen_level(AUTHENTICATED_USERS, auth_level)
-            for user, user_level in spec['permissions'].get("users", []):
-                user_level = user_level.replace("layer", "map")
-                m.set_user_level(user, valid_perms.get(user_level, "_none"))
-
-    return HttpResponse("Not implemented yet")
-    """
+    #TODO
     pass
 
 def batch_delete(request):
-    """
-    if not request.user.is_authenticated:
-        return HttpResponse("You must log in to delete layers", status=401)
-
-    if request.method != "POST":
-        return HttpResponse("Delete API requires POST requests", status=405)
-
-    spec = json.loads(request.body)
-
-    if "layers" in spec:
-        lyrs = Layer.objects.filter(pk__in = spec['layers'])
-        for lyr in lyrs:
-            if not request.user.has_perm("maps.delete_layer", obj=lyr):
-                return HttpResponse("User not authorized to delete layer", status=403)
-
-    if "maps" in spec:
-        map_query = Map.objects.filter(pk__in = spec['maps'])
-        for m in map_query:
-            if not request.user.has_perm("maps.delete_map", obj=m):
-                return HttpResponse("User not authorized to delete map", status=403)
-
-    if "layers" in spec:
-        Layer.objects.filter(pk__in = spec["layers"]).delete()
-
-    if "maps" in spec:
-        Map.objects.filter(pk__in = spec["maps"]).delete()
-
-    nlayers = len(spec.get('layers', []))
-    nmaps = len(spec.get('maps', []))
-
-    return HttpResponse("Deleted %d layers and %d maps" % (nlayers, nmaps))
-    """
+    #TODO
     pass
-
-def _handle_perms_edit(request, obj):
-    errors = []
-    params = request.POST
-    valid_pl = obj.permission_levels
-
-    anon_level = params[ANONYMOUS_USERS]
-    # validate anonymous level, disallow admin level
-    if not anon_level in valid_pl or anon_level == obj.LEVEL_ADMIN:
-        errors.append(_("Anonymous Users") + ": " + INVALID_PERMISSION_MESSAGE)
-
-    all_auth_level = params[AUTHENTICATED_USERS]
-    if not all_auth_level in valid_pl:
-        errors.append(_("Registered Users") + ": " + INVALID_PERMISSION_MESSAGE)
-
-    kpat = re.compile("^u_(.*)_level$")
-    ulevs = {}
-    for k, level in params.items():
-        m = kpat.match(k)
-        if m:
-            username = m.groups()[0]
-            if not level in valid_pl:
-                errors.append(_("User") + " " + username + ": " + INVALID_PERMISSION_MESSAGE)
-            else:
-                ulevs[username] = level
-
-    if len(errors) == 0:
-        obj.set_gen_level(ANONYMOUS_USERS, anon_level)
-        obj.set_gen_level(AUTHENTICATED_USERS, all_auth_level)
-
-        for username, level in ulevs.items():
-            user = User.objects.get(username=username)
-            obj.set_user_level(user, level)
-
-    return errors
-
 
 def _split_query(query):
     """
@@ -513,7 +386,7 @@ def _get_viewer_projection_info(srid):
     return _viewer_projection_lookup.get(srid, {})
 
 
-def resolve_object(request, model, query, permission=None,
+def resolve_object(request, model, query, permission='base.view_resourcebase',
                    permission_required=True, permission_msg=None):
     """Resolve an object using the provided query and check the optional
     permission. Model views should wrap this function as a shortcut.
@@ -523,12 +396,11 @@ def resolve_object(request, model, query, permission=None,
     permission_required - if False, allow get methods to proceed
     permission_msg - optional message to use in 403
     """
-
     obj = get_object_or_404(model, **query)
     allowed = True
     if permission:
         if permission_required or request.method != 'GET':
-            allowed = request.user.has_perm(permission, obj=obj)
+            allowed = request.user.has_perm(permission, obj.get_self_resource())
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)
@@ -578,3 +450,4 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
    if not isinstance(body, basestring):
        body = json.dumps(body)
    return HttpResponse(body, content_type=content_type, status=status)
+

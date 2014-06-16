@@ -29,17 +29,17 @@ from django.conf import settings
 from django.db import models
 from django.db.models import signals
 from django.utils import simplejson as json
-from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
+from guardian.shortcuts import get_anonymous_user
+
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
 from geonode.maps.signals import map_changed_signal
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
@@ -189,33 +189,6 @@ class Map(ResourceBase, GXPMapBase):
     def get_absolute_url(self):
         return reverse('geonode.maps.views.map_detail', None, [str(self.id)])
 
-
-    class Meta:
-        # custom permissions,
-        # change and delete are standard in django
-        permissions = (('view_map', 'Can view'),
-                       ('change_map_permissions', "Can change permissions"), )
-
-    # Permission Level Constants
-    # LEVEL_NONE inherited
-    LEVEL_READ  = 'map_readonly'
-    LEVEL_WRITE = 'map_readwrite'
-    LEVEL_ADMIN = 'map_admin'
-
-    def set_default_permissions(self):
-        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
-        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
-
-        # remove specific user permissions
-        current_perms = self.get_all_level_info()
-        for username in current_perms['users'].keys():
-            user = User.objects.get(username=username)
-            self.set_user_level(user, self.LEVEL_NONE)
-
-        # assign owner admin privs
-        if self.owner:
-            self.set_user_level(self.owner, self.LEVEL_ADMIN)
-
     def get_bbox_from_layers(self, layers):
         """
         Calculate the bbox from a given list of Layer objects
@@ -232,7 +205,6 @@ class Map(ResourceBase, GXPMapBase):
                 bbox[3] = max(bbox[3], layer_bbox[3])
         
         return bbox
-
 
     def create_from_layer_list(self, user, layers, title, abstract):
         self.owner = user
@@ -259,7 +231,7 @@ class Map(ResourceBase, GXPMapBase):
                 except ObjectDoesNotExist:
                     raise GeoNodeError('Could not find layer with name %s' % layer)
 
-            if not user.has_perm('maps.view_layer', obj=layer):
+            if not user.has_perm('base.view_resourcebase', obj=layer.resourcebase_ptr):
                 # invisible layer, skip inclusion or raise Exception?
                 raise GeoNodeError('User %s tried to create a map with layer %s without having premissions' % (user, layer))
             MapLayer.objects.create(
@@ -293,8 +265,8 @@ class Map(ResourceBase, GXPMapBase):
         """
         Returns True if anonymous (public) user can view map.
         """
-        user = AnonymousUser()
-        return user.has_perm('maps.view_map', obj=self)
+        user = get_anonymous_user()
+        return user.has_perm('base.view_resourcebase', obj=self.resourcebase_ptr)
 
     @property
     def layer_group(self):
@@ -348,6 +320,9 @@ class Map(ResourceBase, GXPMapBase):
             lg.layers, lg.styles, lg.bounds = lg_layers, lg_styles, lg_bounds
         gs_catalog.save(lg)
         return lg_name
+
+    class Meta(ResourceBase.Meta):
+        pass
 
 
 class MapLayer(models.Model, GXPLayerBase):
