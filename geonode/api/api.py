@@ -135,7 +135,6 @@ class GroupResource(ModelResource):
 
 class ProfileResource(ModelResource):
     """Profile api"""
-    user = fields.ToOneField(UserResource, 'user')
     avatar_100 = fields.CharField(null=True)
     profile_detail_url = fields.CharField()
     email = fields.CharField(default='')
@@ -174,31 +173,31 @@ class ProfileResource(ModelResource):
         return email
 
     def dehydrate_layers_count(self, bundle):
-        return bundle.obj.user.resourcebase_set.instance_of(Layer).count()
+        return bundle.obj.resourcebase_set.instance_of(Layer).count()
 
     def dehydrate_maps_count(self, bundle):
-        return bundle.obj.user.resourcebase_set.instance_of(Map).count()
+        return bundle.obj.resourcebase_set.instance_of(Map).count()
 
     def dehydrate_documents_count(self, bundle):
-        return bundle.obj.user.resourcebase_set.instance_of(Document).count()
+        return bundle.obj.resourcebase_set.instance_of(Document).count()
 
     def dehydrate_avatar_100(self, bundle):
-        return avatar_url(bundle.obj.user, 100)
+        return avatar_url(bundle.obj, 100)
 
     def dehydrate_profile_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
 
     def dehydrate_current_user(self, bundle):
-        return bundle.request.user.username == bundle.obj.user.username
+        return bundle.request.user.username == bundle.obj.username
 
     def dehydrate_activity_stream_url(self, bundle):
         return reverse('actstream_actor', kwargs={
-            'content_type_id': ContentType.objects.get_for_model(bundle.obj.user).pk, 
-            'object_id': bundle.obj.user.pk})
+            'content_type_id': ContentType.objects.get_for_model(bundle.obj).pk, 
+            'object_id': bundle.obj.pk})
 
     class Meta:
-        queryset = Profile.objects.all()
+        queryset = get_user_model().objects.exclude(username='AnonymousUser')
         resource_name = 'profiles'
         allowed_methods = ['get',]
-        ordering = ['user','name']
+        ordering = ['name']
         
