@@ -6,14 +6,12 @@ import uuid
 from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.files.base import ContentFile
 from django.contrib.contenttypes import generic
 from django.contrib.staticfiles import finders
 from django.utils.translation import ugettext_lazy as _
 
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, Thumbnail, Link
 from geonode.maps.signals import map_changed_signal
@@ -50,18 +48,6 @@ class Document(ResourceBase):
         
     def get_absolute_url(self):
         return reverse('document_detail', args=(self.id,))
-        
-    class Meta:
-        # custom permissions,
-        # change and delete are standard in django
-        permissions = (
-            ('view_document', 'Can view'), 
-            ('change_document_permissions', "Can change permissions"),
-        )
-
-    LEVEL_READ  = 'document_readonly'
-    LEVEL_WRITE = 'document_readwrite'
-    LEVEL_ADMIN = 'document_admin'
 
 
     def _render_thumbnail(self):
@@ -108,6 +94,10 @@ class Document(ResourceBase):
     @property
     def class_name(self):
         return self.__class__.__name__
+
+    class Meta(ResourceBase.Meta):
+        pass
+        
 
 def get_related_documents(resource):
     if isinstance(resource, Layer) or isinstance(resource, Map):

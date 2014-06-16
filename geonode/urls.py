@@ -28,7 +28,10 @@ import geonode.proxy.urls
 
 from geonode.api.urls import api
 
+import autocomplete_light
+
 # Setup Django Admin
+autocomplete_light.autodiscover()
 from django.contrib import admin
 admin.autodiscover()
 
@@ -78,7 +81,7 @@ urlpatterns = patterns('',
                                        name='account_ajax_login'),
     url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup',
                                        name='account_ajax_lookup'),
-    url(r'^security/permissions/(?P<type>[^/]*)/(?P<resource_id>\d+)$', 'geonode.security.views.resource_permissions',
+    url(r'^security/permissions/(?P<resource_id>\d+)$', 'geonode.security.views.resource_permissions',
                                        name='resource_permissions'),
 
     # Meta
@@ -88,24 +91,12 @@ urlpatterns = patterns('',
     url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
                                   {'sitemaps': sitemaps}, name='sitemap'),
     (r'^i18n/', include('django.conf.urls.i18n')),
+    (r'^autocomplete/', include('autocomplete_light.urls')),
     (r'^admin/', include(admin.site.urls)),
+    (r'^groups/', include('geonode.groups.urls')),
+    (r'^documents/', include('geonode.documents.urls')),
+    (r'^services/', include('geonode.services.urls')),
     url(r'', include(api.urls)),
-    )
-
-#Documents views
-if 'geonode.documents' in settings.INSTALLED_APPS:
-    urlpatterns += patterns('',
-        (r'^documents/', include('geonode.documents.urls')),
-    )
-
-if "geonode.contrib.groups" in settings.INSTALLED_APPS:
-    urlpatterns += patterns('',
-        (r'^groups/', include('geonode.contrib.groups.urls')),
-    )
-
-if "geonode.contrib.services" in settings.INSTALLED_APPS:
-    urlpatterns += patterns('',
-        (r'^services/', include('geonode.contrib.services.urls')),
     )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:

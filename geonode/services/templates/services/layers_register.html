@@ -1,0 +1,48 @@
+{% extends "services/services_base.html" %}
+{% load i18n %}
+{% block head %}
+{{ block.super }}
+<script type="text/javascript">
+    $(function () {
+        $("#checkall").on('click', function () {
+            $('input[name=layer_list]').prop('checked', this.checked);
+        });
+    });
+</script>
+{% endblock %}
+
+{% block title %} Services -- Available Layers {{ block.super }} {% endblock %}
+
+{% block body %}
+<div class="twocol">
+    {% if service %}
+    <h1>Select Layers to Import</h1>
+     <form method="POST">
+      {% csrf_token %}
+
+         <table class="table table-striped table-bordered table-condensed">
+             <thead>
+             <tr>
+                 <th><input type="checkbox" checked="true" id="checkall" />{% trans "All/None" %}</th>
+                 <th>{% trans "Name" %}</th>
+                 <th>{% trans "Description" %}</th>
+             </tr>
+             </thead>
+             <tbody>
+             {% for layer in service.layer_set.all %}
+             <tr>
+                 <td><input type="checkbox" name="layer_list" id="option_{{layer.typename}}" value="{{ layer.typename }}" checked="false"  /></td>
+                 <td>{{ layer.typename }}</td>
+                 <td>{{ layer.description }}</td>
+             </tr>
+             {% endfor %}
+
+             </tbody>
+         </table>
+         <div align="center"><p><input type="submit" class="submit_btn" value="{% trans "Add Layers" %}" /></p></div>
+     </form>
+    {% else %}
+    <h3>No layers found</h3>
+    {% endif %}
+</div>
+{% endblock %}

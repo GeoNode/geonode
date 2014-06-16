@@ -18,6 +18,8 @@ from .authorization import GeoNodeAuthorization
 
 from .api import TagResource, TopicCategoryResource, UserResource, FILTER_TYPES
 
+from django.db.models import Q
+
 FILTER_TYPES.update({
     'vector': 'dataStore',
     'raster': 'coverageStore'
@@ -84,15 +86,14 @@ class CommonModelApi(ModelResource):
         return filtered
 
     def filter_bbox(self, queryset, bbox):
-        '''modify the queryset q to limit to the provided bbox
+        '''modify the queryset q to limit to data that intersects with the provided bbox 
+
         bbox - 4 tuple of floats representing 'southwest_lng,southwest_lat,northeast_lng,northeast_lat'
         returns the modified query
         '''
         bbox = map(str, bbox) # 2.6 compat - float to decimal conversion
-        queryset = queryset.filter(bbox_x0__gte=bbox[0])
-        queryset = queryset.filter(bbox_y0__gte=bbox[1])
-        queryset = queryset.filter(bbox_x1__lte=bbox[2])
-        return queryset.filter(bbox_y1__lte=bbox[3])
+        intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) | Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
+        return queryset.filter(intersects)
 
     def get_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])

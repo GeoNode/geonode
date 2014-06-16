@@ -34,12 +34,15 @@ from django.utils import simplejson as json
 from django.utils.html import escape
 from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
+from geonode.services.models import Service
 
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
+from geonode.base.forms import CategoryForm
 from geonode.layers.models import Layer, Attribute
 from geonode.base.enumerations import CHARSETS
+from geonode.base.models import TopicCategory
 
-from geonode.utils import default_map_config
+from geonode.utils import default_map_config, llbbox_to_mercator
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.layers.utils import file_upload
@@ -56,13 +59,6 @@ MAX_SEARCH_BATCH_SIZE = 25
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
-LAYER_LEV_NAMES = {
-    Layer.LEVEL_NONE  : _('No Permissions'),
-    Layer.LEVEL_READ  : _('Read Only'),
-    Layer.LEVEL_WRITE : _('Read/Write'),
-    Layer.LEVEL_ADMIN : _('Administrative')
-}
-
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
 _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this layer")
@@ -70,12 +66,19 @@ _PERMISSION_MSG_METADATA = _("You are not permitted to modify this layer's metad
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 
-def _resolve_layer(request, typename, permission='layers.change_layer',
+def _resolve_layer(request, typename, permission='base.view_resourcebase',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
     """
-    Resolve the layer by the provided typename and check the optional permission.
+    Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
-    return resolve_object(request, Layer, {'typename':typename},
+    service_typename = typename.split(":",1)
+    service = Service.objects.filter(name=service_typename[0])
+
+    if service.count() > 0 and service[0].method != "C":
+        return resolve_object(request, Layer, {'service': service[0], 'typename':service_typename[1]},
+                              permission = permission, permission_msg=msg, **kwargs)
+    else:
+        return resolve_object(request, Layer, {'typename':typename},
                           permission = permission, permission_msg=msg, **kwargs)
 
 
@@ -129,7 +132,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 out['errors'] = str(e)
             else:
                 out['success'] = True
-                out['url'] = reverse('layer_detail', args=[saved_layer.typename])
+                out['url'] = reverse('layer_detail', args=[saved_layer.service_typename])
 
                 permissions = form.cleaned_data["permissions"]
                 if permissions is not None and len(permissions.keys()) > 0:
@@ -153,14 +156,24 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
-    layer = _resolve_layer(request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
 
+    layer = _resolve_layer(request, layername, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+    layer_bbox = layer.bbox
+    # assert False, str(layer_bbox)
+    bbox = list(layer_bbox[0:4])
     config = layer.attribute_config()
-    if layer.storeType == "remoteStore" and "geonode.contrib.services" in settings.INSTALLED_APPS:
-        from geonode.contrib.services.models import Service
-        service = Service.objects.filter(layers__id=layer.id)[0] 
+
+    #Add required parameters for GXP lazy-loading
+    config["srs"] = layer.srid
+    config["title"] = layer.title
+    config["bbox"] =  [float(coord) for coord in bbox] \
+        if layer.srid == "EPSG:4326" else llbbox_to_mercator([float(coord) for coord in bbox])
+
+    if layer.storeType == "remoteStore":
+        service = layer.service
         source_params = {"ptype":service.ptype, "remote": True, "url": service.base_url, "name": service.name}
-        maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config), source_params=json.dumps(source_params))
+        maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config),
+                            source_params=json.dumps(source_params))
     else:
         maplayer = GXPLayer(name = layer.typename, ows_url = layer.ows_url, layer_params=json.dumps( config))
 
@@ -175,8 +188,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
     context_dict = {
-        "layer": layer,
-        "permissions_json": _perms_info_json(layer, LAYER_LEV_NAMES),
+        "resource": layer,
+        "permissions_json": _perms_info_json(layer),
         "documents": get_related_documents(layer),
         "metadata": metadata,
     }
@@ -198,8 +211,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
 @login_required
 def layer_metadata(request, layername, template='layers/layer_metadata.html'):
-    layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_METADATA)
+    layer = _resolve_layer(request, layername, 'base.change_resourcebase', _PERMISSION_MSG_METADATA)
     layer_attribute_set = inlineformset_factory(Layer, Attribute, extra=0, form=LayerAttributeForm, )
+    topic_category = layer.category
 
     poc = layer.poc
     metadata_author = layer.metadata_author
@@ -207,17 +221,20 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     if request.method == "POST":
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(request.POST, instance=layer, prefix="layer_attribute_set", queryset=Attribute.objects.order_by('display_order'))
+        category_form = CategoryForm(request.POST,prefix="category_choice_field",
+            initial=int(request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(instance=layer, prefix="layer_attribute_set", queryset=Attribute.objects.order_by('display_order'))
+        category_form = CategoryForm(prefix="category_choice_field", initial=topic_category.id if topic_category else None)
 
-    if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid():
+    if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid() and category_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']
         new_author = layer_form.cleaned_data['metadata_author']
         new_keywords = layer_form.cleaned_data['keywords']
 
         if new_poc is None:
-            if poc.user is None:
+            if poc is None:
                 poc_form = ProfileForm(request.POST, prefix="poc", instance=poc)
             else:
                 poc_form = ProfileForm(request.POST, prefix="poc")
@@ -225,13 +242,15 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                 new_poc = poc_form.save()
 
         if new_author is None:
-            if metadata_author.user is None:
+            if metadata_author is None:
                 author_form = ProfileForm(request.POST, prefix="author", 
                     instance=metadata_author)
             else:
                 author_form = ProfileForm(request.POST, prefix="author")
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
+
+        new_category = TopicCategory.objects.get(id=category_form.cleaned_data['category_choice_field'])
 
         for form in attribute_form.cleaned_data:
             la = Attribute.objects.get(id=int(form['id'].id))
@@ -247,16 +266,18 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             the_layer.metadata_author = new_author
             the_layer.keywords.clear()
             the_layer.keywords.add(*new_keywords)
-            return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
+            the_layer.category = new_category
+            the_layer.save()
+            return HttpResponseRedirect(reverse('layer_detail', args=(layer.service_typename,)))
 
-    if poc.user is None:
+    if poc is None:
         poc_form = ProfileForm(instance=poc, prefix="poc")
     else:
         layer_form.fields['poc'].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
         poc_form.hidden=True
 
-    if metadata_author.user is None:
+    if metadata_author is None:
         author_form = ProfileForm(instance=metadata_author, prefix="author")
     else:
         layer_form.fields['metadata_author'].initial = metadata_author.id
@@ -269,6 +290,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         "poc_form": poc_form,
         "author_form": author_form,
         "attribute_form": attribute_form,
+        "category_form": category_form,
     }))
 
 
@@ -293,7 +315,7 @@ def layer_change_poc(request, ids, template = 'layers/layer_change_poc.html'):
 
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
-    layer = _resolve_layer(request, layername, 'layers.change_layer',_PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(request, layername, 'base.change_resourcebase',_PERMISSION_MSG_MODIFY)
 
     if request.method == 'GET':
         return render_to_response(template,
@@ -315,7 +337,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 out['errors'] = str(e)
             else:
                 out['success'] = True
-                out['url'] = reverse('layer_detail', args=[saved_layer.typename])
+                out['url'] = reverse('layer_detail', args=[saved_layer.service_typename])
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
@@ -335,7 +357,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 @login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
     try:
-        layer = _resolve_layer(request, layername, 'layers.delete_layer',
+        layer = _resolve_layer(request, layername, 'base.delete_resourcebase',
                                _PERMISSION_MSG_DELETE)
 
         if (request.method == 'GET'):
@@ -353,6 +375,3 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
                 mimetype="text/plain",
                 status=401
         )
-
-
-

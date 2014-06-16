@@ -97,7 +97,7 @@
 {% autoescape off %}
 
   csrf_token =  "{{ csrf_token }}",
-  form_target = "{% url "layer_replace" layer.typename %}",
+  form_target = "{% url "layer_replace" layer.service_typename %}",
   geogit_enabled = {{ GEOGIT_ENABLED|lower  }},
   time_enabled = {{ TIME_ENABLED|lower  }},
   userLookup = "{% url "geonode.views.ajax_lookup" %}"

@@ -41,7 +41,7 @@ class RoleForm(forms.ModelForm):
 
 class PocForm(forms.Form):
     contact = forms.ModelChoiceField(label = "New point of contact",
-                                     queryset = Profile.objects.exclude(user=None))
+                                     queryset = Profile.objects.all())
 
 
 class ProfileForm(forms.ModelForm):

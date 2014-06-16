@@ -1,13 +1,13 @@
 {% extends "layers/layer_base.html" %}
-{% load geonode_auth %}
 {% load i18n %}
 {% load dialogos_tags %}
 {% load agon_ratings_tags %}
 {% load bootstrap_tags %}
 {% load url from future %}
 {% load base_tags %}
+{% load guardian_tags %}
 
-{% block title %}{{ layer.title|default:layer.typename }} — {{ block.super }}{% endblock %}
+{% block title %}{{ resource.title|default:resource.typename }} — {{ block.super }}{% endblock %}
 
 {% block head %}
 {% include "layers/layer_map.html" %}
@@ -19,11 +19,25 @@
 {% block body_class %}layers{% endblock %}
 
 {% block body_outer %}
+
 <div class="row">
   <div class="col-md-12">
-    <h2 class="page-title">{{ layer.title|default:layer.typename }}</h2>
+    <h2 class="page-title">{{ resource.title|default:resource.typename }}</h2>
   </div>
 </div>
+
+<div class="row">
+    <div class="col-md-8">
+        {% if resource.storeType == "remoteStore" %}
+            <h4>{% trans "External service layer" %}</h4>
+            <ul>
+                <li>{% trans "Source:" %}<a href="/services/{{resource.service.id}}">{{ resource.service.title }}</a></li>
+                <li>{% trans "Type:" %}{{ resource.service.type }}</li>
+            </ul>
+        {% endif %}
+    </div>
+</div>
+
 
 <div class="row">
   <div class="col-md-8">
@@ -38,10 +52,10 @@
 
     <div class="tab-content">
 
-    {% include "base/resourcebase_info_panel.html" with resourcebase=layer %}
+    {% include "base/resourcebase_info_panel.html" %}
 
       <article id="attributes" class="tab-pane">
-        {% if layer.attribute_set.all %}
+        {% if resource.attribute_set.all %}
             <table class="table table-striped table-bordered table-condensed">
               <thead>
                 <tr>
@@ -53,7 +67,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for attribute in layer.attribute_set.all %}
+                {% for attribute in resource.attribute_set.all %}
                   <tr>
                     <td>{{ attribute }}</td>
                     {% if attribute.unique_values == "NA" %}
@@ -82,7 +96,7 @@
       {% endblock %}
 
       <article id="comments" class="tab-pane">
-        {% with layer as obj %}
+        {% with resource as obj %}
           {% include "_comments.html" %}
         {% endwith %}
       </article>
@@ -91,12 +105,12 @@
         <!-- TODO: Move this to a reusable template snippet -->
         {% if request.user.is_authenticated %}
         <h4>{% trans "Rate this layer" %}</h4>
-        {% user_rating request.user layer "layer" as user_layer_rating %}
+        {% user_rating request.user resource "layer" as user_layer_rating %}
         <div id="user_rating" class="category-layer" data-score="{{ user_layer_rating }}"></div>
         {% endif %}
         <h4>{% trans 'Average Rating' %}</h4>
-        {% overall_rating layer "layer" as layer_rating %}
-        {% num_ratings layer as num_votes %}
+        {% overall_rating resource "layer" as layer_rating %}
+        {% num_ratings resource as num_votes %}
         <div class="overall_rating" data-score="{{ layer_rating }}"></div> ({{num_votes}})
       </article>
 
@@ -107,11 +121,11 @@
   <div class="col-md-4">
 
     <ul class="list-group">
-
+      {% if resource.storeType != "remoteStore" %}
       <li class="list-group-item">
         <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
       </li>
-
+      {% endif %}
     <div class="modal fade" id="download-layer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -159,9 +173,8 @@
     </div>
 
     <li class="list-group-item">
-
-    {% has_obj_perm user layer "layers.change_layer" as can_edit_layer %}
-    {% if can_edit_layer %}
+    {% get_obj_perms request.user for resource.get_self_resource as "resource_perms" %}
+    {% if "change_resourcebase" in resource_perms %}
     <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#edit-layer">{% trans "Edit Layer" %}</button>
 
   </li>
@@ -175,13 +188,13 @@
           </div>
           <div class="modal-body">
             <ul>
-              <li><a href="{% url "layer_metadata" layer.typename %}">{% trans "Edit Metadata" %}</a></li>            
+              <li><a href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit Metadata" %}</a></li>            
               {% if GEOSERVER_BASE_URL %}
-              <li><a href="{% url "layer_style_manage" layer.typename %}">{% trans "Manage Styles" %}</a></li>
+              <li><a href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage Styles" %}</a></li>
               <li><a class="style-edit" href="#">{% trans "Edit Styles" %}</a></li>
               {% endif %}
-              <li><a href="{% url "layer_replace" layer.typename %}">{% trans "Replace this Layer" %}</a></li>
-              <li><a href="{% url "layer_remove" layer.typename %}">{% trans "Remove this Layer" %}</a></li>
+              <li><a href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace this Layer" %}</a></li>
+              <li><a href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove this Layer" %}</a></li>
             <ul>
           </div>
           <div class="modal-footer">
@@ -192,12 +205,12 @@
     </div>
     {% endif %}
 
-    {% if layer.get_legend %}
+    {% if resource.get_legend %}
     <li class="list-group-item">
       <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
       <p>{{ style.sld_title }}</p>
-      {% if layer.get_legend.link_type == 'image' %}
-      <p><img src="{{ layer.get_legend.url }}"></p>
+      {% if resource.get_legend.link_type == 'image' %}
+      <p><img src="{{ resource.get_legend.url }}"></p>
       {% else %}
       <div id='legend_placeholder'></div>
       {% endif %}
@@ -206,11 +219,11 @@
 
     <li class="list-group-item">
       <h4>{% trans "Maps using this layer" %}</h4>
-      {% if layer.maps %}
+      {% if resource.maps %}
         <p>{% trans "List of maps using this layer:" %}</p>
         {% endif %}
         <ul class="list-unstyled">
-          {% for maplayer in layer.maps %} 
+          {% for maplayer in resource.maps %} 
             <li><a href="{{ maplayer.map.get_absolute_url }}">{{ maplayer.map.title }}</a></li>
           {% empty %}
             <li>{% trans "This layer is not currently used in any maps." %}</li>
@@ -220,7 +233,7 @@
     <li class="list-group-item">
       <h4>{% trans "Create a map using this layer" %}</h4>
       <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>
-        <a href="{% url "new_map" %}?layer={{layer.typename}}" class="btn btn-default btn-block">{% trans "Create a Map" %}</a>
+        <a href="{% url "new_map" %}?layer={{resource.service_typename}}" class="btn btn-default btn-block">{% trans "Create a Map" %}</a>
     </li>
 
     {% if documents.count > 0 %}
@@ -240,9 +253,9 @@
       <h4>{% trans "Styles" %}</h4>
        <p>{% trans "The following styles are associated with this layer. Choose a style to view it in the preview map." %}</p>
        <ul class="list-unstyled">
-        {% for style in layer.styles.all %}
+        {% for style in resource.styles.all %}
         <li>
-          {% if layer.default_style == style %}
+          {% if resource.default_style == style %}
           <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
           (default style)
           {% else %}
@@ -258,8 +271,7 @@
     {% endif %}
 
     {% if GEONODE_SECURITY_ENABLED %}
-    {% has_obj_perm user layer "layers.change_layer_permissions" as can_change_permissions %}
-    {% if can_change_permissions %}
+    {% if "change_resourcebase_permissions" in resource_perms %}
     <li class="list-group-item">
       <h4>{% trans "Permissions" %}</h4>
       <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
@@ -268,28 +280,7 @@
     {% endif %}
     {% endif %}
 
-    <li class="list-group-item">
-      <h4>{% trans "About" %}</h4>
-      {% if layer.owner.profile == layer.poc and layer.owner.profile == layer.metadata_author %}
-      <p>{% trans "Layer Owner, Point of Contact, Metadata Author" %}</p>
-        {% with layer.owner.profile as profile %}
-          {% include "people/_profile_about_item.html" %}
-        {% endwith %}
-      {% else %}
-      <p>{% trans "Layer Owner" %}</p>
-        {% with layer.owner.profile as profile %}
-          {% include "people/_profile_about_item.html" %}
-        {% endwith %}
-      <p>{% trans "Point of Contact" %}</p>
-        {% with layer.poc as profile %}
-          {% include "people/_profile_about_item.html" %}
-        {% endwith %}
-      <p>{% trans "Metadata Author" %}</p>
-        {% with layer.metadata_author as profile %}
-          {% include "people/_profile_about_item.html" %}
-        {% endwith %}
-      {% endif %}
-    </li>    
+    {% include "base/_resourcebase_contact_snippet.html" %}  
   </ul>
 
 
@@ -299,17 +290,12 @@
 {% endblock %}
 {% block extra_script %}
     {% if request.user.is_authenticated %}
-        {% user_rating_js request.user layer "layer" %}
+        {% user_rating_js request.user resource "layer" %}
     {% else %}
-      {% overall_rating layer 'layer' as the_layer_rating %}
+      {% overall_rating resource 'layer' as the_layer_rating %}
     {% endif %}
     {% include 'rating.html' %}
     <script type="text/javascript">
-    $(function() {
-  
-        var activeTab = $('[href=' + location.hash + ']');
-        activeTab && activeTab.tab('show');
-    });
        $("#comment_submit_btn").click(function(event) {
             $.ajax({
               type: "POST",
@@ -324,8 +310,8 @@
             return false;
           });
 
-    {% if layer.get_legend.link_type == 'json' %}
-    $.getJSON('{{layer.get_legend_url}}', function (data) {
+    {% if resource.get_legend.link_type == 'json' %}
+    $.getJSON('{{resource.get_legend_url}}', function (data) {
         var legend = data.layers[0].legend;
         var items = [];
         $.each(legend, function (key, dvalue) {

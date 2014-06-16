@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from geonode import GeoNodeException
 
@@ -25,7 +25,7 @@ from geonode import GeoNodeException
 def get_default_user():
     """Create a default user
     """
-    superusers = User.objects.filter(is_superuser=True).order_by('id')
+    superusers = get_user_model().objects.filter(is_superuser=True).order_by('id')
     if superusers.count() > 0:
         # Return the first created superuser
         return superusers[0]
@@ -41,14 +41,14 @@ def get_valid_user(user=None):
     if user is None:
         theuser = get_default_user()
     elif isinstance(user, basestring):
-        theuser = User.objects.get(username=user)
-    elif user.is_anonymous():
+        theuser = get_user_model().objects.get(username=user)
+    elif user == user.get_anonymous():
         raise GeoNodeException('The user uploading files must not '
                                'be anonymous')
     else:
         theuser = user
 
     #FIXME: Pass a user in the unit tests that is not yet saved ;)
-    assert isinstance(theuser, User)
+    assert isinstance(theuser, get_user_model())
 
     return theuser
