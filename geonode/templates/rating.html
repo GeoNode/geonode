@@ -8,7 +8,7 @@ $(function() {
         },
         path: "{{ STATIC_URL }}lib/img/"
     });
-    var activeTab = $('[href=' + location.hash + ']');
+    var activeTab = $("[href='" + location.hash + "']");
     activeTab && activeTab.tab('show');
 });
 </script>  
