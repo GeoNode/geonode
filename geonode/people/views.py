@@ -48,7 +48,7 @@ def profile_edit(request, username=None):
         except Profile.DoesNotExist:
             return redirect("profile_browse")
     else:
-        profile = get_object_or_404(Profile, user__username=username)
+        profile = get_object_or_404(Profile, username=username)
 
     if request.method == "POST":
         form = ProfileForm(request.POST, request.FILES, instance=profile)
