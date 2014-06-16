@@ -32,6 +32,23 @@
         {{ author_form|as_bootstrap }}
       <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
     </fieldset>
+       <fieldset id="category_form">
+            <label class="control-label required-field">{% trans "Category" %}</label><br/>
+            {% autoescape off %}
+                <div style="clear:both;padding-left:175px;">
+                    {% for choice in category_form.category_choice_field.field.choices %}
+                        <div style="width:50%;float:left;padding-bottom:5px;">
+                            <input type="radio" name="category_choice_field" value="{{ choice.0 }}"
+                                    {% ifequal category_form.initial choice.0 %}
+                                   checked="checked"
+                                    {% endifequal %}> 
+                                    {{ choice.1 }}
+                            </input>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endautoescape %}
+        </fieldset>
     <div class="form-actions">
       <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
     </div>
