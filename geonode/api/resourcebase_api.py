@@ -1,7 +1,11 @@
+import itertools
+
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
 from tastypie import fields
 from tastypie.utils import trailing_slash
+
+from guardian.shortcuts import get_objects_for_user
 
 from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
@@ -104,8 +108,11 @@ class CommonModelApi(ModelResource):
         #filters = self.build_filters(request.GET)
         #orm_objects = self.apply_filters(request, filters)
 
+        resources = get_objects_for_user(request.user, 'base.view_resourcebase')
+        resource_ids = set(resource.id for resource in resources)
+
         # Do the query.
-        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', '')).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
+        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', '')).filter(oid__in=resource_ids).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
         facets = {}
         for facet in sqs.facet_counts()['fields']:
             facets[facet] = {} 
@@ -122,9 +129,13 @@ class CommonModelApi(ModelResource):
         
         for result in page.object_list:
             #if result.object in orm_objects:
-            bundle = self.build_bundle(obj=result.object, request=request)
-            bundle = self.full_dehydrate(bundle)
-            objects.append(bundle)
+            if result:
+                bundle = self.build_bundle(obj=result.object, request=request)
+                bundle = self.full_dehydrate(bundle)
+                objects.append(bundle)
+            else:
+                # This can occur when the index is out of sync
+                pass 
 
         if page.has_previous():
             previous_page = page.previous_page_number()
