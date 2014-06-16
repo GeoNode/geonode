@@ -24,7 +24,7 @@ import taggit
 
 from django import forms
 from django.utils import simplejson as json
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from modeltranslation.forms import TranslationModelForm
 
 from mptt.forms import TreeNodeMultipleChoiceField 
@@ -70,7 +70,7 @@ class LayerForm(TranslationModelForm):
     class Meta:
         model = Layer
         exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType', 'typename',
-                   'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid',
+                   'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid', 'category',
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext',
                    'popular_count', 'share_count', 'thumbnail', 'default_style', 'styles')
