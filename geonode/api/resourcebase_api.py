@@ -1,6 +1,11 @@
+from django.db.models import Q
+from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpResponse
+
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
 from tastypie import fields
+from tastypie.utils.mime import determine_format, build_content_type
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -10,8 +15,6 @@ from geonode.base.models import ResourceBase
 from .authorization import GeoNodeAuthorization
 
 from .api import TagResource, TopicCategoryResource, UserResource, FILTER_TYPES
-
-from django.db.models import Q
 
 FILTER_TYPES.update({
     'vector': 'dataStore',
@@ -88,6 +91,57 @@ class CommonModelApi(ModelResource):
         bbox = map(str, bbox) # 2.6 compat - float to decimal conversion
         intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) | Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
         return queryset.filter(intersects)
+
+    def get_list(self, request, **kwargs):
+        """
+        Returns a serialized list of resources.
+
+        Calls ``obj_get_list`` to provide the data, then handles that result
+        set and serializes it.
+
+        Should return a HttpResponse (200 OK).
+        """
+        # TODO: Uncached for now. Invalidation that works for everyone may be
+        #       impossible.
+        base_bundle = self.build_bundle(request=request)
+        objects = self.obj_get_list(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
+        sorted_objects = self.apply_sorting(objects, options=request.GET)
+
+        paginator = self._meta.paginator_class(request.GET, sorted_objects, resource_uri=self.get_resource_uri(), limit=self._meta.limit, max_limit=self._meta.max_limit, collection_name=self._meta.collection_name)
+        to_be_serialized = paginator.page()
+
+        to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
+        return self.create_response(request, to_be_serialized)
+
+    def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
+        """
+        Extracts the common "which-format/serialize/return-response" cycle.
+
+        Mostly a useful shortcut/hook.
+        """
+        VALUES = [
+            # fields in the db
+            'id',
+            'uuid',
+            'title',
+            'abstract',
+            'csw_wkt_geometry',
+            'csw_type',
+            'distribution_description',
+            'distribution_url',
+            'owner_id',
+            'share_count',
+            'srid',
+            'category',
+            'supplemental_information',
+        ]
+        
+        resource_values = data['objects'].values(*VALUES)
+        resource_list = list(resource_values)
+        desired_format = self.determine_format(request)
+        data['objects'] = resource_list
+        serialized = self.serialize(request, data, desired_format)
+        return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
 
 
 class ResourceBaseResource(CommonModelApi):
