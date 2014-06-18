@@ -43,12 +43,6 @@ class CommonModelApi(ModelResource):
     rating = fields.FloatField(attribute='rating', null = True)
     thumbnail_url = fields.CharField(null=True)
 
-    def dehydrate_thumbnail_url(self, bundle):
-        return bundle.obj.get_thumbnail_url()    
-
-    def dehydrate_absolute__url(self, bundle):
-        return bundle.obj.get_absolute_url()
-
     def build_filters(self, filters={}):
         orm_filters = super(CommonModelApi, self).build_filters(filters)
         if 'type__in' in filters and filters['type__in'] in FILTER_TYPES.keys():
