@@ -300,10 +300,10 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
     # Add them to the upload session (new file fields are created).
     for type_name, fn in files.items():
-        f = open(fn)
-        us = upload_session.layerfile_set.create(name=type_name,
-                                                file=File(f),
-                                                )
+        with open(fn) as f:
+            us = upload_session.layerfile_set.create(name=type_name,
+                                                    file=File(f),
+                                                    )
 
     # Set a default title that looks nice ...
     if title is None:
