@@ -105,7 +105,7 @@ class CommonModelApi(ModelResource):
         resource_ids = set(resource.id for resource in resources)
 
         # Do the query.
-        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', '')).filter(oid__in=resource_ids).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
+        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', '')).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
         facets = {}
         for facet in sqs.facet_counts()['fields']:
             facets[facet] = {} 
