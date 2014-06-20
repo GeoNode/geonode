@@ -102,8 +102,7 @@ class CommonModelApi(ModelResource):
         #filters = self.build_filters(request.GET)
         #orm_objects = self.apply_filters(request, filters)
 
-        resources = get_objects_for_user(request.user, 'base.view_resourcebase')
-        resource_ids = set(resource.id for resource in resources)
+        resources_ids = get_objects_for_user(request.user, 'base.view_resourcebase').values_list('id', flat=True)
 
         # Do the query.
         sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', '')).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
@@ -114,35 +113,30 @@ class CommonModelApi(ModelResource):
                 facets[facet][item[0]] = item[1]
         paginator = Paginator(sqs, request.GET.get('limit'))
 
-        objects = sqs
-        sorted_objects = self.apply_sorting(objects, options=request.GET)
+        try:
+            page = paginator.page(int(request.GET.get('offset')) / int(request.GET.get('limit'), 0) + 1)
+        except InvalidPage:
+            raise Http404("Sorry, no results on that page.")
 
-        paginator = self._meta.paginator_class(request.GET, sorted_objects, resource_uri=self.get_resource_uri(), limit=self._meta.limit, max_limit=self._meta.max_limit, collection_name=self._meta.collection_name)
-        to_be_serialized = paginator.page()
-
-        to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
-
-
-        # if page.has_previous():
-        #     previous_page = page.previous_page_number()
-        # else:
-        #     previous_page = 1
-        # if page.has_next():
-        #     next_page = page.next_page_number()
-        # else:
-        #     next_page = 1
+        if page.has_previous():
+            previous_page = page.previous_page_number()
+        else:
+            previous_page = 1
+        if page.has_next():
+            next_page = page.next_page_number()
+        else:
+            next_page = 1
         object_list = {
            "meta": {
                 "limit": 100,
                 "next": next_page, 
-                "offset": int(request.GET.get('offset')),
+                "offset": int(getattr(request.GET, 'offset',0)),
                 "previous": previous_page, 
                 "total_count": sqs.count(),
                 "facets" : facets,
             },
-            'objects': objects,
+            'objects': map(lambda x: x.get_stored_fields(), page.object_list),
         }
-
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
 
@@ -160,7 +154,6 @@ class CommonModelApi(ModelResource):
         base_bundle = self.build_bundle(request=request)
         objects = self.obj_get_list(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
         sorted_objects = self.apply_sorting(objects, options=request.GET)
-
         paginator = self._meta.paginator_class(request.GET, sorted_objects, resource_uri=self.get_resource_uri(), limit=self._meta.limit, max_limit=self._meta.max_limit, collection_name=self._meta.collection_name)
         to_be_serialized = paginator.page()
 
@@ -192,7 +185,7 @@ class CommonModelApi(ModelResource):
             'absolute_url',
         ]
         
-        if isinstance(data, dict) and 'objects' in data:
+        if isinstance(data, dict) and 'objects' in data and not isinstance(data['objects'], list):
             data['objects'] = list(data['objects'].values(*VALUES))
 
         desired_format = self.determine_format(request)
