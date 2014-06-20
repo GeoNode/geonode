@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 
 from avatar.templatetags.avatar_tags import avatar_url
+from guardian.shortcuts import get_objects_for_user
 
 from geonode.base.models import TopicCategory
 from geonode.layers.models import Layer
@@ -50,13 +51,12 @@ class TagResource(TypeFilteredResource):
 
     def dehydrate_count(self, bundle):
         count = 0
+        resources = get_objects_for_user(bundle.request.user, 'base.view_resourcebase').values_list('id', flat=True)
         if self.type_filter:
-            for tagged in bundle.obj.taggit_taggeditem_items.all():
-                if tagged.content_object and tagged.content_type.model_class() == self.type_filter and \
-                    bundle.request.user.has_perm('view_resourcebase', tagged.content_object):
-                    count += 1
+            ctype = ContentType.objects.get_for_model(self.type_filter)
+            count = bundle.obj.taggit_taggeditem_items.filter(content_type=ctype).filter(object_id__in=resources).count()
         else:
-             count = bundle.obj.taggit_taggeditem_items.count()
+            count = bundle.obj.taggit_taggeditem_items.filter(object_id__in=resources).count()
 
         return count
 
@@ -73,13 +73,11 @@ class TopicCategoryResource(TypeFilteredResource):
     """Category api"""
 
     def dehydrate_count(self, bundle):
-        count = 0
-        resources = bundle.obj.resourcebase_set.instance_of(self.type_filter).get_real_instances() if \
-            self.type_filter else bundle.obj.resourcebase_set.get_real_instances()
+        resources = bundle.obj.resourcebase_set.instance_of(self.type_filter) if \
+            self.type_filter else bundle.obj.resourcebase_set.all()
 
-        for resource in resources:
-            if bundle.request.user.has_perm('view_resourcebase', resource):
-                count += 1
+        permitted = get_objects_for_user(bundle.request.user,'base.view_resourcebase').values_list('id', flat=True)
+        return resources.filter(id__in=permitted).count()
 
         return count
 
