@@ -1,4 +1,6 @@
 import itertools
+from django.db.models import Q
+from django.http import HttpResponse
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
@@ -12,6 +14,7 @@ from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 
 from haystack.query import SearchQuerySet
+from tastypie.utils.mime import determine_format, build_content_type
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -21,8 +24,6 @@ from geonode.base.models import ResourceBase
 from .authorization import GeoNodeAuthorization
 
 from .api import TagResource, TopicCategoryResource, UserResource, FILTER_TYPES
-
-from django.db.models import Q
 
 FILTER_TYPES.update({
     'vector': 'dataStore',
@@ -47,15 +48,7 @@ class CommonModelApi(ModelResource):
     keywords = fields.ToManyField(TagResource, 'keywords', null=True)
     category = fields.ToOneField(TopicCategoryResource, 'category', null=True, full=True)
     owner = fields.ToOneField(UserResource, 'owner', full=True)
-    absolute__url = fields.CharField()
     rating = fields.FloatField(attribute='rating', null = True)
-    thumbnail_url = fields.CharField(null=True)
-
-    def dehydrate_thumbnail_url(self, bundle):
-        return bundle.obj.get_thumbnail_url()    
-
-    def dehydrate_absolute__url(self, bundle):
-        return bundle.obj.get_absolute_url()
 
     def build_filters(self, filters={}):
         orm_filters = super(CommonModelApi, self).build_filters(filters)
@@ -159,6 +152,60 @@ class CommonModelApi(ModelResource):
 
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
+
+    def get_list(self, request, **kwargs):
+        """
+        Returns a serialized list of resources.
+
+        Calls ``obj_get_list`` to provide the data, then handles that result
+        set and serializes it.
+
+        Should return a HttpResponse (200 OK).
+        """
+        # TODO: Uncached for now. Invalidation that works for everyone may be
+        #       impossible.
+        base_bundle = self.build_bundle(request=request)
+        objects = self.obj_get_list(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
+        sorted_objects = self.apply_sorting(objects, options=request.GET)
+
+        paginator = self._meta.paginator_class(request.GET, sorted_objects, resource_uri=self.get_resource_uri(), limit=self._meta.limit, max_limit=self._meta.max_limit, collection_name=self._meta.collection_name)
+        to_be_serialized = paginator.page()
+
+        to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
+        return self.create_response(request, to_be_serialized)
+
+    def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
+        """
+        Extracts the common "which-format/serialize/return-response" cycle.
+
+        Mostly a useful shortcut/hook.
+        """
+        VALUES = [
+            # fields in the db
+            'id',
+            'uuid',
+            'title',
+            'abstract',
+            'csw_wkt_geometry',
+            'csw_type',
+            'distribution_description',
+            'distribution_url',
+            'owner_id',
+            'share_count',
+            'srid',
+            'category',
+            'supplemental_information',
+            'thumbnail_url',
+            'absolute_url',
+        ]
+        
+        if isinstance(data, dict) and 'objects' in data:
+            data['objects'] = list(data['objects'].values(*VALUES))
+
+        desired_format = self.determine_format(request)
+        serialized = self.serialize(request, data, desired_format)
+        return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
+
 
 class ResourceBaseResource(CommonModelApi):
     """ResourceBase api"""
