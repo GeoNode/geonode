@@ -97,6 +97,7 @@ class CommonModelApi(ModelResource):
         self.is_authenticated(request)
         self.throttle_check(request)
 
+
         # TODO Make sure the filters are being applied properly
         #filters = self.build_filters(request.GET)
         #orm_objects = self.apply_filters(request, filters)
@@ -113,31 +114,23 @@ class CommonModelApi(ModelResource):
                 facets[facet][item[0]] = item[1]
         paginator = Paginator(sqs, request.GET.get('limit'))
 
-        try:
-            page = paginator.page(int(request.GET.get('offset')) / int(request.GET.get('limit'), 0) + 1)
-        except InvalidPage:
-            raise Http404("Sorry, no results on that page.")
+        objects = sqs
+        sorted_objects = self.apply_sorting(objects, options=request.GET)
 
-        objects = []
-        
-        for result in page.object_list:
-            #if result.object in orm_objects:
-            if result:
-                bundle = self.build_bundle(obj=result.object, request=request)
-                bundle = self.full_dehydrate(bundle)
-                objects.append(bundle)
-            else:
-                # This can occur when the index is out of sync
-                pass 
+        paginator = self._meta.paginator_class(request.GET, sorted_objects, resource_uri=self.get_resource_uri(), limit=self._meta.limit, max_limit=self._meta.max_limit, collection_name=self._meta.collection_name)
+        to_be_serialized = paginator.page()
 
-        if page.has_previous():
-            previous_page = page.previous_page_number()
-        else:
-            previous_page = 1
-        if page.has_next():
-            next_page = page.next_page_number()
-        else:
-            next_page = 1
+        to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
+
+
+        # if page.has_previous():
+        #     previous_page = page.previous_page_number()
+        # else:
+        #     previous_page = 1
+        # if page.has_next():
+        #     next_page = page.next_page_number()
+        # else:
+        #     next_page = 1
         object_list = {
            "meta": {
                 "limit": 100,
