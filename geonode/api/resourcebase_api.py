@@ -38,10 +38,7 @@ class CommonModelApi(ModelResource):
     keywords = fields.ToManyField(TagResource, 'keywords', null=True)
     category = fields.ToOneField(TopicCategoryResource, 'category', null=True, full=True)
     owner = fields.ToOneField(UserResource, 'owner', full=True)
-    absolute__url = fields.CharField()
     rating = fields.FloatField(attribute='rating', null = True)
-    thumbnail_url = fields.CharField(null=True)
-
 
     def build_filters(self, filters={}):
         orm_filters = super(CommonModelApi, self).build_filters(filters)
@@ -132,7 +129,8 @@ class CommonModelApi(ModelResource):
             'absolute_url',
         ]
         
-        data['objects'] = list(data['objects'].values(*VALUES))
+        if isinstance(data, dict) and 'objects' in data:
+            data['objects'] = list(data['objects'].values(*VALUES))
 
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)
