@@ -43,7 +43,7 @@ from django.conf import settings
 from geonode import GeoNodeException
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, UploadSession, SpatialRepresentationType, TopicCategory
-from geonode.base.models import Link
+from geonode.base.models import Link, ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, kml_exts, vec_exts, cov_exts
 from geonode.utils import http_client
 from geonode.layers.metadata import set_metadata
@@ -538,3 +538,6 @@ def create_thumbnail(instance, thumbnail_remote_url):
                             link_type='image',
                             )
                         )
+    ResourceBase.objects.filter(id=instance.id).update(
+        thumbnail_url=instance.get_thumbnail_url(),
+        absolute_url=instance.get_absolute_url())
