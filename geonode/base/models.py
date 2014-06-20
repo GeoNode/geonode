@@ -158,7 +158,7 @@ class Thumbnail(models.Model):
         md5 = hashlib.md5()
         md5.update(id + str(self.version))
         self.version = self.version + 1
-        self.thumb_file.save(md5.hexdigest() + ".png", ContentFile(image))
+        self.thumb_file.save(md5.hexdigest() + ".png", ContentFile(image))  
 
     def _delete_thumb(self):
         try:
@@ -303,12 +303,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
 
     thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True, on_delete=models.SET_NULL)
+    
 
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
     featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
 
+    #fields necessary for the apis
+    thumbnail_url = models.CharField(max_length=255, null=True, blank=True)
+    absolute_url = models.CharField(max_length=255, null=True, blank=True)
 
     def delete(self, *args, **kwargs):
         super(ResourceBase, self).delete(*args, **kwargs)

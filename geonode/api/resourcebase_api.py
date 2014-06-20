@@ -1,5 +1,4 @@
 from django.db.models import Q
-from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
@@ -42,6 +41,7 @@ class CommonModelApi(ModelResource):
     absolute__url = fields.CharField()
     rating = fields.FloatField(attribute='rating', null = True)
     thumbnail_url = fields.CharField(null=True)
+
 
     def build_filters(self, filters={}):
         orm_filters = super(CommonModelApi, self).build_filters(filters)
@@ -128,19 +128,19 @@ class CommonModelApi(ModelResource):
             'srid',
             'category',
             'supplemental_information',
+            'thumbnail_url',
+            'absolute_url',
         ]
         
-        resource_values = data['objects'].values(*VALUES)
-        resource_list = list(resource_values)
+        data['objects'] = list(data['objects'].values(*VALUES))
+
         desired_format = self.determine_format(request)
-        data['objects'] = resource_list
         serialized = self.serialize(request, data, desired_format)
         return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
 
 
 class ResourceBaseResource(CommonModelApi):
     """ResourceBase api"""
-
 
     class Meta(CommonMetaApi):
         queryset = ResourceBase.objects.polymorphic_queryset().distinct().order_by('-date')
