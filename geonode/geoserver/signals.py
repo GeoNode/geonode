@@ -137,6 +137,8 @@ def geoserver_post_save(instance, sender, **kwargs):
     """
 
     if instance.storeType == "remoteStore":
+        #Save layer attributes
+        set_attributes(instance)
         return
 
 
