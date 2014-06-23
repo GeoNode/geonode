@@ -10,8 +10,11 @@
 {% block title %}{{ resource.title|default:resource.typename }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-{% include "layers/layer_map.html" %}
-
+{% if preview == 'geoext' %}
+  {% include "layers/layer_geoext_map.html" %}
+{% else %}
+  {% include "layers/layer_leaflet_map.html" %}
+{% endif %}
 {{ block.super }}
 {% endblock %}
 
