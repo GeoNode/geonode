@@ -46,7 +46,7 @@ Ext.onReady(function() {
   <p><strong>{% trans "URL:" %}</strong> {{service.base_url}}</p>
   <p><strong>{% trans "Abstract:" %}</strong> {{service.abstract}}</p>
   <p><strong>{% trans "Keywords:" %}</strong> {{ service.keywords.all|join:", " }}</p>
-  <p><strong>{% trans "Contact:" %}</strong> <a href="{{ service.owner.get_profile.get_absolute_url }}">{{ service.owner }}</a></p>
+  <p><strong>{% trans "Contact:" %}</strong> <a href="{% url "profile_detail" service.owner.username %}">{{ service.owner }}</a></p>
 
     {% autoescape off %}
     {%  if services %}

@@ -49,7 +49,7 @@ from arcrest import Folder as ArcFolder, MapService as ArcMapService
 from geoserver.catalog import Catalog, FailedRequestError
 
 from geonode.services.models import Service, Layer, ServiceLayer, WebServiceHarvestLayersJob, WebServiceRegistrationJob
-from geonode.security.views import _perms_info
+from geonode.security.views import _perms_info, _perms_info_json
 from geonode.utils import bbox_to_wkt, json_response
 from geonode.services.forms import CreateServiceForm, ServiceLayerFormSet, ServiceForm
 from geonode.utils import llbbox_to_mercator, mercator_to_llbbox, http_client
@@ -330,6 +330,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
 
     service.keywords = ','.join(wms.identification.keywords)
     service.save()
+    service.set_default_permissions()
 
     if type in ['WMS', 'OWS']:
         # Register the Service with GeoServer to be cascaded
@@ -390,7 +391,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
                             name = name,
                             owner = owner)
         service.save()
-
+        service.set_default_permissions()
     elif type == 'WCS':
         return HttpResponse('Not Implemented (Yet)', status=501)
     else:
@@ -525,14 +526,15 @@ def _register_indexed_service(type, url, name, username, password, verbosity=Fal
             method='I',
             name = name,
             version = wms.identification.version,
-            title = wms.identification.title,
-            abstract = wms.identification.abstract,
+            title = wms.identification.title or name,
+            abstract = wms.identification.abstract or _("Not provided"),
             online_resource = wms.provider.url,
             owner=owner,
             parent=parent)
 
         service.keywords = ','.join(wms.identification.keywords)
         service.save()
+        service.set_default_permissions()
 
         available_resources = []
         for layer in list(wms.contents):
@@ -606,7 +608,8 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                                 mimetype='application/json',
                                 status=200)
 
-            bbox = list(wms_layer.boundingBoxWGS84)
+
+            bbox = list(wms_layer.boundingBoxWGS84 or (-179.0,-89.0,179.0,89.0))
 
             # Need to check if layer already exists??
             saved_layer, created = Layer.objects.get_or_create(
@@ -617,14 +620,14 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                     store=service.name, #??
                     storeType="remoteStore",
                     workspace="remoteWorkspace",
-                    title=wms_layer.title,
-                    abstract=abstract,
+                    title=wms_layer.title or wms_layer.name,
+                    abstract=abstract or _("Not provided"),
                     uuid=layer_uuid,
                     owner=None,
                     srid=srid,
                     bbox_x0 = bbox[0],
-                    bbox_x1 = bbox[1],
-                    bbox_y0 = bbox[2],
+                    bbox_x1 = bbox[2],
+                    bbox_y0 = bbox[1],
                     bbox_y1 = bbox[3]
                 )
             )
@@ -689,6 +692,7 @@ def _register_harvested_service(url, username, password, csw=None, owner=None):
 
     service.keywords = ','.join(csw.identification.keywords)
     service.save
+    service.set_default_permissions()
 
     message = "Service %s registered" % service.name
     return_dict = [{'status': 'ok',
@@ -805,7 +809,7 @@ def _register_arcgis_layers(service, arc=None):
         existing_layer = None
 
         try:
-            existing_layer = Layer.objects.get(typename=typename)
+            existing_layer = Layer.objects.get(typename=typename,service=service)
         except Layer.DoesNotExist:
             pass
 
@@ -822,13 +826,13 @@ def _register_arcgis_layers(service, arc=None):
                     storeType="remoteStore",
                     workspace="remoteWorkspace",
                     title=layer.name,
-                    abstract=layer._json_struct['description'],
+                    abstract=layer._json_struct['description'] or _("Not provided"),
                     uuid=layer_uuid,
                     owner=None,
                     srid="EPSG:%s" % layer.extent.spatialReference.wkid,
                     bbox_x0 = llbbox[0],
-                    bbox_x1 = llbbox[1],
-                    bbox_y0 = llbbox[2],
+                    bbox_x1 = llbbox[2],
+                    bbox_y0 = llbbox[1],
                     bbox_y1 = llbbox[3],
                 )
             )
@@ -881,6 +885,8 @@ def _process_arcgis_service(arcserver, owner=None, parent=None):
         online_resource = arc_url,
         owner=owner,
         parent=parent)
+
+    service.set_default_permissions()
 
     available_resources = []
     for layer in list(arcserver.layers):
@@ -948,7 +954,7 @@ def _register_ogp_service(url, owner=None):
         abstract = OGP_ABSTRACT,
         owner=owner)
 
-
+    service.set_default_permissions()
     if settings.USE_QUEUE:
         #Create a layer import job
         WebServiceHarvestLayersJob.objects.get_or_create(service=service)
@@ -1110,7 +1116,7 @@ def service_detail(request, service_id):
         'service': service,
         'layers': layers,
         'services' : services,
-        'permissions_json': json.dumps(_perms_info(service, SERVICE_LEV_NAMES))
+        'permissions_json': _perms_info_json(service)
     }))
 
 @login_required
