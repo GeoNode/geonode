@@ -1604,8 +1604,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             text: this.picasaText,
             iconCls: "icon-picasa",
             scope:this,
-            disabled: true,
-            hidden: true,
+            disabled: false,
+            hidden: false,
             handler: function() {
                 this.showFeedDialog('gx_picasasource')
             },
@@ -1617,8 +1617,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             text: this.youTubeText,
             iconCls: "icon-youtube",
             scope:this,
-            disabled: true,
-            hidden: true,
+            disabled: false,
+            hidden: false,
             handler: function() {
                 this.showFeedDialog('gx_youtubesource')
             },
