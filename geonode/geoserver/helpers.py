@@ -359,13 +359,13 @@ def gs_slurp(ignore_errors=True, verbosity=1, console=None, owner=None, workspac
     start = datetime.datetime.now()
     for i, resource in enumerate(resources):
         name = resource.name
-        store = resource.store
-        workspace = store.workspace
+        the_store = resource.store
+        workspace = the_store.workspace
         try:
             layer, created = Layer.objects.get_or_create(name=name, defaults = {
                 "workspace": workspace.name,
-                "store": store.name,
-                "storeType": store.resource_type,
+                "store": the_store.name,
+                "storeType": the_store.resource_type,
                 "typename": "%s:%s" % (workspace.name.encode('utf-8'), resource.name.encode('utf-8')),
                 "title": resource.title or 'No title provided',
                 "abstract": resource.abstract or 'No abstract provided',
