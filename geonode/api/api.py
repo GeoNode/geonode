@@ -10,7 +10,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.people.models import Profile
-from geonode.groups.models import Group
+from geonode.groups.models import GroupProfile
 
 from taggit.models import Tag
 
@@ -122,7 +122,7 @@ class GroupResource(ModelResource):
         return reverse('group_detail',  args=[bundle.obj.slug,]) 
 
     class Meta:
-        queryset = Group.objects.all()
+        queryset = GroupProfile.objects.all()
         resource_name = 'groups'
         allowed_methods = ['get',]
         filtering = {
@@ -160,7 +160,7 @@ class ProfileResource(ModelResource):
         semi_filtered = super(ProfileResource, self).apply_filters(request, applicable_filters)
 
         if group is not None:
-            semi_filtered = semi_filtered.filter(user__groupmember__group__slug=group)
+            semi_filtered = semi_filtered.filter(groupmember__group__slug=group)
             
         return semi_filtered
 
