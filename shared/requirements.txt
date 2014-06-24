@@ -44,3 +44,5 @@ jdcal
 vectorformats
 #For autocomplete
 django-autocomplete-light==1.4.5
+unidecode
+
