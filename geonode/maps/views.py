@@ -234,7 +234,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
 
 def map_embed(request, mapid=None, template='maps/map_embed.html'):
     if mapid is None:
-        config = default_map_config(user=request.user)[0]
+        config = default_map_config()[0]
     else:
         map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
         config = map_obj.viewer_json(request.user)
@@ -342,7 +342,7 @@ def new_map_config(request):
     default map configuration is used.  If copy is specified
     and the map specified does not exist a 404 is returned.
     '''
-    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(user=request.user)
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
 
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
