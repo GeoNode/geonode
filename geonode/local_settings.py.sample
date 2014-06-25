@@ -41,3 +41,6 @@ OGC_SERVER = {
 MAP_BASELAYERS[0]["source"]["url"] = (OGC_SERVER['default']['PUBLIC_LOCATION'] +
                                       "wms" if OGC_SERVER and any(OGC_SERVER) else
                                       'http://localhost:8080/geoserver/wms')
+
+# Default preview library
+#LAYER_PREVIEW_LIBRARY = 'geoext'
