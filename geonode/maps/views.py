@@ -391,6 +391,7 @@ def new_map_config(request):
                 config["title"] = layer.title
                 config["bbox"] =  [float(coord) for coord in bbox] \
                     if layer.srid == "EPSG:4326" else llbbox_to_mercator([float(coord) for coord in bbox])
+                config["queryable"] = True
 
                 if layer.storeType == "remoteStore":
                     service = layer.service

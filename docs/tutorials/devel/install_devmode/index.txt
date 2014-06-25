@@ -26,7 +26,7 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
    .. code-block:: console
 
-    $ sudo apt-get install -y build-essential libxml2-dev libxslt1-dev
+    $ sudo apt-get install -y build-essential libxml2-dev libxslt1-dev libpq-dev
 
 
 #. Install dependencies
@@ -37,7 +37,7 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
     $ sudo apt-get install -y python-dev python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-pip python-software-properties
 
-   *Install Python Viturual Environment*
+   *Install Python Virtual Environment*
 
    .. code-block:: console
 
@@ -105,9 +105,11 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
     $ pip install -e geonode --use-mirrors
     $ cd geonode
     
-    If the install fails because of an error related to pyproj not being verified (happens on pip 1.5), use the following:
+   If the install fails because of an error related to pyproj not being verified (happens on pip 1.5), use the following:
     
-    $ pip install -e geonode --use-mirrors --allow-external pyproj --allow-unverified pyproj 
+   .. code-block:: console
+    
+     $ pip install -e geonode --use-mirrors --allow-external pyproj --allow-unverified pyproj 
 
 #. Compile and Start the server
 
@@ -124,6 +126,8 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
     $ paver start
 
    Visit the geonode site by typing http://localhost:8000 into your browser window.
+   
+   If the start fails because of an import error related to osgeo, then please consult the `GDAL for Development Guide <http://docs.geonode.org/en/latest/tutorials/devel/install_devmode/gdal_install.html>`_. 
 
 #. To stop the server
 
