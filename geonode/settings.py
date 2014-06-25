@@ -653,6 +653,27 @@ LEAFLET_CONFIG = {
     }
 }
 
+CACHES = {
+    #DUMMY CACHE FOR DEVELOPMENT
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        },
+    #MEMCACHED EXAMPLE
+    # 'default': {
+    #     'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+    #     'LOCATION': '127.0.0.1:11211',
+    #     },
+    #FILECACHE EXAMPLE
+    # 'default': {
+    #     'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+    #     'LOCATION': '/tmp/django_cache',
+    #     }
+}
+
+#How long cached objects should last, in seconds
+CACHES_DURATION = 300
+
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *

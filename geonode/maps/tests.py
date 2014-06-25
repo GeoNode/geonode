@@ -184,7 +184,7 @@ community."
         """ Make some assertions about the data structure produced for serialization
             to a JSON map configuration"""
         map_obj = Map.objects.get(id=1)
-        cfg = map_obj.viewer_json()
+        cfg = map_obj.viewer_json(None)
         self.assertEquals(cfg['about']['abstract'], 'GeoNode default map abstract')
         self.assertEquals(cfg['about']['title'], 'GeoNode Default Map')
         def is_wms_layer(x):
@@ -408,7 +408,7 @@ community."
         self.assertEquals(response.status_code, 200)
         # Config equals to that of the map whose id is given
         map_obj = Map.objects.get(id=map_id)
-        config_map = map_obj.viewer_json()
+        config_map = map_obj.viewer_json(None)
         response_config_dict = json.loads(response.context['config'])
         self.assertEquals(config_map['about']['abstract'],response_config_dict['about']['abstract'])
         self.assertEquals(config_map['about']['title'],response_config_dict['about']['title'])
@@ -459,7 +459,7 @@ community."
 
         # Config equals to that of the map whose id is given
         map_obj = Map.objects.get(id=map_id)
-        config_map = map_obj.viewer_json()
+        config_map = map_obj.viewer_json(None)
         response_config_dict = json.loads(response.context['config'])
         self.assertEquals(config_map['about']['abstract'],response_config_dict['about']['abstract'])
         self.assertEquals(config_map['about']['title'],response_config_dict['about']['title'])
@@ -486,7 +486,7 @@ community."
         response = c.get(url,{'copy': map_id})
         self.assertEquals(response.status_code,200)
         map_obj = Map.objects.get(id=map_id)
-        config_map = map_obj.viewer_json()
+        config_map = map_obj.viewer_json(None)
         response_config_dict = json.loads(response.content)
         self.assertEquals(config_map['map']['layers'],response_config_dict['map']['layers'])
 
