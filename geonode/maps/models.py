@@ -401,9 +401,12 @@ class MapLayer(models.Model, GXPLayerBase):
         cfg = GXPLayerBase.layer_config(self)
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
-        if Layer.objects.filter(typename=self.name,service__base_url=self.ows_url).exists():
+        if Layer.objects.filter(typename=self.name).exists():
             try:
-                layer = Layer.objects.get(typename=self.name,service__base_url=self.ows_url)
+                if self.local:
+                    layer =  Layer.objects.get(typename=self.name)
+                else:
+                    layer = Layer.objects.get(typename=self.name,service__base_url=self.ows_url)
                 attribute_cfg = layer.attribute_config()
                 if "getFeatureInfo" in attribute_cfg:
                     cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]

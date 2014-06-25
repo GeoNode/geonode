@@ -279,7 +279,7 @@ def map_json(request, mapid):
         map_obj = _resolve_map(request, mapid, 'change_resourcebase')
         try:
             map_obj.update_from_viewer(request.body)
-            cache.delete("viewer_json_" + str(map_obj.id) + "_" + str(request.user.id or 0))
+            cache.delete("viewer_json_" + str(map_obj.id) + "_" + str(0 if request.user is None else request.user.id))
             return HttpResponse(json.dumps(map_obj.viewer_json(request.user)))
         except ValueError, e:
             return HttpResponse(
