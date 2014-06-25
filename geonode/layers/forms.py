@@ -133,7 +133,7 @@ class LayerUploadForm(forms.Form):
             f = self.cleaned_data[field]
             if f is not None:
                 path = os.path.join(tempdir, f.name)
-                with open(path, 'w') as writable:
+                with open(path, 'wb') as writable:
                     for c in f.chunks():
                         writable.write(c)
         absolute_base_file = os.path.join(tempdir,
