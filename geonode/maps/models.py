@@ -21,7 +21,6 @@
 import logging
 import errno
 import uuid
-from django.core.cache import cache
 import httplib2
 from urlparse import urlparse
 import urllib
@@ -35,6 +34,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
+from django.core.cache import cache
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -98,7 +98,7 @@ class Map(ResourceBase, GXPMapBase):
         return Layer.objects.filter(typename__in=layer_names) | \
                Layer.objects.filter(name__in=layer_names)
 
-    def json(self, layer_filter, user):
+    def json(self, layer_filter):
         """
         Get a JSON representation of this map suitable for sending to geoserver
         for creating a download of all layers
@@ -391,14 +391,14 @@ class MapLayer(models.Model, GXPLayerBase):
     local = models.BooleanField(default=False)
     # True if this layer is served by the local geoserver
 
-    def layer_config(self, user=get_anonymous_user()):
+    def layer_config(self, user=None):
         #Try to use existing user-specific cache of layer config
         if self.id:
             cfg = cache.get("layer_config" + str(self.id) + "_" + str(0 if user is None else user.id))
             if cfg is not None:
                 return cfg
 
-        cfg = GXPLayerBase.layer_config(self)
+        cfg = GXPLayerBase.layer_config(self,user=user)
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
         if Layer.objects.filter(typename=self.name).exists():

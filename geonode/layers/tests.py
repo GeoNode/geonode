@@ -39,12 +39,12 @@ from guardian.shortcuts import get_anonymous_user, assign_perm
 from geonode import GeoNodeException
 
 from geonode.layers.models import Layer, Style
-from geonode.layers.forms import JSONField, LayerUploadForm
 from geonode.layers.utils import layer_type, get_files, get_valid_name, \
                                 get_valid_layer_name
 from geonode.people.utils import get_valid_user
 from geonode.base.models import TopicCategory
 from geonode.base.populate_test_data import create_models
+from geonode.layers.forms import JSONField, LayerUploadForm
 from .populate_layers_data import create_layer_data
 
 

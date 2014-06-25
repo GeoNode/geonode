@@ -670,10 +670,6 @@ CACHES = {
     #     }
 }
 
-#How long cached objects should last, in seconds
-CACHES_DURATION = 300
-
-
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *

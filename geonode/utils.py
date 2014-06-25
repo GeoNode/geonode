@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.core.cache import cache
 
 import httplib2
 import base64
@@ -33,6 +32,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from django.http import HttpResponse
+from django.core.cache import cache
 from urlparse import urlsplit
 
 DEFAULT_TITLE=""
@@ -220,7 +220,7 @@ class GXPMapBase(object):
                 if v == source: return k
             return None
 
-        def layer_config(l):
+        def layer_config(l,user=None):
             cfg = l.layer_config(user=user)
             src_cfg = l.source_config()
             source = source_lookup(src_cfg)
@@ -255,7 +255,7 @@ class GXPMapBase(object):
             'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
-                'layers': [layer_config(l) for l in layers],
+                'layers': [layer_config(l,user=user) for l in layers],
                 'center': [self.center_x, self.center_y],
                 'projection': self.projection,
                 'zoom': self.zoom
@@ -353,7 +353,7 @@ class GXPLayer(GXPLayerBase):
             setattr(self,k,kw[k])
 
 
-def default_map_config(user=None):
+def default_map_config():
     _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
 
     _default_map = GXPMap(
@@ -373,7 +373,7 @@ def default_map_config(user=None):
         )
 
     DEFAULT_BASE_LAYERS = [_baselayer(lyr, idx) for idx, lyr in enumerate(settings.MAP_BASELAYERS)]
-    DEFAULT_MAP_CONFIG = _default_map.viewer_json(user,*DEFAULT_BASE_LAYERS)
+    DEFAULT_MAP_CONFIG = _default_map.viewer_json(None,*DEFAULT_BASE_LAYERS)
 
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
