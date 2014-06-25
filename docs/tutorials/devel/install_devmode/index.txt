@@ -105,9 +105,11 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
     $ pip install -e geonode --use-mirrors
     $ cd geonode
     
-    If the install fails because of an error related to pyproj not being verified (happens on pip 1.5), use the following:
+   If the install fails because of an error related to pyproj not being verified (happens on pip 1.5), use the following:
     
-    $ pip install -e geonode --use-mirrors --allow-external pyproj --allow-unverified pyproj 
+   .. code-block:: console
+    
+     $ pip install -e geonode --use-mirrors --allow-external pyproj --allow-unverified pyproj 
 
 #. Compile and Start the server
 
@@ -125,7 +127,7 @@ In order to install Geonode 2.0 in developing mode on Ubuntu 12.04 the following
 
    Visit the geonode site by typing http://localhost:8000 into your browser window.
    
-   If the start fails because of an import error related to osgeo, then please consult the `GDAL for Development Guide <http://docs.geonode.org/en/latest/tutorial/devel/install_devmode/gdal_install.html>`_ 
+   If the start fails because of an import error related to osgeo, then please consult the `GDAL for Development Guide <http://docs.geonode.org/en/latest/tutorials/devel/install_devmode/gdal_install.html>`_. 
 
 #. To stop the server
 
