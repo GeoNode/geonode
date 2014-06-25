@@ -78,8 +78,8 @@ class CommonModelApi(ModelResource):
         else:
             filtered = semi_filtered
 
-        #if extent:
-        #    filtered = self.filter_bbox(filtered, extent)
+        if extent:
+            filtered = self.filter_bbox(filtered, extent)
         return filtered
 
     def filter_bbox(self, queryset, bbox):
@@ -88,6 +88,7 @@ class CommonModelApi(ModelResource):
         bbox - 4 tuple of floats representing 'southwest_lng,southwest_lat,northeast_lng,northeast_lat'
         returns the modified query
         '''
+        bbox = bbox.split(',') #TODO: Why is this different when done through haystack?
         bbox = map(str, bbox) # 2.6 compat - float to decimal conversion
         intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) | Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
         return queryset.filter(intersects)
@@ -97,20 +98,28 @@ class CommonModelApi(ModelResource):
         self.is_authenticated(request)
         self.throttle_check(request)
 
+        # Get the list of objects that matches the filter
+        filters = self.build_filters(request.GET)
+        filtered_objects = self.apply_filters(request, filters)
+        filtered_ids = set(filtered_objects.values_list('id', flat=True))
 
-        # TODO Make sure the filters are being applied properly
-        #filters = self.build_filters(request.GET)
-        #orm_objects = self.apply_filters(request, filters)
+        #Get the list of objects the user has access to
+        perm_ids = set(get_objects_for_user(request.user, 'base.view_resourcebase').values_list('id', flat=True))
 
-        resources_ids = get_objects_for_user(request.user, 'base.view_resourcebase').values_list('id', flat=True)
+        # Combine lists. Include only if in both
+        filter_set = filtered_ids.intersection(perm_ids)
 
-        # Do the query.
-        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', '')).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
+        # Do the query using the filterset and the query term. Facet the results
+        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', '')).filter(oid__in=filter_set).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
+        
+        # Build the Facet dict
         facets = {}
         for facet in sqs.facet_counts()['fields']:
             facets[facet] = {} 
             for item in sqs.facet_counts()['fields'][facet]:
                 facets[facet][item[0]] = item[1]
+
+        # Paginate the results
         paginator = Paginator(sqs, request.GET.get('limit'))
 
         try:
