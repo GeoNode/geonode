@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.core.cache import cache
 
 import httplib2
 import base64
@@ -171,7 +172,7 @@ def layer_from_viewer_config(model, layer, source, ordering):
 
 class GXPMapBase(object):
 
-    def viewer_json(self, *added_layers):
+    def viewer_json(self, user, *added_layers):
         """
         Convert this map to a nested dictionary structure matching the JSON
         configuration for GXP Viewers.
@@ -181,6 +182,11 @@ class GXPMapBase(object):
         configuration. These are not persisted; if you want to add layers you
         should use ``.layer_set.create()``.
         """
+
+        if self.id and len(added_layers) == 0:
+            cfg = cache.get("viewer_json_" + str(self.id) + "_" + str(0 if user is None else user.id))
+            if cfg is not None:
+                return cfg
 
         layers = list(self.layers)
         layers.extend(added_layers)
@@ -215,7 +221,7 @@ class GXPMapBase(object):
             return None
 
         def layer_config(l):
-            cfg = l.layer_config()
+            cfg = l.layer_config(user=user)
             src_cfg = l.source_config()
             source = source_lookup(src_cfg)
             if source: cfg["source"] = source
@@ -261,6 +267,11 @@ class GXPMapBase(object):
             config["map"]["layers"][len(layers)-1]["selected"] = True
 
         config["map"].update(_get_viewer_projection_info(self.projection))
+
+        #Create user-specific cache of maplayer config
+        if self is not None:
+            cache.set("viewer_json_" + str(self.id) + "_" + str(0 if user is None else user.id), config)
+
         return config
 
 
@@ -295,7 +306,7 @@ class GXPLayerBase(object):
 
         return cfg
 
-    def layer_config(self):
+    def layer_config(self, user=None):
         """
         Generate a dict that can be serialized to a GXP layer configuration
         suitable for loading this layer.
@@ -342,7 +353,7 @@ class GXPLayer(GXPLayerBase):
             setattr(self,k,kw[k])
 
 
-def default_map_config():
+def default_map_config(user=None):
     _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
 
     _default_map = GXPMap(
@@ -362,7 +373,7 @@ def default_map_config():
         )
 
     DEFAULT_BASE_LAYERS = [_baselayer(lyr, idx) for idx, lyr in enumerate(settings.MAP_BASELAYERS)]
-    DEFAULT_MAP_CONFIG = _default_map.viewer_json(*DEFAULT_BASE_LAYERS)
+    DEFAULT_MAP_CONFIG = _default_map.viewer_json(user,*DEFAULT_BASE_LAYERS)
 
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 

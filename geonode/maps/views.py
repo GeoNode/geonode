@@ -22,6 +22,7 @@ import math
 import logging
 
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -108,7 +109,7 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
     map_obj.popular_count += 1
     map_obj.save()
 
-    config = map_obj.viewer_json()
+    config = map_obj.viewer_json(request.user)
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
     return render_to_response(template, RequestContext(request, {
@@ -233,10 +234,10 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
 
 def map_embed(request, mapid=None, template='maps/map_embed.html'):
     if mapid is None:
-        config = default_map_config()[0]
+        config = default_map_config(user=request.user)[0]
     else:
         map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
-        config = map_obj.viewer_json()
+        config = map_obj.viewer_json(request.user)
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config)
     }))
@@ -252,7 +253,7 @@ def map_view(request, mapid, template='maps/map_view.html'):
     """
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
-    config = map_obj.viewer_json()
+    config = map_obj.viewer_json(request.user)
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config),
         'map': map_obj
@@ -261,13 +262,13 @@ def map_view(request, mapid, template='maps/map_view.html'):
 
 def map_view_js(request, mapid):
     map_obj = _resolve_map(request, mapid, 'view_resourcebase')
-    config = map_obj.viewer_json()
+    config = map_obj.viewer_json(request.user)
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 def map_json(request, mapid):
     if request.method == 'GET':
         map_obj = _resolve_map(request, mapid, 'view_resourcebase')
-        return HttpResponse(json.dumps(map_obj.viewer_json()))
+        return HttpResponse(json.dumps(map_obj.viewer_json(request.user)))
     elif request.method == 'PUT':
         if not request.user.is_authenticated():
             return HttpResponse(
@@ -278,7 +279,8 @@ def map_json(request, mapid):
         map_obj = _resolve_map(request, mapid, 'change_resourcebase')
         try:
             map_obj.update_from_viewer(request.body)
-            return HttpResponse(json.dumps(map_obj.viewer_json()))
+            cache.delete("viewer_json_" + str(map_obj.id) + "_" + str(request.user.id or 0))
+            return HttpResponse(json.dumps(map_obj.viewer_json(request.user)))
         except ValueError, e:
             return HttpResponse(
                 "The server could not understand the request." + str(e),
@@ -340,7 +342,7 @@ def new_map_config(request):
     default map configuration is used.  If copy is specified
     and the map specified does not exist a 404 is returned.
     '''
-    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(user=request.user)
 
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
@@ -349,7 +351,7 @@ def new_map_config(request):
         map_obj.abstract = DEFAULT_ABSTRACT
         map_obj.title = DEFAULT_TITLE
         if request.user.is_authenticated(): map_obj.owner = request.user
-        config = map_obj.viewer_json()
+        config = map_obj.viewer_json(request.user)
         del config['id']
     else:
         if request.method == 'GET':
@@ -446,7 +448,7 @@ def new_map_config(request):
                 map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
 
 
-            config = map_obj.viewer_json(*(DEFAULT_BASE_LAYERS + layers))
+            config = map_obj.viewer_json(request.user, *(DEFAULT_BASE_LAYERS + layers))
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG

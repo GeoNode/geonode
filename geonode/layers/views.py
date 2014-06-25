@@ -182,7 +182,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
-    NON_WMS_BASE_LAYERS = [la for la in default_map_config()[1] if la.ows_url is None]
+    NON_WMS_BASE_LAYERS = [la for la in default_map_config(request.user)[1] if la.ows_url is None]
 
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
@@ -194,7 +194,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "metadata": metadata,
     }
 
-    context_dict["viewer"] = json.dumps(map_obj.viewer_json(* (NON_WMS_BASE_LAYERS + [maplayer])))
+    context_dict["viewer"] = json.dumps(map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
     context_dict["preview"] = getattr(settings, 'LAYER_PREVIEW_LIBRARY', 'leaflet')
 
     if layer.storeType=='dataStore':
