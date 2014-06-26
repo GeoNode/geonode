@@ -34,6 +34,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
+from django.core.cache import cache
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -390,21 +391,38 @@ class MapLayer(models.Model, GXPLayerBase):
     local = models.BooleanField(default=False)
     # True if this layer is served by the local geoserver
 
-    def layer_config(self):
-        cfg = GXPLayerBase.layer_config(self)
+    def layer_config(self, user=None):
+        #Try to use existing user-specific cache of layer config
+        if self.id:
+            cfg = cache.get("layer_config" + str(self.id) + "_" + str(0 if user is None else user.id))
+            if cfg is not None:
+                return cfg
+
+        cfg = GXPLayerBase.layer_config(self,user=user)
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
-        if self.local:
-            if Layer.objects.filter(typename=self.name).exists():
-                layer = Layer.objects.get(typename=self.name)
+        if Layer.objects.filter(typename=self.name).exists():
+            try:
+                if self.local:
+                    layer =  Layer.objects.get(typename=self.name)
+                else:
+                    layer = Layer.objects.get(typename=self.name,service__base_url=self.ows_url)
                 attribute_cfg = layer.attribute_config()
                 if "getFeatureInfo" in attribute_cfg:
                     cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
-            else:
-                # shows maplayer with pink tiles, 
+                if not user.has_perm('base.view_resourcebase', obj=layer.resourcebase_ptr):
+                    cfg['disabled'] = True
+                    cfg['visibility'] = False
+            except:
+                # shows maplayer with pink tiles,
                 # and signals that there is problem
                 # TODO: clear orphaned MapLayers
                 layer = None
+
+        if self.id:
+            #Create temporary cache of maplayer config, should not last too long in case
+            #local layer permissions or configuration values change (default is 5 minutes)
+            cache.set("layer_config" + str(self.id) + "_" + str(0 if user is None else user.id), cfg)
         return cfg
 
     @property
