@@ -6,13 +6,17 @@ import logging
 
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth import get_user_model
+
+from guardian.shortcuts import get_perms
+
+from mptt.models import MPTTModel, TreeForeignKey
 
 from polymorphic import PolymorphicModel, PolymorphicManager
 from agon_ratings.models import OverallRating
@@ -22,20 +26,22 @@ from geonode.base.enumerations import ALL_LANGUAGES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
 from geonode.utils import bbox_to_wkt
 from geonode.utils import forward_mercator, inverse_mercator
-from geonode.people.models import Profile, Role
 from geonode.security.models import PermissionLevelMixin
 from taggit.managers import TaggableManager
+
+from geonode.people.models import Profile
+from geonode.people.enumerations import ROLE_VALUES
 
 logger = logging.getLogger(__name__)
 
 
 class ContactRole(models.Model):
     """
-    ContactRole is an intermediate abstract model to bind Profiles as Contacts to Layers and apply roles.
+    ContactRole is an intermediate model to bind Profiles as Contacts to Resources and apply roles.
     """
     resource = models.ForeignKey('ResourceBase')
-    contact = models.ForeignKey(Profile)
-    role = models.ForeignKey(Role)
+    contact = models.ForeignKey(settings.AUTH_USER_MODEL)
+    role = models.CharField(choices=ROLE_VALUES, max_length=255, help_text=_('function performed by the responsible party'))
 
     def clean(self):
         """
@@ -97,11 +103,18 @@ class SpatialRepresentationType(models.Model):
     class Meta:
         ordering = ("identifier",)
         verbose_name_plural = 'Metadata Spatial Representation Types'
-        
-class Region(models.Model):
+       
 
-    code = models.CharField(max_length=50)
+class RegionManager(models.Manager):
+    def get_by_natural_key(self, code):
+        return self.get(code=code)
+ 
+class Region(MPTTModel):
+    #objects = RegionManager()
+
+    code = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=255)
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 
     def __unicode__(self):
         return self.name
@@ -109,6 +122,9 @@ class Region(models.Model):
     class Meta:
         ordering = ("name",)
         verbose_name_plural = 'Metadata Regions'
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
         
 class RestrictionCodeType(models.Model):
     """
@@ -142,7 +158,7 @@ class Thumbnail(models.Model):
         md5 = hashlib.md5()
         md5.update(id + str(self.version))
         self.version = self.version + 1
-        self.thumb_file.save(md5.hexdigest() + ".png", ContentFile(image))
+        self.thumb_file.save(md5.hexdigest() + ".png", ContentFile(image))  
 
     def _delete_thumb(self):
         try:
@@ -195,7 +211,7 @@ class License(models.Model):
 class ResourceBaseManager(PolymorphicManager):
     def admin_contact(self):
         # this assumes there is at least one superuser
-        superusers = User.objects.filter(is_superuser=True).order_by('id')
+        superusers = get_user_model().objects.filter(is_superuser=True).order_by('id')
         if superusers.count() == 0:
             raise RuntimeError('GeoNode needs at least one admin/superuser set')
 
@@ -219,8 +235,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     # internal fields
     uuid = models.CharField(max_length=36)
-    owner = models.ForeignKey(User, blank=True, null=True)
-    contacts = models.ManyToManyField(Profile, through='ContactRole')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_resource')
+    contacts = models.ManyToManyField(settings.AUTH_USER_MODEL, through='ContactRole')
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
     date = models.DateTimeField(_('date'), default = datetime.datetime.now, help_text=_('reference date for the cited resource')) # passing the method itself, not the result
 
@@ -237,7 +253,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     # section 3
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_('commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject (space or comma-separated'))
-    regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), help_text=_('keyword identifies a location'), blank=True)
+    regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), help_text=_('keyword identifies a location'), blank=True, null=True)
     restriction_code_type = models.ForeignKey(RestrictionCodeType, verbose_name=_('restrictions'), help_text=_('limitation(s) placed upon the access or use of the data.'), null=True, blank=True, limit_choices_to=Q(is_choice=True))
     constraints_other = models.TextField(_('restrictions other'), blank=True, null=True, help_text=_('other restrictions and legal prerequisites for accessing and using the resource or metadata'))
 
@@ -287,12 +303,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     metadata_xml = models.TextField(null=True, default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', blank=True)
 
     thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True, on_delete=models.SET_NULL)
+    
 
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
     featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
 
+    #fields necessary for the apis
+    thumbnail_url = models.CharField(max_length=255, null=True, blank=True)
+    absolute_url = models.CharField(max_length=255, null=True, blank=True)
 
     def delete(self, *args, **kwargs):
         super(ResourceBase, self).delete(*args, **kwargs)
@@ -344,16 +364,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         if (not (self.license.url is None)) and (len(self.license.url) > 0):
                 a.append("("+self.license.url+")")
         return " ".join(a)
-
-    @property
-    def poc_role(self):
-        role = Role.objects.get(value='pointOfContact')
-        return role
-
-    @property
-    def metadata_author_role(self):
-        role = Role.objects.get(value='author')
-        return role
 
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
@@ -520,11 +530,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
            It is mandatory to call it from descendant classes
            but hard to enforce technically via signals or save overriding.
         """
+        from guardian.models import UserObjectPermission
         logger.debug('Checking for permissions.')
         #  True if every key in the get_all_level_info dict is empty.
-        no_custom_permissions = all(map(lambda perm: not perm, self.get_all_level_info().values()))
+        no_custom_permissions = UserObjectPermission.objects.filter(
+            content_type=ContentType.objects.get_for_model(self.get_self_resource()),
+            object_pk=str(self.pk)
+            ).count()
 
-        if no_custom_permissions:
+        if no_custom_permissions == 0:
             logger.debug('There are no permissions for this object, setting default perms.')
             self.set_default_permissions()
 
@@ -533,16 +547,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         else:
             user = ResourceBase.objects.admin_contact().user
 
-        if self.poc is None:
-            pc, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": user.username}
-                                           )
-            self.poc = pc
+        if self.poc is None:    
+            self.poc = user
         if self.metadata_author is None:  
-            ac, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": user.username}
-                                           )
-            self.metadata_author = ac
+            self.metadata_author = user
 
     def maintenance_frequency_title(self):
         return [v for i, v in enumerate(UPDATE_FREQUENCIES) if v[0] == self.maintenance_frequency][0][1].title()
@@ -552,13 +560,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     
     def _set_poc(self, poc):
         # reset any poc assignation to this resource
-        ContactRole.objects.filter(role=self.poc_role, resource=self).delete()
+        ContactRole.objects.filter(role='pointOfContact', resource=self).delete()
         #create the new assignation
-        ContactRole.objects.create(role=self.poc_role, resource=self, contact=poc)
+        ContactRole.objects.create(role='pointOfContact', resource=self, contact=poc)
 
     def _get_poc(self):
         try:
-            the_poc = ContactRole.objects.get(role=self.poc_role, resource=self).contact
+            the_poc = ContactRole.objects.get(role='pointOfContact', resource=self).contact
         except ContactRole.DoesNotExist:
             the_poc = None
         return the_poc
@@ -567,14 +575,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     def _set_metadata_author(self, metadata_author):
         # reset any metadata_author assignation to this resource
-        ContactRole.objects.filter(role=self.metadata_author_role, resource=self).delete()
+        ContactRole.objects.filter(role='author', resource=self).delete()
         #create the new assignation
-        ContactRole.objects.create(role=self.metadata_author_role,
+        ContactRole.objects.create(role='author',
                                                   resource=self, contact=metadata_author)
 
     def _get_metadata_author(self):
         try:
-            the_ma = ContactRole.objects.get(role=self.metadata_author_role, resource=self).contact
+            the_ma = ContactRole.objects.get(role='author', resource=self).contact
         except ContactRole.DoesNotExist:
             the_ma = None
         return the_ma
@@ -582,7 +590,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
     objects = ResourceBaseManager()
-    
+
+
+    class Meta:
+        # custom permissions,
+        # change and delete are standard in django
+        permissions = (('view_resourcebase', 'Can view'),
+                       ('change_resourcebase_permissions', "Can change permissions"), )
+
 
 class LinkManager(models.Manager):
     """Helper class to access links grouped by type

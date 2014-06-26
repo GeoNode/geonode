@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -48,7 +48,7 @@ def profile_edit(request, username=None):
         except Profile.DoesNotExist:
             return redirect("profile_browse")
     else:
-        profile = get_object_or_404(Profile, user__username=username)
+        profile = get_object_or_404(Profile, username=username)
 
     if request.method == "POST":
         form = ProfileForm(request.POST, request.FILES, instance=profile)
@@ -64,9 +64,9 @@ def profile_edit(request, username=None):
     })
 
 def profile_detail(request, username):
-    profile = get_object_or_404(Profile, user__username=username)
+    profile = get_object_or_404(Profile, username=username)
     # combined queryset from each model content type
-    user_objects = profile.user.resourcebase_set.all()
+    user_objects = profile.resourcebase_set.all()
 
     content_filter = 'all'
 
@@ -114,7 +114,7 @@ def forgot_username(request):
         username_form = ForgotUsernameForm(request.POST)
         if username_form.is_valid():
 
-            users = User.objects.filter(
+            users = get_user_model().objects.filter(
                         email=username_form.cleaned_data['email'])
             if len(users) > 0:
                 username = users[0].username

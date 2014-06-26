@@ -12,20 +12,35 @@
 <script type="text/javascript">
     window.addEventListener("map:init", function (e) {
         var map = e.detail.map;
-
-        {% if layer.bbox_string %}
-        zoom_to_box(map, [{{ layer.bbox_string }}]);
+        {% if resource.bbox_string %}
+        zoom_to_box(map, [{{ resource.bbox_string }}]);
         {% endif %}
 
-        {% if layer.get_tiles_url %}
-        var tile_layer = L.tileLayer("{{ layer.get_tiles_url|safe }}",
+        {% if resource.get_tiles_url %}
+        tile_layer = L.tileLayer("{{ resource.get_tiles_url|safe }}",
         {
          'opacity':0.8
         });
-        map.layerscontrol.addOverlay(tile_layer,"{{ layer.title }}"); 
-        map.addLayer(tile_layer);
-        {% endif %}
+        {%  elif resource.ptype == "gxp_wmscsource"  %}
+            tile_layer = L.tileLayer.wms('{{ resource.ows_url|safe }}', {
+                layers: '{{ resource.typename }}',
+                format: 'image/png',
+                transparent: true,
+                'opacity':0.8
+            });
+        {%  elif resource.ptype == "gxp_arcrestsource" %}
+            tile_layer = L.esri.dynamicMapLayer('{{ resource.ows_url|safe }}', {
+                layers: '{{ resource.typename }}',
+                format: 'png',
+                transparent: true,
+                'opacity':0.8
+            });
 
+        {% endif %}
+        if (tile_layer != null) {
+            map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");
+            map.addLayer(tile_layer);
+        }
     });
     function zoom_to_box(map, bbox){
         var bounds = [

@@ -51,8 +51,8 @@ from geoserver.resource import FeatureType
 from gsimporter import BadRequest
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.db.models import Max
+from django.contrib.auth import get_user_model
 
 import shutil
 import sys
@@ -149,7 +149,7 @@ def upload(name, base_file,
     if user is None:
         user = get_default_user()
     if isinstance(user, basestring):
-        user = User.objects.get(username=user)
+        user = get_user_model().objects.get(username=user)
 
     import_session = save_step(user, name, base_file, overwrite)
 

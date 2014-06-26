@@ -21,9 +21,9 @@ import cPickle as pickle
 import logging
 import shutil
 from datetime import datetime
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.conf import settings
 from geonode.layers.models import Layer
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 from gsimporter import NotFound
@@ -50,7 +50,7 @@ class Upload(models.Model):
     objects = UploadManager()
     
     import_id = models.BigIntegerField(null=True)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
     # hold importer state or internal state (STATE_)
     state = models.CharField(max_length=16)
     date = models.DateTimeField('date', default=datetime.now)

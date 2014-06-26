@@ -1,23 +1,22 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 
 from avatar.templatetags.avatar_tags import avatar_url
+from guardian.shortcuts import get_objects_for_user
 
 from geonode.base.models import TopicCategory
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.people.models import Profile
-from geonode.contrib.groups.models import Group
+from geonode.groups.models import GroupProfile
 
 from taggit.models import Tag
 
 from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
-
-from .authorization import perms
 
 
 FILTER_TYPES = {
@@ -46,23 +45,18 @@ class TypeFilteredResource(ModelResource):
             self.type_filter = None
         return orm_filters
 
-    def filter_security(self, obj, user):
-        """ Used to check whether the item should be included in the counts or not"""
-        return user.has_perm(perms[obj.class_name]['view'], obj)
-
 
 class TagResource(TypeFilteredResource):
     """Tags api"""
 
     def dehydrate_count(self, bundle):
         count = 0
+        resources = get_objects_for_user(bundle.request.user, 'base.view_resourcebase').values_list('id', flat=True)
         if self.type_filter:
-            for tagged in bundle.obj.taggit_taggeditem_items.all():
-                if tagged.content_object and tagged.content_type.model_class() == self.type_filter and \
-                    self.filter_security(tagged.content_object, bundle.request.user):
-                    count += 1
+            ctype = ContentType.objects.get_for_model(self.type_filter)
+            count = bundle.obj.taggit_taggeditem_items.filter(content_type=ctype).filter(object_id__in=resources).count()
         else:
-             count = bundle.obj.taggit_taggeditem_items.count()
+            count = bundle.obj.taggit_taggeditem_items.filter(object_id__in=resources).count()
 
         return count
 
@@ -79,13 +73,11 @@ class TopicCategoryResource(TypeFilteredResource):
     """Category api"""
 
     def dehydrate_count(self, bundle):
-        count = 0
-        resources = bundle.obj.resourcebase_set.instance_of(self.type_filter).get_real_instances() if \
-            self.type_filter else bundle.obj.resourcebase_set.get_real_instances()
+        resources = bundle.obj.resourcebase_set.instance_of(self.type_filter) if \
+            self.type_filter else bundle.obj.resourcebase_set.all()
 
-        for resource in resources:
-            if self.filter_security(resource, bundle.request.user):
-                count += 1
+        permitted = get_objects_for_user(bundle.request.user,'base.view_resourcebase').values_list('id', flat=True)
+        return resources.filter(id__in=permitted).count()
 
         return count
 
@@ -102,7 +94,7 @@ class UserResource(ModelResource):
     """User api"""
 
     class Meta:
-        queryset = User.objects.all()
+        queryset = get_user_model().objects.all()
         resource_name = 'users'
         allowed_methods = ['get',]
         excludes = ['is_staff', 'password', 'is_superuser',
@@ -130,7 +122,7 @@ class GroupResource(ModelResource):
         return reverse('group_detail',  args=[bundle.obj.slug,]) 
 
     class Meta:
-        queryset = Group.objects.all()
+        queryset = GroupProfile.objects.all()
         resource_name = 'groups'
         allowed_methods = ['get',]
         filtering = {
@@ -141,7 +133,6 @@ class GroupResource(ModelResource):
 
 class ProfileResource(ModelResource):
     """Profile api"""
-    user = fields.ToOneField(UserResource, 'user')
     avatar_100 = fields.CharField(null=True)
     profile_detail_url = fields.CharField()
     email = fields.CharField(default='')
@@ -169,7 +160,7 @@ class ProfileResource(ModelResource):
         semi_filtered = super(ProfileResource, self).apply_filters(request, applicable_filters)
 
         if group is not None:
-            semi_filtered = semi_filtered.filter(user__groupmember__group__slug=group)
+            semi_filtered = semi_filtered.filter(groupmember__group__slug=group)
             
         return semi_filtered
 
@@ -180,31 +171,31 @@ class ProfileResource(ModelResource):
         return email
 
     def dehydrate_layers_count(self, bundle):
-        return bundle.obj.user.resourcebase_set.instance_of(Layer).count()
+        return bundle.obj.resourcebase_set.instance_of(Layer).count()
 
     def dehydrate_maps_count(self, bundle):
-        return bundle.obj.user.resourcebase_set.instance_of(Map).count()
+        return bundle.obj.resourcebase_set.instance_of(Map).count()
 
     def dehydrate_documents_count(self, bundle):
-        return bundle.obj.user.resourcebase_set.instance_of(Document).count()
+        return bundle.obj.resourcebase_set.instance_of(Document).count()
 
     def dehydrate_avatar_100(self, bundle):
-        return avatar_url(bundle.obj.user, 100)
+        return avatar_url(bundle.obj, 100)
 
     def dehydrate_profile_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
 
     def dehydrate_current_user(self, bundle):
-        return bundle.request.user.username == bundle.obj.user.username
+        return bundle.request.user.username == bundle.obj.username
 
     def dehydrate_activity_stream_url(self, bundle):
         return reverse('actstream_actor', kwargs={
-            'content_type_id': ContentType.objects.get_for_model(bundle.obj.user).pk, 
-            'object_id': bundle.obj.user.pk})
+            'content_type_id': ContentType.objects.get_for_model(bundle.obj).pk, 
+            'object_id': bundle.obj.pk})
 
     class Meta:
-        queryset = Profile.objects.all()
+        queryset = get_user_model().objects.exclude(username='AnonymousUser')
         resource_name = 'profiles'
         allowed_methods = ['get',]
-        ordering = ['user','name']
+        ordering = ['name']
         

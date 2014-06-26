@@ -41,23 +41,19 @@
             <li id="nav_maps">
               <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
             </li>
-            {% if USE_DOCUMENTS %}
             <li id="nav_documents">
               <a href="{% url "documents_browse" %}">{% trans "Documents" %}</a>
             </li>
-            {% endif %}
             <li id="nav_people">
               <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
             </li>
-            {% if GROUPS_APP %}
             <li id="nav_groups">
               <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
             </li>
-            {% endif %}
           </ul>
           <form class="col-md-3" id="search" action="{% url "search" %}">
             <div class="input-group">
-              <input type="text" placeholder="Search" class="form-control" name="title__contains">
+              <input id="search_input" type="text" placeholder="Search" class="form-control" name="title__contains">
               <span class="input-group-btn">
                 <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
               </span>
@@ -77,7 +73,7 @@
                 <ul class="dropdown-menu">
                   <li><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload Layers" %}</a></li>
                   <li class="divider"></li>
-                  <li><a href="{{ user.get_profile.get_absolute_url }}"><i class="fa fa-user"></i> {% trans "Profile" %}</a></li>
+                  <li><a href="{{ user.get_absolute_url }}"><i class="fa fa-user"></i> {% trans "Profile" %}</a></li>
                   <li><a href="{% url "recent-activity" %}"><i class="fa fa-fire"></i> {% trans "Recent Activity" %}</a></li>
                   <li><a href="{% url "messages_inbox" %}"><i class="fa fa-inbox"></i> {% trans "Inbox" %}</a></li>
                   {% if perms.announcements.can_manage %}
@@ -215,13 +211,27 @@
     {% endif %}
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
+    {% include 'autocomplete_light/static.html' %}
 
     {% block extra_script %}{% endblock extra_script %}
-
+    <script type="text/javascript">
+        var autocomplete = $('#search_input').yourlabsAutocomplete({
+            url: '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}',
+            choiceSelector: 'span',
+            hideAfter: 200,
+            minimumCharacters: 1,
+            placeholder: '{% trans 'Type your search here ...' %}',
+            appendAutocomplete: $('#search_input'),
+        });
+        $('#search_input').bind('selectChoice', function(e, choice, autocomplete) {
+            if(choice[0].children[0] == undefined) {
+                $('#search_input').val(choice[0].innerHTML);
+                $('#search').submit();
+            }
+        });
+    </script>
     <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
     <script type="text/javascript" src="{% url "lang" %}"></script>
-    
-    
 
     </style>
   </body>

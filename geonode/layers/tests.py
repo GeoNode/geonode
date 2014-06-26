@@ -25,29 +25,26 @@ import tempfile
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
-from django.contrib.auth.models import User, AnonymousUser
 from django.utils import simplejson as json
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db.models import Count
+from django.contrib.auth import get_user_model
 from agon_ratings.models import OverallRating
 
-import geonode.layers.utils
-import geonode.layers.views
-import geonode.layers.models
+from guardian.shortcuts import get_anonymous_user, assign_perm
 
 from geonode import GeoNodeException
 
 from geonode.layers.models import Layer, Style
-from geonode.layers.forms import JSONField, LayerUploadForm
 from geonode.layers.utils import layer_type, get_files, get_valid_name, \
                                 get_valid_layer_name
 from geonode.people.utils import get_valid_user
-from geonode.security.enumerations import ANONYMOUS_USERS, AUTHENTICATED_USERS
 from geonode.base.models import TopicCategory
 from geonode.base.populate_test_data import create_models
+from geonode.layers.forms import JSONField, LayerUploadForm
 from .populate_layers_data import create_layer_data
 
 
@@ -62,25 +59,13 @@ class LayersTest(TestCase):
         self.passwd = 'admin'
         create_models(type='layer')
         create_layer_data()
+        self.anonymous_user = get_anonymous_user()
 
     # Permissions Tests
 
     # Users
     # - admin (pk=2)
     # - bobby (pk=1)
-
-    # Inherited
-    # - LEVEL_NONE = _none
-
-    # Layer
-    # - LEVEL_READ = layer_read
-    # - LEVEL_WRITE = layer_readwrite
-    # - LEVEL_ADMIN = layer_admin
-
-    # Map
-    # - LEVEL_READ = map_read
-    # - LEVEL_WRITE = map_readwrite
-    # - LEVEL_ADMIN = map_admin
 
 
     # FIXME: Add a comprehensive set of permissions specifications that allow us
@@ -89,28 +74,30 @@ class LayersTest(TestCase):
     # If anonymous and/or authenticated are not specified,
     # should set_layer_permissions remove any existing perms granted??
 
-    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","layer_readwrite"]]}
+    perm_spec = {
+        "users":{
+            "admin": ["change_resourcebase", "change_resourcebase_permissions","view_resourcebase"]
+        },
+        "groups": {}  
+    }
     def test_layer_set_default_permissions(self):
         """Verify that Layer.set_default_permissions is behaving as expected
         """
 
         # Get a Layer object to work with
         layer = Layer.objects.all()[0]
-
         # Set the default permissions
         layer.set_default_permissions()
 
         # Save the layers Current Permissions
         current_perms = layer.get_all_level_info()
 
-        # Test that LEVEL_READ is set for ANONYMOUS_USERS and AUTHENTICATED_USERS
-        self.assertEqual(layer.get_gen_level(ANONYMOUS_USERS), layer.LEVEL_READ)
-        self.assertEqual(layer.get_gen_level(AUTHENTICATED_USERS), layer.LEVEL_READ)
+        # Test that the anonymous user can read
+        self.assertTrue(self.anonymous_user.has_perm('view_resourcebase', layer.get_self_resource()))
 
-        admin_perms = current_perms['users'][layer.owner.username]
-
-        # Test that the owner was assigned LEVEL_ADMIN
-        self.assertEqual(admin_perms, layer.LEVEL_ADMIN)
+        # Test that the owner can manage the layer
+        self.assertTrue(layer.owner.has_perm('change_resourcebase_permissions', layer.get_self_resource()))
+        self.assertTrue(layer.owner.has_perm('change_resourcebase', layer.get_self_resource()))
 
     def test_set_layer_permissions(self):
         """Verify that the set_layer_permissions view is behaving as expected
@@ -125,20 +112,18 @@ class LayersTest(TestCase):
 
         layer.set_permissions(self.perm_spec)
 
-        # Test that the Permissions for ANONYMOUS_USERS and AUTHENTICATED_USERS were set correctly
-        self.assertEqual(layer.get_gen_level(ANONYMOUS_USERS), layer.LEVEL_NONE)
-        self.assertEqual(layer.get_gen_level(AUTHENTICATED_USERS), layer.LEVEL_NONE)
+        # Test that the Permissions for anonymous user is are set
+        self.assertFalse(self.anonymous_user.has_perm('view_resourcebase', layer.get_self_resource()))
 
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
-        users = [n[0] for n in self.perm_spec['users']]
-        levels = layer.get_user_levels().exclude(user__username__in = users + [layer.owner])
-        self.assertEqual(len(levels), 0)
+        current_perms = layer.get_all_level_info()
+        self.assertEqual(len(current_perms['users'].keys()), 2)
 
         # Test that the User permissions specified in the perm_spec were applied properly
-        for username, level in self.perm_spec['users']:
-            user = geonode.maps.models.User.objects.get(username=username)
-            self.assertEqual(layer.get_user_level(user), level)
+        for username, perm in self.perm_spec['users'].items():
+            user = get_user_model().objects.get(username=username)
+            self.assertTrue(user.has_perm(perm, layer.get_self_resource()))
 
     def test_ajax_layer_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
@@ -151,19 +136,19 @@ class LayersTest(TestCase):
         c = Client()
 
         # Test that an invalid layer.typename is handled for properly
-        response = c.post(reverse('resource_permissions', args=('layer', invalid_layer_id,)),
+        response = c.post(reverse('resource_permissions', args=(invalid_layer_id,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 404)
 
         # Test that GET returns permissions
-        response = c.get(reverse('resource_permissions', args=('layer', valid_layer_typename,)))
+        response = c.get(reverse('resource_permissions', args=(valid_layer_typename,)))
         assert('permissions' in response.content)
 
         # Test that a user is required to have maps.change_layer_permissions
 
         # First test un-authenticated
-        response = c.post(reverse('resource_permissions', args=('layer', valid_layer_typename,)),
+        response = c.post(reverse('resource_permissions', args=(valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401)
@@ -171,7 +156,7 @@ class LayersTest(TestCase):
         # Next Test with a user that does NOT have the proper perms
         logged_in = c.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
-        response = c.post(reverse('resource_permissions', args=('layer', valid_layer_typename,)),
+        response = c.post(reverse('resource_permissions', args=(valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
         self.assertEquals(response.status_code, 401)
@@ -180,7 +165,7 @@ class LayersTest(TestCase):
         logged_in = c.login(username='admin', password='admin')
         self.assertEquals(logged_in, True)
 
-        response = c.post(reverse('resource_permissions', args=('layer', valid_layer_typename,)),
+        response = c.post(reverse('resource_permissions', args=(valid_layer_typename,)),
                             data=json.dumps(self.perm_spec),
                             content_type="application/json")
 
@@ -198,17 +183,12 @@ class LayersTest(TestCase):
 
         # Test with a Layer object
         layer = Layer.objects.all()[0]
-        layer_info = layer.get_all_level_info()
-        info = geonode.security.views._perms_info(layer, geonode.layers.views.LAYER_LEV_NAMES)
 
-        # Test that ANONYMOUS_USERS and AUTHENTICATED_USERS are set properly
-        self.assertEqual(info[ANONYMOUS_USERS], layer.LEVEL_READ)
-        self.assertEqual(info[AUTHENTICATED_USERS], layer.LEVEL_READ)
-
-        self.assertEqual(info['users'], sorted(layer_info['users'].items()))
+        # Test that the anonymous user can read
+        self.assertTrue(self.anonymous_user.has_perm('view_resourcebase', layer.get_self_resource()))
 
         # Test that layer owner can edit layer
-        self.assertTrue(layer.owner.has_perm(set([u'layers.change_layer']), layer))
+        self.assertTrue(layer.owner.has_perm('change_resourcebase', layer.get_self_resource()))
 
         # TODO Much more to do here once jj0hns0n understands the ACL system better
 
@@ -225,7 +205,7 @@ class LayersTest(TestCase):
 
     def test_describe_data_2(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
-        self.assertEqual(7, User.objects.all().count())
+        self.assertEqual(8, get_user_model().objects.all().count())
         c = Client()
         response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
@@ -252,7 +232,7 @@ class LayersTest(TestCase):
 
     def test_describe_data(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
-        self.assertEqual(7, User.objects.all().count())
+        self.assertEqual(8, get_user_model().objects.all().count())
         c = Client()
         response = c.get(reverse('layer_metadata', args=('geonode:CA',)))
         # Since we are not authenticated, we should not be able to access it
@@ -311,7 +291,7 @@ class LayersTest(TestCase):
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
-        adminuser = User.objects.get(is_superuser=True)
+        adminuser = get_user_model().objects.get(is_superuser=True)
         valid_user = get_valid_user(adminuser)
         msg = ('Passed in a valid admin user "%s" but got "%s" in return'
                 % (adminuser, valid_user))
@@ -320,9 +300,9 @@ class LayersTest(TestCase):
         # Verify it returns a valid user after receiving None
         valid_user = get_valid_user(None)
         msg = ('Expected valid user after passing None, got "%s"' % valid_user)
-        assert isinstance(valid_user, User), msg
+        assert isinstance(valid_user, get_user_model()), msg
 
-        newuser = User.objects.create(username='arieluser')
+        newuser = get_user_model().objects.create(username='arieluser')
         valid_user = get_valid_user(newuser)
         msg = ('Passed in a valid user "%s" but got "%s" in return'
                 % (newuser, valid_user))
@@ -333,7 +313,7 @@ class LayersTest(TestCase):
                ' "%s" in return' % ('arieluser', valid_user))
         assert valid_user.username == 'arieluser', msg
 
-        nn = AnonymousUser()
+        nn = get_anonymous_user()
         self.assertRaises(GeoNodeException, get_valid_user, nn)
 
     def testShapefileValidation(self):
@@ -764,17 +744,18 @@ class LayersTest(TestCase):
 
     def test_not_superuser_permissions(self):
         #grab bobby
-        bob = User.objects.get(username='bobby')
+        bob = get_user_model().objects.get(username='bobby')
 
         #grab a layer
         layer = Layer.objects.all()[0]
 
-        #set layer permissions to registered read/write
-        layer.set_gen_level(AUTHENTICATED_USERS,'layer_readwrite')
+        assign_perm('view_resourcebase', bob, layer.get_self_resource())
+        assign_perm('change_resourcebase', bob, layer.get_self_resource())
 
-        #verify bobby has view/change permissions on it
-        self.assertTrue(bob.has_perm('layers.view_layer',layer))
-        self.assertTrue(bob.has_perm('layers.change_layer',layer))
+        #verify bobby has view/change permissions on it but not manage
+        self.assertTrue(bob.has_perm('view_resourcebase',layer.get_self_resource()))
+        self.assertTrue(bob.has_perm('change_resourcebase',layer.get_self_resource()))
+        self.assertFalse(bob.has_perm('change_resourcebase_permissions',layer.get_self_resource()))
 
         #verify that bobby can access the layer data page
         c = Client()

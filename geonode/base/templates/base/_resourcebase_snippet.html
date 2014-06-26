@@ -2,10 +2,10 @@
   <article ng-repeat="item in results">
   	<div class="row items-list">
   	  <div class="col-md-4">
-  	    <a href="{{ item.absolute__url }}"><img class="thumb" ng-src="{{ item.thumbnail_url }}" /></a>
+  	    <a href="{{ item.absolute_url }}"><img class="thumb" ng-src="{{ item.thumbnail_url }}" /></a>
   	  </div>
       <div class="col-md-8">
-        <h4><a href="{{ item.absolute__url }}">{{ item.title }}</a> <span class="owner">{{ item.owner.username }}</span></h4>
+        <h4><a href="{{ item.absolute_url }}">{{ item.title }}</a> <span class="owner">{{ item.owner.username }}</span></h4>
         <p>{{ item.category.gn_description }}</p>
         <p class="abstract">{{ item.abstract|limitTo:250 }}...</p>
         <p class="actions">

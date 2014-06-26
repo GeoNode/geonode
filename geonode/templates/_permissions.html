@@ -5,24 +5,20 @@
     <div class="controls">
       <div class="radio">
         <label>
-          <input type="radio" name="viewmode" id="perms_view_anyone" value="ANYONE" checked="checked">
+          <input type="checkbox" name="view_anonymous" id="perms_view_anyone" value="AnonymousUser">
           {% trans "Anyone" %}
         </label>
       </div>
       <div class="radio">
         <label>
-          <input type="radio" name="viewmode" id="perms_view_registered" value="REGISTERED">
-          {% trans "Any registered user" %}
+          {% trans "The following users:" %}
+          <input class="user-select" type="text" name="view_resourcebase" id="view_resourcebase_users" />
         </label>
       </div>
       <div class="radio">
         <label>
-          <input type="radio" name="viewmode" id="perms_view_editors" value="EDITORS">
-          {% if GROUPS_APP %}
-            {% trans "Only users and groups who can edit" %}
-          {% else %}
-            {% trans "Only users who can edit" %}
-          {% endif %}
+          {% trans "The following groups:" %}
+          <input class="group-select" type="text" name="view_resourcebase" id="view_resourcebase_groups" />
         </label>
       </div>
     </div>
@@ -32,34 +28,32 @@
     <div class="controls">
       <div class="radio">
         <label>
-          <input type="radio" name="editmode" id="perms_edit_registered" value="REGISTERED" checked="checked">
-          {% trans "Any registered user" %}
-        </div>
-      <div class="radio">
-        <label>
-          <input type="radio" name="editmode" id="perms_edit_list" value="LIST">
-          {% if GROUPS_APP %}
-            {% trans "Only the following users or groups:" %}
-          {% else %}
-            {% trans "Only the following users:" %}
-          {% endif %}
+          {% trans "The following users:" %}
+          <input class="user-select" type="text" name="change_resourcebase" id="change_resourcebase_users" />
         </label>
       </div>
-      <input type="text" name="editusers" class="user-select" id="perms_edit_editusers">
-      {% if GROUPS_APP %}
-          <input type="text" name="editgroups" class="group-select" id="perms_edit_editgroups">
-      {% endif %}
-      </input>
+      <div class="radio">
+        <label>
+          {% trans "The following groups:" %}
+          <input class="group-select" type="text" name="change_resourcebase" id="change_resourcebase_groups" /> 
+        </label>
+      </div>
     </div>
   </div>
   <div class="control-group">
-    <label class="control-label">{% trans "Who can manage and edit this data?" %}</label>
+    <label class="control-label">{% trans "Who can manage?" %}</label>
     <div class="controls">
-      <input type="text" name="manageusers" class="user-select" id="perms_edit_manageusers">
-      {% if GROUPS_APP %}
-        <input type="text" name="managegroups" class="group-select" id="perms_edit_managegroups">
-      {% endif %}
-      </input>
+      <div class="radio">
+        <label>
+          {% trans "The following users:" %}
+          <input class="user-select" type="text" name="change_resourcebase_permissions" id="change_resourcebase_permissions_users" />   
+        </label>
+      </div>
+      <div class="radio">
+        <label>
+          {% trans "The following groups:" %}
+          <input class="group-select" type="text" name="change_resourcebase_permissions" id="change_resourcebase_permissions_groups" />          
+        </label>
+      </div>
     </div>
   </div>
-</div>

@@ -4,7 +4,9 @@ from django.db.models import Count
 
 from agon_ratings.models import Rating
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+from guardian.shortcuts import get_objects_for_user
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -29,13 +31,14 @@ def facets(context):
         'raster': 0,
         'vector': 0,
     }
-
-    for layer in Layer.objects.all():
-        if request.user.has_perm('layers.view_layer', layer):
-            if layer.storeType == 'coverageStore':
-                facets['raster'] += 1
-            else:
-                facets['vector'] +=1
+    resources = get_objects_for_user(request.user, 'base.view_resourcebase')
+    vectors = Layer.objects.filter(storeType='dataStore').values_list('id', flat=True)
+    rasters = Layer.objects.filter(storeType='coverageStore').values_list('id', flat=True)
+    remote = Layer.objects.filter(storeType='remoteStore').values_list('id', flat=True)
+   
+    facets['raster'] = resources.filter(id__in=vectors).count()
+    facets['vector'] = resources.filter(id__in=rasters).count()
+    facets['remote'] = resources.filter(id__in=remote).count()
 
     facet_type = context['facet_type'] if 'facet_type' in context else 'all'     
     # Break early if only_layers is set.
@@ -43,20 +46,13 @@ def facets(context):
         return facets
 
 
-    facets['map'] = 0
-    for the_map in Map.objects.all():
-        if request.user.has_perm('maps.view_map', the_map):
-            facets['map'] +=1
-
-    facets['document'] = 0
-    for doc in Document.objects.all():
-        if request.user.has_perm('document.view_document', doc):
-            facets['document'] += 1
-
+    facets['map'] = resources.filter(id__in=Map.objects.values_list('id',flat=True)).count()
+    facets['document'] = resources.filter(id__in=Document.objects.values_list('id',flat=True)).count()
+ 
     if facet_type == 'home':
-        facets['user'] = User.objects.count()
+        facets['user'] = get_user_model().objects.count()
 
-        facets['layer'] = facets['raster'] + facets['vector']
+        facets['layer'] = facets['raster'] + facets['vector'] + facets['remote']
 
     return facets
 

@@ -14,7 +14,7 @@
             "user_permissions": [],
             "username": "admin"
         },
-        "model": "auth.user",
+        "model": "people.profile",
         "pk": 2
     },
     {
@@ -32,7 +32,7 @@
             "user_permissions": [],
             "username": "default_author"
         },
-        "model": "auth.user",
+        "model": "people.profile",
         "pk": 3
     },
     {
@@ -50,8 +50,8 @@
             "user_permissions": [],
             "username": "default_contact"
         },
-        "model": "auth.user",
+        "model": "people.profile",
         "pk": 4
     },
-    { "fields": { "date_joined": "2011-06-09 15:46:03", "email": "", "first_name": "Norman", "groups": [], "is_active": true, "is_staff": false, "is_superuser": false, "last_login": "2011-06-09 15:46:03", "last_name": "Normandy", "password": "sha1$b0022$1592757da52adeed741051a203fe2d65b6798e83", "user_permissions": [], "username": "norman" },  "model": "auth.user", "pk": 6 }
+    { "fields": { "date_joined": "2011-06-09 15:46:03", "email": "", "first_name": "Norman", "groups": [], "is_active": true, "is_staff": false, "is_superuser": false, "last_login": "2011-06-09 15:46:03", "last_name": "Normandy", "password": "sha1$b0022$1592757da52adeed741051a203fe2d65b6798e83", "user_permissions": [], "username": "norman" },  "model": "people.profile", "pk": 6 }
 ]

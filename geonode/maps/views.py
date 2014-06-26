@@ -22,7 +22,7 @@ import math
 import logging
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -37,7 +37,8 @@ from django.views.decorators.http import require_POST
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
-from geonode.utils import forward_mercator
+from geonode.layers.views import _resolve_layer
+from geonode.utils import forward_mercator, llbbox_to_mercator
 from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
@@ -45,8 +46,10 @@ from geonode.utils import resolve_object
 from geonode.utils import http_client
 from geonode.utils import layer_from_viewer_config
 from geonode.maps.forms import MapForm
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
-from geonode.security.views import _perms_info
+from geonode.security.views import _perms_info_json
+from geonode.base.forms import CategoryForm
+from geonode.base.models import TopicCategory
+
 from geonode.documents.models import get_related_documents
 from geonode.base.models import ContactRole
 from geonode.people.forms import ProfileForm, PocForm
@@ -63,13 +66,6 @@ logger = logging.getLogger("geonode.maps.views")
 DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
 
-MAP_LEV_NAMES = {
-    Map.LEVEL_NONE  : _('No Permissions'),
-    Map.LEVEL_READ  : _('Read Only'),
-    Map.LEVEL_WRITE : _('Read/Write'),
-    Map.LEVEL_ADMIN : _('Administrative')
-}
-
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this map.")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this map.')
 _PERMISSION_MSG_LOGIN = _("You must be logged in to save this map")
@@ -79,7 +75,7 @@ _PERMISSION_MSG_VIEW = _("You are not allowed to view this map.")
 
 def _handleThumbNail(req, obj):
     # object will either be a map or a layer, one or the other permission must apply
-    if not req.user.has_perm('maps.change_map', obj=obj) and not req.user.has_perm('maps.change_layer', obj=obj):
+    if not req.user.has_perm('change_resourcebase', obj=obj.get_self_resource()):
         return HttpResponse(loader.render_to_string('401.html',
             RequestContext(req, {'error_message':
                 _("You are not permitted to modify this object")})), status=401)
@@ -96,7 +92,7 @@ def _handleThumbNail(req, obj):
                 mimetype='text/plain'
             )
 
-def _resolve_map(request, id, permission='maps.change_map',
+def _resolve_map(request, id, permission='base.change_resourcebase',
                  msg=_PERMISSION_MSG_GENERIC, **kwargs):
     '''
     Resolve the Map by the provided typename and check the optional permission.
@@ -136,9 +132,9 @@ def map_detail(request, mapid, snapshot = None, template='maps/map_detail.html')
     layers = MapLayer.objects.filter(map=map_obj.id)
     return render_to_response(template, RequestContext(request, {
         'config': config,
-        'map': map_obj,
+        'resource': map_obj,
         'layers': layers,
-        'permissions_json': json.dumps(_perms_info(map_obj, MAP_LEV_NAMES)),
+        'permissions_json': _perms_info_json(map_obj),
         "documents": get_related_documents(map_obj),
     }))
 
@@ -153,17 +149,23 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
 
     metadata_author = map_obj.metadata_author
 
+    topic_category = map_obj.category
+
     if request.method == "POST":
         map_form = MapForm(request.POST, instance=map_obj, prefix="resource")
+        category_form = CategoryForm(request.POST,prefix="category_choice_field",
+             initial=int(request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)        
     else:
         map_form = MapForm(instance=map_obj, prefix="resource")
+        category_form = CategoryForm(prefix="category_choice_field", initial=topic_category.id if topic_category else None)
 
-    if request.method == "POST" and map_form.is_valid():
+    if request.method == "POST" and map_form.is_valid() and category_form.is_valid():
         new_poc = map_form.cleaned_data['poc']
         new_author = map_form.cleaned_data['metadata_author']
         new_keywords = map_form.cleaned_data['keywords']
         new_title = strip_tags(map_form.cleaned_data['title'])
         new_abstract = strip_tags(map_form.cleaned_data['abstract'])
+        new_category = TopicCategory.objects.get(id=category_form.cleaned_data['category_choice_field'])
 
         if new_poc is None:
             if poc.user is None:
@@ -191,7 +193,8 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
             the_map.save()
             the_map.keywords.clear()
             the_map.keywords.add(*new_keywords)
-
+            the_map.category = new_category
+            the_map.save()
             return HttpResponseRedirect(reverse('map_detail', args=(map_obj.id,)))
 
     if poc is None:
@@ -219,6 +222,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
         "map_form": map_form,
         "poc_form": poc_form,
         "author_form": author_form,
+        "category_form": category_form,
     }))
 
 @login_required
@@ -226,9 +230,11 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
     ''' Delete a map, and its constituent layers. '''
     try:
         if not mapid.isdigit():
-            map_obj = _resolve_map_custom(request, mapid, 'urlsuffix', 'maps.view_map', _PERMISSION_MSG_VIEW)
+            map_obj = _resolve_map_custom(request, mapid, 'urlsuffix', 'maps.view_map', _PERMISSION_MSG_DELETE, permission_required=True)
         else:
-            map_obj = _resolve_map(request, mapid, 'maps.view_map', _PERMISSION_MSG_VIEW)
+            map_obj = _resolve_map(request, mapid, 'maps.view_map', _PERMISSION_MSG_DELETE, permission_required=True) 
+        map_obj = _resolve_map(request, mapid, 'base.delete_resourcebase',
+                               _PERMISSION_MSG_DELETE, permission_required=True)
 
         if request.method == 'GET':
             return render_to_response(template, RequestContext(request, {
@@ -410,7 +416,7 @@ def new_map_config(request):
         map_obj.abstract = DEFAULT_ABSTRACT
         map_obj.title = DEFAULT_TITLE
         if request.user.is_authenticated(): map_obj.owner = request.user
-        config = map_obj.viewer_json()
+        config = map_obj.viewer_json(request.user)
         del config['id']
     else:
         if request.method == 'GET':
@@ -426,12 +432,12 @@ def new_map_config(request):
             layers = []
             for layer_name in params.getlist('layer'):
                 try:
-                    layer = Layer.objects.get(typename=layer_name)
+                    layer = _resolve_layer(request, layer_name)
                 except ObjectDoesNotExist:
                     # bad layer, skip
                     continue
 
-                if not request.user.has_perm('layers.view_layer', obj=layer):
+                if not request.user.has_perm('view_resourcebase', obj=layer.get_self_resource()):
                     # invisible layer, skip inclusion
                     continue
 
@@ -445,13 +451,37 @@ def new_map_config(request):
                     bbox[2] = min(bbox[2], layer_bbox[2])
                     bbox[3] = max(bbox[3], layer_bbox[3])
 
-                layers.append(MapLayer(
+                config = layer.attribute_config()
+
+                #Add required parameters for GXP lazy-loading
+                config["srs"] = layer.srid
+                config["title"] = layer.title
+                config["bbox"] =  [float(coord) for coord in bbox] \
+                    if layer.srid == "EPSG:4326" else llbbox_to_mercator([float(coord) for coord in bbox])
+                config["queryable"] = True
+
+                if layer.storeType == "remoteStore":
+                    service = layer.service
+                    maplayer = MapLayer(map = map_obj,
+                                        name = layer.typename,
+                                        ows_url = layer.ows_url,
+                                        layer_params=json.dumps( config),
+                                        visibility=True,
+                                        source_params=json.dumps({
+                                            "ptype":service.ptype,
+                                            "remote": True,
+                                            "url": service.base_url,
+                                            "name": service.name}))
+                else:
+                    maplayer = MapLayer(
                     map = map_obj,
                     name = layer.typename,
-                    ows_url = layer.get_ows_url(),
-                    layer_params=json.dumps( layer.attribute_config()),
+                    ows_url = layer.ows_url,
+                    layer_params=json.dumps(config),
                     visibility = True
-                ))
+                )
+
+                layers.append(maplayer)
 
             if bbox is not None:
                 minx, miny, maxx, maxy = [float(c) for c in bbox]
@@ -483,7 +513,7 @@ def new_map_config(request):
                 map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
 
 
-            config = map_obj.viewer_json(*(DEFAULT_BASE_LAYERS + layers))
+            config = map_obj.viewer_json(request.user, *(DEFAULT_BASE_LAYERS + layers))
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
@@ -508,7 +538,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
         url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
 
         def perm_filter(layer):
-            return request.user.has_perm('layers.view_layer', obj=layer)
+            return request.user.has_perm('base.view_resourcebase', obj=layer.get_self_resource())
 
         mapJson = map_obj.json(perm_filter)
 
@@ -540,7 +570,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 remote_layers.append(lyr)
             else:
                 ownable_layer = Layer.objects.get(typename=lyr.name)
-                if not request.user.has_perm('layers.view_layer', obj=ownable_layer):
+                if not request.user.has_perm('view_resourcebase', obj=ownable_layer.get_self_resource()):
                     locked_layers.append(lyr)
                 else:
                     # we need to add the layer only once
@@ -624,20 +654,6 @@ def map_wms(request, mapid):
 
     return HttpResponseNotAllowed(['PUT', 'GET'])
 
-def _map_fix_perms_for_editor(info):
-    perms = {
-        Map.LEVEL_READ: Layer.LEVEL_READ,
-        Map.LEVEL_WRITE: Layer.LEVEL_WRITE,
-        Map.LEVEL_ADMIN: Layer.LEVEL_ADMIN,
-    }
-
-    def fix(x): return perms.get(x, "_none")
-
-    info[ANONYMOUS_USERS] = fix(info[ANONYMOUS_USERS])
-    info[AUTHENTICATED_USERS] = fix(info[AUTHENTICATED_USERS])
-    info['users'] = [(u, fix(level)) for u, level in info['users']]
-
-    return info
 
 def map_thumbnail(request, mapid):
     if not mapid.isdigit():
