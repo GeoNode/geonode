@@ -38,9 +38,7 @@
 {% endblock %}
 
 {% block extra_script %}
-{% with "none" as document %}
 {% include "_permissions_form_js.html" %}
-{% endwith %}
 
 <script type="text/javascript">
     $('#id_doc_file').on('change', function(){
@@ -71,7 +69,7 @@
       });
     $('#resource').on('change',function(e){$('#resource_type').val($('#resource').select2('data').type)});
     $('#upload_form').submit(function(){
-      $('#permissions').val(JSON.stringify(permissionsString($('#permission_form'),'documents')));
+      $('#permissions').val(JSON.stringify(permissionsString($('#permission_form'),'base')));
     });
 </script>
 {% endblock extra_script %}

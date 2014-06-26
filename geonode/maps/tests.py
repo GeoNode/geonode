@@ -24,11 +24,10 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 from django.utils import simplejson as json
-from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
+from django.contrib.auth import get_user_model
 
-import geonode.maps.models
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.utils import default_map_config
@@ -117,7 +116,12 @@ community."
     }
     """
 
-    perm_spec = {"anonymous":"_none","authenticated":"_none","users":[["admin","map_readwrite"]]}
+    perm_spec = {
+        "users":{
+            "admin": ["change_resourcebase", "change_resourcebase_permissions","view_resourcebase"]
+        },
+        "groups": {}  
+    }
 
     def test_map_json(self):
         c = Client()
@@ -180,7 +184,7 @@ community."
         """ Make some assertions about the data structure produced for serialization
             to a JSON map configuration"""
         map_obj = Map.objects.get(id=1)
-        cfg = map_obj.viewer_json()
+        cfg = map_obj.viewer_json(None)
         self.assertEquals(cfg['about']['abstract'], 'GeoNode default map abstract')
         self.assertEquals(cfg['about']['title'], 'GeoNode Default Map')
         def is_wms_layer(x):
@@ -251,7 +255,7 @@ community."
 
         c = Client()
 
-        url = lambda id: reverse('resource_permissions',args=['map', id])
+        url = lambda id: reverse('resource_permissions',args=[id])
 
         # Test that an invalid layer.typename is handled for properly
         response = c.post(url(invalid_mapid),
@@ -404,7 +408,7 @@ community."
         self.assertEquals(response.status_code, 200)
         # Config equals to that of the map whose id is given
         map_obj = Map.objects.get(id=map_id)
-        config_map = map_obj.viewer_json()
+        config_map = map_obj.viewer_json(None)
         response_config_dict = json.loads(response.context['config'])
         self.assertEquals(config_map['about']['abstract'],response_config_dict['about']['abstract'])
         self.assertEquals(config_map['about']['title'],response_config_dict['about']['title'])
@@ -455,7 +459,7 @@ community."
 
         # Config equals to that of the map whose id is given
         map_obj = Map.objects.get(id=map_id)
-        config_map = map_obj.viewer_json()
+        config_map = map_obj.viewer_json(None)
         response_config_dict = json.loads(response.context['config'])
         self.assertEquals(config_map['about']['abstract'],response_config_dict['about']['abstract'])
         self.assertEquals(config_map['about']['title'],response_config_dict['about']['title'])
@@ -469,7 +473,7 @@ community."
 
         # Test successful new map creation
         m = Map()
-        admin_user = User.objects.get(username='admin')
+        admin_user = get_user_model().objects.get(username='admin')
         layer_name = Layer.objects.all()[0].typename
         m.create_from_layer_list(admin_user, [layer_name], "title", "abstract")
         map_id = m.id
@@ -482,7 +486,7 @@ community."
         response = c.get(url,{'copy': map_id})
         self.assertEquals(response.status_code,200)
         map_obj = Map.objects.get(id=map_id)
-        config_map = map_obj.viewer_json()
+        config_map = map_obj.viewer_json(None)
         response_config_dict = json.loads(response.content)
         self.assertEquals(config_map['map']['layers'],response_config_dict['map']['layers'])
 

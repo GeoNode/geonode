@@ -31,7 +31,7 @@ import sys
 from osgeo import gdal
 
 # Django functionality
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.core.files import File
@@ -43,7 +43,7 @@ from django.conf import settings
 from geonode import GeoNodeException
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, UploadSession, SpatialRepresentationType, TopicCategory
-from geonode.base.models import Link
+from geonode.base.models import Link, ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, kml_exts, vec_exts, cov_exts
 from geonode.utils import http_client
 from geonode.layers.metadata import set_metadata
@@ -214,7 +214,7 @@ def get_valid_layer_name(layer, overwrite):
 def get_default_user():
     """Create a default user
     """
-    superusers = User.objects.filter(is_superuser=True).order_by('id')
+    superusers = get_user_model().objects.filter(is_superuser=True).order_by('id')
     if superusers.count() > 0:
         # Return the first created superuser
         return superusers[0]
@@ -300,10 +300,10 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
     # Add them to the upload session (new file fields are created).
     for type_name, fn in files.items():
-        f = open(fn)
-        us = upload_session.layerfile_set.create(name=type_name,
-                                                file=File(f),
-                                                )
+        with open(fn) as f:
+            us = upload_session.layerfile_set.create(name=type_name,
+                                                    file=File(f),
+                                                    )
 
     # Set a default title that looks nice ...
     if title is None:
@@ -500,7 +500,7 @@ def create_thumbnail(instance, thumbnail_remote_url):
     image = None
 
     if valid_x and valid_y:
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
+        Link.objects.get_or_create(resource= instance.get_self_resource(),
                         url=thumbnail_remote_url,
                         defaults=dict(
                             extension='png',
@@ -538,3 +538,6 @@ def create_thumbnail(instance, thumbnail_remote_url):
                             link_type='image',
                             )
                         )
+    ResourceBase.objects.filter(id=instance.id).update(
+        thumbnail_url=instance.get_thumbnail_url(),
+        absolute_url=instance.get_absolute_url())

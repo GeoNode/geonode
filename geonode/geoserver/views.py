@@ -9,16 +9,19 @@ from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404, render_to_response
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 
+from guardian.shortcuts import get_objects_for_user, get_anonymous_user
+
 from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
+from geonode.base.models import ResourceBase
 from geonode.geoserver.signals import gs_catalog
 from geonode.utils import json_response, _get_basic_auth_info
 from geoserver.catalog import FailedRequestError, ConflictingDataError
@@ -37,7 +40,7 @@ def updatelayers(request):
     params = request.REQUEST
     #Get the owner specified in the request if any, otherwise used the logged user
     owner = params.get('owner', None)
-    owner = User.objects.get(username=owner) if owner is not None else request.user
+    owner = get_user_model().objects.get(username=owner) if owner is not None else request.user
     workspace = params.get('workspace', None)
     store = params.get('store', None)
     filter = params.get('filter', None)
@@ -49,7 +52,7 @@ def updatelayers(request):
 @login_required
 @require_POST
 def layer_style(request, layername):
-    layer = _resolve_layer(request, layername, 'layers.change_layer', _PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(request, layername, 'base.change_resourcebase', _PERMISSION_MSG_MODIFY)
 
     style_name = request.POST.get('defaultStyle')
 
@@ -85,7 +88,7 @@ def layer_style_upload(req, layername):
         return respond(errors="Please provide an SLD file.")
     
     data = form.cleaned_data
-    layer = _resolve_layer(req, layername, 'layers.change_layer', _PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(req, layername, 'base.change_resourcebase', _PERMISSION_MSG_MODIFY)
     
     sld = req.FILES['sld'].read()
 
@@ -120,7 +123,7 @@ def layer_style_upload(req, layername):
 
 @login_required
 def layer_style_manage(req, layername):
-    layer = _resolve_layer(req, layername, 'layers.change_layer', _PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(req, layername, 'base.change_resourcebase', _PERMISSION_MSG_MODIFY)
     if req.method == 'GET':
         try:
             cat = gs_catalog
@@ -185,7 +188,7 @@ def layer_style_manage(req, layername):
             # Save to Django
             layer = set_styles(layer, cat)
             layer.save()
-            return HttpResponseRedirect(reverse('layer_detail', args=(layer.typename,)))
+            return HttpResponseRedirect(reverse('layer_detail', args=(layer.service_typename,)))
         except (FailedRequestError, EnvironmentError, MultiValueDictKeyError) as e:
             msg = ('Error Saving Styles for Layer "%s"' % (layer.name)
             )
@@ -208,7 +211,7 @@ def feature_edit_check(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     datastore = ogc_server_settings.DATASTORE
     feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or datastore
-    if request.user.has_perm('layers.change_layer', obj=layer) and layer.storeType == 'dataStore' and feature_edit:
+    if request.user.has_perm('base.change_resourcebase', obj=layer.resourcebase_ptr) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
     else:
         return HttpResponse(json.dumps({'authorized': False}), mimetype="application/json")
@@ -338,8 +341,8 @@ def resolve_user(request):
     }
 
     if acl_user and acl_user.is_authenticated():
-        resp['fullname'] = acl_user.profile.name
-        resp['email'] = acl_user.profile.email
+        resp['fullname'] = acl_user.first_name
+        resp['email'] = acl_user.email
     return HttpResponse(json.dumps(resp))
 
 
@@ -378,21 +381,14 @@ def layer_acls(request):
             return HttpResponse(_("Bad HTTP Authorization Credentials."),
                                 status=401,
                                 mimetype="text/plain")
-    all_readable = set()
-    all_writable = set()
-    for bck in get_auth_backends():
-        if hasattr(bck, 'objects_with_perm'):
-            all_readable.update(bck.objects_with_perm(acl_user,
-                                                      'layers.view_layer',
-                                                      Layer))
-            all_writable.update(bck.objects_with_perm(acl_user,
-                                                      'layers.change_layer',
-                                                      Layer))
-    read_only = [x for x in all_readable if x not in all_writable]
-    read_write = [x for x in all_writable if x in all_readable]
 
-    read_only = [x[0] for x in Layer.objects.filter(id__in=read_only).values_list('typename').all()]
-    read_write = [x[0] for x in Layer.objects.filter(id__in=read_write).values_list('typename').all()]
+    # Include permissions on the anonymous user
+    all_readable = get_objects_for_user(acl_user, 'base.view_resourcebase')
+
+    all_writable = get_objects_for_user(acl_user, 'base.change_resourcebase')
+
+    read_only = [x.layer.typename for x in all_readable if x not in all_writable and hasattr(x, 'layer')]
+    read_write = [x.layer.typename for x in all_writable if x in all_readable and hasattr(x, 'layer')]
 
     result = {
         'rw': read_write,
@@ -402,7 +398,7 @@ def layer_acls(request):
         'is_anonymous': acl_user.is_anonymous(),
     }
     if acl_user.is_authenticated():
-        result['fullname'] = acl_user.profile.name
-        result['email'] = acl_user.profile.email
+        result['fullname'] = acl_user.first_name
+        result['email'] = acl_user.email
 
     return HttpResponse(json.dumps(result), mimetype="application/json")

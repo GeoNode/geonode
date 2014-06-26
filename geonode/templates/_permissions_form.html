@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <div class="modal fade" id="_permissions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% if layer %}{% url "resource_permissions" 'layer' layer.id %}{% elif map %}{% url "resource_permissions" 'map' map.id %}{% elif document %}{% url "resource_permissions" 'document' document.id %}{% else %}/api/batch_permissions{% endif %}">
+  <form id="permission_form" accept-charset="UTF-8" method="post" class="modal-form" action="{% url "resource_permissions" resource.id %}">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">

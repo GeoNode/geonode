@@ -2,162 +2,114 @@
 <script type="text/javascript">
 
   function permissionsString(form, type) {
-    var anonymousPermissions, authenticatedPermissions, levels;
+    var permissions = {
+      'users': {},
+      'groups': {}
+    }
     if (typeof form === 'string'){
       form = $(form);
     }
-    var data = form.serializeObject();
+    var data = form.serializeObject();   
 
-    if (type == "maps") {
-      levels = {
-          'readonly': 'map_readonly',
-          'readwrite': 'map_readwrite',
-          'admin': 'map_admin',
-          'none': '_none'
-      };
-    } else if (type == "layers"){
-      levels = {
-          'admin': 'layer_admin',
-          'readwrite': 'layer_readwrite',
-          'readonly': 'layer_readonly',
-          'none': '_none'
-      };
-    } else if (type == "documents"){
-      levels = {
-          'admin': 'document_admin',
-          'readwrite': 'document_readwrite',
-          'readonly': 'document_readonly',
-          'none': '_none'
-      };
+    /*
+    * If there's the anonymous user then set it's view permission and pop it
+    */
+    if (data.hasOwnProperty('view_anonymous')) {
+      permissions['users']['AnonymousUser'] = ['view_resourcebase'];
+      delete data['view_anonymous'];
     }
 
-    if (data["viewmode"] === "ANYONE") {
-      anonymousPermissions = levels['readonly'];
-    } else {
-      anonymousPermissions = levels['none'];
-    }
-
-    if (data["editmode"] === "REGISTERED") {
-      authenticatedPermissions = levels['readwrite'];
-    } else if (data["viewmode"] === 'REGISTERED') {
-      authenticatedPermissions = levels['readonly'];
-    } else {
-      authenticatedPermissions = levels['none'];
-    }
-
-    var perUserPermissions = [];
-    if (data["editmode"] === "LIST") {
-      var editusers = form.find("input[name=editusers]").select2("val");
-      if (editusers instanceof Array) {
-        $.each(editusers, function(index, value) {
-          perUserPermissions.push([value, levels["readwrite"]]);
-        });
-      } else {
-        perUserPermissions.push([editusers, levels["readwrite"]]);
+    /*
+    * Cycle through permissions to map the form structure perm = ['user1',',user2'] to
+    * the geonode user = ['perm1','perm2'], optionally also for groups
+    */
+    for(var perm in data){
+      if(data[perm][0] !== ''){
+        for (var i=0;i<data[perm][0].split(',').length;i++){
+          var user = data[perm][0].split(',')[i];
+          if(permissions['users'].hasOwnProperty(user)){
+            permissions['users'][user].push(perm);
+          }else{
+            permissions['users'][user] = [perm];
+          }
+        }
       }
-    }
 
-    var perGroupPermissions = [];
-    {% if GROUPS_APP %}
-    if (data["editmode"] === "LIST") {
-      var editgroups = form.find("input[name=editgroups]").select2("val");
-      if (editgroups instanceof Array) {
-        $.each(editgroups, function(index, value) {
-          perGroupPermissions.push([value, levels["readwrite"]]);
-        });
-      } else {
-        perGroupPermissions.push([editgroups, levels["readwrite"]]);
+      {% if GROUPS_APP %}
+      if(data[perm][1] !== ''){
+        for (var i=0;i<data[perm][1].split(',').length;i++){
+          var group = data[perm][1].split(',')[i];
+          if(permissions['groups'].hasOwnProperty(group)){
+            permissions['groups'][group].push(perm);
+          }else{
+            permissions['groups'][group] = [perm];
+          }
+        }
       }
-    }
-    {% endif %}
-
-    var manageusers = form.find("input[name=manageusers]").select2("val");
-    if (manageusers) {
-      if (manageusers instanceof Array) {
-        $.each(manageusers, function(index, value) {
-          perUserPermissions.push([value, levels["admin"]]);
-        });
-      } else {
-        perUserPermissions.push([manageusers, levels["admin"]]);
-      }
+      {% endif %}
     }
 
-    {% if GROUPS_APP %}
-    var managegroups = form.find("input[name=managegroups]").select2("val");
-    if (managegroups) {
-      if (managegroups instanceof Array) {
-        $.each(managegroups, function(index, value) {
-          perGroupPermissions.push([value, levels["admin"]]);
-        });
-      } else {
-        perGroupPermissions.push([managegroups, levels["admin"]]);
-      }
-    }
-    {% endif %}
-
-    return {
-        anonymous: anonymousPermissions,
-        authenticated: authenticatedPermissions,
-        users: perUserPermissions,
-        groups: perGroupPermissions
-    };
+    return permissions
   };
 
   $(function() {
 
     $('#permissions-body').ready(function(){
-      {% if layer != "none" and document != "none" %}
+      {% if resource %}
       $.ajax(
-        "{% if layer %}{% url "resource_permissions" 'layer' layer.id %}{% elif map %}{% url "resource_permissions" 'map' map.id %}{% elif document %}{% url "resource_permissions" 'document' document.id %}{% endif %}",
+        "{% url "resource_permissions" resource.id %}",
         {
           success: function(data){
             var perms = $.parseJSON($.parseJSON(data).permissions);
-            if ("anonymous" in perms){
-              $('#perms_view_anyone').attr("checked", "checked");
+
+            /*
+            * Compile the users fields after receiving the current permissions status from the server
+            */
+            var users = {
+              view_resourcebase: [],
+              change_resourcebase: [],
+              change_resourcebase_permissions: []
+            };
+            var perms_users = perms.users;
+            for (var user in perms_users){
+              var perms = perms_users[user];
+              if (user === 'AnonymousUser'){
+                $('#perms_view_anyone').attr("checked", "checked");
+              }else{
+                for (var i=0;i<perms.length;i++){
+                  if(users.hasOwnProperty(perms[i])){
+                    users[perms[i]].push(user);
+                  }
+                }
+              }          
             }
-            if ("authenticated" in perms){
-              if (!("anonymous" in perms)){
-                $('#perms_view_registered').attr("checked", "checked");
-              }
-              if (perms["authenticated"].split('_')[1] === 'readwrite'){
-                $('#perms_edit_registered').attr("checked", "checked");
-              }
-            } else if (!("anonymous" in perms)){
-              $('#perms_view_editors').attr("checked", "checked");
+            for (var perm in users){
+              $('#' + perm + '_users').val(users[perm].join());
             }
-            if (!("authenticated" in perms) || perms['authenticated'].split('_')[1] === 'readonly'){
-              $('#perms_edit_list').attr("checked", "checked");
-              var users = [];         
-              for (var key in perms["users"]){
-                users.push(key);
-              }
-              $("#perms_edit_editusers").val(users.join());
-              {% if GROUPS_APP %}
-              var groups = [];
-              for (var key in perms["groups"]){
-                groups.push(key);
-              }
-              $("#perms_edit_editgroups").val(groups.join());
-              {% endif %}
-            }
-            var admins = [];
-            for (var key in perms["users"]){
-              if(perms["users"][key].split('_')[1] === 'admin'){
-                admins.push(key);
-              }
-            }
+            addSelectUsers();
+
             {% if GROUPS_APP %}
-            var group_admins = [];
-            for (var key in perms["groups"]){
-              if(perms["groups"][key].split('_')[1] === 'admin'){
-                group_admins.push(key);
+            /*
+            * Compile the groups fields after receiving the current permissions status from the server
+            */
+            var groups = {
+              view_resourcebase: [],
+              change_resourcebase: [],
+              manage_resourcebase: []
+            };
+            var perms_groups = perms.groups;
+            for (var group in perms_groups){
+              var perms = perms_groups[group];
+              for (var i=0;i<perms.length;i++){
+                groups[perms[i]].push(group);
               }
             }
-            $("#perms_edit_managegroups").val(group_admins.join());
+            for (var perm in groups){
+              $('#' + perm + '_groups').val(groups[perm].join());
+            }
             addSelectGroups();
             {% endif %}
-            $("#perms_edit_manageusers").val(admins.join());
-            addSelectUsers();
+
           }
         }
       );
@@ -171,10 +123,10 @@
     
     function addSelectUsers(){
       $("input.user-select").select2({
-        placeholder: '{% trans "Choose one or more users..." %}',
+        placeholder: '{% trans "Choose users..." %}',
         minimumInputLength: 1,
         multiple: true,
-        width: 'element',
+        width: '160px',
         ajax: {
           url: "{% url "account_ajax_lookup" %}",
           dataType: "json",
@@ -205,10 +157,10 @@
     {% if GROUPS_APP %}
     function addSelectGroups(){
       $("input.group-select").select2({
-        placeholder: '{% trans "Choose one or more groups..." %}',
+        placeholder: '{% trans "Choose groups..." %}',
         minimumInputLength: 1,
         multiple: true,
-        width: 'element',
+        width: '160px',
         ajax: {
           url: "{% url "account_ajax_lookup" %}",
           dataType: "json",
@@ -265,22 +217,12 @@
     }
     {% endif %}
 
-    var toggle_buttons = function() {
-      if ($("input.asset-selector:checked").length) {
-        $(".asset-modifier").removeClass("disabled");
-      } else {
-        $(".asset-modifier").addClass("disabled");
-      }
-    };
-
-    $("input.asset-selector").on("change", toggle_buttons);
-    toggle_buttons();
 
     var perms_submit = function() {
       var form = $(this);
       var action = form.attr("action");
 
-      var permissions = permissionsString(form, {% if layer %}'layers'{% elif map %}'maps'{% elif document %}'documents'{% endif %});
+      var permissions = permissionsString(form, 'base');
       $.ajax(
         {
           type: "POST",
@@ -297,8 +239,8 @@
     $("#perms_submit").click(function(){
         $("#permission_form").submit();
     });
-    {% if layer or map or document %}
-    $("#permission_form").submit({% if layer or map or document %}perms_submit{% else %}batch_perms_submit{% endif %});
+    {% if resource %}
+    $("#permission_form").submit(perms_submit);
     {% endif %}
   });
 </script>

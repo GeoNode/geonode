@@ -29,17 +29,18 @@ from django.conf import settings
 from django.db import models
 from django.db.models import signals
 from django.utils import simplejson as json
-from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
+from django.core.cache import cache
+
+from guardian.shortcuts import get_anonymous_user
 
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
 from geonode.maps.signals import map_changed_signal
-from geonode.security.enumerations import AUTHENTICATED_USERS, ANONYMOUS_USERS
 from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
@@ -197,33 +198,6 @@ class Map(ResourceBase, GXPMapBase):
     def get_absolute_url(self):
         return reverse('geonode.maps.views.map_detail', None, [str(self.id)])
 
-
-    class Meta:
-        # custom permissions,
-        # change and delete are standard in django
-        permissions = (('view_map', 'Can view'),
-                       ('change_map_permissions', "Can change permissions"), )
-
-    # Permission Level Constants
-    # LEVEL_NONE inherited
-    LEVEL_READ  = 'map_readonly'
-    LEVEL_WRITE = 'map_readwrite'
-    LEVEL_ADMIN = 'map_admin'
-
-    def set_default_permissions(self):
-        self.set_gen_level(ANONYMOUS_USERS, self.LEVEL_READ)
-        self.set_gen_level(AUTHENTICATED_USERS, self.LEVEL_READ)
-
-        # remove specific user permissions
-        current_perms = self.get_all_level_info()
-        for username in current_perms['users'].keys():
-            user = User.objects.get(username=username)
-            self.set_user_level(user, self.LEVEL_NONE)
-
-        # assign owner admin privs
-        if self.owner:
-            self.set_user_level(self.owner, self.LEVEL_ADMIN)
-
     def get_bbox_from_layers(self, layers):
         """
         Calculate the bbox from a given list of Layer objects
@@ -240,7 +214,6 @@ class Map(ResourceBase, GXPMapBase):
                 bbox[3] = max(bbox[3], layer_bbox[3])
         
         return bbox
-
 
     def create_from_layer_list(self, user, layers, title, abstract):
         self.owner = user
@@ -267,7 +240,7 @@ class Map(ResourceBase, GXPMapBase):
                 except ObjectDoesNotExist:
                     raise GeoNodeError('Could not find layer with name %s' % layer)
 
-            if not user.has_perm('maps.view_layer', obj=layer):
+            if not user.has_perm('base.view_resourcebase', obj=layer.resourcebase_ptr):
                 # invisible layer, skip inclusion or raise Exception?
                 raise GeoNodeError('User %s tried to create a map with layer %s without having premissions' % (user, layer))
             MapLayer.objects.create(
@@ -306,8 +279,8 @@ class Map(ResourceBase, GXPMapBase):
         """
         Returns True if anonymous (public) user can view map.
         """
-        user = AnonymousUser()
-        return user.has_perm('maps.view_map', obj=self)
+        user = get_anonymous_user()
+        return user.has_perm('base.view_resourcebase', obj=self.resourcebase_ptr)
 
     @property
     def layer_group(self):
@@ -361,6 +334,9 @@ class Map(ResourceBase, GXPMapBase):
             lg.layers, lg.styles, lg.bounds = lg_layers, lg_styles, lg_bounds
         gs_catalog.save(lg)
         return lg_name
+
+    class Meta(ResourceBase.Meta):
+        pass
 
 
 class MapLayer(models.Model, GXPLayerBase):
@@ -428,21 +404,38 @@ class MapLayer(models.Model, GXPLayerBase):
     local = models.BooleanField(default=False)
     # True if this layer is served by the local geoserver
 
-    def layer_config(self):
-        cfg = GXPLayerBase.layer_config(self)
+    def layer_config(self, user=None):
+        #Try to use existing user-specific cache of layer config
+        if self.id:
+            cfg = cache.get("layer_config" + str(self.id) + "_" + str(0 if user is None else user.id))
+            if cfg is not None:
+                return cfg
+
+        cfg = GXPLayerBase.layer_config(self,user=user)
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
-        if self.local:
-            if Layer.objects.filter(typename=self.name).exists():
-                layer = Layer.objects.get(typename=self.name)
+        if Layer.objects.filter(typename=self.name).exists():
+            try:
+                if self.local:
+                    layer =  Layer.objects.get(typename=self.name)
+                else:
+                    layer = Layer.objects.get(typename=self.name,service__base_url=self.ows_url)
                 attribute_cfg = layer.attribute_config()
                 if "getFeatureInfo" in attribute_cfg:
                     cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
-            else:
-                # shows maplayer with pink tiles, 
+                if not user.has_perm('base.view_resourcebase', obj=layer.resourcebase_ptr):
+                    cfg['disabled'] = True
+                    cfg['visibility'] = False
+            except:
+                # shows maplayer with pink tiles,
                 # and signals that there is problem
                 # TODO: clear orphaned MapLayers
                 layer = None
+
+        if self.id:
+            #Create temporary cache of maplayer config, should not last too long in case
+            #local layer permissions or configuration values change (default is 5 minutes)
+            cache.set("layer_config" + str(self.id) + "_" + str(0 if user is None else user.id), cfg)
         return cfg
 
     @property

@@ -1,7 +1,7 @@
 [
     {
         "pk": 1, 
-        "model": "auth.user", 
+        "model": "people.profile", 
         "fields": {
             "username": "bobby", 
             "first_name": "", 
