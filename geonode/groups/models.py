@@ -32,7 +32,8 @@ class GroupProfile(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     
     def save(self, *args, **kwargs):
-        self.group = Group.objects.create(name=self.slug)
+        group, created = Group.objects.get_or_create(name=self.slug)
+        self.group = group
         super(GroupProfile, self).save(*args, **kwargs)
 
     @classmethod
