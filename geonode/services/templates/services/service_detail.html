@@ -11,7 +11,7 @@
 var app;
 {% autoescape off %}
 Ext.onReady(function() {
-{% has_obj_perm user service "maps.change_service_permissions" as can_change_permissions %}
+{% has_obj_perm user service "services.change_service_permissions" as can_change_permissions %}
 
 {% if can_change_permissions %}
        new GeoNode.WorldMapPermissionsEditor({
@@ -105,9 +105,9 @@ Ext.onReady(function() {
 {% block sidebar %}
 <div id="sidebar" class="threecol">
 
-    {% has_obj_perm user service "maps.change_service" as can_change %}
-    {% has_obj_perm user service "maps.delete_service" as can_remove %}
-    {% has_obj_perm user service "maps.change_service_permissions" as can_change_permissions %}
+    {% has_obj_perm user service "services.change_service" as can_change %}
+    {% has_obj_perm user service "services.delete_service" as can_remove %}
+    {% has_obj_perm user service "services.change_service_permissions" as can_change_permissions %}
     {% if can_change or can_remove or can_change_permissions %}
         <h3>{% trans "Manage" %}</h3>
         <ul>
