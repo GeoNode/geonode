@@ -194,7 +194,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "metadata": metadata,
     }
 
-    context_dict["viewer"] = json.dumps(map_obj.viewer_json(* (NON_WMS_BASE_LAYERS + [maplayer])))
+    context_dict["viewer"] = json.dumps(map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
     context_dict["preview"] = getattr(settings, 'LAYER_PREVIEW_LIBRARY', 'leaflet')
 
     if layer.storeType=='dataStore':
