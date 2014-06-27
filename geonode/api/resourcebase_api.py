@@ -113,41 +113,50 @@ class CommonModelApi(ModelResource):
         filter_set = filtered_ids.intersection(perm_ids)
 
         # Do the query using the filterset and the query term. Facet the results
-        sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', '')).filter(oid__in=filter_set).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
+        if len(filter_set) > 0:
+            sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', '')).filter(oid__in=filter_set).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
+            # Build the Facet dict
+            facets = {}
+            for facet in sqs.facet_counts()['fields']:
+                facets[facet] = {} 
+                for item in sqs.facet_counts()['fields'][facet]:
+                    facets[facet][item[0]] = item[1]
+
+            # Paginate the results
+            paginator = Paginator(sqs, request.GET.get('limit'))
+
+            try:
+                page = paginator.page(int(request.GET.get('offset')) / int(request.GET.get('limit'), 0) + 1)
+            except InvalidPage:
+                raise Http404("Sorry, no results on that page.")
+
+            if page.has_previous():
+                previous_page = page.previous_page_number()
+            else:
+                previous_page = 1
+            if page.has_next():
+                next_page = page.next_page_number()
+            else:
+                next_page = 1
+            total_count = sqs.count()
+            objects = page.object_list
+        else:
+            next_page = 0
+            previous_page = 0
+            total_count = 0
+            facets = {}
+            objects = []
         
-        # Build the Facet dict
-        facets = {}
-        for facet in sqs.facet_counts()['fields']:
-            facets[facet] = {} 
-            for item in sqs.facet_counts()['fields'][facet]:
-                facets[facet][item[0]] = item[1]
-
-        # Paginate the results
-        paginator = Paginator(sqs, request.GET.get('limit'))
-
-        try:
-            page = paginator.page(int(request.GET.get('offset')) / int(request.GET.get('limit'), 0) + 1)
-        except InvalidPage:
-            raise Http404("Sorry, no results on that page.")
-
-        if page.has_previous():
-            previous_page = page.previous_page_number()
-        else:
-            previous_page = 1
-        if page.has_next():
-            next_page = page.next_page_number()
-        else:
-            next_page = 1
         object_list = {
            "meta": {
                 "limit": 100,
                 "next": next_page, 
                 "offset": int(getattr(request.GET, 'offset',0)),
                 "previous": previous_page, 
-                "total_count": sqs.count(),
+                "total_count": total_count,
                 "facets" : facets,
             },
-            'objects': map(lambda x: x.get_stored_fields(), page.object_list),
+            'objects': map(lambda x: x.get_stored_fields(), objects),
         }
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
