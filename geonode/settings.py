@@ -599,12 +599,12 @@ PROXY_URL = '/proxy/?url=' if DEBUG else None
 # Set HAYSTACK_SEARCH to True
 # Run "python manage.py rebuild_index"
 
-HAYSTACK_SEARCH = True 
+HAYSTACK_SEARCH = False 
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
         'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'geonode_test',
+        'INDEX_NAME': 'geonode',
         },
     }
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
