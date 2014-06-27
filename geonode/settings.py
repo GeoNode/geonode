@@ -210,7 +210,7 @@ INSTALLED_APPS = (
     'geoexplorer',
     'leaflet',
     'django_extensions',
-    'haystack',
+    #'haystack',
     'autocomplete_light',
     'mptt',
     'modeltranslation',
