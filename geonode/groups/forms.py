@@ -52,6 +52,7 @@ class GroupUpdateForm(forms.ModelForm):
     
     class Meta:
         model = GroupProfile
+        exclude = ['group']
 
 
 class GroupMemberForm(forms.Form):

@@ -300,7 +300,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
     # Add them to the upload session (new file fields are created).
     for type_name, fn in files.items():
-        with open(fn) as f:
+        with open(fn, 'rb') as f:
             us = upload_session.layerfile_set.create(name=type_name,
                                                     file=File(f),
                                                     )
