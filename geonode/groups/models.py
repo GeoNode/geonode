@@ -36,6 +36,10 @@ class GroupProfile(models.Model):
         self.group = group
         super(GroupProfile, self).save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        Group.objects.filter(name=self.slug).delete()
+        super(GroupProfile, self).delete(*args, **kwargs)
+
     @classmethod
     def groups_for_user(cls, user):
         """
