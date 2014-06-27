@@ -15,10 +15,12 @@ from .authorization import GeoNodeAuthorization
 
 from .api import TagResource, TopicCategoryResource, UserResource, FILTER_TYPES
 
-FILTER_TYPES.update({
+LAYER_SUBTYPES = {
     'vector': 'dataStore',
-    'raster': 'coverageStore'
-})
+    'raster': 'coverageStore',
+    'remote': 'remoteStore',
+}
+FILTER_TYPES.update(LAYER_SUBTYPES)
 
 class CommonMetaApi:
     authorization = GeoNodeAuthorization()
@@ -55,11 +57,11 @@ class CommonModelApi(ModelResource):
         filtered = None
         if types:
             for the_type in types:
-                if the_type == 'vector' or the_type == 'raster':
+                if the_type in LAYER_SUBTYPES.keys():
                     if filtered:
-                        filtered = filtered | semi_filtered.filter(Layer___storeType=FILTER_TYPES[the_type])
+                        filtered = filtered | semi_filtered.filter(Layer___storeType=LAYER_SUBTYPES[the_type])
                     else:
-                        filtered = semi_filtered.filter(Layer___storeType=FILTER_TYPES[the_type])
+                        filtered = semi_filtered.filter(Layer___storeType=LAYER_SUBTYPES[the_type])
                 else:
                     if filtered:
                         filtered = filtered | semi_filtered.instance_of(FILTER_TYPES[the_type])
