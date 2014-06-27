@@ -1,6 +1,7 @@
 import itertools
 from django.db.models import Q
 from django.http import HttpResponse
+from django.conf import settings
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
@@ -213,9 +214,12 @@ class ResourceBaseResource(CommonModelApi):
         excludes = ['csw_anytext', 'metadata_xml']
 
     def prepend_urls(self):
-        return [
-            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
-        ]
+        if settings.HAYSTACK_SEARCH:
+            return [
+                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
+            ]
+        else:
+            return []
 
 class FeaturedResourceBaseResource(CommonModelApi):
     """Only the featured resourcebases"""
