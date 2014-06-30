@@ -14,8 +14,9 @@ from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 
-from haystack.query import SearchQuerySet
 from tastypie.utils.mime import determine_format, build_content_type
+if settings.HAYSTACK_SEARCH:
+    from haystack.query import SearchQuerySet
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
