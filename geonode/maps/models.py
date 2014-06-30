@@ -482,7 +482,7 @@ class MapSnapshot(models.Model):
     The date/time the snapshot was created.
     """
 
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
     """
     The user who created the snapshot.
     """

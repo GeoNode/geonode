@@ -115,16 +115,16 @@ def map_detail(request, mapid, snapshot = None, template='maps/map_detail.html')
     The view that show details of each map
     '''
     if not mapid.isdigit():
-        map_obj = _resolve_map_custom(request, mapid, 'urlsuffix', 'base.view.resourcebase', _PERMISSION_MSG_VIEW)
+        map_obj = _resolve_map_custom(request, mapid, 'urlsuffix', 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
     else:
-        map_obj = _resolve_map(request, mapid, 'base.view.resourcebase', _PERMISSION_MSG_VIEW)
+        map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
     map_obj.popular_count += 1
     map_obj.save()
 
 
     if snapshot is None:
-        config = map_obj.viewer_json()
+        config = map_obj.viewer_json(request.user)
     else:
         config = snapshot_config(snapshot, map_obj, request.user)
 
@@ -266,7 +266,7 @@ def map_embed(request, mapid=None, snapshot = None, template='maps/map_embed.htm
             map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
         if snapshot is None:
-            config = map_obj.viewer_json()
+            config = map_obj.viewer_json(request.user)
         else:
             config = snapshot_config(snapshot, map_obj, request.user)
 
@@ -289,7 +289,7 @@ def map_view(request, mapid, snapshot=None, template='maps/map_view.html'):
         map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
     if snapshot is None:
-        config = map_obj.viewer_json()
+        config = map_obj.viewer_json(request.user)
     else:
         config = snapshot_config(snapshot, map_obj, request.user)
 
@@ -304,7 +304,7 @@ def map_view_js(request, mapid):
         map_obj = _resolve_map_custom(request, mapid, 'urlsuffix', 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
     else:
         map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
-    config = map_obj.viewer_json()
+    config = map_obj.viewer_json(request.user)
     return HttpResponse(json.dumps(config), mimetype="application/javascript")
 
 def map_json(request, mapid, snapshot = None):
@@ -313,7 +313,7 @@ def map_json(request, mapid, snapshot = None):
             map_obj = _resolve_map_custom(request, mapid, 'urlsuffix', 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
         else:
             map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)   
-        return HttpResponse(json.dumps(map_obj.viewer_json()))
+        return HttpResponse(json.dumps(map_obj.viewer_json(request.user)))
     elif request.method == 'PUT':
         if not request.user.is_authenticated():
             return HttpResponse(
@@ -328,7 +328,7 @@ def map_json(request, mapid, snapshot = None):
         try:
             map_obj.update_from_viewer(request.body)
             MapSnapshot.objects.create(config=clean_config(request.body),map=map_obj,user=request.user)
-            return HttpResponse(json.dumps(map_obj.viewer_json()))
+            return HttpResponse(json.dumps(map_obj.viewer_json(request.user)))
         except ValueError, e:
             return HttpResponse(
                 "The server could not understand the request." + str(e),
