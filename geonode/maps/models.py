@@ -45,7 +45,7 @@ from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
-from geonode.encode import num_encode, num_decode
+from geonode.utils import num_encode, num_decode
 
 from agon_ratings.models import OverallRating
 

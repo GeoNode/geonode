@@ -53,7 +53,7 @@ from geonode.base.models import TopicCategory
 from geonode.documents.models import get_related_documents
 from geonode.base.models import ContactRole
 from geonode.people.forms import ProfileForm, PocForm
-from geonode.encode import num_encode, num_decode
+from geonode.utils import num_encode, num_decode
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     #FIXME: The post service providing the map_status object
