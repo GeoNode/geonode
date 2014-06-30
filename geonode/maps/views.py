@@ -148,7 +148,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
         new_category = TopicCategory.objects.get(id=category_form.cleaned_data['category_choice_field'])
 
         if new_poc is None:
-            if poc.user is None:
+            if poc is None:
                 poc_form = ProfileForm(request.POST, prefix="poc", instance=poc)
             else:
                 poc_form = ProfileForm(request.POST, prefix="poc")
@@ -156,7 +156,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
                 new_poc = poc_form.save()
 
         if new_author is None:
-            if metadata_author.user is None:
+            if metadata_author is None:
                 author_form = ProfileForm(request.POST, prefix="author", 
                     instance=metadata_author)
             else:
@@ -180,7 +180,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     if poc is None:
         poc_form = ProfileForm(request.POST, prefix="poc")
     else:
-        if poc.user is None:
+        if poc is None:
             poc_form = ProfileForm(instance=poc, prefix="poc")
         else:
             map_form.fields['poc'].initial = poc.id
@@ -190,7 +190,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     if metadata_author is None:
             author_form = ProfileForm(request.POST, prefix="author")
     else:
-        if metadata_author.user is None:
+        if metadata_author is None:
             author_form = ProfileForm(instance=metadata_author, prefix="author")
         else:
             map_form.fields['metadata_author'].initial = metadata_author.id
