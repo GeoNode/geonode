@@ -41,8 +41,12 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from django.db.models import signals
     from geonode.geoserver.signals import geoserver_pre_save_maplayer
     from geonode.geoserver.signals import geoserver_post_save_map
+    from geonode.geoserver.signals import geoserver_pre_save
+    from geonode.geoserver.signals import geoserver_post_save
     signals.pre_save.disconnect(geoserver_pre_save_maplayer, sender=MapLayer)
     signals.post_save.disconnect(geoserver_post_save_map, sender=Map)
+    signals.pre_save.disconnect(geoserver_pre_save, sender=Layer)
+    signals.post_save.disconnect(geoserver_post_save, sender=Layer)
 
 # This is used to populate the database with the search fixture data. This is
 # primarily used as a first step to generate the json data for the fixture using
