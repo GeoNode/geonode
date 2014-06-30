@@ -134,8 +134,8 @@ setup(name='GeoNode',
         "pycsw >=1.6.4, <=1.8.2",
 
         # haystack/elasticsearch, uncomment to use
-        #"django-haystack==2.1.0",
-        #"pyelasticsearch==0.6.1"
+        "django-haystack==2.1.0",
+        "pyelasticsearch==0.6.1"
         ],
       zip_safe=False,
       )
