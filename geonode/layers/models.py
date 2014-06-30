@@ -373,6 +373,8 @@ def post_save_layer(instance, sender, **kwargs):
     """Set missing default values.
     """
     instance.set_missing_info()
+    ResourceBase.objects.filter(id=instance.id).update(
+        absolute_url=instance.get_absolute_url())
 
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
