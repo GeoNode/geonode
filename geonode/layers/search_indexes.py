@@ -27,7 +27,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     bbox_top = indexes.FloatField(model_attr="bbox_y1", null=True)
     temporal_extent_start=indexes.DateTimeField(model_attr="temporal_extent_start", null=True)
     temporal_extent_end=indexes.DateTimeField(model_attr="temporal_extent_end", null=True)
-    keywords = indexes.MultiValueField(model_attr="keyword_list", null=True)
+    keywords = indexes.MultiValueField(model_attr="keyword_list", null=True, faceted=True)
     popular_count = indexes.IntegerField(model_attr="popular_count", default=0,boost=20)
     share_count = indexes.IntegerField(model_attr="share_count", default=0)
     rating = indexes.IntegerField(null=True)
@@ -45,7 +45,8 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
             return "vector"
         elif obj.storeType == "coverageStore":
             return "raster"
-
+        elif obj.storeType == "remoteStore":
+            return "remote"
 
     def prepare_download_links(self,obj):
         try:
