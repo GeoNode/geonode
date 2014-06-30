@@ -20,7 +20,7 @@ class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
     modified = indexes.DateTimeField(model_attr="date")
     detail_url = indexes.CharField(model_attr="get_absolute_url")
     popular_count = indexes.IntegerField(model_attr="popular_count", default=0)
-    keywords = indexes.MultiValueField(model_attr="keyword_list", indexed=False, null=True)
+    keywords = indexes.MultiValueField(model_attr="keyword_list", indexed=False, null=True, faceted=True)
 
     def get_model(self):
         return Document
