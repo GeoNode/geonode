@@ -1,4 +1,5 @@
 {% extends "groups/group_base.html" %}
+{% load bootstrap_tags %}
 {% load i18n %}
 
 {% block head_title %}{% trans "Create Group" %}{% endblock %}
@@ -19,7 +20,7 @@
                     <form class="uniForm" id="form" method="POST" action="" enctype="multipart/form-data">
         {% csrf_token %}
         <fieldset>
-            {{ form }}
+            {{ form|as_bootstrap }}
             <div class="form_block">
                 <input type="hidden" name="action" value="create" />
                 <input type="submit" class="btn btn-primary" value="{% trans 'Update' %}"/>
