@@ -1,7 +1,6 @@
 {% extends "services/services_base.html" %}
 {% load i18n %}
-{% load geonode_auth %}
-
+{% load guardian_tags %}
 {% block head %}
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
@@ -11,7 +10,6 @@
 var app;
 {% autoescape off %}
 Ext.onReady(function() {
-{% has_obj_perm user service "services.change_service_permissions" as can_change_permissions %}
 
 {% if can_change_permissions %}
        new GeoNode.WorldMapPermissionsEditor({
@@ -104,11 +102,9 @@ Ext.onReady(function() {
 {% endblock %}
 {% block sidebar %}
 <div id="sidebar" class="threecol">
+    {% get_obj_perms request.user for service as "resource_perms" %}
 
-    {% has_obj_perm user service "services.change_service" as can_change %}
-    {% has_obj_perm user service "services.delete_service" as can_remove %}
-    {% has_obj_perm user service "services.change_service_permissions" as can_change_permissions %}
-    {% if can_change or can_remove or can_change_permissions %}
+    {% if "change_service" in resource_perms or "remove_service" in resource_perms or "change_service_permissions" in resource_perms %}
         <h3>{% trans "Manage" %}</h3>
         <ul>
         {% if can_change %}

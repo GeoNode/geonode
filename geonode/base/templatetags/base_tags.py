@@ -50,7 +50,7 @@ def facets(context):
     facets['document'] = resources.filter(id__in=Document.objects.values_list('id',flat=True)).count()
  
     if facet_type == 'home':
-        facets['user'] = get_user_model().objects.count()
+        facets['user'] = get_user_model().objects.exclude(username='AnonymousUser').count()
 
         facets['layer'] = facets['raster'] + facets['vector'] + facets['remote']
 
