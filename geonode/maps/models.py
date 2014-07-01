@@ -39,7 +39,7 @@ from django.core.cache import cache
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
@@ -455,3 +455,4 @@ def pre_delete_map(instance, sender, **kwrargs):
 
 
 signals.pre_delete.connect(pre_delete_map, sender=Map)
+signals.post_save.connect(resourcebase_post_save, sender=Map)

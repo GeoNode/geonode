@@ -639,8 +639,15 @@ class Link(models.Model):
 
     objects = LinkManager()
 
-
-
 def resourcebase_post_delete(instance):
     if instance.thumbnail is not None:
         instance.thumbnail.delete()
+
+def resourcebase_post_save(instance, *args, **kwargs):
+    """
+    Used to fill any additional fields after the save.
+    Has to be called by the children
+    """
+    ResourceBase.objects.filter(id=instance.id).update(
+        absolute_url=instance.get_absolute_url())
+    instance.set_missing_info()
