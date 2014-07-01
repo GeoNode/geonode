@@ -13,7 +13,7 @@ from django.contrib.staticfiles import finders
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, Thumbnail, Link
+from geonode.base.models import ResourceBase, Thumbnail, Link, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 
@@ -166,15 +166,9 @@ def update_documents_extent(sender, **kwargs):
     ctype = ContentType.objects.get(model= model)
     for document in Document.objects.filter(content_type=ctype, object_id=sender.id):
         document.save()
-
-def set_missing_info(sender, instance, created, **kwargs):
-    """
-    Executes mandatory post-save logic on the Document.
-    """
-
-    instance.set_missing_info()
+    
 
 signals.pre_save.connect(pre_save_document, sender=Document)
 signals.post_save.connect(create_thumbnail, sender=Document)
-signals.post_save.connect(set_missing_info, sender=Document)
+signals.post_save.connect(resourcebase_post_save, sender=Document)
 map_changed_signal.connect(update_documents_extent)
