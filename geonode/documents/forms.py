@@ -83,12 +83,12 @@ class DocumentForm(TranslationModelForm):
         
     class Meta:
         model = Document
-        exclude = ('contacts','workspace', 'store', 'name', 'uuid', 'storeType',
+        exclude = ('uuid', 'contacts','workspace', 'store', 'name', 'uuid', 'storeType',
                    'typename', 'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid', 'category',
                    'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
                    'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext', 
                    'content_type', 'object_id', 'doc_file', 'extension', 
-                   'popular_count', 'share_count', 'thumbnail', 'doc_url'),
+                   'popular_count', 'share_count', 'thumbnail', 'doc_url')
 
 class DocumentDescriptionForm(forms.Form):
     title = forms.CharField(300)
