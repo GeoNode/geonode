@@ -126,7 +126,7 @@ def document_metadata(request, docid, template='documents/document_metadata.html
                 new_poc = poc_form.save()
 
         if new_author is None:
-            if metadata_author.user is None:
+            if metadata_author is None:
                 author_form = ProfileForm(request.POST, prefix="author", 
                     instance=metadata_author)
             else:
@@ -146,7 +146,7 @@ def document_metadata(request, docid, template='documents/document_metadata.html
     if poc is None:
         poc_form = ProfileForm(request.POST, prefix="poc")
     else:
-        if poc.user is None:
+        if poc is None:
             poc_form = ProfileForm(instance=poc, prefix="poc")
         else:
             document_form.fields['poc'].initial = poc.id
@@ -156,7 +156,7 @@ def document_metadata(request, docid, template='documents/document_metadata.html
     if metadata_author is None:
             author_form = ProfileForm(request.POST, prefix="author")
     else:
-        if metadata_author.user is None:
+        if metadata_author is None:
             author_form = ProfileForm(instance=metadata_author, prefix="author")
         else:
             document_form.fields['metadata_author'].initial = metadata_author.id
