@@ -489,7 +489,7 @@ class GeoNodeMapTest(TestCase):
         self.assertEquals(response.context['is_featuretype'], True)
 
         #test replace a vector with a raster
-        response = c.post(vector_replace_url, {'base_file': open(raster_file) })
+        response = c.post(vector_replace_url, {'base_file': open(raster_file, 'rb') })
         # TODO: This should really return a 400 series error with the json dict
         self.assertEquals(response.status_code, 500)
         response_dict = json.loads(response.content)
@@ -498,10 +498,10 @@ class GeoNodeMapTest(TestCase):
         #test replace a vector with a different vector
         new_vector_file = os.path.join(gisdata.VECTOR_DATA, 'san_andres_y_providencia_poi.shp')
         layer_path, __ = os.path.splitext(new_vector_file)
-        layer_base = open(layer_path + '.shp')
-        layer_dbf = open(layer_path + '.dbf')
-        layer_shx = open(layer_path + '.shx')
-        layer_prj = open(layer_path + '.prj')
+        layer_base = open(layer_path + '.shp', 'rb')
+        layer_dbf = open(layer_path + '.dbf', 'rb')
+        layer_shx = open(layer_path + '.shx', 'rb')
+        layer_prj = open(layer_path + '.prj', 'rb')
 
         response = c.post(vector_replace_url, {'base_file': layer_base,
                                 'dbf_file': layer_dbf,

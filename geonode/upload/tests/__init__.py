@@ -26,12 +26,22 @@ from django.test import TestCase
 from geonode.upload.utils import rename_and_prepare
 from geonode.upload.files import SpatialFiles, scan_file
 
+
 @contextlib.contextmanager
 def create_files(names, zipped=False):
     tmpdir = tempfile.mkdtemp()
     names = [ os.path.join(tmpdir, f) for f in names ]
     for f in names:
-        open(f, 'w').close()
+        #required for windows to read the shapefile in binary mode and the zip in non-binary
+        if zipped:
+            open(f, 'w').close()
+        else:
+            try:
+                open(f, 'wb').close()
+            except IOError, e:
+                #windows fails at writing special characters
+                #need to do something better here
+                print "Test does not work in Windows"
     if zipped:
         basefile = os.path.join(tmpdir,'files.zip')
         zf = zipfile.ZipFile(basefile,'w')
@@ -55,8 +65,12 @@ class FilesTests(TestCase):
 
     def test_rename_files(self):
         with create_files(['junk<y>','notjunky']) as tests:
-            renamed = files._rename_files(tests)
-            self.assertTrue(renamed[0].endswith("junk_y_"))
+            try:
+                renamed = files._rename_files(tests)
+                self.assertTrue(renamed[0].endswith("junk_y_"))
+            except WindowsError,e:
+                pass
+
 
     def test_rename_and_prepare(self):
         with create_files(['109029_23.tiff','notjunk<y>']) as tests:
