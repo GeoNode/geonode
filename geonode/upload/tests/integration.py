@@ -153,9 +153,9 @@ class Client(object):
                 # sometimes a shapefile is missing an extra file,
                 # allow for that
                 if os.path.exists(file_path):
-                    params[spatial_file] = open(file_path, 'r')
+                    params[spatial_file] = open(file_path, 'rb')
 
-        params['base_file'] = open(_file, 'r')
+        params['base_file'] = open(_file, 'rb')
         resp = self.make_request(upload_step(), data=params, ajax=True)
         data = resp.read()
         try:
