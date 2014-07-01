@@ -161,6 +161,8 @@ MAX_DOCUMENT_SIZE = 2 # MB
 
 
 GEONODE_APPS = (
+
+
     # GeoNode internal apps
     'geonode.people',
     'geonode.base',
@@ -187,6 +189,10 @@ GEONODE_APPS = (
 )
 
 INSTALLED_APPS = (
+
+    # Boostrap admin theme
+    'django_admin_bootstrapped.bootstrap3',
+    'django_admin_bootstrapped',
 
     # Apps bundled with Django
     'django.contrib.auth',
