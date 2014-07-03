@@ -329,11 +329,6 @@ def pre_save_layer(instance, sender, **kwargs):
 
     instance.set_bounds_from_bbox(bbox)
 
-    try:
-        instance.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
-    except MultipleObjectsReturned:
-        instance.thumbnail = Thumbnail.objects.filter(resourcebase__id=instance.id)[0]
-
 
 def pre_delete_layer(instance, sender, **kwargs):
     """
