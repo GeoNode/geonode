@@ -82,7 +82,7 @@ setup(name='GeoNode',
         "Django==1.5.5",
         # Django Apps
         "pinax-theme-bootstrap==3.0a11",
-        "pinax-theme-bootstrap-account==1.0b3",
+        "pinax-theme-bootstrap-account==1.0b2",
         "django-user-accounts==1.0b14",
         "django-forms-bootstrap==2.0.3.post1",
         "django-pagination==1.0.7",
