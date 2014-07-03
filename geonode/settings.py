@@ -191,8 +191,8 @@ GEONODE_APPS = (
 INSTALLED_APPS = (
 
     # Boostrap admin theme
-    'django_admin_bootstrapped.bootstrap3',
-    'django_admin_bootstrapped',
+    # 'django_admin_bootstrapped.bootstrap3',
+    # 'django_admin_bootstrapped',
 
     # Apps bundled with Django
     'django.contrib.auth',
