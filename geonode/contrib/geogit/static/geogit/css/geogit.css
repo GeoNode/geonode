@@ -1,0 +1,49 @@
+#copy-button {
+    cursor: pointer;
+}
+
+#clone-url {
+    cursor: text;
+}
+
+.table-center {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.stat-title {
+    color: #999;
+    font-size: 14px;
+    font-variant: small-caps;
+}
+
+.stat-value {
+    font-size: 21px;
+}
+
+.commit {
+    padding: 5px;
+    margin-left: 20px;
+}
+
+.commit-id {
+    color: #999;
+}
+
+.commit-message {
+    margin-bottom: 4px;
+    border-bottom: solid 1px #efefef;
+}
+.commit-author {
+    font-weight: bold;
+    color: #999;
+}
+
+.commit-timestamp {
+    color: #999;
+}
+
+#copy-button.fa {
+    display: table-cell;
+}

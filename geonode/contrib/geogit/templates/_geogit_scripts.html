@@ -1,0 +1,45 @@
+{% load geogit_tags %}
+
+{% if DEBUG_STATIC %}
+    <script src="{{ STATIC_URL }}lib/js/jquery.min.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/angular.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/ZeroClipboard.min.js"></script>
+    <script src="{{ STATIC_URL }}lib/js/moment.min.js"></script>
+{% endif %}
+<script src="{{ STATIC_URL }}geogit/geogit.js"></script>
+<link href="{{ STATIC_URL }}geogit/css/geogit.css" rel="stylesheet"/>
+
+<script type="text/javascript">
+  var module = angular.module('g', ['geogit']);
+  module.constant('geogitConfig', {
+    workspace: '{{ resource.workspace }}',
+    store: '{{ resource.store }}',
+    typename: '{{ resource.typename }}',
+    geoserverURL: '{{ GEOSERVER_BASE_URL }}',
+    statisticsURL: '{%  geogit_statistics_url resource %}',
+    logURL: '{% geogit_log_url resource %}',
+    repoURL: '{% geogit_repo_url resource %}'
+  });
+  angular.bootstrap(document, ['g']);
+
+  ZeroClipboard.config( { swfPath: '/static/lib/img/ZeroClipboard.swf' } );
+    var client = new ZeroClipboard( document.getElementById("copy-button") );
+
+    client.on( 'ready', function( readyEvent ) {
+      client.on( 'aftercopy', function( event ) {
+        alert('Copied ' +  event.data['text/plain'] + ' to the clipboard.');
+      } );
+    } );
+
+  moment.lang('en', {
+    calendar : {
+        lastDay : '[Yesterday at] LT',
+        sameDay : '[Today at] LT',
+        nextDay : '[Tomorrow at] LT',
+        lastWeek : '[last] dddd [at] LT',
+        nextWeek : 'dddd [at] LT',
+        sameElse : '[on] D MMM YYYY'
+    }
+});
+</script>

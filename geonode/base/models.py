@@ -611,6 +611,10 @@ class LinkManager(models.Manager):
     def original(self):
         return self.get_query_set().filter(link_type='original')
 
+    def geogit(self):
+        return self.get_queryset().filter(name__icontains='geogit')
+
+
 class Link(models.Model):
     """Auxiliary model for storing links for resources.
 

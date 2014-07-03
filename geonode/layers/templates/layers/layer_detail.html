@@ -104,6 +104,16 @@
         {% endwith %}
       </article>
 
+      {% if GEOGIT_ENABLED and resource.link_set.geogit %}
+        {% with "_geogit_layer_detail.html" as geogit_template %}
+        <article id="geogit" class="tab-pane">
+          {% with resource as obj %}
+            {% include geogit_template %}
+          {% endwith %}
+        </article>
+        {% endwith %}
+      {% endif %}
+
       <article id="rate" class="tab-pane">
         <!-- TODO: Move this to a reusable template snippet -->
         {% if request.user.is_authenticated %}
@@ -291,7 +301,15 @@
   {% include "_permissions_form.html" %}
   {% endif %}
 {% endblock %}
+
 {% block extra_script %}
+
+    {% if GEOGIT_ENABLED and resource.link_set.geogit %}
+        {% with "_geogit_scripts.html" as geogit_scripts_template %}
+            {% include  geogit_scripts_template %}
+        {% endwith %}
+    {% endif %}
+
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user resource "layer" %}
     {% else %}
