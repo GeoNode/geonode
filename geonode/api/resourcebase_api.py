@@ -97,25 +97,172 @@ class CommonModelApi(ModelResource):
         intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) | Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
         return queryset.filter(intersects)
 
+    def build_haystack_filters(self,parameters):
+        from haystack.inputs import Raw
+        from haystack.query import SearchQuerySet, SQ
+
+        sqs = None
+
+        # Retrieve Query Params
+
+        #Text search
+        query = parameters.get('q',None)
+
+        #Types and subtypes to filter (map, layer, vector, etc)
+        type_facets = parameters.getlist("type__in", [])
+
+        #If coming from explore page, add type filter from resource_name
+        resource_filter = self._meta.resource_name.rstrip("s")
+        if resource_filter != "base" and resource_filter not in type_facets:
+            type_facets.append(resource_filter)
+
+        #Publication date range (start,end)
+        date_range = parameters.get("date_range", ",").split(",")
+
+        #Topic category filter
+        category = parameters.getlist("category__identifier__in")
+
+        #Keyword filter
+        keywords = parameters.getlist("keywords__slug__in")
+
+        #Sort order
+        sort = parameters.get("order_by", "relevance")
+
+        # Geospatial Elements
+        bbox = parameters.get("extent", None)
+
+        # Filter by Type and subtype
+        if type_facets is not None:
+
+            types = []
+            subtypes = []
+
+            for type in type_facets:
+                if type in ["map", "layer", "document", "user"]:
+                    # Type is one of our Major Types (not a sub type)
+                    types.append(type)
+                elif type in LAYER_SUBTYPES.keys():
+                    subtypes.append(type)
+
+            if len(subtypes) > 0:
+                types.append("layer")
+                sqs =  SearchQuerySet().narrow("subtype:%s" % ','.join(map(str, subtypes)))
+
+            if len(types) > 0:
+                sqs = (SearchQuerySet() if sqs is None else sqs).narrow("type:%s" % ','.join(map(str, types)))
+
+
+
+        # Filter by Query Params
+        # haystack bug? if boosted fields aren't included in the
+        # query, then the score won't be affected by the boost
+        if query:
+            if query.startswith('"') or query.startswith('\''):
+                #Match exact phrase
+                phrase = query.replace('"','')
+                sqs = (SearchQuerySet() if sqs is None else sqs).filter(
+                    SQ(title__exact=phrase) |
+                    SQ(abstract__exact=phrase) |
+                    SQ(content__exact=phrase)
+                )
+            else:
+                words = query.split()
+                for word in range(0,len(words)):
+                    search_word = words[word] + "*"
+                    if word == 0:
+                        sqs = (SearchQuerySet() if sqs is None else sqs).filter(
+                            SQ(title=Raw(search_word)) |
+                            SQ(description=Raw(search_word)) |
+                            SQ(content=Raw(search_word))
+                        )
+                    elif words[word] in ["AND","OR"]:
+                        pass
+                    elif words[word-1] == "OR": #previous word OR this word
+                        sqs = sqs.filter_or(
+                            SQ(title=Raw(search_word)) |
+                            SQ(description=Raw(search_word)) |
+                            SQ(content=Raw(search_word))
+                        )
+                    else: #previous word AND this word
+                        sqs = sqs.filter(
+                            SQ(title=Raw(search_word)) |
+                            SQ(description=Raw(search_word)) |
+                            SQ(content=Raw(search_word))
+                        )
+
+        # filter by cateory
+        if category:
+            sqs = (SearchQuerySet() if sqs is None else sqs).narrow('category:%s' % ','.join(map(str, category)))
+
+        #filter by keyword: use filter_or with keywords_exact
+        #not using exact leads to fuzzy matching and too many results
+        #using narrow with exact leads to zero results if multiple keywords selected
+        if keywords:
+            for keyword in keywords:
+                sqs = sqs.filter_or(keywords_exact=keyword)
+
+        #filter by date
+        if date_range[0]:
+                sqs = (SearchQuerySet() if sqs is None else sqs).filter(
+                    SQ(date__gte=date_range[0])
+                )
+
+        if date_range[1]:
+                sqs = (SearchQuerySet() if sqs is None else sqs).filter(
+                    SQ(date__lte=date_range[1])
+                )
+
+        #Filter by geographic bounding box
+        if bbox:
+            left,right,bottom,top = bbox.split(',')
+            sqs = (SearchQuerySet() if sqs is None else sqs).filter(
+                # first check if the bbox has at least one point inside the window
+                SQ(bbox_left__gte=left) & SQ(bbox_left__lte=right) & SQ(bbox_top__gte=bottom) & SQ(bbox_top__lte=top) | #check top_left is inside the window
+                SQ(bbox_right__lte=right) &  SQ(bbox_right__gte=left) & SQ(bbox_top__lte=top) &  SQ(bbox_top__gte=bottom) | #check top_right is inside the window
+                SQ(bbox_bottom__gte=bottom) & SQ(bbox_bottom__lte=top) & SQ(bbox_right__lte=right) &  SQ(bbox_right__gte=left) | #check bottom_right is inside the window
+                SQ(bbox_top__lte=top) & SQ(bbox_top__gte=bottom) & SQ(bbox_left__gte=left) & SQ(bbox_left__lte=right) | #check bottom_left is inside the window
+                # then check if the bbox is including the window
+                SQ(bbox_left__lte=left) & SQ(bbox_right__gte=right) & SQ(bbox_bottom__lte=bottom) & SQ(bbox_top__gte=top)
+            )
+
+        #Apply sort
+        if sort.lower() == "-date":
+            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("-modified")
+        elif sort.lower() == "date":
+            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("modified")
+        elif sort.lower() == "title":
+            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("title_sortable")
+        elif sort.lower() == "-title":
+            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("-title_sortable")
+        elif sort.lower() == "-popular_count":
+            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("-popular_count")
+        else:
+            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("-_score")
+
+        return sqs
+
+
     def get_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         self.is_authenticated(request)
         self.throttle_check(request)
 
         # Get the list of objects that matches the filter
-        filters = self.build_filters(request.GET)
-        filtered_objects = self.apply_filters(request, filters)
-        filtered_ids = set(filtered_objects.values_list('id', flat=True))
+        sqs = self.build_haystack_filters(request.GET)
 
-        #Get the list of objects the user has access to
-        perm_ids = set(get_objects_for_user(request.user, 'base.view_resourcebase').values_list('id', flat=True))
+        if not settings.HAYSTACK_PERMISSIONS_POSTFILTER:
+            #Get the list of objects the user has access to
+            filter_set = set(get_objects_for_user(request.user, 'base.view_resourcebase').values_list('id', flat=True))
 
-        # Combine lists. Include only if in both
-        filter_set = filtered_ids.intersection(perm_ids)
+            # Do the query using the filterset and the query term. Facet the results
+            if len(filter_set) > 0:
+                sqs = sqs.filter(oid__in=filter_set).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
+            else:
+                sqs = None
+        else:
+            sqs =sqs.facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
 
-        # Do the query using the filterset and the query term. Facet the results
-        if len(filter_set) > 0:
-            sqs = SearchQuerySet().models(Layer, Map, Document).load_all().auto_query(request.GET.get('q', '')).filter(oid__in=filter_set).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
+        if sqs:
             # Build the Facet dict
             facets = {}
             for facet in sqs.facet_counts()['fields']:
@@ -247,6 +394,14 @@ class LayerResource(CommonModelApi):
         resource_name = 'layers'
         excludes = ['csw_anytext', 'metadata_xml']
 
+    def prepend_urls(self):
+        if settings.HAYSTACK_SEARCH:
+            return [
+                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
+                ]
+        else:
+            return []
+
 class MapResource(CommonModelApi):
     """Maps API"""
 
@@ -254,9 +409,25 @@ class MapResource(CommonModelApi):
         queryset = Map.objects.distinct().order_by('-date')
         resource_name = 'maps'
 
+    def prepend_urls(self):
+        if settings.HAYSTACK_SEARCH:
+            return [
+                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
+                ]
+        else:
+            return []
+
 class DocumentResource(CommonModelApi):
     """Maps API"""
 
     class Meta(CommonMetaApi):
         queryset = Document.objects.distinct().order_by('-date')
         resource_name = 'documents'
+
+    def prepend_urls(self):
+        if settings.HAYSTACK_SEARCH:
+            return [
+                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
+                ]
+        else:
+            return []
