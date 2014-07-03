@@ -368,6 +368,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 
+    def keyword_slug_list(self):
+        return [kw.slug for kw in self.keywords.all()]
+
     def spatial_representation_type_string(self):
         if hasattr(self.spatial_representation_type, 'identifier'):
             return self.spatial_representation_type.identifier
@@ -639,8 +642,16 @@ class Link(models.Model):
 
     objects = LinkManager()
 
-
-
 def resourcebase_post_delete(instance):
     if instance.thumbnail is not None:
         instance.thumbnail.delete()
+
+def resourcebase_post_save(instance, *args, **kwargs):
+    """
+    Used to fill any additional fields after the save.
+    Has to be called by the children
+    """
+    ResourceBase.objects.filter(id=instance.id).update(
+        thumbnail_url=instance.get_thumbnail_url(),
+        absolute_url=instance.get_absolute_url())
+    instance.set_missing_info()

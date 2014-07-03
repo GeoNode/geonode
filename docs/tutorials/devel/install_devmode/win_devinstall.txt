@@ -1,0 +1,128 @@
+.. _install_win_devmode:
+
+Install GeoNode for Development (Windows)
+===============================
+
+
+In order to install Geonode 2.0 in developing mode on Windows 2008r2 the following steps are required:
+
+#. install dependencies (Python and Java) and supporting tools
+
+#. set up a virtual environment (virtualenv)
+
+#. clone geonode from github and install it in the virtual environment
+
+#. run paver to get install geoserver and start the development servers
+
+.. note:: The following steps have to be executed in your terminal where there is a ">". The path will differ depending on installation.
+
+#. Install Dependencies.  All should be found in binary.  Only 32 bit versions have been tested. 
+
+    * Latest Python 2.7.x Windows build https://www.python.org/download/releases/2.7.7/ 
+
+    * Setuptools http://www.lfd.uci.edu/~gohlke/pythonlibs/#setuptools
+
+    * Install core components of GDAL http://www.gisinternals.com/sdk/PackageList.aspx?file=release-1600-gdal-1-11-mapserver-6-4.zip gdal-111-1600-core.msi 
+
+    .. code-block:: console
+     > easy_install virtualenv
+
+#. Install Java for Geoserver.  If you already have java installed 32 or 64 bit versions work.
+
+    * http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html
+
+    * Ant and Maven are optional for custom builds of Geoserver
+
+#. Install Supporting tools 
+
+    * Git http://git-scm.com/downloads
+
+    * GetText (not tested yet)
+
+#. Install node and tools for static development (not tested yet)
+
+    * http://nodejs.org/download/
+
+    * In the command prompt do the following: Will we need to be admins?
+
+    .. code-block:: console
+
+    > npm install -y -g bower
+    
+    .. code-block:: console
+
+    > npm install -y -g grunt-cli
+
+#. Get the GeoNode Code using Git.  
+    Open the Git bash or use your command prompt depending on how git was installed
+    This command will download the latest version of GeoNode.  For the most recent stable version type number 2.
+
+    .. code-block:: 
+
+      git clone https://github.com/GeoNode/geonode.git
+
+    .. code-block::
+      git clone -b 2.0.x https://github.com/GeoNode/geonode.git
+
+#. Install all Dependencies in a new virtual environment
+    In the command prompt, navigate to where you want your python to be installed.  
+
+    .. code-block::
+      virtualenv geonode
+
+    .. note:: Command not found?  Try adding your python scripts folder to the path environment variable.  In most cases it is C:\Python27\Scripts.  You will need to start a fresh command prompt to register the variables.  See next common error message to add the C:\Python27 path
+
+    .. note:: Errors about no package found and running python from the command prompt gives command not found, then add C:\Python27 to your path environment variable.
+
+    Initialize the virtual environment by navigating to your-virtualenv-directory/Scripts/activate
+
+    After you activate the virtual environment, run the following:
+
+    .. code-block::
+    > pip install paver
+
+    Navigate to your geonode code install and run
+
+    .. code-block::
+    > paver win_install_deps
+
+    *Back to the parent directory*
+
+    .. code-block::
+    > cd ..
+
+    .. code-block::
+    pip install -e geonode -–use-mirrors
+
+    .. code-block::
+    cd geonode
+
+#. Set up the Geoserver with command
+
+    .. code-block::
+    > paver setup
+
+#. Now we can start our geonode instance
+
+    .. code-block::
+    > paver start -–java_path="C:\path\to\java\java.exe"
+
+Visit the geonode site by typing http://localhost:8000 into your browser window.
+
+.. warning:: If the start fails because of an import error related to osgeo, then ensure that the GDAL_LIBRARY_PATH is set in the Windows path.
+
+.. warning:: If you get GEOSversion function not found, then need to need to change line 71 in geonode\Lib\site-packages\Shapely-1.3.0-py2.7-win32.egg\shapely\geos.py from _lgeos = CDLL("geos.dll") to _lgeos = CDLL("geos_c.dll").  See issue https://github.com/Toblerity/Shapely/issues/136
+
+#. To stop the server
+
+    type hold Ctrl c on your keyboard to stop the server
+
+    .. code-block::
+    > paver stop    # to stop all django, geoserver services
+
+#. Next create a superuser for your django geonode
+
+    Create a superuser so you can log on to your local geonode installation at http://localhost:8000
+
+    .. code-block::
+    > django-admin.py createsuperuser –-settings=geonode.settings

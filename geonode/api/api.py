@@ -1,9 +1,11 @@
+from django.conf.urls import url
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 
 from avatar.templatetags.avatar_tags import avatar_url
 from guardian.shortcuts import get_objects_for_user
+from geonode import settings
 
 from geonode.base.models import TopicCategory
 from geonode.layers.models import Layer
@@ -17,7 +19,7 @@ from taggit.models import Tag
 from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
-
+from tastypie.utils import trailing_slash
 
 FILTER_TYPES = {
     'layer': Layer,
@@ -192,6 +194,14 @@ class ProfileResource(ModelResource):
         return reverse('actstream_actor', kwargs={
             'content_type_id': ContentType.objects.get_for_model(bundle.obj).pk, 
             'object_id': bundle.obj.pk})
+
+    def prepend_urls(self):
+        if settings.HAYSTACK_SEARCH:
+            return [
+                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
+                ]
+        else:
+            return []
 
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')

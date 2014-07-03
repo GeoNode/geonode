@@ -31,9 +31,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.core.exceptions import MultipleObjectsReturned
 
-from geonode.base.models import ResourceBase, ResourceBaseManager, Link
-from geonode.base.models import SpatialRepresentationType, TopicCategory
-from geonode.base.models import Thumbnail
+from geonode.base.models import ResourceBase, ResourceBaseManager, Link, SpatialRepresentationType, \
+    TopicCategory, Thumbnail, resourcebase_post_save
 from geonode.people.utils import get_valid_user
 from geonode.layers.metadata import set_metadata
 from agon_ratings.models import OverallRating
@@ -330,11 +329,6 @@ def pre_save_layer(instance, sender, **kwargs):
 
     instance.set_bounds_from_bbox(bbox)
 
-    try:
-        instance.thumbnail, created = Thumbnail.objects.get_or_create(resourcebase__id=instance.id)
-    except MultipleObjectsReturned:
-        instance.thumbnail = Thumbnail.objects.filter(resourcebase__id=instance.id)[0]
-
 
 def pre_delete_layer(instance, sender, **kwargs):
     """
@@ -369,15 +363,7 @@ def post_delete_layer(instance, sender, **kwargs):
         instance.default_style.delete()
 
 
-def post_save_layer(instance, sender, **kwargs):
-    """Set missing default values.
-    """
-    instance.set_missing_info()
-    ResourceBase.objects.filter(id=instance.id).update(
-        absolute_url=instance.get_absolute_url())
-
-
 signals.pre_save.connect(pre_save_layer, sender=Layer)
-signals.post_save.connect(post_save_layer, sender=Layer)
+signals.post_save.connect(resourcebase_post_save, sender=Layer)
 signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)

@@ -8,8 +8,8 @@ from haystack import indexes
 from geonode.maps.models import Layer
 
 class LayerIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
-    oid = indexes.IntegerField(model_attr='resourcebase_ptr_id')
+    text = indexes.EdgeNgramField(document=True, use_template=True)
+    oid = indexes.CharField(model_attr='resourcebase_ptr_id')
     uuid = indexes.CharField(model_attr='uuid')
     type = indexes.CharField(faceted=True)
     subtype = indexes.CharField(faceted=True)
@@ -27,12 +27,13 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     bbox_top = indexes.FloatField(model_attr="bbox_y1", null=True)
     temporal_extent_start=indexes.DateTimeField(model_attr="temporal_extent_start", null=True)
     temporal_extent_end=indexes.DateTimeField(model_attr="temporal_extent_end", null=True)
-    keywords = indexes.MultiValueField(model_attr="keyword_list", null=True, faceted=True)
+    keywords = indexes.MultiValueField(model_attr="keyword_slug_list", null=True, faceted=True)
     popular_count = indexes.IntegerField(model_attr="popular_count", default=0,boost=20)
     share_count = indexes.IntegerField(model_attr="share_count", default=0)
     rating = indexes.IntegerField(null=True)
     num_ratings = indexes.IntegerField()
     num_comments = indexes.IntegerField()
+
 
     def get_model(self):
         return Layer

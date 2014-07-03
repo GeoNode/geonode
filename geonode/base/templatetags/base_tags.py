@@ -36,8 +36,8 @@ def facets(context):
     rasters = Layer.objects.filter(storeType='coverageStore').values_list('id', flat=True)
     remote = Layer.objects.filter(storeType='remoteStore').values_list('id', flat=True)
    
-    facets['raster'] = resources.filter(id__in=vectors).count()
-    facets['vector'] = resources.filter(id__in=rasters).count()
+    facets['raster'] = resources.filter(id__in=rasters).count()
+    facets['vector'] = resources.filter(id__in=vectors).count()
     facets['remote'] = resources.filter(id__in=remote).count()
 
     facet_type = context['facet_type'] if 'facet_type' in context else 'all'     

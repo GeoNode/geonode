@@ -191,8 +191,8 @@ GEONODE_APPS = (
 INSTALLED_APPS = (
 
     # Boostrap admin theme
-    'django_admin_bootstrapped.bootstrap3',
-    'django_admin_bootstrapped',
+    # 'django_admin_bootstrapped.bootstrap3',
+    # 'django_admin_bootstrapped',
 
     # Apps bundled with Django
     'django.contrib.auth',
@@ -605,7 +605,7 @@ PROXY_URL = '/proxy/?url=' if DEBUG else None
 # Set HAYSTACK_SEARCH to True
 # Run "python manage.py rebuild_index"
 
-HAYSTACK_SEARCH = False 
+HAYSTACK_SEARCH = False
 #HAYSTACK_CONNECTIONS = {
 #    'default': {
 #        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
