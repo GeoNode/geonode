@@ -649,5 +649,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
     Has to be called by the children
     """
     ResourceBase.objects.filter(id=instance.id).update(
+        thumbnail_url=instance.get_thumbnail_url(),
         absolute_url=instance.get_absolute_url())
     instance.set_missing_info()

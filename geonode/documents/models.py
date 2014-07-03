@@ -152,7 +152,7 @@ def create_thumbnail(sender, instance, created, **kwargs):
     instance.thumbnail.thumb_spec = 'Rendered'
     instance.thumbnail.save()
     Link.objects.get_or_create(
-        resource=instance.resourcebase_ptr,
+        resource=instance.get_self_resource(),
         url=instance.thumbnail.thumb_file.url,
         defaults=dict(
             name=('Thumbnail'),
