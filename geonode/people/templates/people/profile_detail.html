@@ -86,25 +86,22 @@
     <div class="tab-content span12 paginate paginate-auto">
       {% if object_list|length > 0 %}
       <div class="tab-pane active list paginate-contents" id="all">
-        {% if object_list|length > 0 %}
           {% autopaginate object_list 5 %}
             {% for obj in object_list %}
             <article>
               <div class="content">
                 <div class="item-header">
+                <img class="thumb" src="{{ obj.thumbnail_url}}" />
                 {% if obj.class_name = 'Map' %}
-                <img class="thumb" src="/uploaded/{{ obj.thumbnail.thumb_file }}" />
                 <h3><i class="fa fa-map-marker"></i>
                 {% endif %}
                 {% if obj.class_name = 'Layer' %}
-                <img class="thumb" src="/uploaded/{{ obj.thumbnail.thumb_file }}" />
                 <h3><i class="fa fa-square-o rotate-45"></i>
                 {% endif %}
                 {% if obj.class_name = 'Document' %}
-                <div class="icon-placeholder"><i class="icon-file-text-alt"></i></div>
                 <h3><i class="fa fa-file-text-alt"></i>
                 {% endif %}
-                  <a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
+                  <a href="{{ obj.detail_url }}">{{ obj.title }}</a>
                 </h3>
               </div>
               <div class="details">
@@ -115,11 +112,8 @@
               </div>
             </article>
             {% endfor %}
-          {% endif %}
         </div>
-        {% if object_list|length > 0 %}
           {% paginate %}
-        {% endif %}
       </div>
       {% else %}
       </div>
