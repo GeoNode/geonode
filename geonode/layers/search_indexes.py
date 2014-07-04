@@ -33,6 +33,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     rating = indexes.IntegerField(null=True)
     num_ratings = indexes.IntegerField()
     num_comments = indexes.IntegerField()
+    thumbnail_url = indexes.CharField(model_attr="thumbnail_url", null=True)
 
 
     def get_model(self):
