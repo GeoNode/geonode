@@ -237,7 +237,7 @@ class CommonModelApi(ModelResource):
         elif sort.lower() == "-popular_count":
             sqs = (SearchQuerySet() if sqs is None else sqs).order_by("-popular_count")
         else:
-            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("-_score")
+            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("-modified")
 
         return sqs
 
