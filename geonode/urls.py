@@ -115,8 +115,13 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
 # Set up proxy
 urlpatterns += geonode.proxy.urls.urlpatterns
 
-
 # Serve static files
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 handler403 = 'geonode.views.err403'
+
+#Featured Maps Pattens
+urlpatterns += patterns('',
+    (r'^(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.featured_map'),
+    (r'^(?P<site>[A-Za-z0-9_\-]+)/info$', 'geonode.maps.views.featured_map_info'),
+)
