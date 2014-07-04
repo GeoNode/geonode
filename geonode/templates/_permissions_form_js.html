@@ -88,7 +88,6 @@
             }
             addSelectUsers();
 
-            {% if GROUPS_APP %}
             /*
             * Compile the groups fields after receiving the current permissions status from the server
             */
@@ -108,16 +107,13 @@
               $('#' + perm + '_groups').val(groups[perm].join());
             }
             addSelectGroups();
-            {% endif %}
 
           }
         }
       );
       {% else %}
       addSelectUsers();
-      {% if GROUPS_APP %}
       addSelectGroups();
-      {% endif %}
       {% endif %}
     });
     
@@ -154,7 +150,6 @@
       });
     }
 
-    {% if GROUPS_APP %}
     function addSelectGroups(){
       $("input.group-select").select2({
         placeholder: '{% trans "Choose groups..." %}',
@@ -187,17 +182,14 @@
         }
       });
     }
-    {% endif %}
     
     function userID(user) {
       return user.username;
     }
 
-    {% if GROUPS_APP %}
     function groupID(group) {
       return group.name;
     }
-    {% endif %} 
 
     function userFormatResult(user) {
       return user.username;
@@ -207,7 +199,6 @@
         return user.username;
     }
 
-    {% if GROUPS_APP %}
     function groupFormatResult(group) {
       return group.name;
     }
@@ -215,7 +206,6 @@
     function groupFormatSelection(group) {
         return group.name;
     }
-    {% endif %}
 
 
     var perms_submit = function() {
