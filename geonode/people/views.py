@@ -66,7 +66,7 @@ def profile_edit(request, username=None):
 def profile_detail(request, username):
     profile = get_object_or_404(Profile, username=username)
     # combined queryset from each model content type
-    user_objects = profile.resourcebase_set.all()
+    user_objects = profile.resourcebase_set.distinct()
 
     content_filter = 'all'
 
@@ -95,7 +95,7 @@ def profile_detail(request, username):
         "profile": profile,
         "sortby_field": sortby_field,
         "content_filter": content_filter,
-        "object_list": user_objects,
+        "object_list": user_objects.get_real_instances(),
     })
 
 def forgot_username(request):
