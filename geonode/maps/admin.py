@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from geonode.maps.models import Map, MapLayer
+from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.base.admin import MediaTranslationAdmin
 from django.contrib import admin
 
@@ -43,3 +43,4 @@ class MapLayerAdmin(admin.ModelAdmin):
 
 admin.site.register(Map, MapAdmin)
 admin.site.register(MapLayer, MapLayerAdmin)
+admin.site.register(MapSnapshot)
