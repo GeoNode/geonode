@@ -312,7 +312,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     #fields necessary for the apis
     thumbnail_url = models.CharField(max_length=255, null=True, blank=True)
-    absolute_url = models.CharField(max_length=255, null=True, blank=True)
+    detail_url = models.CharField(max_length=255, null=True, blank=True)
 
     def delete(self, *args, **kwargs):
         super(ResourceBase, self).delete(*args, **kwargs)
@@ -653,5 +653,5 @@ def resourcebase_post_save(instance, *args, **kwargs):
     """
     ResourceBase.objects.filter(id=instance.id).update(
         thumbnail_url=instance.get_thumbnail_url(),
-        absolute_url=instance.get_absolute_url())
+        detail_url=instance.get_absolute_url())
     instance.set_missing_info()
