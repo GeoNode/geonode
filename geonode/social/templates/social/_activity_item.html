@@ -4,7 +4,7 @@
     <p>
       <span class="icon-activity {{ activity_class|default:'activity' }}"></span>
       {% if object %}
-      <span class="thumb-activity"><img src="/uploaded/{{ object.thumbnail.thumb_file }}"></span>
+      <span class="thumb-activity"><img src="{{ object.thumbnail_url }}"></span>
       {% endif %}
       <a href="{{ actor.get_absolute_url }}">{{ username }}</a>
 

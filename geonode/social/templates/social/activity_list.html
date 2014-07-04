@@ -1,23 +1,10 @@
 {% extends 'site_base.html' %}
 {% load activity_tags  social_tags i18n %}
-{% block extra_head %}
-{{ block.super }}
-<script>
-$(function () {
-    $("#follow_button, #unfollow_button").click(function () {
-        $.post($(this).attr("href"), {});
-        $(this).parent().find("#follow_button, #unfollow_button").toggle();
-        return false
-    });
-});
-</script>
-
-{% endblock %}
 
 {% block title %}{% trans "Recent activity" %}{% endblock %}
 
 {% comment %}
-{% block navlinks %}
+{% block subnav %}
 <li><a href="{% url "actstream_object_feed" content_type_id=ctype.pk  object_id=actor.pk %}">RSS</a></li>
 <li><a href="{% url "actstream_object_feed_atom" content_type_id=ctype.pk  object_id=actor.pk %}">ATOM</a></li>
 {% endblock %}
@@ -40,4 +27,17 @@ $(function () {
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script>
+$(function () {
+    $("#follow_button, #unfollow_button").click(function () {
+        $.post($(this).attr("href"), {});
+        $(this).parent().find("#follow_button, #unfollow_button").toggle();
+        return false
+    });
+});
+</script>
 {% endblock %}
