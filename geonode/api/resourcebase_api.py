@@ -361,6 +361,14 @@ class CommonModelApi(ModelResource):
         serialized = self.serialize(request, data, desired_format)
         return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
 
+    def prepend_urls(self):
+        if settings.HAYSTACK_SEARCH:
+            return [
+                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
+                ]
+        else:
+            return []
+
 
 class ResourceBaseResource(CommonModelApi):
     """ResourceBase api"""
@@ -370,13 +378,6 @@ class ResourceBaseResource(CommonModelApi):
         resource_name = 'base'
         excludes = ['csw_anytext', 'metadata_xml']
 
-    def prepend_urls(self):
-        if settings.HAYSTACK_SEARCH:
-            return [
-                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
-            ]
-        else:
-            return []
 
 class FeaturedResourceBaseResource(CommonModelApi):
     """Only the featured resourcebases"""
@@ -394,13 +395,6 @@ class LayerResource(CommonModelApi):
         resource_name = 'layers'
         excludes = ['csw_anytext', 'metadata_xml']
 
-    def prepend_urls(self):
-        if settings.HAYSTACK_SEARCH:
-            return [
-                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
-                ]
-        else:
-            return []
 
 class MapResource(CommonModelApi):
     """Maps API"""
@@ -409,13 +403,6 @@ class MapResource(CommonModelApi):
         queryset = Map.objects.distinct().order_by('-date')
         resource_name = 'maps'
 
-    def prepend_urls(self):
-        if settings.HAYSTACK_SEARCH:
-            return [
-                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
-                ]
-        else:
-            return []
 
 class DocumentResource(CommonModelApi):
     """Maps API"""
@@ -423,11 +410,3 @@ class DocumentResource(CommonModelApi):
     class Meta(CommonMetaApi):
         queryset = Document.objects.distinct().order_by('-date')
         resource_name = 'documents'
-
-    def prepend_urls(self):
-        if settings.HAYSTACK_SEARCH:
-            return [
-                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
-                ]
-        else:
-            return []

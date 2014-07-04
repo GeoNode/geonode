@@ -2,10 +2,10 @@ from django.conf.urls import url
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 
 from avatar.templatetags.avatar_tags import avatar_url
 from guardian.shortcuts import get_objects_for_user
-from geonode import settings
 
 from geonode.base.models import TopicCategory
 from geonode.layers.models import Layer
