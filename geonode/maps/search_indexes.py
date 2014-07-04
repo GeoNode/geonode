@@ -20,6 +20,7 @@ class MapIndex(indexes.SearchIndex, indexes.Indexable):
     detail_url = indexes.CharField(model_attr="get_absolute_url")
     popular_count = indexes.IntegerField(model_attr="popular_count", default=0)
     keywords = indexes.MultiValueField(model_attr="keyword_list", null=True, faceted=True)
+    thumbnail_url = indexes.CharField(model_attr="thumbnail_url", null=True)
 
     def get_model(self):
         return Map

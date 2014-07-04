@@ -351,7 +351,7 @@ class CommonModelApi(ModelResource):
             'category',
             'supplemental_information',
             'thumbnail_url',
-            'absolute_url',
+            'detail_url',
         ]
         
         if isinstance(data, dict) and 'objects' in data and not isinstance(data['objects'], list):
