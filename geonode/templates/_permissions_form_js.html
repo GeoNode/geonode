@@ -35,7 +35,6 @@
         }
       }
 
-      {% if GROUPS_APP %}
       if(data[perm][1] !== ''){
         for (var i=0;i<data[perm][1].split(',').length;i++){
           var group = data[perm][1].split(',')[i];
@@ -46,7 +45,6 @@
           }
         }
       }
-      {% endif %}
     }
 
     return permissions
@@ -72,13 +70,13 @@
             };
             var perms_users = perms.users;
             for (var user in perms_users){
-              var perms = perms_users[user];
+              var user_perms = perms_users[user];
               if (user === 'AnonymousUser'){
                 $('#perms_view_anyone').attr("checked", "checked");
               }else{
-                for (var i=0;i<perms.length;i++){
-                  if(users.hasOwnProperty(perms[i])){
-                    users[perms[i]].push(user);
+                for (var i=0;i<user_perms.length;i++){
+                  if(users.hasOwnProperty(user_perms[i])){
+                    users[user_perms[i]].push(user);
                   }
                 }
               }          
@@ -98,9 +96,9 @@
             };
             var perms_groups = perms.groups;
             for (var group in perms_groups){
-              var perms = perms_groups[group];
-              for (var i=0;i<perms.length;i++){
-                groups[perms[i]].push(group);
+              var group_perms = perms_groups[group];
+              for (var i=0;i<group_perms.length;i++){
+                groups[group_perms[i]].push(group);
               }
             }
             for (var perm in groups){
