@@ -121,7 +121,7 @@ class Catalog(object):
         # admin based on the recommendation here: 
         # http://bit.ly/ccVEU7
 
-        
+
 
         get_dbid_url = self.base + 'srv/en/portal.search.present?' + urllib.urlencode({'uuid': uuid})
 

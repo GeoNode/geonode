@@ -1955,6 +1955,7 @@ def search_page(request):
     else:
         return HttpResponse(status=405)
 
+    params = dict((escape(x),escape(y)) for x,y in params.iteritems())
     map_obj = Map(projection="EPSG:900913", zoom = 1, center_x = 0, center_y = 0)
 
     return render_to_response('search.html', RequestContext(request, {
@@ -2027,6 +2028,8 @@ def maps_search(request):
         params = request.POST
     else:
         return HttpResponse(status=405)
+
+    params = dict((escape(x),escape(y)) for x,y in params.iteritems())
 
     # grab params directly to implement defaults as
     # opposed to panicy django forms behavior.
@@ -2126,6 +2129,8 @@ def maps_search_page(request):
         params = request.POST
     else:
         return HttpResponse(status=405)
+
+    params = dict((escape(x),escape(y)) for x,y in params.iteritems())
 
     return render_to_response('maps_search.html', RequestContext(request, {
         'init_search': json.dumps(params or {}),
