@@ -53,12 +53,19 @@ class TagResource(TypeFilteredResource):
 
     def dehydrate_count(self, bundle):
         count = 0
-        resources = get_objects_for_user(bundle.request.user, 'base.view_resourcebase').values_list('id', flat=True)
-        if self.type_filter:
-            ctype = ContentType.objects.get_for_model(self.type_filter)
-            count = bundle.obj.taggit_taggeditem_items.filter(content_type=ctype).filter(object_id__in=resources).count()
+        if settings.SKIP_PERMS_FILTER:
+            if self.type_filter:
+                ctype = ContentType.objects.get_for_model(self.type_filter)
+                count = bundle.obj.taggit_taggeditem_items.filter(content_type=ctype).count()
+            else:
+                count = bundle.obj.taggit_taggeditem_items.count()
         else:
-            count = bundle.obj.taggit_taggeditem_items.filter(object_id__in=resources).count()
+            resources = get_objects_for_user(bundle.request.user, 'base.view_resourcebase').values_list('id', flat=True)
+            if self.type_filter:
+                ctype = ContentType.objects.get_for_model(self.type_filter)
+                count = bundle.obj.taggit_taggeditem_items.filter(content_type=ctype).filter(object_id__in=resources).count()
+            else:
+                count = bundle.obj.taggit_taggeditem_items.filter(object_id__in=resources).count()
 
         return count
 
@@ -75,13 +82,14 @@ class TopicCategoryResource(TypeFilteredResource):
     """Category api"""
 
     def dehydrate_count(self, bundle):
-        resources = bundle.obj.resourcebase_set.instance_of(self.type_filter) if \
-            self.type_filter else bundle.obj.resourcebase_set.all()
-
-        permitted = get_objects_for_user(bundle.request.user,'base.view_resourcebase').values_list('id', flat=True)
-        return resources.filter(id__in=permitted).count()
-
-        return count
+        if settings.SKIP_PERMS_FILTER:
+            return bundle.obj.resourcebase_set.instance_of(self.type_filter).count() if \
+                self.type_filter else bundle.obj.resourcebase_set.all().count()
+        else:
+            resources = bundle.obj.resourcebase_set.instance_of(self.type_filter) if \
+                self.type_filter else bundle.obj.resourcebase_set.all()
+            permitted = get_objects_for_user(bundle.request.user,'base.view_resourcebase').values_list('id', flat=True)
+            return resources.filter(id__in=permitted).count()
 
     class Meta:
         queryset = TopicCategory.objects.all()
@@ -208,4 +216,3 @@ class ProfileResource(ModelResource):
         resource_name = 'profiles'
         allowed_methods = ['get',]
         ordering = ['name']
-        

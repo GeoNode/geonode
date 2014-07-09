@@ -604,9 +604,11 @@ PROXY_URL = '/proxy/?url=' if DEBUG else None
 # - pip install pyelasticsearch
 # Set HAYSTACK_SEARCH to True
 # Run "python manage.py rebuild_index"
-
 HAYSTACK_SEARCH = False
-HAYSTACK_PERMISSIONS_POSTFILTER = False
+#Avoid permissions prefiltering
+SKIP_PERMS_FILTER = False
+#Update facet counts from Haystack
+HAYSTACK_FACET_COUNTS = False
 #HAYSTACK_CONNECTIONS = {
 #    'default': {
 #        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
