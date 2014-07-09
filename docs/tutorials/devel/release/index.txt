@@ -29,7 +29,7 @@ Preparing the environment
 Make sure to have a Ubuntu 12.04 machine.
 Install the following packages in additon to the python virtulenv tools::
 
-    $ sudo apt-get install git-core git-buildpackage dbhelper devscripts
+    $ sudo apt-get install git-core git-buildpackage debhelper devscripts
 
 Get the GeoNode code (from master) in a virtuelnv::
 
@@ -54,7 +54,7 @@ Set the correct git email::
 
     $ git config --global user.email "yourmail@mail.com"
 
-Register your credentials::
+Register on Pypi with your Pypi credentials::
 
     $ python setup.py register
 

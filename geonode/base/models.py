@@ -13,6 +13,7 @@ from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
+from django.db.models import signals
 
 from guardian.shortcuts import get_perms
 
@@ -313,6 +314,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     #fields necessary for the apis
     thumbnail_url = models.CharField(max_length=255, null=True, blank=True)
     detail_url = models.CharField(max_length=255, null=True, blank=True)
+    rating = models.IntegerField(default=0)
 
     def delete(self, *args, **kwargs):
         super(ResourceBase, self).delete(*args, **kwargs)
@@ -320,18 +322,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     def __unicode__(self):
         return self.title
-    
-    @property
-    def rating(self):
-        try:
-            rating = float(OverallRating.objects.get(
-                content_type=ContentType.objects.get_for_model(self), 
-                object_id=self.pk
-            ).rating)
-        except OverallRating.DoesNotExist:
-            rating = None
-
-        return rating 
 
     @property
     def bbox(self):
@@ -655,3 +645,13 @@ def resourcebase_post_save(instance, *args, **kwargs):
         thumbnail_url=instance.get_thumbnail_url(),
         detail_url=instance.get_absolute_url())
     instance.set_missing_info()
+
+def rating_post_save(instance, *args, **kwargs):
+    """
+    Used to fill the average rating field on OverallRating change.
+    """
+    ResourceBase.objects.filter(id=instance.object_id).update(
+        rating = instance.rating
+        )
+
+signals.post_save.connect(rating_post_save, sender=OverallRating)
