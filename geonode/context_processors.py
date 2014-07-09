@@ -38,6 +38,8 @@ def resource_urls(request):
         PROXY_URL=getattr(settings, 'PROXY_URL', '/proxy/?url='),
         SOCIAL_BUTTONS=getattr(settings, 'SOCIAL_BUTTONS', True),
         HAYSTACK_SEARCH=getattr(settings, 'HAYSTACK_SEARCH', False),
+        SKIP_PERMS_FILTER=getattr(settings, 'SKIP_PERMS_FILTER', False),
+        HAYSTACK_FACET_COUNTS=getattr(settings, 'HAYSTACK_FACET_COUNTS', False),
         CLIENT_RESULTS_LIMIT=getattr(settings, 'CLIENT_RESULTS_LIMIT', 10),
         LICENSES_ENABLED = getattr(settings, 'LICENSES', dict()).get('ENABLED', False),
         LICENSES_DETAIL = getattr(settings, 'LICENSES', dict()).get('DETAIL', 'never'),
