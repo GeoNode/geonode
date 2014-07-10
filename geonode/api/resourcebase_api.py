@@ -26,7 +26,7 @@ from geonode.base.models import ResourceBase
 
 from .authorization import GeoNodeAuthorization
 
-from .api import TagResource, TopicCategoryResource, UserResource, FILTER_TYPES
+from .api import TagResource, ProfileResource, TopicCategoryResource, FILTER_TYPES
 
 LAYER_SUBTYPES = {
     'vector': 'dataStore',
@@ -52,8 +52,7 @@ class CommonMetaApi:
 class CommonModelApi(ModelResource):
     keywords = fields.ToManyField(TagResource, 'keywords', null=True)
     category = fields.ToOneField(TopicCategoryResource, 'category', null=True, full=True)
-    owner = fields.ToOneField(UserResource, 'owner', full=True)
-    rating = fields.FloatField(attribute='rating', null = True)
+    owner = fields.ToOneField(ProfileResource, 'owner', full=True)
 
     def build_filters(self, filters={}):
         orm_filters = super(CommonModelApi, self).build_filters(filters)
