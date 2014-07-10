@@ -53,7 +53,12 @@ And you can set the amount of data returned by default from the API (if the limi
 Searching with Haystack
 -----------------------
 
-GeoNode is ready to use a complete full text search engine. Although the backend type is not mandatory, we suggest (for simplicity) to use Elastichsearch_:
+GeoNode is ready to use a complete full text search engine. 
+Note that haystack will be used only on the base, layers, maps and documents API.
+
+Once activated the full text API is reachable by appending "search" to the url, for example *"/api/base/search?limit=0&offset=0"*
+
+Although the backend type is not mandatory, we suggest (for simplicity) to use Elastichsearch_:
 
 .. _Elastichsearch: http://www.elasticsearch.org/
 
