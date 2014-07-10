@@ -71,6 +71,13 @@ There are three options to create a user:
 * GeoNode interface: A *normal* user will be created by signing up to GeoNode. It only has the status *active* so far! 
 * django admin interface: A new user can be created as well as the status of an already existing user can be changed, e.g make a generic user a superuser.
 
+Groups
+------
+In GeoNode you can assign permissions to groups, all the users that belong to the group will inherit its permissions.
+
+If you are an administrator you can create a group in the dedicated tab and invite or assign users to it.
+The group will be available in the permissions widget in geonode and you will be able to assign object permissions to it.
+
 Layers
 ------
 As mentioned above, a superuser has access on all the uploaded data. In order to restrict other users from certain data, use
@@ -84,12 +91,11 @@ So there are permissions on:
 * who can edit
 * who can edit and manage
  
-The difference between *who can edit* and *who can edit and manage* is the fact, that only a user who is allowed to *edit and manage* is able to change the permissions on this layer/map. (It should be that way but there is a bug so far!) 
+The difference between *who can edit* and *who can edit and manage* is the fact, that only a user who is allowed to *edit and manage* is able to change the permissions on this layer/map.
 
 Basically you can choose between
 
 * Anybody
-* Any registered user
 * Only a certain user or group
 
 If you allow a user to edit your layer, this user has the right to do the following actions:
