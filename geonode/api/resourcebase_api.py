@@ -2,6 +2,7 @@ import itertools
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
+from tastypie.cache import SimpleCache
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
@@ -199,7 +200,7 @@ class CommonModelApi(ModelResource):
         #using narrow with exact leads to zero results if multiple keywords selected
         if keywords:
             for keyword in keywords:
-                sqs = sqs.filter_or(keywords_exact=keyword)
+                sqs = (SearchQuerySet() if sqs is None else sqs).filter_or(keywords_exact=keyword)
 
         #filter by date
         if date_range[0]:
@@ -214,16 +215,10 @@ class CommonModelApi(ModelResource):
 
         #Filter by geographic bounding box
         if bbox:
-            left,right,bottom,top = bbox.split(',')
-            sqs = (SearchQuerySet() if sqs is None else sqs).filter(
-                # first check if the bbox has at least one point inside the window
-                SQ(bbox_left__gte=left) & SQ(bbox_left__lte=right) & SQ(bbox_top__gte=bottom) & SQ(bbox_top__lte=top) | #check top_left is inside the window
-                SQ(bbox_right__lte=right) &  SQ(bbox_right__gte=left) & SQ(bbox_top__lte=top) &  SQ(bbox_top__gte=bottom) | #check top_right is inside the window
-                SQ(bbox_bottom__gte=bottom) & SQ(bbox_bottom__lte=top) & SQ(bbox_right__lte=right) &  SQ(bbox_right__gte=left) | #check bottom_right is inside the window
-                SQ(bbox_top__lte=top) & SQ(bbox_top__gte=bottom) & SQ(bbox_left__gte=left) & SQ(bbox_left__lte=right) | #check bottom_left is inside the window
-                # then check if the bbox is including the window
-                SQ(bbox_left__lte=left) & SQ(bbox_right__gte=right) & SQ(bbox_bottom__lte=bottom) & SQ(bbox_top__gte=top)
-            )
+            left,bottom,right,top = bbox.split(',')
+            sqs = (SearchQuerySet() if sqs is None else sqs).exclude(
+                 SQ(bbox_top__lte=bottom) | SQ(bbox_bottom__gte=top) | SQ(bbox_left__gte=right) | SQ(bbox_right__lte=left)
+        )
 
         #Apply sort
         if sort.lower() == "-date":
@@ -250,7 +245,7 @@ class CommonModelApi(ModelResource):
         # Get the list of objects that matches the filter
         sqs = self.build_haystack_filters(request.GET)
 
-        if not settings.HAYSTACK_PERMISSIONS_POSTFILTER:
+        if not settings.SKIP_PERMS_FILTER:
             #Get the list of objects the user has access to
             filter_set = set(get_objects_for_user(request.user, 'base.view_resourcebase').values_list('id', flat=True))
 
