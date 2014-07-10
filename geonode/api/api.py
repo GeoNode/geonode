@@ -98,21 +98,6 @@ class TopicCategoryResource(TypeFilteredResource):
         filtering = {
             'identifier': ALL,
         }
-        
-
-class UserResource(ModelResource):
-    """User api"""
-
-    class Meta:
-        queryset = get_user_model().objects.all()
-        resource_name = 'users'
-        allowed_methods = ['get',]
-        excludes = ['is_staff', 'password', 'is_superuser',
-             'is_active', 'date_joined', 'last_login']
-
-        filtering = {
-            'username': ALL,
-        }
 
 
 class GroupResource(ModelResource):
@@ -216,3 +201,9 @@ class ProfileResource(ModelResource):
         resource_name = 'profiles'
         allowed_methods = ['get',]
         ordering = ['name']
+        excludes = ['is_staff', 'password', 'is_superuser',
+             'is_active', 'date_joined', 'last_login']
+
+        filtering = {
+            'username': ALL,
+        }
