@@ -11,6 +11,7 @@
             <a href="." id="clear-search" class="pull-right">Clear all filters</a>
           </h5>
         </div>
+          {% include "search/_text_filter.html" %}
         <div id="slide-pane">
           {% if include_type_filter == 'true' %}
           {% include "search/_type_filters.html" %}
