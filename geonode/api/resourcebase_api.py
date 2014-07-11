@@ -1,4 +1,5 @@
 import itertools
+import re
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
@@ -60,6 +61,11 @@ class CommonModelApi(ModelResource):
             orm_filters.update({'type': filters.getlist('type__in')})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
+        #Nothing returned if +'s are used instead of spaces for text search,
+        # so swap them out. Must be a better way of doing this?
+        for filter in orm_filters:
+            if filter in ['title__contains', 'q']:
+                orm_filters[filter] = orm_filters[filter].replace("+"," ")
         return orm_filters
 
     def apply_filters(self, request, applicable_filters):
@@ -162,22 +168,21 @@ class CommonModelApi(ModelResource):
                 phrase = query.replace('"','')
                 sqs = (SearchQuerySet() if sqs is None else sqs).filter(
                     SQ(title__exact=phrase) |
-                    SQ(abstract__exact=phrase) |
+                    SQ(description__exact=phrase) |
                     SQ(content__exact=phrase)
                 )
             else:
-                words = query.split()
-                for word in range(0,len(words)):
-                    search_word = words[word] + "*"
-                    if word == 0:
+                words = [w for w in re.split('\W', query, flags=re.UNICODE) if w]
+                for i, search_word in enumerate(words):
+                    if i == 0:
                         sqs = (SearchQuerySet() if sqs is None else sqs).filter(
                             SQ(title=Raw(search_word)) |
                             SQ(description=Raw(search_word)) |
                             SQ(content=Raw(search_word))
                         )
-                    elif words[word] in ["AND","OR"]:
+                    elif search_word in ["AND","OR"]:
                         pass
-                    elif words[word-1] == "OR": #previous word OR this word
+                    elif words[i-1] == "OR": #previous word OR this word
                         sqs = sqs.filter_or(
                             SQ(title=Raw(search_word)) |
                             SQ(description=Raw(search_word)) |
