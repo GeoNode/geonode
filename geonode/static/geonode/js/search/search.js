@@ -126,6 +126,11 @@
         $scope.results = data.objects;
         $scope.total_counts = data.meta.total_count;
         $scope.$root.query_data = data;
+        if (HAYSTACK_SEARCH) {
+            $scope.text_query = $location.search()['q'].replace(/\+/g," ")
+        } else {
+            $scope.text_query = $location.search()['title__contains'].replace(/\+/g," ")
+        }
 
         //Update facet/keyword/category counts from search results
         if (HAYSTACK_FACET_COUNTS){
@@ -269,6 +274,34 @@
         query_api($scope.query);
       }     
     }
+
+    /*
+    * Text search management
+    */
+    var text_autocomplete = $('#text_search_input').yourlabsAutocomplete({
+          url: AUTOCOMPLETE_URL,
+          choiceSelector: 'span',
+          hideAfter: 200,
+          minimumCharacters: 1,
+          appendAutocomplete: $('#text_search_input')
+    });
+    $('#text_search_input').bind('selectChoice', function(e, choice, text_autocomplete) {
+          if(choice[0].children[0] == undefined) {
+              $('#text_search_input').val(choice[0].innerHTML);
+              $('#text_search_btn').click();
+          }
+    });
+
+    $('#text_search_btn').click(function(){
+        if (HAYSTACK_SEARCH)
+            $scope.query['q'] = $('#text_search_input').val();
+        else
+            $scope.query['title__contains'] = $('#text_search_input').val();
+        query_api($scope.query);
+    });
+
+
+
 
     /*
     * Date management
