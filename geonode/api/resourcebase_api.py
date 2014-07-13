@@ -1,9 +1,7 @@
-import itertools
 import re
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
-from tastypie.cache import SimpleCache
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
@@ -16,9 +14,9 @@ from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 
-from tastypie.utils.mime import determine_format, build_content_type
+from tastypie.utils.mime import build_content_type
 if settings.HAYSTACK_SEARCH:
-    from haystack.query import SearchQuerySet
+    from haystack.query import SearchQuerySet  # noqa
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -36,16 +34,16 @@ LAYER_SUBTYPES = {
 }
 FILTER_TYPES.update(LAYER_SUBTYPES)
 
+
 class CommonMetaApi:
     authorization = GeoNodeAuthorization()
-    allowed_methods = ['get',]
-    filtering = {
-            'title': ALL,
-            'keywords': ALL_WITH_RELATIONS,
-            'category': ALL_WITH_RELATIONS,
-            'owner': ALL_WITH_RELATIONS,
-            'date': ALL,
-        }
+    allowed_methods = ['get']
+    filtering = {'title': ALL,
+                 'keywords': ALL_WITH_RELATIONS,
+                 'category': ALL_WITH_RELATIONS,
+                 'owner': ALL_WITH_RELATIONS,
+                 'date': ALL,
+                 }
     ordering = ['date', 'title', 'popular_count']
     max_limit = None
 
@@ -61,11 +59,11 @@ class CommonModelApi(ModelResource):
             orm_filters.update({'type': filters.getlist('type__in')})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
-        #Nothing returned if +'s are used instead of spaces for text search,
+        # Nothing returned if +'s are used instead of spaces for text search,
         # so swap them out. Must be a better way of doing this?
         for filter in orm_filters:
             if filter in ['title__contains', 'q']:
-                orm_filters[filter] = orm_filters[filter].replace("+"," ")
+                orm_filters[filter] = orm_filters[filter].replace("+", " ")
         return orm_filters
 
     def apply_filters(self, request, applicable_filters):
@@ -93,45 +91,49 @@ class CommonModelApi(ModelResource):
         return filtered
 
     def filter_bbox(self, queryset, bbox):
-        '''modify the queryset q to limit to data that intersects with the provided bbox 
+        """
+        modify the queryset q to limit to data that intersects with the provided bbox
 
         bbox - 4 tuple of floats representing 'southwest_lng,southwest_lat,northeast_lng,northeast_lat'
         returns the modified query
-        '''
-        bbox = bbox.split(',') #TODO: Why is this different when done through haystack?
-        bbox = map(str, bbox) # 2.6 compat - float to decimal conversion
-        intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) | Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
+        """
+        bbox = bbox.split(',')  # TODO: Why is this different when done through haystack?
+        bbox = map(str, bbox)  # 2.6 compat - float to decimal conversion
+
+        intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) |
+                       Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
+
         return queryset.filter(intersects)
 
-    def build_haystack_filters(self,parameters):
+    def build_haystack_filters(self, parameters):
         from haystack.inputs import Raw
-        from haystack.query import SearchQuerySet, SQ
+        from haystack.query import SearchQuerySet, SQ  # noqa
 
         sqs = None
 
         # Retrieve Query Params
 
-        #Text search
-        query = parameters.get('q',None)
+        # Text search
+        query = parameters.get('q', None)
 
-        #Types and subtypes to filter (map, layer, vector, etc)
+        # Types and subtypes to filter (map, layer, vector, etc)
         type_facets = parameters.getlist("type__in", [])
 
-        #If coming from explore page, add type filter from resource_name
+        # If coming from explore page, add type filter from resource_name
         resource_filter = self._meta.resource_name.rstrip("s")
         if resource_filter != "base" and resource_filter not in type_facets:
             type_facets.append(resource_filter)
 
-        #Publication date range (start,end)
+        # Publication date range (start,end)
         date_range = parameters.get("date_range", ",").split(",")
 
-        #Topic category filter
+        # Topic category filter
         category = parameters.getlist("category__identifier__in")
 
-        #Keyword filter
+        # Keyword filter
         keywords = parameters.getlist("keywords__slug__in")
 
-        #Sort order
+        # Sort order
         sort = parameters.get("order_by", "relevance")
 
         # Geospatial Elements
@@ -152,20 +154,18 @@ class CommonModelApi(ModelResource):
 
             if len(subtypes) > 0:
                 types.append("layer")
-                sqs =  SearchQuerySet().narrow("subtype:%s" % ','.join(map(str, subtypes)))
+                sqs = SearchQuerySet().narrow("subtype:%s" % ','.join(map(str, subtypes)))
 
             if len(types) > 0:
                 sqs = (SearchQuerySet() if sqs is None else sqs).narrow("type:%s" % ','.join(map(str, types)))
-
-
 
         # Filter by Query Params
         # haystack bug? if boosted fields aren't included in the
         # query, then the score won't be affected by the boost
         if query:
             if query.startswith('"') or query.startswith('\''):
-                #Match exact phrase
-                phrase = query.replace('"','')
+                # Match exact phrase
+                phrase = query.replace('"', '')
                 sqs = (SearchQuerySet() if sqs is None else sqs).filter(
                     SQ(title__exact=phrase) |
                     SQ(description__exact=phrase) |
@@ -180,33 +180,33 @@ class CommonModelApi(ModelResource):
                             SQ(description=Raw(search_word)) |
                             SQ(content=Raw(search_word))
                         )
-                    elif search_word in ["AND","OR"]:
+                    elif search_word in ["AND", "OR"]:
                         pass
-                    elif words[i-1] == "OR": #previous word OR this word
+                    elif words[i-1] == "OR":  # previous word OR this word
                         sqs = sqs.filter_or(
                             SQ(title=Raw(search_word)) |
                             SQ(description=Raw(search_word)) |
                             SQ(content=Raw(search_word))
                         )
-                    else: #previous word AND this word
+                    else:  # previous word AND this word
                         sqs = sqs.filter(
                             SQ(title=Raw(search_word)) |
                             SQ(description=Raw(search_word)) |
                             SQ(content=Raw(search_word))
                         )
 
-        # filter by cateory
+        # filter by category
         if category:
             sqs = (SearchQuerySet() if sqs is None else sqs).narrow('category:%s' % ','.join(map(str, category)))
 
-        #filter by keyword: use filter_or with keywords_exact
-        #not using exact leads to fuzzy matching and too many results
-        #using narrow with exact leads to zero results if multiple keywords selected
+        # filter by keyword: use filter_or with keywords_exact
+        # not using exact leads to fuzzy matching and too many results
+        # using narrow with exact leads to zero results if multiple keywords selected
         if keywords:
             for keyword in keywords:
                 sqs = (SearchQuerySet() if sqs is None else sqs).filter_or(keywords_exact=keyword)
 
-        #filter by date
+        # filter by date
         if date_range[0]:
                 sqs = (SearchQuerySet() if sqs is None else sqs).filter(
                     SQ(date__gte=date_range[0])
@@ -217,14 +217,15 @@ class CommonModelApi(ModelResource):
                     SQ(date__lte=date_range[1])
                 )
 
-        #Filter by geographic bounding box
+        # Filter by geographic bounding box
         if bbox:
-            left,bottom,right,top = bbox.split(',')
-            sqs = (SearchQuerySet() if sqs is None else sqs).exclude(
-                 SQ(bbox_top__lte=bottom) | SQ(bbox_bottom__gte=top) | SQ(bbox_left__gte=right) | SQ(bbox_right__lte=left)
-        )
+            left, bottom, right, top = bbox.split(',')
+            sqs = (SearchQuerySet() if sqs is None else sqs).exclude(SQ(bbox_top__lte=bottom) |
+                                                                     SQ(bbox_bottom__gte=top) |
+                                                                     SQ(bbox_left__gte=right) |
+                                                                     SQ(bbox_right__lte=left))
 
-        #Apply sort
+        # Apply sort
         if sort.lower() == "-date":
             sqs = (SearchQuerySet() if sqs is None else sqs).order_by("-modified")
         elif sort.lower() == "date":
@@ -240,7 +241,6 @@ class CommonModelApi(ModelResource):
 
         return sqs
 
-
     def get_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         self.is_authenticated(request)
@@ -250,22 +250,23 @@ class CommonModelApi(ModelResource):
         sqs = self.build_haystack_filters(request.GET)
 
         if not settings.SKIP_PERMS_FILTER:
-            #Get the list of objects the user has access to
+            # Get the list of objects the user has access to
             filter_set = set(get_objects_for_user(request.user, 'base.view_resourcebase').values_list('id', flat=True))
 
             # Do the query using the filterset and the query term. Facet the results
             if len(filter_set) > 0:
-                sqs = sqs.filter(oid__in=filter_set).facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
+                sqs = sqs.filter(oid__in=filter_set).facet('type').facet('subtype').facet('owner').facet('keywords')\
+                    .facet('category')
             else:
                 sqs = None
         else:
-            sqs =sqs.facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
+            sqs = sqs.facet('type').facet('subtype').facet('owner').facet('keywords').facet('category')
 
         if sqs:
             # Build the Facet dict
             facets = {}
             for facet in sqs.facet_counts()['fields']:
-                facets[facet] = {} 
+                facets[facet] = {}
                 for item in sqs.facet_counts()['fields'][facet]:
                     facets[facet][item[0]] = item[1]
 
@@ -293,16 +294,15 @@ class CommonModelApi(ModelResource):
             total_count = 0
             facets = {}
             objects = []
-        
+
         object_list = {
-           "meta": {
-                "limit": 100,
-                "next": next_page, 
-                "offset": int(getattr(request.GET, 'offset',0)),
-                "previous": previous_page, 
-                "total_count": total_count,
-                "facets" : facets,
-            },
+           "meta": {"limit": 100,  # noqa
+                    "next": next_page,
+                    "offset": int(getattr(request.GET, 'offset', 0)),
+                    "previous": previous_page,
+                    "total_count": total_count,
+                    "facets": facets,
+                    },
             'objects': map(lambda x: x.get_stored_fields(), objects),
         }
         self.log_throttled_access(request)
@@ -317,12 +317,16 @@ class CommonModelApi(ModelResource):
 
         Should return a HttpResponse (200 OK).
         """
-        # TODO: Uncached for now. Invalidation that works for everyone may be
-        #       impossible.
+        # TODO: Uncached for now. Invalidation that works for everyone may be impossible.
         base_bundle = self.build_bundle(request=request)
         objects = self.obj_get_list(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
         sorted_objects = self.apply_sorting(objects, options=request.GET)
-        paginator = self._meta.paginator_class(request.GET, sorted_objects, resource_uri=self.get_resource_uri(), limit=self._meta.limit, max_limit=self._meta.max_limit, collection_name=self._meta.collection_name)
+
+        paginator = self._meta.paginator_class(request.GET, sorted_objects,
+                                               resource_uri=self.get_resource_uri(),
+                                               limit=self._meta.limit,
+                                               max_limit=self._meta.max_limit,
+                                               collection_name=self._meta.collection_name)
         to_be_serialized = paginator.page()
 
         to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
@@ -353,7 +357,7 @@ class CommonModelApi(ModelResource):
             'detail_url',
             'rating',
         ]
-        
+
         if isinstance(data, dict) and 'objects' in data and not isinstance(data['objects'], list):
             data['objects'] = list(data['objects'].values(*VALUES))
 
@@ -364,7 +368,8 @@ class CommonModelApi(ModelResource):
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
             return [
-                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
+                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()),
+                    self.wrap_view('get_search'), name="api_get_search"),
                 ]
         else:
             return []
@@ -386,9 +391,9 @@ class FeaturedResourceBaseResource(CommonModelApi):
         queryset = ResourceBase.objects.filter(featured=True).order_by('-date')
         resource_name = 'featured'
 
+
 class LayerResource(CommonModelApi):
     """Layer API"""
-
 
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')

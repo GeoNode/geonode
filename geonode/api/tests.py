@@ -1,12 +1,8 @@
-import datetime
-
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCase
 
 from geonode.base.populate_test_data import create_models, all_public
 from geonode.layers.models import Layer
-
-from .resourcebase_api import LayerResource, MapResource, DocumentResource, ResourceBaseResource
 
 
 class PermissionsApiTests(ResourceTestCase):
@@ -18,13 +14,13 @@ class PermissionsApiTests(ResourceTestCase):
 
         self.user = 'admin'
         self.passwd = 'admin'
-        self.list_url = reverse('api_dispatch_list', kwargs={'api_name':'api', 'resource_name':'layers'})
+        self.list_url = reverse('api_dispatch_list', kwargs={'api_name': 'api', 'resource_name': 'layers'})
         create_models(type='layer')
         all_public()
         self.perm_spec = {"users": {}, "groups": {}}
 
     def test_layer_get_list_unauth_all_public(self):
-        """ 
+        """
         Test that the correct number of layers are returned when the
         client is not logged in and all are public
         """
@@ -63,9 +59,7 @@ class PermissionsApiTests(ResourceTestCase):
         Test that if a layer is only visible by admin, then does not appear in the
         unauthenticated list nor in the list when logged is as bobby
         """
-        perm_spec = {"users":{
-                "admin": ['view_resourcebase']
-            }, "groups":{}}
+        perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
         layer = Layer.objects.all()[0]
         layer.set_permissions(perm_spec)
         resp = self.api_client.get(self.list_url)
@@ -89,7 +83,7 @@ class PermissionsApiTests(ResourceTestCase):
             self.list_url + str(layer.id) + '/'))
 
         self.api_client.client.login(username=self.user, password=self.passwd)
-        resp = self.api_client.get(self.list_url + str(layer.id) +'/')
+        resp = self.api_client.get(self.list_url + str(layer.id) + '/')
         self.assertValidJSONResponse(resp)
 
 
@@ -101,7 +95,7 @@ class SearchApiTests(ResourceTestCase):
     def setUp(self):
         super(SearchApiTests, self).setUp()
 
-        self.list_url = reverse('api_dispatch_list', kwargs={'api_name':'api', 'resource_name':'layers'})
+        self.list_url = reverse('api_dispatch_list', kwargs={'api_name': 'api', 'resource_name': 'layers'})
         create_models(type='layer')
         all_public()
 
@@ -158,7 +152,6 @@ class SearchApiTests(ResourceTestCase):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 1)
-
 
     def test_date_filter(self):
         """Test date filtering"""
