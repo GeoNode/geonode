@@ -66,8 +66,7 @@ MD_CORE_MODEL = {
         'pycsw:AccessConstraints': 'accessconstraints',
         'pycsw:OtherConstraints': 'otherconstraints',
         'pycsw:Classification': 'classification',
-        'pycsw:ConditionApplyingToAccessAndUse': \
-            'conditionapplyingtoaccessanduse',
+        'pycsw:ConditionApplyingToAccessAndUse': 'conditionapplyingtoaccessanduse',
         'pycsw:Lineage': 'lineage',
         'pycsw:ResponsiblePartyRole': 'responsiblepartyrole',
         'pycsw:SpecificationTitle': 'specificationtitle',

@@ -18,7 +18,6 @@
 #########################################################################
 
 import os
-import sys
 from lxml import etree
 from django.conf import settings
 from ConfigParser import SafeConfigParser
@@ -36,12 +35,12 @@ CONFIGURATION = {
         'encoding': 'UTF-8',
         'language': settings.LANGUAGE_CODE,
         'maxrecords': '10',
-        #'loglevel': 'DEBUG',
-        #'logfile': '/tmp/pycsw.log',
-        #'federatedcatalogues': 'http://geo.data.gov/geoportal/csw/discovery',
-        #'pretty_print': 'true',
-        #'domainquerytype': 'range',
-        #'domaincounts': 'true',
+        #  'loglevel': 'DEBUG',
+        #  'logfile': '/tmp/pycsw.log',
+        #  'federatedcatalogues': 'http://geo.data.gov/geoportal/csw/discovery',
+        #  'pretty_print': 'true',
+        #  'domainquerytype': 'range',
+        #  'domaincounts': 'true',
         'profiles': 'apiso,ebrim',
     },
     'repository': {
@@ -89,19 +88,21 @@ class CatalogueBackend(GenericCatalogueBackend):
             lresults = self._csw_local_dispatch(keywords, keywords, start+1, limit, bbox)
             # serialize XML
             e = etree.fromstring(lresults)
-            self.catalogue.records = [MD_Metadata(x) for x in e.findall('//{http://www.isotc211.org/2005/gmd}MD_Metadata')]
+
+            self.catalogue.records = \
+                [MD_Metadata(x) for x in e.findall('//{http://www.isotc211.org/2005/gmd}MD_Metadata')]
 
             # build results into JSON for API
             results = [self.catalogue.metadatarecord2dict(doc) for v, doc in self.catalogue.records.iteritems()]
 
-            result = {
-                      'rows': results,
-                      'total': e.find('{http://www.opengis.net/cat/csw/2.0.2}SearchResults').attrib.get('numberOfRecordsMatched'),
-                      'next_page': e.find('{http://www.opengis.net/cat/csw/2.0.2}SearchResults').attrib.get('nextRecord')
+            result = {'rows': results,
+                      'total': e.find('{http://www.opengis.net/cat/csw/2.0.2}SearchResults').attrib.get(
+                          'numberOfRecordsMatched'),
+                      'next_page': e.find('{http://www.opengis.net/cat/csw/2.0.2}SearchResults').attrib.get(
+                          'nextRecord')
                       }
 
             return result
-
 
     def _csw_local_dispatch(self, keywords=None, start=0, limit=10, bbox=None, identifier=None):
         """
@@ -112,21 +113,21 @@ class CatalogueBackend(GenericCatalogueBackend):
         # object for interaction with pycsw
         mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
         config = SafeConfigParser()
-    
+
         for section, options in mdict.iteritems():
             config.add_section(section)
             for option, value in options.iteritems():
                 config.set(section, option, value)
-    
+
         # fake HTTP environment variable
         os.environ['QUERY_STRING'] = ''
-    
+
         # init pycsw
         csw = server.Csw(config)
-    
+
         # fake HTTP method
         csw.requesttype = 'POST'
-    
+
         # fake HTTP request parameters
         if identifier is None:  # it's a GetRecords request
             formats = []
@@ -150,7 +151,7 @@ class CatalogueBackend(GenericCatalogueBackend):
                 'id': [identifier],
                 'outputschema': 'http://www.isotc211.org/2005/gmd',
             }
-            #FIXME(Ariel): Remove this try/except block when pycsw deals with
+            # FIXME(Ariel): Remove this try/except block when pycsw deals with
             # empty geometry fields better.
             # https://gist.github.com/ingenieroariel/717bb720a201030e9b3a
             try:

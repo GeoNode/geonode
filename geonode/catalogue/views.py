@@ -32,17 +32,14 @@ def csw_global_dispatch(request):
 
     # this view should only operate if pycsw_local is the backend
     # else, redirect to the URL of the non-pycsw_local backend
-    if (settings.CATALOGUE['default']['ENGINE'] !=
-        'geonode.catalogue.backends.pycsw_local'):
+    if settings.CATALOGUE['default']['ENGINE'] != 'geonode.catalogue.backends.pycsw_local':
         return HttpResponseRedirect(settings.CATALOGUE['default']['URL'])
 
     mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
 
     env = request.META.copy()
-    env.update({
-            'local.app_root': os.path.dirname(__file__),
-            'REQUEST_URI': request.build_absolute_uri(),
-            })
+    env.update({'local.app_root': os.path.dirname(__file__),
+                'REQUEST_URI': request.build_absolute_uri()})
 
     csw = server.Csw(mdict, env)
 

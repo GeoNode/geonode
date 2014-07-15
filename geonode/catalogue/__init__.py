@@ -33,8 +33,7 @@ if not hasattr(settings, 'CATALOGUE'):
 
 # If settings.CATALOGUE is defined, we expect it to be properly named
 if DEFAULT_CATALOGUE_ALIAS not in settings.CATALOGUE:
-    raise ImproperlyConfigured("You must define a '%s' CATALOGUE" %
-          DEFAULT_CATALOGUE_ALIAS)
+    raise ImproperlyConfigured("You must define a '%s' CATALOGUE" % DEFAULT_CATALOGUE_ALIAS)
 
 
 def load_backend(backend_name):
@@ -47,9 +46,8 @@ def load_backend(backend_name):
         # listing all possible (built-in) CSW backends.
         backend_dir = os.path.join(os.path.dirname(__file__), 'backends')
         try:
-            available_backends = [f for f in os.listdir(backend_dir)
-                    if os.path.isdir(os.path.join(backend_dir, f))
-                    and not f.startswith('.')]
+            available_backends = [f for f in os.listdir(backend_dir) if os.path.isdir(os.path.join(backend_dir, f))
+                                  and not f.startswith('.')]
         except EnvironmentError:
             available_backends = []
 
