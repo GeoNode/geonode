@@ -28,8 +28,10 @@ FILTER_TYPES = {
 
 
 class TypeFilteredResource(ModelResource):
+
     """ Common resource used to apply faceting to categories and keywords
-    based on the type passed as query parameter in the form type:layer/map/document"""
+    based on the type passed as query parameter in the form
+    type:layer/map/document"""
     count = fields.IntegerField()
 
     type_filter = None
@@ -49,6 +51,7 @@ class TypeFilteredResource(ModelResource):
 
 
 class TagResource(TypeFilteredResource):
+
     """Tags api"""
 
     def dehydrate_count(self, bundle):
@@ -56,17 +59,23 @@ class TagResource(TypeFilteredResource):
         if settings.SKIP_PERMS_FILTER:
             if self.type_filter:
                 ctype = ContentType.objects.get_for_model(self.type_filter)
-                count = bundle.obj.taggit_taggeditem_items.filter(content_type=ctype).count()
+                count = bundle.obj.taggit_taggeditem_items.filter(
+                    content_type=ctype).count()
             else:
                 count = bundle.obj.taggit_taggeditem_items.count()
         else:
-            resources = get_objects_for_user(bundle.request.user, 'base.view_resourcebase').values_list('id', flat=True)
+            resources = get_objects_for_user(
+                bundle.request.user,
+                'base.view_resourcebase').values_list(
+                'id',
+                flat=True)
             if self.type_filter:
                 ctype = ContentType.objects.get_for_model(self.type_filter)
                 count = bundle.obj.taggit_taggeditem_items.filter(content_type=ctype).filter(object_id__in=resources)\
                     .count()
             else:
-                count = bundle.obj.taggit_taggeditem_items.filter(object_id__in=resources).count()
+                count = bundle.obj.taggit_taggeditem_items.filter(
+                    object_id__in=resources).count()
 
         return count
 
@@ -80,6 +89,7 @@ class TagResource(TypeFilteredResource):
 
 
 class TopicCategoryResource(TypeFilteredResource):
+
     """Category api"""
 
     def dehydrate_count(self, bundle):
@@ -89,7 +99,11 @@ class TopicCategoryResource(TypeFilteredResource):
         else:
             resources = bundle.obj.resourcebase_set.instance_of(self.type_filter) if \
                 self.type_filter else bundle.obj.resourcebase_set.all()
-            permitted = get_objects_for_user(bundle.request.user, 'base.view_resourcebase').values_list('id', flat=True)
+            permitted = get_objects_for_user(
+                bundle.request.user,
+                'base.view_resourcebase').values_list(
+                'id',
+                flat=True)
             return resources.filter(id__in=permitted).count()
 
     class Meta:
@@ -102,6 +116,7 @@ class TopicCategoryResource(TypeFilteredResource):
 
 
 class GroupResource(ModelResource):
+
     """Groups api"""
 
     detail_url = fields.CharField()
@@ -115,7 +130,7 @@ class GroupResource(ModelResource):
         return bundle.obj.get_managers().count()
 
     def dehydrate_detail_url(self, bundle):
-        return reverse('group_detail',  args=[bundle.obj.slug])
+        return reverse('group_detail', args=[bundle.obj.slug])
 
     class Meta:
         queryset = GroupProfile.objects.all()
@@ -128,6 +143,7 @@ class GroupResource(ModelResource):
 
 
 class ProfileResource(ModelResource):
+
     """Profile api"""
     avatar_100 = fields.CharField(null=True)
     profile_detail_url = fields.CharField()
@@ -153,10 +169,15 @@ class ProfileResource(ModelResource):
 
         group = applicable_filters.pop('group', None)
 
-        semi_filtered = super(ProfileResource, self).apply_filters(request, applicable_filters)
+        semi_filtered = super(
+            ProfileResource,
+            self).apply_filters(
+            request,
+            applicable_filters)
 
         if group is not None:
-            semi_filtered = semi_filtered.filter(groupmember__group__slug=group)
+            semi_filtered = semi_filtered.filter(
+                groupmember__group__slug=group)
 
         return semi_filtered
 
@@ -185,14 +206,19 @@ class ProfileResource(ModelResource):
         return bundle.request.user.username == bundle.obj.username
 
     def dehydrate_activity_stream_url(self, bundle):
-        return reverse('actstream_actor', kwargs={
-            'content_type_id': ContentType.objects.get_for_model(bundle.obj).pk,
-            'object_id': bundle.obj.pk})
+        return reverse(
+            'actstream_actor',
+            kwargs={
+                'content_type_id': ContentType.objects.get_for_model(
+                    bundle.obj).pk,
+                'object_id': bundle.obj.pk})
 
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
             return [
-                url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()),
+                url(r"^(?P<resource_name>%s)/search%s$" % (
+                    self._meta.resource_name, trailing_slash()
+                    ),
                     self.wrap_view('get_search'), name="api_get_search"),
             ]
         else:
