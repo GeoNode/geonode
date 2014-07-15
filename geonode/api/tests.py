@@ -14,7 +14,11 @@ class PermissionsApiTests(ResourceTestCase):
 
         self.user = 'admin'
         self.passwd = 'admin'
-        self.list_url = reverse('api_dispatch_list', kwargs={'api_name': 'api', 'resource_name': 'layers'})
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
         create_models(type='layer')
         all_public()
         self.perm_spec = {"users": {}, "groups": {}}
@@ -56,8 +60,8 @@ class PermissionsApiTests(ResourceTestCase):
 
     def test_layer_get_list_layer_private_to_one_user(self):
         """
-        Test that if a layer is only visible by admin, then does not appear in the
-        unauthenticated list nor in the list when logged is as bobby
+        Test that if a layer is only visible by admin, then does not appear
+        in the unauthenticated list nor in the list when logged is as bobby
         """
         perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
         layer = Layer.objects.all()[0]
@@ -88,6 +92,7 @@ class PermissionsApiTests(ResourceTestCase):
 
 
 class SearchApiTests(ResourceTestCase):
+
     """Test the search"""
 
     fixtures = ['initial_data.json', 'bobby']
@@ -95,7 +100,11 @@ class SearchApiTests(ResourceTestCase):
     def setUp(self):
         super(SearchApiTests, self).setUp()
 
-        self.list_url = reverse('api_dispatch_list', kwargs={'api_name': 'api', 'resource_name': 'layers'})
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
         create_models(type='layer')
         all_public()
 
@@ -108,7 +117,8 @@ class SearchApiTests(ResourceTestCase):
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 3)
 
-        filter_url = self.list_url + '?category__identifier__in=location&category__identifier__in=biota'
+        filter_url = self.list_url + \
+            '?category__identifier__in=location&category__identifier__in=biota'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
@@ -123,7 +133,8 @@ class SearchApiTests(ResourceTestCase):
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 1)
 
-        filter_url = self.list_url + '?keywords__slug__in=layertagunique&keywords__slug__in=populartag'
+        filter_url = self.list_url + \
+            '?keywords__slug__in=layertagunique&keywords__slug__in=populartag'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
@@ -138,7 +149,8 @@ class SearchApiTests(ResourceTestCase):
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 2)
 
-        filter_url = self.list_url + '?owner__username__in=user1&owner__username__in=foo'
+        filter_url = self.list_url + \
+            '?owner__username__in=user1&owner__username__in=foo'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
