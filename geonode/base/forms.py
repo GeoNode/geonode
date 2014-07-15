@@ -18,24 +18,23 @@
 #
 #########################################################################
 
-import os
-import tempfile
-import taggit
-
-from re import escape
-
 from django import forms
 from django.utils.translation import ugettext as _
 
 from geonode.base.models import TopicCategory
 
+
 class CategoryChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" data-content="' + obj.description + '" trigger="hover">' +  obj.gn_description + '</span>' 
+        return '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
+               'data-content="' + obj.description + '" trigger="hover">' + obj.gn_description + '</span>'
+
 
 class CategoryForm(forms.Form):
-    category_choice_field = CategoryChoiceField(required=False, label = '*' + _('Category'), empty_label=None,
-        queryset = TopicCategory.objects.extra(order_by = ['description']))
+    category_choice_field = CategoryChoiceField(required=False,
+                                                label='*' + _('Category'),
+                                                empty_label=None,
+                                                queryset=TopicCategory.objects.extra(order_by=['description']))
 
     def clean(self):
         cleaned_data = self.data

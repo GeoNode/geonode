@@ -1,6 +1,7 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.contrib.sites.models import Site
 from urlparse import urlsplit
+
 
 class Command(BaseCommand):
     """Overrides the default Site object with information from
@@ -16,6 +17,6 @@ class Command(BaseCommand):
         parsed = urlsplit(url)
 
         site = Site.objects.get_current()
-        site.name=name
-        site.domain=parsed.netloc
+        site.name = name
+        site.domain = parsed.netloc
         site.save()
