@@ -46,8 +46,7 @@ def catalogue_post_save(instance, sender, **kwargs):
         catalogue.create_record(instance)
         record = catalogue.get_record(instance.uuid)
     except EnvironmentError, err:
-        msg = 'Could not connect to catalogue' \
-               'to save information for layer "%s"' % (instance.name)
+        msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
         if err.reason.errno == errno.ECONNREFUSED:
             LOGGER.warn(msg, err)
             return
@@ -64,18 +63,15 @@ def catalogue_post_save(instance, sender, **kwargs):
     # Create the different metadata links with the available formats
     for mime, name, metadata_url in record.links['metadata']:
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                url=metadata_url,
-                defaults=dict(
-                   name=name,
-                   extension='xml',
-                   mime=mime,
-                   link_type='metadata',
-                )
-            )
+                                   url=metadata_url,
+                                   defaults=dict(name=name,
+                                                 extension='xml',
+                                                 mime=mime,
+                                                 link_type='metadata')
+                                   )
 
     # generate an XML document (GeoNode's default is ISO)
-    md_doc = catalogue.catalogue.csw_gen_xml(instance,
-             'catalogue/full_metadata.xml')
+    md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
 
     csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
 
@@ -86,7 +82,6 @@ def catalogue_post_save(instance, sender, **kwargs):
     resources.update(metadata_xml=md_doc)
     resources.update(csw_wkt_geometry=csw_wkt_geometry)
     resources.update(csw_anytext=csw_anytext)
-    
 
 
 def catalogue_pre_save(instance, sender, **kwargs):
@@ -100,8 +95,7 @@ def catalogue_pre_save(instance, sender, **kwargs):
         catalogue = get_catalogue()
         record = catalogue.get_record(instance.uuid)
     except EnvironmentError, err:
-        msg = 'Could not connect to catalogue' \
-               'to save information for layer "%s"' % (instance.name)
+        msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
         LOGGER.warn(msg, err)
         raise err
 
@@ -110,21 +104,19 @@ def catalogue_pre_save(instance, sender, **kwargs):
 
     # Fill in the url for the catalogue
     if hasattr(record.distribution, 'online'):
-        onlineresources = [r for r in record.distribution.online \
-            if r.protocol == "WWW:LINK-1.0-http--link"]
+        onlineresources = [r for r in record.distribution.online if r.protocol == "WWW:LINK-1.0-http--link"]
         if len(onlineresources) == 1:
             res = onlineresources[0]
             instance.distribution_url = res.url
             instance.distribution_description = res.description
     else:
-            durl = settings.SITEURL 
+            durl = settings.SITEURL
             if durl[-1] == '/':  # strip trailing slash
                 durl = durl[:-1]
 
             durl = '%s%s' % (durl, instance.get_absolute_url())
             instance.distribution_url = durl
-            instance.distribution_description = \
-            'Online link to the \'%s\' description on GeoNode ' % instance.title
+            instance.distribution_description = 'Online link to the \'%s\' description on GeoNode ' % instance.title
 
 
 if 'geonode.catalogue' in settings.INSTALLED_APPS:
