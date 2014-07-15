@@ -19,7 +19,8 @@
 #########################################################################
 
 import json
-import sys, traceback
+import sys
+import traceback
 
 from django.test import TestCase
 from django.test.client import Client
@@ -28,6 +29,7 @@ from .models import Service
 
 
 class ServicesTests(TestCase):
+
     """Tests geonode.services app/module
     """
 
@@ -41,19 +43,20 @@ class ServicesTests(TestCase):
         """Test registering an indexed WMS
         """
         c = Client()
-        logged_in = c.login(username='admin', password='admin')
-        
-        response = c.post(reverse('register_service'), 
-                {
-                    'type':'WMS',
-                    'url':'http://metaspatial.net/cgi-bin/ogc-wms.xml',
-                })
+        c.login(username='admin', password='admin')
+
+        response = c.post(reverse('register_service'),
+                          {
+            'type': 'WMS',
+                    'url': 'http://metaspatial.net/cgi-bin/ogc-wms.xml',
+        })
         self.assertEqual(response.status_code, 200)
         service_dict = json.loads(response.content)[0]
 
         try:
             service = Service.objects.get(id=service_dict['service_id'])
-            self.assertTrue(service.layer_set.count() > 0) #Harvested some layers
+            # Harvested some layers
+            self.assertTrue(service.layer_set.count() > 0)
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "WMS")
             self.assertEqual(service.ptype, 'gxp_wmscsource')
@@ -68,25 +71,24 @@ class ServicesTests(TestCase):
         c.login(username='admin', password='admin')
         response = c.post(reverse('register_service'),
                           {
-                              'type':'REST',
-                              'url':'http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Facilities/MapServer',
-                              })
+                              'type': 'REST',
+                              'url': 'http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Facilities/MapServer',
+        })
         self.assertEqual(response.status_code, 200)
         service_dict = json.loads(response.content)[0]
 
-
         try:
             service = Service.objects.get(id=service_dict['service_id'])
-            self.assertTrue(service.layer_set.count() > 0) #Harvested some layers
+            # Harvested some layers
+            self.assertTrue(service.layer_set.count() > 0)
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "REST")
             self.assertEqual(service.ptype, 'gxp_arcrestsource')
         except Exception, e:
             self.fail("Service not created: %s" % str(e))
 
-
     # Disabled the test below because it uses an external service and fails randomly.
-    #def test_register_csw(self):
+    # def test_register_csw(self):
     #    c = Client()
     #    c.login(username='admin', password='admin')
     #    response = c.post(reverse('register_service'),
@@ -104,6 +106,6 @@ class ServicesTests(TestCase):
     #    self.assertEqual(service.method, "H")
     #    self.assertEqual(service.type, "CSW")
     #    self.assertEqual(service.base_url, 'http://demo.pycsw.org/cite/csw')
-    #    #TODO: Use CSW or make mock CSW containing just a few small WMS & ESRI service records
-    #    self.assertEquals(service.service_set.all().count(), 0) #No WMS/REST services
-    #    self.assertEquals(service.layers.count(),0)   # No Layers for this one
+    # TODO: Use CSW or make mock CSW containing just a few small WMS & ESRI service records
+    # self.assertEquals(service.service_set.all().count(), 0) #No WMS/REST services
+    # self.assertEquals(service.layers.count(),0)   # No Layers for this one
