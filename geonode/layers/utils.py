@@ -42,9 +42,10 @@ from django.conf import settings
 # Geonode functionality
 from geonode import GeoNodeException
 from geonode.people.utils import get_valid_user
-from geonode.layers.models import Layer, UploadSession, SpatialRepresentationType, TopicCategory
-from geonode.base.models import Link, ResourceBase, Thumbnail
-from geonode.layers.models import shp_exts, csv_exts, kml_exts, vec_exts, cov_exts
+from geonode.layers.models import Layer, UploadSession
+from geonode.base.models import (Link, ResourceBase, Thumbnail, 
+    SpatialRepresentationType, TopicCategory)
+from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.utils import http_client
 from geonode.layers.metadata import set_metadata
 
@@ -57,7 +58,10 @@ logger = logging.getLogger('geonode.layers.utils')
 _separator = '\n' + ('-' * 100) + '\n'
 
 
-def _clean_string(str, regex=r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)", replace="_"):
+def _clean_string(
+        str,
+        regex=r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)",
+        replace="_"):
     """
     Replaces a string that matches the regex with the replacement.
     """
@@ -79,7 +83,8 @@ def get_files(filename):
     try:
         filename.decode('ascii')
     except UnicodeEncodeError:
-        msg = "Please use only characters from the english alphabet for the filename. '%s' is not yet supported." % os.path.basename(filename).encode('UTF-8')
+        msg = "Please use only characters from the english alphabet for the filename. '%s' is not yet supported." \
+            % os.path.basename(filename).encode('UTF-8')
         raise GeoNodeException(msg)
 
     # Make sure the file exists.
@@ -90,7 +95,7 @@ def get_files(filename):
         raise GeoNodeException(msg)
 
     base_name, extension = os.path.splitext(filename)
-    #Replace special characters in filenames - []{}()
+    # Replace special characters in filenames - []{}()
     glob_name = re.sub(r'([\[\]\(\)\{\}])', r'[\g<1>]', base_name)
 
     if extension.lower() == '.shp':
@@ -120,7 +125,7 @@ def get_files(filename):
             raise GeoNodeException(msg)
 
     elif extension.lower() in cov_exts:
-        files[extension.lower().replace('.','')] = filename
+        files[extension.lower().replace('.', '')] = filename
 
     matches = glob.glob(glob_name + ".[sS][lL][dD]")
     if len(matches) == 1:
@@ -161,14 +166,14 @@ def layer_type(filename):
             for n in zf.namelist():
                 b, e = os.path.splitext(n.lower())
                 if e in shp_exts or e in cov_exts or e in csv_exts:
-                    base_name, extension = b,e
+                    extension = e
         finally:
             zf.close()
 
     if extension.lower() in vec_exts:
-         return 'vector'
+        return 'vector'
     elif extension.lower() in cov_exts:
-         return 'raster'
+        return 'raster'
     else:
         msg = ('Saving of extension [%s] is not implemented' % extension)
         raise GeoNodeException(msg)
@@ -214,7 +219,8 @@ def get_valid_layer_name(layer, overwrite):
 def get_default_user():
     """Create a default user
     """
-    superusers = get_user_model().objects.filter(is_superuser=True).order_by('id')
+    superusers = get_user_model().objects.filter(
+        is_superuser=True).order_by('id')
     if superusers.count() > 0:
         # Return the first created superuser
         return superusers[0]
@@ -230,7 +236,8 @@ def is_vector(filename):
     if extension in vec_exts:
         return True
     else:
-        return False 
+        return False
+
 
 def is_raster(filename):
     __, extension = os.path.splitext(filename)
@@ -238,11 +245,12 @@ def is_raster(filename):
     if extension in cov_exts:
         return True
     else:
-        return False 
+        return False
+
 
 def get_resolution(filename):
     gtif = gdal.Open(filename)
-    gt= gtif.GetGeoTransform()
+    gt = gtif.GetGeoTransform()
     __, resx, __, __, __, resy = gt
     resolution = '%s %s' % (resx, resy)
     return resolution
@@ -258,20 +266,20 @@ def get_bbox(filename):
 
     elif is_raster(filename):
         gtif = gdal.Open(filename)
-        gt= gtif.GetGeoTransform()
+        gt = gtif.GetGeoTransform()
         cols = gtif.RasterXSize
         rows = gtif.RasterYSize
 
-        ext=[]
-        xarr=[0,cols]
-        yarr=[0,rows]
+        ext = []
+        xarr = [0, cols]
+        yarr = [0, rows]
 
         # Get the extent.
         for px in xarr:
             for py in yarr:
-                x=gt[0]+(px*gt[1])+(py*gt[2])
-                y=gt[3]+(px*gt[4])+(py*gt[5])
-                ext.append([x,y])
+                x = gt[0] + (px * gt[1]) + (py * gt[2])
+                y = gt[3] + (px * gt[4]) + (py * gt[5])
+                ext.append([x, y])
 
             yarr.reverse()
 
@@ -301,9 +309,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     # Add them to the upload session (new file fields are created).
     for type_name, fn in files.items():
         with open(fn, 'rb') as f:
-            us = upload_session.layerfile_set.create(name=type_name,
-                                                    file=File(f),
-                                                    )
+            upload_session.layerfile_set.create(name=type_name, file=File(f))
 
     # Set a default title that looks nice ...
     if title is None:
@@ -320,19 +326,17 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     # Get a bounding box
     bbox_x0, bbox_x1, bbox_y0, bbox_y1 = get_bbox(filename)
 
-
     defaults = {
-                'upload_session': upload_session,
-                'title': title,
-                'abstract': abstract,
-                'owner': user,
-                'charset': charset,
-                'bbox_x0' : bbox_x0,
-                'bbox_x1' : bbox_x1,
-                'bbox_y0' : bbox_y0,
-                'bbox_y1' : bbox_y1,
+        'upload_session': upload_session,
+        'title': title,
+        'abstract': abstract,
+        'owner': user,
+        'charset': charset,
+        'bbox_x0': bbox_x0,
+        'bbox_x1': bbox_x1,
+        'bbox_y0': bbox_y0,
+        'bbox_y1': bbox_y1,
     }
-
 
     # set metadata
     if 'xml' in files:
@@ -345,15 +349,15 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
             if key == 'spatial_representation_type':
                 value = SpatialRepresentationType(identifier=value)
             elif key == 'topic_category':
-                value, created = TopicCategory.objects.get_or_create(identifier=value.lower(), gn_description=value)
+                value, created = TopicCategory.objects.get_or_create(
+                    identifier=value.lower(), gn_description=value)
                 key = 'category'
             else:
                 defaults[key] = value
 
     # If it is a vector file, create the layer in postgis.
-    table_name = None
     if is_vector(filename):
-        defaults['storeType'] =  'dataStore'
+        defaults['storeType'] = 'dataStore'
 
     # If it is a raster file, get the resolution.
     if is_raster(filename):
@@ -361,9 +365,9 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
     # Create a Django object.
     layer, created = Layer.objects.get_or_create(
-                         name=valid_name,
-                         defaults=defaults
-                     )
+        name=valid_name,
+        defaults=defaults
+    )
 
     # Delete the old layers if overwrite is true
     # and the layer was not just created
@@ -375,7 +379,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         layer.save()
 
     # Assign the keywords (needs to be done after saving)
-    if len(keywords) > 0: 
+    if len(keywords) > 0:
         layer.keywords.add(*keywords)
 
     return layer
@@ -456,13 +460,13 @@ def upload(incoming, user=None, overwrite=False,
                                     user=user,
                                     overwrite=overwrite,
                                     keywords=keywords,
-                                )
+                                    )
                 if not existed:
                     status = 'created'
                 else:
                     status = 'updated'
 
-            except Exception, e:
+            except Exception as e:
                 if ignore_errors:
                     status = 'failed'
                     exception_type, error, traceback = sys.exc_info()
@@ -493,22 +497,30 @@ def upload(incoming, user=None, overwrite=False,
 def create_thumbnail(instance, thumbnail_remote_url):
     BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
-    #Check if the bbox is invalid
-    valid_x = (float(instance.bbox_x0) - float(instance.bbox_x1))**2 > BBOX_DIFFERENCE_THRESHOLD
-    valid_y = (float(instance.bbox_y1) - float(instance.bbox_y0))**2 > BBOX_DIFFERENCE_THRESHOLD
+    # Check if the bbox is invalid
+    valid_x = (
+        float(
+            instance.bbox_x0) -
+        float(
+            instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+    valid_y = (
+        float(
+            instance.bbox_y1) -
+        float(
+            instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
 
     image = None
 
     if valid_x and valid_y:
-        Link.objects.get_or_create(resource= instance.get_self_resource(),
-                        url=thumbnail_remote_url,
-                        defaults=dict(
-                            extension='png',
-                            name=_("Remote Thumbnail"),
-                            mime='image/png',
-                            link_type='image',
-                            )
-                        )
+        Link.objects.get_or_create(resource=instance.get_self_resource(),
+                                   url=thumbnail_remote_url,
+                                   defaults=dict(
+            extension='png',
+            name=_("Remote Thumbnail"),
+            mime='image/png',
+            link_type='image',
+        )
+        )
 
         # Download thumbnail and save it locally.
         resp, image = http_client.request(thumbnail_remote_url)
@@ -524,21 +536,26 @@ def create_thumbnail(instance, thumbnail_remote_url):
         else:
             instance.thumbnail = Thumbnail()
 
-        instance.thumbnail.thumb_file.save('layer-%s-thumb.png' % instance.id, ContentFile(image))
+        instance.thumbnail.thumb_file.save(
+            'layer-%s-thumb.png' %
+            instance.id,
+            ContentFile(image))
         instance.thumbnail.thumb_spec = thumbnail_remote_url
         instance.thumbnail.save()
 
-        thumbnail_url = urljoin(settings.SITEURL, instance.thumbnail.thumb_file.url)
+        thumbnail_url = urljoin(
+            settings.SITEURL,
+            instance.thumbnail.thumb_file.url)
 
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=thumbnail_url,
-                        defaults=dict(
-                            name=_('Thumbnail'),
-                            extension='png',
-                            mime='image/png',
-                            link_type='image',
-                            )
-                        )
+        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                   url=thumbnail_url,
+                                   defaults=dict(
+                                       name=_('Thumbnail'),
+                                       extension='png',
+                                       mime='image/png',
+                                       link_type='image',
+                                   )
+                                   )
     ResourceBase.objects.filter(id=instance.id).update(
         thumbnail_url=instance.get_thumbnail_url()
-        )
+    )

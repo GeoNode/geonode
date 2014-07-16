@@ -42,7 +42,7 @@ def set_metadata(xml):
     # check if document is XML
     try:
         exml = etree.fromstring(xml)
-    except Exception, err:
+    except Exception as err:
         raise GeoNodeException(
             'Uploaded XML document is not XML: %s' % str(err))
 
@@ -96,7 +96,7 @@ def iso2dict(exml):
             vals['topic_category'] = mdata.identification.topiccategory[0]
 
         if (hasattr(mdata.identification, 'keywords') and
-        len(mdata.identification.keywords) > 0):
+                len(mdata.identification.keywords) > 0):
             if None not in mdata.identification.keywords[0]['keywords']:
                 keywords = mdata.identification.keywords[0]['keywords']
 
@@ -144,8 +144,14 @@ def fgdc2dict(exml):
                     # Owslib doesn't support extracting the Topic Category
                     # from FGDC.  So we add support here.
                     # http://www.fgdc.gov/metadata/geospatial-metadata-standards
-                    if all(ss in lowered_themekt for ss in ['iso', '19115', 'topic']) \
-                        and any(ss in lowered_themekt for ss in ['category', 'categories']):
+                    if all(
+                        ss in lowered_themekt for ss in [
+                            'iso',
+                            '19115',
+                            'topic']) and any(
+                        ss in lowered_themekt for ss in [
+                            'category',
+                            'categories']):
                         vals['topic_category'] = theme['themekey'][0]
 
                     keywords.extend(theme['themekey'])
@@ -205,6 +211,7 @@ def sniff_date(datestr):
             return datetime.datetime.strptime(datestr.strip(), dfmt)
         except ValueError:
             pass
+
 
 def get_tagname(element):
     """get tagname without namespace"""
