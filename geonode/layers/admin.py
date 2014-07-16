@@ -19,23 +19,30 @@
 #########################################################################
 
 from django.contrib import admin
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+
 from geonode.base.admin import MediaTranslationAdmin
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
 
 import autocomplete_light
 
+
 class AttributeInline(admin.TabularInline):
     model = Attribute
 
+
 class LayerAdmin(MediaTranslationAdmin):
-    list_display = ('id', 'typename','service_type','title', 'date', 'category')
+    list_display = (
+        'id',
+        'typename',
+        'service_type',
+        'title',
+        'date',
+        'category')
     list_display_links = ('id',)
     list_editable = ('title', 'category')
-    list_filter  = ('owner', 'category', 
-        'restriction_code_type__identifier', 'date', 'date_type')
+    list_filter = ('owner', 'category',
+                   'restriction_code_type__identifier', 'date', 'date_type')
     search_fields = ('typename', 'title', 'abstract', 'purpose',)
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
@@ -43,12 +50,21 @@ class LayerAdmin(MediaTranslationAdmin):
     inlines = [AttributeInline]
     form = autocomplete_light.modelform_factory(Layer)
 
+
 class AttributeAdmin(admin.ModelAdmin):
     model = Attribute
     list_display_links = ('id',)
-    list_display = ('id', 'layer', 'attribute', 'description', 'attribute_label', 'attribute_type', 'display_order')
+    list_display = (
+        'id',
+        'layer',
+        'attribute',
+        'description',
+        'attribute_label',
+        'attribute_type',
+        'display_order')
     list_filter = ('layer', 'attribute_type')
     search_fields = ('attribute', 'attribute_label',)
+
 
 class StyleAdmin(admin.ModelAdmin):
     model = Style
@@ -57,8 +73,10 @@ class StyleAdmin(admin.ModelAdmin):
     list_filter = ('workspace',)
     search_fields = ('name', 'workspace',)
 
+
 class LayerFileInline(admin.TabularInline):
     model = LayerFile
+
 
 class UploadSessionAdmin(admin.ModelAdmin):
     model = UploadSession

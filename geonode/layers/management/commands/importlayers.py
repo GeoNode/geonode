@@ -24,6 +24,7 @@ import traceback
 import datetime
 import sys
 
+
 class Command(BaseCommand):
     help = ("Brings a data file or a directory full of data files into a"
             "GeoNode site.  Layers are added to the Django database, the"
@@ -32,24 +33,39 @@ class Command(BaseCommand):
     args = 'path [path...]'
 
     option_list = BaseCommand.option_list + (
-            make_option('-u', '--user', dest="user", default=None,
-                help="Name of the user account which should own the imported layers"),
-            make_option('-i', '--ignore-errors',
-                action='store_true',
-                dest='ignore_errors',
-                default=False,
-                help='Stop after any errors are encountered.'),
-            make_option('-o', '--overwrite', dest='overwrite', default=False, action="store_true",
-                help="Overwrite existing layers if discovered (defaults False)"),
-            make_option('-k', '--keywords', dest='keywords', default="",
-                help="""The default keywords, separated by comma, for the 
-                    imported layer(s). Will be the same for all imported layers 
+        make_option(
+            '-u',
+            '--user',
+            dest="user",
+            default=None,
+            help="Name of the user account which should own the imported layers"),
+        make_option(
+            '-i',
+            '--ignore-errors',
+            action='store_true',
+            dest='ignore_errors',
+            default=False,
+            help='Stop after any errors are encountered.'),
+        make_option(
+            '-o',
+            '--overwrite',
+            dest='overwrite',
+            default=False,
+            action="store_true",
+            help="Overwrite existing layers if discovered (defaults False)"),
+        make_option(
+            '-k',
+            '--keywords',
+            dest='keywords',
+            default="",
+            help="""The default keywords, separated by comma, for the
+                    imported layer(s). Will be the same for all imported layers
                     if multiple imports are done in one command""")
         )
 
     def handle(self, *args, **options):
         verbosity = int(options.get('verbosity'))
-        ignore_errors = options.get('ignore_errors')
+        # ignore_errors = options.get('ignore_errors')
         user = options.get('user')
         overwrite = options.get('overwrite')
 
@@ -58,24 +74,35 @@ class Command(BaseCommand):
         else:
             console = None
 
-        if overwrite == True:
+        if overwrite:
             skip = False
         else:
             skip = True
 
         keywords = options.get('keywords').split(',')
-        if len(keywords) == 1 and keywords[0] == '': keywords = []
+        if len(keywords) == 1 and keywords[0] == '':
+            keywords = []
         start = datetime.datetime.now()
         output = []
         for path in args:
-            out = upload(path, user=user, overwrite=overwrite, skip=skip,
-                    keywords=keywords, verbosity=verbosity, console=console)
+            out = upload(
+                path,
+                user=user,
+                overwrite=overwrite,
+                skip=skip,
+                keywords=keywords,
+                verbosity=verbosity,
+                console=console)
             output.extend(out)
 
-        updated = [dict_['file'] for dict_ in output if dict_['status']=='updated']
-        created = [dict_['file'] for dict_ in output if dict_['status']=='created']
-        skipped = [dict_['file'] for dict_ in output if dict_['status']=='skipped']
-        failed = [dict_['file'] for dict_ in output if dict_['status']=='failed']
+        updated = [dict_['file']
+                   for dict_ in output if dict_['status'] == 'updated']
+        created = [dict_['file']
+                   for dict_ in output if dict_['status'] == 'created']
+        skipped = [dict_['file']
+                   for dict_ in output if dict_['status'] == 'skipped']
+        failed = [dict_['file']
+                  for dict_ in output if dict_['status'] == 'failed']
 
         finish = datetime.datetime.now()
         td = finish - start
@@ -93,7 +120,7 @@ class Command(BaseCommand):
 
         if verbosity > 0:
             print "\n\nFinished processing %d layers in %s seconds.\n" % (
-                                              len(output), duration_rounded)
+                len(output), duration_rounded)
             print "%d Created layers" % len(created)
             print "%d Updated layers" % len(updated)
             print "%d Skipped layers" % len(skipped)
