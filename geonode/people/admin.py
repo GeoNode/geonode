@@ -19,8 +19,7 @@
 #########################################################################
 
 from django.contrib import admin
-from django.contrib.auth.forms import (UserCreationForm, UserChangeForm,
-    AdminPasswordChangeForm)
+from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -32,43 +31,21 @@ from django.utils.html import escape
 from django.template.response import TemplateResponse
 from django.contrib import messages
 from django.http import HttpResponseRedirect, Http404
+from django.conf import settings
+from django.core.exceptions import PermissionDenied
 
-from geonode.people.models import Profile
+from .models import Profile
+from .forms import ProfileCreationForm, ProfileChangeForm
 
 import autocomplete_light
+
 csrf_protect_m = method_decorator(csrf_protect)
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 
 
-class ProfileCreationForm(UserCreationForm):
-
-    class Meta:
-        model = Profile
-        fields = ("username",)
-
-    def clean_username(self):
-        # Since User.username is unique, this check is redundant,
-        # but it sets a nicer error message than the ORM. See #13147.
-        username = self.cleaned_data["username"]
-        try:
-            Profile.objects.get(username=username)
-        except Profile.DoesNotExist:
-            return username
-        raise forms.ValidationError(
-            self.error_messages['duplicate_username'],
-            code='duplicate_username',
-        )
-
-class ProfileChangeForm(UserChangeForm):
-
-    class Meta:
-        model = Profile
-        fields = '__all__'
-
-
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'organization',)
-    search_fields = ('username','organization', 'profile', )
+    search_fields = ('username', 'organization', 'profile', )
     autocomplete_light.modelform_factory(Profile)
     add_form_template = 'admin/auth/user/add_form.html'
     change_user_password_template = None
@@ -83,7 +60,7 @@ class ProfileAdmin(admin.ModelAdmin):
         (None, {
             'classes': ('wide',),
             'fields': ('username', 'password1', 'password2')}
-        ),
+         ),
     )
     form = ProfileChangeForm
     add_form = ProfileCreationForm
@@ -115,9 +92,9 @@ class ProfileAdmin(admin.ModelAdmin):
     def get_urls(self):
         from django.conf.urls import patterns
         return patterns('',
-            (r'^(\d+)/password/$',
-             self.admin_site.admin_view(self.user_change_password))
-        ) + super(ProfileAdmin, self).get_urls()
+                        (r'^(\d+)/password/$',
+                         self.admin_site.admin_view(self.user_change_password))
+                        ) + super(ProfileAdmin, self).get_urls()
 
     def lookup_allowed(self, lookup, value):
         # See #20078: we don't want to allow any lookups involving passwords.
@@ -154,7 +131,7 @@ class ProfileAdmin(admin.ModelAdmin):
         }
         extra_context.update(defaults)
         return super(ProfileAdmin, self).add_view(request, form_url,
-                                               extra_context)
+                                                  extra_context)
 
     @sensitive_post_parameters_m
     def user_change_password(self, request, id, form_url=''):
@@ -165,7 +142,10 @@ class ProfileAdmin(admin.ModelAdmin):
             form = self.change_password_form(user, request.POST)
             if form.is_valid():
                 form.save()
-                change_message = self.construct_change_message(request, form, None)
+                change_message = self.construct_change_message(
+                    request,
+                    form,
+                    None)
                 self.log_change(request, user, change_message)
                 msg = ugettext('Password changed successfully.')
                 messages.success(request, msg)
@@ -193,9 +173,9 @@ class ProfileAdmin(admin.ModelAdmin):
             'show_save': True,
         }
         return TemplateResponse(request,
-            self.change_user_password_template or
-            'admin/auth/user/change_password.html',
-            context, current_app=self.admin_site.name)
+                                self.change_user_password_template or
+                                'admin/auth/user/change_password.html',
+                                context, current_app=self.admin_site.name)
 
     def response_add(self, request, obj, post_url_continue=None):
         """
@@ -211,6 +191,6 @@ class ProfileAdmin(admin.ModelAdmin):
         if '_addanother' not in request.POST and IS_POPUP_VAR not in request.POST:
             request.POST['_continue'] = 1
         return super(ProfileAdmin, self).response_add(request, obj,
-                                                   post_url_continue)
+                                                      post_url_continue)
 
 admin.site.register(Profile, ProfileAdmin)

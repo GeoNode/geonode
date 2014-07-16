@@ -26,11 +26,8 @@ from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
-from django.views.generic.list import ListView
 from django.contrib.sites.models import Site
 from django.conf import settings
-
-from itertools import chain
 
 from geonode.people.models import Profile
 from geonode.people.forms import ProfileForm
@@ -55,13 +52,18 @@ def profile_edit(request, username=None):
         if form.is_valid():
             form.save()
             messages.success(request, "Profile profile updated.")
-            return redirect(reverse('profile_detail', args=[request.user.username]))
+            return redirect(
+                reverse(
+                    'profile_detail',
+                    args=[
+                        request.user.username]))
     else:
         form = ProfileForm(instance=profile)
 
     return render(request, "people/profile_edit.html", {
         "form": form,
     })
+
 
 def profile_detail(request, username):
     profile = get_object_or_404(Profile, username=username)
@@ -71,17 +73,17 @@ def profile_detail(request, username):
     content_filter = 'all'
 
     if ('content' in request.GET):
-      content = request.GET['content']
-      if content != 'all':
-          if (content == 'layers'):
-              content_filter = 'layers'
-              user_objects = user_objects.instance_of(Layer)
-          if (content == 'maps'):
-              content_filter = 'maps'
-              user_objects = user_objects.instance_of(Map)
-          if (content == 'documents'):
-              content_filter = 'documents'
-              user_objects = user_objects.instance_of(Document)
+        content = request.GET['content']
+        if content != 'all':
+            if (content == 'layers'):
+                content_filter = 'layers'
+                user_objects = user_objects.instance_of(Layer)
+            if (content == 'maps'):
+                content_filter = 'maps'
+                user_objects = user_objects.instance_of(Map)
+            if (content == 'documents'):
+                content_filter = 'documents'
+                user_objects = user_objects.instance_of(Document)
 
     sortby_field = 'date'
     if ('sortby' in request.GET):
@@ -90,13 +92,14 @@ def profile_detail(request, username):
         user_objects = user_objects.order_by('title')
     else:
         user_objects = user_objects.order_by('-date')
-    
+
     return render(request, "people/profile_detail.html", {
         "profile": profile,
         "sortby_field": sortby_field,
         "content_filter": content_filter,
         "object_list": user_objects.get_real_instances(),
     })
+
 
 def forgot_username(request):
     """ Look up a username based on an email address, and send an email
@@ -115,7 +118,7 @@ def forgot_username(request):
         if username_form.is_valid():
 
             users = get_user_model().objects.filter(
-                        email=username_form.cleaned_data['email'])
+                email=username_form.cleaned_data['email'])
             if len(users) > 0:
                 username = users[0].username
                 email_message = email_subject + " : " + username
@@ -128,7 +131,7 @@ def forgot_username(request):
                 message = _("No user could be found with that email address.")
 
     return render_to_response('people/forgot_username_form.html',
-        RequestContext(request, {
-            'message': message,
-            'form': username_form
-    }))
+                              RequestContext(request, {
+                                  'message': message,
+                                  'form': username_form
+                              }))

@@ -1,7 +1,6 @@
-from django.conf import settings
-
 from haystack import indexes
 from geonode.people.models import Profile
+
 
 class ProfileIndex(indexes.SearchIndex, indexes.Indexable):
     oid = indexes.IntegerField(model_attr='id')
@@ -20,7 +19,7 @@ class ProfileIndex(indexes.SearchIndex, indexes.Indexable):
     def prepare_title(self, obj):
         return str(obj)
 
-    def prepare_title_sort(self,obj):
+    def prepare_title_sort(self, obj):
         return str(obj).lower().lstrip()
 
     def prepare_type(self, obj):
