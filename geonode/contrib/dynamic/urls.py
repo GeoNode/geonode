@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns
 
-urlpatterns = patterns('geonode.contrib.dynamic.views',
-    )
+urlpatterns = patterns('geonode.contrib.dynamic.views',)
