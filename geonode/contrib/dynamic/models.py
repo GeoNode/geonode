@@ -4,11 +4,11 @@ import keyword
 import re
 
 from django.utils.datastructures import SortedDict
-from django.db.models.loading import get_model
 from django.conf import settings
 from django.contrib.gis.utils import LayerMapping
 from django.contrib.gis.db import models
 from django.contrib.gis import admin
+from django.core.exceptions import ValidationError
 from django import db
 
 from geonode.layers.models import Layer
@@ -16,6 +16,7 @@ from geonode.layers.models import Layer
 from .postgis import file2pgtable
 
 DYNAMIC_DATASTORE = 'datastore'
+
 
 class ModelDescription(models.Model):
     name = models.CharField(max_length=255)
@@ -32,7 +33,7 @@ class ModelDescription(models.Model):
                             module='geonode.contrib.dynamic',
                             options={'db_table': self.name,
                                      'managed': False
-                                    },
+                                     },
                             with_admin=with_admin,
                             )
 
@@ -59,7 +60,7 @@ class Field(models.Model):
     def get_django_field(self):
         "Returns the correct field type, instantiated with applicable settings"
         # Get all associated settings into a list ready for dict()
-        settings = [(s.name, s.value) for s in self.settings.all()]
+        settings = [(s.name, s.value) for s in self.settings.all()]  # noqa
 
         field_type = getattr(models, self.type)
 
@@ -103,7 +104,6 @@ def create_model(name, fields=None, app_label='', module='', options=None, admin
     if fields:
         attrs.update(fields)
 
-
     # Create the class, which automatically triggers ModelBase processing
     model = type(str(name), (models.Model,), attrs)
 
@@ -124,11 +124,9 @@ def create_model(name, fields=None, app_label='', module='', options=None, admin
             # Tell Django to look for objects on the 'other' database.
             return super(Admin, self).get_queryset(request).using(self.using)
 
-
         def queryset(self, request):
             # Tell Django to look for objects on the 'other' database.
             return super(Admin, self).queryset(request).using(self.using)
-
 
         def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
             # Tell Django to populate ForeignKey widgets using a query
@@ -139,7 +137,6 @@ def create_model(name, fields=None, app_label='', module='', options=None, admin
             # Tell Django to populate ManyToMany widgets using a query
             # on the 'other' database.
             return super(Admin, self).formfield_for_manytomany(db_field, request=request, using=self.using, **kwargs)
-
 
     # Create an Admin class if admin options were provided
     if admin_opts is not None:
@@ -161,9 +158,6 @@ def generate_model(model_description, mapping, db_key=''):
 
     table_name = model_description.name
 
-    table2model = lambda table_name: table_name.title().replace('_', '').replace(' ', '').replace('-', '')
-    strip_prefix = lambda s: s[1:] if s.startswith("u'") else s
-
     try:
         relations = connection.introspection.get_relations(cursor, table_name)
     except NotImplementedError:
@@ -172,10 +166,10 @@ def generate_model(model_description, mapping, db_key=''):
         indexes = connection.introspection.get_indexes(cursor, table_name)
     except NotImplementedError:
         indexes = {}
-    used_column_names = [] # Holds column names used in the table so far
-    for i,row in enumerate(connection.introspection.get_table_description(cursor, table_name)):
-        comment_notes = [] # Holds Field notes, to be displayed in a Python comment.
-        extra_params = SortedDict() # Holds Field parameters such as 'db_column'.
+    used_column_names = []  # Holds column names used in the table so far
+    for i, row in enumerate(connection.introspection.get_table_description(cursor, table_name)):
+        comment_notes = []  # Holds Field notes, to be displayed in a Python comment.
+        extra_params = SortedDict()  # Holds Field parameters such as 'db_column'.
         column_name = row[0]
         is_relation = i in relations
 
@@ -226,15 +220,13 @@ def generate_model(model_description, mapping, db_key=''):
 
         # Add 'null' and 'blank', if the 'null_ok' flag was present in the
         # table description.
-        if row[6]: # If it's NULL...
+        if row[6]:  # If it's NULL...
             if field_type == 'BooleanField':
                 field_type = 'NullBooleanField'
             else:
                 extra_params['blank'] = True
                 if not field_type in ('TextField', 'CharField'):
                     extra_params['null'] = True
-
-        field_desc = (att_name, field_type, extra_params)
 
         if any(field_type) and column_name != 'id':
             field, __ = Field.objects.get_or_create(model=model_description, name=att_name)
@@ -246,7 +238,6 @@ def generate_model(model_description, mapping, db_key=''):
             for name, value in extra_params.items():
                 if any(name):
                     Setting.objects.get_or_create(field=field, name=name, value=value)
-
 
 
 def normalize_col_name(col_name, used_column_names, is_relation):
@@ -305,6 +296,7 @@ def normalize_col_name(col_name, used_column_names, is_relation):
 
     return new_name, field_params, field_notes
 
+
 def get_field_type(connection, table_name, row):
     """
     Given the database connection, the table name, and the cursor row
@@ -333,7 +325,6 @@ def get_field_type(connection, table_name, row):
     if field_type == 'DecimalField':
         field_params['max_digits'] = row[4]
         field_params['decimal_places'] = row[5]
-
 
     return field_type, field_params, field_notes
 
@@ -374,12 +365,11 @@ def pre_save_layer(instance, sender, **kwargs):
     lm.save()
 
 
-
 def post_save_layer(instance, sender, **kwargs):
     """Assign layer instance to the dynamic model.
     """
     # Assign this layer model to all ModelDescriptions with the same name.
-    mds = ModelDescription.objects.filter(name=instance.name).update(layer=instance)
+    ModelDescription.objects.filter(name=instance.name).update(layer=instance)
 
 
 models.signals.pre_save.connect(pre_save_layer, sender=Layer)
