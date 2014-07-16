@@ -117,7 +117,7 @@ class PermissionLevelMixin(object):
             for user in get_user_model().objects.all():
                 assign_perm(perm_spec['users']['AnonymousUser'][0], user, self.get_self_resource())
 
-        elif 'users' in perm_spec:
+        if 'users' in perm_spec:
             for user, perms in perm_spec['users'].items():
                 user = get_user_model().objects.get(username=user)
                 for perm in perms:
