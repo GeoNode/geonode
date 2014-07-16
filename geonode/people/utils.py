@@ -25,7 +25,8 @@ from geonode import GeoNodeException
 def get_default_user():
     """Create a default user
     """
-    superusers = get_user_model().objects.filter(is_superuser=True).order_by('id')
+    superusers = get_user_model().objects.filter(
+        is_superuser=True).order_by('id')
     if superusers.count() > 0:
         # Return the first created superuser
         return superusers[0]
@@ -48,7 +49,7 @@ def get_valid_user(user=None):
     else:
         theuser = user
 
-    #FIXME: Pass a user in the unit tests that is not yet saved ;)
+    # FIXME: Pass a user in the unit tests that is not yet saved ;)
     assert isinstance(theuser, get_user_model())
 
     return theuser

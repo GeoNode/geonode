@@ -27,9 +27,17 @@ if "notification" in settings.INSTALLED_APPS:
     import notification
 
     def create_notice_types(app, created_models, verbosity, **kwargs):
-        notification.models.NoticeType.create("user_follow", _("User following you"), _("another user has started following you"))
+        notification.models.NoticeType.create(
+            "user_follow",
+            _("User following you"),
+            _("another user has started following you"))
 
-    signals.post_syncdb.connect(create_notice_types, sender=notification.models)
-    logger.info("Notifications Configured for geonode.people.managment.commands")
+    signals.post_syncdb.connect(
+        create_notice_types,
+        sender=notification.models)
+    logger.info(
+        "Notifications Configured for geonode.people.managment.commands")
 else:
-    logger.info("Skipping creation of NoticeTypes for geonode.people.management.commands, since notification app was not found.")
+    logger.info(
+        "Skipping creation of NoticeTypes for geonode.people.management.commands, \
+        since notification app was not found.")
