@@ -127,9 +127,13 @@
         $scope.total_counts = data.meta.total_count;
         $scope.$root.query_data = data;
         if (HAYSTACK_SEARCH) {
-            $scope.text_query = $location.search()['q'].replace(/\+/g," ")
+          if ($location.search().hasOwnProperty('q')){
+            $scope.text_query = $location.search()['q'].replace(/\+/g," ");
+          }
         } else {
-            $scope.text_query = $location.search()['title__contains'].replace(/\+/g," ")
+          if ($location.search().hasOwnProperty('title__contains')){
+            $scope.text_query = $location.search()['title__contains'].replace(/\+/g," ");
+          }
         }
 
         //Update facet/keyword/category counts from search results
