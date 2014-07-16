@@ -557,14 +557,9 @@ def final_step(upload_session, user):
         saved_layer.set_default_permissions()
 
     # Create the points of contact records for the layer
-    # A user without a profile might be uploading this
     _log('Creating points of contact records for [%s]', name)
-    poc_contact, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": user.username})
-    author_contact, __ = Profile.objects.get_or_create(user=user,
-                                           defaults={"name": user.username})
-    saved_layer.poc = poc_contact
-    saved_layer.metadata_author = author_contact
+    saved_layer.poc = user
+    saved_layer.metadata_author = user
 
     # look for xml
     xml_file = upload_session.base_file[0].xml_files
