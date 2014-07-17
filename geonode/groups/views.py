@@ -7,12 +7,8 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 
-from geonode.layers.models import Layer 
-from geonode.maps.models import Map
 from geonode.groups.forms import GroupInviteForm, GroupForm, GroupUpdateForm, GroupMemberForm
 from geonode.groups.models import GroupProfile, GroupInvitation, GroupMember
-from geonode.people.models import Profile
-
 
 
 @login_required
@@ -24,10 +20,14 @@ def group_create(request):
             group.save()
             form.save_m2m()
             group.join(request.user, role="manager")
-            return HttpResponseRedirect(reverse("group_detail", args=[group.slug]))
+            return HttpResponseRedirect(
+                reverse(
+                    "group_detail",
+                    args=[
+                        group.slug]))
     else:
         form = GroupForm()
-    
+
     return render_to_response("groups/group_create.html", {
         "form": form,
     }, context_instance=RequestContext(request))
@@ -38,17 +38,21 @@ def group_update(request, slug):
     group = GroupProfile.objects.get(slug=slug)
     if not group.user_is_role(request.user, role="manager"):
         return HttpResponseForbidden()
-    
+
     if request.method == "POST":
         form = GroupUpdateForm(request.POST, request.FILES, instance=group)
         if form.is_valid():
             group = form.save(commit=False)
             group.save()
             form.save_m2m()
-            return HttpResponseRedirect(reverse("group_detail", args=[group.slug]))
+            return HttpResponseRedirect(
+                reverse(
+                    "group_detail",
+                    args=[
+                        group.slug]))
     else:
         form = GroupForm(instance=group)
-    
+
     return render_to_response("groups/group_update.html", {
         "form": form,
         "group": group,
@@ -56,6 +60,7 @@ def group_update(request, slug):
 
 
 class GroupDetailView(ListView):
+
     """
     Mixes a detail view (the group) with a ListView (the members).
     """
@@ -78,23 +83,29 @@ class GroupDetailView(ListView):
         context['maps'] = self.group.resources(resource_type='map')
         context['layers'] = self.group.resources(resource_type='layer')
         context['is_member'] = self.group.user_is_member(self.request.user)
-        context['is_manager'] = self.group.user_is_role(self.request.user, "manager")
+        context['is_manager'] = self.group.user_is_role(
+            self.request.user,
+            "manager")
         return context
 
 
 def group_members(request, slug):
     group = get_object_or_404(GroupProfile, slug=slug)
     ctx = {}
-    
+
     if not group.can_view(request.user):
         raise Http404()
-    
-    if group.access in ["public-invite", "private"] and group.user_is_role(request.user, "manager"):
+
+    if group.access in [
+            "public-invite",
+            "private"] and group.user_is_role(
+            request.user,
+            "manager"):
         ctx["invite_form"] = GroupInviteForm()
 
     if group.user_is_role(request.user, "manager"):
         ctx["member_form"] = GroupMemberForm()
-    
+
     ctx.update({
         "object": group,
         "members": group.member_queryset(),
@@ -104,16 +115,17 @@ def group_members(request, slug):
     ctx = RequestContext(request, ctx)
     return render_to_response("groups/group_members.html", ctx)
 
+
 @require_POST
 @login_required
 def group_members_add(request, slug):
     group = get_object_or_404(GroupProfile, slug=slug)
-    
-    if not group.user_is_role(request.user, role="manager"): 
+
+    if not group.user_is_role(request.user, role="manager"):
         return HttpResponseForbidden()
-    
+
     form = GroupMemberForm(request.POST)
-    
+
     if form.is_valid():
         role = form.cleaned_data["role"]
         for user in form.cleaned_data["user_identifiers"]:
@@ -132,22 +144,23 @@ def group_members_add(request, slug):
 def group_member_remove(request, slug, username):
     group = get_object_or_404(GroupProfile, slug=slug)
     user = get_object_or_404(get_user_model(), username=username)
-    
+
     if not group.user_is_role(request.user, role="manager"):
         return HttpResponseForbidden()
     else:
         GroupMember.objects.get(group=group, user=user).delete()
         user.groups.remove(group.group)
         return redirect("group_detail", slug=group.slug)
-        
+
+
 @require_POST
 @login_required
 def group_join(request, slug):
     group = get_object_or_404(GroupProfile, slug=slug)
-    
+
     if group.access == "private":
         raise Http404()
-    
+
     if group.user_is_member(request.user):
         return redirect("group_detail", slug=group.slug)
     else:
@@ -158,16 +171,19 @@ def group_join(request, slug):
 @require_POST
 def group_invite(request, slug):
     group = get_object_or_404(GroupProfile, slug=slug)
-    
+
     if not group.can_invite(request.user):
         raise Http404()
-    
+
     form = GroupInviteForm(request.POST)
-    
+
     if form.is_valid():
         for user in form.cleaned_data["invite_user_identifiers"].split("\n"):
-            group.invite(user, request.user, role=form.cleaned_data["invite_role"])
-    
+            group.invite(
+                user,
+                request.user,
+                role=form.cleaned_data["invite_role"])
+
     return redirect("group_members", slug=group.slug)
 
 
@@ -175,17 +191,17 @@ def group_invite(request, slug):
 def group_invite_response(request, token):
     invite = get_object_or_404(GroupInvitation, token=token)
     ctx = {"invite": invite}
-    
+
     if request.user != invite.user:
         redirect("group_detail", slug=invite.group.slug)
-    
+
     if request.method == "POST":
         if "accept" in request.POST:
             invite.accept(request.user)
-        
+
         if "decline" in request.POST:
             invite.decline()
-        
+
         return redirect("group_detail", slug=invite.group.slug)
     else:
         ctx = RequestContext(request, ctx)
@@ -196,9 +212,8 @@ def group_invite_response(request, token):
 def group_remove(request, slug):
     group = get_object_or_404(GroupProfile, slug=slug)
     if request.method == 'GET':
-        return render_to_response("groups/group_remove.html", RequestContext(request, {
-            "group": group
-        }))
+        return render_to_response(
+            "groups/group_remove.html", RequestContext(request, {"group": group}))
     if request.method == 'POST':
 
         if not group.user_is_role(request.user, role="manager"):
