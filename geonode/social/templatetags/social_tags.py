@@ -1,8 +1,7 @@
 from django import template
-from django.contrib.contenttypes.models import ContentType
-from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 register = template.Library()
+
 
 def get_data(action, key, default=None):
     """
@@ -13,6 +12,7 @@ def get_data(action, key, default=None):
         return action.data.get(key, default)
     else:
         return default
+
 
 @register.inclusion_tag('social/_activity_item.html')
 def activity_item(action, **kwargs):
@@ -35,7 +35,7 @@ def activity_item(action, **kwargs):
         object_type = object.__class__._meta.object_name.lower()
 
     if target:
-        target_type = target.__class__._meta.object_name.lower()
+        target_type = target.__class__._meta.object_name.lower()  # noqa
 
     if actor is None:
         return str()

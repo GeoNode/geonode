@@ -1,1 +1,1 @@
-import geonode.social.signals
+import geonode.social.signals  # noqa
