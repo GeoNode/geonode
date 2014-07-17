@@ -216,7 +216,8 @@ def execute(sql):
     finally:
         cursor.close()
 
-# Obtained from http://www.postgresql.org/docs/9.2/static/sql-keywords-appendix.html
+# Obtained from
+# http://www.postgresql.org/docs/9.2/static/sql-keywords-appendix.html
 PG_RESERVED_KEYWORDS = ('ALL',
                         'ANALYSE',
                         'ANALYZE',

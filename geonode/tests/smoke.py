@@ -23,8 +23,8 @@ from django.test.client import Client
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
-from geonode import GeoNodeException
 from geonode.utils import forward_mercator, inverse_mercator
+
 
 class GeoNodeSmokeTests(TestCase):
 
@@ -40,7 +40,7 @@ class GeoNodeSmokeTests(TestCase):
     def tearDown(self):
         pass
 
-    #### Basic Pages ####
+    # Basic Pages #
 
     def test_home_page(self):
         '''Test if the homepage renders.'''
@@ -62,7 +62,7 @@ class GeoNodeSmokeTests(TestCase):
         response = c.get(reverse('help'))
         self.failUnlessEqual(response.status_code, 200)
 
-    #### Layer Pages ####
+    # Layer Pages #
 
     def test_layer_page(self):
         'Test if the data home page renders.'
@@ -76,7 +76,7 @@ class GeoNodeSmokeTests(TestCase):
         response = c.get(reverse('layer_acls'))
         self.failUnlessEqual(response.status_code, 200)
 
-    #### Maps Pages ####
+    # Maps Pages #
 
     def test_maps_page(self):
         '''Test Maps page renders.'''
@@ -92,9 +92,9 @@ class GeoNodeSmokeTests(TestCase):
         response = c.get(reverse('new_map'))
         self.failUnlessEqual(response.status_code, 200)
 
-    #### People Pages ####
+    # People Pages #
 
-    def test_profiles(self):
+    def test_profile_list(self):
         '''Test the profiles page renders.'''
 
         c = Client()
@@ -118,7 +118,7 @@ class GeoNodeUtilsTests(TestCase):
     def tearDown(self):
         pass
 
-    ### Some other Stuff
+    # Some other Stuff
 
     """
     def test_check_geonode_is_up(self):
@@ -165,16 +165,36 @@ class GeoNodeUtilsTests(TestCase):
         self.assertEqual(inf_test[1], float('-inf'))
 
         self.assertEqual(round(arctic[0]), 0, "Arctic longitude is correct")
-        self.assertEqual(round(arctic[1]), 19971869, "Arctic latitude is correct")
+        self.assertEqual(
+            round(
+                arctic[1]),
+            19971869,
+            "Arctic latitude is correct")
 
-        self.assertEqual(round(antarctic[0]), 0, "Antarctic longitude is correct")
-        self.assertEqual(round(antarctic[1]), -19971869, "Antarctic latitude is correct")
+        self.assertEqual(
+            round(
+                antarctic[0]),
+            0,
+            "Antarctic longitude is correct")
+        self.assertEqual(
+            round(
+                antarctic[1]), -19971869, "Antarctic latitude is correct")
 
-        self.assertEqual(round(hawaii[0]), -20037508, "Hawaiian lon is correct")
+        self.assertEqual(
+            round(
+                hawaii[0]), -20037508, "Hawaiian lon is correct")
         self.assertEqual(round(hawaii[1]), 0, "Hawaiian lat is correct")
 
-        self.assertEqual(round(phillipines[0]), 20037508, "Phillipines lon is correct")
-        self.assertEqual(round(phillipines[1]), 0, "Phillipines lat is correct")
+        self.assertEqual(
+            round(
+                phillipines[0]),
+            20037508,
+            "Phillipines lon is correct")
+        self.assertEqual(
+            round(
+                phillipines[1]),
+            0,
+            "Phillipines lat is correct")
 
         self.assertEqual(round(ne[0]), 20037508, "NE lon is correct")
         self.assertTrue(ne[1] > 50000000, "NE lat is correct")
@@ -194,17 +214,34 @@ class GeoNodeUtilsTests(TestCase):
         ne = inverse_mercator(forward_mercator((180, 90)))
         sw = inverse_mercator(forward_mercator((-180, -90)))
 
-        self.assertAlmostEqual(arctic[0], 0.0, msg="Arctic longitude is correct")
-        self.assertAlmostEqual(arctic[1], 85.0, msg="Arctic latitude is correct")
+        self.assertAlmostEqual(
+            arctic[0],
+            0.0,
+            msg="Arctic longitude is correct")
+        self.assertAlmostEqual(
+            arctic[1],
+            85.0,
+            msg="Arctic latitude is correct")
 
-        self.assertAlmostEqual(antarctic[0], 0.0, msg="Antarctic longitude is correct")
-        self.assertAlmostEqual(antarctic[1], -85.0, msg="Antarctic latitude is correct")
+        self.assertAlmostEqual(
+            antarctic[0],
+            0.0,
+            msg="Antarctic longitude is correct")
+        self.assertAlmostEqual(
+            antarctic[1], -85.0, msg="Antarctic latitude is correct")
 
-        self.assertAlmostEqual(hawaii[0], -180.0, msg="Hawaiian lon is correct")
+        self.assertAlmostEqual(
+            hawaii[0], -180.0, msg="Hawaiian lon is correct")
         self.assertAlmostEqual(hawaii[1], 0.0, msg="Hawaiian lat is correct")
 
-        self.assertAlmostEqual(phillipines[0], 180.0, msg="Phillipines lon is correct")
-        self.assertAlmostEqual(phillipines[1], 0.0, msg="Phillipines lat is correct")
+        self.assertAlmostEqual(
+            phillipines[0],
+            180.0,
+            msg="Phillipines lon is correct")
+        self.assertAlmostEqual(
+            phillipines[1],
+            0.0,
+            msg="Phillipines lat is correct")
 
         self.assertAlmostEqual(ne[0], 180.0, msg="NE lon is correct")
         self.assertAlmostEqual(ne[1], 90.0, msg="NE lat is correct")
@@ -214,11 +251,12 @@ class GeoNodeUtilsTests(TestCase):
 
     def test_split_query(self):
         query = 'alpha "beta gamma"   delta  '
-        from geonode.utils import _split_query 
+        from geonode.utils import _split_query
         keywords = _split_query(query)
         self.assertEqual(keywords[0], "alpha")
         self.assertEqual(keywords[1], "beta gamma")
         self.assertEqual(keywords[2], "delta")
+
 
 class PermissionViewTests(TestCase):
     pass
