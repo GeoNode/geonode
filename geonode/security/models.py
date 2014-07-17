@@ -18,20 +18,13 @@
 #
 #########################################################################
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.generic import GenericForeignKey
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login
 from django.contrib.auth.models import Group
 
-from guardian.shortcuts import assign_perm, get_perms, remove_perm, \
+from guardian.shortcuts import assign_perm, remove_perm, \
     get_groups_with_perms, get_users_with_perms
-from guardian.utils import get_anonymous_user
 
 ADMIN_PERMISSIONS = [
     'view_resourcebase',
@@ -40,30 +33,38 @@ ADMIN_PERMISSIONS = [
     'change_resourcebase_permissions'
 ]
 
+
 class PermissionLevelError(Exception):
     pass
 
 
 class PermissionLevelMixin(object):
+
     """
     Mixin for adding "Permission Level" methods
     to a model class -- eg role systems where a
     user has exactly one assigned role with respect to
     an object representing an "access level"
     """
-    
+
     LEVEL_NONE = "_none"
 
     def get_all_level_info(self):
         resource = self.get_self_resource()
         info = {
-            'users': get_users_with_perms(resource, attach_perms=True, with_superusers=True),
-            'groups': get_groups_with_perms(resource, attach_perms=True)
-        }
+            'users': get_users_with_perms(
+                resource,
+                attach_perms=True,
+                with_superusers=True),
+            'groups': get_groups_with_perms(
+                resource,
+                attach_perms=True)}
         return info
 
     def get_self_resource(self):
-        return self.resourcebase_ptr if hasattr(self, 'resourcebase_ptr') else self
+        return self.resourcebase_ptr if hasattr(
+            self,
+            'resourcebase_ptr') else self
 
     def remove_all_permissions(self):
         """
@@ -73,7 +74,6 @@ class PermissionLevelMixin(object):
             if not self.owner == user:
                 for perm in perms:
                     remove_perm(perm, user, self.get_self_resource())
-
 
         for group, perms in get_groups_with_perms(self.get_self_resource(), attach_perms=True).iteritems():
             for perm in perms:
@@ -89,7 +89,6 @@ class PermissionLevelMixin(object):
             assign_perm('view_resourcebase', user, self.get_self_resource())
         for perm in ADMIN_PERMISSIONS:
             assign_perm(perm, self.owner, self.get_self_resource())
-
 
     def set_permissions(self, perm_spec):
         """
@@ -115,7 +114,10 @@ class PermissionLevelMixin(object):
 
         if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
             for user in get_user_model().objects.all():
-                assign_perm(perm_spec['users']['AnonymousUser'][0], user, self.get_self_resource())
+                assign_perm(
+                    perm_spec['users']['AnonymousUser'][0],
+                    user,
+                    self.get_self_resource())
 
         if 'users' in perm_spec:
             for user, perms in perm_spec['users'].items():
@@ -124,7 +126,7 @@ class PermissionLevelMixin(object):
                     assign_perm(perm, user, self.get_self_resource())
 
         if 'groups' in perm_spec:
-            for group, perms in perm_spec['groups'].items():           
+            for group, perms in perm_spec['groups'].items():
                 group = Group.objects.get(name=group)
                 for perm in perms:
                     assign_perm(perm, group, self.get_self_resource())
@@ -141,5 +143,5 @@ def autologin(sender, **kwargs):
     # This login function does not need password.
     login(request, user)
 
-#FIXME(Ariel): Replace this signal with the one from django-user-accounts
-#user_activated.connect(autologin)
+# FIXME(Ariel): Replace this signal with the one from django-user-accounts
+# user_activated.connect(autologin)
