@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 import uuid
 
 from django.db import models
@@ -21,7 +20,9 @@ IMGTYPES = ['jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif']
 
 logger = logging.getLogger(__name__)
 
+
 class Document(ResourceBase):
+
     """
     A document is any kind of information that can be attached to a map such as pdf, images, videos, xls...
     """
@@ -38,17 +39,17 @@ class Document(ResourceBase):
 
     extension = models.CharField(max_length=128, blank=True, null=True)
 
-    doc_url = models.URLField(blank=True,
-                              null=True,
-                              help_text=_('The URL of the document if it is external.'),
-                              verbose_name=_('URL'))
+    doc_url = models.URLField(
+        blank=True,
+        null=True,
+        help_text=_('The URL of the document if it is external.'),
+        verbose_name=_('URL'))
 
-    def __unicode__(self):  
+    def __unicode__(self):
         return self.title
-        
+
     def get_absolute_url(self):
         return reverse('document_detail', args=(self.id,))
-
 
     def _render_thumbnail(self):
         from cStringIO import StringIO
@@ -57,8 +58,10 @@ class Document(ResourceBase):
 
         try:
             from PIL import Image, ImageOps
-        except: 
-            logger.error('%s: Pillow not installed, cannot generate thumbnails.' % e)
+        except ImportError, e:
+            logger.error(
+                '%s: Pillow not installed, cannot generate thumbnails.' %
+                e)
             return None
 
         try:
@@ -69,18 +72,21 @@ class Document(ResourceBase):
         else:
             wand_available = True
 
-        if wand_available and self.extension and self.extension.lower() == 'pdf' and self.doc_file:
-            logger.debug('Generating a thumbnail for document: {0}'.format(self.title))
+        if wand_available and self.extension and self.extension.lower(
+        ) == 'pdf' and self.doc_file:
+            logger.debug(
+                'Generating a thumbnail for document: {0}'.format(
+                    self.title))
             with image.Image(filename=self.doc_file.path) as img:
                 img.sample(*size)
                 return img.make_blob('png')
         elif self.extension and self.extension.lower() in IMGTYPES and self.doc_file:
-            
+
             img = Image.open(self.doc_file.path)
             img = ImageOps.fit(img, size, Image.ANTIALIAS)
         else:
             filename = finders.find('documents/{0}-placeholder.png'.format(self.extension), False) or \
-                       finders.find('documents/generic-placeholder.png', False)
+                finders.find('documents/generic-placeholder.png', False)
 
             if not filename:
                 return None
@@ -97,13 +103,15 @@ class Document(ResourceBase):
 
     class Meta(ResourceBase.Meta):
         pass
-        
+
 
 def get_related_documents(resource):
     if isinstance(resource, Layer) or isinstance(resource, Map):
         ct = ContentType.objects.get_for_model(resource)
-        return Document.objects.filter(content_type=ct,object_id=resource.pk)
-    else: return None
+        return Document.objects.filter(content_type=ct, object_id=resource.pk)
+    else:
+        return None
+
 
 def pre_save_document(instance, sender, **kwargs):
     base_name, extension = None, None
@@ -118,7 +126,7 @@ def pre_save_document(instance, sender, **kwargs):
     if not instance.uuid:
         instance.uuid = str(uuid.uuid1())
     instance.csw_type = 'document'
-    
+
     if instance.abstract == '' or instance.abstract is None:
         instance.abstract = 'No abstract provided'
 
@@ -126,7 +134,8 @@ def pre_save_document(instance, sender, **kwargs):
         instance.title = instance.name
 
     if instance.resource:
-        instance.csw_wkt_geometry = instance.resource.geographic_bounding_box.split(';')[-1]
+        instance.csw_wkt_geometry = instance.resource.geographic_bounding_box.split(
+            ';')[-1]
         instance.bbox_x0 = instance.resource.bbox_x0
         instance.bbox_x1 = instance.resource.bbox_x1
         instance.bbox_y0 = instance.resource.bbox_y0
@@ -136,6 +145,7 @@ def pre_save_document(instance, sender, **kwargs):
         instance.bbox_x1 = 180
         instance.bbox_y0 = -90
         instance.bbox_y1 = 90
+
 
 def create_thumbnail(sender, instance, created, **kwargs):
     if not created:
@@ -147,8 +157,11 @@ def create_thumbnail(sender, instance, created, **kwargs):
         instance.thumbnail = Thumbnail()
 
     image = instance._render_thumbnail()
-     
-    instance.thumbnail.thumb_file.save('doc-%s-thumb.png' % instance.id, ContentFile(image))
+
+    instance.thumbnail.thumb_file.save(
+        'doc-%s-thumb.png' %
+        instance.id,
+        ContentFile(image))
     instance.thumbnail.thumb_spec = 'Rendered'
     instance.thumbnail.save()
     Link.objects.get_or_create(
@@ -163,10 +176,10 @@ def create_thumbnail(sender, instance, created, **kwargs):
 
 def update_documents_extent(sender, **kwargs):
     model = 'map' if isinstance(sender, Map) else 'layer'
-    ctype = ContentType.objects.get(model= model)
+    ctype = ContentType.objects.get(model=model)
     for document in Document.objects.filter(content_type=ctype, object_id=sender.id):
         document.save()
-    
+
 
 signals.pre_save.connect(pre_save_document, sender=Document)
 signals.post_save.connect(create_thumbnail, sender=Document)

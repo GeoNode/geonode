@@ -18,29 +18,52 @@ from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.models import Region
 
+
 class DocumentForm(TranslationModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
-    date.widget.widgets[0].attrs = {"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}
-    date.widget.widgets[1].attrs = {"class":"time"}
-    temporal_extent_start = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}))
-    temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}))
-    
+    date.widget.widgets[0].attrs = {
+        "class": "datepicker",
+        'data-date-format': "yyyy-mm-dd"}
+    date.widget.widgets[1].attrs = {"class": "time"}
+    temporal_extent_start = forms.DateField(
+        required=False,
+        widget=forms.DateInput(
+            attrs={
+                "class": "datepicker",
+                'data-date-format': "yyyy-mm-dd"}))
+    temporal_extent_end = forms.DateField(
+        required=False,
+        widget=forms.DateInput(
+            attrs={
+                "class": "datepicker",
+                'data-date-format': "yyyy-mm-dd"}))
+
     resource = forms.ChoiceField(label='Link to')
 
-    poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
-                                 label = "Point Of Contact", required=False,
-                                 queryset = Profile.objects.exclude(username='AnonymousUser'))
+    poc = forms.ModelChoiceField(
+        empty_label="Person outside GeoNode (fill form)",
+        label="Point Of Contact",
+        required=False,
+        queryset=Profile.objects.exclude(
+            username='AnonymousUser'))
 
-    metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
-                                             label = "Metadata Author", required=False,
-                                             queryset = Profile.objects.exclude(username='AnonymousUser'))
+    metadata_author = forms.ModelChoiceField(
+        empty_label="Person outside GeoNode (fill form)",
+        label="Metadata Author",
+        required=False,
+        queryset=Profile.objects.exclude(
+            username='AnonymousUser'))
 
-    keywords = taggit.forms.TagField(required=False,
-                                     help_text=_("A space or comma-separated list of keywords"))
+    keywords = taggit.forms.TagField(
+        required=False,
+        help_text=_("A space or comma-separated list of keywords"))
 
-    regions = TreeNodeMultipleChoiceField(required=False, queryset=Region.objects.all(), level_indicator=u'___')
-    regions.widget.attrs = {"size":20}
-    
+    regions = TreeNodeMultipleChoiceField(
+        required=False,
+        queryset=Region.objects.all(),
+        level_indicator=u'___')
+    regions.widget.attrs = {"size": 20}
+
     def __init__(self, *args, **kwargs):
         super(DocumentForm, self).__init__(*args, **kwargs)
         rbases = list(Layer.objects.all())
@@ -63,8 +86,14 @@ class DocumentForm(TranslationModelForm):
             help_text = self.fields[field].help_text
             self.fields[field].help_text = None
             if help_text != '':
-                self.fields[field].widget.attrs.update({'class':'has-popover', 'data-content':help_text, 'data-placement':'right', 'data-container':'body', 'data-html':'true'})
-    
+                self.fields[field].widget.attrs.update(
+                    {
+                        'class': 'has-popover',
+                        'data-content': help_text,
+                        'data-placement': 'right',
+                        'data-container': 'body',
+                        'data-html': 'true'})
+
     def save(self, *args, **kwargs):
         contenttype_id = None
         contenttype = None
@@ -80,22 +109,50 @@ class DocumentForm(TranslationModelForm):
         self.instance.object_id = object_id
         self.instance.content_type = contenttype
         return super(DocumentForm, self).save(*args, **kwargs)
-        
+
     class Meta:
         model = Document
-        exclude = ('uuid', 'contacts','workspace', 'store', 'name', 'uuid', 'storeType',
-                   'typename', 'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid', 'category',
-                   'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
-                   'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext', 
-                   'content_type', 'object_id', 'doc_file', 'extension', 
-                   'popular_count', 'share_count', 'thumbnail', 'doc_url')
+        exclude = (
+            'uuid',
+            'contacts',
+            'workspace',
+            'store',
+            'name',
+            'uuid',
+            'storeType',
+            'typename',
+            'bbox_x0',
+            'bbox_x1',
+            'bbox_y0',
+            'bbox_y1',
+            'srid',
+            'category',
+            'csw_typename',
+            'csw_schema',
+            'csw_mdsource',
+            'csw_type',
+            'csw_wkt_geometry',
+            'metadata_uploaded',
+            'metadata_xml',
+            'csw_anytext',
+            'content_type',
+            'object_id',
+            'doc_file',
+            'extension',
+            'popular_count',
+            'share_count',
+            'thumbnail',
+            'doc_url')
+
 
 class DocumentDescriptionForm(forms.Form):
     title = forms.CharField(300)
     abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)
 
+
 class DocumentReplaceForm(forms.ModelForm):
+
     """
     The form used to replace a document.
     """
@@ -116,7 +173,8 @@ class DocumentReplaceForm(forms.ModelForm):
             raise forms.ValidationError(_("Document must be a file or url."))
 
         if doc_file and doc_url:
-            raise forms.ValidationError(_("A document cannot have both a file and a url."))
+            raise forms.ValidationError(
+                _("A document cannot have both a file and a url."))
 
         return cleaned_data
 
@@ -126,19 +184,32 @@ class DocumentReplaceForm(forms.ModelForm):
         """
         doc_file = self.cleaned_data.get('doc_file')
 
-        if doc_file and not os.path.splitext(doc_file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
+        if doc_file and not os.path.splitext(
+                doc_file.name)[1].lower()[
+                1:] in settings.ALLOWED_DOCUMENT_TYPES:
             raise forms.ValidationError(_("This file type is not allowed"))
 
         return doc_file
 
 
 class DocumentCreateForm(TranslationModelForm):
+
     """
     The document upload form.
     """
-    permissions = forms.CharField(widget=HiddenInput(attrs={'name': 'permissions', 'id': 'permissions'}), required=True)
-    resource = forms.CharField(required=False, label=_("Link to"), widget=TextInput(attrs={'name': 'q',
-                                                                                           'id': 'resource'}))
+    permissions = forms.CharField(
+        widget=HiddenInput(
+            attrs={
+                'name': 'permissions',
+                'id': 'permissions'}),
+        required=True)
+    resource = forms.CharField(
+        required=False,
+        label=_("Link to"),
+        widget=TextInput(
+            attrs={
+                'name': 'q',
+                'id': 'resource'}))
 
     class Meta:
         model = Document
@@ -170,7 +241,8 @@ class DocumentCreateForm(TranslationModelForm):
             raise forms.ValidationError(_("Document must be a file or url."))
 
         if doc_file and doc_url:
-            raise forms.ValidationError(_("A document cannot have both a file and a url."))
+            raise forms.ValidationError(
+                _("A document cannot have both a file and a url."))
 
         return cleaned_data
 
@@ -180,7 +252,9 @@ class DocumentCreateForm(TranslationModelForm):
         """
         doc_file = self.cleaned_data.get('doc_file')
 
-        if doc_file and not os.path.splitext(doc_file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
+        if doc_file and not os.path.splitext(
+                doc_file.name)[1].lower()[
+                1:] in settings.ALLOWED_DOCUMENT_TYPES:
             raise forms.ValidationError(_("This file type is not allowed"))
 
         return doc_file
