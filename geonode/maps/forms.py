@@ -32,35 +32,77 @@ from geonode.base.models import Region
 
 import autocomplete_light
 
+
 class MapForm(TranslationModelForm):
     date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
-    date.widget.widgets[0].attrs = {"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}
-    date.widget.widgets[1].attrs = {"class":"time"}
-    temporal_extent_start = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}))
-    temporal_extent_end = forms.DateField(required=False,widget=forms.DateInput(attrs={"class":"datepicker", 'data-date-format': "yyyy-mm-dd"}))
-    poc = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
-                                 label = "Point Of Contact", required=False,
-                                 queryset = Profile.objects.exclude(username='AnonymousUser'),
-                                 widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
+    date.widget.widgets[0].attrs = {
+        "class": "datepicker",
+        'data-date-format': "yyyy-mm-dd"}
+    date.widget.widgets[1].attrs = {"class": "time"}
+    temporal_extent_start = forms.DateField(
+        required=False,
+        widget=forms.DateInput(
+            attrs={
+                "class": "datepicker",
+                'data-date-format': "yyyy-mm-dd"}))
+    temporal_extent_end = forms.DateField(
+        required=False,
+        widget=forms.DateInput(
+            attrs={
+                "class": "datepicker",
+                'data-date-format': "yyyy-mm-dd"}))
+    poc = forms.ModelChoiceField(
+        empty_label="Person outside GeoNode (fill form)",
+        label="Point Of Contact",
+        required=False,
+        queryset=Profile.objects.exclude(
+            username='AnonymousUser'),
+        widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
 
-    metadata_author = forms.ModelChoiceField(empty_label = "Person outside GeoNode (fill form)",
-                                             label = "Metadata Author", required=False,
-                                             queryset = Profile.objects.exclude(username='AnonymousUser'),
-                                             widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
-    
-    keywords = taggit.forms.TagField(required=False,
-                                     help_text=_("A space or comma-separated list of keywords"))
+    metadata_author = forms.ModelChoiceField(
+        empty_label="Person outside GeoNode (fill form)",
+        label="Metadata Author",
+        required=False,
+        queryset=Profile.objects.exclude(
+            username='AnonymousUser'),
+        widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
 
-    regions = TreeNodeMultipleChoiceField(required=False, queryset=Region.objects.all(), level_indicator=u'___') 
-    regions.widget.attrs = {"size":20}
+    keywords = taggit.forms.TagField(
+        required=False,
+        help_text=_("A space or comma-separated list of keywords"))
+
+    regions = TreeNodeMultipleChoiceField(
+        required=False,
+        queryset=Region.objects.all(),
+        level_indicator=u'___')
+    regions.widget.attrs = {"size": 20}
 
     class Meta:
         model = Map
-        exclude = ('contacts', 'zoom', 'projection', 'center_x', 'center_y', 'uuid',
-                   'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid', 'category',
-                   'csw_typename', 'csw_schema', 'csw_mdsource', 'csw_type',
-                   'csw_wkt_geometry', 'metadata_uploaded', 'metadata_xml', 'csw_anytext',
-                   'popular_count', 'share_count', 'thumbnail')
+        exclude = (
+            'contacts',
+            'zoom',
+            'projection',
+            'center_x',
+            'center_y',
+            'uuid',
+            'bbox_x0',
+            'bbox_x1',
+            'bbox_y0',
+            'bbox_y1',
+            'srid',
+            'category',
+            'csw_typename',
+            'csw_schema',
+            'csw_mdsource',
+            'csw_type',
+            'csw_wkt_geometry',
+            'metadata_uploaded',
+            'metadata_xml',
+            'csw_anytext',
+            'popular_count',
+            'share_count',
+            'thumbnail')
         widgets = autocomplete_light.get_widgets_dict(Map)
         widgets['abstract'] = forms.Textarea(attrs={'cols': 40, 'rows': 10})
 
@@ -70,4 +112,10 @@ class MapForm(TranslationModelForm):
             help_text = self.fields[field].help_text
             self.fields[field].help_text = None
             if help_text != '':
-                self.fields[field].widget.attrs.update({'class':'has-popover', 'data-content':help_text, 'data-placement':'right', 'data-container':'body', 'data-html':'true'})
+                self.fields[field].widget.attrs.update(
+                    {
+                        'class': 'has-popover',
+                        'data-content': help_text,
+                        'data-placement': 'right',
+                        'data-container': 'body',
+                        'data-html': 'true'})

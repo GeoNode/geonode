@@ -19,9 +19,9 @@
 
 from django.core.management.base import BaseCommand
 
+
 class Command(BaseCommand):
     help = 'Update the IP of local map layers'
-
 
     def handle(self, *args, **options):
         from geonode.maps.models import MapLayer
