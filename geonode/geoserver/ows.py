@@ -19,30 +19,34 @@
 
 import logging
 
-from lxml import etree
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from django.template.loader import render_to_string
 from owslib.wcs import WebCoverageService
 from owslib.coverage.wcsBase import ServiceException
-from owslib.util import http_post
 import urllib
 from geonode import GeoNodeException
-from geonode.geoserver.helpers import ogc_server_settings
 from re import sub
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_EXCLUDE_FORMATS = ['PNG', 'JPEG', 'GIF', 'TIFF']
-def wcs_links(wcs_url, identifier, bbox=None, crs=None, height=None, width=None,
-             exclude_formats=True,
-             quiet=True, version='1.0.0'):
-    #FIXME(Ariel): This would only work for layers marked for public view,
+
+
+def wcs_links(
+        wcs_url,
+        identifier,
+        bbox=None,
+        crs=None,
+        height=None,
+        width=None,
+        exclude_formats=True,
+        quiet=True,
+        version='1.0.0'):
+    # FIXME(Ariel): This would only work for layers marked for public view,
     # what about the ones with permissions enabled?
 
     try:
         wcs = WebCoverageService(wcs_url, version=version)
-    except ServiceException, err:
+    except ServiceException as err:
         err_msg = 'WCS server returned exception: %s' % err
         if not quiet:
             logger.warn(err_msg)
@@ -51,7 +55,7 @@ def wcs_links(wcs_url, identifier, bbox=None, crs=None, height=None, width=None,
     msg = ('Could not create WCS links for layer "%s",'
            ' it was not in the WCS catalog,'
            ' the available layers were: "%s"' % (
-            identifier, wcs.contents.keys()))
+               identifier, wcs.contents.keys()))
 
     output = []
     formats = []
@@ -67,19 +71,20 @@ def wcs_links(wcs_url, identifier, bbox=None, crs=None, height=None, width=None,
         for f in formats:
             if exclude_formats and f in DEFAULT_EXCLUDE_FORMATS:
                 continue
-            #roundabout, hacky way to accomplish getting a getCoverage url.
-            #nonetheless, it's better than having to load an entire large
-            #coverage just to generate a URL
+            # roundabout, hacky way to accomplish getting a getCoverage url.
+            # nonetheless, it's better than having to load an entire large
+            # coverage just to generate a URL
             fakeUrl = wcs.getCoverage(identifier=coverage.id, format=f,
                                       bbox=bbox, crs=crs, height=20,
                                       width=20).geturl()
             url = sub(r'(height=)20(\&width=)20', r'\g<1>{0}\g<2>{1}',
-                         fakeUrl).format(height, width)
+                      fakeUrl).format(height, width)
             # The outputs are: (ext, name, mime, url)
             # FIXME(Ariel): Find a way to get proper ext, name and mime
             # using format as a default for all is not good enough
             output.append((f, f, f, url))
     return output
+
 
 def _wfs_link(wfs_url, identifier, mime, extra_params):
     params = {
@@ -88,25 +93,25 @@ def _wfs_link(wfs_url, identifier, mime, extra_params):
         'request': 'GetFeature',
         'typename': identifier,
         'outputFormat': mime
-     }
+    }
     params.update(extra_params)
     return wfs_url + urllib.urlencode(params)
 
 
 def wfs_links(wfs_url, identifier):
-     types = [
-            ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
-            ("gml", _("GML 2.0"), "gml2", {}),
-            ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
-            ("csv", _("CSV"), "csv", {}),
-            ("excel", _("Excel"), "excel", {}),
-            ("json", _("GeoJSON"), "json", {'srsName': 'EPSG:4326'})
-     ]
-     output = []
-     for ext, name, mime, extra_params in types:
-         url = _wfs_link(wfs_url, identifier, mime, extra_params)
-         output.append((ext, name, mime, url))
-     return output
+    types = [
+        ("zip", _("Zipped Shapefile"), "SHAPE-ZIP", {'format_options': 'charset:UTF-8'}),
+        ("gml", _("GML 2.0"), "gml2", {}),
+        ("gml", _("GML 3.1.1"), "text/xml; subtype=gml/3.1.1", {}),
+        ("csv", _("CSV"), "csv", {}),
+        ("excel", _("Excel"), "excel", {}),
+        ("json", _("GeoJSON"), "json", {'srsName': 'EPSG:4326'})
+    ]
+    output = []
+    for ext, name, mime, extra_params in types:
+        url = _wfs_link(wfs_url, identifier, mime, extra_params)
+        output.append((ext, name, mime, url))
+    return output
 
 
 def _wms_link(wms_url, identifier, mime, height, width, srid, bbox):
@@ -121,6 +126,7 @@ def _wms_link(wms_url, identifier, mime, height, width, srid, bbox):
         'bbox': bbox,
     })
 
+
 def wms_links(wms_url, identifier, bbox, srid, height, width):
     types = [
         ("jpg", _("JPEG"), "image/jpeg"),
@@ -132,5 +138,3 @@ def wms_links(wms_url, identifier, bbox, srid, height, width):
         url = _wms_link(wms_url, identifier, mime, height, width, srid, bbox)
         output.append((ext, name, mime, url))
     return output
-
-

@@ -9,13 +9,10 @@ from socket import error as socket_error
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.core.files.base import ContentFile
 from django.conf import settings
-from django.core.exceptions import MultipleObjectsReturned
-
 
 from geonode import GeoNodeException
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes
-from geonode.geoserver.helpers import _user, _password
 from geonode.geoserver.helpers import set_styles, gs_catalog, get_coverage_grid_extent
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.geoserver.helpers import geoserver_upload
@@ -26,7 +23,6 @@ from geonode.layers.models import Layer
 from geonode.layers.utils import create_thumbnail
 from geonode.people.models import Profile
 
-from geoserver.catalog import FailedRequestError
 from geoserver.layer import Layer as GsLayer
 
 logger = logging.getLogger("geonode.geoserver.signals")
@@ -35,8 +31,9 @@ logger = logging.getLogger("geonode.geoserver.signals")
 def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer
     """
-    #cascading_delete should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
-    if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
+    # cascading_delete should only be called if
+    # ogc_server_settings.BACKEND_WRITE_ENABLED == True
+    if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
         cascading_delete(gs_catalog, instance.typename)
 
 
@@ -59,15 +56,14 @@ def geoserver_pre_save(instance, sender, **kwargs):
         return
 
     gs_name, workspace, values = geoserver_upload(instance,
-                                                    base_file.file.path,
-                                                    instance.owner,
-                                                    instance.name,
-                                                    overwrite=True,
-                                                    title=instance.title,
-                                                    abstract=instance.abstract,
-                                     #               keywords=instance.keywords,
-                                                    charset=instance.charset)
-
+                                                  base_file.file.path,
+                                                  instance.owner,
+                                                  instance.name,
+                                                  overwrite=True,
+                                                  title=instance.title,
+                                                  abstract=instance.abstract,
+                                                  #               keywords=instance.keywords,
+                                                  charset=instance.charset)
 
     # Set fields obtained via the geoserver upload.
     instance.name = gs_name
@@ -77,12 +73,14 @@ def geoserver_pre_save(instance, sender, **kwargs):
     for key in ['typename', 'store', 'storeType']:
         setattr(instance, key, values[key])
 
-    url = ogc_server_settings.internal_rest
-    gs_resource= gs_catalog.get_resource(instance.name,store=instance.store, workspace=instance.workspace)
+    gs_resource = gs_catalog.get_resource(
+        instance.name,
+        store=instance.store,
+        workspace=instance.workspace)
 
     gs_resource.title = instance.title
     gs_resource.abstract = instance.abstract
-    gs_resource.name= instance.name
+    gs_resource.name = instance.name
 
     # Get metadata links
     metadata_links = []
@@ -90,8 +88,9 @@ def geoserver_pre_save(instance, sender, **kwargs):
         metadata_links.append((link.name, link.mime, link.url))
 
     gs_resource.metadata_links = metadata_links
-    #gs_resource should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
-    if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
+    # gs_resource should only be called if
+    # ogc_server_settings.BACKEND_WRITE_ENABLED == True
+    if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
         gs_catalog.save(gs_resource)
 
     gs_layer = gs_catalog.get_layer(instance.name)
@@ -99,9 +98,11 @@ def geoserver_pre_save(instance, sender, **kwargs):
     if instance.poc and instance.poc:
         gs_layer.attribution = str(instance.poc)
         profile = Profile.objects.get(username=instance.poc.username)
-        gs_layer.attribution_link = settings.SITEURL[:-1] + profile.get_absolute_url()
-        #gs_layer should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
-        if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
+        gs_layer.attribution_link = settings.SITEURL[
+            :-1] + profile.get_absolute_url()
+        # gs_layer should only be called if
+        # ogc_server_settings.BACKEND_WRITE_ENABLED == True
+        if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
             gs_catalog.save(gs_layer)
 
     """Get information from geoserver.
@@ -113,21 +114,21 @@ def geoserver_pre_save(instance, sender, **kwargs):
        * Download links (WMS, WCS or WFS and KML)
        * Styles (SLD)
     """
-    gs_resource= gs_catalog.get_resource(instance.name)
+    gs_resource = gs_catalog.get_resource(instance.name)
 
     bbox = gs_resource.latlon_bbox
 
-    #FIXME(Ariel): Correct srid setting below
-    #self.srid = gs_resource.src
+    # FIXME(Ariel): Correct srid setting below
+    # self.srid = gs_resource.src
 
-    instance.srid_url = "http://www.spatialreference.org/ref/" + instance.srid.replace(':','/').lower() + "/"
+    instance.srid_url = "http://www.spatialreference.org/ref/" + \
+        instance.srid.replace(':', '/').lower() + "/"
 
     # Set bounding box values
     instance.bbox_x0 = bbox[0]
     instance.bbox_x1 = bbox[1]
     instance.bbox_y0 = bbox[2]
     instance.bbox_y1 = bbox[3]
-
 
 
 def geoserver_post_save(instance, sender, **kwargs):
@@ -138,15 +139,15 @@ def geoserver_post_save(instance, sender, **kwargs):
     """
 
     if instance.storeType == "remoteStore":
-        #Save layer attributes
+        # Save layer attributes
         set_attributes(instance)
         return
 
-
-    url = ogc_server_settings.internal_rest
-
     try:
-        gs_resource= gs_catalog.get_resource(instance.name, store=instance.store, workspace=instance.workspace)
+        gs_resource = gs_catalog.get_resource(
+            instance.name,
+            store=instance.store,
+            workspace=instance.workspace)
     except socket_error as serr:
         if serr.errno != errno.ECONNREFUSED:
             # Not the error we are looking for, re-raise
@@ -160,8 +161,9 @@ def geoserver_post_save(instance, sender, **kwargs):
     if any(instance.keyword_list()):
         gs_resource.keywords = instance.keyword_list()
 
-        #gs_resource should only be called if ogc_server_settings.BACKEND_WRITE_ENABLED == True
-        if getattr(ogc_server_settings,"BACKEND_WRITE_ENABLED", True):
+        # gs_resource should only be called if
+        # ogc_server_settings.BACKEND_WRITE_ENABLED == True
+        if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
             gs_catalog.save(gs_resource)
 
     bbox = gs_resource.latlon_bbox
@@ -176,39 +178,43 @@ def geoserver_post_save(instance, sender, **kwargs):
     # Set download links for WMS, WCS or WFS and KML
 
     links = wms_links(ogc_server_settings.public_url + 'wms?',
-                    instance.typename.encode('utf-8'), instance.bbox_string,
-                    instance.srid, height, width)
+                      instance.typename.encode('utf-8'), instance.bbox_string,
+                      instance.srid, height, width)
 
     for ext, name, mime, wms_url in links:
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        name=ugettext(name),
-                        defaults=dict(
-                            extension=ext,
-                            url=wms_url,
-                            mime=mime,
-                            link_type='image',
-                           )
-                        )
+        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                   name=ugettext(name),
+                                   defaults=dict(
+                                       extension=ext,
+                                       url=wms_url,
+                                       mime=mime,
+                                       link_type='image',
+                                   )
+                                   )
 
     if instance.storeType == "dataStore":
-        links = wfs_links(ogc_server_settings.public_url + 'wfs?', instance.typename.encode('utf-8'))
+        links = wfs_links(
+            ogc_server_settings.public_url +
+            'wfs?',
+            instance.typename.encode('utf-8'))
         for ext, name, mime, wfs_url in links:
-            if mime=='SHAPE-ZIP':
+            if mime == 'SHAPE-ZIP':
                 name = 'Zipped Shapefile'
-            Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                            url=wfs_url,
-                            defaults=dict(
-                                extension=ext,
-                                name=name,
-                                mime=mime,
-                                url=wfs_url,
-                                link_type='data',
-                            )
-                        )
+            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                       url=wfs_url,
+                                       defaults=dict(
+                                           extension=ext,
+                                           name=name,
+                                           mime=mime,
+                                           url=wfs_url,
+                                           link_type='data',
+                                       )
+                                       )
     if gs_resource.store.type.lower() == 'geogit':
-        repo_url = '{url}geogit/{workspace}:{store}'.format(url=ogc_server_settings.public_url,
-                                                            workspace=instance.workspace,
-                                                            store=instance.store)
+        repo_url = '{url}geogit/{workspace}:{store}'.format(
+            url=ogc_server_settings.public_url,
+            workspace=instance.workspace,
+            store=instance.store)
 
         path = gs_resource.dom.findall('nativeName')
 
@@ -224,9 +230,10 @@ def geoserver_post_save(instance, sender, **kwargs):
                                                  )
                                    )
 
-        command_url = lambda command: "{repo_url}/{command}.json?{path}".format(repo_url=repo_url,
-                                                                                path=path,
-                                                                                command=command)
+        command_url = lambda command: "{repo_url}/{command}.json?{path}".format(
+            repo_url=repo_url,
+            path=path,
+            command=command)
 
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=command_url('log'),
@@ -246,70 +253,69 @@ def geoserver_post_save(instance, sender, **kwargs):
                                                  )
                                    )
 
-
     elif instance.storeType == 'coverageStore':
-        #FIXME(Ariel): This works for public layers, does it work for restricted too?
+        # FIXME(Ariel): This works for public layers, does it work for restricted too?
         # would those end up with no geotiff links, like, forever?
         permissions = instance.get_all_level_info()
-       
-        instance.set_permissions({'users':{'AnonymousUser': ['view_resourcebase']}})
+
+        instance.set_permissions(
+            {'users': {'AnonymousUser': ['view_resourcebase']}})
 
         try:
-            #Potentially 3 dimensions can be returned by the grid if there is a z
-            #axis.  Since we only want width/height, slice to the second dimension
+            # Potentially 3 dimensions can be returned by the grid if there is a z
+            # axis.  Since we only want width/height, slice to the second
+            # dimension
             covWidth, covHeight = get_coverage_grid_extent(instance)[:2]
-        except GeoNodeException, e:
+        except GeoNodeException as e:
             msg = _('Could not create a download link for layer.')
             logger.warn(msg, e)
         else:
 
-            links = wcs_links(ogc_server_settings.public_url + 'wcs?', instance.typename.encode('utf-8'),
-                          bbox=gs_resource.native_bbox[:-1],
-                          crs=gs_resource.native_bbox[-1],
-                          height=str(covHeight), width=str(covWidth))
+            links = wcs_links(ogc_server_settings.public_url + 'wcs?',
+                              instance.typename.encode('utf-8'),
+                              bbox=gs_resource.native_bbox[:-1],
+                              crs=gs_resource.native_bbox[-1],
+                              height=str(covHeight),
+                              width=str(covWidth))
 
             for ext, name, mime, wcs_url in links:
-                Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                                url=wcs_url,
-                                defaults=dict(
-                                    extension=ext,
-                                    name=name,
-                                    mime=mime,
-                                    link_type='data',
-                                )
-                            )
+                Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                           url=wcs_url,
+                                           defaults=dict(
+                                               extension=ext,
+                                               name=name,
+                                               mime=mime,
+                                               link_type='data',
+                                           )
+                                           )
 
         instance.set_permissions(permissions)
 
-    kml_reflector_link_download = ogc_server_settings.public_url + "wms/kml?" + urllib.urlencode({
-        'layers': instance.typename.encode('utf-8'),
-        'mode': "download"
-    })
+    kml_reflector_link_download = ogc_server_settings.public_url + "wms/kml?" + \
+        urllib.urlencode({'layers': instance.typename.encode('utf-8'), 'mode': "download"})
 
-    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=kml_reflector_link_download,
-                        defaults=dict(
-                            extension='kml',
-                            name=_("KML"),
-                            mime='text/xml',
-                            link_type='data',
-                        )
-                    )
+    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                               url=kml_reflector_link_download,
+                               defaults=dict(
+                                   extension='kml',
+                                   name=_("KML"),
+                                   mime='text/xml',
+                                   link_type='data',
+                               )
+                               )
 
-    kml_reflector_link_view = ogc_server_settings.public_url + "wms/kml?" + urllib.urlencode({
-        'layers': instance.typename.encode('utf-8'),
-        'mode': "refresh"
-    })
+    kml_reflector_link_view = ogc_server_settings.public_url + "wms/kml?" + \
+        urllib.urlencode({'layers': instance.typename.encode('utf-8'), 'mode': "refresh"})
 
-    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=kml_reflector_link_view,
-                        defaults=dict(
-                            extension='kml',
-                            name="View in Google Earth",
-                            mime='text/xml',
-                            link_type='data',
-                        )
-                    )
+    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                               url=kml_reflector_link_view,
+                               defaults=dict(
+                                   extension='kml',
+                                   name="View in Google Earth",
+                                   mime='text/xml',
+                                   link_type='data',
+                               )
+                               )
 
     tile_url = ('%sgwc/service/gmaps?' % ogc_server_settings.public_url +
                 'layers=%s' % instance.typename.encode('utf-8') +
@@ -317,43 +323,42 @@ def geoserver_post_save(instance, sender, **kwargs):
                 '&format=image/png8'
                 )
 
-    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=tile_url,
-                        defaults=dict(
-                            extension='tiles',
-                            name=_("Tiles"),
-                            mime='image/png',
-                            link_type='image',
-                            )
-                        )
-
+    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                               url=tile_url,
+                               defaults=dict(
+                                   extension='tiles',
+                                   name=_("Tiles"),
+                                   mime='image/png',
+                                   link_type='image',
+                               )
+                               )
 
     wms_path = '%s/%s/wms' % (instance.workspace, instance.name)
     ows_url = urljoin(ogc_server_settings.public_url, wms_path)
 
-    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=ows_url,
-                        defaults=dict(
-                            extension='html',
-                            name=_("OWS"),
-                            url=ows_url,
-                            mime='text/html',
-                            link_type='OGC:WMS',
-                            )
-                        )
+    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                               url=ows_url,
+                               defaults=dict(
+                                   extension='html',
+                                   name=_("OWS"),
+                                   url=ows_url,
+                                   mime='text/html',
+                                   link_type='OGC:WMS',
+                               )
+                               )
 
+    html_link_url = '%s%s' % (
+        settings.SITEURL[:-1], instance.get_absolute_url())
 
-    html_link_url = '%s%s' % (settings.SITEURL[:-1], instance.get_absolute_url())
-
-    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=html_link_url,
-                        defaults=dict(
-                            extension='html',
-                            name=instance.typename,
-                            mime='text/html',
-                            link_type='html',
-                            )
-                        )
+    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                               url=html_link_url,
+                               defaults=dict(
+                                   extension='html',
+                                   name=instance.typename,
+                                   mime='text/html',
+                                   link_type='html',
+                               )
+                               )
 
     params = {
         'layers': instance.typename.encode('utf-8'),
@@ -365,9 +370,10 @@ def geoserver_post_save(instance, sender, **kwargs):
     # Avoid using urllib.urlencode here because it breaks the url.
     # commas and slashes in values get encoded and then cause trouble
     # with the WMS parser.
-    p = "&".join("%s=%s"%item for item in params.items())
+    p = "&".join("%s=%s" % item for item in params.items())
 
-    thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + "wms/reflect?" + p
+    thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
+        "wms/reflect?" + p
 
     # This is a workaround for development mode where cookies are not shared and the layer is not public so
     # not visible through geoserver
@@ -381,68 +387,72 @@ def geoserver_post_save(instance, sender, **kwargs):
     if settings.DEBUG:
         instance.set_permissions(json.loads(current_perms))
 
-    legend_url = ogc_server_settings.PUBLIC_LOCATION +'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER='+instance.typename+'&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+    legend_url = ogc_server_settings.PUBLIC_LOCATION + 'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+        instance.typename + '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
-    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=legend_url,
-                        defaults=dict(
-                            extension='png',
-                            name=_('Legend'),
-                            url=legend_url,
-                            mime='image/png',
-                            link_type='image',
-                        )
-                    )
+    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                               url=legend_url,
+                               defaults=dict(
+                                   extension='png',
+                                   name=_('Legend'),
+                                   url=legend_url,
+                                   mime='image/png',
+                                   link_type='image',
+                               )
+                               )
 
     ogc_wms_url = ogc_server_settings.public_url + 'wms?'
-    Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=ogc_wms_url,
-                        defaults=dict(
-                            extension='html',
-                            name=instance.name,
-                            url=ogc_wms_url,
-                            mime='text/html',
-                            link_type='OGC:WMS',
-                        )
-                    )
-                        
+    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                               url=ogc_wms_url,
+                               defaults=dict(
+                                   extension='html',
+                                   name=instance.name,
+                                   url=ogc_wms_url,
+                                   mime='text/html',
+                                   link_type='OGC:WMS',
+                               )
+                               )
+
     if instance.storeType == "dataStore":
         ogc_wfs_url = ogc_server_settings.public_url + 'wfs?'
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                            url=ogc_wfs_url,
-                            defaults=dict(
-                                extension='html',
-                                name=instance.name,
-                                url=ogc_wfs_url,
-                                mime='text/html',
-                                link_type='OGC:WFS',
-                            )
-                        )
+        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                   url=ogc_wfs_url,
+                                   defaults=dict(
+                                       extension='html',
+                                       name=instance.name,
+                                       url=ogc_wfs_url,
+                                       mime='text/html',
+                                       link_type='OGC:WFS',
+                                   )
+                                   )
 
     if instance.storeType == "coverageStore":
         ogc_wcs_url = ogc_server_settings.public_url + 'wcs?'
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                            url=ogc_wcs_url,
-                            defaults=dict(
-                                extension='html',
-                                name=instance.name,
-                                url=ogc_wcs_url,
-                                mime='text/html',
-                                link_type='OGC:WCS',
-                            )
-                        )
+        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                   url=ogc_wcs_url,
+                                   defaults=dict(
+                                       extension='html',
+                                       name=instance.name,
+                                       url=ogc_wcs_url,
+                                       mime='text/html',
+                                       link_type='OGC:WCS',
+                                   )
+                                   )
 
-    #remove links that belong to and old address
+    # remove links that belong to and old address
 
     for link in instance.link_set.all():
-        if not urlparse(settings.SITEURL).hostname == urlparse(link.url).hostname and not \
-                    urlparse(ogc_server_settings.public_url).hostname == urlparse(link.url).hostname:
+        if not urlparse(
+            settings.SITEURL).hostname == urlparse(
+            link.url).hostname and not urlparse(
+            ogc_server_settings.public_url).hostname == urlparse(
+                link.url).hostname:
             link.delete()
 
-    #Save layer attributes
+    # Save layer attributes
     set_attributes(instance)
 
-    #Save layer styles
+    # Save layer styles
     set_styles(instance, gs_catalog)
 
 
@@ -453,8 +463,11 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
         return
 
     try:
-        instance.local = isinstance(gs_catalog.get_layer(instance.name),GsLayer)
-    except EnvironmentError, e:
+        instance.local = isinstance(
+            gs_catalog.get_layer(
+                instance.name),
+            GsLayer)
+    except EnvironmentError as e:
         if e.errno == errno.ECONNREFUSED:
             msg = 'Could not connect to catalog to verify if layer %s was local' % instance.name
             logger.warn(msg, e)
@@ -467,7 +480,9 @@ def geoserver_post_save_map(instance, sender, **kwargs):
     local_layers = []
     for layer in instance.layers:
         if layer.local:
-            local_layers.append(Layer.objects.get(typename=layer.name).typename)
+            local_layers.append(
+                Layer.objects.get(
+                    typename=layer.name).typename)
 
     image = None
 
@@ -480,26 +495,28 @@ def geoserver_post_save_map(instance, sender, **kwargs):
             'height': 150,
         }
 
-        # Add the bbox param only if the bbox is different to [None, None, None, None]
+        # Add the bbox param only if the bbox is different to [None, None,
+        # None, None]
         if None not in instance.bbox:
             params['bbox'] = instance.bbox_string
 
         # Avoid using urllib.urlencode here because it breaks the url.
         # commas and slashes in values get encoded and then cause trouble
         # with the WMS parser.
-        p = "&".join("%s=%s"%item for item in params.items())
+        p = "&".join("%s=%s" % item for item in params.items())
 
-        thumbnail_remote_url = ogc_server_settings.LOCATION + "wms/reflect?" + p
+        thumbnail_remote_url = ogc_server_settings.LOCATION + \
+            "wms/reflect?" + p
 
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=thumbnail_remote_url,
-                        defaults=dict(
-                            extension='png',
-                            name=_("Remote Thumbnail"),
-                            mime='image/png',
-                            link_type='image',
-                            )
-                        )
+        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                   url=thumbnail_remote_url,
+                                   defaults=dict(
+                                       extension='png',
+                                       name=_("Remote Thumbnail"),
+                                       mime='image/png',
+                                       link_type='image',
+                                   )
+                                   )
 
         # Download thumbnail and save it locally.
         resp, image = http_client.request(thumbnail_remote_url)
@@ -516,18 +533,23 @@ def geoserver_post_save_map(instance, sender, **kwargs):
         else:
             instance.thumbnail = Thumbnail()
 
-        instance.thumbnail.thumb_file.save('map-%s-thumb.png' % instance.id, ContentFile(image))
+        instance.thumbnail.thumb_file.save(
+            'map-%s-thumb.png' %
+            instance.id,
+            ContentFile(image))
         instance.thumbnail.thumb_spec = thumbnail_remote_url
         instance.thumbnail.save()
 
-        thumbnail_url = urljoin(settings.SITEURL, instance.thumbnail.thumb_file.url)
+        thumbnail_url = urljoin(
+            settings.SITEURL,
+            instance.thumbnail.thumb_file.url)
 
-        Link.objects.get_or_create(resource= instance.resourcebase_ptr,
-                        url=thumbnail_url,
-                        defaults=dict(
-                            name=_('Thumbnail'),
-                            extension='png',
-                            mime='image/png',
-                            link_type='image',
-                            )
-                        )
+        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                   url=thumbnail_url,
+                                   defaults=dict(
+                                       name=_('Thumbnail'),
+                                       extension='png',
+                                       mime='image/png',
+                                       link_type='image',
+                                   )
+                                   )
