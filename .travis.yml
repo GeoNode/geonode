@@ -16,6 +16,7 @@ install:
   - sudo apt-get install -y --force-yes openjdk-6-jdk ant maven2 libjai-imageio-core-java --no-install-recommends
   - sudo apt-get install -y python-gdal
   - pip install -e . --use-mirrors
+  - pip install flake8
 
 before_script:
   - paver setup
@@ -26,6 +27,7 @@ script:
   - paver test
   - paver test_integration
   - paver test_integration -n geonode.tests.csw
+  - flake8 geonode
 #  - paver test_javascript
 
 after_script:
