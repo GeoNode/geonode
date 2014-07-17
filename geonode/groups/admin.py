@@ -11,7 +11,7 @@ class GroupAdmin(admin.ModelAdmin):
     inlines = [
         GroupMemberInline
     ]
-    exclude = ['group',]
+    exclude = ['group', ]
 
 admin.site.register(GroupProfile, GroupAdmin)
 
