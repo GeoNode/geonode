@@ -22,10 +22,12 @@ import tempfile
 from django import forms
 from django.conf import settings
 from geonode.layers.forms import JSONField
-from geonode.upload.models import UploadFile 
+from geonode.upload.models import UploadFile
 from geonode.geoserver.helpers import ogc_server_settings
 
+
 class UploadFileForm(forms.ModelForm):
+
     class Meta:
         model = UploadFile
 
@@ -46,11 +48,19 @@ class LayerUploadForm(forms.Form):
     layer_title = forms.CharField(required=False)
     permissions = JSONField()
 
-    spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file", "xml_file")
+    spatial_files = (
+        "base_file",
+        "dbf_file",
+        "shx_file",
+        "prj_file",
+        "sld_file",
+        "xml_file")
 
     def clean(self):
-        requires_datastore = () if ogc_server_settings.DATASTORE else ('.csv','.kml')
-        types = [ t for t in files.types if t.code not in requires_datastore]
+        requires_datastore = () if ogc_server_settings.DATASTORE else (
+            '.csv',
+            '.kml')
+        types = [t for t in files.types if t.code not in requires_datastore]
         supported_type = lambda ext: any([t.matches(ext) for t in types])
 
         cleaned = super(LayerUploadForm, self).clean()
@@ -60,22 +70,27 @@ class LayerUploadForm(forms.Form):
             pass
         elif not supported_type(base_ext.lower()[1:]):
             supported = " , ".join([t.name for t in types])
-            raise forms.ValidationError("%s files are supported. You uploaded a %s file" % (supported, base_ext))
+            raise forms.ValidationError(
+                "%s files are supported. You uploaded a %s file" %
+                (supported, base_ext))
         if base_ext.lower() == ".shp":
             dbf_file = cleaned["dbf_file"]
             shx_file = cleaned["shx_file"]
             if dbf_file is None or shx_file is None:
-                raise forms.ValidationError("When uploading Shapefiles, .SHX and .DBF files are also required.")
+                raise forms.ValidationError(
+                    "When uploading Shapefiles, .SHX and .DBF files are also required.")
             dbf_name, __ = os.path.splitext(dbf_file.name)
             shx_name, __ = os.path.splitext(shx_file.name)
             if dbf_name != base_name or shx_name != base_name:
-                raise forms.ValidationError("It looks like you're uploading "
+                raise forms.ValidationError(
+                    "It looks like you're uploading "
                     "components from different Shapefiles. Please "
                     "double-check your file selections.")
             if cleaned["prj_file"] is not None:
                 prj_file = cleaned["prj_file"].name
                 if os.path.splitext(prj_file)[0] != base_name:
-                    raise forms.ValidationError("It looks like you're "
+                    raise forms.ValidationError(
+                        "It looks like you're "
                         "uploading components from different Shapefiles. "
                         "Please double-check your file selections.")
         return cleaned
@@ -90,7 +105,7 @@ class LayerUploadForm(forms.Form):
                     for c in f.chunks():
                         writable.write(c)
         absolute_base_file = os.path.join(tempdir,
-                self.cleaned_data["base_file"].name)
+                                          self.cleaned_data["base_file"].name)
         return tempdir, absolute_base_file
 
 
@@ -98,12 +113,12 @@ class TimeForm(forms.Form):
     presentation_strategy = forms.CharField(required=False)
     precision_value = forms.IntegerField(required=False)
     precision_step = forms.ChoiceField(required=False, choices=[
-        ('years',)*2,
-        ('months',)*2,
-        ('days',)*2,
-        ('hours',)*2,
-        ('minutes',)*2,
-        ('seconds',)*2
+        ('years',) * 2,
+        ('months',) * 2,
+        ('days',) * 2,
+        ('hours',) * 2,
+        ('minutes',) * 2,
+        ('seconds',) * 2
     ])
 
     def __init__(self, *args, **kwargs):
@@ -117,8 +132,10 @@ class TimeForm(forms.Form):
         self._build_choice('text_attribute', text_names)
         self._build_choice('end_text_attribute', text_names)
         if text_names:
-            self.fields['text_attribute_format'] = forms.CharField(required=False)
-            self.fields['end_text_attribute_format'] = forms.CharField(required=False)
+            self.fields['text_attribute_format'] = forms.CharField(
+                required=False)
+            self.fields['end_text_attribute_format'] = forms.CharField(
+                required=False)
         self._build_choice('year_attribute', year_names)
         self._build_choice('end_year_attribute', year_names)
 

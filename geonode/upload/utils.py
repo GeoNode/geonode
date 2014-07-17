@@ -20,24 +20,23 @@ import logging
 import os
 import re
 from django.conf import settings
-from geonode.layers.models import Layer
 from geonode.upload.files import _clean_string, SpatialFiles
 from geoserver.catalog import FailedRequestError
-from geonode.geoserver.helpers import ogc_server_settings, gs_catalog, gs_uploader
+from geonode.geoserver.helpers import ogc_server_settings, gs_catalog
 from zipfile import ZipFile
 
 logger = logging.getLogger(__name__)
 
 
 def get_upload_type(filename):
-    # @todo - this is bad and all file handling should be fixed now 
+    # @todo - this is bad and all file handling should be fixed now
     # (but I'm working on something else)!
-    
+
     base_name, extension = os.path.splitext(filename)
     extension = extension[1:].lower()
-    
+
     possible_types = set(('shp', 'csv', 'tif', 'kml'))
-    
+
     if extension == 'zip':
         zf = ZipFile(filename, 'r')
         file_list = zf.namelist()
@@ -47,7 +46,9 @@ def get_upload_type(filename):
             ext = ext[1:].lower()
             if ext in possible_types:
                 return ext
-        raise Exception('Could not find a supported upload type in %s' % file_list)
+        raise Exception(
+            'Could not find a supported upload type in %s' %
+            file_list)
     else:
         assert extension in possible_types
         return extension
@@ -84,7 +85,7 @@ def rename_and_prepare(base_file):
     is/was, geonode will compute a name based on the zipfile but the
     importer will use names as it unpacks the zipfile. Renaming all
     the various pieces seems a burden on the client
-    
+
     Additionally, if a SLD file is present, extract this.
     """
     name, ext = os.path.splitext(os.path.basename(base_file))
@@ -104,7 +105,7 @@ def rename_and_prepare(base_file):
                 main_file = f
             elif ext.lower() == '.csv':
                 main_file = f
-                
+
             # if an sld is there, extract so it can be found
             if ext.lower() == '.sld':
                 zf.extract(f, dirname)
@@ -128,6 +129,7 @@ def rename_and_prepare(base_file):
         _clean_string(os.path.basename(base_file))
     )
 
+
 def create_geoserver_db_featurestore(store_type=None, store_name=None):
     cat = gs_catalog
     dsname = ogc_server_settings.DATASTORE
@@ -144,14 +146,19 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
             return None
     except FailedRequestError:
         if store_type == 'geogit':
-            if store_name is None and hasattr(settings, 'GEOGIT_DATASTORE_NAME'):
+            if store_name is None and hasattr(
+                    settings,
+                    'GEOGIT_DATASTORE_NAME'):
                 store_name = settings.GEOGIT_DATASTORE_NAME
             logger.info(
-                'Creating target datastore %s' % settings.GEOGIT_DATASTORE_NAME)
+                'Creating target datastore %s' %
+                settings.GEOGIT_DATASTORE_NAME)
             ds = cat.create_datastore(store_name)
             ds.type = "GeoGIT"
             ds.connection_parameters.update(
-                geogit_repository=os.path.join(ogc_server_settings.GEOGIT_DATASTORE_DIR, store_name),
+                geogit_repository=os.path.join(
+                    ogc_server_settings.GEOGIT_DATASTORE_DIR,
+                    store_name),
                 branch="master",
                 create="true")
             cat.save(ds)
@@ -172,4 +179,3 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
             ds = cat.get_store(dsname)
 
     return ds
-
