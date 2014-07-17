@@ -8,15 +8,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"> -->
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
-      <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       {% if DEBUG_STATIC %}
       <link href="{{ STATIC_URL }}lib/css/jquery.dataTables.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}lib/css/select2.css" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/jquery-ui.css" rel="stylesheet"/>
       {% endif %}
+      <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
       {% block extra_head %}
       {% endblock %}
     {% endblock %}
