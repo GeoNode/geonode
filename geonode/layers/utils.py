@@ -43,8 +43,8 @@ from django.conf import settings
 from geonode import GeoNodeException
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, UploadSession
-from geonode.base.models import (Link, ResourceBase, Thumbnail, 
-    SpatialRepresentationType, TopicCategory)
+from geonode.base.models import (Link, ResourceBase, Thumbnail,
+                                 SpatialRepresentationType, TopicCategory)
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.utils import http_client
 from geonode.layers.metadata import set_metadata

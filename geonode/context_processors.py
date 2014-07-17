@@ -21,29 +21,64 @@ from django.conf import settings
 from geonode import get_version
 from geonode.catalogue import default_catalogue_backend
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
 
 
 def resource_urls(request):
     """Global values to pass to templates"""
     site = Site.objects.get_current()
     defaults = dict(
-        STATIC_URL=settings.STATIC_URL,  
+        STATIC_URL=settings.STATIC_URL,
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
         REGISTRATION_OPEN=settings.REGISTRATION_OPEN,
         VERSION=get_version(),
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
-        DEBUG_STATIC=getattr(settings, "DEBUG_STATIC", False),
-        PROXY_URL=getattr(settings, 'PROXY_URL', '/proxy/?url='),
-        SOCIAL_BUTTONS=getattr(settings, 'SOCIAL_BUTTONS', True),
-        HAYSTACK_SEARCH=getattr(settings, 'HAYSTACK_SEARCH', False),
-        SKIP_PERMS_FILTER=getattr(settings, 'SKIP_PERMS_FILTER', False),
-        HAYSTACK_FACET_COUNTS=getattr(settings, 'HAYSTACK_FACET_COUNTS', False),
-        CLIENT_RESULTS_LIMIT=getattr(settings, 'CLIENT_RESULTS_LIMIT', 10),
-        LICENSES_ENABLED = getattr(settings, 'LICENSES', dict()).get('ENABLED', False),
-        LICENSES_DETAIL = getattr(settings, 'LICENSES', dict()).get('DETAIL', 'never'),
-        LICENSES_METADATA = getattr(settings, 'LICENSES', dict()).get('METADATA', 'never'),
+        DEBUG_STATIC=getattr(
+            settings,
+            "DEBUG_STATIC",
+            False),
+        PROXY_URL=getattr(
+            settings,
+            'PROXY_URL',
+            '/proxy/?url='),
+        SOCIAL_BUTTONS=getattr(
+            settings,
+            'SOCIAL_BUTTONS',
+            True),
+        HAYSTACK_SEARCH=getattr(
+            settings,
+            'HAYSTACK_SEARCH',
+            False),
+        SKIP_PERMS_FILTER=getattr(
+            settings,
+            'SKIP_PERMS_FILTER',
+            False),
+        HAYSTACK_FACET_COUNTS=getattr(
+            settings,
+            'HAYSTACK_FACET_COUNTS',
+            False),
+        CLIENT_RESULTS_LIMIT=getattr(
+            settings,
+            'CLIENT_RESULTS_LIMIT',
+            10),
+        LICENSES_ENABLED=getattr(
+            settings,
+            'LICENSES',
+            dict()).get(
+            'ENABLED',
+            False),
+        LICENSES_DETAIL=getattr(
+            settings,
+            'LICENSES',
+            dict()).get(
+            'DETAIL',
+            'never'),
+        LICENSES_METADATA=getattr(
+            settings,
+            'LICENSES',
+            dict()).get(
+            'METADATA',
+            'never'),
     )
-    
+
     return defaults

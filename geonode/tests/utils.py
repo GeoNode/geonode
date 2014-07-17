@@ -17,9 +17,11 @@
 #
 #########################################################################
 
-import urllib, urllib2, cookielib
+import urllib
+import urllib2
 import contextlib
 from geonode.maps.models import Layer
+
 
 def get_web_page(url, username=None, password=None, login_url=None):
     """Get url page possible with username and password.
@@ -34,18 +36,19 @@ def get_web_page(url, username=None, password=None, login_url=None):
         opener.open(login_url)
 
         try:
-            token = [x.value for x in cookies.cookiejar if x.name == 'csrftoken'][0]
+            token = [
+                x.value for x in cookies.cookiejar if x.name == 'csrftoken'][0]
         except IndexError:
             return False, "no csrftoken"
 
-        params = dict(username=username, password=password, \
-            this_is_the_login_form=True,
-            csrfmiddlewaretoken=token,
-            )
+        params = dict(username=username, password=password,
+                      this_is_the_login_form=True,
+                      csrfmiddlewaretoken=token,
+                      )
         encoded_params = urllib.urlencode(params)
 
         with contextlib.closing(opener.open(login_url, encoded_params)) as f:
-            html = f.read()
+            f.read()
 
     elif username is not None:
         # Login using basic auth
@@ -61,12 +64,12 @@ def get_web_page(url, username=None, password=None, login_url=None):
 
     try:
         pagehandle = urllib2.urlopen(url)
-    except urllib2.HTTPError, e:
+    except urllib2.HTTPError as e:
         msg = ('The server couldn\'t fulfill the request. '
-                'Error code: %s' % e.code)
+               'Error code: %s' % e.code)
         e.args = (msg,)
         raise
-    except urllib2.URLError, e:
+    except urllib2.URLError as e:
         msg = 'Could not open URL "%s": %s' % (url, e)
         e.args = (msg,)
         raise
@@ -75,10 +78,11 @@ def get_web_page(url, username=None, password=None, login_url=None):
 
     return page
 
+
 def check_layer(uploaded):
     """Verify if an object is a valid Layer.
     """
     msg = ('Was expecting layer object, got %s' % (type(uploaded)))
-    assert type(uploaded) is Layer, msg
+    assert isinstance(uploaded, Layer), msg
     msg = ('The layer does not have a valid name: %s' % uploaded.name)
     assert len(uploaded.name) > 0, msg

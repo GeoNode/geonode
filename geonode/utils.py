@@ -19,35 +19,31 @@
 
 import httplib2
 import base64
-import re
 import math
 import copy
 import string
 
-from urlparse import urlparse
-from collections import namedtuple
 from django.conf import settings
-from django.core.exceptions import PermissionDenied, ImproperlyConfigured
+from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from django.http import HttpResponse
 from django.core.cache import cache
-from urlparse import urlsplit
 
-DEFAULT_TITLE=""
-DEFAULT_ABSTRACT=""
+DEFAULT_TITLE = ""
+DEFAULT_ABSTRACT = ""
 
 INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
 
 ALPHABET = string.ascii_uppercase + string.ascii_lowercase + \
-           string.digits + '-_'
+    string.digits + '-_'
 ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
 
 http_client = httplib2.Http()
+
 
 def _get_basic_auth_info(request):
     """
@@ -61,12 +57,14 @@ def _get_basic_auth_info(request):
 
 
 def batch_permissions(request):
-    #TODO
+    # TODO
     pass
 
+
 def batch_delete(request):
-    #TODO
+    # TODO
     pass
+
 
 def _split_query(query):
     """
@@ -95,21 +93,24 @@ def _split_query(query):
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
     if None not in [x0, x1, y0, y1]:
-        wkt = 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (srid,
-                               x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
+        wkt = 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (
+            srid, x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
     else:
         wkt = 'SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'
     return wkt
 
+
 def llbbox_to_mercator(llbbox):
-    minlonlat = forward_mercator([llbbox[0],llbbox[1]])
-    maxlonlat = forward_mercator([llbbox[2],llbbox[3]])
-    return [minlonlat[0],minlonlat[1],maxlonlat[0],maxlonlat[1]]
+    minlonlat = forward_mercator([llbbox[0], llbbox[1]])
+    maxlonlat = forward_mercator([llbbox[2], llbbox[3]])
+    return [minlonlat[0], minlonlat[1], maxlonlat[0], maxlonlat[1]]
+
 
 def mercator_to_llbbox(bbox):
-    minlonlat = inverse_mercator([bbox[0],bbox[1]])
-    maxlonlat = inverse_mercator([bbox[2],bbox[3]])
-    return [minlonlat[0],minlonlat[1],maxlonlat[0],maxlonlat[1]]
+    minlonlat = inverse_mercator([bbox[0], bbox[1]])
+    maxlonlat = inverse_mercator([bbox[2], bbox[3]])
+    return [minlonlat[0], minlonlat[1], maxlonlat[0], maxlonlat[1]]
+
 
 def forward_mercator(lonlat):
     """
@@ -138,7 +139,8 @@ def inverse_mercator(xy):
     """
     lon = (xy[0] / 20037508.34) * 180
     lat = (xy[1] / 20037508.34) * 180
-    lat = 180/math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
+    lat = 180 / math.pi * \
+        (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
     return (lon, lat)
 
 
@@ -154,26 +156,28 @@ def layer_from_viewer_config(model, layer, source, ordering):
     """
     layer_cfg = dict(layer)
     for k in ["format", "name", "opacity", "styles", "transparent",
-                "fixed", "group", "visibility", "source", "getFeatureInfo"]:
-        if k in layer_cfg: del layer_cfg[k]
+              "fixed", "group", "visibility", "source", "getFeatureInfo"]:
+        if k in layer_cfg:
+            del layer_cfg[k]
 
     source_cfg = dict(source)
     for k in ["url", "projection"]:
-        if k in source_cfg: del source_cfg[k]
+        if k in source_cfg:
+            del source_cfg[k]
 
     return model(
-        stack_order = ordering,
-        format = layer.get("format", None),
-        name = layer.get("name", None),
-        opacity = layer.get("opacity", 1),
-        styles = layer.get("styles", None),
-        transparent = layer.get("transparent", False),
-        fixed = layer.get("fixed", False),
-        group = layer.get('group', None),
-        visibility = layer.get("visibility", True),
-        ows_url = source.get("url", None),
-        layer_params = json.dumps(layer_cfg),
-        source_params = json.dumps(source_cfg)
+        stack_order=ordering,
+        format=layer.get("format", None),
+        name=layer.get("name", None),
+        opacity=layer.get("opacity", 1),
+        styles=layer.get("styles", None),
+        transparent=layer.get("transparent", False),
+        fixed=layer.get("fixed", False),
+        group=layer.get('group', None),
+        visibility=layer.get("visibility", True),
+        ows_url=source.get("url", None),
+        layer_params=json.dumps(layer_cfg),
+        source_params=json.dumps(source_cfg)
     )
 
 
@@ -191,7 +195,10 @@ class GXPMapBase(object):
         """
 
         if self.id and len(added_layers) == 0:
-            cfg = cache.get("viewer_json_" + str(self.id) + "_" + str(0 if user is None else user.id))
+            cfg = cache.get("viewer_json_" +
+                            str(self.id) +
+                            "_" +
+                            str(0 if user is None else user.id))
             if cfg is not None:
                 return cfg
 
@@ -199,7 +206,7 @@ class GXPMapBase(object):
         layers.extend(added_layers)
 
         server_lookup = {}
-        sources = { }
+        sources = {}
 
         def uniqify(seq):
             """
@@ -211,73 +218,87 @@ class GXPMapBase(object):
             """
             results = []
             for x in seq:
-                if x not in results: results.append(x)
+                if x not in results:
+                    results.append(x)
             return results
 
         configs = [l.source_config() for l in layers]
 
         i = 0
         for source in uniqify(configs):
-            while str(i) in sources: i = i + 1
+            while str(i) in sources:
+                i = i + 1
             sources[str(i)] = source
             server_lookup[json.dumps(source)] = str(i)
 
         def source_lookup(source):
             for k, v in sources.iteritems():
-                if v == source: return k
+                if v == source:
+                    return k
             return None
 
-        def layer_config(l,user=None):
+        def layer_config(l, user=None):
             cfg = l.layer_config(user=user)
             src_cfg = l.source_config()
             source = source_lookup(src_cfg)
-            if source: cfg["source"] = source
+            if source:
+                cfg["source"] = source
             return cfg
 
-        source_urls = [source['url'] for source in sources.values() if source.has_key('url')]
-       
+        source_urls = [source['url']
+                       for source in sources.values() if 'url' in source]
+
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
             if not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
-                keys = sources.keys()
-                keys.sort()
-                settings.MAP_BASELAYERS[0]['source']['title'] = 'Local Geoserver'
-                sources[str(int(keys[-1])+1)] = settings.MAP_BASELAYERS[0]['source']
+                keys = sorted(sources.keys())
+                settings.MAP_BASELAYERS[0]['source'][
+                    'title'] = 'Local Geoserver'
+                sources[
+                    str(int(keys[-1]) + 1)] = settings.MAP_BASELAYERS[0]['source']
 
         def _base_source(source):
             base_source = copy.deepcopy(source)
             for key in ["id", "baseParams", "title"]:
-                if key in base_source: del base_source[key]
+                if key in base_source:
+                    del base_source[key]
             return base_source
 
         for idx, lyr in enumerate(settings.MAP_BASELAYERS):
-            if _base_source(lyr["source"]) not in map(_base_source, sources.values()):
-                sources[str(int(max(sources.keys(), key=int)) +1)] = lyr["source"]
-                
+            if _base_source(
+                    lyr["source"]) not in map(
+                    _base_source,
+                    sources.values()):
+                sources[
+                    str(int(max(sources.keys(), key=int)) + 1)] = lyr["source"]
+
         config = {
             'id': self.id,
             'about': {
-                'title':    self.title,
+                'title': self.title,
                 'abstract': self.abstract
             },
             'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
-                'layers': [layer_config(l,user=user) for l in layers],
+                'layers': [layer_config(l, user=user) for l in layers],
                 'center': [self.center_x, self.center_y],
                 'projection': self.projection,
                 'zoom': self.zoom
             }
         }
-        
+
         if any(layers):
             # Mark the last added layer as selected - important for data page
-            config["map"]["layers"][len(layers)-1]["selected"] = True
+            config["map"]["layers"][len(layers) - 1]["selected"] = True
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
-        #Create user-specific cache of maplayer config
+        # Create user-specific cache of maplayer config
         if self is not None:
-            cache.set("viewer_json_" + str(self.id) + "_" + str(0 if user is None else user.id), config)
+            cache.set("viewer_json_" +
+                      str(self.id) +
+                      "_" +
+                      str(0 if user is None else user.id), config)
 
         return config
 
@@ -285,14 +306,16 @@ class GXPMapBase(object):
 class GXPMap(GXPMapBase):
 
     def __init__(self, projection=None, title=None, abstract=None,
-                 center_x = None, center_y = None, zoom = None):
+                 center_x=None, center_y=None, zoom=None):
         self.id = 0
         self.projection = projection
         self.title = title or DEFAULT_TITLE
         self.abstract = abstract or DEFAULT_ABSTRACT
         _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
-        self.center_x = center_x if center_x is not None else _DEFAULT_MAP_CENTER[0]
-        self.center_y = center_y if center_y is not None else _DEFAULT_MAP_CENTER[1]
+        self.center_x = center_x if center_x is not None else _DEFAULT_MAP_CENTER[
+            0]
+        self.center_y = center_y if center_y is not None else _DEFAULT_MAP_CENTER[
+            1]
         self.zoom = zoom if zoom is not None else settings.DEFAULT_MAP_ZOOM
         self.layers = []
 
@@ -309,7 +332,8 @@ class GXPLayerBase(object):
         except Exception:
             cfg = dict(ptype="gxp_wmscsource", restUrl="/gs/rest")
 
-        if self.ows_url: cfg["url"] = self.ows_url
+        if self.ows_url:
+            cfg["url"] = self.ows_url
 
         return cfg
 
@@ -328,22 +352,30 @@ class GXPLayerBase(object):
         except Exception:
             cfg = dict()
 
-        if self.format: cfg['format'] = self.format
-        if self.name: cfg["name"] = self.name
-        if self.opacity: cfg['opacity'] = self.opacity
-        if self.styles: cfg['styles'] = self.styles
-        if self.transparent: cfg['transparent'] = True
+        if self.format:
+            cfg['format'] = self.format
+        if self.name:
+            cfg["name"] = self.name
+        if self.opacity:
+            cfg['opacity'] = self.opacity
+        if self.styles:
+            cfg['styles'] = self.styles
+        if self.transparent:
+            cfg['transparent'] = True
 
         cfg["fixed"] = self.fixed
-        if self.group: cfg["group"] = self.group
+        if self.group:
+            cfg["group"] = self.group
         cfg["visibility"] = self.visibility
 
         return cfg
 
 
 class GXPLayer(GXPLayerBase):
+
     '''GXPLayer represents an object to be included in a GXP map.
     '''
+
     def __init__(self, name=None, ows_url=None, **kw):
         self.format = None
         self.name = name
@@ -357,7 +389,7 @@ class GXPLayer(GXPLayerBase):
         self.layer_params = ""
         self.source_params = ""
         for k in kw:
-            setattr(self,k,kw[k])
+            setattr(self, k, kw[k])
 
 
 def default_map_config():
@@ -371,16 +403,20 @@ def default_map_config():
         center_y=_DEFAULT_MAP_CENTER[1],
         zoom=settings.DEFAULT_MAP_ZOOM
     )
+
     def _baselayer(lyr, order):
         return layer_from_viewer_config(
             GXPLayer,
-            layer = lyr,
-            source = lyr["source"],
-            ordering = order
+            layer=lyr,
+            source=lyr["source"],
+            ordering=order
         )
 
-    DEFAULT_BASE_LAYERS = [_baselayer(lyr, idx) for idx, lyr in enumerate(settings.MAP_BASELAYERS)]
-    DEFAULT_MAP_CONFIG = _default_map.viewer_json(None,*DEFAULT_BASE_LAYERS)
+    DEFAULT_BASE_LAYERS = [
+        _baselayer(
+            lyr, idx) for idx, lyr in enumerate(
+            settings.MAP_BASELAYERS)]
+    DEFAULT_MAP_CONFIG = _default_map.viewer_json(None, *DEFAULT_BASE_LAYERS)
 
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
@@ -389,7 +425,7 @@ _viewer_projection_lookup = {
     "EPSG:900913": {
         "maxResolution": 156543.03390625,
         "units": "m",
-        "maxExtent": [-20037508.34,-20037508.34,20037508.34,20037508.34],
+        "maxExtent": [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
     },
     "EPSG:4326": {
         "max_resolution": (180 - (-180)) / 256,
@@ -418,7 +454,9 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     allowed = True
     if permission:
         if permission_required or request.method != 'GET':
-            allowed = request.user.has_perm(permission, obj.get_self_resource())
+            allowed = request.user.has_perm(
+                permission,
+                obj.get_self_resource())
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)
@@ -427,47 +465,48 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
 
 def json_response(body=None, errors=None, redirect_to=None, exception=None,
                   content_type=None, status=None):
-   """Create a proper JSON response. If body is provided, this is the response.
-   If errors is not None, the response is a success/errors json object.
-   If redirect_to is not None, the response is a success=True, redirect_to object
-   If the exception is provided, it will be logged. If body is a string, the
-   exception message will be used as a format option to that string and the
-   result will be a success=False, errors = body % exception
-   """
-   if content_type is None:
-       content_type = "application/json"
-   if errors:
-       if isinstance(errors, basestring):
-           errors = [errors]
-       body = {
-           'success' : False,
-           'errors' : errors
-       }
-   elif redirect_to:
-       body = {
-           'success' : True,
-           'redirect_to' : redirect_to
-       }
-   elif exception:
-       if body is None:
-           body = "Unexpected exception %s" % exception
-       else:
-           body = body % exception
-       body = {
-           'success' : False,
-           'errors' : [ body ]
-       }
-   elif body:
-       pass
-   else:
-       raise Exception("must call with body, errors or redirect_to")
-   
-   if status==None:
-      status = 200
+    """Create a proper JSON response. If body is provided, this is the response.
+    If errors is not None, the response is a success/errors json object.
+    If redirect_to is not None, the response is a success=True, redirect_to object
+    If the exception is provided, it will be logged. If body is a string, the
+    exception message will be used as a format option to that string and the
+    result will be a success=False, errors = body % exception
+    """
+    if content_type is None:
+        content_type = "application/json"
+    if errors:
+        if isinstance(errors, basestring):
+            errors = [errors]
+        body = {
+            'success': False,
+            'errors': errors
+        }
+    elif redirect_to:
+        body = {
+            'success': True,
+            'redirect_to': redirect_to
+        }
+    elif exception:
+        if body is None:
+            body = "Unexpected exception %s" % exception
+        else:
+            body = body % exception
+        body = {
+            'success': False,
+            'errors': [body]
+        }
+    elif body:
+        pass
+    else:
+        raise Exception("must call with body, errors or redirect_to")
 
-   if not isinstance(body, basestring):
-       body = json.dumps(body)
-   return HttpResponse(body, content_type=content_type, status=status)
+    if status is None:
+        status = 200
+
+    if not isinstance(body, basestring):
+        body = json.dumps(body)
+    return HttpResponse(body, content_type=content_type, status=status)
+
 
 def num_encode(n):
     if n < 0:
@@ -476,8 +515,10 @@ def num_encode(n):
     while True:
         n, r = divmod(n, BASE)
         s.append(ALPHABET[r])
-        if n == 0: break
+        if n == 0:
+            break
     return ''.join(reversed(s))
+
 
 def num_decode(s):
     if s[0] == SIGN_CHARACTER:
