@@ -18,35 +18,35 @@
 #
 #########################################################################
 
-from django.utils.translation import ugettext_lazy as _
-
 from django.utils import simplejson as json
 from django.core.exceptions import PermissionDenied
 from geonode.utils import resolve_object
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 
-from geonode.layers.models import Layer
-from geonode.maps.models import Map
-from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 
 
 def _perms_info(obj):
     info = obj.get_all_level_info()
-    
+
     return info
 
 
 def _perms_info_json(obj):
     info = _perms_info(obj)
-    info['users'] = dict([(u.username, perms) for u, perms in info['users'].items()])
-    info['groups'] = dict([(g.name, perms) for g, perms in info['groups'].items()])
+    info['users'] = dict([(u.username, perms)
+                          for u, perms in info['users'].items()])
+    info['groups'] = dict([(g.name, perms)
+                           for g, perms in info['groups'].items()])
 
     return json.dumps(info)
 
+
 def resource_permissions(request, resource_id):
     try:
-        resource = resolve_object(request, ResourceBase, {'id':resource_id}, 'base.change_resourcebase_permissions')
+        resource = resolve_object(
+            request, ResourceBase, {
+                'id': resource_id}, 'base.change_resourcebase_permissions')
 
     except PermissionDenied:
         # we are handling this in a non-standard way
