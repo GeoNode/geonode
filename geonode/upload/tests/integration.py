@@ -62,9 +62,11 @@ logger = logging.getLogger(__name__)
 # hack the global urls to ensure we're activated locally
 urlpatterns += patterns('', (r'^upload/', include('geonode.upload.urls')))
 
+
 def upload_step(step=None):
     step = reverse('data_upload', args=[step] if step else [])
     return step
+
 
 def parse_cookies(cookies):
     res = {}
@@ -74,7 +76,7 @@ def parse_cookies(cookies):
     return res
 
 
-def get_wms(version='1.1.1',layer_name=None):
+def get_wms(version='1.1.1', layer_name=None):
     """ Function to return an OWSLib WMS object """
     # right now owslib does not support auth for get caps
     # requests. Either we should roll our own or fix owslib
@@ -88,6 +90,7 @@ def get_wms(version='1.1.1',layer_name=None):
 
 
 class Client(object):
+
     """client for making http requests"""
 
     def __init__(self, url, user, passwd):
@@ -161,7 +164,10 @@ class Client(object):
         try:
             return resp, json.loads(data)
         except ValueError:
-            raise ValueError('probably not json, status %s' % resp.getcode(), data)
+            raise ValueError(
+                'probably not json, status %s' %
+                resp.getcode(),
+                data)
 
     def get_html(self, path):
         """ Method that make a get request and passes the results to bs4
@@ -211,16 +217,28 @@ class UploaderBase(TestCase):
         # make a test_settings module that will apply our overrides
         test_settings = ['from geonode.settings import *']
         if os.path.exists('geonode/upload/tests/test_settings.py'):
-            test_settings.append('from geonode.upload.tests.test_settings import *')
+            test_settings.append(
+                'from geonode.upload.tests.test_settings import *')
         for so in cls.settings_overrides:
             test_settings.append('%s=%s' % so)
         with open('integration_settings.py', 'w') as fp:
             fp.write('\n'.join(test_settings))
 
         # runserver with settings
-        args = ['python', 'manage.py', 'runserver', '--settings=integration_settings', '--verbosity=0']
-        # see http://www.doughellmann.com/PyMOTW/subprocess/#process-groups-sessions
-        cls._runserver = subprocess.Popen(args, stderr=open('test.log', 'w'), preexec_fn=os.setsid)
+        args = [
+            'python',
+            'manage.py',
+            'runserver',
+            '--settings=integration_settings',
+            '--verbosity=0']
+        # see
+        # http://www.doughellmann.com/PyMOTW/subprocess/#process-groups-sessions
+        cls._runserver = subprocess.Popen(
+            args,
+            stderr=open(
+                'test.log',
+                'w'),
+            preexec_fn=os.setsid)
 
         # await startup
         cl = Client(
@@ -246,7 +264,6 @@ class UploaderBase(TestCase):
         if os.path.exists('integration_settings.py'):
             os.unlink('integration_settings.py')
 
-
     def setUp(self):
         super(UploaderBase, self).setUp()
         self._tempfiles = []
@@ -266,7 +283,8 @@ class UploaderBase(TestCase):
                 print 'unable to delete layer', l
         # and destroy anything left dangling on geoserver
         cat = gs_catalog
-        map(lambda name: cascading_delete(cat, name), [l.name for l in cat.get_layers()])
+        map(lambda name: cascading_delete(cat, name),
+            [l.name for l in cat.get_layers()])
 
     def tearDown(self):
         super(UploaderBase, self).tearDown()
@@ -302,18 +320,18 @@ class UploaderBase(TestCase):
 
     def check_and_pass_through_timestep(self):
         raise Exception('not implemented')
-        redirect_to = data['redirect_to']
-        self.assertEquals(redirect_to, upload_step('time'))
-        resp = self.client.make_request(upload_step('time'))
-        self.assertEquals(resp.code, 200)
-        data = {'csrfmiddlewaretoken': self.client.get_crsf_token()}
-        resp = self.client.make_request(upload_step('time'), data)
-        data = json.loads(resp.read())
-        return resp, data
+        # redirect_to = data['redirect_to']
+        # self.assertEquals(redirect_to, upload_step('time'))
+        # resp = self.client.make_request(upload_step('time'))
+        # self.assertEquals(resp.code, 200)
+        # data = {'csrfmiddlewaretoken': self.client.get_crsf_token()}
+        # resp = self.client.make_request(upload_step('time'), data)
+        # data = json.loads(resp.read())
+        # return resp, data
 
     def complete_raster_upload(self, file_path, resp, data):
         return self.complete_upload(file_path, resp, data, is_raster=True)
-    
+
     def check_save_step(self, resp, data):
         """Verify the initial save step"""
         self.assertEquals(resp.code, 200)
@@ -332,31 +350,44 @@ class UploaderBase(TestCase):
            Checks to see if a layer is configured in GeoServer
                checks the Rest API
                checks the get cap document """
-               
+
         layer_name, ext = os.path.splitext(os.path.basename(file_path))
-               
+
         self.check_save_step(resp, data)
 
-        layer_page = self.finish_upload(data['redirect_to'], layer_name, is_raster)
-                     
+        layer_page = self.finish_upload(
+            data['redirect_to'],
+            layer_name,
+            is_raster)
+
         self.check_layer_complete(layer_page, layer_name)
-        
-    def finish_upload(self, current_step, layer_name, is_raster=False, skip_srs=False):
+
+    def finish_upload(
+            self,
+            current_step,
+            layer_name,
+            is_raster=False,
+            skip_srs=False):
         if (not is_raster and _ALLOW_TIME_STEP):
             resp, data = self.check_and_pass_through_timestep()
             self.assertEquals(resp.code, 200)
-            self.assertTrue(data['success'], 'expected success but got %s' % data)
+            self.assertTrue(
+                data['success'],
+                'expected success but got %s' %
+                data)
             self.assertTrue('redirect_to' in data)
             current_step = data['redirect_to']
             self.wait_for_progress(data.get('progress'))
-            
+
         if not is_raster and not skip_srs:
             self.assertEquals(current_step, upload_step('srs'))
             # if all is good, the srs step will redirect to the final page
             resp = self.client.get(current_step)
 
             content = json.loads(resp.read())
-            if not content.get('url') and content.get('redirect_to', current_step) == upload_step('final'):
+            if not content.get('url') and content.get(
+                    'redirect_to',
+                    current_step) == upload_step('final'):
                 resp = self.client.get(content.get('redirect_to'))
 
         else:
@@ -369,7 +400,9 @@ class UploaderBase(TestCase):
         # and the final page should redirect to the layer page
         # @todo - make the check match completely (endswith at least)
         # currently working around potential 'orphaned' db tables
-        self.assertTrue(layer_name in url, 'expected %s in URL, got %s' % (layer_name, url))
+        self.assertTrue(
+            layer_name in url, 'expected %s in URL, got %s' %
+            (layer_name, url))
         return url
 
     def check_upload_model(self, original_name):
@@ -381,7 +414,7 @@ class UploaderBase(TestCase):
         except Upload.DoesNotExist:
             self.fail('expected to find Upload object for %s' % original_name)
         self.assertTrue(upload.complete)
-        
+
     def check_layer_complete(self, layer_page, original_name):
         '''check everything to verify the layer is complete'''
         self.check_layer_geonode_page(layer_page)
@@ -392,7 +425,7 @@ class UploaderBase(TestCase):
         self.check_layer_geoserver_caps(original_name)
         self.check_layer_geoserver_rest(original_name)
         self.check_upload_model(original_name)
-        
+
     def check_invalid_projection(self, layer_name, resp, data):
         """ Makes sure that we got the correct response from an layer
         that can't be uploaded"""
@@ -402,7 +435,8 @@ class UploaderBase(TestCase):
         self.assertTrue(data['success'])
         self.assertEquals(upload_step("srs"), data['redirect_to'])
         resp, soup = self.client.get_html(data['redirect_to'])
-        # grab an h2 and find the name there as part of a message saying it's bad
+        # grab an h2 and find the name there as part of a message saying it's
+        # bad
         h2 = soup.find_all(['h2'])[0]
         self.assertTrue(str(h2).find(layer_name))
 
@@ -450,7 +484,7 @@ class UploaderBase(TestCase):
 
     def make_csv(self, *rows):
         fd, abspath = self.temp_file('.csv')
-        fp = os.fdopen(fd,'wb')
+        fp = os.fdopen(fd, 'wb')
         out = csv.writer(fp)
         for r in rows:
             out.writerow(r)
@@ -462,10 +496,13 @@ class TestUpload(UploaderBase):
     settings_overrides = [
         ("OGC_SERVER['default']['DATASTORE']", False)
     ]
-    
+
     def test_shp_upload(self):
         """ Tests if a vector layer can be upload to a running GeoNode GeoServer"""
-        fname = os.path.join(GOOD_DATA, 'vector', 'san_andres_y_providencia_water.shp')
+        fname = os.path.join(
+            GOOD_DATA,
+            'vector',
+            'san_andres_y_providencia_water.shp')
         self.upload_file(fname, self.complete_upload)
 
     def test_raster_upload(self):
@@ -476,9 +513,12 @@ class TestUpload(UploaderBase):
     def test_zipped_upload(self):
         """Test uploading a zipped shapefile"""
         fd, abspath = self.temp_file('.zip')
-        fp = os.fdopen(fd,'wb')
+        fp = os.fdopen(fd, 'wb')
         zf = ZipFile(fp, 'w')
-        fpath = os.path.join(GOOD_DATA, 'vector', 'san_andres_y_providencia_poi.*')
+        fpath = os.path.join(
+            GOOD_DATA,
+            'vector',
+            'san_andres_y_providencia_poi.*')
         for f in glob.glob(fpath):
             zf.write(f, os.path.basename(f))
         zf.close()
@@ -490,7 +530,9 @@ class TestUpload(UploaderBase):
         # this issue with this test is that the importer supports
         # shapefiles without an .prj
         invalid_path = os.path.join(BAD_DATA)
-        self.upload_folder_of_files(invalid_path, self.check_invalid_projection)
+        self.upload_folder_of_files(
+            invalid_path,
+            self.check_invalid_projection)
 
     def test_extension_not_implemented(self):
         """Verify a error message is return when an unsupported layer is
@@ -509,7 +551,8 @@ class TestUpload(UploaderBase):
 
     def test_csv(self):
         '''make sure a csv upload fails gracefully/normally when not activated'''
-        csv_file = self.make_csv(['lat','lon','thing'],['-100','-40','foo'])
+        csv_file = self.make_csv(
+            ['lat', 'lon', 'thing'], ['-100', '-40', 'foo'])
         layer_name, ext = os.path.splitext(os.path.basename(csv_file))
         self.client.login()
         resp, data = self.client.upload_file(csv_file)
@@ -522,34 +565,47 @@ class TestUploadDBDataStore(TestUpload):
 
     settings_overrides = []
 
-    @unittest.skipUnless(ogc_server_settings.datastore_db and _ALLOW_TIME_STEP, "Vector datastore or time not enabled.")
+    @unittest.skipUnless(
+        ogc_server_settings.datastore_db and _ALLOW_TIME_STEP,
+        "Vector datastore or time not enabled.")
     def test_csv(self):
         """Override the baseclass test and verify a correct CSV upload"""
 
-        csv_file = self.make_csv(['lat','lon','thing'],['-100','-40','foo'])
+        csv_file = self.make_csv(
+            ['lat', 'lon', 'thing'], ['-100', '-40', 'foo'])
         layer_name, ext = os.path.splitext(os.path.basename(csv_file))
         self.client.login()
         resp, form_data = self.client.upload_file(csv_file)
         self.check_save_step(resp, form_data)
         csv_step = form_data['redirect_to']
         self.assertEquals(csv_step, upload_step('csv'))
-        form_data = dict(lat='lat', lng='lon', csrfmiddlewaretoken=self.client.get_crsf_token())
+        form_data = dict(
+            lat='lat',
+            lng='lon',
+            csrfmiddlewaretoken=self.client.get_crsf_token())
         resp = self.client.make_request(csv_step, form_data)
         content = json.loads(resp.read())
 
-        if not content.get('url') and content.get('redirect_to', csv_step) == upload_step('final'):
-                resp = self.client.get(content.get('redirect_to'))
-                content = json.loads(resp.read())
+        if not content.get('url') and content.get(
+                'redirect_to',
+                csv_step) == upload_step('final'):
+            resp = self.client.get(content.get('redirect_to'))
+            content = json.loads(resp.read())
 
         url = content.get('url')
 
-        self.assertTrue(url.endswith(layer_name),
-            'expected url to end with %s, but got %s' % (layer_name, url))
+        self.assertTrue(
+            url.endswith(layer_name),
+            'expected url to end with %s, but got %s' %
+            (layer_name,
+             url))
         self.assertEquals(resp.code, 200)
 
         self.check_layer_complete(url, layer_name)
 
-    @unittest.skipUnless(ogc_server_settings.datastore_db and _ALLOW_TIME_STEP, "Vector datastore or time not enabled.")
+    @unittest.skipUnless(
+        ogc_server_settings.datastore_db and _ALLOW_TIME_STEP,
+        "Vector datastore or time not enabled.")
     def test_time(self):
         """Verify that uploading time based csv files works properly"""
 
@@ -574,8 +630,11 @@ class TestUploadDBDataStore(TestUpload):
         resp = self.client.make_request(upload_step('time'), data)
 
         url = json.loads(resp.read())['url']
-        self.assertTrue(url.endswith(layer_name),
-            'expected url to end with %s, but got %s' % (layer_name, url))
+        self.assertTrue(
+            url.endswith(layer_name),
+            'expected url to end with %s, but got %s' %
+            (layer_name,
+             url))
         self.assertEquals(resp.code, 200)
 
         self.check_layer_complete(url, layer_name)
@@ -583,4 +642,3 @@ class TestUploadDBDataStore(TestUpload):
         wms = get_wms(layer_name=layer_name)
         layer_info = wms.items()[0][1]
         self.assertEquals(100, len(layer_info.timepositions))
-

@@ -31,18 +31,14 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
-from geonode.base.models import SpatialRepresentationType
 from geonode.layers.utils import get_valid_layer_name
-from geonode.layers.utils import layer_type
 from geonode.layers.metadata import set_metadata
 from geonode.layers.models import Layer
-from geonode.people.models import Profile
 from geonode import GeoNodeException
 from geonode.people.utils import get_default_user
 from geonode.upload.models import Upload
 from geonode.upload import signals
 from geonode.upload.utils import create_geoserver_db_featurestore
-from geonode.upload.utils import find_file_re
 from geonode.geoserver.helpers import gs_catalog, gs_uploader, ogc_server_settings
 
 import geoserver
@@ -55,16 +51,16 @@ from django.db.models import Max
 from django.contrib.auth import get_user_model
 
 import shutil
-import sys
 import time
 import os.path
 import logging
-import time
 import uuid
 
 logger = logging.getLogger(__name__)
 
+
 class UploadException(Exception):
+
     '''A handled exception meant to be presented to the user'''
 
     @staticmethod
@@ -75,6 +71,7 @@ class UploadException(Exception):
 
 
 class UploaderSession(object):
+
     """All objects held must be able to survive a good pickling"""
 
     # the gsimporter session object
@@ -87,10 +84,10 @@ class UploaderSession(object):
     # location of any temporary uploaded files
     tempdir = None
 
-    #the main uploaded file, zip, shp, tif, etc.
+    # the main uploaded file, zip, shp, tif, etc.
     base_file = None
 
-    #the name to try to give the layer
+    # the name to try to give the layer
     name = None
 
     # blob of permissions JSON
@@ -163,11 +160,11 @@ def upload(name, base_file,
     )
 
     time_step(upload_session,
-        time_attribute, time_transform_type,
-        presentation_strategy, precision_value, precision_step,
-        end_time_attribute=end_time_attribute,
-        end_time_transform_type=end_time_transform_type,
-        time_format=None, srs=None, use_big_date=use_big_date)
+              time_attribute, time_transform_type,
+              presentation_strategy, precision_value, precision_step,
+              end_time_attribute=end_time_attribute,
+              end_time_transform_type=end_time_transform_type,
+              time_format=None, srs=None, use_big_date=use_big_date)
 
     run_import(upload_session, async=False)
     final_step(upload_session, user)
@@ -182,8 +179,10 @@ def save_step(user, layer, spatial_files, overwrite=True):
 
     if len(spatial_files) > 1:
         # we only support more than one file if they're rasters for mosaicing
-        if not all([f.file_type.layer_type == 'coverage' for f in spatial_files]):
-            raise UploadException("Please upload only one type of file at a time")
+        if not all(
+                [f.file_type.layer_type == 'coverage' for f in spatial_files]):
+            raise UploadException(
+                "Please upload only one type of file at a time")
 
     name = get_valid_layer_name(layer, overwrite)
     _log('Name for layer: [%s]', name)
@@ -196,7 +195,7 @@ def save_step(user, layer, spatial_files, overwrite=True):
     # Check if the store exists in geoserver
     try:
         store = gs_catalog.get_store(name)
-    except geoserver.catalog.FailedRequestError, e:
+    except geoserver.catalog.FailedRequestError as e:
         # There is no store, ergo the road is clear
         pass
     else:
@@ -209,7 +208,9 @@ def save_step(user, layer, spatial_files, overwrite=True):
                 # We can just delete it and recreate it later.
                 store.delete()
             else:
-                msg = ('The layer exists and the overwrite parameter is %s' % overwrite)
+                msg = (
+                    'The layer exists and the overwrite parameter is %s' %
+                    overwrite)
                 raise GeoNodeException(msg)
         else:
 
@@ -223,13 +224,19 @@ def save_step(user, layer, spatial_files, overwrite=True):
 
                     existing_type = resource.resource_type
                     if existing_type != the_layer_type:
-                        msg = ('Type of uploaded file %s (%s) does not match type '
-                               'of existing resource type %s' % (name, the_layer_type, existing_type))
+                        msg = (
+                            'Type of uploaded file %s (%s) does not match type '
+                            'of existing resource type %s' %
+                            (name, the_layer_type, existing_type))
                         _log(msg)
                         raise GeoNodeException(msg)
 
-    if the_layer_type not in (FeatureType.resource_type, Coverage.resource_type):
-        raise Exception('Expected the layer type to be a FeatureType or Coverage, not %s' % the_layer_type)
+    if the_layer_type not in (
+            FeatureType.resource_type,
+            Coverage.resource_type):
+        raise Exception(
+            'Expected the layer type to be a FeatureType or Coverage, not %s' %
+            the_layer_type)
     _log('Uploading %s', the_layer_type)
 
     error_msg = None
@@ -240,13 +247,19 @@ def save_step(user, layer, spatial_files, overwrite=True):
         next_id = next_id + 1 if next_id else 1
 
         # save record of this whether valid or not - will help w/ debugging
-        upload = Upload.objects.create(user=user, name=name, state=Upload.STATE_INVALID,
-                                       upload_dir=spatial_files.dirname)
+        upload = Upload.objects.create(
+            user=user,
+            name=name,
+            state=Upload.STATE_INVALID,
+            upload_dir=spatial_files.dirname)
 
         # @todo settings for use_url or auto detection if geoserver is
         # on same host
         import_session = gs_uploader.upload_files(
-            spatial_files.all_files(), use_url=False, import_id=next_id, mosaic=len(spatial_files) > 1)
+            spatial_files.all_files(),
+            use_url=False,
+            import_id=next_id,
+            mosaic=len(spatial_files) > 1)
 
         upload.import_id = import_session.id
         upload.save()
@@ -268,9 +281,11 @@ def save_step(user, layer, spatial_files, overwrite=True):
             # single file tasks will have just a file entry
             if hasattr(task, 'files'):
                 # @todo gsimporter - test this
-                if not all([hasattr(f, 'timestamp') for f in task.source.files]):
-                    error_msg = ("Not all timestamps could be recognized."
-                                 "Please ensure your files contain the correct formats.")
+                if not all([hasattr(f, 'timestamp')
+                            for f in task.source.files]):
+                    error_msg = (
+                        "Not all timestamps could be recognized."
+                        "Please ensure your files contain the correct formats.")
 
         if error_msg:
             upload.state = upload.STATE_INVALID
@@ -279,7 +294,7 @@ def save_step(user, layer, spatial_files, overwrite=True):
         # @todo once the random tmp9723481758915 type of name is not
         # around, need to track the name computed above, for now, the
         # target store name can be used
-    except Exception, e:
+    except Exception as e:
         logger.exception('Error creating import session')
         raise e
 
@@ -307,16 +322,23 @@ def run_import(upload_session, async):
     # in geoserver and set the uploader target appropriately
 
     if ogc_server_settings.GEOGIT_ENABLED and upload_session.geogit is True \
-        and task.target.store_type != 'coverageStore':
+            and task.target.store_type != 'coverageStore':
 
-        target = create_geoserver_db_featurestore(store_type='geogit',
-                                                  store_name=upload_session.geogit_store)
-        _log('setting target datastore %s %s', target.name, target.workspace.name)
+        target = create_geoserver_db_featurestore(
+            store_type='geogit',
+            store_name=upload_session.geogit_store)
+        _log(
+            'setting target datastore %s %s',
+            target.name,
+            target.workspace.name)
         task.set_target(target.name, target.workspace.name)
 
     elif ogc_server_settings.datastore_db and task.target.store_type != 'coverageStore':
         target = create_geoserver_db_featurestore()
-        _log('setting target datastore %s %s', target.name, target.workspace.name)
+        _log(
+            'setting target datastore %s %s',
+            target.name,
+            target.workspace.name)
         task.set_target(target.name, target.workspace.name)
     else:
         target = task.target
@@ -383,8 +405,8 @@ def time_step(upload_session, time_attribute, time_transform_type,
                 build_time_transform(
                     time_attribute,
                     time_transform_type, time_format
-                    )
                 )
+            )
 
         if end_time_attribute and end_time_transform_type:
 
@@ -392,8 +414,8 @@ def time_step(upload_session, time_attribute, time_transform_type,
                 build_time_transform(
                     end_time_attribute,
                     end_time_transform_type, end_time_format
-                    )
                 )
+            )
 
         # this must go after the remapping transform to ensure the
         # type change is applied
@@ -404,7 +426,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
 
                 transforms.append(
                     build_att_remap_transform(end_time_attribute)
-                    )
+                )
 
         transforms.append({
             'type': 'CreateIndexTransform',
@@ -428,7 +450,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
         upload_session.import_session.tasks[0].add_transforms(transforms)
         try:
             upload_session.time_transforms = transforms
-        except BadRequest, br:
+        except BadRequest as br:
             raise UploadException.from_exc('Error configuring time:', br)
 
 
@@ -486,8 +508,10 @@ def final_step(upload_session, user):
         time.sleep(.5)
 
     if not publishing:
-        raise Exception("Expected to find layer named '%s' in geoserver, tried %s times" % (name, i))
-    _log('Had to try %s times to get layer from catalog' % (i+1))
+        raise Exception(
+            "Expected to find layer named '%s' in geoserver, tried %s times" %
+            (name, i))
+    _log('Had to try %s times to get layer from catalog' % (i + 1))
 
     _log('Creating style for [%s]', name)
     # get_files will not find the sld if it doesn't match the base name
@@ -506,14 +530,15 @@ def final_step(upload_session, user):
     if sld is not None:
         try:
             cat.create_style(name, sld)
-        except geoserver.catalog.ConflictingDataError, e:
-            msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (name, str(e))
+        except geoserver.catalog.ConflictingDataError as e:
+            msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (
+                name, str(e))
             # what are we doing with this var?
             # style = cat.get_style(name)
             logger.warn(msg)
             e.args = (msg,)
 
-        #FIXME: Should we use the fully qualified typename?
+        # FIXME: Should we use the fully qualified typename?
         publishing.default_style = cat.get_style(name)
         _log('default style set to %s', name)
         cat.save(publishing)
@@ -574,7 +599,7 @@ def final_step(upload_session, user):
         # set model properties
         for (key, value) in vals.items():
             if key == "spatial_representation_type":
-                #value = SpatialRepresentationType.objects.get(identifier=value)
+                # value = SpatialRepresentationType.objects.get(identifier=value)
                 pass
             else:
                 setattr(saved_layer, key, value)
@@ -596,10 +621,14 @@ def final_step(upload_session, user):
     # message is confusing
     try:
         saved_layer = Layer.objects.get(name=name)
-    except Layer.DoesNotExist, e:
-        msg = ('There was a problem saving the layer %s to GeoNetwork/Django. Error is: %s' % (name, str(e)))
+    except Layer.DoesNotExist as e:
+        msg = (
+            'There was a problem saving the layer %s to GeoNetwork/Django. Error is: %s' %
+            (name, str(e)))
         logger.exception(msg)
-        logger.debug('Attempting to clean up after failed save for layer [%s]', name)
+        logger.debug(
+            'Attempting to clean up after failed save for layer [%s]',
+            name)
         # Since the layer creation was not successful, we need to clean up
         # @todo implement/test cleanup
         # cleanup(name, layer_uuid)
