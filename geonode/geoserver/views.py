@@ -2,7 +2,7 @@ import json
 import logging
 import httplib2
 
-from django.contrib.auth import authenticate, get_backends as get_auth_backends
+from django.contrib.auth import authenticate
 from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST
@@ -16,12 +16,11 @@ from django.template import RequestContext
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 
-from guardian.shortcuts import get_objects_for_user, get_anonymous_user
+from guardian.shortcuts import get_objects_for_user
 
 from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
-from geonode.base.models import ResourceBase
 from geonode.geoserver.signals import gs_catalog
 from geonode.utils import json_response, _get_basic_auth_info
 from geoserver.catalog import FailedRequestError, ConflictingDataError
@@ -30,29 +29,42 @@ from .helpers import get_stores, gs_slurp, ogc_server_settings, set_styles, styl
 
 logger = logging.getLogger(__name__)
 
+
 def stores(request, store_type=None):
     stores = get_stores(store_type)
     data = simplejson.dumps(stores)
     return HttpResponse(data)
 
+
 @user_passes_test(lambda u: u.is_superuser)
 def updatelayers(request):
     params = request.REQUEST
-    #Get the owner specified in the request if any, otherwise used the logged user
+    # Get the owner specified in the request if any, otherwise used the logged
+    # user
     owner = params.get('owner', None)
-    owner = get_user_model().objects.get(username=owner) if owner is not None else request.user
+    owner = get_user_model().objects.get(
+        username=owner) if owner is not None else request.user
     workspace = params.get('workspace', None)
     store = params.get('store', None)
     filter = params.get('filter', None)
 
-    output = gs_slurp(ignore_errors=False, owner=owner, workspace=workspace, store=store, filter=filter)
+    output = gs_slurp(
+        ignore_errors=False,
+        owner=owner,
+        workspace=workspace,
+        store=store,
+        filter=filter)
     return HttpResponse(simplejson.dumps(output))
 
 
 @login_required
 @require_POST
 def layer_style(request, layername):
-    layer = _resolve_layer(request, layername, 'base.change_resourcebase', _PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.change_resourcebase',
+        _PERMISSION_MSG_MODIFY)
 
     style_name = request.POST.get('defaultStyle')
 
@@ -62,51 +74,64 @@ def layer_style(request, layername):
 
     old_default = layer.default_style
     if old_default.name == style_name:
-        return HttpResponse("Default style for %s remains %s" % (layer.name, style_name), status=200)
+        return HttpResponse(
+            "Default style for %s remains %s" %
+            (layer.name, style_name), status=200)
 
     # This code assumes without checking
     # that the new default style name is included
     # in the list of possible styles.
 
-    new_style = (style for style in layer.styles if style.name == style_name).next()
+    new_style = (
+        style for style in layer.styles if style.name == style_name).next()
 
     # Does this change this in geoserver??
     layer.default_style = new_style
-    layer.styles = [s for s in layer.styles if s.name != style_name] + [old_default]
+    layer.styles = [
+        s for s in layer.styles if s.name != style_name] + [old_default]
     layer.save()
 
-    return HttpResponse("Default style for %s changed to %s" % (layer.name, style_name),status=200)
+    return HttpResponse(
+        "Default style for %s changed to %s" %
+        (layer.name, style_name), status=200)
 
 
 @login_required
 def layer_style_upload(req, layername):
-    def respond(*args,**kw):
+    def respond(*args, **kw):
         kw['content_type'] = 'text/html'
         return json_response(*args, **kw)
     form = LayerStyleUploadForm(req.POST, req.FILES)
     if not form.is_valid():
         return respond(errors="Please provide an SLD file.")
-    
+
     data = form.cleaned_data
-    layer = _resolve_layer(req, layername, 'base.change_resourcebase', _PERMISSION_MSG_MODIFY)
-    
+    layer = _resolve_layer(
+        req,
+        layername,
+        'base.change_resourcebase',
+        _PERMISSION_MSG_MODIFY)
+
     sld = req.FILES['sld'].read()
 
     try:
         dom = etree.XML(sld)
-    except Exception, ex:
+    except Exception:
         return respond(errors="The uploaded SLD file is not valid XML")
-    
-    el = dom.findall("{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
+
+    el = dom.findall(
+        "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
     if len(el) == 0 and not data.get('name'):
-        return respond(errors="Please provide a name, unable to extract one from the SLD.")
+        return respond(
+            errors="Please provide a name, unable to extract one from the SLD.")
     name = data.get('name') or el[0].text
     if data['update']:
         match = None
         styles = list(layer.styles) + [layer.default_style]
         for style in styles:
             if style.sld_name == name:
-                match = style; break
+                match = style
+                break
         if match is None:
             return respond(errors="Cannot locate style : " + name)
         match.update_body(sld)
@@ -114,16 +139,26 @@ def layer_style_upload(req, layername):
         try:
             cat = gs_catalog
             cat.create_style(name, sld)
-            layer.styles = layer.styles + [type('style', (object,), {'name': name})]
+            layer.styles = layer.styles + \
+                [type('style', (object,), {'name': name})]
             cat.save(layer.publishing)
-        except ConflictingDataError, e:
+        except ConflictingDataError:
             return respond(errors="""A layer with this name exists. Select
                                      the update option if you want to update.""")
-    return respond(body={'success': True, 'style': name, 'updated': data['update']})
+    return respond(
+        body={
+            'success': True,
+            'style': name,
+            'updated': data['update']})
+
 
 @login_required
 def layer_style_manage(req, layername):
-    layer = _resolve_layer(req, layername, 'base.change_resourcebase', _PERMISSION_MSG_MODIFY)
+    layer = _resolve_layer(
+        req,
+        layername,
+        'base.change_resourcebase',
+        _PERMISSION_MSG_MODIFY)
     if req.method == 'GET':
         try:
             cat = gs_catalog
@@ -133,7 +168,8 @@ def layer_style_manage(req, layername):
             try:
                 set_styles(layer, cat)
             except AttributeError:
-                logger.warn('Unable to set the default style.  Ensure Geoserver is running and that this layer exists.')
+                logger.warn(
+                    'Unable to set the default style.  Ensure Geoserver is running and that this layer exists.')
 
             all_available_gs_styles = cat.get_styles()
             gs_styles = []
@@ -153,14 +189,14 @@ def layer_style_manage(req, layername):
                     "gs_styles": gs_styles,
                     "layer_styles": layer_styles,
                     "default_style": layer.default_style.name
-                    }
+                }
                 )
             )
         except (FailedRequestError, EnvironmentError) as e:
             msg = ('Could not connect to geoserver at "%s"'
-               'to manage style information for layer "%s"' % (
-                ogc_server_settings.LOCATION, layer.name)
-            )
+                   'to manage style information for layer "%s"' % (
+                       ogc_server_settings.LOCATION, layer.name)
+                   )
             logger.warn(msg, e)
             # If geoserver is not online, return an error
             return render_to_response(
@@ -168,7 +204,7 @@ def layer_style_manage(req, layername):
                 RequestContext(req, {
                     "layer": layer,
                     "error": msg
-                    }
+                }
                 )
             )
     elif req.method == 'POST':
@@ -188,17 +224,22 @@ def layer_style_manage(req, layername):
             # Save to Django
             layer = set_styles(layer, cat)
             layer.save()
-            return HttpResponseRedirect(reverse('layer_detail', args=(layer.service_typename,)))
+            return HttpResponseRedirect(
+                reverse(
+                    'layer_detail',
+                    args=(
+                        layer.service_typename,
+                    )))
         except (FailedRequestError, EnvironmentError, MultiValueDictKeyError) as e:
             msg = ('Error Saving Styles for Layer "%s"' % (layer.name)
-            )
+                   )
             logger.warn(msg, e)
             return render_to_response(
                 'layers/layer_style_manage.html',
                 RequestContext(req, {
                     "layer": layer,
                     "error": msg
-                    }
+                }
                 )
             )
 
@@ -211,10 +252,14 @@ def feature_edit_check(request, layername):
     layer = get_object_or_404(Layer, typename=layername)
     datastore = ogc_server_settings.DATASTORE
     feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or datastore
-    if request.user.has_perm('base.change_resourcebase', obj=layer.resourcebase_ptr) and layer.storeType == 'dataStore' and feature_edit:
-        return HttpResponse(json.dumps({'authorized': True}), mimetype="application/json")
+    if request.user.has_perm(
+            'base.change_resourcebase',
+            obj=layer.resourcebase_ptr) and layer.storeType == 'dataStore' and feature_edit:
+        return HttpResponse(
+            json.dumps({'authorized': True}), mimetype="application/json")
     else:
-        return HttpResponse(json.dumps({'authorized': False}), mimetype="application/json")
+        return HttpResponse(
+            json.dumps({'authorized': False}), mimetype="application/json")
 
 
 def geoserver_rest_proxy(request, proxy_path, downstream_path):
@@ -243,7 +288,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
         url, request.method,
         body=request.body or None,
         headers=headers)
-        
+
     # we need to sync django here
     # we should remove this geonode dependency calling layers.views straight
     # from GXP, bypassing the proxy
@@ -256,7 +301,6 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
         content=content,
         status=response.status,
         mimetype=response.get("content-type", "text/plain"))
-
 
 
 def layer_batch_download(request):
@@ -279,27 +323,28 @@ def layer_batch_download(request):
 
         def layer_son(layer):
             return {
-                "name" : layer.typename,
-                "service" : layer.service_type,
-                "metadataURL" : "",
-                "serviceURL" : ""
+                "name": layer.typename,
+                "service": layer.service_type,
+                "metadataURL": "",
+                "serviceURL": ""
             }
 
         readme = """This data is provided by GeoNode.\n\nContents:"""
+
         def list_item(lyr):
             return "%s - %s.*" % (lyr.title, lyr.name)
 
         readme = "\n".join([readme] + [list_item(l) for l in layers])
 
         fake_map = {
-            "map": { "readme": readme },
-            "layers" : [layer_son(lyr) for lyr in layers]
+            "map": {"readme": readme},
+            "layers": [layer_son(lyr) for lyr in layers]
         }
 
         url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
-        resp, content = http_client.request(url,'POST',body=json.dumps(fake_map))
+        resp, content = http_client.request(
+            url, 'POST', body=json.dumps(fake_map))
         return HttpResponse(content, status=resp.status)
-
 
     if request.method == 'GET':
         # essentially, this just proxies back to geoserver
@@ -307,9 +352,11 @@ def layer_batch_download(request):
         if download_id is None:
             return HttpResponse(status=404)
 
-        url = "%srest/process/batchDownload/status/%s" % (ogc_server_settings.LOCATION, download_id)
-        resp,content = http_client.request(url,'GET')
+        url = "%srest/process/batchDownload/status/%s" % (
+            ogc_server_settings.LOCATION, download_id)
+        resp, content = http_client.request(url, 'GET')
         return HttpResponse(content, status=resp.status)
+
 
 def resolve_user(request):
     user = None
@@ -330,7 +377,8 @@ def resolve_user(request):
                                 status=401,
                                 mimetype="text/plain")
 
-    if not any([user, geoserver, superuser]) and not request.user.is_anonymous():
+    if not any([user, geoserver, superuser]
+               ) and not request.user.is_anonymous():
         user = request.user.username
         superuser = request.user.is_superuser
 
@@ -363,17 +411,19 @@ def layer_acls(request):
 
             # Nope, is it the special geoserver user?
             if (acl_user is None and
-                username == ogc_server_settings.USER and
-                password == ogc_server_settings.PASSWORD):
+                    username == ogc_server_settings.USER and
+                    password == ogc_server_settings.PASSWORD):
                 # great, tell geoserver it's an admin.
                 result = {
-                   'rw': [],
-                   'ro': [],
-                   'name': username,
-                   'is_superuser':  True,
-                   'is_anonymous': False
+                    'rw': [],
+                    'ro': [],
+                    'name': username,
+                    'is_superuser': True,
+                    'is_anonymous': False
                 }
-                return HttpResponse(json.dumps(result), mimetype="application/json")
+                return HttpResponse(
+                    json.dumps(result),
+                    mimetype="application/json")
         except Exception:
             pass
 
@@ -387,14 +437,20 @@ def layer_acls(request):
 
     all_writable = get_objects_for_user(acl_user, 'base.change_resourcebase')
 
-    read_only = [x.layer.typename for x in all_readable if x not in all_writable and hasattr(x, 'layer')]
-    read_write = [x.layer.typename for x in all_writable if x in all_readable and hasattr(x, 'layer')]
+    read_only = [
+        x.layer.typename for x in all_readable if x not in all_writable and hasattr(
+            x,
+            'layer')]
+    read_write = [
+        x.layer.typename for x in all_writable if x in all_readable and hasattr(
+            x,
+            'layer')]
 
     result = {
         'rw': read_write,
         'ro': read_only,
         'name': acl_user.username,
-        'is_superuser':  acl_user.is_superuser,
+        'is_superuser': acl_user.is_superuser,
         'is_anonymous': acl_user.is_anonymous(),
     }
     if acl_user.is_authenticated():
