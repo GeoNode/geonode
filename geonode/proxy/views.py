@@ -19,12 +19,12 @@
 #########################################################################
 
 from django.http import HttpResponse
-from httplib import HTTPConnection,HTTPSConnection
+from httplib import HTTPConnection, HTTPSConnection
 from urlparse import urlsplit
-import httplib2
 from django.conf import settings
 from django.utils.http import is_safe_url
 from django.http.request import validate_host
+
 
 def proxy(request):
     PROXY_ALLOWED_HOSTS = getattr(settings, 'PROXY_ALLOWED_HOSTS', ())
@@ -38,11 +38,10 @@ def proxy(request):
         host = ogc_server_settings.netloc
 
     if 'url' not in request.GET:
-        return HttpResponse(
-                "The proxy service requires a URL-encoded URL as a parameter.",
-                status=400,
-                content_type="text/plain"
-                )
+        return HttpResponse("The proxy service requires a URL-encoded URL as a parameter.",
+                            status=400,
+                            content_type="text/plain"
+                            )
 
     raw_url = request.GET['url']
     url = urlsplit(raw_url)
@@ -54,12 +53,11 @@ def proxy(request):
 
     if not settings.DEBUG:
         if not validate_host(url.hostname, PROXY_ALLOWED_HOSTS):
-            return HttpResponse(
-                    "DEBUG is set to False but the host of the path provided to the proxy service is not in the"
-                    " PROXY_ALLOWED_HOSTS setting.",
-                    status=403,
-                    content_type="text/plain"
-                    )
+            return HttpResponse("DEBUG is set to False but the host of the path provided to the proxy service"
+                                " is not in the PROXY_ALLOWED_HOSTS setting.",
+                                status=403,
+                                content_type="text/plain"
+                                )
     headers = {}
 
     if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(url=raw_url, host=host):
@@ -68,7 +66,7 @@ def proxy(request):
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
-    if url.scheme =='https':
+    if url.scheme == 'https':
         conn = HTTPSConnection(url.hostname, url.port)
     else:
         conn = HTTPConnection(url.hostname, url.port)
@@ -78,19 +76,17 @@ def proxy(request):
 
     # If we get a redirect, let's add a useful message.
     if result.status in (301, 302, 303, 307):
-         response = HttpResponse(
-            ('This proxy does not support redirects. The server in "%s" '
-            'asked for a redirect to "%s"' % (url, result.getheader('Location'))),
-            status=result.status,
-            content_type=result.getheader("Content-Type", "text/plain")
-            )
+        response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
+                                 'asked for a redirect to "%s"' % (url, result.getheader('Location'))),
+                                status=result.status,
+                                content_type=result.getheader("Content-Type", "text/plain")
+                                )
 
-         response['Location']=result.getheader('Location')
+        response['Location'] = result.getheader('Location')
     else:
         response = HttpResponse(
             result.read(),
             status=result.status,
-            content_type=result.getheader("Content-Type", "text/plain")
-            )
+            content_type=result.getheader("Content-Type", "text/plain"))
 
     return response

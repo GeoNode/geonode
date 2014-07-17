@@ -19,13 +19,9 @@
 # along with Opencarto.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django import db
-from django.db.utils import DatabaseError
 from django.contrib.gis.gdal import DataSource, SpatialReference, OGRGeometry
-from django.contrib.gis.utils import LayerMapping
 from django.utils.text import slugify
-import psycopg2
 
-import math
 
 def get_model_field_name(field):
     """Get the field name usable without quotes.
@@ -34,7 +30,7 @@ def get_model_field_name(field):
     field = slugify(field)
 
     # Use underscores instead of dashes.
-    field = field.replace('-','_')
+    field = field.replace('-', '_')
 
     # Use underscores instead of semicolons.
     field = field.replace(':', '_')
@@ -63,7 +59,7 @@ def get_model_field_name(field):
 
 
 def transform_geom(wkt, srid_in, srid_out):
-    
+
     proj_in = SpatialReference(int(srid_in))
     proj_out = SpatialReference(int(srid_out))
     ogr = OGRGeometry(wkt)
@@ -73,15 +69,16 @@ def transform_geom(wkt, srid_in, srid_out):
         ogr.set_srs(proj_in)
 
     ogr.transform_to(proj_out)
-    
+
     return ogr.wkt
+
 
 def get_extent_from_text(points, srid_in, srid_out):
     """Transform an extent from srid_in to srid_out."""
     proj_in = SpatialReference(srid_in)
-   
+
     proj_out = SpatialReference(srid_out)
-    
+
     if srid_out == 900913:
         if int(float(points[0])) == -180:
             points[0] = -179
@@ -117,6 +114,7 @@ def get_extent_from_text(points, srid_in, srid_out):
     mins.append(maxs[1])
 
     return mins
+
 
 def merge_geometries(geometries_str, sep='$'):
     """Take a list of geometries in a string, and merge it."""
@@ -162,7 +160,7 @@ def file2pgtable(infile, table_name, srid=4326):
                 geo_type = 'MULTI' + geo_type
         if geom.coord_dim > coord_dim:
             coord_dim = geom.coord_dim
-            if coord_dim > 2 :
+            if coord_dim > 2:
                 coord_dim = 2
 
         if first_feature:
@@ -172,17 +170,17 @@ def file2pgtable(infile, table_name, srid=4326):
             fieldnames = []
             for field in feature:
                 field_name = get_model_field_name(field.name)
-                if field.type == 0: # integer
+                if field.type == 0:  # integer
                     fields.append(field_name + " integer")
                     fieldnames.append(field_name)
-                elif field.type == 2: #float
+                elif field.type == 2:  # float
                     fields.append(field_name + " double precision")
                     fieldnames.append(field_name)
                 elif field.type == 4:
                     fields.append(field_name + " character varying(%s)" % (
                         field.width))
                     fieldnames.append(field_name)
-                elif field.type == 8 or field.type == 9 or field.type == 10 :
+                elif field.type == 8 or field.type == 9 or field.type == 10:
                     fields.append(field_name + " date")
                     fieldnames.append(field_name)
 
@@ -191,8 +189,8 @@ def file2pgtable(infile, table_name, srid=4326):
     sql += ','.join(fields)
     sql += ');'
 
-    sql +=  "SELECT AddGeometryColumn('public','%s','geom',%d,'%s',%d);" % (
-                table_name, srid, geo_type, coord_dim)
+    sql += "SELECT AddGeometryColumn('public','%s','geom',%d,'%s',%d);" % \
+           (table_name, srid, geo_type, coord_dim)
 
     sql += 'END;'
 
@@ -204,6 +202,7 @@ def file2pgtable(infile, table_name, srid=4326):
     execute(sql)
 
     return mapping
+
 
 def execute(sql):
     """Turns out running plain SQL within Django is very hard.
@@ -217,105 +216,101 @@ def execute(sql):
     finally:
         cursor.close()
 
-
-
 # Obtained from http://www.postgresql.org/docs/9.2/static/sql-keywords-appendix.html
-PG_RESERVED_KEYWORDS = (
-'ALL',
-'ANALYSE',
-'ANALYZE',
-'AND',
-'ANY',
-'ARRAY',
-'AS',
-'ASC',
-'ASYMMETRIC',
-'AUTHORIZATION',
-'BOTH',
-'BINARY',
-'CASE',
-'CAST',
-'CHECK',
-'COLLATE',
-'COLLATION',
-'COLUMN',
-'CONSTRAINT',
-'CREATE',
-'CROSS',
-'CURRENT_CATALOG',
-'CURRENT_DATE',
-'CURRENT_ROLE',
-'CURRENT_SCHEMA',
-'CURRENT_TIME',
-'CURRENT_TIMESTAMP',
-'CURRENT_USER',
-'DEFAULT',
-'DEFERRABLE',
-'DESC',
-'DISTINCT',
-'DO',
-'ELSE',
-'END',
-'EXCEPT',
-'FALSE',
-'FETCH',
-'FOR',
-'FOREIGN',
-'FREEZE',
-'FROM',
-'FULL',
-'GRANT',
-'GROUP',
-'HAVING',
-'ILIKE',
-'IN',
-'INITIALLY',
-'INTERSECT',
-'INTO',
-'IS',
-'ISNULL',
-'JOIN',
-'LEADING',
-'LEFT',
-'LIKE',
-'LIMIT',
-'LOCALTIME',
-'LOCALTIMESTAMP',
-'NATURAL',
-'NOT',
-'NOTNULL',
-'NULL',
-'OFFSET',
-'ON',
-'ONLY',
-'OR',
-'ORDER',
-'OUTER',
-'OVER',
-'OVERLAPS',
-'PLACING',
-'PRIMARY',
-'REFERENCES',
-'RETURNING',
-'RIGHT',
-'SELECT',
-'SESSION_USER',
-'SIMILAR',
-'SOME',
-'SYMMETRIC',
-'TABLE',
-'THEN',
-'TO',
-'TRAILING',
-'TRUE',
-'UNION',
-'UNIQUE',
-'USER',
-'USING',
-'VARIADIC',
-'VERBOSE',
-'WHEN',
-'WHERE',
-'WINDOW',
-'WITH',
-)
+PG_RESERVED_KEYWORDS = ('ALL',
+                        'ANALYSE',
+                        'ANALYZE',
+                        'AND',
+                        'ANY',
+                        'ARRAY',
+                        'AS',
+                        'ASC',
+                        'ASYMMETRIC',
+                        'AUTHORIZATION',
+                        'BOTH',
+                        'BINARY',
+                        'CASE',
+                        'CAST',
+                        'CHECK',
+                        'COLLATE',
+                        'COLLATION',
+                        'COLUMN',
+                        'CONSTRAINT',
+                        'CREATE',
+                        'CROSS',
+                        'CURRENT_CATALOG',
+                        'CURRENT_DATE',
+                        'CURRENT_ROLE',
+                        'CURRENT_SCHEMA',
+                        'CURRENT_TIME',
+                        'CURRENT_TIMESTAMP',
+                        'CURRENT_USER',
+                        'DEFAULT',
+                        'DEFERRABLE',
+                        'DESC',
+                        'DISTINCT',
+                        'DO',
+                        'ELSE',
+                        'END',
+                        'EXCEPT',
+                        'FALSE',
+                        'FETCH',
+                        'FOR',
+                        'FOREIGN',
+                        'FREEZE',
+                        'FROM',
+                        'FULL',
+                        'GRANT',
+                        'GROUP',
+                        'HAVING',
+                        'ILIKE',
+                        'IN',
+                        'INITIALLY',
+                        'INTERSECT',
+                        'INTO',
+                        'IS',
+                        'ISNULL',
+                        'JOIN',
+                        'LEADING',
+                        'LEFT',
+                        'LIKE',
+                        'LIMIT',
+                        'LOCALTIME',
+                        'LOCALTIMESTAMP',
+                        'NATURAL',
+                        'NOT',
+                        'NOTNULL',
+                        'NULL',
+                        'OFFSET',
+                        'ON',
+                        'ONLY',
+                        'OR',
+                        'ORDER',
+                        'OUTER',
+                        'OVER',
+                        'OVERLAPS',
+                        'PLACING',
+                        'PRIMARY',
+                        'REFERENCES',
+                        'RETURNING',
+                        'RIGHT',
+                        'SELECT',
+                        'SESSION_USER',
+                        'SIMILAR',
+                        'SOME',
+                        'SYMMETRIC',
+                        'TABLE',
+                        'THEN',
+                        'TO',
+                        'TRAILING',
+                        'TRUE',
+                        'UNION',
+                        'UNIQUE',
+                        'USER',
+                        'USING',
+                        'VARIADIC',
+                        'VERBOSE',
+                        'WHEN',
+                        'WHERE',
+                        'WINDOW',
+                        'WITH',)
