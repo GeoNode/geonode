@@ -19,11 +19,7 @@
 #########################################################################
 
 import logging
-import errno
 import uuid
-import httplib2
-from urlparse import urlparse
-import urllib
 
 from django.conf import settings
 from django.db import models
@@ -45,13 +41,15 @@ from geonode.utils import GXPMapBase
 from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
-from geonode.utils import num_encode, num_decode
+from geonode.utils import num_encode
 
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
 
+
 class Map(ResourceBase, GXPMapBase):
+
     """
     A Map aggregates several layers together and annotates them with a viewport
     configuration.
@@ -62,7 +60,7 @@ class Map(ResourceBase, GXPMapBase):
     # The zoom level to use when initially loading this map.  Zoom levels start
     # at 0 (most zoomed out) and each increment doubles the resolution.
 
-    projection = models.CharField(_('projection'),max_length=32)
+    projection = models.CharField(_('projection'), max_length=32)
     # The projection used for this map.  This is stored as a string with the
     # projection's SRID.
 
@@ -78,14 +76,18 @@ class Map(ResourceBase, GXPMapBase):
     # The last time the map was modified.
 
     urlsuffix = models.CharField(_('Site URL'), max_length=255, blank=True)
-    # Alphanumeric alternative to referencing maps by id, appended to end of 
+    # Alphanumeric alternative to referencing maps by id, appended to end of
     # URL instead of id, ie http://domain/maps/someview
 
-    featuredurl = models.CharField(_('Featured Map URL'), max_length=255, blank=True)
+    featuredurl = models.CharField(
+        _('Featured Map URL'),
+        max_length=255,
+        blank=True)
     # Full URL for featured map view, ie http://domain/someview
 
     def __unicode__(self):
-        return '%s by %s' % (self.title, (self.owner.username if self.owner else "<Anonymous>"))
+        return '%s by %s' % (
+            self.title, (self.owner.username if self.owner else "<Anonymous>"))
 
     @property
     def center(self):
@@ -104,7 +106,7 @@ class Map(ResourceBase, GXPMapBase):
     def local_layers(self):
         layer_names = MapLayer.objects.filter(map__id=self.id).values('name')
         return Layer.objects.filter(typename__in=layer_names) | \
-               Layer.objects.filter(name__in=layer_names)
+            Layer.objects.filter(name__in=layer_names)
 
     def json(self, layer_filter):
         """
@@ -115,7 +117,7 @@ class Map(ResourceBase, GXPMapBase):
         layers = []
         for map_layer in map_layers:
             if map_layer.local:
-                layer =  Layer.objects.get(typename=map_layer.name)
+                layer = Layer.objects.get(typename=map_layer.name)
                 layers.append(layer)
             else:
                 pass
@@ -140,8 +142,8 @@ class Map(ResourceBase, GXPMapBase):
 
         map_config = {
             # the title must be provided and is used for the zip file name
-            "map" : { "readme": readme, "title": self.title },
-            "layers" : [layer_json(lyr) for lyr in layers]
+            "map": {"readme": readme, "title": self.title},
+            "layers": [layer_json(lyr) for lyr in layers]
         }
 
         return json.dumps(map_config)
@@ -159,7 +161,10 @@ class Map(ResourceBase, GXPMapBase):
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
 
-        self.set_bounds_from_center_and_zoom(conf['map']['center'][0], conf['map']['center'][1], conf['map']['zoom'])
+        self.set_bounds_from_center_and_zoom(
+            conf['map']['center'][0],
+            conf['map']['center'][1],
+            conf['map']['zoom'])
 
         self.projection = conf['map']['projection']
 
@@ -181,12 +186,12 @@ class Map(ResourceBase, GXPMapBase):
             self.layer_set.add(
                 layer_from_viewer_config(
                     MapLayer, layer, source_for(layer), ordering
-            ))
+                ))
 
         self.save()
 
         if layer_names != set([l.typename for l in self.local_layers]):
-            map_changed_signal.send_robust(sender=self,what_changed='layers')
+            map_changed_signal.send_robust(sender=self, what_changed='layers')
 
     def keyword_list(self):
         keywords_qs = self.keywords.all()
@@ -212,18 +217,17 @@ class Map(ResourceBase, GXPMapBase):
                 bbox[1] = max(bbox[1], layer_bbox[1])
                 bbox[2] = min(bbox[2], layer_bbox[2])
                 bbox[3] = max(bbox[3], layer_bbox[3])
-        
+
         return bbox
 
     def create_from_layer_list(self, user, layers, title, abstract):
         self.owner = user
         self.title = title
         self.abstract = abstract
-        self.projection="EPSG:900913"
+        self.projection = "EPSG:900913"
         self.zoom = 0
         self.center_x = 0
         self.center_y = 0
-        map_layers = []
         bbox = None
         index = 0
 
@@ -238,17 +242,23 @@ class Map(ResourceBase, GXPMapBase):
                 try:
                     layer = Layer.objects.get(typename=layer)
                 except ObjectDoesNotExist:
-                    raise GeoNodeError('Could not find layer with name %s' % layer)
+                    raise Exception(
+                        'Could not find layer with name %s' %
+                        layer)
 
-            if not user.has_perm('base.view_resourcebase', obj=layer.resourcebase_ptr):
+            if not user.has_perm(
+                    'base.view_resourcebase',
+                    obj=layer.resourcebase_ptr):
                 # invisible layer, skip inclusion or raise Exception?
-                raise GeoNodeError('User %s tried to create a map with layer %s without having premissions' % (user, layer))
+                raise Exception(
+                    'User %s tried to create a map with layer %s without having premissions' %
+                    (user, layer))
             MapLayer.objects.create(
-                map = self,
-                name = layer.typename,
-                ows_url = layer.get_ows_url(),
-                stack_order = index,
-                visibility = True
+                map=self,
+                name=layer.typename,
+                ows_url=layer.get_ows_url(),
+                stack_order=index,
+                visibility=True
             )
 
             index += 1
@@ -263,7 +273,6 @@ class Map(ResourceBase, GXPMapBase):
         # Save again to persist the zoom and bbox changes and
         # to generate the thumbnail.
         self.save()
-        
 
     @property
     def class_name(self):
@@ -271,7 +280,9 @@ class Map(ResourceBase, GXPMapBase):
 
     @property
     def snapshots(self):
-        snapshots = MapSnapshot.objects.exclude(user=None).filter(map__id=self.map.id)
+        snapshots = MapSnapshot.objects.exclude(
+            user=None).filter(
+            map__id=self.map.id)
         return [snapshot for snapshot in snapshots]
 
     @property
@@ -280,7 +291,9 @@ class Map(ResourceBase, GXPMapBase):
         Returns True if anonymous (public) user can view map.
         """
         user = get_anonymous_user()
-        return user.has_perm('base.view_resourcebase', obj=self.resourcebase_ptr)
+        return user.has_perm(
+            'base.view_resourcebase',
+            obj=self.resourcebase_ptr)
 
     @property
     def layer_group(self):
@@ -302,15 +315,16 @@ class Map(ResourceBase, GXPMapBase):
             from geonode.geoserver.helpers import gs_catalog
             from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
         else:
-            raise Exception('Cannot publish layer group if geonode.geoserver is not in INSTALLED_APPS')
+            raise Exception(
+                'Cannot publish layer group if geonode.geoserver is not in INSTALLED_APPS')
 
-        # temporary permission workaround: 
+        # temporary permission workaround:
         # only allow public maps to be published
         if not self.is_public:
             return 'Only public maps can be saved as layer group.'
 
         map_layers = MapLayer.objects.filter(map=self.id)
-        
+
         # Local Group Layer layers and corresponding styles
         layers = []
         lg_styles = []
@@ -322,14 +336,19 @@ class Map(ResourceBase, GXPMapBase):
                 lg_styles.append(style)
         lg_layers = [l.name for l in layers]
 
-        # Group layer bounds and name             
-        lg_bounds = [str(coord) for coord in self.bbox] 
+        # Group layer bounds and name
+        lg_bounds = [str(coord) for coord in self.bbox]
         lg_name = '%s_%d' % (slugify(self.title), self.id)
 
         # Update existing or add new group layer
         lg = self.layer_group
         if lg is None:
-            lg = GsUnsavedLayerGroup(gs_catalog, lg_name, lg_layers, lg_styles, lg_bounds)
+            lg = GsUnsavedLayerGroup(
+                gs_catalog,
+                lg_name,
+                lg_layers,
+                lg_styles,
+                lg_bounds)
         else:
             lg.layers, lg.styles, lg.bounds = lg_layers, lg_styles, lg_bounds
         gs_catalog.save(lg)
@@ -340,6 +359,7 @@ class Map(ResourceBase, GXPMapBase):
 
 
 class MapLayer(models.Model, GXPLayerBase):
+
     """
     The MapLayer model represents a layer included in a map.  This doesn't just
     identify the dataset, but also extra options such as which style to load
@@ -353,7 +373,11 @@ class MapLayer(models.Model, GXPLayerBase):
     # The z-index of this layer in the map; layers with a higher stack_order will
     # be drawn on top of others.
 
-    format = models.CharField(_('format'), null=True, max_length=200, blank=True)
+    format = models.CharField(
+        _('format'),
+        null=True,
+        max_length=200,
+        blank=True)
     # The mimetype of the image format to use for tiles (image/png, image/jpeg,
     # image/gif...)
 
@@ -367,17 +391,22 @@ class MapLayer(models.Model, GXPLayerBase):
     opacity = models.FloatField(_('opacity'), default=1.0)
     # The opacity with which to render this layer, on a scale from 0 to 1.
 
-    styles = models.CharField(_('styles'), null=True,max_length=200, blank=True)
+    styles = models.CharField(
+        _('styles'),
+        null=True,
+        max_length=200,
+        blank=True)
     # The name of the style to use for this layer (only useful for WMS layers.)
 
     transparent = models.BooleanField(_('transparent'), default=False)
-    # A boolean value, true if we should request tiles with a transparent background.
+    # A boolean value, true if we should request tiles with a transparent
+    # background.
 
     fixed = models.BooleanField(_('fixed'), default=False)
     # A boolean value, true if we should prevent the user from dragging and
     # dropping this layer in the layer chooser.
 
-    group = models.CharField(_('group'), null=True,max_length=200, blank=True)
+    group = models.CharField(_('group'), null=True, max_length=200, blank=True)
     # A group label to apply to this layer.  This affects the hierarchy displayed
     # in the map viewer's layer tree.
 
@@ -405,25 +434,32 @@ class MapLayer(models.Model, GXPLayerBase):
     # True if this layer is served by the local geoserver
 
     def layer_config(self, user=None):
-        #Try to use existing user-specific cache of layer config
+        # Try to use existing user-specific cache of layer config
         if self.id:
-            cfg = cache.get("layer_config" + str(self.id) + "_" + str(0 if user is None else user.id))
+            cfg = cache.get("layer_config" +
+                            str(self.id) +
+                            "_" +
+                            str(0 if user is None else user.id))
             if cfg is not None:
                 return cfg
 
-        cfg = GXPLayerBase.layer_config(self,user=user)
+        cfg = GXPLayerBase.layer_config(self, user=user)
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
         if Layer.objects.filter(typename=self.name).exists():
             try:
                 if self.local:
-                    layer =  Layer.objects.get(typename=self.name)
+                    layer = Layer.objects.get(typename=self.name)
                 else:
-                    layer = Layer.objects.get(typename=self.name,service__base_url=self.ows_url)
+                    layer = Layer.objects.get(
+                        typename=self.name,
+                        service__base_url=self.ows_url)
                 attribute_cfg = layer.attribute_config()
                 if "getFeatureInfo" in attribute_cfg:
                     cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
-                if not user.has_perm('base.view_resourcebase', obj=layer.resourcebase_ptr):
+                if not user.has_perm(
+                        'base.view_resourcebase',
+                        obj=layer.resourcebase_ptr):
                     cfg['disabled'] = True
                     cfg['visibility'] = False
             except:
@@ -433,9 +469,13 @@ class MapLayer(models.Model, GXPLayerBase):
                 layer = None
 
         if self.id:
-            #Create temporary cache of maplayer config, should not last too long in case
-            #local layer permissions or configuration values change (default is 5 minutes)
-            cache.set("layer_config" + str(self.id) + "_" + str(0 if user is None else user.id), cfg)
+            # Create temporary cache of maplayer config, should not last too long in case
+            # local layer permissions or configuration values change (default
+            # is 5 minutes)
+            cache.set("layer_config" +
+                      str(self.id) +
+                      "_" +
+                      str(0 if user is None else user.id), cfg)
         return cfg
 
     @property
@@ -450,7 +490,8 @@ class MapLayer(models.Model, GXPLayerBase):
     def local_link(self):
         if self.local:
             layer = Layer.objects.get(typename=self.name)
-            link = "<a href=\"%s\">%s</a>" % (layer.get_absolute_url(),layer.title)
+            link = "<a href=\"%s\">%s</a>" % (
+                layer.get_absolute_url(), layer.title)
         else:
             link = "<span>%s</span> " % self.name
         return link
@@ -464,7 +505,10 @@ class MapLayer(models.Model, GXPLayerBase):
 
 def pre_delete_map(instance, sender, **kwrargs):
     ct = ContentType.objects.get_for_model(instance)
-    OverallRating.objects.filter(content_type = ct, object_id = instance.id).delete()
+    OverallRating.objects.filter(
+        content_type=ct,
+        object_id=instance.id).delete()
+
 
 class MapSnapshot(models.Model):
     map = models.ForeignKey(Map, related_name="snapshot_set")
