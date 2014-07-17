@@ -48,6 +48,7 @@ if "relationships" in settings.INSTALLED_APPS:
     relationships = True
     from relationships.models import Relationship
 
+
 def activity_post_modify_object(sender, instance, created=None, **kwargs):
     """
     Creates new activities after a Map, Layer, or Comment is  created/updated/deleted.
@@ -112,9 +113,10 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
                           target=action.get('target', None),
                           object_name=action.get('object_name'),
                           raw_action=raw_action,
-                        )
+                          )
         except ModelNotActionable:
             logger.debug('The activity received a non-actionable Model or None as the actor/action.')
+
 
 def notification_post_save_layer(instance, sender, created, **kwargs):
     if created:
@@ -124,11 +126,14 @@ def notification_post_save_layer(instance, sender, created, **kwargs):
         # Notification if existing layer is updated
         pass
 
+
 def relationship_post_save_actstream(instance, sender, created, **kwargs):
-   follow(instance.from_user, instance.to_user)
+    follow(instance.from_user, instance.to_user)
+
 
 def relationship_pre_delete_actstream(instance, sender, **kwargs):
-   unfollow(instance.from_user, instance.to_user)
+    unfollow(instance.from_user, instance.to_user)
+
 
 def relationship_post_save(instance, sender, created, **kwargs):
     notification.queue([instance.to_user], "user_follow", {"from_user": instance.from_user})

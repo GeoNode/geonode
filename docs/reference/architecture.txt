@@ -101,7 +101,7 @@ Discovery
 .........
 
 GeoNode's CSW endpoint is deployed available at ``http://localhost:8000/catalogue/csw`` and is
-available for clients to use for standards-based discovery.  See http://pycsw.org/docs/tools.html
+available for clients to use for standards-based discovery.  See http://docs.pycsw.org/en/latest/tools.html
 for a list of CSW clients and tools.
 
 Javascript in GeoNode

@@ -16,6 +16,7 @@ from geonode.base.populate_test_data import create_models
 from geonode.social.templatetags.social_tags import activity_item
 from geonode.layers.models import Layer
 
+
 class SimpleTest(TestCase):
 
     fixtures = ['initial_data.json']
@@ -78,10 +79,12 @@ class SimpleTest(TestCase):
         self.assertEqual(template_tag.get('object_name'), layer_name)
         self.assertEqual(template_tag.get('verb'), _('deleted'))
 
-
         content_type = ContentType.objects.get_for_model(Layer)
         layer = Layer.objects.all()[0]
-        comment = Comment(author=self.user, content_type=content_type, object_id=layer.id, comment="This is a cool layer.")
+        comment = Comment(author=self.user,
+                          content_type=content_type,
+                          object_id=layer.id,
+                          comment="This is a cool layer.")
         comment.save()
 
         action = Action.objects.all()[0]
@@ -103,16 +106,3 @@ class SimpleTest(TestCase):
 
         # Pre-fecthing actstream breaks the actor stream
         self.assertIn(action, actor_stream(self.user))
-
-
-
-
-
-
-
-
-
-
-
-
-
