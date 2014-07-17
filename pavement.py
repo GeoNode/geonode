@@ -147,12 +147,11 @@ def win_install_deps(options):
     download_dir = path('downloaded').abspath()
     if not download_dir.exists():
         download_dir.makedirs() 
-    #~gohlke 
-    win_packages = {"PIL":"http://www.lfd.uci.edu/~gohlke/pythonlibs/e9vjz76h/Pillow-2.5.0.win32-py2.7.exe",
-                    "Py2exe":"http://www.lfd.uci.edu/~gohlke/pythonlibs/e9vjz76h/py2exe-0.6.10a1.win32-py2.7.exe",
-                    "Nose":"http://www.lfd.uci.edu/~gohlke/pythonlibs/e9vjz76h/nose-1.3.3.win32-py2.7.exe",
-                    "LXML": "http://www.lfd.uci.edu/~gohlke/pythonlibs/e9vjz76h/lxml-3.3.5.win32-py2.7.exe",
-                    "GDAL":"http://www.lfd.uci.edu/~gohlke/pythonlibs/e9vjz76h/GDAL-1.11.0.win32-py2.7.exe",
+    win_packages = {"PIL":"https://pypi.python.org/packages/2.7/P/Pillow/Pillow-2.5.1.win32-py2.7.exe",
+                    "Py2exe":"http://superb-dca2.dl.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe",
+                    "Nose":"https://s3.amazonaws.com/geonodedeps/nose-1.3.3.win32-py2.7.exe",
+                    "LXML": "https://pypi.python.org/packages/2.7/l/lxml/lxml-3.3.5.win32-py2.7.exe",
+                    "GDAL":"https://s3.amazonaws.com/geonodedeps/GDAL-1.11.0.win32-py2.7.exe",
                     "PyProj":"https://pyproj.googlecode.com/files/pyproj-1.9.3.win32-py2.7.exe",
                     "Shapely":"https://pypi.python.org/packages/2.7/S/Shapely/Shapely-1.3.0.win32-py2.7.exe",
                     "Psycopg2":"http://www.stickpeople.com/projects/python/win-psycopg/psycopg2-2.4.5.win32-py2.7-pg9.1.3-release.exe"
