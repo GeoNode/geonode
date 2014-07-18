@@ -1,6 +1,6 @@
 $(function() {
 
-    $(".datepicker").datepicker();
+    $(".datepicker").datepicker({autoclose:true});
   
     $("#slide-pane a.toggle-pane").click(function(e) {
         e.preventDefault();

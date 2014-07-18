@@ -78,7 +78,8 @@ module.exports = function(grunt) {
             'select2/select2.css', 
             'multi-select/css/multi-select.css',
             'jquery-ui/themes/smoothness/jquery-ui.css',
-            'bootstrap/dist/css/bootstrap.min.css'
+            'bootstrap/dist/css/bootstrap.min.css',
+            'bootstrap-datepicker/css/datepicker.css'
           ]
         }, {
           expand: true,
@@ -175,7 +176,8 @@ module.exports = function(grunt) {
             'lib/css/select2.css',
             'lib/css/multi-select.css',
             'lib/css/jquery-ui.css',
-            'lib/css/bootstrap.min.css'
+            'lib/css/bootstrap.min.css',
+            'lib/css/datepicker.css'
           ]
         }
       }
