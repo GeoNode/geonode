@@ -18,7 +18,7 @@ Here you will find information about each and every component of Geonode, for ex
 
 :ref:`javascript`
 
-:ref:`settings`
+.. todo: :ref:`settings`
 
 .. toctree::
     :hidden:
@@ -28,8 +28,9 @@ Here you will find information about each and every component of Geonode, for ex
     components
     security
     localization
-    settings
     developers/index
     developers/django-apps
     developers/javascript
     developers/settings
+
+.. todo:: settings WARNING: toctree contains reference to nonexisting document u'reference/settings'

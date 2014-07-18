@@ -4,24 +4,27 @@
 Organizational
 ==============
 
-This is information on existing projects, contributing to GeoNode (code, documentation, translation, ...) and the community itself.
+This is information on existing projects, contributing to GeoNode 
+(code, documentation, translation, ...) and the community itself.
 
 :ref:`about` - What is GeoNode, the big picture.
 
 :ref:`roadmap` - How GeoNode can move ahead into the future.
 
-:ref:`community_resources` - Lots of links, think of it like your personal GeoNode bookmarks
+:ref:`community_resources` - Lots of links, think of it like your personal GeoNode bookmarks.
 
-:ref:`comm_bylaws` - Some rules to keeps us stronger
+:ref:`comm_bylaws` - Some rules to keep us stronger.
 
-`GeoNode Projects`_ - Who else is doing cool stuff with GeoNode
+`GeoNode Projects`_ - Who else is doing cool stuff with GeoNode.
 
-GNIPS_  GeoNode Improvement Proposals
+GNIPS_  GeoNode Improvement Proposals.
 
 
 Contributing
 ------------
-Helping out the GeoNode project is great and by contributing we all benefit and here is how.
+
+Helping out the GeoNode project is great, by contributing we all benefit,
+and here is how!
 
 :ref:`contrib`  is the best way to help out and here we show you how.
 
@@ -33,7 +36,7 @@ Helping out the GeoNode project is great and by contributing we all benefit and 
 
 :ref:`contrib_docu` is outlined how to get started writing documentation.
 
-:ref:`doc_guidelines` a work in progress outlining well ..how to write documentation.
+:ref:`doc_guidelines` a work in progress outlining well ... how to write documentation.
 
 :ref:`contribute_to_doc_translation` describes how to translate the documentation.
 
@@ -42,7 +45,6 @@ Helping out the GeoNode project is great and by contributing we all benefit and 
     :maxdepth: 3
 
     about
-    projects
     roadmap
     community_resources
     comm_bylaws
@@ -53,6 +55,8 @@ Helping out the GeoNode project is great and by contributing we all benefit and 
     contribute/contribute_to_documentation
     contribute/documentation_guidelines
     contribute/contribute_to_doc_translation
+
+.. todo:: projects? WARNING: toctree contains reference to nonexisting document u'organizational/projects'
 
 .. _GNIPS: https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals
 .. _GeoNode Projects: http://geonode.org/gallery/
