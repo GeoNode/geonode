@@ -26,8 +26,7 @@ module.exports = function(grunt) {
         files: [
           {
             // includes bootstrap.css
-            'geonode/css/base.css': 'geonode/less/base.less',
-            'geonode/css/activity.css': 'geonode/less/activity.less'
+            'geonode/css/base.css': 'geonode/less/base.less'
           }
         ]
       },
@@ -39,8 +38,7 @@ module.exports = function(grunt) {
         files: [
           {
             // includes bootstrap.css
-            'geonode/css/base.css': 'geonode/less/base.less',
-            'geonode/css/activity.css': 'geonode/less/activity.less'
+            'geonode/css/base.css': 'geonode/less/base.less'
           }
         ]
       }
