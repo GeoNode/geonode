@@ -501,7 +501,8 @@ def deb(options):
 
         # Workaround for git-dch bug
         # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
-        path('.git').makedirs()
+        # path('.git').makedirs()
+        sh('git init')
 
         # Install requirements
         #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
