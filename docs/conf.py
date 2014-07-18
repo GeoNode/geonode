@@ -44,7 +44,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'GeoNode'
-copyright = u'2013, GeoNode Development Team'
+copyright = u'2014, GeoNode Development Team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
