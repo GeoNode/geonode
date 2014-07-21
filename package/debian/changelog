@@ -1,3 +1,9 @@
+geonode (2.4.0+alpha2) trusty; urgency=medium
+
+  * [0960df] updates to support ubuntu 14.04
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 21 Jul 2014 09:39:06 +0000
+
 geonode (2.4.0+alpha1) trusty; urgency=medium
 
   [ mwengren ]
