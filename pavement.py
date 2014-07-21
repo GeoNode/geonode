@@ -502,7 +502,7 @@ def deb(options):
         # Workaround for git-dch bug
         # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
         # path('.git').makedirs()
-        # Link the pareng git repository folder in to the current one
+        # Link the parent git repository folder in to the current one
         # needed by git-dch
         sh('ln -s ../.git .git')
 
@@ -518,7 +518,7 @@ def deb(options):
             print line.replace("urgency=low", "urgency=high"),
 
         ## Revert workaround for git-dhc bug
-        path('.git').rmtree()
+        sh('rm -rf .git')
 
         if key is None and ppa is None:
             # A local installable package
