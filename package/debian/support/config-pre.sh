@@ -29,27 +29,20 @@ APACHE_SERVICE="invoke-rc.d apache2"
 # sama sama
 TOMCAT_SERVICE="invoke-rc.d tomcat7"
 
-# For Ubuntu 10.04
-if [ -d "/usr/share/postgresql/8.4/contrib" ]
+# For Ubuntu 12.04 (with PostGIS 1.5)
+if [ -d "/usr/share/postgresql/9.1/contrib/postgis-1.5" ]
 then
-    POSTGIS_SQL_PATH=/usr/share/postgresql/8.4/contrib
-    POSTGIS_SQL=postgis.sql
-fi
-
-# For Ubuntu 10.10 (with PostGIS 1.5)
-if [ -d "/usr/share/postgresql/8.4/contrib/postgis-1.5" ]
-then
-    POSTGIS_SQL_PATH=/usr/share/postgresql/8.4/contrib/postgis-1.5
+    POSTGIS_SQL_PATH=/usr/share/postgresql/9.1/contrib/postgis-1.5
     POSTGIS_SQL=postgis.sql
     GEOGRAPHY=1
 else
     GEOGRAPHY=0
 fi
 
-# For Ubuntu 12.04 (with PostGIS 1.5)
-if [ -d "/usr/share/postgresql/9.1/contrib/postgis-1.5" ]
+# For Ubuntu 14.04 (with PostGIS 2.1)
+if [ -d "/usr/share/postgresql/9.3/contrib/postgis-2.1" ]
 then
-    POSTGIS_SQL_PATH=/usr/share/postgresql/9.1/contrib/postgis-1.5
+    POSTGIS_SQL_PATH=/usr/share/postgresql/9.3/contrib/postgis-2.1
     POSTGIS_SQL=postgis.sql
     GEOGRAPHY=1
 else

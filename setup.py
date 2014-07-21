@@ -81,7 +81,7 @@ setup(name='GeoNode',
         # native dependencies
         "pillow", # python-pillow
         "lxml", # python-lxml
-        "psycopg2==2.4.5", # python-psycopg2
+        # "psycopg2==2.4.5", # python-psycopg2
         "Django >=1.6.1, <=1.6.5", # python-django
 
         # Other
