@@ -32,8 +32,6 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.core.cache import cache
 
-from guardian.shortcuts import get_anonymous_user
-
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
@@ -290,6 +288,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         Returns True if anonymous (public) user can view map.
         """
+        from guardian.shortcuts import get_anonymous_user
         user = get_anonymous_user()
         return user.has_perm(
             'base.view_resourcebase',

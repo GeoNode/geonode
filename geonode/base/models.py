@@ -359,7 +359,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     # fields necessary for the apis
     thumbnail_url = models.CharField(max_length=255, null=True, blank=True)
     detail_url = models.CharField(max_length=255, null=True, blank=True)
-    rating = models.IntegerField(default=0)
+    rating = models.IntegerField(default=0, null=True)
 
     def delete(self, *args, **kwargs):
         super(ResourceBase, self).delete(*args, **kwargs)
