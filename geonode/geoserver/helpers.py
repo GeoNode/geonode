@@ -1233,9 +1233,7 @@ class OGC_Servers_Handler(object):
                 'The UPLOADER BACKEND is set to geonode.importer but no DATASTORE is specified.')
 
         if 'PRINTNG_ENABLED' in server:
-            server.set('PRINT_NG_ENABLED', server.get('PRINTNG_ENABLED'))
-            logger.info(
-                "Using PRINTNG_ENABLED setting, please update to PRINT_NG_ENABLED ")
+            raise ImproperlyConfigured("The PRINTNG_ENABLED setting has been removed, use 'PRINT_NG_ENABLED' instead.")
 
     def ensure_defaults(self, alias):
         """
