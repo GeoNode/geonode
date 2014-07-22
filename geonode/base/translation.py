@@ -1,5 +1,5 @@
 from modeltranslation.translator import translator, TranslationOptions
-from geonode.base.models import (TopicCategory, SpatialRepresentationType, Region, 
+from geonode.base.models import (TopicCategory, SpatialRepresentationType, Region,
                                  RestrictionCodeType, License, ResourceBase)
 
 
