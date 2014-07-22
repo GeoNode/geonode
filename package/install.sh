@@ -105,7 +105,7 @@ function setup_django_every_time() {
     # django-admin.py is what should be used for manual installations
     # I am putting django-admin by default and filing a ticket:
     # https://github.com/GeoNode/geonode/issues/1180
-    geonode syncdb --noinput --all
+    geonode syncdb --noinput
     geonode collectstatic --noinput
 
     # Create an empty uploads dir

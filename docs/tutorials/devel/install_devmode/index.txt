@@ -28,7 +28,7 @@ For Windows: (:ref:`_install_win_devmode`)
 
    .. code-block:: console
 
-    $ sudo apt-get install -y build-essential libxml2-dev libxslt1-dev libpq-dev
+    $ sudo apt-get install -y build-essential libxml2-dev libxslt1-dev libpq-dev zlib1g-dev
 
 
 #. Install dependencies
