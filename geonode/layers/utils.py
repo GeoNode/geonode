@@ -36,7 +36,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.core.files import File
 from django.core.files.base import ContentFile
-from django.contrib.gis.gdal import DataSource
 from django.conf import settings
 
 # Geonode functionality
@@ -257,6 +256,7 @@ def get_resolution(filename):
 
 
 def get_bbox(filename):
+    from django.contrib.gis.gdal import DataSource
     bbox_x0, bbox_y0, bbox_x1, bbox_y1 = None, None, None, None
 
     if is_vector(filename):
@@ -497,8 +497,9 @@ def upload(incoming, user=None, overwrite=False,
 def create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url=None):
     BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
-    if not thumbail_create_url: thumbail_create_url = thumbnail_remote_url
-    
+    if not thumbail_create_url:
+        thumbail_create_url = thumbnail_remote_url
+
     # Check if the bbox is invalid
     valid_x = (
         float(
