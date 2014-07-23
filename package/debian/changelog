@@ -1,3 +1,9 @@
+geonode (2.4.0+alpha4) trusty; urgency=medium
+
+  * [900e91] make flake8 happy and import Datasource in the method (install would break)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 23 Jul 2014 10:08:42 +0000
+
 geonode (2.4.0+alpha3) trusty; urgency=medium
 
   [ Tyler Garner ]
