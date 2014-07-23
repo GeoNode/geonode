@@ -374,6 +374,8 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
         "wms/reflect?" + p
+    thumbail_create_url = ogc_server_settings.LOCATION + \
+        "wms/reflect?" + p
 
     # This is a workaround for development mode where cookies are not shared and the layer is not public so
     # not visible through geoserver
@@ -382,7 +384,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         current_perms = _perms_info_json(instance.get_self_resource())
         instance.set_default_permissions()
 
-    create_thumbnail(instance, thumbnail_remote_url)
+    create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url)
 
     if settings.DEBUG:
         instance.set_permissions(json.loads(current_perms))
