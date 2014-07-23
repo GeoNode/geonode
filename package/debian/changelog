@@ -1,3 +1,17 @@
+geonode (2.4.0+alpha3) trusty; urgency=medium
+
+  [ Tyler Garner ]
+  * [d03e07] Fix AttributeError in the ogc_server_settings configuration check.
+
+  [ Simone Dalmasso ]
+  * [83cf4f] further work towards 14.04
+  * [1edb6e] make flake8 happy
+  * [4008bf] fix apache sites on 14.04 and add arrest package
+  * [49b6a7] fix the updatemaplayer ip location
+  * [64997d] use the ogc_server internal location to create the thumbnail but save the link with the public location
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 23 Jul 2014 09:42:50 +0000
+
 geonode (2.4.0+alpha2) trusty; urgency=medium
 
   * [0960df] updates to support ubuntu 14.04
