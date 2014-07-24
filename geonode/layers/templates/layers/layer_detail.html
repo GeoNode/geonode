@@ -95,7 +95,9 @@
       </article>
 
       {% block social_links %}
-      {% include "social_links.html" %}
+      {% if SOCIAL_BUTTONS %}
+        {% include "social_links.html" %}
+      {% endif %}
       {% endblock %}
 
       <article id="comments" class="tab-pane">
