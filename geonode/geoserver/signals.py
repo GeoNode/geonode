@@ -210,48 +210,49 @@ def geoserver_post_save(instance, sender, **kwargs):
                                            link_type='data',
                                        )
                                        )
-    if gs_resource.store.type.lower() == 'geogit':
-        repo_url = '{url}geogit/{workspace}:{store}'.format(
-            url=ogc_server_settings.public_url,
-            workspace=instance.workspace,
-            store=instance.store)
 
-        path = gs_resource.dom.findall('nativeName')
+        if gs_resource.store.type.lower() == 'geogit':
+            repo_url = '{url}geogit/{workspace}:{store}'.format(
+                url=ogc_server_settings.public_url,
+                workspace=instance.workspace,
+                store=instance.store)
 
-        if path:
-            path = 'path={path}'.format(path=path[0].text)
+            path = gs_resource.dom.findall('nativeName')
 
-        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                   url=repo_url,
-                                   defaults=dict(extension='html',
-                                                 name='Clone in GeoGit',
-                                                 mime='text/xml',
-                                                 link_type='html'
-                                                 )
-                                   )
+            if path:
+                path = 'path={path}'.format(path=path[0].text)
 
-        command_url = lambda command: "{repo_url}/{command}.json?{path}".format(
-            repo_url=repo_url,
-            path=path,
-            command=command)
+            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                       url=repo_url,
+                                       defaults=dict(extension='html',
+                                                     name='Clone in GeoGit',
+                                                     mime='text/xml',
+                                                     link_type='html'
+                                                     )
+                                       )
 
-        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                   url=command_url('log'),
-                                   defaults=dict(extension='json',
-                                                 name='GeoGit log',
-                                                 mime='application/json',
-                                                 link_type='html'
-                                                 )
-                                   )
+            command_url = lambda command: "{repo_url}/{command}.json?{path}".format(
+                repo_url=repo_url,
+                path=path,
+                command=command)
 
-        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                   url=command_url('statistics'),
-                                   defaults=dict(extension='json',
-                                                 name='GeoGit statistics',
-                                                 mime='application/json',
-                                                 link_type='html'
-                                                 )
-                                   )
+            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                       url=command_url('log'),
+                                       defaults=dict(extension='json',
+                                                     name='GeoGit log',
+                                                     mime='application/json',
+                                                     link_type='html'
+                                                     )
+                                       )
+
+            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                       url=command_url('statistics'),
+                                       defaults=dict(extension='json',
+                                                     name='GeoGit statistics',
+                                                     mime='application/json',
+                                                     link_type='html'
+                                                     )
+                                       )
 
     elif instance.storeType == 'coverageStore':
         # FIXME(Ariel): This works for public layers, does it work for restricted too?
