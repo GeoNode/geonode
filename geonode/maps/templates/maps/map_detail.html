@@ -33,7 +33,11 @@
       <div class="map-actions">
         <ul class="nav nav-tabs">
           <li class="active"><a href="#info" data-toggle="tab"><i class="icon-info-sign"></i>{% trans "Info" %}</a></li>
+
+          {% if SOCIAL_BUTTONS %}
           <li><a href="#share" data-toggle="tab"><i class="icon-share"></i>{% trans "Share" %}</a></li>
+          {% endif %}
+
           <li><a href="#rate" data-toggle="tab"><i class="icon-star"></i>{% trans "Ratings" %}</a></li>
           <li><a href="#comments" data-toggle="tab"><i class="icon-comment"></i> {% trans "Comments" %}</a></li>
         </ul>
@@ -57,7 +61,9 @@
           <div class="overall_rating" style="float:left" data-score="{{ map_rating }}"></div> ({{num_votes}})
         </article>
         {% block social_links %}
-        {% include "social_links.html" %}
+            {% if SOCIAL_BUTTONS %}
+                {% include "social_links.html" %}
+            {% endif %}
         {% endblock %}
       </div>
 
