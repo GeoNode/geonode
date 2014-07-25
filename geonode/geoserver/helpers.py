@@ -414,10 +414,10 @@ def gs_slurp(
                 "owner": owner,
                 "uuid": str(uuid.uuid4())
             })
-            layer.bbox_x0 = float(resource.native_bbox[0])
-            layer.bbox_x1 = float(resource.native_bbox[1])
-            layer.bbox_y0 = float(resource.native_bbox[2])
-            layer.bbox_y1 = float(resource.native_bbox[3])
+            layer.bbox_x0 = float(resource.latlon_bbox[0])
+            layer.bbox_x1 = float(resource.latlon_bbox[1])
+            layer.bbox_y0 = float(resource.latlon_bbox[2])
+            layer.bbox_y1 = float(resource.latlon_bbox[3])
             layer.save()
             # recalculate the layer statistics
             set_attributes(layer, overwrite=True)
