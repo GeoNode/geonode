@@ -35,10 +35,10 @@ from urlparse import urlparse
 from urlparse import urlsplit
 from threading import local
 from collections import namedtuple
-
 from itertools import cycle, izip
 from lxml import etree
 import xml.etree.ElementTree as ET
+from decimal import Decimal
 
 from owslib.wcs import WebCoverageService
 from owslib.util import http_post
@@ -414,10 +414,10 @@ def gs_slurp(
                 "owner": owner,
                 "uuid": str(uuid.uuid4())
             })
-            layer.bbox_x0 = float(resource.latlon_bbox[0])
-            layer.bbox_x1 = float(resource.latlon_bbox[1])
-            layer.bbox_y0 = float(resource.latlon_bbox[2])
-            layer.bbox_y1 = float(resource.latlon_bbox[3])
+            layer.bbox_x0 = Decimal(resource.latlon_bbox[0])
+            layer.bbox_x1 = Decimal(resource.latlon_bbox[1])
+            layer.bbox_y0 = Decimal(resource.latlon_bbox[2])
+            layer.bbox_y1 = Decimal(resource.latlon_bbox[3])
             layer.save()
             # recalculate the layer statistics
             set_attributes(layer, overwrite=True)
