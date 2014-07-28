@@ -85,7 +85,7 @@ def geoserver_pre_save(instance, sender, **kwargs):
     # Get metadata links
     metadata_links = []
     for link in instance.link_set.metadata():
-        metadata_links.append((link.name, link.mime, link.url))
+        metadata_links.append((link.mime, link.name, link.url))
 
     gs_resource.metadata_links = metadata_links
     # gs_resource should only be called if
