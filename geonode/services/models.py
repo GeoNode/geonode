@@ -124,9 +124,10 @@ def pre_delete_service(instance, sender, **kwargs):
             _user = settings.OGC_SERVER['default']['USER']
             _password = settings.OGC_SERVER['default']['PASSWORD']
             gs = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest",
-                         _user, _password)
+                         _user ,_password)
             cascade_store = gs.get_store(
                 instance.name, settings.CASCADE_WORKSPACE)
+
             gs.delete(cascade_store, recurse=True)
         except FailedRequestError:
             logger.error(
