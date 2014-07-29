@@ -154,7 +154,7 @@ def create_thumbnail(sender, instance, created, **kwargs):
     if instance.has_thumbnail():
         instance.thumbnail_set.get().thumb_file.delete()
     else:
-        instance.thumbnail_set.get().add(Thumbnail())
+        instance.thumbnail_set.add(Thumbnail())
 
     image = instance._render_thumbnail()
 
