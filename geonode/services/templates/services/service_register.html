@@ -1,4 +1,5 @@
 {% extends "services/services_base.html" %}
+{% load bootstrap_tags %}
 {% load i18n %}
 
 {% block head %}
@@ -8,15 +9,12 @@
 {% block title %} Register Service - {{ block.super }} {% endblock %}
 
 {% block body %}
-<div class="twocol">
-
-<h2>Register New Service</h2>
+    <h2 class="page-title">Register New Service</h2>
     <form method="POST" id="service_register_form">
     {% csrf_token %}
-    <ul class="form">
-        {{ create_service_form.as_ul }}
-    </ul>
-    <div align="center"><p><input type="submit" class="submit_btn" id="submit_button" value="{% trans "Create" %}" /></p></div>
+    {{ create_service_form|as_bootstrap }}
+
+    <div align="center"><p><input type="submit" class="btn btn-primary pull-left" id="submit_button" value="{% trans "Create" %}" /></p></div>
     </form>
 
     <div id="responseDiv" style="display:none;">
@@ -30,7 +28,6 @@
         <p>{%  trans "The following layers will be imported" %}</p>
         <table id="dataTable"></table>
     </div>
-</div>
 {% endblock %}
 {% block extra_script %}
 <script type="text/javascript">

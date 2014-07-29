@@ -30,19 +30,6 @@
 </div>
 
 <div class="row">
-    <div class="col-md-8">
-        {% if resource.storeType == "remoteStore" %}
-            <h4>{% trans "External service layer" %}</h4>
-            <ul>
-                <li>{% trans "Source:" %}<a href="/services/{{resource.service.id}}">{{ resource.service.title }}</a></li>
-                <li>{% trans "Type:" %}{{ resource.service.type }}</li>
-            </ul>
-        {% endif %}
-    </div>
-</div>
-
-
-<div class="row">
   <div class="col-md-8">
 
     <div id="embedded_map" class="mrg-btm">
@@ -231,7 +218,6 @@
       {% endif %}
     </li>
     {% endif %}
-
     <li class="list-group-item">
       <h4>{% trans "Maps using this layer" %}</h4>
       {% if resource.maps %}
@@ -294,6 +280,15 @@
     </li>
     {% endif %}
     {% endif %}
+
+    <li class="list-group-item">
+        {% if resource.storeType == "remoteStore" %}
+            <h4>{% trans "External service layer" %}</h4>
+            <div>{% trans "Source" %}: <a href="/services/{{resource.service.id}}">{{ resource.service.title }}</a></div>
+            <div>{% trans "Type" %}: {{ resource.service.type }}</div>
+
+        {% endif %}
+    </li>
 
     {% include "base/_resourcebase_contact_snippet.html" %}  
   </ul>
