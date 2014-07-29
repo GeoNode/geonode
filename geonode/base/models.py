@@ -153,17 +153,10 @@ class RestrictionCodeType(models.Model):
 
 class Thumbnail(models.Model):
 
+    resourcebase = models.ForeignKey('ResourceBase')
     thumb_file = models.FileField(upload_to='thumbs')
     thumb_spec = models.TextField(null=True, blank=True)
     version = models.PositiveSmallIntegerField(null=True, default=0)
-
-    def save_thumb(self, image, id):
-        """image must be png data in a string for now"""
-        self._delete_thumb()
-        md5 = hashlib.md5()
-        md5.update(id + str(self.version))
-        self.version = self.version + 1
-        self.thumb_file.save(md5.hexdigest() + ".png", ContentFile(image))
 
     def _delete_thumb(self):
         try:
@@ -350,7 +343,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                     default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>',
                                     blank=True)
 
-    thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True, on_delete=models.SET_NULL)
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
@@ -545,13 +537,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     def has_thumbnail(self):
         """Determine if the thumbnail object exists and an image exists"""
-        if self.thumbnail is None:
+        if not self.thumbnail_set.exists():
             return False
 
-        if not hasattr(self.thumbnail.thumb_file, 'path'):
+        if not hasattr(self.thumbnail_set.get().thumb_file, 'path'):
             return False
 
-        return os.path.exists(self.thumbnail.thumb_file.path)
+        return os.path.exists(self.thumbnail_set.get().thumb_file.path)
 
     def set_missing_info(self):
         """Set default permissions and point of contacts.
@@ -672,8 +664,9 @@ class Link(models.Model):
 
 
 def resourcebase_post_delete(instance):
-    if instance.thumbnail is not None:
-        instance.thumbnail.delete()
+    if instance.thumbnail_set.exists():
+        instance.thumbnail_set.get().thumb_file.delete()
+        instance.thumbnail_set.get().delete()
 
 
 def resourcebase_post_save(instance, *args, **kwargs):
