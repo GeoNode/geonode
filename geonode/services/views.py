@@ -1268,11 +1268,8 @@ def create_arcgis_links(instance):
     )
 
     # Create thumbnails.
+    bbox = urllib.pathname2url('%s,%s,%s,%s' % (instance.bbox_x0, instance.bbox_y0, instance.bbox_x1, instance.bbox_y1))
 
-    # FIXME(Ariel): Construct the bbox parameter from the above object.
-    # Hardcoding it for now.
-    bbox = '0%2C0%2C10018754.17%2C10018754.17'
-
-    thumbnail_remote_url = instance.ows_url + 'export?LAYERS=show%3A0&TRANSPARENT=true&FORMAT=png&BBOX=' + \
-        bbox + '&SIZE=200%2C150&F=image&BBOXSR=900913&IMAGESR=900913'
+    thumbnail_remote_url = instance.ows_url + 'export?LAYERS=show%3A' + str(instance.typename) + \
+        '&TRANSPARENT=true&FORMAT=png&BBOX=' + bbox + '&SIZE=200%2C150&F=image&BBOXSR=4326&IMAGESR=3857'
     create_thumbnail(instance, thumbnail_remote_url)

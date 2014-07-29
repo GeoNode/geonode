@@ -9,10 +9,10 @@
     </div>
     <div class="col-md-8 filter">      
       <ul class="nav nav-pills filter" id="sort">
-        <li><a data-value="-user__date_joined" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{% trans "Most recent" %}</a></li>
-        <li><a data-value="user__date_joined" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Less recent" %}</a></li>
-        <li><a data-value="name" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "A - Z" %}</a></li>
-        <li><a data-value="-name" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Z - A" %}</a></li>
+        <li><a data-value="-date_joined" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{% trans "Most recent" %}</a></li>
+        <li><a data-value="date_joined" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Less recent" %}</a></li>
+        <li><a data-value="username" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "A - Z" %}</a></li>
+        <li><a data-value="-username" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Z - A" %}</a></li>
       </ul>
     </div>
     <div class="col-md-12">

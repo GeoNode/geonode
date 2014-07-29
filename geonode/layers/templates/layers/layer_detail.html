@@ -210,7 +210,7 @@
               {% endif %}
               <li><a href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace this Layer" %}</a></li>
               <li><a href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove this Layer" %}</a></li>
-            <ul>
+            </ul>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -300,8 +300,11 @@
 
 
   {% if GEONODE_SECURITY_ENABLED %}   
-  {% include "_permissions_form.html" %}
+    {% include "_permissions_form.html" %}
   {% endif %}
+
+  </div> <!-- col-md-4 -->
+</div> <!-- row -->
 {% endblock %}
 
 {% block extra_script %}
