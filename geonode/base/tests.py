@@ -8,7 +8,7 @@ class ThumbnailTests(TestCase):
         self.rb = ResourceBase.objects.create()
 
     def tearDown(self):
-        t = self.rb.thumbnail
+        t = self.rb.thumbnail_set.get()
         if t:
             t.delete()
 
