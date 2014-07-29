@@ -354,8 +354,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     rating = models.IntegerField(default=0, null=True)
 
     def delete(self, *args, **kwargs):
+        resourcebase_pre_delete(self)
         super(ResourceBase, self).delete(*args, **kwargs)
-        resourcebase_post_delete(self)
 
     def __unicode__(self):
         return self.title
@@ -663,10 +663,9 @@ class Link(models.Model):
     objects = LinkManager()
 
 
-def resourcebase_post_delete(instance):
+def resourcebase_pre_delete(instance):
     if instance.thumbnail_set.exists():
         instance.thumbnail_set.get().thumb_file.delete()
-        instance.thumbnail_set.get().delete()
 
 
 def resourcebase_post_save(instance, *args, **kwargs):
