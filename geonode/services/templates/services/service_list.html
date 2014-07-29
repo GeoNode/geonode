@@ -25,12 +25,8 @@
 {% endblock %}
 
 {% block sidebar %}
-<div id="sidebar" class="threecol">
-
-    <h3>{% trans "Manage" %}</h3>
-    <ul>
-        <li><a href="{% url "register_service" %}">{% trans "Register a new Service" %}</a></li>
+    <ul class="list-group">
+    <li class="list-group-item"><h3>{% trans "Manage" %}</h3></li>
+        <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "register_service" %}">{% trans "Register a new Service" %}</a></li>
     </ul>
-
-</div>
 {% endblock %}
