@@ -1,14 +1,12 @@
 import datetime
 import math
 import os
-import hashlib
 import logging
 
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
-from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
@@ -663,11 +661,9 @@ class Link(models.Model):
     objects = LinkManager()
 
 
-
 def resourcebase_pre_delete(instance):
     if instance.thumbnail_set.exists():
         instance.thumbnail_set.get().thumb_file.delete()
-
 
 
 def resourcebase_post_save(instance, *args, **kwargs):
