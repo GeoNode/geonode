@@ -158,14 +158,6 @@ class Thumbnail(models.Model):
     thumb_spec = models.TextField(null=True, blank=True)
     version = models.PositiveSmallIntegerField(null=True, default=0)
 
-    def save_thumb(self, image, id):
-        """image must be png data in a string for now"""
-        self._delete_thumb()
-        md5 = hashlib.md5()
-        md5.update(id + str(self.version))
-        self.version = self.version + 1
-        self.thumb_file.save(md5.hexdigest() + ".png", ContentFile(image))
-
     def _delete_thumb(self):
         try:
             self.thumb_file.delete()
