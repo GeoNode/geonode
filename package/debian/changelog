@@ -1,3 +1,27 @@
+geonode (2.4.0+alpha5) trusty; urgency=medium
+
+  [ Tyler Garner ]
+  * [3181bf] GeoGit link logic only runs when the layer's store type is a dataStore.
+
+  [ Simone Dalmasso ]
+  * [10952b] make sure the signals are not attached when running geonode-updateip
+
+  [ Tyler Garner ]
+  * [d1af86] Update permission form select2 options to allow the input fields to be overridden in css.
+  * [f8c6c2] Minor CSS fix for the filter elements.
+  * [800990] Consistently use the SOCIAL_BUTTONS context to toggle social_link visibility on detail pages.
+
+  [ Simone Dalmasso ]
+  * [56cafb] use lat_lon instead of native projection in updatelayers
+
+  [ Tyler Garner ]
+  * [720b4d] Move Bootstrap higher in the compiled CSS.
+
+  [ Simone Dalmasso ]
+  * [bd11f4] use decimal in update layers and bump minor version to 2.4
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 28 Jul 2014 07:02:39 +0000
+
 geonode (2.4.0+alpha4) trusty; urgency=medium
 
   * [900e91] make flake8 happy and import Datasource in the method (install would break)
