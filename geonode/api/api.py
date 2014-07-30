@@ -228,9 +228,9 @@ class ProfileResource(ModelResource):
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
         resource_name = 'profiles'
         allowed_methods = ['get']
-        ordering = ['name']
+        ordering = ['username', 'date_joined']
         excludes = ['is_staff', 'password', 'is_superuser',
-                    'is_active', 'date_joined', 'last_login']
+                    'is_active', 'last_login']
 
         filtering = {
             'username': ALL,

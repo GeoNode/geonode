@@ -39,7 +39,7 @@ class Service(ResourceBase):
     description = models.CharField(max_length=255, null=True, blank=True)
     online_resource = models.URLField(False, null=True, blank=True)
     fees = models.CharField(max_length=1000, null=True, blank=True)
-    access_contraints = models.CharField(max_length=255, null=True, blank=True)
+    access_constraints = models.CharField(max_length=255, null=True, blank=True)
     connection_params = models.TextField(null=True, blank=True)
     username = models.CharField(max_length=50, null=True, blank=True)
     password = models.CharField(max_length=50, null=True, blank=True)

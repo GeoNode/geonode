@@ -10,12 +10,12 @@
     <form action="/services/{{service.id}}/remove" method="POST" class="inline">
         {% csrf_token %}
         <input type="hidden" value="{{next}}" id="next" name="next">
-        <input type="submit" class="submit_btn" value="{% trans "Yes, delete"  %}" />
+        <div class="form-actions">
+            <input class="btn btn-danger" type="submit" value="{% trans "Yes, I am sure" %}" />
+            <a class="btn btn-info" href="{{ service.get_absolute_url }}">{% trans "No, don't remove it" %}</a>
+        </div>
     </form>
-    <form action="/services/{{service.id}}" method="GET" class="inline">
-        <button type="submit"  class="cancel_btn" onclick="javascript: history.go(-1);return false;">{% trans "No, cancel" %}</button>
-    </form>
+
 </div>
-<div style="float:left;">
 
 {% endblock %}
