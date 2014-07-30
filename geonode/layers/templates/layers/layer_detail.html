@@ -174,6 +174,31 @@
       </div>
     </div>
 
+    {% if 'SOS' in keys %}
+    <li class="list-group-item">
+      <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-data">{% trans "Download Attribute Data" %}</button>
+    </li>
+
+    <div class="modal fade" id="download-data" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel">{% trans "Download Attribute Data" %}</h4>
+          </div>
+          <div class="modal-body">
+            <ul>
+              <li><a href="{{ resource.base }}/layers/{{ resource.workspace }}:{{ resource.name}}/data">{% trans "Get CSV data" %}</a></li>
+            <ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     <li class="list-group-item">
     {% get_obj_perms request.user for resource.get_self_resource as "resource_perms" %}
     {% if "change_resourcebase" in resource_perms %}
@@ -190,7 +215,7 @@
           </div>
           <div class="modal-body">
             <ul>
-              <li><a href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit Metadata" %}</a></li>            
+              <li><a href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit Metadata" %}</a></li>
               {% if GEOSERVER_BASE_URL %}
               <li><a href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage Styles" %}</a></li>
               <li><a class="style-edit" href="#">{% trans "Edit Styles" %}</a></li>
@@ -224,7 +249,7 @@
         <p>{% trans "List of maps using this layer:" %}</p>
         {% endif %}
         <ul class="list-unstyled">
-          {% for maplayer in resource.maps %} 
+          {% for maplayer in resource.maps %}
             <li><a href="{{ maplayer.map.get_absolute_url }}">{{ maplayer.map.title }}</a></li>
           {% empty %}
             <li>{% trans "This layer is not currently used in any maps." %}</li>
@@ -242,7 +267,7 @@
       <h4>{% trans "Documents related to this layer" %}</h4>
       <p>{% trans "List of documents related to this layer:" %}</p>
       <ul class="list-unstyled">
-        {% for document in documents %} 
+        {% for document in documents %}
           <li><a href="{{ document.get_absolute_url }}">{{ document.title }}</a></li>
         {% endfor %}
       </ul>
@@ -290,11 +315,11 @@
         {% endif %}
     </li>
 
-    {% include "base/_resourcebase_contact_snippet.html" %}  
+    {% include "base/_resourcebase_contact_snippet.html" %}
   </ul>
 
 
-  {% if GEONODE_SECURITY_ENABLED %}   
+  {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form.html" %}
   {% endif %}
 
@@ -324,7 +349,7 @@
               data: $("#form_post_comment").serialize(),
               success: function() {
                 $('#form_post_comment_div').modal('hide');
-                $('#comments_section').load(window.location.pathname + ' #comments_section', 
+                $('#comments_section').load(window.location.pathname + ' #comments_section',
                 		function(){$(this).children().unwrap()})
               }
             });

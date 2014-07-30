@@ -39,6 +39,7 @@ from geonode.services.models import Service
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.base.forms import CategoryForm
 from geonode.layers.models import Layer, Attribute
+from geonode.layers.data import layer_sos, layer_netcdf
 from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
 
@@ -244,6 +245,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             name__in=settings.DOWNLOAD_FORMATS_RASTER)
 
     context_dict["links"] = links
+
+    keys = [lkw.name for lkw in layer.keywords.all()]
+    context_dict["keys"] = keys
 
     return render_to_response(template, RequestContext(request, context_dict))
 
@@ -459,3 +463,39 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             mimetype="text/plain",
             status=401
         )
+
+# Optional Layer Views #
+
+
+@login_required
+def layer_data(request, layername, mimetype="text/csv"):
+    """Return non-spatial data for a named layer, in required mimetype format.
+
+    Access to the layer's keywords is needed to determine the additional
+    characteristics defined for a layer.
+
+    Access to the layer's supplemental information is required so that the
+    data extraction function can access & process the non-spatial data.
+    """
+    from geonode.base.enumerations import DEFAULT_SUPPLEMENTAL_INFORMATION
+    layer = _resolve_layer(
+        request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
+    if request.method == 'GET' and 'feature' in request.GET:
+        feature = request.GET['feature']
+    else:
+        feature = None
+    keys = [lkw.name for lkw in layer.keywords.all()]
+    sup_inf_str = str(layer.supplemental_information)
+    if "SOS" in keys:
+        if sup_inf_str is not None and sup_inf_str != DEFAULT_SUPPLEMENTAL_INFORMATION:
+            return layer_sos(feature, sup_inf_str, time=None, mimetype=mimetype)
+        else:
+            content = "Correct supplemental information must be supplied!"
+            status = 400
+            return HttpResponse(content=content, status=status)
+    elif "NetCDF" in keys:
+        return layer_netcdf(request, layername, time=None, mimetype=mimetype)
+    else:
+        content = "Unsupported data type in layer keys..."
+        status = 501
+        return HttpResponse(content=content, status=status)

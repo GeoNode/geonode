@@ -41,6 +41,7 @@ urlpatterns = patterns(
     # url(r'^api/batch_permissions/?$', 'batch_permissions',
     #    name='batch_permssions'),
     # url(r'^api/batch_delete/?$', 'batch_delete', name='batch_delete'),
+    url(r'^(?P<layername>[^/]*)/data$', 'layer_data', name='layer_data')
 )
 
 # -- Deprecated url routes for Geoserver authentication -- remove after GeoNode 2.1
