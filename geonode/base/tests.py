@@ -8,6 +8,7 @@ class ThumbnailTests(TestCase):
         self.rb = ResourceBase.objects.create()
 
     def tearDown(self):
+        # if the thumbnail hasn't already been removed:
         if self.rb.thumbnail_set.exists():
             t = self.rb.thumbnail_set.get()
             if t:
