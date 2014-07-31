@@ -196,8 +196,8 @@ def sos_swe_data_list(response, constants=[], show_headers=True):
 
 
 def sos_observation_xml(url, version='1.0.0', xml=None, offerings=[],
-                        responseFormat=None, observedProperties=[],
-                        eventTime=None, feature=None, allProperties=False):
+                        response_format=None, observed_properties=[],
+                        event_time=None, feature=None, all_properties=False):
     """Return the XML from a SOS GetObservation request.
 
     Parameters
@@ -208,20 +208,20 @@ def sos_observation_xml(url, version='1.0.0', xml=None, offerings=[],
         Version number of SOS (e.g. 1.0.0)
     offerings : list
         selected offerings from SOS; defaults to all available
-    responseFormat : string
+    response_format : string
         desire format for result data
-    observedProperties : list
+    observed_properties : list
         filters results for selected properties from SOS; defaults to first one
-        (unless allProperties is True)
-    eventTime : string
+        (unless all_properties is True)
+    event_time : string
         filters results for a specified instant or period.
         Use ISO format YYYY-MM-DDTHH:mm:ss+-HH  Periods of time (start and end)
         are separated by "/"; e.g. 2009-06-26T10:00:00+01/2009-06-26T11:00:00+01
     feature : string
         filters results for the ID of a feature_of_interest
-    allProperties : boolean
-        if allProperties is True, filters results for all properties (and
-        ignores any items in the observedProperties)
+    all_properties : boolean
+        if all_properties is True, filters results for all properties (and
+        ignores any items in the observed_properties)
     """
     # GetCapabilites of SOS
     _sos = SensorObservationService(url, version=version or '1.0.0', xml=xml or None)
@@ -234,19 +234,19 @@ def sos_observation_xml(url, version='1.0.0', xml=None, offerings=[],
     # Get offering IDs to be used
     offerings_objs = _offerings or  _sos.offerings
     sos_offerings = [off.id for off in offerings_objs]
-    responseFormat = responseFormat or offerings_objs[0].response_formats[0]
-    if not allProperties:
-        observedProperties = observedProperties or [offerings_objs[0].observed_properties[0]]
+    response_format = response_format or offerings_objs[0].response_formats[0]
+    if not all_properties:
+        observed_properties = observed_properties or [offerings_objs[0].observed_properties[0]]
     else:
-        observedProperties = offerings_objs[0].observed_properties
-    eventTime = eventTime
+        observed_properties = offerings_objs[0].observed_properties
+    event_time = event_time
 
     if feature:
         return _sos.get_observation(
-            offerings=sos_offerings, responseFormat=responseFormat,
-            observedProperties=observedProperties, eventTime=eventTime,
+            offerings=sos_offerings, response_format=response_format,
+            observed_properties=observed_properties, event_time=event_time,
             FEATUREOFINTEREST=feature)
     else:
         return _sos.get_observation(
-            offerings=sos_offerings, responseFormat=responseFormat,
-            observedProperties=observedProperties, eventTime=eventTime)
+            offerings=sos_offerings, response_format=response_format,
+            observed_properties=observed_properties, event_time=event_time)

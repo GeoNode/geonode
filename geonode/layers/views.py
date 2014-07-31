@@ -485,6 +485,7 @@ def layer_data(request, layername, mimetype="text/csv"):
     else:
         feature = None
     keys = [lkw.name for lkw in layer.keywords.all()]
+    
     sup_inf_str = str(layer.supplemental_information)
     if "SOS" in keys:
         if sup_inf_str is not None and sup_inf_str != DEFAULT_SUPPLEMENTAL_INFORMATION:

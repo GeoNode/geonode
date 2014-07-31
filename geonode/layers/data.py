@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2012 OpenPlans
+# Copyright (C) 2014 OpenPlans
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -60,11 +60,9 @@ def layer_sos(feature, supplementary_info, time=None, mimetype="text/csv"):
     """
     sos_data = HttpResponse(content="Unable to process request", status=500)
     try:
-        sup_info = eval(supplementary_info)
         offerings = sup_info.get('offerings')
         url = sup_info.get('sos_url')
         observedProperties = sup_info.get('observedProperties')
-        time = time
         XML = sos_observation_xml(
             url, offerings=offerings, observedProperties=observedProperties,
             allProperties=False, feature=feature, eventTime=time)
@@ -85,7 +83,7 @@ def layer_sos(feature, supplementary_info, time=None, mimetype="text/csv"):
             # return HttpResponse(json.dumps(service_result), mimetype="application/json")
         else:
             pass
-    except SyntaxError, e:
+    except Exception, e:
         logger.exception(e)
     return sos_data
 
