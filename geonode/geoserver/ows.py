@@ -243,10 +243,10 @@ def sos_observation_xml(url, version='1.0.0', xml=None, offerings=[],
 
     if feature:
         return _sos.get_observation(
-            offerings=sos_offerings, response_format=response_format,
-            observed_properties=observed_properties, event_time=event_time,
+            offerings=sos_offerings, responseFormat=response_format,
+            observedProperties=observed_properties, eventTime=event_time,
             FEATUREOFINTEREST=feature)
     else:
         return _sos.get_observation(
-            offerings=sos_offerings, response_format=response_format,
-            observed_properties=observed_properties, event_time=event_time)
+            offerings=sos_offerings, responseFormat=response_format,
+            observedProperties=observed_properties, eventTime=event_time)

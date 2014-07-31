@@ -59,9 +59,9 @@ def layer_sos(feature, supplementary_info={}, time=None, mimetype="text/csv"):
     HttpResponse with mimetype data, or None if an error is encountered.
     """
     sos_data = HttpResponse(content="Unable to process request", status=500)
-    offerings = sup_info.get('offerings')
-    url = sup_info.get('sos_url')
-    observed_properties = sup_info.get('observedProperties')
+    offerings = supplementary_info.get('offerings')
+    url = sup_supplementary_info.get('sos_url')
+    observed_properties = sup_supplementary_info.get('observedProperties')
     XML = sos_observation_xml(
         url, offerings=offerings, observed_properties=observed_properties,
         all_properties=False, feature=feature, event_time=time)
