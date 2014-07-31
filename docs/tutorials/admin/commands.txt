@@ -48,6 +48,10 @@ Additional options::
   
   --skip-unadvertised   Skip processing any layers that are marked 'advertised=False' in GeoServer
   
+  --skip-geonode-registered   Just processing GeoServer layers still not registered in GeoNode.
+                        Useful if you are importing layers through GeoServer and not through GeoNode
+                        and you don't want to run updatelayers on every GeoServer layer but just on the new ones.
+  
   --remove-deleted      Remove layers from GeoNode that have been deleted (or marked unavailable) from GeoServer.  
                          Note: this option can be combined with --workspace and --store to only check
                          for deleted layers in a particular workspace or store.
