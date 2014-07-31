@@ -36,7 +36,7 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
 logger = logging.getLogger("geonode.layers.data")
 
 
-def layer_sos(feature, supplementary_info, time=None, mimetype="text/csv"):
+def layer_sos(feature, supplementary_info={}, time=None, mimetype="text/csv"):
     """Return SOS data in mimetype format for a layer that specifies a valid URL.
 
     Parameters
@@ -59,36 +59,35 @@ def layer_sos(feature, supplementary_info, time=None, mimetype="text/csv"):
     HttpResponse with mimetype data, or None if an error is encountered.
     """
     sos_data = HttpResponse(content="Unable to process request", status=500)
-    try:
-        offerings = sup_info.get('offerings')
-        url = sup_info.get('sos_url')
-        observedProperties = sup_info.get('observedProperties')
-        XML = sos_observation_xml(
-            url, offerings=offerings, observedProperties=observedProperties,
-            allProperties=False, feature=feature, eventTime=time)
-        lists = sos_swe_data_list(XML)
-        if mimetype == "text/csv":
-            sos_data = HttpResponse(mimetype='text/csv')
-            sos_data['Content-Disposition'] = 'attachment;filename=sos.csv'
-            writer = csv.writer(sos_data)
-            # headers are included by default in lists, can set show_headers to
-            #   false in the sos_swe_data_list() in ows.py
-            writer.writerows(lists)
-        elif mimetype == "application/json":
-            pass
-            # TODO set the response to return JSON including format, data and style info
-            # service_result =  { format: ...,
-            #                    'data': sos_data,
-            #                     style: ...}
-            # return HttpResponse(json.dumps(service_result), mimetype="application/json")
-        else:
-            pass
-    except Exception, e:
-        logger.exception(e)
+    offerings = sup_info.get('offerings')
+    url = sup_info.get('sos_url')
+    observed_properties = sup_info.get('observedProperties')
+    XML = sos_observation_xml(
+        url, offerings=offerings, observed_properties=observed_properties,
+        all_properties=False, feature=feature, event_time=time)
+    lists = sos_swe_data_list(XML)
+    if mimetype == "text/csv":
+        sos_data = HttpResponse(mimetype='text/csv')
+        sos_data['Content-Disposition'] = 'attachment;filename=sos.csv'
+        writer = csv.writer(sos_data)
+        # headers are included by default in lists, can set show_headers to
+        #   false in the sos_swe_data_list() in ows.py
+        writer.writerows(lists)
+    elif mimetype == "application/json":
+        pass
+        # TODO:
+        # return JSON response: including format, data and style info
+        # service_result =  { format: ...,
+        #                    'data': sos_data,
+        #                     style: ...}
+        # return HttpResponse(json.dumps(service_result), mimetype="application/json")
+    else:
+        pass
     return sos_data
+        
 
 
-def layer_netcdf(request, supplementary_info, time=None, mimetype="text/csv"):
+def layer_netcdf(request, supplementary_info={}, time=None, mimetype="text/csv"):
     """Return netCDF data in CSV format for a layer that specifies a valid URL.
 
     Parameters

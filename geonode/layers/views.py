@@ -40,7 +40,7 @@ from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm,
 from geonode.base.forms import CategoryForm
 from geonode.layers.models import Layer, Attribute
 from geonode.layers.data import layer_sos, layer_netcdf
-from geonode.base.enumerations import CHARSETS
+from geonode.base.enumerations import CHARSETS, DEFAULT_SUPPLEMENTAL_INFORMATION
 from geonode.base.models import TopicCategory
 
 from geonode.utils import default_map_config, llbbox_to_mercator
@@ -477,7 +477,6 @@ def layer_data(request, layername, mimetype="text/csv"):
     Access to the layer's supplemental information is required so that the
     data extraction function can access & process the non-spatial data.
     """
-    from geonode.base.enumerations import DEFAULT_SUPPLEMENTAL_INFORMATION
     layer = _resolve_layer(
         request, layername, 'layers.view_layer', _PERMISSION_MSG_VIEW)
     if request.method == 'GET' and 'feature' in request.GET:
@@ -485,13 +484,17 @@ def layer_data(request, layername, mimetype="text/csv"):
     else:
         feature = None
     keys = [lkw.name for lkw in layer.keywords.all()]
-    
-    sup_inf_str = str(layer.supplemental_information)
+    try:
+        # extract supplemental_information as a dictionary
+        sup_info = eval(layer.supplemental_information)
+    except SyntaxError, e:
+        logger.exception(e)
+        sup_info = None
     if "SOS" in keys:
-        if sup_inf_str is not None and sup_inf_str != DEFAULT_SUPPLEMENTAL_INFORMATION:
-            return layer_sos(feature, sup_inf_str, time=None, mimetype=mimetype)
+        if sup_info and sup_info != DEFAULT_SUPPLEMENTAL_INFORMATION:
+            return layer_sos(feature, sup_info, time=None, mimetype=mimetype)
         else:
-            content = "Correct supplemental information must be supplied!"
+            content = "Supplemental information must be supplied in the correct format!"
             status = 400
             return HttpResponse(content=content, status=status)
     elif "NetCDF" in keys:
