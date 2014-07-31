@@ -42,6 +42,12 @@ class Command(BaseCommand):
             default=False,
             help='Skip processing unadvertised layers from GeoSever.'),
         make_option(
+            '--skip-geonode-registered',
+            action='store_true',
+            dest='skip_geonode_registered',
+            default=False,
+            help='Just processing GeoServer layers still not registered in GeoNode.'),
+        make_option(
             '--remove-deleted',
             action='store_true',
             dest='remove_deleted',
@@ -75,6 +81,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
         skip_unadvertised = options.get('skip_unadvertised')
+        skip_geonode_registered = options.get('skip_geonode_registered')
         remove_deleted = options.get('remove_deleted')
         verbosity = int(options.get('verbosity'))
         user = options.get('user')
@@ -97,6 +104,7 @@ class Command(BaseCommand):
             store=store,
             filter=filter,
             skip_unadvertised=skip_unadvertised,
+            skip_geonode_registered=skip_geonode_registered,
             remove_deleted=remove_deleted)
 
         if verbosity > 1:
