@@ -236,6 +236,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         settings,
         'LAYER_PREVIEW_LIBRARY',
         'leaflet')
+    context_dict["leaflet_fullscreen_plugin"] = 'leaflet-fullscreen' in getattr(
+        settings,
+        'LEAFLET_CONFIG',
+        dict()).get('PLUGINS', dict()) and \
+        context_dict.get('preview') == "leaflet"
 
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
