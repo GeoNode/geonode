@@ -653,6 +653,11 @@ LEAFLET_CONFIG = {
             'js': 'lib/js/esri-leaflet.js',
             'auto-include': True,
         },
+        'leaflet-fullscreen': {
+            'css': '//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.2/leaflet.fullscreen.css',
+            'js': '//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.2/Leaflet.fullscreen.min.js',
+            'auto-include': True,
+        },
     }
 }
 

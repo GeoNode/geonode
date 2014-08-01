@@ -41,6 +41,11 @@
             map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");
             map.addLayer(tile_layer);
         }
+
+        {% if leaflet_fullscreen_plugin %}
+        L.control.fullscreen().addTo(map);
+        {% endif %}
+
     });
     function zoom_to_box(map, bbox){
         var bounds = [
