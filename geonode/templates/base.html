@@ -65,6 +65,9 @@
             </div>
           </form>
           <ul class="nav navbar-nav navbar-right">
+            {% if not user.is_authenticated and REGISTRATION_OPEN %}
+                <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
+            {% endif %}
             <li class="dropdown">
               {% if user.is_authenticated %}
               <li class="user-avatar">
@@ -128,10 +131,6 @@
               </ul>
               {% endif %}
             </li>
-          </ul>
-            {% if REGISTRATION_OPEN %}
-            <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
-            {% endif %}
           </ul>
         </div><!--/.nav-collapse -->
       </div>
