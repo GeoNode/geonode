@@ -34,7 +34,8 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        cascading_delete(gs_catalog, instance.typename)
+        if instance.storeType != "remoteStore":
+            cascading_delete(gs_catalog, instance.typename)
 
 
 def geoserver_pre_save(instance, sender, **kwargs):
