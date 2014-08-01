@@ -249,7 +249,7 @@ def feature_edit_check(request, layername):
     If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
     Otherwise, return a status of 401 (unauthorized).
     """
-    layer = get_object_or_404(Layer, typename=layername)
+    layer = _resolve_layer(request, layername)
     datastore = ogc_server_settings.DATASTORE
     feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or datastore
     if request.user.has_perm(
