@@ -108,7 +108,7 @@
                 </ul>
               </li>
               {% else %}
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sign in <b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Sign in" %} <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li>
                   <form role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
