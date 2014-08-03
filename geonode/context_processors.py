@@ -40,9 +40,9 @@ def resource_urls(request):
         GEOGIT_ENABLED = ogc_server_settings.GEOGIT_ENABLED,
         TIME_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', False),
         DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False),
-        MF_PRINT_ENABLED = ogc_server_settings.MAPFISH_PRINT_ENABLED,
+        MAPFISH_PRINT_ENABLED = ogc_server_settings.MAPFISH_PRINT_ENABLED,
         PRINTNG_ENABLED = ogc_server_settings.PRINTNG_ENABLED,
-        GS_SECURITY_ENABLED = ogc_server_settings.GEONODE_SECURITY_ENABLED,
+        GEONODE_SECURITY_ENABLED = ogc_server_settings.GEONODE_SECURITY_ENABLED,
         PROXY_URL = getattr(settings, 'PROXY_URL', '/proxy/?url='),
         SOCIAL_BUTTONS = getattr(settings, 'SOCIAL_BUTTONS', True),
         USE_DOCUMENTS = 'geonode.documents' in settings.INSTALLED_APPS
