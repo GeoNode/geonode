@@ -24,7 +24,7 @@ OGC_SERVER = {
         'USER' : 'admin',
         'PASSWORD' : 'geoserver',
         'MAPFISH_PRINT_ENABLED' : True,
-        'PRINTNG_ENABLED' : True,
+        'PRINT_NG_ENABLED' : True,
         'GEONODE_SECURITY_ENABLED' : True,
         'GEOGIT_ENABLED' : False,
         'WMST_ENABLED' : False,
@@ -47,4 +47,4 @@ GEOGIT_DATASTORE_NAME = 'geogit-repo'
 UPLOADER_SHOW_TIME_STEP=False
 
 # Use the printNG geoserver lib
-PRINTNG_ENABLED=True
+PRINT_NG_ENABLED=True

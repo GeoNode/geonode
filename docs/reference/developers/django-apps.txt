@@ -212,7 +212,7 @@ OGC_SERVER
 
     A boolean that represents whether the Mapfish printing extension is enabled on the server.
 
-  PRINTNG_ENABLED
+  PRINT_NG_ENABLED
     Default: ``True``
 
     A boolean that represents whether printing of maps and layers is enabled.

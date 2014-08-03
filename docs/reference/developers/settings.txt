@@ -256,8 +256,8 @@ Default: ``'geoserver'``
 
 The administrative password for the OGC server as a string.
 
-PRINTNG_ENABLED
-...............
+PRINT_NG_ENABLED
+................
 Default: ``True``
 
 A boolean that represents whether printing of maps and layers is enabled.
