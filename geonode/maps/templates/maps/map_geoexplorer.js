@@ -28,7 +28,7 @@ Ext.onReady(function() {
     var config = Ext.apply({
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
         proxy: '{{ PROXY_URL }}',
-        {% if PRINTNG_ENABLED %}
+        {% if PRINT_NG_ENABLED %}
         listeners: {
             'save': function(obj_id) {
                 createMapThumbnail(obj_id);

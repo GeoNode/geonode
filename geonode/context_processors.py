@@ -28,6 +28,9 @@ def resource_urls(request):
     """Global values to pass to templates"""
     site = Site.objects.get_current()
 
+    if ogc_server_settings.get('PRINTNG_ENABLED'):
+        logger.info("Found PRINTNG_ENABLED setting, please update to PRINT_NG_ENABLED")
+
     return dict(
         STATIC_URL=settings.STATIC_URL,
         GEOSERVER_BASE_URL=ogc_server_settings.public_url,
@@ -41,7 +44,7 @@ def resource_urls(request):
         TIME_ENABLED = getattr(settings, 'UPLOADER', dict()).get('OPTIONS', dict()).get('TIME_ENABLED', False),
         DEBUG_STATIC = getattr(settings, "DEBUG_STATIC", False),
         MF_PRINT_ENABLED = ogc_server_settings.MAPFISH_PRINT_ENABLED,
-        PRINTNG_ENABLED = ogc_server_settings.PRINTNG_ENABLED,
+        PRINT_NG_ENABLED = ogc_server_settings.get('PRINT_NG_ENABLED', ogc_server_settings.get('PRINTNG_ENABLED', None))
         GS_SECURITY_ENABLED = ogc_server_settings.GEONODE_SECURITY_ENABLED,
         PROXY_URL = getattr(settings, 'PROXY_URL', '/proxy/?url='),
         SOCIAL_BUTTONS = getattr(settings, 'SOCIAL_BUTTONS', True),
