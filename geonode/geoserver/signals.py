@@ -7,6 +7,7 @@ from urlparse import urlparse, urljoin
 from socket import error as socket_error
 
 from django.utils.translation import ugettext, ugettext_lazy as _
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from django.conf import settings
 
@@ -484,9 +485,12 @@ def geoserver_post_save_map(instance, sender, **kwargs):
     local_layers = []
     for layer in instance.layers:
         if layer.local:
-            local_layers.append(
-                Layer.objects.get(
-                    typename=layer.name).typename)
+            try:
+                local_layers.append(
+                    Layer.objects.get(
+                        typename=layer.name).typename)
+            except ObjectDoesNotExist:
+                pass
 
     image = None
 
