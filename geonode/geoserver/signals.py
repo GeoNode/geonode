@@ -335,20 +335,6 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
                                )
 
-    wms_path = '%s/%s/wms' % (instance.workspace, instance.name)
-    ows_url = urljoin(ogc_server_settings.public_url, wms_path)
-
-    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                               url=ows_url,
-                               defaults=dict(
-                                   extension='html',
-                                   name=_("OWS"),
-                                   url=ows_url,
-                                   mime='text/html',
-                                   link_type='OGC:WMS',
-                               )
-                               )
-
     html_link_url = '%s%s' % (
         settings.SITEURL[:-1], instance.get_absolute_url())
 
@@ -405,12 +391,14 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
                                )
 
-    ogc_wms_url = ogc_server_settings.public_url + 'wms?'
+    ogc_wms_path = '%s/wms?request=GetCapabilities&version=1.3.0' % instance.workspace
+    ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
+    ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                url=ogc_wms_url,
                                defaults=dict(
                                    extension='html',
-                                   name=instance.name,
+                                   name=ogc_wms_name,
                                    url=ogc_wms_url,
                                    mime='text/html',
                                    link_type='OGC:WMS',
@@ -418,12 +406,14 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
 
     if instance.storeType == "dataStore":
-        ogc_wfs_url = ogc_server_settings.public_url + 'wfs?'
+        ogc_wfs_path = '%s/wfs?request=GetCapabilities&version=2.0.0' % instance.workspace
+        ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
+        ogc_wfs_name = 'OGC WFS: %s Service' % instance.workspace
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=ogc_wfs_url,
                                    defaults=dict(
                                        extension='html',
-                                       name=instance.name,
+                                       name=ogc_wfs_name,
                                        url=ogc_wfs_url,
                                        mime='text/html',
                                        link_type='OGC:WFS',
@@ -431,12 +421,14 @@ def geoserver_post_save(instance, sender, **kwargs):
                                    )
 
     if instance.storeType == "coverageStore":
-        ogc_wcs_url = ogc_server_settings.public_url + 'wcs?'
+        ogc_wcs_path = '%s/wcs?request=GetCapabilities&version=1.1.1' % instance.workspace
+        ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)
+        ogc_wcs_name = 'OGC WCS: %s Service' % instance.workspace
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=ogc_wcs_url,
                                    defaults=dict(
                                        extension='html',
-                                       name=instance.name,
+                                       name=ogc_wcs_name,
                                        url=ogc_wcs_url,
                                        mime='text/html',
                                        link_type='OGC:WCS',

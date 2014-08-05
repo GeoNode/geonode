@@ -521,7 +521,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         """Return URL for OGC WMS server None if it does not exist.
         """
         try:
-            ows_link = self.link_set.get(name='OWS')
+            ows_link = self.link_set.get(link_type='OGC:WMS')
         except Link.DoesNotExist:
             return None
         else:
@@ -647,6 +647,9 @@ class LinkManager(models.Manager):
 
     def geogit(self):
         return self.get_queryset().filter(name__icontains='geogit')
+
+    def ows(self):
+        return self.get_queryset().filter(link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
 
 
 class Link(models.Model):
