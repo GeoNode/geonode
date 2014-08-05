@@ -325,6 +325,24 @@
              </gmd:CI_OnlineResource>
            </gmd:onLine>
            {% endfor %}
+           {% for link in layer.link_set.ows %}
+           <gmd:onLine>
+             <gmd:CI_OnlineResource>
+               <gmd:linkage>
+                 <gmd:URL>{{link.url}}</gmd:URL>
+               </gmd:linkage>
+               <gmd:protocol>
+                 <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
+               </gmd:protocol>
+               <gmd:name>
+                 <gco:CharacterString>{{link.link_type}} GetCapabilities.{{link.extension}}: {{layer.name}}</gco:CharacterString>
+               </gmd:name>
+               <gmd:description>
+                 <gco:CharacterString>{{link.name}} GetCapabilities (contains {{layer.title}} layer)</gco:CharacterString>
+               </gmd:description>
+             </gmd:CI_OnlineResource>
+           </gmd:onLine>
+           {% endfor %}
          </gmd:MD_DigitalTransferOptions>
        </gmd:transferOptions>
      </gmd:MD_Distribution>
