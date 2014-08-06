@@ -42,6 +42,7 @@ def document_detail(request, docid):
     """
     The view that show details of each document
     """
+    
     document = get_object_or_404(Document, pk=docid)
     if not request.user.has_perm(
             'view_resourcebase',
@@ -60,14 +61,18 @@ def document_detail(request, docid):
     document.popular_count += 1
     document.save()
 
-    prefs_download_formats_metadata = ([format.name for format in request.user.pref_download_formats_metadata.all()])
-    if len(prefs_download_formats_metadata) > 0:
-        metadata = document.link_set.metadata().filter(
-            name__in=settings.DOWNLOAD_FORMATS_METADATA).filter(
-            name__in=prefs_download_formats_metadata)
+
+    metadata_all = document.link_set.metadata().filter(
+        name__in=settings.DOWNLOAD_FORMATS_METADATA)
+    if request.user.is_authenticated():
+        prefs_download_formats_metadata = request.user.pref_download_formats_metadata_names()
+        if len(prefs_download_formats_metadata) > 0:
+            metadata = metadata_all.filter(
+                name__in=prefs_download_formats_metadata)
+        else:
+            metadata = metadata_all
     else:
-        metadata = document.link_set.metadata().filter(
-            name__in=settings.DOWNLOAD_FORMATS_METADATA)
+        metadata = metadata_all
 
     context_dict = {
 

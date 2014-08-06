@@ -222,14 +222,17 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     #print request.user.profile.name
 
-    prefs_download_formats_metadata = ([format.name for format in request.user.pref_download_formats_metadata.all()])
-    if len(prefs_download_formats_metadata) > 0:
-        metadata = layer.link_set.metadata().filter(
-            name__in=settings.DOWNLOAD_FORMATS_METADATA).filter(
-            name__in=prefs_download_formats_metadata)
+    metadata_all = layer.link_set.metadata().filter(
+        name__in=settings.DOWNLOAD_FORMATS_METADATA)
+    if request.user.is_authenticated():
+        prefs_download_formats_metadata = request.user.pref_download_formats_metadata_names()
+        if len(prefs_download_formats_metadata) > 0:
+            metadata = metadata_all.filter(
+                name__in=prefs_download_formats_metadata)
+        else:
+            metadata = metadata_all
     else:
-        metadata = layer.link_set.metadata().filter(
-            name__in=settings.DOWNLOAD_FORMATS_METADATA)
+        metadata = metadata_all
 
     context_dict = {
         "resource": layer,
@@ -246,23 +249,30 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'leaflet')
 
     if layer.storeType == 'dataStore':
-        prefs_download_formats_vector = ([format.name for format in request.user.pref_download_formats_vector.all()])
-        if len(prefs_download_formats_vector) > 0:
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_VECTOR).filter(
-                name__in=prefs_download_formats_vector)
+        links_all = layer.link_set.download().filter(
+            name__in=settings.DOWNLOAD_FORMATS_VECTOR)
+        if request.user.is_authenticated():
+            prefs_download_formats_vector = request.user.pref_download_formats_vector_names()
+            if len(prefs_download_formats_vector) > 0:
+                links = links_all.filter(
+                    name__in=prefs_download_formats_vector)
+            else:
+                links = links_all
         else:
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_VECTOR)
+            links = links_all
     else:
-        prefs_download_formats_raster = ([format.name for format in request.user.pref_download_formats_raster.all()])
-        if len(prefs_download_formats_raster) > 0:
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_RASTER).filter(
-                name__in=prefs_download_formats_raster)
+        links_all = layer.link_set.download().filter(
+            name__in=settings.DOWNLOAD_FORMATS_RASTER)
+        if request.user.is_authenticated():
+            prefs_download_formats_raster = request.user.pref_download_formats_raster_names()
+            if len(prefs_download_formats_raster) > 0:
+                links = links_all.filter(
+                    name__in=prefs_download_formats_raster)
+            else:
+                links = links_all
         else:
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_RASTER)
+            links = links_all
+
 
     context_dict["links"] = links
 

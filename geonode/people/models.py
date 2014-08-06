@@ -147,6 +147,24 @@ class Profile(AbstractUser):
         null=True,
         help_text=_('the preferred formats for downloading raster layers'))
 
+    def pref_download_formats_metadata_names(self):
+        if self.pref_download_formats_metadata is None:
+            return None
+        else:
+            return ([format.name for format in self.pref_download_formats_metadata.all()])
+
+    def pref_download_formats_vector_names(self):
+        if self.pref_download_formats_vector is None:
+            return None
+        else:
+            return ([format.name for format in self.pref_download_formats_vector.all()])
+
+    def pref_download_formats_raster_names(self):
+        if self.pref_download_formats_raster is None:
+            return None
+        else:
+            return ([format.name for format in self.pref_download_formats_raster.all()])
+
     def get_absolute_url(self):
         return reverse('profile_detail', args=[self.username, ])
 
