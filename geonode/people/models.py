@@ -134,14 +134,17 @@ class Profile(AbstractUser):
     pref_download_formats_metadata = models.ManyToManyField(DownloadFormatMetadata,
         verbose_name=_('Download Formats, Metadata'),
         blank=True,
+        null=True,
         help_text=_('the preferred formats for downloading metadata'))
     pref_download_formats_vector = models.ManyToManyField(DownloadFormatVector,
         verbose_name=_('Download Formats, Vector'),
         blank=True,
+        null=True,
         help_text=_('the preferred formats for downloading vector layers'))
     pref_download_formats_raster = models.ManyToManyField(DownloadFormatRaster,
         verbose_name=_('Download Formats, Raster'),
         blank=True,
+        null=True,
         help_text=_('the preferred formats for downloading raster layers'))
 
     def get_absolute_url(self):
