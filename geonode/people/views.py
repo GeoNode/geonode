@@ -64,6 +64,7 @@ def profile_edit(request, username=None):
         "form": form,
     })
 
+
 def profile_preferences(request, username=None):
     if username is None:
         try:
@@ -89,6 +90,7 @@ def profile_preferences(request, username=None):
     return render(request, "people/profile_preferences.html", {
         "form": form,
     })
+
 
 def profile_detail(request, username):
     profile = get_object_or_404(Profile, username=username)

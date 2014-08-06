@@ -30,7 +30,6 @@ from geonode.base.enumerations import COUNTRIES
 
 
 class DownloadFormatMetadata(models.Model):
-
     """Download Formats for Metadata Used in User Prefernces"""
 
     name = models.CharField(max_length=100)
@@ -45,8 +44,8 @@ class DownloadFormatMetadata(models.Model):
         ordering = ("name", )
         verbose_name_plural = 'Download Formats, Metadata'
 
-class DownloadFormatVector(models.Model):
 
+class DownloadFormatVector(models.Model):
     """Download Formats for Vector Layers Used in User Prefernces"""
 
     name = models.CharField(max_length=100)
@@ -61,8 +60,8 @@ class DownloadFormatVector(models.Model):
         ordering = ("name", )
         verbose_name_plural = 'Download Formats, Vector'
 
-class DownloadFormatRaster(models.Model):
 
+class DownloadFormatRaster(models.Model):
     """Download Formats for Raster Layers Used in User Prefernces"""
 
     name = models.CharField(max_length=100)
@@ -145,7 +144,6 @@ class Profile(AbstractUser):
         blank=True,
         help_text=_('the preferred formats for downloading raster layers'))
 
-
     def get_absolute_url(self):
         return reverse('profile_detail', args=[self.username, ])
 
@@ -160,4 +158,3 @@ class Profile(AbstractUser):
 
 def get_anonymous_user_instance(Profile):
     return Profile(username='AnonymousUser')
-

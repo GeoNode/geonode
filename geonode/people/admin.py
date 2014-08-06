@@ -48,15 +48,18 @@ class DownloadFormatMetadataAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     list_display_links = ('id',)
 
+
 class DownloadFormatVectorAdmin(admin.ModelAdmin):
     model = DownloadFormatVector
     list_display = ('id', 'name')
     list_display_links = ('id',)
 
+
 class DownloadFormatRasterAdmin(admin.ModelAdmin):
     model = DownloadFormatRaster
     list_display = ('id', 'name')
     list_display_links = ('id',)
+
 
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'organization',)
@@ -70,7 +73,6 @@ class ProfileAdmin(admin.ModelAdmin):
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
                                        'groups')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
-        #(_('User Preferences'), {'fields': ('pref_download_formats_vector')}),
     )
     add_fieldsets = (
         (None, {

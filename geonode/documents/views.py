@@ -81,6 +81,7 @@ def document_detail(request, docid):
     return render_to_response("documents/document_detail.html",
         RequestContext(request, context_dict))
 
+
 def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)
     if not request.user.has_perm(
