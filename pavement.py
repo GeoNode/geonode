@@ -62,9 +62,14 @@ venv = os.environ.get('VIRTUAL_ENV')
 bundle = path('shared/geonode.pybundle')
 dl_cache = "--download-cache=./build"
 dlname = 'geonode.bundle'
-gs_data = "gs-data"
-geoserver_target = path('src/geoserver-geonode-ext/target/geoserver.war')
-geonetwork_target = path('webapps/geonetwork.war')
+
+geoserver_target = path('webapps/geoserver.war')
+geoserver_zip="geoserver.war"
+geoserver_war_url = "http://worldmap.harvard.edu/media/geoserver/"
+
+gs_data = "./webapps/gs-data"
+gs_data_url="http://worldmap.harvard.edu/media/geoserver/geonode-geoserver-data.zip"
+
 def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
 geonode_client_target_war = path('webapps/geonode-client.war')
 
@@ -88,6 +93,18 @@ def auto(options):
     platform_options(options)
 
 @task
+def fix_geos_version(options):
+    import fileinput
+    oldline = "ver = geos_version()"
+    newline = "ver = geos_version().decode().split(' ')[0]"
+    for line in fileinput.input('lib/python2.7/site-packages/django/contrib/gis/geos/libgeos.py', inplace=True):
+    	if oldline in line:
+            line = line.replace(oldline,newline)
+        print line,
+
+
+@task
+@needs(['fix_geos_version'])
 def install_deps(options):
     """Installs all the python deps from a requirements file"""
     if bundle.exists():
@@ -173,9 +190,29 @@ def setup_gs_data(options):
 @task
 @needs(['setup_gs_data'])
 def setup_geoserver(options):
-    """Prepare a testing instance of GeoServer."""
-    with pushd('src/geoserver-geonode-ext'):
-        sh("mvn clean install")
+    war_zip_file = geoserver_zip
+    src_url = str(geoserver_war_url + war_zip_file)
+    info("geoserver url: %s" %src_url)
+    # where to download the war files. If changed change also
+    # src/geoserver-geonode-ext/jetty.xml accordingly
+
+    webapps = path("./webapps")
+    if not webapps.exists():
+        webapps.mkdir()
+
+    dst_url = webapps / war_zip_file
+    dst_war = webapps / "geoserver.war"
+    deployed_url = webapps / "geoserver"
+
+    if getattr(options, 'clean', False):
+        deployed_url.rmtree()
+
+    if not dst_war.exists():
+        info("getting geoserver.war")
+        grab(src_url, dst_url)
+        zip_extractall(zipfile.ZipFile(dst_url), webapps)
+    if not deployed_url.exists():
+        zip_extractall(zipfile.ZipFile(dst_war), deployed_url)
 
 @task
 def setup_geonetwork(options):
@@ -564,19 +601,25 @@ def start_django(options):
         sys.exit()
 
 @task
-@needs('package_client')
 @cmdopts([
     ('bind=', 'b', 'IP address to bind to. Default is localhost.')
 ])
 def start_geoserver(options):
     jettylog = open("jetty.log", "w")
+    from geonode import settings
+
+    url = "http://localhost:8080/geoserver/"
+    if settings.GEOSERVER_BASE_URL != url:
+        print 'your GEOSERVER_BASE_URL does not match %s' % url
+        sys.exit(1)
+
+
+    jettylog = open("jetty.log", "w")
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
-            "-Djetty.host=" + options.host.bind,
             "-Xmx512M",
             "-XX:MaxPermSize=256m"
-            #"-Xdebug -Xrunjdwp:transport= dt_socket,address=8020,server=y,suspend=n"
         ])
         mvn = subprocess.Popen(
             ["mvn", "jetty:run"],
@@ -622,11 +665,18 @@ def start_geoserver(options):
 def host(options):
     jettylog = open("jetty.log", "w")
     djangolog = open("django.log", "w")
+    from geonode import settings
+
+    url = "http://localhost:8080/geoserver/"
+    if settings.GEOSERVER_BASE_URL != url:
+        print 'your GEOSERVER_BASE_URL does not match %s' % url
+        sys.exit(1)
+
+
+    jettylog = open("jetty.log", "w")
     with pushd("src/geoserver-geonode-ext"):
         os.environ["MAVEN_OPTS"] = " ".join([
-            #"-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8020,server=y,suspend=y",
             "-XX:CompileCommand=exclude,net/sf/saxon/event/ReceivingContentHandler.startElement",
-            "-Djetty.host=" + options.host.bind,
             "-Xmx512M",
             "-XX:MaxPermSize=256m"
         ])
@@ -635,6 +685,9 @@ def host(options):
             stdout=jettylog,
             stderr=jettylog
         )
+
+
+    socket.setdefaulttimeout(1)
     django = subprocess.Popen([
             "paster",
             "serve",
@@ -793,3 +846,4 @@ def _zip_extract_member(zf, member, targetpath, pwd):
     target.close()
 
     return targetpath
+
