@@ -328,6 +328,7 @@ def gs_slurp(
         store=None,
         filter=None,
         skip_unadvertised=False,
+        skip_geonode_registered=False,
         remove_deleted=False):
     """Configure the layers available in GeoServer in GeoNode.
 
@@ -379,6 +380,12 @@ def gs_slurp(
     if skip_unadvertised:
         resources = [k for k in resources if k.advertised ==
                      "true" or k.advertised or k.advertised is None]
+
+    # filter out layers already registered in geonode
+    layer_names = Layer.objects.all().values_list('typename', flat=True)
+    if skip_geonode_registered:
+        resources = [k for k in resources
+                     if not '%s:%s' % (k.workspace.name, k.name) in layer_names]
 
     # TODO: Should we do something with these?
     # i.e. look for matching layers in GeoNode and also disable?

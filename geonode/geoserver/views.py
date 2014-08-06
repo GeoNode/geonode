@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import render_to_response
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
@@ -249,7 +249,7 @@ def feature_edit_check(request, layername):
     If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
     Otherwise, return a status of 401 (unauthorized).
     """
-    layer = get_object_or_404(Layer, typename=layername)
+    layer = _resolve_layer(request, layername)
     datastore = ogc_server_settings.DATASTORE
     feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or datastore
     if request.user.has_perm(
