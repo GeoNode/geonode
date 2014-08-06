@@ -30,7 +30,7 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 
 from geonode.people.models import Profile
-from geonode.people.forms import ProfileForm
+from geonode.people.forms import ProfileForm, ProfilePreferencesForm
 from geonode.people.forms import ForgotUsernameForm
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -64,6 +64,31 @@ def profile_edit(request, username=None):
         "form": form,
     })
 
+def profile_preferences(request, username=None):
+    if username is None:
+        try:
+            profile = request.user.profile
+        except Profile.DoesNotExist:
+            return redirect("profile_browse")
+    else:
+        profile = get_object_or_404(Profile, username=username)
+
+    if request.method == "POST":
+        form = ProfilePreferencesForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile profile updated.")
+            return redirect(
+                reverse(
+                    'profile_detail',
+                    args=[
+                        request.user.username]))
+    else:
+        form = ProfilePreferencesForm(instance=profile)
+
+    return render(request, "people/profile_preferences.html", {
+        "form": form,
+    })
 
 def profile_detail(request, username):
     profile = get_object_or_404(Profile, username=username)

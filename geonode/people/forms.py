@@ -94,3 +94,12 @@ class ProfileForm(forms.ModelForm):
             'is_superuser',
             'is_active',
             'date_joined')
+
+class ProfilePreferencesForm(forms.ModelForm):
+    #keywords = taggit.forms.TagField(
+    #    required=False,
+    #    help_text=_("A space or comma-separated list of keywords"))
+
+    class Meta:
+        model = Profile
+        fields = ("pref_download_formats_metadata","pref_download_formats_vector",)

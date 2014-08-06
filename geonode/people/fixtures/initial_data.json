@@ -1,0 +1,79 @@
+[
+    {
+        "pk": 1,
+        "model": "people.downloadformatmetadata",
+        "fields": {
+            "name": "Atom"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "people.downloadformatmetadata",
+        "fields": {
+            "name": "DIF"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "people.downloadformatmetadata",
+        "fields": {
+            "name": "Dublin Core"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "people.downloadformatmetadata",
+        "fields": {
+            "name": "ebRIM"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "people.downloadformatmetadata",
+        "fields": {
+            "name": "FGDC"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "people.downloadformatmetadata",
+        "fields": {
+            "name": "TC211"
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "people.downloadformatvector", 
+        "fields": {
+            "name": "JPEG" 
+        }
+    },
+    {
+        "pk": 2,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "PDF"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "PNG"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "Zipped Shapefile"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "GLM 2.0"
+        }
+    }
+] 

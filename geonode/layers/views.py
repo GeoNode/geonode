@@ -220,8 +220,16 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
 
-    metadata = layer.link_set.metadata().filter(
-        name__in=settings.DOWNLOAD_FORMATS_METADATA)
+    #print request.user.profile.name
+
+    prefs_download_formats_metadata = ([format.name for format in request.user.pref_download_formats_metadata.all()])
+    if len(prefs_download_formats_metadata) > 0:
+        metadata = layer.link_set.metadata().filter(
+            name__in=settings.DOWNLOAD_FORMATS_METADATA).filter(
+            name__in=prefs_download_formats_metadata)
+    else:
+        metadata = layer.link_set.metadata().filter(
+            name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
     context_dict = {
         "resource": layer,
@@ -238,8 +246,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'leaflet')
 
     if layer.storeType == 'dataStore':
-        links = layer.link_set.download().filter(
-            name__in=settings.DOWNLOAD_FORMATS_VECTOR)
+        prefs_download_formats_vector = ([format.name for format in request.user.pref_download_formats_vector.all()])
+        if len(prefs_download_formats_vector) > 0:
+            links = layer.link_set.download().filter(
+                name__in=settings.DOWNLOAD_FORMATS_VECTOR).filter(
+                name__in=prefs_download_formats_vector)
+        else:
+            links = layer.link_set.download().filter(
+                name__in=settings.DOWNLOAD_FORMATS_VECTOR)
     else:
         links = layer.link_set.download().filter(
             name__in=settings.DOWNLOAD_FORMATS_RASTER)

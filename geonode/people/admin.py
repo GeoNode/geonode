@@ -34,7 +34,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 
-from .models import Profile
+from .models import Profile, DownloadFormatMetadata, DownloadFormatVector
 from .forms import ProfileCreationForm, ProfileChangeForm
 
 import autocomplete_light
@@ -42,6 +42,16 @@ import autocomplete_light
 csrf_protect_m = method_decorator(csrf_protect)
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 
+
+class DownloadFormatMetadataAdmin(admin.ModelAdmin):
+    model = DownloadFormatMetadata
+    list_display = ('id', 'name')
+    list_display_links = ('id',)
+
+class DownloadFormatVectorAdmin(admin.ModelAdmin):
+    model = DownloadFormatVector
+    list_display = ('id', 'name')
+    list_display_links = ('id',)
 
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'organization',)
@@ -55,6 +65,7 @@ class ProfileAdmin(admin.ModelAdmin):
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
                                        'groups')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+        #(_('User Preferences'), {'fields': ('pref_download_formats_vector')}),
     )
     add_fieldsets = (
         (None, {
@@ -193,4 +204,6 @@ class ProfileAdmin(admin.ModelAdmin):
         return super(ProfileAdmin, self).response_add(request, obj,
                                                       post_url_continue)
 
+admin.site.register(DownloadFormatMetadata, DownloadFormatMetadataAdmin)
+admin.site.register(DownloadFormatVector, DownloadFormatVectorAdmin)
 admin.site.register(Profile, ProfileAdmin)
