@@ -104,7 +104,6 @@ def fix_geos_version(options):
 
 
 @task
-@needs(['fix_geos_version'])
 def install_deps(options):
     """Installs all the python deps from a requirements file"""
     if bundle.exists():
@@ -260,6 +259,7 @@ def setup_webapps(options):
 @task
 @needs([
     'install_deps',
+    'fix_geos_version',
     'setup_webapps',
     'sync_django_db',
     'package_client'
