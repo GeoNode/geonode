@@ -34,7 +34,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 
-from .models import Profile, DownloadFormatMetadata, DownloadFormatVector
+from .models import Profile, DownloadFormatMetadata, DownloadFormatVector, DownloadFormatRaster
 from .forms import ProfileCreationForm, ProfileChangeForm
 
 import autocomplete_light
@@ -50,6 +50,11 @@ class DownloadFormatMetadataAdmin(admin.ModelAdmin):
 
 class DownloadFormatVectorAdmin(admin.ModelAdmin):
     model = DownloadFormatVector
+    list_display = ('id', 'name')
+    list_display_links = ('id',)
+
+class DownloadFormatRasterAdmin(admin.ModelAdmin):
+    model = DownloadFormatRaster
     list_display = ('id', 'name')
     list_display_links = ('id',)
 
@@ -206,4 +211,5 @@ class ProfileAdmin(admin.ModelAdmin):
 
 admin.site.register(DownloadFormatMetadata, DownloadFormatMetadataAdmin)
 admin.site.register(DownloadFormatVector, DownloadFormatVectorAdmin)
+admin.site.register(DownloadFormatRaster, DownloadFormatRasterAdmin)
 admin.site.register(Profile, ProfileAdmin)

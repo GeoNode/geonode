@@ -234,8 +234,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     context_dict = {
         "resource": layer,
         "permissions_json": _perms_info_json(layer),
-        "documents": get_related_documents(layer),
         "metadata": metadata,
+        "documents": get_related_documents(layer),
     }
 
     context_dict["viewer"] = json.dumps(
@@ -255,8 +255,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             links = layer.link_set.download().filter(
                 name__in=settings.DOWNLOAD_FORMATS_VECTOR)
     else:
-        links = layer.link_set.download().filter(
-            name__in=settings.DOWNLOAD_FORMATS_RASTER)
+        prefs_download_formats_raster = ([format.name for format in request.user.pref_download_formats_raster.all()])
+        if len(prefs_download_formats_raster) > 0:
+            links = layer.link_set.download().filter(
+                name__in=settings.DOWNLOAD_FORMATS_RASTER).filter(
+                name__in=prefs_download_formats_raster)
+        else:
+            links = layer.link_set.download().filter(
+                name__in=settings.DOWNLOAD_FORMATS_RASTER)
 
     context_dict["links"] = links
 

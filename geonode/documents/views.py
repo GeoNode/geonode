@@ -60,16 +60,26 @@ def document_detail(request, docid):
     document.popular_count += 1
     document.save()
 
-    return render_to_response(
-        "documents/document_detail.html",
-        RequestContext(
-            request,
-            {
-                'permissions_json': _perms_info_json(document),
-                'resource': document,
-                'imgtypes': IMGTYPES,
-                'related': related}))
+    prefs_download_formats_metadata = ([format.name for format in request.user.pref_download_formats_metadata.all()])
+    if len(prefs_download_formats_metadata) > 0:
+        metadata = document.link_set.metadata().filter(
+            name__in=settings.DOWNLOAD_FORMATS_METADATA).filter(
+            name__in=prefs_download_formats_metadata)
+    else:
+        metadata = document.link_set.metadata().filter(
+            name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
+    context_dict = {
+
+        'resource': document,
+        'permissions_json': _perms_info_json(document),
+        "metadata": metadata,
+        'imgtypes': IMGTYPES,
+        'related': related,
+    }
+
+    return render_to_response("documents/document_detail.html",
+        RequestContext(request, context_dict))
 
 def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)

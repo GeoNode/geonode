@@ -61,6 +61,23 @@ class DownloadFormatVector(models.Model):
         ordering = ("name", )
         verbose_name_plural = 'Download Formats, Vector'
 
+class DownloadFormatRaster(models.Model):
+
+    """Download Formats for Raster Layers Used in User Prefernces"""
+
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return u"%s" % (self.name)
+
+    def class_name(value):
+        return value.__class__.__name__
+
+    class Meta:
+        ordering = ("name", )
+        verbose_name_plural = 'Download Formats, Raster'
+
+
 class Profile(AbstractUser):
 
     """Fully featured Geonode user"""
@@ -122,7 +139,12 @@ class Profile(AbstractUser):
     pref_download_formats_vector = models.ManyToManyField(DownloadFormatVector,
         verbose_name=_('Download Formats, Vector'),
         blank=True,
-        help_text=_('the preferred formats for downloading vectors'))
+        help_text=_('the preferred formats for downloading vector layers'))
+    pref_download_formats_raster = models.ManyToManyField(DownloadFormatRaster,
+        verbose_name=_('Download Formats, Raster'),
+        blank=True,
+        help_text=_('the preferred formats for downloading raster layers'))
+
 
     def get_absolute_url(self):
         return reverse('profile_detail', args=[self.username, ])
