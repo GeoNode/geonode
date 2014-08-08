@@ -131,17 +131,20 @@ class Profile(AbstractUser):
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_(
         'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
             (space or comma-separated')),
-    pref_download_formats_metadata = models.ManyToManyField(DownloadFormatMetadata,
+    pref_download_formats_metadata = models.ManyToManyField(
+        DownloadFormatMetadata,
         verbose_name=_('Download Formats, Metadata'),
         blank=True,
         null=True,
         help_text=_('the preferred formats for downloading metadata'))
-    pref_download_formats_vector = models.ManyToManyField(DownloadFormatVector,
+    pref_download_formats_vector = models.ManyToManyField(
+        DownloadFormatVector,
         verbose_name=_('Download Formats, Vector'),
         blank=True,
         null=True,
         help_text=_('the preferred formats for downloading vector layers'))
-    pref_download_formats_raster = models.ManyToManyField(DownloadFormatRaster,
+    pref_download_formats_raster = models.ManyToManyField(
+        DownloadFormatRaster,
         verbose_name=_('Download Formats, Raster'),
         blank=True,
         null=True,

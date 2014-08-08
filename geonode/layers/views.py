@@ -220,8 +220,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
 
-    #print request.user.profile.name
-
     metadata_all = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
     if request.user.is_authenticated():
@@ -272,7 +270,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                 links = links_all
         else:
             links = links_all
-
 
     context_dict["links"] = links
 

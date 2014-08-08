@@ -42,7 +42,7 @@ def document_detail(request, docid):
     """
     The view that show details of each document
     """
-    
+
     document = get_object_or_404(Document, pk=docid)
     if not request.user.has_perm(
             'view_resourcebase',
@@ -60,7 +60,6 @@ def document_detail(request, docid):
 
     document.popular_count += 1
     document.save()
-
 
     metadata_all = document.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
@@ -84,7 +83,7 @@ def document_detail(request, docid):
     }
 
     return render_to_response("documents/document_detail.html",
-        RequestContext(request, context_dict))
+                              RequestContext(request, context_dict))
 
 
 def document_download(request, docid):

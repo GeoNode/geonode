@@ -104,5 +104,5 @@ class ProfilePreferencesForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ("pref_download_formats_metadata",
-            "pref_download_formats_vector",
-            "pref_download_formats_raster", )
+                  "pref_download_formats_vector",
+                  "pref_download_formats_raster", )
