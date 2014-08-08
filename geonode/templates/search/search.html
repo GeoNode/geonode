@@ -12,7 +12,11 @@
     <h2 class="page-title">{% trans "Search" %} <span ng-bind="text_query"></span></h2>
   </div>
   {% with include_type_filter='true' %}
+  {% with header='Type' %}
+  {% with filter='type__in' %}
   {% include "search/_search_content.html" %}
+  {% endwith %}
+  {% endwith %}
   {% endwith %}
 {% endblock %}
 
