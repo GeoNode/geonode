@@ -67,7 +67,7 @@ geoserver_target = path('webapps/geoserver.war')
 geoserver_zip="geoserver.war"
 geoserver_war_url = "http://worldmap.harvard.edu/media/geoserver/"
 
-gs_data = "./webapps/gs-data"
+gs_data = "webapps/gs-data"
 gs_data_url="http://worldmap.harvard.edu/media/geoserver/geonode-geoserver-data.zip"
 
 def geonode_client_target(): return options.deploy.out_dir / "geonode-client.zip"
