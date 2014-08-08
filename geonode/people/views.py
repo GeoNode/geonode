@@ -64,7 +64,7 @@ def profile_edit(request, username=None):
         "form": form,
     })
 
-
+@login_required
 def profile_preferences(request, username=None):
     if username is None:
         try:
