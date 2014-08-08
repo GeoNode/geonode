@@ -59,17 +59,14 @@ def grab(src, dest, name):
     if download:
         urllib.urlretrieve(str(src), str(dest))
 
-GEOSERVER_URL="http://build.geonode.org/geoserver/latest/geoserver.war"
-DATA_DIR_URL="http://build.geonode.org/geoserver/latest/data.zip"
-JETTY_RUNNER_URL="http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar"
+GEOSERVER_URL = "http://build.geonode.org/geoserver/latest/geoserver.war"
+DATA_DIR_URL = "http://build.geonode.org/geoserver/latest/data.zip"
+JETTY_RUNNER_URL = "http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar"
+
 
 @task
-@cmdopts([
-    ('fast', 'f', 'Fast. Skip some operations for speed.'),
-])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
-    fast = options.get('fast', False)
     download_dir = path('downloaded')
     if not download_dir.exists():
         download_dir.makedirs()
@@ -109,13 +106,15 @@ def _install_data_dir():
         xml = f.read()
         m = re.search('baseUrl>([^<]+)', xml)
         xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
-        with open(config, 'w') as f: f.write(xml)
+        with open(config, 'w') as f:
+            f.write(xml)
 
 
 @task
 def static(options):
     with pushd('geonode/static'):
         sh('make')
+
 
 @task
 @needs([
@@ -129,15 +128,15 @@ def setup(options):
           ' please do so now. Use "paver start" to start up the server.'))
 
 
-
 def grab_winfiles(url, dest, packagename):
     #~gohlke needs a user agent that is not python
     # Add your headers
-    headers = {'User-Agent' : 'Mozilla 5.10'}
+    headers = {'User-Agent': 'Mozilla 5.10'}
     request = urllib2.Request(url, None, headers)
     response = urllib2.urlopen(request)
-    with open(dest,'wb') as writefile:
+    with open(dest, 'wb') as writefile:
         writefile.write(response.read())
+
 
 @task
 def win_install_deps(options):
@@ -146,22 +145,23 @@ def win_install_deps(options):
     """
     download_dir = path('downloaded').abspath()
     if not download_dir.exists():
-        download_dir.makedirs() 
-    win_packages = {"PIL":"https://pypi.python.org/packages/2.7/P/Pillow/Pillow-2.5.1.win32-py2.7.exe",
-                    "Py2exe":"http://superb-dca2.dl.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe",
-                    "Nose":"https://s3.amazonaws.com/geonodedeps/nose-1.3.3.win32-py2.7.exe",
-                    "LXML": "https://pypi.python.org/packages/2.7/l/lxml/lxml-3.3.5.win32-py2.7.exe",
-                    "GDAL":"https://s3.amazonaws.com/geonodedeps/GDAL-1.11.0.win32-py2.7.exe",
-                    "PyProj":"https://pyproj.googlecode.com/files/pyproj-1.9.3.win32-py2.7.exe",
-                    "Shapely":"https://pypi.python.org/packages/2.7/S/Shapely/Shapely-1.3.0.win32-py2.7.exe",
-                    "Psycopg2":"http://www.stickpeople.com/projects/python/win-psycopg/psycopg2-2.4.5.win32-py2.7-pg9.1.3-release.exe"
-                    }
-                    
+        download_dir.makedirs()
+    win_packages = {
+        "PIL": "https://pypi.python.org/packages/2.7/P/Pillow/Pillow-2.5.1.win32-py2.7.exe",
+        "Py2exe": "http://superb-dca2.dl.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe",
+        "Nose": "https://s3.amazonaws.com/geonodedeps/nose-1.3.3.win32-py2.7.exe",
+        "LXML": "https://pypi.python.org/packages/2.7/l/lxml/lxml-3.3.5.win32-py2.7.exe",
+        "GDAL": "https://s3.amazonaws.com/geonodedeps/GDAL-1.11.0.win32-py2.7.exe",
+        "PyProj": "https://pyproj.googlecode.com/files/pyproj-1.9.3.win32-py2.7.exe",
+        "Shapely": "https://pypi.python.org/packages/2.7/S/Shapely/Shapely-1.3.0.win32-py2.7.exe",
+        "Psycopg2": "http://www.stickpeople.com/projects/python/win-psycopg/psycopg2-2.4.5.win32-py2.7-pg9.1.3-release.exe"
+    }
+
     for package, url in win_packages.iteritems():
         tempfile = download_dir / os.path.basename(url)
         grab_winfiles(url, tempfile, package)
         try:
-            easy_install.main( [tempfile] )
+            easy_install.main([tempfile])
         except:
             print "install failed"
         os.remove(tempfile)
@@ -274,6 +274,7 @@ def start():
     """
     info("GeoNode is now available.")
 
+
 @task
 def stop_django():
     """
@@ -299,7 +300,6 @@ def stop():
     stop_geoserver()
     info("Stopping GeoNode ...")
     stop_django()
-    
 
 
 @cmdopts([
@@ -323,7 +323,7 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
 
-    from geonode.settings import OGC_SERVER 
+    from geonode.settings import OGC_SERVER
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
 
     url = "http://localhost:8080/geoserver/"
@@ -348,15 +348,15 @@ def start_geoserver(options):
             if not options.get('java_path', None):
                 print "Paver cannot find java in the Windows Environment.  Please provide the --java_path flag with your full path to java.exe e.g. --java_path=C:/path/to/java/bin/java.exe"
                 sys.exit(1)
-            javapath = 'START /B "" "' + options['java_path'] + '"' #if there are spaces
-            #cmd log file needs to exist in windows
-            #using folder from .gitignore
+            # if there are spaces
+            javapath = 'START /B "" "' + options['java_path'] + '"'
+            # cmd log file needs to exist in windows
+            # using folder from .gitignore
             open("../../downloaded/null.txt", 'w+').close()
             loggernullpath = "../../downloaded/null.txt"
 
-
-
-        sh(('%(javapath)s -Xmx512m -XX:MaxPermSize=256m'
+        sh((
+            '%(javapath)s -Xmx512m -XX:MaxPermSize=256m'
             ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
             # workaround for JAI sealed jar issue and jetty classloader
             ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
@@ -364,7 +364,7 @@ def start_geoserver(options):
             ' --log %(log_file)s'
             ' %(config)s'
             ' > %(loggernullpath)s &' % locals()
-          ))
+        ))
 
     info('Starting GeoServer on %s' % url)
 
@@ -510,11 +510,10 @@ def deb(options):
         #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
         sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
-            ' --id-length=6 --ignore-branch --release' % (
-            simple_version)))
+            ' --id-length=6 --ignore-branch --release' % (simple_version)))
 
         deb_changelog = path('debian') / 'changelog'
-        for line in fileinput.input([deb_changelog], inplace = True):
+        for line in fileinput.input([deb_changelog], inplace=True):
             print line.replace("urgency=low", "urgency=high"),
 
         ## Revert workaround for git-dhc bug
@@ -546,8 +545,8 @@ def publish():
         return
 
     call_task('deb', options={
-     'key': key,
-     'ppa': 'geonode/testing',
+        'key': key,
+        'ppa': 'geonode/testing',
     })
 
     version, simple_version = versions()
@@ -580,7 +579,6 @@ def versions():
     else:
         tail = '%s%s' % (stage, edition)
 
-
     simple_version = '%s.%s.%s+%s' % (major, minor, revision, tail)
     return version, simple_version
 
@@ -599,10 +597,10 @@ def kill(arg1, arg2):
     while running and time.time() - t0 < time_out:
         if os.name == 'nt':
             p = Popen('tasklist | find "%s"' % arg1, shell=True,
-                  stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=False)
+                      stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=False)
         else:
             p = Popen('ps aux | grep %s' % arg1, shell=True,
-                  stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
+                      stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
 
         lines = p.stdout.readlines()
 
@@ -638,7 +636,7 @@ def waitfor(url, timeout=300):
     for a in xrange(timeout):
         try:
             resp = urllib.urlopen(url)
-        except IOError, e:
+        except IOError:
             pass
         else:
             if resp.getcode() == 200:
@@ -649,7 +647,6 @@ def waitfor(url, timeout=300):
 
 
 def justcopy(origin, target):
-    import shutil
     if os.path.isdir(origin):
         shutil.rmtree(target, ignore_errors=True)
         shutil.copytree(origin, target)
