@@ -57,7 +57,7 @@ def facets(context):
             facets['archive'] = resources.filter(id__in=archive).count()
             facets['other'] = resources.filter(id__in=other).count()
 
-            return facets;
+            return facets
 
     else:
 
