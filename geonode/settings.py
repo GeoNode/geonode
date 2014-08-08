@@ -155,7 +155,7 @@ LOGOUT_URL = '/account/logout/'
 # Documents application
 ALLOWED_DOCUMENT_TYPES = [
     'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png', 'ppt',
-    'rar', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip',
+    'rar', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz'
 ]
 MAX_DOCUMENT_SIZE = 2  # MB
 DOCUMENT_TYPE_MAP = {
@@ -165,11 +165,9 @@ DOCUMENT_TYPE_MAP = {
     'docx': 'text',
     'ods': 'text',
     'odt': 'text',
-    'pdf': 'text',
     'xls': 'text',
     'xlsx': 'text',
     'xml': 'text',
-
 
     'gif': 'image',
     'jpg': 'image',
@@ -178,9 +176,12 @@ DOCUMENT_TYPE_MAP = {
     'tif': 'image',
     'tiff': 'image',
 
+    'odp': 'presentation',
     'ppt': 'presentation',
-   
+    'pdf': 'presentation',
+    
     'rar': 'archive',
+    'gz': 'archive',
     'zip': 'archive',
 }
 
