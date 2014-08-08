@@ -251,6 +251,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     restriction_code_type_help_text = _('limitation(s) placed upon the access or use of the data.')
     constraints_other_help_text = _('other restrictions and legal prerequisites for accessing and using the resource or'
                                     ' metadata')
+    license_help_text = _('license of the dataset')
     language_help_text = _('language used within the dataset')
     category_help_text = _('high-level geographic data thematic classification to assist in the grouping and search of '
                            'available geographic data sets.')
@@ -287,7 +288,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     constraints_other = models.TextField(_('restrictions other'), blank=True, null=True,
                                          help_text=constraints_other_help_text)
 
-    license = models.ForeignKey(License, null=True, blank=True)
+    license = models.ForeignKey(License, null=True, blank=True,
+        help_text=license_help_text)
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng',
                                 help_text=language_help_text)
 
