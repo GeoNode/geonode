@@ -179,12 +179,11 @@ DOCUMENT_TYPE_MAP = {
     'odp': 'presentation',
     'ppt': 'presentation',
     'pdf': 'presentation',
-    
+
     'rar': 'archive',
     'gz': 'archive',
     'zip': 'archive',
 }
-
 
 
 GEONODE_APPS = (
