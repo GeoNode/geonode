@@ -124,13 +124,14 @@ def pre_save_document(instance, sender, **kwargs):
         instance.extension = extension[1:]
         doc_type_map = settings.DOCUMENT_TYPE_MAP
         if doc_type_map is None:
-            instance.doc_type = 'other'
+            doc_type = 'other'
         else:
             if instance.extension in doc_type_map:
-                instance.doc_type = doc_type_map[''+instance.extension]
+                doc_type = doc_type_map[''+instance.extension]
             else:
-                instance.doc_type = 'other'
-          
+                doc_type = 'other'
+        instance.doc_type = doc_type
+
     elif instance.doc_url:
         if len(instance.doc_url) > 4 and instance.doc_url[-4] == '.':
             instance.extension = instance.doc_url[-3:]
@@ -184,6 +185,7 @@ def create_thumbnail(sender, instance, created, **kwargs):
             extension='png',
             mime='image/png',
             link_type='image',))
+
 
 def update_documents_extent(sender, **kwargs):
     model = 'map' if isinstance(sender, Map) else 'layer'
