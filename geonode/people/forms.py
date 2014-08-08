@@ -93,7 +93,10 @@ class ProfileForm(forms.ModelForm):
             'is_staff',
             'is_superuser',
             'is_active',
-            'date_joined')
+            'date_joined',
+            "pref_download_formats_metadata",
+            "pref_download_formats_vector",
+            "pref_download_formats_raster", )
 
 
 class ProfilePreferencesForm(forms.ModelForm):
