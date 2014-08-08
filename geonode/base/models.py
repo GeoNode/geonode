@@ -289,7 +289,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                          help_text=constraints_other_help_text)
 
     license = models.ForeignKey(License, null=True, blank=True,
-        help_text=license_help_text)
+                                help_text=license_help_text)
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng',
                                 help_text=language_help_text)
 
