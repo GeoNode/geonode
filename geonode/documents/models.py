@@ -4,6 +4,7 @@ import uuid
 
 from django.db import models
 from django.db.models import signals
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.core.files.base import ContentFile
@@ -38,6 +39,8 @@ class Document(ResourceBase):
                                 verbose_name=_('File'))
 
     extension = models.CharField(max_length=128, blank=True, null=True)
+
+    doc_type = models.CharField(max_length=128, blank=True, null=True)
 
     doc_url = models.URLField(
         blank=True,
@@ -114,11 +117,20 @@ def get_related_documents(resource):
 
 
 def pre_save_document(instance, sender, **kwargs):
-    base_name, extension = None, None
+    base_name, extension, doc_type = None, None, None
 
     if instance.doc_file:
         base_name, extension = os.path.splitext(instance.doc_file.name)
         instance.extension = extension[1:]
+        doc_type_map = settings.DOCUMENT_TYPE_MAP
+        if doc_type_map is None:
+            instance.doc_type = 'other'
+        else:
+            if instance.extension in doc_type_map:
+                instance.doc_type = doc_type_map[''+instance.extension]
+            else:
+                instance.doc_type = 'other'
+          
     elif instance.doc_url:
         if len(instance.doc_url) > 4 and instance.doc_url[-4] == '.':
             instance.extension = instance.doc_url[-3:]
@@ -172,7 +184,6 @@ def create_thumbnail(sender, instance, created, **kwargs):
             extension='png',
             mime='image/png',
             link_type='image',))
-
 
 def update_documents_extent(sender, **kwargs):
     model = 'map' if isinstance(sender, Map) else 'layer'
