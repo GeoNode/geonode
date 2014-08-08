@@ -33,24 +33,28 @@ def facets(context):
             'text': 0,
             'image': 0,
             'presentation': 0,
+            'archive': 0,
             'other': 0
         }
 
         text = Document.objects.filter(doc_type='text').values_list('id', flat=True)
         image = Document.objects.filter(doc_type='image').values_list('id', flat=True)
         presentation = Document.objects.filter(doc_type='presentation').values_list('id', flat=True)
+        archive = Document.objects.filter(doc_type='archive').values_list('id', flat=True)
         other = Document.objects.filter(doc_type='other').values_list('id', flat=True)
 
         if settings.SKIP_PERMS_FILTER:
             facets['text'] = text.count()
             facets['image'] = image.count()
             facets['presentation'] = presentation.count()
+            facets['archive'] = archive.count()
             facets['other'] = other.count()
         else:
             resources = get_objects_for_user(request.user, 'base.view_resourcebase')
             facets['text'] = resources.filter(id__in=text).count()
             facets['image'] = resources.filter(id__in=image).count()
             facets['presentation'] = resources.filter(id__in=presentation).count()
+            facets['archive'] = resources.filter(id__in=archive).count()
             facets['other'] = resources.filter(id__in=other).count()
 
             return facets;
