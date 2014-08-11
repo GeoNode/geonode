@@ -22,8 +22,8 @@ import urllib
 from urllib import urlretrieve
 import glob
 
-assert sys.version_info >= (2,6),\
-SystemError("GeoNode Build requires python 2.6 or better")
+assert sys.version_info >= (2,6), \
+    SystemError("GeoNode Build requires python 2.6 or better")
 
 
 options(
@@ -52,9 +52,9 @@ options(
         req_file=path('shared/package/requirements.txt'),
         packages_to_install=['pip'],
         dest_dir='./',
-    ),
+        ),
     host=Bunch(
-    	bind='localhost'
+        bind='localhost'
     )
 )
 
@@ -98,7 +98,7 @@ def fix_geos_version(options):
     oldline = "ver = geos_version()"
     newline = "ver = geos_version().decode().split(' ')[0]"
     for line in fileinput.input('lib/python2.7/site-packages/django/contrib/gis/geos/libgeos.py', inplace=True):
-    	if oldline in line:
+        if oldline in line and newline not in line:
             line = line.replace(oldline,newline)
         print line,
 
@@ -110,12 +110,12 @@ def install_deps(options):
         info('using to install python deps bundle')
         call_task('install_bundle')
     else:
-        info('Installing from requirements file. '\
+        info('Installing from requirements file. ' \
              'Use "paver bundle_deps" to create an install bundle')
         pip_install("-r shared/%s" % options.config.corelibs)
         pip_install("-r shared/%s" % options.config.devlibs)
         if options.config.platform == "win32":
-            info("You will need to install 'PIL' and 'ReportLab' "\
+            info("You will need to install 'PIL' and 'ReportLab' " \
                  "separately to do PDF generation")
 
 @task
@@ -234,7 +234,7 @@ def setup_geonetwork(options):
         deployed_url.rmtree()
 
     if not dst_war.exists():
-    	info("getting geonetwork.war")
+        info("getting geonetwork.war")
         grab(src_url, dst_url)
         zip_extractall(zipfile.ZipFile(dst_url), webapps)
     if not deployed_url.exists():
@@ -329,10 +329,10 @@ def package_client(options):
     """Package compressed client resources (JavaScript, CSS, images)."""
 
     if(hasattr(options, 'use_war')):
-    	geonode_client_target_war.copy(options.deploy.out_dir)
+        geonode_client_target_war.copy(options.deploy.out_dir)
     else:
         # Extract static files to static_location
-    	geonode_media_dir = path("./src/GeoNodePy/geonode/media")
+        geonode_media_dir = path("./src/GeoNodePy/geonode/media")
         static_location = geonode_media_dir / "static"
 
         dst_zip = "src/geonode-client/build/geonode-client.zip"
@@ -455,7 +455,7 @@ def setup_jetty(source, dest):
     ('no_svn', 'D', 'Do not append svn version number as part of name '),
     ('append_to=', 'a', 'append to release name'),
     ('skip_packaging', 'y', 'Do not call package_all when creating a release'),
-])
+    ])
 def make_release(options):
     """
     Creates a tarball to use for building the system elsewhere
@@ -563,13 +563,13 @@ def install_sphinx_conditionally(options):
 def start_django(options):
     djangolog = open("django.log", "w")
     django = subprocess.Popen([
-        "paster",
-        "serve",
-        "--reload",
-        "shared/dev-paste.ini"
-    ],
-        stdout=djangolog,
-        stderr=djangolog
+                                  "paster",
+                                  "serve",
+                                  "--reload",
+                                  "shared/dev-paste.ini"
+                              ],
+                              stdout=djangolog,
+                              stderr=djangolog
     )
 
     def django_is_up():
@@ -689,13 +689,13 @@ def host(options):
 
     socket.setdefaulttimeout(1)
     django = subprocess.Popen([
-            "paster",
-            "serve",
-            "--reload",
-	        "shared/dev-paste.ini"
-        ],
-        stdout=djangolog,
-        stderr=djangolog
+                                  "paster",
+                                  "serve",
+                                  "--reload",
+                                  "shared/dev-paste.ini"
+                              ],
+                              stdout=djangolog,
+                              stderr=djangolog
     )
 
     def jetty_is_up():
