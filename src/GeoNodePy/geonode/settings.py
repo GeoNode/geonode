@@ -139,6 +139,10 @@ INSTALLED_APPS = (
     #'geonode.gazetteer',
     #'debug_toolbar',
 
+    #DVN apps
+    'geonode.dvn',
+    'geonode.classification',
+
 )
 LOGGING = {
     'version': 1,
@@ -505,7 +509,7 @@ SESSION_COOKIE_HTTPONLY = True
 # Only works with Django 1.6+
 CSRF_COOKIE_HTTPONLY = True
 
-DVN_TOKEN = ''
+DVN_TOKEN = 'FakeToken'
 
 try:
     from local_settings import *
