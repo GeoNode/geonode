@@ -2,7 +2,7 @@
  WorldMap
 =========
 
-Build Requirements
+Build Requirements 
 ==================
 
 Before starting work on WorldMap, you will need to have the following
@@ -430,5 +430,5 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with WorldMap.  If not, see <http://www.gnu.org/licenses/>.
 
-WorldMap is Copyright 2011 President and Fellows of Harvard College
+WorldMap is Copyright 2014 President and Fellows of Harvard College
 
