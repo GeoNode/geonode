@@ -1247,7 +1247,7 @@ def after_install(options, home_dir):
     else:
         bin_dir = join(home_dir, 'bin')
     subprocess.call([join(bin_dir, 'easy_install'), 'paver==1.0.1'])
-    subprocess.call([join(bin_dir, 'easy_install'), 'http://bitbucket.org/ianb/pip/get/2cb1db7b2baf.gz#egg=pip'])
+    subprocess.call([join(bin_dir, 'easy_install'), 'pip==1.1'])
     subprocess.call([join(bin_dir, 'easy_install'), 'jstools'])
     subprocess.call([join(bin_dir, 'easy_install'), 'virtualenv'])
     subprocess.call([join(bin_dir, 'paver'),'post_bootstrap'])

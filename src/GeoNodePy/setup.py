@@ -17,7 +17,7 @@ setup(name='GeoNodePy',
           "gsconfig.py",
           "OWSLib==0.4.0",
           "Django>=1.1",
-          "PIL",
+          "Pillow",
           "django-extensions",
           "httplib2"
       ],
