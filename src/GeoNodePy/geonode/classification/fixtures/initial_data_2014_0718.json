@@ -1,0 +1,152 @@
+[
+{
+    "pk": 1, 
+    "model": "classification.classificationmethod", 
+    "fields": {
+        "value_name": "uniqueInterval", 
+        "display_name": "Unique Values", 
+        "created": "2014-07-18T13:00:41.827", 
+        "modified": "2014-07-18T13:00:41.827", 
+        "active": true, 
+        "sort_order": 10, 
+        "is_string_usable": true
+    }
+},
+{
+    "pk": 2, 
+    "model": "classification.classificationmethod", 
+    "fields": {
+        "value_name": "equalInterval", 
+        "display_name": "Equal Interval", 
+        "created": "2014-07-18T13:00:51.752", 
+        "modified": "2014-07-18T13:00:51.752", 
+        "active": true, 
+        "sort_order": 20, 
+        "is_string_usable": false
+    }
+},
+{
+    "pk": 3, 
+    "model": "classification.classificationmethod", 
+    "fields": {
+        "value_name": "quantile", 
+        "display_name": "Quantile", 
+        "created": "2014-07-18T13:01:03.860", 
+        "modified": "2014-07-18T13:01:03.860", 
+        "active": true, 
+        "sort_order": 30, 
+        "is_string_usable": false
+    }
+},
+{
+    "pk": 4, 
+    "model": "classification.classificationmethod", 
+    "fields": {
+        "value_name": "jenks", 
+        "display_name": "Jenks Natural Breaks", 
+        "created": "2014-07-18T13:01:11.838", 
+        "modified": "2014-07-18T13:01:11.838", 
+        "active": true, 
+        "sort_order": 40, 
+        "is_string_usable": false
+    }
+},
+{
+    "pk": 1, 
+    "model": "classification.colorramp", 
+    "fields": {
+        "value_name": "Blue", 
+        "display_name": "Blue", 
+        "created": "2014-07-18T13:03:05.792", 
+        "modified": "2014-07-18T13:03:05.792", 
+        "start_color": "#f7fbff", 
+        "active": true, 
+        "end_color": "#08306b", 
+        "sort_order": 10
+    }
+},
+{
+    "pk": 2, 
+    "model": "classification.colorramp", 
+    "fields": {
+        "value_name": "Red", 
+        "display_name": "Red", 
+        "created": "2014-07-18T13:03:05.795", 
+        "modified": "2014-07-18T13:03:05.795", 
+        "active": true, 
+        "start_color": "#fff5f0", 
+        "end_color": "#67000d", 
+        "sort_order": 20
+    }
+},
+{
+    "pk": 3, 
+    "model": "classification.colorramp", 
+    "fields": {
+        "value_name": "Custom", 
+        "display_name": "Orange", 
+        "created": "2014-07-18T13:03:05.796", 
+        "modified": "2014-07-18T13:03:05.797", 
+        "active": true, 
+        "start_color": "#fff5eb", 
+        "end_color": "#f16913", 
+        "sort_order": 30
+    }
+},
+{
+    "pk": 4, 
+    "model": "classification.colorramp", 
+    "fields": {
+        "value_name": "Jet", 
+        "display_name": "Red-Blue", 
+        "created": "2014-07-18T13:03:05.797", 
+        "modified": "2014-07-18T13:03:05.797", 
+        "active": true, 
+        "start_color": "#f7fbff", 
+        "end_color": "#08306b", 
+        "sort_order": 40
+    }
+},
+{
+    "pk": 5, 
+    "model": "classification.colorramp", 
+    "fields": {
+        "value_name": "Gray", 
+        "display_name": "Gray", 
+        "created": "2014-07-18T13:03:05.798", 
+        "modified": "2014-07-18T13:03:05.798", 
+        "active": true, 
+        "start_color": "#fff5eb", 
+        "end_color": "#f16913", 
+        "sort_order": 50
+    }
+},
+{
+    "pk": 6, 
+    "model": "classification.colorramp", 
+    "fields": {
+        "value_name": "Random", 
+        "display_name": "Random", 
+        "created": "2014-07-18T13:03:05.799", 
+        "modified": "2014-07-18T13:03:05.799", 
+        "active": true, 
+        "start_color": "#f7fbff", 
+        "end_color": "#08306b", 
+        "sort_order": 60
+    }
+}, 
+{
+    "pk": 7, 
+    "model": "classification.colorramp", 
+    "fields": {
+        "value_name": "Custom", 
+        "display_name": "Custom", 
+        "created": "2014-07-18T13:03:05.800", 
+        "modified": "2014-07-18T13:03:05.800", 
+        "active": false, 
+        "start_color": "#ffcc00", 
+        "end_color": "#006699", 
+        "sort_order": 70
+    }
+}
+]
