@@ -1,9 +1,15 @@
 --extra-index-url=http://dist.pinaxproject.com/dev
 
+pip==1.0
+setuptools
+paver
+
+
 # Extensions with C components
 Pillow
 lxml
 
+unidecode
 OWSLib==0.4.0
 Django==1.4.13
 django-extensions==0.8
@@ -31,7 +37,7 @@ geojson
 https://bitbucket.org/jespern/django-piston/get/5b3ef294fe89.zip
 #Uncomment the following to use the django debug toolbar
 -e git+https://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar
-boto
+
 #For scheduled tasks
 django-celery
 django-kombu
@@ -44,7 +50,13 @@ jdcal
 vectorformats
 #For autocomplete
 django-autocomplete-light==1.4.5
-unidecode
+
 
 #DVN
 xmltodict
+
+
+paste
+PasteDeploy
+pastescript
+dj.paste

@@ -100,9 +100,9 @@ password: wm_password
   
   git submodule update --init
   
-  python bootstrap.py --no-site-packages # see note1 below
-  
-  source bin/activate
+  mkvirtualenv worldmap
+
+  pip install -r shared/requirements.txt
   
   paver build # see note2 below
   
