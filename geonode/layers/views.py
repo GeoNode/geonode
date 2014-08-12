@@ -487,8 +487,8 @@ def layer_data(request, layername, mimetype="text/csv"):
     keys = [lkw.name for lkw in layer.keywords.all()]
     try:
         # extract supplemental_information as a dictionary
-        sup_info = eval(layer.supplemental_information)
-    except SyntaxError, e:
+        sup_info = json.loads(layer.supplemental_information)
+    except ValueError, e:
         logger.exception(e)
         sup_info = None
     if "SOS" in keys:
