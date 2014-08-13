@@ -91,6 +91,7 @@ def document_detail(request, docid):
                     'imgtypes': IMGTYPES,
                     'related': related}))
 
+
 def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)
     if not request.user.has_perm(
