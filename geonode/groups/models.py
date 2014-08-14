@@ -18,11 +18,18 @@ class GroupProfile(models.Model):
         ("private", _("Private")),
     ]
 
+    email_help_text = _('Email used to contact one or all group members, such as a mailing list, shared email, or exchange group.')
+
     group = models.OneToOneField(Group)
     title = models.CharField(max_length=50)
     slug = models.SlugField(unique=True)
     logo = models.FileField(upload_to="people_group", blank=True)
     description = models.TextField()
+    email = models.EmailField(
+        _('email'),
+        null=True,
+        blank=True,
+        help_text=email_help_text)
     keywords = TaggableManager(
         _('keywords'),
         help_text=_("A space or comma-separated list of keywords"),
