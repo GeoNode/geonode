@@ -53,10 +53,10 @@ class Document(ResourceBase):
 
     @property
     def name_long(self):
-        if self.title is None or len(self.title) == 0:
+        if not self.title:
             return str(self.id)
         else:
-            return self.title+" ("+str(self.id)+")"
+            return '%s (%s)' % (self.title, self.id)
 
     def _render_thumbnail(self):
         from cStringIO import StringIO
