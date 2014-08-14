@@ -51,6 +51,13 @@ class Document(ResourceBase):
     def get_absolute_url(self):
         return reverse('document_detail', args=(self.id,))
 
+    @property
+    def name_long(self):
+        if self.title is None or len(self.title) == 0:
+            return str(self.id)
+        else:
+            return self.title+" ("+str(self.id)+")"
+
     def _render_thumbnail(self):
         from cStringIO import StringIO
 
