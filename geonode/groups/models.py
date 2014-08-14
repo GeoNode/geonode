@@ -18,7 +18,8 @@ class GroupProfile(models.Model):
         ("private", _("Private")),
     ]
 
-    email_help_text = _('Email used to contact one or all group members, such as a mailing list, shared email, or exchange group.')
+    email_help_text = _('Email used to contact one or all group members, '
+                        'such as a mailing list, shared email, or exchange group.')
 
     group = models.OneToOneField(Group)
     title = models.CharField(max_length=50)
