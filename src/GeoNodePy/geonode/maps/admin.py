@@ -44,7 +44,6 @@ class MapAdmin(admin.ModelAdmin):
     form = autocomplete_light.modelform_factory(Map)
 
 class ContactAdmin(admin.ModelAdmin):
-    inlines = [ContactRoleInline]
     list_display = ('id', 'name', 'user')
     search_fields = ['name']
     form = autocomplete_light.modelform_factory(Contact)
