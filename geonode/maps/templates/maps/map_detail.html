@@ -183,7 +183,7 @@
             <dt>{% trans "WMS layer group for local map layers" %}:</dt>
             <dd><em>{{ resource.layer_group.name }}</em> ({% trans "on" %} <a href="{{ ows }}?service=WMS&request=GetCapabilities">{% trans "local OWS" %}</a>)</dd>
             {% endif %}</dl>
-          {% if can_edit_map %}
+          {% if "change_resourcebase" in resource_perms %}
           <p>{% trans "Publish local map layers as WMS layer group" %}</p>
           <a href="{%url "map_wms" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "Publish Map WMS" %}</a>
           {% endif %}

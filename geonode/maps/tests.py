@@ -32,7 +32,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.utils import default_map_config
 from geonode.base.populate_test_data import create_models
-from geonode.maps.populate_maplayers import create_maplayers
+from geonode.maps.tests_populate_maplayers import create_maplayers
 
 
 class MapsTest(TestCase):
