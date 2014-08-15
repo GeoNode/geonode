@@ -325,6 +325,24 @@
              </gmd:CI_OnlineResource>
            </gmd:onLine>
            {% endfor %}
+           {% for link in layer.link_set.ows %}
+           <gmd:onLine>
+             <gmd:CI_OnlineResource>
+               <gmd:linkage>
+                 <gmd:URL>{{link.url}}</gmd:URL>
+               </gmd:linkage>
+               <gmd:protocol>
+                 <gco:CharacterString>{{link.link_type}}</gco:CharacterString>
+               </gmd:protocol>
+               <gmd:name>
+                 <gco:CharacterString>{{link.link_type}} {{layer.workspace}} Service - Provides Layer: {{ layer.title }}</gco:CharacterString>
+               </gmd:name>
+               <gmd:description>
+                 <gco:CharacterString>{{link.name}} Root Endpoint.  This service contains the {{layer.title}} layer.</gco:CharacterString>
+               </gmd:description>
+             </gmd:CI_OnlineResource>
+           </gmd:onLine>
+           {% endfor %}
          </gmd:MD_DigitalTransferOptions>
        </gmd:transferOptions>
      </gmd:MD_Distribution>
