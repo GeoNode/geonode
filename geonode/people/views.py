@@ -67,7 +67,6 @@ def profile_edit(request, username=None):
 
 def profile_detail(request, username):
     profile = get_object_or_404(Profile, username=username)
-    print "Location: "+profile.location
     # combined queryset from each model content type
     user_objects = profile.resourcebase_set.distinct()
 
