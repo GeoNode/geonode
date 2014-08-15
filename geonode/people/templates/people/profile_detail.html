@@ -79,6 +79,9 @@
         {% include "relationships/_manage_connections.html" %}
       {% endif_has_tag %}
     {% else %}
+      <ul class="list-group">
+        <li class="list-group-item"><a href="{% actor_url profile %}">{% trans "User Activities" %}</a></li>
+      </ul>
       {% if_has_tag if_relationship %}
         {% include "relationships/_profile_follow.html" %}
       {% endif_has_tag %}
