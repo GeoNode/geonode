@@ -405,12 +405,14 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
                                )
 
-    ogc_wms_url = ogc_server_settings.public_url + 'wms?'
+    ogc_wms_path = '%s/wms?' % instance.workspace
+    ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
+    ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                url=ogc_wms_url,
                                defaults=dict(
                                    extension='html',
-                                   name=instance.name,
+                                   name=ogc_wms_name,
                                    url=ogc_wms_url,
                                    mime='text/html',
                                    link_type='OGC:WMS',
@@ -418,12 +420,14 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
 
     if instance.storeType == "dataStore":
-        ogc_wfs_url = ogc_server_settings.public_url + 'wfs?'
+        ogc_wfs_path = '%s/wfs?' % instance.workspace
+        ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
+        ogc_wfs_name = 'OGC WFS: %s Service' % instance.workspace
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=ogc_wfs_url,
                                    defaults=dict(
                                        extension='html',
-                                       name=instance.name,
+                                       name=ogc_wfs_name,
                                        url=ogc_wfs_url,
                                        mime='text/html',
                                        link_type='OGC:WFS',
@@ -431,12 +435,14 @@ def geoserver_post_save(instance, sender, **kwargs):
                                    )
 
     if instance.storeType == "coverageStore":
-        ogc_wcs_url = ogc_server_settings.public_url + 'wcs?'
+        ogc_wcs_path = '%s/wcs?' % instance.workspace
+        ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)
+        ogc_wcs_name = 'OGC WCS: %s Service' % instance.workspace
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=ogc_wcs_url,
                                    defaults=dict(
                                        extension='html',
-                                       name=instance.name,
+                                       name=ogc_wcs_name,
                                        url=ogc_wcs_url,
                                        mime='text/html',
                                        link_type='OGC:WCS',

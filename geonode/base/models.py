@@ -650,6 +650,9 @@ class LinkManager(models.Manager):
     def geogit(self):
         return self.get_queryset().filter(name__icontains='geogit')
 
+    def ows(self):
+        return self.get_queryset().filter(link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
+
 
 class Link(models.Model):
     """Auxiliary model for storing links for resources.
