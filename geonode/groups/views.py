@@ -227,6 +227,7 @@ def group_remove(request, slug):
     else:
         return HttpResponseNotAllowed()
 
+
 class GroupActivityView(ListView):
     """
     Returns recent group activity.
@@ -240,7 +241,7 @@ class GroupActivityView(ListView):
             return None
         else:
             members = ([(member.user.id) for member in self.group.member_queryset()])
-            return Action.objects.filter(public=True,actor_object_id__in=members,)[:15]
+            return Action.objects.filter(public=True, actor_object_id__in=members, )[:15]
 
     def get(self, request, *args, **kwargs):
         self.group = None
@@ -257,4 +258,3 @@ class GroupActivityView(ListView):
         context = super(GroupActivityView, self).get_context_data(**kwargs)
         context['group'] = self.group
         return context
-
