@@ -54,7 +54,8 @@ def get_valid_user(user=None):
 
     return theuser
 
-def format_address(street=None,zipcode=None,city=None,area=None,country=None):
+
+def format_address(street=None, zipcode=None, city=None, area=None, country=None):
     if not country:
         address = []
         if street:
@@ -69,7 +70,6 @@ def format_address(street=None,zipcode=None,city=None,area=None,country=None):
     else:
         if country == "USA":
             address = ""
-            
             if city and area:
                 if street:
                     address += street+", "
@@ -97,7 +97,7 @@ def format_address(street=None,zipcode=None,city=None,area=None,country=None):
             if address:
                 address += ", United States"
             else:
-               address += "United States"
+                address += "United States"
 
             return address
         else:
@@ -112,4 +112,3 @@ def format_address(street=None,zipcode=None,city=None,area=None,country=None):
                 address.append(area)
             address.append(country)
             return " ".join(address)
-
