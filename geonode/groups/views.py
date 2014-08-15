@@ -7,6 +7,8 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 
+from actstream.models import Action
+
 from geonode.groups.forms import GroupInviteForm, GroupForm, GroupUpdateForm, GroupMemberForm
 from geonode.groups.models import GroupProfile, GroupInvitation, GroupMember
 
@@ -86,6 +88,7 @@ class GroupDetailView(ListView):
         context['is_manager'] = self.group.user_is_role(
             self.request.user,
             "manager")
+        context['can_view'] = self.group.can_view(self.request.user)
         return context
 
 
@@ -223,3 +226,35 @@ def group_remove(request, slug):
         return HttpResponseRedirect(reverse("group_list"))
     else:
         return HttpResponseNotAllowed()
+
+class GroupActivityView(ListView):
+    """
+    Returns recent group activity.
+    """
+
+    template_name = 'groups/activity.html'
+    group = None
+
+    def get_queryset(self):
+        if not self.group:
+            return None
+        else:
+            members = ([(member.user.id) for member in self.group.member_queryset()])
+            return Action.objects.filter(public=True,actor_object_id__in=members,)[:15]
+
+    def get(self, request, *args, **kwargs):
+        self.group = None
+        group = get_object_or_404(GroupProfile, slug=kwargs.get('slug'))
+
+        if not group.can_view(request.user):
+            raise Http404()
+
+        self.group = group
+
+        return super(GroupActivityView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(GroupActivityView, self).get_context_data(**kwargs)
+        context['group'] = self.group
+        return context
+
