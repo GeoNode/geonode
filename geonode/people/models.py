@@ -31,6 +31,7 @@ from geonode.groups.models import GroupProfile
 
 from .utils import format_address
 
+
 class Profile(AbstractUser):
 
     """Fully featured Geonode user"""
@@ -116,13 +117,14 @@ class Profile(AbstractUser):
         elif (not self.first_name) and self.last_name:
             return '%s (%s)' % (self.last_name, self.username)
         elif self.first_name and (not self.last_name):
-             return '%s (%s)' % (self.first_name, self.username)
+            return '%s (%s)' % (self.first_name, self.username)
         else:
             return self.username
 
     @property
     def location(self):
-        return format_address(self.delivery,self.zipcode,self.city,self.area,self.country)
+        return format_address(self.delivery, self.zipcode, self.city, self.area, self.country)
+
 
 def get_anonymous_user_instance(Profile):
     return Profile(username='AnonymousUser')
