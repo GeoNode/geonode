@@ -18,7 +18,11 @@ class GroupProfile(models.Model):
         ("private", _("Private")),
     ]
 
-    access_help_text = _('Public: Any registered user can view and join a public group.<br>Public (invite-only):Any registered user can view the group.  Only invited users can join.<br>Private: Registered users cannot see any details about the group, including membership.  Only invited users can join.')
+    access_help_text = _('Public: Any registered user can view and join a public group.<br>'
+                         'Public (invite-only):Any registered user can view the group.  '
+                         'Only invited users can join.<br>'
+                         'Private: Registered users cannot see any details about the group, including membership.  '
+                         'Only invited users can join.')
     email_help_text = _('Email used to contact one or all group members, '
                         'such as a mailing list, shared email, or exchange group.')
 
