@@ -416,7 +416,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     name=layer.name,
                     user=request.user,
                     overwrite=True,
-                    charset = form.cleaned_data["charset"],
+                    charset=form.cleaned_data["charset"],
                 )
             except Exception as e:
                 out['success'] = False
