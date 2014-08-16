@@ -117,6 +117,17 @@ class GeoNodeCSWTest(TestCase):
         self.assertEqual(record.abstract, 'No abstract provided',
                          'Expected a specific abstract in Dublin Core model')
 
+        # test for correct service link articulation
+        for link in record.references:
+            if link['scheme'] == 'OGC:WMS':
+                self.assertEqual(link['url'],
+                                 'http://localhost:8080/geoserver/geonode/wms',
+                                 'Expected a specific OGC:WMS URL')
+            elif link['scheme'] == 'OGC:WFS':
+                self.assertEqual(link['url'],
+                                 'http://localhost:8080/geoserver/geonode/wfs',
+                                 'Expected a specific OGC:WFS URL')
+
     def test_csw_outputschema_iso(self):
         """Verify that GeoNode can handle ISO metadata with ISO outputSchema"""
 
@@ -160,6 +171,17 @@ class GeoNodeCSWTest(TestCase):
             record.identification.bbox.maxy,
             '13.396306',
             'Expected a specific maxy coordinate value in ISO model')
+
+        # test for correct link articulation
+        for link in record.distribution.online:
+            if link.protocol == 'OGC:WMS':
+                self.assertEqual(link.url,
+                                 'http://localhost:8080/geoserver/geonode/wms',
+                                 'Expected a specific OGC:WMS URL')
+            elif link.protocol == 'OGC:WFS':
+                self.assertEqual(link.url,
+                                 'http://localhost:8080/geoserver/geonode/wfs',
+                                 'Expected a specific OGC:WFS URL')
 
     def test_csw_outputschema_dc_bbox(self):
         """Verify that GeoNode can handle ISO metadata BBOX model with Dublin Core outputSchema"""
