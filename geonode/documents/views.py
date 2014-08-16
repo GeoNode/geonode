@@ -260,7 +260,7 @@ def document_remove(request, docid, template='documents/document_remove.html'):
             }))
         if request.method == 'POST':
             document.delete()
-            return HttpResponseRedirect(reverse("documents_browse"))
+            return HttpResponseRedirect(reverse("document_browse"))
         else:
             return HttpResponse("Not allowed", status=403)
 
