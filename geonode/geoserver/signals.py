@@ -336,7 +336,6 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
 
     wms_path = '%s/%s/wms' % (instance.workspace, instance.name)
-    ows_url = urljoin(ogc_server_settings.public_url, wms_path)
 
     html_link_url = '%s%s' % (
         settings.SITEURL[:-1], instance.get_absolute_url())
