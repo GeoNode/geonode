@@ -476,9 +476,7 @@ def geoserver_post_save_map(instance, sender, **kwargs):
     local_layers = []
     for layer in instance.layers:
         if layer.local:
-            local_layers.append(
-                Layer.objects.get(
-                    typename=layer.name).typename)
+            local_layers.append(layer.name)
 
     image = None
 
