@@ -19,7 +19,6 @@ from geonode.geoserver.helpers import geoserver_upload
 from geonode.utils import http_client
 from geonode.base.models import Link
 from geonode.base.models import Thumbnail
-from geonode.layers.models import Layer
 from geonode.layers.utils import create_thumbnail
 from geonode.people.models import Profile
 
