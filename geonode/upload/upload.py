@@ -361,8 +361,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
               end_time_attribute=None,
               end_time_transform_type=None,
               end_time_format=None,
-              time_format=None,
-              use_big_date=None):
+              time_format=None):
     '''
     time_attribute - name of attribute to use as time
 
@@ -393,11 +392,9 @@ def time_step(upload_session, time_attribute, time_transform_type,
         return {'type': 'AttributeRemapTransform',
                 'field': att,
                 'target': 'org.geotools.data.postgis.PostGISDialect$XDate'}
-    if use_big_date is None:
-        try:
-            use_big_date = settings.USE_BIG_DATE
-        except:
-            use_big_date = False
+
+    use_big_date = getattr(settings, 'USE_BIG_DATE', False)
+
     if time_attribute:
         if time_transform_type:
 
