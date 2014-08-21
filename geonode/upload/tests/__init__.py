@@ -23,8 +23,8 @@ import tempfile
 import zipfile
 import geonode.upload.files as files
 from django.test import TestCase
-from geonode.upload.utils import rename_and_prepare
 from geonode.upload.files import SpatialFiles, scan_file
+from geonode.upload.files import _rename_files, _contains_bad_names
 
 
 @contextlib.contextmanager
@@ -64,6 +64,10 @@ class FilesTests(TestCase):
             self.assertTrue(t.name is not None)
             self.assertTrue(t.layer_type is not None)
 
+    def test_contains_bad_names(self):
+        self.assertTrue(_contains_bad_names(['1', 'a']))
+        self.assertTrue(_contains_bad_names(['a', 'foo-bar']))
+
     def test_rename_files(self):
         with create_files(['junk<y>', 'notjunky']) as tests:
             try:
@@ -74,33 +78,9 @@ class FilesTests(TestCase):
 
     def test_rename_and_prepare(self):
         with create_files(['109029_23.tiff', 'notjunk<y>']) as tests:
-            tests = map(rename_and_prepare, tests)
+            tests = _rename_files(tests)
             self.assertTrue(tests[0].endswith("_109029_23.tiff"))
             self.assertTrue(tests[1].endswith("junk_y_"))
-
-        with create_files(['109029_23.shp', '109029_23.shx', '109029_23.dbf', '109029_23.prj'], zipped=True) as tests:
-            tests = rename_and_prepare(tests[0])
-            path = os.path.dirname(tests)
-            self.assertTrue(
-                os.path.exists(
-                    os.path.join(
-                        path,
-                        '_109029_23.shp')))
-            self.assertTrue(
-                os.path.exists(
-                    os.path.join(
-                        path,
-                        '_109029_23.shx')))
-            self.assertTrue(
-                os.path.exists(
-                    os.path.join(
-                        path,
-                        '_109029_23.dbf')))
-            self.assertTrue(
-                os.path.exists(
-                    os.path.join(
-                        path,
-                        '_109029_23.prj')))
 
     def test_scan_file(self):
         """
@@ -126,8 +106,9 @@ class FilesTests(TestCase):
 
         # Test the scan_file function with a zipped spatial file that needs to
         # be renamed.
-        with create_files(['109029_23.shp', '109029_23.shx', '109029_23.dbf',
-                           '109029_23.prj', '109029_23.xml'], zipped=True) as tests:
+        file_names = ['109029_23.shp', '109029_23.shx', '109029_23.dbf',
+                      '109029_23.prj', '109029_23.xml', '109029_23.sld']
+        with create_files(file_names, zipped=True) as tests:
             spatial_files = scan_file(tests[0])
             self.assertTrue(isinstance(spatial_files, SpatialFiles))
 
@@ -135,6 +116,11 @@ class FilesTests(TestCase):
             self.assertTrue(spatial_file.file_type.matches('shp'))
             self.assertEqual(len(spatial_file.auxillary_files), 3)
             self.assertEqual(len(spatial_file.xml_files), 1)
-            self.assertEqual(len(spatial_file.sld_files), 0)
+            self.assertEqual(len(spatial_file.sld_files), 1)
             self.assertTrue(
                 all(map(lambda s: s.endswith('xml'), spatial_file.xml_files)))
+
+            basedir = os.path.dirname(spatial_file.base_file)
+            for f in file_names:
+                path = os.path.join(basedir, '_%s' % f)
+                self.assertTrue(os.path.exists(path))
