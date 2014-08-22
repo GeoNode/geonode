@@ -534,6 +534,10 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url=None):
             image = None
 
     if image is not None:
+        # first delete thumbnail file on disk to prevent duplicates:
+        if instance.has_thumbnail():
+            instance.thumbnail_set.get().thumb_file.delete()
+        # update database and save new thumbnail file on disk:
         instance.thumbnail_set.all().delete()
         thumbnail = Thumbnail(thumb_spec=thumbnail_remote_url)
         thumbnail.thumb_file.save(
