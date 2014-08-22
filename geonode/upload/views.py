@@ -120,7 +120,7 @@ def _error_response(req, exception=None, errors=None, force_ajax=True):
     if exception:
         logger.exception('Unexpected error in upload step')
     else:
-        logger.warning('upload error: %s', errors)
+        logger.error('upload error: %s', errors)
     if req.is_ajax() or force_ajax:
         content_type = 'text/html' if not req.is_ajax() else None
         return json_response(exception=exception, errors=errors,

@@ -16,24 +16,23 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+"""
+See the README.rst in this directory for details on running these tests.
+@todo allow using a database other than `development.db`
+"""
 import os.path
 from bs4 import BeautifulSoup
 from django.conf import settings
-from django.conf.urls import patterns
 from django.core.urlresolvers import reverse
-from geonode.geoserver.helpers import cascading_delete
 from geonode.layers.models import Layer
+from geonode.people.models import Profile
 from geonode.upload.models import Upload
 from geonode.upload.views import _ALLOW_TIME_STEP
-from geonode.geoserver.signals import gs_catalog
-from geonode.urls import include
-from geonode.urls import urlpatterns
 from geonode.geoserver.helpers import ogc_server_settings
 from geoserver.catalog import Catalog
 from gisdata import BAD_DATA
 from gisdata import GOOD_DATA
 from owslib.wms import WebMapService
-from unittest import TestCase
 from urllib2 import HTTPError
 import MultipartPostHandler
 import csv
@@ -50,8 +49,8 @@ import urllib
 import urllib2
 from zipfile import ZipFile
 
-GEONODE_USER = 'admin'
-GEONODE_PASSWD = 'admin'
+GEONODE_USER = 'test_uploader'
+GEONODE_PASSWD = 'test_uploader'
 GEONODE_URL = settings.SITEURL.rstrip('/')
 GEOSERVER_URL = ogc_server_settings.LOCATION
 GEOSERVER_USER, GEOSERVER_PASSWD = ogc_server_settings.credentials
@@ -59,8 +58,13 @@ GEOSERVER_USER, GEOSERVER_PASSWD = ogc_server_settings.credentials
 logging.getLogger('south').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
-# hack the global urls to ensure we're activated locally
-urlpatterns += patterns('', (r'^upload/', include('geonode.upload.urls')))
+# create test user if needed, delete all layers and set password
+u, created = Profile.objects.get_or_create(username=GEONODE_USER)
+if created:
+    u.set_password(GEONODE_PASSWD)
+    u.save()
+else:
+    Layer.objects.filter(owner=u).delete()
 
 
 def upload_step(step=None):
@@ -76,11 +80,11 @@ def parse_cookies(cookies):
     return res
 
 
-def get_wms(version='1.1.1', layer_name=None):
+def get_wms(version='1.1.1', type_name=None):
     """ Function to return an OWSLib WMS object """
     # right now owslib does not support auth for get caps
     # requests. Either we should roll our own or fix owslib
-    url = GEOSERVER_URL + 'geonode/%s/wms' % layer_name
+    url = GEOSERVER_URL + '%s/wms?request=getcapabilities' % type_name.replace(':','/')
     return WebMapService(
         url,
         version=version,
@@ -97,19 +101,11 @@ class Client(object):
         self.url = url
         self.user = user
         self.passwd = passwd
+        self.csrf_token = None
         self.opener = self._init_url_opener()
 
     def _init_url_opener(self):
-        auth_handler = urllib2.HTTPBasicAuthHandler()
-        auth_handler.add_password(
-            realm='GeoNode realm',
-            uri='',
-            user=self.user,
-            passwd=self.passwd
-        )
-
         return urllib2.build_opener(
-            auth_handler,
             urllib2.HTTPCookieProcessor,
             MultipartPostHandler.MultipartPostHandler
         )
@@ -128,24 +124,27 @@ class Client(object):
 
     def login(self):
         """ Method to login the GeoNode site"""
-        params = {'csrfmiddlewaretoken': self.get_crsf_token(),
+        self.csrf_token = self.get_crsf_token()
+        params = {'csrfmiddlewaretoken': self.csrf_token,
                   'username': self.user,
                   'next': '/',
                   'password': self.passwd}
-        return self.make_request(
-            '/account/login/',
+        self.make_request(reverse('account_login'),
             data=urllib.urlencode(params)
         )
+        self.csrf_token = self.get_crsf_token()
 
     def upload_file(self, _file):
         """ function that uploads a file, or a collection of files, to
         the GeoNode"""
+        if not self.csrf_token:
+            self.login()
         spatial_files = ("dbf_file", "shx_file", "prj_file")
 
         base, ext = os.path.splitext(_file)
         params = {
-            'permissions': '{"anonymous": "layer_readonly", "users": []}',
-            'csrfmiddlewaretoken': self.get_crsf_token()
+            'permissions': '{}',
+            'csrfmiddlewaretoken': self.csrf_token
         }
 
         # deal with shapefiles
@@ -188,31 +187,14 @@ class Client(object):
         cookies = parse_cookies(resp.headers['set-cookie'])
         return cookies.get('csrftoken', None)
 
-    def remove_layer(self, layer_name):
-        self.login()
-        return self.make_request(
-            '/layers/geonode:' + layer_name + '/remove',
-            data={'csrfmiddlewaretoken': self.get_crsf_token()}
-        )
 
-
-class UploaderBase(TestCase):
+class UploaderBase(unittest.TestCase):
 
     settings_overrides = []
 
     @classmethod
     def setUpClass(cls):
         super(UploaderBase, cls).setUpClass()
-
-        # don't accidentally delete anyone's layers
-        if Layer.objects.all().count():
-            if 'DELETE_LAYERS' not in os.environ:
-                print
-                print 'FAIL: There are layers in the test database'
-                print 'Will not run integration tests unless `DELETE_LAYERS`'
-                print 'Is specified as an environment variable'
-                print
-                raise Exception('FAIL, SEE ABOVE')
 
         # make a test_settings module that will apply our overrides
         test_settings = ['from geonode.settings import *']
@@ -231,27 +213,33 @@ class UploaderBase(TestCase):
             'runserver',
             '--settings=integration_settings',
             '--verbosity=0']
-        # see
+        # see for details regarding os.setsid:
         # http://www.doughellmann.com/PyMOTW/subprocess/#process-groups-sessions
         cls._runserver = subprocess.Popen(
             args,
-            stderr=open(
-                'test.log',
-                'w'),
             preexec_fn=os.setsid)
 
         # await startup
         cl = Client(
             GEONODE_URL, GEONODE_USER, GEONODE_PASSWD
         )
-        for i in range(5):
+        for i in range(10):
+            time.sleep(.2)
             try:
                 cl.get_html('/')
                 break
             except:
-                time.sleep(.5)
+                pass
         if cls._runserver.poll() is not None:
             raise Exception("Error starting server, check test.log")
+
+
+        cls.client = Client(
+            GEONODE_URL, GEONODE_USER, GEONODE_PASSWD
+        )
+        cls.catalog = Catalog(
+            GEOSERVER_URL + 'rest', GEOSERVER_USER, GEOSERVER_PASSWD
+        )
 
     @classmethod
     def tearDownClass(cls):
@@ -267,24 +255,6 @@ class UploaderBase(TestCase):
     def setUp(self):
         super(UploaderBase, self).setUp()
         self._tempfiles = []
-        self.client = Client(
-            GEONODE_URL, GEONODE_USER, GEONODE_PASSWD
-        )
-        self.catalog = Catalog(
-            GEOSERVER_URL + 'rest', GEOSERVER_USER, GEOSERVER_PASSWD
-        )
-        # @todo - this is obviously the brute force approach - ideally,
-        # these cases would be more declarative and delete only the things
-        # they mess with
-        for l in Layer.objects.all():
-            try:
-                l.delete()
-            except:
-                print 'unable to delete layer', l
-        # and destroy anything left dangling on geoserver
-        cat = gs_catalog
-        map(lambda name: cascading_delete(cat, name),
-            [l.name for l in cat.get_layers()])
 
     def tearDown(self):
         super(UploaderBase, self).tearDown()
@@ -303,31 +273,33 @@ class UploaderBase(TestCase):
             resp.headers['content-type'].startswith('text/html')
         )
 
-    def check_layer_geoserver_caps(self, original_name):
+    def check_layer_geoserver_caps(self, type_name):
         """ Check that a layer shows up in GeoServer's get
         capabilities document """
         # using owslib
-        wms = get_wms(layer_name=original_name)
-        self.assertTrue(original_name in wms.contents,
-                        '%s is not in %s' % (original_name, wms.contents))
+        wms = get_wms(type_name=type_name)
+        ws, layer_name = type_name.split(':')
+        self.assertTrue(layer_name in wms.contents,
+                        '%s is not in %s' % (layer_name, wms.contents))
 
-    def check_layer_geoserver_rest(self, original_name):
+    def check_layer_geoserver_rest(self, layer_name):
         """ Check that a layer shows up in GeoServer rest api after
         the uploader is done"""
         # using gsconfig to test the geoserver rest api.
-        layer = self.catalog.get_layer(original_name)
+        layer = self.catalog.get_layer(layer_name)
         self.assertIsNotNone(layer is not None)
 
     def check_and_pass_through_timestep(self):
-        raise Exception('not implemented')
-        # redirect_to = data['redirect_to']
-        # self.assertEquals(redirect_to, upload_step('time'))
-        # resp = self.client.make_request(upload_step('time'))
-        # self.assertEquals(resp.code, 200)
-        # data = {'csrfmiddlewaretoken': self.client.get_crsf_token()}
-        # resp = self.client.make_request(upload_step('time'), data)
-        # data = json.loads(resp.read())
-        # return resp, data
+        redirect_to = data['redirect_to']
+        if redirect_to == '/data/upload/srs':
+            resp = self.client.make_request(redirect_to)
+        else:
+            self.assertEquals(redirect_to, '/data/upload/time')
+        resp = self.client.make_request('/data/upload/time')
+        self.assertEquals(resp.code, 200)
+        resp = self.client.make_request('/data/upload/time', data, ajax=True)
+        data = json.loads(resp.read())
+        return resp, data
 
     def complete_raster_upload(self, file_path, resp, data):
         return self.complete_upload(file_path, resp, data, is_raster=True)
@@ -397,6 +369,7 @@ class UploaderBase(TestCase):
         self.assertEquals(resp.code, 200)
         c = resp.read()
         url = json.loads(c)['url']
+        url = urllib.unquote(url)
         # and the final page should redirect to the layer page
         # @todo - make the check match completely (endswith at least)
         # currently working around potential 'orphaned' db tables
@@ -421,10 +394,17 @@ class UploaderBase(TestCase):
         # @todo use the original_name
         # currently working around potential 'orphaned' db tables
         # this grabs the name from the url (it might contain a 0)
-        original_name = os.path.basename(layer_page).split(':')[1]
-        self.check_layer_geoserver_caps(original_name)
-        self.check_layer_geoserver_rest(original_name)
-        self.check_upload_model(original_name)
+        type_name = os.path.basename(layer_page)
+        layer_name = type_name.split(':')[1]
+        # seems like acl caching
+        for i in range(10):
+            time.sleep(.1)
+            try:
+                self.check_layer_geoserver_caps(type_name)
+            except:
+                pass
+        self.check_layer_geoserver_rest(layer_name)
+        self.check_upload_model(layer_name)
 
     def check_invalid_projection(self, layer_name, resp, data):
         """ Makes sure that we got the correct response from an layer
@@ -448,7 +428,6 @@ class UploaderBase(TestCase):
             _, ext = os.path.splitext(_file)
             return (ext.lower() in mains)
 
-        self.client.login()
         main_files = filter(is_main, os.listdir(folder))
         for main in main_files:
             # get the abs path to the file
@@ -459,7 +438,6 @@ class UploaderBase(TestCase):
             final_check(base, resp, data)
 
     def upload_file(self, fname, final_check, check_name=None):
-        self.client.login()
         if not check_name:
             check_name, _ = os.path.splitext(fname)
         resp, data = self.client.upload_file(fname)
@@ -493,9 +471,7 @@ class UploaderBase(TestCase):
 
 
 class TestUpload(UploaderBase):
-    settings_overrides = [
-        ("OGC_SERVER['default']['DATASTORE']", False)
-    ]
+    settings_overrides = []
 
     def test_shp_upload(self):
         """ Tests if a vector layer can be upload to a running GeoNode GeoServer"""
@@ -544,8 +520,6 @@ class TestUpload(UploaderBase):
         if unsupported_path.endswith('.pyc'):
             unsupported_path = unsupported_path.rstrip('c')
 
-        self.client.login()  # make sure the client is logged in
-
         with self.assertRaises(HTTPError):
             self.client.upload_file(unsupported_path)
 
@@ -554,27 +528,23 @@ class TestUpload(UploaderBase):
         csv_file = self.make_csv(
             ['lat', 'lon', 'thing'], ['-100', '-40', 'foo'])
         layer_name, ext = os.path.splitext(os.path.basename(csv_file))
-        self.client.login()
         resp, data = self.client.upload_file(csv_file)
         self.assertTrue('success' in data)
         self.assertTrue(data['success'])
         self.assertTrue(data['redirect_to'], "/upload/csv")
 
 
-class TestUploadDBDataStore(TestUpload):
+@unittest.skipUnless(ogc_server_settings.datastore_db, 'Vector datastore not enabled')
+class TestUploadDBDataStore(UploaderBase):
 
     settings_overrides = []
 
-    @unittest.skipUnless(
-        ogc_server_settings.datastore_db and _ALLOW_TIME_STEP,
-        "Vector datastore or time not enabled.")
     def test_csv(self):
         """Override the baseclass test and verify a correct CSV upload"""
 
         csv_file = self.make_csv(
             ['lat', 'lon', 'thing'], ['-100', '-40', 'foo'])
         layer_name, ext = os.path.splitext(os.path.basename(csv_file))
-        self.client.login()
         resp, form_data = self.client.upload_file(csv_file)
         self.check_save_step(resp, form_data)
         csv_step = form_data['redirect_to']
@@ -603,14 +573,10 @@ class TestUploadDBDataStore(TestUpload):
 
         self.check_layer_complete(url, layer_name)
 
-    @unittest.skipUnless(
-        ogc_server_settings.datastore_db and _ALLOW_TIME_STEP,
-        "Vector datastore or time not enabled.")
     def test_time(self):
-        """Verify that uploading time based csv files works properly"""
+        """Verify that uploading time based shapefile works properly"""
 
         timedir = os.path.join(GOOD_DATA, 'time')
-        self.client.login()
         layer_name = 'boxes_with_date'
         shp = os.path.join(timedir, '%s.shp' % layer_name)
 
@@ -639,6 +605,6 @@ class TestUploadDBDataStore(TestUpload):
 
         self.check_layer_complete(url, layer_name)
         # verify our 100 timestamps appear in the WMS caps doc
-        wms = get_wms(layer_name=layer_name)
+        wms = Layer.objects.get(layer_name).metadata()
         layer_info = wms.items()[0][1]
         self.assertEquals(100, len(layer_info.timepositions))
