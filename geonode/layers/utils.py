@@ -540,12 +540,12 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url=None):
         # update database and save new thumbnail file on disk:
         instance.thumbnail_set.all().delete()
         thumbnail = Thumbnail(thumb_spec=thumbnail_remote_url)
+        instance.thumbnail_set.add(thumbnail)
         thumbnail.thumb_file.save(
             'layer-%s-thumb.png' %
             instance.id,
             ContentFile(image))
         thumbnail.save()
-        instance.thumbnail_set.add(thumbnail)
 
         thumbnail_url = urljoin(
             settings.SITEURL,
