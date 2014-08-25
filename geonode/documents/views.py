@@ -1,7 +1,7 @@
 import json, os
 
 from django.shortcuts import render_to_response, get_object_or_404,render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
@@ -43,7 +43,7 @@ _PERMISSION_MSG_VIEW = _("You are not permitted to view this document")
 def _resolve_document(request, docid, permission='layers.change_layer',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
     '''
-    Resolve the layer by the provided typename and check the optional permission.
+    Resolve the document by the provided primary key and check the optional permission.
     '''
     return resolve_object(request, Document, {'pk':docid},
                           permission = permission, permission_msg=msg, **kwargs)
@@ -70,25 +70,52 @@ def document_detail(request, docid):
     """
     The view that show details of each document
     """
-    document = get_object_or_404(Document, pk=docid)
-    if not request.user.has_perm('documents.view_document', obj=document):
-        return HttpResponse(loader.render_to_string('401.html',
-            RequestContext(request, {'error_message':
-                _("You are not allowed to view this document.")})), status=403)
+    document = None
     try:
-        related = document.content_type.get_object_for_this_type(id=document.object_id)
-    except:
-        related = ''
+        document = _resolve_document(
+            request,
+            docid,
+            'documents.view_document',
+            _PERMISSION_MSG_VIEW)
 
-    document.popular_count += 1
-    document.save()
+    except Http404:
+        return HttpResponse(
+            loader.render_to_string(
+                '404.html', RequestContext(
+                    request, {
+                        })), status=404)
 
-    return render_to_response("documents/document_detail.html", RequestContext(request, {
-        'permissions_json': json.dumps(_perms_info(document, DOCUMENT_LEV_NAMES)),
-        'document': document,
-        'imgtypes': IMGTYPES,
-        'related': related
-    }))
+    except PermissionDenied:
+        return HttpResponse(
+            loader.render_to_string(
+                '401.html', RequestContext(
+                    request, {
+                        'error_message': _("You are not allowed to view this document.")})), status=403)
+
+    if document is None:
+        return HttpResponse(
+            'An unknown error has occured.',
+            mimetype="text/plain",
+            status=401
+        )
+
+    else:
+
+        try:
+            related = document.content_type.get_object_for_this_type(id=document.object_id)
+        except:
+            related = ''
+
+        document.popular_count += 1
+        document.save()
+
+        return render_to_response("documents/document_detail.html", RequestContext(request, {
+            'permissions_json': json.dumps(_perms_info(document, DOCUMENT_LEV_NAMES)),
+            'document': document,
+            'imgtypes': IMGTYPES,
+            'related': related
+        }))
+
 
 def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)
@@ -138,7 +165,34 @@ def document_upload(request):
 
 @login_required
 def document_metadata(request, docid, template='documents/document_metadata.html'):
-    document = Document.objects.get(id=docid)
+    document = None
+    try:
+        document = _resolve_document(
+            request,
+            docid,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_METADATA)
+
+    except Http404:
+        return HttpResponse(
+            loader.render_to_string(
+                '404.html', RequestContext(
+                    request, {
+                        })), status=404)
+
+    except PermissionDenied:
+        return HttpResponse(
+            loader.render_to_string(
+                '401.html', RequestContext(
+                    request, {
+                        'error_message': _("You are not allowed to edit this document.")})), status=403)
+
+    if document is None:
+        return HttpResponse(
+            'An unknown error has occured.',
+            mimetype="text/plain",
+            status=401
+        )
 
     poc = document.poc
     metadata_author = document.metadata_author
