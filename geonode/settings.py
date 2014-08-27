@@ -369,7 +369,6 @@ ACTSTREAM_SETTINGS = {
 }
 
 # Settings for Social Apps
-AUTH_PROFILE_MODULE = 'people.Profile'
 REGISTRATION_OPEN = False
 
 # Email for users to contact admins.
