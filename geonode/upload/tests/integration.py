@@ -18,7 +18,11 @@
 #########################################################################
 """
 See the README.rst in this directory for details on running these tests.
-@todo allow using a database other than `development.db`
+@todo allow using a database other than `development.db` - for some reason, a
+      test db is not created when running using normal settings
+@todo when using database settings, a test database is used and this makes it
+      difficult for cleanup to track the layers created between runs
+@todo only test_time seems to work correctly with database backend test settings
 """
 import os.path
 from bs4 import BeautifulSoup
@@ -29,6 +33,7 @@ from geonode.people.models import Profile
 from geonode.upload.models import Upload
 from geonode.upload.views import _ALLOW_TIME_STEP
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.geoserver.helpers import cascading_delete
 from geoserver.catalog import Catalog
 from gisdata import BAD_DATA
 from gisdata import GOOD_DATA
@@ -72,19 +77,11 @@ def upload_step(step=None):
     return step
 
 
-def parse_cookies(cookies):
-    res = {}
-    for part in cookies.split(';'):
-        key, value = part.split('=')
-        res[key] = value
-    return res
-
-
 def get_wms(version='1.1.1', type_name=None):
     """ Function to return an OWSLib WMS object """
     # right now owslib does not support auth for get caps
     # requests. Either we should roll our own or fix owslib
-    url = GEOSERVER_URL + '%s/wms?request=getcapabilities' % type_name.replace(':','/')
+    url = GEOSERVER_URL + '%s/wms?request=getcapabilities' % type_name.replace(':', '/')
     return WebMapService(
         url,
         version=version,
@@ -105,34 +102,44 @@ class Client(object):
         self.opener = self._init_url_opener()
 
     def _init_url_opener(self):
+        self.cookies = urllib2.HTTPCookieProcessor()
         return urllib2.build_opener(
-            urllib2.HTTPCookieProcessor,
+            self.cookies,
             MultipartPostHandler.MultipartPostHandler
         )
 
-    def make_request(self, path, data=None, ajax=False):
+    def make_request(self, path, data=None, ajax=False, debug=True):
         url = path if path.startswith("http") else self.url + path
         req = urllib2.Request(
             url=url, data=data
         )
         if ajax:
             req.add_header('X_REQUESTED_WITH', 'XMLHttpRequest')
-        return self.opener.open(req)
+        try:
+            return self.opener.open(req)
+        except urllib2.HTTPError, ex:
+            if not debug:
+                raise
+            print 'error in request to %s' % path
+            print ex.reason
+            print ex.read()
+            raise
 
-    def get(self, path):
-        return self.make_request(path)
+    def get(self, path, debug=True):
+        return self.make_request(path, debug=debug)
 
     def login(self):
         """ Method to login the GeoNode site"""
-        self.csrf_token = self.get_crsf_token()
+        self.csrf_token = self.get_csrf_token()
         params = {'csrfmiddlewaretoken': self.csrf_token,
                   'username': self.user,
                   'next': '/',
                   'password': self.passwd}
-        self.make_request(reverse('account_login'),
+        self.make_request(
+            reverse('account_login'),
             data=urllib.urlencode(params)
         )
-        self.csrf_token = self.get_crsf_token()
+        self.csrf_token = self.get_csrf_token()
 
     def upload_file(self, _file):
         """ function that uploads a file, or a collection of files, to
@@ -143,7 +150,8 @@ class Client(object):
 
         base, ext = os.path.splitext(_file)
         params = {
-            'permissions': '{}',
+            # make public since wms client doesn't do authentication
+            'permissions': '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
             'csrfmiddlewaretoken': self.csrf_token
         }
 
@@ -168,24 +176,25 @@ class Client(object):
                 resp.getcode(),
                 data)
 
-    def get_html(self, path):
+    def get_html(self, path, debug=True):
         """ Method that make a get request and passes the results to bs4
         Takes a path and returns a tuple
         """
-        resp = self.get(path)
+        resp = self.get(path, debug)
         return resp, BeautifulSoup(resp.read())
 
     def get_json(self, path):
         resp = self.get(path)
         return resp, json.loads(resp.read())
 
-    def get_crsf_token(self):
-        """ Method that makes a request against the home page to get
-        the csrf token from the request cookies
+    def get_csrf_token(self, last=False):
+        """Get a csrf_token from the home page or read from the cookie jar
+        based on the last response
         """
-        resp = self.get('/')
-        cookies = parse_cookies(resp.headers['set-cookie'])
-        return cookies.get('csrftoken', None)
+        if not last:
+            self.get('/')
+        csrf = [c for c in self.cookies.cookiejar if c.name == 'csrftoken']
+        return csrf[0].value if csrf else None
 
 
 class UploaderBase(unittest.TestCase):
@@ -198,7 +207,8 @@ class UploaderBase(unittest.TestCase):
 
         # make a test_settings module that will apply our overrides
         test_settings = ['from geonode.settings import *']
-        if os.path.exists('geonode/upload/tests/test_settings.py'):
+        using_test_settings = os.getenv('DJANGO_SETTINGS_MODULE') == 'geonode.upload.tests.test_settings'
+        if using_test_settings:
             test_settings.append(
                 'from geonode.upload.tests.test_settings import *')
         for so in cls.settings_overrides:
@@ -226,13 +236,12 @@ class UploaderBase(unittest.TestCase):
         for i in range(10):
             time.sleep(.2)
             try:
-                cl.get_html('/')
+                cl.get_html('/', debug=False)
                 break
             except:
                 pass
         if cls._runserver.poll() is not None:
             raise Exception("Error starting server, check test.log")
-
 
         cls.client = Client(
             GEONODE_URL, GEONODE_USER, GEONODE_PASSWD
@@ -289,15 +298,16 @@ class UploaderBase(unittest.TestCase):
         layer = self.catalog.get_layer(layer_name)
         self.assertIsNotNone(layer is not None)
 
-    def check_and_pass_through_timestep(self):
-        redirect_to = data['redirect_to']
-        if redirect_to == '/data/upload/srs':
+    def check_and_pass_through_timestep(self, redirect_to):
+        time_step = upload_step('time')
+        if redirect_to == upload_step('srs'):
             resp = self.client.make_request(redirect_to)
         else:
-            self.assertEquals(redirect_to, '/data/upload/time')
-        resp = self.client.make_request('/data/upload/time')
+            self.assertEquals(redirect_to, time_step)
+        resp = self.client.make_request(time_step)
+        token = self.client.get_csrf_token(True)
         self.assertEquals(resp.code, 200)
-        resp = self.client.make_request('/data/upload/time', data, ajax=True)
+        resp = self.client.make_request(time_step, {'csrfmiddlewaretoken': token}, ajax=True)
         data = json.loads(resp.read())
         return resp, data
 
@@ -340,8 +350,8 @@ class UploaderBase(unittest.TestCase):
             layer_name,
             is_raster=False,
             skip_srs=False):
-        if (not is_raster and _ALLOW_TIME_STEP):
-            resp, data = self.check_and_pass_through_timestep()
+        if not is_raster and _ALLOW_TIME_STEP:
+            resp, data = self.check_and_pass_through_timestep(current_step)
             self.assertEquals(resp.code, 200)
             self.assertTrue(
                 data['success'],
@@ -396,21 +406,22 @@ class UploaderBase(unittest.TestCase):
         # this grabs the name from the url (it might contain a 0)
         type_name = os.path.basename(layer_page)
         layer_name = type_name.split(':')[1]
-        # seems like acl caching
+        # work around acl caching on geoserver side of things
+        caps_found = False
         for i in range(10):
-            time.sleep(.1)
+            time.sleep(.5)
             try:
                 self.check_layer_geoserver_caps(type_name)
+                caps_found = True
             except:
                 pass
+        self.assertTrue(caps_found)
         self.check_layer_geoserver_rest(layer_name)
         self.check_upload_model(layer_name)
 
     def check_invalid_projection(self, layer_name, resp, data):
         """ Makes sure that we got the correct response from an layer
         that can't be uploaded"""
-        if _ALLOW_TIME_STEP:
-            resp, data = self.check_and_pass_through_timestep()
         self.assertTrue(resp.code, 200)
         self.assertTrue(data['success'])
         self.assertEquals(upload_step("srs"), data['redirect_to'])
@@ -552,15 +563,12 @@ class TestUploadDBDataStore(UploaderBase):
         form_data = dict(
             lat='lat',
             lng='lon',
-            csrfmiddlewaretoken=self.client.get_crsf_token())
+            csrfmiddlewaretoken=self.client.get_csrf_token())
         resp = self.client.make_request(csv_step, form_data)
         content = json.loads(resp.read())
 
-        if not content.get('url') and content.get(
-                'redirect_to',
-                csv_step) == upload_step('final'):
-            resp = self.client.get(content.get('redirect_to'))
-            content = json.loads(resp.read())
+        resp = self.client.get(content.get('redirect_to'))
+        content = json.loads(resp.read())
 
         url = content.get('url')
 
@@ -575,6 +583,7 @@ class TestUploadDBDataStore(UploaderBase):
 
     def test_time(self):
         """Verify that uploading time based shapefile works properly"""
+        cascading_delete(self.catalog, 'boxes_with_date')
 
         timedir = os.path.join(GOOD_DATA, 'time')
         layer_name = 'boxes_with_date'
@@ -589,13 +598,18 @@ class TestUploadDBDataStore(UploaderBase):
 
         resp, data = self.client.get_html(upload_step('time'))
         self.assertEquals(resp.code, 200)
-        data = dict(csrfmiddlewaretoken=self.client.get_crsf_token(),
+        data = dict(csrfmiddlewaretoken=self.client.get_csrf_token(),
                     time_attribute='date',
                     presentation_strategy='LIST',
                     )
         resp = self.client.make_request(upload_step('time'), data)
 
+        url = json.loads(resp.read())['redirect_to']
+
+        resp = self.client.make_request(url, data)
+
         url = json.loads(resp.read())['url']
+
         self.assertTrue(
             url.endswith(layer_name),
             'expected url to end with %s, but got %s' %
@@ -603,8 +617,8 @@ class TestUploadDBDataStore(UploaderBase):
              url))
         self.assertEquals(resp.code, 200)
 
+        url = urllib.unquote(url)
         self.check_layer_complete(url, layer_name)
-        # verify our 100 timestamps appear in the WMS caps doc
-        wms = Layer.objects.get(layer_name).metadata()
+        wms = get_wms(type_name='geonode:%s' % layer_name)
         layer_info = wms.items()[0][1]
         self.assertEquals(100, len(layer_info.timepositions))
