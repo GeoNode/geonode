@@ -22,7 +22,7 @@ import shutil
 import tempfile
 import zipfile
 import geonode.upload.files as files
-from django.test import TestCase
+from unittest import TestCase
 from geonode.upload.files import SpatialFiles, scan_file
 from geonode.upload.files import _rename_files, _contains_bad_names
 
@@ -124,3 +124,45 @@ class FilesTests(TestCase):
             for f in file_names:
                 path = os.path.join(basedir, '_%s' % f)
                 self.assertTrue(os.path.exists(path))
+
+
+class TimeFormFormTest(TestCase):
+
+    def _form(self, data):
+        # prevent circular deps error - not sure why this module was getting
+        # imported during normal runserver execution but it was...
+        from geonode.upload.forms import TimeForm
+        return TimeForm(
+            data,
+            time_names=['start_date', 'end_date'],
+            text_names=['start_text', 'end_text'],
+            year_names=['start_year', 'end_year']
+        )
+
+    def assert_start_end(self, data, start, end=None):
+        form = self._form(data)
+        self.assertTrue(form.is_valid())
+        if start:
+            self.assertEqual(start, form.cleaned_data['start_attribute'])
+        if end:
+            self.assertEqual(end, form.cleaned_data['end_attribute'])
+
+    def test_invalid_form(self):
+        form = self._form(dict(time_attribute='start_date', text_attribute='start_text'))
+        self.assertTrue(not form.is_valid())
+
+    def test_start_end_attribute_and_type(self):
+        self.assert_start_end(
+            dict(time_attribute='start_date'),
+            ('start_date', 'Date')
+        )
+        self.assert_start_end(
+            dict(text_attribute='start_text', end_year_attribute='end_year'),
+            ('start_text', 'Text'),
+            ('end_year', 'Number')
+        )
+        self.assert_start_end(
+            dict(year_attribute='start_year', end_time_attribute='end_date'),
+            ('start_year', 'Number'),
+            ('end_date', 'Date')
+        )
