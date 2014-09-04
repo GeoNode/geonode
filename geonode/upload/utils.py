@@ -65,12 +65,13 @@ def create_geoserver_db_featurestore(store_type=None, store_name=None):
             db = ogc_server_settings.datastore_db
             ds.connection_parameters.update(
                 host=db['HOST'],
-                port=db['PORT'],
+                port=db['PORT'] or '5432',
                 database=db['NAME'],
                 user=db['USER'],
                 passwd=db['PASSWORD'],
                 dbtype='postgis')
             cat.save(ds)
             ds = cat.get_store(dsname)
+            assert ds.enabled
 
     return ds

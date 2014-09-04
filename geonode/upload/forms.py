@@ -21,6 +21,7 @@ import files
 import tempfile
 from django import forms
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from geonode.layers.forms import JSONField
 from geonode.upload.models import UploadFile
 from geonode.geoserver.helpers import ogc_server_settings
@@ -131,13 +132,18 @@ class TimeForm(forms.Form):
         self._build_choice('end_time_attribute', time_names)
         self._build_choice('text_attribute', text_names)
         self._build_choice('end_text_attribute', text_names)
+        widget = forms.TextInput(attrs={'placeholder': 'Custom Format'})
         if text_names:
             self.fields['text_attribute_format'] = forms.CharField(
-                required=False)
+                required=False, widget=widget)
             self.fields['end_text_attribute_format'] = forms.CharField(
-                required=False)
+                required=False, widget=widget)
         self._build_choice('year_attribute', year_names)
         self._build_choice('end_year_attribute', year_names)
+
+    def _resolve_attribute_and_type(self, *name_and_types):
+        return [(self.cleaned_data[n], t) for n, t in name_and_types
+                if self.cleaned_data.get(n, None)]
 
     def _build_choice(self, att, names):
         if names:
@@ -145,6 +151,28 @@ class TimeForm(forms.Form):
             choices = [('', '<None>')] + [(a, a) for a in names]
             self.fields[att] = forms.ChoiceField(
                 choices=choices, required=False)
+
+    def clean(self):
+        starts = self._resolve_attribute_and_type(
+            ('time_attribute', 'Date'),
+            ('text_attribute', 'Text'),
+            ('year_attribute', 'Number'),
+        )
+        if len(starts) > 1:
+            raise ValidationError('multiple start attributes')
+        ends = self._resolve_attribute_and_type(
+            ('end_time_attribute', 'Date'),
+            ('end_text_attribute', 'Text'),
+            ('end_year_attribute', 'Number'),
+        )
+        if len(ends) > 1:
+            raise ValidationError('multiple end attributes')
+        if len(starts) > 0:
+            self.cleaned_data['start_attribute'] = starts[0]
+        if len(ends) > 0:
+            self.cleaned_data['end_attribute'] = ends[0]
+        return self.cleaned_data
+
     # @todo implement clean
 
 
