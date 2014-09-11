@@ -75,9 +75,9 @@ geonode_client_target_war = path('webapps/geonode-client.war')
 
 deploy_req_txt = """
 # NOTE... this file is generated
--r %(venv)s/shared/requirements.txt
--e %(venv)s/src/GeoNodePy
-""" % locals()
+-r %s/shared/requirements.txt
+-e %s/src/GeoNodePy
+""" % (os.getcwd(), os.getcwd())
 
 @task
 def auto(options):
@@ -97,7 +97,7 @@ def fix_geos_version(options):
     import fileinput
     oldline = "ver = geos_version()"
     newline = "ver = geos_version().decode().split(' ')[0]"
-    for line in fileinput.input('lib/python2.7/site-packages/django/contrib/gis/geos/libgeos.py', inplace=True):
+    for line in fileinput.input(path(os.environ['VIRTUAL_ENV']) / 'lib/python2.7/site-packages/django/contrib/gis/geos/libgeos.py', inplace=True):
         if oldline in line and newline not in line:
             line = line.replace(oldline,newline)
         print line,
@@ -114,6 +114,7 @@ def install_deps(options):
              'Use "paver bundle_deps" to create an install bundle')
         pip_install("-r shared/%s" % options.config.corelibs)
         pip_install("-r shared/%s" % options.config.devlibs)
+        pip_install('-e %s' %(path("src/GeoNodePy")))
         if options.config.platform == "win32":
             info("You will need to install 'PIL' and 'ReportLab' " \
                  "separately to do PDF generation")
@@ -162,7 +163,7 @@ def install_25_deps(options):
 @needs(['install_deps'])
 def post_bootstrap(options):
     """installs the current package"""
-    pip = path(options.config.bin) / "pip"
+    pip = "pip"
     sh('%s install -e %s' %(pip, path("src/GeoNodePy")))
 
 
@@ -364,9 +365,9 @@ def package_webapp(options):
     with pushd('src/GeoNodePy'):
         sh('python setup.py egg_info sdist')
 
-    req_file = options.deploy.req_file
+    req_file = path(os.getcwd()) / options.deploy.req_file
     req_file.write_text(deploy_req_txt)
-    pip_bundle("-r %s %s/geonode-webapp.pybundle" % (req_file, options.deploy.out_dir))
+    pip_bundle("-r %s %s/geonode-webapp.pybundle" % (req_file, path(os.getcwd()) / options.deploy.out_dir))
 
 
 @task
@@ -517,7 +518,7 @@ def pip(*args):
         error("**ATTENTION**: Update your 'pip' to at least 0.6")
         raise
 
-    full_path_pip = options.config.bin / 'pip'
+    full_path_pip =  'pip'
 
     sh("%(env)s %(cmd)s %(args)s" % {
         "env": options.config.pip_flags,
@@ -549,7 +550,7 @@ def install_sphinx_conditionally(options):
     try:
         import sphinx
     except ImportError:
-        sh("%s install sphinx" % (options.config.bin / 'pip'))
+        sh("%s install sphinx" % ('pip'))
 
         # have to reload doctools so it will realize sphinx is now
         # available

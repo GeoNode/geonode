@@ -510,7 +510,7 @@ def set_layer_permissions(layer, perm_spec, use_email = False):
                 try:
                     user_obj = _create_new_user(useremail, layer.title, reverse('geonode.maps.views.layer_detail', args=(layer.typename,)), layer.owner_id)
                 except:
-                    logger.error("Could not create new user with email address of %s" % useremail)
+                    logger.info("Could not create new user with email address of %s" % useremail)
             if user_obj:
                 layer.set_user_level(user_obj, level)
     else:
@@ -540,7 +540,7 @@ def set_map_permissions(m, perm_spec, use_email = False):
                 try:
                     user_obj = _create_new_user(useremail, m.title, reverse('geonode.maps.views.view', args=[m.id]), m.owner_id)
                 except:
-                    logger.error("Could not create new user with email address of %s" % useremail)
+                    logger.info("Could not create new user with email address of %s" % useremail)
             if user_obj:
                 m.set_user_level(user_obj, level)
     else:
@@ -823,68 +823,6 @@ def view(request, mapid, snapshot=None):
         'editmap': config['edit_map']
     }))
 
-
-def ajax_start_twitter(request):
-    from boto.ec2.connection import EC2Connection
-    try:
-        ec2 = EC2Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
-        twitterInstance = ec2.get_all_instances(instance_ids=[settings.AWS_INSTANCE_ID])[0].instances[0]
-        twitterInstance.start()
-        instanceStarted = False
-        while not instanceStarted:
-            try:
-                twitterInstance.use_ip(settings.AWS_INSTANCE_IP)
-                instanceStarted = True
-            except:
-                pass
-        return HttpResponse(
-            status=200
-        )
-    except Exception, e:
-        return HttpResponse(
-            status=500
-        )
-
-# def chawellness(request, snapshot=None):
-#     '''
-#         Custom view for a particular map
-#     '''
-#     map_obj = get_object_or_404(Map,urlsuffix="CHAwellness")
-#     config = map_obj.viewer_json(request.user)  
-#     
-#     if snapshot is None:
-#         config = map_obj.viewer_json(request.user)
-#     else:
-#         config = snapshot_config(snapshot, map_obj, request.user)
-# 
-#     first_visit = True
-#     if request.session.get('visit' + str(map_obj.id), False):
-#         first_visit = False
-#     else:
-#         request.session['visit' + str(map_obj.id)] = True
-# 
-#     mapstats, created = MapStats.objects.get_or_create(map=map_obj)
-#     mapstats.visits += 1
-#     if created or first_visit:
-#             mapstats.uniques+=1
-#     mapstats.save()
-# 
-#     #Remember last visited map
-#     request.session['lastmap'] = map_obj.id
-#     request.session['lastmapTitle'] = map_obj.title
-# 
-#     config['first_visit'] = first_visit
-#     config['uid'] = request.user.id
-#     config['edit_map'] = request.user.has_perm('maps.change_map', obj=map_obj)
-#     config['topic_categories'] = category_list()    
-#     
-#     return render_to_response("maps/CHAwellness.html", RequestContext(request, {
-#         'config': json.dumps(config),
-#         'GOOGLE_API_KEY' : settings.GOOGLE_API_KEY,
-#         'GEOSERVER_BASE_URL' : settings.GEOSERVER_BASE_URL,
-#         'maptitle': map_obj.title,
-#         'urlsuffix': get_suffix_if_custom(map_obj)
-#         }))      
 
 def tweetview(request):
     map = get_object_or_404(Map,urlsuffix="tweetmap")
@@ -2203,7 +2141,7 @@ def batch_permissions(request, use_email=False):
                         try:
                             user_obj = _create_new_user(user, lyr.title, reverse('geonode.maps.views.layer_detail', args=(lyr.typename,)), lyr.owner_id)
                         except:
-                            logger.error("Could not create new user with email of %s" % user)
+                            logger.info("Could not create new user with email of %s" % user)
                     if user_level not in valid_perms:
                         user_level = "_none"
                     if user_obj:
@@ -2260,7 +2198,7 @@ def batch_permissions(request, use_email=False):
                             try:
                                 user_obj = _create_new_user(user, m.title, reverse('geonode.maps.views.view', args=[m.id]), m.owner_id)
                             except:
-                                logger.error("Could not create new user with email of %s" % user)
+                                logger.info("Could not create new user with email of %s" % user)
                         if user_obj:
                             m.set_user_level(userObject, user_level)
                     else:
