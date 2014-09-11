@@ -17,7 +17,7 @@ class DataverseInfo(models.Model):
     dv_user_email = models.EmailField(db_index=True)
 
     # dataset url
-    dataset_url = models.URLField(max_length=255, blank=True)
+    return_to_dataverse_url = models.URLField(max_length=255, blank=True)
     
     # dataverse info
     dataverse_name = models.CharField(max_length=255, db_index=True)
