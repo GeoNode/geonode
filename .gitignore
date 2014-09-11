@@ -1,3 +1,5 @@
+/src/GeoNodePy/geonode/local_settings.py
+
 # build artifacts
 *.pyc
 *.egg-info
