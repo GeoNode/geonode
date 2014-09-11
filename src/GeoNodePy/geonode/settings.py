@@ -140,6 +140,7 @@ INSTALLED_APPS = (
     #'debug_toolbar',
 
     #DVN apps
+    'geonode.dataverse_info',
     'geonode.dvn',
     'geonode.classification',
 

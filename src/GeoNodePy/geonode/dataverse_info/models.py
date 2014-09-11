@@ -26,15 +26,14 @@ class DataverseInfo(models.Model):
     # dataset info
     doi = models.CharField('DOI', max_length=255, blank=True)
     dataset_id = models.IntegerField(default=-1)  # for API calls.  
-    dataset_version_id = models.IntegerField(default=-1)  # for API calls.
+    dataset_version_id = models.CharField(max_length=25)  # for API calls.
     dataset_name = models.CharField(max_length=255, blank=True)  # for display
     dataset_description = models.TextField(blank=True) 
 
     # datafile info
-    datafile_label = models.CharField(max_length=255)  
+    datafile_label = models.CharField(max_length=255, help_text='original file name')  
     datafile_description = models.TextField(blank=True)   
-    
-    
+        
     # timestamps
     created = models.DateTimeField(auto_now_add=True) 
     modified = models.DateTimeField(auto_now=True)
