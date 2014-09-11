@@ -1,0 +1,198 @@
+[
+    {
+        "pk": 1,
+        "model": "people.downloadformatmetadata",
+        "fields": {
+            "name": "Atom"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "people.downloadformatmetadata",
+        "fields": {
+            "name": "DIF"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "people.downloadformatmetadata",
+        "fields": {
+            "name": "Dublin Core"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "people.downloadformatmetadata",
+        "fields": {
+            "name": "ebRIM"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "people.downloadformatmetadata",
+        "fields": {
+            "name": "FGDC"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "people.downloadformatmetadata",
+        "fields": {
+            "name": "TC211"
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "people.downloadformatvector", 
+        "fields": {
+            "name": "JPEG" 
+        }
+    },
+    {
+        "pk": 2,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "PDF"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "PNG"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "Zipped Shapefile"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "GLM 2.0"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "GML 3.1.1"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "CSV"
+        }
+    },
+    {
+        "pk": 8,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "Excel"
+        }
+    },
+    {
+        "pk": 9,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "GeoJSON"
+        }
+    },
+    {
+        "pk": 10,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "KML"
+        }
+    },
+    {
+        "pk": 11,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "View in Google Earth"
+        }
+    },
+    {
+        "pk": 12,
+        "model": "people.downloadformatvector",
+        "fields": {
+            "name": "Tiles"
+        }
+    },
+   {
+        "pk": 1,
+        "model": "people.downloadformatraster",
+        "fields": {
+            "name": "JPEG"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "people.downloadformatraster",
+        "fields": {
+            "name": "PDF"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "people.downloadformatraster",
+        "fields": {
+            "name": "PNG"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "people.downloadformatraster",
+        "fields": {
+            "name": "ArcGrid"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "people.downloadformatraster",
+        "fields": {
+            "name": "GeoTIFF"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "people.downloadformatraster",
+        "fields": {
+            "name": "Gtopo30"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "people.downloadformatraster",
+        "fields": {
+            "name": "ImageMosaic"
+        }
+    },
+    {
+        "pk": 8,
+        "model": "people.downloadformatraster",
+        "fields": {
+            "name": "KML"
+        }
+    },
+    {
+        "pk": 9,
+        "model": "people.downloadformatraster",
+        "fields": {
+            "name": "View in Google Earth"
+        }
+    },
+    {
+        "pk": 10,
+        "model": "people.downloadformatraster",
+        "fields": {
+            "name": "Tiles"
+        }
+    }
+] 

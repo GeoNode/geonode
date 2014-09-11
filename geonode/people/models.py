@@ -29,6 +29,54 @@ from taggit.managers import TaggableManager
 from geonode.base.enumerations import COUNTRIES
 
 
+class DownloadFormatMetadata(models.Model):
+    """Download Formats for Metadata Used in User Prefernces"""
+
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return u"%s" % (self.name)
+
+    def class_name(value):
+        return value.__class__.__name__
+
+    class Meta:
+        ordering = ("name", )
+        verbose_name_plural = 'Download Formats, Metadata'
+
+
+class DownloadFormatVector(models.Model):
+    """Download Formats for Vector Layers Used in User Prefernces"""
+
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return u"%s" % (self.name)
+
+    def class_name(value):
+        return value.__class__.__name__
+
+    class Meta:
+        ordering = ("name", )
+        verbose_name_plural = 'Download Formats, Vector'
+
+
+class DownloadFormatRaster(models.Model):
+    """Download Formats for Raster Layers Used in User Prefernces"""
+
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return u"%s" % (self.name)
+
+    def class_name(value):
+        return value.__class__.__name__
+
+    class Meta:
+        ordering = ("name", )
+        verbose_name_plural = 'Download Formats, Raster'
+
+
 class Profile(AbstractUser):
 
     """Fully featured Geonode user"""
@@ -82,7 +130,43 @@ class Profile(AbstractUser):
         help_text=_('country of the physical address'))
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_(
         'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
-            (space or comma-separated'))
+            (space or comma-separated')),
+    pref_download_formats_metadata = models.ManyToManyField(
+        DownloadFormatMetadata,
+        verbose_name=_('Download Formats, Metadata'),
+        blank=True,
+        null=True,
+        help_text=_('the preferred formats for downloading metadata'))
+    pref_download_formats_vector = models.ManyToManyField(
+        DownloadFormatVector,
+        verbose_name=_('Download Formats, Vector'),
+        blank=True,
+        null=True,
+        help_text=_('the preferred formats for downloading vector layers'))
+    pref_download_formats_raster = models.ManyToManyField(
+        DownloadFormatRaster,
+        verbose_name=_('Download Formats, Raster'),
+        blank=True,
+        null=True,
+        help_text=_('the preferred formats for downloading raster layers'))
+
+    def pref_download_formats_metadata_names(self):
+        if self.pref_download_formats_metadata is None:
+            return None
+        else:
+            return ([format.name for format in self.pref_download_formats_metadata.all()])
+
+    def pref_download_formats_vector_names(self):
+        if self.pref_download_formats_vector is None:
+            return None
+        else:
+            return ([format.name for format in self.pref_download_formats_vector.all()])
+
+    def pref_download_formats_raster_names(self):
+        if self.pref_download_formats_raster is None:
+            return None
+        else:
+            return ([format.name for format in self.pref_download_formats_raster.all()])
 
     def get_absolute_url(self):
         return reverse('profile_detail', args=[self.username, ])

@@ -220,14 +220,23 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
 
-    metadata = layer.link_set.metadata().filter(
+    metadata_all = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
+    if request.user.is_authenticated():
+        prefs_download_formats_metadata = request.user.pref_download_formats_metadata_names()
+        if len(prefs_download_formats_metadata) > 0:
+            metadata = metadata_all.filter(
+                name__in=prefs_download_formats_metadata)
+        else:
+            metadata = metadata_all
+    else:
+        metadata = metadata_all
 
     context_dict = {
         "resource": layer,
         "permissions_json": _perms_info_json(layer),
-        "documents": get_related_documents(layer),
         "metadata": metadata,
+        "documents": get_related_documents(layer),
     }
 
     context_dict["viewer"] = json.dumps(
@@ -238,11 +247,29 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'leaflet')
 
     if layer.storeType == 'dataStore':
-        links = layer.link_set.download().filter(
+        links_all = layer.link_set.download().filter(
             name__in=settings.DOWNLOAD_FORMATS_VECTOR)
+        if request.user.is_authenticated():
+            prefs_download_formats_vector = request.user.pref_download_formats_vector_names()
+            if len(prefs_download_formats_vector) > 0:
+                links = links_all.filter(
+                    name__in=prefs_download_formats_vector)
+            else:
+                links = links_all
+        else:
+            links = links_all
     else:
-        links = layer.link_set.download().filter(
+        links_all = layer.link_set.download().filter(
             name__in=settings.DOWNLOAD_FORMATS_RASTER)
+        if request.user.is_authenticated():
+            prefs_download_formats_raster = request.user.pref_download_formats_raster_names()
+            if len(prefs_download_formats_raster) > 0:
+                links = links_all.filter(
+                    name__in=prefs_download_formats_raster)
+            else:
+                links = links_all
+        else:
+            links = links_all
 
     context_dict["links"] = links
 
