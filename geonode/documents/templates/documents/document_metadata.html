@@ -14,10 +14,25 @@
 {% block body_outer %}  
 <form class="form-horizontal" action="{% url "document_metadata" document.id %}" method="POST">
     <legend>
-      {% blocktrans with document.typename as document_title %}
+      {% blocktrans with document.name_long as document_title %}
         Editing details for {{ document_title }}
       {% endblocktrans %}
     </legend>
+    {% if document_form.errors or category_form.errors %}
+        <div style="background-color: pink">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}
+            <ul>
+        {% for field in document_form %}
+            {% if field.errors %}
+                <li>{{ field.label }}</li>
+            {% endif %}
+        {% endfor %}
+
+        {% if category_form.errors %}
+            <li>{{ category_form.errors.as_ul }}</li>
+        {% endif %}
+            </ul>
+        </div>
+    {% endif %}
     {% csrf_token %}
     <div class="form-controls">
       {{ document_form|as_bootstrap }}
