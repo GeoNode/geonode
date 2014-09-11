@@ -395,10 +395,13 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         _PERMISSION_MSG_MODIFY)
 
     if request.method == 'GET':
-        return render_to_response(
-            template, RequestContext(
-                request, {
-                    'layer': layer, 'is_featuretype': layer.is_vector()}))
+        ctx = {
+            'charsets': CHARSETS,
+            'layer': layer,
+            'is_featuretype': layer.is_vector()
+        }
+        return render_to_response(template,
+                                  RequestContext(request, ctx))
     elif request.method == 'POST':
 
         form = LayerUploadForm(request.POST, request.FILES)
@@ -408,8 +411,13 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                saved_layer = file_upload(base_file, name=layer.name,
-                                          user=request.user, overwrite=True)
+                saved_layer = file_upload(
+                    base_file,
+                    name=layer.name,
+                    user=request.user,
+                    overwrite=True,
+                    charset=form.cleaned_data["charset"],
+                )
             except Exception as e:
                 out['success'] = False
                 out['errors'] = str(e)

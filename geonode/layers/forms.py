@@ -144,7 +144,13 @@ class LayerUploadForm(forms.Form):
     prj_file = forms.FileField(required=False)
     xml_file = forms.FileField(required=False)
 
-    spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file")
+    charset = forms.CharField(required=False)
+
+    spatial_files = (
+        "base_file",
+        "dbf_file",
+        "shx_file",
+        "prj_file")
 
     def clean(self):
         cleaned = super(LayerUploadForm, self).clean()
