@@ -64,7 +64,7 @@ class ValidationFormTest(TestCase):
     
     def test_form_validation3(self):
         
-        msgt('(3) Does form validates with the geoconnect object GISDataFile turned to a dict--it has extra fields')
+        msgt('(3) Does form validates with the Geoconnect GISDataFile object turned to a dict--it has extra fields')
         tdata = dict(datafile_expected_md5_checksum=''
            , datafile_type=''
            , gis_scratch_work_directory='geoconnect/test_setup/gis_scratch_work/2014-0911-1622__1'
