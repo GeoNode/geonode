@@ -197,7 +197,7 @@
     */
 
 
-    if (! "disableQuerySync" in Configs) {
+    if (!Configs.hasOwnProperty("disableQuerySync")) {
         // Keep in sync the page location with the query object
         $scope.$watch('query', function(){
           $location.search($scope.query);
