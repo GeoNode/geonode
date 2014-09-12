@@ -99,9 +99,11 @@
             };
             var perms_groups = perms.groups;
             for (var group in perms_groups){
-              var group_perms = perms_groups[group];
-              for (var i=0;i<group_perms.length;i++){
-                groups[group_perms[i]].push(group);
+              if (group !== 'anonymous'){
+                var group_perms = perms_groups[group];
+                for (var i=0;i<group_perms.length;i++){
+                  groups[group_perms[i]].push(group);
+                }
               }
             }
             for (var perm in groups){
