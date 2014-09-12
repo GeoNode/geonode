@@ -115,8 +115,8 @@ class PermissionLevelMixin(object):
         if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
             anonymous_group = Group.objects.get(name='anonymous')
             assign_perm(
-                perm_spec['users']['AnonymousUser'][0], 
-                anonymous_group, 
+                perm_spec['users']['AnonymousUser'][0],
+                anonymous_group,
                 self.get_self_resource())
 
         if 'users' in perm_spec:

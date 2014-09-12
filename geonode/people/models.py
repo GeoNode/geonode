@@ -129,6 +129,7 @@ class Profile(AbstractUser):
 def get_anonymous_user_instance(Profile):
     return Profile(username='AnonymousUser')
 
+
 def profile_post_save(instance, sender, **kwargs):
     """Make sure the user belongs by default to the anonymous group.
     This will make sure that anonymous permissions will be granted to the new users."""
