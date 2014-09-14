@@ -6,8 +6,9 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.db import models, IntegrityError
 from django.utils.translation import ugettext_lazy as _
-from taggit.managers import TaggableManager
+from django.db.models import signals
 
+from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group
 
 
@@ -249,3 +250,12 @@ class GroupInvitation(models.Model):
                 "You can't decline an invitation that wasn't for you")
         self.state = "declined"
         self.save()
+
+
+def group_pre_delete(instance, sender, **kwargs):
+    """Make sure that the anonymous group is not deleted"""
+    if instance.name == 'anonymous':
+        raise Exception('Deletion of the anonymous group is\
+         not permitted as will break the geonode permissions system')
+
+signals.pre_delete.connect(group_pre_delete, sender=Group)
