@@ -82,11 +82,13 @@ class PermissionLevelMixin(object):
     def set_default_permissions(self):
         """
         Remove all the permissions except for the owner and assign the
-        view permission to the anonymous user
+        view permission to the anonymous group
         """
         self.remove_all_permissions()
-        for user in get_user_model().objects.all():
-            assign_perm('view_resourcebase', user, self.get_self_resource())
+
+        anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+        assign_perm('view_resourcebase', anonymous_group, self.get_self_resource())
+
         for perm in ADMIN_PERMISSIONS:
             assign_perm(perm, self.owner, self.get_self_resource())
 
