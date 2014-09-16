@@ -27,6 +27,9 @@ from django.contrib.auth.models import AbstractUser
 from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
+from geonode.groups.models import GroupProfile
+
+from .utils import format_address
 
 
 class Profile(AbstractUser):
@@ -39,7 +42,7 @@ class Profile(AbstractUser):
         blank=True,
         null=True,
         help_text=_('name of the responsible organization'))
-    profile = models.TextField(_('Profile'), null=True, blank=True)
+    profile = models.TextField(_('Profile'), null=True, blank=True, help_text=_('introduce yourself'))
     position = models.CharField(
         _('Position Name'),
         max_length=255,
@@ -94,6 +97,33 @@ class Profile(AbstractUser):
         return value.__class__.__name__
 
     USERNAME_FIELD = 'username'
+
+    def group_list_public(self):
+        return GroupProfile.objects.exclude(access="private").filter(groupmember__user=self)
+
+    def group_list_all(self):
+        return GroupProfile.objects.filter(groupmember__user=self)
+
+    def keyword_list(self):
+        """
+        Returns a list of the Profile's keywords.
+        """
+        return [kw.name for kw in self.keywords.all()]
+
+    @property
+    def name_long(self):
+        if self.first_name and self.last_name:
+            return '%s %s (%s)' % (self.first_name, self.last_name, self.username)
+        elif (not self.first_name) and self.last_name:
+            return '%s (%s)' % (self.last_name, self.username)
+        elif self.first_name and (not self.last_name):
+            return '%s (%s)' % (self.first_name, self.username)
+        else:
+            return self.username
+
+    @property
+    def location(self):
+        return format_address(self.delivery, self.zipcode, self.city, self.area, self.country)
 
 
 def get_anonymous_user_instance(Profile):

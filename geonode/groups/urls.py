@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 
-from .views import GroupDetailView
+from .views import GroupDetailView, GroupActivityView
 
 urlpatterns = patterns('geonode.groups.views',
                        url(r'^$',
@@ -37,4 +37,7 @@ urlpatterns = patterns('geonode.groups.views',
                        url(r'^group/[-\w]+/invite/(?P<token>[\w]{40})/$',
                            'group_invite_response',
                            name='group_invite_response'),
+                       url(r'^group/(?P<slug>[-\w]+)/activity/$',
+                           GroupActivityView.as_view(),
+                           name='group_activity'),
                        )

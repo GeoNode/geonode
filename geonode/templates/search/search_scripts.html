@@ -30,5 +30,9 @@
     url: SEARCH_URL
   });
 
-  angular.bootstrap(document, ['search']);
+  var deps = ['search'];
+  {% if include_spatial == 'true' %}
+  deps.push('leaflet-directive');
+  {% endif %}
+  angular.bootstrap(document, deps);
 </script>
