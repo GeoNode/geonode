@@ -1,6 +1,6 @@
 geonode (2.0.1+thefinal0) precise; urgency=high
 
-  * Fixed security issue related to document handling.
+  * Fixed security issue related to document handling..
 
  -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 03 Sep 2014 07:10:55 +0000
 
