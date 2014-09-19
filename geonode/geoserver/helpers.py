@@ -31,6 +31,7 @@ from bs4 import BeautifulSoup
 import geoserver
 import httplib2
 
+
 from urlparse import urlparse
 from urlparse import urlsplit
 from threading import local
@@ -343,23 +344,25 @@ def gs_slurp(
     cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
-
-        # workspace should be returned if exists, otherwise throw an error
-        if workspace is not None:
-            # assume store exists within workspace:
+        if workspace is None:
+            resources = []
+        else:
+            # obtain the store from within the workspace. if it exists, obtain resources
+            # directly from store, otherwise return an empty list:
             if store is not None:
                 store = cat.get_store(store, workspace=workspace)
-                resources = cat.get_resources(store=store)
+                if store is None:
+                    resources = []
+                else:
+                    resources = cat.get_resources(store=store)
             else:
                 resources = cat.get_resources(workspace=workspace)
-        else:
-            raise Exception(
-                "Workspace does not exist in the GeoServer instance")
+
     elif store is not None:
         store = cat.get_store(store)
         resources = cat.get_resources(store=store)
     else:
-        resources = cat.get_resources(workspace=workspace)
+        resources = cat.get_resources()
     if remove_deleted:
         resources_for_delete_compare = resources[:]
         workspace_for_delete_compare = workspace
