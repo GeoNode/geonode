@@ -21,8 +21,8 @@
 from django.db import models
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
-
 from django.contrib.auth.models import AbstractUser
+from django.db.models import signals
 
 from taggit.managers import TaggableManager
 
@@ -128,3 +128,13 @@ class Profile(AbstractUser):
 
 def get_anonymous_user_instance(Profile):
     return Profile(username='AnonymousUser')
+
+
+def profile_post_save(instance, sender, **kwargs):
+    """Make sure the user belongs by default to the anonymous group.
+    This will make sure that anonymous permissions will be granted to the new users."""
+    from django.contrib.auth.models import Group
+    anon_group, created = Group.objects.get_or_create(name='anonymous')
+    instance.groups.add(anon_group)
+
+signals.post_save.connect(profile_post_save, sender=Profile)
