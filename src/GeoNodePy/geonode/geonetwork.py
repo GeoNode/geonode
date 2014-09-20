@@ -84,7 +84,7 @@ class Catalog(object):
         # will be searchable via CSW without admin login.
         # all other privileges are set to False for all 
         # groups.
-        #self.set_metadata_privs(layer.uuid, {"all":  {"view": True}})
+        self.set_metadata_privs(layer.uuid, {"all":  {"view": True}})
 
         return self.base + "srv/en/csw?" + urllib.urlencode({
             "request": "GetRecordById",
@@ -100,6 +100,7 @@ class Catalog(object):
         # TODO: Parse response, check for error report
 
     def update_layer(self, layer):
+        self.set_metadata_privs(layer.uuid, {"all":  {"view": True}})
         self.csw_request(layer, "maps/csw/transaction_update.xml")
         # TODO: Parse response, check for error report
 
