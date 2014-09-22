@@ -67,6 +67,7 @@ MAX_MAPS_SEARCH_BATCH_SIZE = 25
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this map.")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this map.')
 _PERMISSION_MSG_LOGIN = _("You must be logged in to save this map")
+_PERMISSION_MSG_SAVE = _("You are not permitted to save or edit this map.")
 _PERMISSION_MSG_METADATA = _(
     "You are not allowed to modify this map's metadata.")
 _PERMISSION_MSG_VIEW = _("You are not allowed to view this map.")
@@ -325,7 +326,14 @@ def map_json(request, mapid, snapshot=None):
                 status=401,
                 mimetype="text/plain"
             )
-        map_obj = _resolve_map(request, mapid, 'base.change_resourcebase')
+
+        map_obj = Map.objects.get(id=mapid)
+        if not request.user.has_perm('change_resourcebase', map_obj.get_self_resource()):
+            return HttpResponse(
+                _PERMISSION_MSG_SAVE,
+                status=401,
+                mimetype="text/plain"
+            )
         try:
             map_obj.update_from_viewer(request.body)
             MapSnapshot.objects.create(
