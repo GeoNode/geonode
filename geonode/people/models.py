@@ -136,5 +136,12 @@ def profile_post_save(instance, sender, **kwargs):
     from django.contrib.auth.models import Group
     anon_group, created = Group.objects.get_or_create(name='anonymous')
     instance.groups.add(anon_group)
+    if not instance.email == u'':
+        emailaddress = instance.emailaddress_set.get_primary(user=instance)
+        if emailaddress and not emailaddress.email == instance.email:
+            emailaddress.email = instance.email
+            emailaddress.save()
+        elif not emailaddress:
+            instance.emailaddress_set.create(user=instance, email=instance.email, primary=True)
 
 signals.post_save.connect(profile_post_save, sender=Profile)
