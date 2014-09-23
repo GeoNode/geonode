@@ -37,6 +37,7 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
+            {% block tabs %}
             <li id="nav_layers">
               <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
             </li>
@@ -52,6 +53,7 @@
             <li id="nav_groups">
               <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
             </li>
+            {% endblock %}
           </ul>
           <form class="col-md-3" id="search" action="{% url "search" %}">
             <div class="input-group">
