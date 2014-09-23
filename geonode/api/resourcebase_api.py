@@ -408,6 +408,7 @@ class CommonModelApi(ModelResource):
             'distribution_url',
             'owner_id',
             'share_count',
+            'popular_count',
             'srid',
             'category',
             'supplemental_information',
