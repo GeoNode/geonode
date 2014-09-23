@@ -33,6 +33,7 @@ from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import strip_tags
 from django.template.loader import render_to_string
+from django.db.models import F
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
@@ -119,8 +120,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     '''
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
-    map_obj.popular_count += 1
-    map_obj.save()
+    Map.objects.filter(id=map_obj.id).update(popular_count=F('popular_count') + 1)
 
     if snapshot is None:
         config = map_obj.viewer_json(request.user)

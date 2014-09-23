@@ -34,8 +34,9 @@ from django.utils import simplejson as json
 from django.utils.html import escape
 from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
-from geonode.services.models import Service
+from django.db.models import F
 
+from geonode.services.models import Service
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.base.forms import CategoryForm
 from geonode.layers.models import Layer, Attribute
@@ -211,9 +212,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # Update count for popularity ranking.
     Layer.objects.filter(
-        id=layer.id).update(
-        popular_count=layer.popular_count +
-        1)
+        id=layer.id).update(popular_count=F('popular_count') + 1)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
