@@ -142,6 +142,6 @@ def profile_post_save(instance, sender, **kwargs):
         if created or not emailaddress.email == instance.email:
             emailaddress.email = instance.email
             emailaddress.save()
-            
+
 
 signals.post_save.connect(profile_post_save, sender=Profile)
