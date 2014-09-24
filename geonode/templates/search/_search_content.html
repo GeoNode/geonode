@@ -23,8 +23,17 @@
       <div class="col-md-9">
       {% include 'search/_pagination.html' %}
       </div>
+      {% if request.user.is_superuser %}
+      <div class="col-md-7">
+        {% include 'base/_resourcebase_snippet.html' %}
+      </div>
+      <div class="col-md-2">
+        <button data-toggle="modal" class="btn btn-default btn-block" data-target="#_bulk_permissions">Set permissions</button>
+      </div>
+      {% else %}
       <div class="col-md-9">
         {% include 'base/_resourcebase_snippet.html' %}
       </div>
+      {% endif %}
     </div>
   </div>

@@ -232,8 +232,31 @@
     $("#perms_submit").click(function(){
         $("#permission_form").submit();
     });
+
     {% if resource %}
     $("#permission_form").submit(perms_submit);
     {% endif %}
+
+    var bulk_perms_submit = function(){
+       var permissions = permissionsString($('#permission_form'), 'base');
+       var selected_ids = $.map($('.resource_selected:checked'), function(elem){return elem.value});
+       $.ajax(
+        {
+          type: "POST",
+          url: "{% url 'bulk_permissions' %}",
+          data: {
+            permissions: JSON.stringify(permissions),
+            resources: selected_ids
+          },
+          success: function(data) {
+            $("#modal_perms").modal("hide");
+          }
+        }
+      );
+    };
+
+    $("#bulk_perms_submit").click(function(){
+        bulk_perms_submit();
+    });
   });
 </script>

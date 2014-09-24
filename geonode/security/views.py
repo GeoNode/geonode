@@ -20,9 +20,10 @@
 
 from django.utils import simplejson as json
 from django.core.exceptions import PermissionDenied
-from geonode.utils import resolve_object
 from django.http import HttpResponse
+from django.views.decorators.http import require_POST
 
+from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
 
 
@@ -77,3 +78,32 @@ def resource_permissions(request, resource_id):
             'No methods other than get and post are allowed',
             status=401,
             mimetype='text/plain')
+
+@require_POST
+def set_bulk_permissions(request):
+    if not request.user.is_superuser:
+        return HttpResponse(
+            'Only administrators are allowed to change bulk permissions',
+            status=401,
+            mimetype='text/plain')
+    permission_spec = json.loads(request.POST.get('permissions', None))
+    resource_ids = request.POST.getlist('resources', [])
+    if permission_spec is not None:
+        for resource_id in resource_ids:
+            resource = resolve_object(
+                request, ResourceBase, {
+                    'id': resource_id}, 
+                    'base.change_resourcebase_permissions')
+            resource.set_permissions(permission_spec)
+
+        return HttpResponse(
+            json.dumps({'success': True}),
+            status=200,
+            mimetype='text/plain'
+        )
+    else:
+        return HttpResponse(
+            'Wrong permissions specification',
+            status=400,
+            mimetype='text/plain')
+
