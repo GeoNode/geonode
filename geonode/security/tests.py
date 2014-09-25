@@ -26,6 +26,12 @@ class BulkPermissionsTests(ResourceTestCase):
         all_public()
         self.perm_spec = {"users":{"admin":["view_resourcebase"]},"groups":{}}
 
+    def test_non_superuser_is_unauth(self):
+        c = Client()
+        c.login(username='bobby', password='bob')
+        resp = c.post(self.bulk_perms_url, {'permissions': json.dumps(self.perm_spec)})
+        self.assertEquals(resp.status_code, 401)
+
     def test_set_bulk_permissions(self):
         """Test that after restrict view permissions on two layers
         bobby is unable to see them"""
