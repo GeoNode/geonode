@@ -15,7 +15,7 @@ from guardian.shortcuts import get_objects_for_group
 class GroupProfile(models.Model):
     GROUP_CHOICES = [
         ("public", _("Public")),
-        ("public-invite", _("Public (invite-only))")),
+        ("public-invite", _("Public (invite-only)")),
         ("private", _("Private")),
     ]
 
@@ -106,7 +106,7 @@ class GroupProfile(models.Model):
         """
         return get_user_model().objects.filter(
             id__in=self.member_queryset().filter(
-                role='manager') .values_list(
+                role='manager').values_list(
                 "user",
                 flat=True))
 
