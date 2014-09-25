@@ -24,12 +24,14 @@ class BulkPermissionsTests(ResourceTestCase):
         self.bulk_perms_url = reverse('bulk_permissions')
         create_models(type='layer')
         all_public()
-        self.perm_spec = {"users":{"admin":["view_resourcebase"]},"groups":{}}
+        self.perm_spec = {
+            "users": {"admin": ["view_resourcebase"]}, "groups": {}}
 
     def test_non_superuser_is_unauth(self):
         c = Client()
         c.login(username='bobby', password='bob')
-        resp = c.post(self.bulk_perms_url, {'permissions': json.dumps(self.perm_spec)})
+        resp = c.post(
+            self.bulk_perms_url, {'permissions': json.dumps(self.perm_spec)})
         self.assertEquals(resp.status_code, 401)
 
     def test_set_bulk_permissions(self):
@@ -46,12 +48,11 @@ class BulkPermissionsTests(ResourceTestCase):
         data = {
             'permissions': json.dumps(self.perm_spec),
             'resources': layers_id
-            }
+        }
         resp = c.post(self.bulk_perms_url, data)
         self.assertHttpOK(resp)
         c.logout()
-        
+
         c.login(username='bobby', password='bob')
         resp = c.get(self.list_url)
         self.assertEquals(len(self.deserialize(resp)['objects']), 6)
-

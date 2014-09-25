@@ -79,6 +79,7 @@ def resource_permissions(request, resource_id):
             status=401,
             mimetype='text/plain')
 
+
 @require_POST
 def set_bulk_permissions(request):
     if not request.user.is_superuser:
@@ -92,8 +93,9 @@ def set_bulk_permissions(request):
         for resource_id in resource_ids:
             resource = resolve_object(
                 request, ResourceBase, {
-                    'id': resource_id}, 
-                    'base.change_resourcebase_permissions')
+                    'id': resource_id
+                },
+                'base.change_resourcebase_permissions')
             resource.set_permissions(permission_spec)
 
         return HttpResponse(
@@ -106,4 +108,3 @@ def set_bulk_permissions(request):
             'Wrong permissions specification',
             status=400,
             mimetype='text/plain')
-
