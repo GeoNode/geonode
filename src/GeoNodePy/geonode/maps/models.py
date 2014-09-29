@@ -881,6 +881,9 @@ class LayerCategory(models.Model):
     def __str__(self):
         return "%s" % self.name
 
+    class Meta:
+        verbose_name_plural = 'Layer Categories'
+
 
 class Layer(models.Model, PermissionLevelMixin):
     """
@@ -2310,9 +2313,15 @@ class MapStats(models.Model):
     uniques = models.IntegerField(_("Unique Visitors"), default = 0)
     last_modified = models.DateTimeField(auto_now=True,null=True)
 
+    class Meta:
+        verbose_name_plural = 'Map stats'
+
 class LayerStats(models.Model):
     layer = models.ForeignKey(Layer, unique=True)
     visits = models.IntegerField(_("Visits"), default = 0)
     uniques = models.IntegerField(_("Unique Visitors"), default = 0)
     downloads = models.IntegerField(_("Downloads"), default = 0)
     last_modified = models.DateTimeField(auto_now=True, null=True)
+
+    class Meta:
+        verbose_name_plural = 'Layer stats'
