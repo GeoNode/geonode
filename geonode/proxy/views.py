@@ -88,7 +88,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
         return path[len(prefix):]
 
     path = strip_prefix(request.get_full_path(), proxy_path)
-    url = "".join([ogc_server_settings.LOCATION, downstream_path, path])
+    url = str("".join([ogc_server_settings.LOCATION, downstream_path, path]))
 
     http = httplib2.Http()
     http.add_credentials(*(ogc_server_settings.credentials))
@@ -101,7 +101,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
         url, request.method,
         body=request.raw_post_data or None,
         headers=headers)
-        
+
     # we need to sync django here
     # we should remove this geonode dependency calling layers.views straight
     # from GXP, bypassing the proxy
