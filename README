@@ -6,9 +6,12 @@
  GeoNode
 =========
 
-If you just want to try GeoNode, it is recommended to use Ubuntu 12.04 and install the latest stable release::
+If you just want to try GeoNode, it is recommended to use Ubuntu 14.04 or 12.04 and install the latest stable release.  For ubuntu 12.04 install the python software properties::
 
     sudo apt-get install python-software-properties
+
+For 14.04 and for 12.04 with python software properties installed::
+
     sudo add-apt-repository ppa:geonode/release
     sudo apt-get update
     sudo apt-get install geonode
