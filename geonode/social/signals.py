@@ -108,7 +108,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
     if verb:
         try:
             activity.send(action.get('actor'),
-                          verb='{verb}'.format(verb=verb),
+                          verb=u"{verb}".format(verb=verb),
                           action_object=action.get('action_object'),
                           target=action.get('target', None),
                           object_name=action.get('object_name'),
