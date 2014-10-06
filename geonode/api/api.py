@@ -188,13 +188,13 @@ class ProfileResource(ModelResource):
         return email
 
     def dehydrate_layers_count(self, bundle):
-        return bundle.obj.resourcebase_set.instance_of(Layer).count()
+        return bundle.obj.resourcebase_set.instance_of(Layer).distinct().count()
 
     def dehydrate_maps_count(self, bundle):
-        return bundle.obj.resourcebase_set.instance_of(Map).count()
+        return bundle.obj.resourcebase_set.instance_of(Map).distinct().count()
 
     def dehydrate_documents_count(self, bundle):
-        return bundle.obj.resourcebase_set.instance_of(Document).count()
+        return bundle.obj.resourcebase_set.instance_of(Document).distinct().count()
 
     def dehydrate_avatar_100(self, bundle):
         return avatar_url(bundle.obj, 100)

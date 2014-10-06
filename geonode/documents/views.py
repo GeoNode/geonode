@@ -10,6 +10,8 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
+from django.db.models import F
+
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
@@ -64,6 +66,8 @@ def document_detail(request, docid):
                     request, {
                         'error_message': _("You are not allowed to view this document.")})), status=403)
 
+    Document.objects.filter(id=document.id).update(popular_count=F('popular_count') + 1)
+
     if document is None:
         return HttpResponse(
             'An unknown error has occured.',
@@ -77,9 +81,6 @@ def document_detail(request, docid):
                 id=document.object_id)
         except:
             related = ''
-
-        document.popular_count += 1
-        document.save()
 
         return render_to_response(
             "documents/document_detail.html",
@@ -310,7 +311,7 @@ def document_remove(request, docid, template='documents/document_remove.html'):
             }))
         if request.method == 'POST':
             document.delete()
-            return HttpResponseRedirect(reverse("documents_browse"))
+            return HttpResponseRedirect(reverse("document_browse"))
         else:
             return HttpResponse("Not allowed", status=403)
 

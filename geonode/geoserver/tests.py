@@ -365,7 +365,7 @@ class SecurityTest(TestCase):
 
         black_list = [
             reverse('account_signup'),
-            reverse('documents_browse'),
+            reverse('document_browse'),
             reverse('maps_browse'),
             reverse('layer_browse'),
             reverse('layer_detail', kwargs=dict(layername='geonode:Test')),

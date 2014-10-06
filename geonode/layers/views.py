@@ -34,8 +34,9 @@ from django.utils import simplejson as json
 from django.utils.html import escape
 from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
-from geonode.services.models import Service
+from django.db.models import F
 
+from geonode.services.models import Service
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.base.forms import CategoryForm
 from geonode.layers.models import Layer, Attribute
@@ -211,9 +212,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # Update count for popularity ranking.
     Layer.objects.filter(
-        id=layer.id).update(
-        popular_count=layer.popular_count +
-        1)
+        id=layer.id).update(popular_count=F('popular_count') + 1)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection="EPSG:900913")
@@ -395,10 +394,13 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         _PERMISSION_MSG_MODIFY)
 
     if request.method == 'GET':
-        return render_to_response(
-            template, RequestContext(
-                request, {
-                    'layer': layer, 'is_featuretype': layer.is_vector()}))
+        ctx = {
+            'charsets': CHARSETS,
+            'layer': layer,
+            'is_featuretype': layer.is_vector()
+        }
+        return render_to_response(template,
+                                  RequestContext(request, ctx))
     elif request.method == 'POST':
 
         form = LayerUploadForm(request.POST, request.FILES)
@@ -408,8 +410,13 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                saved_layer = file_upload(base_file, name=layer.name,
-                                          user=request.user, overwrite=True)
+                saved_layer = file_upload(
+                    base_file,
+                    name=layer.name,
+                    user=request.user,
+                    overwrite=True,
+                    charset=form.cleaned_data["charset"],
+                )
             except Exception as e:
                 out['success'] = False
                 out['errors'] = str(e)

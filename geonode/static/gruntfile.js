@@ -174,9 +174,8 @@ module.exports = function(grunt) {
           'lib/css/assets.min.css': [
             'lib/css/jquery.dataTables.css',
             'lib/css/select2.css',
-            'lib/css/multi-select.css',
-            'lib/css/jquery-ui.css',
             'lib/css/bootstrap.min.css',
+            'lib/css/jquery-ui.css',
             'lib/css/datepicker.css'
           ]
         }
@@ -244,6 +243,6 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['jshint', 'less:development', 'concat:bootstrap', 'copy', 'replace']);
 
   // build production
-  grunt.registerTask('production', ['jshint', 'less:production', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify' ]);
+  grunt.registerTask('production', ['jshint', 'less:production', 'concat:bootstrap', 'copy', 'cssmin', 'uglify' ]);
 
 };
