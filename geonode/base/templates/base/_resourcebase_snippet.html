@@ -1,10 +1,10 @@
 {% verbatim %}
   <article ng-repeat="item in results">
   	<div class="row items-list">
-  	  <div class="col-md-5">
+  	  <div class="col-md-4">
   	    <a href="{{ item.detail_url }}"><img class="thumb" ng-src="{{ item.thumbnail_url }}" /></a>
   	  </div>
-      <div class="col-md-7">
+      <div class="col-md-8">
         <h4><a href="{{ item.detail_url }}">{{ item.title }}</a> <span class="owner">{{ item.owner.username }}</span></h4>
         <p>{{ item.category.gn_description }}</p>
         <p class="abstract">{{ item.abstract|limitTo:250 }}...</p>
@@ -17,7 +17,7 @@
           <a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a> |
           <a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a> 
           {% endverbatim %}{% if request.user.is_superuser %}
-          | <input class="resource_selected" type="checkbox" value="{{ item.id }}" /></p>
+          | Select <input class="resource_selected" type="checkbox" value="{{ item.id }}" /></p>
           {% endif %}{% verbatim %}
       </div>
     </div>
