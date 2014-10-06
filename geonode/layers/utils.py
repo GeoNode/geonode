@@ -534,21 +534,22 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbail_create_url=None):
             image = None
 
     if image is not None:
+        # first delete thumbnail file on disk to prevent duplicates:
         if instance.has_thumbnail():
-            instance.thumbnail.thumb_file.delete()
-        else:
-            instance.thumbnail = Thumbnail()
-
-        instance.thumbnail.thumb_file.save(
+            instance.thumbnail_set.get().thumb_file.delete()
+        # update database and save new thumbnail file on disk:
+        instance.thumbnail_set.all().delete()
+        thumbnail = Thumbnail(thumb_spec=thumbnail_remote_url)
+        instance.thumbnail_set.add(thumbnail)
+        thumbnail.thumb_file.save(
             'layer-%s-thumb.png' %
             instance.id,
             ContentFile(image))
-        instance.thumbnail.thumb_spec = thumbnail_remote_url
-        instance.thumbnail.save()
+        thumbnail.save()
 
         thumbnail_url = urljoin(
             settings.SITEURL,
-            instance.thumbnail.thumb_file.url)
+            instance.thumbnail_set.get().thumb_file.url)
 
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=thumbnail_url,

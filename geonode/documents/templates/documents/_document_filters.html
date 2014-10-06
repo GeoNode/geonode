@@ -2,7 +2,7 @@
 {% load url from future %}
 
 <ul class="nav nav-pills filter">
-  <li><a href="{% url "documents_browse" %}"{% if document_filter  == "date" %} class="selected"{% endif %}>{% trans "Most recent" %}</a></li>
+  <li><a href="{% url "document_browse" %}"{% if document_filter  == "date" %} class="selected"{% endif %}>{% trans "Most recent" %}</a></li>
   <li><a href="{% url "document_browse_popular" %}"{% if document_filter == "popular_count" %} class="selected"{% endif %}>{% trans "Most popular" %}</a></li>
   <li><a href="{% url "document_browse_shared" %}"{% if document_filter == "share_count" %} class="selected"{% endif %}>{% trans "Most shared" %}</a></li>
   {% comment %}

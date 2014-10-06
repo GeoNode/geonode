@@ -795,8 +795,10 @@ def _register_arcgis_url(url, username, password, owner=None, parent=None):
     if re.search("\/MapServer\/*(f=json)*", baseurl):
         # This is a MapService
         arcserver = ArcMapService(baseurl)
-        return_json = [
-            _process_arcgis_service(arcserver, owner=owner, parent=parent)]
+        if isinstance(arcserver, ArcMapService) and arcserver.spatialReference.wkid in [102100, 3857, 900913]:
+            return_json = [_process_arcgis_service(arcserver, owner=owner, parent=parent)]
+        else:
+            return_json = [{'msg':  _("Could not find any layers in a compatible projection.")}]
 
     else:
         # This is a Folder

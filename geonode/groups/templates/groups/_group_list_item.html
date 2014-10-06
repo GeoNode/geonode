@@ -2,10 +2,13 @@
 <article ng-repeat="group in results">
   <div class="row">
   <div ng-if="group.logo != ''" class="col-md-3">
-    <img ng-src="{{ group.logo }}" alt="{{ group.title }}" class="group-logo" />
+    <a href="{{ group.detail_url }}" ><img ng-src="{{ group.logo }}" alt="{{ group.title }}" class="group-logo" /></a>
   </div>
   <div class="col-md-9">
-    <h5><i class="fa fa-group"></i> <a href="{{ group.detail_url }}">{{ group.title }}</a></h5>
+    <h5>
+      <i class="fa fa-group"></i> <a href="{{ group.detail_url }}">{{ group.title }}</a>
+      <a href="mailto:{{ group.email }}" ng-if="group.email != ''"><i class="fa fa-envelope-o"></i></a>
+    </h5>
     <p>{{ group.description}}</p>
     <ul class="list-inline">
       <li>
