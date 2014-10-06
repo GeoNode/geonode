@@ -12,8 +12,16 @@
     <a href="{% url "document_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Documents" %}</a>
     <h2 class="page-title">{% trans "Explore Documents" %}</h2>
   </div>
+  {% with include_type_filter='true' %}
+  {% with facet_type='documents' %}
+  {% with header='Document Type' %}
+  {% with filter='doc_type__in' %}
   {% include "search/_search_content.html" %}
   {% include "_bulk_permissions_form.html" %}
+  {% endwith %}
+  {% endwith %}
+  {% endwith %}
+  {% endwith %}
 {% endblock %}
 
 {% block extra_script %}

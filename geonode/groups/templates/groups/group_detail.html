@@ -83,7 +83,7 @@
       <li class="list-group-item">
         <h4>{% trans "Managers" %}</h4>
         {% for manager in object.get_managers %}
-        {% with manager.profile as profile %}
+        {% with manager as profile %}
           {% include "people/_profile_about_item.html" %}
         {% endwith %}
         {% endfor %}
