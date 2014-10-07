@@ -2,7 +2,7 @@
 
 (function(){
 
-  var module = angular.module('main_search', ['leaflet-directive'], function($locationProvider) {
+  var module = angular.module('main_search', [], function($locationProvider) {
       $locationProvider.html5Mode(true);
 
       // make sure that angular doesn't intercept the page links
@@ -113,7 +113,7 @@
   * Load data from api and defines the multiple and single choice handlers
   * Syncs the browser url with the selections
   */
-  module.controller('MainController', function($scope, $location, $http, Configs, leafletData){
+  module.controller('MainController', function($injector, $scope, $location, $http, Configs){
     $scope.query = $location.search();
     $scope.query.limit = $scope.query.limit || CLIENT_RESULTS_LIMIT;
     $scope.query.offset = $scope.query.offset || 0;
@@ -196,11 +196,13 @@
     * End pagination
     */
 
-    
-    // Keep in sync the page location with the query object
-    $scope.$watch('query', function(){
-      $location.search($scope.query);
-    }, true);
+
+    if (!Configs.hasOwnProperty("disableQuerySync")) {
+        // Keep in sync the page location with the query object
+        $scope.$watch('query', function(){
+          $location.search($scope.query);
+        }, true);
+    }
 
     /*
     * Add the selection behavior to the element, it adds/removes the 'active' class
@@ -340,7 +342,7 @@
     /*
     * Spatial search
     */
-    if($('.leaflet_map').length > 0){
+    if ($('.leaflet_map').length > 0) {
       angular.extend($scope, {
         layers: {
           baselayers: {
@@ -366,7 +368,8 @@
         }
       });
 
-      var map = leafletData.getMap();
+      var leafletData = $injector.get('leafletData'),
+          map = leafletData.getMap();
 
       map.then(function(map){
         map.on('moveend', function(){

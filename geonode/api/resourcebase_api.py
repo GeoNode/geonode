@@ -408,6 +408,7 @@ class CommonModelApi(ModelResource):
             'distribution_url',
             'owner_id',
             'share_count',
+            'popular_count',
             'srid',
             'category',
             'supplemental_information',
@@ -486,5 +487,13 @@ class DocumentResource(CommonModelApi):
     """Maps API"""
 
     class Meta(CommonMetaApi):
+        filtering = {
+            'title': ALL,
+            'keywords': ALL_WITH_RELATIONS,
+            'category': ALL_WITH_RELATIONS,
+            'owner': ALL_WITH_RELATIONS,
+            'date': ALL,
+            'doc_type': ALL,
+            }
         queryset = Document.objects.distinct().order_by('-date')
         resource_name = 'documents'

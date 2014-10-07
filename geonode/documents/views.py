@@ -1,7 +1,7 @@
 import json
 
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
@@ -10,6 +10,8 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
+from django.db.models import F
+
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
@@ -32,7 +34,7 @@ _PERMISSION_MSG_VIEW = _("You are not permitted to view this document")
 def _resolve_document(request, docid, permission='base.change_resourcebase',
                       msg=_PERMISSION_MSG_GENERIC, **kwargs):
     '''
-    Resolve the layer by the provided typename and check the optional permission.
+    Resolve the document by the provided primary key and check the optional permission.
     '''
     return resolve_object(request, Document, {'pk': docid},
                           permission=permission, permission_msg=msg, **kwargs)
@@ -42,33 +44,53 @@ def document_detail(request, docid):
     """
     The view that show details of each document
     """
-    document = get_object_or_404(Document, pk=docid)
-    if not request.user.has_perm(
-            'view_resourcebase',
-            obj=document.get_self_resource()):
+    document = None
+    try:
+        document = _resolve_document(
+            request,
+            docid,
+            'base.view_resourcebase',
+            _PERMISSION_MSG_VIEW)
+
+    except Http404:
+        return HttpResponse(
+            loader.render_to_string(
+                '404.html', RequestContext(
+                    request, {
+                        })), status=404)
+
+    except PermissionDenied:
         return HttpResponse(
             loader.render_to_string(
                 '401.html', RequestContext(
                     request, {
                         'error_message': _("You are not allowed to view this document.")})), status=403)
-    try:
-        related = document.content_type.get_object_for_this_type(
-            id=document.object_id)
-    except:
-        related = ''
 
-    document.popular_count += 1
-    document.save()
+    if document is None:
+        return HttpResponse(
+            'An unknown error has occured.',
+            mimetype="text/plain",
+            status=401
+        )
 
-    return render_to_response(
-        "documents/document_detail.html",
-        RequestContext(
-            request,
-            {
-                'permissions_json': _perms_info_json(document),
-                'resource': document,
-                'imgtypes': IMGTYPES,
-                'related': related}))
+    else:
+        try:
+            related = document.content_type.get_object_for_this_type(
+                id=document.object_id)
+        except:
+            related = ''
+
+        Document.objects.filter(id=document.id).update(popular_count=F('popular_count') + 1)
+
+        return render_to_response(
+            "documents/document_detail.html",
+            RequestContext(
+                request,
+                {
+                    'permissions_json': _perms_info_json(document),
+                    'resource': document,
+                    'imgtypes': IMGTYPES,
+                    'related': related}))
 
 
 def document_download(request, docid):
@@ -129,100 +151,129 @@ def document_metadata(
         request,
         docid,
         template='documents/document_metadata.html'):
-    document = Document.objects.get(id=docid)
 
-    poc = document.poc
-    metadata_author = document.metadata_author
-    topic_category = document.category
+    document = None
+    try:
+        document = _resolve_document(
+            request,
+            docid,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_METADATA)
 
-    if request.method == "POST":
-        document_form = DocumentForm(
-            request.POST,
-            instance=document,
-            prefix="resource")
-        category_form = CategoryForm(
-            request.POST,
-            prefix="category_choice_field",
-            initial=int(
-                request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
+    except Http404:
+        return HttpResponse(
+            loader.render_to_string(
+                '404.html', RequestContext(
+                    request, {
+                        })), status=404)
+
+    except PermissionDenied:
+        return HttpResponse(
+            loader.render_to_string(
+                '401.html', RequestContext(
+                    request, {
+                        'error_message': _("You are not allowed to edit this document.")})), status=403)
+
+    if document is None:
+        return HttpResponse(
+            'An unknown error has occured.',
+            mimetype="text/plain",
+            status=401
+        )
+
     else:
-        document_form = DocumentForm(instance=document, prefix="resource")
-        category_form = CategoryForm(
-            prefix="category_choice_field",
-            initial=topic_category.id if topic_category else None)
+        poc = document.poc
+        metadata_author = document.metadata_author
+        topic_category = document.category
 
-    if request.method == "POST" and document_form.is_valid(
-    ) and category_form.is_valid():
-        new_poc = document_form.cleaned_data['poc']
-        new_author = document_form.cleaned_data['metadata_author']
-        new_keywords = document_form.cleaned_data['keywords']
-        new_category = TopicCategory.objects.get(
-            id=category_form.cleaned_data['category_choice_field'])
+        if request.method == "POST":
+            document_form = DocumentForm(
+                request.POST,
+                instance=document,
+                prefix="resource")
+            category_form = CategoryForm(
+                request.POST,
+                prefix="category_choice_field",
+                initial=int(
+                    request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
+        else:
+            document_form = DocumentForm(instance=document, prefix="resource")
+            category_form = CategoryForm(
+                prefix="category_choice_field",
+                initial=topic_category.id if topic_category else None)
 
-        if new_poc is None:
-            if poc.user is None:
-                poc_form = ProfileForm(
-                    request.POST,
-                    prefix="poc",
-                    instance=poc)
-            else:
-                poc_form = ProfileForm(request.POST, prefix="poc")
-            if poc_form.has_changed and poc_form.is_valid():
-                new_poc = poc_form.save()
+        if request.method == "POST" and document_form.is_valid(
+        ) and category_form.is_valid():
+            new_poc = document_form.cleaned_data['poc']
+            new_author = document_form.cleaned_data['metadata_author']
+            new_keywords = document_form.cleaned_data['keywords']
+            new_category = TopicCategory.objects.get(
+                id=category_form.cleaned_data['category_choice_field'])
 
-        if new_author is None:
-            if metadata_author is None:
-                author_form = ProfileForm(request.POST, prefix="author",
-                                          instance=metadata_author)
-            else:
-                author_form = ProfileForm(request.POST, prefix="author")
-            if author_form.has_changed and author_form.is_valid():
-                new_author = author_form.save()
+            if new_poc is None:
+                if poc.user is None:
+                    poc_form = ProfileForm(
+                        request.POST,
+                        prefix="poc",
+                        instance=poc)
+                else:
+                    poc_form = ProfileForm(request.POST, prefix="poc")
+                if poc_form.has_changed and poc_form.is_valid():
+                    new_poc = poc_form.save()
 
-        if new_poc is not None and new_author is not None:
-            the_document = document_form.save()
-            the_document.poc = new_poc
-            the_document.metadata_author = new_author
-            the_document.keywords.add(*new_keywords)
-            the_document.category = new_category
-            the_document.save()
-            return HttpResponseRedirect(
-                reverse(
-                    'document_detail',
-                    args=(
-                        document.id,
-                    )))
+            if new_author is None:
+                if metadata_author is None:
+                    author_form = ProfileForm(request.POST, prefix="author",
+                                              instance=metadata_author)
+                else:
+                    author_form = ProfileForm(request.POST, prefix="author")
+                if author_form.has_changed and author_form.is_valid():
+                    new_author = author_form.save()
 
-    if poc is None:
-        poc_form = ProfileForm(request.POST, prefix="poc")
-    else:
+            if new_poc is not None and new_author is not None:
+                the_document = document_form.save()
+                the_document.poc = new_poc
+                the_document.metadata_author = new_author
+                the_document.keywords.add(*new_keywords)
+                the_document.category = new_category
+                the_document.save()
+                return HttpResponseRedirect(
+                    reverse(
+                        'document_detail',
+                        args=(
+                            document.id,
+                        )))
+
         if poc is None:
-            poc_form = ProfileForm(instance=poc, prefix="poc")
+            poc_form = ProfileForm(request.POST, prefix="poc")
         else:
-            document_form.fields['poc'].initial = poc.id
-            poc_form = ProfileForm(prefix="poc")
-            poc_form.hidden = True
+            if poc is None:
+                poc_form = ProfileForm(instance=poc, prefix="poc")
+            else:
+                document_form.fields['poc'].initial = poc.id
+                poc_form = ProfileForm(prefix="poc")
+                poc_form.hidden = True
 
-    if metadata_author is None:
-        author_form = ProfileForm(request.POST, prefix="author")
-    else:
         if metadata_author is None:
-            author_form = ProfileForm(
-                instance=metadata_author,
-                prefix="author")
+            author_form = ProfileForm(request.POST, prefix="author")
         else:
-            document_form.fields[
-                'metadata_author'].initial = metadata_author.id
-            author_form = ProfileForm(prefix="author")
-            author_form.hidden = True
+            if metadata_author is None:
+                author_form = ProfileForm(
+                    instance=metadata_author,
+                    prefix="author")
+            else:
+                document_form.fields[
+                    'metadata_author'].initial = metadata_author.id
+                author_form = ProfileForm(prefix="author")
+                author_form.hidden = True
 
-    return render_to_response(template, RequestContext(request, {
-        "document": document,
-        "document_form": document_form,
-        "poc_form": poc_form,
-        "author_form": author_form,
-        "category_form": category_form,
-    }))
+        return render_to_response(template, RequestContext(request, {
+            "document": document,
+            "document_form": document_form,
+            "poc_form": poc_form,
+            "author_form": author_form,
+            "category_form": category_form,
+        }))
 
 
 def document_search_page(request):
@@ -260,7 +311,7 @@ def document_remove(request, docid, template='documents/document_remove.html'):
             }))
         if request.method == 'POST':
             document.delete()
-            return HttpResponseRedirect(reverse("documents_browse"))
+            return HttpResponseRedirect(reverse("document_browse"))
         else:
             return HttpResponse("Not allowed", status=403)
 

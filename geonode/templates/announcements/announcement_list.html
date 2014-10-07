@@ -41,8 +41,9 @@
                     </td>
                     <td>
                         {% if announcement.publish_start or announcement.publish_end %}
-                        Published from <b>{{ announcement.publish_start|date:"F j, Y" }}<b/> to
-                        <b>{{ announcement.publish_end|date:"F j, Y"|default:"(no end date)" }}<b/>.
+                        {% blocktrans with publish_start=announcement.publish_start|date:"F j, Y" publish_end=announcement.publish_end|date:"F j, Y"|default:"(no end date)" %}
+                        Published from <b>{{ publish_start }}</b> to <b>{{ publish_end }}</b>.
+                        {% endblocktrans %}
                         {% endif %}
                     </td>
                 </tr>

@@ -25,16 +25,14 @@
   {% comments resource as comment_list %}
   {% autopaginate comment_list 5 %}
   {% for comment in comment_list %}      
-    <article>
-      <div class="avatar span1"><a href="{{ comment.author.get_profile.get_absolute_url }}">{% avatar comment.author 40 %}</a></div>
-      <div class="pull-left span7">
-        <p>{{ comment.comment }}</p>
-        <footer>
-          <div class="author clearfix span7">
-            <p>{% trans 'By' %} <a href="{{ comment.author.get_profile.get_absolute_url }}" rel="author">{{ comment.author }}</a> on <time>{{ comment.submit_date|date:"M j, Y" }}</time></p>
+    <article class="col-md-8 comment">
+      <div class="avatar pull-left"><a href="{{ comment.author.get_absolute_url }}">{% avatar comment.author 40 %}</a></div>
+      <p class="comment-description">
+        {{ comment.comment }}
+          <div class="comment-author">
+            <p>{% trans 'By' %} <a href="{{ comment.author.get_absolute_url }}" rel="author">{{ comment.author }}</a> on <time>{{ comment.submit_date|date:"M j, Y" }}</time></p>
           </div>
-        </footer>
-      </div>
+      </p>
     </article>
   {% endfor %}
   </div>
@@ -43,21 +41,26 @@
 
 <!-- Modal -->
 {% if user.is_authenticated %}
-<div id="form_post_comment_div" class="modal hide fade" tabindex="-1" role="dialog">
-    <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3>{% trans 'Add a Comment' %}</h3>
-    </div>
-    <div class="modal-body">
-        {% comment_form resource as form %}
-        <form action="{% comment_target resource %}" method="POST" id="form_post_comment">
-        {% csrf_token %}
-        {{ form }}
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">{% trans "Cancel" %}</button>
-        <button id="comment_submit_btn" class="btn btn-primary">{% trans 'Submit Comments' %}</button>
-    </div>
+<div id="form_post_comment_div" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4 class="modal-title">{% trans 'Add a Comment' %}</h4>
+        </div>
+          {% comment_form resource as form %}
+          <form action="{% comment_target resource %}" method="POST" id="form_post_comment">
+          <div class="modal-body">
+              {% csrf_token %}
+              {{ form|as_bootstrap }}
+          </div>
+
+          <div class="modal-footer">
+              <button class="btn" data-dismiss="modal" aria-hidden="true">{% trans "Cancel" %}</button>
+              <button id="comment_submit_btn" class="btn btn-primary">{% trans 'Submit Comments' %}</button>
+          </div>
         </form>
+      </div>
+    </div>
 </div>
 {% endif %}
