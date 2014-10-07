@@ -41,6 +41,11 @@
             map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");
             map.addLayer(tile_layer);
         }
+
+        if (L.control.hasOwnProperty('fullscreen')) {
+            L.control.fullscreen().addTo(map);
+        }
+
     });
     function zoom_to_box(map, bbox){
         var bounds = [
