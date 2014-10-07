@@ -705,6 +705,11 @@ LEAFLET_CONFIG = {
             'js': 'lib/js/esri-leaflet.js',
             'auto-include': True,
         },
+        'leaflet-fullscreen': {
+            'css': 'lib/css/leaflet.fullscreen.css',
+            'js': 'lib/js/Leaflet.fullscreen.min.js',
+            'auto-include': True,
+        },
     }
 }
 
