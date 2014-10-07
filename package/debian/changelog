@@ -1,3 +1,211 @@
+geonode (2.4.0+alpha6) trusty; urgency=medium
+
+  [ Matthew Hanson ]
+  * [526dfe] fix remote services thumbnail creation
+  * [4b385c] fixed layer id in remote service create thumbnail
+
+  [ Tyler Garner ]
+  * [6360db] Fix unclosed and orphaned markup elements.
+  * [ce48dc] Resource contact elements should not overflow the sidebar.
+  * [648492] Apply more restrictive selector to date picker styling.
+  * [69727a] Allow profiles to be ordered by the username and join date.  Fixes #1608.
+
+  [ Simone Dalmasso ]
+  * [5233b9] remove model translation version for now and add the fallback language setting
+
+  [ Tyler Garner ]
+  * [140a97] External service views should use consistent GeoNode style.
+  * [98bb59] Fix typo in the service model.
+  * [9c045c] Close an unclosed <ul> element in the layer_remove template.
+  * [2b5b68] Fix the travis error.
+
+  [ Matt Bertrand ]
+  * [598b84] Fix layer lookup (specify service=None for local layers)
+
+  [ capooti ]
+  * [4a3b21] Added the --skip-geonode-registered option in updatelayers.
+
+  [ Matt Bertrand ]
+  * [55a723] Don't cascade delete from geoserver for remote layers.  Fixes #1619, #1620.
+
+  [ Tyler Garner ]
+  * [dc3422] Move the Register link inside of a navbar list.  Remove unneeded </ul> tag.
+
+  [ Micah Wengren ]
+  * [676b17] Add a the Leaflet.Fullscreen plugin as a default with Leaflet preview on layer_detail view
+
+  [ menegon ]
+  * [5aaac2] made some strings translatable
+  * [cb7265] Other strings marked as  translatable
+
+  [ mwengren ]
+  * [c91276] Use Javascript to detect plugin presence
+  * [1a4360] Modify Links model to generate GetCapabilities links for WMS, WFS, WCS services
+  * [548938] Restored 'OWS' link, but with added params for GetCapabilities response
+
+  [ Matthew Hanson ]
+  * [a9ae42] fixed permission check for publishing wms
+
+  [ Ian Schneider ]
+  * [3f5a00] make flake8 happy except long lines
+
+  [ state-hiu ]
+  * [85ad7a] added license_help_text
+  * [f33a85] document type (subtype) search
+  * [2ed2af] added doc file types
+  * [904cfc] added archive facet
+
+  [ capooti ]
+  * [264e3b] Satisfying a pep8 recommendation.
+
+  [ state-hiu ]
+  * [bf5106] PEP8 Fixes for E128
+  * [e63f28] small PEP8 fix
+
+  [ Brylie Christopher Oxley ]
+  * [941162] Moved populate_maplayers, adjusted import statement in tests.py.
+
+  [ state-hiu ]
+  * [21e823] final pep8 fixes
+  * [976653] fixed a few license layout issues
+
+  [ Ian Schneider ]
+  * [9e76ca] minor search changes to support reuses
+
+  [ state-hiu ]
+  * [0a2da5] added download button and linked images
+  * [d29186] minor change to html5 data attributes
+  * [4d644c] fixes to document views
+  * [cf6ae0] PEP8 fix
+  * [253bad] add group email, hide manage commands, group logo css
+  * [771714] revert css change b/c of less issues
+  * [34a770] PEP8 fix
+  * [a59375] fixed whitespace
+  * [6b739b] added error messages.  fixed title
+  * [f1bb5f] suggested changes made
+  * [07e17b] group activitu feed, members layout, help_text, fixes
+  * [8ab3ee] PEP8 fixes
+
+  [ mwengren ]
+  * [a51e43] Revert to bare WMS, WFS, WCS URLs in base_link, update gmd:protocol and other element values in ISO template
+
+  [ Tom Kralidis ]
+  * [10d776] remove query string prefix
+
+  [ state-hiu ]
+  * [a4b1e2] reworked profile contact info and layout
+  * [3fadaa] added in groups section to profile page
+  * [c88c92] PEP8 fixes
+  * [eb0997] added in user activities link
+  * [0005c6] added pptx
+  * [31a19d] PEP8 fix
+  * [12db36] updated upload layout for documents and layers
+  * [751ddd] PEP8 fix
+
+  [ Tom Kralidis ]
+  * [5bf7df] add tests, remove erroneous link add __str__ for Link class
+  * [f8aadd] remove commented out code
+  * [b43bfa] remove unused var
+  * [6ce22f] remove unused var
+
+  [ Ian Schneider ]
+  * [08d150] provide postgis as dbtype for datastore
+  * [d920a5] upload - log unexpected exceptions
+
+  [ mwengren ]
+  * [24dfb7] Don't assume a 'local' MapLayer has been added to GeoNode from GeoServer
+  * [96497f] Make flake8 happy, remove unused import
+
+  [ Ian Schneider ]
+  * [237f2c] reformat logging settings
+
+  [ Tom Kralidis ]
+  * [a15f86] Update models.py
+
+  [ state-hiu ]
+  * [288825] fixed geoext preview map center
+
+  [ Tyler Garner ]
+  * [bfa4a6] Remove the AUTH_PROFILE_MODULE setting.
+
+  [ mwengren ]
+  * [afdbb1] Change Foreign Key relationship for ResourceBase and Thumbnail
+
+  [ Tyler Garner ]
+  * [16aa73] Update comment functionality to work with Bootstrap 3.
+
+  [ Brylie Christopher Oxley ]
+  * [1be8a4] Updated documentation steps. Fixes #1194
+
+  [ Matthew Hanson ]
+  * [7de084] cleaned up redundant code for resolving map permissions
+
+  [ Ian Schneider ]
+  * [e0bc74] announcements as template include fragment
+
+  [ Simone Dalmasso ]
+  * [85607b] don't load assets.min.css in debug_static mode
+  * [fbbd18] fix css minification order
+  * [0ce0b5] make the url sync back to work
+  * [d42fa9] DRY the address logic
+  * [3125b6] use anonymous group to manage anonymous permissions, fixes permissions for newly created users
+  * [6b62f5] make flake8 happy
+  * [6f521d] add test for new anonymous group permissions, fix set_default_permissions and group tests
+
+  [ Jean Jordaan ]
+  * [eec65f] Note docs on geoserver auth; also some typos
+
+  [ joebocop ]
+  * [5c08e1] Modify wording of index.txt
+
+  [ Simone Dalmasso ]
+  * [673215] distance profile resources count. Fixes #1651
+  * [8664aa] check if the user has the perms to save an existing map. fixes #1645
+  * [8f5b08] keep in sync the emailaddress between profile and django accounts
+  * [f417d5] don't trigger email address registration with tests, they do it already
+  * [5ea27c] add back the create map link in layers snippets
+  * [7928b4] add back popular_count and fix create map icon
+  * [505bd7] make flake8 happy
+  * [b85446] exclude AnonymousUser from autocomplete fixes #1653
+
+  [ npmiller ]
+  * [c0c8bc] Wrap tabs in a block in the base template
+
+  [ Simone Dalmasso ]
+  * [3333f8] don't trigger the save on popular_count update, fixes #1631
+  * [14e8fc] don't run replace in grunt tasks, it breaks the css
+  * [3dbf3a] remove no longer needed bootstrap 2 css
+  * [3c195a] small groups bugs fixing
+
+  [ Stephen Mather ]
+  * [3921c8] add-apt-repository not installed by default 12.04
+
+  [ Luiz Vital ]
+  * [012ba5] Fixes geoserver_rest_proxy view to be able to send non-ascii chars
+
+  [ Taro Matsuzawa ]
+  * [3a4b48] save map use unicode chars
+  * [4873af] fixes config file name
+
+  [ Stephen Mather ]
+  * [62a7fc] Update README
+  * [eea74d] fix capitalization for Ubuntu
+  * [9d1182] Clarifying language Ubunti 12.04 / 14.04 install
+
+  [ Matt Bertrand ]
+  * [4d520b] Don't allow import of ArcGIS MapServer layers that aren't in a projection compatible with web mercator.
+
+  [ state-hiu ]
+  * [3b567f] fixed location for document popular_count
+
+  [ Micah Wengren ]
+  * [d8239f] Add leaflet-fullscreen plugin resources to bower and grunt config files
+  * [868b17] Update static resources with leaflet-fullscreen plugin files
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 07 Oct 2014 14:40:24 +0000
+
 geonode (2.4.0+alpha5) trusty; urgency=medium
 
   [ Tyler Garner ]
