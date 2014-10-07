@@ -706,8 +706,8 @@ LEAFLET_CONFIG = {
             'auto-include': True,
         },
         'leaflet-fullscreen': {
-            'css': '//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.2/leaflet.fullscreen.css',
-            'js': '//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.2/Leaflet.fullscreen.min.js',
+            'css': 'lib/css/leaflet.fullscreen.css',
+            'js': 'lib/js/Leaflet.fullscreen.min.js',
             'auto-include': True,
         },
     }

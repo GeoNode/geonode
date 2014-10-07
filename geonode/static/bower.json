@@ -25,6 +25,7 @@
     "angular": "1.2.6",
     "angular-leaflet-directive": "~0.7.3",
     "zeroclipboard": "2.1.5",
-    "moment": "2.7.0"
+    "moment": "2.7.0",
+    "leaflet-fullscreen": "https://github.com/Leaflet/Leaflet.fullscreen.git"
   }
 }
