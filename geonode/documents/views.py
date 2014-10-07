@@ -66,8 +66,6 @@ def document_detail(request, docid):
                     request, {
                         'error_message': _("You are not allowed to view this document.")})), status=403)
 
-    Document.objects.filter(id=document.id).update(popular_count=F('popular_count') + 1)
-
     if document is None:
         return HttpResponse(
             'An unknown error has occured.',
@@ -81,6 +79,8 @@ def document_detail(request, docid):
                 id=document.object_id)
         except:
             related = ''
+
+        Document.objects.filter(id=document.id).update(popular_count=F('popular_count') + 1)
 
         return render_to_response(
             "documents/document_detail.html",
