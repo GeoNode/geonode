@@ -4,6 +4,7 @@ import uuid
 
 from django.db import models
 from django.db.models import signals
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.core.files.base import ContentFile
@@ -39,6 +40,8 @@ class Document(ResourceBase):
 
     extension = models.CharField(max_length=128, blank=True, null=True)
 
+    doc_type = models.CharField(max_length=128, blank=True, null=True)
+
     doc_url = models.URLField(
         blank=True,
         null=True,
@@ -50,6 +53,13 @@ class Document(ResourceBase):
 
     def get_absolute_url(self):
         return reverse('document_detail', args=(self.id,))
+
+    @property
+    def name_long(self):
+        if not self.title:
+            return str(self.id)
+        else:
+            return '%s (%s)' % (self.title, self.id)
 
     def _render_thumbnail(self):
         from cStringIO import StringIO
@@ -114,11 +124,21 @@ def get_related_documents(resource):
 
 
 def pre_save_document(instance, sender, **kwargs):
-    base_name, extension = None, None
+    base_name, extension, doc_type = None, None, None
 
     if instance.doc_file:
         base_name, extension = os.path.splitext(instance.doc_file.name)
         instance.extension = extension[1:]
+        doc_type_map = settings.DOCUMENT_TYPE_MAP
+        if doc_type_map is None:
+            doc_type = 'other'
+        else:
+            if instance.extension in doc_type_map:
+                doc_type = doc_type_map[''+instance.extension]
+            else:
+                doc_type = 'other'
+        instance.doc_type = doc_type
+
     elif instance.doc_url:
         if len(instance.doc_url) > 4 and instance.doc_url[-4] == '.':
             instance.extension = instance.doc_url[-3:]
@@ -152,21 +172,21 @@ def create_thumbnail(sender, instance, created, **kwargs):
         return
 
     if instance.has_thumbnail():
-        instance.thumbnail.thumb_file.delete()
+        instance.thumbnail_set.get().thumb_file.delete()
     else:
-        instance.thumbnail = Thumbnail()
+        instance.thumbnail_set.add(Thumbnail())
 
     image = instance._render_thumbnail()
 
-    instance.thumbnail.thumb_file.save(
+    instance.thumbnail_set.get().thumb_file.save(
         'doc-%s-thumb.png' %
         instance.id,
         ContentFile(image))
-    instance.thumbnail.thumb_spec = 'Rendered'
-    instance.thumbnail.save()
+    instance.thumbnail_set.get().thumb_spec = 'Rendered'
+    instance.thumbnail_set.get().save()
     Link.objects.get_or_create(
         resource=instance.get_self_resource(),
-        url=instance.thumbnail.thumb_file.url,
+        url=instance.thumbnail_set.get().thumb_file.url,
         defaults=dict(
             name=('Thumbnail'),
             extension='png',

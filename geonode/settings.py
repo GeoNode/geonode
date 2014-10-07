@@ -154,10 +154,37 @@ LOGOUT_URL = '/account/logout/'
 
 # Documents application
 ALLOWED_DOCUMENT_TYPES = [
-    'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'pdf', 'png', 'ppt',
-    'rar', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip',
+    'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png', 'ppt',
+    'pptx', 'rar', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz'
 ]
 MAX_DOCUMENT_SIZE = 2  # MB
+DOCUMENT_TYPE_MAP = {
+    'txt': 'text',
+    'log': 'text',
+    'doc': 'text',
+    'docx': 'text',
+    'ods': 'text',
+    'odt': 'text',
+    'xls': 'text',
+    'xlsx': 'text',
+    'xml': 'text',
+
+    'gif': 'image',
+    'jpg': 'image',
+    'jpeg': 'image',
+    'png': 'image',
+    'tif': 'image',
+    'tiff': 'image',
+
+    'odp': 'presentation',
+    'ppt': 'presentation',
+    'pptx': 'presentation',
+    'pdf': 'presentation',
+
+    'rar': 'archive',
+    'gz': 'archive',
+    'zip': 'archive',
+}
 
 
 GEONODE_APPS = (
@@ -242,23 +269,49 @@ INSTALLED_APPS = (
 ) + GEONODE_APPS
 
 LOGGING = {
-    'version': 1, 'disable_existing_loggers': True, 'formatters': {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'}, 'simple': {
-                'format': '%(message)s', }, }, 'filters': {
-                    'require_debug_false': {
-                        '()': 'django.utils.log.RequireDebugFalse'}}, 'handlers': {
-                            'null': {
-                                'level': 'ERROR', 'class': 'django.utils.log.NullHandler', }, 'console': {
-                                    'level': 'ERROR', 'class': 'logging.StreamHandler', 'formatter': 'simple'},
-        'mail_admins': {'level': 'ERROR', 'filters': ['require_debug_false'], 'class':
-                                'django.utils.log.AdminEmailHandler', }}, "loggers": {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(message)s',
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'null': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR', 'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
+    },
+    "loggers": {
         "django": {
-            "handlers": ["console"], "level": "ERROR", }, "geonode": {
-            "handlers": ["console"], "level": "ERROR", }, "gsconfig.catalog": {
-            "handlers": ["console"], "level": "ERROR", }, "owslib": {
-            "handlers": ["console"], "level": "ERROR", }, "pycsw": {
-            "handlers": ["console"], "level": "ERROR", }, }, }
+            "handlers": ["console"], "level": "ERROR", },
+        "geonode": {
+            "handlers": ["console"], "level": "ERROR", },
+        "gsconfig.catalog": {
+            "handlers": ["console"], "level": "ERROR", },
+        "owslib": {
+            "handlers": ["console"], "level": "ERROR", },
+        "pycsw": {
+            "handlers": ["console"], "level": "ERROR", },
+        },
+    }
 
 #
 # Customizations to built in Django settings required by GeoNode
@@ -343,7 +396,6 @@ ACTSTREAM_SETTINGS = {
 }
 
 # Settings for Social Apps
-AUTH_PROFILE_MODULE = 'people.Profile'
 REGISTRATION_OPEN = False
 
 # Email for users to contact admins.

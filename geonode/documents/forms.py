@@ -139,6 +139,7 @@ class DocumentForm(TranslationModelForm):
             'object_id',
             'doc_file',
             'extension',
+            'doc_type',
             'popular_count',
             'share_count',
             'thumbnail',

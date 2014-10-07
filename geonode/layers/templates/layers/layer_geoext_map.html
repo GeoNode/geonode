@@ -39,7 +39,17 @@
                 listeners: {
                     "ready": function() {
                         map = app.mapPanel.map;
-                        map.zoomToExtent(map.layers.slice(-1)[0].maxExtent);
+                        bbox = app.map.layers.slice(-1)[0].bbox
+                        if (bbox != undefined)
+                        {
+                            extent = OpenLayers.Bounds.fromArray(bbox).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection(this.map.projection));
+                            zoomToData = function()
+                            {
+                                map.zoomToExtent(extent, false)
+                                map.events.unregister('changebaselayer', null, zoomToData)
+                            };
+                            map.events.register('changebaselayer',null,zoomToData);
+                        }
                     },
                     "beforeunload": function() {
                         if (modified) {

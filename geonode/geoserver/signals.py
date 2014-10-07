@@ -19,7 +19,6 @@ from geonode.geoserver.helpers import geoserver_upload
 from geonode.utils import http_client
 from geonode.base.models import Link
 from geonode.base.models import Thumbnail
-from geonode.layers.models import Layer
 from geonode.layers.utils import create_thumbnail
 from geonode.people.models import Profile
 
@@ -335,20 +334,6 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
                                )
 
-    wms_path = '%s/%s/wms' % (instance.workspace, instance.name)
-    ows_url = urljoin(ogc_server_settings.public_url, wms_path)
-
-    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                               url=ows_url,
-                               defaults=dict(
-                                   extension='html',
-                                   name=_("OWS"),
-                                   url=ows_url,
-                                   mime='text/html',
-                                   link_type='OGC:WMS',
-                               )
-                               )
-
     html_link_url = '%s%s' % (
         settings.SITEURL[:-1], instance.get_absolute_url())
 
@@ -405,12 +390,14 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
                                )
 
-    ogc_wms_url = ogc_server_settings.public_url + 'wms?'
+    ogc_wms_path = '%s/wms' % instance.workspace
+    ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
+    ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                url=ogc_wms_url,
                                defaults=dict(
                                    extension='html',
-                                   name=instance.name,
+                                   name=ogc_wms_name,
                                    url=ogc_wms_url,
                                    mime='text/html',
                                    link_type='OGC:WMS',
@@ -418,12 +405,14 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
 
     if instance.storeType == "dataStore":
-        ogc_wfs_url = ogc_server_settings.public_url + 'wfs?'
+        ogc_wfs_path = '%s/wfs' % instance.workspace
+        ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
+        ogc_wfs_name = 'OGC WFS: %s Service' % instance.workspace
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=ogc_wfs_url,
                                    defaults=dict(
                                        extension='html',
-                                       name=instance.name,
+                                       name=ogc_wfs_name,
                                        url=ogc_wfs_url,
                                        mime='text/html',
                                        link_type='OGC:WFS',
@@ -431,12 +420,14 @@ def geoserver_post_save(instance, sender, **kwargs):
                                    )
 
     if instance.storeType == "coverageStore":
-        ogc_wcs_url = ogc_server_settings.public_url + 'wcs?'
+        ogc_wcs_path = '%s/wcs' % instance.workspace
+        ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)
+        ogc_wcs_name = 'OGC WCS: %s Service' % instance.workspace
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=ogc_wcs_url,
                                    defaults=dict(
                                        extension='html',
-                                       name=instance.name,
+                                       name=ogc_wcs_name,
                                        url=ogc_wcs_url,
                                        mime='text/html',
                                        link_type='OGC:WCS',
@@ -484,9 +475,7 @@ def geoserver_post_save_map(instance, sender, **kwargs):
     local_layers = []
     for layer in instance.layers:
         if layer.local:
-            local_layers.append(
-                Layer.objects.get(
-                    typename=layer.name).typename)
+            local_layers.append(layer.name)
 
     image = None
 
@@ -533,20 +522,20 @@ def geoserver_post_save_map(instance, sender, **kwargs):
 
     if image is not None:
         if instance.has_thumbnail():
-            instance.thumbnail.thumb_file.delete()
+            instance.thumbnail_set.get().thumb_file.delete()
         else:
-            instance.thumbnail = Thumbnail()
+            instance.thumbnail_set.add(Thumbnail())
 
-        instance.thumbnail.thumb_file.save(
+        instance.thumbnail_set.get().thumb_file.save(
             'map-%s-thumb.png' %
             instance.id,
             ContentFile(image))
-        instance.thumbnail.thumb_spec = thumbnail_remote_url
-        instance.thumbnail.save()
+        instance.thumbnail_set.get().thumb_spec = thumbnail_remote_url
+        instance.thumbnail_set.get().save()
 
         thumbnail_url = urljoin(
             settings.SITEURL,
-            instance.thumbnail.thumb_file.url)
+            instance.thumbnail_set.get().thumb_file.url)
 
         Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                    url=thumbnail_url,

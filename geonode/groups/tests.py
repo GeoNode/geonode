@@ -21,10 +21,12 @@ class SmokeTest(TestCase):
     fixtures = ["group_test_data"]
 
     def setUp(self):
+        from django.contrib.auth.models import Group
         create_models(type='layer')
         create_models(type='map')
         create_models(type='document')
         self.norman = get_user_model().objects.get(username="norman")
+        self.norman.groups.add(Group.objects.get(name='anonymous'))
         self.bar = GroupProfile.objects.get(slug='bar')
         self.anonymous_user = get_anonymous_user()
 
@@ -120,8 +122,8 @@ class SmokeTest(TestCase):
         layer = Layer.objects.all()[0]
         perms_info = layer.get_all_level_info()
 
-        # Ensure there is no group info for the layer object by default
-        self.assertEqual(len(perms_info['groups'].keys()), 0)
+        # Ensure there is only one group 'anonymous' by default
+        self.assertEqual(len(perms_info['groups'].keys()), 1)
 
         # Add the foo group to the layer object groups
         layer.set_permissions({'groups': {'bar': ['view_resourcebase']}})
@@ -163,7 +165,7 @@ class SmokeTest(TestCase):
                 permissions = json.loads(permissions)
 
             # Ensure the groups value is empty by default
-            self.assertDictEqual(permissions.get('groups'), dict())
+            self.assertDictEqual(permissions.get('groups'), {u'anonymous': [u'view_resourcebase']})
 
             permissions = {
                 'groups': {

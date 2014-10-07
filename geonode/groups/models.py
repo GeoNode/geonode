@@ -6,23 +6,37 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.db import models, IntegrityError
 from django.utils.translation import ugettext_lazy as _
-from taggit.managers import TaggableManager
+from django.db.models import signals
 
+from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group
 
 
 class GroupProfile(models.Model):
     GROUP_CHOICES = [
         ("public", _("Public")),
-        ("public-invite", _("Public (invite-only))")),
+        ("public-invite", _("Public (invite-only)")),
         ("private", _("Private")),
     ]
+
+    access_help_text = _('Public: Any registered user can view and join a public group.<br>'
+                         'Public (invite-only):Any registered user can view the group.  '
+                         'Only invited users can join.<br>'
+                         'Private: Registered users cannot see any details about the group, including membership.  '
+                         'Only invited users can join.')
+    email_help_text = _('Email used to contact one or all group members, '
+                        'such as a mailing list, shared email, or exchange group.')
 
     group = models.OneToOneField(Group)
     title = models.CharField(max_length=50)
     slug = models.SlugField(unique=True)
     logo = models.FileField(upload_to="people_group", blank=True)
     description = models.TextField()
+    email = models.EmailField(
+        _('email'),
+        null=True,
+        blank=True,
+        help_text=email_help_text)
     keywords = TaggableManager(
         _('keywords'),
         help_text=_("A space or comma-separated list of keywords"),
@@ -30,7 +44,8 @@ class GroupProfile(models.Model):
     access = models.CharField(
         max_length=15,
         default="public'",
-        choices=GROUP_CHOICES)
+        choices=GROUP_CHOICES,
+        help_text=access_help_text)
     last_modified = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
@@ -91,7 +106,7 @@ class GroupProfile(models.Model):
         """
         return get_user_model().objects.filter(
             id__in=self.member_queryset().filter(
-                role='manager') .values_list(
+                role='manager').values_list(
                 "user",
                 flat=True))
 
@@ -235,3 +250,12 @@ class GroupInvitation(models.Model):
                 "You can't decline an invitation that wasn't for you")
         self.state = "declined"
         self.save()
+
+
+def group_pre_delete(instance, sender, **kwargs):
+    """Make sure that the anonymous group is not deleted"""
+    if instance.name == 'anonymous':
+        raise Exception('Deletion of the anonymous group is\
+         not permitted as will break the geonode permissions system')
+
+signals.pre_delete.connect(group_pre_delete, sender=Group)

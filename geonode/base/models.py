@@ -1,14 +1,12 @@
 import datetime
 import math
 import os
-import hashlib
 import logging
 
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
-from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
@@ -153,17 +151,10 @@ class RestrictionCodeType(models.Model):
 
 class Thumbnail(models.Model):
 
+    resourcebase = models.ForeignKey('ResourceBase')
     thumb_file = models.FileField(upload_to='thumbs')
     thumb_spec = models.TextField(null=True, blank=True)
     version = models.PositiveSmallIntegerField(null=True, default=0)
-
-    def save_thumb(self, image, id):
-        """image must be png data in a string for now"""
-        self._delete_thumb()
-        md5 = hashlib.md5()
-        md5.update(id + str(self.version))
-        self.version = self.version + 1
-        self.thumb_file.save(md5.hexdigest() + ".png", ContentFile(image))
 
     def _delete_thumb(self):
         try:
@@ -251,6 +242,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     restriction_code_type_help_text = _('limitation(s) placed upon the access or use of the data.')
     constraints_other_help_text = _('other restrictions and legal prerequisites for accessing and using the resource or'
                                     ' metadata')
+    license_help_text = _('license of the dataset')
     language_help_text = _('language used within the dataset')
     category_help_text = _('high-level geographic data thematic classification to assist in the grouping and search of '
                            'available geographic data sets.')
@@ -287,7 +279,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     constraints_other = models.TextField(_('restrictions other'), blank=True, null=True,
                                          help_text=constraints_other_help_text)
 
-    license = models.ForeignKey(License, null=True, blank=True)
+    license = models.ForeignKey(License, null=True, blank=True,
+                                help_text=license_help_text)
     language = models.CharField(_('language'), max_length=3, choices=ALL_LANGUAGES, default='eng',
                                 help_text=language_help_text)
 
@@ -350,7 +343,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
                                     default='<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>',
                                     blank=True)
 
-    thumbnail = models.ForeignKey(Thumbnail, null=True, blank=True, on_delete=models.SET_NULL)
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
 
@@ -362,8 +354,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     rating = models.IntegerField(default=0, null=True)
 
     def delete(self, *args, **kwargs):
+        resourcebase_pre_delete(self)
         super(ResourceBase, self).delete(*args, **kwargs)
-        resourcebase_post_delete(self)
 
     def __unicode__(self):
         return self.title
@@ -521,7 +513,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
         """Return URL for OGC WMS server None if it does not exist.
         """
         try:
-            ows_link = self.link_set.get(name='OWS')
+            ows_link = self.link_set.get(name='OGC:WMS')
         except Link.DoesNotExist:
             return None
         else:
@@ -545,13 +537,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     def has_thumbnail(self):
         """Determine if the thumbnail object exists and an image exists"""
-        if self.thumbnail is None:
+        if not self.thumbnail_set.exists():
             return False
 
-        if not hasattr(self.thumbnail.thumb_file, 'path'):
+        if not hasattr(self.thumbnail_set.get().thumb_file, 'path'):
             return False
 
-        return os.path.exists(self.thumbnail.thumb_file.path)
+        return os.path.exists(self.thumbnail_set.get().thumb_file.path)
 
     def set_missing_info(self):
         """Set default permissions and point of contacts.
@@ -648,6 +640,9 @@ class LinkManager(models.Manager):
     def geogit(self):
         return self.get_queryset().filter(name__icontains='geogit')
 
+    def ows(self):
+        return self.get_queryset().filter(link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
+
 
 class Link(models.Model):
     """Auxiliary model for storing links for resources.
@@ -660,6 +655,9 @@ class Link(models.Model):
         * data: For WFS and WCS links that allow access to raw data
         * image: For WMS and TMS links
         * metadata: For CSW links
+        * OGC:WMS: for WMS service links
+        * OGC:WFS: for WFS service links
+        * OGC:WCS: for WCS service links
     """
     resource = models.ForeignKey(ResourceBase)
     extension = models.CharField(max_length=255, help_text=_('For example "kml"'))
@@ -670,10 +668,13 @@ class Link(models.Model):
 
     objects = LinkManager()
 
+    def __str__(self):
+        return '%s link' % self.link_type
 
-def resourcebase_post_delete(instance):
-    if instance.thumbnail is not None:
-        instance.thumbnail.delete()
+
+def resourcebase_pre_delete(instance):
+    if instance.thumbnail_set.exists():
+        instance.thumbnail_set.get().thumb_file.delete()
 
 
 def resourcebase_post_save(instance, *args, **kwargs):

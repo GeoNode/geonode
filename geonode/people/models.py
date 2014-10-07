@@ -21,12 +21,15 @@
 from django.db import models
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
-
 from django.contrib.auth.models import AbstractUser
+from django.db.models import signals
 
 from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
+from geonode.groups.models import GroupProfile
+
+from .utils import format_address
 
 
 class Profile(AbstractUser):
@@ -39,7 +42,7 @@ class Profile(AbstractUser):
         blank=True,
         null=True,
         help_text=_('name of the responsible organization'))
-    profile = models.TextField(_('Profile'), null=True, blank=True)
+    profile = models.TextField(_('Profile'), null=True, blank=True, help_text=_('introduce yourself'))
     position = models.CharField(
         _('Position Name'),
         max_length=255,
@@ -95,6 +98,50 @@ class Profile(AbstractUser):
 
     USERNAME_FIELD = 'username'
 
+    def group_list_public(self):
+        return GroupProfile.objects.exclude(access="private").filter(groupmember__user=self)
+
+    def group_list_all(self):
+        return GroupProfile.objects.filter(groupmember__user=self)
+
+    def keyword_list(self):
+        """
+        Returns a list of the Profile's keywords.
+        """
+        return [kw.name for kw in self.keywords.all()]
+
+    @property
+    def name_long(self):
+        if self.first_name and self.last_name:
+            return '%s %s (%s)' % (self.first_name, self.last_name, self.username)
+        elif (not self.first_name) and self.last_name:
+            return '%s (%s)' % (self.last_name, self.username)
+        elif self.first_name and (not self.last_name):
+            return '%s (%s)' % (self.first_name, self.username)
+        else:
+            return self.username
+
+    @property
+    def location(self):
+        return format_address(self.delivery, self.zipcode, self.city, self.area, self.country)
+
 
 def get_anonymous_user_instance(Profile):
     return Profile(username='AnonymousUser')
+
+
+def profile_post_save(instance, sender, **kwargs):
+    """Make sure the user belongs by default to the anonymous group.
+    This will make sure that anonymous permissions will be granted to the new users."""
+    from django.contrib.auth.models import Group
+    anon_group, created = Group.objects.get_or_create(name='anonymous')
+    instance.groups.add(anon_group)
+    # keep in sync Profile email address with Account email address
+    if instance.email not in [u'', '', None] and not kwargs.get('raw', False):
+        emailaddress, created = instance.emailaddress_set.get_or_create(user=instance, primary=True)
+        if created or not emailaddress.email == instance.email:
+            emailaddress.email = instance.email
+            emailaddress.save()
+
+
+signals.post_save.connect(profile_post_save, sender=Profile)

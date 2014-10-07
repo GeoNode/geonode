@@ -56,18 +56,20 @@ GeoNode and GeoServer
 GeoNode uses GeoServer for providing OGC services. 
 
 - GeoNode configures GeoServer via the REST API
-- GeoNode retreives and caches spatial information from GeoServer. This includes
+- GeoNode retrieves and caches spatial information from GeoServer. This includes
   relevant OGC service links, spatial metadata, and attribute information.
  
-  In summary, GeoServer contains the layer's data and GeoNode's layer model
-  extends what metadata is present in GeoServer with it's own.
+  In summary, GeoServer contains the layer data, and GeoNode's layer model
+  extends the metadata present in GeoServer with its own.
 - GeoNode can discover existing layers published in a GeoServer via the WMS
-  capabilities document
-- GeoServer delegates authentication and authorization to GeoNode
+  capabilities document.
+- GeoServer delegates authentication and authorization to GeoNode (see README_).
 - Data uploaded to GeoNode is first processed in GeoNode and finally published
-  to GeoServer (or ingested into the spatial database)
+  to GeoServer (or ingested into the spatial database).
 
 More:  http://geoserver.org
+
+.. _README: https://github.com/GeoNode/geoserver-geonode-ext/blob/master/README.md
 
 GeoNode and PostgreSQL/PostGIS
 ------------------------------

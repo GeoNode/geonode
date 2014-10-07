@@ -275,7 +275,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
         return path[len(prefix):]
 
     path = strip_prefix(request.get_full_path(), proxy_path)
-    url = "".join([ogc_server_settings.LOCATION, downstream_path, path])
+    url = str("".join([ogc_server_settings.LOCATION, downstream_path, path]))
 
     http = httplib2.Http()
     http.add_credentials(*(ogc_server_settings.credentials))
