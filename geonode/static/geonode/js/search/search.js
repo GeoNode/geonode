@@ -2,7 +2,7 @@
 
 (function(){
 
-  var module = angular.module('main_search', [], function($locationProvider) {
+  var module = angular.module('geonode_main_search', [], function($locationProvider) {
       $locationProvider.html5Mode(true);
 
       // make sure that angular doesn't intercept the page links
@@ -113,7 +113,7 @@
   * Load data from api and defines the multiple and single choice handlers
   * Syncs the browser url with the selections
   */
-  module.controller('MainController', function($injector, $scope, $location, $http, Configs){
+  module.controller('geonode_search_controller', function($injector, $scope, $location, $http, Configs){
     $scope.query = $location.search();
     $scope.query.limit = $scope.query.limit || CLIENT_RESULTS_LIMIT;
     $scope.query.offset = $scope.query.offset || 0;
