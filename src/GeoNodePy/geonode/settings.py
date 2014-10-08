@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
 # Django settings for GeoNode project.
 import logging
-import os
+import os, sys
 
 gettext = lambda s: s
 
 #
 # General Django development settings
 #
+
+
+####################### DATAVERSE_INFO_REPOSITORY_PATH
+#
+# Path to additional repository: https://github.com/IQSS/shared-dataverse-information
+# Used for dataverse/worldmap communication.  Validate data passed via api, etc
+#
+DATAVERSE_INFO_REPOSITORY_PATH = '/home/ubuntu/code/shared-dataverse-information'
+####################### END: DATAVERSE_INFO_REPOSITORY_PATH
+
 
 # Defines the directory that contains the settings file as the PROJECT_ROOT
 # It is used for relative settings elsewhere.
@@ -140,7 +150,8 @@ INSTALLED_APPS = (
     #'debug_toolbar',
 
     #DVN apps
-    'geonode.dataverse_info',
+    'dataverse_info',       # external repository: https://github.com/IQSS/shared-dataverse-information
+    'geonode.dataverse_layer_metadata', # uses the datavere info repository
     'geonode.dvn',
     'geonode.classification',
 
