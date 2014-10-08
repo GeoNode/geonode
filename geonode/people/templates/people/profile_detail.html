@@ -93,13 +93,6 @@
 </div>
 
 {% if user.is_authenticated %}
-<div class="col-md-8">
-  <h3>Profile</h3>
-  {{ profile.profile }}
-</div>
-{% endif %}
-
-{% if user.is_authenticated %}
 
 <div class="col-md-8">
   <h3>Groups</h3>
@@ -142,54 +135,36 @@
 {% endif %}
 
 
-<div class="col-md-8">
+<div class="col-md-12">
   <h3>Resources</h3>
+  <div class="col-md-12">
   {% include "people/_profile_filters.html" %}
+  </div> 
+  <div class="col-md-12">
+  {% include "search/_sort_filters.html" %}
+  </div> 
+  <div class="col-md-12">
+    {% include 'search/_pagination.html' %}
+  </div> 
 </div>
 
-<div class="col-md-8">
-    <div class="tab-content span12 paginate paginate-auto">
-      {% if object_list|length > 0 %}
-      <div class="tab-pane active list paginate-contents" id="all">
-          {% autopaginate object_list 5 %}
-            {% for obj in object_list %}
-            <article>
-              <div class="content">
-                <div class="item-header">
-                <img class="thumb" src="{{ obj.thumbnail_url}}" />
-                {% if obj.class_name = 'Map' %}
-                <h3><i class="fa fa-map-marker"></i>
-                {% endif %}
-                {% if obj.class_name = 'Layer' %}
-                <h3><i class="fa fa-square-o rotate-45"></i>
-                {% endif %}
-                {% if obj.class_name = 'Document' %}
-                <h3><i class="fa fa-file-text-alt"></i>
-                {% endif %}
-                  <a href="{{ obj.detail_url }}">{{ obj.title }}</a>
-                </h3>
-              </div>
-              <div class="details">
-                <div class="meta">
-                  <p class="resources-abstract">{{ obj.abstract }}</p>
-                  <p class="sharing-date">{% trans "Shared on" %} {{ obj.date|date:"d b Y" }}</p>
-                </div>
-              </div>
-            </article>
-            {% endfor %}
-        </div>
-          {% paginate %}
-      </div>
+  {% include 'base/_resourcebase_snippet.html' %}
+
+  {% include "_bulk_permissions_form.html" %}
+{% endblock %}
+
+{% block extra_script %}
+  {% if GEONODE_SECURITY_ENABLED %}
+    {% include "_permissions_form_js.html" %}
+  {% endif %}
+  <script type="text/javascript">
+      {% if HAYSTACK_SEARCH %}
+          SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?owner__username={{profile.username}}'
       {% else %}
-      </div>
-      <article>
-        <p>{% trans "No contents found." %}</p>
-      </article>
-    {% endif %}
-    </div>
-  </div>
-</div>
-
+          SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}?owner__username={{profile.username}}';
+      {% endif %}
+  </script>
+  {% include 'search/search_scripts.html' %}
 {% endblock %}
 
 

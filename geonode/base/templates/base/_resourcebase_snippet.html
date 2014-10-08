@@ -17,7 +17,7 @@
           <a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a> |
           <a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a> 
           {% endverbatim %}{% if request.user.is_superuser %}
-          | Select <input class="resource_selected" type="checkbox" value="{{ item.id }}" /></p>
+          | Select <input class="resource_selected" type="checkbox" value="{% verbatim %}{{ item.id }}{% endverbatim %}" /></p>
           {% endif %}{% verbatim %}
       </div>
     </div>
