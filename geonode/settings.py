@@ -555,19 +555,6 @@ MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_mapboxsource"},
 }]
 
-if 'geonode.geoserver' in INSTALLED_APPS:
-    LOCAL_GEOSERVER = {
-        "source": {
-            "ptype": "gxp_wmscsource",
-            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
-            "restUrl": "/gs/rest"
-        }
-    }
-    baselayers = MAP_BASELAYERS
-    MAP_BASELAYERS = [LOCAL_GEOSERVER]
-    MAP_BASELAYERS.extend(baselayers)
-
-
 SOCIAL_BUTTONS = True
 
 # Enable Licenses User Interface
@@ -703,3 +690,16 @@ try:
     from local_settings import *  # noqa
 except ImportError:
     pass
+
+# define the urls after the settings are overridden
+if 'geonode.geoserver' in INSTALLED_APPS:
+    LOCAL_GEOSERVER = {
+        "source": {
+            "ptype": "gxp_wmscsource",
+            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+            "restUrl": "/gs/rest"
+        }
+    }
+    baselayers = MAP_BASELAYERS
+    MAP_BASELAYERS = [LOCAL_GEOSERVER]
+    MAP_BASELAYERS.extend(baselayers)
