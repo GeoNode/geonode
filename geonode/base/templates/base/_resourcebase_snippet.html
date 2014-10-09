@@ -15,7 +15,10 @@
           <a href="{{ item.detail_url }}#info"><i class="fa fa-calendar-o"></i>{{ item.date|date:'d MMM y' }}</a> |
           <a href="{{ item.detail_url }}"><i class="fa fa-eye"></i>{{ item.popular_count }}</a> |
           <a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a> |
-          <a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a></p>
+          <a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a> 
+          {% endverbatim %}{% if request.user.is_authenticated %}
+          | Select <input class="resource_selected" type="checkbox" value="{% verbatim %}{{ item.id }}{% endverbatim %}" /></p>
+          {% endif %}{% verbatim %}
       </div>
     </div>
   </article>
