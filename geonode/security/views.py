@@ -82,29 +82,32 @@ def resource_permissions(request, resource_id):
 
 @require_POST
 def set_bulk_permissions(request):
-    if not request.user.is_superuser:
-        return HttpResponse(
-            'Only administrators are allowed to change bulk permissions',
-            status=401,
-            mimetype='text/plain')
+
     permission_spec = json.loads(request.POST.get('permissions', None))
     resource_ids = request.POST.getlist('resources', [])
     if permission_spec is not None:
+        not_permitted = []
         for resource_id in resource_ids:
-            resource = resolve_object(
-                request, ResourceBase, {
-                    'id': resource_id
-                },
-                'base.change_resourcebase_permissions')
-            resource.set_permissions(permission_spec)
-
+            try:
+                resource = resolve_object(
+                    request, ResourceBase, {
+                        'id': resource_id
+                    },
+                    'base.change_resourcebase_permissions')
+                resource.set_permissions(permission_spec)
+            except PermissionDenied:
+                not_permitted.append(ResourceBase.objects.get(id=resource_id).title)
+            
+        if len(not_permitted) > 0:
+            msg = """Permissions regitered, although the following were skipped because you don't have the rights:\n- %s""" % '\n- '.join(not_permitted)
+        else: msg = 'Permissions correctly registered'
         return HttpResponse(
-            json.dumps({'success': True}),
+            json.dumps({'success': msg}),
             status=200,
             mimetype='text/plain'
         )
     else:
         return HttpResponse(
-            'Wrong permissions specification',
+            json.dumps({'error':'Wrong permissions specification'}),
             status=400,
             mimetype='text/plain')

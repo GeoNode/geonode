@@ -240,6 +240,11 @@
     var bulk_perms_submit = function(){
        var permissions = permissionsString($('#permission_form'), 'base');
        var selected_ids = $.map($('.resource_selected:checked'), function(elem){return elem.value});
+       if(selected_ids.length == 0){
+        $("#modal_perms").modal("hide");
+        alert('Please select at least one resource to set the permissions');
+        return;
+       }
        $.ajax(
         {
           type: "POST",
@@ -250,6 +255,10 @@
           },
           success: function(data) {
             $("#modal_perms").modal("hide");
+            alert($.parseJSON(data).success);
+          },
+          error: function(data){
+            alert($.parseJSON(data).error);
           }
         }
       );
