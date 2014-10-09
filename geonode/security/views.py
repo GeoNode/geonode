@@ -20,9 +20,10 @@
 
 from django.utils import simplejson as json
 from django.core.exceptions import PermissionDenied
-from geonode.utils import resolve_object
 from django.http import HttpResponse
+from django.views.decorators.http import require_POST
 
+from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
 
 
@@ -76,4 +77,39 @@ def resource_permissions(request, resource_id):
         return HttpResponse(
             'No methods other than get and post are allowed',
             status=401,
+            mimetype='text/plain')
+
+
+@require_POST
+def set_bulk_permissions(request):
+
+    permission_spec = json.loads(request.POST.get('permissions', None))
+    resource_ids = request.POST.getlist('resources', [])
+    if permission_spec is not None:
+        not_permitted = []
+        for resource_id in resource_ids:
+            try:
+                resource = resolve_object(
+                    request, ResourceBase, {
+                        'id': resource_id
+                    },
+                    'base.change_resourcebase_permissions')
+                resource.set_permissions(permission_spec)
+            except PermissionDenied:
+                not_permitted.append(ResourceBase.objects.get(id=resource_id).title)
+
+        if len(not_permitted) > 0:
+            msg = """Permissions regitered, although the following were skipped
+                     because you don't have the rights:\n- %s""" % '\n- '.join(not_permitted)
+        else:
+            msg = 'Permissions correctly registered'
+        return HttpResponse(
+            json.dumps({'success': msg}),
+            status=200,
+            mimetype='text/plain'
+        )
+    else:
+        return HttpResponse(
+            json.dumps({'error': 'Wrong permissions specification'}),
+            status=400,
             mimetype='text/plain')
