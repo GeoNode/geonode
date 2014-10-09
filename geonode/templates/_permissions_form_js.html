@@ -232,8 +232,40 @@
     $("#perms_submit").click(function(){
         $("#permission_form").submit();
     });
+
     {% if resource %}
     $("#permission_form").submit(perms_submit);
     {% endif %}
+
+    var bulk_perms_submit = function(){
+       var permissions = permissionsString($('#permission_form'), 'base');
+       var selected_ids = $.map($('.resource_selected:checked'), function(elem){return elem.value});
+       if(selected_ids.length == 0){
+        $("#modal_perms").modal("hide");
+        alert('Please select at least one resource to set the permissions');
+        return;
+       }
+       $.ajax(
+        {
+          type: "POST",
+          url: "{% url 'bulk_permissions' %}",
+          data: {
+            permissions: JSON.stringify(permissions),
+            resources: selected_ids
+          },
+          success: function(data) {
+            $("#modal_perms").modal("hide");
+            alert($.parseJSON(data).success);
+          },
+          error: function(data){
+            alert($.parseJSON(data).error);
+          }
+        }
+      );
+    };
+
+    $("#bulk_perms_submit").click(function(){
+        bulk_perms_submit();
+    });
   });
 </script>

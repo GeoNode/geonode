@@ -88,14 +88,12 @@ urlpatterns = patterns('',
                        # (r'^notifications/', include('notification.urls')),
                        (r'^messages/', include('user_messages.urls')),
                        (r'^social/', include('geonode.social.urls')),
+                       (r'^security/', include('geonode.security.urls')),
                        # Accounts
                        url(r'^account/ajax_login$', 'geonode.views.ajax_login',
                            name='account_ajax_login'),
                        url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup',
                            name='account_ajax_lookup'),
-                       url(r'^security/permissions/(?P<resource_id>\d+)$',
-                           'geonode.security.views.resource_permissions',
-                           name='resource_permissions'),
 
                        # Meta
                        url(r'^lang\.js$',
