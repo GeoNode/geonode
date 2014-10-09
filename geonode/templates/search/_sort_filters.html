@@ -7,8 +7,10 @@
   <li><a data-value="-title" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Z - A" %}</a></li>
   <li><a data-value="-popular_count" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Most popular" %}</a></li>
 </ul>
-{% if request.user.is_superuser %}
-<div class="col-md-2 pull-right">
-    <button data-toggle="modal" class="btn btn-default btn-block" data-target="#_bulk_permissions">Set permissions</button>
-</div>
-{% endif %}
+{% block bulk_perms_button %}
+    {% if request.user.is_authenticated %}
+    <div class="col-md-2 pull-right">
+        <button data-toggle="modal" class="btn btn-default btn-block" data-target="#_bulk_permissions">Set permissions</button>
+    </div>
+    {% endif %}
+{% endblock %}

@@ -3,9 +3,11 @@ import json
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 from tastypie.test import ResourceTestCase
+from guardian.shortcuts import assign_perm
 
 from geonode.base.populate_test_data import create_models, all_public
 from geonode.layers.models import Layer
+from geonode.people.models import Profile
 
 
 class BulkPermissionsTests(ResourceTestCase):
@@ -56,3 +58,22 @@ class BulkPermissionsTests(ResourceTestCase):
         c.login(username='bobby', password='bob')
         resp = c.get(self.list_url)
         self.assertEquals(len(self.deserialize(resp)['objects']), 6)
+
+    def test_bobby_cannot_set_all(self):
+        """Test that Bobby can set the permissions only only on the ones
+        for which he has the right"""
+
+        layer = Layer.objects.all()[0]
+        c = Client()
+        c.login(username='admin', password='admin')
+        # give bobby the right to change the layer permissions
+        assign_perm('change_resourcebase', Profile.objects.get(username='bobby'), layer.get_self_resource())
+        c.logout()
+        c.login(username='bobby', password='bob')
+        layer2 = Layer.objects.all()[1]
+        data = {
+            'permissions': json.dumps({"users": {"bobby": ["view_resourcebase"]}, "groups": {}}),
+            'resources': [layer.id, layer2.id]
+        }
+        resp = c.post(self.bulk_perms_url, data)
+        self.assertTrue(layer2.title in json.loads(resp.content)['success'])
