@@ -306,11 +306,6 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     # Get all the files uploaded with the layer
     files = get_files(filename)
 
-    # Add them to the upload session (new file fields are created).
-    for type_name, fn in files.items():
-        with open(fn, 'rb') as f:
-            upload_session.layerfile_set.create(name=type_name, file=File(f))
-
     # Set a default title that looks nice ...
     if title is None:
         basename = os.path.splitext(os.path.basename(filename))[0]
@@ -322,6 +317,12 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
     # Generate a name that is not taken if overwrite is False.
     valid_name = get_valid_layer_name(name, overwrite)
+
+    # Add them to the upload session (new file fields are created).
+    for type_name, fn in files.items():
+        with open(fn, 'rb') as f:
+            upload_session.layerfile_set.create(name=type_name,
+                                                file=File(f, name='%s.%s' % (valid_name, type_name)))
 
     # Get a bounding box
     bbox_x0, bbox_x1, bbox_y0, bbox_y1 = get_bbox(filename)
