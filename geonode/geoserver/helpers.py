@@ -422,13 +422,13 @@ def gs_slurp(
                 "title": resource.title or 'No title provided',
                 "abstract": resource.abstract or 'No abstract provided',
                 "owner": owner,
-                "uuid": str(uuid.uuid4())
+                "uuid": str(uuid.uuid4()),
+                "bbox_x0": Decimal(resource.latlon_bbox[0]),
+                "bbox_x1": Decimal(resource.latlon_bbox[1]),
+                "bbox_y0": Decimal(resource.latlon_bbox[2]),
+                "bbox_y1": Decimal(resource.latlon_bbox[3])
             })
-            layer.bbox_x0 = Decimal(resource.latlon_bbox[0])
-            layer.bbox_x1 = Decimal(resource.latlon_bbox[1])
-            layer.bbox_y0 = Decimal(resource.latlon_bbox[2])
-            layer.bbox_y1 = Decimal(resource.latlon_bbox[3])
-            layer.save()
+
             # recalculate the layer statistics
             set_attributes(layer, overwrite=True)
 
