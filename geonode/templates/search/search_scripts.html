@@ -17,7 +17,7 @@
 <script src="{{ STATIC_URL }}geonode/js/search/explore.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/search/search.js"></script>
 <script type="text/javascript">
-  $("body").attr('ng-controller', 'MainController');
+  $("body").attr('ng-controller', 'geonode_search_controller');
   CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';
   KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='keywords' %}';
   HAYSTACK_SEARCH = "{{ HAYSTACK_SEARCH }}".toLowerCase() === "true";
@@ -25,7 +25,7 @@
   CLIENT_RESULTS_LIMIT = {{ CLIENT_RESULTS_LIMIT }};
   AUTOCOMPLETE_URL = '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}';
 
-  var module = angular.module('search', ['main_search']);
+  var module = angular.module('search', ['geonode_main_search']);
   module.constant('Configs', {
     url: SEARCH_URL
   });
