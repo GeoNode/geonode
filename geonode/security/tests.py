@@ -69,4 +69,4 @@ class BulkPermissionsTests(ResourceTestCase):
             'resources': [layer.id, layer2.id]
         }
         resp = c.post(self.bulk_perms_url, data)
-        self.assertTrue(layer2.title in json.loads(resp.content)['success'])
+        self.assertTrue(layer2.title in json.loads(resp.content)['not_changed'])
