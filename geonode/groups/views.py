@@ -132,14 +132,8 @@ def group_members_add(request, slug):
     if form.is_valid():
         role = form.cleaned_data["role"]
         for user in form.cleaned_data["user_identifiers"]:
-            # dont add them if already a member, just update the role
-            try:
-                gm = GroupMember.objects.get(user=user, group=group)
-                gm.role = role
-                gm.save()
-            except:
-                gm = GroupMember(user=user, group=group, role=role)
-                gm.save()
+            group.join(user, role=role)
+
     return redirect("group_detail", slug=group.slug)
 
 
