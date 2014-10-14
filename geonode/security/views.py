@@ -98,13 +98,8 @@ def set_bulk_permissions(request):
             except PermissionDenied:
                 not_permitted.append(ResourceBase.objects.get(id=resource_id).title)
 
-        if len(not_permitted) > 0:
-            msg = """Permissions regitered, although the following were skipped
-                     because you don't have the rights:\n- %s""" % '\n- '.join(not_permitted)
-        else:
-            msg = 'Permissions correctly registered'
         return HttpResponse(
-            json.dumps({'success': msg}),
+            json.dumps({'success': 'ok', 'not_changed': not_permitted}),
             status=200,
             mimetype='text/plain'
         )

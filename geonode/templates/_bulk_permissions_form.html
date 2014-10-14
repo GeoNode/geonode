@@ -11,9 +11,13 @@
         <div class="modal-body">
           {% include "_permissions.html" %}
         </div>
+        <div class="alert hidden" id="bulk_perms_message">
+          <p class="message">}</p>
+          <p class="extra_content"></p>
+        </div>
         <div class="modal-footer">
-          <a href="#" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</a>
-          <a href="#" class="btn btn-primary" data-dismiss="modal" id="bulk_perms_submit">{% trans "Apply Changes" %}</a>
+          <a href="#" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</a>
+          <a href="#" class="btn btn-primary" id="bulk_perms_submit">{% trans "Apply Changes" %}</a>
         </div>
       </div>
     </div>

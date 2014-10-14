@@ -307,7 +307,18 @@
     });
 
 
-
+    $scope.feature_select = function($event){
+      var element = $($event.target);
+      var article = $(element.parents('article')[0]);
+      if (article.hasClass('resource_selected')){
+        element.html('Select');
+        article.removeClass('resource_selected');
+      }
+      else{
+        element.html('Deselect');
+        article.addClass('resource_selected');
+      } 
+    };
 
     /*
     * Date management
