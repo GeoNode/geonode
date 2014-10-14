@@ -176,7 +176,6 @@ def geoserver_post_save(instance, sender, **kwargs):
     width = int(height * dataAspect)
 
     # Set download links for WMS, WCS or WFS and KML
-
     links = wms_links(ogc_server_settings.public_url + 'wms?',
                       instance.typename.encode('utf-8'), instance.bbox_string,
                       instance.srid, height, width)
