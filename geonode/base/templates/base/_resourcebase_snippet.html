@@ -1,5 +1,5 @@
 {% verbatim %}
-  <article ng-repeat="item in results">
+  <article ng-repeat="item in results" resource_id="{{ item.id }}">
   	<div class="row items-list">
   	  <div class="col-md-4">
   	    <a href="{{ item.detail_url }}"><img class="thumb" ng-src="{{ item.thumbnail_url }}" /></a>
@@ -17,7 +17,7 @@
           <a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a> |
           <a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a> 
           {% endverbatim %}{% if request.user.is_authenticated %}
-          | Select <input class="resource_selected" type="checkbox" value="{% verbatim %}{{ item.id }}{% endverbatim %}" /></p>
+          | <button class="btn btn-primary btn-xs" ng-click="feature_select($event)">Select</button>
           {% endif %}{% verbatim %}
       </div>
     </div>
