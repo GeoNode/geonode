@@ -32,9 +32,6 @@ from django.conf import settings
 from geonode.people.models import Profile
 from geonode.people.forms import ProfileForm
 from geonode.people.forms import ForgotUsernameForm
-from geonode.layers.models import Layer
-from geonode.maps.models import Map
-from geonode.documents.models import Document
 
 
 @login_required
@@ -68,36 +65,9 @@ def profile_edit(request, username=None):
 def profile_detail(request, username):
     profile = get_object_or_404(Profile, username=username)
     # combined queryset from each model content type
-    user_objects = profile.resourcebase_set.distinct()
-
-    content_filter = 'all'
-
-    if ('content' in request.GET):
-        content = request.GET['content']
-        if content != 'all':
-            if (content == 'layers'):
-                content_filter = 'layers'
-                user_objects = user_objects.instance_of(Layer)
-            if (content == 'maps'):
-                content_filter = 'maps'
-                user_objects = user_objects.instance_of(Map)
-            if (content == 'documents'):
-                content_filter = 'documents'
-                user_objects = user_objects.instance_of(Document)
-
-    sortby_field = 'date'
-    if ('sortby' in request.GET):
-        sortby_field = request.GET['sortby']
-    if sortby_field == 'title':
-        user_objects = user_objects.order_by('title')
-    else:
-        user_objects = user_objects.order_by('-date')
 
     return render(request, "people/profile_detail.html", {
         "profile": profile,
-        "sortby_field": sortby_field,
-        "content_filter": content_filter,
-        "object_list": user_objects.get_real_instances(),
     })
 
 
