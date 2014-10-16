@@ -22,7 +22,7 @@ class DataverseLayerMetadataAdmin(admin.ModelAdmin):
                         , ('dataset_semantic_version', 'dataset_id', 'dataset_version_id')\
                         , 'dataset_description')
               }),
-              ('Datfile Info', { 
+              ('Datafile Information', { 
                     'fields': (('datafile_label', 'datafile_id')\
                           , ('datafile_filesize', 'datafile_content_type', 'datafile_expected_md5_checksum')\
                           , 'datafile_create_datetime')
