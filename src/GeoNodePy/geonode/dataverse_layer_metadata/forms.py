@@ -2,7 +2,7 @@ import sys
 from datetime import datetime
 from django.utils.translation import ugettext as _
 
-from django.forms import ModelForm
+from django import forms 
 
 from geonode.dataverse_layer_metadata.models import DataverseLayerMetadata
 from dataverse_info.forms import DataverseInfoValidationForm
@@ -10,7 +10,14 @@ from dataverse_info.forms import DataverseInfoValidationForm
 DATETIME_PAT_STR = '%Y-%m-%d %H:%M'
 
 
-
+class DataverseLayerMetadataAdminForm(forms.ModelForm):
+    class Meta:
+        model = DataverseLayerMetadata
+        widgets = {  'dataverse_description': forms.Textarea(attrs={'rows': 2, 'cols':70})\
+                   , 'dataset_description': forms.Textarea(attrs={'rows': 2, 'cols':70})\
+              # , 'name': forms.TextInput(attrs={'size':20}) 
+               }
+         
 class DataverseLayerMetadataValidationForm(DataverseInfoValidationForm):
     """Used to validate incoming data from GeoConnect
     Excludes the map_layer attribute and create/modtimes
