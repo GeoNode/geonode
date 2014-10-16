@@ -84,6 +84,7 @@ LANGUAGES = (
     ('pt', 'Portuguese'),
     ('ru', 'Russian'),
     ('vi', 'Vietnamese'),
+    ('ko', '한국어'),
     # ('fil', 'Filipino'),
 
 )
