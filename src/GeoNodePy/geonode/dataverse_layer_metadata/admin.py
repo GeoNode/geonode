@@ -14,6 +14,9 @@ class DataverseLayerMetadataAdmin(admin.ModelAdmin):
            (None, {
                'fields': ('map_layer',)
            }),
+         ('Dataverse User', { 
+                    'fields': (('dv_user_id', 'dv_username', 'dv_user_email'),)
+                }),
            ('Dataverse', { 
                'fields': ('dataverse_installation_name', ('dataverse_name', 'dataverse_id'), 'dataverse_description')
            }),
@@ -26,7 +29,10 @@ class DataverseLayerMetadataAdmin(admin.ModelAdmin):
                     'fields': (('datafile_label', 'datafile_id')\
                           , ('datafile_filesize', 'datafile_content_type', 'datafile_expected_md5_checksum')\
                           , 'datafile_create_datetime')
-                }),      
+                }),  
+                 ('Dataverse Urls', { 
+                        'fields': (('return_to_dataverse_url', 'datafile_download_url',),)
+                    }),    
                 ('Timestamps', { 
                       'fields': (('created', 'modified'), )
                 }),      
