@@ -91,7 +91,7 @@
 
 {% block sidebar %}
 
-{% if GS_SECURITY_ENABLED %}
+{% if GEONODE_SECURITY_ENABLED %}
 <h3>{% trans "Permissions"  %}</h3>
 <div>
   <form id="permission_form">
@@ -120,7 +120,7 @@
 {% endautoescape %}
 
 </script>
-{% if GS_SECURITY_ENABLED %}
+{% if GEONODE_SECURITY_ENABLED %}
 {% with "none" as layer %}
 {% include "_permissions_form_js.html" %}
 {% endwith %}
