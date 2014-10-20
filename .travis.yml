@@ -39,5 +39,6 @@ notifications:
       - "irc.freenode.org#geonode"
     use_notice: true
   email:
-    - geonode-dev@opengeo.org
+    - geonode-dev@boundlessgeo.com
     - ingenieroariel@gmail.com
+    - simone.dalmasso@gmail.com

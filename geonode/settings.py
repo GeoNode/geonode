@@ -91,7 +91,7 @@ LANGUAGES = (
     ('ru', 'Russian'),
     ('vi', 'Vietnamese'),
     ('ko', '한국어'),
-    ('tl', 'Tagalog'),
+    #('tl', 'Tagalog'),
 
 )
 
