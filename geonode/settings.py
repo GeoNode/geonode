@@ -81,10 +81,17 @@ LANGUAGES = (
     ('zh-cn', '中文'),
     ('ja', '日本語'),
     ('fa', 'Persian'),
+    ('ar', 'Arabic'),
+    ('bn', 'Bengali'),
+    ('ne', 'Nepali'),
+    ('sq', 'Albanian'),
+    ('af', 'Afrikaans'),
+    ('sw', 'Swahili'),
     ('pt', 'Portuguese'),
     ('ru', 'Russian'),
     ('vi', 'Vietnamese'),
-    # ('fil', 'Filipino'),
+    ('ko', '한국어'),
+    ('tl', 'Tagalog'),
 
 )
 

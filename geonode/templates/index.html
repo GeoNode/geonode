@@ -27,20 +27,20 @@
      {% facets as facets %}
       <div class="col-md-4">
         <p class="text-center"><i class="fa fa-square-o fa-5x rotate-45"></i></p>
-        <h2 class="text-center">{{ facets.layer|default:"No" }} Layer{{ facets.layer|pluralize }}</h2>
+        <h2 class="text-center">{{ facets.layer|default:_("No") }} {% trans "Layer" %}{{ facets.layer|pluralize }}</h2>
 
         <p class="text-center">{% trans "Click to search for geospatial data published by other users, organizations and public sources. Download data in standard formats." %}</p> 
         <p class="text-center"><a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Explore Layers" %} &raquo;</a></p>
       </div>
       <div class="col-md-4">
         <p class="text-center"><i class="fa fa-map-marker fa-5x"></i></p>
-        <h2 class="text-center">{{ facets.map|default:"No" }} Map{{ facets.map|pluralize }}</h2>
+        <h2 class="text-center">{{ facets.map|default:_("No") }} {% trans "Map" %}{{ facets.map|pluralize }}</h2>
         <p class="text-center">{% trans "Data is available for browsing, aggregating and styling to generate maps which can be shared publicly or restricted to specific users only." %}</p>
         <p class="text-center"><a class="btn btn-default" href="{% url "maps_browse" %}" role="button">{% trans "Create maps" %} &raquo;</a></p>
       </div>
       <div class="col-md-4">
         <p class="text-center"><i class="fa fa-cloud-upload fa-5x"></i></p>
-        <h2 class="text-center">{{ facets.user|default:"No" }} User{{ facets.user|pluralize }}</h2>
+        <h2 class="text-center">{{ facets.user|default:_("No") }} {% trans "User" %}{{ facets.user|pluralize }}</h2>
         <p class="text-center">{% trans "GeoNode allows registered users to easily upload geospatial data in several formats including shapefile and GeoTiff." %}</p>
         <p class="text-center"><a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Share data" %} &raquo;</a></p>
       </div>
