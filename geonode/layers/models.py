@@ -199,12 +199,10 @@ class Layer(ResourceBase):
 
     class Meta:
         # custom permissions,
-        # change and delete are standard in django
+        # change and delete are standard in django-guardian
         permissions = (
-            ('view_layer',
-             'Can view'),
-            ('change_layer_permissions',
-             "Can change permissions"),
+            ('change_layer_data', 'Can edit layer data'),
+            ('change_layer_style', 'Can change layer style'),
         )
 
     # Permission Level Constants
