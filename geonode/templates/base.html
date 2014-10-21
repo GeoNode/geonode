@@ -4,8 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- Disabling responsiveness
-    <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
       {% if DEBUG_STATIC %}
@@ -34,8 +33,14 @@
       <div class="container">
         <div class="navbar-header col-md-2">
           <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-nav">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+          </button>
         </div>
-        <div class="navbar-collapse collapse">
+        <div class="navbar-collapse collapse" id="main-nav">
           <ul class="nav navbar-nav">
             {% block tabs %}
             <li id="nav_layers">
@@ -55,7 +60,7 @@
             </li>
             {% endblock %}
           </ul>
-          <form class="col-md-3" id="search" action="{% url "search" %}">
+          <form class="navbar-form col-md-3" id="search" action="{% url "search" %}">
             <div class="input-group">
               {% if HAYSTACK_SEARCH %}
               <input id="search_input" type="text" placeholder="Search" class="form-control" name="q">
