@@ -1,3 +1,53 @@
+geonode (2.4.0+alpha7) trusty; urgency=medium
+
+  [ Simone Dalmasso ]
+  * [e43839] fix css for dropdow
+  * [c98091] set the map local geoserver url after the local_settings import
+
+  [ Ian Schneider ]
+  * [9d5b24] rename angular search components for clarity
+
+  [ Simone Dalmasso ]
+  * [ab5dc8] add bulk permissions for registered users
+  * [c3b4d7] use the valid layer name as file name on the disk
+  * [545cdf] fix the group member add, use join. Fixes #1717
+  * [8f4dae] don't trigger save twice in update layers, set correctly the bbox.
+  * [c66526] remove erroneous MAP_BASELAYERS definition in local_settings.
+
+  [ Ian Schneider ]
+  * [bf2e9a] remove container width breaking responsive layout
+
+  [ Simone Dalmasso ]
+  * [a4a11b] use bootstrap alerts to notify the bulk perms submit, and better resource select method
+  * [940a26] fix test
+
+  [ Julien Collaer ]
+  * [de8176] adding translation tags
+
+  [ Minpa Lee ]
+  * [2f0b85] added korean language support
+
+  [ Simone Dalmasso ]
+  * [daba02] remove unwanted ng-if in keywords list
+  * [319726] wrap profile items in a div
+
+  [ Ariel Núñez ]
+  * [6b9738] Update settings.py
+
+  [ Ariel Nunez ]
+  * [a87921] Updated locale files with makemessages and compilemessages
+  * [03b303] Another translations update
+  * [daa3eb] Added some target languages for the next release before contacting the translators
+  * [32edf2] Updated list of languages
+
+  [ Simone Dalmasso ]
+  * [580c9f] add back the ng-if in the right place in keywords
+  * [af884e] comment out the tl language for the moment, add myself to the travis mails
+  * [3b2eb9] fix comment, for pep8
+  * [de5ba2] add permissions filter to resources counts in profile list
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 21 Oct 2014 14:19:29 +0000
+
 geonode (2.4.0+alpha6) trusty; urgency=medium
 
   [ Matthew Hanson ]
