@@ -14,9 +14,18 @@
     /*
     * If there's the anonymous user then set it's view permission and pop it
     */
+    permissions['users']['AnonymousUser'] = [];
     if (data.hasOwnProperty('view_anonymous')) {
       permissions['users']['AnonymousUser'] = ['view_resourcebase'];
       delete data['view_anonymous'];
+    }
+    if (data.hasOwnProperty('download_anonymous')) {
+      if (permissions['users']['AnonymousUser'] != undefined){
+        permissions['users']['AnonymousUser'].push('download_resourcebase');
+      } else {
+        permissions['users']['AnonymousUser'] = ['download_resourcebase'];
+      };
+      delete data['download_anonymous'];
     }
 
     /*
@@ -34,7 +43,6 @@
           }
         }
       }
-
       if(data[perm][1] !== ''){
         for (var i=0;i<data[perm][1].split(',').length;i++){
           var group = data[perm][1].split(',')[i];
@@ -46,7 +54,6 @@
         }
       }
     }
-
     return permissions
   };
 
@@ -66,13 +73,23 @@
             var users = {
               view_resourcebase: [],
               change_resourcebase: [],
-              change_resourcebase_permissions: []
+              change_resourcebase_permissions: [],
+              download_resourcebase: [],
+              publish_resourcebase: [],
+              change_resourcebase_metadata: [],
+              change_layer_data: [],
+              change_layer_style: []
             };
             var perms_users = perms.users;
             for (var user in perms_users){
               var user_perms = perms_users[user];
               if (user === 'AnonymousUser'){
-                $('#perms_view_anyone').attr("checked", "checked");
+                if(user_perms.indexOf('view_resourcebase') > -1){
+                  $('#perms_view_anyone').prop('checked', true);;
+                }
+                if(user_perms.indexOf('download_resourcebase') > -1){
+                  $('#perms_download_resourcebase_anyone').prop('checked', true);;
+                }
               }else{
                 for (var i=0;i<user_perms.length;i++){
                   if(users.hasOwnProperty(user_perms[i])){
@@ -95,7 +112,12 @@
             var groups = {
               view_resourcebase: [],
               change_resourcebase: [],
-              manage_resourcebase: []
+              change_resourcebase_permissions: [],
+              download_resourcebase: [],
+              publish_resourcebase: [],
+              change_resourcebase_metadata: [],
+              change_layer_data: [],
+              change_layer_style: []
             };
             var perms_groups = perms.groups;
             for (var group in perms_groups){
