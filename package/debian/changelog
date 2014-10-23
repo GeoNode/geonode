@@ -1,3 +1,10 @@
+geonode (2.4.0+alpha12) trusty; urgency=medium
+
+  * [e2d977] Decrease verbosity level in installer
+  * [02217c] Removed unused popd
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 22 Oct 2014 23:08:05 -0500
+
 geonode (2.4.0+alpha11) trusty; urgency=medium
 
   * [08f7dd] Fixed recursive .git symlink
