@@ -253,8 +253,8 @@ def feature_edit_check(request, layername):
     datastore = ogc_server_settings.DATASTORE
     feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or datastore
     if request.user.has_perm(
-            'base.change_resourcebase',
-            obj=layer.resourcebase_ptr) and layer.storeType == 'dataStore' and feature_edit:
+            'change_layer_data',
+            obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(
             json.dumps({'authorized': True}), mimetype="application/json")
     else:
