@@ -44,6 +44,7 @@ def _perms_info_json(obj):
 
 
 def resource_permissions(request, resource_id):
+
     try:
         resource = resolve_object(
             request, ResourceBase, {
@@ -68,6 +69,7 @@ def resource_permissions(request, resource_id):
 
     elif request.method == 'GET':
         permission_spec = _perms_info_json(resource)
+        
         return HttpResponse(
             json.dumps({'success': True, 'permissions': permission_spec}),
             status=200,
