@@ -250,11 +250,16 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
 @login_required
 def layer_metadata(request, layername, template='layers/layer_metadata.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.change_resourcebase',
-        _PERMISSION_MSG_METADATA)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.change_resourcebase_metadata',
+            _PERMISSION_MSG_METADATA)
+    except PermissionDenied as ex:
+        return HttpResponse('You are not allowed to edit this layer',
+            mimetype="text/plain", status=401)
+        
     layer_attribute_set = inlineformset_factory(
         Layer,
         Attribute,
