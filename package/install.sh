@@ -83,7 +83,7 @@ function setup_django_once() {
 }
 
 function setup_django_every_time() {
-    pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies
+    pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies -quiet
 
     geonodedir=`python -c "import geonode;import os;print os.path.dirname(geonode.__file__)"`
     
@@ -94,12 +94,8 @@ function setup_django_every_time() {
 
     export DJANGO_SETTINGS_MODULE=geonode.settings
 
-    # django-admin is what should be used for debian packages
-    # django-admin.py is what should be used for manual installations
-    # I am putting django-admin by default and filing a ticket:
-    # https://github.com/GeoNode/geonode/issues/1180
-    geonode syncdb --noinput
-    geonode collectstatic --noinput
+    geonode syncdb --noinput --verbosity 0
+    geonode collectstatic --noinput --verbosity 0
 
     # Create an empty uploads dir
     mkdir -p $GEONODE_WWW/uploaded
