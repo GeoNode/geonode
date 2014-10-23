@@ -175,12 +175,15 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
-
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.view_resourcebase',
-        _PERMISSION_MSG_VIEW)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.view_resourcebase',
+            _PERMISSION_MSG_VIEW)
+    except PermissionDenied as ex:
+        return HttpResponse(_PERMISSION_MSG_VIEW,
+            mimetype="text/plain", status=401)
     layer_bbox = layer.bbox
     # assert False, str(layer_bbox)
     bbox = list(layer_bbox[0:4])
@@ -257,7 +260,7 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             'base.change_resourcebase_metadata',
             _PERMISSION_MSG_METADATA)
     except PermissionDenied as ex:
-        return HttpResponse('You are not allowed to edit this layer',
+        return HttpResponse(_PERMISSION_MSG_METADATA,
             mimetype="text/plain", status=401)
         
     layer_attribute_set = inlineformset_factory(
