@@ -494,20 +494,22 @@ def deb(options):
 
     info('Creating package for GeoNode version %s' % version)
 
+    # Get rid of any uncommitted changes to debian/changelog
+    info('Getting rid of any uncommitted changes in debian/changelog')
+    sh('git checkout package/debian/changelog')
+
     with pushd('package'):
-        # Get rid of any uncommitted changes to debian/changelog
-        info('Getting rid of any uncommitted changes in debian/changelog')
-        sh('git checkout debian/changelog')
+
+        # Install requirements
+        #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 
         # Workaround for git-dch bug
         # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
         # path('.git').makedirs()
         # Link the parent git repository folder in to the current one
         # needed by git-dch
-        sh('ln -s ../.git .git')
-
-        # Install requirements
-        #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
+        sh('ln -s ../.git .gito')
+        sh('mv .gito .git')
 
         sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
             ' --id-length=6 --ignore-branch --release' % (simple_version)))
