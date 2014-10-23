@@ -60,7 +60,7 @@
             </li>
             {% endblock %}
           </ul>
-          <form class="navbar-form col-md-3" id="search" action="{% url "search" %}">
+          <form class="col-md-3" id="search" action="{% url "search" %}">
             <div class="input-group">
               {% if HAYSTACK_SEARCH %}
               <input id="search_input" type="text" placeholder="Search" class="form-control" name="q">
