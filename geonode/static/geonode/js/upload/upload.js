@@ -123,7 +123,7 @@ define(['underscore',
             if (!info.type) {
                 log_error({
                     title: 'Unsupported type',
-                    message: gettext('The file') + ' ' + info.files[0].name + ' ' + gettext('is an unsupported file type, please select another file.')
+                    message: interpolate(gettext('The file %s is an unsupported file type, please select another file.',[info.files[0].name]))
                 });
                 delete layers[name];
             } else {
