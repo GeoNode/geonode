@@ -1,3 +1,9 @@
+geonode (2.4.0+alpha13) trusty; urgency=medium
+
+  * [9e4552] Fixed missing dash in pip install
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 22 Oct 2014 23:35:11 -0500
+
 geonode (2.4.0+alpha12) trusty; urgency=medium
 
   * [e2d977] Decrease verbosity level in installer
