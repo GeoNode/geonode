@@ -124,9 +124,12 @@
 
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
-      <li class="list-group-item">
-        <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
-      </li>
+        {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
+        {% if "download_resourcebase" in perms %}
+        <li class="list-group-item">
+           <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
+        </li>
+        {% endif %}
       {% endif %}
     <div class="modal fade" id="download-layer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
