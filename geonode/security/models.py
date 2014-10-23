@@ -50,6 +50,7 @@ class PermissionLevelMixin(object):
     LEVEL_NONE = "_none"
 
     def get_all_level_info(self):
+                
         resource = self.get_self_resource()
         info = {
             'users': get_users_with_perms(
@@ -59,6 +60,41 @@ class PermissionLevelMixin(object):
             'groups': get_groups_with_perms(
                 resource,
                 attach_perms=True)}
+                
+        # TODO very hugly here, but isn't huglier 
+        # to set layer permissions to resource base?
+        from geonode.layers.models import Layer
+        if hasattr(self, "layer"):
+            info_layer = {
+                'users': get_users_with_perms(
+                    self.layer,
+                    attach_perms=True,
+                    with_superusers=True),
+                'groups': get_groups_with_perms(
+                    self.layer,
+                    attach_perms=True)}
+                    
+            for user in info_layer['users']:
+                permissions = []
+                if user in info['users']:
+                    permissions = info['users'][user]
+                else:
+                    info['users'][user] = []
+                
+                for perm in info_layer['users'][user]:
+                    if not perm in permissions:
+                        permissions.append(perm)
+                        
+            for group in info_layer['groups']:
+                permissions = []
+                if group in info['groups']:
+                    permissions = info['groups'][group]
+                else:
+                    info['groups'][group] = []
+                for perm in info_layer['groups'][group]:
+                    if not perm in permissions:
+                        permissions.append(perm)
+
         return info
 
     def get_self_resource(self):
@@ -70,6 +106,8 @@ class PermissionLevelMixin(object):
         """
         Remove all the permissions for users and groups except for the resource owner
         """
+        # TODO refactor this
+        # first remove in resourcebase
         for user, perms in get_users_with_perms(self.get_self_resource(), attach_perms=True).iteritems():
             if not self.owner == user:
                 for perm in perms:
@@ -78,6 +116,17 @@ class PermissionLevelMixin(object):
         for group, perms in get_groups_with_perms(self.get_self_resource(), attach_perms=True).iteritems():
             for perm in perms:
                 remove_perm(perm, group, self.get_self_resource())
+                
+        # now remove in layer (if resource is layer
+        if hasattr(self, "layer"):
+            for user, perms in get_users_with_perms(self, attach_perms=True).iteritems():
+                if not self.owner == user:
+                    for perm in perms:
+                        remove_perm(perm, user, self)
+
+            for group, perms in get_groups_with_perms(self, attach_perms=True).iteritems():
+                for perm in perms:
+                    remove_perm(perm, group, self)
 
     def set_default_permissions(self):
         """
@@ -112,26 +161,32 @@ class PermissionLevelMixin(object):
                 ]
         }
         """
+        
         self.remove_all_permissions()
-
+        
         if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
             anonymous_group = Group.objects.get(name='anonymous')
-            assign_perm(
-                perm_spec['users']['AnonymousUser'][0],
-                anonymous_group,
-                self.get_self_resource())
+            for perm in perm_spec['users']['AnonymousUser']:
+                assign_perm(perm, anonymous_group, self.get_self_resource())
 
+        # TODO refactor code here
         if 'users' in perm_spec:
             for user, perms in perm_spec['users'].items():
                 user = get_user_model().objects.get(username=user)
                 for perm in perms:
-                    assign_perm(perm, user, self.get_self_resource())
+                    if self.polymorphic_ctype.name == 'layer' and perm in ('change_layer_data', 'change_layer_style'):
+                        assign_perm(perm, user, self.layer)
+                    else:
+                        assign_perm(perm, user, self.get_self_resource())
 
         if 'groups' in perm_spec:
             for group, perms in perm_spec['groups'].items():
                 group = Group.objects.get(name=group)
                 for perm in perms:
-                    assign_perm(perm, group, self.get_self_resource())
+                    if self.polymorphic_ctype.name == 'layer' and perm in ('change_layer_data', 'change_layer_style'):
+                        assign_perm(perm, group, self.layer)
+                    else:
+                        assign_perm(perm, group, self.get_self_resource())
 
 
 # Logic to login a user automatically when it has successfully
