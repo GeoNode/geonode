@@ -1,3 +1,10 @@
+geonode (2.4.0+alpha11) trusty; urgency=medium
+
+  * [08f7dd] Fixed recursive .git symlink
+  * [9451d4] Move to postgis2 on Ubuntu 14.04
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 22 Oct 2014 22:30:07 -0500
+
 geonode (2.4.0+alpha10) trusty; urgency=medium
 
   [ x ]
