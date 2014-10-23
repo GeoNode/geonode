@@ -1,3 +1,27 @@
+geonode (2.4.0+alpha9) trusty; urgency=medium
+
+  [ Ian Schneider ]
+  * [608fe9] fix order of arguments to metadata_links
+  * [2931e6] some navbar tweaks for small devices
+
+  [ Julien Collaer ]
+  * [b618b2] adding fr translations
+
+  [ Ariel Núñez ]
+  * [f20ec7] Update setup.py
+
+  [ cristinao ]
+  * [cae3b8] Update tour.txt
+
+  [ Ariel Núñez ]
+  * [454a1c] Added Cristina Ospino to AUTHORS
+  * [1c9052] Added Patrick and Derek to the PRIMARY AUTHORS
+  * [7bebbf] Don't enable the default site after removal
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 22 Oct 2014 21:55:45 -0500
+
 geonode (2.4.0+alpha8) trusty; urgency=medium
 
   * UNRELEASED
