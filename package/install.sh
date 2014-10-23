@@ -106,7 +106,6 @@ function setup_django_every_time() {
     # processes like updatelayers and collectstatic can write here
     chmod 777 -R $GEONODE_WWW/uploaded
     chmod 777 -R $GEONODE_WWW/static
-    popd
 }
 
 function setup_apache_once() {
