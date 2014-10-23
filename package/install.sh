@@ -66,15 +66,8 @@ function setup_postgres_once() {
     su - postgres <<EOF
 createdb -E UTF8 -l en_US.UTF8 -T template0 geonode
 createlang -d geonode plpgsql
-psql -d geonode -f $POSTGIS_SQL_PATH/$POSTGIS_SQL
-psql -d geonode -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
-psql -d geonode -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
-psql -d geonode -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
+psql -d geonode -c 'CREATE EXTENSION postgis'
 EOF
-if ((GEOGRAPHY))
-then
-    su - postgres -c "psql -d geonode -c 'GRANT ALL ON geography_columns TO PUBLIC;'"
-fi
 su - postgres -c "psql" <<EOF
 CREATE ROLE geonode WITH LOGIN PASSWORD '$psqlpass' SUPERUSER INHERIT;
 EOF
