@@ -30,7 +30,7 @@ define(function (require, exports) {
         $.each(this.requires, function (idx, req) {
             idx = $.inArray(req, extensions);
             if (idx === -1) {
-                errors.push('Missing a ' + req + ' file, which is required');
+                errors.push(interpolate(gettext('Missing a %s file, which is required'),[req]));
             }
         });
         return errors;
