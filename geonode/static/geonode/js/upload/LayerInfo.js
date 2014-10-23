@@ -539,7 +539,7 @@ define(function (require, exports) {
         $.each(this.files, function (idx, file) {
             var li = $('<li/>').appendTo(ul),
                 p = $('<p/>', {text: file.name}).appendTo(li),
-                a  = $('<a/>', {text: gettext('Remove')});
+                a  = $('<a/>', {text: ' ' + gettext('Remove')});
 
             a.data('layer', self.name);
             a.data('file',  file.name);
