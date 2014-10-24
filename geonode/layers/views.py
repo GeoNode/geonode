@@ -25,10 +25,10 @@ import shutil
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from django.conf import settings
-from django.template import RequestContext
+from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import escape
@@ -181,9 +181,28 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             layername,
             'base.view_resourcebase',
             _PERMISSION_MSG_VIEW)
-    except PermissionDenied as ex:
-        return HttpResponse(_PERMISSION_MSG_VIEW,
-            mimetype="text/plain", status=401)
+    
+    except Http404:
+        return HttpResponse(
+            loader.render_to_string(
+                '404.html', RequestContext(
+                    request, {
+                        })), status=404)
+
+    except PermissionDenied:
+        return HttpResponse(
+            loader.render_to_string(
+                '401.html', RequestContext(
+                    request, {
+                        'error_message': _PERMISSION_MSG_VIEW})), status=403)
+
+    if layer is None:
+        return HttpResponse(
+            _PERMISSION_MSG_UNKNOWN,
+            mimetype="text/plain",
+            status=401
+        )
+        
     layer_bbox = layer.bbox
     # assert False, str(layer_bbox)
     bbox = list(layer_bbox[0:4])
