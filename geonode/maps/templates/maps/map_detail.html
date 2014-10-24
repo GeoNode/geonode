@@ -97,8 +97,7 @@
             </div>
           </div>
         </div>
-        {% get_obj_perms request.user for resource.get_self_resource as "resource_perms" %}
-        {% if "change_resourcebase" in resource_perms %}
+        {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
         <li class="list-group-item">
           <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#edit-map">{% trans "Edit Map" %}</button>
         </li>
@@ -111,12 +110,17 @@
               </div>
               <div class="modal-body">
                 <ul>
+                  {% if "change_resourcebase_metadata" in perms %}
                   <li><a href="{% url "map_metadata" resource.id %}">{% trans "Edit Map Metadata" %}</a></li>
-                  {% if PRINT_NG_ENABLED %}
-                  <li><a href="#" id="set_thumbnail">{% trans "Set Map Thumbnail" %}</a></li>
                   {% endif %}
-                  <li><a href="#modal_perms" data-toggle="modal">{% trans "Edit Map Permissions" %}</a></li>
+                  {% if "change_resourcebase" in perms %}
+                    {% if PRINT_NG_ENABLED %}
+                    <li><a href="#" id="set_thumbnail">{% trans "Set Map Thumbnail" %}</a></li>
+                    {% endif %}
+                  {% endif %}
+                  {% if "change_resourcebase" in perms %}
                   <li><a href="{% url "map_remove" resource.id %}">{% trans "Remove this Map" %}</a></li>
+                  {% endif %}
                 <ul>
               </div>
               <div class="modal-footer">
@@ -125,7 +129,6 @@
             </div>
           </div>
         </div>
-        {% endif %}
 
         <li class="list-group-item">
           <a href="{% url "map_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
