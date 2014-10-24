@@ -204,7 +204,7 @@ class SimpleClientTest(unittest.TestCase):
 
 """
 import requests
-data = dict(geoconnect_token='JdPGVSga9yM8gt74ZpLp'\
+data = dict(geoconnect_token='test-token'\
         , dv_user_id=5\
         , datafile_id=90\
         )
@@ -215,7 +215,7 @@ print r.text
 
 #--------------------------------
 import requests
-data = dict(geoconnect_token='JdPGVSga9yM8gt74ZpLp'\
+data = dict(geoconnect_token='test-token'\
         , dv_user_id=5\
         )
 url = 'http://127.0.0.1:8000/dvn-layer/get-dataverse-user-layers/'
