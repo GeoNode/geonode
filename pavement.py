@@ -516,7 +516,7 @@ def deb(options):
 
         deb_changelog = path('debian') / 'changelog'
         for line in fileinput.input([deb_changelog], inplace=True):
-            print line.replace("urgency=low", "urgency=high"),
+            print line.replace("urgency=medium", "urgency=high"),
 
         ## Revert workaround for git-dhc bug
         sh('rm -rf .git')
