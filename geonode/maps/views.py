@@ -25,10 +25,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
-from django.template import RequestContext
+from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import strip_tags
@@ -72,6 +72,7 @@ _PERMISSION_MSG_SAVE = _("You are not permitted to save or edit this map.")
 _PERMISSION_MSG_METADATA = _(
     "You are not allowed to modify this map's metadata.")
 _PERMISSION_MSG_VIEW = _("You are not allowed to view this map.")
+_PERMISSION_MSG_UNKNOWN = _('An unknown error has occured.')
 
 
 def _handleThumbNail(req, obj):
@@ -118,8 +119,33 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     '''
     The view that show details of each map
     '''
-    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+    
+    map_obj = None
+    
+    try:
+        map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
+    except Http404:
+        return HttpResponse(
+            loader.render_to_string(
+                '404.html', RequestContext(
+                    request, {
+                        })), status=404)
+
+    except PermissionDenied:
+        return HttpResponse(
+            loader.render_to_string(
+                '401.html', RequestContext(
+                    request, {
+                        'error_message': _PERMISSION_MSG_VIEW})), status=403)
+
+    if map_obj is None:
+        return HttpResponse(
+            _PERMISSION_MSG_UNKNOWN,
+            mimetype="text/plain",
+            status=401
+        )
+        
     Map.objects.filter(id=map_obj.id).update(popular_count=F('popular_count') + 1)
 
     if snapshot is None:
