@@ -8,7 +8,7 @@ var queryParams = null;
 function getHost(r) {
    var a= document.createElement("A");
    a.href = r;
-   return a.protocol+"//"+a.hostname+(a.port ? ":"+ a.port : "")+"/";
+   return a.protocol+"//"+a.hostname+":"+(a.port ? a.port : "80")+"/";
 }
 /*
  (function($) {
@@ -31,13 +31,12 @@ var MESSAGING = (function Messaging() { // declare 'Singleton' as the return val
     var _instance = null;
     var _constructor = function() {
         this.referringHost = getHost(document.referrer);
-        this.handlers = [];
+        this.handlers = {};
         this.uniqueId = CryptoJS.MD5(" "+location.href+(Math.random()*(new Date().getTime()))).toString(CryptoJS.enc.Base64);
         this.isMasterSlave = false;
     };
     _constructor.prototype = { // *** prototypes will be "public" methods available to the instance
         initialize: function() {
-           console.log("client sending 'init' message to master");
            this.send(new Message("init",{}),true);
         },
         setMasterSlave: function(b) { this.isMasterSlave = b; },
@@ -51,27 +50,43 @@ var MESSAGING = (function Messaging() { // declare 'Singleton' as the return val
         send: function(msg, force) {
            force = typeof force !== 'undefined'?force:false;
            if( (force && this.opener) || this.isMasterSlave) {
-              console.log("sending message: type="+msg.type+", message = "+msg.message);
               this.opener.postMessage({xblockId:queryParams.xblockId, uniqueClientId:this.uniqueId, message: msg}, this.getReferringHost());
            } else {
-              console.log("not sending message, type="+msg.type+",  message="+msg.message);
+              if( this.opener ) {
+                  console.log("not sending message, force: "+force+"  this.opener: defined  this.isMasterSlave:"+this.isMasterSlave);
+              } else {
+                  console.log("not sending message, this.opener is undefined    this.isMasterSlave: "+this.isMasterSlave);
+              }
            }
         },
         registerHandler: function(t,h) {
            this.handlers[t] = h;
         },
         handleMessageEvent: function(event) {
-         var data = JSON.parse(event.data);
-         if( data.type == "master-acknowledge" || this.isMasterSlave ) {
-        //   var a = $('<a>', { href:event.origin})[0];
-           var originHost = getHost(event.origin);
-           if( originHost == this.referringHost) { //SECURITY: we only listen to messages from our referring host
-              if( this.handlers[data.type] ) {
-                 var msg = new Message(data.type, JSON.parse(data.message)); //data.message is a JSON string
-                 this.handlers[data.type]( msg );
-              }          
+           try {
+             var data = JSON.parse(event.data);
+              if( data.type == "master-acknowledge" || this.isMasterSlave ) {
+                 var originHost = getHost(event.origin);
+                 if( originHost == this.referringHost) { //SECURITY: we only listen to messages from our referring host
+                    if( this.handlers[data.type] ) {
+                       try {
+                          var msg = new Message(data.type, JSON.parse(data.message)); //data.message is a JSON string
+                          this.handlers[data.type]( msg );
+                       } catch (e) {
+                          console.log("ERROR:  Failed to handle message - "+e+"\n"+ e.stack);
+                       }
+                    } else {
+                       console.log("ERROR:  Message ignored by slave - no handler for message type="+data.type);
+                    }          
+                 } else {
+                    console.log("WARNING:  Message ignored by slave - originHost="+originHost+"   - referringHost="+this.referringHost);
+                 }
+              } else {
+                 console.log("WARNING: Message ignored by slave  -  message type: "+data.type+",  isMasterSlave: "+this.isMasterSlave);
+              }
+           } catch(e) {  
+              console.log("ERROR:  SLAVE THREW EXCEPTION WHEN HANDLING MESSAGE: "+e+"\nevent.data="+event.data);
            }
-         }
         }
     };
     return {
@@ -98,29 +113,28 @@ Message.prototype = {
     getMessageStr: function() { return this.message; }
 };
 
-var loadHandler = function(event){
-   console.log("DOMContentLoaded handler called");
-   var parentWindow =  event.currentTarget.opener ? event.currentTarget.opener : window.parent;
-   MESSAGING.getInstance().setOpener(parentWindow);
-   MESSAGING.getInstance().registerHandler("master-acknowledge", 
-                        function(msg) { 
-                           console.log("handler for master-acknowledge called  type="+msg.getType()+",   message="+msg.getMessage());
-                           if( msg.getType() === "master-acknowledge" && msg.getMessage()===MESSAGING.getInstance().uniqueId) {
-                                console.log("master-acknowledge: masterSlave = true");
-                                MESSAGING.getInstance().setMasterSlave(true);
-                           }
-                        });
-   MESSAGING.getInstance().initialize();
+window.addEventListener('DOMContentLoaded',
+    function(event){
+       console.log("DOMContentLoaded handler called");
+       var parentWindow =  event.currentTarget.opener ? event.currentTarget.opener : window.parent;
+       MESSAGING.getInstance().setOpener(parentWindow);
+       MESSAGING.getInstance().registerHandler("master-acknowledge",
+                            function(msg) {
+                               console.log("handler for master-acknowledge called  type="+msg.getType()+",   message="+msg.getMessage());
+                               if( msg.getType() === "master-acknowledge" && msg.getMessage()===MESSAGING.getInstance().uniqueId) {
+                                    console.log("master-acknowledge: masterSlave = true");
+                                    MESSAGING.getInstance().setMasterSlave(true);
+//                                    MESSAGING.getInstance().send(new Message("portalReady", {}));
+                               }
+                            });
+       MESSAGING.getInstance().initialize();
 
-   window.addEventListener(
-      'message',
-      function(event){
-         MESSAGING.getInstance().handleMessageEvent(event);
-      }, 
-      false
-    );
-}
-window.addEventListener('DOMContentLoaded', loadHandler, false);
-
-   //Register a handler for an "info" message
-   //   MESSAGING.getInstance().registerHandler("info", function(m) { alert("the client code received this 'info' message: "+m.getMessage()); });
+       window.addEventListener(
+          'message',
+          function(event){
+             MESSAGING.getInstance().handleMessageEvent(event);
+          },
+          false
+        );
+    }, false
+);
