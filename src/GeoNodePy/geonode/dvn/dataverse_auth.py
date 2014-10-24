@@ -5,12 +5,8 @@ from django.http import QueryDict
 
 TOKEN_KEY_NAME = 'geoconnect_token'
 
-def has_proper_auth(request):
-    hash_object = hashlib.sha256(b'Hello World')
-    hex_dig = hash_object.hexdigest()
-    #print(hex_dig)
-    len(hex_dig)
-    #64
+#def has_proper_auth(request):
+#    hash_object = hashlib.sha256(b'Hello World')
 
 
 def has_proper_auth(request):

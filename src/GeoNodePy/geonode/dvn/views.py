@@ -21,12 +21,12 @@ logger = logging.getLogger("geonode.dvn.views")
 
 @csrf_exempt
 def dvn_import(request):
-
     if not has_proper_auth(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
     
     if request.POST:
+        
         user = None
         title = request.POST["title"]
         abstract = request.POST["abstract"]
@@ -58,6 +58,8 @@ def dvn_import(request):
         else:
             name = slugify(name.replace(".","_"))
             file_obj = write_file(content)
+            print ('file_obj', file_obj)
+            
             try:
                 
                 # Save the actual layer
@@ -67,7 +69,7 @@ def dvn_import(request):
                                title = title,
                                keywords = keywords.split()
                 )
-
+                
                 # Look for DataverseInfo in the request.POST
                 #   If it exists, create a DataverseLayerMetadata object
                 #
@@ -81,16 +83,8 @@ def dvn_import(request):
                 json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=layer_metadata_obj.get_metadata_dict())
                 #print '-' * 40
                 #print 'json_msg', json_msg
+                
                 return HttpResponse(status=200, content=json_msg, content_type="application/json")
-                """
-                return HttpResponse(status=200, content=json.dumps({
-                    "success": True,
-                    "layer_name": saved_layer.typename,
-                    "layer_link": "%sdata/%s" % (settings.SITEURL, saved_layer.typename),
-                    "embed_map_link": "%smaps/embed/?layer=%s" % (settings.SITEURL, saved_layer.typename),
-                    "worldmap_username": user.username
-                }))
-                """
             
             except:
                 e = sys.exc_info()[0]
@@ -100,14 +94,15 @@ def dvn_import(request):
                 return HttpResponse(content=json_msg, content_type="application/json")
             
     else:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Requests must be POST not GET")
+        
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="The request must be a POST, not GET")
         return HttpResponse(status=401, content=json_msg, content_type="application/json")
         
 
 
-@csrf_exempt
-def dvn_export(request):
-    return HttpResponse(status=500)
+#@csrf_exempt
+#def dvn_export(request):
+#    return HttpResponse(status=500)
 
 def write_file(file):
     tempdir = tempfile.mkdtemp()

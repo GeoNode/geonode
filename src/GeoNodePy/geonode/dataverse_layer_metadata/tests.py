@@ -5,10 +5,16 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+import unittest
+
+from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.test.client import Client
 
 from geonode.dataverse_layer_metadata.models import DataverseLayerMetadata
-from geonode.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm
+from geonode.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm, CheckForExistingLayerForm, CheckForDataverseUserLayersForm
+
+from django.conf import settings
 
 def msg(m): print(m)
 def dashes(): msg('-' * 40)
@@ -60,6 +66,7 @@ class ValidationFormTest(TestCase):
         #print 'valid',validation_form.is_valid()
         self.assertEqual(validation_form.is_valid(), True)
 
+
     def test_form_validation2(self):
 
         msgt('(2) Test invalid data for: [dataset_id, return_to_dataverse_url]')
@@ -102,10 +109,119 @@ class ValidationFormTest(TestCase):
         self.assertEqual(type(dvinfo_obj), DataverseLayerMetadata)
         msg('yes, converts into a DataverseMetadata object (minus the map_layer)')
 
+
+    #@unittest.skip("testing skipping")
+    def test_form_validation4(self):
+        msgt('(4) Does the CheckForExistingLayerForm form work?)')
+
+        form_data = dict(dv_user_id=10, datafile_id=1)
+        f = CheckForExistingLayerForm(form_data)
+        self.assertEqual(f.is_valid(), True)
+        msg('Yes valid params')
+        self.assertEqual(f.cleaned_data, dict(dv_user_id=10, datafile_id=1))
+        msg('cleaned_data is as expected')
+
+        form_data = dict(dv_user_id='99', datafile_id=1)
+        f = CheckForExistingLayerForm(form_data)
+        self.assertEqual(f.is_valid(), True)
+
+        msg('Yes valid params 2')
+        self.assertEqual(f.cleaned_data, dict(dv_user_id=99, datafile_id=1))
+        msg('cleaned_data is as expected')
+
+        self.assertEqual(f.get_latest_dataverse_layer_metadata(), None)
+        msg('No layers found')
+
+        form_data = dict(dv_user_id='99')
+        f = CheckForExistingLayerForm(form_data)
+        self.assertEqual(f.is_valid(), False)
+        msg('Invalid params')        #get_latest_dataverse_layer_metadata
+
+        self.assertRaises(AssertionError, f.get_latest_dataverse_layer_metadata)
+        msg('Attempting to retrieve metadata on invalid form raises assertion error')
+
+
+
+class SimpleClientTest(unittest.TestCase):
+
+    def test_view_1(self):
+        msgt('(1) get_existing_layer_data: without authentication')
+        client = Client()
+        response = client.post(reverse('get_existing_layer_data'))
+        print ('response.content', response.content)
+        self.assertEqual(response.status_code, 401)
+        msg('get response gives 401')
+
+        self.assertEqual(response.content, """{"message": "Authentication failed.", "success": false}""")
+        msg('check error message')
+
+
+    def test_view_2(self):
+        msgt('(2) get_existing_layer_data: with a get, not a post')
+        client = Client()
+        response = client.get(reverse('get_existing_layer_data') + '?geoconnect_token=%s' % settings.DVN_TOKEN)
+        self.assertEqual(response.status_code, 401)
+        msg('get response gives 401')
+
+        self.assertEqual(response.content, """{"message": "The request must be a POST, not GET", "success": false}""")
+        msg('check error message')
+
+
+    def test_view_3(self):
+        msgt('(3) get_existing_layer_data: with a auth and post, but no other data')
+        client = Client()
+
+        data = dict(geoconnect_token=settings.DVN_TOKEN)
+
+        response = client.post(reverse('get_existing_layer_data'), data)
+        self.assertEqual(response.status_code, 401)
+        msg('get response gives 401')
+
+        self.assertEqual(response.content, """{"message": "The request did not validate.  Expected a 'dv_user_id' and 'datafile_id'", "success": false}""")
+        msg('check error message')
+
+
+    def test_view_4(self):
+        msgt('(4) get_existing_layer_data: valid, no existing layers found')
+        client = Client()
+
+        data = dict(geoconnect_token=settings.DVN_TOKEN\
+                    , dv_user_id=107\
+                    , datafile_id=1\
+                    )
+        response = client.post(reverse('get_existing_layer_data'), data)
+        print (response.status_code, response.content)
+
+        self.assertEqual(response.status_code, 200)
+        msg('response gives a 200')
+
+        self.assertEqual(response.content, """{"message": "This layer does not yet exist", "success": false}""")
+        msg('check message')
+
+
+
+
+
 """
-        from datetime import datetime
-        from geonode.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm
-        DATETIME_PAT_STR = '%Y-%m-%d %H:%M'
-        s='2010-09-05 04:00:00+00:00'
-        DataverseLayerMetadataValidationForm.format_datafile_create_datetime(s)
+import requests
+data = dict(geoconnect_token='JdPGVSga9yM8gt74ZpLp'\
+        , dv_user_id=5\
+        , datafile_id=90\
+        )
+url = 'http://127.0.0.1:8000/dvn-layer/get-existing-layer-info/'
+r = requests.post(url, data=data)
+print r.status_code
+print r.text
+
+#--------------------------------
+import requests
+data = dict(geoconnect_token='JdPGVSga9yM8gt74ZpLp'\
+        , dv_user_id=5\
+        )
+url = 'http://127.0.0.1:8000/dvn-layer/get-dataverse-user-layers/'
+r = requests.post(url, data=data)
+print r.status_code
+print r.text
+
+
 """

@@ -10,6 +10,7 @@ from dataverse_info.forms import DataverseInfoValidationForm
 DATETIME_PAT_STR = '%Y-%m-%d %H:%M'
 
 
+        
 class DataverseLayerMetadataAdminForm(forms.ModelForm):
     class Meta:
         model = DataverseLayerMetadata
@@ -54,3 +55,56 @@ class DataverseLayerMetadataValidationForm(DataverseInfoValidationForm):
     class Meta:
         model = DataverseLayerMetadata
         exclude = ['map_layer','created', 'modified']
+
+
+class CheckForExistingLayerForm(DataverseInfoValidationForm):
+    """
+    Used for the API that retrieves a WorldMap Layer based on a specific:
+        - Dataverse user id
+        - Dataverse file id
+    """
+    class Meta:
+        model = DataverseLayerMetadata
+        fields = ('dv_user_id', 'datafile_id')
+
+
+    def get_latest_dataverse_layer_metadata(self):
+        """
+        Return DataverseLayerMetadata objects that match the given 'dv_user_id' and 'datafile_id'
+        """
+        if hasattr(self, 'cleaned_data') is False:
+            raise AssertionError('Form is invalid.  cleaned_data is not available')
+
+        # using pre 1.6 version of Django, so can't use 'first()'
+        #return DataverseLayerMetadata.objects.select_related('map_layer').filter(**self.cleaned_data).first()
+        
+        qs = DataverseLayerMetadata.objects.filter(**self.cleaned_data)
+        r = list(qs[:1])
+        #print ('r', r)
+        if r:
+            return r[0]
+        return None
+        
+        
+        
+class CheckForDataverseUserLayersForm(DataverseInfoValidationForm):
+    """
+    Used for the API that retrieves a Dataverse user's WorldMap Layers
+        - input dv_user_id
+    """
+    class Meta:
+        model = DataverseLayerMetadata
+        fields = ('dv_user_id',)
+
+
+    def get_dataverse_layer_metadata_objects(self):
+        """
+        Return DataverseLayerMetadata objects that matches the given 'dv_user_id'
+        """
+        if hasattr(self, 'cleaned_data') is False:
+            raise AssertionError('Form is invalid.  cleaned_data is not available')
+
+        return DataverseLayerMetadata.objects.select_related('map_layer').filter(**self.cleaned_data)
+        
+        
+

@@ -98,6 +98,7 @@ class LayerMetadata:
             
         return self.update_metadata_with_layer_object(layer_obj)
         
+        
     def update_metadata_with_layer_object(self, layer_obj):
         if not type(layer_obj) is Layer:
             return False
