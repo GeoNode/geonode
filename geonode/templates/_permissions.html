@@ -1,11 +1,12 @@
 {% load i18n %}
 <div class="panel-group" id="permissions-body">
+{% with resource_type=resource.polymorphic_ctype.name %}
   <!-- view layer -->
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-          {% trans "Who can view this layer?" %}
+          {% trans "Who can view it?" %}
         </a>
       </h4>
     </div>
@@ -37,7 +38,7 @@
     <div class="panel-heading">
       <h4 class="panel-title">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
-          {% trans "Who can download this layer?" %}
+          {% trans "Who can download it?" %}
         </a>
       </h4>
     </div>
@@ -69,7 +70,7 @@
     <div class="panel-heading">
       <h4 class="panel-title">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
-          {% trans "Who can change metadata for this layer?" %}
+          {% trans "Who can change metadata for it?" %}
         </a>
       </h4>
     </div>
@@ -90,6 +91,7 @@
       </div>
     </div>
   </div>
+  {% if resource_type == "layer" %}
   <!-- change layer data -->
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -142,12 +144,13 @@
       </div>
     </div>
   </div>
+  {% endif %}
   <!-- change permissions -->
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse6">
-          {% trans "Who can change permissions for this layer?" %}
+          {% trans "Who can change permissions for it?" %}
         </a>
       </h4>
     </div>
@@ -173,7 +176,7 @@
     <div class="panel-heading">
       <h4 class="panel-title">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse7">
-          {% trans "Who can publish/unpublish this layer?" %}
+          {% trans "Who can publish/unpublish it?" %}
         </a>
       </h4>
     </div>
@@ -194,5 +197,5 @@
       </div>
     </div>
   </div>
-  
+{% endwith %}
 </div>
