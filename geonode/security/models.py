@@ -73,7 +73,8 @@ class PermissionLevelMixin(object):
                 'groups': get_groups_with_perms(
                     self.layer,
                     attach_perms=True)}
-                    
+            
+
             for user in info_layer['users']:
                 permissions = []
                 if user in info['users']:
@@ -119,14 +120,14 @@ class PermissionLevelMixin(object):
                 
         # now remove in layer (if resource is layer
         if hasattr(self, "layer"):
-            for user, perms in get_users_with_perms(self, attach_perms=True).iteritems():
+            for user, perms in get_users_with_perms(self.layer, attach_perms=True).iteritems():
                 if not self.owner == user:
                     for perm in perms:
-                        remove_perm(perm, user, self)
+                        remove_perm(perm, user, self.layer)
 
-            for group, perms in get_groups_with_perms(self, attach_perms=True).iteritems():
+            for group, perms in get_groups_with_perms(self.layer, attach_perms=True).iteritems():
                 for perm in perms:
-                    remove_perm(perm, group, self)
+                    remove_perm(perm, group, self.layer)
 
     def set_default_permissions(self):
         """
