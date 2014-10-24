@@ -193,7 +193,9 @@
               <li><a href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit Metadata" %}</a></li>            
               {% if GEOSERVER_BASE_URL %}
               <li><a href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage Styles" %}</a></li>
+              {% if preview == 'geoext' %}
               <li><a class="style-edit" href="#">{% trans "Edit Styles" %}</a></li>
+              {% endif %}
               {% endif %}
               <li><a href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace this Layer" %}</a></li>
               <li><a href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove this Layer" %}</a></li>
