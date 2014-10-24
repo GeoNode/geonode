@@ -1,3 +1,16 @@
+geonode (2.4.0+alpha14) trusty; urgency=medium
+
+  [ Simone Dalmasso ]
+  * [7de1b9] remove the navbar-form class from  search form
+
+  [ Julien Collaer ]
+  * [7ba57e] adding translations items
+  * [8e5c04] using interpolate syntax for incrusting var into translables texts
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Fri, 24 Oct 2014 10:15:18 -0500
+
 geonode (2.4.0+alpha13) trusty; urgency=medium
 
   * [9e4552] Fixed missing dash in pip install

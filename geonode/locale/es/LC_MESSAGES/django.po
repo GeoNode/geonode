@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-17 08:47-0500\n"
+"POT-Creation-Date: 2014-10-24 09:59-0500\n"
 "PO-Revision-Date: 2013-09-05 19:43+0000\n"
 "Last-Translator: Clarisa <clarisa.morana@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/geonode/language/"
@@ -1351,7 +1351,7 @@ msgid "For example \"text/xml\""
 msgstr "Por ejemplo \"text/xml\""
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:184 templates/base.html:169
+#: templates/500.html:184 templates/base.html:174
 msgid "About"
 msgstr "Acerca de"
 
@@ -1426,7 +1426,7 @@ msgid "Purpose"
 msgstr "Propósito"
 
 #: base/templates/base/resourcebase_info_panel.html:112 templates/500.html:187
-#: templates/base.html:172
+#: templates/base.html:177
 msgid "Language"
 msgstr "Idioma"
 
@@ -2448,7 +2448,7 @@ msgstr "Explora Capas"
 
 #: layers/templates/layers/layer_list.html:13
 #: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
-#: templates/base.html:85
+#: templates/base.html:90
 msgid "Upload Layers"
 msgstr "Subir Capas"
 
@@ -3364,7 +3364,7 @@ msgstr "Nombre de la organización"
 msgid "name of the responsible organization"
 msgstr "Nombre de la organización responsable"
 
-#: people/models.py:45 templates/500.html:76 templates/base.html:87
+#: people/models.py:45 templates/500.html:76 templates/base.html:92
 msgid "Profile"
 msgstr "Perfil"
 
@@ -3475,17 +3475,17 @@ msgstr "Todos los Contenidos"
 
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64 templates/500.html:39
-#: templates/base.html:42
+#: templates/base.html:47
 msgid "Layers"
 msgstr "Capas"
 
 #: people/templates/people/_profile_filters.html:6 templates/500.html:42
-#: templates/base.html:45
+#: templates/base.html:50
 msgid "Maps"
 msgstr "Mapas"
 
 #: people/templates/people/_profile_filters.html:7 templates/500.html:45
-#: templates/base.html:48
+#: templates/base.html:53
 msgid "Documents"
 msgstr "Documentos"
 
@@ -3845,74 +3845,74 @@ msgstr ""
 "La página solicitada no existe. Tal vez usted está utilizando un marcador "
 "desactualizado.⏎"
 
-#: templates/500.html:48 templates/base.html:51
+#: templates/500.html:48 templates/base.html:56
 msgid "People"
 msgstr "Gente"
 
-#: templates/500.html:51 templates/base.html:54
+#: templates/500.html:51 templates/base.html:59
 #, fuzzy
 msgid "Groups"
 msgstr "grupo"
 
-#: templates/500.html:77 templates/base.html:88
+#: templates/500.html:77 templates/base.html:93
 msgid "Recent Activity"
 msgstr ""
 
-#: templates/500.html:78 templates/base.html:89
+#: templates/500.html:78 templates/base.html:94
 msgid "Inbox"
 msgstr ""
 
-#: templates/500.html:80 templates/base.html:91
+#: templates/500.html:80 templates/base.html:96
 #: templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
 #: templates/announcements/announcement_list.html:20
 msgid "Announcements"
 msgstr "Anuncios"
 
-#: templates/500.html:83 templates/base.html:94
+#: templates/500.html:83 templates/base.html:99
 #, fuzzy
 msgid "Remote Services"
 msgstr "Servicios web de GeoNode"
 
-#: templates/500.html:84 templates/base.html:95
+#: templates/500.html:84 templates/base.html:100
 msgid "Invite User"
 msgstr ""
 
-#: templates/500.html:86 templates/base.html:97
+#: templates/500.html:86 templates/base.html:102
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: templates/500.html:89 templates/base.html:100
+#: templates/500.html:89 templates/base.html:105
 msgid "Admin"
 msgstr "Administración"
 
-#: templates/500.html:92 templates/base.html:103
+#: templates/500.html:92 templates/base.html:108
 msgid "Help"
 msgstr "Ayuda"
 
-#: templates/500.html:97 templates/base.html:108
+#: templates/500.html:97 templates/base.html:113
 #: templates/account/logout.html:6 templates/account/logout.html.py:12
 #: templates/account/logout.html:17
 msgid "Log out"
 msgstr "Salir"
 
-#: templates/500.html:109 templates/base.html:120
+#: templates/500.html:109 templates/base.html:125
 msgid "Username"
 msgstr "Usuario"
 
-#: templates/500.html:113 templates/base.html:124
+#: templates/500.html:113 templates/base.html:129
 msgid "Password"
 msgstr "Clave"
 
-#: templates/500.html:118 templates/base.html:129
+#: templates/500.html:118 templates/base.html:134
 msgid "Remember Me"
 msgstr "Recordarme"
 
-#: templates/500.html:120 templates/base.html:114 templates/base.html.py:131
+#: templates/500.html:120 templates/base.html:119 templates/base.html.py:136
 msgid "Sign in"
 msgstr "Regístrate"
 
-#: templates/500.html:128 templates/base.html:72
+#: templates/500.html:128 templates/base.html:77
 msgid "Register"
 msgstr "Registrarse"
 
@@ -3940,19 +3940,19 @@ msgstr ""
 "github.com/GeoNode/geonode/issues\">seguimiento de errores de GeoNode</a>\n"
 "  "
 
-#: templates/500.html:182 templates/base.html:167
+#: templates/500.html:182 templates/base.html:172
 msgid "Powered by"
 msgstr "Proporcionado por:"
 
-#: templates/500.html:182 templates/base.html:167
+#: templates/500.html:182 templates/base.html:172
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/500.html:182 templates/base.html:167
+#: templates/500.html:182 templates/base.html:172
 msgid "version"
 msgstr "Versión"
 
-#: templates/500.html:183 templates/base.html:168
+#: templates/500.html:183 templates/base.html:173
 msgid "Developers"
 msgstr "Desarrolladores"
 
@@ -4037,7 +4037,7 @@ msgstr "Acerca de GeoNode"
 msgid "About GeoNode."
 msgstr "Acerca de GeoNode."
 
-#: templates/base.html:218
+#: templates/base.html:223
 msgid "Type your search here ..."
 msgstr ""
 
@@ -4830,6 +4830,11 @@ msgstr "Tus selecciones"
 msgid "Clear all filters"
 msgstr "Borrar"
 
+#: templates/search/_sort_filters.html:13
+#, fuzzy
+msgid "Set permissions"
+msgstr "permisos"
+
 #: templates/search/_text_filter.html:5
 msgid "Text"
 msgstr ""
@@ -4939,9 +4944,6 @@ msgstr "Enviar Respuesta"
 
 #~ msgid "Update metadata"
 #~ msgstr "Actualizar metadatos"
-
-#~ msgid "permissions"
-#~ msgstr "permisos"
 
 #~ msgid "Individual Name"
 #~ msgstr "Nombre individual"
