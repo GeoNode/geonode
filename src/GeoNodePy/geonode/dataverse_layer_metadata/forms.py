@@ -5,7 +5,9 @@ from django.utils.translation import ugettext as _
 from django import forms 
 
 from geonode.dataverse_layer_metadata.models import DataverseLayerMetadata
-from dataverse_info.forms import DataverseInfoValidationForm
+from dataverse_info.forms import DataverseInfoValidationForm\
+                                , CheckForExistingLayerFormBasic\
+                                , CheckForDataverseUserLayersFormBasic
 
 DATETIME_PAT_STR = '%Y-%m-%d %H:%M'
 
@@ -57,17 +59,17 @@ class DataverseLayerMetadataValidationForm(DataverseInfoValidationForm):
         exclude = ['map_layer','created', 'modified']
 
 
-class CheckForExistingLayerForm(DataverseInfoValidationForm):
+class CheckForExistingLayerForm(CheckForExistingLayerFormBasic):
     """
     Used for the API that retrieves a WorldMap Layer based on a specific:
         - Dataverse user id
         - Dataverse file id
     """
-    class Meta:
-        model = DataverseLayerMetadata
-        fields = ('dv_user_id', 'datafile_id')
+    #class Meta:
+    #    model = DataverseLayerMetadata
+    #    fields = ('dv_user_id', 'datafile_id')
 
-
+        
     def get_latest_dataverse_layer_metadata(self):
         """
         Return DataverseLayerMetadata objects that match the given 'dv_user_id' and 'datafile_id'
@@ -87,14 +89,14 @@ class CheckForExistingLayerForm(DataverseInfoValidationForm):
         
         
         
-class CheckForDataverseUserLayersForm(DataverseInfoValidationForm):
+class CheckForDataverseUserLayersForm(CheckForDataverseUserLayersFormBasic):
     """
     Used for the API that retrieves a Dataverse user's WorldMap Layers
-        - input dv_user_id
+        - input: dv_user_id
     """
-    class Meta:
-        model = DataverseLayerMetadata
-        fields = ('dv_user_id',)
+    #class Meta:
+    #    model = DataverseLayerMetadata
+    #    fields = ('dv_user_id',)
 
 
     def get_dataverse_layer_metadata_objects(self):

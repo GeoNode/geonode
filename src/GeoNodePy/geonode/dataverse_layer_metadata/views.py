@@ -48,6 +48,11 @@ def view_get_dataverse_user_layers(request):
         layer_metadata_obj = LayerMetadata(**{ 'geonode_layer_object' : mo.map_layer })
         metadata_list.append(layer_metadata_obj.get_metadata_dict())
     
+    if len(metadata_list) == 0:
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg='No map layers found')
+        return HttpResponse(status=200, content=json_msg, content_type="application/json")
+        
+    
     # Return the response!
     json_msg = MessageHelperJSON.get_json_msg(success=True, msg='worked', data_dict=metadata_list)
     return HttpResponse(status=200, content=json_msg, content_type="application/json")
@@ -60,7 +65,8 @@ def get_existing_layer_data(request):
     Given a POST with a 'dv_user_id' and 'datafile_id'
     
     Check if a DataverseLayerMetadata record exists for this information.
-     
+    
+    returns JSON
     """
     #   Does it have proper auth?
     #
@@ -91,7 +97,7 @@ def get_existing_layer_data(request):
     #   Nope, we are mapping a new file to the WorldMap
     #
     if dataverse_layer_metadata is None:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="This layer does not yet exist")
+        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="This layer does not exist")
         return HttpResponse(status=200, content=json_msg, content_type="application/json")
 
     # Prepare a JSON response
