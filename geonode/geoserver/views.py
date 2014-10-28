@@ -275,10 +275,10 @@ def style_change_check(request, path):
     # or /ge/rest/layers/geonode:san_andres_y_providencia_coastline.json
     # for POST path is /gs/rest/styles
     # we will suppose that a user can create a new style only if he is an
-    # administrator (we need to discuss about it)
+    # authenticated (we need to discuss about it)
     authorized = True
     if request.method == 'POST': # new style
-        if not request.user.is_superuser:
+        if not request.user.is_authenticated:
             authorized = False
     if request.method == 'PUT':
         if path == 'rest/layers': # layer update
