@@ -98,7 +98,7 @@
   <h3>Groups</h3>
   {% if user == profile %}
     {% for group in profile.group_list_all %}
-      <article ng-repeat="group in results">
+      <article>
         <div class="row">
            <div ng-if="group.logo != ''" class="col-md-2">
              <a href="{{ group.get_absolute_url }}" ><img src="/uploaded/{{ group.logo }}" alt="{{ group.title }}" class="group-logo" /></a>
@@ -115,7 +115,7 @@
     {% endfor %}
   {% else %}
     {% for group in profile.group_list_public %}
-      <article ng-repeat="group in results">
+      <article>
         <div class="row">
            <div ng-if="group.logo != ''" class="col-md-2">
              <a href="{{ group.get_absolute_url }}" ><img src="/uploaded/{{ group.logo }}" alt="{{ group.title }}" class="group-logo" /></a>
