@@ -3,7 +3,10 @@
 (function(){
 
   var module = angular.module('geonode_main_search', [], function($locationProvider) {
-      $locationProvider.html5Mode(true);
+      $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false
+      });
 
       // make sure that angular doesn't intercept the page links
       angular.element("a").prop("target", "_self");
