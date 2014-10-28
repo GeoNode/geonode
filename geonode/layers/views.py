@@ -272,6 +272,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
 @login_required
 def layer_metadata(request, layername, template='layers/layer_metadata.html'):
+                        
     try:
         layer = _resolve_layer(
             request,
@@ -279,8 +280,10 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             'base.change_resourcebase_metadata',
             _PERMISSION_MSG_METADATA)
     except PermissionDenied as ex:
-        return HttpResponse(_PERMISSION_MSG_METADATA,
-            mimetype="text/plain", status=401)
+        return HttpResponse(loader.render_to_string(
+                '401.html', RequestContext(
+                    request, {
+                        })), status=401)
         
     layer_attribute_set = inlineformset_factory(
         Layer,
