@@ -1,6 +1,7 @@
 import json
 import logging
 import httplib2
+import os
 
 from django.contrib.auth import authenticate
 from django.utils import simplejson
@@ -19,7 +20,7 @@ from django.utils.translation import ugettext as _
 from guardian.shortcuts import get_objects_for_user
 
 from geonode.layers.forms import LayerStyleUploadForm
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 from geonode.geoserver.signals import gs_catalog
 from geonode.utils import json_response, _get_basic_auth_info
@@ -261,7 +262,44 @@ def feature_edit_check(request, layername):
         return HttpResponse(
             json.dumps({'authorized': False}), mimetype="application/json")
 
-
+def style_change_check(request, path):
+    """
+    If the layer has not change_layer_style permission, return a status of
+    401 (unauthorized)
+    """
+    # a new style is created with a POST and then a PUT,
+    # a style is updated with a PUT
+    # a layer is updated with a style with a PUT
+    # in both case we need to check permissions here
+    # for PUT path is /gs/rest/styles/san_andres_y_providencia_water_a452004b.xml
+    # or /ge/rest/layers/geonode:san_andres_y_providencia_coastline.json
+    # for POST path is /gs/rest/styles
+    # we will suppose that a user can create a new style only if he is an
+    # administrator (we need to discuss about it)
+    authorized = True
+    if request.method == 'POST': # new style
+        if not request.user.is_superuser:
+            authorized = False
+    if request.method == 'PUT':
+        if path == 'rest/layers': # layer update
+            # should be safe to always authorize it
+            authorized = True
+        else: # style update
+            # we will iterate all layers (should be just one if not using GS)
+            # to which the posted style is associated
+            # and check if the user has change_style_layer permissions on each of them
+            style_name = os.path.splitext(request.path)[0].split('/')[-1]
+            try:
+                style = Style.objects.get(name=style_name)
+                for layer in style.layer_styles.all():
+                    if not request.user.has_perm('change_layer_style', obj=layer):
+                        authorized = False
+            except:
+                authorized = False
+                logger.warn(
+                    'There is not a style with such a name: %s.' % style_name)
+    return authorized
+            
 def geoserver_rest_proxy(request, proxy_path, downstream_path):
 
     if not request.user.is_authenticated():
@@ -283,19 +321,25 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
+        # if user is not authorized, we must stop him
+        
+        # we need to sync django here and check if some object (styles) can
+        # be edited by the user
+        # we should remove this geonode dependency calling layers.views straight
+        # from GXP, bypassing the proxy
+        if downstream_path in ('rest/styles', 'rest/layers') and len(request.body) > 0:
+            if not style_change_check(request, downstream_path):
+                return HttpResponse(
+                    _("You don't have permissions to change style for this layer"),
+                    mimetype="text/plain",
+                    status=401)
+            if downstream_path == 'rest/styles':
+                style_update(request, url)
 
     response, content = http.request(
         url, request.method,
         body=request.body or None,
         headers=headers)
-
-    # we need to sync django here
-    # we should remove this geonode dependency calling layers.views straight
-    # from GXP, bypassing the proxy
-    if downstream_path == 'rest/styles' and len(request.body) > 0:
-        # for some reason sometime gxp sends a put with empty request
-        # need to figure out with Bart
-        style_update(request, url)
 
     return HttpResponse(
         content=content,
