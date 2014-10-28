@@ -481,6 +481,7 @@ def post_delete_layer(instance, sender, **kwargs):
     logger.debug(
         "Going to delete the default style for [%s]",
         instance.typename.encode('utf-8'))
+
     if instance.default_style and Layer.objects.filter(
             default_style__id=instance.default_style.id).count() == 0:
         instance.default_style.delete()
@@ -488,7 +489,6 @@ def post_delete_layer(instance, sender, **kwargs):
     if instance.upload_session:
         for lf in instance.upload_session.layerfile_set.all():
             lf.file.delete()
-
 
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
