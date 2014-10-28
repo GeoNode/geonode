@@ -486,6 +486,10 @@ def post_delete_layer(instance, sender, **kwargs):
             default_style__id=instance.default_style.id).count() == 0:
         instance.default_style.delete()
 
+    if instance.upload_session:
+        for lf in instance.upload_session.layerfile_set.all():
+            lf.file.delete()
+
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.post_save.connect(resourcebase_post_save, sender=Layer)
