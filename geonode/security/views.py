@@ -58,6 +58,7 @@ def resource_permissions(request, resource_id):
             mimetype='text/plain')
 
     if request.method == 'POST':
+        #import ipdb;ipdb.set_trace()
         permission_spec = json.loads(request.body)
         resource.set_permissions(permission_spec)
 

@@ -145,12 +145,12 @@
     </div>
   </div>
   {% endif %}
-  <!-- change permissions -->
+  <!-- manage layer -->
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse6">
-          {% trans "Who can change permissions for it?" %}
+          {% trans "Who can manage it? (update, delete, change permissions, publish/unpublish it?)" %}
         </a>
       </h4>
     </div>
@@ -159,39 +159,13 @@
         <div class="radio">
           <label>
             {% trans "The following users:" %}
-            <input class="user-select" type="text" name="change_resourcebase_permissions" id="change_resourcebase_permissions_users" />
+            <input class="user-select" type="text" name="manage_resourcebase" id="manage_resourcebase_users" />
           </label>
         </div>
         <div class="radio">
           <label>
             {% trans "The following groups:" %}
-            <input class="group-select" type="text" name="change_resourcebase_permissions" id="change_resourcebase_permissions_groups" /> 
-          </label>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- publish layer -->
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapse7">
-          {% trans "Who can publish/unpublish it?" %}
-        </a>
-      </h4>
-    </div>
-    <div id="collapse7" class="panel-collapse collapse">
-      <div class="controls">
-        <div class="radio">
-          <label>
-            {% trans "The following users:" %}
-            <input class="user-select" type="text" name="publish_resourcebase" id="publish_resourcebase_users" />
-          </label>
-        </div>
-        <div class="radio">
-          <label>
-            {% trans "The following groups:" %}
-            <input class="group-select" type="text" name="publish_resourcebase" id="publish_resourcebase_groups" /> 
+            <input class="group-select" type="text" name="manage_resourcebase" id="manage_resourcebase_groups" /> 
           </label>
         </div>
       </div>
