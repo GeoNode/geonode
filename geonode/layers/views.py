@@ -101,7 +101,8 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
         ctx = {
-            'charsets': CHARSETS
+            'charsets': CHARSETS,
+            'is_layer': True,
         }
         return render_to_response(template,
                                   RequestContext(request, ctx))
@@ -249,6 +250,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "permissions_json": _perms_info_json(layer),
         "documents": get_related_documents(layer),
         "metadata": metadata,
+        "is_layer": True,
     }
 
     context_dict["viewer"] = json.dumps(
