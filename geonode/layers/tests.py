@@ -96,14 +96,53 @@ class LayersTest(TestCase):
                 'view_resourcebase',
                 layer.get_self_resource()))
 
+        # Test that the owner user can read
+        self.assertTrue(
+            layer.owner.has_perm(
+                'view_resourcebase',
+                layer.get_self_resource()))
+                
+        # Test that the owner user can download it
+        self.assertTrue(
+            layer.owner.has_perm(
+                'download_resourcebase',
+                layer.get_self_resource()))
+                
+        # Test that the owner user can edit metadata
+        self.assertTrue(
+            layer.owner.has_perm(
+                'change_resourcebase_metadata',
+                layer.get_self_resource()))
+                
+        # Test that the owner user can edit data if is vector type
+        if layer.storeType == 'dataStore':
+            self.assertTrue(
+                layer.owner.has_perm(
+                    'change_layer_data',
+                    layer))
+                    
+        # Test that the owner user can edit styles
+        self.assertTrue(
+            layer.owner.has_perm(
+                'change_layer_style',
+                layer))
+                
         # Test that the owner can manage the layer
+        self.assertTrue(
+            layer.owner.has_perm(
+                'change_resourcebase',
+                layer.get_self_resource()))
+        self.assertTrue(
+            layer.owner.has_perm(
+                'delete_resourcebase',
+                layer.get_self_resource()))
         self.assertTrue(
             layer.owner.has_perm(
                 'change_resourcebase_permissions',
                 layer.get_self_resource()))
         self.assertTrue(
             layer.owner.has_perm(
-                'change_resourcebase',
+                'publish_resourcebase',
                 layer.get_self_resource()))
 
     def test_set_layer_permissions(self):

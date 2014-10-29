@@ -28,9 +28,12 @@ from guardian.shortcuts import assign_perm, remove_perm, \
 
 ADMIN_PERMISSIONS = [
     'view_resourcebase',
+    'download_resourcebase',
+    'change_resourcebase_metadata',
     'change_resourcebase',
     'delete_resourcebase',
-    'change_resourcebase_permissions'
+    'change_resourcebase_permissions',
+    'publish_resourcebase',
 ]
 
 
@@ -135,12 +138,19 @@ class PermissionLevelMixin(object):
         view permission to the anonymous group
         """
         self.remove_all_permissions()
-
+        
+        # default permissions for anonymous users
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
         assign_perm('view_resourcebase', anonymous_group, self.get_self_resource())
 
+        # default permissions for resource owner
         for perm in ADMIN_PERMISSIONS:
             assign_perm(perm, self.owner, self.get_self_resource())
+        
+        # only for layer owner
+        if self.__class__.__name__ == 'Layer':
+            assign_perm('change_layer_data', self.owner, self)
+            assign_perm('change_layer_style', self.owner, self)
 
     def set_permissions(self, perm_spec):
         """
