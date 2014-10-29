@@ -10,11 +10,11 @@ import string
 
 from lxml import etree
 
-from geonode.dvn.dv_utils import remove_whitespace_from_xml, MessageHelperJSON
-from geonode.dvn.geoserver_rest_url_helper import WORLDMAP_WORKSPACE_NAME
+from geonode.dataverse_connect.dv_utils import remove_whitespace_from_xml, MessageHelperJSON
+from geonode.dataverse_connect.geoserver_rest_url_helper import WORLDMAP_WORKSPACE_NAME
 
 
-logger = logging.getLogger("geonode.dvn.formatted_style_rules")
+logger = logging.getLogger("geonode.dataverse_connect.formatted_style_rules")
 
 """
 Class to help create an SLD with Rules

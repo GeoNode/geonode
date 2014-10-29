@@ -8,8 +8,8 @@ class DataverseLayerMetadataAdmin(admin.ModelAdmin):
     save_on_top = True
     search_fields = ('map_layer__name',  'dataverse_name', 'dataset_name', 'datafile_label', 'dataset_description')
     list_display = ('map_layer', 'dataset_name', 'datafile_label', 'dataverse_name', )
-    list_filter = ('dataverse_name', )   
-    readonly_fields = ('modified', 'created', 'datafile_create_datetime', 'datafile_expected_md5_checksum' )
+    list_filter = ('dataset_is_public', 'dataverse_name', )   
+    readonly_fields = ('modified', 'created', 'dataset_is_public', 'datafile_create_datetime', 'datafile_expected_md5_checksum' )
     fieldsets = (
            (None, {
                'fields': ('map_layer',)
@@ -22,6 +22,7 @@ class DataverseLayerMetadataAdmin(admin.ModelAdmin):
            }),
             ('Dataset/Dataset Version', { 
                   'fields': (('dataset_name', 'dataset_citation')\
+                        , 'dataset_is_public'\
                         , ('dataset_semantic_version', 'dataset_id', 'dataset_version_id')\
                         , 'dataset_description')
               }),

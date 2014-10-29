@@ -11,16 +11,16 @@ from geonode.maps.utils import save
 from geonode.maps.views import _create_new_user
 from geonode.utils import slugify
 
-from geonode.dvn.dataverse_auth import has_proper_auth
-from geonode.dvn.layer_metadata import LayerMetadata        # object with layer metadata
-from geonode.dvn.dv_utils import MessageHelperJSON          # format json response object
+from geonode.dataverse_connect.dataverse_auth import has_proper_auth
+from geonode.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
+from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 
 from geonode.dataverse_layer_metadata.layer_metadata_helper import add_dataverse_layer_metadata
 
-logger = logging.getLogger("geonode.dvn.views")
+logger = logging.getLogger("geonode.dataverse_connect.views")
 
 @csrf_exempt
-def dvn_import(request):
+def view_add_worldmap_shapefile(request):
     if not has_proper_auth(request):
         json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Authentication failed.")
         return HttpResponse(status=401, content=json_msg, content_type="application/json")

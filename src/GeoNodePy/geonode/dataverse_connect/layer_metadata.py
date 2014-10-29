@@ -9,9 +9,9 @@ import logging
 from django.conf import settings
 
 from geonode.maps.models import Layer
-from geonode.dvn.dv_utils import remove_whitespace_from_xml, MessageHelperJSON
+from geonode.dataverse_connect.dv_utils import remove_whitespace_from_xml, MessageHelperJSON
 
-logger = logging.getLogger("geonode.dvn.layer_metadata")
+logger = logging.getLogger("geonode.dataverse_connect.layer_metadata")
 
 """
 to do, add attribute metadata

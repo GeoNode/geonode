@@ -20,13 +20,13 @@ from django.conf import settings
 from django.http import QueryDict
 
 from geonode.maps.models import Layer
-from geonode.dvn.dv_utils import remove_whitespace_from_xml, MessageHelperJSON
-from geonode.dvn.sld_helper_form import SLDHelperForm
+from geonode.dataverse_connect.dv_utils import remove_whitespace_from_xml, MessageHelperJSON
+from geonode.dataverse_connect.sld_helper_form import SLDHelperForm
 
-from geonode.dvn.geoserver_rest_url_helper import get_retrieve_sld_rules_url, get_layer_features_definition_url
+from geonode.dataverse_connect.geoserver_rest_url_helper import get_retrieve_sld_rules_url, get_layer_features_definition_url
 
-from geonode.dvn.geoserver_rest_util import make_geoserver_get_request
-logger = logging.getLogger("geonode.dvn.geonode_get_services")
+from geonode.dataverse_connect.geoserver_rest_util import make_geoserver_get_request
+logger = logging.getLogger("geonode.dataverse_connect.geonode_get_services")
 
 
 

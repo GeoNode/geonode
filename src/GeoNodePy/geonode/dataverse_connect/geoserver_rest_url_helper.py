@@ -8,7 +8,7 @@ except:
     from urllib.parse import urljoin        # python 3.x
     
     
-from geonode.dvn.sld_helper_form import SLDHelperForm
+from geonode.dataverse_connect.sld_helper_form import SLDHelperForm
 
 
 WORLDMAP_WORKSPACE_NAME = 'geonode'

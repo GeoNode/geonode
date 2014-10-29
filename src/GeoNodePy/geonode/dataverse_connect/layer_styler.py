@@ -6,13 +6,13 @@ import sys
 
 from django.conf import settings
 
-from geonode.dvn.dv_utils import MessageHelperJSON
-from geonode.dvn.sld_helper_form import SLDHelperForm
-from geonode.dvn.style_layer_maker import StyleLayerMaker
-from geonode.dvn.formatted_style_rules import FormattedStyleRules
-from geonode.dvn.geonode_get_services import get_sld_rules
+from geonode.dataverse_connect.dv_utils import MessageHelperJSON
+from geonode.dataverse_connect.sld_helper_form import SLDHelperForm
+from geonode.dataverse_connect.style_layer_maker import StyleLayerMaker
+from geonode.dataverse_connect.formatted_style_rules import FormattedStyleRules
+from geonode.dataverse_connect.geonode_get_services import get_sld_rules
 
-logger = logging.getLogger("geonode.dvn.layer_styler")
+logger = logging.getLogger("geonode.dataverse_connect.layer_styler")
 
 class LayerStyler:
     def __init__(self, styling_params):

@@ -2,11 +2,11 @@ import logging
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from geonode.dvn.dataverse_auth import has_proper_auth
-from geonode.dvn.layer_metadata import LayerMetadata        # object with layer metadata
+from geonode.dataverse_connect.dataverse_auth import has_proper_auth
+from geonode.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
 from geonode.dataverse_layer_metadata.forms import CheckForExistingLayerForm, CheckForDataverseUserLayersForm
 
-from geonode.dvn.dv_utils import MessageHelperJSON          # format json response object
+from geonode.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
 
 logger = logging.getLogger("geonode.dataverse_layer_metadata.views")
 

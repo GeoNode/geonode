@@ -16,7 +16,7 @@ import logging
 from django.conf import settings
 
 
-logger = logging.getLogger("geonode.dvn.geonode_post_services")
+logger = logging.getLogger("geonode.dataverse_connect.geonode_post_services")
 
 
 def make_geoserver_json_put_request(request_url_str, json_data_str):

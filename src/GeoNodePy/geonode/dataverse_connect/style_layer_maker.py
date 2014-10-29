@@ -18,13 +18,13 @@ except:
 from django.utils.translation import ugettext as _
 from django.conf import settings
 
-from geonode.dvn.layer_metadata import LayerMetadata
+from geonode.dataverse_connect.layer_metadata import LayerMetadata
 from geonode.maps.models import Layer
-from geonode.dvn.geoserver_rest_util import make_geoserver_json_put_request, make_geoserver_put_sld_request
-from geonode.dvn.geoserver_rest_url_helper import get_set_sld_rules_to_layer_url, get_set_default_style_url
+from geonode.dataverse_connect.geoserver_rest_util import make_geoserver_json_put_request, make_geoserver_put_sld_request
+from geonode.dataverse_connect.geoserver_rest_url_helper import get_set_sld_rules_to_layer_url, get_set_default_style_url
 
 
-logger = logging.getLogger("geonode.dvn.style_layer_maker")
+logger = logging.getLogger("geonode.dataverse_connect.style_layer_maker")
 
 
 class StyleLayerMaker:
