@@ -125,7 +125,7 @@
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
         {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
-        {% if "download_resourcebase" in perms %}
+        {% if links %}
         <li class="list-group-item">
            <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
         </li>
