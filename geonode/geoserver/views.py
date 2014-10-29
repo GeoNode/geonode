@@ -4,6 +4,7 @@ import httplib2
 import os
 
 from django.contrib.auth import authenticate
+from django.core.exceptions import PermissionDenied
 from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST
@@ -13,7 +14,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.template import RequestContext
+from django.template import RequestContext, loader
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 
@@ -155,11 +156,19 @@ def layer_style_upload(req, layername):
 
 @login_required
 def layer_style_manage(req, layername):
-    layer = _resolve_layer(
-        req,
-        layername,
-        'base.change_resourcebase',
-        _PERMISSION_MSG_MODIFY)
+        
+    try:
+        layer = _resolve_layer(
+            req,
+            layername,
+            'layers.change_layer_style',
+            _PERMISSION_MSG_MODIFY)
+    except PermissionDenied as ex:
+        return HttpResponse(loader.render_to_string(
+                '401.html', RequestContext(
+                    req, {
+                        })), status=401)
+                        
     if req.method == 'GET':
         try:
             cat = gs_catalog
