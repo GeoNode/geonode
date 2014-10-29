@@ -1,6 +1,5 @@
 {% load i18n %}
 <div class="panel-group" id="permissions-body">
-{% with resource_type=resource.polymorphic_ctype.name %}
   <!-- view layer -->
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -91,7 +90,7 @@
       </div>
     </div>
   </div>
-  {% if resource_type == "layer" %}
+  {% if is_layer %}
   <!-- change layer data -->
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -171,5 +170,4 @@
       </div>
     </div>
   </div>
-{% endwith %}
 </div>
