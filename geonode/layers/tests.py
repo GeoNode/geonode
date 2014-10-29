@@ -33,7 +33,7 @@ from django.db.models import Count
 from django.contrib.auth import get_user_model
 from agon_ratings.models import OverallRating
 
-from guardian.shortcuts import get_anonymous_user, assign_perm
+from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
 
 from geonode import GeoNodeException
 
@@ -904,26 +904,103 @@ class LayersTest(TestCase):
         # grab a layer
         layer = Layer.objects.all()[0]
 
-        assign_perm('view_resourcebase', bob, layer.get_self_resource())
-        assign_perm('change_resourcebase', bob, layer.get_self_resource())
-
         # verify bobby has view/change permissions on it but not manage
-        self.assertTrue(
-            bob.has_perm(
-                'view_resourcebase',
-                layer.get_self_resource()))
-        self.assertTrue(
-            bob.has_perm(
-                'change_resourcebase',
-                layer.get_self_resource()))
         self.assertFalse(
             bob.has_perm(
                 'change_resourcebase_permissions',
                 layer.get_self_resource()))
-
-        # verify that bobby can access the layer data page
+                
         c = Client()
         self.assertTrue(c.login(username='bobby', password='bob'))
 
+        # starts permissions checking
+        # 1. view_resourcebase
+        # 2. change_resourcebase
+        # 3. delete_resourcebase
+        # 4. change_resourcebase_metadata
+        # 5. change_resourcebase_permissions
+        # 6. change_layer_data
+        # 7. change_layer_style
+        
+        # 1. view_resourcebase
+        # 1.1 has view_resourcebase: verify that bobby can access the layer detail page
+        self.assertTrue(
+            bob.has_perm(
+                'view_resourcebase',
+                layer.get_self_resource()))
+        
         response = c.get(reverse('layer_detail', args=(layer.typename,)))
+        self.assertEquals(response.status_code, 200)
+        
+        # 1.2 has not view_resourcebase: verify that bobby can access the layer detail page
+        remove_perm('view_resourcebase', bob, layer.get_self_resource())
+        response = c.get(reverse('layer_detail', args=(layer.typename,)))
+        self.assertEquals(response.status_code, 200)
+        
+        # 2. change_resourcebase
+        # 2.1 has not change_resourcebase: verify that bobby cannot access the layer replace page
+        response = c.get(reverse('layer_replace', args=(layer.typename,)))
+        self.assertEquals(response.status_code, 401)
+        
+        # 2.2 has change_resourcebase: verify that bobby can access the layer replace page
+        assign_perm('change_resourcebase', bob, layer.get_self_resource())
+        self.assertTrue(
+            bob.has_perm(
+                'change_resourcebase',
+                layer.get_self_resource()))
+                
+        response = c.get(reverse('layer_replace', args=(layer.typename,)))
+        self.assertEquals(response.status_code, 200)
+        
+        # 3. delete_resourcebase
+        # 3.1 has not delete_resourcebase: verify that bobby cannot access the layer delete page
+        response = c.get(reverse('layer_remove', args=(layer.typename,)))
+        self.assertEquals(response.status_code, 401)
+        
+        # 3.2 has delete_resourcebase: verify that bobby can access the layer delete page
+        assign_perm('delete_resourcebase', bob, layer.get_self_resource())
+        self.assertTrue(
+            bob.has_perm(
+                'delete_resourcebase',
+                layer.get_self_resource()))
+                
+        response = c.get(reverse('layer_remove', args=(layer.typename,)))
+        self.assertEquals(response.status_code, 200)
+        
+        # 4. change_resourcebase_metadata
+        # 4.1 has not change_resourcebase_metadata: verify that bobby cannot access the layer metadata page
+        response = c.get(reverse('layer_metadata', args=(layer.typename,)))
+        self.assertEquals(response.status_code, 401)
+        
+        # 4.2 has delete_resourcebase: verify that bobby can access the layer delete page
+        assign_perm('change_resourcebase_metadata', bob, layer.get_self_resource())
+        self.assertTrue(
+            bob.has_perm(
+                'change_resourcebase_metadata',
+                layer.get_self_resource()))
+                
+        response = c.get(reverse('layer_metadata', args=(layer.typename,)))
+        self.assertEquals(response.status_code, 200)
+        
+        # 5. change_resourcebase_permissions
+        # should be impossible for the user without change_resourcebase_permissions
+        # to change permissions as the permission form is not available in the
+        # layer detail page?
+        
+        # 6. change_layer_data
+        # must be done in integration test sending a WFS-T request with CURL
+        
+        # 7. change_layer_style
+        # 7.1 has not change_resourcebase_metadata: verify that bobby cannot access the layer metadata page
+        response = c.get(reverse('layer_style_manage', args=(layer.typename,)))
+        self.assertEquals(response.status_code, 401)
+        
+        # 4.2 has delete_resourcebase: verify that bobby can access the layer delete page
+        assign_perm('change_layer_style', bob, layer)
+        self.assertTrue(
+            bob.has_perm(
+                'change_layer_style',
+                layer))
+                
+        response = c.get(reverse('layer_style_manage', args=(layer.typename,)))
         self.assertEquals(response.status_code, 200)
