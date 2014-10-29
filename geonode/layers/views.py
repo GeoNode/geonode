@@ -419,11 +419,18 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
 
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.change_resourcebase',
-        _PERMISSION_MSG_MODIFY)
+        
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_MODIFY)
+    except PermissionDenied as ex:
+        return HttpResponse(loader.render_to_string(
+                '401.html', RequestContext(
+                    request, {
+                        })), status=401)
 
     if request.method == 'GET':
         ctx = {
