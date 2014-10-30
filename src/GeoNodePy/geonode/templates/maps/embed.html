@@ -348,38 +348,12 @@ app.on("ready", function () {
                 fillColor: '#' + currentQuestion.color,
                 fillOpacity: 0.3
             });
-            Ext.example.msg("Info", "{%  trans "
-            Please
-            click
-            on
-            the
-            boundaries
-            of
-            a
-            polygon. < br / > Double - click
-            to
-            end
-            drawing.
-            " %}"
+            Ext.example.msg("Info", "{%  trans "Please click on the boundaries of a polygon. < br / > Double - click to end drawing." %}"
         )
             ;
             polygonControl.activate();
         } else if (currentQuestion.type == 'polyline') {
-            Ext.example.msg("Info", "{%  trans "
-            Please
-            click
-            on
-            the
-            verticies
-            of
-            a
-            polyline. < br / > Double - click
-            to
-            end
-            drawing.
-            " %}"
-        )
-            ;
+            Ext.example.msg("Info", "{%  trans "Please click on the verticies of a polyline. < br / > Double - click to end drawing. " %}");
             polylineControl.activate();
         }
 
