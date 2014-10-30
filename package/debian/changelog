@@ -1,3 +1,33 @@
+geonode (2.4.0+alpha17) trusty; urgency=high
+
+  [ Ian Schneider ]
+  * [29c726] safer,complete sync of emailaddress/profile, tests
+
+  [ giohappy ]
+  * [eef970] enable Edit styles menu item only if geoext is set as preview library
+
+  [ Simone Dalmasso ]
+  * [147bd5] remove the files on layer delete.
+
+  [ Julien Collaer ]
+  * [4a3fcc] tags
+
+  [ Simone Dalmasso ]
+  * [1dd85f] remove the ng directive in profile detail fixes #1744
+  * [c8d60b] fix flake8
+  * [5c1858] fix flake8
+  * [c4f571] avoid on load date query trigger
+  * [f96fad] bump angular to 1.3.0 and leaflet-directive to 0.7.9
+  * [8c13e9] prevent default event on bulk perms form
+
+  [ Raphael Sprumont ]
+  * [9f4521] correction issue 1743 Geonode
+
+  [ Simone Dalmasso ]
+  * [8ca828] fix service url reverse
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 29 Oct 2014 14:54:26 +0000
+
 geonode (2.4.0+alpha16) trusty; urgency=high
 
   [ x ]

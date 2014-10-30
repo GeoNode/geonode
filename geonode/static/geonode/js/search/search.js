@@ -292,7 +292,8 @@
           choiceSelector: 'span',
           hideAfter: 200,
           minimumCharacters: 1,
-          appendAutocomplete: $('#text_search_input')
+          appendAutocomplete: $('#text_search_input'),
+          placeholder: gettext('Enter your text here ...')
     });
     $('#text_search_input').bind('selectChoice', function(e, choice, text_autocomplete) {
           if(choice[0].children[0] == undefined) {
