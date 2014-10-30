@@ -436,7 +436,8 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         ctx = {
             'charsets': CHARSETS,
             'layer': layer,
-            'is_featuretype': layer.is_vector()
+            'is_featuretype': layer.is_vector(),
+            'is_layer': True,
         }
         return render_to_response(template,
                                   RequestContext(request, ctx))
