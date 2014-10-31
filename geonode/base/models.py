@@ -290,9 +290,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     # Section 5
     temporal_extent_start = models.DateTimeField(_('temporal extent start'), blank=True, null=True,
-                                                   help_text=temporal_extent_start_help_text)
+                                                 help_text=temporal_extent_start_help_text)
     temporal_extent_end = models.DateTimeField(_('temporal extent end'), blank=True, null=True,
-                                                help_text=temporal_extent_end_help_text)
+                                               help_text=temporal_extent_end_help_text)
 
     supplemental_information = models.TextField(_('supplemental information'), default=DEFAULT_SUPPLEMENTAL_INFORMATION,
                                                 help_text=_('any other descriptive information about the dataset'))
