@@ -25,7 +25,7 @@ def has_proper_auth(request):
     else:
         return False
     
-    if not dv_token == settings.DVN_TOKEN:
+    if not dv_token == settings.WORLDMAP_TOKEN_FOR_DATAVERSE:
         return False
 
     return True

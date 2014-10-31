@@ -521,7 +521,7 @@ SESSION_COOKIE_HTTPONLY = True
 # Only works with Django 1.6+
 CSRF_COOKIE_HTTPONLY = True
 
-DVN_TOKEN = 'FakeToken'
+WORLDMAP_TOKEN_FOR_DATAVERSE = 'FakeToken'
 
 try:
     from local_settings import *

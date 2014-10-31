@@ -1,5 +1,6 @@
 import logging
 from django.http import HttpResponse
+
 from django.views.decorators.csrf import csrf_exempt
 
 from geonode.dataverse_connect.dataverse_auth import has_proper_auth

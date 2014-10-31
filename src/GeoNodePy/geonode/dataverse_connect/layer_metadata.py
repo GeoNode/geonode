@@ -105,7 +105,10 @@ class LayerMetadata:
 
         self.layer_name = layer_obj.typename
         self.layer_link = '%sdata/%s' % (settings.SITEURL, layer_obj.typename)
+
         self.embed_map_link =  '%smaps/embed/?layer=%s' % (settings.SITEURL, layer_obj.typename)
+
+
         self.llbbox = layer_obj.llbbox
         self.attribute_info = self.get_attribute_metadata(layer_obj)
         if layer_obj.owner:

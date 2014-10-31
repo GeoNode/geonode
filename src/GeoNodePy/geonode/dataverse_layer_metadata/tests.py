@@ -159,7 +159,7 @@ class SimpleClientTest(unittest.TestCase):
     def test_view_2(self):
         msgt('(2) get_existing_layer_data: with a get, not a post')
         client = Client()
-        response = client.get(reverse('get_existing_layer_data') + '?geoconnect_token=%s' % settings.DVN_TOKEN)
+        response = client.get(reverse('get_existing_layer_data') + '?geoconnect_token=%s' % settings.WORLDMAP_TOKEN_FOR_DATAVERSE)
         self.assertEqual(response.status_code, 401)
         msg('get response gives 401')
 
@@ -171,7 +171,7 @@ class SimpleClientTest(unittest.TestCase):
         msgt('(3) get_existing_layer_data: with a auth and post, but no other data')
         client = Client()
 
-        data = dict(geoconnect_token=settings.DVN_TOKEN)
+        data = dict(geoconnect_token=settings.WORLDMAP_TOKEN_FOR_DATAVERSE)
 
         response = client.post(reverse('get_existing_layer_data'), data)
         self.assertEqual(response.status_code, 401)
@@ -185,7 +185,7 @@ class SimpleClientTest(unittest.TestCase):
         msgt('(4) get_existing_layer_data: valid, no existing layers found')
         client = Client()
 
-        data = dict(geoconnect_token=settings.DVN_TOKEN\
+        data = dict(geoconnect_token=settings.WORLDMAP_TOKEN_FOR_DATAVERSE\
                     , dv_user_id=107\
                     , datafile_id=1\
                     )

@@ -2,11 +2,14 @@ import os
 import tempfile
 import logging
 import sys
+
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.conf import settings
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
+
+
 from geonode.maps.utils import save
 from geonode.maps.views import _create_new_user
 from geonode.utils import slugify

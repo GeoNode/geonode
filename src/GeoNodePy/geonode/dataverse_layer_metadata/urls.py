@@ -8,3 +8,10 @@ urlpatterns = patterns('geonode.dataverse_layer_metadata.views',
 
        url(r'^get-dataverse-user-layers/$', 'view_get_dataverse_user_layers', name='view_get_dataverse_user_layers'),     # Does layer exist
 )
+
+
+urlpatterns += patterns('geonode.dataverse_layer_metadata.view_embed_layer',
+
+    url(r'^view-embedded/$', 'view_embedded_layer', name='view_embedded_layer'),
+
+)
