@@ -358,7 +358,7 @@ class Catalogue(CatalogueServiceWeb):
 
         # construct the link to the Catalogue metadata record (not self-indexed)
         result['metadata_links'] = [("text/xml", "ISO", self.url_for_uuid(rec.identifier,
-                                                                            'http://www.isotc211.org/2005/gmd'))]
+                                                                          'http://www.isotc211.org/2005/gmd'))]
 
         return result
 
