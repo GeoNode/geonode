@@ -452,7 +452,7 @@ Specifies which metadata formats are available for users to download.
 Default::
 
     DOWNLOAD_FORMATS_METADATA = [
-        'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'TC211',
+        'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO',
     ]
     
 DOWNLOAD_FORMATS_VECTOR
