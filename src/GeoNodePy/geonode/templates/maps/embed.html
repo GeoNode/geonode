@@ -17,155 +17,70 @@
     google.load("earth", "1");
 </script>
 
+<script src='/static/geonode/externals/ext/resources/xblocktools.js'></script>
+
 <script type="text/javascript">
-    var app;
 
-    OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
-        defaultHandlerOptions: {
-            'single': true,
-            'double': false,
-            'pixelTolerance': 0,
-            'stopSingle': false,
-            'stopDouble': false
+var app;
+
+var XB = XB || {};  // global used for xblock adapter scripts
+
+Ext.onReady(function() {
+{% autoescape off %}
+    var config = {
+        useCapabilities: false,
+        tools: [{
+            ptype: "gxp_wmsgetfeatureinfo",
+            // uncomment the line below if you want feature info in a grid
+            format: "grid",
+            actionTarget: "main.tbar",
+            outputConfig: {width: 400, height: 200, panIn: false}
         },
-
-        initialize: function(options) {
-            this.handlerOptions = OpenLayers.Util.extend(
-                    {}, this.defaultHandlerOptions
-            );
-            OpenLayers.Control.prototype.initialize.apply(
-                    this, arguments
-            );
-            this.handler = new OpenLayers.Handler.Click(
-                    this, {
-                        'click': this.trigger
-                    }, this.handlerOptions
-            );
-        },
-
-        trigger: function(e) {
-            var map = e.object;
-            var lonlat = map.getLonLatFromPixel(e.xy);
-            var Geographic  = new OpenLayers.Projection("EPSG:4326");
-            var Mercator = new OpenLayers.Projection("EPSG:900913");
-            var point = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat).transform(Mercator, Geographic);
-            MESSAGING.getInstance().send(new Message("click",point));
-        }
-    });
-
-    function getLayerLegendInfo( layers, layer ) {
-        for( var i=0; i<layers.length; i++ ) {
-            if( layers[i].styles ) {
-                if( layers[i].title == layer.name ) {
-                    return {
-                        styles: layers[i].styles,
-                        name:   layers[i].name,
-                        url:    layers[i].url,
-                    }
-                }
+            {
+                ptype: "gxp_coordinatetool",
+                title: "<span class='x-btn-text'>{% trans 'Map Coordinates - longitude, latitude' %}</span>",
+                actionTarget: {target: "main.tbar"}
+            },
+            {
+                ptype: "gxp_annotation",
+                user: "{{ user.id }}",
+                toggleGroup: 'featureGroup',
+                actionTarget: {target: "main.tbar", index: 6}
             }
-        }
-        return null;
-    }
+        ],
+        createTools: function() {
+            return [new Ext.Button({
+                tooltip: GeoExplorer.prototype.backgroundContainerText,
+                iconCls: 'icon-layer-switcher',
+                menu: new gxp.menu.LayerMenu({
+                    layers: this.mapPanel.layers
+                })
+            })]
+        },
+        proxy: "/proxy/?url=",
+        siteUrl: "{{ SITE_URL }}",
 
-    Ext.onReady(function() {
-        {% autoescape off %}
-        var config = {
-            useCapabilities: false,
-            tools: [{
-                ptype: "gxp_wmsgetfeatureinfo",
-                // uncomment the line below if you want feature info in a grid
-                format: "grid",
-                actionTarget: "main.tbar",
-                outputConfig: {width: 400, height: 200, panIn: false}
-            },
-                {
-                    ptype: "gxp_coordinatetool",
-                    title: "<span class='x-btn-text'>{% trans 'Map Coordinates - longitude, latitude' %}</span>",
-                    actionTarget:  {target: "main.tbar"}
-                },
-                {
-                    ptype: "gxp_annotation",
-                    user: "{{ user.id }}",
-                    toggleGroup: 'featureGroup',
-                    actionTarget:  {target: "main.tbar", index: 6}
-                }],
-            createTools: function() {
-                return [new Ext.Button({
-                    tooltip: GeoExplorer.prototype.backgroundContainerText,
-                    iconCls: 'icon-layer-switcher',
-                    menu: new gxp.menu.LayerMenu({
-                        layers: this.mapPanel.layers
-                    })
-                })]
-            },
-            proxy: "/proxy/?url=",
-            siteUrl: "{{ SITE_URL }}",
+        /* The URL to a REST map configuration service.  This service
+         * provides listing and, with an authenticated user, saving of
+         * maps on the server for sharing and editing.
+         */
+        rest: "/maps/"
+    };
 
-            /* The URL to a REST map configuration service.  This service
-             * provides listing and, with an authenticated user, saving of
-             * maps on the server for sharing and editing.
-             */
-            rest: "/maps/"
-        };
-
-        Ext.apply(config, {{ config }});
-
-
+    Ext.apply(config, {{ config }});
+      
+    
     app = new GeoExplorer.Viewer(config);
-    //console.log("==============================================");
-    //console.log("app.config.map.layers = "+JSON.stringify(app.config.map.layers));
-    //console.log("==============================================");
 
-    MESSAGING.getInstance().registerHandler("info", function(m) { alert("the slave code received this 'info' message: "+m.getMessage()); });
-    //    setTimeout(function() {MESSAGING.getInstance().send(new Message("info","ad-hoc message from slave"));}, 1500);
+//********************************************* XBLOCK RELATED CODE ********************************************
+//useful for debugging...
+XB.MESSAGING.getInstance().registerHandler("info", function (m) {
+    alert("INFO: the slave code received this 'info' message: " + m.getMessage());
+});
 
-    app.on("ready", function() {
-        app.mapPanel.map.events.register("moveend", app.mapPanel, function(){
-            MESSAGING.getInstance().send(new Message("moveend",{center:app.mapPanel.map.getCenter(),zoomLevel:app.mapPanel.map.getZoom()}));
-        });
-
-        app.mapPanel.map.events.register("zoomend", app.mapPanel.map, function(){
-            MESSAGING.getInstance().send(new Message("zoomend", app.mapPanel.map.getZoom()));
-        });
-
-        app.mapPanel.map.events.register("changelayer", app.mapPanel.map, function(e) {
-            MESSAGING.getInstance().send(new Message("changelayer", {name: e.layer.name, id:e.layer.id, visibility:e.layer.visibility,opacity:e.layer.opacity, legendData: getLayerLegendInfo(app.config.map.layers, e.layer)}));
-        });
-//	app.mapPanel.map.events.register("changebaselayer", app.mapPanel.map, function(e) {
-//            console.log("changebaselayer event:   id: "+e.layer.id+"   name: "+e.layer.name);
-//        });
-        MESSAGING.getInstance().registerHandler("setZoomLevel", function(m) { app.mapPanel.map.zoomTo(m.getMessage()); });
-        MESSAGING.getInstance().registerHandler("setCenter",function(m) {
-            var data = m.getMessage();
-            app.mapPanel.map.setCenter([data.centerLon, data.centerLat],data.zoomLevel,false,false);
-        });
-        MESSAGING.getInstance().registerHandler("setLayers",function(m) {
-            var data = JSON.parse(m.getMessage());
-            for(var id in data){
-                var layer = app.mapPanel.map.getLayer(id);
-                if( layer != null ) {
-                    //  layer.setVisibility(data[id]['visibility']);
-                    var ctrl = Ext.getCmp("layer_menu_" + layer.id);
-                    layer.setOpacity(data[id]['opacity']);
-                    if( (ctrl.checked && !data[id]['visibility']) || (!ctrl.checked && data[id]['visibility']) ) {
-                        ctrl.setChecked( data[id]['visibility']);
-                    }
-                } else {
-                    console.log("ERROR: could not find layer for id: "+id);
-                }
-            }
-        });
-
-        var click = new OpenLayers.Control.Click();
-        app.mapPanel.map.addControl(click);
-        click.activate();
-
-        MESSAGING.getInstance().send(new Message("portalReady", {}));
-    });
-
-    {% endautoescape %}
-    });
+app.on("ready", XB.xblocktools);
+{% endautoescape %}
+});
 </script>
 {% endblock %}
 {% block body %}
