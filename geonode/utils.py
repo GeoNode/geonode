@@ -453,8 +453,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     obj = get_object_or_404(model, **query)
     allowed = True
     obj_to_check = obj.get_self_resource()
-    if permission.split('.')[1] in ['add_layer', 'change_layer', 
-        'delete_layer', 'change_layer_data', 'change_layer_style']:
+    if permission.split('.')[-1] in ['change_layer_data', 'change_layer_style']:
         if obj.__class__.__name__ == 'Layer':
             obj_to_check = obj
     if permission:
