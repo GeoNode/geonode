@@ -213,6 +213,7 @@
     <script src="{{ STATIC_URL }}geonode/js/base/base.js"></script>
     {% include 'autocomplete_light/static.html' %}
 
+    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
     {% block extra_script %}{% endblock extra_script %}
     <script type="text/javascript">
         var autocomplete = $('#search_input').yourlabsAutocomplete({
@@ -230,7 +231,6 @@
             }
         });
     </script>
-    <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
     <script type="text/javascript" src="{% url "lang" %}"></script>
 
   </body>
