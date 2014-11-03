@@ -38,6 +38,7 @@ from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
 from geonode import GeoNodeException
 
 from geonode.layers.models import Layer, Style
+from geonode.groups.models import Group
 from geonode.layers.utils import layer_type, get_files, get_valid_name, \
     get_valid_layer_name
 from geonode.people.utils import get_valid_user
@@ -938,7 +939,7 @@ class LayersTest(TestCase):
         #detail page
         remove_perm('view_resourcebase', bob, layer.get_self_resource())
         response = c.get(reverse('layer_detail', args=(layer.typename,)))
-        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.status_code, 401)
         
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that bobby cannot access the 
@@ -1031,6 +1032,11 @@ class LayersTest(TestCase):
         #remove_perm('view_resourcebase', self.anonymous_user, layer.get_self_resource())
         #response = c.get(reverse('layer_detail', args=(layer.typename,)))
         #self.assertEquals(response.status_code, 401)
+        remove_perm('view_resourcebase', self.anonymous_user, layer.get_self_resource())
+        anonymous_group = Group.objects.get(name='anonymous')
+        remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
+        response = c.get(reverse('layer_detail', args=(layer.typename,)))
+        self.assertEquals(response.status_code, 401)
         
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that anonymous user cannot 
