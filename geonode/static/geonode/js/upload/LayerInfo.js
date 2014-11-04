@@ -246,11 +246,11 @@ define(function (require, exports) {
 
     LayerInfo.prototype.displayUploadedLayerLinks = function(resp) {
         var self = this;
-        var a = '<a href="' + resp.url + '" class="btn">Layer Info</a>';
-        var b = '<a href="' + resp.url + '/metadata" class="btn">Edit Metadata</a>';
-        var c = '<a href="' + resp.url + '/style/manage" class="btn">Manage Styles</a>';
+        var a = '<a href="' + resp.url + '" class="btn">' + gettext('Layer Info') + '</a>';
+        var b = '<a href="' + resp.url + '/metadata" class="btn">' + gettext('Edit Metadata') + '</a>';
+        var c = '<a href="' + resp.url + '/style/manage" class="btn">' + gettext('Manage Styles') + '</a>';
         self.logStatus({
-            msg: '<p> Your layer was successfully uploaded<br/><br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '</p>',
+            msg: '<p>' + gettext('Your layer was successfully uploaded') + '<br/><br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '</p>',
             level: 'alert-success',
             empty: 'true'
         });
@@ -279,7 +279,7 @@ define(function (require, exports) {
                 async: true,
                 beforeSend: function() {
                     self.logStatus({
-                        msg: '<p>Performing Final GeoServer Config Step <img class="pull-right" src="/static/geonode/img/loading.gif"></p>',
+                        msg: '<p>' + gettext('Performing Final GeoServer Config Step') + '<img class="pull-right" src="/static/geonode/img/loading.gif"></p>',
                         level: 'alert-success',
                         empty: 'true'
                     });
@@ -294,7 +294,7 @@ define(function (require, exports) {
                     self.polling = false;
                     if (resp.status === "other") {
                         self.logStatus({
-                            msg:'<p>You need to specify more information in order to complete your upload</p>',
+                            msg:'<p>' + gettext('You need to specify more information in order to complete your upload') + '</p>',
                             level: 'alert-success',
                             empty: 'true'
                         });
@@ -308,7 +308,7 @@ define(function (require, exports) {
             var element = 'next_step_' + id
             var a = '<a id="' + element + '" class="btn">Continue</a>';
             self.logStatus({
-                msg:'<p>You need to specify more information in order to complete your upload.</p><p>You can continue configuring your layer.</p><p>' + a + '</p>',
+                msg:'<p>' + gettext('You need to specify more information in order to complete your upload.') + '</p><p>' + gettext('You can continue configuring your layer.') + '</p><p>' + a + '</p>',
                 level: 'alert-success',
                 empty: 'true'
             });
@@ -316,7 +316,7 @@ define(function (require, exports) {
             return;
         } else if (resp.status === "other") {
             self.logStatus({
-                msg:'<p>You need to specify more information in order to complete your upload</p>',
+                msg:'<p>' + gettext('You need to specify more information in order to complete your upload') + '</p>',
                 level: 'alert-success',
                 empty: 'true'
             });
@@ -326,7 +326,7 @@ define(function (require, exports) {
         } else {
             self.polling = false;
             self.logStatus({
-                msg:'<p>Unexpected Error</p>',
+                msg:'<p>' + gettext('Unexpected Error') + '</p>',
                 level: 'alert-error',
                 empty: 'true'
             });
@@ -342,7 +342,7 @@ define(function (require, exports) {
     LayerInfo.prototype.doStep = function (resp) {
         var self = this;
         self.logStatus({
-            msg: '<p>Performing GeoServer Config Step</p>',
+            msg: '<p>' + gettext('Performing GeoServer Config Step') + '</p>',
             level: 'alert-success',
             empty: 'true'
         });
@@ -411,10 +411,10 @@ define(function (require, exports) {
             error: function (jqXHR) {
                 self.polling = false;
                 if (jqXHR === null) {
-                    self.markError("Unexpected Error");
+                    self.markError(gettext('Unexpected Error'));
                 } else {
                     var parsed_errors = $.parseJSON(jqXHR.responseText)
-                    var error_message = 'No error message supplied';
+                    var error_message = gettext('No error message supplied');
 
                     // Support the two different syntax used in GeoNode.
                     // TODO(Ariel): Agree on one of those server side and
@@ -429,7 +429,7 @@ define(function (require, exports) {
             },
             success: function (resp, status) {
                 self.logStatus({
-                    msg: '<p> Layer files uploaded, configuring in GeoServer</p>',
+                    msg: '<p>' + gettext('Layer files uploaded, configuring in GeoServer') + '</p>',
                     level: 'alert-success',
                     empty: 'true',
                 });
@@ -444,7 +444,7 @@ define(function (require, exports) {
            data: {results:geogit_stores, text:'name'},
            formatSelection: format,
            formatResult: format,
-           placeholder: 'Select or create a Geogit repository.',
+           placeholder: gettext('Select or create a Geogit repository.'),
 
             id: function(object) {
              return object.name;
@@ -539,7 +539,7 @@ define(function (require, exports) {
         $.each(this.files, function (idx, file) {
             var li = $('<li/>').appendTo(ul),
                 p = $('<p/>', {text: file.name}).appendTo(li),
-                a  = $('<a/>', {text: ' Remove'});
+                a  = $('<a/>', {text: ' ' + gettext('Remove')});
 
             a.data('layer', self.name);
             a.data('file',  file.name);

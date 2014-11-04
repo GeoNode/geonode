@@ -123,7 +123,7 @@ define(['underscore',
             if (!info.type) {
                 log_error({
                     title: 'Unsupported type',
-                    message: 'File ' + info.files[0].name + ' is an unsupported file type, please select another file.'
+                    message: interpolate(gettext('The file %s is an unsupported file type, please select another file.',[info.files[0].name]))
                 });
                 delete layers[name];
             } else {
@@ -283,7 +283,7 @@ define(['underscore',
     doUploads = function () {
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
-            alert('You are uploading an incomplete set of files.');
+            alert(gettext('You are uploading an incomplete set of files.'));
         } else {
             $.each(layers, function (name, layerinfo) {
                 layerinfo.uploadFiles();

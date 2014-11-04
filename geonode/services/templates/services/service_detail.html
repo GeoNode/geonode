@@ -54,7 +54,7 @@ Ext.onReady(function() {
             <tr><th style="width:50%">Title</th><th>Description</th></tr>
             {% for service in services %}
                     <tr>
-                        <td><a href='{%  url service_detail service.id %}'>{{service.title}}</a></td>
+                        <td><a href='{%  url "service_detail" service.id %}'>{{service.title}}</a></td>
                         <td>{{service.abstract}}</td>
                     </tr>
             {% endfor %}

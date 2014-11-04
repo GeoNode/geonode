@@ -29,6 +29,8 @@ from taggit.managers import TaggableManager
 from geonode.base.enumerations import COUNTRIES
 from geonode.groups.models import GroupProfile
 
+from account.models import EmailAddress
+
 from .utils import format_address
 
 
@@ -138,10 +140,13 @@ def profile_post_save(instance, sender, **kwargs):
     instance.groups.add(anon_group)
     # keep in sync Profile email address with Account email address
     if instance.email not in [u'', '', None] and not kwargs.get('raw', False):
-        emailaddress, created = instance.emailaddress_set.get_or_create(user=instance, primary=True)
-        if created or not emailaddress.email == instance.email:
-            emailaddress.email = instance.email
-            emailaddress.save()
+        EmailAddress.objects.filter(user=instance, primary=True).update(email=instance.email)
+
+
+def email_post_save(instance, sender, **kw):
+    if instance.primary:
+        Profile.objects.filter(id=instance.user.pk).update(email=instance.email)
 
 
 signals.post_save.connect(profile_post_save, sender=Profile)
+signals.post_save.connect(email_post_save, sender=EmailAddress)
