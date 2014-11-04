@@ -176,34 +176,12 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
-    try:
-        layer = _resolve_layer(
-            request,
-            layername,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
     
-    except Http404:
-        return HttpResponse(
-            loader.render_to_string(
-                '404.html', RequestContext(
-                    request, {
-                        })), status=404)
-
-    except PermissionDenied:
-        return HttpResponse(
-            loader.render_to_string(
-                '401.html', RequestContext(
-                    request, {
-                        'error_message': _PERMISSION_MSG_VIEW})), status=403)
-
-    if layer is None:
-        return HttpResponse(
-            _PERMISSION_MSG_UNKNOWN,
-            mimetype="text/plain",
-            status=401
-        )
-        
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
     layer_bbox = layer.bbox
     # assert False, str(layer_bbox)
     bbox = list(layer_bbox[0:4])
@@ -274,19 +252,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
 @login_required
 def layer_metadata(request, layername, template='layers/layer_metadata.html'):
-                        
-    try:
-        layer = _resolve_layer(
-            request,
-            layername,
-            'base.change_resourcebase_metadata',
-            _PERMISSION_MSG_METADATA)
-    except PermissionDenied as ex:
-        return HttpResponse(loader.render_to_string(
-                '401.html', RequestContext(
-                    request, {
-                        })), status=401)
-        
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.change_resourcebase_metadata',
+        _PERMISSION_MSG_METADATA)
     layer_attribute_set = inlineformset_factory(
         Layer,
         Attribute,
@@ -419,18 +389,11 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
 
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
-        
-    try:
-        layer = _resolve_layer(
-            request,
-            layername,
-            'base.change_resourcebase',
-            _PERMISSION_MSG_MODIFY)
-    except PermissionDenied as ex:
-        return HttpResponse(loader.render_to_string(
-                '401.html', RequestContext(
-                    request, {
-                        })), status=401)
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.change_resourcebase',
+        _PERMISSION_MSG_MODIFY)
 
     if request.method == 'GET':
         ctx = {
@@ -488,22 +451,18 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 
 @login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
-    try:
-        layer = _resolve_layer(request, layername, 'base.delete_resourcebase',
-                               _PERMISSION_MSG_DELETE)
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.delete_resourcebase',
+        _PERMISSION_MSG_DELETE)
 
-        if (request.method == 'GET'):
-            return render_to_response(template, RequestContext(request, {
-                "layer": layer
-            }))
-        if (request.method == 'POST'):
-            layer.delete()
-            return HttpResponseRedirect(reverse("layer_browse"))
-        else:
-            return HttpResponse("Not allowed", status=403)
-    except PermissionDenied:
-        return HttpResponse(
-            'You are not allowed to delete this layer',
-            mimetype="text/plain",
-            status=401
-        )
+    if (request.method == 'GET'):
+        return render_to_response(template, RequestContext(request, {
+            "layer": layer
+        }))
+    if (request.method == 'POST'):
+        layer.delete()
+        return HttpResponseRedirect(reverse("layer_browse"))
+    else:
+        return HttpResponse("Not allowed", status=403)
