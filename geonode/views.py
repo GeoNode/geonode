@@ -23,6 +23,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.db.models import Q
+from django.template.response import TemplateResponse
+
 from geonode.groups.models import GroupProfile
 
 
@@ -95,7 +97,10 @@ def ajax_lookup(request):
 
 
 def err403(request):
-    return HttpResponseRedirect(
-        reverse('account_login') +
-        '?next=' +
-        request.get_full_path())
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(
+            reverse('account_login') +
+            '?next=' +
+            request.get_full_path())
+    else:
+        return TemplateResponse(request, '401.html', {}, status=401).render()

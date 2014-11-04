@@ -151,7 +151,7 @@ def pre_save_document(instance, sender, **kwargs):
         instance.abstract = 'No abstract provided'
 
     if instance.title == '' or instance.title is None:
-        instance.title = instance.name
+        instance.title = instance.doc_file.name
 
     if instance.resource:
         instance.csw_wkt_geometry = instance.resource.geographic_bounding_box.split(
