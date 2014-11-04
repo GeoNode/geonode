@@ -1,35 +1,22 @@
-{% extends "fullscreen.html" %}
-{% load i18n %}
-{% block title %} {% trans "Map Viewer" %} - {{ block.super }} {% endblock %}
 
-{% block head %}
-{% include "geonode/ext_header.html" %}
-{% include "geonode/app_header.html" %}
-{% include "geonode/geo_header.html" %}
-{% include "geonode/xblock_header.html" %}
-{{ block.super }}
-{% if "gme-" in GOOGLE_API_KEY %}
-<script src="https://www.google.com/jsapi?client={{GOOGLE_API_KEY}}"></script>
-{% else %}
-<script src="https://www.google.com/jsapi?key={{GOOGLE_API_KEY}}"></script>
-{% endif %}
-<script type="text/javascript">
-    google.load("earth", "1");
-</script>
+var XB = XB || {};  // global used for xblock adapter scripts
 
-<script type="text/javascript">
-var app;
+/*
+ *  These are all the functions which get data to/from worldmap and communicate it back to the xblock adapter
+ *
+ *  It sets up layers on the map for drawing polygons and polylines and deals with highlighting geometry on the
+ *  map as well as setting up the map to draw polygons, polylines and markerplacements so that on completion
+ *  the data can be sent back to the xblock adapter.
+ *
+ */
 
+XB.markers = new Array();
+XB.polygons = new Array();
+XB.polylines = new Array();
 
-//************************************** XBLOCK RELATED FUNCTIONS & GLOBALS *****************************************
-var markerLayer, polygonLayer;
-var markers = new Array();
-var polygons = new Array();
-var polylines = new Array();
+XB.currentQuestion = null;  //what we're currently searching for with the currently selected tool
 
-var currentQuestion = null;  //what we're currently searching for with the currently selected tool
-
-var CLICK_CONTROL = OpenLayers.Class(OpenLayers.Control, {
+XB.clickControl = OpenLayers.Class(OpenLayers.Control, {
     defaultHandlerOptions: {
         'single': true,
         'double': false,
@@ -55,31 +42,31 @@ var CLICK_CONTROL = OpenLayers.Class(OpenLayers.Control, {
     trigger: function (e) {
         var map = e.object;
         var lonlat = map.getLonLatFromPixel(e.xy);
-        var point = transformToLonLat(lonlat);
+        var point = XB.transformToLonLat(lonlat);
 
         var size = new OpenLayers.Size(21, 25);
         var offset = new OpenLayers.Pixel(-size.w / 2, -size.h);
         var icon = new OpenLayers.Icon('/static/geonode/externals/ext/resources/images/default/xblock-images/marker.png', size, offset);
-        icon.imageDiv.firstChild.setAttribute("style", "background-color:" + currentQuestion.color);
+        icon.imageDiv.firstChild.setAttribute("style", "background-color:" + XB.currentQuestion.color);
 
-        if (markers[currentQuestion.id]) {
-            markerLayer.removeMarker(markers[currentQuestion.id]);
+        if (XB.markers[XB.currentQuestion.id]) {
+            XB.markerLayer.removeMarker(XB.markers[XB.currentQuestion.id]);
         }
-        markers[currentQuestion.id] = new OpenLayers.Marker(lonlat, icon);
-        markerLayer.addMarker(markers[currentQuestion.id]);
+        XB.markers[XB.currentQuestion.id] = new OpenLayers.Marker(lonlat, icon);
+        XB.markerLayer.addMarker(XB.markers[XB.currentQuestion.id]);
 
-        window.MESSAGING.getInstance().send(
+        XB.MESSAGING.getInstance().send(
                 new Message("point_response",
                         {
                             point: {lon: point.x, lat: point.y},
-                            question: currentQuestion
+                            question: XB.currentQuestion
                         }
                 )
         );
     }
 });
 
-function getLayerLegendInfo(layers, layer) {
+XB.getLayerLegendInfo = function(layers, layer) {
     for (var i = 0; i < layers.length; i++) {
         if (layers[i].styles) {
             if (layers[i].title === layer.name) {
@@ -94,89 +81,28 @@ function getLayerLegendInfo(layers, layer) {
     return null;
 }
 
-function transformToXY(lonlat) {
-    var Geographic = new OpenLayers.Projection("EPSG:4326");
-    var Mercator = new OpenLayers.Projection("EPSG:900913");
-    return new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat).transform(Geographic, Mercator);
+XB.geographicProjection = new OpenLayers.Projection("EPSG:4326");
+XB.mercatorProjection =   new OpenLayers.Projection("EPSG:900913");
+XB.transformToXY = function(lonlat) {
+    return new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat).transform(XB.geographicProjection, XB.mercatorProjection);
 }
 
-function transformToLonLat(lonlat) {
-    var Geographic = new OpenLayers.Projection("EPSG:4326");
-    var Mercator = new OpenLayers.Projection("EPSG:900913");
-    return new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat).transform(Mercator, Geographic);
+XB.transformToLonLat=function(lonlat) {
+    return new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat).transform(XB.mercatorProjection, XB.geographicProjection);
 }
 //************************************ END - XBLOCK RELATED FUNCTIONS ***********************************************
 
-<!-- <script src='/static/geonode/externals/ext/resources/xblocktools.js'></script> -->
 
-<script type="text/javascript">
+XB.xblocktools = function () {
 
-var XB = XB || {};  // global used for xblock adapter scripts
-
-Ext.onReady(function() {
-{% autoescape off %}
-    var config = {
-        useCapabilities: false,
-        tools: [{
-            ptype: "gxp_wmsgetfeatureinfo",
-            // uncomment the line below if you want feature info in a grid
-            format: "grid",
-            actionTarget: "main.tbar",
-            outputConfig: {width: 400, height: 200, panIn: false}
-        },  //***** XBLOCK RELATED SETUP *******
-            {
-                ptype: "gxp_coordinatetool",
-                title: "<span class='x-btn-text'>{% trans 'Map Coordinates - longitude, latitude' %}</span>",
-                actionTarget: {target: "main.tbar"}
-            },
-            {
-                ptype: "gxp_annotation",
-                user: "{{ user.id }}",
-                toggleGroup: 'featureGroup',
-                actionTarget: {target: "main.tbar", index: 6}
-            }
-            //***** END - XBLOCK RELATED SETUP ******
-        ],
-        createTools: function() {
-            return [new Ext.Button({
-                tooltip: GeoExplorer.prototype.backgroundContainerText,
-                iconCls: 'icon-layer-switcher',
-                menu: new gxp.menu.LayerMenu({
-                    layers: this.mapPanel.layers
-                })
-            })]
-        },
-        proxy: "/proxy/?url=",
-        siteUrl: "{{ SITE_URL }}",
-
-        /* The URL to a REST map configuration service.  This service
-         * provides listing and, with an authenticated user, saving of
-         * maps on the server for sharing and editing.
-         */
-        rest: "/maps/"
-    };
-
-    Ext.apply(config, {{ config }});
-      
-    
-    app = new GeoExplorer.Viewer(config);
-
-//********************************************* XBLOCK RELATED CODE ********************************************
-//useful for debugging...
-window.MESSAGING.getInstance().registerHandler("info", function (m) {
-    alert("INFO: the slave code received this 'info' message: " + m.getMessage());
-});
-
-app.on("ready", function () {
-
-    markerLayer = new OpenLayers.Layer.Markers("worldmap-markers");
-    polygonLayer = new OpenLayers.Layer.Vector("worldmap-polygons", {
+    XB.markerLayer = new OpenLayers.Layer.Markers("worldmap-markers");
+    XB.polygonLayer = new OpenLayers.Layer.Vector("worldmap-polygons", {
         styleMap: new OpenLayers.StyleMap({
             fillColor: "#ff0000",
             fillOpacity: 0.3
         })
     });
-    polylineLayer = new OpenLayers.Layer.Vector("worldmap-polyline", {
+    XB.polylineLayer = new OpenLayers.Layer.Vector("worldmap-polyline", {
         styleMap: new OpenLayers.StyleMap({
             strokeColor: "#000000",
             strokeOpacity: 1.0,
@@ -184,37 +110,37 @@ app.on("ready", function () {
         })
     });
 
-    var polygonControl =
-            new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon, {
+    XB.polygonControl =
+            new OpenLayers.Control.DrawFeature(XB.polygonLayer, OpenLayers.Handler.Polygon, {
                 callbacks: {
                     done: function (geo) {
                         var polygon = [];
                         for (var i = 0; i < geo.components[0].components.length; i++) {
-                            var point = transformToLonLat({lon: geo.components[0].components[i].x, lat: geo.components[0].components[i].y});
+                            var point = XB.transformToLonLat({lon: geo.components[0].components[i].x, lat: geo.components[0].components[i].y});
                             polygon.push({lon: point.x, lat: point.y});
                         }
 
-                        window.MESSAGING.getInstance().send(
+                        XB.MESSAGING.getInstance().send(
                                 new Message("polygon_response",
                                         {
                                             polygon: polygon,
-                                            question: currentQuestion
+                                            question: XB.currentQuestion
                                         }
                                 )
                         );
 
                         var feature = new OpenLayers.Feature.Vector(geo, {}, {
-                            fillColor: '#' + currentQuestion.color,
+                            fillColor: '#' + XB.currentQuestion.color,
                             fillOpacity: 0.4
                         });
                         var proceed = this.events.triggerEvent("sketchcomplete", {feature: feature});
                         if (proceed !== false) {
                             feature.state = OpenLayers.State.INSERT;
-                            if (polygons[currentQuestion.id]) {
-                                polygonLayer.removeFeatures([polygons[currentQuestion.id]]);
+                            if (XB.polygons[XB.currentQuestion.id]) {
+                                XB.polygonLayer.removeFeatures([XB.polygons[XB.currentQuestion.id]]);
                             }
-                            polygons[currentQuestion.id] = feature;
-                            polygonLayer.addFeatures([feature]);
+                            XB.polygons[XB.currentQuestion.id] = feature;
+                            XB.polygonLayer.addFeatures([feature]);
                             this.featureAdded(feature);
                             this.events.triggerEvent("featureadded", {feature: feature});
                         }
@@ -223,39 +149,39 @@ app.on("ready", function () {
                 }
             });
 
-    var polylineControl =
-            new OpenLayers.Control.DrawFeature(polylineLayer, OpenLayers.Handler.Path, {
+    XB.polylineControl =
+            new OpenLayers.Control.DrawFeature(XB.polylineLayer, OpenLayers.Handler.Path, {
                 doubleTouchTolerance: 50,
                 callbacks: {
                     done: function (geo) {
                         var polyline = [];
                         for (var i = 0; i < geo.components.length; i++) {
-                            var point = transformToLonLat({lon: geo.components[i].x, lat: geo.components[i].y});
+                            var point = XB.transformToLonLat({lon: geo.components[i].x, lat: geo.components[i].y});
                             polyline.push({lon: point.x, lat: point.y});
                         }
 
-                        window.MESSAGING.getInstance().send(
+                        XB.MESSAGING.getInstance().send(
                                 new Message("polyline_response",
                                         {
                                             polyline: polyline,
-                                            question: currentQuestion
+                                            question: XB.currentQuestion
                                         }
                                 )
                         );
 
                         var feature = new OpenLayers.Feature.Vector(geo, {}, {
-                            strokeColor: '#' + currentQuestion.color,
+                            strokeColor: '#' + XB.currentQuestion.color,
                             strokeOpacity: 1,
                             strokeWidth: 3
                         });
                         var proceed = this.events.triggerEvent("sketchcomplete", {feature: feature});
                         if (proceed !== false) {
                             feature.state = OpenLayers.State.INSERT;
-                            if (polylines[currentQuestion.id]) {
-                                polylineLayer.removeFeatures([polylines[currentQuestion.id]]);
+                            if (XB.polylines[XB.currentQuestion.id]) {
+                                XB.polylineLayer.removeFeatures([XB.polylines[XB.currentQuestion.id]]);
                             }
-                            polylines[currentQuestion.id] = feature;
-                            polylineLayer.addFeatures([feature]);
+                            XB.polylines[XB.currentQuestion.id] = feature;
+                            XB.polylineLayer.addFeatures([feature]);
                             this.featureAdded(feature);
                             this.events.triggerEvent("featureadded", {feature: feature});
                         }
@@ -263,33 +189,33 @@ app.on("ready", function () {
                 }
             });
 
-    app.mapPanel.map.addLayers([markerLayer, polygonLayer, polylineLayer]);
+    app.mapPanel.map.addLayers([XB.markerLayer, XB.polygonLayer, XB.polylineLayer]);
 
     app.mapPanel.map.events.register("moveend", app.mapPanel, function () {
         // calculate lat/lon
-        window.MESSAGING.getInstance().send(new Message("moveend", {center: transformToLonLat(app.mapPanel.map.getCenter()), zoomLevel: app.mapPanel.map.getZoom()}));
+        XB.MESSAGING.getInstance().send(new Message("moveend", {center: XB.transformToLonLat(app.mapPanel.map.getCenter()), zoomLevel: app.mapPanel.map.getZoom()}));
     });
 
     app.mapPanel.map.events.register("zoomend", app.mapPanel.map, function () {
-        window.MESSAGING.getInstance().send(new Message("zoomend", app.mapPanel.map.getZoom()));
+        XB.MESSAGING.getInstance().send(new Message("zoomend", app.mapPanel.map.getZoom()));
     });
 
     app.mapPanel.map.events.register("changelayer", app.mapPanel.map, function (e) {
-        var msg = new Message("changelayer", {name: e.layer.name, id: e.layer.id, visibility: e.layer.visibility, opacity: e.layer.opacity, legendData: getLayerLegendInfo(app.config.map.layers, e.layer)});
+        var msg = new Message("changelayer", {name: e.layer.name, id: e.layer.id, visibility: e.layer.visibility, opacity: e.layer.opacity, legendData: XB.getLayerLegendInfo(app.config.map.layers, e.layer)});
         console.log("sending changelayer back to master.  layer: " + JSON.stringify(msg.getMessage()));
-        window.MESSAGING.getInstance().send(msg);
+        XB.MESSAGING.getInstance().send(msg);
     });
 
-    window.MESSAGING.getInstance().registerHandler("setZoomLevel", function (m) {
+    XB.MESSAGING.getInstance().registerHandler("setZoomLevel", function (m) {
         app.mapPanel.map.zoomTo(m.getMessage());
     });
-    window.MESSAGING.getInstance().registerHandler("setCenter", function (m) {
+    XB.MESSAGING.getInstance().registerHandler("setCenter", function (m) {
         var data = m.getMessage();
         //Ext.example.msg("Info","setCenter: "+data.centerLat+","+data.centerLon+"   zoom="+data.zoomLevel);
-        var pt = transformToXY({lon: data.centerLon, lat: data.centerLat});
+        var pt = XB.transformToXY({lon: data.centerLon, lat: data.centerLat});
         app.mapPanel.map.setCenter([pt.x, pt.y], data.zoomLevel, false, false);
     });
-    window.MESSAGING.getInstance().registerHandler("setLayers", function (m) {
+    XB.MESSAGING.getInstance().registerHandler("setLayers", function (m) {
         console.log("slave recieved setLayers command, data = " + m.getMessage());
         var data = JSON.parse(m.getMessage());
         for (var id in data) {
@@ -306,8 +232,8 @@ app.on("ready", function () {
                         }
                         else {
                             console.log("didn't change visibility for layer: " + id + " currently: " + data[id]['visibility']);
-                            console.log("sending changelayer back to master.  layer: { name: " + data[id]['name'] + ", id: " + id + ", visibility: " + data[id]['visibility'] + ", opacity: " + data[id]['opacity'] + ",  legendData: " + JSON.stringify(getLayerLegendInfo(app.config.map.layers, data[id])) + "}");
-                            window.MESSAGING.getInstance().send(new Message("changelayer", {name: data[id]['name'], id: id, visibility: data[id]['visibility'], opacity: data[id]['opacity'], legendData: getLayerLegendInfo(app.config.map.layers, data[id])}));
+                            console.log("sending changelayer back to master.  layer: { name: " + data[id]['name'] + ", id: " + id + ", visibility: " + data[id]['visibility'] + ", opacity: " + data[id]['opacity'] + ",  legendData: " + JSON.stringify(XB.getLayerLegendInfo(app.config.map.layers, data[id])) + "}");
+                            XB.MESSAGING.getInstance().send(new Message("changelayer", {name: data[id]['name'], id: id, visibility: data[id]['visibility'], opacity: data[id]['opacity'], legendData: XB.getLayerLegendInfo(app.config.map.layers, data[id])}));
                         }
                     } else {
                         console.log("ERROR: could not find layer for id: " + id);
@@ -321,59 +247,57 @@ app.on("ready", function () {
         }
     });
 
-    var markerControl = new CLICK_CONTROL();
-    app.mapPanel.map.addControl(markerControl);
-    app.mapPanel.map.addControl(polygonControl);
-    app.mapPanel.map.addControl(polylineControl);
+    XB.markerControl = new XB.clickControl();
+    app.mapPanel.map.addControl(XB.markerControl);
+    app.mapPanel.map.addControl(XB.polygonControl);
+    app.mapPanel.map.addControl(XB.polylineControl);
 
-    window.MESSAGING.getInstance().registerHandler("reset-answer-tool", function (m) {
+    XB.MESSAGING.getInstance().registerHandler("reset-answer-tool", function (m) {
         $('.olMapViewport').css('cursor', "default");
 //           if( document.getElementById(id) != undefined ) {
 //               document.getElementById(id).style.cursor = "default";
 //           }
-        markerControl.deactivate();
-        polygonControl.deactivate();
-        polylineControl.deactivate();
-        currentQuestion = null;
+        XB.markerControl.deactivate();
+        XB.polygonControl.deactivate();
+        XB.polylineControl.deactivate();
+        XB.currentQuestion = null;
     });
 
-    window.MESSAGING.getInstance().registerHandler("set-answer-tool", function (e) {
+    XB.MESSAGING.getInstance().registerHandler("set-answer-tool", function (e) {
 
         var message = JSON.parse(e.message);
-        currentQuestion = message;
+        XB.currentQuestion = message;
 
         //TODO: fix url - make relative
-        //should use   $('.olMapViewport').style.cursor = "url(http://robertlight.com/tmp/"+currentQuestion.type+"Cursor.png) 16 16, auto";
-        $('.olMapViewport').css('cursor', "url(/static/geonode/externals/ext/resources/images/default/xblock-images/" + currentQuestion.type + "Cursor.png) 16 16, auto");
-        //document.getElementById(app.mapPanel.map.id+"_OpenLayers_ViewPort").style.cursor = "url(http://robertlight.com/tmp/"+currentQuestion.type+"Cursor.png) 16 16, auto";
-        if (currentQuestion.type == 'point') {
+        //should use   $('.olMapViewport').style.cursor = "url(http://robertlight.com/tmp/"+XB.currentQuestion.type+"Cursor.png) 16 16, auto";
+        $('.olMapViewport').css('cursor', "url(/static/geonode/externals/ext/resources/images/default/xblock-images/" + XB.currentQuestion.type + "Cursor.png) 16 16, auto");
+        //document.getElementById(app.mapPanel.map.id+"_OpenLayers_ViewPort").style.cursor = "url(http://robertlight.com/tmp/"+XB.currentQuestion.type+"Cursor.png) 16 16, auto";
+        if (XB.currentQuestion.type == 'point') {
             Ext.example.msg("Info", "{% trans 'Click the map at the location requested' %}");
-            markerControl.activate();
-        } else if (currentQuestion.type == 'polygon') {
-            // window.alert("color="+currentQuestion.color);
-            polygonLayer.styleMap = new OpenLayers.StyleMap({
-                fillColor: '#' + currentQuestion.color,
+            XB.markerControl.activate();
+        } else if (XB.currentQuestion.type == 'polygon') {
+            // window.alert("color="+XB.currentQuestion.color);
+            XB.polygonLayer.styleMap = new OpenLayers.StyleMap({
+                fillColor: '#' + XB.currentQuestion.color,
                 fillOpacity: 0.3
             });
-            Ext.example.msg("Info", "{%  trans "Please click on the boundaries of a polygon. < br / > Double - click to end drawing." %}"
-        )
-            ;
-            polygonControl.activate();
-        } else if (currentQuestion.type == 'polyline') {
-            Ext.example.msg("Info", "{%  trans "Please click on the verticies of a polyline. < br / > Double - click to end drawing. " %}");
-            polylineControl.activate();
+            Ext.example.msg("Info", "{%  trans 'Please click on the boundaries of a polygon. <br/> Double - click to end drawing.' %}");
+            XB.polygonControl.activate();
+        } else if (XB.currentQuestion.type == 'polyline') {
+            Ext.example.msg("Info", "{%  trans 'Please click on the verticies of a polyline.</br/>Double - click  to end drawing.' %}");
+            XB.polylineControl.activate();
         }
 
     });
 
-    window.MESSAGING.getInstance().registerHandler("flash-polygon", function (e) {
+    XB.MESSAGING.getInstance().registerHandler("flash-polygon", function (e) {
         var data = JSON.parse(e.message);
         var features = [];
         var bounds = null;
         for (var i = 0; i < data.length; i++) {
             var points = [];
             for (var j = 0; j < data[i].length; j++) {
-                points.push(transformToXY(data[i][j]));
+                points.push(XB.transformToXY(data[i][j]));
             }
             var ring = new OpenLayers.Geometry.LinearRing(points);
             var center = ring.getCentroid();
@@ -402,40 +326,35 @@ app.on("ready", function () {
                 [center.x, center.y],
                 Math.min(15, app.mapPanel.map.getZoomForExtent(bounds, false))
         );
-        polygonLayer.addFeatures(features);
-        polygonLayer.redraw();
+        XB.polygonLayer.addFeatures(features);
+        XB.polygonLayer.redraw();
         setTimeout(function () {
-            polygonLayer.removeFeatures(features);
-            polygonLayer.redraw();
+            XB.polygonLayer.removeFeatures(features);
+            XB.polygonLayer.redraw();
         }, 3000);
 
     });
 
-    window.MESSAGING.getInstance().registerHandler("reset-highlights", function (m) {
+    XB.MESSAGING.getInstance().registerHandler("reset-highlights", function (m) {
         try {
-            polygonLayer.destroyFeatures();
+            XB.polygonLayer.destroyFeatures();
         } catch (e) {
         }
         try {
-            markerLayer.destroyFeatures();
+            XB.markerLayer.destroyFeatures();
         } catch (e) {
         }
         try {
-            polylineLayer.destroyFeatures();
+            XB.polylineLayer.destroyFeatures();
         } catch (e) {
         }
         try {
-            markerLayer.clearMarkers();
+            XB.markerLayer.clearMarkers();
         } catch (e) {
         }
-//            try {
-//                for( var i in markers ) {
-//                    markerLayer.removeMarker(markers[i]);
-//                }
-//            } catch (e) {}
     });
 
-    window.MESSAGING.getInstance().registerHandler("highlight-layer", function (m) {
+    XB.MESSAGING.getInstance().registerHandler("highlight-layer", function (m) {
         var data = JSON.parse(m.getMessage());
         var layer = app.mapPanel.map.getLayer(data['layer']);
         var duration = data['duration'];
@@ -456,7 +375,7 @@ app.on("ready", function () {
         }
     });
 
-    window.MESSAGING.getInstance().registerHandler("highlight-geometry", function (e) {
+    XB.MESSAGING.getInstance().registerHandler("highlight-geometry", function (e) {
         var data = JSON.parse(e.message);
         var type = data['type'];
         var duration = data['duration']
@@ -466,7 +385,7 @@ app.on("ready", function () {
         if (type == 'polygon') {
             var points = [];
             for (var i = 0; i < data['points'].length; i++) {
-                points.push(transformToXY(data['points'][i]))
+                points.push(XB.transformToXY(data['points'][i]))
             }
             var ring = new OpenLayers.Geometry.LinearRing(points);
             var center = ring.getCentroid();
@@ -489,32 +408,32 @@ app.on("ready", function () {
             console.log("zooming in to (" + center.x + "," + center.y + ") factor=" + factor);
             app.mapPanel.map.setCenter([center.x, center.y], factor);
 
-            polygonLayer.addFeatures(features);
-            polygonLayer.redraw();
+            XB.polygonLayer.addFeatures(features);
+            XB.polygonLayer.redraw();
             if (duration != undefined && duration > 0) {
                 setTimeout(function () {
-                    polygonLayer.removeFeatures(features);
-                    polygonLayer.redraw();
+                    XB.polygonLayer.removeFeatures(features);
+                    XB.polygonLayer.redraw();
                 }, duration);
             }
         } else if (type == 'point') {
             // app.mapPanel.map
             var size = new OpenLayers.Size(21, 25);
             var offset = new OpenLayers.Pixel(-size.w / 2, -size.h);
-            var xy = transformToXY(data['points'][0]);
+            var xy = XB.transformToXY(data['points'][0]);
             var icon = new OpenLayers.Icon('/static/geonode/externals/ext/resources/images/default/xblock-images/marker.png', size, offset);
             app.mapPanel.map.setCenter([xy.x, xy.y], 11 + relativeZoom);
             marker = new OpenLayers.Marker({lon: xy.x, lat: xy.y}, icon);
-            markerLayer.addMarker(marker);
+            XB.markerLayer.addMarker(marker);
             if (duration != undefined && duration > 0) {
                 setTimeout(function () {
-                    markerLayer.removeMarker(marker);
+                    XB.markerLayer.removeMarker(marker);
                 }, duration);
             }
         } else if (type == 'polyline') {
             var points = [];
             for (var i = 0; i < data['points'].length; i++) {
-                points.push(transformToXY(data['points'][i]));
+                points.push(XB.transformToXY(data['points'][i]));
             }
 
             var line = new OpenLayers.Geometry.LineString(points);
@@ -527,12 +446,12 @@ app.on("ready", function () {
                     bounds.getCenterLonLat(),
                     Math.min(15, relativeZoom + app.mapPanel.map.getZoomForExtent(bounds, false))
             );
-            polygonLayer.addFeatures(features);
-            polygonLayer.redraw();
+            XB.polygonLayer.addFeatures(features);
+            XB.polygonLayer.redraw();
             if (duration != undefined && duration > 0) {
                 setTimeout(function () {
-                    polygonLayer.removeFeatures(features);
-                    polygonLayer.redraw();
+                    XB.polygonLayer.removeFeatures(features);
+                    XB.polygonLayer.redraw();
                 }, duration);
             }
         }
@@ -540,7 +459,7 @@ app.on("ready", function () {
     });
 
     console.log("sending portalReady to master from embed.html at end of app.on('ready') processing");
-    window.MESSAGING.getInstance().send(new Message("portalReady", {}));
+    XB.MESSAGING.getInstance().send(new Message("portalReady", {}));
 
     var legendInfo = [];
     for (var i = 0; i < app.mapPanel.map.layers.length; i++) {
@@ -551,17 +470,11 @@ app.on("ready", function () {
                     id: layer.id,
                     visibility: layer.visibility,
                     opacity: layer.opacity,
-                    legendData: getLayerLegendInfo(app.config.map.layers, layer)
+                    legendData: XB.getLayerLegendInfo(app.config.map.layers, layer)
                 }
         );
     }
-    window.MESSAGING.getInstance().send(new Message("postLegends", legendInfo));
+    XB.MESSAGING.getInstance().send(new Message("postLegends", legendInfo));
 
     //**************************************** END - XBLOCK RELATED CODE ****************************************
-});
-{% endautoescape %}
-});
-</script>
-{% endblock %}
-{% block body %}
-{% endblock %}
+};
