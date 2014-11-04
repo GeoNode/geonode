@@ -487,8 +487,11 @@ def layer_acls(request):
 
     # Include permissions on the anonymous user
     all_readable = get_objects_for_user(acl_user, 'base.view_resourcebase')
-
-    all_writable = get_objects_for_user(acl_user, 'base.change_resourcebase')
+    all_writable_layers = get_objects_for_user(acl_user, 'layers.change_layer_data')
+    
+    all_writable = []
+    for obj in all_writable_layers:
+        all_writable.append(obj.get_self_resource())
 
     read_only = [
         x.layer.typename for x in all_readable if x not in all_writable and hasattr(
@@ -498,7 +501,7 @@ def layer_acls(request):
         x.layer.typename for x in all_writable if x in all_readable and hasattr(
             x,
             'layer')]
-
+    
     result = {
         'rw': read_write,
         'ro': read_only,
