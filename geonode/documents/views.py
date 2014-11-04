@@ -96,7 +96,7 @@ def document_detail(request, docid):
 def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)
     if not request.user.has_perm(
-            'base.view_resourcebase',
+            'base.download_resourcebase',
             obj=document.get_self_resource()):
         return HttpResponse(
             loader.render_to_string(
@@ -157,7 +157,7 @@ def document_metadata(
         document = _resolve_document(
             request,
             docid,
-            'base.change_resourcebase',
+            'base.change_resourcebase_metadata',
             _PERMISSION_MSG_METADATA)
 
     except Http404:
