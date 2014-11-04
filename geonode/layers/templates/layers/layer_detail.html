@@ -196,7 +196,6 @@
               <li><a href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit Metadata" %}</a></li>  
               {% endif %}             
               {% if GEOSERVER_BASE_URL %}
-                {% get_obj_perms request.user for resource.layer as "layer_perms" %}
                 {% if "change_layer_style" in layer_perms %}
                 <li><a href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage Styles" %}</a></li>
                   {% if preview == 'geoext' %}

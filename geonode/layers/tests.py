@@ -938,6 +938,8 @@ class LayersTest(TestCase):
         # 1.2 has not view_resourcebase: verify that bobby can not access the layer 
         #detail page
         remove_perm('view_resourcebase', bob, layer.get_self_resource())
+        anonymous_group = Group.objects.get(name='anonymous')
+        remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
         response = c.get(reverse('layer_detail', args=(layer.typename,)))
         self.assertEquals(response.status_code, 401)
         
@@ -1036,7 +1038,7 @@ class LayersTest(TestCase):
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
         response = c.get(reverse('layer_detail', args=(layer.typename,)))
-        self.assertEquals(response.status_code, 401)
+        self.assertEquals(response.status_code, 302)
         
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that anonymous user cannot 
