@@ -448,7 +448,7 @@ GeoNode.Composer = window.GeoExplorer && Ext.extend(GeoExplorer.Composer, {
         config.sources['search'] = {
             ptype: "gxp_geonodecataloguesource",
             restUrl: "/gs/rest",
-            url: "/search/api"
+            url: "/search"
         };
         config.tools.push({
             ptype: 'gn_xhrtrouble'

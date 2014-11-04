@@ -3,7 +3,10 @@
 (function(){
 
   var module = angular.module('geonode_main_search', [], function($locationProvider) {
-      $locationProvider.html5Mode(true);
+      $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false
+      });
 
       // make sure that angular doesn't intercept the page links
       angular.element("a").prop("target", "_self");
@@ -289,7 +292,8 @@
           choiceSelector: 'span',
           hideAfter: 200,
           minimumCharacters: 1,
-          appendAutocomplete: $('#text_search_input')
+          appendAutocomplete: $('#text_search_input'),
+          placeholder: gettext('Enter your text here ...')
     });
     $('#text_search_input').bind('selectChoice', function(e, choice, text_autocomplete) {
           if(choice[0].children[0] == undefined) {
@@ -328,7 +332,7 @@
       'date__gte': '',
       'date__lte': ''
     };
-
+    var init_date = true;
     $scope.$watch('date_query', function(){
       if($scope.date_query.date__gte != '' && $scope.date_query.date__lte != ''){
         $scope.query['date__range'] = $scope.date_query.date__gte + ',' + $scope.date_query.date__lte;
@@ -347,7 +351,12 @@
         delete $scope.query['date__gte'];
         delete $scope.query['date__lte'];
       }
-      query_api($scope.query);
+      if (!init_date){
+        query_api($scope.query);
+      }else{
+        init_date = false;
+      }
+      
     }, true);
 
     /*
