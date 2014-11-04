@@ -167,7 +167,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
 @login_required
 def map_metadata(request, mapid, template='maps/map_metadata.html'):
 
-    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+    map_obj = _resolve_map(request, mapid, 'base.change_resourcebase_metadata', _PERMISSION_MSG_VIEW)
 
     poc = map_obj.poc
 
@@ -593,7 +593,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
     XXX To do, remove layer status once progress id done
     This should be fix because
     """
-    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+    map_obj = _resolve_map(request, mapid, 'base.download_resourcebase', _PERMISSION_MSG_VIEW)
 
     map_status = dict()
     if request.method == 'POST':
