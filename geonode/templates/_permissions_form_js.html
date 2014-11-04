@@ -330,7 +330,8 @@
       );
     };
 
-    $("#bulk_perms_submit").click(function(){
+    $("#bulk_perms_submit").click(function(e){
+        e.preventDefault();
         bulk_perms_submit();
     });
 
