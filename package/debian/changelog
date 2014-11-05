@@ -1,3 +1,75 @@
+geonode (2.4.0+alpha21) trusty; urgency=high
+
+  [ CORTI Paolo ]
+  * [fea76b] Added geonode custom permissions definition for ResourceBase and Layer
+
+  [ capooti ]
+  * [08ba0c] Added geonode custom permissions definition for ResourceBase and Layer
+
+  [ CORTI Paolo ]
+  * [f5b43e] Now we manage custom perissions from the user interface
+
+  [ capooti ]
+  * [3cf149] Now we manage custom perissions from the user interface
+  * [996e81] An user without the download_resourcebase permission cannot download a layer, map or document
+  * [5347fe] An user without the download_resourcebase permission cannot download a layer, map or document
+  * [051f1f] Display correct options in edit window (edit metadata, styles...) given the permissions the user has for the layer
+  * [3c6088] Display correct options in edit window (edit metadata, styles...) given the permissions the user has for the layer
+  * [6eda03] Returning a 401 if user want to modify metadata but has not a change_resourcebase_metadata permission
+  * [54e3ee] Returning a 401 if user want to modify metadata but has not a change_resourcebase_metadata permission
+  * [fcaf51] Returning a 401 if user want to view a layer but has not a view_resourcebase  permission. Using ugettext messages
+  * [f6058f] Returning a 401 if user want to view a layer but has not a view_resourcebase  permission. Using ugettext messages
+  * [2e1bf7] Enable edit in gxp if user has change_layer_data permission on the layer
+  * [415894] Enable edit in gxp if user has change_layer_data permission on the layer
+  * [ed3090] Now the document details page is update with the new custom permissions structure
+  * [c565ff] Now the map details page is updated with the new custom permissions structure
+  * [06ab3b] Returning a 404 if user want to view map but has not a view_resourcebase permission
+  * [7ff857] Returning a 401 if user want to view a layer but has not a view_resourcebase permission
+  * [d18385] Permissions form must display edit layer data and styles fields only if resource is a layer
+  * [cd1a6c] Fixing a bug: we were incorrectly removing specific layer permissions from resource base instead than from layer
+  * [3e4950] This is to implement, from django, the change_layer_style permission application, by intercepting the requests to GeoServer REST API
+  * [298453] Lets have any authenticate user able to create a style
+  * [accff2] Now the change_resourcebase, delete_resourcebase, change_resourcebase_permissions, publish_resourcebase are managed from a single access field in permissions form
+  * [42f059] Rendering the standard 401 page for an unauthorized acces to the edit metadata page
+  * [69ff43] Updates default permissions with new custom permissions and test them
+  * [61769b] Added a is_layer template variable in order to show/hide custom layer permissions in upload layer/document
+  * [9b5fe0] Managing default layer permissions causing a problem when uploading
+  * [c84803] Download links must be sent to template only if user has download_resourcebase permission
+  * [26beb0] Rendering the standard 401 page for an unauthorized acced to the replace layer page
+  * [1f783c] Make resolve_object correctly working when the permission must be checked on the original object (layer) and not on the resourcebase
+  * [cd39f5] The layer_style_manager view must return a 401 if the user has not the change_layer_style permission
+  * [0b45e5] Added a bunch of tests for testing new custom permissions when the user is authenticated but not a superuser
+  * [dd7adb] Layer replace view must pass is_layer for permission form to works correctly
+  * [1d8512] Adding tests on permission for anonymous user
+  * [d0db4c] Removing default layer permissions, as they should be never used
+  * [d09fcd] We need to remove view_resourcebase from anonymous group when testing it on anonymous user
+  * [4e9964] Added integration tests for view_resourcebase
+  * [07551b] Fixed permission checks on views after master sync
+  * [aba65c] Restore a previous unwanted line removal
+  * [5966c5] Now integrations test are properly running
+  * [c1df98] Updated document views with new permission system
+  * [f0874b] Moved all permissions tests from layers to security
+  * [0cc0b3] Updated acls and its relative test with new change_layer_data permission
+  * [8b40c4] Updated documentation relative to permissions (more to be done!)
+  * [6c73bc] Updated maps views and template to new custom permissions
+  * [8a9e0f] Syncing with master
+  * [c1008b] Syncing with master. Forgot locale files
+  * [fed6b2] Syncing with master. Forgot locale files (2)
+  * [1c3619] Reverting to master version for this file
+  * [8452b2] Removed an unused try/permissiondenied block, and uniformed the request variable name to the same way as in other views
+  * [b888ab] Removed an unused try/permissiondenied block
+  * [509e9d] Removed unused permissions from layer permission check
+  * [886003] Had to set this again, otherwise tests are failing. Will investigate later
+  * [c53296] Making flake8 happy
+  * [2d29b7] Making flake8 happy on a last file
+
+  [ Ariel Núñez ]
+  * [72ae02] Disabled paver static in Travis
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 05 Nov 2014 10:30:00 -0500
+
 geonode (2.4.0+alpha20) trusty; urgency=high
 
   [ x ]
