@@ -185,7 +185,8 @@ class PermissionLevelMixin(object):
             for user, perms in perm_spec['users'].items():
                 user = get_user_model().objects.get(username=user)
                 for perm in perms:
-                    if self.polymorphic_ctype.name == 'layer' and perm in ('add_layer', 'change_layer', 'delete_layer', 'change_layer_data', 'change_layer_style'):
+                    if self.polymorphic_ctype.name == 'layer' and perm in (
+                        'change_layer_data', 'change_layer_style'):
                         assign_perm(perm, user, self.layer)
                     else:
                         assign_perm(perm, user, self.get_self_resource())
