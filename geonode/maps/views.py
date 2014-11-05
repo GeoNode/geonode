@@ -23,7 +23,6 @@ import logging
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404
@@ -72,6 +71,7 @@ _PERMISSION_MSG_SAVE = _("You are not permitted to save or edit this map.")
 _PERMISSION_MSG_METADATA = _(
     "You are not allowed to modify this map's metadata.")
 _PERMISSION_MSG_VIEW = _("You are not allowed to view this map.")
+_PERMISSION_MSG_UNKNOWN = _('An unknown error has occured.')
 
 
 def _handleThumbNail(req, obj):
@@ -118,6 +118,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     '''
     The view that show details of each map
     '''
+
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
     Map.objects.filter(id=map_obj.id).update(popular_count=F('popular_count') + 1)
@@ -141,7 +142,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
 @login_required
 def map_metadata(request, mapid, template='maps/map_metadata.html'):
 
-    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+    map_obj = _resolve_map(request, mapid, 'base.change_resourcebase_metadata', _PERMISSION_MSG_VIEW)
 
     poc = map_obj.poc
 
@@ -244,28 +245,20 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
 @login_required
 def map_remove(request, mapid, template='maps/map_remove.html'):
     ''' Delete a map, and its constituent layers. '''
-    try:
-        map_obj = _resolve_map(request, mapid, 'base.delete_resourcebase', _PERMISSION_MSG_VIEW)
+    map_obj = _resolve_map(request, mapid, 'base.delete_resourcebase', _PERMISSION_MSG_VIEW)
 
-        if request.method == 'GET':
-            return render_to_response(template, RequestContext(request, {
-                "map": map_obj
-            }))
+    if request.method == 'GET':
+        return render_to_response(template, RequestContext(request, {
+            "map": map_obj
+        }))
 
-        elif request.method == 'POST':
-            layers = map_obj.layer_set.all()
-            for layer in layers:
-                layer.delete()
-            map_obj.delete()
+    elif request.method == 'POST':
+        layers = map_obj.layer_set.all()
+        for layer in layers:
+            layer.delete()
+        map_obj.delete()
 
-            return HttpResponseRedirect(reverse("maps_browse"))
-
-    except PermissionDenied:
-        return HttpResponse(
-            'You are not allowed to delete this map',
-            mimetype="text/plain",
-            status=401
-        )
+        return HttpResponseRedirect(reverse("maps_browse"))
 
 
 def map_embed(
@@ -567,7 +560,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
     XXX To do, remove layer status once progress id done
     This should be fix because
     """
-    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+    map_obj = _resolve_map(request, mapid, 'base.download_resourcebase', _PERMISSION_MSG_VIEW)
 
     map_status = dict()
     if request.method == 'POST':

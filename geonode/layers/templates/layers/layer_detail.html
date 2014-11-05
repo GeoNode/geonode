@@ -124,9 +124,12 @@
 
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
-      <li class="list-group-item">
-        <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
-      </li>
+        {% get_obj_perms request.user for resource.get_self_resource as "perms" %}
+        {% if links %}
+        <li class="list-group-item">
+           <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
+        </li>
+        {% endif %}
       {% endif %}
     <div class="modal fade" id="download-layer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -175,8 +178,7 @@
     </div>
 
     <li class="list-group-item">
-    {% get_obj_perms request.user for resource.get_self_resource as "resource_perms" %}
-    {% if "change_resourcebase" in resource_perms %}
+    
     <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#edit-layer">{% trans "Edit Layer" %}</button>
 
   </li>
@@ -190,15 +192,24 @@
           </div>
           <div class="modal-body">
             <ul>
-              <li><a href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit Metadata" %}</a></li>            
+              {% if "change_resourcebase_metadata" in perms %}
+              <li><a href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit Metadata" %}</a></li>  
+              {% endif %}             
               {% if GEOSERVER_BASE_URL %}
-              <li><a href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage Styles" %}</a></li>
-              {% if preview == 'geoext' %}
-              <li><a class="style-edit" href="#">{% trans "Edit Styles" %}</a></li>
+                {% get_obj_perms request.user for resource.layer as "layer_perms" %}
+                {% if "change_layer_style" in layer_perms %}
+                <li><a href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage Styles" %}</a></li>
+                  {% if preview == 'geoext' %}
+                  <li><a class="style-edit" href="#">{% trans "Edit Styles" %}</a></li>
+                  {% endif %}
+                {% endif %}
               {% endif %}
+              {% if "change_resourcebase" in perms %}
+                <li><a href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace this Layer" %}</a></li>
               {% endif %}
-              <li><a href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace this Layer" %}</a></li>
-              <li><a href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove this Layer" %}</a></li>
+              {% if "delete_resourcebase" in perms %}
+                <li><a href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove this Layer" %}</a></li>
+              {% endif %}
             </ul>
           </div>
           <div class="modal-footer">
@@ -207,7 +218,6 @@
         </div>
       </div>
     </div>
-    {% endif %}
 
     {% if resource.get_legend %}
     <li class="list-group-item">
@@ -274,7 +284,7 @@
     {% endif %}
 
     {% if GEONODE_SECURITY_ENABLED %}
-    {% if "change_resourcebase_permissions" in resource_perms %}
+    {% if "change_resourcebase_permissions" in perms %}
     <li class="list-group-item">
       <h4>{% trans "Permissions" %}</h4>
       <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
