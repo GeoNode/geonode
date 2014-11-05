@@ -1,5 +1,14 @@
 geonode (2.4.0+dev20141024171719) trusty; urgency=high
 
+  [ x ]
+  * UNRELEASED
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 05 Nov 2014 08:33:54 -0500
+
+geonode (2.4.0+dev20141024171719) trusty; urgency=high
+
   [ Tom Kralidis ]
   * [4a29cb] s/TC211/ISO/ as per https://groups.google.com/forum/#!topic/geonode-users/e7LnCtPBdKs
   * [3c27c1] fix flake8 error
