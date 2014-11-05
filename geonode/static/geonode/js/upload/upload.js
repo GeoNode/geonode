@@ -319,6 +319,7 @@ define(['underscore',
             dropZone = document.querySelector(options.dropZone),
             file_queue = $(options.file_queue),
             doClearState = function () {
+                $("#file-input").replaceWith($("#file-input").clone());
                 // set the global layer object to empty
                 layers = {};
                 // redraw the file display view
