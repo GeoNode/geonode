@@ -498,18 +498,14 @@ def deb(options):
     info('Getting rid of any uncommitted changes in debian/changelog')
     sh('git checkout package/debian/changelog')
 
+    # Workaround for git-dch bug
+    # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
+    sh('ln -s %s %s' % (os.path.realpath('.git'), os.path.realpath('package')))
+
     with pushd('package'):
 
         # Install requirements
         #sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
-
-        # Workaround for git-dch bug
-        # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
-        # path('.git').makedirs()
-        # Link the parent git repository folder in to the current one
-        # needed by git-dch
-        sh('ln -s ../.git .gito')
-        sh('mv .gito .git')
 
         sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
             ' --id-length=6 --ignore-branch --release' % (simple_version)))
