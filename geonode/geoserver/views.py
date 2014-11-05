@@ -99,22 +99,22 @@ def layer_style(request, layername):
 
 
 @login_required
-def layer_style_upload(req, layername):
+def layer_style_upload(request, layername):
     def respond(*args, **kw):
         kw['content_type'] = 'text/html'
         return json_response(*args, **kw)
-    form = LayerStyleUploadForm(req.POST, req.FILES)
+    form = LayerStyleUploadForm(request.POST, request.FILES)
     if not form.is_valid():
         return respond(errors="Please provide an SLD file.")
 
     data = form.cleaned_data
     layer = _resolve_layer(
-        req,
+        request,
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_MODIFY)
 
-    sld = req.FILES['sld'].read()
+    sld = request.FILES['sld'].read()
 
     try:
         dom = etree.XML(sld)
@@ -155,21 +155,15 @@ def layer_style_upload(req, layername):
 
 
 @login_required
-def layer_style_manage(req, layername):
+def layer_style_manage(request, layername):
+    
+    layer = _resolve_layer(
+        request,
+        layername,
+        'layers.change_layer_style',
+        _PERMISSION_MSG_MODIFY)
         
-    try:
-        layer = _resolve_layer(
-            req,
-            layername,
-            'layers.change_layer_style',
-            _PERMISSION_MSG_MODIFY)
-    except PermissionDenied as ex:
-        return HttpResponse(loader.render_to_string(
-                '401.html', RequestContext(
-                    req, {
-                        })), status=401)
-                        
-    if req.method == 'GET':
+    if request.method == 'GET':
         try:
             cat = gs_catalog
 
@@ -194,7 +188,7 @@ def layer_style_manage(req, layername):
             # Render the form
             return render_to_response(
                 'layers/layer_style_manage.html',
-                RequestContext(req, {
+                RequestContext(request, {
                     "layer": layer,
                     "gs_styles": gs_styles,
                     "layer_styles": layer_styles,
@@ -211,16 +205,16 @@ def layer_style_manage(req, layername):
             # If geoserver is not online, return an error
             return render_to_response(
                 'layers/layer_style_manage.html',
-                RequestContext(req, {
+                RequestContext(request, {
                     "layer": layer,
                     "error": msg
                 }
                 )
             )
-    elif req.method == 'POST':
+    elif request.method == 'POST':
         try:
-            selected_styles = req.POST.getlist('style-select')
-            default_style = req.POST['default_style']
+            selected_styles = request.POST.getlist('style-select')
+            default_style = request.POST['default_style']
             # Save to GeoServer
             cat = gs_catalog
             gs_layer = cat.get_layer(layer.name)
@@ -246,7 +240,7 @@ def layer_style_manage(req, layername):
             logger.warn(msg, e)
             return render_to_response(
                 'layers/layer_style_manage.html',
-                RequestContext(req, {
+                RequestContext(request, {
                     "layer": layer,
                     "error": msg
                 }
