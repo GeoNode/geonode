@@ -20,6 +20,9 @@
 import os
 import json
 import datetime
+import urllib2
+import base64
+import time
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -29,6 +32,7 @@ from django.test import LiveServerTestCase as TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.auth import get_user_model
+from guardian.shortcuts import assign_perm
 
 from geoserver.catalog import FailedRequestError, UploadError
 
@@ -590,6 +594,70 @@ class GeoNodeMapTest(TestCase):
                                                'prj_file': layer_prj
                                                })
         self.assertEquals(response.status_code, 401)
+
+    def test_permissions(self):
+        """Test permissions on a layer
+        """
+
+        # grab norman
+        norman = get_user_model().objects.get(username="norman")
+
+        thefile = os.path.join(
+            gisdata.VECTOR_DATA,
+            'san_andres_y_providencia_poi.shp')
+        layer = file_upload(thefile, overwrite=True)
+        check_layer(layer)
+
+        # we need some time to have the service up and running
+        time.sleep(20)
+
+        # Set the layer private for not authenticated users
+        layer.set_permissions({'users': {'AnonymousUser': []}})
+
+        url = 'http://localhost:8080/geoserver/geonode/wms?' \
+            'LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES=' \
+            '&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' \
+            '&SRS=EPSG%3A4326' \
+            '&BBOX=-81.394599749999,13.316009005566,' \
+            '-81.370560451855,13.372728455566' \
+            '&WIDTH=217&HEIGHT=512'
+
+        # test view_resourcebase permission on anonymous user
+        request = urllib2.Request(url)
+        response = urllib2.urlopen(request)
+        self.assertTrue(
+            response.info().getheader('Content-Type'),
+            'application/vnd.ogc.se_xml;charset=UTF-8'
+        )
+
+        # test WMS with authenticated user that has not view_resourcebase:
+        # the layer must be not accessible (response is xml)
+        request = urllib2.Request(url)
+        base64string = base64.encodestring(
+            '%s:%s' % ('norman', 'norman')).replace('\n', '')
+        request.add_header("Authorization", "Basic %s" % base64string)
+        response = urllib2.urlopen(request)
+        self.assertTrue(
+            response.info().getheader('Content-Type'),
+            'application/vnd.ogc.se_xml;charset=UTF-8'
+        )
+
+        # test WMS with authenticated user that has view_resourcebase: the layer
+        # must be accessible (response is image)
+        assign_perm('view_resourcebase', norman, layer.get_self_resource())
+        request = urllib2.Request(url)
+        base64string = base64.encodestring(
+            '%s:%s' % ('norman', 'norman')).replace('\n', '')
+        request.add_header("Authorization", "Basic %s" % base64string)
+        response = urllib2.urlopen(request)
+        self.assertTrue(response.info().getheader('Content-Type'), 'image/png')
+
+        # test change_layer_data
+        # would be nice to make a WFS/T request and test results, but this
+        # would work only on PostGIS layers
+
+        # Clean up and completely delete the layer
+        layer.delete()
 
 
 class GeoNodeThumbnailTest(TestCase):

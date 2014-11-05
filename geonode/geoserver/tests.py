@@ -35,7 +35,7 @@ class LayerTests(TestCase):
         layer = Layer.objects.all()[0]
 
         bob = get_user_model().objects.get(username='bobby')
-        assign_perm('change_resourcebase', bob, layer.get_self_resource())
+        assign_perm('change_layer_style', bob, layer)
 
         c = Client()
         logged_in = c.login(username='bobby', password='bob')
@@ -134,7 +134,7 @@ class LayerTests(TestCase):
 
         bob = get_user_model().objects.get(username='bobby')
         layer_ca = Layer.objects.get(typename='geonode:CA')
-        assign_perm('change_resourcebase', bob, layer_ca.get_self_resource())
+        assign_perm('change_layer_data', bob, layer_ca)
 
         # Test that requesting when supplying the geoserver credentials returns
         # the expected json

@@ -1,6 +1,7 @@
 import json
 import logging
 import httplib2
+import os
 
 from django.contrib.auth import authenticate
 from django.utils import simplejson
@@ -19,7 +20,7 @@ from django.utils.translation import ugettext as _
 from guardian.shortcuts import get_objects_for_user
 
 from geonode.layers.forms import LayerStyleUploadForm
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 from geonode.geoserver.signals import gs_catalog
 from geonode.utils import json_response, _get_basic_auth_info
@@ -97,22 +98,22 @@ def layer_style(request, layername):
 
 
 @login_required
-def layer_style_upload(req, layername):
+def layer_style_upload(request, layername):
     def respond(*args, **kw):
         kw['content_type'] = 'text/html'
         return json_response(*args, **kw)
-    form = LayerStyleUploadForm(req.POST, req.FILES)
+    form = LayerStyleUploadForm(request.POST, request.FILES)
     if not form.is_valid():
         return respond(errors="Please provide an SLD file.")
 
     data = form.cleaned_data
     layer = _resolve_layer(
-        req,
+        request,
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_MODIFY)
 
-    sld = req.FILES['sld'].read()
+    sld = request.FILES['sld'].read()
 
     try:
         dom = etree.XML(sld)
@@ -153,13 +154,15 @@ def layer_style_upload(req, layername):
 
 
 @login_required
-def layer_style_manage(req, layername):
+def layer_style_manage(request, layername):
+
     layer = _resolve_layer(
-        req,
+        request,
         layername,
-        'base.change_resourcebase',
+        'layers.change_layer_style',
         _PERMISSION_MSG_MODIFY)
-    if req.method == 'GET':
+
+    if request.method == 'GET':
         try:
             cat = gs_catalog
 
@@ -184,7 +187,7 @@ def layer_style_manage(req, layername):
             # Render the form
             return render_to_response(
                 'layers/layer_style_manage.html',
-                RequestContext(req, {
+                RequestContext(request, {
                     "layer": layer,
                     "gs_styles": gs_styles,
                     "layer_styles": layer_styles,
@@ -201,16 +204,16 @@ def layer_style_manage(req, layername):
             # If geoserver is not online, return an error
             return render_to_response(
                 'layers/layer_style_manage.html',
-                RequestContext(req, {
+                RequestContext(request, {
                     "layer": layer,
                     "error": msg
                 }
                 )
             )
-    elif req.method == 'POST':
+    elif request.method == 'POST':
         try:
-            selected_styles = req.POST.getlist('style-select')
-            default_style = req.POST['default_style']
+            selected_styles = request.POST.getlist('style-select')
+            default_style = request.POST['default_style']
             # Save to GeoServer
             cat = gs_catalog
             gs_layer = cat.get_layer(layer.name)
@@ -236,7 +239,7 @@ def layer_style_manage(req, layername):
             logger.warn(msg, e)
             return render_to_response(
                 'layers/layer_style_manage.html',
-                RequestContext(req, {
+                RequestContext(request, {
                     "layer": layer,
                     "error": msg
                 }
@@ -253,13 +256,54 @@ def feature_edit_check(request, layername):
     datastore = ogc_server_settings.DATASTORE
     feature_edit = getattr(settings, "GEOGIT_DATASTORE", None) or datastore
     if request.user.has_perm(
-            'base.change_resourcebase',
-            obj=layer.resourcebase_ptr) and layer.storeType == 'dataStore' and feature_edit:
+            'change_layer_data',
+            obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(
             json.dumps({'authorized': True}), mimetype="application/json")
     else:
         return HttpResponse(
             json.dumps({'authorized': False}), mimetype="application/json")
+
+
+def style_change_check(request, path):
+    """
+    If the layer has not change_layer_style permission, return a status of
+    401 (unauthorized)
+    """
+    # a new style is created with a POST and then a PUT,
+    # a style is updated with a PUT
+    # a layer is updated with a style with a PUT
+    # in both case we need to check permissions here
+    # for PUT path is /gs/rest/styles/san_andres_y_providencia_water_a452004b.xml
+    # or /ge/rest/layers/geonode:san_andres_y_providencia_coastline.json
+    # for POST path is /gs/rest/styles
+    # we will suppose that a user can create a new style only if he is an
+    # authenticated (we need to discuss about it)
+    authorized = True
+    if request.method == 'POST':
+        # new style
+        if not request.user.is_authenticated:
+            authorized = False
+    if request.method == 'PUT':
+        if path == 'rest/layers':
+            # layer update, should be safe to always authorize it
+            authorized = True
+        else:
+            # style update
+            # we will iterate all layers (should be just one if not using GS)
+            # to which the posted style is associated
+            # and check if the user has change_style_layer permissions on each of them
+            style_name = os.path.splitext(request.path)[0].split('/')[-1]
+            try:
+                style = Style.objects.get(name=style_name)
+                for layer in style.layer_styles.all():
+                    if not request.user.has_perm('change_layer_style', obj=layer):
+                        authorized = False
+            except:
+                authorized = False
+                logger.warn(
+                    'There is not a style with such a name: %s.' % style_name)
+    return authorized
 
 
 def geoserver_rest_proxy(request, proxy_path, downstream_path):
@@ -283,19 +327,24 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
+        # if user is not authorized, we must stop him
+        # we need to sync django here and check if some object (styles) can
+        # be edited by the user
+        # we should remove this geonode dependency calling layers.views straight
+        # from GXP, bypassing the proxy
+        if downstream_path in ('rest/styles', 'rest/layers') and len(request.body) > 0:
+            if not style_change_check(request, downstream_path):
+                return HttpResponse(
+                    _("You don't have permissions to change style for this layer"),
+                    mimetype="text/plain",
+                    status=401)
+            if downstream_path == 'rest/styles':
+                style_update(request, url)
 
     response, content = http.request(
         url, request.method,
         body=request.body or None,
         headers=headers)
-
-    # we need to sync django here
-    # we should remove this geonode dependency calling layers.views straight
-    # from GXP, bypassing the proxy
-    if downstream_path == 'rest/styles' and len(request.body) > 0:
-        # for some reason sometime gxp sends a put with empty request
-        # need to figure out with Bart
-        style_update(request, url)
 
     return HttpResponse(
         content=content,
@@ -434,8 +483,10 @@ def layer_acls(request):
 
     # Include permissions on the anonymous user
     all_readable = get_objects_for_user(acl_user, 'base.view_resourcebase')
-
-    all_writable = get_objects_for_user(acl_user, 'base.change_resourcebase')
+    all_writable_layers = get_objects_for_user(acl_user, 'layers.change_layer_data')
+    all_writable = []
+    for obj in all_writable_layers:
+        all_writable.append(obj.get_self_resource())
 
     read_only = [
         x.layer.typename for x in all_readable if x not in all_writable and hasattr(
