@@ -24,7 +24,6 @@ import tempfile
 
 from django.test import TestCase
 from django.test.client import Client
-from django.utils import simplejson as json
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
@@ -692,4 +691,3 @@ class LayersTest(TestCase):
             **{'layer_count': Count('resourcebase__layer__category')})
         elevation = topics.get(identifier='elevation')
         self.assertEquals(elevation.layer_count, 3)
-
