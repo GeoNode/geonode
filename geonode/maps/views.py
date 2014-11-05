@@ -23,7 +23,6 @@ import logging
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError, Http404
 from django.shortcuts import render_to_response, get_object_or_404
@@ -120,31 +119,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     The view that show details of each map
     '''
     
-    map_obj = None
-    
-    try:
-        map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
-
-    except Http404:
-        return HttpResponse(
-            loader.render_to_string(
-                '404.html', RequestContext(
-                    request, {
-                        })), status=404)
-
-    except PermissionDenied:
-        return HttpResponse(
-            loader.render_to_string(
-                '401.html', RequestContext(
-                    request, {
-                        'error_message': _PERMISSION_MSG_VIEW})), status=403)
-
-    if map_obj is None:
-        return HttpResponse(
-            _PERMISSION_MSG_UNKNOWN,
-            mimetype="text/plain",
-            status=401
-        )
+    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
         
     Map.objects.filter(id=map_obj.id).update(popular_count=F('popular_count') + 1)
 
@@ -270,29 +245,20 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
 @login_required
 def map_remove(request, mapid, template='maps/map_remove.html'):
     ''' Delete a map, and its constituent layers. '''
-    try:
-        map_obj = _resolve_map(request, mapid, 'base.delete_resourcebase', _PERMISSION_MSG_VIEW)
+    map_obj = _resolve_map(request, mapid, 'base.delete_resourcebase', _PERMISSION_MSG_VIEW)
 
-        if request.method == 'GET':
-            return render_to_response(template, RequestContext(request, {
-                "map": map_obj
-            }))
+    if request.method == 'GET':
+        return render_to_response(template, RequestContext(request, {
+            "map": map_obj
+        }))
 
-        elif request.method == 'POST':
-            layers = map_obj.layer_set.all()
-            for layer in layers:
-                layer.delete()
-            map_obj.delete()
+    elif request.method == 'POST':
+        layers = map_obj.layer_set.all()
+        for layer in layers:
+            layer.delete()
+        map_obj.delete()
 
-            return HttpResponseRedirect(reverse("maps_browse"))
-
-    except PermissionDenied:
-        return HttpResponse(
-            'You are not allowed to delete this map',
-            mimetype="text/plain",
-            status=401
-        )
-
+        return HttpResponseRedirect(reverse("maps_browse"))
 
 def map_embed(
         request,
