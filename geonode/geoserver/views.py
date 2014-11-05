@@ -4,7 +4,6 @@ import httplib2
 import os
 
 from django.contrib.auth import authenticate
-from django.core.exceptions import PermissionDenied
 from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST
@@ -14,7 +13,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.template import RequestContext, loader
+from django.template import RequestContext
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 
@@ -156,13 +155,13 @@ def layer_style_upload(request, layername):
 
 @login_required
 def layer_style_manage(request, layername):
-    
+
     layer = _resolve_layer(
         request,
         layername,
         'layers.change_layer_style',
         _PERMISSION_MSG_MODIFY)
-        
+
     if request.method == 'GET':
         try:
             cat = gs_catalog
@@ -265,6 +264,7 @@ def feature_edit_check(request, layername):
         return HttpResponse(
             json.dumps({'authorized': False}), mimetype="application/json")
 
+
 def style_change_check(request, path):
     """
     If the layer has not change_layer_style permission, return a status of
@@ -280,14 +280,16 @@ def style_change_check(request, path):
     # we will suppose that a user can create a new style only if he is an
     # authenticated (we need to discuss about it)
     authorized = True
-    if request.method == 'POST': # new style
+    if request.method == 'POST':
+        # new style
         if not request.user.is_authenticated:
             authorized = False
     if request.method == 'PUT':
-        if path == 'rest/layers': # layer update
-            # should be safe to always authorize it
+        if path == 'rest/layers':
+            # layer update, should be safe to always authorize it
             authorized = True
-        else: # style update
+        else:
+            # style update
             # we will iterate all layers (should be just one if not using GS)
             # to which the posted style is associated
             # and check if the user has change_style_layer permissions on each of them
@@ -302,7 +304,8 @@ def style_change_check(request, path):
                 logger.warn(
                     'There is not a style with such a name: %s.' % style_name)
     return authorized
-            
+
+
 def geoserver_rest_proxy(request, proxy_path, downstream_path):
 
     if not request.user.is_authenticated():
@@ -325,7 +328,6 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
         # if user is not authorized, we must stop him
-        
         # we need to sync django here and check if some object (styles) can
         # be edited by the user
         # we should remove this geonode dependency calling layers.views straight
@@ -482,7 +484,6 @@ def layer_acls(request):
     # Include permissions on the anonymous user
     all_readable = get_objects_for_user(acl_user, 'base.view_resourcebase')
     all_writable_layers = get_objects_for_user(acl_user, 'layers.change_layer_data')
-    
     all_writable = []
     for obj in all_writable_layers:
         all_writable.append(obj.get_self_resource())
@@ -495,7 +496,7 @@ def layer_acls(request):
         x.layer.typename for x in all_writable if x in all_readable and hasattr(
             x,
             'layer')]
-    
+
     result = {
         'rw': read_write,
         'ro': read_only,

@@ -24,10 +24,10 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError, Http404
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
-from django.template import RequestContext, loader
+from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import strip_tags
@@ -118,9 +118,9 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     '''
     The view that show details of each map
     '''
-    
+
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
-        
+
     Map.objects.filter(id=map_obj.id).update(popular_count=F('popular_count') + 1)
 
     if snapshot is None:
@@ -259,6 +259,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
         map_obj.delete()
 
         return HttpResponseRedirect(reverse("maps_browse"))
+
 
 def map_embed(
         request,
