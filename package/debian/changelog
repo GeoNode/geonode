@@ -1,3 +1,12 @@
+geonode (2.4.0+alpha20) trusty; urgency=high
+
+  [ x ]
+  * UNRELEASED
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 05 Nov 2014 08:58:25 -0500
+
 geonode (2.4.0+alpha19) trusty; urgency=high
 
   [ x ]
