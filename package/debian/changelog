@@ -1,3 +1,49 @@
+geonode (2.4.0+alpha20) trusty; urgency=high
+
+  [ x ]
+  * UNRELEASED
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 05 Nov 2014 08:58:25 -0500
+
+geonode (2.4.0+alpha19) trusty; urgency=high
+
+  [ x ]
+  * UNRELEASED
+
+  [ Ariel Nunez ]
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 05 Nov 2014 08:55:39 -0500
+
+geonode (2.4.0+alpha18) trusty; urgency=high
+
+  [ Tom Kralidis ]
+  * [4a29cb] s/TC211/ISO/ as per https://groups.google.com/forum/#!topic/geonode-users/e7LnCtPBdKs
+  * [3c27c1] fix flake8 error
+
+  [ Raphael Sprumont ]
+  * [eb3f4d] fix order translate js
+
+  [ Simone Dalmasso ]
+  * [f42ca8] correctly use the filename ad fallback in document title
+  * [c49ca3] vix the err403 handler for non allowed users and the admin_contact method for resourcebase
+  * [684606] fix integration test to respect the new error code
+
+  [ Jeffrey Johnson ]
+  * [d0ccfe] adding screenshot of demo site to organizational/about.txt
+
+  [ Stefano Menegon ]
+  * [e24ce6] Fixed some layout  issues on GeoExplorer
+
+  [ Geode Team ]
+  * [0b7726] corection_1718
+
+  [ Ariel Nunez ]
+  * [6e9b8c] Avoid inifite .git symlink when applying workaround for git-dch bug
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Wed, 05 Nov 2014 08:28:09 -0500
+
 geonode (2.4.0+alpha17) trusty; urgency=high
 
   [ Ian Schneider ]
