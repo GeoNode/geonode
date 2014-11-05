@@ -20,7 +20,7 @@ install:
 
 before_script:
   - paver setup
-  - paver static
+#  - paver static
 
 script:
   - python manage.py test geonode.tests.smoke
