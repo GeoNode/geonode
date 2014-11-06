@@ -30,6 +30,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from django.http import HttpResponse
 from django.core.cache import cache
+from django.http import Http404
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
@@ -451,8 +452,12 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     permission_msg - optional message to use in 403
     """
     obj = get_object_or_404(model, **query)
-    allowed = True
     obj_to_check = obj.get_self_resource()
+    
+    if obj_to_check.is_published == False:
+        raise Http404
+
+    allowed = True
     if permission.split('.')[-1] in ['change_layer_data', 'change_layer_style']:
         if obj.__class__.__name__ == 'Layer':
             obj_to_check = obj
