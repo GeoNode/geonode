@@ -291,10 +291,8 @@ class CommonModelApi(ModelResource):
             filter_set = set(
                 get_objects_for_user(
                     request.user,
-                    'base.view_resourcebase').filter(is_published=True) \
-                    .values_list(
-                        'id',
-                        flat=True))
+                    'base.view_resourcebase'
+                ).filter(is_published=True).values_list('id', flat=True))
 
             # Do the query using the filterset and the query term. Facet the
             # results

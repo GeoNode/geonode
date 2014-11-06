@@ -691,8 +691,8 @@ class LayersTest(TestCase):
             **{'layer_count': Count('resourcebase__layer__category')})
         elevation = topics.get(identifier='elevation')
         self.assertEquals(elevation.layer_count, 3)
-        
-        
+
+
 class UnpublishedObjectTests(TestCase):
 
     """Test the is_published base attribute"""

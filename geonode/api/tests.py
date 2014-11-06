@@ -6,6 +6,7 @@ from tastypie.test import ResourceTestCase
 from geonode.base.populate_test_data import create_models, all_public
 from geonode.layers.models import Layer
 
+
 class PermissionsApiTests(ResourceTestCase):
 
     fixtures = ['initial_data.json', 'bobby']
@@ -137,12 +138,12 @@ class SearchApiTests(ResourceTestCase):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 5)
-        
+
         # same tests, with an unpublished layer
         layer = Layer.objects.filter(category__identifier='location')[0]
         layer.is_published = False
         layer.save()
-        
+
         filter_url = self.list_url + '?category__identifier=location'
 
         resp = self.api_client.get(filter_url)
@@ -155,7 +156,7 @@ class SearchApiTests(ResourceTestCase):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 4)
-        
+
         layer.is_published = True
         layer.save()
 
@@ -181,7 +182,7 @@ class SearchApiTests(ResourceTestCase):
         layer = Layer.objects.filter(keywords__slug='layertagunique')[0]
         layer.is_published = False
         layer.save()
-        
+
         filter_url = self.list_url + '?keywords__slug=layertagunique'
 
         resp = self.api_client.get(filter_url)
@@ -194,7 +195,7 @@ class SearchApiTests(ResourceTestCase):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 7)
-        
+
         layer.is_published = True
         layer.save()
 
@@ -215,12 +216,12 @@ class SearchApiTests(ResourceTestCase):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 3)
-        
+
         # same tests, with an unpublished layer
         layer = Layer.objects.filter(owner__username='user1')[0]
         layer.is_published = False
         layer.save()
-        
+
         filter_url = self.list_url + '?owner__username=user1'
 
         resp = self.api_client.get(filter_url)
@@ -233,7 +234,7 @@ class SearchApiTests(ResourceTestCase):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 2)
-        
+
         layer.is_published = True
         layer.save()
 
@@ -247,16 +248,16 @@ class SearchApiTests(ResourceTestCase):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 1)
-        
+
         # same test, with an unpublished layer
         layer = Layer.objects.filter(title='layer2')[0]
         layer.is_published = False
         layer.save()
-        
+
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 0)
-        
+
         layer.is_published = True
         layer.save()
 
@@ -282,12 +283,12 @@ class SearchApiTests(ResourceTestCase):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 4)
-        
+
         # same test, with an unpublished layer
         layer = Layer.objects.filter(date=datetime(1985, 1, 1))[0]
         layer.is_published = False
         layer.save()
-        
+
         filter_url = self.list_url + '?date__exact=1985-01-01'
 
         resp = self.api_client.get(filter_url)
@@ -305,6 +306,6 @@ class SearchApiTests(ResourceTestCase):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 3)
-        
+
         layer.is_published = True
         layer.save()
