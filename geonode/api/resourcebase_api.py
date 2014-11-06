@@ -291,9 +291,10 @@ class CommonModelApi(ModelResource):
             filter_set = set(
                 get_objects_for_user(
                     request.user,
-                    'base.view_resourcebase').values_list(
-                    'id',
-                    flat=True))
+                    'base.view_resourcebase').filter(is_published=True) \
+                    .values_list(
+                        'id',
+                        flat=True))
 
             # Do the query using the filterset and the query term. Facet the
             # results
@@ -426,6 +427,7 @@ class CommonModelApi(ModelResource):
 
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)
+
         return response_class(
             content=serialized,
             content_type=build_content_type(desired_format),
@@ -448,7 +450,7 @@ class ResourceBaseResource(CommonModelApi):
     """ResourceBase api"""
 
     class Meta(CommonMetaApi):
-        queryset = ResourceBase.objects.polymorphic_queryset() \
+        queryset = ResourceBase.published.polymorphic_queryset() \
             .distinct().order_by('-date')
         resource_name = 'base'
         excludes = ['csw_anytext', 'metadata_xml']
@@ -459,7 +461,7 @@ class FeaturedResourceBaseResource(CommonModelApi):
     """Only the featured resourcebases"""
 
     class Meta(CommonMetaApi):
-        queryset = ResourceBase.objects.filter(featured=True).order_by('-date')
+        queryset = ResourceBase.published.filter(featured=True).order_by('-date')
         resource_name = 'featured'
 
 
@@ -468,7 +470,7 @@ class LayerResource(CommonModelApi):
     """Layer API"""
 
     class Meta(CommonMetaApi):
-        queryset = Layer.objects.distinct().order_by('-date')
+        queryset = Layer.published.distinct().order_by('-date')
         resource_name = 'layers'
         excludes = ['csw_anytext', 'metadata_xml']
 
@@ -478,7 +480,7 @@ class MapResource(CommonModelApi):
     """Maps API"""
 
     class Meta(CommonMetaApi):
-        queryset = Map.objects.distinct().order_by('-date')
+        queryset = Map.published.distinct().order_by('-date')
         resource_name = 'maps'
 
 
@@ -489,5 +491,5 @@ class DocumentResource(CommonModelApi):
     class Meta(CommonMetaApi):
         filtering = CommonMetaApi.filtering
         filtering.update({'doc_type': ALL})
-        queryset = Document.objects.distinct().order_by('-date')
+        queryset = Document.published.distinct().order_by('-date')
         resource_name = 'documents'
