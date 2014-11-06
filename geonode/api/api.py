@@ -98,8 +98,6 @@ class TopicCategoryResource(TypeFilteredResource):
 
     def dehydrate_count(self, bundle):
         if settings.SKIP_PERMS_FILTER:
-            resources = ResourceBase.published.all().values_list('id',
-                flat=True)
             if self.type_filter:
                 return bundle.obj.resourcebase_set.filter(is_published=True).instance_of(self.type_filter).count()
             else:
