@@ -58,8 +58,8 @@ class TagResource(TypeFilteredResource):
     def dehydrate_count(self, bundle):
         count = 0
         if settings.SKIP_PERMS_FILTER:
-            resources = ResourceBase.published.all().values_list('id',
-                flat=True)
+            resources = ResourceBase.published.all() \
+                .values_list('id', flat=True)
             if self.type_filter:
                 ctype = ContentType.objects.get_for_model(self.type_filter)
                 count = bundle.obj.taggit_taggeditem_items.filter(
