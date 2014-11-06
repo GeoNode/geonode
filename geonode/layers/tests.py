@@ -41,7 +41,7 @@ from geonode.layers.utils import layer_type, get_files, get_valid_name, \
     get_valid_layer_name
 from geonode.people.utils import get_valid_user
 from geonode.base.models import TopicCategory
-from geonode.base.populate_test_data import create_models
+from geonode.base.populate_test_data import create_models, all_public
 from geonode.layers.forms import JSONField, LayerUploadForm
 from .populate_layers_data import create_layer_data
 
@@ -691,3 +691,40 @@ class LayersTest(TestCase):
             **{'layer_count': Count('resourcebase__layer__category')})
         elevation = topics.get(identifier='elevation')
         self.assertEquals(elevation.layer_count, 3)
+        
+        
+class UnpublishedObjectTests(TestCase):
+
+    """Test the is_published base attribute"""
+
+    fixtures = ['initial_data.json', 'bobby']
+
+    def setUp(self):
+        super(UnpublishedObjectTests, self).setUp()
+
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
+        create_models(type='layer')
+        all_public()
+
+    def test_unpublished_layer(self):
+        """Test category filtering"""
+
+        c = Client()
+        c.login(username='user1', password='user1')
+
+        response = c.get(reverse('layer_detail', args=('geonode:CA',)))
+        self.failUnlessEqual(response.status_code, 200)
+
+        layer = Layer.objects.filter(title='CA')[0]
+        layer.is_published = False
+        layer.save()
+
+        response = c.get(reverse('layer_detail', args=('geonode:CA',)))
+        self.failUnlessEqual(response.status_code, 404)
+
+        layer.is_published = True
+        layer.save()
