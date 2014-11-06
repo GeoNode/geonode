@@ -319,10 +319,15 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     valid_name = get_valid_layer_name(name, overwrite)
 
     # Add them to the upload session (new file fields are created).
+    assigned_name = None
     for type_name, fn in files.items():
         with open(fn, 'rb') as f:
             upload_session.layerfile_set.create(name=type_name,
-                                                file=File(f, name='%s.%s' % (valid_name, type_name)))
+                                                file=File(f, name='%s.%s' % (assigned_name or valid_name, type_name)))
+            # save the system assigned name for the remaining files
+            if not assigned_name:
+                the_file = upload_session.layerfile_set.all()[0].file.name
+                assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
     # Get a bounding box
     bbox_x0, bbox_x1, bbox_y0, bbox_y1 = get_bbox(filename)
