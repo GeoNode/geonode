@@ -25,7 +25,7 @@ class LicenseAdmin(MediaTranslationAdmin):
 
 
 class ResourceBaseAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'date', 'category')
+    list_display = ('id', 'title', 'is_published', 'date', 'category')
     list_display_links = ('id',)
 
     form = autocomplete_light.modelform_factory(ResourceBase)

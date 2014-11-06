@@ -219,6 +219,17 @@ class ResourceBaseManager(PolymorphicManager):
         return super(ResourceBaseManager, self).get_queryset()
 
 
+class PublishedResourceBaseManager(PolymorphicManager):
+
+    def get_queryset(self):
+        return super(PublishedResourceBaseManager, self).get_queryset() \
+            .filter(is_published=True).non_polymorphic()
+
+    def polymorphic_queryset(self):
+        return super(PublishedResourceBaseManager, self).get_queryset() \
+            .filter(is_published=True)
+
+
 class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     """
     Base Resource Object loosely based on ISO 19115:2003
@@ -344,6 +355,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     share_count = models.IntegerField(default=0)
 
     featured = models.BooleanField(default=False, help_text=_('Should this resource be advertised in home page?'))
+    is_published = models.BooleanField(default=True, help_text=_('Should this resource be published and searchable?'))
 
     # fields necessary for the apis
     thumbnail_url = models.CharField(max_length=255, null=True, blank=True)
@@ -607,6 +619,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
     objects = ResourceBaseManager()
+    published = PublishedResourceBaseManager()
 
     class Meta:
         # custom permissions,
