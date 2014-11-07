@@ -33,6 +33,7 @@ def resource_urls(request):
         VERSION=get_version(),
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
+        RESOURCE_PUBLISHING=settings.RESOURCE_PUBLISHING,
         DEBUG_STATIC=getattr(
             settings,
             "DEBUG_STATIC",

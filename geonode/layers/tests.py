@@ -726,5 +726,10 @@ class UnpublishedObjectTests(TestCase):
         response = c.get(reverse('layer_detail', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 404)
 
+        # with settings disabled
+        with self.settings(RESOURCE_PUBLISHING=False):
+            response = c.get(reverse('layer_detail', args=('geonode:CA',)))
+            self.failUnlessEqual(response.status_code, 200)
+
         layer.is_published = True
         layer.save()

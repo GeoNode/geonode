@@ -292,12 +292,16 @@ class CommonModelApi(ModelResource):
                 get_objects_for_user(
                     request.user,
                     'base.view_resourcebase'
-                ).filter(is_published=True).values_list('id', flat=True))
+                )
+            )
+            if settings.RESOURCE_PUBLISHING:
+                filter_set = filter_set.filter(is_published=True)
 
+            filter_set_ids = filter_set.values_list('id', flat=True)
             # Do the query using the filterset and the query term. Facet the
             # results
             if len(filter_set) > 0:
-                sqs = sqs.filter(oid__in=filter_set).facet('type').facet('subtype').facet('owner').facet('keywords')\
+                sqs = sqs.filter(oid__in=filter_set_ids).facet('type').facet('subtype').facet('owner').facet('keywords')\
                     .facet('category')
             else:
                 sqs = None

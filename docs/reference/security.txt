@@ -218,3 +218,7 @@ When the resource is unpublished, it will be not available to any user,
 including administrators, in the GeoNode site. The only way to access to it 
 is by the Django admin site, from where it will be eventually possible to
 publish again the resource by a staff member.
+
+The publish/unpublish workflow can be used in a standard GeoNode installation.
+In case it is not needed, it will be possible to disable it by setting to 
+False the RESOURCE_PUBLISHING settings variable.
