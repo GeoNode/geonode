@@ -222,12 +222,16 @@ class ResourceBaseManager(PolymorphicManager):
 class PublishedResourceBaseManager(PolymorphicManager):
 
     def get_queryset(self):
-        return super(PublishedResourceBaseManager, self).get_queryset() \
-            .filter(is_published=True).non_polymorphic()
+        qs = super(PublishedResourceBaseManager, self).get_queryset()
+        if settings.RESOURCE_PUBLISHING:
+            qs = qs.filter(is_published=True).non_polymorphic()
+        return qs
 
     def polymorphic_queryset(self):
-        return super(PublishedResourceBaseManager, self).get_queryset() \
-            .filter(is_published=True)
+        qs = super(PublishedResourceBaseManager, self).get_queryset()
+        if settings.RESOURCE_PUBLISHING:
+            qs.filter(is_published=True)
+        return qs
 
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin):
