@@ -26,7 +26,6 @@ from geonode.utils import forward_mercator
 from geonode.security.models import PermissionLevelMixin
 from taggit.managers import TaggableManager
 
-from geonode.people.models import Profile
 from geonode.people.enumerations import ROLE_VALUES
 
 logger = logging.getLogger(__name__)
@@ -211,9 +210,7 @@ class ResourceBaseManager(PolymorphicManager):
         if superusers.count() == 0:
             raise RuntimeError('GeoNode needs at least one admin/superuser set')
 
-        contact = Profile.objects.get_or_create(user=superusers[0],
-                                                defaults={"name": "Geonode Admin"})[0]
-        return contact
+        return superusers[0]
 
     def get_queryset(self):
         return super(ResourceBaseManager, self).get_queryset().non_polymorphic()
@@ -613,9 +610,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin):
 
     class Meta:
         # custom permissions,
-        # change and delete are standard in django
-        permissions = (('view_resourcebase', 'Can view'),
-                       ('change_resourcebase_permissions', "Can change permissions"), )
+        # add, change and delete are standard in django-guardian
+        permissions = (
+            ('view_resourcebase', 'Can view resource'),
+            ('change_resourcebase_permissions', 'Can change resource permissions'),
+            ('download_resourcebase', 'Can download resource'),
+            ('publish_resourcebase', 'Can publish resource'),
+            ('change_resourcebase_metadata', 'Can change resource metadata'),
+        )
 
 
 class LinkManager(models.Manager):

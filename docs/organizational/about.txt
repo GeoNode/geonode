@@ -25,6 +25,8 @@ But it should hopefully allow you to easily preview the capabilities of GeoNode.
 .. _demo.geonode.org: http://demo.geonode.org
 
 
+.. image:: img/demo-site.png
+
 Geospatial data storage
 =======================
 

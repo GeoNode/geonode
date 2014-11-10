@@ -39,3 +39,12 @@ padding-top:5px;
 .hero-unit h1{
 font-size:40px
 }
+
+.x-panel * {
+    -moz-box-sizing: content-box;    /* firefox */
+    -ms-box-sizing: content-box;     /* ie */
+    -webkit-box-sizing: content-box; /* webkit */
+    -khtml-box-sizing: content-box;  /* konqueror */
+    box-sizing: content-box;         /* css3 */
+}
+
