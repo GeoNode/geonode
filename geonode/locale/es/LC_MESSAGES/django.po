@@ -19,9 +19,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-17 08:47-0500\n"
-"PO-Revision-Date: 2014-11-11 18:41+0000\n"
-"Last-Translator: Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>\n"
+"POT-Creation-Date: 2014-10-24 09:59-0500\n"
+"PO-Revision-Date: 2014-11-11 22:38+0000\n"
+"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/geonode/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1333,7 +1333,7 @@ msgid "For example \"text/xml\""
 msgstr "Por ejemplo \"text/xml\""
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
-#: templates/500.html:184 templates/base.html:169
+#: templates/500.html:184 templates/base.html:174
 msgid "About"
 msgstr "Acerca de"
 
@@ -1408,7 +1408,7 @@ msgid "Purpose"
 msgstr "Propósito"
 
 #: base/templates/base/resourcebase_info_panel.html:112 templates/500.html:187
-#: templates/base.html:172
+#: templates/base.html:177
 msgid "Language"
 msgstr "Idioma"
 
@@ -2389,7 +2389,7 @@ msgstr "Explora Capas"
 
 #: layers/templates/layers/layer_list.html:13
 #: layers/templates/upload/layer_upload_base.html:12 templates/500.html:74
-#: templates/base.html:85
+#: templates/base.html:90
 msgid "Upload Layers"
 msgstr "Subir Capas"
 
@@ -3229,7 +3229,7 @@ msgstr "Nombre de la organización"
 msgid "name of the responsible organization"
 msgstr "Nombre de la organización responsable"
 
-#: people/models.py:45 templates/500.html:76 templates/base.html:87
+#: people/models.py:45 templates/500.html:76 templates/base.html:92
 msgid "Profile"
 msgstr "Perfil"
 
@@ -3331,17 +3331,17 @@ msgstr "Todos los Contenidos"
 
 #: people/templates/people/_profile_filters.html:5
 #: services/templates/services/service_detail.html:64 templates/500.html:39
-#: templates/base.html:42
+#: templates/base.html:47
 msgid "Layers"
 msgstr "Capas"
 
 #: people/templates/people/_profile_filters.html:6 templates/500.html:42
-#: templates/base.html:45
+#: templates/base.html:50
 msgid "Maps"
 msgstr "Mapas"
 
 #: people/templates/people/_profile_filters.html:7 templates/500.html:45
-#: templates/base.html:48
+#: templates/base.html:53
 msgid "Documents"
 msgstr "Documentos"
 
@@ -3663,72 +3663,72 @@ msgid ""
 "  "
 msgstr "\nLa página solicitada no existe. Tal vez usted está utilizando un marcador desactualizado.⏎"
 
-#: templates/500.html:48 templates/base.html:51
+#: templates/500.html:48 templates/base.html:56
 msgid "People"
 msgstr "Gente"
 
-#: templates/500.html:51 templates/base.html:54
+#: templates/500.html:51 templates/base.html:59
 msgid "Groups"
 msgstr "Grupos"
 
-#: templates/500.html:77 templates/base.html:88
+#: templates/500.html:77 templates/base.html:93
 msgid "Recent Activity"
 msgstr "Reciente Actividad"
 
-#: templates/500.html:78 templates/base.html:89
+#: templates/500.html:78 templates/base.html:94
 msgid "Inbox"
 msgstr "Bandeja de entrada"
 
-#: templates/500.html:80 templates/base.html:91
+#: templates/500.html:80 templates/base.html:96
 #: templates/announcements/announcement_list.html:6
 #: templates/announcements/announcement_list.html:13
 #: templates/announcements/announcement_list.html:20
 msgid "Announcements"
 msgstr "Anuncios"
 
-#: templates/500.html:83 templates/base.html:94
+#: templates/500.html:83 templates/base.html:99
 msgid "Remote Services"
 msgstr "Servicios Remotos"
 
-#: templates/500.html:84 templates/base.html:95
+#: templates/500.html:84 templates/base.html:100
 msgid "Invite User"
 msgstr "Invitar Usuario"
 
-#: templates/500.html:86 templates/base.html:97
+#: templates/500.html:86 templates/base.html:102
 msgid "GeoServer"
 msgstr "GeoServer"
 
-#: templates/500.html:89 templates/base.html:100
+#: templates/500.html:89 templates/base.html:105
 msgid "Admin"
 msgstr "Administración"
 
-#: templates/500.html:92 templates/base.html:103
+#: templates/500.html:92 templates/base.html:108
 msgid "Help"
 msgstr "Ayuda"
 
-#: templates/500.html:97 templates/base.html:108
+#: templates/500.html:97 templates/base.html:113
 #: templates/account/logout.html:6 templates/account/logout.html.py:12
 #: templates/account/logout.html:17
 msgid "Log out"
 msgstr "Salir"
 
-#: templates/500.html:109 templates/base.html:120
+#: templates/500.html:109 templates/base.html:125
 msgid "Username"
 msgstr "Usuario"
 
-#: templates/500.html:113 templates/base.html:124
+#: templates/500.html:113 templates/base.html:129
 msgid "Password"
 msgstr "Clave"
 
-#: templates/500.html:118 templates/base.html:129
+#: templates/500.html:118 templates/base.html:134
 msgid "Remember Me"
 msgstr "Recordarme"
 
-#: templates/500.html:120 templates/base.html:114 templates/base.html.py:131
+#: templates/500.html:120 templates/base.html:119 templates/base.html.py:136
 msgid "Sign in"
 msgstr "Regístrate"
 
-#: templates/500.html:128 templates/base.html:72
+#: templates/500.html:128 templates/base.html:77
 msgid "Register"
 msgstr "Registrarse"
 
@@ -3744,19 +3744,19 @@ msgid ""
 "          "
 msgstr "\nPor favor contacte su administrador GeoNode (él pudo haber recibido un correo electrónico automaticamente si asi lo configuró).\nSi usted es el administrador del sitio, habilite el modo de depuración para ver el error actual y solucionarlo o documentar un error en <a href=\"http://github.com/GeoNode/geonode/issues\">Rastreador de error de GeoNode</a>"
 
-#: templates/500.html:182 templates/base.html:167
+#: templates/500.html:182 templates/base.html:172
 msgid "Powered by"
 msgstr "Proporcionado por:"
 
-#: templates/500.html:182 templates/base.html:167
+#: templates/500.html:182 templates/base.html:172
 msgid "GeoNode"
 msgstr "GeoNode"
 
-#: templates/500.html:182 templates/base.html:167
+#: templates/500.html:182 templates/base.html:172
 msgid "version"
 msgstr "Versión"
 
-#: templates/500.html:183 templates/base.html:168
+#: templates/500.html:183 templates/base.html:173
 msgid "Developers"
 msgstr "Desarrolladores"
 
@@ -3835,7 +3835,7 @@ msgstr "Acerca de GeoNode"
 msgid "About GeoNode."
 msgstr "Acerca de GeoNode."
 
-#: templates/base.html:218
+#: templates/base.html:223
 msgid "Type your search here ..."
 msgstr "Escriba aquí su busqueda  ..."
 
@@ -4412,6 +4412,10 @@ msgstr "Tus selecciones"
 #: templates/search/_search_content.html:11
 msgid "Clear all filters"
 msgstr "Quitar todos los filtros"
+
+#: templates/search/_sort_filters.html:13
+msgid "Set permissions"
+msgstr ""
 
 #: templates/search/_text_filter.html:5
 msgid "Text"
