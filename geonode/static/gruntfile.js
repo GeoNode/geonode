@@ -79,10 +79,10 @@ module.exports = function(grunt) {
             'multi-select/css/multi-select.css',
             'jquery-ui/themes/smoothness/jquery-ui.css',
             'bootstrap/dist/css/bootstrap.min.css',
-            'bootstrap-datepicker/css/datepicker.css',
             'leaflet-fullscreen/dist/leaflet.fullscreen.css',
             'leaflet-fullscreen/dist/fullscreen@2x.png',
-            'leaflet-fullscreen/dist/fullscreen.png'
+            'leaflet-fullscreen/dist/fullscreen.png',
+            'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'
           ]
         }, {
           expand: true,
@@ -114,7 +114,6 @@ module.exports = function(grunt) {
             'jquery-ajaxprogress/jquery.ajaxprogress.js',
             'jquery.ajaxQueue/dist/jquery.ajaxQueue.js',
             'multi-select/js/jquery.multi-select.js',
-            'bootstrap-datepicker/js/bootstrap-datepicker.js',
             'json2/json2.js',
             'select2/select2.js',
             'requirejs/require.js',
@@ -125,8 +124,9 @@ module.exports = function(grunt) {
             'angular-leaflet-directive/dist/angular-leaflet-directive.min.js',
             'bootstrap/dist/js/bootstrap.min.js',
             'zeroclipboard/dist/ZeroClipboard.min.js',
-            'moment/min/moment.min.js',
-            'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
+            'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js',
+            'moment/min/moment-with-locales.min.js',
+            'eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js'
           ]
         }]
       }
@@ -180,7 +180,7 @@ module.exports = function(grunt) {
             'lib/css/select2.css',
             'lib/css/bootstrap.min.css',
             'lib/css/jquery-ui.css',
-            'lib/css/datepicker.css'
+            'lib/css/bootstrap-datetimepicker.css',
           ]
         }
       }
@@ -204,15 +204,14 @@ module.exports = function(grunt) {
             'lib/js/jquery.ajaxprogress.js',
             'lib/js/jquery.ajaxQueue.js',
             'lib/js/jquery.multi-select.js',
-            'lib/js/bootstrap-datepicker.js',
             'lib/js/json2.js',
             'lib/js/select2.js',
             'lib/js/bootstrap.min.js',
             'lib/js/angular.js',
             'lib/js/angular-leaflet-directive.min.js',
-            'lib/js/moment.min.js',
-            'lib/js/ZeroClipboard.min.js'
-
+            'lib/js/ZeroClipboard.min.js',
+            'lib/js/moment-with-locales.min.js',
+            'lib/js/bootstrap-datetimepicker.min.js'
           ],
           'lib/js/require.js': ['lib/js/require.js'],
           'lib/js/text.js': ['lib/js/text.js'],
