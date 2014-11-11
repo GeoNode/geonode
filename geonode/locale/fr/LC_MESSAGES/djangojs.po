@@ -1,54 +1,55 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
+# Julien Collaer <julien.collaer@opengeode.be>, 2014
+# Vincent BONNAL <vincent.bonnal@cirad.fr>, 2013-2014
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2013-09-05 02:20+0000\n"
-"Last-Translator: geonode <geonode-transifex@opengeo.org>\n"
-"Language-Team: French (http://www.transifex.com/projects/p/geonode/language/"
-"fr/)\n"
-"Language: fr\n"
+"PO-Revision-Date: 2014-11-11 22:40+0000\n"
+"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"Language-Team: French (http://www.transifex.com/projects/p/geonode/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Add user..."
-msgstr ""
+msgstr "Ajouter un utilisateur..."
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can view and download this data?"
-msgstr ""
+msgstr "Qui peut voir et télécharger cette donnée?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Anyone"
-msgstr ""
+msgstr "Tout le monde"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Any registered user"
-msgstr ""
+msgstr "Tout utilisateur enregistré"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Only users who can edit"
-msgstr ""
+msgstr "Seulement les utilisateurs pouvant éditer"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can edit this data?"
-msgstr ""
+msgstr "Qui peut modifier cette donnée?"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Only the following users or groups:"
-msgstr ""
+msgstr "Seulement les utilisateurs et les groupes suivants:"
 
 #: static/geonode/js/extjs/GeoNode.js:72
 msgid "Who can manage and edit this data?"
-msgstr ""
+msgstr "Qui peut gérer et modifier cette donnée?"
 
 #: static/geonode/js/upload/FileType.js:33
 #, c-format
@@ -77,17 +78,16 @@ msgid "Zip Archives"
 msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:249
-#, fuzzy
 msgid "Layer Info"
-msgstr "Couches"
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
-msgstr ""
+msgstr "Modifier les métadonnées"
 
 #: static/geonode/js/upload/LayerInfo.js:251
 msgid "Manage Styles"
-msgstr ""
+msgstr "Gérer les styles"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
@@ -112,9 +112,8 @@ msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
-#, fuzzy
 msgid "Unexpected Error"
-msgstr "Erreur de connexion"
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
@@ -133,9 +132,8 @@ msgid "Select or create a Geogit repository."
 msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:542
-#, fuzzy
 msgid "Remove"
-msgstr "Supprimer la couche"
+msgstr "Supprimer"
 
 #: static/geonode/js/upload/upload.js:126
 #, c-format
@@ -152,7 +150,7 @@ msgstr "Annuler"
 
 #: templates/lang.js:10
 msgid "Save as Copy"
-msgstr "Enregistrer en tant que copie"
+msgstr "Enregistrer une copie"
 
 #: templates/lang.js:11
 msgid "About this Map"
@@ -269,7 +267,7 @@ msgstr "Mini"
 
 #: templates/lang.js:51
 msgid "Pan Map"
-msgstr ""
+msgstr "Naviguer sur carte"
 
 #: templates/lang.js:52
 msgid "Zoom to Next Extent"
@@ -331,9 +329,7 @@ msgstr "Petit"
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
-"Erreur à la connexion au serveur.\n"
-" Merci de vérifier l'url et réessayer."
+msgstr "Erreur à la connexion au serveur.\nMerci de vérifier l'url et réessayer."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
@@ -359,9 +355,7 @@ msgstr "Basculer sur la vue Google Earth 3D"
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr ""
-"Cette carte que vous essayez de charger n'existe pas. Créez une nouvelle "
-"carte à la place."
+msgstr "Cette carte que vous essayez de charger n'existe pas. Créez une nouvelle carte à la place."
 
 #: templates/lang.js:75
 msgid "Unknown Map"
@@ -385,11 +379,11 @@ msgstr "Niveau de zoom"
 
 #: templates/lang.js:80
 msgid "Zoom Level"
-msgstr "Niveau de Soom"
+msgstr "Niveau de Zoom"
 
 #: templates/lang.js:81
 msgid "Zoom to Layer Extent"
-msgstr "Zoomer sur la Couche"
+msgstr "Zoomer sur l'emprise de la couche"
 
 #: templates/lang.js:82
 msgid "Zoom to Visible Extent"
@@ -417,7 +411,7 @@ msgstr "Voir cette Carte"
 
 #: templates/lang.js:101
 msgid "Open Map"
-msgstr "Ouvrir une Carte"
+msgstr "Ouvrir la Carte"
 
 #: templates/lang.js:107 templates/lang.js.c:183
 msgid "Name"
@@ -425,7 +419,7 @@ msgstr "Nom"
 
 #: templates/lang.js:108
 msgid "Queryable"
-msgstr ""
+msgstr "Interrogeable"
 
 #: templates/lang.js:115
 msgid "No background"
@@ -435,9 +429,7 @@ msgstr "Pas de fond"
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr ""
-"Votre carte est prête à être publiée sur internet ! Copiez simplement le "
-"code HTML suivant pour afficher la carte sur votre site :"
+msgstr "Votre carte est prête à être publiée sur internet ! Copiez simplement le code HTML suivant pour afficher la carte sur votre site :"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
@@ -449,7 +441,7 @@ msgstr "Aucune information n'est disponible pour cette couche."
 
 #: templates/lang.js:138 templates/lang.js.c:205
 msgid "Provided by:"
-msgstr "Généré par :"
+msgstr "Fourni par :"
 
 #: templates/lang.js:139 templates/lang.js.c:206
 msgid "Download:"
@@ -457,7 +449,7 @@ msgstr "Télécharger :"
 
 #: templates/lang.js:140 templates/lang.js.c:208
 msgid "No keywords are listed for this layer."
-msgstr "Aucun mot-clé n'est disponible pour cette couche."
+msgstr "Aucun mot-clé associé à cette couche."
 
 #: templates/lang.js:141 templates/lang.js.c:209
 msgid "Keywords:"
@@ -501,7 +493,7 @@ msgstr "PDF en cours de création..."
 
 #: templates/lang.js:164
 msgid "Last Modified"
-msgstr "Date de Modification"
+msgstr "Dernière Modification"
 
 #: templates/lang.js:167 templates/lang.js.c:188
 msgid "Prev"

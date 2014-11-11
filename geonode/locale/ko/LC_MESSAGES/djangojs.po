@@ -1,22 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
-# MinPa Lee <mapplus@gmail.com>, 2013
+# Minpa Lee <mapplus@gmail.com>, 2013
+# Minpa Lee <mapplus@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2013-09-05 02:20+0000\n"
-"Last-Translator: MinPa Lee <mapplus@gmail.com>\n"
-"Language-Team: Korean (http://www.transifex.com/projects/p/geonode/language/"
-"ko/)\n"
-"Language: ko\n"
+"PO-Revision-Date: 2014-11-11 22:40+0000\n"
+"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"Language-Team: Korean (http://www.transifex.com/projects/p/geonode/language/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: ko\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: static/geonode/js/extjs/GeoNode.js:72
@@ -78,17 +78,16 @@ msgid "Zip Archives"
 msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:249
-#, fuzzy
 msgid "Layer Info"
-msgstr "레이어"
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
-msgstr ""
+msgstr "메타데이터 편집"
 
 #: static/geonode/js/upload/LayerInfo.js:251
 msgid "Manage Styles"
-msgstr ""
+msgstr "스타일 관리"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
@@ -113,9 +112,8 @@ msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
-#, fuzzy
 msgid "Unexpected Error"
-msgstr "연결 오류"
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
@@ -134,9 +132,8 @@ msgid "Select or create a Geogit repository."
 msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:542
-#, fuzzy
 msgid "Remove"
-msgstr "레이어 제거"
+msgstr ""
 
 #: static/geonode/js/upload/upload.js:126
 #, c-format
@@ -332,9 +329,7 @@ msgstr "작게"
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
-"서버 연결 오류입니다.\n"
-"URL을 확인하고 다시 시도하십시오."
+msgstr "서버 연결 오류입니다.\nURL을 확인하고 다시 시도하십시오."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
@@ -434,9 +429,7 @@ msgstr "배경 없음"
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr ""
-"지도를 웹에 발행할 준비가 되었습니다! 웹사이트에 지도를 추가하려면 다음 HTML"
-"을 복사하십시오."
+msgstr "지도를 웹에 발행할 준비가 되었습니다! 웹사이트에 지도를 추가하려면 다음 HTML을 복사하십시오."
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"

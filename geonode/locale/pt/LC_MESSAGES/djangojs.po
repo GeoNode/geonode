@@ -1,22 +1,23 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
-# MarcosBR <mrosa@arcplan.com.br>, 2013
+# Bibiana T. de Almeida <bibiana.almeida@embrapa.br>, 2013
+# Marcos Reis Rosa <mrosa@arcplan.com.br>, 2013
+# Marcos Reis Rosa <mrosa@arcplan.com.br>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-24 10:00-0500\n"
-"PO-Revision-Date: 2013-09-08 18:30+0000\n"
-"Last-Translator: MarcosBR <mrosa@arcplan.com.br>\n"
-"Language-Team: Portuguese (http://www.transifex.com/projects/p/geonode/"
-"language/pt/)\n"
-"Language: pt\n"
+"PO-Revision-Date: 2014-11-11 22:40+0000\n"
+"Last-Translator: ingenieroariel <ingenieroariel@gmail.com>\n"
+"Language-Team: Portuguese (http://www.transifex.com/projects/p/geonode/language/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: pt\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: static/geonode/js/extjs/GeoNode.js:72
@@ -78,17 +79,16 @@ msgid "Zip Archives"
 msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:249
-#, fuzzy
 msgid "Layer Info"
-msgstr "Camadas"
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:250
 msgid "Edit Metadata"
-msgstr ""
+msgstr "Editar Metadados"
 
 #: static/geonode/js/upload/LayerInfo.js:251
 msgid "Manage Styles"
-msgstr ""
+msgstr "Gerenciar Estilos"
 
 #: static/geonode/js/upload/LayerInfo.js:253
 msgid "Your layer was successfully uploaded"
@@ -113,9 +113,8 @@ msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:329
 #: static/geonode/js/upload/LayerInfo.js:414
-#, fuzzy
 msgid "Unexpected Error"
-msgstr "Erro na Conexão"
+msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:345
 msgid "Performing GeoServer Config Step"
@@ -134,9 +133,8 @@ msgid "Select or create a Geogit repository."
 msgstr ""
 
 #: static/geonode/js/upload/LayerInfo.js:542
-#, fuzzy
 msgid "Remove"
-msgstr "Excluir Camada"
+msgstr ""
 
 #: static/geonode/js/upload/upload.js:126
 #, c-format
@@ -332,9 +330,7 @@ msgstr "Pequeno"
 msgid ""
 "Error contacting server.\n"
 " Please check the url and try again."
-msgstr ""
-"Erro conectando o servidor.\n"
-"Por favor, verifique o endereço e tente novamente."
+msgstr "Erro conectando o servidor.\nPor favor, verifique o endereço e tente novamente."
 
 #: templates/lang.js:69
 msgid "Layer Properties"
@@ -360,8 +356,7 @@ msgstr "Alterar para o Google Earth 3D Viewer"
 msgid ""
 "The map that you are trying to load does not exist.  Creating a new map "
 "instead."
-msgstr ""
-"O mapa que você está tentando carregar não existe mais. Criando um novo."
+msgstr "O mapa que você está tentando carregar não existe mais. Criando um novo."
 
 #: templates/lang.js:75
 msgid "Unknown Map"
@@ -435,9 +430,7 @@ msgstr "Sem Fundo"
 msgid ""
 "Your map is ready to be published to the web!  Simply copy the following "
 "HTML to embed the map in your website:"
-msgstr ""
-"Seu mapa está pronto para ser publicado na rede! Simplesmente copie o "
-"caminha a seguir e adicione ao ser website:"
+msgstr "Seu mapa está pronto para ser publicado na rede! Simplesmente copie o caminha a seguir e adicione ao ser website:"
 
 #: templates/lang.js:136 templates/lang.js.c:202
 msgid "Abstract:"
