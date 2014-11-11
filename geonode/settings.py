@@ -91,6 +91,13 @@ LANGUAGES = (
     ('ru', 'Russian'),
     ('vi', 'Vietnamese'),
     ('ko', '한국어'),
+    ('am', 'Amharic'),
+    ('km', 'Khmer'),
+    ('pl', 'Polish'),
+    ('sv', 'Swedish'),
+    ('th', 'Thai'),
+    ('uk', 'Ukranian'),
+
     # ('tl', 'Tagalog'),
 )
 
