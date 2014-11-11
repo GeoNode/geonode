@@ -1,13 +1,27 @@
 {% load staticfiles %}
 {% if DEBUG_STATIC %}
-<script src="{% static "lib/js/bootstrap-datepicker.js" %}" type="text/javascript"></script>
+<script src="{% static "lib/js/bootstrap-datetimepicker.min.js" %}" type="text/javascript"></script>
 {% endif %}
 <script type="text/javascript">
 {% autoescape off %}
     $(function() {
-      $(".datepicker").datepicker();
+      var pickerOptions = {
+          format: 'YYYY-MM-DD hh:mm',
+          pickDate: true,
+          pickTime: true,
+          language: 'en',
+          icons: {
+              time: 'fa fa-clock-o',
+              date: 'fa fa-calendar',
+              up: 'fa fa-chevron-up',
+              down: 'fa fa-chevron-down'
+          }
+      };
+      $('#id_resource-date_picker').datetimepicker(pickerOptions);
+      $('#id_resource-temporal_extent_start_picker').datetimepicker(pickerOptions);
+      $('#id_resource-temporal_extent_end_picker').datetimepicker(pickerOptions);
     });
-    
+
     $('.modal-forms').css('max-height', '500px').css('overflow-y', 'scroll');    
     $('.modal-cloose-btn').css('margin','20px');
 
