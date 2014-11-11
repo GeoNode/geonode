@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-24 09:59-0500\n"
+"POT-Creation-Date: 2014-11-11 18:20-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 msgid "Invalid permission level."
 msgstr "مستوى إذن غير صالح."
 
-#: utils.py:461
+#: utils.py:465
 msgid "Permission Denied"
 msgstr "إذن مرفوض"
 
@@ -1104,221 +1104,228 @@ msgstr "التصنيف"
 msgid "Category is required."
 msgstr "مطلوب الفئة."
 
-#: base/models.py:41 services/models.py:85
+#: base/models.py:40 services/models.py:85
 msgid "function performed by the responsible party"
 msgstr "الوظيفة التي تؤديها الجهة المسؤولة"
 
-#: base/models.py:232
+#: base/models.py:229
 msgid "reference date for the cited resource"
 msgstr "التاريخ المرجعي للمورد استشهد"
 
-#: base/models.py:233
+#: base/models.py:230
 msgid "identification of when a given event occurred"
 msgstr "تحديد عند وقوع حدث معين"
 
-#: base/models.py:234
+#: base/models.py:231
 msgid "version of the cited resource"
 msgstr "نسخة من الموارد المذكورة"
 
-#: base/models.py:235
+#: base/models.py:232
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "الموجز السردي موجز لمحتوى المصدر (ق)"
 
-#: base/models.py:236
+#: base/models.py:233
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "ملخص للنوايا التي تم تطوير الموارد (ق)"
 
-#: base/models.py:237
+#: base/models.py:234
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr "التردد الذي يتم إجراء التعديلات والحذف لبيانات بعد إنتاجه لأول مرة"
 
-#: base/models.py:239
+#: base/models.py:236
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
-msgstr "الكلمة المستخدمة بشكل شائع (ق) أو كلمة رسمية (ق) أو عبارة (ق) تستخدم لوصف موضوع (الفضاء أو مفصولة بفواصل"
+msgstr ""
+"الكلمة المستخدمة بشكل شائع (ق) أو كلمة رسمية (ق) أو عبارة (ق) تستخدم لوصف "
+"موضوع (الفضاء أو مفصولة بفواصل"
 
-#: base/models.py:241
+#: base/models.py:238
 msgid "keyword identifies a location"
 msgstr "الكلمة تحدد مكان"
 
-#: base/models.py:242
+#: base/models.py:239
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "القيد (ق) المفروضة على وصول أو استخدام البيانات."
 
-#: base/models.py:243
+#: base/models.py:240
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
-msgstr "غيرها من القيود والمتطلبات القانونية للوصول إلى واستخدام الموارد أو الفوقية"
+msgstr ""
+"غيرها من القيود والمتطلبات القانونية للوصول إلى واستخدام الموارد أو الفوقية"
 
-#: base/models.py:245
+#: base/models.py:242
 msgid "license of the dataset"
 msgstr "ترخيص مجموعة البيانات"
 
-#: base/models.py:246
+#: base/models.py:243
 msgid "language used within the dataset"
 msgstr "اللغة المستخدمة في مجموعة البيانات"
 
-#: base/models.py:247
+#: base/models.py:244
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
-msgstr "رفيع المستوى تصنيف مواضيعي البيانات الجغرافية للمساعدة في تجميع وبحث مجموعات البيانات الجغرافية المتاحة."
+msgstr ""
+"رفيع المستوى تصنيف مواضيعي البيانات الجغرافية للمساعدة في تجميع وبحث مجموعات "
+"البيانات الجغرافية المتاحة."
 
-#: base/models.py:249
+#: base/models.py:246
 msgid "method used to represent geographic information in the dataset."
 msgstr "الطريقة المستخدمة لتمثيل المعلومات الجغرافية في مجموعة البيانات."
 
-#: base/models.py:250
+#: base/models.py:247
 msgid "time period covered by the content of the dataset (start)"
 msgstr "الفترة الزمنية التي المحتوى من مجموعة البيانات المشمولة (البدء)"
 
-#: base/models.py:251
+#: base/models.py:248
 msgid "time period covered by the content of the dataset (end)"
 msgstr "الفترة الزمنية التي المحتوى من مجموعة البيانات (النهاية) تغطيها"
 
-#: base/models.py:252
+#: base/models.py:249
 msgid ""
 "information about on-line sources from which the dataset, specification, or "
 "community profile name and extended metadata elements can be obtained"
-msgstr "معلومات عن مصادر على الانترنت التي يمكن الحصول على مجموعة البيانات، والمواصفات، أو اسم ملف تعريف المجتمع والعناصر الوصفية طويلة"
+msgstr ""
+"معلومات عن مصادر على الانترنت التي يمكن الحصول على مجموعة البيانات، "
+"والمواصفات، أو اسم ملف تعريف المجتمع والعناصر الوصفية طويلة"
 
-#: base/models.py:254
+#: base/models.py:251
 msgid "detailed text description of what the online resource is/does"
 msgstr "وصف مفصل لما الموارد على الانترنت هو / لا"
 
-#: base/models.py:255
+#: base/models.py:252
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "التفسير العام لمعرفة المنتج البيانات حول نسب مجموعة بيانات"
 
-#: base/models.py:261
+#: base/models.py:258
 msgid "title"
 msgstr "title"
 
-#: base/models.py:261
+#: base/models.py:258
 msgid "name by which the cited resource is known"
 msgstr "الاسم الذي استشهد هو مورد معروف"
 
-#: base/models.py:262
+#: base/models.py:259
 msgid "date"
 msgstr "date"
 
-#: base/models.py:263
+#: base/models.py:260
 msgid "date type"
 msgstr "نوع التاريخ"
 
-#: base/models.py:265
+#: base/models.py:262
 msgid "edition"
 msgstr "طبعة"
 
-#: base/models.py:266
+#: base/models.py:263
 msgid "abstract"
 msgstr "ملخص"
 
-#: base/models.py:267
+#: base/models.py:264
 msgid "purpose"
 msgstr "الغرض"
 
-#: base/models.py:268
+#: base/models.py:265
 msgid "maintenance frequency"
 msgstr "تردد الصيانة"
 
-#: base/models.py:271 groups/models.py:41 people/models.py:86
+#: base/models.py:268 groups/models.py:41 people/models.py:88
 msgid "keywords"
 msgstr "الكلمات المفتاحية"
 
-#: base/models.py:272
+#: base/models.py:269
 msgid "keywords region"
 msgstr "المنطقة الكلمات الرئيسية"
 
-#: base/models.py:275
+#: base/models.py:272
 msgid "restrictions"
 msgstr "قيود"
 
-#: base/models.py:279
+#: base/models.py:276
 msgid "restrictions other"
 msgstr "قيود أخرى"
 
-#: base/models.py:284
+#: base/models.py:281
 msgid "language"
 msgstr "لغة"
 
-#: base/models.py:295
+#: base/models.py:292
 msgid "temporal extent start"
 msgstr "مدى الزمني البداية"
 
-#: base/models.py:297
+#: base/models.py:294
 msgid "temporal extent end"
 msgstr "نهاية المدى الزمني"
 
-#: base/models.py:300
+#: base/models.py:297
 msgid "supplemental information"
 msgstr "معلومات إضافية"
 
-#: base/models.py:301
+#: base/models.py:298
 msgid "any other descriptive information about the dataset"
 msgstr "أي معلومات وصفية أخرى حول مجموعة البيانات"
 
-#: base/models.py:304
+#: base/models.py:301
 msgid "distribution URL"
 msgstr "URL التوزيع"
 
-#: base/models.py:306
+#: base/models.py:303
 msgid "distribution description"
 msgstr "وصف التوزيع"
 
-#: base/models.py:310
+#: base/models.py:307
 msgid "data quality statement"
 msgstr "بيان نوعية البيانات"
 
-#: base/models.py:325
+#: base/models.py:322
 msgid "CSW typename"
 msgstr "لجنة وضع المرأة typename"
 
-#: base/models.py:327
+#: base/models.py:324
 msgid "CSW schema"
 msgstr "مخطط جنة وضع المرأة"
 
-#: base/models.py:332
+#: base/models.py:329
 msgid "CSW source"
 msgstr "مصدر جنة وضع المرأة"
 
-#: base/models.py:333
+#: base/models.py:330
 msgid "CSW insert date"
 msgstr "لجنة وضع المرأة أدخل التاريخ"
 
-#: base/models.py:334
+#: base/models.py:331
 msgid "CSW type"
 msgstr "نوع جنة وضع المرأة"
 
-#: base/models.py:335
+#: base/models.py:332
 msgid "CSW anytext"
 msgstr "لجنة وضع المرأة anytext"
 
-#: base/models.py:336
+#: base/models.py:333
 msgid "CSW WKT geometry"
 msgstr "هندسة جنة وضع المرأة WKT"
 
-#: base/models.py:349
+#: base/models.py:346
 msgid "Should this resource be advertised in home page?"
 msgstr "يجب أن يتم الإعلان عن هذا المورد في الصفحة الرئيسية؟"
 
-#: base/models.py:663
-msgid "For example \"kml\""
-msgstr "على سبيل المثال \ "KML \""
-
 #: base/models.py:665
-msgid "For example \"View in Google Earth\""
-msgstr "على سبيل المثال \ "عرض في Google Earth \""
+msgid "For example \"kml\""
+msgstr "على سبيل المثال \"KML \""
 
-#: base/models.py:666
+#: base/models.py:667
+msgid "For example \"View in Google Earth\""
+msgstr "على سبيل المثال \"عرض في Google Earth \""
+
+#: base/models.py:668
 msgid "For example \"text/xml\""
-msgstr "على سبيل المثال \ "نص / XML \""
+msgstr "على سبيل المثال \"نص / XML \""
 
 #: base/templates/base/_resourcebase_contact_snippet.html:3
 #: templates/500.html:184 templates/base.html:174
@@ -1366,7 +1373,7 @@ msgid "Date"
 msgstr "التاريخ "
 
 #: base/templates/base/resourcebase_info_panel.html:34
-#: layers/templates/layers/layer_detail.html:288
+#: layers/templates/layers/layer_detail.html:300
 msgid "Type"
 msgstr "نوع"
 
@@ -1560,118 +1567,117 @@ msgstr "تحميل"
 msgid "You do not have permission to view this document"
 msgstr "لم يكن لديك إذن لعرض هذا المستند"
 
-#: documents/templates/documents/document_detail.html:40
+#: documents/templates/documents/document_detail.html:42
 msgid "External Resource"
 msgstr "الموارد الخارجية"
 
-#: documents/templates/documents/document_detail.html:45
+#: documents/templates/documents/document_detail.html:48
 #: layers/templates/layers/_actions.html:3
 #: maps/templates/maps/map_detail.html:35 templates/_actions.html:3
 msgid "Info"
 msgstr "معلومات"
 
-#: documents/templates/documents/document_detail.html:47
+#: documents/templates/documents/document_detail.html:50
 #: layers/templates/layers/_actions.html:6
 #: maps/templates/maps/map_detail.html:38 templates/_actions.html:5
 msgid "Share"
 msgstr "مشاركة"
 
-#: documents/templates/documents/document_detail.html:49
+#: documents/templates/documents/document_detail.html:52
 #: layers/templates/layers/_actions.html:8
 #: maps/templates/maps/map_detail.html:41
 msgid "Ratings"
 msgstr "تقييم"
 
-#: documents/templates/documents/document_detail.html:50
+#: documents/templates/documents/document_detail.html:53
 #: layers/templates/layers/_actions.html:9
 #: maps/templates/maps/map_detail.html:42 templates/_comments.html:12
 msgid "Comments"
 msgstr "التعليقات"
 
-#: documents/templates/documents/document_detail.html:68
+#: documents/templates/documents/document_detail.html:71
 msgid "Rate this document"
 msgstr "قيم هذا المستند"
 
-#: documents/templates/documents/document_detail.html:72
+#: documents/templates/documents/document_detail.html:75
 #: layers/templates/layers/layer_detail.html:113
 #: maps/templates/maps/map_detail.html:58
 msgid "Average Rating"
 msgstr "متوسط ​​التقييم"
 
-#: documents/templates/documents/document_detail.html:86
-#: documents/templates/documents/document_detail.html:88
-#: documents/templates/documents/document_detail.html:90
-#: documents/templates/documents/document_detail.html:101
-#: documents/templates/documents/document_detail.html:126
+#: documents/templates/documents/document_detail.html:91
+#: documents/templates/documents/document_detail.html:93
+#: documents/templates/documents/document_detail.html:95
+#: documents/templates/documents/document_detail.html:107
 msgid "Download Document"
 msgstr "تحميل الوثيقة"
 
-#: documents/templates/documents/document_detail.html:94
-#: layers/templates/layers/layer_detail.html:153
-#: layers/templates/layers/layer_detail.html:161
+#: documents/templates/documents/document_detail.html:100
+#: layers/templates/layers/layer_detail.html:156
+#: layers/templates/layers/layer_detail.html:164
 msgid "Download Metadata"
 msgstr "تحميل بيانات ميتا"
 
-#: documents/templates/documents/document_detail.html:111
-#: documents/templates/documents/document_detail.html:136
-#: layers/templates/layers/layer_detail.html:146
-#: layers/templates/layers/layer_detail.html:171
-#: layers/templates/layers/layer_detail.html:203
-#: maps/templates/maps/map_detail.html:92
-#: maps/templates/maps/map_detail.html:120
+#: documents/templates/documents/document_detail.html:117
+#: documents/templates/documents/document_detail.html:147
+#: layers/templates/layers/layer_detail.html:149
+#: layers/templates/layers/layer_detail.html:174
+#: layers/templates/layers/layer_detail.html:216
+#: maps/templates/maps/map_detail.html:95
+#: maps/templates/maps/map_detail.html:127
 #: templates/_bulk_permissions_form.html:19
 msgid "Close"
 msgstr "إغلاق"
 
-#: documents/templates/documents/document_detail.html:119
+#: documents/templates/documents/document_detail.html:124
+#: documents/templates/documents/document_detail.html:131
 msgid "Edit Document"
 msgstr "تحرير المستند"
 
-#: documents/templates/documents/document_detail.html:130
-#: layers/templates/layers/layer_detail.html:193
+#: documents/templates/documents/document_detail.html:136
+#: layers/templates/layers/layer_detail.html:196
 msgid "Edit Metadata"
 msgstr "تحرير البيانات الوصفية"
 
-#: documents/templates/documents/document_detail.html:131
+#: documents/templates/documents/document_detail.html:139
 msgid "Replace this Document"
 msgstr "استبدال هذه الوثيقة"
 
-#: documents/templates/documents/document_detail.html:132
+#: documents/templates/documents/document_detail.html:142
 msgid "Remove this Document"
 msgstr "إزالة هذه الوثيقة"
 
-#: documents/templates/documents/document_detail.html:144
+#: documents/templates/documents/document_detail.html:154
 msgid "Resource using this document"
 msgstr "الموارد باستخدام هذا المستند"
 
-#: documents/templates/documents/document_detail.html:146
+#: documents/templates/documents/document_detail.html:156
 msgid "List of resources using this document:"
 msgstr "قائمة الموارد باستخدام هذه الوثيقة:"
 
-#: documents/templates/documents/document_detail.html:150
+#: documents/templates/documents/document_detail.html:160
 msgid "This document is related to a "
 msgstr "وترتبط هذه الوثيقة إلى "
 
-#: documents/templates/documents/document_detail.html:153
+#: documents/templates/documents/document_detail.html:163
 msgid "This document is not related to any maps or layers"
 msgstr "لا تتعلق هذه الوثيقة إلى أي خرائط أو طبقات"
 
-#: documents/templates/documents/document_detail.html:160
+#: documents/templates/documents/document_detail.html:170
 #: documents/templates/documents/document_upload.html:32
 #: groups/templates/groups/group_detail.html:65
-#: layers/templates/layers/layer_detail.html:277
+#: layers/templates/layers/layer_detail.html:289
 #: layers/templates/layers/layer_replace.html:94
 #: layers/templates/upload/layer_upload.html:91
-#: maps/templates/maps/map_detail.html:167 people/admin.py:55
-#: templates/_permissions_form.html:9
+#: maps/templates/maps/map_detail.html:173 people/admin.py:55
 msgid "Permissions"
 msgstr "أذونات"
 
-#: documents/templates/documents/document_detail.html:161
+#: documents/templates/documents/document_detail.html:171
 msgid "Click the button below to change the permissions of this document."
 msgstr "انقر فوق الزر أدناه لتغيير الأذونات من هذه الوثيقة."
 
-#: documents/templates/documents/document_detail.html:162
+#: documents/templates/documents/document_detail.html:172
 msgid "Change Document Permissions"
 msgstr "تغيير صلاحيات الوثيقة"
 
@@ -1692,7 +1698,7 @@ msgid ""
 "\n"
 "        Editing details for %(document_title)s\n"
 "      "
-msgstr "\ ن التفاصيل التحرير ل٪ (DOCUMENT_TITLE) S \ ن      "
+msgstr "ن التفاصيل التحرير ل٪ (DOCUMENT_TITLE) S  ن      "
 
 #: documents/templates/documents/document_metadata.html:22
 #: layers/templates/layers/layer_metadata.html:23
@@ -1719,7 +1725,7 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(document_title)s?\n"
 "        "
-msgstr "\ ن هل أنت متأكد أنك تريد إزالة٪ (DOCUMENT_TITLE) ق؟ \ ن        "
+msgstr " ن هل أنت متأكد أنك تريد إزالة٪ (DOCUMENT_TITLE) ق؟  ن        "
 
 #: documents/templates/documents/document_remove.html:18
 #: groups/templates/groups/group_remove.html:19
@@ -1804,20 +1810,25 @@ msgstr "KML"
 msgid "Tiles"
 msgstr "البلاط"
 
-#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:212
+#: geoserver/signals.py:385 layers/templates/layers/layer_detail.html:224
 #: services/views.py:1265
 msgid "Legend"
 msgstr "تفسيرات"
 
-#: geoserver/signals.py:507 layers/utils.py:523
+#: geoserver/signals.py:507 layers/utils.py:528
 msgid "Remote Thumbnail"
 msgstr "صورة مصغرة عن بعد"
 
-#: geoserver/signals.py:542 layers/utils.py:558
+#: geoserver/signals.py:542 layers/utils.py:563
 msgid "Thumbnail"
 msgstr "صورة مصغرة"
 
-#: geoserver/views.py:376 geoserver/views.py:431
+#: geoserver/views.py:338
+#, fuzzy
+msgid "You don't have permissions to change style for this layer"
+msgstr "لم يكن لديك أذونات لهذه الطبقة."
+
+#: geoserver/views.py:425 geoserver/views.py:480
 msgid "Bad HTTP Authorization Credentials."
 msgstr "وثائق التفويض التفويض HTTP سيئة."
 
@@ -1877,13 +1888,19 @@ msgid ""
 "(invite-only):Any registered user can view the group.  Only invited users "
 "can join.<br>Private: Registered users cannot see any details about the "
 "group, including membership.  Only invited users can join."
-msgstr "الجمهور: يمكن لأي مستخدم مسجل عرض والانضمام إلى جماعة العامة <BR> العامة (دعوة فقط): يمكن لأي مستخدم مسجل عرض المجموعة. يمكن فقط للمستخدمين دعوة الانضمام <BR> الخاص: لا يمكن للمستخدمين المسجلين ترى أي تفاصيل حول المجموعة، بما في ذلك العضوية. يمكن فقط للمستخدمين دعوة الانضمام."
+msgstr ""
+"الجمهور: يمكن لأي مستخدم مسجل عرض والانضمام إلى جماعة العامة <BR> العامة "
+"(دعوة فقط): يمكن لأي مستخدم مسجل عرض المجموعة. يمكن فقط للمستخدمين دعوة "
+"الانضمام <BR> الخاص: لا يمكن للمستخدمين المسجلين ترى أي تفاصيل حول المجموعة، "
+"بما في ذلك العضوية. يمكن فقط للمستخدمين دعوة الانضمام."
 
 #: groups/models.py:27
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
-msgstr "البريد الإلكتروني المستخدم في الاتصال واحد أو كل أعضاء المجموعة، مثل القائمة البريدية، والبريد الإلكتروني مشتركة، أو مجموعة الصرف."
+msgstr ""
+"البريد الإلكتروني المستخدم في الاتصال واحد أو كل أعضاء المجموعة، مثل القائمة "
+"البريدية، والبريد الإلكتروني مشتركة، أو مجموعة الصرف."
 
 #: groups/models.py:36
 msgid "email"
@@ -1983,7 +2000,7 @@ msgid ""
 "\n"
 "            This group is <strong>%(access)s</strong>.\n"
 "          "
-msgstr "\ ن هذه المجموعة على <strong>٪ (الوصول) S </ قوي>. \ ن          "
+msgstr " ن هذه المجموعة على <strong>٪ (الوصول) S </ قوي>.  ن          "
 
 #: groups/templates/groups/group_detail.html:71
 msgid "Anyone may join this group."
@@ -2049,7 +2066,7 @@ msgid ""
 "\n"
 "          Are you sure you want to remove the group: %(group_title)s?\n"
 "        "
-msgstr "\ ن هل أنت متأكد أنك تريد إزالة المجموعة:٪ (group_title) S \ ن        "
+msgstr " ن هل أنت متأكد أنك تريد إزالة المجموعة:٪ (group_title) S  ن        "
 
 #: groups/templates/groups/group_remove_maps_data.html:6
 msgid "Remove Maps/Data from Group"
@@ -2075,147 +2092,149 @@ msgstr "النسخة الحزب الديمقراطي اليساري"
 msgid "sld url"
 msgstr "رابط الحزب الديمقراطي اليساري"
 
-#: layers/models.py:280
+#: layers/models.py:278
 msgid "attribute name"
 msgstr "اسم السمة"
 
-#: layers/models.py:281
+#: layers/models.py:279
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "اسم السمة كما المخزنة في بحلقات / قاعدة البيانات المكانية"
 
-#: layers/models.py:287
+#: layers/models.py:285
 msgid "attribute description"
 msgstr "السمة وصف"
 
-#: layers/models.py:288
+#: layers/models.py:286
 msgid "description of attribute to be used in metadata"
 msgstr "وصف السمة التي ستستخدم في الفوقية"
 
-#: layers/models.py:293
+#: layers/models.py:291
 msgid "attribute label"
 msgstr "التسمية السمة"
 
-#: layers/models.py:294
+#: layers/models.py:292
 msgid "title of attribute as displayed in GeoNode"
 msgstr "عنوان السمة كما هو معروض في GeoNode"
 
-#: layers/models.py:300
+#: layers/models.py:298
 msgid "attribute type"
 msgstr "نوع السمة"
 
-#: layers/models.py:301
+#: layers/models.py:299
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "نوع بيانات السمة (عدد صحيح، سلسلة، والهندسة، وغيرها)"
 
-#: layers/models.py:308
+#: layers/models.py:306
 msgid "visible?"
 msgstr "مرئية؟"
 
-#: layers/models.py:309
+#: layers/models.py:307
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "تحدد ما إذا كان ينبغي عرض السمة في تحديد النتائج"
 
-#: layers/models.py:312
+#: layers/models.py:310
 msgid "display order"
 msgstr "ترتيب العرض"
 
-#: layers/models.py:313
+#: layers/models.py:311
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "يحدد الترتيب الذي يجب أن يتم عرض السمة في تحديد النتائج"
 
-#: layers/models.py:318
+#: layers/models.py:316
 msgid "count"
 msgstr "عد"
 
-#: layers/models.py:319
+#: layers/models.py:317
 msgid "count value for this field"
 msgstr "عد قيمة لهذا الحقل"
 
-#: layers/models.py:322
+#: layers/models.py:320
 msgid "min"
 msgstr "دقيقة"
 
-#: layers/models.py:323
+#: layers/models.py:321
 msgid "minimum value for this field"
 msgstr "قيمة الحد الأدنى لهذا الحقل"
 
-#: layers/models.py:330
+#: layers/models.py:328
 msgid "max"
 msgstr "ماكس"
 
-#: layers/models.py:331
+#: layers/models.py:329
 msgid "maximum value for this field"
 msgstr "القيمة القصوى لهذا الحقل"
 
-#: layers/models.py:338
+#: layers/models.py:336
 msgid "average"
 msgstr "متوسط"
 
-#: layers/models.py:339
+#: layers/models.py:337
 msgid "average value for this field"
 msgstr "متوسط ​​قيمة لهذا الحقل"
 
-#: layers/models.py:346
+#: layers/models.py:344
 msgid "median"
 msgstr "متوسط"
 
-#: layers/models.py:347
+#: layers/models.py:345
 msgid "median value for this field"
 msgstr "متوسط ​​قيمة لهذا الحقل"
 
-#: layers/models.py:354
+#: layers/models.py:352
 msgid "standard deviation"
 msgstr "الانحراف المعياري"
 
-#: layers/models.py:355
+#: layers/models.py:353
 msgid "standard deviation for this field"
 msgstr "الانحراف المعياري لهذا الحقل"
 
-#: layers/models.py:362
+#: layers/models.py:360
 msgid "sum"
 msgstr "مجموع"
 
-#: layers/models.py:363
+#: layers/models.py:361
 msgid "sum value for this field"
 msgstr "قيمة المبلغ لهذا الحقل"
 
-#: layers/models.py:370
+#: layers/models.py:368
 msgid "unique values for this field"
 msgstr "قيم فريدة لهذا الحقل"
 
-#: layers/models.py:375
+#: layers/models.py:373
 msgid "last modified"
 msgstr "آخر تعديل"
 
-#: layers/models.py:377
+#: layers/models.py:375
 msgid "date when attribute statistics were last updated"
 msgstr "تاريخ عندما كانت الإحصاءات السمة آخر تحديث"
 
-#: layers/views.py:60
+#: layers/views.py:59
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
-msgstr "حدث خطأ أثناء محاولة تحميل البيانات الخاصة بك. يرجى المحاولة مرة أخرى، أو الاتصال والمسؤول إذا استمرت المشكلة."
+msgstr ""
+"حدث خطأ أثناء محاولة تحميل البيانات الخاصة بك. يرجى المحاولة مرة أخرى، أو "
+"الاتصال والمسؤول إذا استمرت المشكلة."
 
-#: layers/views.py:63
+#: layers/views.py:62
 msgid "You are not permitted to delete this layer"
 msgstr "لا يسمح لك لحذف هذه الطبقة"
 
-#: layers/views.py:64
+#: layers/views.py:63
 msgid "You do not have permissions for this layer."
 msgstr "لم يكن لديك أذونات لهذه الطبقة."
 
-#: layers/views.py:65
+#: layers/views.py:64
 msgid "You are not permitted to modify this layer"
 msgstr "لا يسمح لك لتعديل هذه الطبقة"
 
-#: layers/views.py:67
+#: layers/views.py:66
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "لا يسمح لك لتعديل هذه الطبقة الفوقية"
 
-#: layers/views.py:68
+#: layers/views.py:67
 msgid "You are not permitted to view this layer"
 msgstr "لا يسمح لك بمشاهدة هذه الطبقة"
 
@@ -2234,8 +2253,8 @@ msgid "Create a map"
 msgstr "إنشاء خريطة"
 
 #: layers/templates/layers/_layer_list_item.html:48
-#: layers/templates/layers/layer_detail.html:128
-#: layers/templates/layers/layer_detail.html:136
+#: layers/templates/layers/layer_detail.html:130
+#: layers/templates/layers/layer_detail.html:139
 msgid "Download Layer"
 msgstr "تحميل طبقة"
 
@@ -2285,87 +2304,88 @@ msgstr "الانحراف المعياري"
 msgid "Rate this layer"
 msgstr "قيم هذا طبقة"
 
-#: layers/templates/layers/layer_detail.html:180
-#: layers/templates/layers/layer_detail.html:189
+#: layers/templates/layers/layer_detail.html:182
+#: layers/templates/layers/layer_detail.html:191
 msgid "Edit Layer"
 msgstr "تحرير طبقة"
 
-#: layers/templates/layers/layer_detail.html:195
+#: layers/templates/layers/layer_detail.html:201
 #: layers/templates/layers/layer_style_manage.html:14
 msgid "Manage Styles"
 msgstr "إدارة أنماط"
 
-#: layers/templates/layers/layer_detail.html:196
+#: layers/templates/layers/layer_detail.html:203
 msgid "Edit Styles"
 msgstr "تحرير أنماط"
 
-#: layers/templates/layers/layer_detail.html:198
+#: layers/templates/layers/layer_detail.html:208
 msgid "Replace this Layer"
 msgstr "استبدال هذه الطبقة"
 
-#: layers/templates/layers/layer_detail.html:199
+#: layers/templates/layers/layer_detail.html:211
 msgid "Remove this Layer"
 msgstr "إزالة هذه الطبقة"
 
-#: layers/templates/layers/layer_detail.html:222
+#: layers/templates/layers/layer_detail.html:234
 msgid "Maps using this layer"
 msgstr "خرائط باستخدام هذه الطبقة"
 
-#: layers/templates/layers/layer_detail.html:224
+#: layers/templates/layers/layer_detail.html:236
 msgid "List of maps using this layer:"
 msgstr "قائمة الخرائط باستخدام هذه الطبقة:"
 
-#: layers/templates/layers/layer_detail.html:230
+#: layers/templates/layers/layer_detail.html:242
 msgid "This layer is not currently used in any maps."
 msgstr "لا تستخدم هذه الطبقة في الوقت الراهن في أي خرائط."
 
-#: layers/templates/layers/layer_detail.html:235
+#: layers/templates/layers/layer_detail.html:247
 msgid "Create a map using this layer"
 msgstr "إنشاء خريطة باستخدام هذه الطبقة"
 
-#: layers/templates/layers/layer_detail.html:236
+#: layers/templates/layers/layer_detail.html:248
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "انقر فوق الزر أدناه لتوليد خريطة جديدة مبنية على هذه الطبقة."
 
-#: layers/templates/layers/layer_detail.html:237
+#: layers/templates/layers/layer_detail.html:249
 msgid "Create a Map"
 msgstr "إنشاء خريطة"
 
-#: layers/templates/layers/layer_detail.html:242
+#: layers/templates/layers/layer_detail.html:254
 msgid "Documents related to this layer"
 msgstr "الوثائق المتصلة بهذه الطبقة"
 
-#: layers/templates/layers/layer_detail.html:243
+#: layers/templates/layers/layer_detail.html:255
 msgid "List of documents related to this layer:"
 msgstr "قائمة الوثائق ذات الصلة لهذه الطبقة:"
 
-#: layers/templates/layers/layer_detail.html:254
+#: layers/templates/layers/layer_detail.html:266
 msgid "Styles"
 msgstr "الأنماط"
 
-#: layers/templates/layers/layer_detail.html:255
+#: layers/templates/layers/layer_detail.html:267
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
-msgstr "وترتبط الأنماط التالية مع هذه الطبقة. اختيار نمط لمشاهدته في المعاينة خريطة."
+msgstr ""
+"وترتبط الأنماط التالية مع هذه الطبقة. اختيار نمط لمشاهدته في المعاينة خريطة."
 
-#: layers/templates/layers/layer_detail.html:268
+#: layers/templates/layers/layer_detail.html:280
 msgid "No styles associated with this layer"
 msgstr "لا توجد أنماط المرتبطة بهذه الطبقة"
 
-#: layers/templates/layers/layer_detail.html:278
+#: layers/templates/layers/layer_detail.html:290
 msgid "Click the button below to change the permissions of this layer."
 msgstr "انقر فوق الزر أدناه لتغيير الأذونات من هذه الطبقة."
 
-#: layers/templates/layers/layer_detail.html:279
+#: layers/templates/layers/layer_detail.html:291
 msgid "Change Layer Permissions"
 msgstr "ضوابط تغيير طبقة"
 
-#: layers/templates/layers/layer_detail.html:286
+#: layers/templates/layers/layer_detail.html:298
 msgid "External service layer"
 msgstr "طبقة الخدمة الخارجية"
 
-#: layers/templates/layers/layer_detail.html:287
+#: layers/templates/layers/layer_detail.html:299
 msgid "Source"
 msgstr "مصدر"
 
@@ -2387,7 +2407,7 @@ msgid ""
 "\n"
 "        Editing details for %(layer_title)s\n"
 "      "
-msgstr "\ ن التفاصيل التحرير ل٪ (layer_title) S \ ن      "
+msgstr " ن التفاصيل التحرير ل٪ (layer_title) S  ن      "
 
 #: layers/templates/layers/layer_metadata.html:17
 msgid ""
@@ -2396,7 +2416,10 @@ msgid ""
 "        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
 "Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr "ملاحظة: تم بالسكان الفوقية الاصلي هذه الطبقة عن طريق استيراد ملف XML الفوقية \ ن \ يدعم البيانات الوصفية استيراد GeoNode في مجموعة فرعية من ISO، FGDC، وعناصر البيانات الوصفية دبلن كور ن بعض الفوقية الأصلي قد فقدت."
+msgstr ""
+"ملاحظة: تم بالسكان الفوقية الاصلي هذه الطبقة عن طريق استيراد ملف XML "
+"الفوقية  ن  يدعم البيانات الوصفية استيراد GeoNode في مجموعة فرعية من ISO، "
+"FGDC، وعناصر البيانات الوصفية دبلن كور ن بعض الفوقية الأصلي قد فقدت."
 
 #: layers/templates/layers/layer_metadata.html:72
 msgid "Attribute"
@@ -2421,7 +2444,7 @@ msgid ""
 "\n"
 "          Are you sure you want to remove %(layer_title)s?\n"
 "        "
-msgstr "\ ن هل أنت متأكد أنك تريد إزالة٪ (layer_title) ق؟ \ ن        "
+msgstr " ن هل أنت متأكد أنك تريد إزالة٪ (layer_title) ق؟  ن        "
 
 #: layers/templates/layers/layer_remove.html:25
 msgid "This action affects the following maps:"
@@ -2514,7 +2537,9 @@ msgid ""
 "      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
 "%(layer_title)s</a>\n"
 "    "
-msgstr "\ ن إدارة الأنماط المتاحة لل<a href=\"/layers/٪(layer_title)s\">٪ (layer_title) S </A> \ ن    "
+msgstr ""
+" ن إدارة الأنماط المتاحة لل<a href=\"/layers/٪(layer_title)s\">٪ "
+"(layer_title) S </A>  ن    "
 
 #: layers/templates/layers/layer_style_manage.html:26
 msgid "Layer Default Style"
@@ -2528,7 +2553,9 @@ msgstr "الأساليب المتاحة"
 msgid ""
 "Click on an available style in the upper box to assign it to this layer. "
 "Selected styles appear in the lower box."
-msgstr "انقر على أسلوب متاح في المربع العلوي لتعيينه لهذه الطبقة. ويبدو أن الأساليب المختارة في المربع السفلي."
+msgstr ""
+"انقر على أسلوب متاح في المربع العلوي لتعيينه لهذه الطبقة. ويبدو أن الأساليب "
+"المختارة في المربع السفلي."
 
 #: layers/templates/layers/layer_style_manage.html:62
 msgid "Update Available Styles"
@@ -2562,7 +2589,11 @@ msgid ""
 "        <a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
 "        and enter the following:\n"
 "    "
-msgstr "\ ن وتنسيق نظام مرجعي للا يمكن أن تحدد هذه الطبقة \ ن حدد أو أدخل رمز ESPG المناسب لهذه الطبقة تحت \ ن طريقة واحدة للقيام بذلك هو القيام بزيارة و:. \ ن <أ href = و\ "HTTP: / /prj2epsg.org/search \ "الهدف = \" _ \ "> prj2epsg </A> \ n و أدخل ما يلي: \ ن    "
+msgstr ""
+" ن وتنسيق نظام مرجعي للا يمكن أن تحدد هذه الطبقة  ن حدد أو أدخل رمز ESPG "
+"المناسب لهذه الطبقة تحت  ن طريقة واحدة للقيام بذلك هو القيام بزيارة و:.  ن "
+"<أ href = و\"HTTP: / /prj2epsg.org/search \"الهدف = \" _ \"> prj2epsg </A>  "
+"n و أدخل ما يلي:  ن    "
 
 #: layers/templates/upload/layer_upload_crs.html:32
 #: layers/templates/upload/layer_upload_csv.html:49
@@ -2576,7 +2607,9 @@ msgid ""
 "        There is a problem recognizing the projection of this data. Please\n"
 "        reproject this data to a more common projection.\n"
 "        "
-msgstr "\ ن هناك مشكلة الاعتراف إسقاط هذه البيانات. يرجى \ N إعادة إسقاط هذه البيانات إلى إسقاط أكثر شيوعا. \ ن        "
+msgstr ""
+" ن هناك مشكلة الاعتراف إسقاط هذه البيانات. يرجى  N إعادة إسقاط هذه البيانات "
+"إلى إسقاط أكثر شيوعا.  ن        "
 
 #: layers/templates/upload/layer_upload_csv.html:11
 msgid "Geospatial Data"
@@ -2586,14 +2619,19 @@ msgstr "بيانات الجغرافية"
 msgid ""
 "Please indicate which attributes contain the latitude and longitude "
 "coordinates in the CSV data."
-msgstr "يرجى توضيح السمات التي تحتوي على خطوط الطول وإحداثيات خطوط الطول في بيانات CSV."
+msgstr ""
+"يرجى توضيح السمات التي تحتوي على خطوط الطول وإحداثيات خطوط الطول في بيانات "
+"CSV."
 
 #: layers/templates/upload/layer_upload_csv.html:14
 msgid ""
 "With this data, GeoNode was able to guess which attributes contain the\n"
 "latitude and longitude coordinates, but please confirm that the correct\n"
 "attributes are selected below."
-msgstr "مع هذه البيانات، كان قادرا على تخمين السمات التي تحتوي على \ nlatitude إحداثيات الطول والعرض، ولكن الرجاء التأكد من أن يتم اختيار \ nattributes الصحيحة أدناه GeoNode."
+msgstr ""
+"مع هذه البيانات، كان قادرا على تخمين السمات التي تحتوي على  nlatitude "
+"إحداثيات الطول والعرض، ولكن الرجاء التأكد من أن يتم اختيار  nattributes "
+"الصحيحة أدناه GeoNode."
 
 #: layers/templates/upload/layer_upload_csv.html:24
 msgid "Latitude"
@@ -2615,7 +2653,10 @@ msgid ""
 "Please verify that you have two columns in your csv file that can be used "
 "for\n"
 "the latitude and longitude."
-msgstr "لم نكتشف الأعمدة التي يمكن استخدامها لخطوط الطول والعرض. \ n الرجاء التحقق من أن لديك اثنين من الأعمدة في ملف CSV التي يمكن استخدامها لخط العرض \ صفي الطول والعرض."
+msgstr ""
+"لم نكتشف الأعمدة التي يمكن استخدامها لخطوط الطول والعرض.  n الرجاء التحقق من "
+"أن لديك اثنين من الأعمدة في ملف CSV التي يمكن استخدامها لخط العرض  صفي الطول "
+"والعرض."
 
 #: layers/templates/upload/layer_upload_invalid.html:6
 #: layers/templates/upload/no_upload.html:6
@@ -2724,7 +2765,10 @@ msgid ""
 "    attributes are used, the second attribute represents the end of a valid "
 "period for the\n"
 "    feature."
-msgstr "وهناك سمة يمكن أن تدعم حاليا واحدة أو اثنتين سمات الوقت. إذا تم استخدام واحدة \ ن سمة، يعتبر ميزة ذات الصلة على أن نقطة واحدة في الوقت المناسب. إذا استخدمت اثنين \ ن الصفات، تمثل السمة الثانية نهاية فترة صالحة للميزة \ ن."
+msgstr ""
+"وهناك سمة يمكن أن تدعم حاليا واحدة أو اثنتين سمات الوقت. إذا تم استخدام "
+"واحدة  ن سمة، يعتبر ميزة ذات الصلة على أن نقطة واحدة في الوقت المناسب. إذا "
+"استخدمت اثنين  ن الصفات، تمثل السمة الثانية نهاية فترة صالحة للميزة  ن."
 
 #: layers/templates/upload/layer_upload_time.html:114
 msgid "Selecting an Attribute"
@@ -2753,7 +2797,9 @@ msgid ""
 "guess' approach.\n"
 "    The most common formatting flags are:\n"
 "    "
-msgstr "\ n للسمات النص، يمكن للمرء تحديد تنسيق مخصص أو استخدام نهج "أفضل تخمين" \ ن والأعلام التنسيق الأكثر شيوعا هي: \ ن    "
+msgstr ""
+" n للسمات النص، يمكن للمرء تحديد تنسيق مخصص أو استخدام نهج \"أفضل تخمين\"  ن "
+"والأعلام التنسيق الأكثر شيوعا هي:  ن    "
 
 #: layers/templates/upload/layer_upload_time.html:128
 msgid "year"
@@ -2788,11 +2834,13 @@ msgstr "لاحظ أن علامات الاقتباس المفردة تمثل ال
 msgid ""
 "To remove ambiguity, repeat a code to represent the maximum number of digits "
 "- for example yyyy"
-msgstr "لإزالة الغموض، كرر رمز لتمثيل أكبر عدد ممكن من الأرقام - على سبيل المثال س س س س"
+msgstr ""
+"لإزالة الغموض، كرر رمز لتمثيل أكبر عدد ممكن من الأرقام - على سبيل المثال س س "
+"س س"
 
 #: layers/templates/upload/layer_upload_time.html:140
 msgid "The 'best guess' will handle date and optional time variants of"
-msgstr "فإن "أفضل تخمين" التعامل مع التاريخ والوقت الاختياري للمتغيرات"
+msgstr "فإن \"أفضل تخمين\" التعامل مع التاريخ والوقت الاختياري للمتغيرات"
 
 #: layers/templates/upload/layer_upload_time.html:141
 msgid "In terms of the formatting flags noted above, these are"
@@ -2801,7 +2849,9 @@ msgstr "من ناحية الأعلام التنسيق المشار إليه أع
 #: layers/templates/upload/no_upload.html:7
 msgid ""
 "Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
-msgstr "العودة إلى صفحة التحميل في البداية في <span id = \ "الوفاق الوطني \"> 5 </ SPAN> ثواني "
+msgstr ""
+"العودة إلى صفحة التحميل في البداية في <span id = \"الوفاق الوطني \"> 5 </ "
+"SPAN> ثواني "
 
 #: layers/templates/upload/no_upload.html:8
 msgid " Or just go "
@@ -2888,29 +2938,33 @@ msgstr "بارامس مصدر"
 msgid "JSON Configuration"
 msgstr "تكوين جسون"
 
-#: maps/views.py:68
+#: maps/views.py:67
 msgid "You are not permitted to delete this map."
 msgstr "لا يسمح لك لحذف هذه الخريطة."
 
-#: maps/views.py:69
+#: maps/views.py:68
 msgid "You do not have permissions for this map."
 msgstr "لم يكن لديك أذونات لهذه الخريطة."
 
-#: maps/views.py:70
+#: maps/views.py:69
 msgid "You must be logged in to save this map"
 msgstr "يجب أن تكون مسجلا لحفظ هذه الخريطة"
 
-#: maps/views.py:71
+#: maps/views.py:70
 msgid "You are not permitted to save or edit this map."
 msgstr "لا يسمح لك بحفظ أو تعديل هذه الخريطة."
 
-#: maps/views.py:73
+#: maps/views.py:72
 msgid "You are not allowed to modify this map's metadata."
 msgstr "لا يسمح لك لتعديل البيانات الوصفية لهذه الخريطة."
 
-#: maps/views.py:74
+#: maps/views.py:73
 msgid "You are not allowed to view this map."
 msgstr "لا يسمح لك لعرض هذه الخريطة."
+
+#: maps/views.py:74
+msgid "An unknown error has occured."
+msgstr ""
 
 #: maps/views.py:87
 msgid "You are not permitted to modify this object"
@@ -2957,103 +3011,99 @@ msgstr "استكشاف خرائط"
 msgid "Rate this Map"
 msgstr "قيم هذا خريطة"
 
-#: maps/templates/maps/map_detail.html:76
-#: maps/templates/maps/map_detail.html:83
+#: maps/templates/maps/map_detail.html:78
+#: maps/templates/maps/map_detail.html:86
 msgid "Download Map"
 msgstr "تحميل خريطة"
 
-#: maps/templates/maps/map_detail.html:87
+#: maps/templates/maps/map_detail.html:90
 msgid "Download Data Layers"
 msgstr "تحميل طبقات البيانات"
 
-#: maps/templates/maps/map_detail.html:88
+#: maps/templates/maps/map_detail.html:91
 msgid "Download Web Map Context"
 msgstr "تحميل خريطة السياق الويب"
 
-#: maps/templates/maps/map_detail.html:100
-#: maps/templates/maps/map_detail.html:107
+#: maps/templates/maps/map_detail.html:102
+#: maps/templates/maps/map_detail.html:109
 msgid "Edit Map"
 msgstr "تحرير خريطة"
 
-#: maps/templates/maps/map_detail.html:111
+#: maps/templates/maps/map_detail.html:114
 msgid "Edit Map Metadata"
 msgstr "تحرير خريطة الفوقية"
 
-#: maps/templates/maps/map_detail.html:113
+#: maps/templates/maps/map_detail.html:118
 msgid "Set Map Thumbnail"
 msgstr "وضع خريطة مصغرة"
 
-#: maps/templates/maps/map_detail.html:115
-msgid "Edit Map Permissions"
-msgstr "تحرير خريطة ضوابط"
-
-#: maps/templates/maps/map_detail.html:116
+#: maps/templates/maps/map_detail.html:122
 msgid "Remove this Map"
 msgstr "إزالة هذه الخريطة"
 
-#: maps/templates/maps/map_detail.html:128
+#: maps/templates/maps/map_detail.html:134
 msgid "View Map"
 msgstr "عرض الخريطة"
 
-#: maps/templates/maps/map_detail.html:138
+#: maps/templates/maps/map_detail.html:144
 msgid "Map Layers"
 msgstr "خريطة الطبقات"
 
-#: maps/templates/maps/map_detail.html:139
+#: maps/templates/maps/map_detail.html:145
 msgid "This map uses the following layers:"
 msgstr "هذه الخريطة تستخدم الطبقات التالية:"
 
-#: maps/templates/maps/map_detail.html:155
+#: maps/templates/maps/map_detail.html:161
 msgid "Documents related to this map"
 msgstr "وثائق تتعلق هذه الخريطة"
 
-#: maps/templates/maps/map_detail.html:156
+#: maps/templates/maps/map_detail.html:162
 msgid "List of documents related to this map:"
 msgstr "قائمة الوثائق المتعلقة بهذا الخارطة:"
 
-#: maps/templates/maps/map_detail.html:168
+#: maps/templates/maps/map_detail.html:174
 msgid "Specify which users can view or modify this map"
 msgstr "تحديد أي يمكن للمستخدمين عرض أو تعديل هذه الخريطة"
 
-#: maps/templates/maps/map_detail.html:169
+#: maps/templates/maps/map_detail.html:175
 msgid "Change Permissions of this Map"
 msgstr "تغيير صلاحيات هذا خريطة"
 
-#: maps/templates/maps/map_detail.html:175
+#: maps/templates/maps/map_detail.html:181
 msgid "Copy this map"
 msgstr "نسخ هذه الخريطة"
 
-#: maps/templates/maps/map_detail.html:176
+#: maps/templates/maps/map_detail.html:182
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "تكرار هذه الخريطة وتعديله لأغراضك الخاصة"
 
-#: maps/templates/maps/map_detail.html:177
+#: maps/templates/maps/map_detail.html:183
 #: maps/templates/maps/map_list.html:11
 msgid "Create a New Map"
 msgstr "إنشاء خريطة جديدة"
 
-#: maps/templates/maps/map_detail.html:182
+#: maps/templates/maps/map_detail.html:188
 msgid "Map WMS"
 msgstr "خريطة WMS"
 
-#: maps/templates/maps/map_detail.html:184
+#: maps/templates/maps/map_detail.html:190
 msgid "WMS layer group for local map layers"
 msgstr "WMS مجموعة طبقة لطبقات الخريطة المحلية"
 
-#: maps/templates/maps/map_detail.html:185 social/tests.py:103
+#: maps/templates/maps/map_detail.html:191 social/tests.py:103
 #: social/templatetags/social_tags.py:47
 msgid "on"
 msgstr "على"
 
-#: maps/templates/maps/map_detail.html:185
+#: maps/templates/maps/map_detail.html:191
 msgid "local OWS"
 msgstr "الدودة الحلزونية المحلية"
 
-#: maps/templates/maps/map_detail.html:188
+#: maps/templates/maps/map_detail.html:194
 msgid "Publish local map layers as WMS layer group"
 msgstr "نشر خريطة الطبقات المحلية وWMS مجموعة طبقة"
 
-#: maps/templates/maps/map_detail.html:189
+#: maps/templates/maps/map_detail.html:195
 msgid "Publish Map WMS"
 msgstr "نشر خريطة WMS"
 
@@ -3063,7 +3113,9 @@ msgid ""
 "      Here you can download all the layers of this map that\n"
 "      are hosted on this GeoNode.\n"
 "    "
-msgstr "\ ن هنا يمكنك تحميل جميع طبقات من هذه الخريطة أن \ N يتم استضافتها على هذا GeoNode. \ ن    "
+msgstr ""
+" ن هنا يمكنك تحميل جميع طبقات من هذه الخريطة أن  N يتم استضافتها على هذا "
+"GeoNode.  ن    "
 
 #: maps/templates/maps/map_download.html:22
 msgid ""
@@ -3071,7 +3123,9 @@ msgid ""
 "      <div class=\"alert alert-warning\">Could not find downloadable layers "
 "for this map. You can go back to  \n"
 "      "
-msgstr "\ ن <div الطبقة = \ "في حالة تأهب الإنذار تنبيه \"> تعذر العثور طبقات قابلة للتحميل لهذه الخريطة. يمكنك العودة إلى \ ن      "
+msgstr ""
+" ن <div الطبقة = \"في حالة تأهب الإنذار تنبيه \"> تعذر العثور طبقات قابلة "
+"للتحميل لهذه الخريطة. يمكنك العودة إلى  ن      "
 
 #: maps/templates/maps/map_download.html:29
 msgid ""
@@ -3080,7 +3134,9 @@ msgid ""
 "downloaded\n"
 "        due to security restrictions:\n"
 "      "
-msgstr "\ ن بالإضافة إلى ذلك، يحتوي على خريطة هذه الطبقات التي لن يتم تحميلها \ ن وذلك بسبب القيود الأمنية: \ ن      "
+msgstr ""
+" ن بالإضافة إلى ذلك، يحتوي على خريطة هذه الطبقات التي لن يتم تحميلها  ن وذلك "
+"بسبب القيود الأمنية:  ن      "
 
 #: maps/templates/maps/map_download.html:41
 msgid ""
@@ -3088,7 +3144,9 @@ msgid ""
 "        Finally, the map contains these layers which will not be downloaded\n"
 "        because they are not available directly from this GeoNode:\n"
 "      "
-msgstr "\ ن وأخيرا، فإن خريطة تحتوي هذه الطبقات التي لن يتم تحميلها \ ن لأنها ليست متاحة مباشرة من هذا GeoNode: \ ن      "
+msgstr ""
+" ن وأخيرا، فإن خريطة تحتوي هذه الطبقات التي لن يتم تحميلها  ن لأنها ليست "
+"متاحة مباشرة من هذا GeoNode:  ن      "
 
 #: maps/templates/maps/map_download.html:54
 msgid "Downloading"
@@ -3116,7 +3174,7 @@ msgid ""
 "\n"
 "        Editing details for %(map_title)s\n"
 "      "
-msgstr "\ ن التفاصيل التحرير ل٪ (MAP_TITLE) S \ ن      "
+msgstr " ن التفاصيل التحرير ل٪ (MAP_TITLE) S  ن      "
 
 #: maps/templates/maps/map_metadata.html:17
 msgid ""
@@ -3125,7 +3183,10 @@ msgid ""
 "        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
 "Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
-msgstr "ملاحظة: تم بالسكان الفوقية الاصلي هذه الخريطة عن طريق استيراد ملف XML الفوقية \ ن \ يدعم البيانات الوصفية استيراد GeoNode في مجموعة فرعية من ISO، FGDC، وعناصر البيانات الوصفية دبلن كور ن بعض الفوقية الأصلي قد فقدت."
+msgstr ""
+"ملاحظة: تم بالسكان الفوقية الاصلي هذه الخريطة عن طريق استيراد ملف XML "
+"الفوقية  ن  يدعم البيانات الوصفية استيراد GeoNode في مجموعة فرعية من ISO، "
+"FGDC، وعناصر البيانات الوصفية دبلن كور ن بعض الفوقية الأصلي قد فقدت."
 
 #: maps/templates/maps/map_remove.html:6
 msgid "Deleting"
@@ -3137,7 +3198,7 @@ msgid ""
 "\n"
 "        Are you sure you want to remove %(map_title)s?\n"
 "    "
-msgstr "\ ن هل أنت متأكد أنك تريد إزالة٪ (MAP_TITLE) ق؟ \ ن    "
+msgstr " ن هل أنت متأكد أنك تريد إزالة٪ (MAP_TITLE) ق؟  ن    "
 
 #: maps/templates/maps/map_view.html:5
 msgid "GeoExplorer"
@@ -3178,7 +3239,9 @@ msgstr "الطرف الذي نشر الموارد"
 msgid ""
 "party that accepts accountability and responsibility for the data and "
 "ensures         appropriate care and maintenance of the resource"
-msgstr "الحزب الذي يقبل المساءلة والمسؤولية عن البيانات ويضمن الرعاية والصيانة المناسبة للمورد"
+msgstr ""
+"الحزب الذي يقبل المساءلة والمسؤولية عن البيانات ويضمن الرعاية والصيانة "
+"المناسبة للمورد"
 
 #: people/enumerations.py:44
 msgid ""
@@ -3222,93 +3285,95 @@ msgstr "المستخدم التالية لك"
 msgid "another user has started following you"
 msgstr "بدأت مستخدم آخر التالية لك"
 
-#: people/models.py:40
+#: people/models.py:42
 msgid "Organization Name"
 msgstr "اسم المؤسسة"
 
-#: people/models.py:44
+#: people/models.py:46
 msgid "name of the responsible organization"
 msgstr "اسم المنظمة المسؤولة"
 
-#: people/models.py:45 templates/500.html:76 templates/base.html:92
+#: people/models.py:47 templates/500.html:76 templates/base.html:92
 msgid "Profile"
 msgstr " الملف الشخصي"
 
-#: people/models.py:45
+#: people/models.py:47
 msgid "introduce yourself"
 msgstr "تقديم نفسك"
 
-#: people/models.py:47
+#: people/models.py:49
 msgid "Position Name"
 msgstr "اسم المركز"
 
-#: people/models.py:51
+#: people/models.py:53
 msgid "role or position of the responsible person"
 msgstr "دور أو موقف الشخص المسؤول"
 
-#: people/models.py:52
+#: people/models.py:54
 msgid "Voice"
 msgstr "الصوت "
 
-#: people/models.py:53
+#: people/models.py:55
 msgid ""
 "telephone number by which individuals can speak to the responsible "
 "organization or individual"
 msgstr "رقم الهاتف الذي يمكن للأفراد التحدث إلى المنظمة المسؤولة أو فرد"
 
-#: people/models.py:54
+#: people/models.py:56
 msgid "Facsimile"
 msgstr "الفاكس"
 
-#: people/models.py:55
+#: people/models.py:57
 msgid ""
 "telephone number of a facsimile machine for the responsible organization or "
 "individual"
 msgstr "رقم الهاتف آلة الفاكس للفرد أو المنظمة المسؤولة"
 
-#: people/models.py:57
+#: people/models.py:59
 msgid "Delivery Point"
 msgstr "تسليم بوينت"
 
-#: people/models.py:61
+#: people/models.py:63
 msgid ""
 "physical and email address at which the organization or individual may be "
 "contacted"
 msgstr "عنوان البريد الإلكتروني البدني والذي المنظمة أو الفرد قد يتم الاتصال"
 
-#: people/models.py:63
+#: people/models.py:65
 msgid "City"
 msgstr "المدينة"
 
-#: people/models.py:67
+#: people/models.py:69
 msgid "city of the location"
 msgstr "مدينة الموقع"
 
-#: people/models.py:69
+#: people/models.py:71
 msgid "Administrative Area"
 msgstr "منطقة إدارية"
 
-#: people/models.py:73
+#: people/models.py:75
 msgid "state, province of the location"
 msgstr "الدولة، محافظة الموقع"
 
-#: people/models.py:75
+#: people/models.py:77
 msgid "Postal Code"
 msgstr "الرمز البريدي"
 
-#: people/models.py:79
+#: people/models.py:81
 msgid "ZIP or other postal code"
 msgstr "الرمز البريدي أو الرمز البريدي آخرين"
 
-#: people/models.py:85
+#: people/models.py:87
 msgid "country of the physical address"
 msgstr "بلد العنوان الفعلي"
 
-#: people/models.py:87
+#: people/models.py:89
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject             (space or comma-separated"
-msgstr "الكلمة المستخدمة بشكل شائع (ق) أو كلمة رسمية (ق) أو عبارة (ق) تستخدم لوصف موضوع (الفضاء أو مفصولة بفواصل"
+msgstr ""
+"الكلمة المستخدمة بشكل شائع (ق) أو كلمة رسمية (ق) أو عبارة (ق) تستخدم لوصف "
+"موضوع (الفضاء أو مفصولة بفواصل"
 
 #: people/views.py:84
 msgid "Your username for "
@@ -3354,7 +3419,9 @@ msgstr "نسيت اسم المستخدم"
 msgid ""
 "Enter your email address and click the submit button.  Your username will be "
 "sent to you."
-msgstr "ادخل عنوان البريد الإلكتروني الخاص بك وانقر على زر إرسال. سوف يتم إرسال اسم المستخدم الخاص بك لك."
+msgstr ""
+"ادخل عنوان البريد الإلكتروني الخاص بك وانقر على زر إرسال. سوف يتم إرسال اسم "
+"المستخدم الخاص بك لك."
 
 #: people/templates/people/profile_create.html:8
 #: people/templates/people/profile_create.html:14
@@ -3495,7 +3562,15 @@ msgid ""
 "share thousands of geospatial data layers,\n"
 "maps, metadata, and development resources through a single common "
 "interface.\n"
-msgstr "\ n كان المفتوحة بوابة جغرافية لكونسورتيوم يتكون من مساهمات من عدة جامعات ومنظمات لمساعدة \ nfacilitate اكتشاف واكتساب البيانات الجغرافية في العديد من المنظمات والمنابر. الشركاء الحاليين \ ninclude: هارفارد، معهد ماساتشوستس للتكنولوجيا، MassGIS، برينستون، كولومبيا، ستانفورد، جامعة كاليفورنيا في بيركلي، جامعة كاليفورنيا، جامعة ييل، و[أوكن]. بنيت على مصدر مفتوح \ ntechnology، المفتوح بوابة جغرافية توفر المنظمات الفرصة لتبادل الآلاف من الطبقات الجغرافية المكانية البيانات، \ nmaps، الفوقية، وتنمية الموارد من خلال واجهة واحدة. \ ن"
+msgstr ""
+" n كان المفتوحة بوابة جغرافية لكونسورتيوم يتكون من مساهمات من عدة جامعات "
+"ومنظمات لمساعدة  nfacilitate اكتشاف واكتساب البيانات الجغرافية في العديد من "
+"المنظمات والمنابر. الشركاء الحاليين  ninclude: هارفارد، معهد ماساتشوستس "
+"للتكنولوجيا، MassGIS، برينستون، كولومبيا، ستانفورد، جامعة كاليفورنيا في "
+"بيركلي، جامعة كاليفورنيا، جامعة ييل، و[أوكن]. بنيت على مصدر مفتوح  "
+"ntechnology، المفتوح بوابة جغرافية توفر المنظمات الفرصة لتبادل الآلاف من "
+"الطبقات الجغرافية المكانية البيانات،  nmaps، الفوقية، وتنمية الموارد من خلال "
+"واجهة واحدة.  ن"
 
 #: services/views.py:273
 msgid "This is an existing service"
@@ -3514,7 +3589,8 @@ msgstr "لا يمكن العثور على أي طبقات في إسقاط متو
 msgid ""
 "Could not find any layers in a compatible projection:                 The "
 "spatial id was: %s and the url %s"
-msgstr "لا يمكن العثور على أي طبقات في إسقاط متوافق: معرف المكاني كان: %s ورابط %s"
+msgstr ""
+"لا يمكن العثور على أي طبقات في إسقاط متوافق: معرف المكاني كان: %s ورابط %s"
 
 #: services/views.py:1207
 msgid "You are not permitted to remove this service."
@@ -3637,8 +3713,7 @@ msgstr "النشاط الأخير"
 
 #: social/templatetags/social_tags.py:32
 msgid "to"
-msgstr "إلى
-"
+msgstr "إلى"
 
 #: templates/401.html:10
 msgid "Not Permitted"
@@ -3649,7 +3724,7 @@ msgid ""
 "\n"
 "          You are not allowed to perform this operation.  \n"
 "      "
-msgstr "\ ن لا يسمح لك لتنفيذ هذه العملية. \ ن      "
+msgstr " ن لا يسمح لك لتنفيذ هذه العملية.  ن      "
 
 #: templates/401.html:25
 msgid "Please verify that you are logged in as the correct user."
@@ -3669,7 +3744,9 @@ msgid ""
 "      The page you requested does not exist.  Perhaps you are using an "
 "outdated bookmark?\n"
 "  "
-msgstr "\ ن لا توجد الصفحة المطلوبة. ربما كنت تستخدم المرجعية التي عفا عليها الزمن؟ \ ن  "
+msgstr ""
+" ن لا توجد الصفحة المطلوبة. ربما كنت تستخدم المرجعية التي عفا عليها الزمن؟  "
+"ن  "
 
 #: templates/500.html:48 templates/base.html:56
 msgid "People"
@@ -3678,6 +3755,11 @@ msgstr "الناس"
 #: templates/500.html:51 templates/base.html:59
 msgid "Groups"
 msgstr "مجموعات"
+
+#: templates/500.html:56 templates/search/search.html:6
+#: templates/search/search.html.py:12
+msgid "Search"
+msgstr "بحث "
 
 #: templates/500.html:77 templates/base.html:93
 msgid "Recent Activity"
@@ -3753,7 +3835,12 @@ msgid ""
 "actual error and fix it or file an issue in <a href=\"http://github.com/"
 "GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "          "
-msgstr "\ ن الرجاء الاتصال بمسؤول GeoNode الخاص بك (كان قد تلقى رسالة بالبريد الالكتروني تلقائيا إذا كان تكوينه بشكل صحيح) \ n إذا كنت المسؤول عن الموقع، تمكين وضع التصحيح لرؤية الخطأ الفعلي وإصلاحه أو ملف القضية في <أ href ل = \ "HTTP: //github.com/GeoNode/geonode/issues \"> GeoNode في قضية تعقب </A> \ ن          "
+msgstr ""
+" ن الرجاء الاتصال بمسؤول GeoNode الخاص بك (كان قد تلقى رسالة بالبريد "
+"الالكتروني تلقائيا إذا كان تكوينه بشكل صحيح)  n إذا كنت المسؤول عن الموقع، "
+"تمكين وضع التصحيح لرؤية الخطأ الفعلي وإصلاحه أو ملف القضية في <أ href ل = "
+"\"HTTP: //github.com/GeoNode/geonode/issues \"> GeoNode في قضية تعقب </A>  "
+"ن          "
 
 #: templates/500.html:182 templates/base.html:172
 msgid "Powered by"
@@ -3804,37 +3891,62 @@ msgstr "إضافة تعليق"
 msgid "Submit Comments"
 msgstr "تقديم تعليقات"
 
-#: templates/_permissions.html:4
-msgid "Who can view and download this data?"
-msgstr "الذين يمكنهم عرض وتحميل هذه البيانات؟"
+#: templates/_permissions.html:8
+#, fuzzy
+msgid "Who can view it?"
+msgstr "الذين يمكن تعديل هذه البيانات؟"
 
-#: templates/_permissions.html:9
+#: templates/_permissions.html:17 templates/_permissions.html.py:49
 msgid "Anyone"
 msgstr "أي شخص"
 
-#: templates/_permissions.html:14 templates/_permissions.html.py:31
-#: templates/_permissions.html:48
+#: templates/_permissions.html:22 templates/_permissions.html.py:54
+#: templates/_permissions.html:80 templates/_permissions.html.py:107
+#: templates/_permissions.html:133 templates/_permissions.html.py:160
 msgid "The following users:"
 msgstr "المستخدمين التالية:"
 
-#: templates/_permissions.html:20 templates/_permissions.html.py:37
-#: templates/_permissions.html:54
+#: templates/_permissions.html:28 templates/_permissions.html.py:60
+#: templates/_permissions.html:86 templates/_permissions.html.py:113
+#: templates/_permissions.html:139 templates/_permissions.html.py:166
 msgid "The following groups:"
 msgstr "المجموعات التالية:"
 
-#: templates/_permissions.html:27
-msgid "Who can edit this data?"
+#: templates/_permissions.html:40
+#, fuzzy
+msgid "Who can download it?"
+msgstr "الذين يمكنهم عرض وتحميل هذه البيانات؟"
+
+#: templates/_permissions.html:72
+msgid "Who can change metadata for it?"
+msgstr ""
+
+#: templates/_permissions.html:99
+#, fuzzy
+msgid "Who can edit data for this layer?"
 msgstr "الذين يمكن تعديل هذه البيانات؟"
 
-#: templates/_permissions.html:44
-msgid "Who can manage?"
-msgstr "الذين يمكن إدارة؟"
+#: templates/_permissions.html:125
+#, fuzzy
+msgid "Who can edit styles for this layer?"
+msgstr "الذين يمكن تعديل هذه البيانات؟"
 
-#: templates/_permissions_form_js.html:125
+#: templates/_permissions.html:152
+msgid ""
+"Who can manage it? (update, delete, change permissions, publish/unpublish "
+"it?)"
+msgstr ""
+
+#: templates/_permissions_form.html:9
+#, fuzzy
+msgid "Set permissions for this "
+msgstr "تعيين أذونات"
+
+#: templates/_permissions_form_js.html:180
 msgid "Choose users..."
 msgstr "اختيار المستخدمين ..."
 
-#: templates/_permissions_form_js.html:158
+#: templates/_permissions_form_js.html:213
 msgid "Choose groups..."
 msgstr "اختيار مجموعات ..."
 
@@ -3846,7 +3958,7 @@ msgstr "حول GeoNode"
 msgid "About GeoNode."
 msgstr "حول GeoNode."
 
-#: templates/base.html:223
+#: templates/base.html:224
 msgid "Type your search here ..."
 msgstr "اكتب بحثك هنا ..."
 
@@ -3942,7 +4054,67 @@ msgid ""
 "  <h4>GeoTools Example Code</h4>\n"
 "  <p>Create a DataStore and extract a FeatureType from it, then run a Query. "
 "It is all documented on the wiki at <code>http://geotools.org/</code>.</p>\n"
-msgstr "\ ن <P> <a href=\"http://geonode.org/\"> GeoNode </A> هي خدمة مفتوحة مبنية على برمجيات مفتوحة المصدر. نحن نشجعكم على بناء تطبيقات جديدة باستخدام المكونات والموارد التي يقدمها. هذه الصفحة هي نقطة الانطلاق للمطورين للاهتمام في الاستفادة الكاملة من GeoNode. فإنه يشمل أيضا روابط لكود المصدر للمشروع بحيث يمكن لأي شخص بناء وتخصيص GeoNode الخاصة بهم. </ P> \ ن \ ن <H4> GeoNode برامج </ H4> \ ن \ ن <P> جميع التعليمات البرمجية التي تدير GeoNode مفتوح المصدر. رمز متاح في <a href=\"http://github.com/GeoNode/geonode\"> http://github.com/GeoNode/geonode/ </A>. تعقب الموضوع لهذا المشروع هو في <ل href=\"http://github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/issues</a>.</p>\n\n <p> وبنيت GeoNode باستخدام العديد من المشاريع مفتوحة المصدر، مع كل المجتمع الخاص بها. إذا كنت مهتما في المساهمة ميزات جديدة إلى GeoNode، ونحن نشجعكم على القيام بذلك من خلال المساهمة في أحد المشاريع التي بني عليها: </ P> \ ن <UL> \ ن <لي> <أ href = و\ "HTTP: //geoext.org \"> GeoExt </A> - مجموعة أدوات غنية لتطبيقات جافا سكريبت رسم الخرائط على شبكة الإنترنت </ لى> \ ن <لي> <a href=\"http://geoserver.org\"> GeoServer </A> - خادم يستند إلى معايير للمعلومات الجغرافية المكانية </ لى> \ ن <لي> <a href=\"http://geowebcache.org\"> GeoWebCache </A> - محرك التخزين المؤقت للWMS بلاط </ لى> <لي> <a href=\"http://openlayers.org\"> OpenLayers </A> - مكتبة جافا سكريبت الصرفة المحرك خرائط GeoExt </ لى> \ ن <لي> <أ href = و\ " المتشعب:؟ //pycsw.org \ "> pycsw </A> - لجنة وضع المرأة خادم كتالوج الفوقية </ لى> \ ن </ UL> \ ن \ ن <H4> ما هي الخدمات OGC </ H4> \ ن <ع > يتم تقديم البيانات في هذا التطبيق باستخدام المعايير المفتوحة التي أقرها <a href=\"http://opengeospatial.org/\"> المفتوحة الجيوفضائي </A>. على وجه الخصوص، ويستخدم WMS (الويب خريطة الخدمة) للوصول إلى الخرائط، ويستخدم مؤتمر القمة (خدمة ميزة ويب) للوصول إلى بيانات متجهة، ويستخدم WCS (خدمة التغطية ويب) للوصول إلى البيانات النقطية. يستخدم مؤتمر العالم الإسلامي (الويب خريطة السياق المستندات) لتبادل الخرائط. يمكنك استخدام هذه الخدمات في التطبيقات الخاصة بك باستخدام مكتبات مثل OpenLayers، GeoTools، وOGR (كلها برمجيات مفتوحة المصدر ومتاحة بتكلفة صفر). </ P> \ ن \ ن <H4> ما هو GeoWebCache؟ </ H4> \ ن <p> وGeoWebCache يوفر البلاط الخرائط التي تتوافق مع عدد من محركات رسم الخرائط، بما في ذلك خرائط جوجل، خرائط بنج وOpenLayers. جميع البيانات التي تستضيفها GeoNode متاحة أيضا من خلال GeoWebCache. GeoWebCache يحسن WMS بواسطة التخزين المؤقت البيانات وتوفير الخرائط أكثر استجابة. </ P> \ ن \ ن <H4> OpenLayers مثال رمز </ H4> \ ن \ ن <p> لتشمل خريطة GeoNode طبقة في OpenLayers خريطة أولا العثور على اسم لتلك الطبقة. تم العثور على هذا في الطبقة <كود> اسم </ القانون> الميدان (لا <كود> عنوان </ القانون>) من القائمة الطبقة. في هذا المثال، سوف نستخدم طبقة نيكاراغوا الحدود السياسية الخلفية، اسمه <كود> المخاطر: nicaragua_admin </ القانون>. ثم، إنشاء مثيل OpenLayers.Layer.WMS: </ P> \ ن <P> <كود> فار geonodeLayer = OpenLayers.Layer.WMS الجديد (\ "GeoNode المخاطر البيانات \"، \ "HTTP: // التجريبي. geonode.org/geoserver/wms \ "{طبقات: \" خطر: nicaragua_admin \ "})؛ </ الرمز> </ P> \ ن \ ن <H4> خرائط جوجل المثال كود </ H4> \ ن <ع > لتشمل خريطة GeoNode طبقة في خريطة جوجل، وتشمل طبقة namein القالب URL </ P> \ ن <P> <كود> فار tilelayer = GTileLayer جديدة (فارغة، باطلة، باطلة، {tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng: صحيح، والتعتيم: 0،5})؛ </ الرمز> </ P> \ ن \ ن <H4> بحلقات / GeoJSON أيضا / GML الناتج </ H4> \ ن <p> للحصول على البيانات من GeoNode استخدام خدمات الويب مؤتمر القمة البروتوكول. على سبيل المثال، للحصول على كامل الحدود الادارية نيكاراغوا استخدام: </ P> \ ن <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n <P> تغيير تنسيق الإخراج إلى <كود> سلمان </ الرمز>، <كود> GML2 </ الرمز>، <كود> GML3 </ الرمز> أو <كود> CSV </ القانون> سيحصل البيانات في تلك الأشكال. بروتوكول مؤتمر القمة أيضا يمكن التعامل مع استفسارات أكثر دقة، تحديد المربع المحيط أو مرشحات مختلفة المكانية وغير المكانية على أساس سمات البيانات. </ P> \ ن \ ن <H4> GeoTools مثال رمز </ H4> \ ن <P> إنشاء مخزن البيانات واستخلاص FeatureType من ذلك، قم بتشغيل استعلام. وجميع توثيقها على ويكي في <كود> http://geotools.org/ </ القانون>. </ P> \ ن"
+msgstr ""
+" ن <P> <a href=\"http://geonode.org/\"> GeoNode </A> هي خدمة مفتوحة مبنية "
+"على برمجيات مفتوحة المصدر. نحن نشجعكم على بناء تطبيقات جديدة باستخدام "
+"المكونات والموارد التي يقدمها. هذه الصفحة هي نقطة الانطلاق للمطورين للاهتمام "
+"في الاستفادة الكاملة من GeoNode. فإنه يشمل أيضا روابط لكود المصدر للمشروع "
+"بحيث يمكن لأي شخص بناء وتخصيص GeoNode الخاصة بهم. </ P>  ن  ن <H4> GeoNode "
+"برامج </ H4>  ن  ن <P> جميع التعليمات البرمجية التي تدير GeoNode مفتوح "
+"المصدر. رمز متاح في <a href=\"http://github.com/GeoNode/geonode\"> http://"
+"github.com/GeoNode/geonode/ </A>. تعقب الموضوع لهذا المشروع هو في <ل href="
+"\"http://github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/"
+"geonode/issues</a>.</p>\n"
+"\n"
+" <p> وبنيت GeoNode باستخدام العديد من المشاريع مفتوحة المصدر، مع كل المجتمع "
+"الخاص بها. إذا كنت مهتما في المساهمة ميزات جديدة إلى GeoNode، ونحن نشجعكم "
+"على القيام بذلك من خلال المساهمة في أحد المشاريع التي بني عليها: </ P>  ن "
+"<UL>  ن <لي> <أ href = و\"HTTP: //geoext.org \"> GeoExt </A> - مجموعة أدوات "
+"غنية لتطبيقات جافا سكريبت رسم الخرائط على شبكة الإنترنت </ لى>  ن <لي> <a "
+"href=\"http://geoserver.org\"> GeoServer </A> - خادم يستند إلى معايير "
+"للمعلومات الجغرافية المكانية </ لى>  ن <لي> <a href=\"http://geowebcache.org"
+"\"> GeoWebCache </A> - محرك التخزين المؤقت للWMS بلاط </ لى> <لي> <a href="
+"\"http://openlayers.org\"> OpenLayers </A> - مكتبة جافا سكريبت الصرفة المحرك "
+"خرائط GeoExt </ لى>  ن <لي> <أ href = و\" المتشعب:؟ //pycsw.org \"> pycsw </"
+"A> - لجنة وضع المرأة خادم كتالوج الفوقية </ لى>  ن </ UL>  ن  ن <H4> ما هي "
+"الخدمات OGC </ H4>  ن <ع > يتم تقديم البيانات في هذا التطبيق باستخدام "
+"المعايير المفتوحة التي أقرها <a href=\"http://opengeospatial.org/\"> "
+"المفتوحة الجيوفضائي </A>. على وجه الخصوص، ويستخدم WMS (الويب خريطة الخدمة) "
+"للوصول إلى الخرائط، ويستخدم مؤتمر القمة (خدمة ميزة ويب) للوصول إلى بيانات "
+"متجهة، ويستخدم WCS (خدمة التغطية ويب) للوصول إلى البيانات النقطية. يستخدم "
+"مؤتمر العالم الإسلامي (الويب خريطة السياق المستندات) لتبادل الخرائط. يمكنك "
+"استخدام هذه الخدمات في التطبيقات الخاصة بك باستخدام مكتبات مثل OpenLayers، "
+"GeoTools، وOGR (كلها برمجيات مفتوحة المصدر ومتاحة بتكلفة صفر). </ P>  ن  ن "
+"<H4> ما هو GeoWebCache؟ </ H4>  ن <p> وGeoWebCache يوفر البلاط الخرائط التي "
+"تتوافق مع عدد من محركات رسم الخرائط، بما في ذلك خرائط جوجل، خرائط بنج "
+"وOpenLayers. جميع البيانات التي تستضيفها GeoNode متاحة أيضا من خلال "
+"GeoWebCache. GeoWebCache يحسن WMS بواسطة التخزين المؤقت البيانات وتوفير "
+"الخرائط أكثر استجابة. </ P>  ن  ن <H4> OpenLayers مثال رمز </ H4>  ن  ن <p> "
+"لتشمل خريطة GeoNode طبقة في OpenLayers خريطة أولا العثور على اسم لتلك "
+"الطبقة. تم العثور على هذا في الطبقة <كود> اسم </ القانون> الميدان (لا <كود> "
+"عنوان </ القانون>) من القائمة الطبقة. في هذا المثال، سوف نستخدم طبقة "
+"نيكاراغوا الحدود السياسية الخلفية، اسمه <كود> المخاطر: nicaragua_admin </ "
+"القانون>. ثم، إنشاء مثيل OpenLayers.Layer.WMS: </ P>  ن <P> <كود> فار "
+"geonodeLayer = OpenLayers.Layer.WMS الجديد (\"GeoNode المخاطر البيانات \"، "
+"\"HTTP: // التجريبي. geonode.org/geoserver/wms \"{طبقات: \" خطر: "
+"nicaragua_admin \"})؛ </ الرمز> </ P>  ن  ن <H4> خرائط جوجل المثال كود </ "
+"H4>  ن <ع > لتشمل خريطة GeoNode طبقة في خريطة جوجل، وتشمل طبقة namein القالب "
+"URL </ P>  ن <P> <كود> فار tilelayer = GTileLayer جديدة (فارغة، باطلة، "
+"باطلة، {tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/"
+"gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng: "
+"صحيح، والتعتيم: 0،5})؛ </ الرمز> </ P>  ن  ن <H4> بحلقات / GeoJSON أيضا / "
+"GML الناتج </ H4>  ن <p> للحصول على البيانات من GeoNode استخدام خدمات الويب "
+"مؤتمر القمة البروتوكول. على سبيل المثال، للحصول على كامل الحدود الادارية "
+"نيكاراغوا استخدام: </ P>  ن <p><code>http://demo.geonode.org/geoserver/wfs?"
+"request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-"
+"ZIP</code></p>\n"
+" <P> تغيير تنسيق الإخراج إلى <كود> سلمان </ الرمز>، <كود> GML2 </ الرمز>، "
+"<كود> GML3 </ الرمز> أو <كود> CSV </ القانون> سيحصل البيانات في تلك الأشكال. "
+"بروتوكول مؤتمر القمة أيضا يمكن التعامل مع استفسارات أكثر دقة، تحديد المربع "
+"المحيط أو مرشحات مختلفة المكانية وغير المكانية على أساس سمات البيانات. </ "
+"P>  ن  ن <H4> GeoTools مثال رمز </ H4>  ن <P> إنشاء مخزن البيانات واستخلاص "
+"FeatureType من ذلك، قم بتشغيل استعلام. وجميع توثيقها على ويكي في <كود> "
+"http://geotools.org/ </ القانون>. </ P>  ن"
 
 #: templates/developer.html:53
 msgid "GeoNode's Web Services"
@@ -3984,7 +4156,9 @@ msgstr "GeoNode مساعدة"
 msgid ""
 "This page provides helpful information about how to use the GeoNode. You can "
 "use the sidebar links to navigate to what you want to know."
-msgstr "توفر هذه الصفحة معلومات مفيدة حول كيفية استخدام GeoNode. يمكنك استخدام الروابط الشريط الجانبي للانتقال إلى ما تريد أن تعرف."
+msgstr ""
+"توفر هذه الصفحة معلومات مفيدة حول كيفية استخدام GeoNode. يمكنك استخدام "
+"الروابط الشريط الجانبي للانتقال إلى ما تريد أن تعرف."
 
 #: templates/help.html:12
 msgid ""
@@ -4073,7 +4247,61 @@ msgid ""
 "  <p>You will be able to see your new map when you search for it from the <a "
 "href=\"/maps\">Maps</a> tab.</p> \n"
 "  "
-msgstr "\ ن <P> وGeoNode يوفر الوصول إلى مجموعات البيانات وتطبيق تحرير خريطة يسمح للمستخدمين لتصفح الخرائط الموجودة والمساهمة الخاصة بهم. </ P> \ ن <H4 ID = \ "تصفح البيانات \"> \ ن الطبقات التصفح </ H4> \ ن <P> <a طبقات href=\"/layers\"> </A> التبويب يسمح لك لتصفح البيانات التي تم تحميلها لهذا GeoNode. </ P> \ ن <p> ويمكن أن تكون جميع البيانات تحميل في مجموعة متنوعة من الأشكال، لاستخدامها في تطبيقات أخرى. </ P> \ ن \ ن <معرف H4 = \ "المطور وصول \"> وصول المطور </ H4> \ ن <P> و <أ href = و\ "/ المطور \"> صفحة المطور </A> هي مكان للمطورين لبناء التطبيقات التي تحصل ضد GeoNode. وهو يتضمن تعليمات حول كيفية استخدام خدمات شبكة الإنترنت، يربط إلى رمز مصدر GeoNode، والمعلومات عن المشاريع مفتوحة المصدر تستخدم لإنشائه. </ P> \ ن \ ن <H4 معرف = \ "تصفح خرائط \"> خرائط التصفح </ H4> \ ن <P> وGeoNode يتيح للمستخدمين خلق وتبادل الخرائط مع بعضها البعض. </ P> \ ن <P> <a href=\"/maps\"> وخرائط </A> التبويب هو بوابة لاستكشاف الخريطة على GeoNode. من هنا يمكنك <strong> بحث عن خريطة </ strong> أو <strong> إنشاء خريطة </ قوي>، الذي سيفتح <a href=\"/maps/new\"> خريطة الملحن </A> . </ P> \ ن <H5> وضع جوجل الأرض </ H5> \ ن <p> وأي خريطة النظر في خريطة محرر تفاعلي يمكن أن ينظر في وضع 3D مع البرنامج المساعد جوجل إيرث. للتبديل إلى وضع 3D اختيار شعار جوجل إيرث العالم، الزر أقصى اليمين على شريط الأدوات العلوي. وإذا لم يكن لديك البرنامج المساعد تثبيت برنامج Google Earth يطلب منك تثبيته. </ P> \ ن \ ن <H4 ID = \ "خلق واحد في خريطة \"> إنشاء خريطة </ H4> \ ن < p> لإنشاء خريطة جديدة تذهب إلى <a href=\"/maps\"> ساهمت التبويب خرائط </A> وانقر على <a href=\"/maps/new\"> خلق الخريطة الخاصة بك </ و> الارتباط. </ P> \ ن <p> وهذا سوف يأخذك إلى <a href=\"/maps/new\"> خريطة الملحن </A> بطبقة قاعدة تحميلها. </ P> \ ن <p> لإضافة طبقات من البيانات GeoNode النقر على الزر الأخضر زائد تقع أسفل علامة التبويب طبقات على الجانب الأيسر من الشاشة. هذا وسوف تفتح الحوار تسرد كل الطبقات المتاحة على GeoNode. </ P> \ ن <p> لإضافة طبقات إلى الخريطة الخاصة تحديدها وضرب <strong> إضافة طبقات </ قوي> زر. عند الانتهاء قد ضرب <strong> تم </ strong> لإغلاق مربع الحوار والعودة إلى الخريطة. </ P> \ ن \ ن <H5> إعادة ترتيب وإزالة الطبقات </ H5> \ ن <P> تغيير ترتيب العرض من الطبقات المذكورة في التبويب البيانات ببساطة عن طريق سحب وإسقاط أسمائهم. سيتم تحديث النظام في خريطة لتعكس ذلك. لتحويل الرؤية طبقة قبالة ببساطة قم بإلغاء عليه، وإزالته تماما تحديده وضرب على زر ناقص أحمر. </ P> \ ن \ ن <H5> إنقاذ الخريطة الخاصة بك </ H5> \ ن <p> ومرة ​​واحدة في مناسبة تم العثور على مجموعة من الطبقات ومستوى التكبير حان الوقت لحفظها بحيث يمكن للآخرين رؤيتها. انقر فوق الزر حفظ - اليسار معظم أيقونة على شريط الأدوات العلوي، صورة الخريطة مع قرص - على رأس القائمة وملء العنوان والملخص من الخريطة </ P> \ ن \ ن <H4. معرف = \ "تصدير واحد في خريطة \"> تصدير خريطة </ H4> \ ن <p> وأي خريطة من GeoNode يمكن أن تكون جزءا لا يتجزأ من أجل استخدامها في موقع آخر أو بلوق. تصدير خريطة:. </ P> \ ن <OL> \ ن <li> حدد من قائمة الخرائط على صفحة المجتمع أو خريطة ومن ثم الضغط على زر "خريطة التصدير '</ لى> \ ن <لى > اختر الارتفاع المطلوب وعرض للالمصغر في المعالج. </ لى> \ ن <li> ونسخ قصاصة HTML المقدمة في المعالج إلى أي صفحة HTML أو الإطار من الدعم بلوق وظيفة. </ لى> \ ن </ OL> \ ن <P> وهذا وضع القطعة التفاعلية يظهر لك الخريطة في صفحة الويب الخاص بك أو بلوق وظيفة. </ P> \ ن <P> لاحظ أن <a href=\"/maps/new\"> خريطة لديه الملحن </A> أيضا على زر لتصدير الخريطة. فقط تأكد من حفظ الخارطة قبل التصدير إذا كان هناك التغييرات التي تريد أن يراها الآخرون. وتصدر النسخة الأخيرة حفظها، وليس إصدار ينظر الماضي. </ P> \ ن \ ن <معرف H4 = \ "التعديل واحد في خريطة \"> التعديل على خريطة </ H4> \ ن <p> وأي خريطة متوفرة يمكن أن تكون بمثابة نقطة الانطلاق لرسم خريطة جديدة. </ P> \ ن <OL> \ ن <li> وفتح الخريطة في خريطة الملحن. </ لى> \ ن <li> وإضافة وإزالة طبقات كما تريد. </ لى> \ ن <li> وعموم والتكبير لتسليط الضوء على مجال اهتمام </ لى> \ ن <لي> على <strong> هام: </ قوي> تحديث العنوان، الملخص، ومعلومات الاتصال والعلامات لتعكس خريطة جديدة. </ لى> \ ن <لي> حفظ الخريطة. </ لى> \ ن </ OL> \ ن <p> وسوف تكون قادرا على رؤية الخريطة الجديدة الخاصة بك عندما كنت ابحث عنها من <أ href ل = \ "/ خرائط \"> خرائط </A> التبويب. </ P> \ ن  "
+msgstr ""
+" ن <P> وGeoNode يوفر الوصول إلى مجموعات البيانات وتطبيق تحرير خريطة يسمح "
+"للمستخدمين لتصفح الخرائط الموجودة والمساهمة الخاصة بهم. </ P>  ن <H4 ID = "
+"\"تصفح البيانات \">  ن الطبقات التصفح </ H4>  ن <P> <a طبقات href=\"/layers"
+"\"> </A> التبويب يسمح لك لتصفح البيانات التي تم تحميلها لهذا GeoNode. </ P>  "
+"ن <p> ويمكن أن تكون جميع البيانات تحميل في مجموعة متنوعة من الأشكال، "
+"لاستخدامها في تطبيقات أخرى. </ P>  ن  ن <معرف H4 = \"المطور وصول \"> وصول "
+"المطور </ H4>  ن <P> و <أ href = و\"/ المطور \"> صفحة المطور </A> هي مكان "
+"للمطورين لبناء التطبيقات التي تحصل ضد GeoNode. وهو يتضمن تعليمات حول كيفية "
+"استخدام خدمات شبكة الإنترنت، يربط إلى رمز مصدر GeoNode، والمعلومات عن "
+"المشاريع مفتوحة المصدر تستخدم لإنشائه. </ P>  ن  ن <H4 معرف = \"تصفح خرائط "
+"\"> خرائط التصفح </ H4>  ن <P> وGeoNode يتيح للمستخدمين خلق وتبادل الخرائط "
+"مع بعضها البعض. </ P>  ن <P> <a href=\"/maps\"> وخرائط </A> التبويب هو بوابة "
+"لاستكشاف الخريطة على GeoNode. من هنا يمكنك <strong> بحث عن خريطة </ strong> "
+"أو <strong> إنشاء خريطة </ قوي>، الذي سيفتح <a href=\"/maps/new\"> خريطة "
+"الملحن </A> . </ P>  ن <H5> وضع جوجل الأرض </ H5>  ن <p> وأي خريطة النظر في "
+"خريطة محرر تفاعلي يمكن أن ينظر في وضع 3D مع البرنامج المساعد جوجل إيرث. "
+"للتبديل إلى وضع 3D اختيار شعار جوجل إيرث العالم، الزر أقصى اليمين على شريط "
+"الأدوات العلوي. وإذا لم يكن لديك البرنامج المساعد تثبيت برنامج Google Earth "
+"يطلب منك تثبيته. </ P>  ن  ن <H4 ID = \"خلق واحد في خريطة \"> إنشاء خريطة </ "
+"H4>  ن < p> لإنشاء خريطة جديدة تذهب إلى <a href=\"/maps\"> ساهمت التبويب "
+"خرائط </A> وانقر على <a href=\"/maps/new\"> خلق الخريطة الخاصة بك </ و> "
+"الارتباط. </ P>  ن <p> وهذا سوف يأخذك إلى <a href=\"/maps/new\"> خريطة "
+"الملحن </A> بطبقة قاعدة تحميلها. </ P>  ن <p> لإضافة طبقات من البيانات "
+"GeoNode النقر على الزر الأخضر زائد تقع أسفل علامة التبويب طبقات على الجانب "
+"الأيسر من الشاشة. هذا وسوف تفتح الحوار تسرد كل الطبقات المتاحة على GeoNode. "
+"</ P>  ن <p> لإضافة طبقات إلى الخريطة الخاصة تحديدها وضرب <strong> إضافة "
+"طبقات </ قوي> زر. عند الانتهاء قد ضرب <strong> تم </ strong> لإغلاق مربع "
+"الحوار والعودة إلى الخريطة. </ P>  ن  ن <H5> إعادة ترتيب وإزالة الطبقات </ "
+"H5>  ن <P> تغيير ترتيب العرض من الطبقات المذكورة في التبويب البيانات ببساطة "
+"عن طريق سحب وإسقاط أسمائهم. سيتم تحديث النظام في خريطة لتعكس ذلك. لتحويل "
+"الرؤية طبقة قبالة ببساطة قم بإلغاء عليه، وإزالته تماما تحديده وضرب على زر "
+"ناقص أحمر. </ P>  ن  ن <H5> إنقاذ الخريطة الخاصة بك </ H5>  ن <p> ومرة ​​واحدة "
+"في مناسبة تم العثور على مجموعة من الطبقات ومستوى التكبير حان الوقت لحفظها "
+"بحيث يمكن للآخرين رؤيتها. انقر فوق الزر حفظ - اليسار معظم أيقونة على شريط "
+"الأدوات العلوي، صورة الخريطة مع قرص - على رأس القائمة وملء العنوان والملخص "
+"من الخريطة </ P>  ن  ن <H4. معرف = \"تصدير واحد في خريطة \"> تصدير خريطة </ "
+"H4>  ن <p> وأي خريطة من GeoNode يمكن أن تكون جزءا لا يتجزأ من أجل استخدامها "
+"في موقع آخر أو بلوق. تصدير خريطة:. </ P>  ن <OL>  ن <li> حدد من قائمة "
+"الخرائط على صفحة المجتمع أو خريطة ومن ثم الضغط على زر \"خريطة التصدير '</ "
+"لى>  ن <لى > اختر الارتفاع المطلوب وعرض للالمصغر في المعالج. </ لى>  ن <li> "
+"ونسخ قصاصة HTML المقدمة في المعالج إلى أي صفحة HTML أو الإطار من الدعم بلوق "
+"وظيفة. </ لى>  ن </ OL>  ن <P> وهذا وضع القطعة التفاعلية يظهر لك الخريطة في "
+"صفحة الويب الخاص بك أو بلوق وظيفة. </ P>  ن <P> لاحظ أن <a href=\"/maps/new"
+"\"> خريطة لديه الملحن </A> أيضا على زر لتصدير الخريطة. فقط تأكد من حفظ "
+"الخارطة قبل التصدير إذا كان هناك التغييرات التي تريد أن يراها الآخرون. وتصدر "
+"النسخة الأخيرة حفظها، وليس إصدار ينظر الماضي. </ P>  ن  ن <معرف H4 = "
+"\"التعديل واحد في خريطة \"> التعديل على خريطة </ H4>  ن <p> وأي خريطة متوفرة "
+"يمكن أن تكون بمثابة نقطة الانطلاق لرسم خريطة جديدة. </ P>  ن <OL>  ن <li> "
+"وفتح الخريطة في خريطة الملحن. </ لى>  ن <li> وإضافة وإزالة طبقات كما تريد. "
+"</ لى>  ن <li> وعموم والتكبير لتسليط الضوء على مجال اهتمام </ لى>  ن <لي> "
+"على <strong> هام: </ قوي> تحديث العنوان، الملخص، ومعلومات الاتصال والعلامات "
+"لتعكس خريطة جديدة. </ لى>  ن <لي> حفظ الخريطة. </ لى>  ن </ OL>  ن <p> وسوف "
+"تكون قادرا على رؤية الخريطة الجديدة الخاصة بك عندما كنت ابحث عنها من <أ href "
+"ل = \"/ خرائط \"> خرائط </A> التبويب. </ P>  ن  "
 
 #: templates/help.html:65
 msgid "Sections"
@@ -4120,7 +4348,9 @@ msgstr "GeoNode هو منصة مفتوحة المصدر لتبادل البيا�
 msgid ""
 "If you have any questions about the software or service, join our <a href="
 "\"https://groups.google.com/d/forum/geonode-users\">mailing list</a>."
-msgstr "إذا كان لديك أي أسئلة حول البرنامج أو الخدمة، والانضمام لدينا <a-href=\"https://groups.google.com/d/forum/geonode users\"> القائمة البريدية </A>."
+msgstr ""
+"إذا كان لديك أي أسئلة حول البرنامج أو الخدمة، والانضمام لدينا <a-href="
+"\"https://groups.google.com/d/forum/geonode users\"> القائمة البريدية </A>."
 
 #: templates/index.html:18
 msgid "Need help?"
@@ -4142,7 +4372,9 @@ msgstr "طبقة"
 msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
-msgstr "انقر للبحث عن البيانات الجغرافية المكانية التي قام الآخرون بنشرها والمنظمات ومصادر عامة. تحميل البيانات في النماذج القياسية."
+msgstr ""
+"انقر للبحث عن البيانات الجغرافية المكانية التي قام الآخرون بنشرها والمنظمات "
+"ومصادر عامة. تحميل البيانات في النماذج القياسية."
 
 #: templates/index.html:37
 msgid "Map"
@@ -4152,7 +4384,9 @@ msgstr "الخريطة"
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be shared publicly or restricted to specific users only."
-msgstr "البيانات متاحة للتصفح، تجميع والتصميم لتوليد الخرائط التي يمكن أن تكون مشتركة علنا ​​أو مقيدة للمستخدمين معينين فقط."
+msgstr ""
+"البيانات متاحة للتصفح، تجميع والتصميم لتوليد الخرائط التي يمكن أن تكون "
+"مشتركة علنا ​​أو مقيدة للمستخدمين معينين فقط."
 
 #: templates/index.html:39
 msgid "Create maps"
@@ -4166,7 +4400,9 @@ msgstr "المستخدم"
 msgid ""
 "GeoNode allows registered users to easily upload geospatial data in several "
 "formats including shapefile and GeoTiff."
-msgstr "GeoNode يسمح للمستخدمين المسجلين لتحميل البيانات الجغرافية المكانية بسهولة في العديد من الأشكال بما في ذلك بحلقات وملفات GeoTiff."
+msgstr ""
+"GeoNode يسمح للمستخدمين المسجلين لتحميل البيانات الجغرافية المكانية بسهولة "
+"في العديد من الأشكال بما في ذلك بحلقات وملفات GeoTiff."
 
 #: templates/index.html:45
 msgid "Share data"
@@ -4201,7 +4437,9 @@ msgstr "إعادة تعيين كلمة المرور"
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll send you "
 "an email allowing you to reset it."
-msgstr "نسيت كلمة المرور؟ أدخل عنوان البريد الالكتروني أدناه، وسوف نرسل لك رسالة بالبريد الالكتروني مما يتيح لك إعادة تعيينها."
+msgstr ""
+"نسيت كلمة المرور؟ أدخل عنوان البريد الالكتروني أدناه، وسوف نرسل لك رسالة "
+"بالبريد الالكتروني مما يتيح لك إعادة تعيينها."
 
 #: templates/account/password_reset.html:20
 msgid "Reset my password"
@@ -4213,7 +4451,10 @@ msgid ""
 "If you have any trouble resetting your password, contact us at <a href="
 "\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
 "a>."
-msgstr "إذا كان لديك أي مشكلة إعادة تعيين كلمة المرور الخاصة بك، اتصل بنا على <a href=\"mailto:٪(THEME_ACCOUNT_CONTACT_EMAIL)s\">٪ (THEME_ACCOUNT_CONTACT_EMAIL) S </A>."
+msgstr ""
+"إذا كان لديك أي مشكلة إعادة تعيين كلمة المرور الخاصة بك، اتصل بنا على <a "
+"href=\"mailto:٪(THEME_ACCOUNT_CONTACT_EMAIL)s\">٪ "
+"(THEME_ACCOUNT_CONTACT_EMAIL) S </A>."
 
 #: templates/account/signup.html:7 templates/account/signup.html.py:14
 #: templates/account/signup.html:22
@@ -4232,7 +4473,10 @@ msgid ""
 "To confirm this email address, go to %(activate_url)s\n"
 "\n"
 "If you did not sign up for this site, you can ignore this message.\n"
-msgstr "مستخدم على٪ (SITE_NAME) خلقت S حساب باستخدام عنوان البريد الإلكتروني هذا. \ n \ n لتأكيد عنوان البريد الإلكتروني هذا، انتقل إلى٪ (activate_url) S \ n \ n إذا لم تسجل في هذا الموقع، يمكنك تجاهل هذا رسالة \ ن"
+msgstr ""
+"مستخدم على٪ (SITE_NAME) خلقت S حساب باستخدام عنوان البريد الإلكتروني هذا.  "
+"n  n لتأكيد عنوان البريد الإلكتروني هذا، انتقل إلى٪ (activate_url) S  n  n "
+"إذا لم تسجل في هذا الموقع، يمكنك تجاهل هذا رسالة  ن"
 
 #: templates/account/email/email_confirmation_subject.txt:1
 #, python-format
@@ -4248,7 +4492,11 @@ msgid ""
 "link below to reset your password.\n"
 "\n"
 "%(password_reset_url)s\n"
-msgstr "كنت تتلقى هذا البريد الإلكتروني لأنك أو أي شخص آخر قد طلب كلمة مرور لحساب المستخدم الخاص بك في٪ (SITE_NAME) S. \ n ويمكن تجاهلها بأمان إذا لم تطلب إعادة تعيين كلمة المرور. اضغط على الرابط أدناه لإعادة تعيين كلمة المرور الخاصة بك. \ N \ N٪ (password_reset_url) S \ ن"
+msgstr ""
+"كنت تتلقى هذا البريد الإلكتروني لأنك أو أي شخص آخر قد طلب كلمة مرور لحساب "
+"المستخدم الخاص بك في٪ (SITE_NAME) S.  n ويمكن تجاهلها بأمان إذا لم تطلب "
+"إعادة تعيين كلمة المرور. اضغط على الرابط أدناه لإعادة تعيين كلمة المرور "
+"الخاصة بك.  N  N٪ (password_reset_url) S  ن"
 
 #: templates/account/email/password_reset_subject.txt:1
 #, python-format
@@ -4298,7 +4546,9 @@ msgid ""
 "                        Published from <b>%(publish_start)s</b> to <b>"
 "%(publish_end)s</b>.\n"
 "                        "
-msgstr "\ ن المنشورة من <ب>٪ (publish_start) S </ B> إلى <b>٪ (publish_end) S </ B>. \ ن                        "
+msgstr ""
+" ن المنشورة من <ب>٪ (publish_start) S </ B> إلى <b>٪ (publish_end) S </ B>.  "
+"ن                        "
 
 #: templates/announcements/detail.html:4
 #, python-format
@@ -4339,7 +4589,9 @@ msgstr "يرجى تحديد الآلهة التي ترغب في حذفها."
 msgid ""
 "You have no avatars to delete. Please <a href=\"%(avatar_change_url)s"
 "\">upload one</a> now."
-msgstr "لا يوجد لديك الآلهة وحذفها. يرجى <a href=\"٪(avatar_change_url)s\"> تحميل </A> واحد الآن."
+msgstr ""
+"لا يوجد لديك الآلهة وحذفها. يرجى <a href=\"٪(avatar_change_url)s\"> تحميل </"
+"A> واحد الآن."
 
 #: templates/avatar/confirm_delete.html:15
 msgid "Delete These"
@@ -4381,7 +4633,9 @@ msgstr "ملاحظات"
 msgid ""
 "You do not have a verified email address to which notices can be sent. You "
 "can add one by going to <a href=\"%(email_url)s\">Account</a>."
-msgstr "لم يكن لديك عنوان بريد إلكتروني التحقق التي يمكن إرسال الإشعارات. يمكنك إضافة واحد عن طريق الذهاب إلى <a href=\"٪(email_url)s\"> </A> حساب."
+msgstr ""
+"لم يكن لديك عنوان بريد إلكتروني التحقق التي يمكن إرسال الإشعارات. يمكنك "
+"إضافة واحد عن طريق الذهاب إلى <a href=\"٪(email_url)s\"> </A> حساب."
 
 #: templates/notification/notice_settings.html:30
 msgid "Notification Type"
@@ -4497,6 +4751,11 @@ msgstr "التصنيفات "
 msgid "Date begins after:"
 msgstr "تاريخ يبدأ بعد:"
 
+#: templates/search/_general_filters.html:31
+#: templates/search/_general_filters.html:35
+msgid "yyyy-mm-dd"
+msgstr ""
+
 #: templates/search/_general_filters.html:34
 msgid "Date ends before:"
 msgstr "تاريخ ينتهي قبل:"
@@ -4516,10 +4775,6 @@ msgstr "تعيين أذونات"
 #: templates/search/_text_filter.html:5
 msgid "Text"
 msgstr "نص"
-
-#: templates/search/search.html:6 templates/search/search.html.py:12
-msgid "Search"
-msgstr "بحث "
 
 #: templates/user_messages/inbox.html:6
 msgid "Message Inbox"
@@ -4569,3 +4824,8 @@ msgstr "العودة إلى علبة الوارد"
 msgid "Send Reply"
 msgstr "إرسال رد"
 
+#~ msgid "Edit Map Permissions"
+#~ msgstr "تحرير خريطة ضوابط"
+
+#~ msgid "Who can manage?"
+#~ msgstr "الذين يمكن إدارة؟"
