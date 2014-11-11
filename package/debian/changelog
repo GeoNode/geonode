@@ -1,3 +1,21 @@
+geonode (2.4.0+alpha22) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [1bc5a7] save the system assigned name for uploaded file and use it for the rest
+
+  [ Ariel Nunez ]
+  * [e4e6bc] Added requested languages from transifex
+  * [1e7d1f] Updated translations
+  * [4930f6] Added messages for new languages
+  * [27e8dc] Updated .mo
+  * [888705] Updated .po from transifex
+  * [42f63f] Updated locale with dummy data so they are picked up by tx push
+  * [65bb12] Used google's workbench to translate 30% of arabic
+  * [262e39] Manual fixes to arabic django.po
+  * [b8a60f] Updated arabic
+
+ -- Ariel Nunez <ingenieroariel@gmail.com>  Tue, 11 Nov 2014 18:45:53 -0500
+
 geonode (2.4.0+alpha21) trusty; urgency=high
 
   [ CORTI Paolo ]
