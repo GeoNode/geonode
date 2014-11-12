@@ -1,4 +1,5 @@
 {% extends "site_base.html" %}
+{% load geonode_auth %}
 {% load i18n %}
 {% load maps_tags %}
 {% load layers_tags %}
@@ -68,7 +69,10 @@
         <section class="article-list latest-maps">
           {% featured_maps as featured_maps %}
           {% for map in featured_maps %}
-            {% include "maps/_map_list_item.html" %}
+            {% has_obj_perm user map "maps.view_map" as can_view_map %}
+            {% if can_view_map %}
+              {% include "maps/_map_list_item.html" %}
+            {% endif %}
           {% endfor %}
         </section>
       </div>
