@@ -61,6 +61,7 @@ from geoserver.catalog import Catalog
 from geoserver.catalog import FailedRequestError, UploadError
 from geoserver.catalog import ConflictingDataError
 from geoserver.resource import FeatureType, Coverage
+from geoserver.support import DimensionInfo
 
 from geonode import GeoNodeException
 from geonode.layers.utils import layer_type, get_files
@@ -1403,6 +1404,67 @@ def style_update(request, url):
         style_name = os.path.basename(request.path)
         style = Style.objects.all().filter(name=style_name)[0]
         style.delete()
+
+
+def set_time_info(layer, attribute, end_attribute, presentation,
+                  precision_value, precision_step, enabled=True):
+    '''Configure the time dimension for a layer.
+
+    :param layer: the layer to configure
+    :param attribute: the attribute used to represent the instant or period
+                      start
+    :param end_attribute: the optional attribute used to represent the end
+                          period
+    :param presentation: either 'LIST', 'DISCRETE_INTERVAL', or
+                         'CONTINUOUS_INTERVAL'
+    :param precision_value: number representing number of steps
+    :param precision_step: one of 'seconds', 'minutes', 'hours', 'days',
+                           'months', 'years'
+    :param enabled: defaults to True
+    '''
+    layer = gs_catalog.get_layer(layer.name)
+    if layer is None:
+        raise ValueError('no such layer: %s' % layer.name)
+    resource = layer.resource
+    resolution = None
+    if precision_value and precision_step:
+        resolution = '%s %s' % (precision_value, precision_step)
+    info = DimensionInfo("time", enabled, presentation, resolution, "ISO8601",
+                         None, attribute=attribute, end_attribute=end_attribute)
+    metadata = dict(resource.metadata or {})
+    metadata['time'] = info
+    resource.metadata = metadata
+    gs_catalog.save(resource)
+
+
+def get_time_info(layer):
+    '''Get the configured time dimension metadata for the layer as a dict.
+
+    The keys of the dict will be those of the parameters of `set_time_info`.
+
+    :returns: dict of values or None if not configured
+    '''
+    layer = gs_catalog.get_layer(layer.name)
+    if layer is None:
+        raise ValueError('no such layer: %s' % layer.name)
+    resource = layer.resource
+    info = resource.metadata.get('time', None) if resource.metadata else None
+    vals = None
+    if info:
+        value = step = None
+        resolution = info.resolution_str()
+        if resolution:
+            value, step = resolution.split()
+        vals = dict(
+            enabled=info.enabled,
+            attribute=info.attribute,
+            end_attribute=info.end_attribute,
+            presentation=info.presentation,
+            precision_value=value,
+            precision_step=step,
+        )
+    return vals
+
 
 ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
 
