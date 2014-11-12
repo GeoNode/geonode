@@ -91,7 +91,7 @@ LANGUAGES = (
     ('ru', 'Russian'),
     ('vi', 'Vietnamese'),
     ('ko', '한국어'),
-    ('am', 'Amharic'),
+    # ('am', 'Amharic'),
     ('km', 'Khmer'),
     ('pl', 'Polish'),
     ('sv', 'Swedish'),
