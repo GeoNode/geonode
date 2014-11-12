@@ -22,6 +22,7 @@ import taggit
 from django import forms
 
 from mptt.forms import TreeNodeMultipleChoiceField
+from bootstrap3_datetime.widgets import DateTimePicker
 
 from geonode.maps.models import Map
 from geonode.people.models import Profile
@@ -34,23 +35,31 @@ import autocomplete_light
 
 
 class MapForm(TranslationModelForm):
-    date = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
-    date.widget.widgets[0].attrs = {
-        "class": "datepicker",
-        'data-date-format': "yyyy-mm-dd"}
-    date.widget.widgets[1].attrs = {"class": "time"}
-    temporal_extent_start = forms.DateField(
+    _date_widget_options = {
+        "icon_attrs": {"class": "fa fa-calendar"},
+        "attrs": {"class": "form-control input-sm"},
+        "format": "%Y-%m-%d %H:%M",
+        # Options for the datetimepickers are not set here on purpose.
+        # They are set in the metadata_form_js.html template because
+        # bootstrap-datetimepicker uses jquery for its initialization
+        # and we need to ensure it is available before trying to
+        # instantiate a new datetimepicker. This could probably be improved.
+        "options": False,
+        }
+    date = forms.DateTimeField(
+        localize=True,
+        widget=DateTimePicker(**_date_widget_options)
+    )
+    temporal_extent_start = forms.DateTimeField(
         required=False,
-        widget=forms.DateInput(
-            attrs={
-                "class": "datepicker",
-                'data-date-format': "yyyy-mm-dd"}))
-    temporal_extent_end = forms.DateField(
+        localize=True,
+        widget=DateTimePicker(**_date_widget_options)
+    )
+    temporal_extent_end = forms.DateTimeField(
         required=False,
-        widget=forms.DateInput(
-            attrs={
-                "class": "datepicker",
-                'data-date-format': "yyyy-mm-dd"}))
+        localize=True,
+        widget=DateTimePicker(**_date_widget_options)
+    )
     poc = forms.ModelChoiceField(
         empty_label="Person outside GeoNode (fill form)",
         label="Point Of Contact",
