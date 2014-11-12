@@ -107,7 +107,7 @@ AUTH_USER_MODEL = 'people.Profile'
 # to load the internationalization machinery.
 USE_I18N = True
 
-MODELTRANSLATION_LANGUAGES = ['en',]
+MODELTRANSLATION_LANGUAGES = ['en', ]
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
 
