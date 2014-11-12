@@ -47,16 +47,6 @@ define(function (require, exports) {
         return name.replace(/\[|\]|\(|\)/g, '_');
     };
 
-    /** Function to get progress template 
-     *
-     *  @params {options}
-     *  @returns 
-     */
-    LayerInfo.prototype.progressTemplate  = function (options) {
-        var template =  _.template($('#progressTemplate').html());
-        return template(options);
-    };
-
     /** Function to return the success template  
      *
      *  @params {options}
@@ -187,31 +177,23 @@ define(function (require, exports) {
         return form_data;
     };
 
-    /** Log the status to the status div 
+    /** Log the status to the status div
      *
      *  @params {options}
      *  @returns {string}
      */
     LayerInfo.prototype.logStatus = function (options) {
-        var status = this.element.find('#status'),
-            empty = options.empty;
-
-        if (empty) {
-            status.empty();
-        }
-        status.append(this.progressTemplate({
-            message: options.msg,
-            alertLevel: options.level
-        }));
+        options.element = this.element.find('#status');
+        common.logStatus(options);
     };
 
-    /** Function to mark errors in the the status 
+    /** Function to mark errors in the the status
      *
      *  @params {error}
      *  @returns {string}
      */
     LayerInfo.prototype.markError = function (error, status) {
-        this.logStatus({msg: error, level: 'alert-error', empty:true});
+        common.logError(error, this.element.find('#status'));
     };
 
     /** Function to mark the start of the upload
@@ -413,25 +395,14 @@ define(function (require, exports) {
                 if (jqXHR === null) {
                     self.markError(gettext('Unexpected Error'));
                 } else {
-                    var parsed_errors = $.parseJSON(jqXHR.responseText)
-                    var error_message = gettext('No error message supplied');
-
-                    // Support the two different syntax used in GeoNode.
-                    // TODO(Ariel): Agree on one of those server side and
-                    // simplify this code. It can be either 'errormsgs' or 'error'.
-                    if(parsed_errors.hasOwnProperty("errormsgs")){
-                        error_message = parsed_errors.errormsgs;
-                    }else{
-                        error_message = parsed_errors.errors;
-                    } 
-                    self.markError(error_message);
+                    self.markError(jqXHR);
                 }
             },
             success: function (resp, status) {
                 self.logStatus({
                     msg: '<p>' + gettext('Layer files uploaded, configuring in GeoServer') + '</p>',
                     level: 'alert-success',
-                    empty: 'true',
+                    empty: 'true'
                 });
                 self.doStep(resp);
             }
