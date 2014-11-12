@@ -595,6 +595,18 @@ class GeoNodeMapTest(TestCase):
                                                })
         self.assertEquals(response.status_code, 401)
 
+
+class GeoNodePermissionsTest(TestCase):
+
+    """Tests GeoNode permissions and its integration with GeoServer
+    """
+
+    def setUp(self):
+        call_command('loaddata', 'people_data', verbosity=0)
+
+    def tearDown(self):
+        pass
+
     def test_permissions(self):
         """Test permissions on a layer
         """
