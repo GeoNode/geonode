@@ -33,9 +33,9 @@ from django.contrib.auth import get_user_model
 from agon_ratings.models import OverallRating
 
 from guardian.shortcuts import get_anonymous_user
+from guardian.shortcuts import assign_perm, remove_perm
 
 from geonode import GeoNodeException
-
 from geonode.layers.models import Layer, Style
 from geonode.layers.utils import layer_type, get_files, get_valid_name, \
     get_valid_layer_name
@@ -697,7 +697,7 @@ class UnpublishedObjectTests(TestCase):
 
     """Test the is_published base attribute"""
 
-    fixtures = ['initial_data.json', 'bobby']
+    fixtures = ['bobby']
 
     def setUp(self):
         super(UnpublishedObjectTests, self).setUp()
@@ -711,24 +711,34 @@ class UnpublishedObjectTests(TestCase):
         all_public()
 
     def test_unpublished_layer(self):
-        """Test category filtering"""
+        """Test unpublished layer behaviour"""
 
-        c = Client()
-        c.login(username='user1', password='user1')
+        client = Client()
+        user = get_user_model().objects.get(username='bobby')
+        client.login(username='bobby', password='bob')
 
-        response = c.get(reverse('layer_detail', args=('geonode:CA',)))
+        # access to layer detail page gives 200 if layer is published
+        response = client.get(reverse('layer_detail', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
         layer = Layer.objects.filter(title='CA')[0]
         layer.is_published = False
         layer.save()
 
-        response = c.get(reverse('layer_detail', args=('geonode:CA',)))
+        # access to layer detail page gives 404 if layer is unpublished
+        response = client.get(reverse('layer_detail', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 404)
+
+        # access to layer deatil pages give 200 if a layer is unpublished
+        # but the user has the publish_resourcebase permission
+        assign_perm('publish_resourcebase', user, layer.get_self_resource())
+        response = client.get(reverse('layer_detail', args=('geonode:CA',)))
+        self.failUnlessEqual(response.status_code, 200)
 
         # with settings disabled
         with self.settings(RESOURCE_PUBLISHING=False):
-            response = c.get(reverse('layer_detail', args=('geonode:CA',)))
+            remove_perm('publish_resourcebase', user, layer.get_self_resource())
+            response = client.get(reverse('layer_detail', args=('geonode:CA',)))
             self.failUnlessEqual(response.status_code, 200)
 
         layer.is_published = True

@@ -659,6 +659,41 @@ class GeoNodeMapTest(TestCase):
         # Clean up and completely delete the layer
         layer.delete()
 
+    def test_unpublished(self):
+        """Test permissions on an unpublished layer
+        """
+
+        thefile = os.path.join(
+            gisdata.VECTOR_DATA,
+            'san_andres_y_providencia_poi.shp')
+        layer = file_upload(thefile, overwrite=True)
+        check_layer(layer)
+
+        # we need some time to have the service up and running
+        time.sleep(20)
+
+        # request getCapabilities: layer must be there as it is published and
+        # advertised: we need to check if in response there is
+        # <Name>geonode:san_andres_y_providencia_water</Name>
+        url = 'http://localhost:8080/geoserver/ows?' \
+            'service=wms&version=1.3.0&request=GetCapabilities'
+        str_to_check = '<Name>geonode:san_andres_y_providencia_poi</Name>'
+        request = urllib2.Request(url)
+        response = urllib2.urlopen(request)
+        self.assertTrue(any(str_to_check in s for s in response.readlines()))
+
+        # now test with unpublished layer
+        resource = layer.get_self_resource()
+        resource.is_published = False
+        resource.save()
+
+        request = urllib2.Request(url)
+        response = urllib2.urlopen(request)
+        self.assertFalse(any(str_to_check in s for s in response.readlines()))
+
+        # Clean up and completely delete the layer
+        layer.delete()
+
 
 class GeoNodeThumbnailTest(TestCase):
 

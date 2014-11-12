@@ -17,6 +17,7 @@ from geonode.geoserver.helpers import set_styles, gs_catalog, get_coverage_grid_
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.geoserver.helpers import geoserver_upload
 from geonode.utils import http_client
+from geonode.base.models import ResourceBase
 from geonode.base.models import Link
 from geonode.base.models import Thumbnail
 from geonode.layers.utils import create_thumbnail
@@ -138,29 +139,46 @@ def geoserver_post_save(instance, sender, **kwargs):
        to be saved to the database before accessing them.
     """
 
+    def get_gs_resource(instance):
+        if type(instance) is ResourceBase:
+            if hasattr(instance, 'layer'):
+                resource = instance.layer
+            else:
+                return None
+        else:
+            resource = instance
+        try:
+            return gs_catalog.get_resource(
+                resource.name,
+                store=resource.store,
+                workspace=resource.workspace)
+        except socket_error as serr:
+            if serr.errno != errno.ECONNREFUSED:
+                # Not the error we are looking for, re-raise
+                raise serr
+            # If the connection is refused, take it easy.
+            return
+
+    gs_resource = get_gs_resource(instance)
+
+    if gs_resource is None:
+        return
+
+    if type(instance) is ResourceBase:
+        # unadvertise the resource it the layer is unpublished
+        if instance.is_published != gs_resource.advertised:
+            if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
+                gs_resource.advertised = instance.is_published
+                gs_catalog.save(gs_resource)
+        return
+
     if instance.storeType == "remoteStore":
         # Save layer attributes
         set_attributes(instance)
         return
 
-    try:
-        gs_resource = gs_catalog.get_resource(
-            instance.name,
-            store=instance.store,
-            workspace=instance.workspace)
-    except socket_error as serr:
-        if serr.errno != errno.ECONNREFUSED:
-            # Not the error we are looking for, re-raise
-            raise serr
-        # If the connection is refused, take it easy.
-        return
-
-    if gs_resource is None:
-        return
-
     if any(instance.keyword_list()):
         gs_resource.keywords = instance.keyword_list()
-
         # gs_resource should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
